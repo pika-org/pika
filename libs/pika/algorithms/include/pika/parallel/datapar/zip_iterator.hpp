@@ -14,10 +14,10 @@
 #include <pika/iterator_support/zip_iterator.hpp>
 #include <pika/type_support/pack.hpp>
 
-#include <pika/execution/traits/vector_pack_alignment_size.hpp>
-#include <pika/execution/traits/vector_pack_load_store.hpp>
-#include <pika/execution/traits/vector_pack_type.hpp>
 #include <pika/parallel/datapar/iterator_helpers.hpp>
+#include <pika/parallel/util/vector_pack_alignment_size.hpp>
+#include <pika/parallel/util/vector_pack_load_store.hpp>
+#include <pika/parallel/util/vector_pack_type.hpp>
 
 #include <algorithm>
 #include <cstddef>

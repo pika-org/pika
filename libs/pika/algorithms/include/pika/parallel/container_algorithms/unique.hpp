@@ -589,11 +589,11 @@ namespace pika { namespace ranges {
 
 #include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
-#include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/iterator_support/iterator_range.hpp>
 #include <pika/iterator_support/range.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/iterator_support/traits/is_range.hpp>
+#include <pika/parallel/algorithms/detail/predicates.hpp>
 
 #include <pika/algorithms/traits/projected.hpp>
 #include <pika/algorithms/traits/projected_range.hpp>

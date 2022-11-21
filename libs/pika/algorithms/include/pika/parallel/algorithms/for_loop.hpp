@@ -733,11 +733,11 @@ namespace pika {
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/concepts/concepts.hpp>
-#include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/functional/detail/invoke.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/modules/executors.hpp>
 #include <pika/modules/threading_base.hpp>
+#include <pika/parallel/algorithms/detail/predicates.hpp>
 #include <pika/parallel/util/detail/sender_util.hpp>
 #include <pika/type_support/empty_function.hpp>
 #include <pika/type_support/pack.hpp>

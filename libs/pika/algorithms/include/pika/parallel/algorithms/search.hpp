@@ -10,10 +10,10 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/executors/execution_policy.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/parallel/algorithms/detail/distance.hpp>
+#include <pika/parallel/algorithms/detail/predicates.hpp>
 #include <pika/parallel/algorithms/detail/search.hpp>
 #include <pika/parallel/util/detail/algorithm_result.hpp>
 #include <pika/parallel/util/detail/sender_util.hpp>

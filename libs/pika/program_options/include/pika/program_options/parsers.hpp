@@ -43,7 +43,7 @@ namespace pika { namespace program_options {
         /** Options description that was used for parsing.
             Parsers should return pointer to the instance of
             option_description passed to them, and issues of lifetime are
-            up to the caller. Can be NULL.
+            up to the caller. Can be nullptr.
          */
         const options_description* description;
 

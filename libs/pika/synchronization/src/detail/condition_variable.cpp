@@ -158,7 +158,7 @@ namespace pika::detail {
         PIKA_ASSERT(lock.owns_lock());
 
         // enqueue the request and block this thread
-        auto this_ctx = pika::execution_base::this_thread::agent();
+        auto this_ctx = pika::execution::this_thread::detail::agent();
         queue_entry f(this_ctx, &queue_);
         queue_.push_back(f);
 
@@ -181,7 +181,7 @@ namespace pika::detail {
         PIKA_ASSERT(lock.owns_lock());
 
         // enqueue the request and block this thread
-        auto this_ctx = pika::execution_base::this_thread::agent();
+        auto this_ctx = pika::execution::this_thread::detail::agent();
         queue_entry f(this_ctx, &queue_);
         queue_.push_back(f);
 

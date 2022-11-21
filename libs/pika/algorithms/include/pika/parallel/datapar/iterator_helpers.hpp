@@ -10,12 +10,12 @@
 
 #if defined(PIKA_HAVE_DATAPAR)
 #include <pika/assert.hpp>
-#include <pika/execution/traits/vector_pack_alignment_size.hpp>
-#include <pika/execution/traits/vector_pack_load_store.hpp>
-#include <pika/execution/traits/vector_pack_type.hpp>
 #include <pika/functional/detail/invoke.hpp>
 #include <pika/functional/invoke_result.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
+#include <pika/parallel/util/vector_pack_alignment_size.hpp>
+#include <pika/parallel/util/vector_pack_load_store.hpp>
+#include <pika/parallel/util/vector_pack_type.hpp>
 
 #include <cstddef>
 #include <iterator>

@@ -8,11 +8,11 @@
 
 #include <pika/config.hpp>
 #include <pika/execution/traits/is_execution_policy.hpp>
-#include <pika/execution/traits/vector_pack_load_store.hpp>
-#include <pika/execution/traits/vector_pack_type.hpp>
 #include <pika/functional/invoke_result.hpp>
 #include <pika/functional/traits/is_invocable.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
+#include <pika/parallel/util/vector_pack_load_store.hpp>
+#include <pika/parallel/util/vector_pack_type.hpp>
 #include <pika/type_support/pack.hpp>
 
 #include <iterator>

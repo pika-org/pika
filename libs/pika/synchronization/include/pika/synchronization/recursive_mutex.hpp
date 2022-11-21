@@ -33,7 +33,7 @@ namespace pika {
 
         private:
             std::atomic<std::uint64_t> recursion_count;
-            std::atomic<pika::execution_base::agent_ref> locking_context;
+            std::atomic<pika::execution::detail::agent_ref> locking_context;
             Mutex mtx;
 
         public:
@@ -52,7 +52,7 @@ namespace pika {
             /// \throws Never throws.
             bool try_lock()
             {
-                auto ctx = pika::execution_base::this_thread::agent();
+                auto ctx = pika::execution::this_thread::detail::agent();
                 PIKA_ASSERT(ctx);
 
                 return try_recursive_lock(ctx) || try_basic_lock(ctx);
@@ -67,7 +67,7 @@ namespace pika {
             ///         called outside of a pika-thread.
             void lock()
             {
-                auto ctx = pika::execution_base::this_thread::agent();
+                auto ctx = pika::execution::this_thread::detail::agent();
                 PIKA_ASSERT(ctx);
 
                 if (!try_recursive_lock(ctx))
@@ -89,7 +89,8 @@ namespace pika {
             {
                 if (0 == --recursion_count)
                 {
-                    locking_context.exchange(pika::execution_base::agent_ref());
+                    locking_context.exchange(
+                        pika::execution::detail::agent_ref());
                     util::unregister_lock(this);
                     util::reset_ignored(&mtx);
                     mtx.unlock();
@@ -98,7 +99,7 @@ namespace pika {
 
         private:
             bool try_recursive_lock(
-                pika::execution_base::agent_ref current_context)
+                pika::execution::detail::agent_ref current_context)
             {
                 if (locking_context.load(std::memory_order_acquire) ==
                     current_context)
@@ -110,7 +111,8 @@ namespace pika {
                 return false;
             }
 
-            bool try_basic_lock(pika::execution_base::agent_ref current_context)
+            bool try_basic_lock(
+                pika::execution::detail::agent_ref current_context)
             {
                 if (mtx.try_lock())
                 {

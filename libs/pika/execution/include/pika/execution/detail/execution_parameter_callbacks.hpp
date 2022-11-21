@@ -13,7 +13,7 @@
 #include <cstddef>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace parallel { namespace execution { namespace detail {
+namespace pika::parallel::execution::detail {
     /// \cond NOINTERNAL
     using get_os_thread_count_type =
         pika::util::detail::function<std::size_t()>;
@@ -27,4 +27,4 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
     PIKA_EXPORT threads::detail::mask_cref_type get_pu_mask(
         threads::detail::topology&, std::size_t);
     /// \endcond
-}}}}    // namespace pika::parallel::execution::detail
+}    // namespace pika::parallel::execution::detail

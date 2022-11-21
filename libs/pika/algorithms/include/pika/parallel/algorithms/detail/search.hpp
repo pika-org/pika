@@ -11,10 +11,10 @@
 
 #include <pika/config.hpp>
 #include <pika/algorithms/traits/projected.hpp>
-#include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/functional/detail/invoke.hpp>
 #include <pika/parallel/algorithms/detail/dispatch.hpp>
 #include <pika/parallel/algorithms/detail/distance.hpp>
+#include <pika/parallel/algorithms/detail/predicates.hpp>
 #include <pika/parallel/util/compare_projected.hpp>
 #include <pika/parallel/util/detail/algorithm_result.hpp>
 #include <pika/parallel/util/loop.hpp>

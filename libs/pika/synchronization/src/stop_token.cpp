@@ -79,7 +79,7 @@ namespace pika::detail {
 
             for (std::size_t k = 0; is_locked(old_state); ++k)
             {
-                pika::execution_base::this_thread::yield_k(
+                pika::execution::this_thread::detail::yield_k(
                     k, "stop_state::lock");
                 old_state = state_.load(std::memory_order_relaxed);
             }
@@ -106,7 +106,7 @@ namespace pika::detail {
 
             for (std::size_t k = 0; is_locked(old_state); ++k)
             {
-                pika::execution_base::this_thread::yield_k(
+                pika::execution::this_thread::detail::yield_k(
                     k, "stop_state::lock_and_request_stop");
                 old_state = state_.load(std::memory_order_acquire);
 
@@ -148,7 +148,7 @@ namespace pika::detail {
 
             for (std::size_t k = 0; is_locked(old_state); ++k)
             {
-                pika::execution_base::this_thread::yield_k(
+                pika::execution::this_thread::detail::yield_k(
                     k, "stop_state::add_callback");
                 old_state = state_.load(std::memory_order_acquire);
 

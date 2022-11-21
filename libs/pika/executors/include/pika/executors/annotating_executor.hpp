@@ -19,7 +19,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace execution { namespace experimental {
+namespace pika::execution::experimental {
 
     ///////////////////////////////////////////////////////////////////////////
     /// A \a annotating_executor wraps any other executor and adds the
@@ -205,9 +205,9 @@ namespace pika { namespace execution { namespace experimental {
         return annotating_executor<std::decay_t<Executor>>(
             PIKA_FORWARD(Executor, exec), PIKA_MOVE(annotation));
     }
-}}}    // namespace pika::execution::experimental
+}    // namespace pika::execution::experimental
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
 
     // The annotating executor exposes the same executor categories as its
     // underlying (wrapped) executor.
@@ -248,4 +248,4 @@ namespace pika { namespace parallel { namespace execution {
     {
     };
     /// \endcond
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution

@@ -11,7 +11,7 @@
 
 #include <type_traits>
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     namespace detail {
         template <typename T>
         struct is_one_way_executor : std::false_type
@@ -78,9 +78,9 @@ namespace pika { namespace parallel { namespace execution {
       : detail::is_bulk_two_way_executor<std::decay_t<T>>
     {
     };
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
-namespace pika { namespace traits {
+namespace pika::traits {
     // Concurrency TS V2: executor framework
     template <typename T, typename Enable = void>
     struct is_one_way_executor
@@ -162,4 +162,4 @@ namespace pika { namespace traits {
 
     template <typename T>
     inline constexpr bool is_executor_any_v = is_executor_any<T>::value;
-}}    // namespace pika::traits
+}    // namespace pika::traits

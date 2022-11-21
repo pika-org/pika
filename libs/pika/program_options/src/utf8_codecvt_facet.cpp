@@ -5,8 +5,8 @@
 //  Andrew Lumsdaine, Indiana University (lums@osl.iu.edu).
 //
 //  SPDX-License-Identifier: BSL-1.0
-//  Use, modification and distribution is subject to the Boost Software
-//  License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
+//  Use, modification and distribution is subject to the Boost Software License,
+//  Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 // Please see the comments in <boost/detail/utf8_codecvt_facet.hpp> to

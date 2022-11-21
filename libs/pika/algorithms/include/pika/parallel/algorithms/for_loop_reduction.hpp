@@ -11,8 +11,8 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/concurrency/cache_line_data.hpp>
-#include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/execution/detail/execution_parameter_callbacks.hpp>
+#include <pika/parallel/algorithms/detail/predicates.hpp>
 #include <pika/threading_base/thread_num_tss.hpp>
 
 #include <cstddef>

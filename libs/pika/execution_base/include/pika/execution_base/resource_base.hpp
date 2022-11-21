@@ -8,11 +8,10 @@
 
 #pragma once
 
-namespace pika { namespace execution_base {
-
+namespace pika::execution::detail {
     /// TODO: implement, this is currently just a dummy
     struct resource_base
     {
         virtual ~resource_base() = default;
     };
-}}    // namespace pika::execution_base
+}    // namespace pika::execution::detail

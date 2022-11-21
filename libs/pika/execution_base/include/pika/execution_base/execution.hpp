@@ -16,7 +16,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace execution {
+namespace pika::execution {
     ///////////////////////////////////////////////////////////////////////////
     /// Function invocations executed by a group of sequential execution agents
     /// execute in sequential order.
@@ -56,10 +56,10 @@ namespace pika { namespace execution {
     {
         constexpr non_task_policy_tag() = default;
     };
-}}    // namespace pika::execution
+}    // namespace pika::execution
 /// \endcond
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
 
     ///////////////////////////////////////////////////////////////////////////
     // Executor customization points
@@ -484,4 +484,4 @@ namespace pika { namespace parallel { namespace execution {
                 PIKA_FORWARD(Future, predecessor), PIKA_FORWARD(Ts, ts)...);
         }
     } bulk_then_execute{};
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution

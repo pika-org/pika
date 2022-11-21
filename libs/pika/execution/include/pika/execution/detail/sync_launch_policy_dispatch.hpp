@@ -17,7 +17,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace detail {
+namespace pika::detail {
 
     // dispatch point used for launch_policy implementations
     template <typename Action, typename Enable = void>
@@ -84,4 +84,4 @@ namespace pika { namespace detail {
             }
         }
     };
-}}    // namespace pika::detail
+}    // namespace pika::detail

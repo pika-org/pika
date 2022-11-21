@@ -23,7 +23,7 @@ namespace pika::execution::experimental {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace execution { namespace experimental {
+namespace pika::execution::experimental {
 #if defined(DOXYGEN)
     /// start is a customization point object. The expression
     /// `pika::execution::experimental::start(r)` is equivalent to:
@@ -87,5 +87,5 @@ namespace pika { namespace execution { namespace experimental {
 
     template <typename O>
     inline constexpr bool is_operation_state_v = is_operation_state<O>::value;
-}}}    // namespace pika::execution::experimental
+}    // namespace pika::execution::experimental
 #endif

@@ -31,7 +31,7 @@
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
 
     namespace detail {
         /// \cond NOINTERNAL
@@ -789,4 +789,4 @@ namespace pika { namespace parallel { namespace execution {
 
         return PIKA_FORWARD(Param, param);
     }
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution

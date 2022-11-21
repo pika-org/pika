@@ -8,9 +8,9 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/iterator_support/iterator_facade.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
+#include <pika/parallel/algorithms/detail/predicates.hpp>
 
 #include <algorithm>
 #include <cstddef>

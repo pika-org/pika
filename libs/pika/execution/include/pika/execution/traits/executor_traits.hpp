@@ -22,7 +22,7 @@ namespace pika {
     class future;
 }    // namespace pika
 
-namespace pika { namespace execution {
+namespace pika::execution {
     ///////////////////////////////////////////////////////////////////////////
     struct static_chunk_size;
 
@@ -30,9 +30,9 @@ namespace pika { namespace execution {
     struct sequenced_execution_tag;
     struct parallel_execution_tag;
     struct unsequenced_execution_tag;
-}}    // namespace pika::execution
+}    // namespace pika::execution
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     ///////////////////////////////////////////////////////////////////////////
     namespace detail {
         PIKA_HAS_MEMBER_XXX_TRAIT_DEF(post)
@@ -206,9 +206,9 @@ namespace pika { namespace parallel { namespace execution {
     using executor_future_t =
         typename executor_future<Executor, T, Ts...>::type;
 
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
-namespace pika { namespace traits {
+namespace pika::traits {
     ///////////////////////////////////////////////////////////////////////////
     template <typename T, typename Enable = void>
     struct has_post_member
@@ -340,4 +340,4 @@ namespace pika { namespace traits {
     using executor_parameters_type_t =
         typename executor_parameters_type<Executor>::type;
 
-}}    // namespace pika::traits
+}    // namespace pika::traits

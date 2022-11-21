@@ -16,7 +16,7 @@
 #include <execution>
 #include <type_traits>
 
-namespace pika { namespace detail {
+namespace pika::detail {
 
     // Specialize our is_execution_policy traits for the corresponding std
     // versions
@@ -71,6 +71,6 @@ namespace pika { namespace detail {
     };
 #endif
     /// \endcond
-}}    // namespace pika::detail
+}    // namespace pika::detail
 
 #endif

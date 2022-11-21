@@ -56,13 +56,12 @@ namespace pika::threads::detail {
 
     public:
         PIKA_FORCEINLINE coroutine_type::result_type call(
-            pika::execution_base::this_thread::detail::agent_storage*
-                agent_storage)
+            pika::execution::this_thread::detail::agent_storage* agent_storage)
         {
             PIKA_ASSERT(get_state().state() == thread_schedule_state::active);
             PIKA_ASSERT(this == coroutine_.get_thread_id().get());
 
-            pika::execution_base::this_thread::reset_agent ctx(
+            pika::execution::this_thread::detail::reset_agent ctx(
                 agent_storage, agent_);
             return coroutine_(set_state_ex(thread_restart_state::signaled));
         }

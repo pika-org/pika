@@ -15,8 +15,8 @@ set(algorithms_headers
     pika/parallel/algorithms/copy.hpp
     pika/parallel/algorithms/count.hpp
     pika/parallel/algorithms/destroy.hpp
-    pika/parallel/algorithms/detail/adjacent_difference.hpp
     pika/parallel/algorithms/detail/accumulate.hpp
+    pika/parallel/algorithms/detail/adjacent_difference.hpp
     pika/parallel/algorithms/detail/advance_and_get_distance.hpp
     pika/parallel/algorithms/detail/advance_to_sentinel.hpp
     pika/parallel/algorithms/detail/dispatch.hpp
@@ -26,9 +26,11 @@ set(algorithms_headers
     pika/parallel/algorithms/detail/generate.hpp
     pika/parallel/algorithms/detail/indirect.hpp
     pika/parallel/algorithms/detail/insertion_sort.hpp
+    pika/parallel/algorithms/detail/is_negative.hpp
     pika/parallel/algorithms/detail/is_sorted.hpp
     pika/parallel/algorithms/detail/parallel_stable_sort.hpp
     pika/parallel/algorithms/detail/pivot.hpp
+    pika/parallel/algorithms/detail/predicates.hpp
     pika/parallel/algorithms/detail/rotate.hpp
     pika/parallel/algorithms/detail/sample_sort.hpp
     pika/parallel/algorithms/detail/search.hpp
@@ -61,10 +63,10 @@ set(algorithms_headers
     pika/parallel/algorithms/partial_sort.hpp
     pika/parallel/algorithms/partial_sort_copy.hpp
     pika/parallel/algorithms/partition.hpp
-    pika/parallel/algorithms/reduce_by_key.hpp
     pika/parallel/algorithms/reduce.hpp
-    pika/parallel/algorithms/remove_copy.hpp
+    pika/parallel/algorithms/reduce_by_key.hpp
     pika/parallel/algorithms/remove.hpp
+    pika/parallel/algorithms/remove_copy.hpp
     pika/parallel/algorithms/replace.hpp
     pika/parallel/algorithms/reverse.hpp
     pika/parallel/algorithms/rotate.hpp
@@ -75,22 +77,23 @@ set(algorithms_headers
     pika/parallel/algorithms/set_union.hpp
     pika/parallel/algorithms/shift_left.hpp
     pika/parallel/algorithms/shift_right.hpp
+    pika/parallel/algorithms/sort.hpp
+    pika/parallel/algorithms/sort_by_key.hpp
     pika/parallel/algorithms/stable_sort.hpp
     pika/parallel/algorithms/starts_with.hpp
-    pika/parallel/algorithms/sort_by_key.hpp
-    pika/parallel/algorithms/sort.hpp
     pika/parallel/algorithms/swap_ranges.hpp
-    pika/parallel/algorithms/transform_exclusive_scan.hpp
     pika/parallel/algorithms/transform.hpp
+    pika/parallel/algorithms/transform_exclusive_scan.hpp
     pika/parallel/algorithms/transform_inclusive_scan.hpp
-    pika/parallel/algorithms/transform_reduce_binary.hpp
     pika/parallel/algorithms/transform_reduce.hpp
+    pika/parallel/algorithms/transform_reduce_binary.hpp
     pika/parallel/algorithms/uninitialized_copy.hpp
     pika/parallel/algorithms/uninitialized_default_construct.hpp
     pika/parallel/algorithms/uninitialized_fill.hpp
     pika/parallel/algorithms/uninitialized_move.hpp
     pika/parallel/algorithms/uninitialized_value_construct.hpp
     pika/parallel/algorithms/unique.hpp
+    pika/parallel/container_algorithms.hpp
     pika/parallel/container_algorithms/adjacent_difference.hpp
     pika/parallel/container_algorithms/adjacent_find.hpp
     pika/parallel/container_algorithms/all_any_none.hpp
@@ -105,7 +108,6 @@ set(algorithms_headers
     pika/parallel/container_algorithms/for_each.hpp
     pika/parallel/container_algorithms/for_loop.hpp
     pika/parallel/container_algorithms/generate.hpp
-    pika/parallel/container_algorithms.hpp
     pika/parallel/container_algorithms/includes.hpp
     pika/parallel/container_algorithms/inclusive_scan.hpp
     pika/parallel/container_algorithms/is_heap.hpp
@@ -122,8 +124,8 @@ set(algorithms_headers
     pika/parallel/container_algorithms/partial_sort_copy.hpp
     pika/parallel/container_algorithms/partition.hpp
     pika/parallel/container_algorithms/reduce.hpp
-    pika/parallel/container_algorithms/remove_copy.hpp
     pika/parallel/container_algorithms/remove.hpp
+    pika/parallel/container_algorithms/remove_copy.hpp
     pika/parallel/container_algorithms/replace.hpp
     pika/parallel/container_algorithms/reverse.hpp
     pika/parallel/container_algorithms/rotate.hpp
@@ -151,10 +153,10 @@ set(algorithms_headers
     pika/parallel/container_memory.hpp
     pika/parallel/container_numeric.hpp
     pika/parallel/datapar.hpp
+    pika/parallel/datapar/adjacent_difference.hpp
     pika/parallel/datapar/fill.hpp
     pika/parallel/datapar/find.hpp
     pika/parallel/datapar/generate.hpp
-    pika/parallel/datapar/adjacent_difference.hpp
     pika/parallel/datapar/iterator_helpers.hpp
     pika/parallel/datapar/loop.hpp
     pika/parallel/datapar/transfer.hpp
@@ -171,8 +173,14 @@ set(algorithms_headers
     pika/parallel/util/detail/handle_local_exceptions.hpp
     pika/parallel/util/detail/partitioner_iteration.hpp
     pika/parallel/util/detail/scoped_executor_parameters.hpp
-    pika/parallel/util/detail/sender_util.hpp
     pika/parallel/util/detail/select_partitioner.hpp
+    pika/parallel/util/detail/sender_util.hpp
+    pika/parallel/util/detail/simd/vector_pack_alignment_size.hpp
+    pika/parallel/util/detail/simd/vector_pack_all_any_none.hpp
+    pika/parallel/util/detail/simd/vector_pack_count_bits.hpp
+    pika/parallel/util/detail/simd/vector_pack_find.hpp
+    pika/parallel/util/detail/simd/vector_pack_load_store.hpp
+    pika/parallel/util/detail/simd/vector_pack_type.hpp
     pika/parallel/util/foreach_partitioner.hpp
     pika/parallel/util/invoke_projected.hpp
     pika/parallel/util/loop.hpp
@@ -190,6 +198,12 @@ set(algorithms_headers
     pika/parallel/util/scan_partitioner.hpp
     pika/parallel/util/transfer.hpp
     pika/parallel/util/transform_loop.hpp
+    pika/parallel/util/vector_pack_alignment_size.hpp
+    pika/parallel/util/vector_pack_all_any_none.hpp
+    pika/parallel/util/vector_pack_count_bits.hpp
+    pika/parallel/util/vector_pack_find.hpp
+    pika/parallel/util/vector_pack_load_store.hpp
+    pika/parallel/util/vector_pack_type.hpp
     pika/parallel/util/zip_iterator.hpp
 )
 

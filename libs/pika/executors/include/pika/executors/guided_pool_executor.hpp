@@ -39,7 +39,7 @@ namespace pika {
 // --------------------------------------------------------------------
 // pool_numa_hint
 // --------------------------------------------------------------------
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     namespace detail {
         // --------------------------------------------------------------------
         // helper struct for tuple of futures future<tuple<f1, f2, f3, ...>>>
@@ -643,6 +643,6 @@ namespace pika { namespace parallel { namespace execution {
     {
     };
 
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
 #include <pika/config/warnings_suffix.hpp>

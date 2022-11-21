@@ -8,11 +8,11 @@
 
 #include <pika/concepts/concepts.hpp>
 
-#include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/iterator_support/counting_iterator.hpp>
 #include <pika/iterator_support/traits/is_sentinel_for.hpp>
 #include <pika/parallel/algorithms/detail/advance_to_sentinel.hpp>
 #include <pika/parallel/algorithms/detail/distance.hpp>
+#include <pika/parallel/algorithms/detail/predicates.hpp>
 
 #include <cstdint>
 #include <iterator>

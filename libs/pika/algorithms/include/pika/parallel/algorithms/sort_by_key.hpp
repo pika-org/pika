@@ -8,7 +8,7 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/execution/algorithms/detail/predicates.hpp>
+#include <pika/parallel/algorithms/detail/predicates.hpp>
 #include <pika/parallel/algorithms/sort.hpp>
 #include <pika/parallel/util/zip_iterator.hpp>
 

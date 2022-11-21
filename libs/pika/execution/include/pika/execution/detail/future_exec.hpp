@@ -32,7 +32,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace lcos { namespace detail {
+namespace pika::lcos::detail {
 
     template <typename Executor, typename Future, typename F>
     inline pika::traits::future_then_executor_result_t<Executor,
@@ -315,4 +315,4 @@ namespace pika { namespace lcos { namespace detail {
 
         return p;
     }
-}}}    // namespace pika::lcos::detail
+}    // namespace pika::lcos::detail

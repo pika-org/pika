@@ -19,7 +19,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace execution { namespace experimental {
+namespace pika::execution::experimental {
 
     // with_annotation property implementation for execution policies
     // that simply forwards to the embedded executor
@@ -72,4 +72,4 @@ namespace pika { namespace execution { namespace experimental {
     {
         return pika::execution::experimental::get_annotation(policy.executor());
     }
-}}}    // namespace pika::execution::experimental
+}    // namespace pika::execution::experimental

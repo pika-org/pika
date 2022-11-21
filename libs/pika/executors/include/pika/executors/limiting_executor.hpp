@@ -27,7 +27,7 @@
 // --------------------------------------------------------------------
 //
 // --------------------------------------------------------------------
-namespace pika { namespace execution { namespace experimental {
+namespace pika::execution::experimental {
 
     // by convention the title is 7 chars (for alignment)
     using print_on = pika::debug::detail::enable_print<false>;
@@ -312,9 +312,9 @@ namespace pika { namespace execution { namespace experimental {
         mutable std::size_t upper_threshold_;
         bool block_;
     };
-}}}    // namespace pika::execution::experimental
+}    // namespace pika::execution::experimental
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
 
     // --------------------------------------------------------------------
     // simple forwarding implementations of executor traits
@@ -353,6 +353,6 @@ namespace pika { namespace parallel { namespace execution {
       : is_bulk_two_way_executor<std::decay_t<BaseExecutor>>
     {
     };
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
 #include <pika/config/warnings_suffix.hpp>

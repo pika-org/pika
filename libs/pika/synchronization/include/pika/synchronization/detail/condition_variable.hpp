@@ -40,13 +40,13 @@ namespace pika::detail {
             using hook_type = boost::intrusive::slist_member_hook<
                 boost::intrusive::link_mode<boost::intrusive::normal_link>>;
 
-            queue_entry(pika::execution_base::agent_ref ctx, void* q)
+            queue_entry(pika::execution::detail::agent_ref ctx, void* q)
               : ctx_(ctx)
               , q_(q)
             {
             }
 
-            pika::execution_base::agent_ref ctx_;
+            pika::execution::detail::agent_ref ctx_;
             void* q_;
             hook_type slist_hook_;
         };

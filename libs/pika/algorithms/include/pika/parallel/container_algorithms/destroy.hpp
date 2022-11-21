@@ -110,10 +110,10 @@ namespace pika { namespace ranges {
 
 #include <pika/algorithms/traits/projected.hpp>
 #include <pika/algorithms/traits/projected_range.hpp>
-#include <pika/execution/algorithms/detail/is_negative.hpp>
 #include <pika/executors/execution_policy.hpp>
 #include <pika/parallel/algorithms/destroy.hpp>
 #include <pika/parallel/algorithms/detail/dispatch.hpp>
+#include <pika/parallel/algorithms/detail/is_negative.hpp>
 #include <pika/parallel/util/detail/algorithm_result.hpp>
 #include <pika/parallel/util/detail/sender_util.hpp>
 

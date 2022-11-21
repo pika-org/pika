@@ -192,7 +192,7 @@ namespace pika { namespace program_options {
     {
     public:
         /** Ctor. The 'store_to' parameter tells where to store
-            the value when it's known. The parameter can be NULL. */
+            the value when it's known. The parameter can be nullptr. */
         typed_value(T* store_to)
           : m_store_to(store_to)
           , m_composing(false)

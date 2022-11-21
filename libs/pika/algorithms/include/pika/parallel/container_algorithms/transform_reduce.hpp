@@ -254,10 +254,10 @@ namespace pika {
 #include <pika/pack_traversal/unwrap.hpp>
 #include <pika/parallel/util/detail/sender_util.hpp>
 
-#include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/executors/execution_policy.hpp>
 #include <pika/parallel/algorithms/detail/accumulate.hpp>
 #include <pika/parallel/algorithms/detail/dispatch.hpp>
+#include <pika/parallel/algorithms/detail/predicates.hpp>
 #include <pika/parallel/algorithms/transform_reduce.hpp>
 #include <pika/parallel/util/detail/algorithm_result.hpp>
 #include <pika/parallel/util/loop.hpp>

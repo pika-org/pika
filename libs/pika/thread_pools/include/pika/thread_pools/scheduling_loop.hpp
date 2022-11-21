@@ -457,7 +457,8 @@ namespace pika::threads::detail {
                             idle_loop_count = 0;
                     }
                     // Force yield...
-                    pika::execution_base::this_thread::yield("background_work");
+                    pika::execution::this_thread::detail::yield(
+                        "background_work");
                 }
 
                 return thread_result_type(
@@ -492,14 +493,12 @@ namespace pika::threads::detail {
         thread_id_ref_type& next_thrd, SchedulingPolicy& scheduler,
         std::size_t num_thread, bool /* running */,
         std::int64_t& background_work_exec_time_init,
-        pika::execution_base::this_thread::detail::agent_storage*
-            context_storage)
+        pika::execution::this_thread::detail::agent_storage* context_storage)
 #else
     bool call_background_thread(thread_id_ref_type& background_thread,
         thread_id_ref_type& next_thrd, SchedulingPolicy& scheduler,
         std::size_t num_thread, bool /* running */,
-        pika::execution_base::this_thread::detail::agent_storage*
-            context_storage)
+        pika::execution::this_thread::detail::agent_storage* context_storage)
     // NOLINTEND(bugprone-easily-swappable-parameters)
 #endif
     {
@@ -628,9 +627,8 @@ namespace pika::threads::detail {
                     idle_loop_count);
         }
 
-        pika::execution_base::this_thread::detail::agent_storage*
-            context_storage =
-                pika::execution_base::this_thread::detail::get_agent_storage();
+        pika::execution::this_thread::detail::agent_storage* context_storage =
+            pika::execution::this_thread::detail::get_agent_storage();
 
         std::size_t added = std::size_t(-1);
         thread_id_ref_type next_thrd;
@@ -1027,8 +1025,8 @@ namespace pika::threads::detail {
                 if (!params.inner_.empty())
                 {
                     params.inner_();
-                    context_storage = pika::execution_base::this_thread::
-                        detail::get_agent_storage();
+                    context_storage = pika::execution::this_thread::detail::
+                        get_agent_storage();
                 }
             }
 
@@ -1085,8 +1083,8 @@ namespace pika::threads::detail {
                 if (!params.outer_.empty())
                 {
                     params.outer_();
-                    context_storage = pika::execution_base::this_thread::
-                        detail::get_agent_storage();
+                    context_storage = pika::execution::this_thread::detail::
+                        get_agent_storage();
                 }
 
                 // break if we were idling after 'may_exit'

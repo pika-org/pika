@@ -19,7 +19,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace detail {
+namespace pika::detail {
     template <typename Func, typename Enable = void>
     struct async_dispatch_launch_policy_helper;
 
@@ -92,4 +92,4 @@ namespace pika { namespace detail {
                 PIKA_FORWARD(Ts, ts)...);
         }
     };
-}}    // namespace pika::detail
+}    // namespace pika::detail

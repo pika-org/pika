@@ -12,7 +12,6 @@
 #include <pika/assert.hpp>
 #include <pika/async_base/launch_policy.hpp>
 #include <pika/coroutines/thread_enums.hpp>
-#include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/execution/detail/async_launch_policy_dispatch.hpp>
 #include <pika/execution/detail/post_policy_dispatch.hpp>
 #include <pika/execution/executors/execution.hpp>
@@ -35,7 +34,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { namespace execution { namespace detail {
+namespace pika::parallel::execution::detail {
 
     template <typename Launch, typename F, typename S, typename... Ts>
     std::vector<
@@ -175,4 +174,4 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
         return pika::traits::future_access<result_future_type>::create(
             PIKA_MOVE(p));
     }
-}}}}    // namespace pika::parallel::execution::detail
+}    // namespace pika::parallel::execution::detail

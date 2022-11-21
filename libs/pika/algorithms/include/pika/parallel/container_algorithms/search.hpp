@@ -10,10 +10,10 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/execution/traits/is_execution_policy.hpp>
 #include <pika/iterator_support/range.hpp>
 #include <pika/iterator_support/traits/is_range.hpp>
+#include <pika/parallel/algorithms/detail/predicates.hpp>
 
 #include <pika/algorithms/traits/projected.hpp>
 #include <pika/algorithms/traits/projected_range.hpp>

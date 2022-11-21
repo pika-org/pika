@@ -21,7 +21,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
 
     ///////////////////////////////////////////////////////////////////////////
     // define member traits
@@ -154,4 +154,4 @@ namespace pika { namespace parallel { namespace execution {
             exec.set_scheduler_mode(mode);
         }
     } set_scheduler_mode{};
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution

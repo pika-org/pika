@@ -19,6 +19,7 @@
 #include <pika/modules/memory.hpp>
 #include <pika/threading_base/annotated_function.hpp>
 
+#include <atomic>
 #include <cstddef>
 #include <exception>
 #include <functional>

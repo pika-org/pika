@@ -14,7 +14,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     ///////////////////////////////////////////////////////////////////////////
     namespace detail {
         /// \cond NOINTERNAL
@@ -87,4 +87,4 @@ namespace pika { namespace parallel { namespace execution {
     };
 
     inline constexpr create_rebound_policy_t create_rebound_policy{};
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution

@@ -10,7 +10,7 @@
 
 #include <pika/config.hpp>
 
-#include <pika/execution/algorithms/detail/predicates.hpp>
+#include <pika/parallel/algorithms/detail/predicates.hpp>
 
 #include <cstddef>
 #include <cstdlib>

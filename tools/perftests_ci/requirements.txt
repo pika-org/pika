@@ -2,4 +2,5 @@ numpy
 matplotlib
 python-dateutil
 lxml
+# noinshpect
 # pika-no-inspect

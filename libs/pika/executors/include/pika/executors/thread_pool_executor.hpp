@@ -10,6 +10,6 @@
 
 #include <pika/executors/parallel_executor.hpp>
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     using thread_pool_executor = pika::execution::parallel_executor;
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution

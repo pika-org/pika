@@ -12,10 +12,7 @@
 #include <type_traits>
 #include <variant>
 
-namespace pika {
-    namespace execution {
-        namespace experimental {
-            namespace detail {
+namespace pika::execution::experimental::detail {
     template <typename Variants>
     struct single_result
     {
@@ -84,4 +81,4 @@ namespace pika {
 
     template <typename Variants>
     using single_variant_t = typename single_variant<Variants>::type;
-}}}}    // namespace pika::execution::experimental::detail
+}    // namespace pika::execution::experimental::detail

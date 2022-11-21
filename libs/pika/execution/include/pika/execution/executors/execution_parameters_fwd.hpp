@@ -19,7 +19,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
 
     ///////////////////////////////////////////////////////////////////////////
     // Executor information customization points
@@ -284,4 +284,4 @@ namespace pika { namespace parallel { namespace execution {
                 PIKA_FORWARD(Executor, exec));
         }
     } mark_end_execution{};
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution

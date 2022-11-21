@@ -26,7 +26,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace execution {
+namespace pika::execution {
 
     ///////////////////////////////////////////////////////////////////////////
     /// Default sequential execution policy object.
@@ -1378,9 +1378,9 @@ namespace pika { namespace execution {
             .with(parameters());
     }
 
-}}    // namespace pika::execution
+}    // namespace pika::execution
 
-namespace pika { namespace detail {
+namespace pika::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     // Allow to detect execution policies which were created as a result
@@ -1582,4 +1582,4 @@ namespace pika { namespace detail {
     };
 
     /// \endcond
-}}    // namespace pika::detail
+}    // namespace pika::detail

@@ -162,7 +162,6 @@ namespace pika {
 #include <pika/parallel/util/detail/sender_util.hpp>
 
 #include <pika/algorithms/traits/projected.hpp>
-#include <pika/execution/traits/vector_pack_count_bits.hpp>
 #include <pika/executors/execution_policy.hpp>
 #include <pika/parallel/algorithms/detail/dispatch.hpp>
 #include <pika/parallel/algorithms/detail/distance.hpp>
@@ -170,6 +169,7 @@ namespace pika {
 #include <pika/parallel/util/invoke_projected.hpp>
 #include <pika/parallel/util/loop.hpp>
 #include <pika/parallel/util/partitioner.hpp>
+#include <pika/parallel/util/vector_pack_count_bits.hpp>
 
 #include <algorithm>
 #include <cstddef>

@@ -23,16 +23,16 @@
 #include <pika/config/warnings_prefix.hpp>
 
 namespace pika::threads::detail {
-    struct PIKA_EXPORT execution_context : pika::execution_base::context_base
+    struct PIKA_EXPORT execution_context : pika::execution::detail::context_base
     {
-        pika::execution_base::resource_base const& resource() const override
+        pika::execution::detail::resource_base const& resource() const override
         {
             return resource_;
         }
-        pika::execution_base::resource_base resource_;
+        pika::execution::detail::resource_base resource_;
     };
 
-    struct PIKA_EXPORT execution_agent : pika::execution_base::agent_base
+    struct PIKA_EXPORT execution_agent : pika::execution::detail::agent_base
     {
         explicit execution_agent(
             coroutines::detail::coroutine_impl* coroutine) noexcept;

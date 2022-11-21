@@ -120,11 +120,11 @@ namespace pika {
 #else
 
 #include <pika/config.hpp>
-#include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/executors/execution_policy.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/parallel/algorithms/adjacent_find.hpp>
 #include <pika/parallel/algorithms/detail/dispatch.hpp>
+#include <pika/parallel/algorithms/detail/predicates.hpp>
 #include <pika/parallel/util/detail/algorithm_result.hpp>
 #include <pika/parallel/util/detail/sender_util.hpp>
 #include <pika/parallel/util/invoke_projected.hpp>

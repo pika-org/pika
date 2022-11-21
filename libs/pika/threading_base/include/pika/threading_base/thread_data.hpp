@@ -532,8 +532,7 @@ namespace pika::threads::detail {
         ///                 manager will use the returned value to set the
         ///                 thread's scheduling status.
         inline coroutine_type::result_type operator()(
-            pika::execution_base::this_thread::detail::agent_storage*
-                agent_storage);
+            pika::execution::this_thread::detail::agent_storage* agent_storage);
 
         virtual thread_id_type get_thread_id() const
         {
@@ -720,7 +719,7 @@ namespace pika::threads::detail {
 
 namespace pika::threads::detail {
     PIKA_FORCEINLINE coroutine_type::result_type thread_data::operator()(
-        pika::execution_base::this_thread::detail::agent_storage* agent_storage)
+        pika::execution::this_thread::detail::agent_storage* agent_storage)
     {
         if (is_stackless())
         {

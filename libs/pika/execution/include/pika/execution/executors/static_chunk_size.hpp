@@ -16,7 +16,7 @@
 #include <cstddef>
 #include <type_traits>
 
-namespace pika { namespace execution {
+namespace pika::execution {
     ///////////////////////////////////////////////////////////////////////////
     /// Loop iterations are divided into pieces of size \a chunk_size and then
     /// assigned to threads. If \a chunk_size is not specified, the iterations
@@ -86,9 +86,9 @@ namespace pika { namespace execution {
         std::size_t chunk_size_;
         /// \endcond
     };
-}}    // namespace pika::execution
+}    // namespace pika::execution
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     /// \cond NOINTERNAL
     template <>
     struct is_executor_parameters<pika::execution::static_chunk_size>
@@ -96,4 +96,4 @@ namespace pika { namespace parallel { namespace execution {
     {
     };
     /// \endcond
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution

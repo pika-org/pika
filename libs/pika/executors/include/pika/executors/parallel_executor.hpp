@@ -12,7 +12,6 @@
 #include <pika/allocator_support/internal_allocator.hpp>
 #include <pika/assert.hpp>
 #include <pika/async_base/launch_policy.hpp>
-#include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/execution/detail/async_launch_policy_dispatch.hpp>
 #include <pika/execution/detail/post_policy_dispatch.hpp>
 #include <pika/execution/detail/sync_launch_policy_dispatch.hpp>

@@ -11,7 +11,7 @@
 #if defined(PIKA_HAVE_DATAPAR)
 
 #if !defined(__CUDACC__)
-#include <pika/execution/traits/detail/simd/vector_pack_find.hpp>
+#include <pika/parallel/util/detail/simd/vector_pack_find.hpp>
 #endif
 
 #endif

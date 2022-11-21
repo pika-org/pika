@@ -8,9 +8,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(execution_headers
     pika/execution/algorithms/bulk.hpp
-    pika/execution/algorithms/detail/is_negative.hpp
     pika/execution/algorithms/detail/partial_algorithm.hpp
-    pika/execution/algorithms/detail/predicates.hpp
     pika/execution/algorithms/detail/single_result.hpp
     pika/execution/algorithms/drop_value.hpp
     pika/execution/algorithms/ensure_started.hpp
@@ -45,30 +43,15 @@ set(execution_headers
     pika/execution/executors/fused_bulk_execute.hpp
     pika/execution/executors/guided_chunk_size.hpp
     pika/execution/executors/persistent_auto_chunk_size.hpp
-    pika/execution/executors/polymorphic_executor.hpp
     pika/execution/executors/rebind_executor.hpp
     pika/execution/executors/static_chunk_size.hpp
     pika/execution/scheduler_queries.hpp
-    pika/execution/traits/detail/simd/vector_pack_alignment_size.hpp
-    pika/execution/traits/detail/simd/vector_pack_all_any_none.hpp
-    pika/execution/traits/detail/simd/vector_pack_count_bits.hpp
-    pika/execution/traits/detail/simd/vector_pack_find.hpp
-    pika/execution/traits/detail/simd/vector_pack_load_store.hpp
-    pika/execution/traits/detail/simd/vector_pack_type.hpp
     pika/execution/traits/executor_traits.hpp
     pika/execution/traits/future_then_result_exec.hpp
     pika/execution/traits/is_execution_policy.hpp
-    pika/execution/traits/vector_pack_alignment_size.hpp
-    pika/execution/traits/vector_pack_all_any_none.hpp
-    pika/execution/traits/vector_pack_count_bits.hpp
-    pika/execution/traits/vector_pack_find.hpp
-    pika/execution/traits/vector_pack_load_store.hpp
-    pika/execution/traits/vector_pack_type.hpp
 )
 
-set(execution_sources execution_parameter_callbacks.cpp
-                      polymorphic_executor.cpp
-)
+set(execution_sources execution_parameter_callbacks.cpp)
 
 include(pika_add_module)
 pika_add_module(

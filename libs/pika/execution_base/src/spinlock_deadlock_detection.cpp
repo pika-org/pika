@@ -14,7 +14,7 @@
 #include <cstddef>
 
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
-namespace pika { namespace util { namespace detail {
+namespace pika::util::detail {
     static bool spinlock_break_on_deadlock_enabled = false;
     static std::size_t spinlock_deadlock_detection_limit =
         PIKA_SPINLOCK_DEADLOCK_DETECTION_LIMIT;
@@ -50,5 +50,5 @@ namespace pika { namespace util { namespace detail {
     {
         return spinlock_deadlock_warning_limit;
     }
-}}}    // namespace pika::util::detail
+}    // namespace pika::util::detail
 #endif

@@ -45,11 +45,11 @@ extern "C" int sched_yield(void);
 #include <time.h>
 #endif
 
-namespace pika { namespace execution_base {
+namespace pika::execution {
 
-    namespace {
+    namespace detail { namespace {
 
-        struct default_context : execution_base::context_base
+        struct default_context : context_base
         {
             resource_base const& resource() const override
             {
@@ -58,7 +58,7 @@ namespace pika { namespace execution_base {
             resource_base resource_;
         };
 
-        struct default_agent : execution_base::agent_base
+        struct default_agent : detail::agent_base
         {
             default_agent();
 
@@ -205,7 +205,7 @@ namespace pika { namespace execution_base {
         {
             std::this_thread::sleep_until(sleep_time.value());
         }
-    }    // namespace
+    }}    // namespace detail
 
     namespace detail {
         agent_base& get_default_agent()
@@ -215,41 +215,39 @@ namespace pika { namespace execution_base {
         }
     }    // namespace detail
 
-    namespace this_thread {
+    namespace this_thread::detail {
 
-        namespace detail {
-
-            struct agent_storage
+        struct agent_storage
+        {
+            agent_storage()
+              : impl_(&pika::execution::detail::get_default_agent())
             {
-                agent_storage()
-                  : impl_(&pika::execution_base::detail::get_default_agent())
-                {
-                }
-
-                agent_base* set(agent_base* context) noexcept
-                {
-                    std::swap(context, impl_);
-                    return context;
-                }
-
-                agent_base* impl_;
-            };
-
-            agent_storage* get_agent_storage()
-            {
-                static thread_local agent_storage storage;
-                return &storage;
             }
-        }    // namespace detail
+
+            execution::detail::agent_base* set(
+                execution::detail::agent_base* context) noexcept
+            {
+                std::swap(context, impl_);
+                return context;
+            }
+
+            execution::detail::agent_base* impl_;
+        };
+
+        agent_storage* get_agent_storage()
+        {
+            static thread_local agent_storage storage;
+            return &storage;
+        }
 
         reset_agent::reset_agent(
-            detail::agent_storage* storage, agent_base& impl)
+            detail::agent_storage* storage, execution::detail::agent_base& impl)
           : storage_(storage)
           , old_(storage_->set(&impl))
         {
         }
 
-        reset_agent::reset_agent(agent_base& impl)
+        reset_agent::reset_agent(execution::detail::agent_base& impl)
           : reset_agent(detail::get_agent_storage(), impl)
         {
         }
@@ -259,9 +257,9 @@ namespace pika { namespace execution_base {
             storage_->set(old_);
         }
 
-        pika::execution_base::agent_ref agent()
+        pika::execution::detail::agent_ref agent()
         {
-            return pika::execution_base::agent_ref(
+            return pika::execution::detail::agent_ref(
                 detail::get_agent_storage()->impl_);
         }
 
@@ -313,5 +311,5 @@ namespace pika { namespace execution_base {
         {
             agent().suspend(desc);
         }
-    }    // namespace this_thread
-}}       // namespace pika::execution_base
+    }    // namespace this_thread::detail
+}    // namespace pika::execution

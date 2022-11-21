@@ -13,7 +13,6 @@ set(tests
     parallel_executor
     parallel_fork_executor
     parallel_policy_executor
-    polymorphic_executor
     scheduler_executor
     sequenced_executor
     shared_parallel_executor

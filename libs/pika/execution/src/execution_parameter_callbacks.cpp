@@ -14,7 +14,7 @@
 #include <utility>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace parallel { namespace execution { namespace detail {
+namespace pika::parallel::execution::detail {
     get_os_thread_count_type& get_get_os_thread_count()
     {
         static get_os_thread_count_type f;
@@ -79,4 +79,4 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
             return mask;
         }
     }
-}}}}    // namespace pika::parallel::execution::detail
+}    // namespace pika::parallel::execution::detail
