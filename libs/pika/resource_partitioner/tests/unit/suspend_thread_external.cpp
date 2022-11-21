@@ -41,7 +41,8 @@ int pika_main()
         for (std::size_t thread_num = 0; thread_num < num_threads - 1;
              ++thread_num)
         {
-            pika::threads::suspend_processing_unit(tp, thread_num).get();
+            pika::threads::detail::suspend_processing_unit(tp, thread_num)
+                .get();
             PIKA_TEST_EQ(std::size_t(num_threads - thread_num - 1),
                 tp.get_active_os_thread_count());
         }
@@ -49,7 +50,7 @@ int pika_main()
         for (std::size_t thread_num = 0; thread_num < num_threads - 1;
              ++thread_num)
         {
-            pika::threads::resume_processing_unit(tp, thread_num).get();
+            pika::threads::detail::resume_processing_unit(tp, thread_num).get();
             PIKA_TEST_EQ(
                 std::size_t(thread_num + 2), tp.get_active_os_thread_count());
         }
@@ -65,14 +66,15 @@ int pika_main()
             std::vector<pika::future<void>> fs;
 
             fs.push_back(
-                pika::threads::suspend_processing_unit(tp, thread_num));
-            fs.push_back(pika::threads::resume_processing_unit(tp, thread_num));
+                pika::threads::detail::suspend_processing_unit(tp, thread_num));
+            fs.push_back(
+                pika::threads::detail::resume_processing_unit(tp, thread_num));
 
             pika::wait_all(fs);
 
             // Suspend is not guaranteed to run before resume, so make sure
             // processing unit is running
-            pika::threads::resume_processing_unit(tp, thread_num).get();
+            pika::threads::detail::resume_processing_unit(tp, thread_num).get();
 
             fs.clear();
 
@@ -80,8 +82,8 @@ int pika_main()
             // as no thread is available to steal from the current thread.
             for (std::size_t i = 0; i < max_threads - 1; ++i)
             {
-                fs.push_back(
-                    pika::threads::suspend_processing_unit(tp, thread_num));
+                fs.push_back(pika::threads::detail::suspend_processing_unit(
+                    tp, thread_num));
             }
 
             pika::wait_all(fs);
@@ -92,8 +94,8 @@ int pika_main()
             // as no thread is available to steal from the current thread.
             for (std::size_t i = 0; i < max_threads - 1; ++i)
             {
-                fs.push_back(
-                    pika::threads::resume_processing_unit(tp, thread_num));
+                fs.push_back(pika::threads::detail::resume_processing_unit(
+                    tp, thread_num));
             }
 
             pika::wait_all(fs);
@@ -118,7 +120,8 @@ int pika_main()
             {
                 if (thread_num < pika::resource::get_num_threads("worker"))
                 {
-                    pika::threads::suspend_processing_unit(tp, thread_num)
+                    pika::threads::detail::suspend_processing_unit(
+                        tp, thread_num)
                         .get();
                 }
 
@@ -132,7 +135,8 @@ int pika_main()
             }
             else
             {
-                pika::threads::resume_processing_unit(tp, thread_num).get();
+                pika::threads::detail::resume_processing_unit(tp, thread_num)
+                    .get();
 
                 if (thread_num > 0)
                 {
@@ -151,7 +155,8 @@ int pika_main()
         for (std::size_t thread_num_resume = 0; thread_num_resume < thread_num;
              ++thread_num_resume)
         {
-            pika::threads::resume_processing_unit(tp, thread_num_resume).get();
+            pika::threads::detail::resume_processing_unit(tp, thread_num_resume)
+                .get();
         }
     }
 

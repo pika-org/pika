@@ -70,7 +70,8 @@ int pika_main(int argc, char* argv[])
             {
                 if (thread_num < pika::resource::get_num_threads("default") - 1)
                 {
-                    pika::threads::suspend_processing_unit(tp, thread_num)
+                    pika::threads::detail::suspend_processing_unit(
+                        tp, thread_num)
                         .get();
                 }
 
@@ -84,7 +85,8 @@ int pika_main(int argc, char* argv[])
             }
             else
             {
-                pika::threads::resume_processing_unit(tp, thread_num).get();
+                pika::threads::detail::resume_processing_unit(tp, thread_num)
+                    .get();
 
                 if (thread_num > 0)
                 {
@@ -103,7 +105,8 @@ int pika_main(int argc, char* argv[])
         for (std::size_t thread_num_resume = 0; thread_num_resume < thread_num;
              ++thread_num_resume)
         {
-            pika::threads::resume_processing_unit(tp, thread_num_resume).get();
+            pika::threads::detail::resume_processing_unit(tp, thread_num_resume)
+                .get();
         }
     }
 
