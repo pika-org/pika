@@ -14,8 +14,8 @@
 #include <pika/assert.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/datastructures/variant.hpp>
+#include <pika/execution/algorithms/detail/helpers.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
-#include <pika/execution/algorithms/detail/single_result.hpp>
 #include <pika/execution_base/operation_state.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
