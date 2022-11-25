@@ -14,6 +14,7 @@
 #include <pika/async_mpi/mpi_polling.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/datastructures/variant.hpp>
+#include <pika/execution/algorithms/detail/helpers.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
@@ -105,24 +106,13 @@ namespace pika::mpi::experimental {
             stream_type stream;
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-            template <typename T>
-            struct result_type_signature_helper
-            {
-                using type = pika::execution::experimental::set_value_t(T);
-            };
-
-            template <>
-            struct result_type_signature_helper<void>
-            {
-                using type = pika::execution::experimental::set_value_t();
-            };
-
             template <typename... Ts>
             requires is_mpi_request_invocable_v<F, Ts...>
             using invoke_result_helper =
                 pika::execution::experimental::completion_signatures<
-                    typename result_type_signature_helper<
-                        mpi_request_invoke_result_t<F, Ts...>>::type>;
+                    pika::execution::experimental::detail::
+                        result_type_signature_helper_t<
+                            mpi_request_invoke_result_t<F, Ts...>>>;
 
             using completion_signatures =
                 pika::execution::experimental::make_completion_signatures<

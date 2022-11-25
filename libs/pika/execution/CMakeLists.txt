@@ -8,6 +8,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(execution_headers
     pika/execution/algorithms/bulk.hpp
+    pika/execution/algorithms/detail/helpers.hpp
     pika/execution/algorithms/detail/partial_algorithm.hpp
     pika/execution/algorithms/detail/single_result.hpp
     pika/execution/algorithms/drop_value.hpp
