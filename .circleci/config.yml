@@ -355,7 +355,7 @@ jobs:
       - run:
           name: Building Core
           command: |
-              ninja -j4 -k 0 pika
+              ninja -j4 -k 0 pika pika_exe_precompiled_headers
       - persist_to_workspace:
           root: /pika
           paths:
