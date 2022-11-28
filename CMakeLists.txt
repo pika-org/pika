@@ -1186,10 +1186,6 @@ if(NOT WIN32)
   if(APPLE)
     pika_add_compile_flag_if_available(-ftemplate-depth=256)
   endif()
-
-  if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
-    pika_add_link_flag_if_available(-Wl,-lstdc++fs)
-  endif()
 endif()
 
 if(WIN32)
