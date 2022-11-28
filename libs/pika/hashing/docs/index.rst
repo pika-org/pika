@@ -14,7 +14,6 @@ hashing
 The hashing module provides two hashing implementations:
 
 * :cpp:func:`pika::util::fibhash`
-* :cpp:class:`pika::util::jenkins_hash`
 
 See the :ref:`API reference <modules_hashing_api>` of the module for more
 details.
