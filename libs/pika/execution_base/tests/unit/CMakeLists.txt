@@ -18,13 +18,9 @@ foreach(test ${tests})
   pika_add_executable(
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources}
-    NOLIBS
-    DEPENDENCIES pika ${BOOST_UNDERLYING_THREAD_LIBRARY}
     EXCLUDE_FROM_ALL
     FOLDER "Tests/Unit/Modules/ExecutionBase"
   )
 
   pika_add_unit_test("modules.execution_base" ${test} ${${test}_PARAMETERS})
-  target_compile_definitions(${test}_test PRIVATE -DPIKA_MODULE_STATIC_LINKING)
-
 endforeach()

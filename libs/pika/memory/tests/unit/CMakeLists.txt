@@ -15,12 +15,9 @@ foreach(test ${tests})
   pika_add_executable(
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
-    EXCLUDE_FROM_ALL NOLIBS
-    DEPENDENCIES pika
+    EXCLUDE_FROM_ALL
     FOLDER "Tests/Unit/Modules/Memory"
   )
 
   pika_add_unit_test("modules.memory" ${test} ${${test}_PARAMETERS})
-  target_compile_definitions(${test}_test PRIVATE -DPIKA_MODULE_STATIC_LINKING)
-
 endforeach()
