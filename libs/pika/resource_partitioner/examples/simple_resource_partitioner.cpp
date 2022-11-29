@@ -7,7 +7,6 @@
 
 #include <pika/config.hpp>
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
-#include <pika/algorithm.hpp>
 #include <pika/execution.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/resource_partitioner.hpp>
@@ -23,6 +22,7 @@
 #include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "system_characteristics.hpp"
 
@@ -132,76 +132,65 @@ int pika_main(pika::program_options::variables_map&)
 
     pika::mutex m;
     std::set<std::thread::id> thread_set;
+    std::vector<pika::future<void>> futures;
 
-    // test a parallel algorithm on custom pool with high priority
-    pika::execution::static_chunk_size fixed(1);
-    pika::for_loop_strided(
-        pika::execution::par.with(fixed).on(high_priority_executor), 0,
-        loop_count, 1, [&](std::size_t i) {
+    // launch tasks on custom pool with high priority
+    for (std::size_t i = 0; i < loop_count; ++i)
+    {
+        futures.push_back(pika::async(high_priority_executor, [&, i]() {
             std::lock_guard<pika::mutex> lock(m);
             if (thread_set.insert(std::this_thread::get_id()).second)
             {
                 std::cout << std::hex << pika::this_thread::get_id() << " "
                           << std::hex << std::this_thread::get_id()
-                          << " high priority i " << std::dec << i << std::endl;
-            }
-        });
-    std::cout << "thread set contains " << std::dec << thread_set.size()
-              << std::endl;
-    thread_set.clear();
-
-    // test a parallel algorithm on custom pool with normal priority
-    pika::for_loop_strided(
-        pika::execution::par.with(fixed).on(normal_priority_executor), 0,
-        loop_count, 1, [&](std::size_t i) {
-            std::lock_guard<pika::mutex> lock(m);
-            if (thread_set.insert(std::this_thread::get_id()).second)
-            {
-                std::cout << std::hex << pika::this_thread::get_id() << " "
-                          << std::hex << std::this_thread::get_id()
-                          << " normal priority i " << std::dec << i
+                          << " high priority executor i " << std::dec << i
                           << std::endl;
             }
-        });
+        }));
+    }
+    pika::wait_all(std::move(futures));
     std::cout << "thread set contains " << std::dec << thread_set.size()
               << std::endl;
+    futures.clear();
+    thread_set.clear();
+
+    // launch tasks on custom pool with normal priority
+    for (std::size_t i = 0; i < loop_count; ++i)
+    {
+        futures.push_back(pika::async(normal_priority_executor, [&, i]() {
+            std::lock_guard<pika::mutex> lock(m);
+            if (thread_set.insert(std::this_thread::get_id()).second)
+            {
+                std::cout << std::hex << pika::this_thread::get_id() << " "
+                          << std::hex << std::this_thread::get_id()
+                          << " normal priority executor i " << std::dec << i
+                          << std::endl;
+            }
+        }));
+    }
+    pika::wait_all(std::move(futures));
+    std::cout << "thread set contains " << std::dec << thread_set.size()
+              << std::endl;
+    futures.clear();
     thread_set.clear();
 
     // test a parallel algorithm on pool_executor
-    pika::for_loop_strided(pika::execution::par.with(fixed).on(pool_executor),
-        0, loop_count, 1, [&](std::size_t i) {
+    for (std::size_t i = 0; i < loop_count; ++i)
+    {
+        futures.push_back(pika::async(pool_executor, [&, i]() {
             std::lock_guard<pika::mutex> lock(m);
             if (thread_set.insert(std::this_thread::get_id()).second)
             {
                 std::cout << std::hex << pika::this_thread::get_id() << " "
                           << std::hex << std::this_thread::get_id()
-                          << " mpi pool i " << std::dec << i << std::endl;
+                          << " pool executor i " << std::dec << i << std::endl;
             }
-        });
+        }));
+    }
+    pika::wait_all(std::move(futures));
     std::cout << "thread set contains " << std::dec << thread_set.size()
               << std::endl;
-    thread_set.clear();
-
-    //     auto high_priority_async_policy =
-    //         pika::launch::async_policy(pika::execution::thread_priority::critical);
-    //     auto normal_priority_async_policy = pika::launch::async_policy();
-
-    // test a parallel algorithm on custom pool with high priority
-    pika::for_loop_strided(
-        pika::execution::par.with(fixed /*, high_priority_async_policy*/)
-            .on(pool_executor),
-        0, loop_count, 1, [&](std::size_t i) {
-            std::lock_guard<pika::mutex> lock(m);
-            if (thread_set.insert(std::this_thread::get_id()).second)
-            {
-                std::cout << std::hex << pika::this_thread::get_id() << " "
-                          << std::hex << std::this_thread::get_id()
-                          << " high priority mpi i " << std::dec << i
-                          << std::endl;
-            }
-        });
-    std::cout << "thread set contains " << std::dec << thread_set.size()
-              << std::endl;
+    futures.clear();
     thread_set.clear();
 
     return pika::finalize();

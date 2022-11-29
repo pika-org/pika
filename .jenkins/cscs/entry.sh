@@ -39,7 +39,7 @@ sbatch \
     --constraint="${configuration_slurm_constraint}" \
     --partition="cscsci" \
     --account="djenkssl" \
-    --time="02:00:00" \
+    --time="01:00:00" \
     --output="jenkins-pika-${configuration_name_with_build_type}.out" \
     --error="jenkins-pika-${configuration_name_with_build_type}.err" \
     --wait .jenkins/cscs/batch.sh

@@ -45,12 +45,6 @@ function(pika_perform_cxx_feature_tests)
 
   pika_check_for_cxx17_aligned_new(DEFINITIONS PIKA_HAVE_CXX17_ALIGNED_NEW)
 
-  pika_check_for_cxx17_std_transform_scan(
-    DEFINITIONS PIKA_HAVE_CXX17_STD_TRANSFORM_SCAN_ALGORITHMS
-  )
-
-  pika_check_for_cxx17_std_scan(DEFINITIONS PIKA_HAVE_CXX17_STD_SCAN_ALGORITHMS)
-
   pika_check_for_cxx17_copy_elision(DEFINITIONS PIKA_HAVE_CXX17_COPY_ELISION)
 
   pika_check_for_cxx17_memory_resource(
@@ -59,10 +53,6 @@ function(pika_perform_cxx_feature_tests)
 
   # C++20 feature tests
   pika_check_for_cxx20_coroutines(DEFINITIONS PIKA_HAVE_CXX20_COROUTINES)
-
-  pika_check_for_cxx20_experimental_simd(
-    DEFINITIONS PIKA_HAVE_CXX20_EXPERIMENTAL_SIMD PIKA_HAVE_DATAPAR
-  )
 
   pika_check_for_cxx20_lambda_capture(
     DEFINITIONS PIKA_HAVE_CXX20_LAMBDA_CAPTURE
@@ -88,10 +78,6 @@ function(pika_perform_cxx_feature_tests)
 
   pika_check_for_cxx20_std_execution_policies(
     DEFINITIONS PIKA_HAVE_CXX20_STD_EXECUTION_POLICIES
-  )
-
-  pika_check_for_cxx20_std_ranges_iter_swap(
-    DEFINITIONS PIKA_HAVE_CXX20_STD_RANGES_ITER_SWAP
   )
 
   pika_check_for_cxx20_trivial_virtual_destructor(

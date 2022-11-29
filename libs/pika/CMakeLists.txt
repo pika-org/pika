@@ -12,7 +12,6 @@ include(pika_message)
 # cmake-format: off
 set(_pika_modules
     affinity
-    algorithms
     allocator_support
     assertion
     async_base

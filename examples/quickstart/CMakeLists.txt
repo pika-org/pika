@@ -8,7 +8,6 @@
 set(example_programs
     composable_guard
     customize_async
-    disable_thread_stealing_executor
     enumerate_threads
     event_synchronization
     executor_with_thread_hooks
@@ -20,17 +19,13 @@ set(example_programs
     latch_example # suffix added to avoid conflict with unit tests
     channel_example # suffix added to avoid conflict with unit tests
     channel_docs
-    matrix_multiplication
     pipeline1
     potpourri
-    safe_object
     # shared_mutex # Disabled due to unavailable timed suspension
     simple_future_continuation
     # timed_futures # Disabled due to unavailable timed suspension timed_wake #
     # Disabled due to unavailable timed suspension
     use_main_thread
-    vector_counting_dotproduct
-    vector_zip_dotproduct
     wait_composition
 )
 
@@ -44,13 +39,6 @@ set(hello_world_PARAMETERS THREADS 4)
 set(channel_PARAMETERS THREADS 4)
 set(simple_future_continuation_PARAMETERS THREADS 4)
 set(timed_futures_PARAMETERS THREADS 4)
-set(vector_counting_dotproduct_PARAMETERS THREADS 4)
-set(vector_zip_dotproduct_PARAMETERS THREADS 4)
-
-# the following example fails compiling on someversions of MSVC
-if(PIKA_WITH_TUPLE_RVALUE_SWAP AND (NOT MSVC))
-  list(APPEND example_programs sort_by_key_demo)
-endif()
 
 foreach(example_program ${example_programs})
   set(sources ${example_program}.cpp)

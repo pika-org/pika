@@ -4,7 +4,6 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/algorithm.hpp>
 #include <pika/future.hpp>
 #include <pika/init.hpp>
 
@@ -45,22 +44,14 @@ int pika_main()
     // You can check if a future is ready with the is_ready method.
     std::cout << "Result is ready? " << result.is_ready() << std::endl;
 
-    // You can launch other work in the meantime. Let's sort a vector.
-    std::vector<int> v(1000000);
+    // You can launch other work in the meantime. Let's start an intermediate
+    // task that prints to std::cout.
+    pika::future<void> intermediate_task = pika::async(
+        []() { std::cout << "hello from intermediate task" << std::endl; });
 
-    // We fill the vector synchronously and sequentially.
-    pika::generate(
-        pika::execution::seq, std::begin(v), std::end(v), &std::rand);
-
-    // We can launch the sort in parallel and asynchronously.
-    pika::future<void> done_sorting =
-        pika::sort(pika::execution::par(          // In parallel.
-                       pika::execution::task),    // Asynchronously.
-            std::begin(v), std::end(v));
-
-    // We launch the final task when the vector has been sorted and result is
-    // ready using when_all.
-    auto all = pika::when_all(result, done_sorting).then(&final_task);
+    // We launch the final task when the intermediate task is ready and result
+    // is ready using when_all.
+    auto all = pika::when_all(result, intermediate_task).then(&final_task);
 
     // We can wait for all to be ready.
     all.wait();

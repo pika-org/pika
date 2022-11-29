@@ -10,7 +10,6 @@
 // to associate custom thread data with the tasks that are created by the
 // underlying executor.
 
-#include <pika/algorithm.hpp>
 #include <pika/assert.hpp>
 #include <pika/execution.hpp>
 #include <pika/init.hpp>
@@ -224,8 +223,8 @@ int pika_main()
     auto exec = executor_example::make_executor_with_thread_hooks(
         pika::execution::par.executor(), on_start, on_stop);
 
-    pika::for_loop(
-        pika::execution::par.on(exec), 0, v.size(), [](std::size_t) {});
+    pika::parallel::execution::bulk_sync_execute(
+        exec, [](std::size_t) {}, v.size());
 
     std::cout << "Executed " << starts.load() << " starts and " << stops.load()
               << " stops\n";

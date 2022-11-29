@@ -15,7 +15,6 @@ Core modules
    :maxdepth: 2
 
    /libs/core/affinity/docs/index.rst
-   /libs/core/algorithms/docs/index.rst
    /libs/core/allocator_support/docs/index.rst
    /libs/core/assertion/docs/index.rst
    /libs/core/async_base/docs/index.rst

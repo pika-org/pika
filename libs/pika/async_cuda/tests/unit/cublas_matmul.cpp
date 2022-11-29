@@ -25,7 +25,6 @@
 // Currently, nvcc does not handle lambda functions properly and it is simpler to use
 // cudaMalloc/cudaMemcpy etc, so we do not #define PIKA_CUBLAS_DEMO_WITH_ALLOCATOR
 
-#include <pika/algorithm.hpp>
 #include <pika/assert.hpp>
 #include <pika/chrono.hpp>
 #include <pika/cuda.hpp>
@@ -76,7 +75,8 @@ template <typename T>
 void matrixMulCPU(T* C, const T* A, const T* B, unsigned int hA,
     unsigned int wA, unsigned int wB)
 {
-    pika::for_loop(pika::execution::par, 0, hA, [&](int i) {
+    for (unsigned int i = 0; i < hA; ++i)
+    {
         for (unsigned int j = 0; j < wB; ++j)
         {
             T sum = 0;
@@ -88,7 +88,7 @@ void matrixMulCPU(T* C, const T* A, const T* B, unsigned int hA,
             }
             C[i * wB + j] = (T) sum;
         }
-    });
+    }
 }
 
 // -------------------------------------------------------------------------
@@ -101,11 +101,12 @@ inline bool compare_L2_err(const float* reference, const float* data,
     float error = 0;
     float ref = 0;
 
-    pika::for_loop(pika::execution::par, 0, len, [&](int i) {
+    for (unsigned int i = 0; i < len; ++i)
+    {
         float diff = reference[i] - data[i];
         error += diff * diff;
         ref += reference[i] * reference[i];
-    });
+    }
 
     float normRef = sqrtf(ref);
     if (std::fabs(ref) < 1e-7f)
@@ -127,8 +128,6 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
     sMatrixSize& matrix_size, std::size_t /* device */,
     [[maybe_unused]] std::size_t iterations)
 {
-    using pika::execution::par;
-
     // Allocate host memory for matrices A and B
     unsigned int size_A = matrix_size.uiWA * matrix_size.uiHA;
     unsigned int size_B = matrix_size.uiWB * matrix_size.uiHB;
@@ -141,8 +140,8 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
 
     // Fill A and B with random numbers
     auto randfunc = [](T& x) { x = gen() / (T) RAND_MAX; };
-    pika::for_each(par, h_A.begin(), h_A.end(), randfunc);
-    pika::for_each(par, h_B.begin(), h_B.end(), randfunc);
+    std::for_each(h_A.begin(), h_A.end(), randfunc);
+    std::for_each(h_B.begin(), h_B.end(), randfunc);
 
     T *d_A, *d_B, *d_C;
     whip::malloc(&d_A, size_A * sizeof(T));

@@ -89,17 +89,14 @@ Documentation
 Documentation is a work in progress. The following headers are part of the
 public API. Any other headers are internal implementation details.
 
-- ``pika/algorithm.hpp``
 - ``pika/barrier.hpp``
 - ``pika/channel.hpp``
 - ``pika/condition_variable.hpp``
 - ``pika/cuda.hpp``
 - ``pika/execution.hpp``
 - ``pika/latch.hpp``
-- ``pika/memory.hpp``
 - ``pika/mpi.hpp``
 - ``pika/mutex.hpp``
-- ``pika/numeric.hpp``
 - ``pika/runtime.hpp``
 - ``pika/semaphore.hpp``
 - ``pika/shared_mutex.hpp``
