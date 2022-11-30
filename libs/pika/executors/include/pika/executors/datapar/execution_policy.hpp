@@ -7,8 +7,6 @@
 #pragma once
 
 #include <pika/config.hpp>
-
-#if defined(PIKA_HAVE_DATAPAR)
 #include <pika/async_base/traits/is_launch_policy.hpp>
 #include <pika/execution/executors/execution_parameters.hpp>
 #include <pika/execution/executors/rebind_executor.hpp>
@@ -1448,5 +1446,3 @@ namespace pika::detail {
     };
     /// \endcond
 }    // namespace pika::detail
-
-#endif

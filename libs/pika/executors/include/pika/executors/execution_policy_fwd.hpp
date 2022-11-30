@@ -7,9 +7,7 @@
 #pragma once
 
 #include <pika/config.hpp>
-#if defined(PIKA_HAVE_DATAPAR)
 #include <pika/executors/datapar/execution_policy_fwd.hpp>
-#endif
 
 namespace pika::execution {
     ///////////////////////////////////////////////////////////////////////////

@@ -163,7 +163,6 @@ namespace pika::parallel {
         {
         };
 
-#if defined(PIKA_HAVE_DATAPAR)
         ///////////////////////////////////////////////////////////////////////
         template <typename Result>
         struct handle_exception_impl<pika::execution::simd_task_policy, Result>
@@ -176,7 +175,6 @@ namespace pika::parallel {
             Result> : handle_exception_task_impl<Result>
         {
         };
-#endif
 
         using exception_list_termination_handler_type =
             pika::util::detail::function<void()>;

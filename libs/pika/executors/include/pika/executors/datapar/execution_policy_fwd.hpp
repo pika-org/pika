@@ -8,7 +8,6 @@
 
 #include <pika/config.hpp>
 
-#if defined(PIKA_HAVE_DATAPAR)
 namespace pika::execution {
     ///////////////////////////////////////////////////////////////////////////
     struct simd_policy;
@@ -32,5 +31,3 @@ namespace pika::execution {
     template <typename Executor, typename Parameters>
     struct par_simd_task_policy_shim;
 }    // namespace pika::execution
-
-#endif
