@@ -45,6 +45,10 @@ jobs:
         brew update
         brew install boost cmake fmt hwloc ninja
     - uses: actions/checkout@v2
+    - name: Setup ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: ccache-macos-debug
     - name: Configure
       shell: bash
       run: |
@@ -52,6 +56,7 @@ jobs:
               -H. \
               -Bbuild \
               -GNinja \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DCMAKE_BUILD_TYPE=Debug \
               -DPIKA_WITH_UNITY_BUILD=ON \
               -DPIKA_WITH_EXAMPLES=ON \
