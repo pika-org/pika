@@ -31,7 +31,7 @@ pika requires:
 
   * `GCC <https://gcc.gnu.org>`_ 9 or greater
   * `clang <https://clang.llvm.org>`_ 11 or greater
-  * MSVC is may work but it is not tested
+  * MSVC may work but it is not tested
 
 * `CMake <https://cmake.org>`_ 3.22.0 or greater
 * `header-only Boost <https://boost.org>`_ 1.71.0 or greater

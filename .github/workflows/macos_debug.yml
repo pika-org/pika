@@ -88,8 +88,6 @@ jobs:
     steps:
     - name: Install dependencies
       run: |
-        # Workaround for https://github.com/actions/virtual-environments/issues/2322
-        rm -rf /usr/local/bin/2to3
         export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
         brew upgrade
         brew update
@@ -134,8 +132,6 @@ jobs:
     steps:
     - name: Install dependencies
       run: |
-        # Workaround for https://github.com/actions/virtual-environments/issues/2322
-        rm -rf /usr/local/bin/2to3
         export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
         brew upgrade
         brew update
@@ -170,8 +166,6 @@ jobs:
     steps:
     - name: Install dependencies
       run: |
-        # Workaround for https://github.com/actions/virtual-environments/issues/2322
-        rm -rf /usr/local/bin/2to3
         export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
         brew upgrade
         brew update
