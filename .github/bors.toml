@@ -40,7 +40,8 @@ status = [
   "ci/circleci: arm64_build",
 
   # Jenkins
-  "jenkins/cscs-ault/hipcc-release",
+  # This is temporary until ault behaves better again
+  # "jenkins/cscs-ault/hipcc-release",
   "jenkins/cscs-daint/cce-debug",
   "jenkins/cscs-daint/cce-release",
   "jenkins/cscs-daint/clang-11-debug",
