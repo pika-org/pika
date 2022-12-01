@@ -28,6 +28,7 @@ source "${src_dir}/.jenkins/cscs-ault/env-common.sh"
 source "${src_dir}/.jenkins/cscs-ault/env-${configuration_name}.sh"
 
 set +e
+spack clean -m
 spack build-env "${spack_spec}" -- ctest \
     --verbose \
     -S "${src_dir}/.jenkins/cscs-ault/ctest.cmake" \
