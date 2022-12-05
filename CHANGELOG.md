@@ -4,6 +4,19 @@
 <!--- Distributed under the Boost Software License, Version 1.0. (See accompanying -->
 <!--- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 
+## 0.11.0 (2022-12-07)
+
+### New features
+
+### Breaking changes
+
+- All parallel algorithms have been moved to a new repository that depends on pika: https://github.com/pika-org/pika-algorithms. ([#505](https://github.com/pika-org/pika/pull/505))
+- fmt is now a required dependency. ([#487](https://github.com/pika-org/pika/pull/487))
+- The default allocator has been changed from tcmalloc to mimalloc. ([#501](https://github.com/pika-org/pika/pull/501))
+- Cleaned up various modules and moved minor functionality into `detail` namespaces. ([#483](https://github.com/pika-org/pika/pull/483), [#508](https://github.com/pika-org/pika/pull/508), [#509](https://github.com/pika-org/pika/pull/509))
+
+### Bugfixes
+
 ## 0.10.0 (2022-11-02)
 
 ### New features
