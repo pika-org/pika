@@ -16,25 +16,9 @@ on:
       - trying
       - staging
 
-# Note that this file contains a lot of duplication between the workflow steps.
-# That is because GitHub actions doesn't support YAML anchors:
-# https://github.community/t/support-for-yaml-anchors/16128. If GitHub ever
-# supports that in the future this file should absolutely be updated to make use
-# of them. In the meantime the duplication stays as GitHub's other options for
-# reusing steps seem overkill in this situation.
-
-# This defines in initial job for configuring pika and building the core
-# library. Following that are parallel steps for building and running tests. The
-# tests have been split to roughly have equal running time.
-#
-# Note that dependencies are reinstalled on every step as this seems to be
-# faster than trying to package the dependencies from the first step and reusing
-# them in later steps. This does open the door for occasional failures with
-# later steps installing different versions of packages.
-
 jobs:
-  build_core:
-    name: github/macos/debug/core
+  build_and_test:
+    name: github/macos/debug
     runs-on: macos-latest
 
     steps:
@@ -45,6 +29,10 @@ jobs:
         brew update
         brew install boost cmake fmt hwloc ninja
     - uses: actions/checkout@v2
+    - name: Setup ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: ccache-macos-debug
     - name: Configure
       shell: bash
       run: |
@@ -52,6 +40,7 @@ jobs:
               -H. \
               -Bbuild \
               -GNinja \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DCMAKE_BUILD_TYPE=Debug \
               -DPIKA_WITH_UNITY_BUILD=ON \
               -DPIKA_WITH_EXAMPLES=ON \
@@ -66,45 +55,9 @@ jobs:
     - name: Build pika
       shell: bash
       run: |
-          cmake --build build --target pika
-    # Packaging the build artifacts from the first step into an archive is
-    # faster than letting upload-artifact upload the directory directory.
-    - name: Package artifacts into a single file
-      shell: bash
-      run: |
-          tar --create --file artifact.tar.gz .
-    - name: Store results for test stage
-      uses: actions/upload-artifact@v3
-      with:
-        path: artifact.tar.gz
-        if-no-files-found: error
-        retention-days: 7
-
-  build_and_run_tests_examples_regressions:
-    name: github/macos/debug/tests/examples_regressions
-    needs: build_core
-    runs-on: macos-latest
-
-    steps:
-    - name: Install dependencies
-      run: |
-        export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
-        brew upgrade
-        brew update
-        brew install boost cmake fmt hwloc ninja
-    - name: Load build artifacts from core stage
-      uses: actions/download-artifact@v3
-      with:
-        name: artifact
-    - name: Unpack artifacts
-      shell: bash
-      run: |
-          tar --extract --file artifact.tar.gz
-    - name: Build tests
-      shell: bash
-      run: |
+          cmake --build build --target all
           cmake --build build --target examples
-          cmake --build build --target tests.regressions
+          cmake --build build --target tests
     - name: Test
       shell: bash
       run: |
@@ -113,8 +66,9 @@ jobs:
             -j3 \
             --output-on-failure \
             --timeout 120 \
-            --tests-regex tests.examples \
-            --tests-regex tests.regressions
+            --exclude-regex \
+          "tests.unit.modules.execution.standalone_thread_pool_executor|\
+          tests.unit.modules.resource_partitioner.used_pus"
     - name: Install
       shell: bash
       run: |
@@ -123,75 +77,3 @@ jobs:
       shell: bash
       run: |
           hello_world
-
-  build_and_run_tests_performance:
-    name: github/macos/debug/tests/performance
-    needs: build_core
-    runs-on: macos-latest
-
-    steps:
-    - name: Install dependencies
-      run: |
-        export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
-        brew upgrade
-        brew update
-        brew install boost cmake fmt hwloc ninja
-    - name: Load build artifacts from core stage
-      uses: actions/download-artifact@v3
-      with:
-        name: artifact
-    - name: Unpack artifacts
-      shell: bash
-      run: |
-          tar --extract --file artifact.tar.gz
-    - name: Build tests
-      shell: bash
-      run: |
-          cmake --build build --target tests.performance
-    - name: Test
-      shell: bash
-      run: |
-          cd build
-          ctest \
-            -j3 \
-            --output-on-failure \
-            --timeout 120 \
-            --tests-regex tests.performance
-
-  build_and_run_tests_unit:
-    name: github/macos/debug/tests/unit
-    needs: build_core
-    runs-on: macos-latest
-
-    steps:
-    - name: Install dependencies
-      run: |
-        export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
-        brew upgrade
-        brew update
-        brew install boost cmake fmt hwloc ninja
-    - name: Load build artifacts from core stage
-      uses: actions/download-artifact@v3
-      with:
-        name: artifact
-    - name: Unpack artifacts
-      shell: bash
-      run: |
-          tar --extract --file artifact.tar.gz
-    - name: Build tests
-      shell: bash
-      run: |
-          cd build
-          ninja tests.unit
-    - name: Test
-      shell: bash
-      run: |
-          cd build
-          ctest \
-            -j3 \
-            --output-on-failure \
-            --timeout 120 \
-            --tests-regex tests.unit \
-            --exclude-regex \
-          "tests.unit.modules.execution.standalone_thread_pool_executor|\
-          tests.unit.modules.resource_partitioner.used_pus"
