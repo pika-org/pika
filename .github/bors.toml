@@ -15,7 +15,7 @@ status = [
   "github/macos/debug/tests/examples_regressions",
   "github/macos/debug/tests/performance",
   "github/macos/debug/tests/unit",
-  "github/macos_arm64/debug",
+  # "github/macos_arm64/debug",
 
   # CircleCI static checks
   "ci/circleci: check_circular_deps",
