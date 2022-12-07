@@ -15,7 +15,6 @@
 #include <pika/functional/function.hpp>
 #include <pika/futures/future_fwd.hpp>
 #include <pika/futures/traits/future_access.hpp>
-#include <pika/futures/traits/get_remote_result.hpp>
 #include <pika/memory/intrusive_ptr.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/synchronization/condition_variable.hpp>

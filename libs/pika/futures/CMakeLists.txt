@@ -22,12 +22,10 @@ set(futures_headers
     pika/futures/traits/future_access.hpp
     pika/futures/traits/future_then_result.hpp
     pika/futures/traits/future_traits.hpp
-    pika/futures/traits/get_remote_result.hpp
     pika/futures/traits/is_future.hpp
     pika/futures/traits/is_future_range.hpp
     pika/futures/traits/is_future_tuple.hpp
     pika/futures/traits/promise_local_result.hpp
-    pika/futures/traits/promise_remote_result.hpp
 )
 
 set(futures_sources future_data.cpp)
