@@ -194,18 +194,21 @@ function(pika_add_module libname modulename)
   target_link_libraries(
     pika_${modulename} ${module_public_keyword} ${${modulename}_DEPENDENCIES}
   )
-  target_include_directories(
-    pika_${modulename}
-    ${module_public_keyword}
-    $<BUILD_INTERFACE:${HEADER_ROOT}>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-  )
 
   target_link_libraries(
     pika_${modulename} ${module_public_keyword} pika_public_flags
     pika_base_libraries
   )
+
+  target_include_directories(
+    pika_${modulename}
+    ${module_public_keyword}
+    $<BUILD_INTERFACE:${HEADER_ROOT}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
+    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+  )
+
   if(NOT module_is_interface_library)
     target_link_libraries(pika_${modulename} PRIVATE pika_private_flags)
   endif()
@@ -221,12 +224,6 @@ function(pika_add_module libname modulename)
       pika_${modulename} PRIVATE ${libname_upper}_EXPORTS
     )
   endif()
-
-  target_include_directories(
-    pika_${modulename} ${module_public_keyword}
-    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-  )
 
   pika_add_source_group(
     NAME pika_${modulename}
