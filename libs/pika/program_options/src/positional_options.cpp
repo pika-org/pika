@@ -12,7 +12,7 @@
 #include <limits>
 #include <string>
 
-namespace pika { namespace program_options {
+namespace pika::program_options {
 
     positional_options_description::positional_options_description() {}
 
@@ -48,4 +48,4 @@ namespace pika { namespace program_options {
         return m_trailing;
     }
 
-}}    // namespace pika::program_options
+}    // namespace pika::program_options

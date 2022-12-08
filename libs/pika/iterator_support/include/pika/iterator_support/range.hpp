@@ -12,7 +12,7 @@
 #include <iterator>
 #include <utility>
 
-namespace pika { namespace util {
+namespace pika::util {
     namespace detail {
         ///////////////////////////////////////////////////////////////////////
         template <typename T, std::size_t N>
@@ -213,4 +213,4 @@ namespace pika { namespace util {
     }    // namespace range_adl
 
     using namespace range_adl;
-}}    // namespace pika::util
+}    // namespace pika::util

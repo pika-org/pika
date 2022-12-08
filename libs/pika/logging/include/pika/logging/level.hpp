@@ -22,7 +22,7 @@
 
 #include <string>
 
-namespace pika { namespace util { namespace logging {
+namespace pika::util::logging {
 
     /**
     @brief Handling levels - classes that can hold and/or deal with levels
@@ -56,7 +56,7 @@ namespace pika { namespace util { namespace logging {
     };
 
     PIKA_EXPORT std::string levelname(level value);
-}}}    // namespace pika::util::logging
+}    // namespace pika::util::logging
 
 template <>
 struct fmt::formatter<pika::util::logging::level> : fmt::formatter<std::string>

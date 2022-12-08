@@ -35,7 +35,7 @@ namespace pika {
 #define LBT_(lvl) LPIKA_(lvl, "  [BT] ")  /* bootstrap */
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace util {
+namespace pika::util {
 
     ////////////////////////////////////////////////////////////////////////////
     namespace detail {
@@ -108,7 +108,7 @@ namespace pika { namespace util {
         PIKA_EXPORT PIKA_DECLARE_LOG(app_console)
         // special debug logging channel
         PIKA_EXPORT PIKA_DECLARE_LOG(debuglog_console)
-}}    // namespace pika::util
+}    // namespace pika::util
 
 ///////////////////////////////////////////////////////////////////////////////
 #define LTIM_CONSOLE_(lvl)                                                     \

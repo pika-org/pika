@@ -14,7 +14,7 @@
 #include <cstdint>
 #include <cstdlib>
 
-namespace pika { namespace util {
+namespace pika::util {
 
     namespace detail {
 
@@ -51,4 +51,4 @@ namespace pika { namespace util {
         return (detail::golden_ratio * (i ^ (i >> helper::shift_amount))) >>
             helper::shift_amount;
     }
-}}    // namespace pika::util
+}    // namespace pika::util

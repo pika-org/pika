@@ -29,7 +29,7 @@
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace util {
+namespace pika::util {
 
     using logger_writer_type = logging::writer::named_write;
 
@@ -849,7 +849,7 @@ namespace pika { namespace util {
             break;
         }
     }
-}}    // namespace pika::util
+}    // namespace pika::util
 
 #else
 

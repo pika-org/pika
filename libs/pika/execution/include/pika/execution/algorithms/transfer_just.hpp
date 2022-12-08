@@ -17,7 +17,7 @@
 
 #include <utility>
 
-namespace pika { namespace execution { namespace experimental {
+namespace pika::execution::experimental {
     inline constexpr struct transfer_just_t final
       : pika::functional::detail::tag_fallback<transfer_just_t>
     {
@@ -30,5 +30,5 @@ namespace pika { namespace execution { namespace experimental {
                 PIKA_FORWARD(Scheduler, scheduler));
         }
     } transfer_just{};
-}}}    // namespace pika::execution::experimental
+}    // namespace pika::execution::experimental
 #endif

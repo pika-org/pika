@@ -10,11 +10,11 @@
 #include <cctype>
 #include <string>
 
-namespace pika { namespace string_util {
+namespace pika::string_util {
     template <typename CharT, class Traits, class Alloc>
     void to_lower(std::basic_string<CharT, Traits, Alloc>& s)
     {
         std::transform(std::begin(s), std::end(s), std::begin(s),
             [](int c) { return std::tolower(c); });
     }
-}}    // namespace pika::string_util
+}    // namespace pika::string_util

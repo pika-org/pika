@@ -19,7 +19,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace util {
+namespace pika::util {
 
     namespace detail {
 
@@ -505,12 +505,10 @@ namespace pika { namespace util {
       : detail::zip_iterator_category<typename ZipIter::iterator_tuple_type>
     {
     };
-}}    // namespace pika::util
+}    // namespace pika::util
 
-namespace pika { namespace traits {
-
+namespace pika::traits {
     namespace functional {
-
         ///////////////////////////////////////////////////////////////////////
         template <typename F, typename T>
         struct element_result_of : util::detail::invoke_result<F, T>
@@ -551,4 +549,4 @@ namespace pika { namespace traits {
     struct is_zip_iterator<pika::util::zip_iterator<Iter...>> : std::true_type
     {
     };
-}}    // namespace pika::traits
+}    // namespace pika::traits

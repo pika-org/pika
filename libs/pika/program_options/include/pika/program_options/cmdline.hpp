@@ -8,7 +8,7 @@
 
 #include <pika/program_options/config.hpp>
 
-namespace pika { namespace program_options { namespace command_line_style {
+namespace pika::program_options::command_line_style {
 
     /** Various possible styles of options.
 
@@ -86,6 +86,6 @@ namespace pika { namespace program_options { namespace command_line_style {
         /** The default style. */
         default_style = unix_style
     };
-}}}    // namespace pika::program_options::command_line_style
+}    // namespace pika::program_options::command_line_style
 
 #include <pika/program_options/detail/cmdline.hpp>

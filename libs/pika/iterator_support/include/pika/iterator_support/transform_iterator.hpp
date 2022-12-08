@@ -15,7 +15,7 @@
 #include <iterator>
 #include <type_traits>
 
-namespace pika { namespace util {
+namespace pika::util {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Iterator, typename Transformer,
@@ -133,4 +133,4 @@ namespace pika { namespace util {
     {
         return transform_iterator<Iterator, Transformer>(it, Transformer());
     }
-}}    // namespace pika::util
+}    // namespace pika::util

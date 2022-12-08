@@ -22,7 +22,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace util {
+namespace pika::util {
     ///////////////////////////////////////////////////////////////////////////
     // Helper class to gain access to the implementation functions in the
     // derived (user-defined) iterator classes.
@@ -681,4 +681,4 @@ namespace pika { namespace util {
         Derived tmp(static_cast<Derived const&>(it));
         return tmp += n;
     }
-}}    // namespace pika::util
+}    // namespace pika::util

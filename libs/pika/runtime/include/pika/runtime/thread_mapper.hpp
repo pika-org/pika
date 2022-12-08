@@ -26,7 +26,7 @@
 #include <sys/syscall.h>
 #endif
 
-namespace pika { namespace util {
+namespace pika::util {
 
     ///////////////////////////////////////////////////////////////////////////
     // enumerates active OS threads and maintains their metadata
@@ -154,6 +154,6 @@ namespace pika { namespace util {
         // mapping between pika thread labels and thread indices
         label_map_type label_map_;
     };
-}}    // namespace pika::util
+}    // namespace pika::util
 
 #include <pika/config/warnings_suffix.hpp>

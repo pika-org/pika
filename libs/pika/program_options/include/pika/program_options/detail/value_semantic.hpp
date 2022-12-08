@@ -21,7 +21,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace pika { namespace program_options {
+namespace pika::program_options {
 
     extern PIKA_EXPORT std::string arg;
 
@@ -215,4 +215,4 @@ namespace pika { namespace program_options {
         return r;
     }
 
-}}    // namespace pika::program_options
+}    // namespace pika::program_options

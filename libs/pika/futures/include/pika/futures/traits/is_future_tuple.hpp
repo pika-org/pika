@@ -12,7 +12,7 @@
 #include <tuple>
 #include <type_traits>
 
-namespace pika { namespace traits {
+namespace pika::traits {
     template <typename Tuple, typename Enable = void>
     struct is_future_tuple : std::false_type
     {
@@ -23,4 +23,4 @@ namespace pika { namespace traits {
       : util::detail::all_of<is_future<Ts>...>
     {
     };
-}}    // namespace pika::traits
+}    // namespace pika::traits

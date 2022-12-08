@@ -26,12 +26,12 @@ struct test_async_executor
     }
 };
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     template <>
     struct is_two_way_executor<test_async_executor> : std::true_type
     {
     };
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
 int pika_main()
 {

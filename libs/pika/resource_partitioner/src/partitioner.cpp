@@ -17,7 +17,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace resource {
+namespace pika::resource {
     ///////////////////////////////////////////////////////////////////////////
     std::vector<pu> pu::pus_sharing_core()
     {
@@ -218,4 +218,4 @@ namespace pika { namespace resource {
     {
         partitioner_.configure_pools();
     }
-}}    // namespace pika::resource
+}    // namespace pika::resource

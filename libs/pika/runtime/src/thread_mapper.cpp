@@ -26,7 +26,7 @@
 #include <unistd.h>
 #endif
 
-namespace pika { namespace util {
+namespace pika::util {
 
     namespace detail {
 
@@ -293,4 +293,4 @@ namespace pika { namespace util {
         return true;
     }
 
-}}    // namespace pika::util
+}    // namespace pika::util

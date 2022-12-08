@@ -18,7 +18,7 @@
 
 #include <utility>
 
-namespace pika { namespace execution { namespace experimental {
+namespace pika::execution::experimental {
     inline constexpr struct execute_t final
       : pika::functional::detail::tag_fallback<execute_t>
     {
@@ -32,5 +32,5 @@ namespace pika { namespace execution { namespace experimental {
                     PIKA_FORWARD(F, f)));
         }
     } execute{};
-}}}    // namespace pika::execution::experimental
+}    // namespace pika::execution::experimental
 #endif

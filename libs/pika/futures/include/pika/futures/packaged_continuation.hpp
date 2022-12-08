@@ -29,7 +29,7 @@
 #include <utility>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace lcos { namespace detail {
+namespace pika::lcos::detail {
 
     template <typename Future, typename SourceState, typename DestinationState>
     PIKA_FORCEINLINE void
@@ -573,9 +573,9 @@ namespace pika { namespace lcos { namespace detail {
 
         other_allocator alloc_;
     };
-}}}    // namespace pika::lcos::detail
+}    // namespace pika::lcos::detail
 
-namespace pika { namespace traits { namespace detail {
+namespace pika::traits::detail {
     template <typename Future, typename F, typename ContResult,
         typename Allocator>
     struct shared_state_allocator<
@@ -584,10 +584,10 @@ namespace pika { namespace traits { namespace detail {
         using type = lcos::detail::continuation_allocator<Allocator, Future, F,
             ContResult>;
     };
-}}}    // namespace pika::traits::detail
+}    // namespace pika::traits::detail
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace lcos { namespace detail {
+namespace pika::lcos::detail {
     ///////////////////////////////////////////////////////////////////////////
     template <typename ContResult>
     class unwrap_continuation : public future_data<ContResult>
@@ -722,9 +722,9 @@ namespace pika { namespace lcos { namespace detail {
 
         other_allocator alloc_;
     };
-}}}    // namespace pika::lcos::detail
+}    // namespace pika::lcos::detail
 
-namespace pika { namespace traits { namespace detail {
+namespace pika::traits::detail {
     template <typename ContResult, typename Allocator>
     struct shared_state_allocator<lcos::detail::unwrap_continuation<ContResult>,
         Allocator>
@@ -732,9 +732,9 @@ namespace pika { namespace traits { namespace detail {
         using type =
             lcos::detail::unwrap_continuation_allocator<Allocator, ContResult>;
     };
-}}}    // namespace pika::traits::detail
+}    // namespace pika::traits::detail
 
-namespace pika { namespace lcos { namespace detail {
+namespace pika::lcos::detail {
     template <typename Allocator, typename Future>
     inline traits::detail::shared_state_ptr_t<future_unwrap_result_t<Future>>
     unwrap_impl_alloc(Allocator const& a, Future&& future, error_code& /*ec*/)
@@ -789,4 +789,4 @@ namespace pika { namespace lcos { namespace detail {
     {
         return unwrap_impl(PIKA_FORWARD(Future, future), ec);
     }
-}}}    // namespace pika::lcos::detail
+}    // namespace pika::lcos::detail

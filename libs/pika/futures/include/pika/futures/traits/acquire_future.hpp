@@ -22,7 +22,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace traits {
+namespace pika::traits {
     namespace detail {
         template <typename T, typename Enable = void>
         struct acquire_future_impl;
@@ -139,4 +139,4 @@ namespace pika { namespace traits {
             }
         };
     }    // namespace detail
-}}       // namespace pika::traits
+}    // namespace pika::traits

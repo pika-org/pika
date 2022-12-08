@@ -18,7 +18,7 @@ namespace pika {
     class shared_future;
 }    // namespace pika
 
-namespace pika { namespace traits {
+namespace pika::traits {
     ///////////////////////////////////////////////////////////////////////////
     namespace detail {
         template <typename Future, typename Enable = void>
@@ -82,4 +82,4 @@ namespace pika { namespace traits {
       : std::is_void<future_traits_t<Future>>
     {
     };
-}}    // namespace pika::traits
+}    // namespace pika::traits

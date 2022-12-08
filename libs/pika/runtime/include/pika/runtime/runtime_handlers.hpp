@@ -16,7 +16,7 @@
 #include <cstddef>
 #include <string>
 
-namespace pika { namespace detail {
+namespace pika::detail {
     [[noreturn]] PIKA_EXPORT void assertion_handler(
         pika::detail::source_location const& loc, const char* expr,
         std::string const& msg);
@@ -30,4 +30,4 @@ namespace pika { namespace detail {
     PIKA_EXPORT threads::detail::thread_pool_base* get_default_pool();
     PIKA_EXPORT threads::detail::mask_cref_type get_pu_mask(
         threads::detail::topology& topo, std::size_t thread_num);
-}}    // namespace pika::detail
+}    // namespace pika::detail

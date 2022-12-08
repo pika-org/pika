@@ -22,7 +22,7 @@
 #include <memory>
 #include <string>
 
-namespace pika { namespace util { namespace logging { namespace formatter {
+namespace pika::util::logging::formatter {
 
     /**
 @brief prefixes each message with an index.
@@ -113,4 +113,4 @@ std::(w)string and the string that holds your logged message. See convert_format
         thread_id() = default;
     };
 
-}}}}    // namespace pika::util::logging::formatter
+}    // namespace pika::util::logging::formatter

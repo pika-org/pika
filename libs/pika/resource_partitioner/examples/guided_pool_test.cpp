@@ -70,7 +70,7 @@ std::string a_function(pika::future<double>&& df)
     return "The number 2";
 }
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
 
     struct guided_test_tag
     {
@@ -117,7 +117,7 @@ namespace pika { namespace parallel { namespace execution {
             return 56;
         }
     };
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
 using namespace pika::parallel::execution;
 

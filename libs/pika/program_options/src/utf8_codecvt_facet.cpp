@@ -24,7 +24,7 @@
 // compile this file.
 
 /////////1/////////2/////////3/////////4/////////5/////////6/////////7/////////8
-namespace pika { namespace program_options { namespace detail {
+namespace pika::program_options::detail {
 
     // implementation for wchar_t
 
@@ -291,4 +291,4 @@ namespace pika { namespace program_options { namespace detail {
         return detail::get_cont_octet_out_count_impl<sizeof(wchar_t)>(word);
     }
 
-}}}    // namespace pika::program_options::detail
+}    // namespace pika::program_options::detail

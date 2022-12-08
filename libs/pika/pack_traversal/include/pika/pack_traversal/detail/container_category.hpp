@@ -10,7 +10,7 @@
 #include <pika/datastructures/traits/is_tuple_like.hpp>
 #include <pika/iterator_support/traits/is_range.hpp>
 
-namespace pika { namespace util { namespace detail {
+namespace pika::util::detail {
     /// A tag for dispatching based on the tuple like
     /// or container properties of a type.
     template <bool IsContainer, bool IsTupleLike>
@@ -23,4 +23,4 @@ namespace pika { namespace util { namespace detail {
     using container_category_of_t =
         container_category_tag<traits::is_range<T>::value,
             traits::detail::is_tuple_like_v<T>>;
-}}}    // namespace pika::util::detail
+}    // namespace pika::util::detail

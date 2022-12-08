@@ -21,7 +21,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace lcos { namespace local {
+namespace pika::lcos::local {
 
     template <typename Sig>
     class packaged_task;
@@ -136,7 +136,7 @@ namespace pika { namespace lcos { namespace local {
         function_type function_;
         local::promise<R> promise_;
     };
-}}}    // namespace pika::lcos::local
+}    // namespace pika::lcos::local
 
 namespace std {
     // Requires: Allocator shall be an allocator (17.6.3.5)

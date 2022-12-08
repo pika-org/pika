@@ -38,7 +38,7 @@
 #include <filesystem>
 #include <string>
 
-namespace pika { namespace util {
+namespace pika::util {
     ///////////////////////////////////////////////////////////////////////////////
     std::string get_executable_prefix(char const* argv0)
     {
@@ -170,4 +170,4 @@ namespace pika { namespace util {
 
         return r;
     }
-}}    // namespace pika::util
+}    // namespace pika::util

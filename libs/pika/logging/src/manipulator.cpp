@@ -16,7 +16,7 @@
 
 #include <pika/logging/manipulator.hpp>
 
-namespace pika { namespace util { namespace logging {
+namespace pika::util::logging {
 
     namespace formatter {
 
@@ -30,4 +30,4 @@ namespace pika { namespace util { namespace logging {
 
     }    // namespace destination
 
-}}}    // namespace pika::util::logging
+}    // namespace pika::util::logging

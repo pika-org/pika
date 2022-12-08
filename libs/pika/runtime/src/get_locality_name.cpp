@@ -11,7 +11,7 @@
 
 #include <string>
 
-namespace pika { namespace detail {
+namespace pika::detail {
 
     std::string get_locality_base_name()
     {
@@ -31,7 +31,7 @@ namespace pika { namespace detail {
         std::string basename = get_locality_base_name();
         return basename + '#' + std::to_string(get_locality_id());
     }
-}}    // namespace pika::detail
+}    // namespace pika::detail
 
 namespace pika {
 

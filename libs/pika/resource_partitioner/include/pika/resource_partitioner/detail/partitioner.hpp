@@ -24,7 +24,7 @@
 #include <tuple>
 #include <vector>
 
-namespace pika { namespace resource { namespace detail {
+namespace pika::resource::detail {
     ///////////////////////////////////////////////////////////////////////////
     // structure used to encapsulate all characteristics of thread_pools
     // as specified by the user in int main()
@@ -242,4 +242,4 @@ namespace pika { namespace resource { namespace detail {
 
         threads::scheduler_mode default_scheduler_mode_;
     };
-}}}    // namespace pika::resource::detail
+}    // namespace pika::resource::detail

@@ -22,7 +22,7 @@
 #include <mutex>
 #include <utility>
 
-namespace pika { namespace lcos { namespace local {
+namespace pika::lcos::local {
     ///////////////////////////////////////////////////////////////////////////
     template <typename Mutex = pika::spinlock>
     struct base_trigger
@@ -248,4 +248,4 @@ namespace pika { namespace lcos { namespace local {
                 generation_value, l, function_name, ec);
         }
     };
-}}}    // namespace pika::lcos::local
+}    // namespace pika::lcos::local

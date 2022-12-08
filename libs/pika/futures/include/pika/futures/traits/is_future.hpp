@@ -19,7 +19,7 @@ namespace pika {
     class shared_future;
 }    // namespace pika
 
-namespace pika { namespace traits {
+namespace pika::traits {
     namespace detail {
         template <typename Future, typename Enable = void>
         struct is_unique_future : std::false_type
@@ -72,4 +72,4 @@ namespace pika { namespace traits {
     template <typename R>
     inline constexpr bool is_ref_wrapped_future_v =
         is_ref_wrapped_future<R>::value;
-}}    // namespace pika::traits
+}    // namespace pika::traits

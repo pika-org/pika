@@ -16,7 +16,7 @@
 
 #include <pika/config/warnings_prefix.hpp>
 
-namespace pika { namespace program_options {
+namespace pika::program_options {
 
     inline std::string strip_prefixes(const std::string& text)
     {
@@ -445,6 +445,6 @@ namespace pika { namespace program_options {
         invalid_bool_value(const std::string& value);
     };
 
-}}    // namespace pika::program_options
+}    // namespace pika::program_options
 
 #include <pika/config/warnings_suffix.hpp>

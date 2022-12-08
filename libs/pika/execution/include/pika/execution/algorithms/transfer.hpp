@@ -20,7 +20,7 @@
 
 #include <utility>
 
-namespace pika { namespace execution { namespace experimental {
+namespace pika::execution::experimental {
     inline constexpr struct transfer_t final
       : pika::functional::detail::tag_priority<transfer_t>
     {
@@ -68,5 +68,5 @@ namespace pika { namespace execution { namespace experimental {
                 PIKA_FORWARD(Scheduler, scheduler)};
         }
     } transfer{};
-}}}    // namespace pika::execution::experimental
+}    // namespace pika::execution::experimental
 #endif

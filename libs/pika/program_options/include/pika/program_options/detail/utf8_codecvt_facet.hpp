@@ -95,7 +95,7 @@
 //            See utf8_codecvt_facet.cpp for the implementation.              //
 //----------------------------------------------------------------------------//
 
-namespace pika { namespace program_options { namespace detail {
+namespace pika::program_options::detail {
 
     struct PIKA_EXPORT utf8_codecvt_facet
       : public std::codecvt<wchar_t, char, std::mbstate_t>
@@ -175,4 +175,4 @@ namespace pika { namespace program_options { namespace detail {
         }
     };
 
-}}}    // namespace pika::program_options::detail
+}    // namespace pika::program_options::detail

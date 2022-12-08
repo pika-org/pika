@@ -16,7 +16,7 @@
 #include <pika/hardware/timestamp/cuda.hpp>
 #endif
 
-namespace pika { namespace util { namespace hardware {
+namespace pika::util::hardware {
 
     // clang-format off
     PIKA_HOST_DEVICE inline std::uint64_t timestamp()
@@ -44,4 +44,4 @@ namespace pika { namespace util { namespace hardware {
     }
     // clang-format on
 
-}}}    // namespace pika::util::hardware
+}    // namespace pika::util::hardware

@@ -19,7 +19,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace resource {
+namespace pika::resource {
     ///////////////////////////////////////////////////////////////////////////
     class pu
     {
@@ -211,4 +211,4 @@ namespace pika { namespace resource {
             return ::pika::resource::partitioner(rpmode, rtcfg, affinity_data);
         }
     }    // namespace detail
-}}       // namespace pika::resource
+}    // namespace pika::resource

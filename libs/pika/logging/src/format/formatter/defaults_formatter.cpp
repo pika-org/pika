@@ -24,7 +24,7 @@
 #include <memory>
 #include <ostream>
 
-namespace pika { namespace util { namespace logging { namespace formatter {
+namespace pika::util::logging::formatter {
 
     idx::~idx() = default;
 
@@ -49,4 +49,4 @@ namespace pika { namespace util { namespace logging { namespace formatter {
         return std::unique_ptr<idx>(new idx_impl());
     }
 
-}}}}    // namespace pika::util::logging::formatter
+}    // namespace pika::util::logging::formatter

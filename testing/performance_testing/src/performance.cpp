@@ -15,7 +15,7 @@
 #include <string>
 #include <type_traits>
 
-namespace pika { namespace util {
+namespace pika::util {
 
     namespace detail {
 
@@ -73,4 +73,4 @@ namespace pika { namespace util {
     {
         print_cdash_timing(name, static_cast<double>(time) / 1e9);
     }
-}}    // namespace pika::util
+}    // namespace pika::util

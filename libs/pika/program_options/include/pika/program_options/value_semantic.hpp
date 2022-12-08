@@ -18,7 +18,7 @@
 #include <typeinfo>
 #include <vector>
 
-namespace pika { namespace program_options {
+namespace pika::program_options {
 
     /** Class which specifies how the option's value is to be parsed
         and converted into C++ types.
@@ -432,6 +432,6 @@ namespace pika { namespace program_options {
     */
     PIKA_EXPORT typed_value<bool>* bool_switch(bool* v);
 
-}}    // namespace pika::program_options
+}    // namespace pika::program_options
 
 #include <pika/program_options/detail/value_semantic.hpp>

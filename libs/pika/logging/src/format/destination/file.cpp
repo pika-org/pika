@@ -25,7 +25,7 @@
 #include <mutex>
 #include <string>
 
-namespace pika { namespace util { namespace logging { namespace destination {
+namespace pika::util::logging::destination {
 
     file::~file() = default;
 
@@ -91,4 +91,4 @@ namespace pika { namespace util { namespace logging { namespace destination {
         return std::unique_ptr<file>(new file_impl(file_name, set));
     }
 
-}}}}    // namespace pika::util::logging::destination
+}    // namespace pika::util::logging::destination

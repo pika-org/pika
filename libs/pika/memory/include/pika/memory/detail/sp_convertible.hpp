@@ -13,7 +13,7 @@
 
 #include <cstddef>
 
-namespace pika { namespace memory { namespace detail {
+namespace pika::memory::detail {
 
     template <typename Y, typename T>
     struct sp_convertible
@@ -49,4 +49,4 @@ namespace pika { namespace memory { namespace detail {
     template <typename Y, typename T>
     inline constexpr bool sp_convertible_v = sp_convertible<Y, T>::value;
 
-}}}    // namespace pika::memory::detail
+}    // namespace pika::memory::detail

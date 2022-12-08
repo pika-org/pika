@@ -30,374 +30,367 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace lcos { namespace local {
+namespace pika::lcos::local::detail {
 
-    ///////////////////////////////////////////////////////////////////////
-    namespace detail {
+    template <typename Result, typename F, typename Executor,
+        typename Base = lcos::detail::task_base<Result>>
+    struct task_object;
 
-        template <typename Result, typename F, typename Executor,
-            typename Base = lcos::detail::task_base<Result>>
-        struct task_object;
+    template <typename Result, typename F, typename Base>
+    struct task_object<Result, F, void, Base> : Base
+    {
+        using base_type = Base;
+        using result_type = typename Base::result_type;
+        using init_no_addref = typename Base::init_no_addref;
 
-        template <typename Result, typename F, typename Base>
-        struct task_object<Result, F, void, Base> : Base
+        F f_;
+
+        explicit task_object(F const& f)
+          : f_(f)
         {
-            using base_type = Base;
-            using result_type = typename Base::result_type;
-            using init_no_addref = typename Base::init_no_addref;
+        }
 
-            F f_;
+        explicit task_object(F&& f) noexcept
+          : f_(PIKA_MOVE(f))
+        {
+        }
 
-            explicit task_object(F const& f)
-              : f_(f)
+        task_object(init_no_addref no_addref, F const& f)
+          : base_type(no_addref)
+          , f_(f)
+        {
+        }
+
+        task_object(init_no_addref no_addref, F&& f) noexcept
+          : base_type(no_addref)
+          , f_(PIKA_MOVE(f))
+        {
+        }
+
+        void do_run() noexcept override
+        {
+            pika::intrusive_ptr<base_type> this_(this);
+            pika::detail::try_catch_exception_ptr(
+                [&]() {
+                    if constexpr (std::is_void_v<Result>)
+                    {
+                        f_();
+                        this->set_value(result_type());
+                    }
+                    else
+                    {
+                        this->set_value(f_());
+                    }
+                },
+                [&](std::exception_ptr ep) {
+                    this->set_exception(PIKA_MOVE(ep));
+                });
+        }
+
+    protected:
+        // run in a separate thread
+        threads::detail::thread_id_ref_type apply(
+            threads::detail::thread_pool_base* pool, const char* annotation,
+            launch policy, error_code& ec) override
+        {
+            this->check_started();
+
+            pika::intrusive_ptr<base_type> this_(this);
+            if (policy == launch::fork)
             {
-            }
-
-            explicit task_object(F&& f) noexcept
-              : f_(PIKA_MOVE(f))
-            {
-            }
-
-            task_object(init_no_addref no_addref, F const& f)
-              : base_type(no_addref)
-              , f_(f)
-            {
-            }
-
-            task_object(init_no_addref no_addref, F&& f) noexcept
-              : base_type(no_addref)
-              , f_(PIKA_MOVE(f))
-            {
-            }
-
-            void do_run() noexcept override
-            {
-                pika::intrusive_ptr<base_type> this_(this);
-                pika::detail::try_catch_exception_ptr(
-                    [&]() {
-                        if constexpr (std::is_void_v<Result>)
-                        {
-                            f_();
-                            this->set_value(result_type());
-                        }
-                        else
-                        {
-                            this->set_value(f_());
-                        }
-                    },
-                    [&](std::exception_ptr ep) {
-                        this->set_exception(PIKA_MOVE(ep));
-                    });
-            }
-
-        protected:
-            // run in a separate thread
-            threads::detail::thread_id_ref_type apply(
-                threads::detail::thread_pool_base* pool, const char* annotation,
-                launch policy, error_code& ec) override
-            {
-                this->check_started();
-
-                pika::intrusive_ptr<base_type> this_(this);
-                if (policy == launch::fork)
-                {
-                    threads::detail::thread_init_data data(
-                        threads::detail::make_thread_function_nullary(
-                            util::detail::deferred_call(
-                                &base_type::run_impl, PIKA_MOVE(this_))),
-                        ::pika::detail::thread_description(f_, annotation),
-                        policy.priority(),
-                        execution::thread_schedule_hint(
-                            static_cast<std::int16_t>(get_worker_thread_num())),
-                        policy.stacksize(),
-                        threads::detail::thread_schedule_state::
-                            pending_do_not_schedule,
-                        true);
-
-                    return threads::detail::register_thread(data, pool, ec);
-                }
-
                 threads::detail::thread_init_data data(
                     threads::detail::make_thread_function_nullary(
                         util::detail::deferred_call(
                             &base_type::run_impl, PIKA_MOVE(this_))),
                     ::pika::detail::thread_description(f_, annotation),
-                    policy.priority(), policy.hint(), policy.stacksize(),
-                    threads::detail::thread_schedule_state::pending);
+                    policy.priority(),
+                    execution::thread_schedule_hint(
+                        static_cast<std::int16_t>(get_worker_thread_num())),
+                    policy.stacksize(),
+                    threads::detail::thread_schedule_state::
+                        pending_do_not_schedule,
+                    true);
 
-                return threads::detail::register_work(data, pool, ec);
+                return threads::detail::register_thread(data, pool, ec);
             }
-        };
 
-        template <typename Allocator, typename Result, typename F,
-            typename Base>
-        struct task_object_allocator : task_object<Result, F, void, Base>
+            threads::detail::thread_init_data data(
+                threads::detail::make_thread_function_nullary(
+                    util::detail::deferred_call(
+                        &base_type::run_impl, PIKA_MOVE(this_))),
+                ::pika::detail::thread_description(f_, annotation),
+                policy.priority(), policy.hint(), policy.stacksize(),
+                threads::detail::thread_schedule_state::pending);
+
+            return threads::detail::register_work(data, pool, ec);
+        }
+    };
+
+    template <typename Allocator, typename Result, typename F, typename Base>
+    struct task_object_allocator : task_object<Result, F, void, Base>
+    {
+        using base_type = task_object<Result, F, void, Base>;
+        using result_type = typename base_type::result_type;
+        using init_no_addref = typename base_type::init_no_addref;
+
+        using other_allocator = typename std::allocator_traits<
+            Allocator>::template rebind_alloc<task_object_allocator>;
+
+        task_object_allocator(other_allocator const& alloc, F const& f)
+          : base_type(f)
+          , alloc_(alloc)
         {
-            using base_type = task_object<Result, F, void, Base>;
-            using result_type = typename base_type::result_type;
-            using init_no_addref = typename base_type::init_no_addref;
+        }
 
-            using other_allocator = typename std::allocator_traits<
-                Allocator>::template rebind_alloc<task_object_allocator>;
-
-            task_object_allocator(other_allocator const& alloc, F const& f)
-              : base_type(f)
-              , alloc_(alloc)
-            {
-            }
-
-            task_object_allocator(other_allocator const& alloc, F&& f) noexcept
-              : base_type(PIKA_MOVE(f))
-              , alloc_(alloc)
-            {
-            }
-
-            task_object_allocator(init_no_addref no_addref,
-                other_allocator const& alloc, F const& f)
-              : base_type(no_addref, f)
-              , alloc_(alloc)
-            {
-            }
-
-            task_object_allocator(init_no_addref no_addref,
-                other_allocator const& alloc, F&& f) noexcept
-              : base_type(no_addref, PIKA_MOVE(f))
-              , alloc_(alloc)
-            {
-            }
-
-        private:
-            void destroy() noexcept override
-            {
-                using traits = std::allocator_traits<other_allocator>;
-
-                other_allocator alloc(alloc_);
-                traits::destroy(alloc, this);
-                traits::deallocate(alloc, this, 1);
-            }
-
-            other_allocator alloc_;
-        };
-
-        template <typename Result, typename F, typename Executor, typename Base>
-        struct task_object : task_object<Result, F, void, Base>
+        task_object_allocator(other_allocator const& alloc, F&& f) noexcept
+          : base_type(PIKA_MOVE(f))
+          , alloc_(alloc)
         {
-            using base_type = task_object<Result, F, void, Base>;
-            using result_type = typename base_type::result_type;
-            using init_no_addref = typename base_type::init_no_addref;
+        }
 
-            Executor* exec_ = nullptr;
-
-            explicit task_object(F const& f)
-              : base_type(f)
-            {
-            }
-
-            explicit task_object(F&& f) noexcept
-              : base_type(PIKA_MOVE(f))
-            {
-            }
-
-            task_object(Executor& exec, F const& f)
-              : base_type(f)
-              , exec_(&exec)
-            {
-            }
-
-            task_object(Executor& exec, F&& f) noexcept
-              : base_type(PIKA_MOVE(f))
-              , exec_(&exec)
-            {
-            }
-
-            task_object(init_no_addref no_addref, F const& f)
-              : base_type(no_addref, f)
-            {
-            }
-
-            task_object(init_no_addref no_addref, F&& f) noexcept
-              : base_type(no_addref, PIKA_MOVE(f))
-            {
-            }
-
-            task_object(Executor& exec, init_no_addref no_addref, F const& f)
-              : base_type(no_addref, f)
-              , exec_(&exec)
-            {
-            }
-
-            task_object(
-                Executor& exec, init_no_addref no_addref, F&& f) noexcept
-              : base_type(no_addref, PIKA_MOVE(f))
-              , exec_(&exec)
-            {
-            }
-
-        protected:
-            // run in a separate thread
-            threads::detail::thread_id_ref_type apply(
-                threads::detail::thread_pool_base* pool, const char* annotation,
-                launch policy, error_code& ec) override
-            {
-                if (exec_)
-                {
-                    this->check_started();
-
-                    pika::intrusive_ptr<base_type> this_(this);
-                    parallel::execution::post(*exec_,
-                        util::detail::deferred_call(
-                            &base_type::run_impl, PIKA_MOVE(this_)),
-                        exec_->get_schedulehint(), annotation);
-                    return threads::detail::invalid_thread_id;
-                }
-
-                return this->base_type::apply(pool, annotation, policy, ec);
-            }
-        };
-
-        ///////////////////////////////////////////////////////////////////////
-        template <typename Result, typename F, typename Executor>
-        struct cancelable_task_object;
-
-        template <typename Result, typename F>
-        struct cancelable_task_object<Result, F, void>
-          : task_object<Result, F, void,
-                lcos::detail::cancelable_task_base<Result>>
+        task_object_allocator(
+            init_no_addref no_addref, other_allocator const& alloc, F const& f)
+          : base_type(no_addref, f)
+          , alloc_(alloc)
         {
-            using base_type = task_object<Result, F, void,
-                lcos::detail::cancelable_task_base<Result>>;
-            using result_type = typename base_type::result_type;
-            using init_no_addref = typename base_type::init_no_addref;
+        }
 
-            explicit cancelable_task_object(F const& f)
-              : base_type(f)
-            {
-            }
-
-            explicit cancelable_task_object(F&& f) noexcept
-              : base_type(PIKA_MOVE(f))
-            {
-            }
-
-            cancelable_task_object(init_no_addref no_addref, F const& f)
-              : base_type(no_addref, f)
-            {
-            }
-
-            cancelable_task_object(init_no_addref no_addref, F&& f) noexcept
-              : base_type(no_addref, PIKA_MOVE(f))
-            {
-            }
-        };
-
-        template <typename Allocator, typename Result, typename F>
-        struct cancelable_task_object_allocator
-          : cancelable_task_object<Result, F, void>
+        task_object_allocator(init_no_addref no_addref,
+            other_allocator const& alloc, F&& f) noexcept
+          : base_type(no_addref, PIKA_MOVE(f))
+          , alloc_(alloc)
         {
-            using base_type = cancelable_task_object<Result, F, void>;
-            using result_type = typename base_type::result_type;
-            using init_no_addref = typename base_type::init_no_addref;
+        }
 
-            using other_allocator = typename std::allocator_traits<Allocator>::
-                template rebind_alloc<cancelable_task_object_allocator>;
-
-            cancelable_task_object_allocator(
-                other_allocator const& alloc, F const& f)
-              : base_type(f)
-              , alloc_(alloc)
-            {
-            }
-
-            cancelable_task_object_allocator(
-                other_allocator const& alloc, F&& f) noexcept
-              : base_type(PIKA_MOVE(f))
-              , alloc_(alloc)
-            {
-            }
-
-            cancelable_task_object_allocator(init_no_addref no_addref,
-                other_allocator const& alloc, F const& f)
-              : base_type(no_addref, f)
-              , alloc_(alloc)
-            {
-            }
-
-            cancelable_task_object_allocator(init_no_addref no_addref,
-                other_allocator const& alloc, F&& f) noexcept
-              : base_type(no_addref, PIKA_MOVE(f))
-              , alloc_(alloc)
-            {
-            }
-
-        private:
-            void destroy() noexcept override
-            {
-                using traits = std::allocator_traits<other_allocator>;
-
-                other_allocator alloc(alloc_);
-                traits::destroy(alloc, this);
-                traits::deallocate(alloc, this, 1);
-            }
-
-            other_allocator alloc_;
-        };
-
-        template <typename Result, typename F, typename Executor>
-        struct cancelable_task_object
-          : task_object<Result, F, Executor,
-                lcos::detail::cancelable_task_base<Result>>
+    private:
+        void destroy() noexcept override
         {
-            using base_type = task_object<Result, F, Executor,
-                lcos::detail::cancelable_task_base<Result>>;
-            using result_type = typename base_type::result_type;
-            using init_no_addref = typename base_type::init_no_addref;
+            using traits = std::allocator_traits<other_allocator>;
 
-            explicit cancelable_task_object(F const& f)
-              : base_type(f)
+            other_allocator alloc(alloc_);
+            traits::destroy(alloc, this);
+            traits::deallocate(alloc, this, 1);
+        }
+
+        other_allocator alloc_;
+    };
+
+    template <typename Result, typename F, typename Executor, typename Base>
+    struct task_object : task_object<Result, F, void, Base>
+    {
+        using base_type = task_object<Result, F, void, Base>;
+        using result_type = typename base_type::result_type;
+        using init_no_addref = typename base_type::init_no_addref;
+
+        Executor* exec_ = nullptr;
+
+        explicit task_object(F const& f)
+          : base_type(f)
+        {
+        }
+
+        explicit task_object(F&& f) noexcept
+          : base_type(PIKA_MOVE(f))
+        {
+        }
+
+        task_object(Executor& exec, F const& f)
+          : base_type(f)
+          , exec_(&exec)
+        {
+        }
+
+        task_object(Executor& exec, F&& f) noexcept
+          : base_type(PIKA_MOVE(f))
+          , exec_(&exec)
+        {
+        }
+
+        task_object(init_no_addref no_addref, F const& f)
+          : base_type(no_addref, f)
+        {
+        }
+
+        task_object(init_no_addref no_addref, F&& f) noexcept
+          : base_type(no_addref, PIKA_MOVE(f))
+        {
+        }
+
+        task_object(Executor& exec, init_no_addref no_addref, F const& f)
+          : base_type(no_addref, f)
+          , exec_(&exec)
+        {
+        }
+
+        task_object(Executor& exec, init_no_addref no_addref, F&& f) noexcept
+          : base_type(no_addref, PIKA_MOVE(f))
+          , exec_(&exec)
+        {
+        }
+
+    protected:
+        // run in a separate thread
+        threads::detail::thread_id_ref_type apply(
+            threads::detail::thread_pool_base* pool, const char* annotation,
+            launch policy, error_code& ec) override
+        {
+            if (exec_)
             {
+                this->check_started();
+
+                pika::intrusive_ptr<base_type> this_(this);
+                parallel::execution::post(*exec_,
+                    util::detail::deferred_call(
+                        &base_type::run_impl, PIKA_MOVE(this_)),
+                    exec_->get_schedulehint(), annotation);
+                return threads::detail::invalid_thread_id;
             }
 
-            explicit cancelable_task_object(F&& f) noexcept
-              : base_type(PIKA_MOVE(f))
-            {
-            }
+            return this->base_type::apply(pool, annotation, policy, ec);
+        }
+    };
 
-            cancelable_task_object(Executor& exec, F const& f)
-              : base_type(exec, f)
-            {
-            }
+    ///////////////////////////////////////////////////////////////////////
+    template <typename Result, typename F, typename Executor>
+    struct cancelable_task_object;
 
-            cancelable_task_object(Executor& exec, F&& f) noexcept
-              : base_type(exec, PIKA_MOVE(f))
-            {
-            }
+    template <typename Result, typename F>
+    struct cancelable_task_object<Result, F, void>
+      : task_object<Result, F, void, lcos::detail::cancelable_task_base<Result>>
+    {
+        using base_type = task_object<Result, F, void,
+            lcos::detail::cancelable_task_base<Result>>;
+        using result_type = typename base_type::result_type;
+        using init_no_addref = typename base_type::init_no_addref;
 
-            cancelable_task_object(init_no_addref no_addref, F const& f)
-              : base_type(no_addref, f)
-            {
-            }
+        explicit cancelable_task_object(F const& f)
+          : base_type(f)
+        {
+        }
 
-            cancelable_task_object(init_no_addref no_addref, F&& f) noexcept
-              : base_type(no_addref, PIKA_MOVE(f))
-            {
-            }
+        explicit cancelable_task_object(F&& f) noexcept
+          : base_type(PIKA_MOVE(f))
+        {
+        }
 
-            cancelable_task_object(
-                Executor& exec, init_no_addref no_addref, F const& f)
-              : base_type(exec, no_addref, f)
-            {
-            }
+        cancelable_task_object(init_no_addref no_addref, F const& f)
+          : base_type(no_addref, f)
+        {
+        }
 
-            cancelable_task_object(
-                Executor& exec, init_no_addref no_addref, F&& f) noexcept
-              : base_type(exec, no_addref, PIKA_MOVE(f))
-            {
-            }
-        };
-    }    // namespace detail
-}}}      // namespace pika::lcos::local
+        cancelable_task_object(init_no_addref no_addref, F&& f) noexcept
+          : base_type(no_addref, PIKA_MOVE(f))
+        {
+        }
+    };
 
-namespace pika { namespace traits { namespace detail {
+    template <typename Allocator, typename Result, typename F>
+    struct cancelable_task_object_allocator
+      : cancelable_task_object<Result, F, void>
+    {
+        using base_type = cancelable_task_object<Result, F, void>;
+        using result_type = typename base_type::result_type;
+        using init_no_addref = typename base_type::init_no_addref;
+
+        using other_allocator = typename std::allocator_traits<
+            Allocator>::template rebind_alloc<cancelable_task_object_allocator>;
+
+        cancelable_task_object_allocator(
+            other_allocator const& alloc, F const& f)
+          : base_type(f)
+          , alloc_(alloc)
+        {
+        }
+
+        cancelable_task_object_allocator(
+            other_allocator const& alloc, F&& f) noexcept
+          : base_type(PIKA_MOVE(f))
+          , alloc_(alloc)
+        {
+        }
+
+        cancelable_task_object_allocator(
+            init_no_addref no_addref, other_allocator const& alloc, F const& f)
+          : base_type(no_addref, f)
+          , alloc_(alloc)
+        {
+        }
+
+        cancelable_task_object_allocator(init_no_addref no_addref,
+            other_allocator const& alloc, F&& f) noexcept
+          : base_type(no_addref, PIKA_MOVE(f))
+          , alloc_(alloc)
+        {
+        }
+
+    private:
+        void destroy() noexcept override
+        {
+            using traits = std::allocator_traits<other_allocator>;
+
+            other_allocator alloc(alloc_);
+            traits::destroy(alloc, this);
+            traits::deallocate(alloc, this, 1);
+        }
+
+        other_allocator alloc_;
+    };
+
+    template <typename Result, typename F, typename Executor>
+    struct cancelable_task_object
+      : task_object<Result, F, Executor,
+            lcos::detail::cancelable_task_base<Result>>
+    {
+        using base_type = task_object<Result, F, Executor,
+            lcos::detail::cancelable_task_base<Result>>;
+        using result_type = typename base_type::result_type;
+        using init_no_addref = typename base_type::init_no_addref;
+
+        explicit cancelable_task_object(F const& f)
+          : base_type(f)
+        {
+        }
+
+        explicit cancelable_task_object(F&& f) noexcept
+          : base_type(PIKA_MOVE(f))
+        {
+        }
+
+        cancelable_task_object(Executor& exec, F const& f)
+          : base_type(exec, f)
+        {
+        }
+
+        cancelable_task_object(Executor& exec, F&& f) noexcept
+          : base_type(exec, PIKA_MOVE(f))
+        {
+        }
+
+        cancelable_task_object(init_no_addref no_addref, F const& f)
+          : base_type(no_addref, f)
+        {
+        }
+
+        cancelable_task_object(init_no_addref no_addref, F&& f) noexcept
+          : base_type(no_addref, PIKA_MOVE(f))
+        {
+        }
+
+        cancelable_task_object(
+            Executor& exec, init_no_addref no_addref, F const& f)
+          : base_type(exec, no_addref, f)
+        {
+        }
+
+        cancelable_task_object(
+            Executor& exec, init_no_addref no_addref, F&& f) noexcept
+          : base_type(exec, no_addref, PIKA_MOVE(f))
+        {
+        }
+    };
+}    // namespace pika::lcos::local::detail
+
+namespace pika::traits::detail {
 
     template <typename Result, typename F, typename Base, typename Allocator>
     struct shared_state_allocator<
@@ -415,9 +408,9 @@ namespace pika { namespace traits { namespace detail {
             lcos::local::detail::cancelable_task_object_allocator<Allocator,
                 Result, F>;
     };
-}}}    // namespace pika::traits::detail
+}    // namespace pika::traits::detail
 
-namespace pika { namespace lcos { namespace local {
+namespace pika::lcos::local {
 
     ///////////////////////////////////////////////////////////////////////////
     // The futures_factory is very similar to a packaged_task except that it
@@ -797,4 +790,4 @@ namespace pika { namespace lcos { namespace local {
         pika::intrusive_ptr<task_impl_type> task_;
         bool future_obtained_ = false;
     };
-}}}    // namespace pika::lcos::local
+}    // namespace pika::lcos::local

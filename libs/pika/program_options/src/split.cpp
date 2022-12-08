@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-namespace pika { namespace program_options { namespace detail {
+namespace pika::program_options::detail {
 
     template <class Char>
     std::vector<std::basic_string<Char>>
@@ -39,9 +39,9 @@ namespace pika { namespace program_options { namespace detail {
         return result;
     }
 
-}}}    // namespace pika::program_options::detail
+}    // namespace pika::program_options::detail
 
-namespace pika { namespace program_options {
+namespace pika::program_options {
 
     // Take a command line string and splits in into tokens, according
     // to the given collection of separators chars.
@@ -59,4 +59,4 @@ namespace pika { namespace program_options {
         return detail::split_unix<wchar_t>(cmdline, separator, quote, escape);
     }
 
-}}    // namespace pika::program_options
+}    // namespace pika::program_options

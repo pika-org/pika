@@ -10,7 +10,7 @@
 #include <cstddef>
 #include <string>
 
-namespace pika { namespace string_util {
+namespace pika::string_util {
     template <typename CharT, class Traits, class Alloc>
     void trim(std::basic_string<CharT, Traits, Alloc>& s)
     {
@@ -42,4 +42,4 @@ namespace pika { namespace string_util {
 
         return t;
     }
-}}    // namespace pika::string_util
+}    // namespace pika::string_util

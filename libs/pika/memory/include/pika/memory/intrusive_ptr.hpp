@@ -23,7 +23,7 @@
 #include <iosfwd>
 #include <type_traits>
 
-namespace pika { namespace memory {
+namespace pika::memory {
 
     //
     //  intrusive_ptr
@@ -332,7 +332,7 @@ namespace pika { namespace memory {
         os << p.get();
         return os;
     }
-}}    // namespace pika::memory
+}    // namespace pika::memory
 
 namespace pika {
 

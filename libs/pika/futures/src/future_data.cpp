@@ -26,7 +26,7 @@
 #include <mutex>
 #include <utility>
 
-namespace pika { namespace lcos { namespace detail {
+namespace pika::lcos::detail {
 
     static run_on_completed_error_handler_type run_on_completed_error_handler;
 
@@ -339,4 +339,4 @@ namespace pika { namespace lcos { namespace detail {
         }
         return pika::future_status::ready;    //-V110
     }
-}}}    // namespace pika::lcos::detail
+}    // namespace pika::lcos::detail

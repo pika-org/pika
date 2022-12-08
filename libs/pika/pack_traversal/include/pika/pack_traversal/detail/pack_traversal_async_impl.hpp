@@ -29,7 +29,7 @@
 #include <utility>
 
 namespace pika {
-    namespace util { namespace detail {
+    namespace util::detail {
         /// A tag which is passed to the `operator()` of the visitor
         /// if an element is visited synchronously.
         struct async_traverse_visit_tag
@@ -237,9 +237,9 @@ namespace pika {
 
             other_allocator alloc_;
         };
-    }}    // namespace util::detail
+    }    // namespace util::detail
 
-    namespace traits { namespace detail {
+    namespace traits::detail {
         template <typename Visitor, typename... Args, typename Allocator>
         struct shared_state_allocator<
             util::detail::async_traversal_frame<Visitor, Args...>, Allocator>
@@ -248,9 +248,9 @@ namespace pika {
                 util::detail::async_traversal_frame_allocator<Allocator,
                     Visitor, Args...>;
         };
-    }}    // namespace traits::detail
+    }    // namespace traits::detail
 
-    namespace util { namespace detail {
+    namespace util::detail {
         template <typename Target, std::size_t Begin, std::size_t End>
         struct static_async_range
         {
@@ -727,5 +727,5 @@ namespace pika {
             resumer();
             return frame;
         }
-    }}    // namespace util::detail
+    }    // namespace util::detail
 }    // end namespace pika

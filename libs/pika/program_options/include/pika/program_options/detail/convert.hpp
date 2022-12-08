@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-namespace pika { namespace program_options {
+namespace pika::program_options {
 
     /** Converts from local 8 bit encoding into wchar_t string using
         the specified locale facet. */
@@ -59,4 +59,4 @@ namespace pika { namespace program_options {
         return result;
     }
 
-}}    // namespace pika::program_options
+}    // namespace pika::program_options

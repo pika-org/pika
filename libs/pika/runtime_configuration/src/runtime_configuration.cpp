@@ -44,7 +44,7 @@
 #include <limits>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace util {
+namespace pika::util {
 
     namespace detail {
 
@@ -673,4 +673,4 @@ namespace pika { namespace util {
         }
         return small_stacksize;
     }
-}}    // namespace pika::util
+}    // namespace pika::util

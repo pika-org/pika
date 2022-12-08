@@ -12,7 +12,7 @@
 
 #include <string>
 
-namespace pika { namespace util {
+namespace pika::util {
     void may_attach_debugger(std::string const& category)
     {
         if (get_config_entry("pika.attach_debugger", "") == category)
@@ -20,4 +20,4 @@ namespace pika { namespace util {
             debug::detail::attach_debugger();
         }
     }
-}}    // namespace pika::util
+}    // namespace pika::util

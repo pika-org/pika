@@ -23,7 +23,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace util { namespace logging {
+namespace pika::util::logging {
 
     /**
     @brief The logger class. Every log from your application is an instance of
@@ -182,4 +182,4 @@ namespace pika { namespace util { namespace logging {
         writer::named_write m_writer;
         level m_level;
     };
-}}}    // namespace pika::util::logging
+}    // namespace pika::util::logging

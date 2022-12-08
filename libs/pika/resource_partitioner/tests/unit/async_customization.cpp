@@ -253,12 +253,12 @@ private:
 // --------------------------------------------------------------------
 // set traits for executor to say it is an async executor
 // --------------------------------------------------------------------
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     template <>
     struct is_two_way_executor<test_async_executor> : std::true_type
     {
     };
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
 template <typename T>
 T dummy_task(T val)
@@ -442,7 +442,7 @@ struct dummy_tag
 {
 };
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     template <>
     struct pool_numa_hint<dummy_tag>
     {
@@ -484,7 +484,7 @@ namespace pika { namespace parallel { namespace execution {
             return 4;
         }
     };
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
 int pika_main()
 {

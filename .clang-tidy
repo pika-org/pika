@@ -22,6 +22,7 @@ Checks: >
     misc-non-copyable-objects,
     misc-use-after-move,
     misc-virtual-near-miss,
+    modernize-concat-nested-namespaces,
     modernize-use-nullptr,
     modernize-use-using,
 # WarningsAsErrors: '*'

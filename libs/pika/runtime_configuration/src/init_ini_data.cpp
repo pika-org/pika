@@ -28,7 +28,7 @@
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace util {
+namespace pika::util {
     ///////////////////////////////////////////////////////////////////////////
     bool handle_ini_file(section& ini, std::string const& loc)
     {
@@ -237,4 +237,4 @@ namespace pika { namespace util {
             return lhs.first == rhs.first;
         }
     }    // namespace detail
-}}       // namespace pika::util
+}    // namespace pika::util

@@ -17,7 +17,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace program_options {
+namespace pika::program_options {
 
     template <class Char>
     basic_command_line_parser<Char>::basic_command_line_parser(
@@ -133,4 +133,4 @@ namespace pika { namespace program_options {
         return result;
     }
 
-}}    // namespace pika::program_options
+}    // namespace pika::program_options

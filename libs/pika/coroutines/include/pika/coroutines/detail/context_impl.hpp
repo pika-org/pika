@@ -118,10 +118,10 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
     !defined(__arm64__) && !defined(__aarch64__)
 
 #include <pika/coroutines/detail/context_linux_x86.hpp>
-namespace pika { namespace threads { namespace coroutines { namespace detail {
+namespace pika::threads::coroutines::detail {
     template <typename CoroutineImpl>
     using default_context_impl = lx::x86_linux_context_impl<CoroutineImpl>;
-}}}}    // namespace pika::threads::coroutines::detail
+}    // namespace pika::threads::coroutines::detail
 
 #elif defined(_POSIX_VERSION) || defined(__bgq__) || defined(__powerpc__) ||   \
     defined(__s390x__) || defined(__arm__) || defined(arm64) ||                \

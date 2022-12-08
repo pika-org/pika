@@ -38,7 +38,7 @@ extern char** environ;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace util {
+namespace pika::util {
 
     ///////////////////////////////////////////////////////////////////////////////
     // example ini line: line # comment
@@ -986,4 +986,4 @@ namespace pika { namespace util {
         return value;
     }
 
-}}    // namespace pika::util
+}    // namespace pika::util

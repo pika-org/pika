@@ -23,7 +23,7 @@
 #include <utility>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace lcos { namespace detail {
+namespace pika::lcos::detail {
 
     template <typename Promise = void>
     using coroutine_handle = std::coroutine_handle<Promise>;
@@ -191,7 +191,7 @@ namespace pika { namespace lcos { namespace detail {
             traits::deallocate(alloc, static_cast<char*>(p), size);
         }
     };
-}}}    // namespace pika::lcos::detail
+}    // namespace pika::lcos::detail
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace std {

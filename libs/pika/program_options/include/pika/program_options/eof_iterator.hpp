@@ -12,7 +12,7 @@
 
 #include <iterator>
 
-namespace pika { namespace program_options {
+namespace pika::program_options {
 
     /** The 'eof_iterator' class is useful for constructing forward iterators
         in cases where iterator extract data from some source and it's easy
@@ -95,4 +95,4 @@ namespace pika { namespace program_options {
         bool m_at_eof;
         ValueType m_value;
     };
-}}    // namespace pika::program_options
+}    // namespace pika::program_options

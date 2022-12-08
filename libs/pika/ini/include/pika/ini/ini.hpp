@@ -27,7 +27,7 @@
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace util {
+namespace pika::util {
     ///////////////////////////////////////////////////////////////////////////
     class PIKA_EXPORT section
     {
@@ -282,4 +282,4 @@ namespace pika { namespace util {
         }
     };
 
-}}    // namespace pika::util
+}    // namespace pika::util

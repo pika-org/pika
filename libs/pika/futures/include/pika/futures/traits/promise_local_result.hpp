@@ -9,7 +9,7 @@
 #include <pika/config.hpp>
 #include <pika/type_support/unused.hpp>
 
-namespace pika { namespace traits {
+namespace pika::traits {
     ///////////////////////////////////////////////////////////////////////////
     template <typename Result, typename Enable = void>
     struct promise_local_result
@@ -26,4 +26,4 @@ namespace pika { namespace traits {
     template <typename Result>
     using promise_local_result_t = typename promise_local_result<Result>::type;
 
-}}    // namespace pika::traits
+}    // namespace pika::traits

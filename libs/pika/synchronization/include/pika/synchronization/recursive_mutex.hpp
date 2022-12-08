@@ -21,111 +21,104 @@
 #include <cstdint>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika {
-    namespace detail {
-        /// An exclusive-ownership recursive mutex which implements Boost.Thread's
-        /// TimedLockable concept.
-        template <typename Mutex = pika::spinlock>
-        struct recursive_mutex_impl
+namespace pika::detail {
+    /// An exclusive-ownership recursive mutex which implements Boost.Thread's
+    /// TimedLockable concept.
+    template <typename Mutex = pika::spinlock>
+    struct recursive_mutex_impl
+    {
+    public:
+        PIKA_NON_COPYABLE(recursive_mutex_impl);
+
+    private:
+        std::atomic<std::uint64_t> recursion_count;
+        std::atomic<pika::execution::detail::agent_ref> locking_context;
+        Mutex mtx;
+
+    public:
+        recursive_mutex_impl(char const* const desc = "recursive_mutex_impl")
+          : recursion_count(0)
+          , mtx(desc)
         {
-        public:
-            PIKA_NON_COPYABLE(recursive_mutex_impl);
+        }
 
-        private:
-            std::atomic<std::uint64_t> recursion_count;
-            std::atomic<pika::execution::detail::agent_ref> locking_context;
-            Mutex mtx;
+        /// Attempts to acquire ownership of the \a recursive_mutex.
+        /// Never blocks.
+        ///
+        /// \returns \a true if ownership was acquired; otherwise, \a false.
+        ///
+        /// \throws Never throws.
+        bool try_lock()
+        {
+            auto ctx = pika::execution::this_thread::detail::agent();
+            PIKA_ASSERT(ctx);
 
-        public:
-            recursive_mutex_impl(
-                char const* const desc = "recursive_mutex_impl")
-              : recursion_count(0)
-              , mtx(desc)
+            return try_recursive_lock(ctx) || try_basic_lock(ctx);
+        }
+
+        /// Acquires ownership of the \a recursive_mutex. Suspends the
+        /// current pika-thread if ownership cannot be obtained immediately.
+        ///
+        /// \throws Throws \a pika#bad_parameter if an error occurs while
+        ///         suspending. Throws \a pika#yield_aborted if the mutex is
+        ///         destroyed while suspended. Throws \a pika#null_thread_id if
+        ///         called outside of a pika-thread.
+        void lock()
+        {
+            auto ctx = pika::execution::this_thread::detail::agent();
+            PIKA_ASSERT(ctx);
+
+            if (!try_recursive_lock(ctx))
             {
+                mtx.lock();
+                locking_context.exchange(ctx);
+                util::ignore_lock(&mtx);
+                util::register_lock(this);
+                recursion_count.store(1);
             }
+        }
 
-            /// Attempts to acquire ownership of the \a recursive_mutex.
-            /// Never blocks.
-            ///
-            /// \returns \a true if ownership was acquired; otherwise, \a false.
-            ///
-            /// \throws Never throws.
-            bool try_lock()
+        /// Release ownership of the \a recursive_mutex.
+        ///
+        /// \throws Throws \a pika#bad_parameter if an error occurs while
+        ///         releasing the mutex. Throws \a pika#null_thread_id if called
+        ///         outside of a pika-thread.
+        void unlock()
+        {
+            if (0 == --recursion_count)
             {
-                auto ctx = pika::execution::this_thread::detail::agent();
-                PIKA_ASSERT(ctx);
-
-                return try_recursive_lock(ctx) || try_basic_lock(ctx);
+                locking_context.exchange(pika::execution::detail::agent_ref());
+                util::unregister_lock(this);
+                util::reset_ignored(&mtx);
+                mtx.unlock();
             }
+        }
 
-            /// Acquires ownership of the \a recursive_mutex. Suspends the
-            /// current pika-thread if ownership cannot be obtained immediately.
-            ///
-            /// \throws Throws \a pika#bad_parameter if an error occurs while
-            ///         suspending. Throws \a pika#yield_aborted if the mutex is
-            ///         destroyed while suspended. Throws \a pika#null_thread_id if
-            ///         called outside of a pika-thread.
-            void lock()
+    private:
+        bool try_recursive_lock(
+            pika::execution::detail::agent_ref current_context)
+        {
+            if (locking_context.load(std::memory_order_acquire) ==
+                current_context)
             {
-                auto ctx = pika::execution::this_thread::detail::agent();
-                PIKA_ASSERT(ctx);
-
-                if (!try_recursive_lock(ctx))
-                {
-                    mtx.lock();
-                    locking_context.exchange(ctx);
-                    util::ignore_lock(&mtx);
+                if (++recursion_count == 1)
                     util::register_lock(this);
-                    recursion_count.store(1);
-                }
+                return true;
             }
+            return false;
+        }
 
-            /// Release ownership of the \a recursive_mutex.
-            ///
-            /// \throws Throws \a pika#bad_parameter if an error occurs while
-            ///         releasing the mutex. Throws \a pika#null_thread_id if called
-            ///         outside of a pika-thread.
-            void unlock()
+        bool try_basic_lock(pika::execution::detail::agent_ref current_context)
+        {
+            if (mtx.try_lock())
             {
-                if (0 == --recursion_count)
-                {
-                    locking_context.exchange(
-                        pika::execution::detail::agent_ref());
-                    util::unregister_lock(this);
-                    util::reset_ignored(&mtx);
-                    mtx.unlock();
-                }
+                locking_context.exchange(current_context);
+                util::ignore_lock(&mtx);
+                util::register_lock(this);
+                recursion_count.store(1);
+                return true;
             }
-
-        private:
-            bool try_recursive_lock(
-                pika::execution::detail::agent_ref current_context)
-            {
-                if (locking_context.load(std::memory_order_acquire) ==
-                    current_context)
-                {
-                    if (++recursion_count == 1)
-                        util::register_lock(this);
-                    return true;
-                }
-                return false;
-            }
-
-            bool try_basic_lock(
-                pika::execution::detail::agent_ref current_context)
-            {
-                if (mtx.try_lock())
-                {
-                    locking_context.exchange(current_context);
-                    util::ignore_lock(&mtx);
-                    util::register_lock(this);
-                    recursion_count.store(1);
-                    return true;
-                }
-                return false;
-            }
-        };
-    }    // namespace detail
-
-    using recursive_mutex = detail::recursive_mutex_impl<>;
-}    // namespace pika
+            return false;
+        }
+    };
+}    // namespace pika::detail

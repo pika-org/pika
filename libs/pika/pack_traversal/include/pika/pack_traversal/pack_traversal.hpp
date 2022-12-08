@@ -50,7 +50,7 @@ namespace pika { namespace util {
 }}       // namespace pika::util
 #else    // DOXYGEN
 
-namespace pika { namespace util {
+namespace pika::util {
     template <typename Mapper, typename... T>
     auto map_pack(Mapper&& mapper, T&&... pack)
         -> decltype(detail::apply_pack_transform(detail::strategy_remap_tag{},
@@ -83,6 +83,6 @@ namespace pika { namespace util {
         detail::apply_pack_transform(detail::strategy_traverse_tag{},
             PIKA_FORWARD(Mapper, mapper), PIKA_FORWARD(T, pack)...);
     }
-}}    // namespace pika::util
+}    // namespace pika::util
 
 #endif    // DOXYGEN

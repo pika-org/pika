@@ -23,7 +23,7 @@
 #include <string>
 #include <string_view>
 
-namespace pika { namespace util { namespace logging {
+namespace pika::util::logging {
 
     /// @brief Formatter is a manipulator.
     /// It allows you to format the message before writing it to the destination(s)
@@ -87,4 +87,4 @@ namespace pika { namespace util { namespace logging {
 
     }    // namespace destination
 
-}}}    // namespace pika::util::logging
+}    // namespace pika::util::logging

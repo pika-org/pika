@@ -9,7 +9,7 @@
 #include <cctype>
 #include <string>
 
-namespace pika { namespace string_util {
+namespace pika::string_util {
     namespace detail {
         template <typename CharT, typename Traits, typename Allocator>
         struct is_any_of_pred
@@ -43,4 +43,4 @@ namespace pika { namespace string_util {
             return std::isspace(c);
         }
     };
-}}    // namespace pika::string_util
+}    // namespace pika::string_util

@@ -38,7 +38,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace lcos { namespace detail {
+namespace pika::lcos::detail {
     ///////////////////////////////////////////////////////////////////////////
     enum class future_state
     {
@@ -614,7 +614,7 @@ namespace pika { namespace lcos { namespace detail {
     protected:
         pika::intrusive_ptr<shared_state_type> shared_state_;
     };
-}}}    // namespace pika::lcos::detail
+}    // namespace pika::lcos::detail
 
 namespace pika {
 

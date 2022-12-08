@@ -182,12 +182,12 @@ struct unlimited_number_of_chunks
     }
 };
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     template <>
     struct is_executor_parameters<unlimited_number_of_chunks> : std::true_type
     {
     };
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
 void function_futures_register_work(std::uint64_t count, bool csv)
 {

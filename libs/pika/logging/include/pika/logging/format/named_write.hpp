@@ -27,7 +27,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace util { namespace logging { namespace detail {
+namespace pika::util::logging::detail {
 
     template <typename T>
     struct named
@@ -267,9 +267,9 @@ namespace pika { namespace util { namespace logging { namespace detail {
         std::string format_string;
     };
 
-}}}}    // namespace pika::util::logging::detail
+}    // namespace pika::util::logging::detail
 
-namespace pika { namespace util { namespace logging { namespace writer {
+namespace pika::util::logging::writer {
 
     /// @brief Composed of a named formatter and a named destinations.
     /// Thus, you can specify the formatting and destinations as strings
@@ -447,4 +447,4 @@ namespace pika { namespace util { namespace logging { namespace writer {
         std::string m_destination_str;
     };
 
-}}}}    // namespace pika::util::logging::writer
+}    // namespace pika::util::logging::writer

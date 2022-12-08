@@ -10,7 +10,7 @@
 
 #include <utility>
 
-namespace pika { namespace util {
+namespace pika::util {
     /// A tag which is passed to the `operator()` of the visitor
     /// if an element is visited synchronously.
     using detail::async_traverse_visit_tag;
@@ -159,4 +159,4 @@ namespace pika { namespace util {
         return detail::apply_pack_transform_async_allocator(
             alloc, PIKA_FORWARD(Visitor, visitor), PIKA_FORWARD(T, pack)...);
     }
-}}    // namespace pika::util
+}    // namespace pika::util

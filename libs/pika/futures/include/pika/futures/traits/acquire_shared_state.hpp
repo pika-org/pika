@@ -25,7 +25,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace traits {
+namespace pika::traits {
 
     namespace detail {
 
@@ -176,4 +176,4 @@ namespace pika { namespace traits {
             }
         };
     }    // namespace detail
-}}       // namespace pika::traits
+}    // namespace pika::traits

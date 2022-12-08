@@ -11,7 +11,7 @@
 
 #include <cstddef>
 
-namespace pika { namespace util { namespace hardware {
+namespace pika::util::hardware {
 
     template <typename T, typename U>
     bool has_bit_set(T value, U bit)
@@ -72,4 +72,4 @@ namespace pika { namespace util { namespace hardware {
         return unbounded_shl<Low, Result>(static_cast<Result>(x));
     }
 
-}}}    // namespace pika::util::hardware
+}    // namespace pika::util::hardware

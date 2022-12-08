@@ -922,7 +922,7 @@ namespace pika {
 }    // namespace pika
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace util {
+namespace pika::util {
     std::string expand(std::string const& in)
     {
         return get_runtime().get_config().expand(in);
@@ -932,10 +932,10 @@ namespace pika { namespace util {
     {
         get_runtime().get_config().expand(in, std::string::size_type(-1));
     }
-}}    // namespace pika::util
+}    // namespace pika::util
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace threads {
+namespace pika::threads {
     detail::thread_manager& get_thread_manager()
     {
         return get_runtime().get_thread_manager();
@@ -987,7 +987,7 @@ namespace pika { namespace threads {
         }
         return rt->get_topology();
     }
-}}    // namespace pika::threads
+}    // namespace pika::threads
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {

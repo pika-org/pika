@@ -22,7 +22,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace program_options {
+namespace pika::program_options {
 
     using namespace std;
     using namespace pika::program_options::command_line_style;
@@ -67,9 +67,9 @@ namespace pika { namespace program_options {
         return msg;
     }
 
-}}    // namespace pika::program_options
+}    // namespace pika::program_options
 
-namespace pika { namespace program_options { namespace detail {
+namespace pika::program_options::detail {
 
     using namespace std;
     using namespace program_options;
@@ -695,4 +695,4 @@ namespace pika { namespace program_options { namespace detail {
         m_style_parser = s;
     }
 
-}}}    // namespace pika::program_options::detail
+}    // namespace pika::program_options::detail

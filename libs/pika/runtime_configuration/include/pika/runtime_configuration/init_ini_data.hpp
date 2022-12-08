@@ -16,7 +16,7 @@
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace util {
+namespace pika::util {
     ///////////////////////////////////////////////////////////////////////////
     bool handle_ini_file(section& ini, std::string const& loc);
     bool handle_ini_file_env(
@@ -32,4 +32,4 @@ namespace pika { namespace util {
     ///////////////////////////////////////////////////////////////////////////
     // global function to read component ini information
     void merge_component_inis(section& ini);
-}}    // namespace pika::util
+}    // namespace pika::util

@@ -29,7 +29,7 @@
 #include <mutex>
 #include <ostream>
 
-namespace pika { namespace util {
+namespace pika::util {
     enum counter_type
     {
         counter_sanity,
@@ -206,7 +206,7 @@ namespace pika { namespace util {
     ////////////////////////////////////////////////////////////////////////////
     PIKA_EXPORT int report_errors();
     PIKA_EXPORT int report_errors(std::ostream& stream);
-}}    // namespace pika::util
+}    // namespace pika::util
 
 ////////////////////////////////////////////////////////////////////////////////
 #define PIKA_TEST(...)                                                         \

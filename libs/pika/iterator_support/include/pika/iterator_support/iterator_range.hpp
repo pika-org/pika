@@ -16,7 +16,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace util {
+namespace pika::util {
     template <typename Iterator, typename Sentinel = Iterator>
     class iterator_range
     {
@@ -81,9 +81,9 @@ namespace pika { namespace util {
     {
         return iterator_range<Iterator, Sentinel>(iterator, sentinel);
     }
-}}    // namespace pika::util
+}    // namespace pika::util
 
-namespace pika { namespace ranges {
+namespace pika::ranges {
     template <typename I, typename S = I>
     using subrange_t = pika::util::iterator_range<I, S>;
-}}    // namespace pika::ranges
+}    // namespace pika::ranges

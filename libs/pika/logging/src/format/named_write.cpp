@@ -26,7 +26,7 @@
 #include <sstream>
 #include <string>
 
-namespace pika { namespace util { namespace logging { namespace detail {
+namespace pika::util::logging::detail {
 
     static std::string unescape(std::string escaped)
     {
@@ -272,9 +272,9 @@ namespace pika { namespace util { namespace logging { namespace detail {
         }
     }    // namespace
 
-}}}}    // namespace pika::util::logging::detail
+}    // namespace pika::util::logging::detail
 
-namespace pika { namespace util { namespace logging { namespace writer {
+namespace pika::util::logging::writer {
 
     named_write::named_write()
     {
@@ -298,4 +298,4 @@ namespace pika { namespace util { namespace logging { namespace writer {
         detail::configure(m_destination, format, detail::parse_destination{});
     }
 
-}}}}    // namespace pika::util::logging::writer
+}    // namespace pika::util::logging::writer

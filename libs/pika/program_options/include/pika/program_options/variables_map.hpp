@@ -17,7 +17,7 @@
 
 #include <pika/config/warnings_prefix.hpp>
 
-namespace pika { namespace program_options {
+namespace pika::program_options {
 
     template <class Char>
     class basic_parsed_options;
@@ -208,6 +208,6 @@ namespace pika { namespace program_options {
         return v;
     }
 
-}}    // namespace pika::program_options
+}    // namespace pika::program_options
 
 #include <pika/config/warnings_suffix.hpp>
