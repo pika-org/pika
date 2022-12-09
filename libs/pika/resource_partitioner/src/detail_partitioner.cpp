@@ -31,7 +31,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace resource { namespace detail {
+namespace pika::resource::detail {
     ///////////////////////////////////////////////////////////////////////////
     [[noreturn]] void throw_runtime_error(
         std::string const& func, std::string const& message)
@@ -1088,4 +1088,4 @@ namespace pika { namespace resource { namespace detail {
 
     ////////////////////////////////////////////////////////////////////////
     std::atomic<int> partitioner::instance_number_counter_(-1);
-}}}    // namespace pika::resource::detail
+}    // namespace pika::resource::detail

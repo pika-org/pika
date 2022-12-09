@@ -17,7 +17,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace traits {
+namespace pika::traits {
     ///////////////////////////////////////////////////////////////////////////
     namespace detail {
         struct no_executor
@@ -72,4 +72,4 @@ namespace pika { namespace traits {
     template <typename Future, typename F>
     using future_then_result_t = typename future_then_result<Future, F>::type;
 
-}}    // namespace pika::traits
+}    // namespace pika::traits

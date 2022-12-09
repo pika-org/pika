@@ -15,7 +15,7 @@
 #include <functional>
 #include <iterator>
 
-namespace pika { namespace util {
+namespace pika::util {
 
     template <typename Generator>
     class generator_iterator
@@ -68,4 +68,4 @@ namespace pika { namespace util {
     template <typename Generator>
     generator_iterator(Generator*)->generator_iterator<Generator>;
     // clang-format on
-}}    // namespace pika::util
+}    // namespace pika::util

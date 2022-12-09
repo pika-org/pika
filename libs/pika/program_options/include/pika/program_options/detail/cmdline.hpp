@@ -20,7 +20,7 @@
 
 #include <pika/config/warnings_prefix.hpp>
 
-namespace pika { namespace program_options { namespace detail {
+namespace pika::program_options::detail {
 
     /** Command line parser class. Main requirements were:
         - Powerful enough to support all common uses.
@@ -138,6 +138,6 @@ namespace pika { namespace program_options { namespace detail {
 
     void test_cmdline_detail();
 
-}}}    // namespace pika::program_options::detail
+}    // namespace pika::program_options::detail
 
 #include <pika/config/warnings_suffix.hpp>

@@ -157,7 +157,7 @@ namespace pika {
     }    // namespace detail
 }    // namespace pika
 
-namespace pika { namespace detail {
+namespace pika::detail {
     template <typename Exception>
     PIKA_EXPORT std::exception_ptr
     construct_lightweight_exception(Exception const& e, std::string const& func,
@@ -362,7 +362,7 @@ namespace pika { namespace detail {
         std::out_of_range const&, std::string const&, std::string const&, long);
     template PIKA_EXPORT void throw_exception(std::invalid_argument const&,
         std::string const&, std::string const&, long);
-}}    // namespace pika::detail
+}    // namespace pika::detail
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {

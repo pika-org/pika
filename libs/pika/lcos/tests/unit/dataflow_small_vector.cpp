@@ -22,7 +22,7 @@
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace traits {
+namespace pika::traits {
 
     // support unwrapping of pika::detail::small_vector
     template <typename NewType, typename OldType, std::size_t Size,
@@ -41,7 +41,7 @@ namespace pika { namespace traits {
             return pika::detail::small_vector<NewType, Size, NewAllocator>();
         }
     };
-}}    // namespace pika::traits
+}    // namespace pika::traits
 
 template <typename T>
 using small_vector =

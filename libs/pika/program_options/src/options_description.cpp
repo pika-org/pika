@@ -27,7 +27,7 @@
 
 using namespace std;
 
-namespace pika { namespace program_options {
+namespace pika::program_options {
 
     namespace {
 
@@ -688,4 +688,4 @@ namespace pika { namespace program_options {
         }
     }
 
-}}    // namespace pika::program_options
+}    // namespace pika::program_options

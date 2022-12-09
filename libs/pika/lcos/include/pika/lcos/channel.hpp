@@ -30,7 +30,7 @@
 #include <mutex>
 #include <utility>
 
-namespace pika { namespace lcos { namespace local {
+namespace pika::lcos::local {
     ///////////////////////////////////////////////////////////////////////////
     namespace detail {
         ///////////////////////////////////////////////////////////////////////
@@ -1187,4 +1187,4 @@ namespace pika { namespace lcos { namespace local {
       , data_(c ? get_checked() : false)
     {
     }
-}}}    // namespace pika::lcos::local
+}    // namespace pika::lcos::local

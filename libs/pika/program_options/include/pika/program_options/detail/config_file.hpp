@@ -19,7 +19,7 @@
 
 #include <pika/config/warnings_prefix.hpp>
 
-namespace pika { namespace program_options { namespace detail {
+namespace pika::program_options::detail {
 
     /** Standalone parser for config files in ini-line format.
         The parser is a model of single-pass lvalue iterator, and
@@ -164,6 +164,6 @@ namespace pika { namespace program_options { namespace detail {
         }
     }
 
-}}}    // namespace pika::program_options::detail
+}    // namespace pika::program_options::detail
 
 #include <pika/config/warnings_suffix.hpp>

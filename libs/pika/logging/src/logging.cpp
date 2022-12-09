@@ -20,7 +20,7 @@
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace util {
+namespace pika::util {
     PIKA_DEFINE_LOG(app, disable_all)
     PIKA_DEFINE_LOG(app_console, disable_all)
     PIKA_DEFINE_LOG(app_error, fatal)
@@ -68,12 +68,12 @@ namespace pika { namespace util {
             }
         }
     }    // namespace detail
-}}       // namespace pika::util
+}    // namespace pika::util
 
 ///////////////////////////////////////////////////////////////////////////////
 #include <pika/logging/detail/logger.hpp>
 
-namespace pika { namespace util { namespace logging {
+namespace pika::util::logging {
 
     void logger::turn_cache_off()
     {
@@ -90,6 +90,6 @@ namespace pika { namespace util { namespace logging {
             m_writer(msg);
     }
 
-}}}    // namespace pika::util::logging
+}    // namespace pika::util::logging
 
 #endif    // PIKA_HAVE_LOGGING

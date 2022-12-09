@@ -14,7 +14,7 @@
 #include <string>
 #include <type_traits>
 
-namespace pika { namespace util {
+namespace pika::util {
 
     namespace detail {
         template <typename T, typename Enable = void>
@@ -51,4 +51,4 @@ namespace pika { namespace util {
         }
     }
 
-}}    // namespace pika::util
+}    // namespace pika::util

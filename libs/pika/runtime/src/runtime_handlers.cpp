@@ -26,7 +26,7 @@
 #include <sstream>
 #include <string>
 
-namespace pika { namespace detail {
+namespace pika::detail {
 
     [[noreturn]] void assertion_handler(
         pika::detail::source_location const& loc, const char* expr,
@@ -148,4 +148,4 @@ namespace pika { namespace detail {
         auto& rp = pika::resource::get_partitioner();
         return rp.get_pu_mask(thread_num);
     }
-}}    // namespace pika::detail
+}    // namespace pika::detail

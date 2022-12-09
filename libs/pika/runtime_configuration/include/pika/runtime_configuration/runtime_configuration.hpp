@@ -24,7 +24,7 @@
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace util {
+namespace pika::util {
     ///////////////////////////////////////////////////////////////////////////
     // The runtime_configuration class is a wrapper for the runtime
     // configuration data allowing to extract configuration information in a
@@ -125,4 +125,4 @@ namespace pika { namespace util {
         char const* argv0;
 #endif
     };
-}}    // namespace pika::util
+}    // namespace pika::util

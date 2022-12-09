@@ -26,7 +26,7 @@
 #include <windows.h>
 #endif
 
-namespace pika { namespace util { namespace logging { namespace destination {
+namespace pika::util::logging::destination {
 
     cout::~cout() = default;
 
@@ -99,4 +99,4 @@ namespace pika { namespace util { namespace logging { namespace destination {
         return std::unique_ptr<dbg_window>(new dbg_window_impl());
     }
 
-}}}}    // namespace pika::util::logging::destination
+}    // namespace pika::util::logging::destination

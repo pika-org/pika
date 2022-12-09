@@ -35,7 +35,7 @@
 #include <mutex>
 #endif
 
-namespace pika { namespace util { namespace logging { namespace formatter {
+namespace pika::util::logging::formatter {
 
     high_precision_time::~high_precision_time() = default;
 
@@ -127,4 +127,4 @@ namespace pika { namespace util { namespace logging { namespace formatter {
             new high_precision_time_impl(format));
     }
 
-}}}}    // namespace pika::util::logging::formatter
+}    // namespace pika::util::logging::formatter

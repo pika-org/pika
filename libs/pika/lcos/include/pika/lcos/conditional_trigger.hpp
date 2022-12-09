@@ -14,7 +14,7 @@
 
 #include <utility>
 
-namespace pika { namespace lcos { namespace local {
+namespace pika::lcos::local {
     ///////////////////////////////////////////////////////////////////////////
     struct conditional_trigger
     {
@@ -66,4 +66,4 @@ namespace pika { namespace lcos { namespace local {
         lcos::local::promise<void> promise_;
         util::detail::function<bool()> cond_;
     };
-}}}    // namespace pika::lcos::local
+}    // namespace pika::lcos::local

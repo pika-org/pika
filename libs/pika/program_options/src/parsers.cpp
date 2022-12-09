@@ -29,7 +29,7 @@
 
 using namespace std;
 
-namespace pika { namespace program_options {
+namespace pika::program_options {
 
     namespace {
 
@@ -196,4 +196,4 @@ namespace pika { namespace program_options {
         return parse_environment(desc, string(prefix));
     }
 
-}}    // namespace pika::program_options
+}    // namespace pika::program_options

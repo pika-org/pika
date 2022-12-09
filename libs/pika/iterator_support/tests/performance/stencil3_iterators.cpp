@@ -25,7 +25,7 @@ int test_count = 100;
 int partition_size = 10000;
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace experimental { namespace detail {
+namespace pika::experimental::detail {
     template <typename Iterator>
     PIKA_FORCEINLINE Iterator previous(Iterator it, std::false_type)
     {
@@ -62,11 +62,11 @@ namespace pika { namespace experimental { namespace detail {
     {
         return next(it, pika::traits::is_random_access_iterator<Iterator>());
     }
-}}}    // namespace pika::experimental::detail
+}    // namespace pika::experimental::detail
 
 ///////////////////////////////////////////////////////////////////////////////
 // Version of stencil3_iterator which handles boundary elements internally
-namespace pika { namespace experimental {
+namespace pika::experimental {
     ///////////////////////////////////////////////////////////////////////////
     template <typename Iterator, typename IterBegin = Iterator,
         typename IterValueBegin = Iterator, typename IterEnd = IterBegin,
@@ -255,7 +255,7 @@ namespace pika { namespace experimental {
             begin, begin, begin_val, detail::previous(end), end_val);
         return std::make_pair(b, make_stencil3_full_iterator<decltype(b)>(end));
     }
-}}    // namespace pika::experimental
+}    // namespace pika::experimental
 
 std::chrono::duration<double> bench_stencil3_iterator_full()
 {
@@ -281,7 +281,7 @@ std::chrono::duration<double> bench_stencil3_iterator_full()
 
 ///////////////////////////////////////////////////////////////////////////////
 // compare with unchecked stencil3_iterator (version 1)
-namespace pika { namespace experimental {
+namespace pika::experimental {
     template <typename Iterator>
     class stencil3_iterator_v1
       : public util::detail::zip_iterator_base<
@@ -327,7 +327,7 @@ namespace pika { namespace experimental {
         return std::make_pair(
             make_stencil3_iterator_v1(begin), make_stencil3_iterator_v1(end));
     }
-}}    // namespace pika::experimental
+}    // namespace pika::experimental
 
 std::chrono::duration<double> bench_stencil3_iterator_v1()
 {
@@ -357,7 +357,7 @@ std::chrono::duration<double> bench_stencil3_iterator_v1()
 
 ///////////////////////////////////////////////////////////////////////////////
 // compare with unchecked stencil3_iterator (version 2)
-namespace pika { namespace experimental {
+namespace pika::experimental {
     namespace detail {
         struct stencil_transformer_v2
         {
@@ -436,7 +436,7 @@ namespace pika { namespace experimental {
         return std::make_pair(
             make_stencil3_iterator_v2(begin), make_stencil3_iterator_v2(end));
     }
-}}    // namespace pika::experimental
+}    // namespace pika::experimental
 
 std::chrono::duration<double> bench_stencil3_iterator_v2()
 {

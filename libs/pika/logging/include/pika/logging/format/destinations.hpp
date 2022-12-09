@@ -24,7 +24,7 @@
 #include <memory>
 #include <string>
 
-namespace pika { namespace util { namespace logging { namespace destination {
+namespace pika::util::logging::destination {
 
     /**
     @brief Writes the string to console
@@ -159,4 +159,4 @@ namespace pika { namespace util { namespace logging { namespace destination {
         file_settings settings;
     };
 
-}}}}    // namespace pika::util::logging::destination
+}    // namespace pika::util::logging::destination

@@ -256,12 +256,12 @@ struct test_sync_executor1
     }
 };
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     template <>
     struct is_one_way_executor<test_sync_executor1> : std::true_type
     {
     };
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
 struct test_sync_executor2 : test_sync_executor1
 {
@@ -309,7 +309,7 @@ struct test_sync_executor2 : test_sync_executor1
     }
 };
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     template <>
     struct is_one_way_executor<test_sync_executor2> : std::true_type
     {
@@ -319,7 +319,7 @@ namespace pika { namespace parallel { namespace execution {
     struct is_bulk_one_way_executor<test_sync_executor2> : std::true_type
     {
     };
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
 template <typename Executor, typename B1, typename B2>
 void static_check_executor(B1, B2)

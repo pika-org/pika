@@ -13,7 +13,7 @@
 #include <string>
 #include <utility>
 
-namespace pika { namespace program_options {
+namespace pika::program_options {
 
     class environment_iterator
       : public eof_iterator<environment_iterator,
@@ -51,4 +51,4 @@ namespace pika { namespace program_options {
     private:
         char** m_environment;
     };
-}}    // namespace pika::program_options
+}    // namespace pika::program_options

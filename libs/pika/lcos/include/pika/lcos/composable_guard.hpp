@@ -92,7 +92,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace lcos { namespace local {
+namespace pika::lcos::local {
     namespace detail {
         struct debug_object
         {
@@ -205,4 +205,4 @@ namespace pika { namespace lcos { namespace local {
             detail::guard_function(util::detail::deferred_call(
                 PIKA_FORWARD(F, f), PIKA_FORWARD(Args, args)...)));
     }
-}}}    // namespace pika::lcos::local
+}    // namespace pika::lcos::local

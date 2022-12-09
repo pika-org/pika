@@ -21,7 +21,7 @@
 #include <mutex>
 #include <utility>
 
-namespace pika { namespace lcos { namespace local {
+namespace pika::lcos::local {
     ///////////////////////////////////////////////////////////////////////////
     template <typename T, typename Mutex = pika::spinlock>
     struct receive_buffer
@@ -468,4 +468,4 @@ namespace pika { namespace lcos { namespace local {
         mutable mutex_type mtx_;
         buffer_map_type buffer_map_;
     };
-}}}    // namespace pika::lcos::local
+}    // namespace pika::lcos::local

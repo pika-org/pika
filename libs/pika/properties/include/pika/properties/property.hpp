@@ -13,7 +13,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace experimental {
+namespace pika::experimental {
 
     inline constexpr struct prefer_t
       : pika::functional::detail::tag_fallback<prefer_t>
@@ -44,4 +44,4 @@ namespace pika { namespace experimental {
             return PIKA_FORWARD(T0, t0);
         }
     } prefer{};
-}}    // namespace pika::experimental
+}    // namespace pika::experimental

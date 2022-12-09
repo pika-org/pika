@@ -19,7 +19,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace lcos { namespace local {
+namespace pika::lcos::local {
     namespace detail {
         template <typename R,
             typename SharedState = lcos::detail::future_data<R>>
@@ -544,7 +544,7 @@ namespace pika { namespace lcos { namespace local {
     {
         x.swap(y);
     }
-}}}    // namespace pika::lcos::local
+}    // namespace pika::lcos::local
 
 namespace std {
     // Requires: Allocator shall be an allocator (17.6.3.5)

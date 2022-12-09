@@ -20,7 +20,7 @@
 #include <iostream>
 #include <string>
 
-namespace pika { namespace util {
+namespace pika::util {
     namespace detail {
 
         std::atomic<std::size_t> fixture::sanity_tests_(0);
@@ -148,4 +148,4 @@ namespace pika { namespace util {
             return 1;
         }
     }
-}}    // namespace pika::util
+}    // namespace pika::util

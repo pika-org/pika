@@ -9,8 +9,8 @@
 #include <pika/config.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace util {
+namespace pika::util {
 
     // forward declaration only
     class PIKA_EXPORT runtime_configuration;
-}}    // namespace pika::util
+}    // namespace pika::util

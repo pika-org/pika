@@ -20,7 +20,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace lcos { namespace detail {
+namespace pika::lcos::detail {
 
     // Returns true when the given future is ready,
     // the future is deferred executed if possible first.
@@ -100,4 +100,4 @@ namespace pika { namespace lcos { namespace detail {
 
         return values;
     }
-}}}    // namespace pika::lcos::detail
+}    // namespace pika::lcos::detail

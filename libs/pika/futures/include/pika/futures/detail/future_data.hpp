@@ -49,7 +49,7 @@ namespace pika {
 }    // namespace pika
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace lcos { namespace detail {
+namespace pika::lcos::detail {
 
     using run_on_completed_error_handler_type =
         util::detail::function<void(std::exception_ptr const& e)>;
@@ -1028,15 +1028,15 @@ namespace pika { namespace lcos { namespace detail {
     protected:
         threads::detail::thread_id_type id_;
     };
-}}}    // namespace pika::lcos::detail
+}    // namespace pika::lcos::detail
 
-namespace pika { namespace traits { namespace detail {
+namespace pika::traits::detail {
 
     template <typename R, typename Allocator>
     struct shared_state_allocator<lcos::detail::future_data<R>, Allocator>
     {
         using type = lcos::detail::future_data_allocator<R, Allocator>;
     };
-}}}    // namespace pika::traits::detail
+}    // namespace pika::traits::detail
 
 #include <pika/config/warnings_suffix.hpp>

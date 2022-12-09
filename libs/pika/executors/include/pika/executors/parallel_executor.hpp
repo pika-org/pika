@@ -40,7 +40,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { namespace execution { namespace detail {
+namespace pika::parallel::execution::detail {
     template <typename Policy>
     struct get_default_policy
     {
@@ -69,9 +69,9 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
 
     template <typename F, typename Shape, typename Future, typename... Ts>
     struct then_bulk_function_result;
-}}}}    // namespace pika::parallel::execution::detail
+}    // namespace pika::parallel::execution::detail
 
-namespace pika { namespace execution {
+namespace pika::execution {
     ///////////////////////////////////////////////////////////////////////////
     /// A \a parallel_executor creates groups of parallel execution agents
     /// which execute in threads implicitly created by the executor. This
@@ -342,9 +342,9 @@ namespace pika { namespace execution {
     };
 
     using parallel_executor = parallel_policy_executor<pika::launch>;
-}}    // namespace pika::execution
+}    // namespace pika::execution
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     /// \cond NOINTERNAL
     template <typename Policy>
     struct is_one_way_executor<
@@ -364,4 +364,4 @@ namespace pika { namespace parallel { namespace execution {
     {
     };
     /// \endcond
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution

@@ -30,7 +30,7 @@
 #include <string_view>
 #include <utility>
 
-namespace pika { namespace util { namespace logging {
+namespace pika::util::logging {
 
     /**
         @brief Optimizes the formatting for prepending and/or appending strings to
@@ -134,4 +134,4 @@ namespace pika { namespace util { namespace logging {
         mutable bool m_full_msg_computed;
         mutable std::string m_full_msg;
     };
-}}}    // namespace pika::util::logging
+}    // namespace pika::util::logging

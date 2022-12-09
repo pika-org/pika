@@ -33,7 +33,7 @@
 #include <pthread.h>
 #endif
 
-namespace pika { namespace util { namespace logging { namespace formatter {
+namespace pika::util::logging::formatter {
 
     thread_id::~thread_id() = default;
 
@@ -63,4 +63,4 @@ namespace pika { namespace util { namespace logging { namespace formatter {
         return std::unique_ptr<thread_id>(new thread_id_impl());
     }
 
-}}}}    // namespace pika::util::logging::formatter
+}    // namespace pika::util::logging::formatter

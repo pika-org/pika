@@ -24,7 +24,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace threads {
+namespace pika::threads {
     ///////////////////////////////////////////////////////////////////////////
     namespace detail {
         // This is the overload for running functions which return a value.
@@ -150,4 +150,4 @@ namespace pika { namespace threads {
         return detail::run_as_pika_thread(
             result_is_void(), f, PIKA_FORWARD(Ts, vs)...);
     }
-}}    // namespace pika::threads
+}    // namespace pika::threads

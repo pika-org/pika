@@ -105,7 +105,7 @@ namespace pika { namespace functional {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace functional {
+namespace pika::functional {
     template <auto& Tag>
     using tag_t = std::decay_t<decltype(Tag)>;
 
@@ -258,6 +258,6 @@ namespace pika { namespace functional {
     inline namespace tag_invoke_f_ns {
         using tag_invoke_ns::tag_invoke;
     }    // namespace tag_invoke_f_ns
-}}       // namespace pika::functional
+}    // namespace pika::functional
 
 #endif

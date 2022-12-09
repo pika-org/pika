@@ -23,7 +23,7 @@
 
 #include <pika/config/warnings_prefix.hpp>
 
-namespace pika { namespace program_options {
+namespace pika::program_options {
 
     /** Describes one possible command line/config file option. There are two
         kinds of properties of an option. First describe it syntactically and
@@ -276,6 +276,6 @@ namespace pika { namespace program_options {
         }
     };
 
-}}    // namespace pika::program_options
+}    // namespace pika::program_options
 
 #include <pika/config/warnings_suffix.hpp>

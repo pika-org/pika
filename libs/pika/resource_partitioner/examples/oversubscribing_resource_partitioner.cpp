@@ -28,7 +28,7 @@
 // NB
 // this test needs to be updated as it no longer does what it is supposed to do
 
-namespace resource { namespace pools {
+namespace resource::pools {
     enum ids
     {
         DEFAULT = 0,
@@ -36,7 +36,7 @@ namespace resource { namespace pools {
         GPU = 2,
         MATRIX = 3,
     };
-}}    // namespace resource::pools
+}    // namespace resource::pools
 
 static bool use_pools = false;
 static int pool_threads = 1;

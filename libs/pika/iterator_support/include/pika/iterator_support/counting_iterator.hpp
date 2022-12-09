@@ -21,7 +21,7 @@
 #include <iterator>
 #include <type_traits>
 
-namespace pika { namespace util {
+namespace pika::util {
 
     template <typename Incrementable, typename CategoryOrTraversal = void,
         typename Difference = void, typename Enable = void>
@@ -192,4 +192,4 @@ namespace pika { namespace util {
     {
         return counting_iterator<Incrementable>(x);
     }
-}}    // namespace pika::util
+}    // namespace pika::util

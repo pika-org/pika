@@ -16,7 +16,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace traits {
+namespace pika::traits {
     ///////////////////////////////////////////////////////////////////////////
     namespace detail {
         // This implementation of is_iterator seems to work fine even for
@@ -544,4 +544,4 @@ namespace pika { namespace traits {
     template <typename Iter>
     using iter_ref_t = typename std::iterator_traits<Iter>::reference;
 
-}}    // namespace pika::traits
+}    // namespace pika::traits

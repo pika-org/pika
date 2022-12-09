@@ -22,7 +22,7 @@
 #include <utility>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace util {
+namespace pika::util {
 
     struct register_lock_data
     {
@@ -202,4 +202,4 @@ namespace pika { namespace util {
     }
 
 #endif
-}}    // namespace pika::util
+}    // namespace pika::util

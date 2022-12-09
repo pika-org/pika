@@ -171,7 +171,7 @@ namespace executor_example {
 
 ///////////////////////////////////////////////////////////////////////////////
 // simple forwarding implementations of executor traits
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
 
     template <typename BaseExecutor>
     struct is_one_way_executor<
@@ -207,7 +207,7 @@ namespace pika { namespace parallel { namespace execution {
       : is_bulk_two_way_executor<std::decay_t<BaseExecutor>>
     {
     };
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
 int pika_main()
 {

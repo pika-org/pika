@@ -23,7 +23,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace util {
+namespace pika::util {
     // Default template argument handling for iterator_adaptor
     namespace detail {
         ///////////////////////////////////////////////////////////////////////
@@ -221,4 +221,4 @@ namespace pika { namespace util {
     private:    // data members
         Base iterator_;
     };
-}}    // namespace pika::util
+}    // namespace pika::util

@@ -17,7 +17,7 @@
 #include <utility>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace util {
+namespace pika::util {
 
 #ifdef PIKA_HAVE_VERIFY_LOCKS
     ///////////////////////////////////////////////////////////////////////////
@@ -402,4 +402,4 @@ namespace pika { namespace util {
 
     void set_held_locks_data(std::unique_ptr<held_locks_data>&& /* data */) {}
 #endif
-}}    // namespace pika::util
+}    // namespace pika::util

@@ -53,7 +53,7 @@ namespace pika::execution::experimental {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace execution { namespace experimental {
+namespace pika::execution::experimental {
 #if defined(DOXYGEN)
     /// connect is a customization point object.
     /// For some subexpression `s` and `r`, let `S` be the type such that `decltype((s))`
@@ -478,5 +478,5 @@ namespace pika { namespace execution { namespace experimental {
     template <typename S, typename R>
     using connect_result_t =
         typename pika::util::detail::invoke_result<connect_t, S, R>::type;
-}}}    // namespace pika::execution::experimental
+}    // namespace pika::execution::experimental
 #endif

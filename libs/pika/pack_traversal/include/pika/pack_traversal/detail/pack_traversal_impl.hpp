@@ -24,7 +24,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace util { namespace detail {
+namespace pika::util::detail {
     /// Exposes useful facilities for dealing with 1:n mappings
     namespace spreading {
         /// A struct to mark a tuple to be unpacked into the parent context
@@ -933,4 +933,4 @@ namespace pika { namespace util { namespace detail {
             PIKA_FORWARD(Mapper, mapper));
         return helper.init_traverse(strategy, PIKA_FORWARD(T, pack)...);
     }
-}}}    // namespace pika::util::detail
+}    // namespace pika::util::detail

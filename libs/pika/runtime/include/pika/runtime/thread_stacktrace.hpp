@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-namespace pika { namespace util { namespace debug {
+namespace pika::util::debug {
 
     // ------------------------------------------------------------------------
     // return a vector of suspended/other task Ids
@@ -31,4 +31,4 @@ namespace pika { namespace util { namespace debug {
     // return string containing the stack backtrace for suspended tasks
     PIKA_EXPORT std::string suspended_task_backtraces();
 
-}}}    // namespace pika::util::debug
+}    // namespace pika::util::debug

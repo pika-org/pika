@@ -52,7 +52,7 @@ struct void_parallel_executor : pika::execution::parallel_executor
     }
 };
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     template <>
     struct is_two_way_executor<void_parallel_executor> : std::true_type
     {
@@ -62,7 +62,7 @@ namespace pika { namespace parallel { namespace execution {
     struct is_bulk_two_way_executor<void_parallel_executor> : std::true_type
     {
     };
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
 ////////////////////////////////////////////////////////////////////////////////
 // Tests to void_parallel_executor behavior for the bulk executes

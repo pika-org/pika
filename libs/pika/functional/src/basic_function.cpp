@@ -24,7 +24,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace util { namespace detail {
+namespace pika::util::detail {
     ///////////////////////////////////////////////////////////////////////////
     function_base::function_base(
         function_base const& other, vtable const* /* empty_vtable */)
@@ -149,4 +149,4 @@ namespace pika { namespace util { namespace detail {
         return util::itt::string_handle{};
 #endif
     }
-}}}    // namespace pika::util::detail
+}    // namespace pika::util::detail

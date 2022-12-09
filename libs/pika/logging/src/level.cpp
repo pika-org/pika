@@ -17,7 +17,7 @@
 #include <string_view>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace util { namespace logging {
+namespace pika::util::logging {
     std::string levelname(level value)
     {
         switch (value)
@@ -42,6 +42,6 @@ namespace pika { namespace util { namespace logging {
 
         return '<' + std::to_string(static_cast<int>(value)) + '>';
     }
-}}}    // namespace pika::util::logging
+}    // namespace pika::util::logging
 
 #endif    // PIKA_HAVE_LOGGING

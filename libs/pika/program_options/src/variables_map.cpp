@@ -18,7 +18,7 @@
 #include <set>
 #include <string>
 
-namespace pika { namespace program_options {
+namespace pika::program_options {
 
     using namespace std;
 
@@ -246,4 +246,4 @@ namespace pika { namespace program_options {
         }
     }
 
-}}    // namespace pika::program_options
+}    // namespace pika::program_options

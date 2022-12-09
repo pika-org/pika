@@ -16,7 +16,7 @@
 #include <cstdint>
 #include <string>
 
-namespace pika { namespace resource {
+namespace pika::resource {
     ///////////////////////////////////////////////////////////////////////////
     /// Return the number of thread pools currently managed by the
     /// \a resource_partitioner
@@ -53,9 +53,9 @@ namespace pika { namespace resource {
 
     /// Return true if the pool with the given index exists
     PIKA_EXPORT bool pool_exists(std::size_t pool_index);
-}}    // namespace pika::resource
+}    // namespace pika::resource
 
-namespace pika { namespace threads {
+namespace pika::threads {
     ///    The function \a get_thread_count returns the number of currently
     /// known threads.
     ///
@@ -107,4 +107,4 @@ namespace pika { namespace threads {
         util::detail::function<bool(detail::thread_id_type)> const& f,
         detail::thread_schedule_state state =
             detail::thread_schedule_state::unknown);
-}}    // namespace pika::threads
+}    // namespace pika::threads

@@ -20,20 +20,13 @@
 #include <pika/logging/detail/macros.hpp>
 #include <pika/logging/level.hpp>
 
-namespace pika { namespace util { namespace logging {
-
-    /**
-@file pika/logging/logging.hpp
-
-Include this file when you're using the logging lib, but don't necessarily want to
-use @ref manipulator "formatters and destinations".
-If you want to use @ref manipulator "formatters and destinations",
-then you can include this one instead:
-
-@code
-#include <pika/logging/format.hpp>
-@endcode
-
-*/
-
-}}}    // namespace pika::util::logging
+/// @file pika/logging/logging.hpp
+///
+/// Include this file when you're using the logging lib, but don't necessarily want to
+/// use @ref manipulator "formatters and destinations".
+/// If you want to use @ref manipulator "formatters and destinations",
+/// then you can include this one instead:
+///
+/// @code
+/// #include <pika/logging/format.hpp>
+/// @endcode

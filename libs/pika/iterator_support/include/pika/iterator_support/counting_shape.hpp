@@ -12,7 +12,7 @@
 #include <pika/iterator_support/range.hpp>
 #include <pika/iterator_support/traits/is_range.hpp>
 
-namespace pika { namespace util { namespace detail {
+namespace pika::util::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Incrementable>
@@ -28,4 +28,4 @@ namespace pika { namespace util { namespace detail {
             pika::util::make_counting_iterator(Incrementable(0)),
             pika::util::make_counting_iterator(n));
     }
-}}}    // namespace pika::util::detail
+}    // namespace pika::util::detail

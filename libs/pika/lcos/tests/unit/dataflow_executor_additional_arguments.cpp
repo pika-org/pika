@@ -64,7 +64,7 @@ struct additional_argument_executor
     }
 };
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     template <>
     struct is_one_way_executor<additional_argument_executor> : std::true_type
     {
@@ -74,7 +74,7 @@ namespace pika { namespace parallel { namespace execution {
     struct is_two_way_executor<additional_argument_executor> : std::true_type
     {
     };
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
 std::atomic<std::uint32_t> void_f_count;
 std::atomic<std::uint32_t> int_f_count;

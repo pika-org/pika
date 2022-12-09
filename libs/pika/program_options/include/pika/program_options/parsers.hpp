@@ -18,7 +18,7 @@
 
 #include <pika/config/warnings_prefix.hpp>
 
-namespace pika { namespace program_options {
+namespace pika::program_options {
 
     class options_description;
     class positional_options_description;
@@ -270,7 +270,7 @@ namespace pika { namespace program_options {
         const std::wstring& cmdline);
 #endif
 
-}}    // namespace pika::program_options
+}    // namespace pika::program_options
 
 #include <pika/config/warnings_suffix.hpp>
 

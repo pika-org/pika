@@ -17,7 +17,7 @@
 #include <string>
 #include <vector>
 
-namespace pika { namespace util { namespace debug {
+namespace pika::util::debug {
 
     // ------------------------------------------------------------------------
     // return a vector of suspended/other task Ids
@@ -80,4 +80,4 @@ namespace pika { namespace util { namespace debug {
         }
         return tmp.str();
     }
-}}}    // namespace pika::util::debug
+}    // namespace pika::util::debug

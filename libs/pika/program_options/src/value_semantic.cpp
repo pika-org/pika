@@ -17,7 +17,7 @@
 #include <string>
 #include <vector>
 
-namespace pika { namespace program_options {
+namespace pika::program_options {
 
     using namespace std;
 
@@ -400,4 +400,4 @@ namespace pika { namespace program_options {
         return msg;
     }
 
-}}    // namespace pika::program_options
+}    // namespace pika::program_options

@@ -10,8 +10,8 @@
 
 #include <string>
 
-namespace pika { namespace detail {
+namespace pika::detail {
     /// Helper utility to set and store a name for the current operating system
     /// thread. Returns a reference to the name for the current thread.
     PIKA_EXPORT std::string& thread_name();
-}}    // namespace pika::detail
+}    // namespace pika::detail

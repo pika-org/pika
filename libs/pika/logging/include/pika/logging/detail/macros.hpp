@@ -22,7 +22,7 @@
 
 #include <string>
 
-namespace pika { namespace util { namespace logging {
+namespace pika::util::logging {
 
     /**
 @page macros Macros - how, what for?
@@ -155,4 +155,4 @@ PIKA_DEFINE_LOG(g_l, logger_type)
 #define PIKA_LOG_FORMAT(NAME, LEVEL, FORMAT, ...)                              \
     PIKA_LOG_USE_LOG(NAME, LEVEL).format(FORMAT, __VA_ARGS__)
 
-}}}    // namespace pika::util::logging
+}    // namespace pika::util::logging

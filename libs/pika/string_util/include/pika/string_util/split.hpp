@@ -15,7 +15,7 @@
 #include <string>
 #include <utility>
 
-namespace pika { namespace string_util {
+namespace pika::string_util {
     namespace detail {
         template <typename It, typename CharT, typename Traits,
             typename Allocator>
@@ -76,4 +76,4 @@ namespace pika { namespace string_util {
         split(container, std::string{str}, PIKA_FORWARD(Predicate, pred),
             compress_mode);
     }
-}}    // namespace pika::string_util
+}    // namespace pika::string_util

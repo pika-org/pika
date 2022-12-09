@@ -18,7 +18,7 @@
 #include <tuple>
 #include <vector>
 
-namespace pika { namespace util {
+namespace pika::util {
 
     namespace detail {
         // Json output for performance reports
@@ -88,4 +88,4 @@ namespace pika { namespace util {
 
     PIKA_EXPORT void print_cdash_timing(const char* name, double time);
     PIKA_EXPORT void print_cdash_timing(const char* name, std::uint64_t time);
-}}    // namespace pika::util
+}    // namespace pika::util

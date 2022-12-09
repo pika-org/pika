@@ -18,7 +18,7 @@
 #include <iterator>
 #include <type_traits>
 
-namespace pika { namespace iterators {
+namespace pika::iterators {
 
     // Traversal Categories
     struct no_traversal_tag
@@ -134,7 +134,7 @@ namespace pika { namespace iterators {
       : pure_traversal_tag<typename iterator_traversal<Iterator>::type>
     {
     };
-}}    // namespace pika::iterators
+}    // namespace pika::iterators
 
 #define PIKA_ITERATOR_TRAVERSAL_TAG_NS pika
 

@@ -652,7 +652,7 @@ namespace pika::detail {
 
 }    // namespace pika::detail
 
-namespace pika { namespace util { namespace itt {
+namespace pika::util::itt {
 
     struct stack_context
     {
@@ -781,6 +781,6 @@ namespace pika { namespace util { namespace itt {
     };
 
     inline constexpr void event_tick(event const&) noexcept {}
-}}}    // namespace pika::util::itt
+}    // namespace pika::util::itt
 
 #endif    // PIKA_HAVE_ITTNOTIFY

@@ -14,7 +14,7 @@
 #include <iterator>
 #include <type_traits>
 
-namespace pika { namespace traits {
+namespace pika::traits {
     ///////////////////////////////////////////////////////////////////////////
     template <typename T, typename Enable = void>
     struct is_range : std::false_type
@@ -66,4 +66,4 @@ namespace pika { namespace traits {
 
     template <typename T>
     using range_iterator_t = typename range_iterator<T>::type;
-}}    // namespace pika::traits
+}    // namespace pika::traits

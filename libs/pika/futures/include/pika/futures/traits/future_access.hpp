@@ -27,7 +27,7 @@ namespace pika {
     }    // namespace lcos::detail
 }    // namespace pika
 
-namespace pika { namespace traits {
+namespace pika::traits {
     ///////////////////////////////////////////////////////////////////////////
     namespace detail {
         struct future_data_void
@@ -300,4 +300,4 @@ namespace pika { namespace traits {
     template <typename SharedState, typename Allocator>
     using shared_state_allocator_t =
         typename shared_state_allocator<SharedState, Allocator>::type;
-}}    // namespace pika::traits
+}    // namespace pika::traits

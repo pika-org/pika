@@ -15,7 +15,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace pika { namespace program_options { namespace detail {
+namespace pika::program_options::detail {
 
     using namespace std;
 
@@ -72,9 +72,9 @@ namespace pika { namespace program_options { namespace detail {
 
         return result;
     }
-}}}    // namespace pika::program_options::detail
+}    // namespace pika::program_options::detail
 
-namespace pika { namespace program_options {
+namespace pika::program_options {
 
     std::wstring from_8_bit(const std::string& s,
         const std::codecvt<wchar_t, char, std::mbstate_t>& cvt)
@@ -129,4 +129,4 @@ namespace pika { namespace program_options {
     {
         return to_utf8(s);
     }
-}}    // namespace pika::program_options
+}    // namespace pika::program_options

@@ -10,11 +10,11 @@
 
 #include <pika/modules/errors.hpp>
 
-namespace pika { namespace util { namespace detail {
+namespace pika::util::detail {
     [[noreturn]] void throw_bad_function_call()
     {
         pika::throw_exception(pika::error::bad_function_call,
             "empty function object should not be used",
             "empty_function::operator()");
     }
-}}}    // namespace pika::util::detail
+}    // namespace pika::util::detail

@@ -19,7 +19,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace util { namespace detail {
+namespace pika::util::detail {
     /// Deduces to a true_type if the given future is instantiated with
     /// a non void type.
     template <typename T>
@@ -299,4 +299,4 @@ namespace pika { namespace util { namespace detail {
         return functional_unwrap_impl<std::decay_t<T>, Depth>(
             PIKA_FORWARD(T, callable));
     }
-}}}    // namespace pika::util::detail
+}    // namespace pika::util::detail

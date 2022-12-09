@@ -20,7 +20,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace resource {
+namespace pika::resource {
     std::size_t get_num_thread_pools()
     {
         return get_partitioner().get_num_pools();
@@ -71,9 +71,9 @@ namespace pika { namespace resource {
     {
         return get_runtime().get_thread_manager().pool_exists(pool_index);
     }
-}}    // namespace pika::resource
+}    // namespace pika::resource
 
-namespace pika { namespace threads {
+namespace pika::threads {
     std::int64_t get_thread_count(detail::thread_schedule_state state)
     {
         return get_thread_manager().get_thread_count(state);
@@ -101,4 +101,4 @@ namespace pika { namespace threads {
     {
         return get_thread_manager().enumerate_threads(f, state);
     }
-}}    // namespace pika::threads
+}    // namespace pika::threads

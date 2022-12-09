@@ -16,7 +16,7 @@
 #include <memory>
 #include <string>
 
-namespace pika { namespace resource {
+namespace pika::resource {
     class numa_domain;
     class core;
     class pu;
@@ -72,4 +72,4 @@ namespace pika { namespace resource {
         abp_priority_lifo = 6,
         shared_priority = 7,
     };
-}}    // namespace pika::resource
+}    // namespace pika::resource

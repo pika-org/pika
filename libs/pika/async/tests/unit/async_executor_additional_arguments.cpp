@@ -41,12 +41,12 @@ struct additional_argument_executor
     }
 };
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     template <>
     struct is_two_way_executor<additional_argument_executor> : std::true_type
     {
     };
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
 ///////////////////////////////////////////////////////////////////////////////
 std::int32_t increment(additional_argument, std::int32_t i)

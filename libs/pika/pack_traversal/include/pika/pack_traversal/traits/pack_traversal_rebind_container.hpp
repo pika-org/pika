@@ -14,7 +14,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace pika { namespace traits {
+namespace pika::traits {
     ////////////////////////////////////////////////////////////////////////////
     namespace detail {
         ////////////////////////////////////////////////////////////////////////
@@ -116,4 +116,4 @@ namespace pika { namespace traits {
             return std::array<NewType, N>();
         }
     };
-}}    // namespace pika::traits
+}    // namespace pika::traits

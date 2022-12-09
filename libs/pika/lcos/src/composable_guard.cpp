@@ -17,7 +17,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace lcos { namespace local {
+namespace pika::lcos::local {
     static void run_composable(detail::guard_task* task);
 
     static void nothing() {}
@@ -280,4 +280,4 @@ namespace pika { namespace lcos { namespace local {
             free(zero);
         }
     }
-}}}    // namespace pika::lcos::local
+}    // namespace pika::lcos::local

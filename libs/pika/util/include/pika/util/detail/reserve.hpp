@@ -20,7 +20,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace pika { namespace traits { namespace detail {
+namespace pika::traits::detail {
 
     ///////////////////////////////////////////////////////////////////////
     // not every random access sequence is reservable
@@ -69,4 +69,4 @@ namespace pika { namespace traits { namespace detail {
             v.reserve(std::distance(begin, end));
         }
     }
-}}}    // namespace pika::traits::detail
+}    // namespace pika::traits::detail

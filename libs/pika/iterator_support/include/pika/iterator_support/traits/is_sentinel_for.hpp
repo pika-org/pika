@@ -11,7 +11,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace traits {
+namespace pika::traits {
 
     ///////////////////////////////////////////////////////////////////////////
     // The trait checks whether sentinel Sent is proper for iterator I.
@@ -66,4 +66,4 @@ namespace pika { namespace traits {
     inline constexpr bool is_sized_sentinel_for_v =
         is_sized_sentinel_for<Sent, Iter>::value;
 
-}}    // namespace pika::traits
+}    // namespace pika::traits

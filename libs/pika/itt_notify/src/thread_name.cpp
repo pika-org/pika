@@ -9,10 +9,10 @@
 
 #include <string>
 
-namespace pika { namespace detail {
+namespace pika::detail {
     std::string& thread_name()
     {
         static thread_local std::string thread_name_;
         return thread_name_;
     }
-}}    // namespace pika::detail
+}    // namespace pika::detail

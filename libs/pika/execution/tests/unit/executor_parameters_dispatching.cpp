@@ -41,12 +41,12 @@ struct test_executor_get_chunk_size : pika::execution::parallel_executor
     }
 };
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     template <>
     struct is_two_way_executor<test_executor_get_chunk_size> : std::true_type
     {
     };
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
 struct test_chunk_size
 {
@@ -59,14 +59,14 @@ struct test_chunk_size
     }
 };
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     /// \cond NOINTERNAL
     template <>
     struct is_executor_parameters<test_chunk_size> : std::true_type
     {
     };
     /// \endcond
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
 ///////////////////////////////////////////////////////////////////////////////
 void test_get_chunk_size()
@@ -116,13 +116,13 @@ struct test_executor_maximal_number_of_chunks
     }
 };
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     template <>
     struct is_two_way_executor<test_executor_maximal_number_of_chunks>
       : std::true_type
     {
     };
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
 struct test_number_of_chunks
 {
@@ -135,12 +135,12 @@ struct test_number_of_chunks
     }
 };
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     template <>
     struct is_executor_parameters<test_number_of_chunks> : std::true_type
     {
     };
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
 ///////////////////////////////////////////////////////////////////////////////
 void test_maximal_number_of_chunks()
@@ -187,13 +187,13 @@ struct test_executor_reset_thread_distribution
     }
 };
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     template <>
     struct is_two_way_executor<test_executor_reset_thread_distribution>
       : std::true_type
     {
     };
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
 struct test_thread_distribution
 {
@@ -204,12 +204,12 @@ struct test_thread_distribution
     }
 };
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     template <>
     struct is_executor_parameters<test_thread_distribution> : std::true_type
     {
     };
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
 ///////////////////////////////////////////////////////////////////////////////
 void test_reset_thread_distribution()
@@ -256,13 +256,13 @@ struct test_executor_processing_units_count : pika::execution::parallel_executor
     }
 };
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     template <>
     struct is_two_way_executor<test_executor_processing_units_count>
       : std::true_type
     {
     };
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
 struct test_processing_units
 {
@@ -274,12 +274,12 @@ struct test_processing_units
     }
 };
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     template <>
     struct is_executor_parameters<test_processing_units> : std::true_type
     {
     };
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
 ///////////////////////////////////////////////////////////////////////////////
 void test_processing_units_count()
@@ -336,12 +336,12 @@ struct test_executor_begin_end : pika::execution::parallel_executor
     }
 };
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     template <>
     struct is_two_way_executor<test_executor_begin_end> : std::true_type
     {
     };
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
 struct test_begin_end
 {
@@ -364,12 +364,12 @@ struct test_begin_end
     }
 };
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     template <>
     struct is_executor_parameters<test_begin_end> : std::true_type
     {
     };
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
 ///////////////////////////////////////////////////////////////////////////////
 void test_mark_begin_execution()

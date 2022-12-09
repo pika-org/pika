@@ -13,7 +13,7 @@
 #include <functional>
 #include <type_traits>
 
-namespace pika { namespace traits {
+namespace pika::traits {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename R, typename Enable = void>
@@ -76,4 +76,4 @@ namespace pika { namespace traits {
         inline constexpr bool is_future_or_future_range_v =
             is_future_or_future_range<R>::value;
     }    // namespace detail
-}}       // namespace pika::traits
+}    // namespace pika::traits

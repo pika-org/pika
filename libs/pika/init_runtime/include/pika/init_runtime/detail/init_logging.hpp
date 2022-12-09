@@ -15,7 +15,7 @@
 
 #if defined(PIKA_HAVE_LOGGING)
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace util {
+namespace pika::util {
 
     /// \cond NOINTERNAL
 
@@ -79,7 +79,7 @@ namespace pika { namespace util {
 
     /// Disable all logging for the given destination
     PIKA_EXPORT void disable_logging(logging_destination dest);
-}}    // namespace pika::util
+}    // namespace pika::util
 
 #else    // PIKA_HAVE_LOGGING
 

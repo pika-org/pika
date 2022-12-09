@@ -12,7 +12,7 @@
 #include <pika/runtime/state.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace threads {
+namespace pika::threads {
     // return whether thread manager is in the runtime_state described by st
     bool thread_manager_is(runtime_state st)
     {
@@ -35,4 +35,4 @@ namespace pika { namespace threads {
         }
         return (rt->get_thread_manager().status() >= st);
     }
-}}    // namespace pika::threads
+}    // namespace pika::threads
