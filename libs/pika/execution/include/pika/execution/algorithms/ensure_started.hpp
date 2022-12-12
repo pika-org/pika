@@ -438,12 +438,12 @@ namespace pika::ensure_started_detail {
             state->start();
         }
 
-        ensure_started_sender_type(ensure_started_sender_type const&) = default;
-        ensure_started_sender_type& operator=(
-            ensure_started_sender_type const&) = default;
         ensure_started_sender_type(ensure_started_sender_type&&) = default;
         ensure_started_sender_type& operator=(
             ensure_started_sender_type&&) = default;
+        ensure_started_sender_type(ensure_started_sender_type const&) = delete;
+        ensure_started_sender_type& operator=(
+            ensure_started_sender_type const&) = delete;
 
         template <typename Receiver>
         struct operation_state
