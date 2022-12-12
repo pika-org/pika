@@ -168,39 +168,6 @@ int main()
         PIKA_TEST(set_error_called);
     }
 
-    // We don't test internal implementation details of the P2300 reference
-    // implementation
-#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-    // Chained ensure_started calls do not create new shared states
-    {
-        std::atomic<bool> receiver_set_value_called{false};
-        auto s1 = ex::just() | ex::ensure_started();
-        auto s2 = ex::ensure_started(s1);
-        PIKA_TEST_EQ(s1.state, s2.state);
-        auto s3 = ex::ensure_started(std::move(s2));
-        PIKA_TEST_EQ(s1.state, s3.state);
-        auto f = [] {};
-        auto r = callback_receiver<decltype(f)>{f, receiver_set_value_called};
-        auto os = ex::connect(std::move(s3), std::move(r));
-        ex::start(os);
-        PIKA_TEST(receiver_set_value_called);
-    }
-
-    {
-        std::atomic<bool> receiver_set_value_called{false};
-        auto s1 = ex::just(42) | ex::ensure_started();
-        auto s2 = ex::ensure_started(s1);
-        PIKA_TEST_EQ(s1.state, s2.state);
-        auto s3 = ex::ensure_started(std::move(s2));
-        PIKA_TEST_EQ(s1.state, s3.state);
-        auto f = [](int x) { PIKA_TEST_EQ(x, 42); };
-        auto r = callback_receiver<decltype(f)>{f, receiver_set_value_called};
-        auto os = ex::connect(std::move(s3), std::move(r));
-        ex::start(os);
-        PIKA_TEST(receiver_set_value_called);
-    }
-#endif
-
     // It's allowed to discard the sender from ensure_started
     {
         ex::just() | ex::ensure_started();
