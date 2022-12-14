@@ -202,6 +202,8 @@ namespace boost { namespace inspect {
         {"(\\bstd\\s*::\\s*underlying_type\\b)", "std::underlying_type",
             "type_traits"},
         {"(\\bstd\\s*::\\s*result_of\\b)", "std::result_of", "type_traits"},
+        {"(\\bstd\\s*::\\s*is_invocable[a-z_]*\\b)", "std::is_invocable",
+            "type_traits"},
         // cstring
         {"(\\bstd\\s*::\\s*(mem((set)|(cpy)|(move)))\\b)", "std::\\2",
             "cstring"},

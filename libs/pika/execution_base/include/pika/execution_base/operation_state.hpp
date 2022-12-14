@@ -18,7 +18,6 @@ namespace pika::execution::experimental {
 #else
 #include <pika/config/constexpr.hpp>
 #include <pika/functional/tag_invoke.hpp>
-#include <pika/functional/traits/is_invocable.hpp>
 
 #include <type_traits>
 #include <utility>
@@ -80,7 +79,7 @@ namespace pika::execution::experimental {
     struct is_operation_state
       : detail::is_operation_state_impl<std::is_destructible<O>::value &&
                 std::is_object<O>::value &&
-                pika::detail::is_invocable_v<start_t, std::decay_t<O>&>,
+                std::is_invocable_v<start_t, std::decay_t<O>&>,
             O>
     {
     };

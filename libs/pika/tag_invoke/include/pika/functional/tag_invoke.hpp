@@ -100,7 +100,6 @@ namespace pika { namespace functional {
 
 #include <pika/config.hpp>
 #include <pika/functional/invoke_result.hpp>
-#include <pika/functional/traits/is_invocable.hpp>
 
 #include <type_traits>
 #include <utility>
@@ -149,8 +148,7 @@ namespace pika::functional {
     ///////////////////////////////////////////////////////////////////////////
     template <typename Tag, typename... Args>
     using is_tag_invocable =
-        pika::detail::is_invocable<decltype(tag_invoke_ns::tag_invoke), Tag,
-            Args...>;
+        std::is_invocable<decltype(tag_invoke_ns::tag_invoke), Tag, Args...>;
 
     template <typename Tag, typename... Args>
     inline constexpr bool is_tag_invocable_v =

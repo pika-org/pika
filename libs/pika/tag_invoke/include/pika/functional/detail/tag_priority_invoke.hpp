@@ -108,7 +108,6 @@ namespace pika::functional::detail {
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/functional/invoke_result.hpp>
 #include <pika/functional/tag_invoke.hpp>
-#include <pika/functional/traits/is_invocable.hpp>
 
 #include <type_traits>
 #include <utility>
@@ -159,8 +158,9 @@ namespace pika::functional::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Tag, typename... Args>
-    using is_tag_override_invocable = pika::detail::is_invocable<
-        decltype(tag_override_invoke_ns::tag_override_invoke), Tag, Args...>;
+    using is_tag_override_invocable =
+        std::is_invocable<decltype(tag_override_invoke_ns::tag_override_invoke),
+            Tag, Args...>;
 
     template <typename Tag, typename... Args>
     inline constexpr bool is_tag_override_invocable_v =

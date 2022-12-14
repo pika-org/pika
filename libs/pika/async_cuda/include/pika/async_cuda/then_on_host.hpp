@@ -171,7 +171,7 @@ namespace pika::cuda::experimental {
             };
 
             template <typename... Ts>
-            requires pika::detail::is_invocable_v<F, Ts...>
+            requires std::is_invocable_v<F, Ts...>
             using invoke_result_helper =
                 pika::execution::experimental::completion_signatures<
                     typename result_type_signature_helper<
