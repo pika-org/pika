@@ -6,8 +6,9 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/functional/invoke.hpp>
-#include <pika/functional/traits/is_invocable.hpp>
 #include <pika/testing.hpp>
+
+#include <type_traits>
 
 struct s
 {
@@ -29,8 +30,8 @@ struct p
 ///////////////////////////////////////////////////////////////////////////////
 int main()
 {
-    using pika::detail::is_invocable_v;
     using pika::util::detail::invoke;
+    using std::is_invocable_v;
 
     using mem_fun_ptr = int (s::*)();
     PIKA_TEST_MSG((is_invocable_v<mem_fun_ptr, p> == false), "mem-fun-ptr");

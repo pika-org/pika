@@ -184,7 +184,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
         };
 
         template <typename... Ts>
-        requires pika::detail::is_invocable_v<F, cuda_stream const&,
+        requires std::is_invocable_v<F, cuda_stream const&,
             std::add_lvalue_reference_t<std::decay_t<Ts>>...>
         using invoke_result_helper = pika::execution::experimental::
             completion_signatures<typename result_type_signature_helper<

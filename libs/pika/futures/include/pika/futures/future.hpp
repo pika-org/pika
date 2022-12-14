@@ -18,7 +18,6 @@
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
 #include <pika/functional/detail/invoke.hpp>
-#include <pika/functional/traits/is_invocable.hpp>
 #include <pika/futures/detail/future_data.hpp>
 #include <pika/futures/future_fwd.hpp>
 #include <pika/futures/traits/acquire_shared_state.hpp>
@@ -1214,7 +1213,7 @@ namespace pika {
     template <typename R, typename U, typename Conv>
     pika::future<R> make_future(pika::shared_future<U> f, Conv&& conv)
     {
-        static_assert(pika::detail::is_invocable_r_v<R, Conv, U>,
+        static_assert(std::is_invocable_r_v<R, Conv, U>,
             "the argument type must be convertible to the requested "
             "result type by using the supplied conversion function");
 

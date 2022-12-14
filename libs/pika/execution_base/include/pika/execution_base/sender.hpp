@@ -44,7 +44,6 @@ namespace pika::execution::experimental {
 #include <pika/execution_base/receiver.hpp>
 #include <pika/functional/invoke_result.hpp>
 #include <pika/functional/tag_invoke.hpp>
-#include <pika/functional/traits/is_invocable.hpp>
 #include <pika/type_support/equality.hpp>
 
 #include <cstddef>
@@ -187,8 +186,7 @@ namespace pika::execution::experimental {
 
         template <typename Executor, typename F>
         struct is_executor_of_base_impl<Executor, F,
-            std::enable_if_t<
-                pika::detail::is_invocable<std::decay_t<F>&>::value &&
+            std::enable_if_t<std::is_invocable<std::decay_t<F>&>::value &&
                 std::is_constructible<std::decay_t<F>, F>::value &&
                 std::is_destructible<std::decay_t<F>>::value &&
                 std::is_move_constructible<std::decay_t<F>>::value &&
@@ -237,8 +235,7 @@ namespace pika::execution::experimental {
 
         template <typename S, typename R>
         struct connect_result_helper<S, R,
-            std::enable_if_t<
-                pika::detail::is_invocable<connect_t, S, R>::value>>
+            std::enable_if_t<std::is_invocable<connect_t, S, R>::value>>
           : pika::util::detail::invoke_result<connect_t, S, R>
         {
         };
@@ -296,22 +293,15 @@ namespace pika::execution::experimental {
         template <typename Sender, typename Receiver>
         struct is_sender_to_impl<true, Sender, Receiver>
           : std::integral_constant<bool,
-                pika::detail::is_invocable_v<connect_t, Sender&&, Receiver&&> ||
-                    pika::detail::is_invocable_v<connect_t, Sender&&,
-                        Receiver&> ||
-                    pika::detail::is_invocable_v<connect_t, Sender&&,
-                        Receiver const&> ||
-                    pika::detail::is_invocable_v<connect_t, Sender&,
-                        Receiver&&> ||
-                    pika::detail::is_invocable_v<connect_t, Sender&,
-                        Receiver&> ||
-                    pika::detail::is_invocable_v<connect_t, Sender&,
-                        Receiver const&> ||
-                    pika::detail::is_invocable_v<connect_t, Sender const&,
-                        Receiver&&> ||
-                    pika::detail::is_invocable_v<connect_t, Sender const&,
-                        Receiver&> ||
-                    pika::detail::is_invocable_v<connect_t, Sender const&,
+                std::is_invocable_v<connect_t, Sender&&, Receiver&&> ||
+                    std::is_invocable_v<connect_t, Sender&&, Receiver&> ||
+                    std::is_invocable_v<connect_t, Sender&&, Receiver const&> ||
+                    std::is_invocable_v<connect_t, Sender&, Receiver&&> ||
+                    std::is_invocable_v<connect_t, Sender&, Receiver&> ||
+                    std::is_invocable_v<connect_t, Sender&, Receiver const&> ||
+                    std::is_invocable_v<connect_t, Sender const&, Receiver&&> ||
+                    std::is_invocable_v<connect_t, Sender const&, Receiver&> ||
+                    std::is_invocable_v<connect_t, Sender const&,
                         Receiver const&>>
         {
         };
@@ -465,8 +455,7 @@ namespace pika::execution::experimental {
 
     template <typename Scheduler>
     struct is_scheduler<Scheduler,
-        std::enable_if_t<
-            pika::detail::is_invocable<schedule_t, Scheduler>::value &&
+        std::enable_if_t<std::is_invocable<schedule_t, Scheduler>::value &&
             std::is_copy_constructible<Scheduler>::value &&
             pika::detail::is_equality_comparable_v<Scheduler>>> : std::true_type
     {

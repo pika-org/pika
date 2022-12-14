@@ -16,7 +16,6 @@
 #include <pika/functional/detail/vtable/vtable.hpp>
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
-#include <pika/functional/traits/is_invocable.hpp>
 
 #include <cstddef>
 #include <cstring>
@@ -196,7 +195,7 @@ namespace pika::util::detail {
         T* target() noexcept
         {
             using TD = std::remove_cv_t<T>;
-            static_assert(pika::detail::is_invocable_r_v<R, TD&, Ts...>,
+            static_assert(std::is_invocable_r_v<R, TD&, Ts...>,
                 "T shall be Callable with the function signature");
 
             vtable const* f_vptr = get_vtable<TD>();
@@ -210,7 +209,7 @@ namespace pika::util::detail {
         T const* target() const noexcept
         {
             using TD = std::remove_cv_t<T>;
-            static_assert(pika::detail::is_invocable_r_v<R, TD&, Ts...>,
+            static_assert(std::is_invocable_r_v<R, TD&, Ts...>,
                 "T shall be Callable with the function signature");
 
             vtable const* f_vptr = get_vtable<TD>();

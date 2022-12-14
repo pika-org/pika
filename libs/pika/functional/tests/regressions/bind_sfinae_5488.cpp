@@ -10,15 +10,13 @@
 
 #include <type_traits>
 
-template <typename F,
-    std::enable_if_t<pika::detail::is_invocable_v<F>, int> = 0>
+template <typename F, std::enable_if_t<std::is_invocable_v<F>, int> = 0>
 auto test(F&& f)
 {
     return f();
 }
 
-template <typename F,
-    std::enable_if_t<pika::detail::is_invocable_v<F, int>, int> = 0>
+template <typename F, std::enable_if_t<std::is_invocable_v<F, int>, int> = 0>
 auto test(F&& f)
 {
     return f(42);

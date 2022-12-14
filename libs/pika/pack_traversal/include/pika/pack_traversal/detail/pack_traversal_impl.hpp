@@ -10,7 +10,6 @@
 #include <pika/functional/detail/invoke.hpp>
 #include <pika/functional/invoke_fused.hpp>
 #include <pika/functional/invoke_result.hpp>
-#include <pika/functional/traits/is_invocable.hpp>
 #include <pika/pack_traversal/detail/container_category.hpp>
 #include <pika/pack_traversal/traits/pack_traversal_rebind_container.hpp>
 #include <pika/type_support/decay.hpp>
@@ -301,7 +300,7 @@ namespace pika::util::detail {
     /// call to the mapper.
     template <typename Mapper, typename T>
     using is_effective_t =
-        pika::detail::is_invocable<typename Mapper::traversor_type, T>;
+        std::is_invocable<typename Mapper::traversor_type, T>;
 
     /// Deduces to a true type if any type leads to at least one effective
     /// call to the mapper.

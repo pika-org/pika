@@ -8,7 +8,6 @@
 
 #include <pika/config.hpp>
 #include <pika/errors/try_catch_exception_ptr.hpp>
-#include <pika/functional/traits/is_invocable.hpp>
 #include <pika/functional/unique_function.hpp>
 #include <pika/futures/detail/future_data.hpp>
 #include <pika/futures/promise.hpp>
@@ -38,7 +37,7 @@ namespace pika::lcos::local {
         template <typename F, typename FD = std::decay_t<F>,
             typename Enable =
                 std::enable_if_t<!std::is_same_v<FD, packaged_task> &&
-                    pika::detail::is_invocable_r_v<R, FD&, Ts...>>>
+                    std::is_invocable_r_v<R, FD&, Ts...>>>
         explicit packaged_task(F&& f)
           : function_(PIKA_FORWARD(F, f))
           , promise_()
@@ -48,7 +47,7 @@ namespace pika::lcos::local {
         template <typename Allocator, typename F, typename FD = std::decay_t<F>,
             typename Enable =
                 std::enable_if_t<!std::is_same_v<FD, packaged_task> &&
-                    pika::detail::is_invocable_r_v<R, FD&, Ts...>>>
+                    std::is_invocable_r_v<R, FD&, Ts...>>>
         explicit packaged_task(std::allocator_arg_t, Allocator const& a, F&& f)
           : function_(PIKA_FORWARD(F, f))
           , promise_(std::allocator_arg, a)

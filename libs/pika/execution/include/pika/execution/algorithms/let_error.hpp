@@ -226,7 +226,7 @@ namespace pika::let_error_detail {
                 };
 
                 template <typename... Ts,
-                    typename = std::enable_if_t<pika::detail::is_invocable_v<
+                    typename = std::enable_if_t<std::is_invocable_v<
                         pika::execution::experimental::set_value_t, Receiver&&,
                         Ts...>>>
                 friend void

@@ -305,6 +305,7 @@ patterns = [
     { pattern = '\bstd::common_type\b', include = 'type_traits' },
     { pattern = '\bstd::underlying_type\b', include = 'type_traits' },
     { pattern = '\bstd::result_of\b', include = 'type_traits' },
+    { pattern = '\bstd::is_invocable([a-z_]*)\b', include = 'type_traits' },
     { pattern = '\bstd::(mem((set)|(cpy)|(move)))\b', include = 'cstring' },
     { pattern = '\bstd::swap\b', include = 'utility' },
     { pattern = '\bstd::move\b', include = 'utility' },

@@ -12,7 +12,6 @@
 #include <pika/functional/detail/basic_function.hpp>
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
-#include <pika/functional/traits/is_invocable.hpp>
 
 #include <cstddef>
 #include <type_traits>
@@ -41,7 +40,7 @@ namespace pika::util::detail {
             typename Enable1 =
                 std::enable_if_t<!std::is_same_v<FD, unique_function>>,
             typename Enable2 =
-                std::enable_if_t<pika::detail::is_invocable_r_v<R, FD&, Ts...>>>
+                std::enable_if_t<std::is_invocable_r_v<R, FD&, Ts...>>>
         unique_function(F&& f)
         {
             assign(PIKA_FORWARD(F, f));
@@ -52,7 +51,7 @@ namespace pika::util::detail {
             typename Enable1 =
                 std::enable_if_t<!std::is_same_v<FD, unique_function>>,
             typename Enable2 =
-                std::enable_if_t<pika::detail::is_invocable_r_v<R, FD&, Ts...>>>
+                std::enable_if_t<std::is_invocable_r_v<R, FD&, Ts...>>>
         unique_function& operator=(F&& f)
         {
             assign(PIKA_FORWARD(F, f));

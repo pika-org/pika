@@ -12,7 +12,6 @@ set(tag_invoke_headers
     pika/functional/detail/tag_priority_invoke.hpp
     pika/functional/invoke_result.hpp
     pika/functional/tag_invoke.hpp
-    pika/functional/traits/is_invocable.hpp
 )
 
 set(tag_invoke_sources)

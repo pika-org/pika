@@ -12,7 +12,6 @@
 #include <pika/functional/invoke_result.hpp>
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
-#include <pika/functional/traits/is_invocable.hpp>
 #include <pika/type_support/decay.hpp>
 #include <pika/type_support/pack.hpp>
 
@@ -23,7 +22,7 @@
 namespace pika::detail {
     template <typename F, typename... Ts>
     struct is_deferred_invocable
-      : pika::detail::is_invocable<detail::decay_unwrap_t<F>,
+      : std::is_invocable<detail::decay_unwrap_t<F>,
             detail::decay_unwrap_t<Ts>...>
     {
     };

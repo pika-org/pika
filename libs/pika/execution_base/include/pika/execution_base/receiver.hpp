@@ -39,7 +39,6 @@ namespace pika::execution::experimental {
 #else
 #include <pika/config/constexpr.hpp>
 #include <pika/functional/tag_invoke.hpp>
-#include <pika/functional/traits/is_invocable.hpp>
 
 #include <exception>
 #include <type_traits>
@@ -159,10 +158,8 @@ namespace pika::execution::experimental {
         template <typename T, typename E>
         struct is_receiver_impl<true, T, E>
           : std::integral_constant<bool,
-                pika::detail::is_invocable_v<set_stopped_t,
-                    std::decay_t<T>&&> &&
-                    pika::detail::is_invocable_v<set_error_t, std::decay_t<T>&&,
-                        E>>
+                std::is_invocable_v<set_stopped_t, std::decay_t<T>&&> &&
+                    std::is_invocable_v<set_error_t, std::decay_t<T>&&, E>>
         {
         };
     }    // namespace detail
@@ -192,8 +189,7 @@ namespace pika::execution::experimental {
         template <typename T, typename... As>
         struct is_receiver_of_impl<true, T, As...>
           : std::integral_constant<bool,
-                pika::detail::is_invocable_v<set_value_t, std::decay_t<T>&&,
-                    As...>>
+                std::is_invocable_v<set_value_t, std::decay_t<T>&&, As...>>
         {
         };
     }    // namespace detail

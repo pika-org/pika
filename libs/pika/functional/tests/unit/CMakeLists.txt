@@ -24,7 +24,6 @@ set(function_tests
     function_ref_wrapper
     function_target
     function_test
-    is_invocable
     nothrow_swap
     stateless_test
 )

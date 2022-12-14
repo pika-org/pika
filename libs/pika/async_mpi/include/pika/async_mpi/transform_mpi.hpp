@@ -20,7 +20,6 @@
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/functional/invoke_fused.hpp>
-#include <pika/functional/traits/is_invocable.hpp>
 #include <pika/mpi_base/mpi.hpp>
 
 #include <exception>
@@ -79,7 +78,7 @@ namespace pika::mpi::experimental {
 
         template <typename F, typename... Ts>
         inline constexpr bool is_mpi_request_invocable_v =
-            pika::detail::is_invocable_v<F,
+            std::is_invocable_v<F,
                 std::add_lvalue_reference_t<std::decay_t<Ts>>..., MPI_Request*>;
 
         template <typename F, typename... Ts>

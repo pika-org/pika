@@ -14,7 +14,6 @@
 #include <pika/functional/detail/vtable/vtable.hpp>
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
-#include <pika/functional/traits/is_invocable.hpp>
 #include <pika/modules/itt_notify.hpp>
 
 #include <cstddef>

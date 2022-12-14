@@ -109,8 +109,7 @@ namespace pika {
                 [](stop_token st, F&& f, Ts&&... ts) -> void {
                     // perform tasks of the thread
                     using use_stop_token =
-                        typename pika::detail::is_invocable<F, stop_token,
-                            Ts...>::type;
+                        typename std::is_invocable<F, stop_token, Ts...>::type;
 
                     jthread::invoke(use_stop_token{}, PIKA_FORWARD(F, f),
                         PIKA_MOVE(st), PIKA_FORWARD(Ts, ts)...);
