@@ -22,16 +22,11 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <fmt/printf.h>
+#include <fmt/std.h>
 
 #include <memory>
 #include <ostream>
 #include <type_traits>
-
-#if defined(PIKA_WINDOWS)
-#include <windows.h>
-#else
-#include <pthread.h>
-#endif
 
 namespace pika::util::logging::formatter {
 
@@ -41,20 +36,8 @@ namespace pika::util::logging::formatter {
     {
         void operator()(std::ostream& to) const override
         {
-            auto id =
-#if defined(PIKA_WINDOWS)
-                ::GetCurrentThreadId();
-#else
-                pthread_self();
-#endif
-            if constexpr (std::is_pointer_v<decltype(id)>)
-            {
-                fmt::print(to, "{}", fmt::ptr(id));
-            }
-            else
-            {
-                fmt::print(to, "{}", id);
-            }
+            auto id = std::this_thread::get_id();
+            fmt::print(to, "{}", id);
         }
     };
 
