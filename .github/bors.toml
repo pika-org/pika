@@ -12,7 +12,7 @@ status = [
   "github/linux/sanitizers/fast",
   "github/linux/tracy/fast",
   "github/macos/debug",
-  # "github/macos_arm64/debug",
+  "github/macos_arm64/debug",
 
   # CircleCI static checks
   "ci/circleci: check_circular_deps",
