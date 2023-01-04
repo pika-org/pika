@@ -296,6 +296,10 @@ int pika_main(pika::program_options::variables_map& vm)
     test_shared_state_deadlock(async_rw_mutex<std::size_t>{0});
     test_shared_state_deadlock(async_rw_mutex<mytype, mytype_base>{mytype{}});
 
+    test_read_sender_copyable(async_rw_mutex<void>{});
+    test_read_sender_copyable(async_rw_mutex<std::size_t>{0});
+    test_read_sender_copyable(async_rw_mutex<mytype, mytype_base>{mytype{}});
+
     return pika::finalize();
 }
 

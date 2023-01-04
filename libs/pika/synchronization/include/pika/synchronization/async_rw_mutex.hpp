@@ -718,6 +718,22 @@ namespace pika::execution::experimental {
                 return operation_state<R>{PIKA_FORWARD(R, r),
                     PIKA_MOVE(s.prev_state), PIKA_MOVE(s.state)};
             }
+
+            template <typename R>
+            friend auto tag_invoke(pika::execution::experimental::connect_t,
+                sender const& s, R&& r)
+            {
+                if constexpr (AccessType ==
+                    detail::async_rw_mutex_access_type::readwrite)
+                {
+                    static_assert(sizeof(R) == 0,
+                        "senders returned from async_rw_mutex::readwrite are "
+                        "not l-lvalue connectable");
+                }
+
+                return operation_state<R>{
+                    PIKA_FORWARD(R, r), s.prev_state, s.state};
+            }
         };
 
         PIKA_NO_UNIQUE_ADDRESS value_type value;
