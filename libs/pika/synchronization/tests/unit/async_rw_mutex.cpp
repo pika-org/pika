@@ -68,11 +68,11 @@ public:
 // from the async_rw_mutex senders.
 struct checker
 {
-    bool expect_readonly;
-    std::size_t expected_predecessor_value;
+    const bool expect_readonly;
+    const std::size_t expected_predecessor_value;
     std::atomic<std::size_t>& count;
-    std::size_t count_min;
-    std::size_t count_max = count_min;
+    const std::size_t count_min;
+    const std::size_t count_max = count_min;
 
     // Access types are differently tagged for read-only and read-write access.
     using void_read_access_type =
@@ -286,7 +286,7 @@ int pika_main(pika::program_options::variables_map& vm)
     test_moved(async_rw_mutex<std::size_t>{0});
     test_moved(async_rw_mutex<mytype, mytype_base>{mytype{}});
 
-    std::size_t iterations = 100;
+    constexpr std::size_t iterations = 1000;
     test_multiple_accesses(async_rw_mutex<void>{}, iterations);
     test_multiple_accesses(async_rw_mutex<std::size_t>{0}, iterations);
     test_multiple_accesses(
