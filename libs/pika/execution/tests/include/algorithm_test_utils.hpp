@@ -96,11 +96,12 @@ struct error_sender
     }
 };
 
+template <typename... Ts>
 struct const_reference_error_sender
 {
     template <template <class...> class Tuple,
         template <class...> class Variant>
-    using value_types = Variant<Tuple<>>;
+    using value_types = Variant<Tuple<Ts...>>;
 
     template <template <class...> class Variant>
     using error_types = Variant<std::exception_ptr const&>;
@@ -109,7 +110,7 @@ struct const_reference_error_sender
 
     using completion_signatures =
         pika::execution::experimental::completion_signatures<
-            pika::execution::experimental::set_value_t(),
+            pika::execution::experimental::set_value_t(Ts...),
             pika::execution::experimental::set_error_t(
                 std::exception_ptr const&)>;
 
@@ -708,11 +709,12 @@ namespace my_namespace {
         }
     };
 
+    template <typename... Ts>
     struct my_sender
     {
         template <template <typename...> class Tuple,
             template <typename...> class Variant>
-        using value_types = Variant<Tuple<>>;
+        using value_types = Variant<Tuple<Ts...>>;
 
         template <template <typename...> class Variant>
         using error_types = Variant<>;
@@ -721,7 +723,7 @@ namespace my_namespace {
 
         using completion_signatures =
             pika::execution::experimental::completion_signatures<
-                pika::execution::experimental::set_value_t()>;
+                pika::execution::experimental::set_value_t(Ts...)>;
 
         template <typename R>
         struct operation_state
@@ -730,7 +732,8 @@ namespace my_namespace {
             friend void tag_invoke(pika::execution::experimental::start_t,
                 operation_state& os) noexcept
             {
-                pika::execution::experimental::set_value(std::move(os.r));
+                pika::execution::experimental::set_value(
+                    std::move(os.r), Ts{}...);
             }
         };
 
