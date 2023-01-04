@@ -99,28 +99,19 @@ struct checker
     using size_t_readwrite_access_type =
         typename async_rw_mutex<std::size_t>::readwrite_access_type;
 
-    static_assert(
-        std::is_convertible<size_t_read_access_type, std::size_t const&>::value,
-        "The given access type must be convertible to a const reference of "
-        "given template type");
-    static_assert(
-        std::is_convertible<size_t_readwrite_access_type, std::size_t&>::value,
-        "The given access type must be convertible to a reference of given "
-        "template type");
-
-    void operator()(std::size_t const& x)
+    void operator()(size_t_read_access_type x)
     {
         PIKA_TEST(expect_readonly);
-        PIKA_TEST_EQ(x, expected_predecessor_value);
+        PIKA_TEST_EQ(x.get(), expected_predecessor_value);
         PIKA_TEST_RANGE(++count, count_min, count_max);
     }
 
-    void operator()(std::size_t& x)
+    void operator()(size_t_readwrite_access_type x)
     {
         PIKA_ASSERT(!expect_readonly);
-        PIKA_TEST_EQ(x, expected_predecessor_value);
+        PIKA_TEST_EQ(x.get(), expected_predecessor_value);
         PIKA_TEST_RANGE(++count, count_min, count_max);
-        ++x;
+        ++x.get();
     }
 
     // Non-void access types must be convertible to (const) references of the
@@ -130,28 +121,19 @@ struct checker
     using mytype_readwrite_access_type =
         typename async_rw_mutex<mytype, mytype_base>::readwrite_access_type;
 
-    static_assert(
-        std::is_convertible<mytype_read_access_type, mytype_base const&>::value,
-        "The given access type must be convertible to a const reference of "
-        "given template type");
-    static_assert(
-        std::is_convertible<mytype_readwrite_access_type, mytype&>::value,
-        "The given access type must be convertible to a reference of given "
-        "template type");
-
-    void operator()(mytype_base const& x)
+    void operator()(mytype_read_access_type x)
     {
         PIKA_TEST(expect_readonly);
-        PIKA_TEST_EQ(x.read(), expected_predecessor_value);
+        PIKA_TEST_EQ(x.get().read(), expected_predecessor_value);
         PIKA_TEST_RANGE(++count, count_min, count_max);
     }
 
-    void operator()(mytype& x)
+    void operator()(mytype_readwrite_access_type x)
     {
         PIKA_ASSERT(!expect_readonly);
-        PIKA_TEST_EQ(x.read(), expected_predecessor_value);
+        PIKA_TEST_EQ(x.get().read(), expected_predecessor_value);
         PIKA_TEST_RANGE(++count, count_min, count_max);
-        ++(x.readwrite());
+        ++(x.get().readwrite());
     }
 };
 

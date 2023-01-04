@@ -194,12 +194,6 @@ namespace pika::execution::experimental {
                 PIKA_ASSERT(state);
                 return state->get_value();
             }
-
-            operator ReadT&() const
-            {
-                PIKA_ASSERT(state);
-                return state->get_value();
-            }
         };
 
         template <typename ReadWriteT, typename ReadT>
@@ -236,12 +230,6 @@ namespace pika::execution::experimental {
                 async_rw_mutex_access_wrapper const&) = delete;
 
             ReadWriteT& get()
-            {
-                PIKA_ASSERT(state);
-                return state->get_value();
-            }
-
-            operator ReadWriteT&()
             {
                 PIKA_ASSERT(state);
                 return state->get_value();
