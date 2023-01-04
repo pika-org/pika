@@ -20,6 +20,7 @@
 
 using pika::execution::experimental::async_rw_mutex;
 using pika::execution::experimental::execute;
+using pika::execution::experimental::start_detached;
 using pika::execution::experimental::then;
 using pika::execution::experimental::thread_pool_scheduler;
 using pika::execution::experimental::transfer;
@@ -253,6 +254,36 @@ void test_multiple_accesses(
     sync_wait(rwm.readwrite());
 }
 
+template <typename ReadWriteT, typename ReadT = ReadWriteT>
+void test_shared_state_deadlock(async_rw_mutex<ReadWriteT, ReadT> rwm)
+{
+    // This tests that when synchronously waiting for read-only access, the
+    // shared state from the previous read-write access is not kept alive
+    // unnecessarily, thus stopping the read-only access from happening.
+    //
+    // This test should simply not deadlock. If the previous state is held alive
+    // by the async_rw_mutex itself the second sync_wait will never complete.
+    bool readwrite_access = false;
+    bool read_access = false;
+    sync_wait(rwm.readwrite() | then([&](auto) { readwrite_access = true; }));
+    sync_wait(rwm.read() | then([&](auto) { read_access = true; }));
+    PIKA_TEST(readwrite_access);
+    PIKA_TEST(read_access);
+}
+
+template <typename ReadWriteT, typename ReadT = ReadWriteT>
+void test_read_sender_copyable(async_rw_mutex<ReadWriteT, ReadT> rwm)
+{
+    std::size_t read_accesses = 0;
+    auto f = [&](auto) { ++read_accesses; };
+    sync_wait(rwm.read() | then(f));
+    auto s = rwm.read();
+    sync_wait(s | then(f));
+    sync_wait(s | then(f));
+    sync_wait(std::move(s) | then(f));
+    PIKA_TEST_EQ(read_accesses, std::size_t(4));
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main(pika::program_options::variables_map& vm)
 {
@@ -278,6 +309,10 @@ int pika_main(pika::program_options::variables_map& vm)
     test_multiple_accesses(async_rw_mutex<std::size_t>{0}, iterations);
     test_multiple_accesses(
         async_rw_mutex<mytype, mytype_base>{mytype{}}, iterations);
+
+    test_shared_state_deadlock(async_rw_mutex<void>{});
+    test_shared_state_deadlock(async_rw_mutex<std::size_t>{0});
+    test_shared_state_deadlock(async_rw_mutex<mytype, mytype_base>{mytype{}});
 
     return pika::finalize();
 }
