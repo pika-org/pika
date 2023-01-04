@@ -13,6 +13,7 @@ set(tests
     algorithm_let_error
     algorithm_let_value
     algorithm_split
+    algorithm_split_tuple
     algorithm_start_detached
     algorithm_sync_wait
     algorithm_then
