@@ -516,7 +516,7 @@ namespace pika::execution::experimental {
             }
         };
 
-        allocator_type alloc;
+        PIKA_NO_UNIQUE_ADDRESS allocator_type alloc;
 
         detail::async_rw_mutex_access_type prev_access =
             detail::async_rw_mutex_access_type::readwrite;
@@ -720,8 +720,8 @@ namespace pika::execution::experimental {
             }
         };
 
-        value_type value;
-        allocator_type alloc;
+        PIKA_NO_UNIQUE_ADDRESS value_type value;
+        PIKA_NO_UNIQUE_ADDRESS allocator_type alloc;
 
         detail::async_rw_mutex_access_type prev_access =
             detail::async_rw_mutex_access_type::readwrite;
