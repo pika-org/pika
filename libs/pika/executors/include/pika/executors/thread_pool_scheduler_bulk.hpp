@@ -538,8 +538,7 @@ namespace pika::thread_pool_bulk_detail {
             template <typename Sender_, typename Shape_, typename F_,
                 typename Receiver_>
             operation_state(
-                pika::execution::experimental::thread_pool_scheduler&&
-                    scheduler,
+                pika::execution::experimental::thread_pool_scheduler scheduler,
                 Sender_&& sender, Shape_&& shape, F_&& f, Receiver_&& receiver)
               : scheduler(PIKA_MOVE(scheduler))
               , op_state(pika::execution::experimental::connect(
@@ -568,7 +567,7 @@ namespace pika::thread_pool_bulk_detail {
         }
 
         template <typename Receiver>
-        auto tag_invoke(pika::execution::experimental::connect_t,
+        friend auto tag_invoke(pika::execution::experimental::connect_t,
             thread_pool_bulk_sender& s, Receiver&& receiver)
         {
             return operation_state<std::decay_t<Receiver>>{s.scheduler,

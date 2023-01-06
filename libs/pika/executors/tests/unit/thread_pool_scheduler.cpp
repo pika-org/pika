@@ -1774,6 +1774,25 @@ void test_bulk()
         }
     }
 
+    // l-value reference sender
+    for (int n : ns)
+    {
+        std::vector<int> v(n, 0);
+        pika::thread::id parent_id = pika::this_thread::get_id();
+
+        auto s =
+            ex::schedule(ex::thread_pool_scheduler{}) | ex::bulk(n, [&](int i) {
+                ++v[i];
+                PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id());
+            });
+        tt::sync_wait(s);
+
+        for (int i = 0; i < n; ++i)
+        {
+            PIKA_TEST_EQ(v[i], 1);
+        }
+    }
+
     // The specification only allows integral shapes
 #if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     {
