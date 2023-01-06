@@ -6,9 +6,9 @@
 
 
 cxx_std="20"
-gcc_version="11.3.0"
+gcc_version="12.2.0"
 boost_version="1.79.0"
-hip_version="5.2.3"
+hip_version="5.3.0"
 hwloc_version="2.6.0"
 spack_compiler="gcc@${gcc_version}"
 spack_arch="linux-centos8-zen"
