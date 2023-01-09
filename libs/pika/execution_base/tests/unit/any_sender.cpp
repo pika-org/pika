@@ -353,6 +353,11 @@ void test_any_sender(F&& f, Ts&&... ts)
     ex::any_sender<std::decay_t<Ts>...> as1{s};
     auto as2 = as1;
 
+    PIKA_TEST(!as1.empty());
+    PIKA_TEST(!as2.empty());
+    PIKA_TEST(as1);
+    PIKA_TEST(as2);
+
     // We should be able to connect both as1 and as2 multiple times; set_value
     // should always be called
     {
@@ -360,6 +365,8 @@ void test_any_sender(F&& f, Ts&&... ts)
         auto os = ex::connect(as1, callback_receiver<F>{f, set_value_called});
         ex::start(os);
         PIKA_TEST(set_value_called);
+        PIKA_TEST(!as1.empty());
+        PIKA_TEST(as1);
     }
 
     {
@@ -368,6 +375,8 @@ void test_any_sender(F&& f, Ts&&... ts)
             std::move(as1), callback_receiver<F>{f, set_value_called});
         ex::start(os);
         PIKA_TEST(set_value_called);
+        PIKA_TEST(as1.empty());
+        PIKA_TEST(!as1);
     }
 
     {
@@ -375,6 +384,8 @@ void test_any_sender(F&& f, Ts&&... ts)
         auto os = ex::connect(as2, callback_receiver<F>{f, set_value_called});
         ex::start(os);
         PIKA_TEST(set_value_called);
+        PIKA_TEST(!as2.empty());
+        PIKA_TEST(as2);
     }
 
     {
@@ -383,6 +394,8 @@ void test_any_sender(F&& f, Ts&&... ts)
             std::move(as2), callback_receiver<F>{f, set_value_called});
         ex::start(os);
         PIKA_TEST(set_value_called);
+        PIKA_TEST(as2.empty());
+        PIKA_TEST(!as2);
     }
 
     // as1 and as2 have been moved so we always expect an exception here
@@ -437,6 +450,11 @@ void test_unique_any_sender(F&& f, Ts&&... ts)
     ex::unique_any_sender<std::decay_t<Ts>...> as1{std::move(s)};
     auto as2 = std::move(as1);
 
+    PIKA_TEST(as1.empty());
+    PIKA_TEST(!as2.empty());
+    PIKA_TEST(!as1);
+    PIKA_TEST(as2);
+
     // We expect set_value to be called here
     {
         std::atomic<bool> set_value_called = false;
@@ -444,6 +462,8 @@ void test_unique_any_sender(F&& f, Ts&&... ts)
             std::move(as2), callback_receiver<F>{f, set_value_called});
         ex::start(os);
         PIKA_TEST(set_value_called);
+        PIKA_TEST(as2.empty());
+        PIKA_TEST(!as2);
     }
 
     // as1 has been moved so we always expect an exception here
@@ -639,6 +659,17 @@ void test_globals()
 #endif
 }
 
+void test_empty_any_sender()
+{
+    ex::unique_any_sender<> uas{};
+    ex::any_sender<> as{};
+
+    PIKA_TEST(uas.empty());
+    PIKA_TEST(!uas);
+    PIKA_TEST(as.empty());
+    PIKA_TEST(!as);
+}
+
 void test_make_any_sender()
 {
     static_assert(
@@ -749,6 +780,9 @@ int main()
 
     // Test use of *any_* in globals
     test_globals();
+
+    // Test that default constructed senders are empty
+    test_empty_any_sender();
 
     // Test deducing value types with make(_unique)_any_sender
     test_make_any_sender();

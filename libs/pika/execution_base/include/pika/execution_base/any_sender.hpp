@@ -125,11 +125,6 @@ namespace pika::detail {
                 reinterpret_cast<base_type const*>(&embedded_storage);
         }
 
-        bool empty() const noexcept
-        {
-            return get().empty();
-        }
-
         void reset_vtable()
         {
             object = const_cast<base_type*>(get_empty_vtable<base_type>());
@@ -210,6 +205,11 @@ namespace pika::detail {
         movable_sbo_storage(movable_sbo_storage const&) = delete;
         movable_sbo_storage& operator=(movable_sbo_storage const&) = delete;
 
+        bool empty() const noexcept
+        {
+            return get().empty();
+        }
+
         base_type const& get() const noexcept
         {
             return *object;
@@ -253,7 +253,6 @@ namespace pika::detail {
         using typename storage_base_type::base_type;
 
         using storage_base_type::embedded_storage;
-        using storage_base_type::empty;
         using storage_base_type::heap_storage;
         using storage_base_type::object;
         using storage_base_type::release;
@@ -282,6 +281,7 @@ namespace pika::detail {
         }
 
     public:
+        using storage_base_type::empty;
         using storage_base_type::get;
         using storage_base_type::store;
 
@@ -801,6 +801,16 @@ namespace pika::execution::experimental {
             return PIKA_MOVE(moved_storage.get())
                 .connect(detail::any_receiver<Ts...>{PIKA_FORWARD(R, r)});
         }
+
+        bool empty() const noexcept
+        {
+            return storage.empty();
+        }
+
+        operator bool() const noexcept
+        {
+            return !empty();
+        }
     };
 
     template <typename... Ts>
@@ -889,6 +899,16 @@ namespace pika::execution::experimental {
             auto moved_storage = PIKA_MOVE(s.storage);
             return PIKA_MOVE(moved_storage.get())
                 .connect(detail::any_receiver<Ts...>{PIKA_FORWARD(R, r)});
+        }
+
+        bool empty() const noexcept
+        {
+            return storage.empty();
+        }
+
+        operator bool() const noexcept
+        {
+            return !empty();
         }
     };
 
