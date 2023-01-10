@@ -348,7 +348,7 @@ namespace pika::when_all_impl {
 
             using operation_state_type =
                 std::decay_t<decltype(pika::execution::experimental::connect(
-                    PIKA_FORWARD(SendersPack, senders).template get<i>(),
+                    std::declval<SendersPack>().template get<i>(),
                     when_all_receiver<operation_state>(
                         std::declval<std::decay_t<operation_state>&>())))>;
             operation_state_type op_state;
@@ -401,7 +401,8 @@ namespace pika::when_all_impl {
             when_all_sender_type& s, Receiver&& receiver)
         {
             return operation_state<Receiver, senders_type&,
-                num_predecessors - 1>(receiver, s.senders);
+                num_predecessors - 1>(
+                PIKA_FORWARD(Receiver, receiver), s.senders);
         }
     };
 }    // namespace pika::when_all_impl
