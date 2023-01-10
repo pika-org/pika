@@ -6,10 +6,10 @@
 
 include(CMakeFindDependencyMacro)
 
-function(pika_find_package)
+macro(pika_find_package)
   if(PIKA_FIND_PACKAGE)
     find_dependency(${ARGN})
   else()
     find_package(${ARGN})
   endif()
-endfunction(pika_find_package)
+endmacro(pika_find_package)
