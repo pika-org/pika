@@ -20,6 +20,7 @@
 #include <stdexcept>
 #include <string>
 #include <thread>
+#include <tuple>
 #include <type_traits>
 #include <unordered_set>
 #include <utility>
@@ -1985,6 +1986,64 @@ void test_drop_value()
     }
 }
 
+void test_split_tuple()
+{
+    ex::thread_pool_scheduler sched{};
+
+    {
+        auto [s] = ex::split_tuple(ex::transfer_just(sched, std::tuple(42)));
+        PIKA_TEST_EQ(tt::sync_wait(std::move(s)), 42);
+    }
+
+    {
+        auto [s1, s2, s3] = ex::split_tuple(ex::transfer_just(
+            sched, std::tuple(42, std::string{"hello"}, 3.14)));
+        PIKA_TEST_EQ(tt::sync_wait(std::move(s1)), 42);
+        PIKA_TEST_EQ(tt::sync_wait(std::move(s2)), std::string{"hello"});
+        PIKA_TEST_EQ(tt::sync_wait(std::move(s3)), 3.14);
+    }
+
+    {
+        auto [s1, s2, s3] = ex::split_tuple(ex::transfer_just(
+            sched, std::tuple(42, std::string{"hello"}, 3.14)));
+        auto s1_transfer = std::move(s1) | ex::transfer(sched);
+        auto s2_transfer = std::move(s2) | ex::transfer(sched);
+        auto s3_transfer = std::move(s3) | ex::transfer(sched);
+        PIKA_TEST_EQ(tt::sync_wait(std::move(s1_transfer)), 42);
+        PIKA_TEST_EQ(
+            tt::sync_wait(std::move(s2_transfer)), std::string{"hello"});
+        PIKA_TEST_EQ(tt::sync_wait(std::move(s3_transfer)), 3.14);
+    }
+
+    {
+        auto [s1, s2, s3] = ex::split_tuple(ex::then(ex::schedule(sched), [] {
+            throw std::runtime_error("error");
+            return std::tuple(42, std::string{"hello"}, 3.14);
+        }));
+
+        auto check_exception = [](auto&& s) {
+            bool exception_thrown = false;
+
+            try
+            {
+                tt::sync_wait(std::move(s));
+                PIKA_TEST(false);
+            }
+            catch (std::runtime_error const& e)
+            {
+                PIKA_TEST_EQ(std::string(e.what()), std::string("error"));
+                exception_thrown = true;
+            }
+
+            PIKA_TEST(exception_thrown);
+        };
+
+        check_exception(std::move(s1));
+        check_exception(std::move(s2));
+        check_exception(std::move(s3));
+    }
+}
+
 void test_scheduler_queries()
 {
     PIKA_TEST(ex::get_forward_progress_guarantee(ex::thread_pool_scheduler{}) ==
@@ -2022,6 +2081,7 @@ int pika_main()
     test_detach();
     test_bulk();
     test_drop_value();
+    test_split_tuple();
     test_completion_scheduler();
     test_scheduler_queries();
 

@@ -20,6 +20,7 @@ set(execution_headers
     pika/execution/algorithms/make_future.hpp
     pika/execution/algorithms/schedule_from.hpp
     pika/execution/algorithms/split.hpp
+    pika/execution/algorithms/split_tuple.hpp
     pika/execution/algorithms/start_detached.hpp
     pika/execution/algorithms/sync_wait.hpp
     pika/execution/algorithms/then.hpp
