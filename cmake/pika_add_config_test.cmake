@@ -385,15 +385,6 @@ function(pika_check_for_cxx17_aligned_new)
 endfunction()
 
 # ##############################################################################
-function(pika_check_for_cxx17_hardware_destructive_interference_size)
-  pika_add_config_test(
-    PIKA_WITH_CXX17_HARDWARE_DESTRUCTIVE_INTERFERENCE_SIZE
-    SOURCE cmake/tests/cxx17_hardware_destructive_interference_size.cpp
-    FILE ${ARGN}
-  )
-endfunction()
-
-# ##############################################################################
 function(pika_check_for_cxx17_std_transform_scan)
   pika_add_config_test(
     PIKA_WITH_CXX17_STD_TRANSFORM_SCAN_ALGORITHMS

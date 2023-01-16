@@ -19,16 +19,12 @@ namespace pika::concurrency::detail {
     // abstract away cache-line size
     constexpr std::size_t get_cache_line_size() noexcept
     {
-#if defined(PIKA_HAVE_CXX17_HARDWARE_DESTRUCTIVE_INTERFERENCE_SIZE)
-        return std::hardware_destructive_interference_size;
-#else
 #if defined(__s390__) || defined(__s390x__)
         return 256;    // assume 256 byte cache-line size
 #elif defined(powerpc) || defined(__powerpc__) || defined(__ppc__)
         return 128;    // assume 128 byte cache-line size
 #else
         return 64;    // assume 64 byte cache-line size
-#endif
 #endif
     }
 

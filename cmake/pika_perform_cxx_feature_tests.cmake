@@ -39,10 +39,6 @@ function(pika_perform_cxx_feature_tests)
     DEFINITIONS PIKA_HAVE_CXX17_STD_EXECUTION_POLICIES
   )
 
-  pika_check_for_cxx17_hardware_destructive_interference_size(
-    DEFINITIONS PIKA_HAVE_CXX17_HARDWARE_DESTRUCTIVE_INTERFERENCE_SIZE
-  )
-
   pika_check_for_cxx17_aligned_new(DEFINITIONS PIKA_HAVE_CXX17_ALIGNED_NEW)
 
   pika_check_for_cxx17_copy_elision(DEFINITIONS PIKA_HAVE_CXX17_COPY_ELISION)
