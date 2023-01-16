@@ -693,6 +693,15 @@ void test_make_any_sender()
                   ex::any_sender<int, std::string, double>>);
 }
 
+void test_when_all()
+{
+    ex::any_sender<> as1{ex::just()};
+    ex::any_sender<int> as2{ex::just(42)};
+    ex::any_sender<int> as3{ex::when_all(std::move(as1), std::move(as2))};
+
+    tt::sync_wait(std::move(as3));
+}
+
 int main()
 {
     // We can only wrap copyable senders in any_sender
@@ -786,6 +795,9 @@ int main()
 
     // Test deducing value types with make(_unique)_any_sender
     test_make_any_sender();
+
+    // Test using any_senders together with when_all
+    test_when_all();
 
     return 0;
 }
