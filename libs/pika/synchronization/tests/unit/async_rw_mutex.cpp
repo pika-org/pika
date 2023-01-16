@@ -20,6 +20,7 @@
 
 using pika::execution::experimental::async_rw_mutex;
 using pika::execution::experimental::execute;
+using pika::execution::experimental::start_detached;
 using pika::execution::experimental::then;
 using pika::execution::experimental::thread_pool_scheduler;
 using pika::execution::experimental::transfer;
@@ -67,11 +68,11 @@ public:
 // from the async_rw_mutex senders.
 struct checker
 {
-    bool expect_readonly;
-    std::size_t expected_predecessor_value;
+    const bool expect_readonly;
+    const std::size_t expected_predecessor_value;
     std::atomic<std::size_t>& count;
-    std::size_t count_min;
-    std::size_t count_max = count_min;
+    const std::size_t count_min;
+    const std::size_t count_max = count_min;
 
     // Access types are differently tagged for read-only and read-write access.
     using void_read_access_type =
@@ -98,28 +99,19 @@ struct checker
     using size_t_readwrite_access_type =
         typename async_rw_mutex<std::size_t>::readwrite_access_type;
 
-    static_assert(
-        std::is_convertible<size_t_read_access_type, std::size_t const&>::value,
-        "The given access type must be convertible to a const reference of "
-        "given template type");
-    static_assert(
-        std::is_convertible<size_t_readwrite_access_type, std::size_t&>::value,
-        "The given access type must be convertible to a reference of given "
-        "template type");
-
-    void operator()(std::size_t const& x)
+    void operator()(size_t_read_access_type x)
     {
         PIKA_TEST(expect_readonly);
-        PIKA_TEST_EQ(x, expected_predecessor_value);
+        PIKA_TEST_EQ(x.get(), expected_predecessor_value);
         PIKA_TEST_RANGE(++count, count_min, count_max);
     }
 
-    void operator()(std::size_t& x)
+    void operator()(size_t_readwrite_access_type x)
     {
         PIKA_ASSERT(!expect_readonly);
-        PIKA_TEST_EQ(x, expected_predecessor_value);
+        PIKA_TEST_EQ(x.get(), expected_predecessor_value);
         PIKA_TEST_RANGE(++count, count_min, count_max);
-        ++x;
+        ++x.get();
     }
 
     // Non-void access types must be convertible to (const) references of the
@@ -129,28 +121,19 @@ struct checker
     using mytype_readwrite_access_type =
         typename async_rw_mutex<mytype, mytype_base>::readwrite_access_type;
 
-    static_assert(
-        std::is_convertible<mytype_read_access_type, mytype_base const&>::value,
-        "The given access type must be convertible to a const reference of "
-        "given template type");
-    static_assert(
-        std::is_convertible<mytype_readwrite_access_type, mytype&>::value,
-        "The given access type must be convertible to a reference of given "
-        "template type");
-
-    void operator()(mytype_base const& x)
+    void operator()(mytype_read_access_type x)
     {
         PIKA_TEST(expect_readonly);
-        PIKA_TEST_EQ(x.read(), expected_predecessor_value);
+        PIKA_TEST_EQ(x.get().read(), expected_predecessor_value);
         PIKA_TEST_RANGE(++count, count_min, count_max);
     }
 
-    void operator()(mytype& x)
+    void operator()(mytype_readwrite_access_type x)
     {
         PIKA_ASSERT(!expect_readonly);
-        PIKA_TEST_EQ(x.read(), expected_predecessor_value);
+        PIKA_TEST_EQ(x.get().read(), expected_predecessor_value);
         PIKA_TEST_RANGE(++count, count_min, count_max);
-        ++(x.readwrite());
+        ++(x.get().readwrite());
     }
 };
 
@@ -253,6 +236,36 @@ void test_multiple_accesses(
     sync_wait(rwm.readwrite());
 }
 
+template <typename ReadWriteT, typename ReadT = ReadWriteT>
+void test_shared_state_deadlock(async_rw_mutex<ReadWriteT, ReadT> rwm)
+{
+    // This tests that when synchronously waiting for read-only access, the
+    // shared state from the previous read-write access is not kept alive
+    // unnecessarily, thus stopping the read-only access from happening.
+    //
+    // This test should simply not deadlock. If the previous state is held alive
+    // by the async_rw_mutex itself the second sync_wait will never complete.
+    bool readwrite_access = false;
+    bool read_access = false;
+    sync_wait(rwm.readwrite() | then([&](auto) { readwrite_access = true; }));
+    sync_wait(rwm.read() | then([&](auto) { read_access = true; }));
+    PIKA_TEST(readwrite_access);
+    PIKA_TEST(read_access);
+}
+
+template <typename ReadWriteT, typename ReadT = ReadWriteT>
+void test_read_sender_copyable(async_rw_mutex<ReadWriteT, ReadT> rwm)
+{
+    std::size_t read_accesses = 0;
+    auto f = [&](auto) { ++read_accesses; };
+    sync_wait(rwm.read() | then(f));
+    auto s = rwm.read();
+    sync_wait(s | then(f));
+    sync_wait(s | then(f));
+    sync_wait(std::move(s) | then(f));
+    PIKA_TEST_EQ(read_accesses, std::size_t(4));
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main(pika::program_options::variables_map& vm)
 {
@@ -273,11 +286,19 @@ int pika_main(pika::program_options::variables_map& vm)
     test_moved(async_rw_mutex<std::size_t>{0});
     test_moved(async_rw_mutex<mytype, mytype_base>{mytype{}});
 
-    std::size_t iterations = 100;
+    constexpr std::size_t iterations = 1000;
     test_multiple_accesses(async_rw_mutex<void>{}, iterations);
     test_multiple_accesses(async_rw_mutex<std::size_t>{0}, iterations);
     test_multiple_accesses(
         async_rw_mutex<mytype, mytype_base>{mytype{}}, iterations);
+
+    test_shared_state_deadlock(async_rw_mutex<void>{});
+    test_shared_state_deadlock(async_rw_mutex<std::size_t>{0});
+    test_shared_state_deadlock(async_rw_mutex<mytype, mytype_base>{mytype{}});
+
+    test_read_sender_copyable(async_rw_mutex<void>{});
+    test_read_sender_copyable(async_rw_mutex<std::size_t>{0});
+    test_read_sender_copyable(async_rw_mutex<mytype, mytype_base>{mytype{}});
 
     return pika::finalize();
 }
