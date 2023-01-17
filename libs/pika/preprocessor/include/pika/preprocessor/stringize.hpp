@@ -17,8 +17,6 @@
 
 /* See http://www.boost.org for most recent version. */
 
-// pikainspect:noinclude:PIKA_PP_STRINGIZE
-
 #pragma once
 
 #if defined(DOXYGEN)

@@ -11,8 +11,6 @@
 
 /* Revised by Paul Mensonides (2002) */
 
-// pikainspect:noinclude:PIKA_PP_CAT
-
 #pragma once
 
 #if defined(DOXYGEN)
