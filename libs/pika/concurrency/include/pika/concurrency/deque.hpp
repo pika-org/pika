@@ -125,37 +125,32 @@ namespace pika::concurrency::detail {
         }
 
         pair lrs(std::memory_order mo = std::memory_order_acquire) const
-            volatile
         {
             return pair_.load(mo);
         }
 
         node* left(std::memory_order mo = std::memory_order_acquire) const
-            volatile
         {
             return pair_.load(mo).get_left_ptr();
         }
 
         node* right(std::memory_order mo = std::memory_order_acquire) const
-            volatile
         {
             return pair_.load(mo).get_right_ptr();
         }
 
         tag_t status(std::memory_order mo = std::memory_order_acquire) const
-            volatile
         {
             return pair_.load(mo).get_left_tag();
         }
 
         tag_t tag(std::memory_order mo = std::memory_order_acquire) const
-            volatile
         {
             return pair_.load(mo).get_right_tag();
         }
 
         bool cas(deque_anchor& expected, deque_anchor const& desired,
-            std::memory_order mo = std::memory_order_acq_rel) volatile
+            std::memory_order mo = std::memory_order_acq_rel)
         {
             return pair_.compare_exchange_strong(
                 expected.load(std::memory_order_acquire),
@@ -163,42 +158,42 @@ namespace pika::concurrency::detail {
         }
 
         bool cas(pair& expected, deque_anchor const& desired,
-            std::memory_order mo = std::memory_order_acq_rel) volatile
+            std::memory_order mo = std::memory_order_acq_rel)
         {
             return pair_.compare_exchange_strong(
                 expected, desired.load(std::memory_order_acquire), mo);
         }
 
         bool cas(deque_anchor& expected, pair const& desired,
-            std::memory_order mo = std::memory_order_acq_rel) volatile
+            std::memory_order mo = std::memory_order_acq_rel)
         {
             return pair_.compare_exchange_strong(
                 expected.load(std::memory_order_acquire), desired, mo);
         }
 
         bool cas(pair& expected, pair const& desired,
-            std::memory_order mo = std::memory_order_acq_rel) volatile
+            std::memory_order mo = std::memory_order_acq_rel)
         {
             return pair_.compare_exchange_strong(expected, desired, mo);
         }
 
-        bool operator==(volatile deque_anchor const& rhs) const
+        bool operator==(deque_anchor const& rhs) const
         {
             return pair_.load(std::memory_order_acquire) ==
                 rhs.pair_.load(std::memory_order_acquire);
         }
 
-        bool operator!=(volatile deque_anchor const& rhs) const
+        bool operator!=(deque_anchor const& rhs) const
         {
             return !(*this == rhs);
         }
 
-        bool operator==(volatile pair const& rhs) const
+        bool operator==(pair const& rhs) const
         {
             return pair_.load(std::memory_order_acquire) == rhs;
         }
 
-        bool operator!=(volatile pair const& rhs) const
+        bool operator!=(pair const& rhs) const
         {
             return !(*this == rhs);
         }
