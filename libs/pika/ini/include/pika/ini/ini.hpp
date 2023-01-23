@@ -246,17 +246,8 @@ namespace pika::util {
             expand(l, str, len);
         }
 
-        void set_root(section* r, bool recursive = false)
-        {
-            root_ = r;
-            if (recursive)
-            {
-                section_map::iterator send = sections_.end();
-                for (section_map::iterator si = sections_.begin(); si != send;
-                     ++si)
-                    si->second.set_root(r, true);
-            }
-        }
+        void set_root(section* r, bool recursive = false);
+
         section* get_root() const
         {
             return root_;
