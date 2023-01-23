@@ -96,7 +96,7 @@ namespace pika::util {
         section();
         explicit section(std::string const& filename, section* root = nullptr);
         section(section const& in);
-        ~section() {}
+        ~section() = default;
 
         section& operator=(section const& rhs);
 
