@@ -125,7 +125,7 @@ namespace pika::resource {
 
     ///////////////////////////////////////////////////////////////////////////
     namespace detail {
-        inline ::pika::resource::partitioner make_partitioner(
+        ::pika::resource::partitioner make_partitioner(
             resource::partitioner_mode rpmode, pika::util::section rtcfg,
             pika::detail::affinity_data affinity_data);
     }
@@ -139,11 +139,7 @@ namespace pika::resource {
 
         partitioner(resource::partitioner_mode rpmode,
             pika::util::section rtcfg,
-            pika::detail::affinity_data affinity_data)
-          : partitioner_(
-                detail::create_partitioner(rpmode, rtcfg, affinity_data))
-        {
-        }
+            pika::detail::affinity_data affinity_data);
 
     public:
         ///////////////////////////////////////////////////////////////////////
@@ -203,12 +199,4 @@ namespace pika::resource {
         detail::partitioner& partitioner_;
     };
 
-    namespace detail {
-        ::pika::resource::partitioner make_partitioner(
-            resource::partitioner_mode rpmode, pika::util::section rtcfg,
-            pika::detail::affinity_data affinity_data)
-        {
-            return ::pika::resource::partitioner(rpmode, rtcfg, affinity_data);
-        }
-    }    // namespace detail
 }    // namespace pika::resource
