@@ -75,43 +75,51 @@ namespace pika::debug::detail {
     // ------------------------------------------------------------------
     // helper class for printing thread ID, either std:: or pika::
     // ------------------------------------------------------------------
-    namespace detail {
-
-        void print_thread_info(std::ostream& os)
+    void print_thread_info(std::ostream& os)
+    {
+        if (pika::threads::detail::get_self_id() ==
+            pika::threads::detail::invalid_thread_id)
         {
-            if (pika::threads::detail::get_self_id() ==
-                pika::threads::detail::invalid_thread_id)
-            {
-                os << "-------------- ";
-            }
-            else
-            {
-                pika::threads::detail::thread_data* dummy =
-                    pika::threads::detail::get_self_id_data();
-                os << hex<12, std::uintptr_t>(
-                          reinterpret_cast<std::uintptr_t>(dummy))
-                   << " ";
-            }
-            os << hex<12, std::thread::id>(std::this_thread::get_id())
+            os << "-------------- ";
+        }
+        else
+        {
+            pika::threads::detail::thread_data* dummy =
+                pika::threads::detail::get_self_id_data();
+            os << hex<12, std::uintptr_t>(
+                      reinterpret_cast<std::uintptr_t>(dummy))
+               << " ";
+        }
+        const char* pool = "-------";
+        auto tid = threads::detail::get_self_id();
+        if (tid != threads::detail::invalid_thread_id)
+        {
+            auto* p = get_thread_id_data(tid)
+                          ->get_scheduler_base()
+                          ->get_parent_pool();
+            pool = p->get_pool_name().c_str();
+        }
+        os << hex<12, std::thread::id>(std::this_thread::get_id()) << " pool "
+           << debug::detail::str<8>(pool)
+
 #ifdef DEBUGGING_PRINT_LINUX
-               << " cpu " << debug::detail::dec<3, int>(sched_getcpu()) << " ";
+           << " cpu " << debug::detail::dec<3, int>(sched_getcpu()) << " ";
 #else
-               << " cpu "
-               << "--- ";
+           << " cpu "
+           << "--- ";
 #endif
+    }
+
+    struct current_thread_print_helper
+    {
+        current_thread_print_helper()
+        {
+            debug::detail::register_print_info(&detail::print_thread_info);
         }
 
-        struct current_thread_print_helper
-        {
-            current_thread_print_helper()
-            {
-                debug::detail::register_print_info(&detail::print_thread_info);
-            }
+        static current_thread_print_helper helper_;
+    };
 
-            static current_thread_print_helper helper_;
-        };
-
-        current_thread_print_helper current_thread_print_helper::helper_{};
-    }    // namespace detail
+    current_thread_print_helper current_thread_print_helper::helper_{};
 }    // namespace pika::debug::detail
 /// \endcond
