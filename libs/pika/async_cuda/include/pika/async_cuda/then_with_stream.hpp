@@ -15,6 +15,7 @@
 #include <pika/async_cuda/custom_lapack_api.hpp>
 #include <pika/async_cuda/detail/cuda_event_callback.hpp>
 #include <pika/datastructures/variant.hpp>
+#include <pika/execution/algorithms/detail/helpers.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 #include <pika/execution/algorithms/then.hpp>
 #include <pika/execution_base/receiver.hpp>
@@ -171,25 +172,16 @@ namespace pika::cuda::experimental::then_with_stream_detail {
             then_with_cuda_stream_sender_type const&) = default;
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-        template <typename T>
-        struct result_type_signature_helper
-        {
-            using type = pika::execution::experimental::set_value_t(T);
-        };
-
-        template <>
-        struct result_type_signature_helper<void>
-        {
-            using type = pika::execution::experimental::set_value_t();
-        };
-
         template <typename... Ts>
         requires std::is_invocable_v<F, cuda_stream const&,
             std::add_lvalue_reference_t<std::decay_t<Ts>>...>
-        using invoke_result_helper = pika::execution::experimental::
-            completion_signatures<typename result_type_signature_helper<
-                pika::util::detail::invoke_result_t<F, cuda_stream const&,
-                    std::add_lvalue_reference_t<std::decay_t<Ts>>...>>::type>;
+        using invoke_result_helper =
+            pika::execution::experimental::completion_signatures<
+                pika::execution::experimental::detail::
+                    result_type_signature_helper_t<
+                        pika::util::detail::invoke_result_t<F,
+                            cuda_stream const&,
+                            std::add_lvalue_reference_t<std::decay_t<Ts>>...>>>;
 
         using completion_signatures =
             pika::execution::experimental::make_completion_signatures<

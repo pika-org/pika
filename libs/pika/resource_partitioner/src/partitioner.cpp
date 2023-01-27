@@ -138,6 +138,12 @@ namespace pika::resource {
     }    // namespace detail
 
     ///////////////////////////////////////////////////////////////////////////
+    partitioner::partitioner(resource::partitioner_mode rpmode,
+        pika::util::section rtcfg, pika::detail::affinity_data affinity_data)
+      : partitioner_(detail::create_partitioner(rpmode, rtcfg, affinity_data))
+    {
+    }
+
     void partitioner::create_thread_pool(std::string const& name,
         scheduling_policy sched /*= scheduling_policy::unspecified*/,
         pika::threads::scheduler_mode mode)
@@ -218,4 +224,15 @@ namespace pika::resource {
     {
         partitioner_.configure_pools();
     }
+
+    namespace detail {
+
+        ::pika::resource::partitioner make_partitioner(
+            resource::partitioner_mode rpmode, pika::util::section rtcfg,
+            pika::detail::affinity_data affinity_data)
+        {
+            return ::pika::resource::partitioner(rpmode, rtcfg, affinity_data);
+        }
+
+    }    // namespace detail
 }    // namespace pika::resource

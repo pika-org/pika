@@ -44,6 +44,16 @@ namespace pika::util {
     // example ini line: line # comment
     const char pattern_comment[] = "^([^#]*)(#.*)$";
     ///////////////////////////////////////////////////////////////////////////////
+    void section::set_root(section* r, bool recursive)
+    {
+        root_ = r;
+        if (recursive)
+        {
+            section_map::iterator send = sections_.end();
+            for (section_map::iterator si = sections_.begin(); si != send; ++si)
+                si->second.set_root(r, true);
+        }
+    }
 
     namespace detail {
         ///////////////////////////////////////////////////////////////////////////

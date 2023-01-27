@@ -38,7 +38,7 @@ sbatch \
     --nodes="1" \
     --partition="${configuration_slurm_partition}" \
     --account="djenkssl" \
-    --time="00:30:00" \
+    --time="00:45:00" \
     --output="${job_name}.out" \
     --error="${job_name}.err" \
     --exclusive \

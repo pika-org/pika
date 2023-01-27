@@ -10,6 +10,7 @@
 #include <pika/assert.hpp>
 #include <pika/async_cuda/cuda_scheduler.hpp>
 #include <pika/errors/try_catch_exception_ptr.hpp>
+#include <pika/execution/algorithms/detail/helpers.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
@@ -158,24 +159,13 @@ namespace pika::cuda::experimental {
                 then_on_host_sender_type const&) = default;
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-            template <typename T>
-            struct result_type_signature_helper
-            {
-                using type = pika::execution::experimental::set_value_t(T);
-            };
-
-            template <>
-            struct result_type_signature_helper<void>
-            {
-                using type = pika::execution::experimental::set_value_t();
-            };
-
             template <typename... Ts>
             requires std::is_invocable_v<F, Ts...>
             using invoke_result_helper =
                 pika::execution::experimental::completion_signatures<
-                    typename result_type_signature_helper<
-                        pika::util::detail::invoke_result_t<F, Ts...>>::type>;
+                    pika::execution::experimental::detail::
+                        result_type_signature_helper_t<
+                            pika::util::detail::invoke_result_t<F, Ts...>>>;
 
             using completion_signatures =
                 pika::execution::experimental::make_completion_signatures<

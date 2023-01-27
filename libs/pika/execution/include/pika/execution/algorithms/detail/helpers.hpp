@@ -1,4 +1,4 @@
-//  Copyright (c) 2020 ETH Zurich
+//  Copyright (c) 2021 ETH Zurich
 //
 //  SPDX-License-Identifier: BSL-1.0
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -7,12 +7,30 @@
 #pragma once
 
 #include <pika/config.hpp>
+#include <pika/execution_base/receiver.hpp>
 #include <pika/type_support/pack.hpp>
 
 #include <type_traits>
 #include <variant>
 
 namespace pika::execution::experimental::detail {
+
+    template <typename T>
+    struct result_type_signature_helper
+    {
+        using type = pika::execution::experimental::set_value_t(T);
+    };
+
+    template <>
+    struct result_type_signature_helper<void>
+    {
+        using type = pika::execution::experimental::set_value_t();
+    };
+
+    template <typename T>
+    using result_type_signature_helper_t =
+        typename result_type_signature_helper<T>::type;
+
     template <typename Variants>
     struct single_result
     {
@@ -81,4 +99,5 @@ namespace pika::execution::experimental::detail {
 
     template <typename Variants>
     using single_variant_t = typename single_variant<Variants>::type;
+
 }    // namespace pika::execution::experimental::detail

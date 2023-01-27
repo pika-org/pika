@@ -16,8 +16,8 @@
 #include <pika/allocator_support/internal_allocator.hpp>
 #include <pika/allocator_support/traits/is_allocator.hpp>
 #include <pika/errors/try_catch_exception_ptr.hpp>
+#include <pika/execution/algorithms/detail/helpers.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
-#include <pika/execution/algorithms/detail/single_result.hpp>
 #include <pika/execution_base/operation_state.hpp>
 #include <pika/execution_base/sender.hpp>
 #include <pika/functional/invoke_result.hpp>

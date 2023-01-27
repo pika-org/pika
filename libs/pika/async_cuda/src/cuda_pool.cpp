@@ -10,6 +10,7 @@
 #include <pika/concurrency/cache_line_data.hpp>
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/threading_base/thread_num_tss.hpp>
+#include <pika/topology/topology.hpp>
 
 #include <cstddef>
 #include <memory>
