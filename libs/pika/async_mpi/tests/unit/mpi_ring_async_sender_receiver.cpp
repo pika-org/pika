@@ -67,7 +67,7 @@ std::atomic<std::uint64_t> counter;
 // a debug level of N shows messages with priority<N
 using namespace pika::debug::detail;
 template <int Level>
-static print_threshold<Level, 9> msr_deb("MPI_SR_");
+static print_threshold<Level, 0> msr_deb("MPI_SR_");
 
 // ------------------------------------------------------------
 // caution: message_buffers will be constructed in-place in a buffer
@@ -110,7 +110,7 @@ inline std::uint32_t tag_no(
     std::uint64_t rank, std::uint64_t iteration, std::uint32_t ranks)
 {
     std::int64_t tag = (rank + (iteration * ranks)) & 0xffffffff;
-    msr_deb<0>.debug(str<>("generating tag"), std::uint32_t(tag), "rank/s",
+    msr_deb<5>.debug(str<>("generating tag"), std::uint32_t(tag), "rank/s",
         rank, ranks, "iteration", iteration);
     return std::uint32_t(tag);
 }
@@ -137,7 +137,7 @@ void msg_info(std::uint32_t rank, std::uint32_t size, msg_type mtype,
         std::stringstream temp;
         temp << dec<3>(rank) << "/" << dec<3>(size);
         // clang-format off
-        msr_deb<0>.debug(str<>(temp.str().c_str())
+        msr_deb<4>.debug(str<>(temp.str().c_str())
                          , "token", hex<4>(token)
                          , "<-/->", dec<3>(other)
                          , "tag", dec<3>(tag)
@@ -254,7 +254,7 @@ struct receiver
                 });
 
             // launch the receive for te next msg and launch the sending forward
-            msr_deb<0>.debug(str<>("start_detached"), "tx_snd2", step, round);
+            msr_deb<6>.debug(str<>("start_detached"), "tx_snd2", step, round);
             pika::execution::async(std::move(tx_snd2));
         }
         else
@@ -290,9 +290,9 @@ struct receiver
                 });
 
             // launch the receive for te next msg and launch the sending forward
-            msr_deb<0>.debug(str<>("start_detached"), "rx_snd2", step, round);
+            msr_deb<6>.debug(str<>("start_detached"), "rx_snd2", step, round);
             pika::execution::async(std::move(rx_snd2));
-            msr_deb<0>.debug(str<>("start_detached"), "tx_snd2", step, round);
+            msr_deb<6>.debug(str<>("start_detached"), "tx_snd2", step, round);
             pika::execution::async(std::move(tx_snd2));
         }
     }
@@ -303,7 +303,7 @@ int call_mpi_irecv(void* buf, int count, MPI_Datatype datatype, int source,
     int tag, MPI_Comm comm, MPI_Request* request)
 {
     int res = MPI_Irecv(buf, count, datatype, source, tag, comm, request);
-    std::cout << "Calling MPI_Irecv " << std::endl;
+    msr_deb<6>.debug(str<>("MPI_Irecv"), dec<5>(count));
     return res;
 }
 
@@ -389,10 +389,9 @@ int pika_main(pika::program_options::variables_map& vm)
                 // create chain of senders to make the mpi recv and handle it
                 auto rx_snd1 = ex::just(&*buf, message_size, MPI_UNSIGNED_CHAR,
                                    prev_rank(rank, size), tag, MPI_COMM_WORLD) |
-                    mpi::transform_mpi(
-                        call_mpi_irecv, mpi::stream_type::receive_1) |
+                    mpi::transform_mpi(MPI_Irecv, mpi::stream_type::receive_1) |
                     ex::then(reclambda);
-                msr_deb<0>.debug(str<>("start_detached"), "rx_snd1", i, orank);
+                msr_deb<6>.debug(str<>("start_detached"), "rx_snd1", i, orank);
                 pika::execution::async(std::move(rx_snd1));
             }
 
@@ -413,7 +412,7 @@ int pika_main(pika::program_options::variables_map& vm)
                 });
             msg_info(
                 rank, size, msg_type::send, buf->token_val_, tag, 0, 0, "init");
-            msr_deb<0>.debug(str<>("start_detached"), "send_snd", i);
+            msr_deb<6>.debug(str<>("start_detached"), "send_snd", i);
             pika::execution::async(std::move(send_snd));
         }
 
