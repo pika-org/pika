@@ -115,7 +115,7 @@ namespace pika::mpi::experimental {
             using completion_signatures =
                 pika::execution::experimental::make_completion_signatures<
                     std::decay_t<Sender>,
-                    pika::execution::experimental::detail::empty_env,
+                    pika::execution::experimental::empty_env,
                     pika::execution::experimental::completion_signatures<
                         pika::execution::experimental::set_error_t(
                             std::exception_ptr)>,
@@ -262,10 +262,9 @@ namespace pika::mpi::experimental {
                             });
                     }
 
-                    friend constexpr pika::execution::experimental::detail::
-                        empty_env
-                        tag_invoke(pika::execution::experimental::get_env_t,
-                            transform_mpi_receiver const&) noexcept
+                    friend constexpr pika::execution::experimental::empty_env
+                    tag_invoke(pika::execution::experimental::get_env_t,
+                        transform_mpi_receiver const&) noexcept
                     {
                         return {};
                     }
@@ -288,7 +287,7 @@ namespace pika::mpi::experimental {
                     pika::util::detail::transform_t<
                         pika::execution::experimental::value_types_of_t<
                             std::decay_t<Sender>,
-                            pika::execution::experimental::detail::empty_env,
+                            pika::execution::experimental::empty_env,
                             std::tuple, pika::detail::variant>,
                         value_types_helper>,
                     pika::detail::monostate>;
@@ -340,8 +339,7 @@ namespace pika::mpi::experimental {
                         pika::util::detail::transform_t<
                             pika::execution::experimental::value_types_of_t<
                                 transform_mpi_sender_type,
-                                pika::execution::experimental::detail::
-                                    empty_env,
+                                pika::execution::experimental::empty_env,
                                 pika::util::detail::pack,
                                 pika::util::detail::pack>,
                             result_types_helper>,

@@ -80,7 +80,7 @@ namespace pika::split_tuple_detail {
         using value_type = typename std::decay<
             pika::execution::experimental::detail::single_result_t<
                 typename pika::execution::experimental::value_types_of_t<Sender,
-                    pika::execution::experimental::detail::empty_env,
+                    pika::execution::experimental::empty_env,
                     pika::util::detail::pack, pika::util::detail::pack>>>::type;
 #else
         using value_type = typename std::decay<
@@ -95,8 +95,7 @@ namespace pika::split_tuple_detail {
             pika::util::detail::unique_t<pika::util::detail::prepend_t<
                 pika::util::detail::transform_t<
                     typename pika::execution::experimental::error_types_of_t<
-                        Sender,
-                        pika::execution::experimental::detail::empty_env,
+                        Sender, pika::execution::experimental::empty_env,
                         pika::detail::variant>,
                     std::decay>,
                 std::exception_ptr>>;
@@ -144,8 +143,7 @@ namespace pika::split_tuple_detail {
             using value_type = typename std::decay<
                 pika::execution::experimental::detail::single_result_t<
                     typename pika::execution::experimental::value_types_of_t<
-                        Sender,
-                        pika::execution::experimental::detail::empty_env,
+                        Sender, pika::execution::experimental::empty_env,
                         pika::util::detail::pack, pika::util::detail::pack>>>::
                 type;
 #else
@@ -170,7 +168,7 @@ namespace pika::split_tuple_detail {
                 r.state.set_predecessor_done();
             }
 
-            friend constexpr pika::execution::experimental::detail::empty_env
+            friend constexpr pika::execution::experimental::empty_env
             tag_invoke(pika::execution::experimental::get_env_t,
                 split_tuple_receiver const&) noexcept
             {
@@ -213,7 +211,7 @@ namespace pika::split_tuple_detail {
                 constexpr bool sends_stopped =
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
                     pika::execution::experimental::sends_stopped<Sender,
-                        pika::execution::experimental::detail::empty_env>
+                        pika::execution::experimental::empty_env>
 #else
                     pika::execution::experimental::sender_traits<
                         Sender>::sends_done
@@ -413,7 +411,7 @@ namespace pika::split_tuple_detail {
         using value_type = typename std::decay<
             pika::execution::experimental::detail::single_result_t<
                 typename pika::execution::experimental::value_types_of_t<Sender,
-                    pika::execution::experimental::detail::empty_env,
+                    pika::execution::experimental::empty_env,
                     pika::util::detail::pack, pika::util::detail::pack>>>::type;
 #else
         using value_type = typename std::decay<
@@ -449,7 +447,7 @@ namespace pika::split_tuple_detail {
 
         using completion_signatures =
             pika::execution::experimental::make_completion_signatures<Sender,
-                pika::execution::experimental::detail::empty_env,
+                pika::execution::experimental::empty_env,
                 pika::execution::experimental::completion_signatures<
                     pika::execution::experimental::set_error_t(
                         std::exception_ptr)>,
@@ -567,7 +565,7 @@ namespace pika::split_tuple_detail {
         using value_type = typename std::decay<
             pika::execution::experimental::detail::single_result_t<
                 typename pika::execution::experimental::value_types_of_t<Sender,
-                    pika::execution::experimental::detail::empty_env,
+                    pika::execution::experimental::empty_env,
                     pika::util::detail::pack, pika::util::detail::pack>>>::type;
 #else
         using value_type = typename std::decay<

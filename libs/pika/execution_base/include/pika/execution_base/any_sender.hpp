@@ -552,8 +552,8 @@ namespace pika::execution::experimental::detail {
             PIKA_MOVE(moved_storage.get()).set_stopped();
         }
 
-        friend constexpr pika::execution::experimental::detail::empty_env
-        tag_invoke(pika::execution::experimental::get_env_t,
+        friend constexpr pika::execution::experimental::empty_env tag_invoke(
+            pika::execution::experimental::get_env_t,
             any_receiver const&) noexcept
         {
             return {};
@@ -930,7 +930,7 @@ namespace pika::execution::experimental {
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
             using value_types_pack =
                 pika::execution::experimental::value_types_of_t<Sender,
-                    pika::execution::experimental::detail::empty_env,
+                    pika::execution::experimental::empty_env,
                     pika::util::detail::pack, pika::util::detail::pack>;
 #else
             using value_types_pack = typename pika::execution::experimental::

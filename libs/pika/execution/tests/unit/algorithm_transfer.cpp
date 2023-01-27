@@ -209,11 +209,22 @@ struct sender_with_completion_scheduler : void_sender
     {
     }
 
-    friend scheduler_transfer tag_invoke(
-        ex::get_completion_scheduler_t<ex::set_value_t>,
-        sender_with_completion_scheduler s) noexcept
+    struct env
     {
-        return s.sched;
+        scheduler_transfer scheduler;
+
+        friend scheduler_transfer tag_invoke(
+            ex::get_completion_scheduler_t<ex::set_value_t>,
+            env const& e) noexcept
+        {
+            return e.scheduler;
+        }
+    };
+
+    friend env tag_invoke(
+        ex::get_env_t, sender_with_completion_scheduler const& s)
+    {
+        return {s.sched};
     }
 };
 

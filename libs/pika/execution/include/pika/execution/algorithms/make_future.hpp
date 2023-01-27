@@ -99,8 +99,8 @@ namespace pika::make_future_detail {
             r_local.data.reset();
         }
 
-        friend constexpr pika::execution::experimental::detail::empty_env
-        tag_invoke(pika::execution::experimental::get_env_t,
+        friend constexpr pika::execution::experimental::empty_env tag_invoke(
+            pika::execution::experimental::get_env_t,
             make_future_receiver const&) noexcept
         {
             return {};
@@ -150,8 +150,8 @@ namespace pika::make_future_detail {
             r_local.data.reset();
         }
 
-        friend constexpr pika::execution::experimental::detail::empty_env
-        tag_invoke(pika::execution::experimental::get_env_t,
+        friend constexpr pika::execution::experimental::empty_env tag_invoke(
+            pika::execution::experimental::get_env_t,
             make_future_receiver const&) noexcept
         {
             return {};
@@ -203,8 +203,7 @@ namespace pika::make_future_detail {
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
         using value_types =
             typename pika::execution::experimental::value_types_of_t<
-                std::decay_t<Sender>,
-                pika::execution::experimental::detail::empty_env,
+                std::decay_t<Sender>, pika::execution::experimental::empty_env,
                 pika::util::detail::pack, pika::util::detail::pack>;
 #else
         using value_types = typename pika::execution::experimental::

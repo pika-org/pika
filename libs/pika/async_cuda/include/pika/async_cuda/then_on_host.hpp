@@ -117,7 +117,7 @@ namespace pika::cuda::experimental {
                     });
             }
 
-            friend constexpr pika::execution::experimental::detail::empty_env
+            friend constexpr pika::execution::experimental::empty_env
             tag_invoke(pika::execution::experimental::get_env_t,
                 then_on_host_receiver_type const&) noexcept
             {
@@ -169,7 +169,7 @@ namespace pika::cuda::experimental {
 
             using completion_signatures =
                 pika::execution::experimental::make_completion_signatures<
-                    Sender, pika::execution::experimental::detail::empty_env,
+                    Sender, pika::execution::experimental::empty_env,
                     pika::execution::experimental::completion_signatures<
                         pika::execution::experimental::set_error_t(
                             std::exception_ptr)>,
@@ -225,12 +225,10 @@ namespace pika::cuda::experimental {
                         PIKA_FORWARD(Receiver, receiver), s.f, s.sched});
             }
 
-            friend cuda_scheduler tag_invoke(
-                pika::execution::experimental::get_completion_scheduler_t<
-                    pika::execution::experimental::set_value_t>,
-                then_on_host_sender_type const& s) noexcept
+            friend auto tag_invoke(pika::execution::experimental::get_env_t,
+                then_on_host_sender_type const& s)
             {
-                return s.sched;
+                return pika::execution::experimental::get_env(s.sender);
             }
         };
     }    // namespace then_on_host_detail
@@ -254,7 +252,8 @@ namespace pika::cuda::experimental {
         {
             auto completion_sched =
                 pika::execution::experimental::get_completion_scheduler<
-                    pika::execution::experimental::set_value_t>(sender);
+                    pika::execution::experimental::set_value_t>(
+                    pika::execution::experimental::get_env(sender));
             static_assert(
                 std::is_same_v<std::decay_t<decltype(completion_sched)>,
                     cuda_scheduler>,

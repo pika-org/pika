@@ -43,10 +43,19 @@ struct sender
         return {};
     }
 
-    friend Scheduler tag_invoke(
-        pika::execution::experimental::get_completion_scheduler_t<
-            pika::execution::experimental::set_value_t>,
-        sender const&) noexcept
+    struct env
+    {
+        friend Scheduler tag_invoke(
+            pika::execution::experimental::get_completion_scheduler_t<
+                pika::execution::experimental::set_value_t>,
+            env const&) noexcept
+        {
+            return {};
+        }
+    };
+
+    friend env tag_invoke(
+        pika::execution::experimental::get_env_t, sender const&) noexcept
     {
         return {};
     }

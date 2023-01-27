@@ -5,6 +5,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/execution_base/receiver.hpp>
+#include <pika/execution_base/sender.hpp>
 #include <pika/testing.hpp>
 
 #include <exception>
@@ -37,7 +38,7 @@ namespace mylib {
             value_called = true;
         }
 
-        friend constexpr ex::detail::empty_env tag_invoke(
+        friend constexpr ex::empty_env tag_invoke(
             ex::get_env_t, receiver_1 const&) noexcept
         {
             return {};
@@ -56,7 +57,7 @@ namespace mylib {
             error_called = true;
         }
 
-        friend constexpr ex::detail::empty_env tag_invoke(
+        friend constexpr ex::empty_env tag_invoke(
             ex::get_env_t, receiver_2 const&) noexcept
         {
             return {};
@@ -81,7 +82,7 @@ namespace mylib {
             value_called = true;
         }
 
-        friend constexpr ex::detail::empty_env tag_invoke(
+        friend constexpr ex::empty_env tag_invoke(
             ex::get_env_t, receiver_3 const&) noexcept
         {
             return {};
@@ -163,7 +164,7 @@ namespace mylib {
             value_called = true;
         }
 
-        friend constexpr ex::detail::empty_env tag_invoke(
+        friend constexpr ex::empty_env tag_invoke(
             ex::get_env_t, non_receiver_4 const&) noexcept
         {
             return {};

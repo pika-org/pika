@@ -237,14 +237,23 @@ namespace pika::execution::experimental {
                     s.fallback_annotation};
             }
 
-            template <typename CPO,
-                PIKA_CONCEPT_REQUIRES_(std::is_same_v<CPO,
-                    pika::execution::experimental::set_value_t>)>
-            friend constexpr auto tag_invoke(
-                pika::execution::experimental::get_completion_scheduler_t<CPO>,
-                sender const& s) noexcept
+            struct env
             {
-                return s.scheduler;
+                PIKA_NO_UNIQUE_ADDRESS std::decay_t<Scheduler> scheduler;
+
+                friend auto tag_invoke(
+                    pika::execution::experimental::get_completion_scheduler_t<
+                        pika::execution::experimental::set_value_t>,
+                    env const& e) noexcept
+                {
+                    return e.scheduler;
+                }
+            };
+
+            friend env tag_invoke(
+                pika::execution::experimental::get_env_t, sender const& s)
+            {
+                return {s.scheduler};
             }
         };
 

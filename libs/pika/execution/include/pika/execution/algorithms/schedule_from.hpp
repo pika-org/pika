@@ -74,38 +74,34 @@ namespace pika::schedule_from_detail {
 
         static constexpr bool sends_done = false;
 
-        template <typename CPO,
-            // clang-format off
-                PIKA_CONCEPT_REQUIRES_(
-                    pika::execution::experimental::detail::is_receiver_cpo_v<CPO> &&
-                    (std::is_same_v<CPO, pika::execution::experimental::set_value_t> ||
-                        pika::execution::experimental::detail::has_completion_scheduler_v<
-                                pika::execution::experimental::set_error_t,
-                                std::decay_t<Sender>> ||
-                        pika::execution::experimental::detail::has_completion_scheduler_v<
-                                pika::execution::experimental::set_stopped_t,
-                                std::decay_t<Sender>>))
-            // clang-format on
-            >
-        friend constexpr auto tag_invoke(
-            pika::execution::experimental::get_completion_scheduler_t<CPO>,
-            schedule_from_sender_type const& sender)
+        template <typename Env>
+        struct env
         {
-            if constexpr (std::is_same_v<std::decay_t<CPO>,
-                              pika::execution::experimental::set_value_t>)
+            PIKA_NO_UNIQUE_ADDRESS Env e;
+            PIKA_NO_UNIQUE_ADDRESS std::decay_t<Scheduler> scheduler;
+
+            friend auto tag_invoke(
+                pika::execution::experimental::get_completion_scheduler_t<
+                    pika::execution::experimental::set_value_t>,
+                env const& e) noexcept
             {
-                return sender.scheduler;
+                return e.scheduler;
             }
-            else
+
+            template <typename Tag,
+                PIKA_CONCEPT_REQUIRES_(std::is_invocable_v<Tag, env const&>)>
+            friend decltype(auto) tag_invoke(Tag, env const& e)
             {
-                return pika::execution::experimental::get_completion_scheduler<
-                    CPO>(sender.predecessor_sender);
+                return Tag{}(e.e);
             }
-            // This silences a bogus warning from nvcc about no return from
-            // a non-void function.
-#if defined(__NVCC__)
-            __builtin_unreachable();
-#endif
+        };
+
+        friend auto tag_invoke(pika::execution::experimental::get_env_t,
+            schedule_from_sender_type const& s)
+        {
+            auto e =
+                pika::execution::experimental::get_env(s.predecessor_sender);
+            return env<std::decay_t<decltype(e)>>{std::move(e), s.scheduler};
         }
 
         template <typename Receiver>

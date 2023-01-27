@@ -63,20 +63,10 @@ namespace pika::bulk_detail {
 
         static constexpr bool sends_done = false;
 
-        template <typename CPO,
-            // clang-format off
-                PIKA_CONCEPT_REQUIRES_(
-                    pika::execution::experimental::detail::is_receiver_cpo_v<CPO> &&
-                    pika::execution::experimental::detail::has_completion_scheduler_v<
-                        CPO, std::decay_t<Sender>>)
-            // clang-format on
-            >
-        friend constexpr auto tag_invoke(
-            pika::execution::experimental::get_completion_scheduler_t<CPO>,
-            bulk_sender_type const& sender)
+        friend constexpr decltype(auto) tag_invoke(
+            pika::execution::experimental::get_env_t, bulk_sender_type const& s)
         {
-            return pika::execution::experimental::get_completion_scheduler<CPO>(
-                sender.sender);
+            return pika::execution::experimental::get_env(s.sender);
         }
 
         template <typename Receiver>
@@ -182,7 +172,8 @@ namespace pika::execution::experimental {
         {
             auto scheduler =
                 pika::execution::experimental::get_completion_scheduler<
-                    pika::execution::experimental::set_value_t>(sender);
+                    pika::execution::experimental::set_value_t>(
+                    pika::execution::experimental::get_env(sender));
             return pika::functional::detail::tag_invoke(bulk_t{},
                 PIKA_MOVE(scheduler), PIKA_FORWARD(Sender, sender), shape,
                 PIKA_FORWARD(F, f));

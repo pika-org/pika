@@ -57,8 +57,8 @@ namespace pika::drop_value_detail {
             pika::execution::experimental::set_value(PIKA_MOVE(r.receiver));
         }
 
-        friend constexpr pika::execution::experimental::detail::empty_env
-        tag_invoke(pika::execution::experimental::get_env_t,
+        friend constexpr pika::execution::experimental::empty_env tag_invoke(
+            pika::execution::experimental::get_env_t,
             drop_value_receiver_type const&) noexcept
         {
             return {};
@@ -88,7 +88,7 @@ namespace pika::drop_value_detail {
 
         using completion_signatures =
             pika::execution::experimental::make_completion_signatures<Sender,
-                pika::execution::experimental::detail::empty_env,
+                pika::execution::experimental::empty_env,
                 pika::execution::experimental::completion_signatures<>,
                 empty_set_value>;
 #else
@@ -106,22 +106,6 @@ namespace pika::drop_value_detail {
         static constexpr bool sends_done = false;
 #endif
 
-        template <typename CPO,
-            // clang-format off
-                PIKA_CONCEPT_REQUIRES_(
-                    pika::execution::experimental::detail::is_receiver_cpo_v<CPO> &&
-                    pika::execution::experimental::detail::has_completion_scheduler_v<
-                        CPO, std::decay_t<Sender>>)
-            // clang-format on
-            >
-        friend constexpr auto tag_invoke(
-            pika::execution::experimental::get_completion_scheduler_t<CPO>,
-            drop_value_sender_type const& sender)
-        {
-            return pika::execution::experimental::get_completion_scheduler<CPO>(
-                sender.sender);
-        }
-
         template <typename Receiver>
         friend auto tag_invoke(pika::execution::experimental::connect_t,
             drop_value_sender_type&& s, Receiver&& receiver)
@@ -138,6 +122,13 @@ namespace pika::drop_value_detail {
             return pika::execution::experimental::connect(r.sender,
                 drop_value_receiver<Receiver>{
                     PIKA_FORWARD(Receiver, receiver)});
+        }
+
+        friend constexpr decltype(auto) tag_invoke(
+            pika::execution::experimental::get_env_t,
+            drop_value_sender_type const& s)
+        {
+            return pika::execution::experimental::get_env(s.sender);
         }
     };
 }    // namespace pika::drop_value_detail

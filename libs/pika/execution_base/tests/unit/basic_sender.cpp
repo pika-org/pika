@@ -84,7 +84,7 @@ struct receiver
         r.i.get() = v;
     }
 
-    friend constexpr ex::detail::empty_env tag_invoke(
+    friend constexpr ex::empty_env tag_invoke(
         ex::get_env_t, receiver const&) noexcept
     {
         return {};
@@ -171,7 +171,7 @@ struct void_receiver
         ++void_receiver_set_value_calls;
     }
 
-    friend constexpr ex::detail::empty_env tag_invoke(
+    friend constexpr ex::empty_env tag_invoke(
         ex::get_env_t, void_receiver const&) noexcept
     {
         return {};

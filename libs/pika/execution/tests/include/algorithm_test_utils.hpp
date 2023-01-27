@@ -163,8 +163,8 @@ struct callback_receiver
         r.set_value_called = true;
     }
 
-    friend constexpr pika::execution::experimental::detail::empty_env
-    tag_invoke(pika::execution::experimental::get_env_t,
+    friend constexpr pika::execution::experimental::empty_env tag_invoke(
+        pika::execution::experimental::get_env_t,
         callback_receiver const&) noexcept
     {
         return {};
@@ -199,8 +199,8 @@ struct error_callback_receiver
         PIKA_TEST(r.expect_set_value);
     }
 
-    friend constexpr pika::execution::experimental::detail::empty_env
-    tag_invoke(pika::execution::experimental::get_env_t,
+    friend constexpr pika::execution::experimental::empty_env tag_invoke(
+        pika::execution::experimental::get_env_t,
         error_callback_receiver const&) noexcept
     {
         return {};
@@ -502,10 +502,25 @@ struct scheduler
             return operation_state<R>{std::forward<R>(r)};
         }
 
-        friend scheduler tag_invoke(
-            pika::execution::experimental::get_completion_scheduler_t<
-                pika::execution::experimental::set_value_t>,
-            sender const& s) noexcept
+        struct env
+        {
+            std::reference_wrapper<std::atomic<bool>> schedule_called;
+            std::reference_wrapper<std::atomic<bool>> execute_called;
+            std::reference_wrapper<std::atomic<bool>>
+                tag_invoke_overload_called;
+
+            friend scheduler tag_invoke(
+                pika::execution::experimental::get_completion_scheduler_t<
+                    pika::execution::experimental::set_value_t>,
+                env const& e) noexcept
+            {
+                return {e.schedule_called, e.execute_called,
+                    e.tag_invoke_overload_called};
+            }
+        };
+
+        friend env tag_invoke(
+            pika::execution::experimental::get_env_t, sender const& s)
         {
             return {s.schedule_called, s.execute_called,
                 s.tag_invoke_overload_called};
@@ -583,10 +598,25 @@ struct scheduler2
             return operation_state<R>{std::forward<R>(r)};
         }
 
-        friend scheduler2 tag_invoke(
-            pika::execution::experimental::get_completion_scheduler_t<
-                pika::execution::experimental::set_value_t>,
-            sender const& s) noexcept
+        struct env
+        {
+            std::reference_wrapper<std::atomic<bool>> schedule_called;
+            std::reference_wrapper<std::atomic<bool>> execute_called;
+            std::reference_wrapper<std::atomic<bool>>
+                tag_invoke_overload_called;
+
+            friend scheduler2 tag_invoke(
+                pika::execution::experimental::get_completion_scheduler_t<
+                    pika::execution::experimental::set_value_t>,
+                env const& e) noexcept
+            {
+                return {e.schedule_called, e.execute_called,
+                    e.tag_invoke_overload_called};
+            }
+        };
+
+        friend env tag_invoke(
+            pika::execution::experimental::get_env_t, sender const& s)
         {
             return {s.schedule_called, s.execute_called,
                 s.tag_invoke_overload_called};
@@ -687,6 +717,23 @@ namespace my_namespace {
                 pika::execution::experimental::get_completion_scheduler_t<
                     pika::execution::experimental::set_value_t>,
                 sender const&) noexcept
+            {
+                return {};
+            }
+
+            struct env
+            {
+                friend my_scheduler tag_invoke(
+                    pika::execution::experimental::get_completion_scheduler_t<
+                        pika::execution::experimental::set_value_t>,
+                    env const&) noexcept
+                {
+                    return {};
+                }
+            };
+
+            friend env tag_invoke(
+                pika::execution::experimental::get_env_t, sender const&)
             {
                 return {};
             }

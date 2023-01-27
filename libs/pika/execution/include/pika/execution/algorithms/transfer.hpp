@@ -40,7 +40,8 @@ namespace pika::execution::experimental {
         {
             auto completion_scheduler =
                 pika::execution::experimental::get_completion_scheduler<
-                    pika::execution::experimental::set_value_t>(sender);
+                    pika::execution::experimental::set_value_t>(
+                    pika::execution::experimental::get_env(sender));
             return pika::functional::detail::tag_invoke(transfer_t{},
                 PIKA_MOVE(completion_scheduler), PIKA_FORWARD(Sender, sender),
                 PIKA_FORWARD(Scheduler, scheduler));

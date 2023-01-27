@@ -67,12 +67,23 @@ struct const_reference_cuda_sender
         return operation_state<R>{std::move(s.x), std::forward<R>(r)};
     }
 
-    friend cu::cuda_scheduler tag_invoke(
-        pika::execution::experimental::get_completion_scheduler_t<
-            pika::execution::experimental::set_value_t>,
-        const_reference_cuda_sender const& s) noexcept
+    struct env
     {
-        return s.sched;
+        cu::cuda_scheduler sched;
+
+        friend cu::cuda_scheduler tag_invoke(
+            pika::execution::experimental::get_completion_scheduler_t<
+                pika::execution::experimental::set_value_t>,
+            env const& e) noexcept
+        {
+            return e.sched;
+        }
+    };
+
+    friend env tag_invoke(pika::execution::experimental::get_env_t,
+        const_reference_cuda_sender const& s)
+    {
+        return {s.sched};
     }
 };
 
@@ -118,12 +129,23 @@ struct const_reference_error_cuda_sender
         return {std::forward<R>(r)};
     }
 
-    friend cu::cuda_scheduler tag_invoke(
-        pika::execution::experimental::get_completion_scheduler_t<
-            pika::execution::experimental::set_value_t>,
-        const_reference_error_cuda_sender const& s) noexcept
+    struct env
     {
-        return s.sched;
+        cu::cuda_scheduler sched;
+
+        friend cu::cuda_scheduler tag_invoke(
+            pika::execution::experimental::get_completion_scheduler_t<
+                pika::execution::experimental::set_value_t>,
+            env const& e) noexcept
+        {
+            return e.sched;
+        }
+    };
+
+    friend env tag_invoke(pika::execution::experimental::get_env_t,
+        const_reference_error_cuda_sender const& s)
+    {
+        return {s.sched};
     }
 };
 
