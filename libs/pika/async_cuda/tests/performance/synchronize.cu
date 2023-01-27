@@ -131,6 +131,10 @@ int pika_main(pika::program_options::variables_map& vm)
             << elapsed << '\n';
     }
 
+// The compilation of this loop unrolling with llvm-amdgpu's
+// Clang 5.3.3 is hanging.
+#if !(defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION) ||                     \
+    defined(PIKA_HAVE_HIP))
     {
         cu::enable_user_polling poll("default");
 
@@ -177,6 +181,7 @@ int pika_main(pika::program_options::variables_map& vm)
             << "then_with_stream force synchronize batched:                    "
             << elapsed << '\n';
     }
+#endif
 
     {
         cu::enable_user_polling poll("default");
