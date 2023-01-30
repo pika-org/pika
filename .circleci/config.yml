@@ -623,7 +623,7 @@ jobs:
             cd build
             ulimit -c unlimited
             ctest \
-              -j4 \
+              -j2 \
               --timeout 500 \
               -T test \
               --no-compress-output \
