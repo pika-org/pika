@@ -16,7 +16,7 @@ include(CheckLibraryExists)
 
 function(pika_add_config_test variable)
   set(options FILE EXECUTE GPU NOT_REQUIRED)
-  set(one_value_args SOURCE ROOT CMAKECXXFEATURE CHECK_CXXSTD)
+  set(one_value_args SOURCE ROOT CMAKECXXFEATURE CHECK_CXXSTD EXTRA_MSG)
   set(multi_value_args
       CXXFLAGS
       INCLUDE_DIRECTORIES
@@ -209,6 +209,9 @@ function(pika_add_config_test variable)
   endif()
 
   set(_msg "Performing Test ${variable}")
+  if(${variable}_EXTRA_MSG)
+    set(_msg "${_msg} (${${variable}_EXTRA_MSG})")
+  endif()
 
   if(${variable}_RESULT)
     set(_msg "${_msg} - ${_run_msg}")
@@ -291,7 +294,7 @@ function(pika_check_for_cxx11_std_atomic)
         PIKA_WITH_CXX11_ATOMIC
         SOURCE cmake/tests/cxx11_std_atomic.cpp
         LIBRARIES ${PIKA_CXX11_STD_ATOMIC_LIBRARIES}
-        FILE ${ARGN}
+        FILE ${ARGN} EXTRA_MSG "with -latomic"
       )
       if(NOT PIKA_WITH_CXX11_ATOMIC)
         unset(PIKA_CXX11_STD_ATOMIC_LIBRARIES CACHE)
@@ -325,7 +328,7 @@ function(pika_check_for_cxx11_std_atomic_128bit)
         PIKA_WITH_CXX11_ATOMIC_128BIT
         SOURCE cmake/tests/cxx11_std_atomic_128bit.cpp
         LIBRARIES ${PIKA_CXX11_STD_ATOMIC_LIBRARIES}
-        FILE ${ARGN}
+        FILE ${ARGN} EXTRA_MSG "with -latomic"
       )
       if(NOT PIKA_WITH_CXX11_ATOMIC_128BIT)
         # Adding -latomic did not help, so we don't attempt to link to it later
