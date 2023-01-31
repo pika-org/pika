@@ -696,7 +696,16 @@ namespace pika::threads {
 
             if (std::size_t(-1) == num_thread)
             {
-                num_thread = curr_queue_++ % num_queues_;
+                auto local_thread =
+                    pika::threads::detail::get_local_thread_num_tss();
+                if (local_thread != std::size_t(-1))
+                {
+                    num_thread = local_thread % num_queues_;
+                }
+                else
+                {
+                    num_thread = curr_queue_++ % num_queues_;
+                }
             }
             else if (num_thread >= num_queues_)
             {
