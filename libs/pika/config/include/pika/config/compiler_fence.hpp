@@ -41,9 +41,13 @@ extern "C" void _mm_pause();
 
 #if defined(__i386__) || defined(__x86_64__)
 #define PIKA_SMT_PAUSE __asm__ __volatile__("rep; nop" : : : "memory")
-#elif defined(__ppc__)
+#elif defined(__ppc__) || defined(__ppc64__)
 // According to: https://stackoverflow.com/questions/5425506/equivalent-of-x86-pause-instruction-for-ppc
+#ifdef __APPLE__
+#define PIKA_SMT_PAUSE __asm__ volatile("or r27,r27,r27")
+#else
 #define PIKA_SMT_PAUSE __asm__ __volatile__("or 27,27,27")
+#endif
 #elif defined(__arm__)
 #define PIKA_SMT_PAUSE __asm__ __volatile__("yield")
 #else
