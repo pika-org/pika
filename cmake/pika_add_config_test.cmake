@@ -274,11 +274,16 @@ function(pika_check_for_cxx11_std_atomic)
   # First see if we can build atomics with no -latomics. We make sure to
   # override REQUIRED, if set, with NOT_REQUIRED so that we can use the fallback
   # test further down.
+  set(check_not_required)
+  if(NOT MSVC)
+    set(check_not_required NOT_REQUIRED)
+  endif()
+
   pika_add_config_test(
     PIKA_WITH_CXX11_ATOMIC
     SOURCE cmake/tests/cxx11_std_atomic.cpp
     LIBRARIES ${PIKA_CXX11_STD_ATOMIC_LIBRARIES}
-    FILE ${ARGN} NOT_REQUIRED
+    FILE ${ARGN} ${check_not_required}
   )
 
   if(NOT MSVC)
@@ -309,12 +314,18 @@ function(pika_check_for_cxx11_std_atomic_128bit)
   # First see if we can build atomics with no -latomics. We make sure to
   # override REQUIRED, if set, with NOT_REQUIRED so that we can use the fallback
   # test further down.
+  set(check_not_required)
+  if(NOT MSVC)
+    set(check_not_required NOT_REQUIRED)
+  endif()
+
   pika_add_config_test(
     PIKA_WITH_CXX11_ATOMIC_128BIT
     SOURCE cmake/tests/cxx11_std_atomic_128bit.cpp
     LIBRARIES ${PIKA_CXX11_STD_ATOMIC_LIBRARIES}
     FILE ${ARGN} NOT_REQUIRED
   )
+
   if(NOT MSVC)
     # Sometimes linking against libatomic is required, if the platform doesn't
     # support lock-free atomics. We already know that MSVC works
