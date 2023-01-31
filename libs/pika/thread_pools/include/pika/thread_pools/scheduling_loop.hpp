@@ -614,11 +614,13 @@ namespace pika::threads::detail {
 
         std::shared_ptr<bool> background_running = nullptr;
         thread_id_ref_type background_thread;
-
-        if (scheduler.SchedulingPolicy::has_scheduler_mode(
+        bool have_background_thread =
+            scheduler.SchedulingPolicy::has_scheduler_mode(
                 scheduler_mode::do_background_work) &&
             num_thread < params.max_background_threads_ &&
-            !params.background_.empty())
+            !params.background_.empty();
+
+        if (have_background_thread)
         {
             background_thread =
                 create_background_thread(scheduler, params, background_running,
@@ -996,11 +998,13 @@ namespace pika::threads::detail {
 #if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
     defined(PIKA_HAVE_THREAD_IDLE_RATES)
                 // do background work in parcel layer and in agas
-                if (!call_background_thread(background_thread, next_thrd,
+                if (have_background_thread &&
+                    !call_background_thread(background_thread, next_thrd,
                         scheduler, num_thread, running, bg_work_exec_time_init,
                         context_storage))
 #else
-                if (!call_background_thread(background_thread, next_thrd,
+                if (have_background_thread &&
+                    !call_background_thread(background_thread, next_thrd,
                         scheduler, num_thread, running, context_storage))
 #endif    // PIKA_HAVE_BACKGROUND_THREAD_COUNTERS
                 {
@@ -1047,12 +1051,14 @@ namespace pika::threads::detail {
 #if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
     defined(PIKA_HAVE_THREAD_IDLE_RATES)
                 // do background work in parcel layer and in agas
-                if (!call_background_thread(background_thread, next_thrd,
+                if (have_background_thread &&
+                    !call_background_thread(background_thread, next_thrd,
                         scheduler, num_thread, running, bg_work_exec_time_init,
                         context_storage))
 #else
                 // do background work in parcel layer and in agas
-                if (!call_background_thread(background_thread, next_thrd,
+                if (have_background_thread &&
+                    !call_background_thread(background_thread, next_thrd,
                         scheduler, num_thread, running, context_storage))
 #endif    // PIKA_HAVE_BACKGROUND_THREAD_COUNTERS
                 {

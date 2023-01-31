@@ -873,6 +873,18 @@ namespace pika::threads {
                 --work_items_count_.data_;
                 return true;
             }
+            else if (!steal &&
+                0 > new_tasks_count_.data_.load(std::memory_order_relaxed))
+            {
+                std::size_t added = 0;
+                wait_or_add_new(true, added);
+                if (added > 0 && work_items_.pop(next_thrd, false))
+                {
+                    thrd.reset(next_thrd, false);    // do not addref!
+                    --work_items_count_.data_;
+                    return true;
+                }
+            }
 #endif
             return false;
         }
