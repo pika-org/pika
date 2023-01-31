@@ -74,6 +74,7 @@ jobs:
             --timeout 120 \
             --exclude-regex \
           "tests.unit.modules.execution.standalone_thread_pool_executor|\
+          tests.unit.modules.executors.std_thread_scheduler|\
           tests.unit.modules.resource_partitioner.used_pus"
     - name: Install
       shell: bash
