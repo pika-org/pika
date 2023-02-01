@@ -15,10 +15,10 @@ spack_arch="linux-centos8-zen"
 stdexec_version="c0fe16f451137b00ceb85d912ec3a288990ce766"
 
 # The xnack- architectures are not supported by rocblas@5.3.3
-spack_spec="pika@main+rocm+p2300 amdgpu_target='gfx900,gfx906:xnack-' arch=${spack_arch} %${spack_compiler} malloc=system cxxstd=${cxx_std} ^boost@${boost_version} ^hwloc@${hwloc_version} ^hip@${hip_version} ^whip amdgpu_target='gfx900,gfx906:xnack-' ^stdexec@${stdexec_version}"
+spack_spec="pika@main+rocm+p2300 amdgpu_target='gfx906:xnack-' arch=${spack_arch} %${spack_compiler} malloc=system cxxstd=${cxx_std} ^boost@${boost_version} ^hwloc@${hwloc_version} ^hip@${hip_version} ^whip amdgpu_target='gfx906:xnack-' ^stdexec@${stdexec_version}"
 
 configure_extra_options+=" -DCMAKE_BUILD_RPATH=$(spack location -i ${spack_compiler})/lib64"
-configure_extra_options+=" -DCMAKE_HIP_ARCHITECTURES=gfx900;gfx906:xnack-"
+configure_extra_options+=" -DCMAKE_HIP_ARCHITECTURES=gfx906:xnack-"
 configure_extra_options+=" -DPIKA_WITH_HIP=ON"
 configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${cxx_std}"
 configure_extra_options+=" -DPIKA_WITH_MALLOC=system"
