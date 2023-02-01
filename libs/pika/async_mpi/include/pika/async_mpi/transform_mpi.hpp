@@ -254,12 +254,11 @@ namespace pika::mpi::experimental {
 
                                 MPI_Request request{MPI_REQUEST_NULL};
 
-                                PIKA_DP(mpi_tran,
-                                    debug(str<>("throttle?"), "stream",
-                                        mpi::experimental::detail::stream_name(r.op_state.stream)));
-
                                 namespace ex = pika::execution::experimental;
                                 namespace mpi = pika::mpi::experimental;
+                                PIKA_DP(mpi_tran,
+                                    debug(str<>("throttle?"), "stream",
+                                        detail::stream_name(r.op_state.stream)));
 
                                 auto mode = mpi::get_completion_mode();
 
@@ -276,6 +275,11 @@ namespace pika::mpi::experimental {
                                             {
                                                 PIKA_INVOKE(
                                                     PIKA_MOVE(r.op_state.f), ts..., &request);
+                                                PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
+                                                    "The MPI_Request is still MPI_REQUEST_NULL "
+                                                    "after being passed to the user callback in "
+                                                    "transform_mpi. Did you forget to use the "
+                                                    "request?");
                                             }
                                             else
                                             {
@@ -283,6 +287,11 @@ namespace pika::mpi::experimental {
                                                     .template emplace<invoke_result_type>(
                                                         PIKA_INVOKE(PIKA_MOVE(r.op_state.f), ts...,
                                                             &request));
+                                                PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
+                                                    "The MPI_Request is still MPI_REQUEST_NULL "
+                                                    "after being passed to the user callback in "
+                                                    "transform_mpi. Did you forget to use the "
+                                                    "request?");
                                             }
                                             // check if request completed immediately
                                             if (!detail::eager_poll_request(request))
@@ -292,10 +301,9 @@ namespace pika::mpi::experimental {
                                                         str<>("set callback"), request, "suspend"));
                                                 if (mode == 0)
                                                 {
-                                                    pika::util::yield_while(
-                                                        std::bind(pika::mpi::experimental::detail::
-                                                                      eager_poll_request,
-                                                            request));
+                                                    pika::util::yield_while([&request]() {
+                                                        return !detail::eager_poll_request(request);
+                                                    });
                                                     r.op_state.ts = {};
                                                     if constexpr (!std::is_void_v<
                                                                       invoke_result_type>)
@@ -352,6 +360,11 @@ namespace pika::mpi::experimental {
                                             [&](auto&... ts) mutable {
                                                 PIKA_INVOKE(
                                                     PIKA_MOVE(r.op_state.f), ts..., &request);
+                                                PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
+                                                    "The MPI_Request is still MPI_REQUEST_NULL "
+                                                    "after being passed to the user callback in "
+                                                    "transform_mpi. Did you forget to use the "
+                                                    "request?");
                                                 // When the return type is void,
                                                 // there is no value to forward to
                                                 // the receiver
@@ -368,6 +381,11 @@ namespace pika::mpi::experimental {
                                                     .template emplace<invoke_result_type>(
                                                         PIKA_INVOKE(PIKA_MOVE(r.op_state.f), ts...,
                                                             &request));
+                                                PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
+                                                    "The MPI_Request is still MPI_REQUEST_NULL "
+                                                    "after being passed to the user callback in "
+                                                    "transform_mpi. Did you forget to use the "
+                                                    "request?");
                                                 // When the return type is non-void,
                                                 // we have to forward the value to
                                                 // the receiver
@@ -480,7 +498,7 @@ namespace pika::mpi::experimental {
                 {
                     PIKA_DP(mpi_tran,
                         debug(debug::detail::str<>("operation_state"), "stream",
-                            mpi::experimental::detail::stream_name(s)));
+                            detail::stream_name(s)));
                 }
 
                 friend constexpr auto tag_invoke(
@@ -516,12 +534,12 @@ namespace pika::mpi::experimental {
             PIKA_CONCEPT_REQUIRES_(
                 pika::execution::experimental::is_sender_v<std::decay_t<Sender>>)>
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(transform_mpi_t, Sender&& sender,
-            F&& f, mpi::experimental::stream_type s = mpi::experimental::stream_type::automatic)
+            F&& f, stream_type s = stream_type::automatic)
         {
             using namespace transform_mpi_detail;
             PIKA_DP(mpi_tran,
-                debug(debug::detail::str<>("tag_fallback_invoke"), "stream",
-                    mpi::experimental::detail::stream_name(s)));
+                debug(
+                    debug::detail::str<>("tag_fallback_invoke"), "stream", detail::stream_name(s)));
 
             if constexpr (pika::execution::experimental::detail::has_completion_scheduler_v<
                               pika::execution::experimental::set_value_t, std::decay_t<Sender>>)
@@ -759,11 +777,11 @@ namespace pika::mpi::experimental {
         // tag invoke overload for mpi_transform
         //
         template <typename F>
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(transform_mpi_t, F&& f,
-            mpi::experimental::stream_type s = mpi::experimental::stream_type::automatic)
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(transform_mpi_t, F&& f, stream_type s = stream_type::automatic)
         {
             return ::pika::execution::experimental::detail::partial_algorithm<transform_mpi_t, F,
-                mpi::experimental::stream_type>{PIKA_FORWARD(F, f), s};
+                stream_type>{PIKA_FORWARD(F, f), s};
         }
 
     } transform_mpi{};
