@@ -15,8 +15,8 @@ set(PIKA_ADDCONFIGTEST_LOADED TRUE)
 include(CheckLibraryExists)
 
 function(pika_add_config_test variable)
-  set(options FILE EXECUTE GPU)
-  set(one_value_args SOURCE ROOT CMAKECXXFEATURE CHECK_CXXSTD)
+  set(options FILE EXECUTE GPU NOT_REQUIRED)
+  set(one_value_args SOURCE ROOT CMAKECXXFEATURE CHECK_CXXSTD EXTRA_MSG)
   set(multi_value_args
       CXXFLAGS
       INCLUDE_DIRECTORIES
@@ -209,6 +209,9 @@ function(pika_add_config_test variable)
   endif()
 
   set(_msg "Performing Test ${variable}")
+  if(${variable}_EXTRA_MSG)
+    set(_msg "${_msg} (${${variable}_EXTRA_MSG})")
+  endif()
 
   if(${variable}_RESULT)
     set(_msg "${_msg} - ${_run_msg}")
@@ -226,7 +229,7 @@ function(pika_add_config_test variable)
     foreach(definition ${${variable}_DEFINITIONS})
       pika_add_config_define(${definition})
     endforeach()
-  elseif(${variable}_REQUIRED)
+  elseif(${variable}_REQUIRED AND NOT ${variable}_NOT_REQUIRED)
     pika_warn("Test failed, detailed output:\n\n${${variable}_OUTPUT}")
     pika_error(${${variable}_REQUIRED})
   endif()
@@ -268,12 +271,19 @@ function(pika_check_for_cxx11_std_atomic)
     unset(PIKA_CXX11_STD_ATOMIC_LIBRARIES CACHE)
   endif()
 
-  # first see if we can build atomics with no -latomics
+  # First see if we can build atomics with no -latomics. We make sure to
+  # override REQUIRED, if set, with NOT_REQUIRED so that we can use the fallback
+  # test further down.
+  set(check_not_required)
+  if(NOT MSVC)
+    set(check_not_required NOT_REQUIRED)
+  endif()
+
   pika_add_config_test(
     PIKA_WITH_CXX11_ATOMIC
     SOURCE cmake/tests/cxx11_std_atomic.cpp
     LIBRARIES ${PIKA_CXX11_STD_ATOMIC_LIBRARIES}
-    FILE ${ARGN}
+    FILE ${ARGN} ${check_not_required}
   )
 
   if(NOT MSVC)
@@ -289,7 +299,7 @@ function(pika_check_for_cxx11_std_atomic)
         PIKA_WITH_CXX11_ATOMIC
         SOURCE cmake/tests/cxx11_std_atomic.cpp
         LIBRARIES ${PIKA_CXX11_STD_ATOMIC_LIBRARIES}
-        FILE ${ARGN}
+        FILE ${ARGN} EXTRA_MSG "with -latomic"
       )
       if(NOT PIKA_WITH_CXX11_ATOMIC)
         unset(PIKA_CXX11_STD_ATOMIC_LIBRARIES CACHE)
@@ -301,12 +311,21 @@ endfunction()
 
 # Separately check for 128 bit atomics
 function(pika_check_for_cxx11_std_atomic_128bit)
+  # First see if we can build atomics with no -latomics. We make sure to
+  # override REQUIRED, if set, with NOT_REQUIRED so that we can use the fallback
+  # test further down.
+  set(check_not_required)
+  if(NOT MSVC)
+    set(check_not_required NOT_REQUIRED)
+  endif()
+
   pika_add_config_test(
     PIKA_WITH_CXX11_ATOMIC_128BIT
     SOURCE cmake/tests/cxx11_std_atomic_128bit.cpp
     LIBRARIES ${PIKA_CXX11_STD_ATOMIC_LIBRARIES}
-    FILE ${ARGN}
+    FILE ${ARGN} NOT_REQUIRED
   )
+
   if(NOT MSVC)
     # Sometimes linking against libatomic is required, if the platform doesn't
     # support lock-free atomics. We already know that MSVC works
@@ -320,7 +339,7 @@ function(pika_check_for_cxx11_std_atomic_128bit)
         PIKA_WITH_CXX11_ATOMIC_128BIT
         SOURCE cmake/tests/cxx11_std_atomic_128bit.cpp
         LIBRARIES ${PIKA_CXX11_STD_ATOMIC_LIBRARIES}
-        FILE ${ARGN}
+        FILE ${ARGN} EXTRA_MSG "with -latomic"
       )
       if(NOT PIKA_WITH_CXX11_ATOMIC_128BIT)
         # Adding -latomic did not help, so we don't attempt to link to it later
