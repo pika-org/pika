@@ -9,8 +9,6 @@
 //==============================================================================
 // modified to fit pika macro nameing scheme
 
-// pikainspect:noinclude:PIKA_PP_STRIP_PARENS
-
 #pragma once
 
 #include <pika/preprocessor/cat.hpp>

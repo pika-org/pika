@@ -5,13 +5,14 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-// make inspect happy: pikainspect:nodeprecatedinclude pikainspect:nodeprecatedname
-
 #include <pika/functional/function.hpp>
 #include <pika/modules/timing.hpp>
 #include <pika/pika.hpp>
 
 #include <pika/modules/program_options.hpp>
+
+// noinshpect to silence inshpect check for deprecated includes and names
+// (boost::function later in the file)
 #include <boost/function.hpp>
 
 #include <cstdint>

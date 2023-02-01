@@ -6,8 +6,6 @@
 
 #pragma once
 
-// pikainspect:noinclude:PIKA_PP_NARGS
-
 #include <pika/preprocessor/expand.hpp>
 
 /// Expands to the number of arguments passed in

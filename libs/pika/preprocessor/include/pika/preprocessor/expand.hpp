@@ -6,8 +6,6 @@
 
 #pragma once
 
-// pikainspect:noinclude:PIKA_PP_EXPAND
-
 /// The PIKA_PP_EXPAND macro performs a double macro-expansion on its argument.
 /// \param X Token to be expanded twice
 ///

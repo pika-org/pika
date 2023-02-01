@@ -227,7 +227,6 @@ jobs:
                 -DPIKA_WITH_GIT_TAG="${CIRCLE_TAG}" \
                 -DPIKA_WITH_CXX_STANDARD=20 \
                 -DPIKA_WITH_PRECOMPILED_HEADERS=Off \
-                -DPIKA_WITH_TOOLS=On \
                 -DPIKA_WITH_MALLOC=system \
                 -DPIKA_WITH_MPI=ON \
                 -DPIKA_WITH_P2300_REFERENCE_IMPLEMENTATION=ON \
@@ -276,33 +275,6 @@ jobs:
                 -DPIKA_WITH_EXAMPLES=On
             rm -rf *
 
-  inspect:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: /pika
-      - run:
-          name: Building Inspect Tool
-          command: |
-              ninja -j4 tools.inspect
-      - run:
-          name: Running Inspect Tool
-          command: |
-              ./bin/inspect --all --output=./pika_inspect_report.html /pika/source
-      - run:
-          name: Convert inspect HTML output to XML
-          command: |
-              mkdir -p /report
-              /pika/source/tools/inspect/inspect_to_junit.py \
-                  ./pika_inspect_report.html \
-                  /report/pika_inspect.xml
-          when: always
-      - store_artifacts:
-          path: pika_inspect_report.html
-          destination: pika_inspect_report.html
-      - store_test_results:
-          path: /report
-
   inshpect:
     <<: *defaults
     steps:
@@ -313,8 +285,7 @@ jobs:
           command: |
               export INSHPECT_NUMTHREADS=2
               export INSHPECT_VERBOSE=1
-              # TODO: Currently restricted to libs, remove libs when regular inspect tool is removed
-              inshpect /pika/source/libs /pika/source/.inshpect.toml > \
+              inshpect /pika/source /pika/source/.inshpect.toml > \
                   inshpect.txt
               res=$?
               INSHPECT_FD="fd --exclude LICENSE_1_0.txt" \
@@ -559,9 +530,8 @@ jobs:
             sudo apt install -y \
               clang \
               ninja-build \
-              libboost-regex-dev \
-            libboost-context-dev \
-            libhwloc-dev \
+              libboost-context-dev \
+              libhwloc-dev \
               mpi-default-dev \
               xsltproc
             git clone --branch 9.1.0 --single-branch --depth 1 \
@@ -589,7 +559,6 @@ jobs:
                 -DPIKA_WITH_GIT_TAG="${CIRCLE_TAG}" \
                 -DPIKA_WITH_CXX_STANDARD=17 \
                 -DPIKA_WITH_PRECOMPILED_HEADERS=On \
-                -DPIKA_WITH_TOOLS=On \
                 -DPIKA_WITH_MALLOC=system \
                 -DPIKA_WITH_MPI=ON \
                 -DPIKA_WITH_EXAMPLES=On \
@@ -677,10 +646,6 @@ workflows:
       - inshpect:
           requires:
             - checkout_code
-      - inspect:
-          requires:
-            - core
-            - configure
       - core:
           <<: *branch_filter
           requires:

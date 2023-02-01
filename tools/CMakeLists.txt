@@ -4,10 +4,6 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-if(PIKA_WITH_TOOLS)
-  set(subdirs inspect)
-endif()
-
 if(PIKA_WITH_TESTS_BENCHMARKS)
   set(subdirs ${subdirs} perftests_ci)
 endif()
