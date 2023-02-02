@@ -403,30 +403,30 @@ namespace pika::mpi::experimental {
 #endif
 
         // -------------------------------------------------------------
-        void add_request_callback(request_callback_function_type&& callback,
-            MPI_Request request, stream_type s)
+        bool add_request_callback(request_callback_function_type&& callback,
+            MPI_Request request, bool eager_check, stream_type s)
         {
             PIKA_ASSERT_MSG(get_register_polling_count() != 0,
                 "MPI event polling has not been enabled on any pool. Make sure "
                 "that MPI event polling is enabled on at least one thread "
                 "pool.");
 
-            // Eagerly check if request already completed. If it did, call the
-            // callback immediately.
+            // if already complete, kip callback
 #ifndef DISALLOW_EAGER_POLLING_CHECK
-            if (detail::eager_poll_request(request))
+            if (eager_check && detail::poll_request(request))
             {
                 using namespace pika::debug::detail;
                 PIKA_DP(mpi_debug<5>,
                     debug(str<>("eager poll"), request, get_stream_ref(s)));
+                // invoke the callback now since request has completed eagerly
                 PIKA_INVOKE(PIKA_MOVE(callback), MPI_SUCCESS);
-                // note that since we didn't increment the 'in flight' counter
-                // we don't notify any condition either
-                return;
+                // didn't increment 'in flight' counter, don't notify condition
+                return false;
             }
 #endif
             add_to_request_callback_queue(
                 request_callback{request, PIKA_MOVE(callback), s});
+            return true;
         }
 
         // -------------------------------------------------------------
@@ -458,7 +458,7 @@ namespace pika::mpi::experimental {
         }
 
 #ifndef DISALLOW_EAGER_POLLING_CHECK
-        bool eager_poll_request(MPI_Request& req)
+        bool poll_request(MPI_Request& req)
         {
             int flag;
             MPI_Test(&req, &flag, MPI_STATUS_IGNORE);

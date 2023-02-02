@@ -41,8 +41,7 @@ namespace pika::mpi::experimental {
         // -----------------------------------------------------------------
         // calls set_value or set_error on the receiver
         template <typename Receiver, typename... Ts>
-        void set_value_request_callback_helper(
-            int mpi_status, Receiver&& receiver, Ts&&... ts)
+        void set_value_request_callback_helper(int mpi_status, Receiver&& receiver, Ts&&... ts)
         {
             static_assert(sizeof...(Ts) <= 1, "Expecting at most one value");
             if (mpi_status == MPI_SUCCESS)
@@ -53,8 +52,7 @@ namespace pika::mpi::experimental {
             else
             {
                 pika::execution::experimental::set_error(
-                    PIKA_FORWARD(Receiver, receiver),
-                    std::make_exception_ptr(mpi_exception(mpi_status)));
+                    PIKA_FORWARD(Receiver, receiver), std::make_exception_ptr(mpi_exception(mpi_status)));
             }
         }
 
@@ -65,45 +63,37 @@ namespace pika::mpi::experimental {
         // the callback helper with or without a passed result.
         // (mpi calls nearly always return an int, so the void one is not used much)
         template <typename OperationState>
-        void set_value_request_callback_void(
-            MPI_Request request, OperationState& op_state)
+        void set_value_request_callback_void(MPI_Request request, OperationState& op_state)
         {
             detail::add_request_callback(
                 [&op_state](int status) mutable {
                     using namespace pika::debug::detail;
                     PIKA_DP(mpi_tran,
-                        debug(str<>("callback_void"), "stream",
-                            detail::stream_name(op_state.stream)));
+                        debug(str<>("callback_void"), "stream", detail::stream_name(op_state.stream)));
                     op_state.ts = {};
+                    set_value_request_callback_helper(status, PIKA_MOVE(op_state.receiver));
+                },
+                request, true, op_state.stream);
+        }
+
+        template <typename Result, typename OperationState>
+        void set_value_request_callback_non_void(MPI_Request request, OperationState& op_state)
+        {
+            detail::add_request_callback(
+                [&op_state](int status) mutable {
+                    using namespace pika::debug::detail;
+                    PIKA_DP(mpi_tran,
+                        debug(str<>("callback_nonvoid"), "stream", detail::stream_name(op_state.stream)));
+                    op_state.ts = {};
+                    PIKA_ASSERT(std::holds_alternative<Result>(op_state.result));
                     set_value_request_callback_helper(
-                        status, PIKA_MOVE(op_state.receiver));
+                        status, PIKA_MOVE(op_state.receiver), PIKA_MOVE(std::get<Result>(op_state.result)));
                 },
-                request, op_state.stream);
+                request, true, op_state.stream);
         }
 
         template <typename Result, typename OperationState>
-        void set_value_request_callback_non_void(
-            MPI_Request request, OperationState& op_state)
-        {
-            detail::add_request_callback(
-                [&op_state](int status) mutable {
-                    using namespace pika::debug::detail;
-                    PIKA_DP(mpi_tran,
-                        debug(str<>("callback_nonvoid"), "stream",
-                            detail::stream_name(op_state.stream)));
-                    op_state.ts = {};
-                    PIKA_ASSERT(
-                        std::holds_alternative<Result>(op_state.result));
-                    set_value_request_callback_helper(status,
-                        PIKA_MOVE(op_state.receiver),
-                        PIKA_MOVE(std::get<Result>(op_state.result)));
-                },
-                request, op_state.stream);
-        }
-
-        template <typename Result, typename OperationState>
-        void set_value_request_callback_suspend_resume(
-            MPI_Request request, OperationState& op_state)
+        void set_value_request_callback_suspend_resume(MPI_Request request, OperationState& op_state)
         {
             detail::add_request_callback(
                 [&op_state](int status) mutable {
@@ -112,8 +102,6 @@ namespace pika::mpi::experimental {
                         debug(str<>("callback_void_suspend_resume"), "stream",
                             detail::stream_name(op_state.stream)));
                     op_state.ts = {};
-                    //                    PIKA_ASSERT(
-                    //                        std::holds_alternative<Result>(op_state.result));
                     op_state.status = status;
 
                     // wake up the suspended thread
@@ -123,23 +111,21 @@ namespace pika::mpi::experimental {
                     }
                     op_state.cond_var_.notify_one();
                 },
-                request, op_state.stream);
+                // we do not need to eagerly check, because it was done earlier
+                request, false, op_state.stream);
         }
 
         // -----------------------------------------------------------------
         // can function be invoked with param types + MPI_Request
         template <typename F, typename... Ts>
         inline constexpr bool is_mpi_request_invocable_v =
-            std::is_invocable_v<F,
-                std::add_lvalue_reference_t<std::decay_t<Ts>>..., MPI_Request*>;
+            std::is_invocable_v<F, std::add_lvalue_reference_t<std::decay_t<Ts>>..., MPI_Request*>;
 
         // -----------------------------------------------------------------
         // get return type of func(Ts..., MPI_Request)
         template <typename F, typename... Ts>
-        using mpi_request_invoke_result_t =
-            std::decay_t<pika::util::detail::invoke_result_t<F,
-                std::add_lvalue_reference_t<std::decay_t<Ts>>...,
-                MPI_Request*>>;
+        using mpi_request_invoke_result_t = std::decay_t<pika::util::detail::invoke_result_t<F,
+            std::add_lvalue_reference_t<std::decay_t<Ts>>..., MPI_Request*>>;
 
         // -----------------------------------------------------------------
         // route calls through an impl layer for ADL resolution
@@ -150,8 +136,7 @@ namespace pika::mpi::experimental {
         };
 
         template <typename Sender, typename F>
-        using transform_mpi_sender = typename transform_mpi_sender_impl<Sender,
-            F>::transform_mpi_sender_type;
+        using transform_mpi_sender = typename transform_mpi_sender_impl<Sender, F>::transform_mpi_sender_type;
 
         // -----------------------------------------------------------------
         // transform MPI adapter - sender type
@@ -170,12 +155,10 @@ namespace pika::mpi::experimental {
                         result_type_signature_helper_t<mpi_request_invoke_result_t<F, Ts...>>>;
 
             using completion_signatures =
-                pika::execution::experimental::make_completion_signatures<
-                    std::decay_t<Sender>,
+                pika::execution::experimental::make_completion_signatures<std::decay_t<Sender>,
                     pika::execution::experimental::detail::empty_env,
                     pika::execution::experimental::completion_signatures<
-                        pika::execution::experimental::set_error_t(
-                            std::exception_ptr)>,
+                        pika::execution::experimental::set_error_t(std::exception_ptr)>,
                     invoke_result_helper>;
 #else
             // -----------------------------------------------------------------
@@ -186,33 +169,43 @@ namespace pika::mpi::experimental {
             template <template <typename...> class Tuple, typename... Ts>
             struct invoke_result_helper<Tuple<Ts...>>
             {
-                static_assert(is_mpi_request_invocable_v<F, Ts...>,
-                    "F not invocable with the value_types specified.");
+                static_assert(
+                    is_mpi_request_invocable_v<F, Ts...>, "F not invocable with the value_types specified.");
                 using result_type = mpi_request_invoke_result_t<F, Ts...>;
                 using type =
-                    std::conditional_t<std::is_void<result_type>::value,
-                        Tuple<>, Tuple<result_type>>;
+                    std::conditional_t<std::is_void<result_type>::value, Tuple<>, Tuple<result_type>>;
             };
 
             // -----------------------------------------------------------------
             // get pack of unique types from combined tuple and variant
-            template <template <typename...> class Tuple,
-                template <typename...> class Variant>
-            using value_types =
-                pika::util::detail::unique_t<pika::util::detail::transform_t<
-                    typename pika::execution::experimental::sender_traits<
-                        Sender>::template value_types<Tuple, Variant>,
+            template <template <typename...> class Tuple, template <typename...> class Variant>
+            using value_types = pika::util::detail::unique_t<
+                pika::util::detail::transform_t<typename pika::execution::experimental::sender_traits<
+                                                    Sender>::template value_types<Tuple, Variant>,
                     invoke_result_helper>>;
 
             template <template <typename...> class Variant>
-            using error_types =
-                pika::util::detail::unique_t<pika::util::detail::prepend_t<
-                    typename pika::execution::experimental::sender_traits<
-                        Sender>::template error_types<Variant>,
-                    std::exception_ptr>>;
+            using error_types = pika::util::detail::unique_t<pika::util::detail::prepend_t<
+                typename pika::execution::experimental::sender_traits<Sender>::template error_types<Variant>,
+                std::exception_ptr>>;
 
             static constexpr bool sends_done = false;
 #endif
+
+            struct priority_set_restore
+            {
+                pika::execution::thread_priority old_priority_;
+                priority_set_restore(pika::execution::thread_priority new_p)
+                  : old_priority_{threads::detail::get_self_id_data()->get_priority()}
+                {
+                    threads::detail::get_self_id_data()->set_priority(new_p);
+                }
+
+                ~priority_set_restore()
+                {
+                    threads::detail::get_self_id_data()->set_priority(old_priority_);
+                }
+            };
 
             // -----------------------------------------------------------------
             // operation state for a given receiver
@@ -235,203 +228,124 @@ namespace pika::mpi::experimental {
                     operation_state& op_state;
 
                     template <typename Error>
-                    friend constexpr void
-                    tag_invoke(pika::execution::experimental::set_error_t,
+                    friend constexpr void tag_invoke(pika::execution::experimental::set_error_t,
                         transform_mpi_receiver&& r, Error&& error) noexcept
                     {
                         pika::execution::experimental::set_error(
-                            PIKA_MOVE(r.op_state.receiver),
-                            PIKA_FORWARD(Error, error));
+                            PIKA_MOVE(r.op_state.receiver), PIKA_FORWARD(Error, error));
                     }
 
                     friend constexpr void tag_invoke(
-                        pika::execution::experimental::set_stopped_t,
-                        transform_mpi_receiver&& r) noexcept
+                        pika::execution::experimental::set_stopped_t, transform_mpi_receiver&& r) noexcept
                     {
-                        pika::execution::experimental::set_stopped(
-                            PIKA_MOVE(r.op_state.receiver));
+                        pika::execution::experimental::set_stopped(PIKA_MOVE(r.op_state.receiver));
                     };
 
                     // receive the MPI function and arguments and add a request,
                     // then invoke the mpi function and set a callback to be
                     // triggered when the mpi request completes
                     template <typename... Ts,
-                        typename = std::enable_if_t<
-                            is_mpi_request_invocable_v<F, Ts...>>>
-                    friend constexpr void
-                    tag_invoke(pika::execution::experimental::set_value_t,
+                        typename = std::enable_if_t<is_mpi_request_invocable_v<F, Ts...>>>
+                    friend constexpr void tag_invoke(pika::execution::experimental::set_value_t,
                         transform_mpi_receiver&& r, Ts&&... ts) noexcept
                     {
                         pika::detail::try_catch_exception_ptr(
                             [&]() mutable {
-                                using namespace pika::debug::detail;
-                                using ts_element_type =
-                                    std::tuple<std::decay_t<Ts>...>;
-                                r.op_state.ts.template emplace<ts_element_type>(
-                                    PIKA_FORWARD(Ts, ts)...);
-                                auto& t =
-                                    std::get<ts_element_type>(r.op_state.ts);
-
-                                MPI_Request request{MPI_REQUEST_NULL};
-
                                 namespace ex = pika::execution::experimental;
                                 namespace mpi = pika::mpi::experimental;
-                                PIKA_DP(mpi_tran,
-                                    debug(str<>("throttle?"), "stream",
-                                        detail::stream_name(
-                                            r.op_state.stream)));
-
-                                auto mode = mpi::get_completion_mode();
-
+                                using namespace pika::debug::detail;
+                                using ts_element_type = std::tuple<std::decay_t<Ts>...>;
+                                //
+                                r.op_state.ts.template emplace<ts_element_type>(PIKA_FORWARD(Ts, ts)...);
+                                auto& t = std::get<ts_element_type>(r.op_state.ts);
+                                //
+                                MPI_Request request{MPI_REQUEST_NULL};
                                 // modes 0 uses the task yield_while method of callback
                                 // modes 1,2 use the task resume method of callback
+                                auto mode = mpi::get_completion_mode();
                                 if (mode < 3)
                                 {
-                                    using invoke_result_type =
-                                        mpi_request_invoke_result_t<F, Ts...>;
+                                    using invoke_result_type = mpi_request_invoke_result_t<F, Ts...>;
                                     pika::util::detail::invoke_fused(
                                         [&](auto&... ts) mutable {
+                                            PIKA_DP(mpi_tran,
+                                                debug(str<>("mpi invoke"), dec<2>(mode),
+                                                    print_type<invoke_result_type>()));
                                             // execute the mpi function call, passing in the request object
-                                            if constexpr (
-                                                std::is_void_v<
-                                                    invoke_result_type>)
+                                            if constexpr (std::is_void_v<invoke_result_type>)
                                             {
-                                                PIKA_INVOKE(
-                                                    PIKA_MOVE(r.op_state.f),
-                                                    ts..., &request);
-                                                PIKA_ASSERT_MSG(
-                                                    request != MPI_REQUEST_NULL,
-                                                    "The MPI_Request is still "
-                                                    "MPI_REQUEST_NULL "
-                                                    "after being passed to the "
-                                                    "user callback in "
-                                                    "transform_mpi. Did you "
-                                                    "forget to use the "
-                                                    "request?");
+                                                PIKA_INVOKE(PIKA_MOVE(r.op_state.f), ts..., &request);
+                                                PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
+                                                    "MPI_REQUEST_NULL is being passed to the transform_mpi "
+                                                    "user callback");
                                             }
                                             else
                                             {
-                                                r.op_state.result
-                                                    .template emplace<
-                                                        invoke_result_type>(
-                                                        PIKA_INVOKE(
-                                                            PIKA_MOVE(
-                                                                r.op_state.f),
-                                                            ts..., &request));
-                                                PIKA_ASSERT_MSG(
-                                                    request != MPI_REQUEST_NULL,
-                                                    "The MPI_Request is still "
-                                                    "MPI_REQUEST_NULL "
-                                                    "after being passed to the "
-                                                    "user callback in "
-                                                    "transform_mpi. Did you "
-                                                    "forget to use the "
-                                                    "request?");
-                                            }
-                                            // check if request completed immediately
-                                            if (!detail::eager_poll_request(
-                                                    request))
-                                            {
-                                                PIKA_DP(mpi_tran,
-                                                    debug(str<>("set callback"),
-                                                        request, "suspend"));
-                                                if (mode == 0)
-                                                {
-                                                    pika::util::yield_while(
-                                                        [&request]() {
-                                                            return !detail::
-                                                                eager_poll_request(
-                                                                    request);
-                                                        });
-                                                    r.op_state.ts = {};
-                                                    if constexpr (
-                                                        !std::is_void_v<
-                                                            invoke_result_type>)
-                                                    {
-                                                        r.op_state.result =
-                                                            MPI_SUCCESS;
-                                                    }
-                                                    r.op_state.status =
-                                                        MPI_SUCCESS;
-                                                }
-                                                else
-                                                {
-                                                    r.op_state.resume = false;
-                                                    std::unique_lock l{
-                                                        r.op_state.mutex_};
-                                                    set_value_request_callback_suspend_resume<
-                                                        invoke_result_type>(
-                                                        request, r.op_state);
-                                                    r.op_state.cond_var_.wait(
-                                                        l, [&]() {
-                                                            return r.op_state
-                                                                .resume;
-                                                        });
-                                                }
-                                            }
-                                            else
-                                            {
-                                                r.op_state.status = MPI_SUCCESS;
-                                            }
-
-                                            if constexpr (
-                                                std::is_void_v<
-                                                    invoke_result_type>)
-                                            {
-                                                set_value_request_callback_helper(
-                                                    r.op_state.status,
-                                                    PIKA_MOVE(
-                                                        r.op_state.receiver));
-                                            }
-                                            else
-                                            {
-                                                // when this thread wakes up, we must call set_value
-                                                PIKA_ASSERT(
-                                                    std::holds_alternative<
-                                                        invoke_result_type>(
-                                                        r.op_state.result));
-                                                set_value_request_callback_helper(
-                                                    r.op_state.status,
-                                                    PIKA_MOVE(
-                                                        r.op_state.receiver),
-                                                    PIKA_MOVE(std::get<
-                                                        invoke_result_type>(
-                                                        r.op_state.result)));
+                                                r.op_state.result.template emplace<invoke_result_type>(
+                                                    PIKA_INVOKE(PIKA_MOVE(r.op_state.f), ts..., &request));
+                                                PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
+                                                    "MPI_REQUEST_NULL is being passed to the transform_mpi "
+                                                    "user callback");
                                             }
                                         },
                                         t);
+                                    //
+                                    if (mode == 0)
+                                    {
+                                        pika::util::yield_while(
+                                            [&request]() { return !detail::poll_request(request); });
+                                    }
+                                    else
+                                    {
+                                        // don't suspend if request completed already
+                                        if (!detail::poll_request(request))
+                                        {
+                                            r.op_state.resume = false;
+                                            set_value_request_callback_suspend_resume<invoke_result_type>(
+                                                request, r.op_state);
+                                            priority_set_restore set_restore(
+                                                pika::execution::thread_priority::high);
+                                            std::unique_lock l{r.op_state.mutex_};
+                                            r.op_state.cond_var_.wait(l, [&]() { return r.op_state.resume; });
+                                        }
+                                    }
+                                    r.op_state.ts = {};
+                                    r.op_state.status = MPI_SUCCESS;
+                                    if constexpr (!std::is_void_v<invoke_result_type>)
+                                    {
+                                        // @todo - use a helper like other modes
+                                        r.op_state.result = MPI_SUCCESS;
+                                        set_value_request_callback_helper(
+                                            r.op_state.status, PIKA_MOVE(r.op_state.receiver), MPI_SUCCESS);
+                                    }
+                                    else
+                                    {
+                                        set_value_request_callback_helper(
+                                            r.op_state.status, PIKA_MOVE(r.op_state.receiver));
+                                    }
                                 }
+                                // modes 4,5,6,7,8 ....
                                 else
                                 {
+                                    PIKA_DP(mpi_tran,
+                                        debug(str<>("throttle?"), "stream",
+                                            detail::stream_name(r.op_state.stream)));
                                     // throttle if too many "in flight"
-                                    detail::wait_for_throttling(
-                                        r.op_state.stream);
-
-                                    using invoke_result_type =
-                                        mpi_request_invoke_result_t<F, Ts...>;
-
-                                    if constexpr (std::is_void_v<
-                                                      invoke_result_type>)
+                                    detail::wait_for_throttling(r.op_state.stream);
+                                    using invoke_result_type = mpi_request_invoke_result_t<F, Ts...>;
+                                    PIKA_DP(mpi_tran,
+                                        debug(str<>("mpi invoke"), dec<2>(mode),
+                                            print_type<invoke_result_type>()));
+                                    if constexpr (std::is_void_v<invoke_result_type>)
                                     {
                                         pika::util::detail::invoke_fused(
                                             [&](auto&... ts) mutable {
-                                                PIKA_INVOKE(
-                                                    PIKA_MOVE(r.op_state.f),
-                                                    ts..., &request);
-                                                PIKA_ASSERT_MSG(
-                                                    request != MPI_REQUEST_NULL,
-                                                    "The MPI_Request is still "
-                                                    "MPI_REQUEST_NULL "
-                                                    "after being passed to the "
-                                                    "user callback in "
-                                                    "transform_mpi. Did you "
-                                                    "forget to use the "
-                                                    "request?");
-                                                // When the return type is void,
-                                                // there is no value to forward to
-                                                // the receiver
-                                                set_value_request_callback_void(
-                                                    request, r.op_state);
+                                                PIKA_INVOKE(PIKA_MOVE(r.op_state.f), ts..., &request);
+                                                PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
+                                                    "MPI_REQUEST_NULL is being passed to the transform_mpi "
+                                                    "user callback");
+                                                // return type void, no value to forward to receiver
+                                                set_value_request_callback_void(request, r.op_state);
                                             },
                                             t);
                                     }
@@ -439,27 +353,13 @@ namespace pika::mpi::experimental {
                                     {
                                         pika::util::detail::invoke_fused(
                                             [&](auto&... ts) mutable {
-                                                r.op_state.result
-                                                    .template emplace<
-                                                        invoke_result_type>(
-                                                        PIKA_INVOKE(
-                                                            PIKA_MOVE(
-                                                                r.op_state.f),
-                                                            ts..., &request));
-                                                PIKA_ASSERT_MSG(
-                                                    request != MPI_REQUEST_NULL,
-                                                    "The MPI_Request is still "
-                                                    "MPI_REQUEST_NULL "
-                                                    "after being passed to the "
-                                                    "user callback in "
-                                                    "transform_mpi. Did you "
-                                                    "forget to use the "
-                                                    "request?");
-                                                // When the return type is non-void,
-                                                // we have to forward the value to
-                                                // the receiver
-                                                set_value_request_callback_non_void<
-                                                    invoke_result_type>(
+                                                r.op_state.result.template emplace<invoke_result_type>(
+                                                    PIKA_INVOKE(PIKA_MOVE(r.op_state.f), ts..., &request));
+                                                PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
+                                                    "MPI_REQUEST_NULL is being passed to the transform_mpi "
+                                                    "user callback");
+                                                // forward value to receiver
+                                                set_value_request_callback_non_void<invoke_result_type>(
                                                     request, r.op_state);
                                             },
                                             t);
@@ -468,48 +368,41 @@ namespace pika::mpi::experimental {
                             },
                             [&](std::exception_ptr ep) {
                                 pika::execution::experimental::set_error(
-                                    PIKA_MOVE(r.op_state.receiver),
-                                    PIKA_MOVE(ep));
+                                    PIKA_MOVE(r.op_state.receiver), PIKA_MOVE(ep));
                             });
                     }
 
-                    friend constexpr pika::execution::experimental::detail::
-                        empty_env
-                        tag_invoke(pika::execution::experimental::get_env_t,
-                            transform_mpi_receiver const&) noexcept
+                    friend constexpr pika::execution::experimental::detail::empty_env tag_invoke(
+                        pika::execution::experimental::get_env_t, transform_mpi_receiver const&) noexcept
                     {
                         return {};
                     }
                 };
 
                 using operation_state_type =
-                    pika::execution::experimental::connect_result_t<
-                        std::decay_t<Sender>, transform_mpi_receiver>;
+                    pika::execution::experimental::connect_result_t<std::decay_t<Sender>,
+                        transform_mpi_receiver>;
                 operation_state_type op_state;
 
                 template <typename Tuple>
                 struct value_types_helper
                 {
-                    using type =
-                        pika::util::detail::transform_t<Tuple, std::decay>;
+                    using type = pika::util::detail::transform_t<Tuple, std::decay>;
                 };
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
                 using ts_type = pika::util::detail::prepend_t<
                     pika::util::detail::transform_t<
-                        pika::execution::experimental::value_types_of_t<
-                            std::decay_t<Sender>,
-                            pika::execution::experimental::detail::empty_env,
-                            std::tuple, pika::detail::variant>,
+                        pika::execution::experimental::value_types_of_t<std::decay_t<Sender>,
+                            pika::execution::experimental::detail::empty_env, std::tuple,
+                            pika::detail::variant>,
                         value_types_helper>,
                     pika::detail::monostate>;
 #else
                 using ts_type = pika::util::detail::prepend_t<
                     pika::util::detail::transform_t<
                         typename pika::execution::experimental::sender_traits<
-                            std::decay_t<Sender>>::
-                            template value_types<std::tuple,
-                                pika::detail::variant>,
+                            std::decay_t<Sender>>::template value_types<std::tuple, pika::detail::variant>,
                         value_types_helper>,
                     pika::detail::monostate>;
 #endif
@@ -545,25 +438,19 @@ namespace pika::mpi::experimental {
                     using type = pika::detail::monostate;
                 };
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-                using result_type = pika::util::detail::change_pack_t<
-                    pika::detail::variant,
+                using result_type = pika::util::detail::change_pack_t<pika::detail::variant,
                     pika::util::detail::unique_t<pika::util::detail::prepend_t<
                         pika::util::detail::transform_t<
-                            pika::execution::experimental::value_types_of_t<
-                                transform_mpi_sender_type,
-                                pika::execution::experimental::detail::
-                                    empty_env,
-                                pika::util::detail::pack,
+                            pika::execution::experimental::value_types_of_t<transform_mpi_sender_type,
+                                pika::execution::experimental::detail::empty_env, pika::util::detail::pack,
                                 pika::util::detail::pack>,
                             result_types_helper>,
                         pika::detail::monostate>>>;
 #else
-                using result_type = pika::util::detail::change_pack_t<
-                    pika::detail::variant,
+                using result_type = pika::util::detail::change_pack_t<pika::detail::variant,
                     pika::util::detail::unique_t<pika::util::detail::prepend_t<
                         pika::util::detail::transform_t<
-                            transform_mpi_sender_type::value_types<
-                                pika::util::detail::pack,
+                            transform_mpi_sender_type::value_types<pika::util::detail::pack,
                                 pika::util::detail::pack>,
                             result_types_helper>,
                         pika::detail::monostate>>>;
@@ -571,23 +458,19 @@ namespace pika::mpi::experimental {
                 result_type result;
 
                 template <typename Receiver_, typename F_, typename Sender_>
-                operation_state(Receiver_&& receiver, F_&& f, Sender_&& sender,
-                    stream_type s)
+                operation_state(Receiver_&& receiver, F_&& f, Sender_&& sender, stream_type s)
                   : receiver(PIKA_FORWARD(Receiver_, receiver))
                   , f(PIKA_FORWARD(F_, f))
                   , stream{s}
                   , op_state(pika::execution::experimental::connect(
-                        PIKA_FORWARD(Sender_, sender),
-                        transform_mpi_receiver{*this}))
+                        PIKA_FORWARD(Sender_, sender), transform_mpi_receiver{*this}))
                 {
                     PIKA_DP(mpi_tran,
-                        debug(debug::detail::str<>("operation_state"), "stream",
-                            detail::stream_name(s)));
+                        debug(debug::detail::str<>("operation_state"), "stream", detail::stream_name(s)));
                 }
 
                 friend constexpr auto tag_invoke(
-                    pika::execution::experimental::start_t,
-                    operation_state& os) noexcept
+                    pika::execution::experimental::start_t, operation_state& os) noexcept
                 {
                     return pika::execution::experimental::start(os.op_state);
                 }
@@ -598,46 +481,36 @@ namespace pika::mpi::experimental {
             tag_invoke(pika::execution::experimental::connect_t,
                 transform_mpi_sender_type const& s, Receiver&& receiver)
             {
-                return operation_state<Receiver>(
-                    PIKA_FORWARD(Receiver, receiver), s.f, s.sender, s.stream);
+                return operation_state<Receiver>(PIKA_FORWARD(Receiver, receiver), s.f, s.sender, s.stream);
             }
 
             template <typename Receiver>
-            friend constexpr auto
-            tag_invoke(pika::execution::experimental::connect_t,
-                transform_mpi_sender_type&& s, Receiver&& receiver)
+            friend constexpr auto tag_invoke(
+                pika::execution::experimental::connect_t, transform_mpi_sender_type&& s, Receiver&& receiver)
             {
                 return operation_state<Receiver>(
-                    PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.f),
-                    PIKA_MOVE(s.sender), s.stream);
+                    PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.f), PIKA_MOVE(s.sender), s.stream);
             }
         };
     }    // namespace transform_mpi_detail
 
-    inline constexpr struct transform_mpi_t final
-      : pika::functional::detail::tag_fallback<transform_mpi_t>
+    inline constexpr struct transform_mpi_t final : pika::functional::detail::tag_fallback<transform_mpi_t>
     {
     private:
         template <typename Sender, typename F,
-            PIKA_CONCEPT_REQUIRES_(
-                pika::execution::experimental::is_sender_v<Sender>)>
+            PIKA_CONCEPT_REQUIRES_(pika::execution::experimental::is_sender_v<Sender>)>
         friend constexpr PIKA_FORCEINLINE auto
-        tag_fallback_invoke(transform_mpi_t, Sender&& sender, F&& f,
-            stream_type s = stream_type::automatic)
+        tag_fallback_invoke(transform_mpi_t, Sender&& sender, F&& f, stream_type s = stream_type::automatic)
         {
             using namespace transform_mpi_detail;
             PIKA_DP(mpi_tran,
-                debug(debug::detail::str<>("tag_fallback_invoke"), "stream",
-                    detail::stream_name(s)));
+                debug(debug::detail::str<>("tag_fallback_invoke"), "stream", detail::stream_name(s)));
 
-            if constexpr (pika::execution::experimental::detail::
-                              has_completion_scheduler_v<
-                                  pika::execution::experimental::set_value_t,
-                                  std::decay_t<Sender>>)
+            if constexpr (pika::execution::experimental::detail::has_completion_scheduler_v<
+                              pika::execution::experimental::set_value_t, std::decay_t<Sender>>)
             {
                 return pika::execution::experimental::transfer(
-                    transform_mpi_sender<Sender, F>{
-                        PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), s},
+                    transform_mpi_sender<Sender, F>{PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), s},
                     pika::execution::experimental::get_completion_scheduler<
                         pika::execution::experimental::set_value_t>(sender));
             }
@@ -645,28 +518,22 @@ namespace pika::mpi::experimental {
             {
                 namespace ex = pika::execution::experimental;
                 namespace mpi = pika::mpi::experimental;
-                // if there is no mpi pool, then
-                // mode 2 == mode 3
-
-                // notes : stackless,
-                // static no priority scheduler
                 auto mode = mpi::get_completion_mode();
                 if (mode == 0)
                 {
                     // use yield_while on the mpi pool
                     auto snd0 = PIKA_FORWARD(Sender, sender) |
                         ex::transfer(ex::thread_pool_scheduler{
-                            &pika::resource::get_thread_pool(
-                                mpi::get_pool_name())});
-                    auto snd1 = transform_mpi_sender<decltype(snd0), F>{
-                        PIKA_MOVE(snd0), PIKA_FORWARD(F, f), s};
+                            &pika::resource::get_thread_pool(mpi::get_pool_name())});
+                    auto snd1 =
+                        transform_mpi_sender<decltype(snd0), F>{PIKA_MOVE(snd0), PIKA_FORWARD(F, f), s};
                     return ex::make_unique_any_sender(std::move(snd1));
                 }
                 else if (mode == 1)
                 {
                     // use suspend/resume on the same pool that the task is running on
-                    auto snd1 = transform_mpi_sender<Sender, F>{
-                        PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), s};
+                    auto snd1 =
+                        transform_mpi_sender<Sender, F>{PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), s};
                     return ex::make_unique_any_sender(std::move(snd1));
                 }
                 else if (mode == 2)
@@ -674,10 +541,9 @@ namespace pika::mpi::experimental {
                     // transfer to mpi pool and use suspend/resume there
                     auto snd0 = PIKA_FORWARD(Sender, sender) |
                         ex::transfer(ex::thread_pool_scheduler{
-                            &pika::resource::get_thread_pool(
-                                mpi::get_pool_name())});
-                    auto snd1 = transform_mpi_sender<decltype(snd0), F>{
-                        std::move(snd0), PIKA_FORWARD(F, f), s};
+                            &pika::resource::get_thread_pool(mpi::get_pool_name())});
+                    auto snd1 =
+                        transform_mpi_sender<decltype(snd0), F>{std::move(snd0), PIKA_FORWARD(F, f), s};
                     return ex::make_unique_any_sender(std::move(snd1));
                 }
                 // ----------------------------------------------------------
@@ -686,12 +552,9 @@ namespace pika::mpi::experimental {
                     // run mpi inline
                     // run completion explicitly on default pool with High priority
                     auto snd1 =
-                        transform_mpi_sender<Sender, F>{
-                            PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f),
-                            s} |
+                        transform_mpi_sender<Sender, F>{PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), s} |
                         ex::transfer(ex::with_priority(
-                            ex::thread_pool_scheduler{
-                                &pika::resource::get_thread_pool("default")},
+                            ex::thread_pool_scheduler{&pika::resource::get_thread_pool("default")},
                             pika::execution::thread_priority::high));
                     return ex::make_unique_any_sender(std::move(snd1));
                 }
@@ -700,11 +563,8 @@ namespace pika::mpi::experimental {
                     // run mpi inline
                     // run completion explicitly on default pool without priority
                     auto snd1 =
-                        transform_mpi_sender<Sender, F>{
-                            PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f),
-                            s} |
-                        ex::transfer(ex::thread_pool_scheduler{
-                            &pika::resource::get_thread_pool("default")});
+                        transform_mpi_sender<Sender, F>{PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), s} |
+                        ex::transfer(ex::thread_pool_scheduler{&pika::resource::get_thread_pool("default")});
                     return ex::make_unique_any_sender(std::move(snd1));
                 }
                 else if (mode == 5)
@@ -713,16 +573,12 @@ namespace pika::mpi::experimental {
                     // run completion explicitly on default pool with High priority
                     auto snd0 = PIKA_FORWARD(Sender, sender) |
                         ex::transfer(ex::with_stacksize(
-                            ex::thread_pool_scheduler{
-                                &pika::resource::get_thread_pool(
-                                    mpi::get_pool_name())},
+                            ex::thread_pool_scheduler{&pika::resource::get_thread_pool(mpi::get_pool_name())},
                             pika::execution::thread_stacksize::nostack));
                     auto snd1 =
-                        transform_mpi_sender<decltype(snd0), F>{
-                            std::move(snd0), PIKA_FORWARD(F, f), s} |
+                        transform_mpi_sender<decltype(snd0), F>{std::move(snd0), PIKA_FORWARD(F, f), s} |
                         ex::transfer(ex::with_priority(
-                            ex::thread_pool_scheduler{
-                                &pika::resource::get_thread_pool("default")},
+                            ex::thread_pool_scheduler{&pika::resource::get_thread_pool("default")},
                             pika::execution::thread_priority::high));
                     return ex::make_unique_any_sender(std::move(snd1));
                 }
@@ -732,15 +588,11 @@ namespace pika::mpi::experimental {
                     // run completion explicitly on default pool without priority
                     auto snd0 = PIKA_FORWARD(Sender, sender) |
                         ex::transfer(ex::with_stacksize(
-                            ex::thread_pool_scheduler{
-                                &pika::resource::get_thread_pool(
-                                    mpi::get_pool_name())},
+                            ex::thread_pool_scheduler{&pika::resource::get_thread_pool(mpi::get_pool_name())},
                             pika::execution::thread_stacksize::nostack));
                     auto snd1 =
-                        transform_mpi_sender<decltype(snd0), F>{
-                            std::move(snd0), PIKA_FORWARD(F, f), s} |
-                        ex::transfer(ex::thread_pool_scheduler{
-                            &pika::resource::get_thread_pool("default")});
+                        transform_mpi_sender<decltype(snd0), F>{std::move(snd0), PIKA_FORWARD(F, f), s} |
+                        ex::transfer(ex::thread_pool_scheduler{&pika::resource::get_thread_pool("default")});
                     return ex::make_unique_any_sender(std::move(snd1));
                 }
                 /*
@@ -868,10 +720,9 @@ namespace pika::mpi::experimental {
 */
                 else
                 {
-                    throw std::runtime_error(
-                        "Unsupported transfer mode " + std::to_string(mode));
-                    auto snd1 = transform_mpi_sender<Sender, F>{
-                        PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), s};
+                    throw std::runtime_error("Unsupported transfer mode " + std::to_string(mode));
+                    auto snd1 =
+                        transform_mpi_sender<Sender, F>{PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), s};
                     return ex::make_unique_any_sender(std::move(snd1));
                 }
             }
@@ -881,11 +732,11 @@ namespace pika::mpi::experimental {
         // tag invoke overload for mpi_transform
         //
         template <typename F>
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            transform_mpi_t, F&& f, stream_type s = stream_type::automatic)
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(transform_mpi_t, F&& f, stream_type s = stream_type::automatic)
         {
-            return ::pika::execution::experimental::detail::partial_algorithm<
-                transform_mpi_t, F, stream_type>{PIKA_FORWARD(F, f), s};
+            return ::pika::execution::experimental::detail::partial_algorithm<transform_mpi_t, F,
+                stream_type>{PIKA_FORWARD(F, f), s};
         }
 
     } transform_mpi{};

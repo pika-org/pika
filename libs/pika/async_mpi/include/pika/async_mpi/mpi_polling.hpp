@@ -50,8 +50,8 @@ namespace pika::mpi::experimental {
 
         const char* stream_name(stream_type s);
 
-        PIKA_EXPORT void add_request_callback(
-            request_callback_function_type&&, MPI_Request, stream_type);
+        PIKA_EXPORT bool add_request_callback(
+            request_callback_function_type&&, MPI_Request, bool, stream_type);
         PIKA_EXPORT void register_polling(
             pika::threads::detail::thread_pool_base&);
         PIKA_EXPORT void unregister_polling(
@@ -81,14 +81,8 @@ namespace pika::mpi::experimental {
         PIKA_EXPORT pika::threads::detail::polling_status poll();
 
         // utility function to avoid duplication in eager check locations
-#ifndef DISALLOW_EAGER_POLLING_CHECK
-        PIKA_EXPORT bool eager_poll_request(MPI_Request& /*req*/);
-#else
-        PIKA_EXPORT constexpr bool eager_poll_request(MPI_Request& /*req*/)
-        {
-            return false;
-        }
-#endif
+        PIKA_EXPORT bool poll_request(MPI_Request& /*req*/);
+
     }    // namespace detail
 
     // -----------------------------------------------------------------
