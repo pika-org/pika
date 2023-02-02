@@ -74,7 +74,7 @@ namespace pika::mpi::experimental {
                     op_state.ts = {};
                     set_value_request_callback_helper(status, PIKA_MOVE(op_state.receiver));
                 },
-                request, op_state.stream);
+                request, true, op_state.stream);
         }
 
         template <typename Result, typename OperationState>
@@ -91,7 +91,7 @@ namespace pika::mpi::experimental {
                     set_value_request_callback_helper(status, PIKA_MOVE(op_state.receiver),
                         PIKA_MOVE(std::get<Result>(op_state.result)));
                 },
-                request, op_state.stream);
+                request, true, op_state.stream);
         }
 
         template <typename Result, typename OperationState>
@@ -105,8 +105,6 @@ namespace pika::mpi::experimental {
                         debug(str<>("callback_void_suspend_resume"), "stream",
                             detail::stream_name(op_state.stream)));
                     op_state.ts = {};
-                    //                    PIKA_ASSERT(
-                    //                        std::holds_alternative<Result>(op_state.result));
                     op_state.status = status;
 
                     // wake up the suspended thread
@@ -116,7 +114,8 @@ namespace pika::mpi::experimental {
                     }
                     op_state.cond_var_.notify_one();
                 },
-                request, op_state.stream);
+                // we do not need to eagerly check, because it was done earlier
+                request, false, op_state.stream);
         }
 
         // -----------------------------------------------------------------
@@ -200,6 +199,21 @@ namespace pika::mpi::experimental {
             static constexpr bool sends_done = false;
 #endif
 
+            struct priority_set_restore
+            {
+                pika::execution::thread_priority old_priority_;
+                priority_set_restore(pika::execution::thread_priority new_p)
+                  : old_priority_{threads::detail::get_self_id_data()->get_priority()}
+                {
+                    threads::detail::get_self_id_data()->set_priority(new_p);
+                }
+
+                ~priority_set_restore()
+                {
+                    threads::detail::get_self_id_data()->set_priority(old_priority_);
+                }
+            };
+
             // -----------------------------------------------------------------
             // operation state for a given receiver
             template <typename Receiver>
@@ -246,40 +260,36 @@ namespace pika::mpi::experimental {
                     {
                         pika::detail::try_catch_exception_ptr(
                             [&]() mutable {
+                                namespace ex = pika::execution::experimental;
+                                namespace mpi = pika::mpi::experimental;
                                 using namespace pika::debug::detail;
                                 using ts_element_type = std::tuple<std::decay_t<Ts>...>;
+                                //
                                 r.op_state.ts.template emplace<ts_element_type>(
                                     PIKA_FORWARD(Ts, ts)...);
                                 auto& t = std::get<ts_element_type>(r.op_state.ts);
-
+                                //
                                 MPI_Request request{MPI_REQUEST_NULL};
-
-                                namespace ex = pika::execution::experimental;
-                                namespace mpi = pika::mpi::experimental;
-                                PIKA_DP(mpi_tran,
-                                    debug(str<>("throttle?"), "stream",
-                                        detail::stream_name(r.op_state.stream)));
-
-                                auto mode = mpi::get_completion_mode();
-
                                 // modes 0 uses the task yield_while method of callback
                                 // modes 1,2 use the task resume method of callback
+                                auto mode = mpi::get_completion_mode();
                                 if (mode < 3)
                                 {
                                     using invoke_result_type =
                                         mpi_request_invoke_result_t<F, Ts...>;
                                     pika::util::detail::invoke_fused(
                                         [&](auto&... ts) mutable {
+                                            PIKA_DP(mpi_tran,
+                                                debug(str<>("mpi invoke"), dec<2>(mode),
+                                                    print_type<invoke_result_type>()));
                                             // execute the mpi function call, passing in the request object
                                             if constexpr (std::is_void_v<invoke_result_type>)
                                             {
                                                 PIKA_INVOKE(
                                                     PIKA_MOVE(r.op_state.f), ts..., &request);
                                                 PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
-                                                    "The MPI_Request is still MPI_REQUEST_NULL "
-                                                    "after being passed to the user callback in "
-                                                    "transform_mpi. Did you forget to use the "
-                                                    "request?");
+                                                    "MPI_REQUEST_NULL is being passed to the "
+                                                    "transform_mpi user callback");
                                             }
                                             else
                                             {
@@ -288,72 +298,61 @@ namespace pika::mpi::experimental {
                                                         PIKA_INVOKE(PIKA_MOVE(r.op_state.f), ts...,
                                                             &request));
                                                 PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
-                                                    "The MPI_Request is still MPI_REQUEST_NULL "
-                                                    "after being passed to the user callback in "
-                                                    "transform_mpi. Did you forget to use the "
-                                                    "request?");
-                                            }
-                                            // check if request completed immediately
-                                            if (!detail::eager_poll_request(request))
-                                            {
-                                                PIKA_DP(mpi_tran,
-                                                    debug(
-                                                        str<>("set callback"), request, "suspend"));
-                                                if (mode == 0)
-                                                {
-                                                    pika::util::yield_while([&request]() {
-                                                        return !detail::eager_poll_request(request);
-                                                    });
-                                                    r.op_state.ts = {};
-                                                    if constexpr (!std::is_void_v<
-                                                                      invoke_result_type>)
-                                                    {
-                                                        r.op_state.result = MPI_SUCCESS;
-                                                    }
-                                                    r.op_state.status = MPI_SUCCESS;
-                                                }
-                                                else
-                                                {
-                                                    r.op_state.resume = false;
-                                                    std::unique_lock l{r.op_state.mutex_};
-                                                    set_value_request_callback_suspend_resume<
-                                                        invoke_result_type>(request, r.op_state);
-                                                    r.op_state.cond_var_.wait(
-                                                        l, [&]() { return r.op_state.resume; });
-                                                }
-                                            }
-                                            else
-                                            {
-                                                r.op_state.status = MPI_SUCCESS;
-                                            }
-
-                                            if constexpr (std::is_void_v<invoke_result_type>)
-                                            {
-                                                set_value_request_callback_helper(r.op_state.status,
-                                                    PIKA_MOVE(r.op_state.receiver));
-                                            }
-                                            else
-                                            {
-                                                // when this thread wakes up, we must call set_value
-                                                PIKA_ASSERT(
-                                                    std::holds_alternative<invoke_result_type>(
-                                                        r.op_state.result));
-                                                set_value_request_callback_helper(r.op_state.status,
-                                                    PIKA_MOVE(r.op_state.receiver),
-                                                    PIKA_MOVE(std::get<invoke_result_type>(
-                                                        r.op_state.result)));
+                                                    "MPI_REQUEST_NULL is being passed to the "
+                                                    "transform_mpi user callback");
                                             }
                                         },
                                         t);
+                                    //
+                                    if (mode == 0)
+                                    {
+                                        pika::util::yield_while([&request]() {
+                                            return !detail::poll_request(request);
+                                        });
+                                    }
+                                    else
+                                    {
+                                        // don't suspend if request completed already
+                                        if (!detail::poll_request(request))
+                                        {
+                                            r.op_state.resume = false;
+                                            set_value_request_callback_suspend_resume<
+                                                invoke_result_type>(request, r.op_state);
+                                            priority_set_restore set_restore(
+                                                pika::execution::thread_priority::high);
+                                            std::unique_lock l{r.op_state.mutex_};
+                                            r.op_state.cond_var_.wait(
+                                                l, [&]() { return r.op_state.resume; });
+                                        }
+                                    }
+                                    r.op_state.ts = {};
+                                    r.op_state.status = MPI_SUCCESS;
+                                    if constexpr (!std::is_void_v<invoke_result_type>)
+                                    {
+                                        // @todo - use a helper like other modes
+                                        r.op_state.result = MPI_SUCCESS;
+                                        set_value_request_callback_helper(r.op_state.status,
+                                            PIKA_MOVE(r.op_state.receiver), MPI_SUCCESS);
+                                    }
+                                    else
+                                    {
+                                        set_value_request_callback_helper(
+                                            r.op_state.status, PIKA_MOVE(r.op_state.receiver));
+                                    }
                                 }
+                                // modes 4,5,6,7,8 ....
                                 else
                                 {
+                                    PIKA_DP(mpi_tran,
+                                        debug(str<>("throttle?"), "stream",
+                                            detail::stream_name(r.op_state.stream)));
                                     // throttle if too many "in flight"
                                     detail::wait_for_throttling(r.op_state.stream);
-
                                     using invoke_result_type =
                                         mpi_request_invoke_result_t<F, Ts...>;
-
+                                    PIKA_DP(mpi_tran,
+                                        debug(str<>("mpi invoke"), dec<2>(mode),
+                                            print_type<invoke_result_type>()));
                                     if constexpr (std::is_void_v<invoke_result_type>)
                                     {
                                         pika::util::detail::invoke_fused(
@@ -361,13 +360,9 @@ namespace pika::mpi::experimental {
                                                 PIKA_INVOKE(
                                                     PIKA_MOVE(r.op_state.f), ts..., &request);
                                                 PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
-                                                    "The MPI_Request is still MPI_REQUEST_NULL "
-                                                    "after being passed to the user callback in "
-                                                    "transform_mpi. Did you forget to use the "
-                                                    "request?");
-                                                // When the return type is void,
-                                                // there is no value to forward to
-                                                // the receiver
+                                                    "MPI_REQUEST_NULL is being passed to the "
+                                                    "transform_mpi user callback");
+                                                // return type void, no value to forward to receiver
                                                 set_value_request_callback_void(
                                                     request, r.op_state);
                                             },
@@ -382,13 +377,9 @@ namespace pika::mpi::experimental {
                                                         PIKA_INVOKE(PIKA_MOVE(r.op_state.f), ts...,
                                                             &request));
                                                 PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
-                                                    "The MPI_Request is still MPI_REQUEST_NULL "
-                                                    "after being passed to the user callback in "
-                                                    "transform_mpi. Did you forget to use the "
-                                                    "request?");
-                                                // When the return type is non-void,
-                                                // we have to forward the value to
-                                                // the receiver
+                                                    "MPI_REQUEST_NULL is being passed to the "
+                                                    "transform_mpi user callback");
+                                                // forward value to receiver
                                                 set_value_request_callback_non_void<
                                                     invoke_result_type>(request, r.op_state);
                                             },
@@ -554,11 +545,6 @@ namespace pika::mpi::experimental {
             {
                 namespace ex = pika::execution::experimental;
                 namespace mpi = pika::mpi::experimental;
-                // if there is no mpi pool, then
-                // mode 2 == mode 3
-
-                // notes : stackless,
-                // static no priority scheduler
                 auto mode = mpi::get_completion_mode();
                 if (mode == 0)
                 {
