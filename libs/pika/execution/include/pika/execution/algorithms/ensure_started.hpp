@@ -236,7 +236,7 @@ namespace pika::ensure_started_detail {
             }
 
             template <typename Receiver>
-            struct done_error_value_visitor
+            struct stopped_error_value_visitor
             {
                 PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
@@ -344,7 +344,7 @@ namespace pika::ensure_started_detail {
                     // TODO: Should this preserve the scheduler? It does not
                     // if we call set_* inline.
                     pika::detail::visit(
-                        done_error_value_visitor<Receiver>{
+                        stopped_error_value_visitor<Receiver>{
                             PIKA_FORWARD(Receiver, receiver)},
                         PIKA_MOVE(v));
                 }
@@ -362,7 +362,7 @@ namespace pika::ensure_started_detail {
                         // directly again.
                         l.unlock();
                         pika::detail::visit(
-                            done_error_value_visitor<Receiver>{
+                            stopped_error_value_visitor<Receiver>{
                                 PIKA_FORWARD(Receiver, receiver)},
                             PIKA_MOVE(v));
                     }
@@ -377,7 +377,7 @@ namespace pika::ensure_started_detail {
                                 receiver = PIKA_FORWARD(
                                     Receiver, receiver)]() mutable {
                                 pika::detail::visit(
-                                    done_error_value_visitor<Receiver>{
+                                    stopped_error_value_visitor<Receiver>{
                                         PIKA_MOVE(receiver)},
                                     PIKA_MOVE(v));
                             });

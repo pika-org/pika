@@ -246,7 +246,7 @@ namespace pika::split_detail {
             }
 
             template <typename Receiver>
-            struct done_error_value_visitor
+            struct stopped_error_value_visitor
             {
                 PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
@@ -352,7 +352,7 @@ namespace pika::split_detail {
                     // TODO: Should this preserve the scheduler? It does not
                     // if we call set_* inline.
                     pika::detail::visit(
-                        done_error_value_visitor<Receiver>{
+                        stopped_error_value_visitor<Receiver>{
                             PIKA_FORWARD(Receiver, receiver)},
                         v);
                 }
@@ -371,7 +371,7 @@ namespace pika::split_detail {
                         // directly again.
                         l.unlock();
                         pika::detail::visit(
-                            done_error_value_visitor<Receiver>{
+                            stopped_error_value_visitor<Receiver>{
                                 PIKA_FORWARD(Receiver, receiver)},
                             v);
                     }
@@ -389,7 +389,7 @@ namespace pika::split_detail {
                                 receiver = PIKA_FORWARD(
                                     Receiver, receiver)]() mutable {
                                 pika::detail::visit(
-                                    done_error_value_visitor<Receiver>{
+                                    stopped_error_value_visitor<Receiver>{
                                         PIKA_MOVE(receiver)},
                                     v);
                             });
