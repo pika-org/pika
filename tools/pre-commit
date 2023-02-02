@@ -31,9 +31,13 @@ normal=$(tput sgr0)
 
 cxxfiles=()
 for file in `git diff --cached --name-only --diff-filter=ACMRT | grep -E "\.(cpp|hpp)$"`; do
+    # to allow for per-directory clang format files, we cd into the dir first
+    DIR=$(dirname "$file")
+    pushd $DIR > /dev/null
     if ! cmp -s <(git show :${file}) <(git show :${file}|$CLANG_FORMAT_VERSION -style=file); then
         cxxfiles+=("${file}")
     fi
+    popd > /dev/null
 done
 
 cmakefiles=()
