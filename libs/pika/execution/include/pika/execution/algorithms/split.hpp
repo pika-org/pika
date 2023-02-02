@@ -151,9 +151,6 @@ namespace pika::split_detail {
                 using type = pika::util::detail::transform_t<Tuple, std::decay>;
             };
 
-            struct done_type
-            {
-            };
             using value_type = pika::util::detail::transform_t<
                 typename pika::execution::experimental::sender_traits<Sender>::
                     template value_types<std::tuple, pika::detail::variant>,
@@ -166,8 +163,8 @@ namespace pika::split_detail {
                                 pika::detail::variant>,
                         std::decay>,
                     std::exception_ptr>>;
-            pika::detail::variant<pika::detail::monostate, done_type,
-                error_type, value_type>
+            pika::detail::variant<pika::detail::monostate,
+                pika::execution::detail::stopped_type, error_type, value_type>
                 v;
 
             using continuation_type =
@@ -249,7 +246,7 @@ namespace pika::split_detail {
             }
 
             template <typename Receiver>
-            struct done_error_value_visitor
+            struct stopped_error_value_visitor
             {
                 PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
@@ -258,7 +255,7 @@ namespace pika::split_detail {
                     PIKA_UNREACHABLE;
                 }
 
-                void operator()(done_type)
+                void operator()(pika::execution::detail::stopped_type)
                 {
                     pika::execution::experimental::set_stopped(
                         PIKA_MOVE(receiver));
@@ -355,7 +352,7 @@ namespace pika::split_detail {
                     // TODO: Should this preserve the scheduler? It does not
                     // if we call set_* inline.
                     pika::detail::visit(
-                        done_error_value_visitor<Receiver>{
+                        stopped_error_value_visitor<Receiver>{
                             PIKA_FORWARD(Receiver, receiver)},
                         v);
                 }
@@ -374,7 +371,7 @@ namespace pika::split_detail {
                         // directly again.
                         l.unlock();
                         pika::detail::visit(
-                            done_error_value_visitor<Receiver>{
+                            stopped_error_value_visitor<Receiver>{
                                 PIKA_FORWARD(Receiver, receiver)},
                             v);
                     }
@@ -392,7 +389,7 @@ namespace pika::split_detail {
                                 receiver = PIKA_FORWARD(
                                     Receiver, receiver)]() mutable {
                                 pika::detail::visit(
-                                    done_error_value_visitor<Receiver>{
+                                    stopped_error_value_visitor<Receiver>{
                                         PIKA_MOVE(receiver)},
                                     v);
                             });

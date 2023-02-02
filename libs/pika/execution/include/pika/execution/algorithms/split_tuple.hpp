@@ -90,9 +90,6 @@ namespace pika::split_tuple_detail {
                     pika::util::detail::pack>>>::type;
 #endif
 
-        struct done_type
-        {
-        };
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
         using error_type =
             pika::util::detail::unique_t<pika::util::detail::prepend_t<
@@ -112,8 +109,8 @@ namespace pika::split_tuple_detail {
                     std::decay>,
                 std::exception_ptr>>;
 #endif
-        pika::detail::variant<pika::detail::monostate, done_type, error_type,
-            value_type>
+        pika::detail::variant<pika::detail::monostate,
+            pika::execution::detail::stopped_type, error_type, value_type>
             v;
 
         using continuation_type = pika::util::detail::unique_function<void()>;
@@ -202,7 +199,7 @@ namespace pika::split_tuple_detail {
         }
 
         template <std::size_t Index, typename Receiver>
-        struct done_error_value_visitor
+        struct stopped_error_value_visitor
         {
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
@@ -211,7 +208,7 @@ namespace pika::split_tuple_detail {
                 PIKA_UNREACHABLE;
             }
 
-            void operator()(done_type)
+            void operator()(pika::execution::detail::stopped_type)
             {
                 constexpr bool sends_stopped =
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
@@ -324,7 +321,7 @@ namespace pika::split_tuple_detail {
                 // values/errors have been stored into the shared state.
                 // We can trigger the continuation directly.
                 pika::detail::visit(
-                    done_error_value_visitor<Index, Receiver>{
+                    stopped_error_value_visitor<Index, Receiver>{
                         PIKA_FORWARD(Receiver, receiver)},
                     v);
             }
@@ -343,7 +340,7 @@ namespace pika::split_tuple_detail {
                     // directly again.
                     l.unlock();
                     pika::detail::visit(
-                        done_error_value_visitor<Index, Receiver>{
+                        stopped_error_value_visitor<Index, Receiver>{
                             PIKA_FORWARD(Receiver, receiver)},
                         v);
                 }
@@ -360,7 +357,7 @@ namespace pika::split_tuple_detail {
                                                receiver = PIKA_FORWARD(Receiver,
                                                    receiver)]() mutable {
                         pika::detail::visit(
-                            done_error_value_visitor<Index, Receiver>{
+                            stopped_error_value_visitor<Index, Receiver>{
                                 PIKA_MOVE(receiver)},
                             v);
                     };
