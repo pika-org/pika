@@ -469,3 +469,10 @@ namespace pika::execution::experimental {
         typename pika::util::detail::invoke_result<connect_t, S, R>::type;
 }    // namespace pika::execution::experimental
 #endif
+
+namespace pika::execution::detail {
+    /// Helper type for storing set_stopped signals in variants.
+    struct stopped_type
+    {
+    };
+}    // namespace pika::execution::detail

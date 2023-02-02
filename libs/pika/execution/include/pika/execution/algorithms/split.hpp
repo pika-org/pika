@@ -151,9 +151,6 @@ namespace pika::split_detail {
                 using type = pika::util::detail::transform_t<Tuple, std::decay>;
             };
 
-            struct done_type
-            {
-            };
             using value_type = pika::util::detail::transform_t<
                 typename pika::execution::experimental::sender_traits<Sender>::
                     template value_types<std::tuple, pika::detail::variant>,
@@ -166,8 +163,8 @@ namespace pika::split_detail {
                                 pika::detail::variant>,
                         std::decay>,
                     std::exception_ptr>>;
-            pika::detail::variant<pika::detail::monostate, done_type,
-                error_type, value_type>
+            pika::detail::variant<pika::detail::monostate,
+                pika::execution::detail::stopped_type, error_type, value_type>
                 v;
 
             using continuation_type =
@@ -258,7 +255,7 @@ namespace pika::split_detail {
                     PIKA_UNREACHABLE;
                 }
 
-                void operator()(done_type)
+                void operator()(pika::execution::detail::stopped_type)
                 {
                     pika::execution::experimental::set_stopped(
                         PIKA_MOVE(receiver));

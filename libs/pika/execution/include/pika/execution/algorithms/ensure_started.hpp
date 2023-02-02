@@ -143,9 +143,6 @@ namespace pika::ensure_started_detail {
             // the predecessor work is released as soon as possible.
             std::optional<operation_state_type> os;
 
-            struct done_type
-            {
-            };
             template <typename Tuple>
             struct value_types_helper
             {
@@ -161,8 +158,8 @@ namespace pika::ensure_started_detail {
             using error_type =
                 pika::util::detail::unique_t<pika::util::detail::prepend_t<
                     error_types<pika::detail::variant>, std::exception_ptr>>;
-            pika::detail::variant<pika::detail::monostate, done_type,
-                error_type, value_type>
+            pika::detail::variant<pika::detail::monostate,
+                pika::execution::detail::stopped_type, error_type, value_type>
                 v;
 
             using continuation_type =
@@ -252,7 +249,7 @@ namespace pika::ensure_started_detail {
                     PIKA_UNREACHABLE;
                 }
 
-                void operator()(done_type)
+                void operator()(pika::execution::detail::stopped_type)
                 {
                     pika::execution::experimental::set_stopped(
                         PIKA_MOVE(receiver));
