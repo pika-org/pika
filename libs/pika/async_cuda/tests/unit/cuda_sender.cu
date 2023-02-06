@@ -126,8 +126,16 @@ int pika_main(pika::program_options::variables_map& vm)
     std::size_t device = vm["device"].as<std::size_t>();
     //
     unsigned int seed = (unsigned int) std::time(nullptr);
+#if !defined(PIKA_HAVE_HIP)
+    // ROCm Clang-15 (HIP 5.3.3) fails to compile this with an internal compiler
+    // error. See https://github.com/pika-org/pika/issues/585 for more details.
     if (vm.count("seed"))
         seed = vm["seed"].as<unsigned int>();
+#else
+    std::cout << "The --seed command line argument is ignored because HIP is ";
+    std::cout << "enabled. See https://github.com/pika-org/pika/issues/585 ";
+    std::cout << "for more details." << std::endl;
+#endif
 
     std::cout << "using seed: " << seed << std::endl;
     std::srand(seed);
