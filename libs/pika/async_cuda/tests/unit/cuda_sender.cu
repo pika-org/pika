@@ -45,7 +45,6 @@ auto launch_saxpy_kernel(pika::cuda::experimental::cuda_scheduler& cuda_sched,
 template <typename T>
 __global__ void trivial_kernel(T val)
 {
-    // TODO: Fingers crossed that printf now works with HIP?
     printf("hello from gpu with value %f\n", static_cast<double>(val));
 }
 
