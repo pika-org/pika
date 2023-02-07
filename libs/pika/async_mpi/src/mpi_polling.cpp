@@ -273,7 +273,11 @@ namespace pika::mpi::experimental {
         // -----------------------------------------------------------------
         void wait_for_throttling(stream_type stream)
         {
-            wait_for_throttling_impl(get_stream_ref(stream));
+            // if throttling is disabled, then do nothing
+            if constexpr (detail::throttling_enabled)
+            {
+                wait_for_throttling_impl(get_stream_ref(stream));
+            }
         }
 
         // -----------------------------------------------------------------
@@ -618,12 +622,17 @@ namespace pika::mpi::experimental {
                 --mpi_data_.active_request_vector_size_;
 
                 // wake any thread that is waiting for throttling
-                if (stream.in_stream_ < stream.limit_)
+                // if throttling is disabled, then do nothing
+                if constexpr (detail::throttling_enabled)
                 {
-                    std::unique_lock lk(stream.throttling_mtx_);
-                    PIKA_DP(mpi_debug<5>,
-                        debug(str<>("notify_one"), std::get<MPI_Request>(c), stream, mpi_data_));
-                    stream.throttling_cond_.notify_one();
+                    if (stream.in_stream_ < stream.limit_)
+                    {
+                        std::unique_lock lk(stream.throttling_mtx_);
+                        PIKA_DP(mpi_debug<5>,
+                            debug(
+                                str<>("notify_one"), std::get<MPI_Request>(c), stream, mpi_data_));
+                        stream.throttling_cond_.notify_one();
+                    }
                 }
 
                 PIKA_DP(mpi_debug<5>,

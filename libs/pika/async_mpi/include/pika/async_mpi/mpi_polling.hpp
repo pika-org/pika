@@ -80,6 +80,8 @@ namespace pika::mpi::experimental {
         // utility function to avoid duplication in eager check locations
         PIKA_EXPORT bool poll_request(MPI_Request& /*req*/);
 
+        inline constexpr bool throttling_enabled = false;
+
     }    // namespace detail
 
     // -----------------------------------------------------------------
