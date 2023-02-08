@@ -346,7 +346,7 @@ namespace pika::schedule_from_detail {
         template <typename Receiver>
         friend operation_state<Receiver>
         tag_invoke(pika::execution::experimental::connect_t,
-            schedule_from_sender_type& s, Receiver&& receiver)
+            schedule_from_sender_type const& s, Receiver&& receiver)
         {
             return {s.predecessor_sender, s.scheduler,
                 PIKA_FORWARD(Receiver, receiver)};

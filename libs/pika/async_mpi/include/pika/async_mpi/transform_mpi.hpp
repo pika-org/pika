@@ -384,7 +384,7 @@ namespace pika::mpi::experimental {
             template <typename Receiver>
             friend constexpr auto
             tag_invoke(pika::execution::experimental::connect_t,
-                transform_mpi_sender_type& s, Receiver&& receiver)
+                transform_mpi_sender_type const& s, Receiver&& receiver)
             {
                 return operation_state<Receiver>(
                     PIKA_FORWARD(Receiver, receiver), s.f, s.sender, s.stream);

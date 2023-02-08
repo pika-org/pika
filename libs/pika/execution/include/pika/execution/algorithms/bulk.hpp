@@ -155,7 +155,7 @@ namespace pika::bulk_detail {
 
         template <typename Receiver>
         friend auto tag_invoke(pika::execution::experimental::connect_t,
-            bulk_sender_type& s, Receiver&& receiver)
+            bulk_sender_type const& s, Receiver&& receiver)
         {
             return pika::execution::experimental::connect(s.sender,
                 bulk_receiver<Receiver>(

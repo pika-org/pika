@@ -175,7 +175,7 @@ namespace pika::then_detail {
 
         template <typename Receiver>
         friend auto tag_invoke(pika::execution::experimental::connect_t,
-            then_sender_type& r, Receiver&& receiver)
+            then_sender_type const& r, Receiver&& receiver)
         {
             return pika::execution::experimental::connect(r.sender,
                 then_receiver<Receiver, F>{

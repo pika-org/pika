@@ -488,7 +488,7 @@ namespace pika::split_detail {
         template <typename Receiver>
         friend operation_state<Receiver>
         tag_invoke(pika::execution::experimental::connect_t,
-            split_sender_type& s, Receiver&& receiver)
+            split_sender_type const& s, Receiver&& receiver)
         {
             return {PIKA_FORWARD(Receiver, receiver), s.state};
         }

@@ -580,7 +580,7 @@ namespace pika::execution::experimental::detail {
         virtual void clone_into(void* p) const = 0;
         using unique_any_sender_base<Ts...>::connect;
         virtual any_operation_state connect(
-            any_receiver<Ts...>&& receiver) & = 0;
+            any_receiver<Ts...>&& receiver) const& = 0;
     };
 
     template <typename... Ts>
@@ -626,8 +626,8 @@ namespace pika::execution::experimental::detail {
             return true;
         }
 
-        [[noreturn]] any_operation_state connect(any_receiver<Ts...>&&) &
-            override
+        [[noreturn]] any_operation_state connect(
+            any_receiver<Ts...>&&) const& override
         {
             throw_bad_any_call("any_sender", "connect");
         }
@@ -691,7 +691,8 @@ namespace pika::execution::experimental::detail {
             new (p) any_sender_impl(sender);
         }
 
-        any_operation_state connect(any_receiver<Ts...>&& receiver) & override
+        any_operation_state connect(
+            any_receiver<Ts...>&& receiver) const& override
         {
             return any_operation_state{sender, PIKA_MOVE(receiver)};
         }
@@ -879,8 +880,9 @@ namespace pika::execution::experimental {
                 pika::execution::experimental::set_stopped_t()>;
 
         template <typename R>
-        friend detail::any_operation_state tag_invoke(
-            pika::execution::experimental::connect_t, any_sender& s, R&& r)
+        friend detail::any_operation_state
+        tag_invoke(pika::execution::experimental::connect_t,
+            any_sender const& s, R&& r)
         {
             return s.storage.get().connect(
                 detail::any_receiver<Ts...>{PIKA_FORWARD(R, r)});

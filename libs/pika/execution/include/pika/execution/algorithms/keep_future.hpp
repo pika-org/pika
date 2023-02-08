@@ -145,7 +145,7 @@ namespace pika::keep_future_detail {
         template <typename Receiver>
         friend operation_state<Receiver, future_type>
         tag_invoke(pika::execution::experimental::connect_t,
-            keep_future_sender& s, Receiver&& receiver)
+            keep_future_sender const& s, Receiver&& receiver)
         {
             return {PIKA_FORWARD(Receiver, receiver), s.future};
         }
