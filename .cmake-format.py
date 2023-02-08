@@ -458,7 +458,6 @@ with section("parse"):
         "pika_check_for_cxx11_std_quick_exit": {"pargs": {"nargs": 0}},
         "pika_check_for_cxx11_std_shared_ptr_lwg3018": {"pargs": {"nargs": 0}},
         "pika_check_for_cxx17_aligned_new": {"pargs": {"nargs": 0}},
-        "pika_check_for_cxx17_filesystem": {"pargs": {"nargs": 0}},
         "pika_check_for_cxx17_hardware_destructive_interference_size": {
             "pargs": {"nargs": 0}
         },
