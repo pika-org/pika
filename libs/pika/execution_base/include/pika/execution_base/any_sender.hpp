@@ -800,6 +800,17 @@ namespace pika::execution::experimental {
                 .connect(detail::any_receiver<Ts...>{PIKA_FORWARD(R, r)});
         }
 
+        template <typename R>
+        friend detail::any_operation_state
+        tag_invoke(pika::execution::experimental::connect_t,
+            unique_any_sender const&, R&&)
+        {
+            static_assert(sizeof(R) == 0,
+                "Are you missing a std::move? unique_any_sender is not "
+                "copyable and thus not l-value connectable. Make sure you are "
+                "passing an r-value reference of the sender.");
+        }
+
         bool empty() const noexcept
         {
             return storage.empty();
