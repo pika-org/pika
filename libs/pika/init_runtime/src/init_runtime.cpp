@@ -43,6 +43,11 @@
 #include <pika/util/get_entry_as.hpp>
 #include <pika/version.hpp>
 
+#if defined(PIKA_HAVE_HIP)
+#include <hip/hip_runtime.h>
+#include <whip.hpp>
+#endif
+
 #if defined(__bgq__)
 #include <cstdlib>
 #endif
@@ -491,6 +496,11 @@ namespace pika {
                               << pika::get_error_what(e) << "\n";
                     return -1;
                 }
+
+#if defined(PIKA_HAVE_HIP)
+                LPROGRESS_ << "run_local: initialize HIP";
+                whip::check_error(hipInit(0));
+#endif
 
                 // Initialize and start the pika runtime.
                 LPROGRESS_ << "run_local: create runtime";
