@@ -318,6 +318,7 @@ namespace pika::mpi::experimental {
                                             r.op_state.resume = false;
                                             set_value_request_callback_suspend_resume<
                                                 invoke_result_type>(request, r.op_state);
+                                            PIKA_ASSERT(pika::threads::detail::get_self_id());
                                             priority_set_restore set_restore(
                                                 pika::execution::thread_priority::high);
                                             std::unique_lock l{r.op_state.mutex_};
