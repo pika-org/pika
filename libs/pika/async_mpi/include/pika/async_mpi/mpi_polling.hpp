@@ -26,6 +26,8 @@
 #include <utility>
 #include <vector>
 
+//#define DISALLOW_EAGER_POLLING_CHECK 1
+
 namespace pika::mpi::experimental {
 
     enum class stream_type : std::uint32_t
@@ -77,6 +79,16 @@ namespace pika::mpi::experimental {
         // Background progress function for MPI async operations
         // Checks for completed MPI_Requests and sets ready state in waiting receivers
         PIKA_EXPORT pika::threads::detail::polling_status poll();
+
+        // utility function to avoid duplication in eager check locations
+#ifndef DISALLOW_EAGER_POLLING_CHECK
+        PIKA_EXPORT bool eager_poll_request(MPI_Request& /*req*/);
+#else
+        PIKA_EXPORT constexpr bool eager_poll_request(MPI_Request& /*req*/)
+        {
+            return false;
+        }
+#endif
     }    // namespace detail
 
     // -----------------------------------------------------------------
@@ -109,6 +121,7 @@ namespace pika::mpi::experimental {
     /// set the maximume number of MPI_Request completions to
     /// handle at each polling event
     PIKA_EXPORT void set_max_polling_size(std::size_t);
+    PIKA_EXPORT std::size_t get_max_polling_size();
 
     // -----------------------------------------------------------------
     /// Get the poll transfer mode. when an mpi message completes,
