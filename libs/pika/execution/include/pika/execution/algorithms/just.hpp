@@ -109,7 +109,7 @@ namespace pika::just_detail {
 
             template <typename Receiver>
             friend auto tag_invoke(pika::execution::experimental::connect_t,
-                just_sender_type& s, Receiver&& receiver)
+                just_sender_type const& s, Receiver&& receiver)
             {
                 return operation_state<Receiver>{
                     PIKA_FORWARD(Receiver, receiver), s.ts};

@@ -375,7 +375,7 @@ namespace pika::when_all_vector_detail {
 
         template <typename Receiver>
         friend auto tag_invoke(pika::execution::experimental::connect_t,
-            when_all_vector_sender_type& s, Receiver&& receiver)
+            when_all_vector_sender_type const& s, Receiver&& receiver)
         {
             return operation_state<Receiver>(receiver, s.senders);
         }

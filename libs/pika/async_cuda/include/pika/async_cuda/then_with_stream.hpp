@@ -597,7 +597,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
 
         template <typename Receiver>
         friend auto tag_invoke(pika::execution::experimental::connect_t,
-            then_with_cuda_stream_sender_type& s, Receiver&& receiver)
+            then_with_cuda_stream_sender_type const& s, Receiver&& receiver)
         {
             return operation_state<Receiver>(
                 PIKA_FORWARD(Receiver, receiver), s.f, s.sched, s.sender);

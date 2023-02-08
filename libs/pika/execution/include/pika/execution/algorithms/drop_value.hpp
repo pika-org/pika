@@ -133,7 +133,7 @@ namespace pika::drop_value_detail {
 
         template <typename Receiver>
         friend auto tag_invoke(pika::execution::experimental::connect_t,
-            drop_value_sender_type& r, Receiver&& receiver)
+            drop_value_sender_type const& r, Receiver&& receiver)
         {
             return pika::execution::experimental::connect(r.sender,
                 drop_value_receiver<Receiver>{

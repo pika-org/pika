@@ -219,7 +219,7 @@ namespace pika::cuda::experimental {
 
             template <typename Receiver>
             friend auto tag_invoke(pika::execution::experimental::connect_t,
-                then_on_host_sender_type& s, Receiver&& receiver)
+                then_on_host_sender_type const& s, Receiver&& receiver)
             {
                 return pika::execution::experimental::connect(s.sender,
                     then_on_host_receiver<Receiver, F>{

@@ -398,7 +398,7 @@ namespace pika::when_all_impl {
 
         template <typename Receiver>
         friend auto tag_invoke(pika::execution::experimental::connect_t,
-            when_all_sender_type& s, Receiver&& receiver)
+            when_all_sender_type const& s, Receiver&& receiver)
         {
             return operation_state<Receiver, senders_type&,
                 num_predecessors - 1>(

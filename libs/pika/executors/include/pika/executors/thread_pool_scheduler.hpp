@@ -231,7 +231,7 @@ namespace pika::execution::experimental {
 
             template <typename Receiver>
             friend operation_state<Scheduler, Receiver>
-            tag_invoke(connect_t, sender& s, Receiver&& receiver)
+            tag_invoke(connect_t, sender const& s, Receiver&& receiver)
             {
                 return {s.scheduler, PIKA_FORWARD(Receiver, receiver),
                     s.fallback_annotation};

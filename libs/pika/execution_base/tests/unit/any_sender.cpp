@@ -160,7 +160,7 @@ struct sender
 
     template <typename R>
     friend operation_state<R>
-    tag_invoke(pika::execution::experimental::connect_t, sender& s, R&& r)
+    tag_invoke(pika::execution::experimental::connect_t, sender const& s, R&& r)
     {
         return {std::forward<R>(r), s.ts};
     }
