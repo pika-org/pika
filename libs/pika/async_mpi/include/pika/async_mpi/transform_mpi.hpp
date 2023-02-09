@@ -30,6 +30,11 @@
 
 namespace pika::mpi::experimental {
     namespace transform_mpi_detail {
+        // -----------------------------------------------------------------
+        // by convention the title is 7 chars (for alignment)
+        using print_on = pika::debug::detail::enable_print<false>;
+        static print_on mpi_tran("MPITRAN");
+
         template <typename Receiver, typename... Ts>
         void set_value_request_callback_helper(
             int mpi_status, Receiver&& receiver, Ts&&... ts)
@@ -54,6 +59,10 @@ namespace pika::mpi::experimental {
         {
             detail::add_request_callback(
                 [&op_state](int status) mutable {
+                    mpi_tran.debug(debug::detail::str<>("callback_void"),
+                        "stream",
+                        mpi::experimental::detail::stream_name(
+                            op_state.stream));
                     op_state.ts = {};
                     set_value_request_callback_helper(
                         status, PIKA_MOVE(op_state.receiver));
@@ -67,6 +76,10 @@ namespace pika::mpi::experimental {
         {
             detail::add_request_callback(
                 [&op_state](int status) mutable {
+                    mpi_tran.debug(debug::detail::str<>("callback_nonvoid"),
+                        "stream",
+                        mpi::experimental::detail::stream_name(
+                            op_state.stream));
                     op_state.ts = {};
                     PIKA_ASSERT(
                         std::holds_alternative<Result>(op_state.result));
@@ -205,6 +218,10 @@ namespace pika::mpi::experimental {
                                 using invoke_result_type =
                                     mpi_request_invoke_result_t<F, Ts...>;
 
+                                transform_mpi_detail::mpi_tran.debug(
+                                    debug::detail::str<>("throttle?"), "stream",
+                                    mpi::experimental::detail::stream_name(
+                                        r.op_state.stream));
                                 // throttle if too many "in flight"
                                 detail::wait_for_throttling(r.op_state.stream);
 
@@ -371,6 +388,9 @@ namespace pika::mpi::experimental {
                         PIKA_FORWARD(Sender_, sender),
                         transform_mpi_receiver{*this}))
                 {
+                    transform_mpi_detail::mpi_tran.debug(
+                        debug::detail::str<>("operation_state"), "stream",
+                        mpi::experimental::detail::stream_name(s));
                 }
 
                 friend constexpr auto tag_invoke(
@@ -414,8 +434,35 @@ namespace pika::mpi::experimental {
             mpi::experimental::stream_type s =
                 mpi::experimental::stream_type::automatic)
         {
-            return transform_mpi_detail::transform_mpi_sender<Sender, F>{
-                PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), s};
+            transform_mpi_detail::mpi_tran.debug(
+                debug::detail::str<>("tag_fallback_invoke"), "stream",
+                mpi::experimental::detail::stream_name(s));
+
+            if constexpr (pika::execution::experimental::detail::
+                              has_completion_scheduler_v<
+                                  pika::execution::experimental::set_value_t,
+                                  std::decay_t<Sender>>)
+            {
+                return pika::execution::experimental::transfer(
+                    transform_mpi_detail::transform_mpi_sender<Sender, F>{
+                        PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), s},
+                    pika::execution::experimental::get_completion_scheduler<
+                        pika::execution::experimental::set_value_t>(sender));
+            }
+            else
+            {
+                //                auto temp =
+                //                pika::execution::experimental::completion_scheduler<
+                //                    pika::execution::experimental::set_value_t>(sender));
+
+                //                return pika::execution::experimental::transfer(
+                //                    transform_mpi_detail::transform_mpi_sender<Sender, F>{
+                //                        PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), s},
+                //                    pika::execution::experimental::thread_pool_scheduler{});
+
+                return transform_mpi_detail::transform_mpi_sender<Sender, F>{
+                    PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), s};
+            }
         }
 
         //

@@ -6,6 +6,9 @@
 
 #include <pika/assert.hpp>
 #include <pika/execution.hpp>
+#if __has_include(<pika/executors/thread_pool_scheduler_queue_bypass.hpp>)
+# include <pika/executors/thread_pool_scheduler_queue_bypass.hpp>
+#endif
 #include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/mpi.hpp>
@@ -79,6 +82,7 @@ struct message_buffer
     //
     message_buffer(std::uint64_t msize)
     {
+        token_val_ = 65535;
         size_ = msize;
     }
 };
@@ -226,87 +230,81 @@ int pika_main(pika::program_options::variables_map& vm)
                 if (mpi_task_transfer)
                 {
                     as1 = snd1 |
-                        ex::transfer(pika::execution::experimental::
-                                thread_pool_scheduler{});
+                        ex::transfer(ex::with_priority(
+                            ex::thread_pool_scheduler_queue_bypass{},
+                            pika::execution::thread_priority::high));
                 }
                 else
                 {
                     as1 = snd1;
                 }
-                auto recv_snd = as1 |
-                    ex::transfer(pika::execution::experimental::
-                            thread_pool_scheduler{}) |
-                    ex::then([=, &counter](int /*res*/) {
-                        // output info
-                        msg_info(rank, size, msg_type::recv, buf, tag);
-                        counter--;
+                auto recv_snd = as1 | ex::then([=, &counter](int /*res*/) {
+                    // output info
+                    msg_info(rank, size, msg_type::recv, buf, tag);
+                    counter--;
 
-                        // decrement the token we received
-                        --buf->token_val_;
-                        if (buf->token_val_ !=
-                            (size - std::uint64_t(rank - origin)) % size)
+                    // decrement the token we received
+                    --buf->token_val_;
+                    if (buf->token_val_ !=
+                        (size - std::uint64_t(rank + size - origin)) % size)
+                    {
+                        using namespace pika::debug::detail;
+                        msr_deb<0>.debug(str<>("Recv"), "Rank", dec<3>(rank),
+                            "of", dec<3>(size), "Recv token",
+                            dec<3>(buf->token_val_), "from rank",
+                            dec<3>(prev_rank(rank, size)), "tag", dec<3>(tag));
+                    }
+                    assert(buf->token_val_ ==
+                        (size - std::uint64_t(rank + size - origin)) % size);
+
+                    // if this token came from us and has been all the way round the ring, just exit
+                    if (origin == rank)
+                    {
+                        if (output)
                         {
                             using namespace pika::debug::detail;
-                            msr_deb<0>.debug(str<>("Recv"), "Rank",
+                            msr_deb<0>.debug(str<>("Complete"), "Rank",
                                 dec<3>(rank), "of", dec<3>(size), "Recv token",
-                                dec<3>(buf->token_val_), "from rank",
-                                dec<3>(prev_rank(rank, size)), "tag",
-                                dec<3>(tag));
+                                dec<3>(buf->token_val_), "tag", dec<3>(tag),
+                                "counter", dec<3>(counter));
                         }
-                        assert(buf->token_val_ ==
-                            (size - std::uint64_t(rank - origin)) % size);
-
-                        // if this token came from us and has been all the way round the ring, just exit
-                        if (origin == rank)
+                        release_msg_buffer(buf);
+                    }
+                    // if this token is from another rank, then forward it on to the right
+                    else
+                    {
+                        auto snd1 =
+                            ex::just(&*buf, message_size, MPI_UNSIGNED_CHAR,
+                                next_rank(rank, size), tag, MPI_COMM_WORLD) |
+                            mpi::transform_mpi(
+                                MPI_Isend, mpi::stream_type::send);
+                        // we don't need an any sender here because running the continuation
+                        // on apolling thread would not do any harm, but for benchmarking
+                        // we want to create more tasks to stress things
+                        ex::any_sender<int> as1;
+                        if (mpi_task_transfer)
                         {
-                            if (output)
-                            {
-                                using namespace pika::debug::detail;
-                                msr_deb<0>.debug(str<>("Complete"), "Rank",
-                                    dec<3>(rank), "of", dec<3>(size),
-                                    "Recv token", dec<3>(buf->token_val_),
-                                    "tag", dec<3>(tag), "counter",
-                                    dec<3>(counter));
-                            }
-                            release_msg_buffer(buf);
+                            as1 = snd1 |
+                                ex::transfer(ex::with_priority(
+                                    ex::thread_pool_scheduler_queue_bypass{},
+                                    pika::execution::thread_priority::high));
                         }
-                        // if this token is from another rank, then forward it on to the right
                         else
                         {
-                            auto snd1 =
-                                ex::just(&*buf, message_size, MPI_UNSIGNED_CHAR,
-                                    next_rank(rank, size), tag,
-                                    MPI_COMM_WORLD) |
-                                mpi::transform_mpi(
-                                    MPI_Isend, mpi::stream_type::send);
-                            // we don't need an any sender here because running the continuation
-                            // on apolling thread would not do any harm, but for benchmarking
-                            // we want to create more tasks to stress things
-                            ex::any_sender<int> as1;
-                            if (mpi_task_transfer)
-                            {
-                                as1 = snd1 |
-                                    ex::transfer(pika::execution::experimental::
-                                            thread_pool_scheduler{});
-                            }
-                            else
-                            {
-                                as1 = snd1;
-                            }
-                            auto send_snd = as1 |
-                                // ex::transfer(pika::execution::experimental::thread_pool_scheduler{}) |
-                                ex::then([=, &counter](int /*res*/) {
-                                    // output info
-                                    msg_info(
-                                        rank, size, msg_type::send, buf, tag);
-                                    counter--;
-                                    release_msg_buffer(buf);
-                                });
-                            msg_info(
-                                rank, size, msg_type::send, buf, tag, "post");
-                            ex::start_detached(std::move(send_snd));
+                            as1 = snd1;
                         }
-                    });
+                        auto send_snd = as1 |
+                            // ex::transfer(ex::thread_pool_scheduler_queue_bypass{}) |
+                            ex::then([=, &counter](int /*res*/) {
+                                // output info
+                                msg_info(rank, size, msg_type::send, buf, tag);
+                                counter--;
+                                release_msg_buffer(buf);
+                            });
+                        msg_info(rank, size, msg_type::send, buf, tag, "post");
+                        ex::start_detached(std::move(send_snd));
+                    }
+                });
                 msg_info(rank, size, msg_type::recv, buf, tag, "post");
                 ex::start_detached(std::move(recv_snd));
             }
@@ -317,7 +315,7 @@ int pika_main(pika::program_options::variables_map& vm)
             std::uint64_t tag = tag_no(rank, i, in_flight);
             auto send_snd =
 #if SPAWN_AS_NEW_TASK
-//                ex::transfer_just(pika::execution::experimental::thread_pool_scheduler{},
+//                ex::transfer_just(ex::thread_pool_scheduler{},
 //                                  &tokens[tag], message_size, MPI_UNSIGNED_CHAR,
 //                    next_rank(rank, size), tag, MPI_COMM_WORLD) |
 #else
