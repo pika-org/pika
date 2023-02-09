@@ -172,7 +172,7 @@ int pika_main(pika::program_options::variables_map& vm)
     // and adding a continuation with a copy of a copy
     std::cout << "Copying executor : " << testd2 + 1 << std::endl;
     auto cuda_sched_copy = cuda_sched;
-    tt::sync_wait(ex::transfer_just(cuda_sched, testd2 + 1) |
+    tt::sync_wait(ex::transfer_just(cuda_sched_copy, testd2 + 1) |
         cu::then_with_stream(&cuda_trivial_kernel<double>) |
         cu::then_on_host([] { std::cout << "copy continuation triggered\n"; }));
 
