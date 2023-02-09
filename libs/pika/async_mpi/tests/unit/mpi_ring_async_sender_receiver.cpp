@@ -17,6 +17,7 @@
 //
 #include <boost/lockfree/stack.hpp>
 #include <fmt/format.h>
+#include <fmt/printf.h>
 //
 #include <array>
 #include <atomic>
