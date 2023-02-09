@@ -39,7 +39,7 @@
 
 // a debug level of zero disables messages with a priority>0
 // a debug level of N shows messages with priority<N
-constexpr int debug_level = 0;
+constexpr int debug_level = 9;
 
 // cppcheck-suppress ConfigurationNotChecked
 template <int Level>
@@ -60,6 +60,19 @@ namespace ex = pika::execution::experimental;
 namespace mpi = pika::mpi::experimental;
 namespace tt = pika::this_thread::experimental;
 namespace deb = pika::debug::detail;
+
+namespace pika::execution {
+    template <typename Sender>
+    auto async(Sender&& sender)
+    {
+        namespace ex = pika::execution::experimental;
+        auto sched = ex::thread_pool_scheduler{&pika::resource::get_thread_pool("default")};
+        auto snd = ex::schedule(sched) | ex::then([sender = std::move(sender)]() mutable {
+            ex::start_detached(std::move(sender));
+        });
+        ex::start_detached(std::move(snd));
+    }
+}    // namespace pika::execution
 
 //----------------------------------------------------------------------------
 // namespace aliases
@@ -258,7 +271,7 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
                         "send in flight", sends_in_flight);
                     return result;
                 });
-            ex::start_detached(std::move(ssnd));
+            pika::execution::async(std::move(ssnd));
         }
         messages_sent++;
         //
