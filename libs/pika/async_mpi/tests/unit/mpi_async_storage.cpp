@@ -139,8 +139,10 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
 
     // this needs to scope all uses of mpi::experimental::executor
     std::string poolname = "default";
-    if (pika::resource::pool_exists("mpi"))
-        poolname = "mpi";
+    if (pika::resource::pool_exists(mpi::get_pool_name()))
+    {
+        poolname = mpi::get_pool_name();
+    }
     mpi::enable_user_polling enable_polling(poolname);
 
     pika::scoped_annotation annotate("test_write");
@@ -498,9 +500,10 @@ void init_resource_partitioner_handler(pika::resource::partitioner& rp,
 
     // Create a thread pool with a single core that we will use for all
     // communication related tasks
-    rp.create_thread_pool(
-        "mpi", pika::resource::scheduling_policy::local_priority_fifo, mode);
-    rp.add_resource(rp.numa_domains()[0].cores()[0].pus()[0], "mpi");
+    rp.create_thread_pool(mpi::get_pool_name(),
+        pika::resource::scheduling_policy::local_priority_fifo, mode);
+    rp.add_resource(
+        rp.numa_domains()[0].cores()[0].pus()[0], mpi::get_pool_name());
 }
 
 //----------------------------------------------------------------------------
@@ -545,13 +548,14 @@ int main(int argc, char* argv[])
     nws_deb<6>.debug(3, "Calling pika::init");
     pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
-    // Set the callback to init the thread_pools
+    // Set the callback to init thread_pools
     init_args.rp_callback = &init_resource_partitioner_handler;
 
-    auto res = pika::init(pika_main, argc, argv, init_args);
+    auto result = pika::init(pika_main, argc, argv, init_args);
+    PIKA_TEST_EQ(result, 0);
+
+    // Finalize MPI
     MPI_Finalize();
 
-    // This test should just run without crashing
-    PIKA_TEST(true);
-    return res;
+    return result;
 }

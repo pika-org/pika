@@ -16,6 +16,7 @@
 #include <pika/testing.hpp>
 //
 #include <boost/lockfree/stack.hpp>
+#include <fmt/format.h>
 //
 #include <array>
 #include <atomic>
@@ -57,7 +58,7 @@ namespace tt = pika::this_thread::experimental;
 namespace deb = pika::debug;
 
 static bool output = false;
-static uint32_t mpi_task_transfer = false;
+static uint32_t mpi_task_transfer = mpi::get_completion_mode();
 static std::uint32_t mpi_poll_size = 16;
 // ------------------------------------------------------------
 // a debug level of zero disables messages with a priority>0
@@ -189,13 +190,12 @@ int pika_main(pika::program_options::variables_map& vm)
     // --------------------------
     const std::uint64_t iterations = vm["iterations"].as<std::uint64_t>();
     output = vm.count("output") != 0;
-    mpi_task_transfer = vm["mpi-task-transfer"].as<std::uint32_t>();
     //
     auto in_flight = vm["in-flight-limit"].as<std::uint32_t>();
     mpi::set_max_requests_in_flight(in_flight, mpi::stream_type::user_1);
 
     mpi_poll_size = vm["mpi-polling-size"].as<std::uint32_t>();
-    mpi::set_max_mpi_polling_size(mpi_poll_size);
+    mpi::set_max_polling_size(mpi_poll_size);
 
     std::uint64_t message_size = vm["message-bytes"].as<std::uint64_t>();
 
@@ -204,7 +204,13 @@ int pika_main(pika::program_options::variables_map& vm)
     // --------------------------
     {
         // the scope of the user polling must include all uses of transform_mpi
-        mpi::enable_user_polling enable_polling;
+        // this needs to scope all uses of mpi::experimental::executor
+        std::string poolname = "default";
+        if (pika::resource::pool_exists(mpi::get_pool_name()))
+        {
+            poolname = mpi::get_pool_name();
+        }
+        mpi::enable_user_polling enable_polling(poolname);
 
         // To prevent the application exiting the main scope of mpi polling
         // whilst there are messages in flight, we will count each send/recv and
@@ -232,88 +238,74 @@ int pika_main(pika::program_options::variables_map& vm)
                 // rx msg came from us, and has completed the ring
                 if (origin == rank)
                 {
-                    auto recv_snd = snd1 | ex::then([=, &counter](int /*res*/) {
-                        // output info
-                        msg_info(rank, size, msg_type::recv, buf, tag);
-                        counter--;
-                        if (output)
-                        {
-                            using namespace pika::debug::detail;
-                            msr_deb<0>.debug(str<>("Complete"), "Rank",
-                                dec<3>(rank), "of", dec<3>(size), "Recv token",
-                                dec<3>(buf->token_val_), "tag", dec<3>(tag),
-                                "counter", dec<3>(counter));
-                        }
-                        release_msg_buffer(buf);
-                    });
+                    auto recv_snd =
+                        std::move(snd1) | ex::then([=, &counter](int /*res*/) {
+                            // output info
+                            msg_info(rank, size, msg_type::recv, buf, tag);
+                            counter--;
+                            if (output)
+                            {
+                                using namespace pika::debug::detail;
+                                msr_deb<0>.debug(str<>("Complete"), "Rank",
+                                    dec<3>(rank), "of", dec<3>(size),
+                                    "Recv token", dec<3>(buf->token_val_),
+                                    "tag", dec<3>(tag), "counter",
+                                    dec<3>(counter));
+                            }
+                            release_msg_buffer(buf);
+                        });
                     msg_info(rank, size, msg_type::recv, buf, tag, "post");
                     ex::start_detached(std::move(recv_snd));
                 }
                 // msgs from other ranks get forwarded to the next in the ring
                 else
                 {
-                    // to prevent continuations running on a polling thread
-                    // transfer explicitly to a new pika task
-                    ex::any_sender<int> as1;
-                    if (mpi_task_transfer == 0)
-                    {
-                        as1 = snd1;
-                    }
-                    else if (mpi_task_transfer == 1)
-                    {
-                        as1 = snd1 |
-                            ex::transfer(
-                                ex::with_priority(ex::thread_pool_scheduler{},
-                                    pika::execution::thread_priority::high));
-                    }
-                    if (mpi_task_transfer == 2)
-                    {
-                        as1 = snd1 |
-                            ex::transfer(ex::with_priority(
-                                ex::thread_pool_scheduler_queue_bypass{},
-                                pika::execution::thread_priority::high));
-                    }
-                    auto recv_snd = as1 | ex::then([=, &counter](int /*res*/) {
-                        // output info
-                        msg_info(rank, size, msg_type::recv, buf, tag);
-                        counter--;
+                    auto recv_snd =
+                        std::move(snd1) | ex::then([=, &counter](int /*res*/) {
+                            // output info
+                            msg_info(rank, size, msg_type::recv, buf, tag);
+                            counter--;
 
-                        // decrement the token we received
-                        --buf->token_val_;
-                        if (buf->token_val_ !=
-                            (size - std::uint64_t(rank + size - origin)) % size)
-                        {
-                            using namespace pika::debug::detail;
-                            msr_deb<0>.debug(str<>("Recv"), "Rank",
-                                dec<3>(rank), "of", dec<3>(size), "Recv token",
-                                dec<3>(buf->token_val_), "from rank",
-                                dec<3>(prev_rank(rank, size)), "tag",
-                                dec<3>(tag));
-                        }
-                        assert(buf->token_val_ ==
-                            (size - std::uint64_t(rank + size - origin)) %
-                                size);
+                            // decrement the token we received
+                            --buf->token_val_;
+                            if (buf->token_val_ !=
+                                (size - std::uint64_t(rank + size - origin)) %
+                                    size)
+                            {
+                                using namespace pika::debug::detail;
+                                msr_deb<0>.debug(str<>("Recv"), "Rank",
+                                    dec<3>(rank), "of", dec<3>(size),
+                                    "Recv token", dec<3>(buf->token_val_),
+                                    "from rank", dec<3>(prev_rank(rank, size)),
+                                    "tag", dec<3>(tag));
+                            }
+                            assert(buf->token_val_ ==
+                                (size - std::uint64_t(rank + size - origin)) %
+                                    size);
 
-                        auto snd1 =
-                            ex::just(&*buf, message_size, MPI_UNSIGNED_CHAR,
-                                next_rank(rank, size), tag, MPI_COMM_WORLD) |
-                            mpi::transform_mpi(
-                                MPI_Isend, mpi::stream_type::send_1);
+                            auto snd1 =
+                                ex::just(&*buf, message_size, MPI_UNSIGNED_CHAR,
+                                    next_rank(rank, size), tag,
+                                    MPI_COMM_WORLD) |
+                                mpi::transform_mpi(
+                                    MPI_Isend, mpi::stream_type::send_1);
 
-                        auto send_snd = snd1 |
-                            // ex::transfer(ex::thread_pool_scheduler_queue_bypass{}) |
-                            ex::then([=, &counter](int /*res*/) {
-                                // output info
-                                msg_info(rank, size, msg_type::send, buf, tag);
-                                counter--;
-                                release_msg_buffer(buf);
-                                //                                if (output) msr_deb<0>.debug(str<>("Yielding after forwarding"));
-                                //                                pika::this_thread::yield();
-                                //                                if (output) msr_deb<0>.debug(str<>("Done Yielding after forwarding"));
-                            });
-                        msg_info(rank, size, msg_type::send, buf, tag, "post");
-                        ex::start_detached(std::move(send_snd));
-                    });
+                            auto send_snd = std::move(snd1) |
+                                // ex::transfer(ex::thread_pool_scheduler_queue_bypass{}) |
+                                ex::then([=, &counter](int /*res*/) {
+                                    // output info
+                                    msg_info(
+                                        rank, size, msg_type::send, buf, tag);
+                                    counter--;
+                                    release_msg_buffer(buf);
+                                    //                                if (output) msr_deb<0>.debug(str<>("Yielding after forwarding"));
+                                    //                                pika::this_thread::yield();
+                                    //                                if (output) msr_deb<0>.debug(str<>("Done Yielding after forwarding"));
+                                });
+                            msg_info(
+                                rank, size, msg_type::send, buf, tag, "post");
+                            ex::start_detached(std::move(send_snd));
+                        });
                     msg_info(rank, size, msg_type::recv, buf, tag, "post");
                     ex::start_detached(std::move(recv_snd));
                 }
@@ -382,10 +374,10 @@ int pika_main(pika::program_options::variables_map& vm)
                               "{1}, in_flight, {2}, ranks, {3}, threads, {4}, "
                               "iterations, {5}, task_transfer, {6}, "
                               "message-size, {7}, polling-size, {8}, time";
-            pika::util::format_to(temp, msg, in_flight, size,
-                pika::get_num_worker_threads(), iterations, mpi_task_transfer,
-                message_size, mpi_poll_size, elapsed)
-                << std::endl;
+            fmt::print(temp, msg, in_flight, size,
+                pika::get_num_worker_threads(), iterations,
+                mpi::get_completion_mode(), message_size, mpi_poll_size,
+                elapsed);
             std::cout << temp.str();
         }
         // let the user polling go out of scope
@@ -393,6 +385,38 @@ int pika_main(pika::program_options::variables_map& vm)
     return pika::finalize();
 }
 
+//----------------------------------------------------------------------------
+void init_resource_partitioner_handler(pika::resource::partitioner& rp,
+    pika::program_options::variables_map const& vm)
+{
+    // Don't create the MPI pool if the user disabled it
+    if (vm["no-mpi-pool"].as<bool>())
+    {
+        mpi::set_pool_name("default");
+        return;
+    }
+
+    // Don't create the MPI pool if there is a single process
+    int ntasks;
+    MPI_Comm_size(MPI_COMM_WORLD, &ntasks);
+    //    if (ntasks == 1)
+    //        return;
+
+    // Disable idle backoff on the MPI pool
+    using pika::threads::scheduler_mode;
+    auto mode = scheduler_mode::default_mode;
+    mode = scheduler_mode(mode & ~scheduler_mode::enable_idle_backoff);
+
+    // Create a thread pool with a single core that we will use for all
+    // communication related tasks
+    rp.create_thread_pool(mpi::get_pool_name(),
+        pika::resource::scheduling_policy::unspecified, mode);
+
+    rp.add_resource(
+        rp.numa_domains()[0].cores()[0].pus()[0], mpi::get_pool_name());
+}
+
+//----------------------------------------------------------------------------
 // the normal int main function that is called at startup and runs on an OS
 // thread the user must call pika::init to start the pika runtime which
 // will execute pika_main on an pika thread
@@ -420,6 +444,9 @@ int main(int argc, char* argv[])
             mpi::get_max_requests_in_flight()),
         "Apply a limit to the number of messages in flight.");
 
+    cmdline.add_options()("no-mpi-pool", pika::program_options::bool_switch(),
+        "Disable the MPI pool.");
+
     cmdline.add_options()("mpi-polling-size",
         pika::program_options::value<std::uint32_t>()->default_value(16),
         "The maximum number of mpi request completions to handle per poll.");
@@ -427,12 +454,6 @@ int main(int argc, char* argv[])
     cmdline.add_options()("message-bytes",
         pika::program_options::value<std::uint64_t>()->default_value(64),
         "Specify the buffer size to use for messages (min 16).");
-
-    cmdline.add_options()("mpi-task-transfer",
-        pika::program_options::value<std::uint32_t>()->default_value(1),
-        "0: poll callbacks on raw thread,\n"
-        "1: poll callbacks on scheduler,\n"
-        "2: poll callbacks on scheduler_bypass");
 
     cmdline.add_options()("output",
         "Display messages during test");
@@ -444,6 +465,8 @@ int main(int argc, char* argv[])
     // Initialize and run pika.
     pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
+    // Set the callback to init thread_pools
+    init_args.rp_callback = &init_resource_partitioner_handler;
 
     auto result = pika::init(pika_main, argc, argv, init_args);
     PIKA_TEST_EQ(result, 0);

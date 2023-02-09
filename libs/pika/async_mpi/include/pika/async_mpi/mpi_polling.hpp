@@ -43,11 +43,6 @@ namespace pika::mpi::experimental {
     };
 
     namespace detail {
-        // -----------------------------------------------------------------
-        // by convention the title is 7 chars (for alignment)
-        using print_on = pika::debug::detail::enable_print<false>;
-        static print_on mpi_debug("MPIPOLL");
-
         using request_callback_function_type =
             pika::util::detail::unique_function<void(int)>;
 
@@ -113,7 +108,24 @@ namespace pika::mpi::experimental {
     // -----------------------------------------------------------------
     /// set the maximume number of MPI_Request completions to
     /// handle at each polling event
-    PIKA_EXPORT void set_max_mpi_polling_size(std::size_t);
+    PIKA_EXPORT void set_max_polling_size(std::size_t);
+
+    // -----------------------------------------------------------------
+    /// Get the poll transfer mode. when an mpi message completes,
+    /// it may trigger a continuation,
+    /// mode 0 - the continuation is run inline directly on the polling
+    /// thread of the pool doing the polling
+    /// mode 1 - the continuation is wrapped into a high priority task
+    /// and placed in the queue on the default pool
+    /// mode 2 - the continuation is wrapped into a high priority task
+    /// and placed in the queue on the pool doing the polling (same as mode 1
+    /// if no mpi pool enabled)
+    /// mode 3 - the continuation is wrapped into a task but run inline on
+    /// whichever pool is doing the polling, bypassing queues altogether
+    PIKA_EXPORT std::size_t get_completion_mode();
+
+    PIKA_EXPORT const std::string& get_pool_name();
+    PIKA_EXPORT void set_pool_name(const std::string&);
 
     // initialize the pika::mpi background request handler
     // All ranks should call this function,
