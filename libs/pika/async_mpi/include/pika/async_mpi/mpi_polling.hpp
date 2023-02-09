@@ -45,17 +45,14 @@ namespace pika::mpi::experimental {
     };
 
     namespace detail {
-        using request_callback_function_type =
-            pika::util::detail::unique_function<void(int)>;
+        using request_callback_function_type = pika::util::detail::unique_function<void(int)>;
 
         const char* stream_name(stream_type s);
 
         PIKA_EXPORT bool add_request_callback(
             request_callback_function_type&&, MPI_Request, bool, stream_type);
-        PIKA_EXPORT void register_polling(
-            pika::threads::detail::thread_pool_base&);
-        PIKA_EXPORT void unregister_polling(
-            pika::threads::detail::thread_pool_base&);
+        PIKA_EXPORT void register_polling(pika::threads::detail::thread_pool_base&);
+        PIKA_EXPORT void unregister_polling(pika::threads::detail::thread_pool_base&);
 
         // -----------------------------------------------------------------
         // an MPI error handling type that we can use to intercept
@@ -106,8 +103,7 @@ namespace pika::mpi::experimental {
     /// Query the current value of the throttling threshold for the stream
     /// if the optional stream param is not specified, then the
     /// automatic/default stream value is returned
-    PIKA_EXPORT std::uint32_t get_max_requests_in_flight(
-        std::optional<stream_type> = std::nullopt);
+    PIKA_EXPORT std::uint32_t get_max_requests_in_flight(std::optional<stream_type> = std::nullopt);
 
     // -----------------------------------------------------------------
     /// returns the number of mpi requests currently outstanding
@@ -139,8 +135,8 @@ namespace pika::mpi::experimental {
     // initialize the pika::mpi background request handler
     // All ranks should call this function,
     // but only one thread per rank needs to do so
-    PIKA_EXPORT void init(bool init_mpi = false,
-        std::string const& pool_name = "", bool init_errorhandler = false);
+    PIKA_EXPORT void init(
+        bool init_mpi = false, std::string const& pool_name = "", bool init_errorhandler = false);
 
     // -----------------------------------------------------------------
     PIKA_EXPORT void finalize(std::string const& pool_name = "");
@@ -150,8 +146,7 @@ namespace pika::mpi::experimental {
     // handled elsewhere
     struct [[nodiscard]] enable_user_polling
     {
-        enable_user_polling(
-            std::string const& pool_name = "", bool init_errorhandler = false)
+        enable_user_polling(std::string const& pool_name = "", bool init_errorhandler = false)
           : pool_name_(pool_name)
         {
             mpi::experimental::init(false, pool_name, init_errorhandler);
