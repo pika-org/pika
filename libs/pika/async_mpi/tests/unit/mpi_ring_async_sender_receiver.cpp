@@ -7,7 +7,7 @@
 #include <pika/assert.hpp>
 #include <pika/execution.hpp>
 #if __has_include(<pika/executors/thread_pool_scheduler_queue_bypass.hpp>)
-# include <pika/executors/thread_pool_scheduler_queue_bypass.hpp>
+#include <pika/executors/thread_pool_scheduler_queue_bypass.hpp>
 #endif
 #include <pika/future.hpp>
 #include <pika/init.hpp>
@@ -17,6 +17,7 @@
 //
 #include <boost/lockfree/stack.hpp>
 #include <fmt/format.h>
+#include <fmt/printf.h>
 //
 #include <array>
 #include <atomic>
