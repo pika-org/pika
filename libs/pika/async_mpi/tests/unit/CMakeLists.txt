@@ -10,7 +10,7 @@ set(tests algorithm_transform_mpi mpi_ring_async_sender_receiver
 
 # cmake-format: off
 set(mpi_ring_async_sender_receiver_PARAMETERS
-    ARGS "--in-flight-limit=32"
+    ARGS "--in-flight-limit=32" "--rounds=10" "--iterations=100"
     THREADS 4 LOCALITIES 2 RUNWRAPPER mpi
 )
 

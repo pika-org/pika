@@ -67,7 +67,7 @@ std::atomic<std::uint64_t> counter;
 // a debug level of N shows messages with priority<N
 using namespace pika::debug::detail;
 template <int Level>
-static print_threshold<Level, 0> msr_deb("MPI_SR_");
+static print_threshold<Level, 1> msr_deb("MPI_SR_");
 
 // ------------------------------------------------------------
 // caution: message_buffers will be constructed in-place in a buffer
@@ -109,7 +109,7 @@ inline std::uint32_t prev_rank(std::uint32_t rank, std::uint32_t size)
 inline std::uint32_t tag_no(std::uint64_t rank, std::uint64_t iteration, std::uint32_t ranks)
 {
     std::int64_t tag = (rank + (iteration * ranks)) & 0xffffffff;
-    msr_deb<5>.debug(
+    msr_deb<7>.debug(
         str<>("generating tag"), std::uint32_t(tag), "rank/s", rank, ranks, "iteration", iteration);
     return std::uint32_t(tag);
 }
@@ -134,7 +134,7 @@ void msg_info(std::uint32_t rank, std::uint32_t size, msg_type mtype, std::uint3
         std::stringstream temp;
         temp << dec<3>(rank) << "/" << dec<3>(size);
         // clang-format off
-        msr_deb<4>.debug(str<>(temp.str().c_str())
+        msr_deb<1>.debug(str<>(temp.str().c_str())
                          , "token", hex<4>(token)
                          , "<-/->", dec<3>(other)
                          , "tag", dec<3>(tag)
@@ -236,13 +236,13 @@ struct receiver
             auto tx_snd2 = ex::just(&*buf, message_size, MPI_UNSIGNED_CHAR, next_rank(rank, size),
                                tag, MPI_COMM_WORLD) |
                 mpi::transform_mpi(MPI_Isend, mpi::stream_type::user_1) |
-                ex::then([&, round, step, buf = buf, tag = tag, rank = rank, size = size](
-                             int /*result*/) {
-                    counter--;
-                    msg_info(rank, size, msg_type::send, buf->token_val_, tag, round, step,
-                        "forwardsent");
-                    release_msg_buffer(buf);
-                });
+                ex::then(
+                    [round, step, buf = buf, tag = tag, rank = rank, size = size](int /*result*/) {
+                        counter--;
+                        msg_info(rank, size, msg_type::send, buf->token_val_, tag, round, step,
+                            "forwardsent");
+                        release_msg_buffer(buf);
+                    });
 
             // launch the receive for te next msg and launch the sending forward
             msr_deb<6>.debug(str<>("start_detached"), "tx_snd2", step, round);
@@ -268,14 +268,13 @@ struct receiver
             auto tx_snd2 = ex::just(&*buf, message_size, MPI_UNSIGNED_CHAR, next_rank(rank, size),
                                tag, MPI_COMM_WORLD) |
                 mpi::transform_mpi(MPI_Isend, mpi::stream_type::user_1) |
-                ex::then([&, round, step, buf = buf, tag = tag, rank = rank, size = size](
-                             int /*result*/) {
-                    // output info
-                    counter--;
-                    msg_info(rank, size, msg_type::send, buf->token_val_, tag, round, step,
-                        "forwardsent");
-                    //                release_msg_buffer(buf);
-                });
+                ex::then(
+                    [round, step, buf = buf, tag = tag, rank = rank, size = size](int /*result*/) {
+                        counter--;
+                        msg_info(rank, size, msg_type::send, buf->token_val_, tag, round, step,
+                            "forwardsent");
+                        //                release_msg_buffer(buf);
+                    });
 
             // launch the receive for te next msg and launch the sending forward
             msr_deb<6>.debug(str<>("start_detached"), "rx_snd2", step, round);
@@ -387,8 +386,7 @@ int pika_main(pika::program_options::variables_map& vm)
             auto send_snd = ex::just(&*buf, message_size, MPI_UNSIGNED_CHAR, next_rank(rank, size),
                                 tag, MPI_COMM_WORLD) |
                 mpi::transform_mpi(MPI_Isend, mpi::stream_type::user_1) |
-                ex::then([=, &counter](int /*result*/) {
-                    // output info
+                ex::then([rank, size, buf, tag](int /*result*/) {
                     counter--;
                     msg_info(rank, size, msg_type::send, buf->token_val_, tag, 0, 0, "initsent");
                     release_msg_buffer(buf);
@@ -545,6 +543,5 @@ int main(int argc, char* argv[])
 
     // Finalize MPI
     MPI_Finalize();
-
     return result;
 }
