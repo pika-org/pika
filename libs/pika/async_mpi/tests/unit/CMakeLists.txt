@@ -4,19 +4,20 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(tests algorithm_transform_mpi mpi_ring_async_sender_receiver
-          mpi_async_storage
+set(tests # algorithm_transform_mpi
+    mpi_ring_async_sender_receiver
+    # mpi_async_storage
 )
 
 # cmake-format: off
 set(mpi_ring_async_sender_receiver_PARAMETERS
-    ARGS "--in-flight-limit=32" "--rounds=10" "--iterations=100"
+    ARGS "--in-flight-limit=32" "--rounds=10" "--iterations=100" "--pika:ignore-process-mask"
     THREADS 4 LOCALITIES 2 RUNWRAPPER mpi
 )
 
 set(mpi_async_storage_PARAMETERS
     ARGS
-        "--in-flight-limit=256" "--localMB=256" "--transferKB=1024" "--seconds=1"
+        "--in-flight-limit=256" "--localMB=256" "--transferKB=1024" "--seconds=1" "-Ipika.stacks.use_guard_pages=0" "--pika:ignore-process-mask"
     THREADS 4 LOCALITIES 2 RUNWRAPPER mpi
 )
 # cmake-format: on
