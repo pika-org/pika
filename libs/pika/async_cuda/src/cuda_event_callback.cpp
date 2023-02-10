@@ -70,111 +70,117 @@ namespace pika::cuda::experimental::detail {
         {
             using pika::threads::detail::polling_status;
 
-            // we don't want to hold the lock when invoking callbacks
-            ready_callback ready_callback_;
-            bool process_only_one = false;
-
-            // locked section
+            bool process_only_one;
+            do
             {
-                // Don't poll if another thread is already polling
-                std::unique_lock<mutex_type> lk(vector_mtx, std::try_to_lock);
-                if (!lk.owns_lock())
+                // we don't want to hold the lock when invoking callbacks
+                ready_callback ready_callback_;
+                process_only_one = false;
+
+                // locked section
                 {
+                    // Don't poll if another thread is already polling
+                    std::unique_lock<mutex_type> lk(vector_mtx, std::try_to_lock);
+                    if (!lk.owns_lock())
+                    {
+                        if (cud_debug.is_enabled())
+                        {
+                            static auto poll_deb =
+                                cud_debug.make_timer(1, debug::detail::str<>("Poll - lock failed"));
+                            cud_debug.timed(poll_deb, "enqueued events",
+                                debug::detail::dec<3>(get_number_of_enqueued_events()),
+                                "active events",
+                                debug::detail::dec<3>(get_number_of_active_events()));
+                        }
+                        return polling_status::idle;
+                    }
+
                     if (cud_debug.is_enabled())
                     {
                         static auto poll_deb =
-                            cud_debug.make_timer(1, debug::detail::str<>("Poll - lock failed"));
+                            cud_debug.make_timer(1, debug::detail::str<>("Poll - lock success"));
                         cud_debug.timed(poll_deb, "enqueued events",
                             debug::detail::dec<3>(get_number_of_enqueued_events()), "active events",
                             debug::detail::dec<3>(get_number_of_active_events()));
                     }
-                    return polling_status::idle;
-                }
 
-                if (cud_debug.is_enabled())
-                {
-                    static auto poll_deb =
-                        cud_debug.make_timer(1, debug::detail::str<>("Poll - lock success"));
-                    cud_debug.timed(poll_deb, "enqueued events",
-                        debug::detail::dec<3>(get_number_of_enqueued_events()), "active events",
-                        debug::detail::dec<3>(get_number_of_active_events()));
-                }
+                    // Grab the handle to the event pool so we can return completed events
+                    cuda_event_pool& pool = cuda_event_pool::get_event_pool();
 
-                // Grab the handle to the event pool so we can return completed events
-                cuda_event_pool& pool = cuda_event_pool::get_event_pool();
-
-                // Iterate over our list of events and see if any have completed
-                event_callback_vector.erase(
-                    std::remove_if(event_callback_vector.begin(), event_callback_vector.end(),
-                        [&](event_callback& continuation) {
-                            whip::error_t status = whip::success;
-                            if (process_only_one)
-                            {
-                                return false;
-                            }
-                            try
-                            {
-                                bool ready = whip::event_ready(continuation.event);
-
-                                // If the event is not yet ready, do nothing
-                                if (!ready)
+                    // Iterate over our list of events and see if any have completed
+                    event_callback_vector.erase(
+                        std::remove_if(event_callback_vector.begin(), event_callback_vector.end(),
+                            [&](event_callback& continuation) {
+                                whip::error_t status = whip::success;
+                                if (process_only_one)
                                 {
                                     return false;
                                 }
-                            }
-                            catch (whip::exception const& e)
-                            {
-                                status = e.get_error();
-                            }
+                                try
+                                {
+                                    bool ready = whip::event_ready(continuation.event);
 
-                            // Forward successes and other errors to the callback
-                            cud_debug.debug(debug::detail::str<>("set ready vector"), "event",
-                                debug::detail::hex<8>(continuation.event), "enqueued events",
-                                debug::detail::dec<3>(get_number_of_enqueued_events()),
-                                "active events",
-                                debug::detail::dec<3>(get_number_of_active_events()));
-                            // save callback to invoke after lock release
-                            ready_callback_ = ready_callback{status, PIKA_MOVE(continuation.f)};
-                            pool.push(PIKA_MOVE(continuation.event));
-                            process_only_one = true;
-                            return true;
-                        }),
-                    event_callback_vector.end());
-                active_events_counter = event_callback_vector.size();
+                                    // If the event is not yet ready, do nothing
+                                    if (!ready)
+                                    {
+                                        return false;
+                                    }
+                                }
+                                catch (whip::exception const& e)
+                                {
+                                    status = e.get_error();
+                                }
 
-                detail::event_callback continuation;
-                while (event_callback_queue.try_dequeue(continuation))
-                {
-                    whip::error_t status = whip::success;
-                    try
+                                // Forward successes and other errors to the callback
+                                cud_debug.debug(debug::detail::str<>("set ready vector"), "event",
+                                    debug::detail::hex<8>(continuation.event), "enqueued events",
+                                    debug::detail::dec<3>(get_number_of_enqueued_events()),
+                                    "active events",
+                                    debug::detail::dec<3>(get_number_of_active_events()));
+                                // save callback to invoke after lock release
+                                ready_callback_ = ready_callback{status, PIKA_MOVE(continuation.f)};
+                                pool.push(PIKA_MOVE(continuation.event));
+                                process_only_one = true;
+                                return true;
+                            }),
+                        event_callback_vector.end());
+                    active_events_counter = event_callback_vector.size();
+
+                    detail::event_callback continuation;
+                    while (event_callback_queue.try_dequeue(continuation))
                     {
-                        bool ready = !process_only_one && whip::event_ready(continuation.event);
-                        if (!ready)
+                        whip::error_t status = whip::success;
+                        try
                         {
-                            add_to_event_callback_vector(PIKA_MOVE(continuation));
-                            continue;
+                            bool ready = !process_only_one && whip::event_ready(continuation.event);
+                            if (!ready)
+                            {
+                                add_to_event_callback_vector(PIKA_MOVE(continuation));
+                                continue;
+                            }
                         }
-                    }
-                    catch (whip::exception const& e)
-                    {
-                        status = e.get_error();
-                    }
+                        catch (whip::exception const& e)
+                        {
+                            status = e.get_error();
+                        }
 
-                    cud_debug.debug(debug::detail::str<>("set ready queue"), "event",
-                        debug::detail::hex<8>(continuation.event), "enqueued events",
-                        debug::detail::dec<3>(get_number_of_enqueued_events()), "active events",
-                        debug::detail::dec<3>(get_number_of_active_events()));
-                    // save callback to invoke after lock release
-                    ready_callback_ = ready_callback{status, PIKA_MOVE(continuation.f)};
-                    pool.push(PIKA_MOVE(continuation.event));
-                    process_only_one = true;
+                        cud_debug.debug(debug::detail::str<>("set ready queue"), "event",
+                            debug::detail::hex<8>(continuation.event), "enqueued events",
+                            debug::detail::dec<3>(get_number_of_enqueued_events()), "active events",
+                            debug::detail::dec<3>(get_number_of_active_events()));
+                        // save callback to invoke after lock release
+                        ready_callback_ = ready_callback{status, PIKA_MOVE(continuation.f)};
+                        pool.push(PIKA_MOVE(continuation.event));
+                        process_only_one = true;
+                    }
+                }    // end locked region
+
+                if (process_only_one)
+                {
+                    ready_callback_.f(ready_callback_.status);
                 }
-            }    // end locked region
 
-            if (process_only_one)
-            {
-                ready_callback_.f(ready_callback_.status);
-            }
+            } while (process_only_one);
 
             using pika::threads::detail::polling_status;
             return event_callback_vector.empty() ? polling_status::idle : polling_status::busy;
