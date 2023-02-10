@@ -465,6 +465,8 @@ namespace pika::mpi::experimental {
                   , stream{s}
                   , op_state(pika::execution::experimental::connect(
                         PIKA_FORWARD(Sender_, sender), transform_mpi_receiver{*this}))
+                  , resume{false}
+                  , status{MPI_SUCCESS}
                 {
                     PIKA_DP(mpi_tran,
                         debug(debug::detail::str<>("operation_state"), "stream", detail::stream_name(s)));
@@ -478,8 +480,7 @@ namespace pika::mpi::experimental {
             };
 
             template <typename Receiver>
-            friend constexpr auto
-            tag_invoke(pika::execution::experimental::connect_t,
+            friend constexpr auto tag_invoke(pika::execution::experimental::connect_t,
                 transform_mpi_sender_type const& s, Receiver&& receiver)
             {
                 return operation_state<Receiver>(PIKA_FORWARD(Receiver, receiver), s.f, s.sender, s.stream);
