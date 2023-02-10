@@ -13,6 +13,7 @@
 #include <pika/async_cuda/detail/cuda_debug.hpp>
 #include <pika/async_cuda/detail/cuda_event_callback.hpp>
 #include <pika/concurrency/concurrentqueue.hpp>
+#include <pika/datastructures/detail/small_vector.hpp>
 #include <pika/synchronization/spinlock.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
@@ -44,6 +45,13 @@ namespace pika::cuda::experimental::detail {
         event_callback_function_type f;
     };
 
+    // a struct we use temporarily to hold callbacks we can invoke
+    struct ready_callback
+    {
+        whip::error_t status;
+        event_callback_function_type f;
+    };
+
     class cuda_event_queue
     {
     public:
@@ -62,92 +70,109 @@ namespace pika::cuda::experimental::detail {
         {
             using pika::threads::detail::polling_status;
 
-            // Don't poll if another thread is already polling
-            std::unique_lock<mutex_type> lk(vector_mtx, std::try_to_lock);
-            if (!lk.owns_lock())
+            // we don't want to hold the lock when invoking callbacks
+            // so put ready events onto a temp queue
+            pika::detail::small_vector<ready_callback, 64> ready_callbacks_;
+
+            // locked section
             {
+                // Don't poll if another thread is already polling
+                std::unique_lock<mutex_type> lk(vector_mtx, std::try_to_lock);
+                if (!lk.owns_lock())
+                {
+                    if (cud_debug.is_enabled())
+                    {
+                        static auto poll_deb =
+                            cud_debug.make_timer(1, debug::detail::str<>("Poll - lock failed"));
+                        cud_debug.timed(poll_deb, "enqueued events",
+                            debug::detail::dec<3>(get_number_of_enqueued_events()), "active events",
+                            debug::detail::dec<3>(get_number_of_active_events()));
+                    }
+                    return polling_status::idle;
+                }
+
                 if (cud_debug.is_enabled())
                 {
                     static auto poll_deb =
-                        cud_debug.make_timer(1, debug::detail::str<>("Poll - lock failed"));
+                        cud_debug.make_timer(1, debug::detail::str<>("Poll - lock success"));
                     cud_debug.timed(poll_deb, "enqueued events",
                         debug::detail::dec<3>(get_number_of_enqueued_events()), "active events",
                         debug::detail::dec<3>(get_number_of_active_events()));
                 }
-                return polling_status::idle;
-            }
 
-            if (cud_debug.is_enabled())
-            {
-                static auto poll_deb =
-                    cud_debug.make_timer(1, debug::detail::str<>("Poll - lock success"));
-                cud_debug.timed(poll_deb, "enqueued events",
-                    debug::detail::dec<3>(get_number_of_enqueued_events()), "active events",
-                    debug::detail::dec<3>(get_number_of_active_events()));
-            }
+                // Grab the handle to the event pool so we can return completed events
+                cuda_event_pool& pool = cuda_event_pool::get_event_pool();
 
-            // Grab the handle to the event pool so we can return completed events
-            cuda_event_pool& pool = cuda_event_pool::get_event_pool();
+                // Iterate over our list of events and see if any have completed
+                event_callback_vector.erase(
+                    std::remove_if(event_callback_vector.begin(), event_callback_vector.end(),
+                        [&](event_callback& continuation) {
+                            whip::error_t status = whip::success;
 
-            // Iterate over our list of events and see if any have completed
-            event_callback_vector.erase(
-                std::remove_if(event_callback_vector.begin(), event_callback_vector.end(),
-                    [&](event_callback& continuation) {
-                        whip::error_t status = whip::success;
-
-                        try
-                        {
-                            bool ready = whip::event_ready(continuation.event);
-
-                            // If the event is not yet ready, do nothing
-                            if (!ready)
+                            try
                             {
-                                return false;
+                                bool ready = whip::event_ready(continuation.event);
+
+                                // If the event is not yet ready, do nothing
+                                if (!ready)
+                                {
+                                    return false;
+                                }
                             }
-                        }
-                        catch (whip::exception const& e)
-                        {
-                            status = e.get_error();
-                        }
+                            catch (whip::exception const& e)
+                            {
+                                status = e.get_error();
+                            }
 
-                        // Forward successes and other errors to the callback
-                        cud_debug.debug(debug::detail::str<>("set ready vector"), "event",
-                            debug::detail::hex<8>(continuation.event), "enqueued events",
-                            debug::detail::dec<3>(get_number_of_enqueued_events()), "active events",
-                            debug::detail::dec<3>(get_number_of_active_events()));
-                        continuation.f(status);
-                        pool.push(PIKA_MOVE(continuation.event));
-                        return true;
-                    }),
-                event_callback_vector.end());
-            active_events_counter = event_callback_vector.size();
+                            // Forward successes and other errors to the callback
+                            cud_debug.debug(debug::detail::str<>("set ready vector"), "event",
+                                debug::detail::hex<8>(continuation.event), "enqueued events",
+                                debug::detail::dec<3>(get_number_of_enqueued_events()),
+                                "active events",
+                                debug::detail::dec<3>(get_number_of_active_events()));
+                            // put callback onto a temp queue to invoke after lock release
+                            ready_callbacks_.emplace_back(
+                                ready_callback{status, std::move(continuation.f)});
+                            pool.push(PIKA_MOVE(continuation.event));
+                            return true;
+                        }),
+                    event_callback_vector.end());
+                active_events_counter = event_callback_vector.size();
 
-            detail::event_callback continuation;
-            while (event_callback_queue.try_dequeue(continuation))
-            {
-                whip::error_t status = whip::success;
-
-                try
+                detail::event_callback continuation;
+                while (event_callback_queue.try_dequeue(continuation))
                 {
-                    bool ready = whip::event_ready(continuation.event);
+                    whip::error_t status = whip::success;
 
-                    if (!ready)
+                    try
                     {
-                        add_to_event_callback_vector(PIKA_MOVE(continuation));
-                        continue;
-                    }
-                }
-                catch (whip::exception const& e)
-                {
-                    status = e.get_error();
-                }
+                        bool ready = whip::event_ready(continuation.event);
 
-                cud_debug.debug(debug::detail::str<>("set ready queue"), "event",
-                    debug::detail::hex<8>(continuation.event), "enqueued events",
-                    debug::detail::dec<3>(get_number_of_enqueued_events()), "active events",
-                    debug::detail::dec<3>(get_number_of_active_events()));
-                continuation.f(status);
-                pool.push(PIKA_MOVE(continuation.event));
+                        if (!ready)
+                        {
+                            add_to_event_callback_vector(PIKA_MOVE(continuation));
+                            continue;
+                        }
+                    }
+                    catch (whip::exception const& e)
+                    {
+                        status = e.get_error();
+                    }
+
+                    cud_debug.debug(debug::detail::str<>("set ready queue"), "event",
+                        debug::detail::hex<8>(continuation.event), "enqueued events",
+                        debug::detail::dec<3>(get_number_of_enqueued_events()), "active events",
+                        debug::detail::dec<3>(get_number_of_active_events()));
+                    // put callback onto a temp queue to invoke after lock release
+                    ready_callbacks_.emplace_back(
+                        ready_callback{status, std::move(continuation.f)});
+                    pool.push(PIKA_MOVE(continuation.event));
+                }
+            }
+
+            for (auto& cb : ready_callbacks_)
+            {
+                cb.f(cb.status);
             }
 
             using pika::threads::detail::polling_status;
