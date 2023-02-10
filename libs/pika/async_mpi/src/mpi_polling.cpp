@@ -441,7 +441,6 @@ namespace pika::mpi::experimental {
             MPI_Comm_set_errhandler(MPI_COMM_WORLD, detail::pika_mpi_errhandler);
         }
 
-#ifndef DISALLOW_EAGER_POLLING_CHECK
         bool poll_request(MPI_Request& req)
         {
             int flag;
@@ -452,7 +451,6 @@ namespace pika::mpi::experimental {
             }
             return flag;
         };
-#endif
 
         // -------------------------------------------------------------
         /// Remove all entries in request and callback vectors that are invalid
