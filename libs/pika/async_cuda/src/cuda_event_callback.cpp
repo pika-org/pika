@@ -72,8 +72,8 @@ namespace pika::cuda::experimental::detail {
             using pika::threads::detail::polling_status;
 
             // we don't want to hold the lock when invoking callbacks
-            // so put ready events onto a temp queue
-            pika::detail::small_vector<ready_callback, 64> ready_callbacks_;
+            ready_callback ready_callback_;
+            bool process_only_one = false;
 
             // locked section
             {
@@ -114,7 +114,10 @@ namespace pika::cuda::experimental::detail {
                         event_callback_vector.end(),
                         [&](event_callback& continuation) {
                             whip::error_t status = whip::success;
-
+                            if (process_only_one)
+                            {
+                                return false;
+                            }
                             try
                             {
                                 bool ready =
@@ -142,10 +145,11 @@ namespace pika::cuda::experimental::detail {
                                 "active events",
                                 debug::detail::dec<3>(
                                     get_number_of_active_events()));
-                            // put callback onto a temp queue to invoke after lock release
-                            ready_callbacks_.emplace_back(ready_callback{
-                                status, std::move(continuation.f)});
+                            // save callback to invoke after lock release
+                            ready_callback_ = ready_callback{
+                                status, PIKA_MOVE(continuation.f)};
                             pool.push(PIKA_MOVE(continuation.event));
+                            process_only_one = true;
                             return true;
                         }),
                     event_callback_vector.end());
@@ -155,11 +159,10 @@ namespace pika::cuda::experimental::detail {
                 while (event_callback_queue.try_dequeue(continuation))
                 {
                     whip::error_t status = whip::success;
-
                     try
                     {
-                        bool ready = whip::event_ready(continuation.event);
-
+                        bool ready = !process_only_one &&
+                            whip::event_ready(continuation.event);
                         if (!ready)
                         {
                             add_to_event_callback_vector(
@@ -178,16 +181,17 @@ namespace pika::cuda::experimental::detail {
                         debug::detail::dec<3>(get_number_of_enqueued_events()),
                         "active events",
                         debug::detail::dec<3>(get_number_of_active_events()));
-                    // put callback onto a temp queue to invoke after lock release
-                    ready_callbacks_.emplace_back(
-                        ready_callback{status, std::move(continuation.f)});
+                    // save callback to invoke after lock release
+                    ready_callback_ =
+                        ready_callback{status, PIKA_MOVE(continuation.f)};
                     pool.push(PIKA_MOVE(continuation.event));
+                    process_only_one = true;
                 }
-            }
+            }    // end locked region
 
-            for (auto& cb : ready_callbacks_)
+            if (process_only_one)
             {
-                cb.f(cb.status);
+                ready_callback_.f(ready_callback_.status);
             }
 
             using pika::threads::detail::polling_status;
