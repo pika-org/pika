@@ -104,7 +104,7 @@ inline std::uint32_t prev_rank(std::uint32_t rank, std::uint32_t size)
 // ------------------------------------------------------------
 // when messages arrive/complete in random order, it might be the
 // case that message N + x completes long before message N, so
-// we don't reuse tags immmediately and instead offset them by
+// we don't reuse tags immediately and instead offset them by
 // a multiple to ensure we don't have two with the same id in flight
 // at the same time
 inline std::uint32_t tag_no(std::uint64_t rank, std::uint64_t iteration, std::uint32_t ranks)
@@ -245,7 +245,7 @@ struct receiver
                         release_msg_buffer(buf);
                     });
 
-            // launch the receive for te next msg and launch the sending forward
+            // launch the receive for the next msg and launch the sending forward
             msr_deb<6>.debug(str<>("start_detached"), "tx_snd2", step, round);
             pika::execution::async(std::move(tx_snd2));
         }
@@ -277,7 +277,7 @@ struct receiver
                         //                release_msg_buffer(buf);
                     });
 
-            // launch the receive for te next msg and launch the sending forward
+            // launch the receive for the next msg and launch the sending forward
             msr_deb<6>.debug(str<>("start_detached"), "rx_snd2", step, round);
             pika::execution::async(std::move(rx_snd2));
             msr_deb<6>.debug(str<>("start_detached"), "tx_snd2", step, round);
@@ -369,7 +369,7 @@ int pika_main(pika::program_options::variables_map& vm)
                     tag_no(std::uint64_t(orank), std::uint64_t(i), std::uint32_t(size));
                 msg_info(rank, size, msg_type::recv, buf->token_val_, tag, 0, 0, "ringrecv");
 
-                // a handler for a receive that recursivley posts receives and handles them
+                // a handler for a receive that recursively posts receives and handles them
                 receiver reclambda(rank, orank, size, tag, num_rounds, message_size, buf);
                 // create chain of senders to make the mpi recv and handle it
                 auto rx_snd1 = ex::just(&*buf, message_size, MPI_UNSIGNED_CHAR,

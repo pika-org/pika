@@ -487,6 +487,8 @@ namespace pika::mpi::experimental {
                   , stream{s}
                   , op_state(pika::execution::experimental::connect(
                         PIKA_FORWARD(Sender_, sender), transform_mpi_receiver{*this}))
+                  , resume{false}
+                  , status{MPI_SUCCESS}
                 {
                     PIKA_DP(mpi_tran,
                         debug(debug::detail::str<>("operation_state"), "stream",
