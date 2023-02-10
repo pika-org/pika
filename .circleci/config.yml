@@ -141,13 +141,14 @@ jobs:
           name: Check that C++ files are well clang-formatted
           command: |
               cd /pika/source
-              # activate the ** globbing
-              shopt -s globstar
-              # ignore globs that have no matches (e.g. no cu.in files exist
-              # currently)
-              shopt -s nullglob
-              clang-format --version
-              clang-format -i **/*.{cpp,hpp,cu}{,.in}
+              # get modified files relative to branch "main" in this PR
+              for file in `git diff origin/main --name-only --diff-filter=ACMRT | grep -E "\.(cpp|hpp|cu)(\.in)?$"`; do
+                  # to allow for per-directory clang format files, we cd into the dir first
+                  DIR=$(dirname "$file")
+                  cd /pika/source/${DIR}
+                  clang-format -i $(basename -- ${file})
+              done
+              cd /pika/source
               git diff --exit-code > /tmp/modified_clang_format_files.txt
       - store_artifacts:
           path: /tmp/modified_clang_format_files.txt
