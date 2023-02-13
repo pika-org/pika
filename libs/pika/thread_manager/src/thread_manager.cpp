@@ -790,62 +790,6 @@ namespace pika::threads::detail {
         return result;
     }
 
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
-    defined(PIKA_HAVE_THREAD_IDLE_RATES)
-    std::int64_t thread_manager::get_background_work_duration(bool reset)
-    {
-        std::int64_t result = 0;
-        for (auto const& pool_iter : pools_)
-            result +=
-                pool_iter->get_background_work_duration(all_threads, reset);
-        return result;
-    }
-
-    std::int64_t thread_manager::get_background_overhead(bool reset)
-    {
-        std::int64_t result = 0;
-        for (auto const& pool_iter : pools_)
-            result += pool_iter->get_background_overhead(all_threads, reset);
-        return result;
-    }
-
-    std::int64_t thread_manager::get_background_send_duration(bool reset)
-    {
-        std::int64_t result = 0;
-        for (auto const& pool_iter : pools_)
-            result +=
-                pool_iter->get_background_send_duration(all_threads, reset);
-        return result;
-    }
-
-    std::int64_t thread_manager::get_background_send_overhead(bool reset)
-    {
-        std::int64_t result = 0;
-        for (auto const& pool_iter : pools_)
-            result +=
-                pool_iter->get_background_send_overhead(all_threads, reset);
-        return result;
-    }
-
-    std::int64_t thread_manager::get_background_receive_duration(bool reset)
-    {
-        std::int64_t result = 0;
-        for (auto const& pool_iter : pools_)
-            result +=
-                pool_iter->get_background_receive_duration(all_threads, reset);
-        return result;
-    }
-
-    std::int64_t thread_manager::get_background_receive_overhead(bool reset)
-    {
-        std::int64_t result = 0;
-        for (auto const& pool_iter : pools_)
-            result +=
-                pool_iter->get_background_receive_overhead(all_threads, reset);
-        return result;
-    }
-#endif    // PIKA_HAVE_BACKGROUND_THREAD_COUNTERS
-
 #ifdef PIKA_HAVE_THREAD_IDLE_RATES
     std::int64_t thread_manager::avg_idle_rate(bool reset)
     {

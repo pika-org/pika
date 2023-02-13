@@ -252,20 +252,6 @@ namespace pika::threads::detail {
 
         std::int64_t get_cumulative_duration(std::size_t, bool) override;
 
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
-    defined(PIKA_HAVE_THREAD_IDLE_RATES)
-        std::int64_t get_background_work_duration(std::size_t, bool) override;
-        std::int64_t get_background_overhead(std::size_t, bool) override;
-
-        std::int64_t get_background_send_duration(std::size_t, bool) override;
-        std::int64_t get_background_send_overhead(std::size_t, bool) override;
-
-        std::int64_t get_background_receive_duration(
-            std::size_t, bool) override;
-        std::int64_t get_background_receive_overhead(
-            std::size_t, bool) override;
-#endif    // PIKA_HAVE_BACKGROUND_THREAD_COUNTERS
-
 #if defined(PIKA_HAVE_THREAD_IDLE_RATES)
         std::int64_t avg_idle_rate_all(bool reset) override;
         std::int64_t avg_idle_rate(std::size_t, bool) override;
@@ -355,27 +341,6 @@ namespace pika::threads::detail {
             std::int64_t exec_times_;
             std::int64_t tfunc_times_;
             std::int64_t reset_tfunc_times_;
-
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
-    defined(PIKA_HAVE_THREAD_IDLE_RATES)
-            // overall counters for background work
-            std::int64_t background_duration_;
-            std::int64_t reset_background_duration_;
-            std::int64_t reset_background_tfunc_times_;
-            std::int64_t reset_background_overhead_;
-
-            // counters for background work related to sending parcels
-            std::int64_t background_send_duration_;
-            std::int64_t reset_background_send_duration_;
-            std::int64_t reset_background_send_tfunc_times_;
-            std::int64_t reset_background_send_overhead_;
-
-            // counters for background work related to receiving parcels
-            std::int64_t background_receive_duration_;
-            std::int64_t reset_background_receive_duration_;
-            std::int64_t reset_background_receive_tfunc_times_;
-            std::int64_t reset_background_receive_overhead_;
-#endif    // PIKA_HAVE_BACKGROUND_THREAD_COUNTERS
 
             std::int64_t idle_loop_counts_;
             std::int64_t busy_loop_counts_;

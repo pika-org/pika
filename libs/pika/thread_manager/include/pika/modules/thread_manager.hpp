@@ -302,17 +302,6 @@ namespace pika::threads::detail {
         std::int64_t get_average_thread_wait_time(bool reset);
         std::int64_t get_average_task_wait_time(bool reset);
 #endif
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
-    defined(PIKA_HAVE_THREAD_IDLE_RATES)
-        std::int64_t get_background_work_duration(bool reset);
-        std::int64_t get_background_overhead(bool reset);
-
-        std::int64_t get_background_send_duration(bool reset);
-        std::int64_t get_background_send_overhead(bool reset);
-
-        std::int64_t get_background_receive_duration(bool reset);
-        std::int64_t get_background_receive_overhead(bool reset);
-#endif    //PIKA_HAVE_BACKGROUND_THREAD_COUNTERS
 
         std::int64_t get_cumulative_duration(bool reset);
 

@@ -616,19 +616,6 @@ pika_option(
   ADVANCED
 )
 
-if(PIKA_WITH_THREAD_IDLE_RATES)
-  pika_option(
-    PIKA_WITH_BACKGROUND_THREAD_COUNTERS
-    BOOL
-    "Enable performance counters related to adaptive parcel coalescing (default: OFF)."
-    OFF
-    ADVANCED
-  )
-  if(PIKA_WITH_BACKGROUND_THREAD_COUNTERS)
-    pika_add_config_define(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS)
-  endif()
-endif()
-
 pika_option(
   PIKA_WITH_THREAD_CREATION_AND_CLEANUP_RATES BOOL
   "Enable measuring thread creation and cleanup times (default: OFF)" OFF

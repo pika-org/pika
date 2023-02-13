@@ -8,7 +8,6 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/execution_base/this_thread.hpp>
 #include <pika/functional/unique_function.hpp>
 #include <pika/hardware/timestamp.hpp>
 #include <pika/modules/itt_notify.hpp>
@@ -18,11 +17,6 @@
 #include <pika/threading_base/scheduler_state.hpp>
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/threading_base/thread_num_tss.hpp>
-
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
-    defined(PIKA_HAVE_THREAD_IDLE_RATES)
-#include <pika/thread_pools/detail/scoped_background_timer.hpp>
-#endif
 
 #if defined(PIKA_HAVE_TRACY)
 #include <pika/threading_base/detail/tracy.hpp>
@@ -336,44 +330,6 @@ namespace pika::threads::detail {
     };
 
     ///////////////////////////////////////////////////////////////////////////
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
-    defined(PIKA_HAVE_THREAD_IDLE_RATES)
-    struct scheduling_counters
-    {
-        // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-        scheduling_counters(std::int64_t& executed_threads,
-            std::int64_t& executed_thread_phases, std::int64_t& tfunc_time,
-            std::int64_t& exec_time, std::int64_t& idle_loop_count,
-            std::int64_t& busy_loop_count, bool& is_active,
-            std::int64_t& background_work_duration,
-            std::int64_t& background_send_duration,
-            std::int64_t& background_receive_duration)
-          // NOLINTEND(bugprone-easily-swappable-parameters)
-          : executed_threads_(executed_threads)
-          , executed_thread_phases_(executed_thread_phases)
-          , tfunc_time_(tfunc_time)
-          , exec_time_(exec_time)
-          , idle_loop_count_(idle_loop_count)
-          , busy_loop_count_(busy_loop_count)
-          , background_work_duration_(background_work_duration)
-          , background_send_duration_(background_send_duration)
-          , background_receive_duration_(background_receive_duration)
-          , is_active_(is_active)
-        {
-        }
-
-        std::int64_t& executed_threads_;
-        std::int64_t& executed_thread_phases_;
-        std::int64_t& tfunc_time_;
-        std::int64_t& exec_time_;
-        std::int64_t& idle_loop_count_;
-        std::int64_t& busy_loop_count_;
-        std::int64_t& background_work_duration_;
-        std::int64_t& background_send_duration_;
-        std::int64_t& background_receive_duration_;
-        bool& is_active_;
-    };
-#else
     struct scheduling_counters
     {
         // NOLINTBEGIN(bugprone-easily-swappable-parameters)
@@ -400,8 +356,6 @@ namespace pika::threads::detail {
         std::int64_t& busy_loop_count_;
         bool& is_active_;
     };
-
-#endif    // PIKA_HAVE_BACKGROUND_THREAD_COUNTERS
 
     struct scheduling_callbacks
     {
@@ -486,21 +440,12 @@ namespace pika::threads::detail {
     // and create a new one that is supposed to be executed inside the
     // scheduling_loop, true otherwise
     template <typename SchedulingPolicy>
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
-    defined(PIKA_HAVE_THREAD_IDLE_RATES)
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-    bool call_background_thread(thread_id_ref_type& background_thread,
-        thread_id_ref_type& next_thrd, SchedulingPolicy& scheduler,
-        std::size_t num_thread, bool /* running */,
-        std::int64_t& background_work_exec_time_init,
-        pika::execution::this_thread::detail::agent_storage* context_storage)
-#else
     bool call_background_thread(thread_id_ref_type& background_thread,
         thread_id_ref_type& next_thrd, SchedulingPolicy& scheduler,
         std::size_t num_thread, bool /* running */,
         pika::execution::this_thread::detail::agent_storage* context_storage)
     // NOLINTEND(bugprone-easily-swappable-parameters)
-#endif
     {
         if (PIKA_UNLIKELY(background_thread))
         {
@@ -520,15 +465,6 @@ namespace pika::threads::detail {
                             thrd_stat.get_previous() ==
                                 thread_schedule_state::pending))
                     {
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
-    defined(PIKA_HAVE_THREAD_IDLE_RATES)
-                        // measure background work duration
-                        background_work_duration_counter bg_work_duration(
-                            background_work_exec_time_init);
-                        background_exec_time_wrapper bg_exec_time(
-                            bg_work_duration);
-#endif    // PIKA_HAVE_BACKGROUND_THREAD_COUNTERS
-
                         // invoke background thread
                         thrd_stat = (*get_thread_id_data(background_thread))(
                             context_storage);
@@ -599,12 +535,6 @@ namespace pika::threads::detail {
 
         std::int64_t& idle_loop_count = counters.idle_loop_count_;
         std::int64_t& busy_loop_count = counters.busy_loop_count_;
-
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
-    defined(PIKA_HAVE_THREAD_IDLE_RATES)
-        std::int64_t& bg_work_exec_time_init =
-            counters.background_work_duration_;
-#endif    // PIKA_HAVE_BACKGROUND_THREAD_COUNTERS
 
         idle_collect_rate idle_rate(counters.tfunc_time_, counters.exec_time_);
         tfunc_time_wrapper tfunc_time_collector(idle_rate);
@@ -993,16 +923,8 @@ namespace pika::threads::detail {
                     added = std::size_t(-1);
                 }
 
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
-    defined(PIKA_HAVE_THREAD_IDLE_RATES)
-                // do background work in parcel layer and in agas
-                if (!call_background_thread(background_thread, next_thrd,
-                        scheduler, num_thread, running, bg_work_exec_time_init,
-                        context_storage))
-#else
                 if (!call_background_thread(background_thread, next_thrd,
                         scheduler, num_thread, running, context_storage))
-#endif    // PIKA_HAVE_BACKGROUND_THREAD_COUNTERS
                 {
                     // Let the current background thread terminate as soon as
                     // possible. No need to reschedule, as another LCO will
@@ -1044,17 +966,9 @@ namespace pika::threads::detail {
             {
                 busy_loop_count = 0;
 
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
-    defined(PIKA_HAVE_THREAD_IDLE_RATES)
-                // do background work in parcel layer and in agas
-                if (!call_background_thread(background_thread, next_thrd,
-                        scheduler, num_thread, running, bg_work_exec_time_init,
-                        context_storage))
-#else
                 // do background work in parcel layer and in agas
                 if (!call_background_thread(background_thread, next_thrd,
                         scheduler, num_thread, running, context_storage))
-#endif    // PIKA_HAVE_BACKGROUND_THREAD_COUNTERS
                 {
                     // Let the current background thread terminate as soon
                     // as possible. No need to reschedule, as another LCO
