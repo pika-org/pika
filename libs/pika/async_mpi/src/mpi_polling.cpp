@@ -14,6 +14,7 @@
 #include <pika/modules/errors.hpp>
 #include <pika/modules/threading_base.hpp>
 #include <pika/mpi_base/mpi_environment.hpp>
+#include <pika/resource_partitioner/detail/partitioner.hpp>
 #include <pika/synchronization/condition_variable.hpp>
 
 #include <array>
@@ -187,7 +188,7 @@ namespace pika::mpi::experimental {
         // default transfer mode for mpi continuations
         static std::size_t task_completion_mode_ = get_completion_mode_default();
 
-        static std::string default_pool_name = "pika:polling";
+        static std::string polling_pool_name = "pika:polling";
 
         inline mpi_stream& get_stream_ref(stream_type stream)
         {
@@ -749,13 +750,13 @@ namespace pika::mpi::experimental {
     // -----------------------------------------------------------------
     const std::string& get_pool_name()
     {
-        return detail::default_pool_name;
+        return detail::polling_pool_name;
     }
 
     // -----------------------------------------------------------------
     void set_pool_name(const std::string& name)
     {
-        detail::default_pool_name = name;
+        detail::polling_pool_name = name;
     }
 
     // -------------------------------------------------------------
@@ -810,7 +811,7 @@ namespace pika::mpi::experimental {
         // install polling loop on requested thread pool
         if (pool_name.empty() || !pika::resource::pool_exists(pool_name))
         {
-            set_pool_name("default");
+            set_pool_name(resource::get_partitioner().get_default_pool_name());
             detail::register_polling(pika::resource::get_thread_pool(0));
         }
         else
