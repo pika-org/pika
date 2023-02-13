@@ -81,7 +81,6 @@ namespace pika::mpi::experimental {
         PIKA_EXPORT bool poll_request(MPI_Request& /*req*/);
 
         inline constexpr bool throttling_enabled = false;
-
     }    // namespace detail
 
     // -----------------------------------------------------------------
