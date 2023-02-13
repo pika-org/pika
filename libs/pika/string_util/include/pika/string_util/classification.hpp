@@ -36,11 +36,4 @@ namespace pika::string_util {
             std::allocator<char>>{std::string{chars}};
     }
 
-    struct is_space
-    {
-        bool operator()(int c) const noexcept
-        {
-            return std::isspace(c);
-        }
-    };
 }    // namespace pika::string_util
