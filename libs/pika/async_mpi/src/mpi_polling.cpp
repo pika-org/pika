@@ -402,7 +402,7 @@ namespace pika::mpi::experimental {
                 "MPI event polling has not been enabled on any pool. Make sure that MPI event "
                 "polling is enabled on at least one thread pool.");
 
-            // if already complete, kip callback
+            // if already complete, skip callback
 #ifndef DISALLOW_EAGER_POLLING_CHECK
             if (eager_check && detail::poll_request(request))
             {
