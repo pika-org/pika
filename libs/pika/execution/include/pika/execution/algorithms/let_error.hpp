@@ -310,6 +310,16 @@ namespace pika::let_error_detail {
             return operation_state<Receiver>(PIKA_MOVE(s.predecessor_sender),
                 PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.f));
         }
+
+        template <typename Receiver>
+        friend auto tag_invoke(pika::execution::experimental::connect_t,
+            let_error_sender_type const&, Receiver&&)
+        {
+            static_assert(sizeof(Receiver) == 0,
+                "Are you missing a std::move? The let_error sender is not "
+                "copyable and thus not l-value connectable. Make sure you are "
+                "passing an r-value reference of the sender.");
+        }
     };
 }    // namespace pika::let_error_detail
 

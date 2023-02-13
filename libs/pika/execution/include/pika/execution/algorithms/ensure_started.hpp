@@ -475,6 +475,17 @@ namespace pika::ensure_started_detail {
         {
             return {PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.state)};
         }
+
+        template <typename Receiver>
+        friend operation_state<Receiver>
+        tag_invoke(pika::execution::experimental::connect_t,
+            ensure_started_sender_type const&, Receiver&&)
+        {
+            static_assert(sizeof(Receiver) == 0,
+                "Are you missing a std::move? The ensure_started sender is not "
+                "copyable and thus not l-value connectable. Make sure you are "
+                "passing an r-value reference of the sender.");
+        }
     };
 
     template <typename Sender, typename Enable = void>
