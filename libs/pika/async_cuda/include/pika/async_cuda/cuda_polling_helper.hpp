@@ -32,10 +32,12 @@ namespace pika::cuda::experimental {
             if (pool_name_.empty())
             {
                 detail::register_polling(pika::resource::get_thread_pool(0));
+                set_pool_name("default");
             }
             else
             {
                 detail::register_polling(pika::resource::get_thread_pool(pool_name_));
+                set_pool_name(pool_name_);
             }
         }
 

@@ -14,6 +14,8 @@
 #include <pika/async_cuda/detail/cuda_event_callback.hpp>
 #include <pika/concurrency/concurrentqueue.hpp>
 #include <pika/datastructures/detail/small_vector.hpp>
+#include <pika/resource_partitioner/detail/partitioner.hpp>
+#include <pika/runtime/thread_pool_helpers.hpp>
 #include <pika/synchronization/spinlock.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
@@ -336,20 +338,23 @@ namespace pika::cuda::experimental::detail {
         sched->clear_cuda_polling_function();
     }
 
-    static std::string default_pool_name = "pika:polling";
+    static std::string polling_pool_name = "pika:polling";
 
 }    // namespace pika::cuda::experimental::detail
 
 namespace pika::cuda::experimental {
     PIKA_EXPORT const std::string& get_pool_name()
     {
-        if (pika::resource::pool_exists(detail::default_pool_name))
-            return detail::default_pool_name;
-        return "default";
+        if (pika::resource::pool_exists(detail::polling_pool_name))
+        {
+            return detail::polling_pool_name;
+        }
+        //
+        return resource::get_partitioner().get_default_pool_name();
     }
 
     PIKA_EXPORT void set_pool_name(const std::string& name)
     {
-        detail::default_pool_name = name;
+        detail::polling_pool_name = name;
     }
 }    // namespace pika::cuda::experimental
