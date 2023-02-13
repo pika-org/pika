@@ -187,7 +187,7 @@ namespace pika::mpi::experimental {
         // default transfer mode for mpi continuations
         static std::size_t task_completion_mode_ = get_completion_mode_default();
 
-        static std::string default_pool_name = "pika:mpi";
+        static std::string default_pool_name = "pika:polling";
 
         inline mpi_stream& get_stream_ref(stream_type stream)
         {
