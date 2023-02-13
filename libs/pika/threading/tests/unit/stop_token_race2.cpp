@@ -53,7 +53,7 @@ void test_callback_throw()
     // catch terminate() call:
     std::set_terminate([] {
         std::cout << "std::terminate called\n";
-        std::exit(pika::util::report_errors());
+        std::exit(pika::detail::report_errors());
     });
 
     // request stop

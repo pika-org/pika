@@ -29,184 +29,174 @@
 #include <mutex>
 #include <ostream>
 
-namespace pika::util {
+namespace pika::detail {
     enum counter_type
     {
         counter_sanity,
         counter_test
     };
 
-    namespace detail {
-        // Helper to wrap pointers in fmt::ptr so that users of PIKA_TEST* don't
-        // have to wrap values to be tested in fmt::ptr.
-        template <typename T>
-        auto make_fmt_ptr(T* x)
-        {
-            return fmt::ptr(x);
-        }
+    // Helper to wrap pointers in fmt::ptr so that users of PIKA_TEST* don't
+    // have to wrap values to be tested in fmt::ptr.
+    template <typename T>
+    auto make_fmt_ptr(T* x)
+    {
+        return fmt::ptr(x);
+    }
+
+    template <typename T>
+    T& make_fmt_ptr(T& x)
+    {
+        return x;
+    }
+
+    struct fixture final
+    {
+    public:
+        using mutex_type = pika::detail::spinlock;
+
+    private:
+        std::ostream& stream_;
+        static std::atomic<std::size_t> sanity_tests_;
+        static std::atomic<std::size_t> sanity_failures_;
+        static std::atomic<std::size_t> test_tests_;
+        static std::atomic<std::size_t> test_failures_;
+        mutex_type mutex_;
+
+    public:
+        explicit fixture(std::ostream& stream);
+        ~fixture();
+
+        PIKA_EXPORT void increment_tests(counter_type c);
+        PIKA_EXPORT void increment_failures(counter_type c);
+
+        PIKA_EXPORT std::size_t get_tests(counter_type c) const;
+        PIKA_EXPORT std::size_t get_failures(counter_type c) const;
 
         template <typename T>
-        T& make_fmt_ptr(T& x)
+        bool check_(char const* file, int line, char const* function,
+            counter_type c, T const& t, char const* msg)
         {
-            return x;
+            increment_tests(c);
+
+            if (!t)
+            {
+                std::lock_guard<mutex_type> l(mutex_);
+                fmt::print(stream_, "{}({}): {} failed in function '{}'\n",
+                    file, line, msg, function);
+                increment_failures(c);
+                return false;
+            }
+            return true;
         }
 
-        struct fixture final
+        template <typename T, typename U>
+        bool check_equal(char const* file, int line, char const* function,
+            counter_type c, T const& t, U const& u, char const* msg)
         {
-        public:
-            using mutex_type = pika::detail::spinlock;
+            increment_tests(c);
 
-        private:
-            std::ostream& stream_;
-            static std::atomic<std::size_t> sanity_tests_;
-            static std::atomic<std::size_t> sanity_failures_;
-            static std::atomic<std::size_t> test_tests_;
-            static std::atomic<std::size_t> test_failures_;
-            mutex_type mutex_;
-
-        public:
-            explicit fixture(std::ostream& stream);
-            ~fixture();
-
-            PIKA_EXPORT void increment_tests(counter_type c);
-            PIKA_EXPORT void increment_failures(counter_type c);
-
-            PIKA_EXPORT std::size_t get_tests(counter_type c) const;
-            PIKA_EXPORT std::size_t get_failures(counter_type c) const;
-
-            template <typename T>
-            bool check_(char const* file, int line, char const* function,
-                counter_type c, T const& t, char const* msg)
+            if (!(t == u))
             {
-                increment_tests(c);
-
-                if (!t)
-                {
-                    std::lock_guard<mutex_type> l(mutex_);
-                    fmt::print(stream_, "{}({}): {} failed in function '{}'\n",
-                        file, line, msg, function);
-                    increment_failures(c);
-                    return false;
-                }
-                return true;
+                std::lock_guard<mutex_type> l(mutex_);
+                fmt::print(stream_,
+                    "{}({}): {} failed in function '{}': '{} != {}'\n", file,
+                    line, msg, function, make_fmt_ptr(t), make_fmt_ptr(u));
+                increment_failures(c);
+                return false;
             }
+            return true;
+        }
 
-            template <typename T, typename U>
-            bool check_equal(char const* file, int line, char const* function,
-                counter_type c, T const& t, U const& u, char const* msg)
+        template <typename T, typename U>
+        bool check_not_equal(char const* file, int line, char const* function,
+            counter_type c, T const& t, U const& u, char const* msg)
+        {
+            increment_tests(c);
+
+            if (!(t != u))
             {
-                increment_tests(c);
+                std::lock_guard<mutex_type> l(mutex_);
+                fmt::print(stream_,
+                    "{}({}): {} failed in function '{}': '{} == {}'\n", file,
+                    line, msg, function, make_fmt_ptr(t), make_fmt_ptr(u));
+                increment_failures(c);
+                return false;
+            }
+            return true;
+        }
 
-                if (!(t == u))
+        template <typename T, typename U>
+        bool check_less(char const* file, int line, char const* function,
+            counter_type c, T const& t, U const& u, char const* msg)
+        {
+            increment_tests(c);
+
+            if (!(t < u))
+            {
+                std::lock_guard<mutex_type> l(mutex_);
+                pika::detail::ios_flags_saver ifs(stream_);
+                fmt::print(stream_,
+                    "{}({}): {} failed in function '{}': '{} >= {}'\n", file,
+                    line, msg, function, make_fmt_ptr(t), make_fmt_ptr(u));
+                increment_failures(c);
+                return false;
+            }
+            return true;
+        }
+
+        template <typename T, typename U>
+        bool check_less_equal(char const* file, int line, char const* function,
+            counter_type c, T const& t, U const& u, char const* msg)
+        {
+            increment_tests(c);
+
+            if (!(t <= u))
+            {
+                std::lock_guard<mutex_type> l(mutex_);
+                fmt::print(stream_,
+                    "{}({}): {} failed in function '{}': '{} > {}'\n", file,
+                    line, msg, function, make_fmt_ptr(t), make_fmt_ptr(u));
+                increment_failures(c);
+                return false;
+            }
+            return true;
+        }
+
+        template <typename T, typename U, typename V>
+        bool check_range(char const* file, int line, char const* function,
+            counter_type c, T const& t, U const& u, V const& v, char const* msg)
+        {
+            increment_tests(c);
+
+            if (!(t >= u && t <= v))
+            {
+                std::lock_guard<mutex_type> l(mutex_);
+                if (!(t >= u))
                 {
-                    std::lock_guard<mutex_type> l(mutex_);
                     fmt::print(stream_,
-                        "{}({}): {} failed in function '{}': '{} != {}'\n",
-                        file, line, msg, function, make_fmt_ptr(t),
-                        make_fmt_ptr(u));
-                    increment_failures(c);
-                    return false;
+                        "{}({}): {} failed in function '{}': '{} < {}'\n", file,
+                        line, msg, function, make_fmt_ptr(t), make_fmt_ptr(u));
                 }
-                return true;
-            }
-
-            template <typename T, typename U>
-            bool
-            check_not_equal(char const* file, int line, char const* function,
-                counter_type c, T const& t, U const& u, char const* msg)
-            {
-                increment_tests(c);
-
-                if (!(t != u))
+                else
                 {
-                    std::lock_guard<mutex_type> l(mutex_);
-                    fmt::print(stream_,
-                        "{}({}): {} failed in function '{}': '{} == {}'\n",
-                        file, line, msg, function, make_fmt_ptr(t),
-                        make_fmt_ptr(u));
-                    increment_failures(c);
-                    return false;
-                }
-                return true;
-            }
-
-            template <typename T, typename U>
-            bool check_less(char const* file, int line, char const* function,
-                counter_type c, T const& t, U const& u, char const* msg)
-            {
-                increment_tests(c);
-
-                if (!(t < u))
-                {
-                    std::lock_guard<mutex_type> l(mutex_);
-                    pika::detail::ios_flags_saver ifs(stream_);
-                    fmt::print(stream_,
-                        "{}({}): {} failed in function '{}': '{} >= {}'\n",
-                        file, line, msg, function, make_fmt_ptr(t),
-                        make_fmt_ptr(u));
-                    increment_failures(c);
-                    return false;
-                }
-                return true;
-            }
-
-            template <typename T, typename U>
-            bool
-            check_less_equal(char const* file, int line, char const* function,
-                counter_type c, T const& t, U const& u, char const* msg)
-            {
-                increment_tests(c);
-
-                if (!(t <= u))
-                {
-                    std::lock_guard<mutex_type> l(mutex_);
                     fmt::print(stream_,
                         "{}({}): {} failed in function '{}': '{} > {}'\n", file,
-                        line, msg, function, make_fmt_ptr(t), make_fmt_ptr(u));
-                    increment_failures(c);
-                    return false;
+                        line, msg, function, make_fmt_ptr(t), u);
                 }
-                return true;
+                increment_failures(c);
+                return false;
             }
+            return true;
+        }
+    };
 
-            template <typename T, typename U, typename V>
-            bool check_range(char const* file, int line, char const* function,
-                counter_type c, T const& t, U const& u, V const& v,
-                char const* msg)
-            {
-                increment_tests(c);
-
-                if (!(t >= u && t <= v))
-                {
-                    std::lock_guard<mutex_type> l(mutex_);
-                    if (!(t >= u))
-                    {
-                        fmt::print(stream_,
-                            "{}({}): {} failed in function '{}': '{} < {}'\n",
-                            file, line, msg, function, make_fmt_ptr(t),
-                            make_fmt_ptr(u));
-                    }
-                    else
-                    {
-                        fmt::print(stream_,
-                            "{}({}): {} failed in function '{}': '{} > {}'\n",
-                            file, line, msg, function, make_fmt_ptr(t), u);
-                    }
-                    increment_failures(c);
-                    return false;
-                }
-                return true;
-            }
-        };
-
-        PIKA_EXPORT extern fixture global_fixture;
-
-    }    // namespace detail
+    PIKA_EXPORT extern fixture global_fixture;
 
     ////////////////////////////////////////////////////////////////////////////
     PIKA_EXPORT int report_errors();
     PIKA_EXPORT int report_errors(std::ostream& stream);
-}    // namespace pika::util
+}    // namespace pika::detail
 
 ////////////////////////////////////////////////////////////////////////////////
 #define PIKA_TEST(...)                                                         \
@@ -217,14 +207,13 @@ namespace pika::util {
     PIKA_PP_EXPAND(                                                            \
         PIKA_PP_CAT(PIKA_TEST_, PIKA_PP_NARGS(__VA_ARGS__))(__VA_ARGS__))      \
     /**/
-#define PIKA_TEST_1(expr)                                                      \
-    PIKA_TEST_IMPL(::pika::util::detail::global_fixture, expr)
+#define PIKA_TEST_1(expr) PIKA_TEST_IMPL(::pika::detail::global_fixture, expr)
 #define PIKA_TEST_2(strm, expr)                                                \
-    PIKA_TEST_IMPL(::pika::util::detail::fixture{strm}, expr)
+    PIKA_TEST_IMPL(::pika::detail::fixture{strm}, expr)
 
 #define PIKA_TEST_IMPL(fixture, expr)                                          \
     fixture.check_(__FILE__, __LINE__, PIKA_ASSERT_CURRENT_FUNCTION,           \
-        ::pika::util::counter_test, expr,                                      \
+        ::pika::detail::counter_test, expr,                                    \
         "test '" PIKA_PP_STRINGIZE(expr) "'")
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -237,13 +226,13 @@ namespace pika::util {
         PIKA_PP_CAT(PIKA_TEST_MSG_, PIKA_PP_NARGS(__VA_ARGS__))(__VA_ARGS__))  \
     /**/
 #define PIKA_TEST_MSG_2(expr, msg)                                             \
-    PIKA_TEST_MSG_IMPL(::pika::util::detail::global_fixture, expr, msg)
+    PIKA_TEST_MSG_IMPL(::pika::detail::global_fixture, expr, msg)
 #define PIKA_TEST_MSG_3(strm, expr, msg)                                       \
-    PIKA_TEST_MSG_IMPL(::pika::util::detail::fixture{strm}, expr, msg)
+    PIKA_TEST_MSG_IMPL(::pika::detail::fixture{strm}, expr, msg)
 
 #define PIKA_TEST_MSG_IMPL(fixture, expr, msg)                                 \
     fixture.check_(__FILE__, __LINE__, PIKA_ASSERT_CURRENT_FUNCTION,           \
-        ::pika::util::counter_test, expr, msg)
+        ::pika::detail::counter_test, expr, msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 #define PIKA_TEST_EQ(...)                                                      \
@@ -255,13 +244,13 @@ namespace pika::util {
         PIKA_PP_CAT(PIKA_TEST_EQ_, PIKA_PP_NARGS(__VA_ARGS__))(__VA_ARGS__))   \
     /**/
 #define PIKA_TEST_EQ_2(expr1, expr2)                                           \
-    PIKA_TEST_EQ_IMPL(::pika::util::detail::global_fixture, expr1, expr2)
+    PIKA_TEST_EQ_IMPL(::pika::detail::global_fixture, expr1, expr2)
 #define PIKA_TEST_EQ_3(strm, expr1, expr2)                                     \
-    PIKA_TEST_EQ_IMPL(::pika::util::detail::fixture{strm}, expr1, expr2)
+    PIKA_TEST_EQ_IMPL(::pika::detail::fixture{strm}, expr1, expr2)
 
 #define PIKA_TEST_EQ_IMPL(fixture, expr1, expr2)                               \
     fixture.check_equal(__FILE__, __LINE__, PIKA_ASSERT_CURRENT_FUNCTION,      \
-        ::pika::util::counter_test, expr1, expr2,                              \
+        ::pika::detail::counter_test, expr1, expr2,                            \
         "test '" PIKA_PP_STRINGIZE(expr1) " == " PIKA_PP_STRINGIZE(expr2) "'")
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -274,13 +263,13 @@ namespace pika::util {
         PIKA_PP_CAT(PIKA_TEST_NEQ_, PIKA_PP_NARGS(__VA_ARGS__))(__VA_ARGS__))  \
     /**/
 #define PIKA_TEST_NEQ_2(expr1, expr2)                                          \
-    PIKA_TEST_NEQ_IMPL(::pika::util::detail::global_fixture, expr1, expr2)
+    PIKA_TEST_NEQ_IMPL(::pika::detail::global_fixture, expr1, expr2)
 #define PIKA_TEST_NEQ_3(strm, expr1, expr2)                                    \
-    PIKA_TEST_NEQ_IMPL(::pika::util::detail::fixture{strm}, expr1, expr2)
+    PIKA_TEST_NEQ_IMPL(::pika::detail::fixture{strm}, expr1, expr2)
 
 #define PIKA_TEST_NEQ_IMPL(fixture, expr1, expr2)                              \
     fixture.check_not_equal(__FILE__, __LINE__, PIKA_ASSERT_CURRENT_FUNCTION,  \
-        ::pika::util::counter_test, expr1, expr2,                              \
+        ::pika::detail::counter_test, expr1, expr2,                            \
         "test '" PIKA_PP_STRINGIZE(expr1) " != " PIKA_PP_STRINGIZE(expr2) "'")
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -293,13 +282,13 @@ namespace pika::util {
         PIKA_PP_CAT(PIKA_TEST_LT_, PIKA_PP_NARGS(__VA_ARGS__))(__VA_ARGS__))   \
     /**/
 #define PIKA_TEST_LT_2(expr1, expr2)                                           \
-    PIKA_TEST_LT_IMPL(::pika::util::detail::global_fixture, expr1, expr2)
+    PIKA_TEST_LT_IMPL(::pika::detail::global_fixture, expr1, expr2)
 #define PIKA_TEST_LT_3(strm, expr1, expr2)                                     \
-    PIKA_TEST_LT_IMPL(::pika::util::detail::fixture{strm}, expr1, expr2)
+    PIKA_TEST_LT_IMPL(::pika::detail::fixture{strm}, expr1, expr2)
 
 #define PIKA_TEST_LT_IMPL(fixture, expr1, expr2)                               \
     fixture.check_less(__FILE__, __LINE__, PIKA_ASSERT_CURRENT_FUNCTION,       \
-        ::pika::util::counter_test, expr1, expr2,                              \
+        ::pika::detail::counter_test, expr1, expr2,                            \
         "test '" PIKA_PP_STRINGIZE(expr1) " < " PIKA_PP_STRINGIZE(expr2) "'")
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -312,13 +301,13 @@ namespace pika::util {
         PIKA_PP_CAT(PIKA_TEST_LTE_, PIKA_PP_NARGS(__VA_ARGS__))(__VA_ARGS__))  \
     /**/
 #define PIKA_TEST_LTE_2(expr1, expr2)                                          \
-    PIKA_TEST_LTE_IMPL(::pika::util::detail::global_fixture, expr1, expr2)
+    PIKA_TEST_LTE_IMPL(::pika::detail::global_fixture, expr1, expr2)
 #define PIKA_TEST_LTE_3(strm, expr1, expr2)                                    \
-    PIKA_TEST_LTE_IMPL(::pika::util::detail::fixture{strm}, expr1, expr2)
+    PIKA_TEST_LTE_IMPL(::pika::detail::fixture{strm}, expr1, expr2)
 
 #define PIKA_TEST_LTE_IMPL(fixture, expr1, expr2)                              \
     fixture.check_less_equal(__FILE__, __LINE__, PIKA_ASSERT_CURRENT_FUNCTION, \
-        ::pika::util::counter_test, expr1, expr2,                              \
+        ::pika::detail::counter_test, expr1, expr2,                            \
         "test '" PIKA_PP_STRINGIZE(expr1) " <= " PIKA_PP_STRINGIZE(expr2) "'")
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -331,15 +320,13 @@ namespace pika::util {
         __VA_ARGS__))                                                          \
     /**/
 #define PIKA_TEST_RANGE_3(expr1, expr2, expr3)                                 \
-    PIKA_TEST_RANGE_IMPL(                                                      \
-        ::pika::util::detail::global_fixture, expr1, expr2, expr3)
+    PIKA_TEST_RANGE_IMPL(::pika::detail::global_fixture, expr1, expr2, expr3)
 #define PIKA_TEST_RANGE_4(strm, expr1, expr2, expr3)                           \
-    PIKA_TEST_RANGE_IMPL(                                                      \
-        ::pika::util::detail::fixture{strm}, expr1, expr2, expr3)
+    PIKA_TEST_RANGE_IMPL(::pika::detail::fixture{strm}, expr1, expr2, expr3)
 
 #define PIKA_TEST_RANGE_IMPL(fixture, expr1, expr2, expr3)                     \
     fixture.check_range(__FILE__, __LINE__, PIKA_ASSERT_CURRENT_FUNCTION,      \
-        ::pika::util::counter_test, expr1, expr2, expr3,                       \
+        ::pika::detail::counter_test, expr1, expr2, expr3,                     \
         "test '" PIKA_PP_STRINGIZE(expr2) " <= " PIKA_PP_STRINGIZE(            \
             expr1) " <= " PIKA_PP_STRINGIZE(expr3) "'")
 
@@ -353,15 +340,13 @@ namespace pika::util {
         __VA_ARGS__))                                                          \
     /**/
 #define PIKA_TEST_EQ_MSG_3(expr1, expr2, msg)                                  \
-    PIKA_TEST_EQ_MSG_IMPL(                                                     \
-        ::pika::util::detail::global_fixture, expr1, expr2, msg)
+    PIKA_TEST_EQ_MSG_IMPL(::pika::detail::global_fixture, expr1, expr2, msg)
 #define PIKA_TEST_EQ_MSG_4(strm, expr1, expr2, msg)                            \
-    PIKA_TEST_EQ_MSG_IMPL(                                                     \
-        ::pika::util::detail::fixture{strm}, expr1, expr2, msg)
+    PIKA_TEST_EQ_MSG_IMPL(::pika::detail::fixture{strm}, expr1, expr2, msg)
 
 #define PIKA_TEST_EQ_MSG_IMPL(fixture, expr1, expr2, msg)                      \
     fixture.check_equal(__FILE__, __LINE__, PIKA_ASSERT_CURRENT_FUNCTION,      \
-        ::pika::util::counter_test, expr1, expr2, msg)
+        ::pika::detail::counter_test, expr1, expr2, msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 #define PIKA_TEST_NEQ_MSG(...)                                                 \
@@ -373,15 +358,13 @@ namespace pika::util {
         PIKA_TEST_NEQ_MSG_, PIKA_PP_NARGS(__VA_ARGS__))(__VA_ARGS__))          \
     /**/
 #define PIKA_TEST_NEQ_MSG_3(expr1, expr2, msg)                                 \
-    PIKA_TEST_NEQ_MSG_IMPL(                                                    \
-        ::pika::util::detail::global_fixture, expr1, expr2, msg)
+    PIKA_TEST_NEQ_MSG_IMPL(::pika::detail::global_fixture, expr1, expr2, msg)
 #define PIKA_TEST_NEQ_MSG_4(strm, expr1, expr2, msg)                           \
-    PIKA_TEST_NEQ_MSG_IMPL(                                                    \
-        ::pika::util::detail::fixture{strm}, expr1, expr2, msg)
+    PIKA_TEST_NEQ_MSG_IMPL(::pika::detail::fixture{strm}, expr1, expr2, msg)
 
 #define PIKA_TEST_NEQ_MSG_IMPL(fixture, expr1, expr2, msg)                     \
     fixture.check_not_equal(__FILE__, __LINE__, PIKA_ASSERT_CURRENT_FUNCTION,  \
-        ::pika::util::counter_test, expr1, expr2, msg)
+        ::pika::detail::counter_test, expr1, expr2, msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 #define PIKA_TEST_LT_MSG(...)                                                  \
@@ -393,15 +376,13 @@ namespace pika::util {
         __VA_ARGS__))                                                          \
     /**/
 #define PIKA_TEST_LT_MSG_3(expr1, expr2, msg)                                  \
-    PIKA_TEST_LT_MSG_IMPL(                                                     \
-        ::pika::util::detail::global_fixture, expr1, expr2, msg)
+    PIKA_TEST_LT_MSG_IMPL(::pika::detail::global_fixture, expr1, expr2, msg)
 #define PIKA_TEST_LT_MSG_4(strm, expr1, expr2, msg)                            \
-    PIKA_TEST_LT_MSG_IMPL(                                                     \
-        ::pika::util::detail::fixture{strm}, expr1, expr2, msg)
+    PIKA_TEST_LT_MSG_IMPL(::pika::detail::fixture{strm}, expr1, expr2, msg)
 
 #define PIKA_TEST_LT_MSG_IMPL(fixture, expr1, expr2, msg)                      \
     fixture.check_less(__FILE__, __LINE__, PIKA_ASSERT_CURRENT_FUNCTION,       \
-        ::pika::util::counter_test, expr1, expr2, msg)
+        ::pika::detail::counter_test, expr1, expr2, msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 #define PIKA_TEST_LTE_MSG(...)                                                 \
@@ -413,15 +394,13 @@ namespace pika::util {
         PIKA_TEST_LTE_MSG_, PIKA_PP_NARGS(__VA_ARGS__))(__VA_ARGS__))          \
     /**/
 #define PIKA_TEST_LTE_MSG_3(expr1, expr2, msg)                                 \
-    PIKA_TEST_LTE_MSG_IMPL(                                                    \
-        ::pika::util::detail::global_fixture, expr1, expr2, msg)
+    PIKA_TEST_LTE_MSG_IMPL(::pika::detail::global_fixture, expr1, expr2, msg)
 #define PIKA_TEST_LTE_MSG_4(strm, expr1, expr2, msg)                           \
-    PIKA_TEST_LTE_MSG_IMPL(                                                    \
-        ::pika::util::detail::fixture{strm}, expr1, expr2, msg)
+    PIKA_TEST_LTE_MSG_IMPL(::pika::detail::fixture{strm}, expr1, expr2, msg)
 
 #define PIKA_TEST_LTE_MSG_IMPL(fixture, expr1, expr2, msg)                     \
     fixture.check_less_equal(__FILE__, __LINE__, PIKA_ASSERT_CURRENT_FUNCTION, \
-        ::pika::util::counter_test, expr1, expr2, msg)
+        ::pika::detail::counter_test, expr1, expr2, msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 #define PIKA_TEST_RANGE_MSG(...)                                               \
@@ -434,14 +413,14 @@ namespace pika::util {
     /**/
 #define PIKA_TEST_RANGE_MSG_4(expr1, expr2, expr3, msg)                        \
     PIKA_TEST_RANGE_MSG_IMPL(                                                  \
-        ::pika::util::detail::global_fixture, expr1, expr2, expr3, msg)
+        ::pika::detail::global_fixture, expr1, expr2, expr3, msg)
 #define PIKA_TEST_RANGE_MSG_5(strm, expr1, expr2, expr3, msg)                  \
     PIKA_TEST_RANGE_MSG_IMPL(                                                  \
-        ::pika::util::detail::fixture{strm}, expr1, expr2, expr3, msg)
+        ::pika::detail::fixture{strm}, expr1, expr2, expr3, msg)
 
 #define PIKA_TEST_RANGE_MSG_IMPL(fixture, expr1, expr2, expr3, msg)            \
     fixture.check_range(__FILE__, __LINE__, PIKA_ASSERT_CURRENT_FUNCTION,      \
-        ::pika::util::counter_test, expr1, expr2, expr3, msg)
+        ::pika::detail::counter_test, expr1, expr2, expr3, msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 #define PIKA_SANITY(...)                                                       \
@@ -452,14 +431,13 @@ namespace pika::util {
     PIKA_PP_EXPAND(                                                            \
         PIKA_PP_CAT(PIKA_SANITY_, PIKA_PP_NARGS(__VA_ARGS__))(__VA_ARGS__))    \
     /**/
-#define PIKA_SANITY_1(expr)                                                    \
-    PIKA_TEST_IMPL(::pika::util::detail::global_fixture, expr)
+#define PIKA_SANITY_1(expr) PIKA_TEST_IMPL(::pika::detail::global_fixture, expr)
 #define PIKA_SANITY_2(strm, expr)                                              \
-    PIKA_SANITY_IMPL(::pika::util::detail::fixture{strm}, expr)
+    PIKA_SANITY_IMPL(::pika::detail::fixture{strm}, expr)
 
 #define PIKA_SANITY_IMPL(fixture, expr)                                        \
     fixture.check_(__FILE__, __LINE__, PIKA_ASSERT_CURRENT_FUNCTION,           \
-        ::pika::util::counter_sanity, expr,                                    \
+        ::pika::detail::counter_sanity, expr,                                  \
         "sanity check '" PIKA_PP_STRINGIZE(expr) "'")
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -472,13 +450,13 @@ namespace pika::util {
         __VA_ARGS__))                                                          \
     /**/
 #define PIKA_SANITY_MSG_2(expr, msg)                                           \
-    PIKA_SANITY_MSG_IMPL(::pika::util::detail::global_fixture, expr, msg)
+    PIKA_SANITY_MSG_IMPL(::pika::detail::global_fixture, expr, msg)
 #define PIKA_SANITY_MSG_3(strm, expr, msg)                                     \
-    PIKA_SANITY_MSG_IMPL(::pika::util::detail::fixture{strm}, expr, msg)
+    PIKA_SANITY_MSG_IMPL(::pika::detail::fixture{strm}, expr, msg)
 
 #define PIKA_SANITY_MSG_IMPL(fixture, expr, msg)                               \
     fixture.check_(__FILE__, __LINE__, PIKA_ASSERT_CURRENT_FUNCTION,           \
-        ::pika::util::counter_sanity, expr, msg)
+        ::pika::detail::counter_sanity, expr, msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 #define PIKA_SANITY_EQ(...)                                                    \
@@ -490,13 +468,13 @@ namespace pika::util {
         PIKA_PP_CAT(PIKA_SANITY_EQ_, PIKA_PP_NARGS(__VA_ARGS__))(__VA_ARGS__)) \
     /**/
 #define PIKA_SANITY_EQ_2(expr1, expr2)                                         \
-    PIKA_SANITY_EQ_IMPL(::pika::util::detail::global_fixture, expr1, expr2)
+    PIKA_SANITY_EQ_IMPL(::pika::detail::global_fixture, expr1, expr2)
 #define PIKA_SANITY_EQ_3(strm, expr1, expr2)                                   \
-    PIKA_SANITY_EQ_IMPL(::pika::util::detail::fixture{strm}, expr1, expr2)
+    PIKA_SANITY_EQ_IMPL(::pika::detail::fixture{strm}, expr1, expr2)
 
 #define PIKA_SANITY_EQ_IMPL(fixture, expr1, expr2)                             \
     fixture.check_equal(__FILE__, __LINE__, PIKA_ASSERT_CURRENT_FUNCTION,      \
-        ::pika::util::counter_sanity, expr1, expr2,                            \
+        ::pika::detail::counter_sanity, expr1, expr2,                          \
         "sanity check '" PIKA_PP_STRINGIZE(expr1) " == " PIKA_PP_STRINGIZE(    \
             expr2) "'")
 
@@ -510,13 +488,13 @@ namespace pika::util {
         __VA_ARGS__))                                                          \
     /**/
 #define PIKA_SANITY_NEQ_2(expr1, expr2)                                        \
-    PIKA_SANITY_NEQ_IMPL(::pika::util::detail::global_fixture, expr1, expr2)
+    PIKA_SANITY_NEQ_IMPL(::pika::detail::global_fixture, expr1, expr2)
 #define PIKA_SANITY_NEQ_3(strm, expr1, expr2)                                  \
-    PIKA_SANITY_NEQ_IMPL(::pika::util::detail::fixture{strm}, expr1, expr2)
+    PIKA_SANITY_NEQ_IMPL(::pika::detail::fixture{strm}, expr1, expr2)
 
 #define PIKA_SANITY_NEQ_IMPL(fixture, expr1, expr2)                            \
     fixture.check_not_equal(__FILE__, __LINE__, PIKA_ASSERT_CURRENT_FUNCTION,  \
-        ::pika::util::counter_sanity, expr1, expr2,                            \
+        ::pika::detail::counter_sanity, expr1, expr2,                          \
         "sanity check '" PIKA_PP_STRINGIZE(expr1) " != " PIKA_PP_STRINGIZE(    \
             expr2) "'")
 
@@ -530,13 +508,13 @@ namespace pika::util {
         PIKA_PP_CAT(PIKA_SANITY_LT_, PIKA_PP_NARGS(__VA_ARGS__))(__VA_ARGS__)) \
     /**/
 #define PIKA_SANITY_LT_2(expr1, expr2)                                         \
-    PIKA_SANITY_LT_IMPL(::pika::util::detail::global_fixture, expr1, expr2)
+    PIKA_SANITY_LT_IMPL(::pika::detail::global_fixture, expr1, expr2)
 #define PIKA_SANITY_LT_3(strm, expr1, expr2)                                   \
-    PIKA_SANITY_LT_IMPL(::pika::util::detail::fixture{strm}, expr1, expr2)
+    PIKA_SANITY_LT_IMPL(::pika::detail::fixture{strm}, expr1, expr2)
 
 #define PIKA_SANITY_LT_IMPL(fixture, expr1, expr2)                             \
     fixture.check_less(__FILE__, __LINE__, PIKA_ASSERT_CURRENT_FUNCTION,       \
-        ::pika::util::counter_sanity, expr1, expr2,                            \
+        ::pika::detail::counter_sanity, expr1, expr2,                          \
         "sanity check '" PIKA_PP_STRINGIZE(expr1) " < " PIKA_PP_STRINGIZE(     \
             expr2) "'")
 
@@ -550,13 +528,13 @@ namespace pika::util {
         __VA_ARGS__))                                                          \
     /**/
 #define PIKA_SANITY_LTE_2(expr1, expr2)                                        \
-    PIKA_SANITY_LTE_IMPL(::pika::util::detail::global_fixture, expr1, expr2)
+    PIKA_SANITY_LTE_IMPL(::pika::detail::global_fixture, expr1, expr2)
 #define PIKA_SANITY_LTE_3(strm, expr1, expr2)                                  \
-    PIKA_SANITY_LTE_IMPL(::pika::util::detail::fixture{strm}, expr1, expr2)
+    PIKA_SANITY_LTE_IMPL(::pika::detail::fixture{strm}, expr1, expr2)
 
 #define PIKA_SANITY_LTE_IMPL(fixture, expr1, expr2)                            \
     fixture.check_less_equal(__FILE__, __LINE__, PIKA_ASSERT_CURRENT_FUNCTION, \
-        ::pika::util::counter_sanity, expr1, expr2,                            \
+        ::pika::detail::counter_sanity, expr1, expr2,                          \
         "sanity check '" PIKA_PP_STRINGIZE(expr1) " <= " PIKA_PP_STRINGIZE(    \
             expr2) "'")
 
@@ -570,15 +548,13 @@ namespace pika::util {
         PIKA_SANITY_RANGE_, PIKA_PP_NARGS(__VA_ARGS__))(__VA_ARGS__))          \
     /**/
 #define PIKA_SANITY_RANGE_3(expr1, expr2, expr3)                               \
-    PIKA_SANITY_RANGE_IMPL(                                                    \
-        ::pika::util::detail::global_fixture, expr1, expr2, expr3)
+    PIKA_SANITY_RANGE_IMPL(::pika::detail::global_fixture, expr1, expr2, expr3)
 #define PIKA_SANITY_RANGE_4(strm, expr1, expr2, expr3)                         \
-    PIKA_SANITY_RANGE_IMPL(                                                    \
-        ::pika::util::detail::fixture{strm}, expr1, expr2, expr3)
+    PIKA_SANITY_RANGE_IMPL(::pika::detail::fixture{strm}, expr1, expr2, expr3)
 
 #define PIKA_SANITY_RANGE_IMPL(fixture, expr1, expr2, expr3)                   \
     fixture.check_range(__FILE__, __LINE__, PIKA_ASSERT_CURRENT_FUNCTION,      \
-        ::pika::util::counter_sanity, expr1, expr2, expr3,                     \
+        ::pika::detail::counter_sanity, expr1, expr2, expr3,                   \
         "sanity check '" PIKA_PP_STRINGIZE(expr2) " <= " PIKA_PP_STRINGIZE(    \
             expr1) " <= " PIKA_PP_STRINGIZE(expr3) "'")
 
@@ -592,15 +568,13 @@ namespace pika::util {
         PIKA_SANITY_EQ_MSG_, PIKA_PP_NARGS(__VA_ARGS__))(__VA_ARGS__))         \
     /**/
 #define PIKA_SANITY_EQ_MSG_3(expr1, expr2, msg)                                \
-    PIKA_SANITY_EQ_MSG_IMPL(                                                   \
-        ::pika::util::detail::global_fixture, expr1, expr2, msg)
+    PIKA_SANITY_EQ_MSG_IMPL(::pika::detail::global_fixture, expr1, expr2, msg)
 #define PIKA_SANITY_EQ_MSG_4(strm, expr1, expr2, msg)                          \
-    PIKA_SANITY_EQ_MSG_IMPL(                                                   \
-        ::pika::util::detail::fixture{strm}, expr1, expr2, msg)
+    PIKA_SANITY_EQ_MSG_IMPL(::pika::detail::fixture{strm}, expr1, expr2, msg)
 
 #define PIKA_SANITY_EQ_MSG_IMPL(fixture, expr1, expr2, msg)                    \
     fixture.check_equal(__FILE__, __LINE__, PIKA_ASSERT_CURRENT_FUNCTION,      \
-        ::pika::util::counter_sanity, expr1, expr2, msg)
+        ::pika::detail::counter_sanity, expr1, expr2, msg)
 
 ////////////////////////////////////////////////////////////////////////////////
 #define PIKA_TEST_THROW(...)                                                   \
@@ -612,11 +586,9 @@ namespace pika::util {
         __VA_ARGS__))                                                          \
     /**/
 #define PIKA_TEST_THROW_2(expression, exception)                               \
-    PIKA_TEST_THROW_IMPL(                                                      \
-        ::pika::util::detail::global_fixture, expression, exception)
+    PIKA_TEST_THROW_IMPL(::pika::detail::global_fixture, expression, exception)
 #define PIKA_TEST_THROW_3(strm, expression, exception)                         \
-    PIKA_TEST_THROW_IMPL(                                                      \
-        ::pika::util::detail::fixture{strm}, expression, exception)
+    PIKA_TEST_THROW_IMPL(::pika::detail::fixture{strm}, expression, exception)
 
 #define PIKA_TEST_THROW_IMPL(fixture, expression, exception)                   \
     {                                                                          \
