@@ -335,4 +335,21 @@ namespace pika::cuda::experimental::detail {
         auto* sched = pool.get_scheduler();
         sched->clear_cuda_polling_function();
     }
+
+    static std::string default_pool_name = "pika:polling";
+
 }    // namespace pika::cuda::experimental::detail
+
+namespace pika::cuda::experimental {
+    PIKA_EXPORT const std::string& get_pool_name()
+    {
+        if (pika::resource::pool_exists(detail::default_pool_name))
+            return detail::default_pool_name;
+        return "default";
+    }
+
+    PIKA_EXPORT void set_pool_name(const std::string& name)
+    {
+        detail::default_pool_name = name;
+    }
+}    // namespace pika::cuda::experimental
