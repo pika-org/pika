@@ -77,7 +77,7 @@ namespace pika {
 
         if (get_config_entry("pika.diagnostics_on_terminate", "1") == "1")
         {
-            int const verbosity = util::from_string<int>(
+            int const verbosity = detail::from_string<int>(
                 get_config_entry("pika.exception_verbosity", "1"));
 
             if (verbosity >= 2)
@@ -89,7 +89,7 @@ namespace pika {
             if (verbosity >= 1)
             {
                 std::size_t const trace_depth =
-                    util::from_string<std::size_t>(get_config_entry(
+                    detail::from_string<std::size_t>(get_config_entry(
                         "pika.trace_depth", PIKA_HAVE_THREAD_BACKTRACE_DEPTH));
                 std::cerr << "{stack-trace}: "
                           << pika::debug::detail::trace(trace_depth) << "\n";
@@ -150,7 +150,7 @@ namespace pika {
 
         if (get_config_entry("pika.diagnostics_on_terminate", "1") == "1")
         {
-            int const verbosity = util::from_string<int>(
+            int const verbosity = detail::from_string<int>(
                 get_config_entry("pika.exception_verbosity", "1"));
 
             char* reason = strsignal(signum);
@@ -164,7 +164,7 @@ namespace pika {
             if (verbosity >= 1)
             {
                 std::size_t const trace_depth =
-                    util::from_string<std::size_t>(get_config_entry(
+                    detail::from_string<std::size_t>(get_config_entry(
                         "pika.trace_depth", PIKA_HAVE_THREAD_BACKTRACE_DEPTH));
                 std::cerr << "{stack-trace}: "
                           << pika::debug::detail::trace(trace_depth) << "\n";

@@ -121,7 +121,7 @@ namespace pika::detail {
                 if (vm.count("pika:print-bind"))
                 {
                     std::size_t num_threads =
-                        pika::util::from_string<std::size_t>(
+                        pika::detail::from_string<std::size_t>(
                             ini.get_entry("pika.os_threads", 1));
                     handle_print_bind(num_threads);
                 }

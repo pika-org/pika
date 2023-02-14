@@ -240,7 +240,7 @@ namespace pika::resource::detail {
         if (!default_scheduler_mode_str.empty())
         {
             default_scheduler_mode_ =
-                threads::scheduler_mode(pika::util::from_string<std::size_t>(
+                threads::scheduler_mode(pika::detail::from_string<std::size_t>(
                     default_scheduler_mode_str));
             PIKA_ASSERT_MSG((default_scheduler_mode_ &
                                 ~threads::scheduler_mode::all_flags) ==

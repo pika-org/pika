@@ -39,7 +39,7 @@ namespace pika::util {
         {
             try
             {
-                int env_val = pika::util::from_string<int>(env);
+                int env_val = pika::detail::from_string<int>(env);
                 if (env_val < 0)
                     return pika::util::logging::level::disable_all;
 
@@ -62,7 +62,7 @@ namespace pika::util {
                 }
                 return pika::util::logging::level::debug;
             }
-            catch (pika::util::bad_lexical_cast const&)
+            catch (pika::detail::bad_lexical_cast const&)
             {
                 return pika::util::logging::level::disable_all;
             }

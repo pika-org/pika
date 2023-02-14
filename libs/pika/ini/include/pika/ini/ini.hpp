@@ -197,7 +197,7 @@ namespace pika::util {
         std::string get_entry(std::string const& key, T dflt) const
         {
             std::unique_lock<mutex_type> l(mtx_);
-            return get_entry(l, key, pika::util::to_string(dflt));
+            return get_entry(l, key, pika::detail::to_string(dflt));
         }
 
         void add_notification_callback(

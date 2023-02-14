@@ -70,7 +70,7 @@ void validate(
     std::smatch match;
     if (regex_match(s, match, r))
     {
-        v = std::any(magic_number(pika::util::from_string<int>(match[1])));
+        v = std::any(magic_number(pika::detail::from_string<int>(match[1])));
     }
     else
     {

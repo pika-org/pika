@@ -107,9 +107,9 @@ namespace pika::program_options {
         std::basic_string<Char> s(validators::get_single_string(xs));
         try
         {
-            v = std::any(pika::util::from_string<T>(s));
+            v = std::any(pika::detail::from_string<T>(s));
         }
-        catch (const pika::util::bad_lexical_cast&)
+        catch (const pika::detail::bad_lexical_cast&)
         {
             throw invalid_option_value(s);
         }
@@ -154,7 +154,7 @@ namespace pika::program_options {
                 validate(a, cv, (T*) nullptr, 0);
                 tv->push_back(std::any_cast<T>(a));
             }
-            catch (const pika::util::bad_lexical_cast& /*e*/)
+            catch (const pika::detail::bad_lexical_cast& /*e*/)
             {
                 throw invalid_option_value(s[i]);
             }

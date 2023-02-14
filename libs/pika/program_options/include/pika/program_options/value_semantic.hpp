@@ -210,7 +210,7 @@ namespace pika::program_options {
         typed_value* default_value(const T& v)
         {
             m_default_value = std::any(v);
-            m_default_value_as_text = pika::util::to_string(v);
+            m_default_value_as_text = pika::detail::to_string(v);
             return this;
         }
 
@@ -234,7 +234,7 @@ namespace pika::program_options {
         typed_value* implicit_value(const T& v)
         {
             m_implicit_value = std::any(v);
-            m_implicit_value_as_text = pika::util::to_string(v);
+            m_implicit_value_as_text = pika::detail::to_string(v);
             return this;
         }
 
