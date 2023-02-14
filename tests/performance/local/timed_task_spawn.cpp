@@ -437,9 +437,9 @@ int pika_main(variables_map& vm)
             for (auto& raw_counter : raw_counters)
             {
                 std::vector<std::string> entry;
-                pika::string_util::split(entry, raw_counter,
-                    pika::string_util::is_any_of(","),
-                    pika::string_util::token_compress_mode::on);
+                pika::detail::split(entry, raw_counter,
+                    pika::detail::is_any_of(","),
+                    pika::detail::token_compress_mode::on);
 
                 PIKA_TEST_EQ(entry.size(), 2);
 

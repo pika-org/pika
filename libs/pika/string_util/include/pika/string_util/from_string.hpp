@@ -19,25 +19,24 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika::util {
-    namespace detail {
-        template <typename T, typename Enable = void>
-        struct from_string
+namespace pika::detail {
+    template <typename T, typename Enable = void>
+    struct from_string_impl
+    {
+        template <typename Char>
+        static void call(std::basic_string<Char> const& value, T& target)
         {
-            template <typename Char>
-            static void call(std::basic_string<Char> const& value, T& target)
-            {
-                std::basic_istringstream<Char> stream(value);
-                stream.exceptions(std::ios_base::failbit);
-                stream >> target;
-            }
-        };
+            std::basic_istringstream<Char> stream(value);
+            stream.exceptions(std::ios_base::failbit);
+            stream >> target;
+        }
+    };
 
-        template <typename T, typename U>
-        T check_out_of_range(U const& value)
-        {
-            U const min = (std::numeric_limits<T>::min)();
-            U const max = (std::numeric_limits<T>::max)();
+    template <typename T, typename U>
+    T check_out_of_range(U const& value)
+    {
+        U const min = (std::numeric_limits<T>::min)();
+        U const max = (std::numeric_limits<T>::max)();
 #if defined(PIKA_INTEL_VERSION)
 #pragma warning(push)
 #pragma warning(disable : 186)
@@ -48,8 +47,8 @@ namespace pika::util {
 #pragma diag_suppress 186
 #endif
 #endif
-            if (value < min || value > max)
-                throw std::out_of_range("from_string: out of range");
+        if (value < min || value > max)
+            throw std::out_of_range("from_string: out of range");
 #if defined(PIKA_INTEL_VERSION)
 #pragma warning(pop)
 #elif defined(PIKA_CUDA_VERSION)
@@ -59,125 +58,120 @@ namespace pika::util {
 #pragma diag_default 186
 #endif
 #endif
-            return static_cast<T>(value);
+        return static_cast<T>(value);
+    }
+
+    template <typename Char>
+    void
+    check_only_whitespace(std::basic_string<Char> const& s, std::size_t pos)
+    {
+        auto i = s.begin();
+        std::advance(i, pos);
+        i = std::find_if(i, s.end(), [](int c) { return !std::isspace(c); });
+
+        if (i != s.end())
+        {
+            throw std::invalid_argument(
+                "from_string: found non-whitespace after token");
+        }
+    }
+
+    template <typename T>
+    struct from_string_impl<T, std::enable_if_t<std::is_integral_v<T>>>
+    {
+        template <typename Char>
+        static void call(std::basic_string<Char> const& value, int& target)
+        {
+            std::size_t pos = 0;
+            target = std::stoi(value, &pos);
+            check_only_whitespace(value, pos);
         }
 
         template <typename Char>
-        void
-        check_only_whitespace(std::basic_string<Char> const& s, std::size_t pos)
+        static void call(std::basic_string<Char> const& value, long& target)
         {
-            auto i = s.begin();
-            std::advance(i, pos);
-            i = std::find_if(
-                i, s.end(), [](int c) { return !std::isspace(c); });
-
-            if (i != s.end())
-            {
-                throw std::invalid_argument(
-                    "from_string: found non-whitespace after token");
-            }
+            std::size_t pos = 0;
+            target = std::stol(value, &pos);
+            check_only_whitespace(value, pos);
         }
 
-        template <typename T>
-        struct from_string<T, std::enable_if_t<std::is_integral<T>::value>>
+        template <typename Char>
+        static void
+        call(std::basic_string<Char> const& value, long long& target)
         {
-            template <typename Char>
-            static void call(std::basic_string<Char> const& value, int& target)
-            {
-                std::size_t pos = 0;
-                target = std::stoi(value, &pos);
-                check_only_whitespace(value, pos);
-            }
+            std::size_t pos = 0;
+            target = std::stoll(value, &pos);
+            check_only_whitespace(value, pos);
+        }
 
-            template <typename Char>
-            static void call(std::basic_string<Char> const& value, long& target)
-            {
-                std::size_t pos = 0;
-                target = std::stol(value, &pos);
-                check_only_whitespace(value, pos);
-            }
-
-            template <typename Char>
-            static void
-            call(std::basic_string<Char> const& value, long long& target)
-            {
-                std::size_t pos = 0;
-                target = std::stoll(value, &pos);
-                check_only_whitespace(value, pos);
-            }
-
-            template <typename Char>
-            static void
-            call(std::basic_string<Char> const& value, unsigned int& target)
-            {
-                // there is no std::stoui
-                unsigned long target_long;
-                call(value, target_long);
-                target = check_out_of_range<T>(target_long);
-            }
-
-            template <typename Char>
-            static void
-            call(std::basic_string<Char> const& value, unsigned long& target)
-            {
-                std::size_t pos = 0;
-                target = std::stoul(value, &pos);
-                check_only_whitespace(value, pos);
-            }
-
-            template <typename Char>
-            static void call(std::basic_string<Char> const& value,
-                unsigned long long& target)
-            {
-                std::size_t pos = 0;
-                target = std::stoull(value, &pos);
-                check_only_whitespace(value, pos);
-            }
-
-            template <typename Char, typename U>
-            static void call(std::basic_string<Char> const& value, U& target)
-            {
-                using promoted_t = decltype(+std::declval<U>());
-                static_assert(!std::is_same<promoted_t, U>::value, "");
-
-                promoted_t promoted;
-                call(value, promoted);
-                target = check_out_of_range<U>(promoted);
-            }
-        };
-
-        template <typename T>
-        struct from_string<T,
-            std::enable_if_t<std::is_floating_point<T>::value>>
+        template <typename Char>
+        static void
+        call(std::basic_string<Char> const& value, unsigned int& target)
         {
-            template <typename Char>
-            static void
-            call(std::basic_string<Char> const& value, float& target)
-            {
-                std::size_t pos = 0;
-                target = std::stof(value, &pos);
-                check_only_whitespace(value, pos);
-            }
+            // there is no std::stoui
+            unsigned long target_long;
+            call(value, target_long);
+            target = check_out_of_range<T>(target_long);
+        }
 
-            template <typename Char>
-            static void
-            call(std::basic_string<Char> const& value, double& target)
-            {
-                std::size_t pos = 0;
-                target = std::stod(value, &pos);
-                check_only_whitespace(value, pos);
-            }
+        template <typename Char>
+        static void
+        call(std::basic_string<Char> const& value, unsigned long& target)
+        {
+            std::size_t pos = 0;
+            target = std::stoul(value, &pos);
+            check_only_whitespace(value, pos);
+        }
 
-            template <typename Char>
-            static void
-            call(std::basic_string<Char> const& value, long double& target)
-            {
-                std::size_t pos = 0;
-                target = std::stold(value, &pos);
-                check_only_whitespace(value, pos);
-            }
-        };
-    }    // namespace detail
+        template <typename Char>
+        static void
+        call(std::basic_string<Char> const& value, unsigned long long& target)
+        {
+            std::size_t pos = 0;
+            target = std::stoull(value, &pos);
+            check_only_whitespace(value, pos);
+        }
+
+        template <typename Char, typename U>
+        static void call(std::basic_string<Char> const& value, U& target)
+        {
+            using promoted_t = decltype(+std::declval<U>());
+            static_assert(!std::is_same_v<promoted_t, U>, "");
+
+            promoted_t promoted;
+            call(value, promoted);
+            target = check_out_of_range<U>(promoted);
+        }
+    };
+
+    template <typename T>
+    struct from_string_impl<T, std::enable_if_t<std::is_floating_point_v<T>>>
+    {
+        template <typename Char>
+        static void call(std::basic_string<Char> const& value, float& target)
+        {
+            std::size_t pos = 0;
+            target = std::stof(value, &pos);
+            check_only_whitespace(value, pos);
+        }
+
+        template <typename Char>
+        static void call(std::basic_string<Char> const& value, double& target)
+        {
+            std::size_t pos = 0;
+            target = std::stod(value, &pos);
+            check_only_whitespace(value, pos);
+        }
+
+        template <typename Char>
+        static void
+        call(std::basic_string<Char> const& value, long double& target)
+        {
+            std::size_t pos = 0;
+            target = std::stold(value, &pos);
+            check_only_whitespace(value, pos);
+        }
+    };
 
     template <typename T, typename Char>
     T from_string(std::basic_string<Char> const& v)
@@ -185,11 +179,11 @@ namespace pika::util {
         T target;
         try
         {
-            detail::from_string<T>::call(v, target);
+            from_string_impl<T>::call(v, target);
         }
         catch (...)
         {
-            return detail::throw_bad_lexical_cast<std::basic_string<Char>, T>();
+            return throw_bad_lexical_cast<std::basic_string<Char>, T>();
         }
         return target;
     }
@@ -200,7 +194,7 @@ namespace pika::util {
         T target;
         try
         {
-            detail::from_string<T>::call(v, target);
+            from_string_impl<T>::call(v, target);
             return target;
         }
         catch (...)
@@ -215,11 +209,11 @@ namespace pika::util {
         T target;
         try
         {
-            detail::from_string<T>::call(v, target);
+            from_string_impl<T>::call(v, target);
         }
         catch (...)
         {
-            return detail::throw_bad_lexical_cast<std::string, T>();
+            return throw_bad_lexical_cast<std::string, T>();
         }
         return target;
     }
@@ -230,7 +224,7 @@ namespace pika::util {
         T target;
         try
         {
-            detail::from_string<T>::call(v, target);
+            from_string_impl<T>::call(v, target);
             return target;
         }
         catch (...)
@@ -238,4 +232,4 @@ namespace pika::util {
             return PIKA_FORWARD(U, default_value);
         }
     }
-}    // namespace pika::util
+}    // namespace pika::detail

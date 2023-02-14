@@ -15,14 +15,14 @@ int main()
     std::string str1("AbCdEfG 123 xxxYYYzZzZ");
     std::string str2("");
 
-    pika::string_util::to_lower(str1);
+    pika::detail::to_lower(str1);
     PIKA_TEST(str1 == "abcdefg 123 xxxyyyzzzz");
 
     // to_lower is idempotent
-    pika::string_util::to_lower(str1);
+    pika::detail::to_lower(str1);
     PIKA_TEST(str1 == "abcdefg 123 xxxyyyzzzz");
 
-    pika::string_util::to_lower(str2);
+    pika::detail::to_lower(str2);
     PIKA_TEST(str2 == "");
 
     return 0;

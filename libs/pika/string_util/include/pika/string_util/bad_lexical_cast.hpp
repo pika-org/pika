@@ -12,7 +12,7 @@
 
 #include <pika/config/warnings_prefix.hpp>
 
-namespace pika::util {
+namespace pika::detail {
     class PIKA_EXPORT bad_lexical_cast : public std::bad_cast
     {
     public:
@@ -50,19 +50,15 @@ namespace pika::util {
         std::type_info const* target;
     };
 
-    namespace detail {
+    [[noreturn]] PIKA_EXPORT void throw_bad_lexical_cast(
+        std::type_info const& source_type, std::type_info const& target_type);
 
-        [[noreturn]] PIKA_EXPORT void throw_bad_lexical_cast(
-            std::type_info const& source_type,
-            std::type_info const& target_type);
+    template <typename Source, typename Target>
+    [[noreturn]] inline Target throw_bad_lexical_cast()
+    {
+        throw_bad_lexical_cast(typeid(Source), typeid(Target));
+    }
 
-        template <typename Source, typename Target>
-        [[noreturn]] inline Target throw_bad_lexical_cast()
-        {
-            detail::throw_bad_lexical_cast(typeid(Source), typeid(Target));
-        }
-    }    // namespace detail
-
-}    // namespace pika::util
+}    // namespace pika::detail
 
 #include <pika/config/warnings_suffix.hpp>

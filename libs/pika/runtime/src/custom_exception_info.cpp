@@ -64,7 +64,7 @@ namespace pika {
     // return a string holding a formatted message.
     std::string diagnostic_information(pika::exception_info const& xi)
     {
-        int const verbosity = util::from_string<int>(
+        int const verbosity = detail::from_string<int>(
             get_config_entry("pika.exception_verbosity", "1"));
 
         std::ostringstream strm;
@@ -377,7 +377,7 @@ namespace pika {
             std::int64_t pid = ::getpid();
 
             std::size_t const trace_depth =
-                util::from_string<std::size_t>(get_config_entry(
+                detail::from_string<std::size_t>(get_config_entry(
                     "pika.trace_depth", PIKA_HAVE_THREAD_BACKTRACE_DEPTH));
 
             pika::debug::detail::backtrace bt(trace_depth);

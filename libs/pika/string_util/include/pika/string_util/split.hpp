@@ -15,19 +15,16 @@
 #include <string>
 #include <utility>
 
-namespace pika::string_util {
-    namespace detail {
-        template <typename It, typename CharT, typename Traits,
-            typename Allocator>
-        std::basic_string<CharT, Traits, Allocator>
-        substr(std::basic_string<CharT, Traits, Allocator> const& s,
-            It const& first, It const& last)
-        {
-            std::size_t const pos = std::distance(std::begin(s), first);
-            std::size_t const count = std::distance(first, last);
-            return s.substr(pos, count);
-        }
-    }    // namespace detail
+namespace pika::detail {
+    template <typename It, typename CharT, typename Traits, typename Allocator>
+    std::basic_string<CharT, Traits, Allocator>
+    substr(std::basic_string<CharT, Traits, Allocator> const& s,
+        It const& first, It const& last)
+    {
+        std::size_t const pos = std::distance(std::begin(s), first);
+        std::size_t const count = std::distance(first, last);
+        return s.substr(pos, count);
+    }
 
     enum class token_compress_mode
     {
@@ -51,7 +48,7 @@ namespace pika::string_util {
         {
             token_end = std::find_if(token_begin, std::end(str), pred);
 
-            container.push_back(detail::substr(str, token_begin, token_end));
+            container.push_back(substr(str, token_begin, token_end));
 
             if (token_end != std::end(str))
             {
@@ -76,4 +73,4 @@ namespace pika::string_util {
         split(container, std::string{str}, PIKA_FORWARD(Predicate, pred),
             compress_mode);
     }
-}    // namespace pika::string_util
+}    // namespace pika::detail

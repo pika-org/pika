@@ -678,8 +678,7 @@ namespace pika::util {
         using string_vector = std::vector<std::string>;
 
         string_vector split_key;
-        pika::string_util::split(
-            split_key, key, pika::string_util::is_any_of("."));
+        pika::detail::split(split_key, key, pika::detail::is_any_of("."));
 
         std::string sk = split_key.back();
         split_key.pop_back();

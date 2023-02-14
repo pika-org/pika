@@ -105,9 +105,9 @@ namespace pika::util {
             {
                 std::vector<std::string> path_dirs;
 
-                pika::string_util::split(path_dirs, epath,
-                    pika::string_util::is_any_of(":"),
-                    pika::string_util::token_compress_mode::on);
+                pika::detail::split(path_dirs, epath,
+                    pika::detail::is_any_of(":"),
+                    pika::detail::token_compress_mode::on);
 
                 for (std::uint64_t i = 0; i < path_dirs.size(); ++i)
                 {

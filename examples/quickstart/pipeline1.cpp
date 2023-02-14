@@ -25,7 +25,7 @@ struct pipeline
             if (std::regex_match(item, regex))
             {
                 auto trim = [](std::string const& s) {
-                    return pika::string_util::trim_copy(s);
+                    return pika::detail::trim_copy(s);
                 };
 
                 pika::async(trim, std::move(item))

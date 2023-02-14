@@ -273,7 +273,8 @@ namespace pika::detail {
         }
         else
         {
-            default_threads = pika::util::from_string<std::size_t>(threads_str);
+            default_threads =
+                pika::detail::from_string<std::size_t>(threads_str);
         }
 
         std::size_t threads =
@@ -292,7 +293,7 @@ namespace pika::detail {
             }
             else
             {
-                threads = pika::util::from_string<std::size_t>(threads_str);
+                threads = pika::detail::from_string<std::size_t>(threads_str);
             }
 
             if (threads == 0)
@@ -368,7 +369,7 @@ namespace pika::detail {
             }
             else
             {
-                num_cores = pika::util::from_string<std::size_t>(cores_str);
+                num_cores = pika::detail::from_string<std::size_t>(cores_str);
             }
         }
 

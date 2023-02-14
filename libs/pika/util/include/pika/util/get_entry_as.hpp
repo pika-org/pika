@@ -24,7 +24,7 @@ namespace pika::detail {
         std::string const& entry = config.get_entry(key, "");
         if (entry.empty())
             return dflt;
-        return util::from_string<DestType>(entry, dflt);
+        return detail::from_string<DestType>(entry, dflt);
     }
 
     template <typename DestType, typename Config,
