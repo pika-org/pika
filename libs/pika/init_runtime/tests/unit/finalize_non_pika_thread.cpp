@@ -26,5 +26,5 @@ int main(int argc, char* argv[])
 
     PIKA_TEST(ran_pika_main);
 
-    return pika::util::report_errors();
+    return pika::detail::report_errors();
 }
