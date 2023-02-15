@@ -14,7 +14,6 @@
 #include <pika/modules/errors.hpp>
 #include <pika/modules/threading_base.hpp>
 #include <pika/mpi_base/mpi_environment.hpp>
-#include <pika/resource_partitioner/detail/partitioner.hpp>
 #include <pika/synchronization/condition_variable.hpp>
 
 #include <array>
@@ -397,7 +396,7 @@ namespace pika::mpi::experimental {
 
         // -------------------------------------------------------------
         bool add_request_callback(request_callback_function_type&& callback, MPI_Request request,
-            bool eager_check, stream_type s)
+            check_request_eager eager, stream_type s)
         {
             PIKA_ASSERT_MSG(get_register_polling_count() != 0,
                 "MPI event polling has not been enabled on any pool. Make sure that MPI event "
@@ -405,7 +404,7 @@ namespace pika::mpi::experimental {
 
             // if already complete, skip callback
 #ifndef DISALLOW_EAGER_POLLING_CHECK
-            if (eager_check && detail::poll_request(request))
+            if (eager == check_request_eager::yes && detail::poll_request(request))
             {
                 using namespace pika::debug::detail;
                 PIKA_DP(mpi_debug<5>, debug(str<>("eager poll"), request, get_stream_ref(s)));
@@ -826,7 +825,7 @@ namespace pika::mpi::experimental {
         // install polling loop on requested thread pool
         if (pool_name.empty() || !pika::resource::pool_exists(pool_name))
         {
-            set_pool_name(resource::get_partitioner().get_default_pool_name());
+            set_pool_name(resource::get_pool_name(0));
             detail::register_polling(pika::resource::get_thread_pool(0));
         }
         else

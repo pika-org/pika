@@ -15,6 +15,7 @@
 #include <pika/concepts/concepts.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/debugging/demangle_helper.hpp>
+#include <pika/execution/algorithms/detail/helpers.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 #include <pika/execution/algorithms/transfer.hpp>
 #include <pika/execution_base/any_sender.hpp>
@@ -36,7 +37,7 @@ namespace pika::mpi::experimental {
         // -----------------------------------------------------------------
         // by convention the title is 7 chars (for alignment)
         using print_on = pika::debug::detail::enable_print<false>;
-        static print_on mpi_tran("MPITRAN");
+        inline constexpr print_on mpi_tran("MPITRAN");
 
         // -----------------------------------------------------------------
         // calls set_value or set_error on the receiver
@@ -74,7 +75,7 @@ namespace pika::mpi::experimental {
                     op_state.ts = {};
                     set_value_request_callback_helper(status, PIKA_MOVE(op_state.receiver));
                 },
-                request, true, op_state.stream);
+                request, detail::check_request_eager::yes, op_state.stream);
         }
 
         template <typename Result, typename OperationState>
@@ -91,7 +92,7 @@ namespace pika::mpi::experimental {
                     set_value_request_callback_helper(status, PIKA_MOVE(op_state.receiver),
                         PIKA_MOVE(std::get<Result>(op_state.result)));
                 },
-                request, true, op_state.stream);
+                request, detail::check_request_eager::yes, op_state.stream);
         }
 
         template <typename Result, typename OperationState>
@@ -110,12 +111,12 @@ namespace pika::mpi::experimental {
                     // wake up the suspended thread
                     {
                         std::lock_guard lk(op_state.mutex_);
-                        op_state.resume = true;
+                        op_state.completed = true;
                     }
                     op_state.cond_var_.notify_one();
                 },
                 // we do not need to eagerly check, because it was done earlier
-                request, false, op_state.stream);
+                request, detail::check_request_eager::no, op_state.stream);
         }
 
         // -----------------------------------------------------------------
@@ -199,21 +200,6 @@ namespace pika::mpi::experimental {
             static constexpr bool sends_done = false;
 #endif
 
-            struct priority_set_restore
-            {
-                pika::execution::thread_priority old_priority_;
-                priority_set_restore(pika::execution::thread_priority new_p)
-                  : old_priority_{threads::detail::get_self_id_data()->get_priority()}
-                {
-                    threads::detail::get_self_id_data()->set_priority(new_p);
-                }
-
-                ~priority_set_restore()
-                {
-                    threads::detail::get_self_id_data()->set_priority(old_priority_);
-                }
-            };
-
             // -----------------------------------------------------------------
             // operation state for a given receiver
             template <typename Receiver>
@@ -224,7 +210,7 @@ namespace pika::mpi::experimental {
                 stream_type stream;
                 pika::spinlock mutex_;
                 pika::condition_variable cond_var_;
-                bool resume;
+                bool completed;
                 int status;
 
                 // -----------------------------------------------------------------
@@ -260,10 +246,9 @@ namespace pika::mpi::experimental {
                     {
                         pika::detail::try_catch_exception_ptr(
                             [&]() mutable {
-                                namespace ex = pika::execution::experimental;
-                                namespace mpi = pika::mpi::experimental;
                                 using namespace pika::debug::detail;
                                 using ts_element_type = std::tuple<std::decay_t<Ts>...>;
+                                using invoke_result_type = mpi_request_invoke_result_t<F, Ts...>;
                                 //
                                 r.op_state.ts.template emplace<ts_element_type>(
                                     PIKA_FORWARD(Ts, ts)...);
@@ -272,11 +257,9 @@ namespace pika::mpi::experimental {
                                 MPI_Request request{MPI_REQUEST_NULL};
                                 // modes 0 uses the task yield_while method of callback
                                 // modes 1,2 use the task resume method of callback
-                                auto mode = mpi::get_completion_mode();
+                                auto mode = mpi::experimental::get_completion_mode();
                                 if (mode < 3)
                                 {
-                                    using invoke_result_type =
-                                        mpi_request_invoke_result_t<F, Ts...>;
                                     pika::util::detail::invoke_fused(
                                         [&](auto&... ts) mutable {
                                             PIKA_DP(mpi_tran,
@@ -288,8 +271,8 @@ namespace pika::mpi::experimental {
                                                 PIKA_INVOKE(
                                                     PIKA_MOVE(r.op_state.f), ts..., &request);
                                                 PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
-                                                    "MPI_REQUEST_NULL is being passed to the "
-                                                    "transform_mpi user callback");
+                                                    "MPI_REQUEST_NULL returned from mpi "
+                                                    "invocation");
                                             }
                                             else
                                             {
@@ -298,8 +281,8 @@ namespace pika::mpi::experimental {
                                                         PIKA_INVOKE(PIKA_MOVE(r.op_state.f), ts...,
                                                             &request));
                                                 PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
-                                                    "MPI_REQUEST_NULL is being passed to the "
-                                                    "transform_mpi user callback");
+                                                    "MPI_REQUEST_NULL returned from mpi "
+                                                    "invocation");
                                             }
                                         },
                                         t);
@@ -315,25 +298,24 @@ namespace pika::mpi::experimental {
                                         // don't suspend if request completed already
                                         if (!detail::poll_request(request))
                                         {
-                                            r.op_state.resume = false;
                                             set_value_request_callback_suspend_resume<
                                                 invoke_result_type>(request, r.op_state);
                                             PIKA_ASSERT(pika::threads::detail::get_self_id());
-                                            priority_set_restore set_restore(
-                                                pika::execution::thread_priority::high);
+                                            threads::detail::thread_data::scoped_thread_priority
+                                                set_restore(pika::execution::thread_priority::high);
                                             std::unique_lock l{r.op_state.mutex_};
                                             r.op_state.cond_var_.wait(
-                                                l, [&]() { return r.op_state.resume; });
+                                                l, [&]() { return r.op_state.completed; });
                                         }
                                     }
                                     r.op_state.ts = {};
                                     r.op_state.status = MPI_SUCCESS;
                                     if constexpr (!std::is_void_v<invoke_result_type>)
                                     {
-                                        // @todo - use a helper like other modes
-                                        r.op_state.result = MPI_SUCCESS;
                                         set_value_request_callback_helper(r.op_state.status,
-                                            PIKA_MOVE(r.op_state.receiver), MPI_SUCCESS);
+                                            PIKA_MOVE(r.op_state.receiver),
+                                            PIKA_MOVE(
+                                                std::get<invoke_result_type>(r.op_state.result)));
                                     }
                                     else
                                     {
@@ -349,8 +331,6 @@ namespace pika::mpi::experimental {
                                             detail::stream_name(r.op_state.stream)));
                                     // throttle if too many "in flight"
                                     detail::wait_for_throttling(r.op_state.stream);
-                                    using invoke_result_type =
-                                        mpi_request_invoke_result_t<F, Ts...>;
                                     PIKA_DP(mpi_tran,
                                         debug(str<>("mpi invoke"), dec<2>(mode),
                                             print_type<invoke_result_type>()));
@@ -361,8 +341,8 @@ namespace pika::mpi::experimental {
                                                 PIKA_INVOKE(
                                                     PIKA_MOVE(r.op_state.f), ts..., &request);
                                                 PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
-                                                    "MPI_REQUEST_NULL is being passed to the "
-                                                    "transform_mpi user callback");
+                                                    "MPI_REQUEST_NULL returned from mpi "
+                                                    "invocation");
                                                 // return type void, no value to forward to receiver
                                                 set_value_request_callback_void(
                                                     request, r.op_state);
@@ -378,8 +358,8 @@ namespace pika::mpi::experimental {
                                                         PIKA_INVOKE(PIKA_MOVE(r.op_state.f), ts...,
                                                             &request));
                                                 PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
-                                                    "MPI_REQUEST_NULL is being passed to the "
-                                                    "transform_mpi user callback");
+                                                    "MPI_REQUEST_NULL returned from mpi "
+                                                    "invocation");
                                                 // forward value to receiver
                                                 set_value_request_callback_non_void<
                                                     invoke_result_type>(request, r.op_state);
@@ -485,10 +465,10 @@ namespace pika::mpi::experimental {
                   : receiver(PIKA_FORWARD(Receiver_, receiver))
                   , f(PIKA_FORWARD(F_, f))
                   , stream{s}
+                  , completed{false}
+                  , status{MPI_SUCCESS}
                   , op_state(pika::execution::experimental::connect(
                         PIKA_FORWARD(Sender_, sender), transform_mpi_receiver{*this}))
-                  , resume{false}
-                  , status{MPI_SUCCESS}
                 {
                     PIKA_DP(mpi_tran,
                         debug(debug::detail::str<>("operation_state"), "stream",
@@ -546,35 +526,38 @@ namespace pika::mpi::experimental {
             }
             else
             {
-                namespace ex = pika::execution::experimental;
-                namespace mpi = pika::mpi::experimental;
-                auto mode = mpi::get_completion_mode();
+                using pika::execution::experimental::make_unique_any_sender;
+                using pika::execution::experimental::thread_pool_scheduler;
+                using pika::execution::experimental::transfer;
+                using pika::execution::experimental::with_priority;
+                using pika::execution::experimental::with_stacksize;
+                auto mode = get_completion_mode();
                 if (mode == 0)
                 {
                     // use yield_while on the mpi pool
                     auto snd0 = PIKA_FORWARD(Sender, sender) |
-                        ex::transfer(ex::thread_pool_scheduler{
-                            &pika::resource::get_thread_pool(mpi::get_pool_name())});
+                        transfer(thread_pool_scheduler{
+                            &pika::resource::get_thread_pool(get_pool_name())});
                     auto snd1 = transform_mpi_sender<decltype(snd0), F>{
                         PIKA_MOVE(snd0), PIKA_FORWARD(F, f), s};
-                    return ex::make_unique_any_sender(std::move(snd1));
+                    return make_unique_any_sender(std::move(snd1));
                 }
                 else if (mode == 1)
                 {
                     // use suspend/resume on the same pool that the task is running on
                     auto snd1 = transform_mpi_sender<Sender, F>{
                         PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), s};
-                    return ex::make_unique_any_sender(std::move(snd1));
+                    return make_unique_any_sender(std::move(snd1));
                 }
                 else if (mode == 2)
                 {
                     // transfer to mpi pool and use suspend/resume there
                     auto snd0 = PIKA_FORWARD(Sender, sender) |
-                        ex::transfer(ex::thread_pool_scheduler{
-                            &pika::resource::get_thread_pool(mpi::get_pool_name())});
+                        transfer(thread_pool_scheduler{
+                            &pika::resource::get_thread_pool(get_pool_name())});
                     auto snd1 = transform_mpi_sender<decltype(snd0), F>{
                         std::move(snd0), PIKA_FORWARD(F, f), s};
-                    return ex::make_unique_any_sender(std::move(snd1));
+                    return make_unique_any_sender(std::move(snd1));
                 }
                 // ----------------------------------------------------------
                 else if (mode == 3)
@@ -583,10 +566,10 @@ namespace pika::mpi::experimental {
                     // run completion explicitly on default pool with High priority
                     auto snd1 = transform_mpi_sender<Sender, F>{PIKA_FORWARD(Sender, sender),
                                     PIKA_FORWARD(F, f), s} |
-                        ex::transfer(ex::with_priority(
-                            ex::thread_pool_scheduler{&pika::resource::get_thread_pool("default")},
+                        transfer(with_priority(
+                            thread_pool_scheduler{&pika::resource::get_thread_pool("default")},
                             pika::execution::thread_priority::high));
-                    return ex::make_unique_any_sender(std::move(snd1));
+                    return make_unique_any_sender(std::move(snd1));
                 }
                 else if (mode == 4)
                 {
@@ -594,115 +577,111 @@ namespace pika::mpi::experimental {
                     // run completion explicitly on default pool without priority
                     auto snd1 = transform_mpi_sender<Sender, F>{PIKA_FORWARD(Sender, sender),
                                     PIKA_FORWARD(F, f), s} |
-                        ex::transfer(
-                            ex::thread_pool_scheduler{&pika::resource::get_thread_pool("default")});
-                    return ex::make_unique_any_sender(std::move(snd1));
+                        transfer(
+                            thread_pool_scheduler{&pika::resource::get_thread_pool("default")});
+                    return make_unique_any_sender(std::move(snd1));
                 }
                 else if (mode == 5)
                 {
                     // transfer mpi to mpi pool,
                     // run completion explicitly on default pool with High priority
                     auto snd0 = PIKA_FORWARD(Sender, sender) |
-                        ex::transfer(ex::with_stacksize(
-                            ex::thread_pool_scheduler{
-                                &pika::resource::get_thread_pool(mpi::get_pool_name())},
-                            pika::execution::thread_stacksize::nostack));
+                        transfer(
+                            with_stacksize(thread_pool_scheduler{&pika::resource::get_thread_pool(
+                                               get_pool_name())},
+                                pika::execution::thread_stacksize::nostack));
                     auto snd1 = transform_mpi_sender<decltype(snd0), F>{std::move(snd0),
                                     PIKA_FORWARD(F, f), s} |
-                        ex::transfer(ex::with_priority(
-                            ex::thread_pool_scheduler{&pika::resource::get_thread_pool("default")},
+                        transfer(with_priority(
+                            thread_pool_scheduler{&pika::resource::get_thread_pool("default")},
                             pika::execution::thread_priority::high));
-                    return ex::make_unique_any_sender(std::move(snd1));
+                    return make_unique_any_sender(std::move(snd1));
                 }
                 else if (mode == 6)
                 {
                     // transfer mpi to mpi pool,
                     // run completion explicitly on default pool without priority
                     auto snd0 = PIKA_FORWARD(Sender, sender) |
-                        ex::transfer(ex::with_stacksize(
-                            ex::thread_pool_scheduler{
-                                &pika::resource::get_thread_pool(mpi::get_pool_name())},
-                            pika::execution::thread_stacksize::nostack));
+                        transfer(
+                            with_stacksize(thread_pool_scheduler{&pika::resource::get_thread_pool(
+                                               get_pool_name())},
+                                pika::execution::thread_stacksize::nostack));
                     auto snd1 = transform_mpi_sender<decltype(snd0), F>{std::move(snd0),
                                     PIKA_FORWARD(F, f), s} |
-                        ex::transfer(
-                            ex::thread_pool_scheduler{&pika::resource::get_thread_pool("default")});
-                    return ex::make_unique_any_sender(std::move(snd1));
+                        transfer(
+                            thread_pool_scheduler{&pika::resource::get_thread_pool("default")});
+                    return make_unique_any_sender(std::move(snd1));
                 }
-                /*
+
+                // ----------------------------
+                // Modes need checking before use
+                // ----------------------------
                 else if (mode == 7)
                 {
                     // transfer mpi to mpi pool,
                     // run completion on polling thread (mpi or default pool)
                     auto snd0 = PIKA_FORWARD(Sender, sender) |
-                        ex::transfer(ex::with_stacksize(
-                            ex::thread_pool_scheduler{
-                                &pika::resource::get_thread_pool(
-                                    mpi::get_pool_name())},
-                            pika::execution::thread_stacksize::nostack));
+                        transfer(
+                            with_stacksize(thread_pool_scheduler{&pika::resource::get_thread_pool(
+                                               get_pool_name())},
+                                pika::execution::thread_stacksize::nostack));
                     auto snd1 = transform_mpi_sender<decltype(snd0), F>{
                         std::move(snd0), PIKA_FORWARD(F, f), s};
-                    return ex::make_unique_any_sender(std::move(snd1));
-                }
-                else if (mode == 6)
-                {
-                    // transfer mpi to mpi pool
-                    // run completion explicitly on mpi pool as high priority
-                    auto snd0 = PIKA_FORWARD(Sender, sender) |
-                        ex::transfer(ex::with_stacksize(
-                            ex::thread_pool_scheduler{
-                                &pika::resource::get_thread_pool(
-                                    mpi::get_pool_name())},
-                            pika::execution::thread_stacksize::nostack));
-                    auto snd1 =
-                        transform_mpi_sender<decltype(snd0), F>{
-                            std::move(snd0), PIKA_FORWARD(F, f), s} |
-                        ex::transfer(ex::with_priority(
-                            ex::thread_pool_scheduler{
-                                &pika::resource::get_thread_pool(
-                                    mpi::get_pool_name())},
-                            pika::execution::thread_priority::high));
-                    return ex::make_unique_any_sender(std::move(snd1));
-                }
-                else if (mode == 7)
-                {
-                    // transfer mpi to mpi pool
-                    // run completion explicitly on default pool using high priority
-                    auto snd0 = PIKA_FORWARD(Sender, sender) |
-                        ex::transfer(ex::with_stacksize(
-                            ex::thread_pool_scheduler{
-                                &pika::resource::get_thread_pool(
-                                    mpi::get_pool_name())},
-                            pika::execution::thread_stacksize::nostack));
-                    auto snd1 =
-                        transform_mpi_sender<decltype(snd0), F>{
-                            std::move(snd0), PIKA_FORWARD(F, f), s} |
-                        ex::transfer(ex::with_priority(
-                            ex::thread_pool_scheduler{
-                                &pika::resource::get_thread_pool("default")},
-                            pika::execution::thread_priority::high));
-                    return ex::make_unique_any_sender(std::move(snd1));
+                    return make_unique_any_sender(std::move(snd1));
                 }
                 else if (mode == 8)
                 {
                     // transfer mpi to mpi pool
-                    // run completion explicitly on default pool using default priority
+                    // run completion explicitly on mpi pool as high priority
                     auto snd0 = PIKA_FORWARD(Sender, sender) |
-                        ex::transfer(ex::with_stacksize(
-                            ex::thread_pool_scheduler{
-                                &pika::resource::get_thread_pool(
-                                    mpi::get_pool_name())},
-                            pika::execution::thread_stacksize::nostack));
-                    auto snd1 =
-                        transform_mpi_sender<decltype(snd0), F>{
-                            std::move(snd0), PIKA_FORWARD(F, f), s} |
-                        ex::transfer(ex::with_priority(
-                            ex::thread_pool_scheduler{
-                                &pika::resource::get_thread_pool("default")},
-                            pika::execution::thread_priority::normal));
-                    return ex::make_unique_any_sender(std::move(snd1));
+                        transfer(
+                            with_stacksize(thread_pool_scheduler{&pika::resource::get_thread_pool(
+                                               get_pool_name())},
+                                pika::execution::thread_stacksize::nostack));
+                    auto snd1 = transform_mpi_sender<decltype(snd0), F>{std::move(snd0),
+                                    PIKA_FORWARD(F, f), s} |
+                        transfer(
+                            with_priority(thread_pool_scheduler{&pika::resource::get_thread_pool(
+                                              get_pool_name())},
+                                pika::execution::thread_priority::high));
+                    return make_unique_any_sender(std::move(snd1));
                 }
                 else if (mode == 9)
+                {
+                    // transfer mpi to mpi pool
+                    // run completion explicitly on default pool using high priority
+                    auto snd0 = PIKA_FORWARD(Sender, sender) |
+                        transfer(
+                            with_stacksize(thread_pool_scheduler{&pika::resource::get_thread_pool(
+                                               get_pool_name())},
+                                pika::execution::thread_stacksize::nostack));
+                    auto snd1 = transform_mpi_sender<decltype(snd0), F>{std::move(snd0),
+                                    PIKA_FORWARD(F, f), s} |
+                        transfer(with_priority(
+                            thread_pool_scheduler{&pika::resource::get_thread_pool("default")},
+                            pika::execution::thread_priority::high));
+                    return make_unique_any_sender(std::move(snd1));
+                }
+                else if (mode == 10)
+                {
+                    // transfer mpi to mpi pool
+                    // run completion explicitly on default pool using default priority
+                    auto snd0 = PIKA_FORWARD(Sender, sender) |
+                        transfer(
+                            with_stacksize(thread_pool_scheduler{&pika::resource::get_thread_pool(
+                                               get_pool_name())},
+                                pika::execution::thread_stacksize::nostack));
+                    auto snd1 = transform_mpi_sender<decltype(snd0), F>{std::move(snd0),
+                                    PIKA_FORWARD(F, f), s} |
+                        transfer(with_priority(
+                            thread_pool_scheduler{&pika::resource::get_thread_pool("default")},
+                            pika::execution::thread_priority::normal));
+                    return make_unique_any_sender(std::move(snd1));
+                }
+                /*
+ *     Temporarily disabled until bypass scheduler available
+ *
+                else if (mode == 11)
                 {
                     // run mpi inline on current pool
                     // run completion with bypass on mpi pool
@@ -710,46 +689,46 @@ namespace pika::mpi::experimental {
                         transform_mpi_sender<Sender, F>{
                             PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f),
                             s} |
-                        ex::transfer(ex::thread_pool_scheduler_queue_bypass{
+                        transfer(thread_pool_scheduler_queue_bypass{
                             &pika::resource::get_thread_pool(
-                                mpi::get_pool_name())});
-                    return ex::make_unique_any_sender(std::move(snd1));
+                                get_pool_name())});
+                    return make_unique_any_sender(std::move(snd1));
                 }
-                else if (mode == 10)
+                else if (mode == 12)
                 {
                     // transfer mpi to mpi pool,
                     // run completion with bypass on mpi pool
                     auto snd0 = PIKA_FORWARD(Sender, sender) |
-                        ex::transfer(ex::with_stacksize(
-                            ex::thread_pool_scheduler{
+                        transfer(with_stacksize(
+                            thread_pool_scheduler{
                                 &pika::resource::get_thread_pool(
-                                    mpi::get_pool_name())},
+                                    get_pool_name())},
                             pika::execution::thread_stacksize::nostack));
                     auto snd1 =
                         transform_mpi_sender<decltype(snd0), F>{
                             std::move(snd0), PIKA_FORWARD(F, f), s} |
-                        ex::transfer(ex::thread_pool_scheduler_queue_bypass{
+                        transfer(thread_pool_scheduler_queue_bypass{
                             &pika::resource::get_thread_pool(
-                                mpi::get_pool_name())});
-                    return ex::make_unique_any_sender(std::move(snd1));
+                                get_pool_name())});
+                    return make_unique_any_sender(std::move(snd1));
                 }
-                else if (mode == 11)
+                else if (mode == 13)
                 {
                     // transfer mpi to mpi pool
                     // run completion inline with bypass on default pool
                     // only effective if default pool is polling pool (mpi=default)
                     auto snd0 = PIKA_FORWARD(Sender, sender) |
-                        ex::transfer(ex::with_stacksize(
-                            ex::thread_pool_scheduler{
+                        transfer(with_stacksize(
+                            thread_pool_scheduler{
                                 &pika::resource::get_thread_pool(
-                                    mpi::get_pool_name())},
+                                    get_pool_name())},
                             pika::execution::thread_stacksize::nostack));
                     auto snd1 =
                         transform_mpi_sender<decltype(snd0), F>{
                             std::move(snd0), PIKA_FORWARD(F, f), s} |
-                        ex::transfer(ex::thread_pool_scheduler_queue_bypass{
+                        transfer(thread_pool_scheduler_queue_bypass{
                             &pika::resource::get_thread_pool("default")});
-                    return ex::make_unique_any_sender(std::move(snd1));
+                    return make_unique_any_sender(std::move(snd1));
                 }
 */
                 else
@@ -757,7 +736,7 @@ namespace pika::mpi::experimental {
                     throw std::runtime_error("Unsupported transfer mode " + std::to_string(mode));
                     auto snd1 = transform_mpi_sender<Sender, F>{
                         PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), s};
-                    return ex::make_unique_any_sender(std::move(snd1));
+                    return make_unique_any_sender(std::move(snd1));
                 }
             }
         }

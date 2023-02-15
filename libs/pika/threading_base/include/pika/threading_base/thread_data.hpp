@@ -411,6 +411,22 @@ namespace pika::threads::detail {
         }
 #endif
 
+        // convenience object to temporarily change priority
+        struct scoped_thread_priority
+        {
+            pika::execution::thread_priority old_priority_;
+            scoped_thread_priority(pika::execution::thread_priority new_p)
+              : old_priority_{threads::detail::get_self_id_data()->get_priority()}
+            {
+                threads::detail::get_self_id_data()->set_priority(new_p);
+            }
+
+            ~scoped_thread_priority()
+            {
+                threads::detail::get_self_id_data()->set_priority(old_priority_);
+            }
+        };
+
         constexpr execution::thread_priority get_priority() const noexcept
         {
             return priority_;

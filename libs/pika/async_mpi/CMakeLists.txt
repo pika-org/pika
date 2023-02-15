@@ -29,8 +29,10 @@ pika_add_module(
   DEPENDENCIES MPI::MPI_CXX
   MODULE_DEPENDENCIES
     pika_concurrency
+    pika_debugging
     pika_errors
     pika_execution_base
+    pika_executors
     pika_memory
     pika_threading_base
     pika_mpi_base

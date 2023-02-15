@@ -26,8 +26,6 @@
 #include <utility>
 #include <vector>
 
-//#define DISALLOW_EAGER_POLLING_CHECK 1
-
 namespace pika::mpi::experimental {
 
     enum class stream_type : std::uint32_t
@@ -47,10 +45,16 @@ namespace pika::mpi::experimental {
     namespace detail {
         using request_callback_function_type = pika::util::detail::unique_function<void(int)>;
 
+        enum struct check_request_eager : bool
+        {
+            no = false,
+            yes = true
+        };
+
         const char* stream_name(stream_type s);
 
         PIKA_EXPORT bool add_request_callback(
-            request_callback_function_type&&, MPI_Request, bool, stream_type);
+            request_callback_function_type&&, MPI_Request, check_request_eager, stream_type);
         PIKA_EXPORT void register_polling(pika::threads::detail::thread_pool_base&);
         PIKA_EXPORT void unregister_polling(pika::threads::detail::thread_pool_base&);
 

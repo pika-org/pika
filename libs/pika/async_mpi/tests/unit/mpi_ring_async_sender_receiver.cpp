@@ -107,7 +107,7 @@ inline std::uint32_t prev_rank(std::uint32_t rank, std::uint32_t size)
 // we don't reuse tags immediately and instead offset them by
 // a multiple to ensure we don't have two with the same id in flight
 // at the same time
-inline std::uint32_t tag_no(std::uint64_t rank, std::uint64_t iteration, std::uint32_t ranks)
+inline std::uint32_t make_tag(std::uint64_t rank, std::uint64_t iteration, std::uint32_t ranks)
 {
     std::int64_t tag = (rank + (iteration * ranks)) & 0xffffffff;
     msr_deb<7>.debug(
@@ -183,19 +183,20 @@ namespace pika::execution {
     {
         namespace ex = pika::execution::experimental;
         auto sched = ex::thread_pool_scheduler{&pika::resource::get_thread_pool("default")};
-        auto snd = ex::schedule(sched) | ex::then([sender = std::move(sender)]() mutable {
-            ex::start_detached(std::move(sender));
-        });
+        auto snd =
+            ex::schedule(sched) | ex::then([sender = std::forward<Sender>(sender)]() mutable {
+                ex::start_detached(std::move(sender));
+            });
         ex::start_detached(std::move(snd));
     }
 }    // namespace pika::execution
 
-struct receiver
+struct message_receiver
 {
     std::uint64_t rank, orank, size, tag, num_rounds, message_size;
     message_buffer* buf;
 
-    receiver(int rank, int orank, int size, int tag, int num_rounds, int message_size,
+    message_receiver(int rank, int orank, int size, int tag, int num_rounds, int message_size,
         message_buffer* buf)
       : rank(rank)
       , orank(orank)
@@ -213,7 +214,7 @@ struct receiver
         counter--;
 
         // increment the token we received
-        auto old_token = buf->token_val_++;
+        /*auto old_token = */ buf->token_val_++;
 
         // each message travels around the ring num_rounds times,
         // which round is the message currently on?
@@ -257,7 +258,7 @@ struct receiver
             // because the send always goes out before the receive comes in
             // even if there is only one rank in the ring
             msg_info(rank, size, msg_type::send, buf->token_val_, tag, round, step, "forward");
-            receiver reclambda(rank, orank, size, tag, num_rounds, message_size, buf);
+            message_receiver reclambda(rank, orank, size, tag, num_rounds, message_size, buf);
 
             // prepost receive the recursive lambda will
             // be used to handle it in the same way as this one is
@@ -366,11 +367,11 @@ int pika_main(pika::program_options::variables_map& vm)
                 // the message is always received from the previous rank
                 auto buf = get_msg_buffer(message_size);
                 std::uint64_t tag =
-                    tag_no(std::uint64_t(orank), std::uint64_t(i), std::uint32_t(size));
+                    make_tag(std::uint64_t(orank), std::uint64_t(i), std::uint32_t(size));
                 msg_info(rank, size, msg_type::recv, buf->token_val_, tag, 0, 0, "ringrecv");
 
                 // a handler for a receive that recursively posts receives and handles them
-                receiver reclambda(rank, orank, size, tag, num_rounds, message_size, buf);
+                message_receiver reclambda(rank, orank, size, tag, num_rounds, message_size, buf);
                 // create chain of senders to make the mpi recv and handle it
                 auto rx_snd1 = ex::just(&*buf, message_size, MPI_UNSIGNED_CHAR,
                                    prev_rank(rank, size), tag, MPI_COMM_WORLD) |
@@ -383,7 +384,8 @@ int pika_main(pika::program_options::variables_map& vm)
             // start the ring (first message) message for this iteration/rank
             auto buf = get_msg_buffer(message_size);
             buf->token_val_ = 0;
-            std::uint64_t tag = tag_no(std::uint64_t(rank), std::uint64_t(i), std::uint32_t(size));
+            std::uint64_t tag =
+                make_tag(std::uint64_t(rank), std::uint64_t(i), std::uint32_t(size));
             auto send_snd = ex::just(&*buf, message_size, MPI_UNSIGNED_CHAR, next_rank(rank, size),
                                 tag, MPI_COMM_WORLD) |
                 mpi::transform_mpi(MPI_Isend, mpi::stream_type::user_1) |
