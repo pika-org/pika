@@ -9,7 +9,6 @@
 #include <pika/config.hpp>
 #include <pika/functional/detail/invoke.hpp>
 #include <pika/functional/invoke_fused.hpp>
-#include <pika/functional/invoke_result.hpp>
 #include <pika/pack_traversal/detail/container_category.hpp>
 #include <pika/pack_traversal/traits/pack_traversal_rebind_container.hpp>
 #include <pika/type_support/decay.hpp>
@@ -208,7 +207,7 @@ namespace pika::util::detail {
         /// contain spread types.
         template <typename C, typename... T>
         constexpr auto apply_spread_impl(std::false_type, C&& callable,
-            T&&... args) -> typename invoke_result<C, T...>::type
+            T&&... args) -> std::invoke_result_t<C, T...>
         {
             return PIKA_INVOKE(
                 PIKA_FORWARD(C, callable), PIKA_FORWARD(T, args)...);
@@ -435,12 +434,12 @@ namespace pika::util::detail {
         /// version.
         template <typename Container, typename Mapping>
         using mapped_type_from_t = dereferenced_of_t<spreading::unpacked_of_t<
-            typename invoke_result<Mapping, element_of_t<Container>>::type>>;
+            std::invoke_result_t<Mapping, element_of_t<Container>>>>;
 
         /// Deduces to a true_type if the mapping maps to zero elements.
         template <typename T, typename M>
         using is_empty_mapped = spreading::is_empty_spread<
-            std::decay_t<typename invoke_result<M, element_of_t<T>>::type>>;
+            std::decay_t<std::invoke_result_t<M, element_of_t<T>>>>;
 
         /// We are allowed to reuse the container if we map to the same
         /// type we are accepting and when we have
@@ -602,7 +601,7 @@ namespace pika::util::detail {
 
             template <typename... Args>
             auto operator()(Args&&... args)
-                -> std::void_t<typename invoke_result<M, OldArgs>::type...>
+                -> std::void_t<std::invoke_result_t<M, OldArgs>...>
             {
                 int dummy[] = {
                     0, ((void) mapper_(PIKA_FORWARD(Args, args)), 0)...};
@@ -638,8 +637,8 @@ namespace pika::util::detail {
             M mapper_;
 
             template <typename... Args>
-            auto operator()(Args&&... args) -> typename invoke_result<
-                typename invoke_result<M, OldArg>::type>::type
+            auto operator()(Args&&... args)
+                -> std::invoke_result_t<std::invoke_result_t<M, OldArg>>
             {
                 int dummy[] = {
                     0, ((void) mapper_(PIKA_FORWARD(Args, args)), 0)...};

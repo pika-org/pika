@@ -9,7 +9,6 @@
 #include <pika/config.hpp>
 #include <pika/datastructures/member_pack.hpp>
 #include <pika/functional/invoke_fused.hpp>
-#include <pika/functional/invoke_result.hpp>
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
 #include <pika/type_support/decay.hpp>
@@ -35,7 +34,7 @@ namespace pika::detail {
 namespace pika::util::detail {
     template <typename F, typename... Ts>
     struct invoke_deferred_result
-      : util::detail::invoke_result<::pika::detail::decay_unwrap_t<F>,
+      : std::invoke_result<::pika::detail::decay_unwrap_t<F>,
             ::pika::detail::decay_unwrap_t<Ts>...>
     {
     };
@@ -75,7 +74,7 @@ namespace pika::util::detail {
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         PIKA_HOST_DEVICE
-        PIKA_FORCEINLINE util::detail::invoke_result_t<F, Ts...> operator()()
+        PIKA_FORCEINLINE std::invoke_result_t<F, Ts...> operator()()
         {
             return PIKA_INVOKE(
                 PIKA_MOVE(_f), PIKA_MOVE(_args).template get<Is>()...);

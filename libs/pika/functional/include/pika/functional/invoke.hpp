@@ -8,9 +8,9 @@
 
 #include <pika/config.hpp>
 #include <pika/functional/detail/invoke.hpp>
-#include <pika/functional/invoke_result.hpp>
 #include <pika/type_support/void_guard.hpp>
 
+#include <type_traits>
 #include <utility>
 
 namespace pika::util::detail {
@@ -34,7 +34,7 @@ namespace pika::util::detail {
     ///
     /// \note This function is similar to `std::invoke` (C++17)
     template <typename F, typename... Ts>
-    constexpr PIKA_HOST_DEVICE util::detail::invoke_result_t<F, Ts...>
+    constexpr PIKA_HOST_DEVICE std::invoke_result_t<F, Ts...>
     invoke(F&& f, Ts&&... vs)
     {
         return PIKA_INVOKE(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...);

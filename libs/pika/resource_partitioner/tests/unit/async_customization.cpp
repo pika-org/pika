@@ -98,8 +98,7 @@ struct test_async_executor
     // of a normal async call with arbitrary arguments
     // --------------------------------------------------------------------
     template <typename F, typename... Ts>
-    future<typename util::detail::invoke_result<F, Ts...>::type>
-    async_execute(F&& f, Ts&&... ts)
+    future<std::invoke_result_t<F, Ts...>> async_execute(F&& f, Ts&&... ts)
     {
         using result_type =
             typename util::detail::invoke_deferred_result<F, Ts...>::type;

@@ -23,7 +23,6 @@ set(include_headers
     pika/stop_token.hpp
     pika/system_error.hpp
     pika/thread.hpp
-    pika/type_traits.hpp
     pika/unwrap.hpp
 )
 

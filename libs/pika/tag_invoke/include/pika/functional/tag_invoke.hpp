@@ -78,7 +78,8 @@ namespace pika::functional::detail {
     /// returning the result type of the call pika::functional::detail::tag_invoke. This
     /// can be used in a SFINAE context.
     template <typename Tag, typename... Args>
-    using tag_invoke_result = invoke_result<decltype(tag_invoke), Tag, Args...>;
+    using tag_invoke_result =
+        std::invoke_result<decltype(tag_invoke), Tag, Args...>;
 
     /// `pika::functional::detail::tag_invoke_result_t<Tag, Args...>` evaluates to
     /// `pika::functional::detail::tag_invoke_result_t<Tag, Args...>::type`
@@ -99,7 +100,6 @@ namespace pika::functional::detail {
 #else
 
 #include <pika/config.hpp>
-#include <pika/functional/invoke_result.hpp>
 
 #include <type_traits>
 #include <utility>
@@ -200,8 +200,7 @@ namespace pika::functional::detail {
 
     template <typename Tag, typename... Args>
     using tag_invoke_result =
-        pika::util::detail::invoke_result<decltype(tag_invoke_ns::tag_invoke),
-            Tag, Args...>;
+        std::invoke_result<decltype(tag_invoke_ns::tag_invoke), Tag, Args...>;
 
     template <typename Tag, typename... Args>
     using tag_invoke_result_t = typename tag_invoke_result<Tag, Args...>::type;

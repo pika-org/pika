@@ -8,7 +8,6 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/functional/invoke_result.hpp>
 #include <pika/iterator_support/iterator_facade.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/type_support/pack.hpp>
@@ -511,7 +510,7 @@ namespace pika::traits {
     namespace functional {
         ///////////////////////////////////////////////////////////////////////
         template <typename F, typename T>
-        struct element_result_of : util::detail::invoke_result<F, T>
+        struct element_result_of : std::invoke_result<F, T>
         {
         };
 

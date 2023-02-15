@@ -20,7 +20,6 @@
 #include <pika/execution_base/sender.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/functional/invoke_fused.hpp>
-#include <pika/functional/invoke_result.hpp>
 #include <pika/type_support/detail/with_result_of.hpp>
 #include <pika/type_support/pack.hpp>
 
@@ -67,8 +66,8 @@ namespace pika::let_value_detail {
         template <template <typename...> class Tuple, typename... Ts>
         struct successor_sender_types_helper<Tuple<Ts...>>
         {
-            using type = pika::util::detail::invoke_result_t<F,
-                std::add_lvalue_reference_t<Ts>...>;
+            using type =
+                std::invoke_result_t<F, std::add_lvalue_reference_t<Ts>...>;
             static_assert(pika::execution::experimental::is_sender<
                               std::decay_t<type>>::value,
                 "let_value expects the invocable sender factory to return "

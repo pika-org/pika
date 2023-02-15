@@ -20,7 +20,6 @@
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 #include <pika/execution_base/operation_state.hpp>
 #include <pika/execution_base/sender.hpp>
-#include <pika/functional/invoke_result.hpp>
 #include <pika/futures/detail/future_data.hpp>
 #include <pika/futures/promise.hpp>
 #include <pika/memory/intrusive_ptr.hpp>
@@ -31,6 +30,7 @@
 #include <exception>
 #include <memory>
 #include <optional>
+#include <type_traits>
 #include <utility>
 
 namespace pika::make_future_detail {
@@ -214,9 +214,9 @@ namespace pika::make_future_detail {
         using result_type =
             std::decay_t<pika::execution::experimental::detail::single_result_t<
                 value_types>>;
-        using operation_state_type = pika::util::detail::invoke_result_t<
-            pika::execution::experimental::connect_t, Sender,
-            make_future_receiver<result_type, allocator_type>>;
+        using operation_state_type =
+            std::invoke_result_t<pika::execution::experimental::connect_t,
+                Sender, make_future_receiver<result_type, allocator_type>>;
 
         using shared_state =
             future_data<result_type, allocator_type, operation_state_type>;

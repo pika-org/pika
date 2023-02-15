@@ -83,10 +83,8 @@ namespace pika::mpi::experimental {
                 std::add_lvalue_reference_t<std::decay_t<Ts>>..., MPI_Request*>;
 
         template <typename F, typename... Ts>
-        using mpi_request_invoke_result_t =
-            std::decay_t<pika::util::detail::invoke_result_t<F,
-                std::add_lvalue_reference_t<std::decay_t<Ts>>...,
-                MPI_Request*>>;
+        using mpi_request_invoke_result_t = std::decay_t<std::invoke_result_t<F,
+            std::add_lvalue_reference_t<std::decay_t<Ts>>..., MPI_Request*>>;
 
         template <typename Sender, typename F>
         struct transform_mpi_sender_impl

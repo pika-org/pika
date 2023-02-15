@@ -10,7 +10,6 @@
 #include <pika/datastructures/traits/is_tuple_like.hpp>
 #include <pika/functional/detail/invoke.hpp>
 #include <pika/functional/invoke_fused.hpp>
-#include <pika/functional/invoke_result.hpp>
 #include <pika/futures/traits/future_traits.hpp>
 #include <pika/futures/traits/is_future.hpp>
 #include <pika/pack_traversal/pack_traversal.hpp>
@@ -186,8 +185,8 @@ namespace pika::util::detail {
         /// also when the result is a tuple like type, when we received
         /// a single argument.
         template <typename C, typename T>
-        static auto apply(C&& callable, T&& unwrapped) ->
-            typename invoke_result<C, T>::type
+        static auto apply(C&& callable, T&& unwrapped)
+            -> std::invoke_result_t<C, T>
         {
             return PIKA_INVOKE(
                 PIKA_FORWARD(C, callable), PIKA_FORWARD(T, unwrapped));

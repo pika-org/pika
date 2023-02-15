@@ -10,7 +10,6 @@
 #include <pika/config.hpp>
 #include <pika/datastructures/member_pack.hpp>
 #include <pika/functional/invoke.hpp>
-#include <pika/functional/invoke_result.hpp>
 #include <pika/functional/one_shot.hpp>
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
@@ -27,7 +26,7 @@ namespace pika::util::detail {
 
     template <typename F, typename... Ts, typename... Us>
     struct invoke_bound_front_result<F, util::detail::pack<Ts...>, Us...>
-      : util::detail::invoke_result<F, Ts..., Us...>
+      : std::invoke_result<F, Ts..., Us...>
     {
     };
 

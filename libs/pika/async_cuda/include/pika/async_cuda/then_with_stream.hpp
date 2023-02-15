@@ -179,8 +179,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
             pika::execution::experimental::completion_signatures<
                 pika::execution::experimental::detail::
                     result_type_signature_helper_t<
-                        pika::util::detail::invoke_result_t<F,
-                            cuda_stream const&,
+                        std::invoke_result_t<F, cuda_stream const&,
                             std::add_lvalue_reference_t<std::decay_t<Ts>>...>>>;
 
         using completion_signatures =
@@ -198,9 +197,8 @@ namespace pika::cuda::experimental::then_with_stream_detail {
         template <template <typename...> class Tuple, typename... Ts>
         struct invoke_result_helper<Tuple<Ts...>>
         {
-            using result_type =
-                pika::util::detail::invoke_result_t<F, cuda_stream const&,
-                    std::add_lvalue_reference_t<std::decay_t<Ts>>...>;
+            using result_type = std::invoke_result_t<F, cuda_stream const&,
+                std::add_lvalue_reference_t<std::decay_t<Ts>>...>;
             using type = std::conditional_t<std::is_void_v<result_type>,
                 Tuple<>, Tuple<result_type>>;
         };
@@ -328,11 +326,10 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                                 }
                             }
 
-                            using invoke_result_type =
-                                std::decay_t<pika::util::detail::
-                                        invoke_result_t<F, cuda_stream const&,
-                                            std::add_lvalue_reference_t<
-                                                std::decay_t<Ts>>...>>;
+                            using invoke_result_type = std::decay_t<
+                                std::invoke_result_t<F, cuda_stream const&,
+                                    std::add_lvalue_reference_t<
+                                        std::decay_t<Ts>>...>>;
                             constexpr bool is_void_result =
                                 std::is_void_v<invoke_result_type>;
                             if constexpr (is_void_result)

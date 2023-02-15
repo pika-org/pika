@@ -11,7 +11,6 @@
 #include <pika/assert.hpp>
 #include <pika/datastructures/member_pack.hpp>
 #include <pika/functional/invoke.hpp>
-#include <pika/functional/invoke_result.hpp>
 #include <pika/functional/one_shot.hpp>
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
@@ -62,9 +61,8 @@ namespace pika::util::detail {
     {
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename... Us>
-        static constexpr PIKA_HOST_DEVICE
-            util::detail::invoke_result_t<T, Us...>
-            call(T&& t, Us&&... vs)
+        static constexpr PIKA_HOST_DEVICE std::invoke_result_t<T, Us...>
+        call(T&& t, Us&&... vs)
         {
             return PIKA_INVOKE(PIKA_FORWARD(T, t), PIKA_FORWARD(Us, vs)...);
         }
@@ -76,7 +74,7 @@ namespace pika::util::detail {
 
     template <typename F, typename... Ts, typename... Us>
     struct invoke_bound_result<F, util::detail::pack<Ts...>, Us...>
-      : util::detail::invoke_result<F,
+      : std::invoke_result<F,
             decltype(bind_eval<Ts, sizeof...(Us)>::call(
                 std::declval<Ts>(), std::declval<Us>()...))...>
     {

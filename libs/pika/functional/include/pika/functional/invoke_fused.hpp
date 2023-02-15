@@ -8,7 +8,6 @@
 
 #include <pika/config.hpp>
 #include <pika/functional/invoke.hpp>
-#include <pika/functional/invoke_result.hpp>
 #include <pika/type_support/pack.hpp>
 #include <pika/type_support/void_guard.hpp>
 
@@ -30,13 +29,13 @@ namespace pika::util::detail {
 
     template <typename F, typename Tuple, std::size_t... Is>
     struct invoke_fused_result_impl<F, Tuple&, index_pack<Is...>>
-      : util::detail::invoke_result<F, std::tuple_element_t<Is, Tuple>&...>
+      : std::invoke_result<F, std::tuple_element_t<Is, Tuple>&...>
     {
     };
 
     template <typename F, typename Tuple, std::size_t... Is>
     struct invoke_fused_result_impl<F, Tuple&&, index_pack<Is...>>
-      : util::detail::invoke_result<F, std::tuple_element_t<Is, Tuple>&&...>
+      : std::invoke_result<F, std::tuple_element_t<Is, Tuple>&&...>
     {
     };
 

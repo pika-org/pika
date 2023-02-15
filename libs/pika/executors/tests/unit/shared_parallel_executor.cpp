@@ -22,8 +22,7 @@
 struct shared_parallel_executor
 {
     template <typename F, typename... Ts>
-    pika::shared_future<
-        typename pika::util::detail::invoke_result<F, Ts...>::type>
+    pika::shared_future<std::invoke_result_t<F, Ts...>>
     async_execute(F&& f, Ts&&... ts)
     {
         return pika::async(std::forward<F>(f), std::forward<Ts>(ts)...);

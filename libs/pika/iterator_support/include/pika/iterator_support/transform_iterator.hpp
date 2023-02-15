@@ -7,7 +7,6 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/functional/invoke_result.hpp>
 #include <pika/iterator_support/iterator_adaptor.hpp>
 #include <pika/type_support/lazy_conditional.hpp>
 #include <pika/type_support/type_identity.hpp>
@@ -33,7 +32,7 @@ namespace pika::util {
             // premature instantiations
             using reference_type = ::pika::detail::lazy_conditional_t<
                 std::is_void<Reference>::value,
-                util::detail::invoke_result<Transformer, Iterator>,
+                std::invoke_result<Transformer, Iterator>,
                 ::pika::detail::type_identity<Reference>>;
 
             using value_type =

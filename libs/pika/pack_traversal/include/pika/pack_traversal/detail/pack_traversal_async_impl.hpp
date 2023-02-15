@@ -11,7 +11,6 @@
 #include <pika/assert.hpp>
 #include <pika/functional/detail/invoke.hpp>
 #include <pika/functional/invoke_fused.hpp>
-#include <pika/functional/invoke_result.hpp>
 #include <pika/futures/traits/future_access.hpp>
 #include <pika/memory/intrusive_ptr.hpp>
 #include <pika/pack_traversal/detail/container_category.hpp>
@@ -149,9 +148,8 @@ namespace pika {
 
             /// Calls the visitor with the given element
             template <typename T>
-            auto traverse(T&& value) ->
-                typename pika::util::detail::invoke_result<Visitor&,
-                    async_traverse_visit_tag, T>::type
+            auto traverse(T&& value)
+                -> std::invoke_result_t<Visitor&, async_traverse_visit_tag, T>
             {
                 return PIKA_INVOKE(visitor(), async_traverse_visit_tag{},
                     PIKA_FORWARD(T, value));
