@@ -7,9 +7,9 @@
 #pragma once
 
 #if defined(DOXYGEN)
-namespace pika::functional {
+namespace pika::functional::detail {
     inline namespace unspecified {
-        /// The `pika::functional::tag_invoke` name defines a constexpr object
+        /// The `pika::functional::detail::tag_invoke` name defines a constexpr object
         /// that is invocable with one or more arguments. The first argument
         /// is a 'tag' (typically a CPO). It is only invocable if an overload
         /// of tag_invoke() that accepts the same arguments could be found via
@@ -19,14 +19,14 @@ namespace pika::functional {
         /// equivalent to evaluating the unqualified call to
         /// `tag_invoke(decay-copy(tag), PIKA_FORWARD(Args, args)...)`.
         ///
-        /// `pika::functional::tag_invoke` is implemented against P1895.
+        /// `pika::functional::detail::tag_invoke` is implemented against P1895.
         ///
         /// Example:
         /// Defining a new customization point `foo`:
         /// ```
         /// namespace mylib {
         ///     inline constexpr
-        ///         struct foo_fn final : pika::functional::tag<foo_fn>
+        ///         struct foo_fn final : pika::functional::detail::tag<foo_fn>
         ///         {
         ///         } foo{};
         /// }
@@ -52,50 +52,50 @@ namespace pika::functional {
         inline constexpr unspecified tag_invoke = unspecified;
     }    // namespace unspecified
 
-    /// `pika::functional::is_tag_invocable<Tag, Args...>` is std::true_type if
+    /// `pika::functional::detail::is_tag_invocable<Tag, Args...>` is std::true_type if
     /// an overload of `tag_invoke(tag, args...)` can be found via ADL.
     template <typename Tag, typename... Args>
     struct is_tag_invocable;
 
-    /// `pika::functional::is_tag_invocable_v<Tag, Args...>` evaluates to
-    /// `pika::functional::is_tag_invocable<Tag, Args...>::value`
+    /// `pika::functional::detail::is_tag_invocable_v<Tag, Args...>` evaluates to
+    /// `pika::functional::detail::is_tag_invocable<Tag, Args...>::value`
     template <typename Tag, typename... Args>
     constexpr bool is_tag_invocable_v = is_tag_invocable<Tag, Args...>::value;
 
-    /// `pika::functional::is_nothrow_tag_invocable<Tag, Args...>` is
+    /// `pika::functional::detail::is_nothrow_tag_invocable<Tag, Args...>` is
     /// std::true_type if an overload of `tag_invoke(tag, args...)` can be
     /// found via ADL and is noexcept.
     template <typename Tag, typename... Args>
     struct is_nothrow_tag_invocable;
 
-    /// `pika::functional::is_tag_invocable_v<Tag, Args...>` evaluates to
-    /// `pika::functional::is_tag_invocable<Tag, Args...>::value`
+    /// `pika::functional::detail::is_tag_invocable_v<Tag, Args...>` evaluates to
+    /// `pika::functional::detail::is_tag_invocable<Tag, Args...>::value`
     template <typename Tag, typename... Args>
     constexpr bool is_nothrow_tag_invocable_v =
         is_nothrow_tag_invocable<Tag, Args...>::value;
 
-    /// `pika::functional::tag_invoke_result<Tag, Args...>` is the trait
-    /// returning the result type of the call pika::functional::tag_invoke. This
+    /// `pika::functional::detail::tag_invoke_result<Tag, Args...>` is the trait
+    /// returning the result type of the call pika::functional::detail::tag_invoke. This
     /// can be used in a SFINAE context.
     template <typename Tag, typename... Args>
     using tag_invoke_result = invoke_result<decltype(tag_invoke), Tag, Args...>;
 
-    /// `pika::functional::tag_invoke_result_t<Tag, Args...>` evaluates to
-    /// `pika::functional::tag_invoke_result_t<Tag, Args...>::type`
+    /// `pika::functional::detail::tag_invoke_result_t<Tag, Args...>` evaluates to
+    /// `pika::functional::detail::tag_invoke_result_t<Tag, Args...>::type`
     template <typename Tag, typename... Args>
     using tag_invoke_result_t = typename tag_invoke_result<Tag, Args...>::type;
 
-    /// `pika::functional::tag<Tag>` defines a base class that implements
+    /// `pika::functional::detail::tag<Tag>` defines a base class that implements
     /// the necessary tag dispatching functionality for a given type `Tag`
     template <typename Tag>
     struct tag;
 
-    /// `pika::functional::tag_noexcept<Tag>` defines a base class that implements
+    /// `pika::functional::detail::tag_noexcept<Tag>` defines a base class that implements
     /// the necessary tag dispatching functionality for a given type `Tag`
     /// The implementation has to be noexcept
     template <typename Tag>
     struct tag_noexcept;
-}    // namespace pika::functional
+}    // namespace pika::functional::detail
 #else
 
 #include <pika/config.hpp>
@@ -104,7 +104,7 @@ namespace pika::functional {
 #include <type_traits>
 #include <utility>
 
-namespace pika::functional {
+namespace pika::functional::detail {
     template <auto& Tag>
     using tag_t = std::decay_t<decltype(Tag)>;
 
@@ -256,6 +256,6 @@ namespace pika::functional {
     inline namespace tag_invoke_f_ns {
         using tag_invoke_ns::tag_invoke;
     }    // namespace tag_invoke_f_ns
-}    // namespace pika::functional
+}    // namespace pika::functional::detail
 
 #endif

@@ -34,7 +34,7 @@ namespace pika::execution::experimental {
     ///       `void start();`
     ///     * Otherwise, the expression is ill-formed.
     ///
-    /// The customization is implemented in terms of `pika::functional::tag_invoke`.
+    /// The customization is implemented in terms of `pika::functional::detail::tag_invoke`.
     template <typename O>
     void start(O&& o);
 #endif
@@ -55,7 +55,7 @@ namespace pika::execution::experimental {
     struct is_operation_state;
 
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE
-    struct start_t : pika::functional::tag_noexcept<start_t>
+    struct start_t : pika::functional::detail::tag_noexcept<start_t>
     {
     } start{};
 

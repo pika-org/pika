@@ -17,12 +17,13 @@ namespace mylib {
         // *this to work around a bug in GCC <= 8.
         template <typename T>
         constexpr auto operator()(T&& x) const
-            noexcept(noexcept(pika::functional::tag_invoke(
+            noexcept(noexcept(pika::functional::detail::tag_invoke(
                 std::declval<foo_fn>(), std::forward<T>(x))))
-                -> decltype(pika::functional::tag_invoke(
+                -> decltype(pika::functional::detail::tag_invoke(
                     std::declval<foo_fn>(), std::forward<T>(x)))
         {
-            return pika::functional::tag_invoke(*this, std::forward<T>(x));
+            return pika::functional::detail::tag_invoke(
+                *this, std::forward<T>(x));
         }
     } foo;
 
@@ -30,13 +31,13 @@ namespace mylib {
     {
         // See above for an explanation of std::declval<bar_fn>().
         template <typename T, typename U>
-        constexpr auto operator()(T&& x, U&& u) const noexcept(
-            noexcept(pika::functional::tag_invoke(std::declval<bar_fn>(),
+        constexpr auto operator()(T&& x, U&& u) const noexcept(noexcept(
+            pika::functional::detail::tag_invoke(std::declval<bar_fn>(),
                 std::forward<T>(x), std::forward<U>(u))))
-            -> decltype(pika::functional::tag_invoke(
+            -> decltype(pika::functional::detail::tag_invoke(
                 std::declval<bar_fn>(), std::forward<T>(x), std::forward<U>(u)))
         {
-            return pika::functional::tag_invoke(
+            return pika::functional::detail::tag_invoke(
                 *this, std::forward<T>(x), std::forward<U>(u));
         }
     } bar;
@@ -129,51 +130,58 @@ namespace testlib {
 int main()
 {
     // Check if is_invocable trait works
-    static_assert(pika::functional::is_tag_invocable_v<mylib::foo_fn,
+    static_assert(pika::functional::detail::is_tag_invocable_v<mylib::foo_fn,
                       mylib::tag_invocable>,
         "Should be tag invocable");
-    static_assert(pika::functional::is_tag_invocable_v<mylib::foo_fn,
+    static_assert(pika::functional::detail::is_tag_invocable_v<mylib::foo_fn,
                       mylib::tag_invocable_noexcept>,
         "Should be tag invocable");
-    static_assert(!pika::functional::is_tag_invocable_v<mylib::foo_fn,
+    static_assert(!pika::functional::detail::is_tag_invocable_v<mylib::foo_fn,
                       mylib::tag_not_invocable>,
         "Should not be tag invocable");
-    static_assert(!pika::functional::is_tag_invocable_v<mylib::foo_fn,
+    static_assert(!pika::functional::detail::is_tag_invocable_v<mylib::foo_fn,
                       mylib::tag_invocable2>,
         "Should not be tag invocable");
 
-    static_assert(pika::functional::is_tag_invocable_v<mylib::foo_fn,
+    static_assert(pika::functional::detail::is_tag_invocable_v<mylib::foo_fn,
                       otherlib::tag_invocable>,
         "Should be tag invocable");
-    static_assert(pika::functional::is_tag_invocable_v<mylib::foo_fn,
+    static_assert(pika::functional::detail::is_tag_invocable_v<mylib::foo_fn,
                       otherlib::tag_invocable_noexcept>,
         "Should be tag invocable");
-    static_assert(!pika::functional::is_tag_invocable_v<mylib::foo_fn,
+    static_assert(!pika::functional::detail::is_tag_invocable_v<mylib::foo_fn,
                       otherlib::tag_not_invocable>,
         "Should not be tag invocable");
 
     // Check if is_nothrow_invocable trait works
-    static_assert(!pika::functional::is_nothrow_tag_invocable_v<mylib::foo_fn,
-                      mylib::tag_invocable>,
+    static_assert(
+        !pika::functional::detail::is_nothrow_tag_invocable_v<mylib::foo_fn,
+            mylib::tag_invocable>,
         "Should not be nothrow tag invocable");
-    static_assert(pika::functional::is_nothrow_tag_invocable_v<mylib::foo_fn,
-                      mylib::tag_invocable_noexcept>,
+    static_assert(
+        pika::functional::detail::is_nothrow_tag_invocable_v<mylib::foo_fn,
+            mylib::tag_invocable_noexcept>,
         "Should be nothrow tag invocable");
-    static_assert(!pika::functional::is_nothrow_tag_invocable_v<mylib::foo_fn,
-                      mylib::tag_not_invocable>,
+    static_assert(
+        !pika::functional::detail::is_nothrow_tag_invocable_v<mylib::foo_fn,
+            mylib::tag_not_invocable>,
         "Should not be nothrow tag invocable");
-    static_assert(!pika::functional::is_nothrow_tag_invocable_v<mylib::foo_fn,
-                      mylib::tag_invocable2>,
+    static_assert(
+        !pika::functional::detail::is_nothrow_tag_invocable_v<mylib::foo_fn,
+            mylib::tag_invocable2>,
         "Should not be nothrow tag invocable");
 
-    static_assert(!pika::functional::is_nothrow_tag_invocable_v<mylib::foo_fn,
-                      otherlib::tag_invocable>,
+    static_assert(
+        !pika::functional::detail::is_nothrow_tag_invocable_v<mylib::foo_fn,
+            otherlib::tag_invocable>,
         "Should not be nothrow tag invocable");
-    static_assert(pika::functional::is_nothrow_tag_invocable_v<mylib::foo_fn,
-                      otherlib::tag_invocable_noexcept>,
+    static_assert(
+        pika::functional::detail::is_nothrow_tag_invocable_v<mylib::foo_fn,
+            otherlib::tag_invocable_noexcept>,
         "Should be nothrow tag invocable");
-    static_assert(!pika::functional::is_nothrow_tag_invocable_v<mylib::foo_fn,
-                      otherlib::tag_not_invocable>,
+    static_assert(
+        !pika::functional::detail::is_nothrow_tag_invocable_v<mylib::foo_fn,
+            otherlib::tag_not_invocable>,
         "Should not be nothrow tag invocable");
 
     // Check if we properly propagate type categories
@@ -189,82 +197,80 @@ int main()
     // Needs to call the rvalue ref overload
     PIKA_TEST_EQ(mylib::foo(std::move(dut1)), 3);
 
-    static_assert(pika::functional::is_tag_invocable_v<mylib::bar_fn,
+    static_assert(pika::functional::detail::is_tag_invocable_v<mylib::bar_fn,
                       testlib::tag_invocable2, int>,
         "Should be tag invocable");
-    static_assert(pika::functional::is_tag_invocable_v<mylib::bar_fn,
+    static_assert(pika::functional::detail::is_tag_invocable_v<mylib::bar_fn,
                       testlib::tag_invocable2, int&>,
         "Should be tag invocable");
-    static_assert(pika::functional::is_tag_invocable_v<mylib::bar_fn,
+    static_assert(pika::functional::detail::is_tag_invocable_v<mylib::bar_fn,
                       testlib::tag_invocable2, int const&>,
         "Should be tag invocable");
-    static_assert(pika::functional::is_tag_invocable_v<mylib::bar_fn,
+    static_assert(pika::functional::detail::is_tag_invocable_v<mylib::bar_fn,
                       testlib::tag_invocable2, int const&&>,
         "Should be tag invocable");
-    static_assert(pika::functional::is_tag_invocable_v<mylib::bar_fn,
+    static_assert(pika::functional::detail::is_tag_invocable_v<mylib::bar_fn,
                       testlib::tag_invocable2, int&&>,
         "Should be tag invocable");
-    static_assert(!pika::functional::is_tag_invocable_v<mylib::bar_fn,
+    static_assert(!pika::functional::detail::is_tag_invocable_v<mylib::bar_fn,
                       testlib::tag_invocable2>,
         "Should not be tag invocable");
-    static_assert(!pika::functional::is_tag_invocable_v<mylib::bar_fn,
+    static_assert(!pika::functional::detail::is_tag_invocable_v<mylib::bar_fn,
                       testlib::tag_invocable2, int, int>,
         "Should not be tag invocable");
 
     int i = 0;
     PIKA_TEST_EQ(&mylib::bar(testlib::tag_invocable2{}, i), &i);
-    static_assert(
-        std::is_same<pika::functional::tag_invoke_result_t<mylib::bar_fn,
-                         testlib::tag_invocable2, int>,
-            int&&>::value,
+    static_assert(std::is_same<pika::functional::detail::tag_invoke_result_t<
+                                   mylib::bar_fn, testlib::tag_invocable2, int>,
+                      int&&>::value,
         "Result type needs to match");
     static_assert(
-        std::is_same<pika::functional::tag_invoke_result_t<mylib::bar_fn,
-                         testlib::tag_invocable2, int const&>,
+        std::is_same<pika::functional::detail::tag_invoke_result_t<
+                         mylib::bar_fn, testlib::tag_invocable2, int const&>,
             int const&>::value,
         "Result type needs to match");
     static_assert(
-        std::is_same<pika::functional::tag_invoke_result_t<mylib::bar_fn,
-                         testlib::tag_invocable2, int&>,
+        std::is_same<pika::functional::detail::tag_invoke_result_t<
+                         mylib::bar_fn, testlib::tag_invocable2, int&>,
             int&>::value,
         "Result type needs to match");
     static_assert(
-        std::is_same<pika::functional::tag_invoke_result_t<mylib::bar_fn,
-                         testlib::tag_invocable2, int const&&>,
+        std::is_same<pika::functional::detail::tag_invoke_result_t<
+                         mylib::bar_fn, testlib::tag_invocable2, int const&&>,
             int const&&>::value,
         "Result type needs to match");
     static_assert(
-        std::is_same<pika::functional::tag_invoke_result_t<mylib::bar_fn,
-                         testlib::tag_invocable2, int&&>,
+        std::is_same<pika::functional::detail::tag_invoke_result_t<
+                         mylib::bar_fn, testlib::tag_invocable2, int&&>,
             int&&>::value,
         "Result type needs to match");
-    static_assert(
-        std::is_same<pika::functional::tag_invoke_result_t<mylib::bar_fn,
-                         testlib::tag_invocable2, int>,
-            decltype(mylib::bar(
-                testlib::tag_invocable2{}, std::declval<int>()))>::value,
+    static_assert(std::is_same<pika::functional::detail::tag_invoke_result_t<
+                                   mylib::bar_fn, testlib::tag_invocable2, int>,
+                      decltype(mylib::bar(testlib::tag_invocable2{},
+                          std::declval<int>()))>::value,
         "Result type needs to match");
     static_assert(
-        std::is_same<pika::functional::tag_invoke_result_t<mylib::bar_fn,
-                         testlib::tag_invocable2, int const&>,
+        std::is_same<pika::functional::detail::tag_invoke_result_t<
+                         mylib::bar_fn, testlib::tag_invocable2, int const&>,
             decltype(mylib::bar(
                 testlib::tag_invocable2{}, std::declval<int const&>()))>::value,
         "Result type needs to match");
     static_assert(
-        std::is_same<pika::functional::tag_invoke_result_t<mylib::bar_fn,
-                         testlib::tag_invocable2, int&>,
+        std::is_same<pika::functional::detail::tag_invoke_result_t<
+                         mylib::bar_fn, testlib::tag_invocable2, int&>,
             decltype(mylib::bar(
                 testlib::tag_invocable2{}, std::declval<int&>()))>::value,
         "Result type needs to match");
     static_assert(
-        std::is_same<pika::functional::tag_invoke_result_t<mylib::bar_fn,
-                         testlib::tag_invocable2, int const&&>,
+        std::is_same<pika::functional::detail::tag_invoke_result_t<
+                         mylib::bar_fn, testlib::tag_invocable2, int const&&>,
             decltype(mylib::bar(testlib::tag_invocable2{},
                 std::declval<int const&&>()))>::value,
         "Result type needs to match");
     static_assert(
-        std::is_same<pika::functional::tag_invoke_result_t<mylib::bar_fn,
-                         testlib::tag_invocable2, int&&>,
+        std::is_same<pika::functional::detail::tag_invoke_result_t<
+                         mylib::bar_fn, testlib::tag_invocable2, int&&>,
             decltype(mylib::bar(
                 testlib::tag_invocable2{}, std::declval<int&&>()))>::value,
         "Result type needs to match");

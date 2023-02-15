@@ -27,16 +27,16 @@ namespace pika::execution::experimental {
         {
             template <typename Query,
                 PIKA_CONCEPT_REQUIRES_(
-                    pika::functional::is_nothrow_tag_invocable_v<
+                    pika::functional::detail::is_nothrow_tag_invocable_v<
                         forwarding_scheduler_query_t, Query const&>)>
             constexpr bool operator()(Query const& query) const noexcept
             {
-                return pika::functional::tag_invoke(*this, query);
+                return pika::functional::detail::tag_invoke(*this, query);
             }
 
             template <typename Query,
                 PIKA_CONCEPT_REQUIRES_(
-                    !pika::functional::is_nothrow_tag_invocable_v<
+                    !pika::functional::detail::is_nothrow_tag_invocable_v<
                         forwarding_scheduler_query_t, Query const&>)>
             constexpr bool operator()(Query const&) const noexcept
             {
@@ -48,18 +48,18 @@ namespace pika::execution::experimental {
         {
             template <typename Scheduler,
                 PIKA_CONCEPT_REQUIRES_(is_scheduler_v<Scheduler>&&
-                        pika::functional::is_nothrow_tag_invocable_v<
+                        pika::functional::detail::is_nothrow_tag_invocable_v<
                             get_forward_progress_guarantee_t,
                             Scheduler const&>)>
             constexpr forward_progress_guarantee
             operator()(Scheduler const& scheduler) const noexcept
             {
-                return pika::functional::tag_invoke(*this, scheduler);
+                return pika::functional::detail::tag_invoke(*this, scheduler);
             }
 
             template <typename Scheduler,
                 PIKA_CONCEPT_REQUIRES_(is_scheduler_v<Scheduler> &&
-                    !pika::functional::is_nothrow_tag_invocable_v<
+                    !pika::functional::detail::is_nothrow_tag_invocable_v<
                         get_forward_progress_guarantee_t, Scheduler const&>)>
             constexpr forward_progress_guarantee
             operator()(Scheduler const&) const noexcept

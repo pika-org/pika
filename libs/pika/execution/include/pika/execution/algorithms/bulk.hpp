@@ -184,8 +184,9 @@ namespace pika::execution::experimental {
             auto scheduler =
                 pika::execution::experimental::get_completion_scheduler<
                     pika::execution::experimental::set_value_t>(sender);
-            return pika::functional::tag_invoke(bulk_t{}, PIKA_MOVE(scheduler),
-                PIKA_FORWARD(Sender, sender), shape, PIKA_FORWARD(F, f));
+            return pika::functional::detail::tag_invoke(bulk_t{},
+                PIKA_MOVE(scheduler), PIKA_FORWARD(Sender, sender), shape,
+                PIKA_FORWARD(F, f));
         }
 
         // clang-format off

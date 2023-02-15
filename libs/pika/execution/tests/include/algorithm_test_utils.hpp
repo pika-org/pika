@@ -618,7 +618,7 @@ namespace tag_namespace {
         template <typename Sender>
         auto operator()(Sender&& sender) const
         {
-            return pika::functional::tag_invoke(
+            return pika::functional::detail::tag_invoke(
                 *this, std::forward<Sender>(sender));
         }
 

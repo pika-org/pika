@@ -62,7 +62,7 @@ namespace pika::execution::experimental {
     template <typename ExPolicy,
         PIKA_CONCEPT_REQUIRES_(
             pika::is_execution_policy_v<ExPolicy> &&
-            pika::functional::is_tag_invocable_v<
+            pika::functional::detail::is_tag_invocable_v<
                 pika::execution::experimental::get_annotation_t,
                 typename std::decay_t<ExPolicy>::executor_type>
         )>

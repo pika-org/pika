@@ -54,25 +54,25 @@ namespace pika::functional::detail {
         inline constexpr unspecified tag_fallback_invoke = unspecified;
     }    // namespace unspecified
 
-    /// `pika::functional::is_tag_fallback_invocable<Tag, Args...>` is std::true_type if
+    /// `pika::functional::detail::is_tag_fallback_invocable<Tag, Args...>` is std::true_type if
     /// an overload of `tag_fallback_invoke(tag, args...)` can be found via ADL.
     template <typename Tag, typename... Args>
     struct is_tag_fallback_invocable;
 
-    /// `pika::functional::is_tag_fallback_invocable_v<Tag, Args...>` evaluates to
-    /// `pika::functional::is_tag_fallback_invocable<Tag, Args...>::value`
+    /// `pika::functional::detail::is_tag_fallback_invocable_v<Tag, Args...>` evaluates to
+    /// `pika::functional::detail::is_tag_fallback_invocable<Tag, Args...>::value`
     template <typename Tag, typename... Args>
     constexpr bool is_tag_fallback_invocable_v =
         is_tag_fallback_invocable<Tag, Args...>::value;
 
-    /// `pika::functional::is_nothrow_tag_fallback_invocable<Tag, Args...>` is
+    /// `pika::functional::detail::is_nothrow_tag_fallback_invocable<Tag, Args...>` is
     /// std::true_type if an overload of `tag_fallback_invoke(tag, args...)` can be
     /// found via ADL and is noexcept.
     template <typename Tag, typename... Args>
     struct is_nothrow_tag_fallback_invocable;
 
-    /// `pika::functional::is_tag_fallback_invocable_v<Tag, Args...>` evaluates to
-    /// `pika::functional::is_tag_fallback_invocable<Tag, Args...>::value`
+    /// `pika::functional::detail::is_tag_fallback_invocable_v<Tag, Args...>` evaluates to
+    /// `pika::functional::detail::is_tag_fallback_invocable<Tag, Args...>::value`
     template <typename Tag, typename... Args>
     constexpr bool is_nothrow_tag_fallback_invocable_v =
         is_nothrow_tag_fallback_invocable<Tag, Args...>::value;

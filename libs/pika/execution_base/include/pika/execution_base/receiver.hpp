@@ -57,7 +57,7 @@ namespace pika::execution::experimental {
     ///       `void set_value();`
     ///     * Otherwise, the expression is ill-formed.
     ///
-    /// The customization is implemented in terms of `pika::functional::tag_invoke`.
+    /// The customization is implemented in terms of `pika::functional::detail::tag_invoke`.
     template <typename R, typename... As>
     void set_value(R&& r, As&&... as);
 
@@ -71,7 +71,7 @@ namespace pika::execution::experimental {
     ///       `void set_stopped();`
     ///     * Otherwise, the expression is ill-formed.
     ///
-    /// The customization is implemented in terms of `pika::functional::tag_invoke`.
+    /// The customization is implemented in terms of `pika::functional::detail::tag_invoke`.
     template <typename R>
     void set_stopped(R&& r);
 
@@ -85,7 +85,7 @@ namespace pika::execution::experimental {
     ///       `void set_error();`
     ///     * Otherwise, the expression is ill-formed.
     ///
-    /// The customization is implemented in terms of `pika::functional::tag_invoke`.
+    /// The customization is implemented in terms of `pika::functional::detail::tag_invoke`.
     template <typename R, typename E>
     void set_error(R&& r, E&& e);
 #endif
@@ -131,17 +131,17 @@ namespace pika::execution::experimental {
     struct is_receiver_of;
 
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE
-    struct set_value_t : pika::functional::tag<set_value_t>
+    struct set_value_t : pika::functional::detail::tag<set_value_t>
     {
     } set_value{};
 
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE
-    struct set_error_t : pika::functional::tag_noexcept<set_error_t>
+    struct set_error_t : pika::functional::detail::tag_noexcept<set_error_t>
     {
     } set_error{};
 
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE
-    struct set_stopped_t : pika::functional::tag_noexcept<set_stopped_t>
+    struct set_stopped_t : pika::functional::detail::tag_noexcept<set_stopped_t>
     {
     } set_stopped{};
 
