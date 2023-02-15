@@ -12,31 +12,32 @@
 
 namespace pika::execution::experimental {
     inline constexpr struct with_priority_t final
-      : pika::functional::tag<with_priority_t>
+      : pika::functional::detail::tag<with_priority_t>
     {
     } with_priority{};
 
     inline constexpr struct get_priority_t final
-      : pika::functional::tag<get_priority_t>
+      : pika::functional::detail::tag<get_priority_t>
     {
     } get_priority{};
 
     inline constexpr struct with_stacksize_t final
-      : pika::functional::tag<with_stacksize_t>
+      : pika::functional::detail::tag<with_stacksize_t>
     {
     } with_stacksize{};
 
     inline constexpr struct get_stacksize_t final
-      : pika::functional::tag<get_stacksize_t>
+      : pika::functional::detail::tag<get_stacksize_t>
     {
     } get_stacksize{};
 
     inline constexpr struct with_hint_t final
-      : pika::functional::tag<with_hint_t>
+      : pika::functional::detail::tag<with_hint_t>
     {
     } with_hint{};
 
-    inline constexpr struct get_hint_t final : pika::functional::tag<get_hint_t>
+    inline constexpr struct get_hint_t final
+      : pika::functional::detail::tag<get_hint_t>
     {
     } get_hint{};
 
@@ -49,7 +50,7 @@ namespace pika::execution::experimental {
     } with_annotation{};
 
     inline constexpr struct get_annotation_t final
-      : pika::functional::tag<get_annotation_t>
+      : pika::functional::detail::tag<get_annotation_t>
     {
     } get_annotation{};
 }    // namespace pika::execution::experimental

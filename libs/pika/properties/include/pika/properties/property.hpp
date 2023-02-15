@@ -34,7 +34,7 @@ namespace pika::experimental {
                 prefer_t, Tag, T0&& t0, Tn&&...)
             noexcept(noexcept(PIKA_FORWARD(T0, t0)))
             -> std::enable_if_t<
-                    !pika::functional::is_tag_invocable_v<
+                    !pika::functional::detail::is_tag_invocable_v<
                         prefer_t, Tag, T0, Tn...> &&
                     !std::is_invocable_v<Tag, T0, Tn...>,
                     decltype(PIKA_FORWARD(T0, t0))>

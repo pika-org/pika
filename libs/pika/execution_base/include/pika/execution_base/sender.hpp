@@ -71,7 +71,7 @@ namespace pika::execution::experimental {
     ///     * Otherwise, the expression is ill-formed.
     ///
     /// The customization is implemented in terms of
-    /// `pika::functional::tag_invoke`.
+    /// `pika::functional::detail::tag_invoke`.
     template <typename S, typename R>
     void connect(S&& s, R&& r);
 
@@ -92,7 +92,7 @@ namespace pika::execution::experimental {
     ///      * Otherwise, schedule(s) is ill-formed.
     ///
     /// The customization is implemented in terms of
-    /// `pika::functional::tag_invoke`.
+    /// `pika::functional::detail::tag_invoke`.
 
 #endif
     // We define an empty dummy type for compatibility. Senders can define both
@@ -219,7 +219,7 @@ namespace pika::execution::experimental {
     }    // namespace detail
 
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE
-    struct connect_t : pika::functional::tag<connect_t>
+    struct connect_t : pika::functional::detail::tag<connect_t>
     {
     } connect{};
 
@@ -277,7 +277,7 @@ namespace pika::execution::experimental {
     }    // namespace detail
 
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE
-    struct schedule_t : pika::functional::tag<schedule_t>
+    struct schedule_t : pika::functional::detail::tag<schedule_t>
     {
     } schedule{};
 

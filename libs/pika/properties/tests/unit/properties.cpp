@@ -14,7 +14,8 @@ struct property1
     int v = 0;
 };
 
-inline constexpr struct with_property_t : pika::functional::tag<with_property_t>
+inline constexpr struct with_property_t
+  : pika::functional::detail::tag<with_property_t>
 {
 } with_property;
 
