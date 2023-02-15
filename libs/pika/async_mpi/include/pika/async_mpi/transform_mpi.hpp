@@ -99,6 +99,8 @@ namespace pika::mpi::experimental {
         template <typename Sender, typename F>
         struct transform_mpi_sender_impl<Sender, F>::transform_mpi_sender_type
         {
+            using is_sender = void;
+
             std::decay_t<Sender> sender;
             std::decay_t<F> f;
             stream_type stream;
@@ -162,6 +164,8 @@ namespace pika::mpi::experimental {
 
                 struct transform_mpi_receiver
                 {
+                    using is_receiver = void;
+
                     operation_state& op_state;
 
                     template <typename Error>

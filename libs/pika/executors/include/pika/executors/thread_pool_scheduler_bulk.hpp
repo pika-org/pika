@@ -85,6 +85,8 @@ namespace pika::thread_pool_bulk_detail {
             thread_pool_bulk_sender const&) = default;
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+        using is_sender = void;
+
         template <template <typename...> class Tuple,
             template <typename...> class Variant>
         using value_types =
@@ -127,6 +129,8 @@ namespace pika::thread_pool_bulk_detail {
         {
             struct bulk_receiver
             {
+                using is_receiver = void;
+
                 operation_state* op_state;
 
                 template <typename E>

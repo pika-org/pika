@@ -62,6 +62,8 @@ namespace pika::keep_future_detail {
     template <typename Future>
     struct keep_future_sender_base
     {
+        using is_sender = void;
+
         std::decay_t<Future> future;
 
         template <template <typename...> class Tuple,

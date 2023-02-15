@@ -34,6 +34,8 @@ namespace pika::drop_value_detail {
     template <typename Receiver>
     struct drop_value_receiver_impl<Receiver>::drop_value_receiver_type
     {
+        using is_receiver = void;
+
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
         template <typename Error>
@@ -78,6 +80,8 @@ namespace pika::drop_value_detail {
     template <typename Sender>
     struct drop_value_sender_impl<Sender>::drop_value_sender_type
     {
+        using is_sender = void;
+
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Sender> sender;
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)

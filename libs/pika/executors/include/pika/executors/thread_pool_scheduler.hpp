@@ -197,6 +197,8 @@ namespace pika::execution::experimental {
         template <typename Scheduler>
         struct sender
         {
+            using is_sender = void;
+
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Scheduler> scheduler;
 
             // We explicitly get the fallback annotation when constructing the

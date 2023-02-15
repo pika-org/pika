@@ -76,6 +76,8 @@ namespace pika::execution::experimental {
 
         struct sender
         {
+            using is_sender = void;
+
             template <template <typename...> class Tuple,
                 template <typename...> class Variant>
             using value_types = Variant<Tuple<>>;

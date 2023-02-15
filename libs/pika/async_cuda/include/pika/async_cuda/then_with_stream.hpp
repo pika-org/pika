@@ -149,6 +149,8 @@ namespace pika::cuda::experimental::then_with_stream_detail {
     struct then_with_cuda_stream_sender_impl<Sender,
         F>::then_with_cuda_stream_sender_type
     {
+        using is_sender = void;
+
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Sender> sender;
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
         cuda_scheduler sched;
@@ -246,6 +248,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
 
             struct then_with_cuda_stream_receiver
             {
+                using is_receiver = void;
                 using then_with_cuda_stream_receiver_tag = void;
 
                 operation_state& op_state;

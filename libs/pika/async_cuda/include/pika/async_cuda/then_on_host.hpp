@@ -39,6 +39,8 @@ namespace pika::cuda::experimental {
         struct then_on_host_receiver_impl<Receiver,
             F>::then_on_host_receiver_type
         {
+            using is_receiver = void;
+
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
             cuda_scheduler sched;
@@ -138,6 +140,8 @@ namespace pika::cuda::experimental {
         template <typename Sender, typename F>
         struct then_on_host_sender_impl<Sender, F>::then_on_host_sender_type
         {
+            using is_sender = void;
+
             std::decay_t<Sender> sender;
             std::decay_t<F> f;
             cuda_scheduler sched;

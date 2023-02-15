@@ -334,6 +334,8 @@ namespace pika::lcos::detail {
     class future_base
     {
     public:
+        using is_sender = void;
+
         using result_type = R;
         using shared_state_type =
             future_data_base<traits::detail::shared_state_ptr_result_t<R>>;

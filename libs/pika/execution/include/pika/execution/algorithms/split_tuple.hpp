@@ -119,6 +119,8 @@ namespace pika::split_tuple_detail {
 
         struct split_tuple_receiver
         {
+            using is_receiver = void;
+
             shared_state& state;
 
             template <typename Error>
@@ -403,6 +405,8 @@ namespace pika::split_tuple_detail {
     struct split_tuple_sender_impl<Sender, Allocator,
         Index>::split_tuple_sender_type
     {
+        using is_sender = void;
+
         using allocator_type = Allocator;
         using shared_state_type = shared_state<Sender, Allocator>;
 

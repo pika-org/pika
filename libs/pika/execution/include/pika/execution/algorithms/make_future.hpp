@@ -58,6 +58,8 @@ namespace pika::make_future_detail {
     template <typename T, typename Allocator>
     struct make_future_receiver
     {
+        using is_receiver = void;
+
         pika::intrusive_ptr<
             resettable_operation_state_future_data<T, Allocator>>
             data;
