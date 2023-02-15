@@ -7,7 +7,7 @@
 #pragma once
 
 #if defined(DOXYGEN)
-namespace pika { namespace functional {
+namespace pika::functional {
     inline namespace unspecified {
         /// The `pika::functional::tag_invoke` name defines a constexpr object
         /// that is invocable with one or more arguments. The first argument
@@ -95,7 +95,7 @@ namespace pika { namespace functional {
     /// The implementation has to be noexcept
     template <typename Tag>
     struct tag_noexcept;
-}}    // namespace pika::functional
+}    // namespace pika::functional
 #else
 
 #include <pika/config.hpp>
