@@ -21,7 +21,6 @@
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
 #include <pika/functional/detail/tag_priority_invoke.hpp>
-#include <pika/functional/invoke_result.hpp>
 #include <pika/iterator_support/counting_shape.hpp>
 #include <pika/type_support/pack.hpp>
 

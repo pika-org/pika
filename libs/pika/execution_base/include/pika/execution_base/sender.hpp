@@ -42,7 +42,6 @@ namespace pika::execution::experimental {
 #include <pika/config/constexpr.hpp>
 #include <pika/execution_base/operation_state.hpp>
 #include <pika/execution_base/receiver.hpp>
-#include <pika/functional/invoke_result.hpp>
 #include <pika/functional/tag_invoke.hpp>
 #include <pika/type_support/equality.hpp>
 
@@ -236,7 +235,7 @@ namespace pika::execution::experimental {
         template <typename S, typename R>
         struct connect_result_helper<S, R,
             std::enable_if_t<std::is_invocable<connect_t, S, R>::value>>
-          : pika::util::detail::invoke_result<connect_t, S, R>
+          : std::invoke_result<connect_t, S, R>
         {
         };
     }    // namespace detail
@@ -465,8 +464,7 @@ namespace pika::execution::experimental {
     inline constexpr bool is_scheduler_v = is_scheduler<Scheduler>::value;
 
     template <typename S, typename R>
-    using connect_result_t =
-        typename pika::util::detail::invoke_result<connect_t, S, R>::type;
+    using connect_result_t = std::invoke_result_t<connect_t, S, R>;
 }    // namespace pika::execution::experimental
 #endif
 

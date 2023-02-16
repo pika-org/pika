@@ -60,8 +60,7 @@ struct external_future_executor
     template <typename F, typename... Ts>
     decltype(auto) async_execute(F&& f, Ts&&... ts)
     {
-        using is_void = typename std::is_void<
-            typename pika::util::detail::invoke_result<F, Ts...>::type>;
+        using is_void = typename std::is_void<std::invoke_result_t<F, Ts...>>;
         return async_execute_helper(
             is_void{}, std::forward<F>(f), std::forward<Ts>(ts)...);
     }
@@ -156,9 +155,8 @@ struct external_future_additional_argument_executor
     template <typename F, typename... Ts>
     decltype(auto) async_execute(F&& f, Ts&&... ts)
     {
-        using is_void =
-            typename std::is_void<typename pika::util::detail::invoke_result<F,
-                additional_argument, Ts...>::type>;
+        using is_void = typename std::is_void<
+            std::invoke_result_t<F, additional_argument, Ts...>>;
         return async_execute_helper(
             is_void{}, std::forward<F>(f), std::forward<Ts>(ts)...);
     }

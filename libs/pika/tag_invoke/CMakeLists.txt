@@ -10,7 +10,6 @@ set(tag_invoke_headers
     pika/functional/detail/invoke.hpp
     pika/functional/detail/tag_fallback_invoke.hpp
     pika/functional/detail/tag_priority_invoke.hpp
-    pika/functional/invoke_result.hpp
     pika/functional/tag_invoke.hpp
 )
 

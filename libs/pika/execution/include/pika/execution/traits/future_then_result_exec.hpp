@@ -10,7 +10,6 @@
 #include <pika/config.hpp>
 #include <pika/execution/traits/executor_traits.hpp>
 #include <pika/execution_base/traits/is_executor.hpp>
-#include <pika/functional/invoke_result.hpp>
 #include <pika/futures/traits/future_then_result.hpp>
 #include <pika/futures/traits/future_traits.hpp>
 #include <pika/futures/traits/is_future.hpp>
@@ -33,10 +32,9 @@ namespace pika::traits {
 
         template <typename Executor, typename Future, typename F>
         struct future_then_executor_result<Executor, Future, F,
-            std::void_t<pika::util::detail::invoke_result_t<F&, Future>>>
+            std::void_t<std::invoke_result_t<F&, Future>>>
         {
-            using func_result_type =
-                pika::util::detail::invoke_result_t<F&, Future>;
+            using func_result_type = std::invoke_result_t<F&, Future>;
 
             using cont_result =
                 traits::executor_future_t<Executor, func_result_type, Future>;

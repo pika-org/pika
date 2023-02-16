@@ -22,7 +22,6 @@
 #include <pika/functional/bind_back.hpp>
 #include <pika/functional/deferred_call.hpp>
 #include <pika/functional/detail/invoke.hpp>
-#include <pika/functional/invoke_result.hpp>
 #include <pika/futures/future.hpp>
 #include <pika/futures/traits/future_access.hpp>
 #include <pika/futures/traits/future_traits.hpp>
@@ -282,7 +281,7 @@ namespace pika::parallel::execution::detail {
         // fall-back: emulate sync_execute using async_execute
         template <typename TwoWayExecutor, typename F, typename... Ts>
         static auto call_impl(std::false_type, TwoWayExecutor&& exec, F&& f,
-            Ts&&... ts) -> pika::util::detail::invoke_result_t<F, Ts...>
+            Ts&&... ts) -> std::invoke_result_t<F, Ts...>
         {
             try
             {
@@ -321,7 +320,7 @@ namespace pika::parallel::execution::detail {
         template <typename TwoWayExecutor, typename F, typename... Ts>
         PIKA_FORCEINLINE static auto call_impl(
             pika::detail::wrap_int, TwoWayExecutor&& exec, F&& f, Ts&&... ts)
-            -> pika::util::detail::invoke_result_t<F, Ts...>
+            -> std::invoke_result_t<F, Ts...>
         {
             using is_void = typename std::is_void<
                 pika::util::detail::invoke_deferred_result_t<F, Ts...>>::type;

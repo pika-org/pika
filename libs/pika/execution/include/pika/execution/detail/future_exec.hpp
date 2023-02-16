@@ -17,7 +17,6 @@
 #include <pika/execution/traits/future_then_result_exec.hpp>
 #include <pika/execution_base/traits/is_executor.hpp>
 #include <pika/functional/invoke.hpp>
-#include <pika/functional/invoke_result.hpp>
 #include <pika/futures/detail/future_data.hpp>
 #include <pika/futures/future.hpp>
 #include <pika/futures/packaged_continuation.hpp>
@@ -57,8 +56,7 @@ namespace pika::lcos::detail {
             using result_type =
                 typename pika::traits::future_then_result<Future,
                     F>::result_type;
-            using continuation_result_type =
-                pika::util::detail::invoke_result_t<F, Future>;
+            using continuation_result_type = std::invoke_result_t<F, Future>;
 
             pika::traits::detail::shared_state_ptr_t<result_type> p =
                 detail::make_continuation_alloc<continuation_result_type>(
@@ -77,8 +75,7 @@ namespace pika::lcos::detail {
             using result_type =
                 typename pika::traits::future_then_result<Future,
                     F>::result_type;
-            using continuation_result_type =
-                pika::util::detail::invoke_result_t<F, Future>;
+            using continuation_result_type = std::invoke_result_t<F, Future>;
 
             pika::traits::detail::shared_state_ptr_t<result_type> p =
                 detail::make_continuation_alloc<continuation_result_type>(alloc,

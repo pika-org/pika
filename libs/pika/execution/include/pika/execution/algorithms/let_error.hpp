@@ -20,7 +20,6 @@
 #include <pika/execution_base/sender.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/functional/invoke_fused.hpp>
-#include <pika/functional/invoke_result.hpp>
 #include <pika/type_support/detail/with_result_of.hpp>
 #include <pika/type_support/pack.hpp>
 
@@ -68,8 +67,8 @@ namespace pika::let_error_detail {
         template <typename Error>
         struct successor_sender_types_helper
         {
-            using type = pika::util::detail::invoke_result_t<F,
-                std::add_lvalue_reference_t<Error>>;
+            using type =
+                std::invoke_result_t<F, std::add_lvalue_reference_t<Error>>;
             static_assert(pika::execution::experimental::is_sender<
                               std::decay_t<type>>::value,
                 "let_error expects the invocable sender factory to return "

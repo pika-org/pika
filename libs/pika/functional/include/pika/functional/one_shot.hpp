@@ -10,7 +10,6 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/functional/invoke.hpp>
-#include <pika/functional/invoke_result.hpp>
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
 
@@ -53,7 +52,7 @@ namespace pika::util::detail {
         }
 
         template <typename... Ts>
-        constexpr PIKA_HOST_DEVICE util::detail::invoke_result_t<F, Ts...>
+        constexpr PIKA_HOST_DEVICE std::invoke_result_t<F, Ts...>
         operator()(Ts&&... vs)
         {
             check_call();

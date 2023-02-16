@@ -60,8 +60,8 @@ namespace pika::schedule_from_detail {
                 Sender>::template error_types<Variant>;
 
         using scheduler_sender_type =
-            typename pika::util::detail::invoke_result<
-                pika::execution::experimental::schedule_t, Scheduler>::type;
+            std::invoke_result_t<pika::execution::experimental::schedule_t,
+                Scheduler>;
         template <template <typename...> class Variant>
         using scheduler_sender_error_types =
             typename pika::execution::experimental::sender_traits<
@@ -139,9 +139,8 @@ namespace pika::schedule_from_detail {
 
             using scheduler_operation_state_type =
                 pika::execution::experimental::connect_result_t<
-                    typename pika::util::detail::invoke_result<
-                        pika::execution::experimental::schedule_t,
-                        Scheduler>::type,
+                    std::invoke_result_t<
+                        pika::execution::experimental::schedule_t, Scheduler>,
                     scheduler_sender_receiver>;
             std::optional<scheduler_operation_state_type> scheduler_op_state;
 

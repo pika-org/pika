@@ -82,7 +82,7 @@ namespace pika::functional::detail {
     /// can be used in a SFINAE context.
     template <typename Tag, typename... Args>
     using tag_fallback_invoke_result =
-        invoke_result<decltype(tag_fallback_invoke), Tag, Args...>;
+        std::invoke_result<decltype(tag_fallback_invoke), Tag, Args...>;
 
     /// `pika::functional::detail::tag_fallback_invoke_result_t<Tag, Args...>` evaluates to
     /// `pika::functional::detail::tag_fallback_invoke_result_t<Tag, Args...>::type`
@@ -104,7 +104,6 @@ namespace pika::functional::detail {
 #else
 
 #include <pika/config.hpp>
-#include <pika/functional/invoke_result.hpp>
 #include <pika/functional/tag_invoke.hpp>
 
 #include <type_traits>
@@ -207,7 +206,7 @@ namespace pika::functional::detail {
         is_nothrow_tag_fallback_invocable<Tag, Args...>::value;
 
     template <typename Tag, typename... Args>
-    using tag_fallback_invoke_result = pika::util::detail::invoke_result<
+    using tag_fallback_invoke_result = std::invoke_result<
         decltype(tag_fallback_invoke_ns::tag_fallback_invoke), Tag, Args...>;
 
     template <typename Tag, typename... Args>

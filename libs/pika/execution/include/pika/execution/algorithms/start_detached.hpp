@@ -19,7 +19,6 @@
 #include <pika/execution_base/operation_state.hpp>
 #include <pika/execution_base/sender.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
-#include <pika/functional/invoke_result.hpp>
 #include <pika/memory/intrusive_ptr.hpp>
 #include <pika/thread_support/atomic_count.hpp>
 #include <pika/type_support/unused.hpp>
