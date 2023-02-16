@@ -1,8 +1,14 @@
-# if line ends with a " store line in buffer
-# if line starts with " and buffer is non empty, join to buffer and remove "[[:space:]]"
-# if neither start or end, print buffer if non empty, print line 
-# if we see "clang-format off" turn off processing
-# if we see "clang-forma on" turn back on processing
+# Copyright (c) 2019 The STE||AR-Group
+#
+# SPDX-License-Identifier: BSL-1.0
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+# join strings across lines, not foolproof but handles 99% of c++ cases
+# can fail for empty strings like
+# std::string x = "stuff " + "    "
+#                 " more string carried over from above"
+#
 
 function clear_buffer() {
     if (buffer) print buffer
@@ -10,14 +16,9 @@ function clear_buffer() {
     in_string=0
 }
 
-# don't allow \n" to be replaced, to keep user enforced breaks
+# remove first instance of "   "
 function join_strings(buf) {
-    #  can't get negative lookbehind to work in awk, so instead
-    gsub("\\\\n\"", "REPLACE_HACK_24601", buf)
-    gsub("\\\\\"", "REPLACE_HACK_24602", buf)
-    gsub("\"[[:space:]]*\"", "", buf)
-    gsub("REPLACE_HACK_24601", "\\n\"", buf)
-    gsub("REPLACE_HACK_24602", "\\\"", buf)
+    sub("\"[[:space:]]*\"", "", buf)
     buffer=buf
 }
 
@@ -26,7 +27,8 @@ BEGIN {
     in_string=0 
 }
 
-# clang-format on/off 
+# if we see "clang-format off" turn off processing
+# if we see "clang-forma on" turn back on processing
 /\/\/ clang-format off/    { enabled=0; clear_buffer(); print $0; next }
 /\/\/ clang-format on/     { enabled=1; print $0; next }
 
@@ -43,29 +45,34 @@ BEGIN {
 /^[[:space:]]*\"/    { string_start=1 }
 # line ends with a string quote (ignoring trailing whitespace)
 /\"[[:space:]]*$/    { string_end=1 }
+# disallow string ending with \n"
+/\\n\"[[:space:]]*$/ { string_end=0 }
+# disallow string ending with \"
+/\\"[[:space:]]*$/   { string_end=0 ; print "2"}
 
 # if we're in a string and this line starts with string : join
-string_start && in_string {
+in_string && string_start {
     buffer=buffer $0
     join_strings(buffer)
+    if (!string_end)
+        clear_buffer()
     next
 }
 
-# if current line ends on a string quote, then start buffer
-string_end && !in_string { 
+# if current line ends on a string quote, then start new buffer
+!in_string && string_end { 
     buffer=$0
     in_string=1
     next
 }
 
-# if we were in a string, but not now
-in_string && !string_start {
+# if we were in a string, terminate
+in_string {
     clear_buffer()
 }
 
-    # gsub(/[aeiou]/, "%")
-
-in_string==0 {
+# default fallthrough, just print the current line
+{
     print $0
 }
 
