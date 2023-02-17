@@ -30,7 +30,7 @@ int main()
     test_atomic<std::uint32_t>();
     test_atomic<std::uint64_t>();
 
-    std::memory_order mo;
+    [[maybe_unused]] std::memory_order mo;
     mo = std::memory_order_relaxed;
     mo = std::memory_order_acquire;
     mo = std::memory_order_release;
