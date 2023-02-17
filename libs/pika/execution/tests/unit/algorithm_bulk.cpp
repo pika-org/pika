@@ -43,8 +43,7 @@ template <typename S>
 auto tag_invoke(ex::bulk_t, S&& s, int num, custom_bulk_operation t)
 {
     t.tag_invoke_overload_called = true;
-    return ex::bulk(
-        std::forward<S>(s), num, [t = std::move(t)](int n) { t(n); });
+    return ex::bulk(std::forward<S>(s), num, [t = std::move(t)](int n) { t(n); });
 }
 
 int main()
@@ -84,8 +83,8 @@ int main()
     {
         std::atomic<bool> set_value_called{false};
         std::atomic<int> set_value_count{0};
-        auto s = ex::bulk(ex::just(custom_type_non_default_constructible{42}),
-            10, [&](int n, auto x) {
+        auto s =
+            ex::bulk(ex::just(custom_type_non_default_constructible{42}), 10, [&](int n, auto x) {
                 PIKA_TEST_EQ(n, set_value_count);
                 ++set_value_count;
                 ++(x.x);
@@ -102,9 +101,8 @@ int main()
     {
         std::atomic<bool> set_value_called{false};
         std::atomic<int> set_value_count{0};
-        auto s = ex::bulk(
-            ex::just(custom_type_non_default_constructible_non_copyable{42}),
-            10, [&](int n, auto&&) {
+        auto s = ex::bulk(ex::just(custom_type_non_default_constructible_non_copyable{42}), 10,
+            [&](int n, auto&&) {
                 PIKA_TEST_EQ(n, set_value_count);
                 ++set_value_count;
             });
@@ -136,11 +134,10 @@ int main()
         std::atomic<bool> set_value_called{false};
         std::atomic<int> set_value_count{0};
         int x = 42;
-        auto s = ex::bulk(ex::just(const_reference_sender<decltype(x)>{x}), 10,
-            [&](int n, auto&&) {
-                PIKA_TEST_EQ(n, set_value_count);
-                ++set_value_count;
-            });
+        auto s = ex::bulk(ex::just(const_reference_sender<decltype(x)>{x}), 10, [&](int n, auto&&) {
+            PIKA_TEST_EQ(n, set_value_count);
+            ++set_value_count;
+        });
         auto f = [](auto x) { PIKA_TEST_EQ(x.x, 42); };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));
@@ -154,8 +151,8 @@ int main()
         std::atomic<bool> set_value_called{false};
         std::atomic<int> set_value_count{0};
         auto f = [&](int, int) { ++set_value_count; };
-        auto s = ex::just(42) | ex::bulk(10, f) | ex::bulk(10, f) |
-            ex::bulk(10, f) | ex::bulk(10, f);
+        auto s =
+            ex::just(42) | ex::bulk(10, f) | ex::bulk(10, f) | ex::bulk(10, f) | ex::bulk(10, f);
         auto f1 = [](int x) { PIKA_TEST_EQ(x, 42); };
         auto r = callback_receiver<decltype(f1)>{f1, set_value_called};
         auto os = ex::connect(std::move(s), r);
@@ -171,9 +168,8 @@ int main()
         std::atomic<bool> custom_bulk_call_operator_called{false};
         std::atomic<int> custom_bulk_call_count{0};
         auto s = ex::bulk(ex::just(), 10,
-            custom_bulk_operation{tag_invoke_overload_called,
-                custom_bulk_call_operator_called, custom_bulk_call_count,
-                false});
+            custom_bulk_operation{tag_invoke_overload_called, custom_bulk_call_operator_called,
+                custom_bulk_call_count, false});
         auto f = [] {};
         auto r = callback_receiver<decltype(f)>{f, receiver_set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));
@@ -187,8 +183,7 @@ int main()
     // Failure path
     {
         std::atomic<bool> set_error_called{false};
-        auto s = ex::bulk(
-            ex::just(), 0, [](int) { throw std::runtime_error("error"); });
+        auto s = ex::bulk(ex::just(), 0, [](int) { throw std::runtime_error("error"); });
         auto r = error_callback_receiver<decltype(check_exception_ptr)>{
             check_exception_ptr, set_error_called, true};
         auto os = ex::connect(std::move(s), std::move(r));
@@ -217,10 +212,8 @@ int main()
                 throw std::runtime_error("error");
             return x + 1;
         });
-        auto s3 =
-            ex::bulk(std::move(s2), 10, [](int, int) { PIKA_TEST(false); });
-        auto s4 =
-            ex::bulk(std::move(s3), 10, [](int, int) { PIKA_TEST(false); });
+        auto s3 = ex::bulk(std::move(s2), 10, [](int, int) { PIKA_TEST(false); });
+        auto s4 = ex::bulk(std::move(s3), 10, [](int, int) { PIKA_TEST(false); });
         auto r = error_callback_receiver<decltype(check_exception_ptr)>{
             check_exception_ptr, set_error_called};
         auto os = ex::connect(std::move(s4), std::move(r));
@@ -234,9 +227,8 @@ int main()
         std::atomic<bool> custom_bulk_call_operator_called{false};
         std::atomic<int> custom_bulk_call_count{0};
         auto s = ex::bulk(ex::just(), 10,
-            custom_bulk_operation{tag_invoke_overload_called,
-                custom_bulk_call_operator_called, custom_bulk_call_count,
-                true});
+            custom_bulk_operation{tag_invoke_overload_called, custom_bulk_call_operator_called,
+                custom_bulk_call_count, true});
         auto r = error_callback_receiver<decltype(check_exception_ptr)>{
             check_exception_ptr, receiver_set_error_called};
         auto os = ex::connect(std::move(s), std::move(r));
@@ -249,8 +241,7 @@ int main()
 
     {
         std::atomic<bool> set_error_called{false};
-        auto s = ex::bulk(
-            const_reference_error_sender{}, 10, [](int) { PIKA_TEST(false); });
+        auto s = ex::bulk(const_reference_error_sender{}, 10, [](int) { PIKA_TEST(false); });
         auto r = error_callback_receiver<decltype(check_exception_ptr)>{
             check_exception_ptr, set_error_called};
         auto os = ex::connect(std::move(s), std::move(r));

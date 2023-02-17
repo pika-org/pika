@@ -29,13 +29,13 @@ template <typename Scheduler>
 inline constexpr bool is_cuda_scheduler_v =
     std::is_same_v<std::decay_t<Scheduler>, cu::cuda_scheduler>;
 
-#define CHECK_CUDA_COMPLETION_SCHEDULER(...)                                   \
-    static_assert(is_cuda_scheduler_v<decltype(ex::get_completion_scheduler<   \
-            ex::set_value_t>(ex::get_env(__VA_ARGS__)))>)
+#define CHECK_CUDA_COMPLETION_SCHEDULER(...)                                                       \
+ static_assert(is_cuda_scheduler_v<decltype(ex::get_completion_scheduler<ex::set_value_t>(         \
+         ex::get_env(__VA_ARGS__)))>)
 
-#define CHECK_NOT_CUDA_COMPLETION_SCHEDULER(...)                               \
-    static_assert(!is_cuda_scheduler_v<decltype(ex::get_completion_scheduler<  \
-                      ex::set_value_t>(ex::get_env(__VA_ARGS__)))>)
+#define CHECK_NOT_CUDA_COMPLETION_SCHEDULER(...)                                                   \
+ static_assert(!is_cuda_scheduler_v<decltype(ex::get_completion_scheduler<ex::set_value_t>(        \
+                   ex::get_env(__VA_ARGS__)))>)
 
 int pika_main()
 {
@@ -56,21 +56,18 @@ int pika_main()
     }
 
     {
-        auto s =
-            ex::schedule(sched) | cu::then_with_stream([](whip::stream_t) {});
+        auto s = ex::schedule(sched) | cu::then_with_stream([](whip::stream_t) {});
         CHECK_CUDA_COMPLETION_SCHEDULER(s);
     }
 
     {
         auto s = ex::schedule(sched) |
-            cu::then_with_cublas(
-                [](cublasHandle_t) {}, CUBLAS_POINTER_MODE_HOST);
+            cu::then_with_cublas([](cublasHandle_t) {}, CUBLAS_POINTER_MODE_HOST);
         CHECK_CUDA_COMPLETION_SCHEDULER(s);
     }
 
     {
-        auto s = ex::schedule(sched) |
-            cu::then_with_cusolver([](cusolverDnHandle_t) {});
+        auto s = ex::schedule(sched) | cu::then_with_cusolver([](cusolverDnHandle_t) {});
         CHECK_CUDA_COMPLETION_SCHEDULER(s);
     }
 
@@ -86,8 +83,7 @@ int pika_main()
         // handler which is not installed in this test (the pika runtime is not
         // started). The thread pool is never accessed.
         auto s = ex::schedule(sched) |
-            cu::then_with_cublas(
-                [](cublasHandle_t) {}, CUBLAS_POINTER_MODE_HOST) |
+            cu::then_with_cublas([](cublasHandle_t) {}, CUBLAS_POINTER_MODE_HOST) |
             ex::transfer(ex::thread_pool_scheduler{nullptr});
         CHECK_NOT_CUDA_COMPLETION_SCHEDULER(s);
 #endif
@@ -101,22 +97,19 @@ int pika_main()
         // to the scheduler. It will return a stream with a priority "close to"
         // the given priority. Currently this means that anything high or higher
         // maps to high, and anything below high maps to normal.
-        PIKA_TEST_EQ(sched.get_next_stream().get_priority(),
-            pika::execution::thread_priority::normal);
         PIKA_TEST_EQ(
-            ex::with_priority(sched, pika::execution::thread_priority::low)
-                .get_next_stream()
-                .get_priority(),
+            sched.get_next_stream().get_priority(), pika::execution::thread_priority::normal);
+        PIKA_TEST_EQ(ex::with_priority(sched, pika::execution::thread_priority::low)
+                         .get_next_stream()
+                         .get_priority(),
             pika::execution::thread_priority::normal);
-        PIKA_TEST_EQ(
-            ex::with_priority(sched, pika::execution::thread_priority::default_)
-                .get_next_stream()
-                .get_priority(),
+        PIKA_TEST_EQ(ex::with_priority(sched, pika::execution::thread_priority::default_)
+                         .get_next_stream()
+                         .get_priority(),
             pika::execution::thread_priority::normal);
-        PIKA_TEST_EQ(
-            ex::with_priority(sched, pika::execution::thread_priority::high)
-                .get_next_stream()
-                .get_priority(),
+        PIKA_TEST_EQ(ex::with_priority(sched, pika::execution::thread_priority::high)
+                         .get_next_stream()
+                         .get_priority(),
             pika::execution::thread_priority::high);
     }
 
@@ -142,9 +135,8 @@ int pika_main()
         {
             using pika::execution::thread_priority;
 
-            senders.push_back(
-                ex::schedule(ex::with_priority(sched,
-                    i % 2 ? thread_priority::high : thread_priority::normal)) |
+            senders.push_back(ex::schedule(ex::with_priority(
+                                  sched, i % 2 ? thread_priority::high : thread_priority::normal)) |
                 cu::then_with_stream([p, i](whip::stream_t stream) {
                     kernel<<<1, 1, 0, stream>>>(p, i);
                     whip::check_last_error();

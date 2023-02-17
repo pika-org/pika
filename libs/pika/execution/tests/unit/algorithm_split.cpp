@@ -22,8 +22,7 @@ namespace tt = pika::this_thread::experimental;
 // This overload is only used to check dispatching. It is not a useful
 // implementation.
 template <typename Allocator = pika::detail::internal_allocator<>>
-auto tag_invoke(
-    ex::split_t, custom_sender_tag_invoke s, Allocator const& = Allocator{})
+auto tag_invoke(ex::split_t, custom_sender_tag_invoke s, Allocator const& = Allocator{})
 {
     s.tag_invoke_overload_called = true;
     return void_sender{};
@@ -67,8 +66,7 @@ int main()
 
     {
         std::atomic<bool> set_value_called{false};
-        auto s1 =
-            ex::just(custom_type_non_default_constructible_non_copyable{42});
+        auto s1 = ex::just(custom_type_non_default_constructible_non_copyable{42});
         auto s2 = ex::split(std::move(s1));
         auto f = [](auto& x) { PIKA_TEST_EQ(x.x, 42); };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
@@ -104,8 +102,7 @@ int main()
     {
         std::atomic<bool> receiver_set_value_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
-        auto s =
-            custom_sender_tag_invoke{tag_invoke_overload_called} | ex::split();
+        auto s = custom_sender_tag_invoke{tag_invoke_overload_called} | ex::split();
         auto f = [] {};
         auto r = callback_receiver<decltype(f)>{f, receiver_set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));

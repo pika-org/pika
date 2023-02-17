@@ -29,8 +29,7 @@ namespace pika::execution::experimental {
     struct thread_pool_scheduler
     {
         constexpr thread_pool_scheduler() = default;
-        explicit thread_pool_scheduler(
-            pika::threads::detail::thread_pool_base* pool)
+        explicit thread_pool_scheduler(pika::threads::detail::thread_pool_base* pool)
           : pool_(pool)
         {
         }
@@ -39,8 +38,7 @@ namespace pika::execution::experimental {
         bool operator==(thread_pool_scheduler const& rhs) const noexcept
         {
             return pool_ == rhs.pool_ && priority_ == rhs.priority_ &&
-                stacksize_ == rhs.stacksize_ &&
-                schedulehint_ == rhs.schedulehint_;
+                stacksize_ == rhs.stacksize_ && schedulehint_ == rhs.schedulehint_;
         }
 
         bool operator!=(thread_pool_scheduler const& rhs) const noexcept
@@ -55,10 +53,8 @@ namespace pika::execution::experimental {
         }
 
         // support with_priority property
-        friend thread_pool_scheduler tag_invoke(
-            pika::execution::experimental::with_priority_t,
-            thread_pool_scheduler const& scheduler,
-            pika::execution::thread_priority priority)
+        friend thread_pool_scheduler tag_invoke(pika::execution::experimental::with_priority_t,
+            thread_pool_scheduler const& scheduler, pika::execution::thread_priority priority)
         {
             auto sched_with_priority = scheduler;
             sched_with_priority.priority_ = priority;
@@ -66,17 +62,14 @@ namespace pika::execution::experimental {
         }
 
         friend pika::execution::thread_priority tag_invoke(
-            pika::execution::experimental::get_priority_t,
-            thread_pool_scheduler const& scheduler)
+            pika::execution::experimental::get_priority_t, thread_pool_scheduler const& scheduler)
         {
             return scheduler.priority_;
         }
 
         // support with_stacksize property
-        friend thread_pool_scheduler tag_invoke(
-            pika::execution::experimental::with_stacksize_t,
-            thread_pool_scheduler const& scheduler,
-            pika::execution::thread_stacksize stacksize)
+        friend thread_pool_scheduler tag_invoke(pika::execution::experimental::with_stacksize_t,
+            thread_pool_scheduler const& scheduler, pika::execution::thread_stacksize stacksize)
         {
             auto sched_with_stacksize = scheduler;
             sched_with_stacksize.stacksize_ = stacksize;
@@ -84,17 +77,14 @@ namespace pika::execution::experimental {
         }
 
         friend pika::execution::thread_stacksize tag_invoke(
-            pika::execution::experimental::get_stacksize_t,
-            thread_pool_scheduler const& scheduler)
+            pika::execution::experimental::get_stacksize_t, thread_pool_scheduler const& scheduler)
         {
             return scheduler.stacksize_;
         }
 
         // support with_hint property
-        friend thread_pool_scheduler tag_invoke(
-            pika::execution::experimental::with_hint_t,
-            thread_pool_scheduler const& scheduler,
-            pika::execution::thread_schedule_hint hint)
+        friend thread_pool_scheduler tag_invoke(pika::execution::experimental::with_hint_t,
+            thread_pool_scheduler const& scheduler, pika::execution::thread_schedule_hint hint)
         {
             auto sched_with_hint = scheduler;
             sched_with_hint.schedulehint_ = hint;
@@ -102,8 +92,7 @@ namespace pika::execution::experimental {
         }
 
         friend pika::execution::thread_schedule_hint tag_invoke(
-            pika::execution::experimental::get_hint_t,
-            thread_pool_scheduler const& scheduler)
+            pika::execution::experimental::get_hint_t, thread_pool_scheduler const& scheduler)
         {
             return scheduler.schedulehint_;
         }
@@ -118,8 +107,7 @@ namespace pika::execution::experimental {
             return sched_with_annotation;
         }
 
-        friend thread_pool_scheduler tag_invoke(
-            pika::execution::experimental::with_annotation_t,
+        friend thread_pool_scheduler tag_invoke(pika::execution::experimental::with_annotation_t,
             thread_pool_scheduler const& scheduler, std::string annotation)
         {
             auto sched_with_annotation = scheduler;
@@ -129,8 +117,7 @@ namespace pika::execution::experimental {
         }
 
         // support get_annotation property
-        friend constexpr char const* tag_invoke(
-            pika::execution::experimental::get_annotation_t,
+        friend constexpr char const* tag_invoke(pika::execution::experimental::get_annotation_t,
             thread_pool_scheduler const& scheduler) noexcept
         {
             return scheduler.annotation_;
@@ -141,15 +128,13 @@ namespace pika::execution::experimental {
         {
             pika::detail::thread_description desc(f, fallback_annotation);
             threads::detail::thread_init_data data(
-                threads::detail::make_thread_function_nullary(
-                    PIKA_FORWARD(F, f)),
-                desc, priority_, schedulehint_, stacksize_);
+                threads::detail::make_thread_function_nullary(PIKA_FORWARD(F, f)), desc, priority_,
+                schedulehint_, stacksize_);
             threads::detail::register_work(data, pool_);
         }
 
         template <typename F>
-        friend void
-        tag_invoke(execute_t, thread_pool_scheduler const& sched, F&& f)
+        friend void tag_invoke(execute_t, thread_pool_scheduler const& sched, F&& f)
         {
             sched.execute(PIKA_FORWARD(F, f), sched.get_fallback_annotation());
         }
@@ -162,8 +147,8 @@ namespace pika::execution::experimental {
             char const* fallback_annotation;
 
             template <typename Scheduler_, typename Receiver_>
-            operation_state(Scheduler_&& scheduler, Receiver_&& receiver,
-                char const* fallback_annotation)
+            operation_state(
+                Scheduler_&& scheduler, Receiver_&& receiver, char const* fallback_annotation)
               : scheduler(PIKA_FORWARD(Scheduler_, scheduler))
               , receiver(PIKA_FORWARD(Receiver_, receiver))
               , fallback_annotation(fallback_annotation)
@@ -182,8 +167,7 @@ namespace pika::execution::experimental {
                     [&]() {
                         os.scheduler.execute(
                             [receiver = PIKA_MOVE(os.receiver)]() mutable {
-                                pika::execution::experimental::set_value(
-                                    PIKA_MOVE(receiver));
+                                pika::execution::experimental::set_value(PIKA_MOVE(receiver));
                             },
                             os.fallback_annotation);
                     },
@@ -205,11 +189,9 @@ namespace pika::execution::experimental {
             // sender so that if the scheduler has no annotation, the annotation
             // is instead taken from the context creating the sender, not from
             // the context when the task is actually spawned (if different).
-            char const* fallback_annotation =
-                scheduler.get_fallback_annotation();
+            char const* fallback_annotation = scheduler.get_fallback_annotation();
 
-            template <template <typename...> class Tuple,
-                template <typename...> class Variant>
+            template <template <typename...> class Tuple, template <typename...> class Variant>
             using value_types = Variant<Tuple<>>;
 
             template <template <typename...> class Variant>
@@ -217,50 +199,44 @@ namespace pika::execution::experimental {
 
             static constexpr bool sends_done = false;
 
-            using completion_signatures =
-                pika::execution::experimental::completion_signatures<
-                    pika::execution::experimental::set_value_t(),
-                    pika::execution::experimental::set_error_t(
-                        std::exception_ptr)>;
+            using completion_signatures = pika::execution::experimental::completion_signatures<
+                pika::execution::experimental::set_value_t(),
+                pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
             template <typename Receiver>
             friend operation_state<Scheduler, Receiver>
             tag_invoke(connect_t, sender&& s, Receiver&& receiver)
             {
-                return {PIKA_MOVE(s.scheduler),
-                    PIKA_FORWARD(Receiver, receiver), s.fallback_annotation};
+                return {PIKA_MOVE(s.scheduler), PIKA_FORWARD(Receiver, receiver),
+                    s.fallback_annotation};
             }
 
             template <typename Receiver>
             friend operation_state<Scheduler, Receiver>
             tag_invoke(connect_t, sender const& s, Receiver&& receiver)
             {
-                return {s.scheduler, PIKA_FORWARD(Receiver, receiver),
-                    s.fallback_annotation};
+                return {s.scheduler, PIKA_FORWARD(Receiver, receiver), s.fallback_annotation};
             }
 
             struct env
             {
                 PIKA_NO_UNIQUE_ADDRESS std::decay_t<Scheduler> scheduler;
 
-                friend auto tag_invoke(
-                    pika::execution::experimental::get_completion_scheduler_t<
-                        pika::execution::experimental::set_value_t>,
+                friend auto tag_invoke(pika::execution::experimental::get_completion_scheduler_t<
+                                           pika::execution::experimental::set_value_t>,
                     env const& e) noexcept
                 {
                     return e.scheduler;
                 }
             };
 
-            friend env tag_invoke(
-                pika::execution::experimental::get_env_t, sender const& s)
+            friend env tag_invoke(pika::execution::experimental::get_env_t, sender const& s)
             {
                 return {s.scheduler};
             }
         };
 
-        friend sender<thread_pool_scheduler> tag_invoke(
-            schedule_t, thread_pool_scheduler&& sched)
+        friend sender<thread_pool_scheduler> tag_invoke(schedule_t, thread_pool_scheduler&& sched)
         {
             return {PIKA_MOVE(sched)};
         }
@@ -291,23 +267,21 @@ namespace pika::execution::experimental {
         // want to use implementation details of it.
 #if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
         template <typename Sender, PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender>)>
-        friend auto tag_invoke(schedule_from_t,
-            thread_pool_scheduler&& scheduler, Sender&& predecessor_sender)
+        friend auto
+        tag_invoke(schedule_from_t, thread_pool_scheduler&& scheduler, Sender&& predecessor_sender)
         {
-            return schedule_from_detail::schedule_from_sender<Sender,
-                thread_pool_scheduler>{PIKA_FORWARD(Sender, predecessor_sender),
-                with_annotation(
-                    PIKA_MOVE(scheduler), scheduler.get_fallback_annotation())};
+            return schedule_from_detail::schedule_from_sender<Sender, thread_pool_scheduler>{
+                PIKA_FORWARD(Sender, predecessor_sender),
+                with_annotation(PIKA_MOVE(scheduler), scheduler.get_fallback_annotation())};
         }
 
         template <typename Sender, PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender>)>
-        friend auto tag_invoke(schedule_from_t,
-            thread_pool_scheduler const& scheduler, Sender&& predecessor_sender)
+        friend auto tag_invoke(
+            schedule_from_t, thread_pool_scheduler const& scheduler, Sender&& predecessor_sender)
         {
-            return schedule_from_detail::schedule_from_sender<Sender,
-                thread_pool_scheduler>{PIKA_FORWARD(Sender, predecessor_sender),
-                with_annotation(
-                    scheduler, scheduler.get_fallback_annotation())};
+            return schedule_from_detail::schedule_from_sender<Sender, thread_pool_scheduler>{
+                PIKA_FORWARD(Sender, predecessor_sender),
+                with_annotation(scheduler, scheduler.get_fallback_annotation())};
         }
 #endif
         /// \endcond
@@ -323,14 +297,12 @@ namespace pika::execution::experimental {
             }
 
             // Next is the annotation from the current context scheduling work
-            pika::threads::detail::thread_id_type id =
-                pika::threads::detail::get_self_id();
+            pika::threads::detail::thread_id_type id = pika::threads::detail::get_self_id();
             if (id)
             {
                 pika::detail::thread_description desc =
                     pika::threads::detail::get_thread_description(id);
-                if (desc.kind() ==
-                    pika::detail::thread_description::data_type_description)
+                if (desc.kind() == pika::detail::thread_description::data_type_description)
                 {
                     return desc.get_description();
                 }
@@ -345,10 +317,8 @@ namespace pika::execution::experimental {
 
         pika::threads::detail::thread_pool_base* pool_ =
             pika::threads::detail::get_self_or_default_pool();
-        pika::execution::thread_priority priority_ =
-            pika::execution::thread_priority::normal;
-        pika::execution::thread_stacksize stacksize_ =
-            pika::execution::thread_stacksize::small_;
+        pika::execution::thread_priority priority_ = pika::execution::thread_priority::normal;
+        pika::execution::thread_stacksize stacksize_ = pika::execution::thread_stacksize::small_;
         pika::execution::thread_schedule_hint schedulehint_{};
         char const* annotation_ = nullptr;
         /// \endcond

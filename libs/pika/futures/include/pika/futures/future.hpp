@@ -111,8 +111,7 @@ namespace pika::lcos::detail {
     struct future_get_result
     {
         template <typename SharedState>
-        PIKA_FORCEINLINE static R*
-        call(SharedState const& state, error_code& ec = throws)
+        PIKA_FORCEINLINE static R* call(SharedState const& state, error_code& ec = throws)
         {
             return state->get_result(ec);
         }
@@ -140,8 +139,7 @@ namespace pika::lcos::detail {
     };
 
     template <typename ContResult>
-    using continuation_result_t =
-        typename continuation_result<ContResult>::type;
+    using continuation_result_t = typename continuation_result<ContResult>::type;
 
     template <typename ContResult>
     struct continuation_result<pika::future<ContResult>>
@@ -155,27 +153,20 @@ namespace pika::lcos::detail {
     make_continuation(Future const& future, Policy&& policy, F&& f);
 
     // create non-unwrapping continuations
-    template <typename ContResult, typename Future, typename Executor,
-        typename F>
+    template <typename ContResult, typename Future, typename Executor, typename F>
     inline traits::detail::shared_state_ptr_t<ContResult>
     make_continuation_exec(Future const& future, Executor&& exec, F&& f);
 
-    template <typename ContResult, typename Future, typename Executor,
-        typename Policy, typename F>
+    template <typename ContResult, typename Future, typename Executor, typename Policy, typename F>
     inline traits::detail::shared_state_ptr_t<ContResult>
-    make_continuation_exec_policy(
-        Future const& future, Executor&& exec, Policy&& policy, F&& f);
+    make_continuation_exec_policy(Future const& future, Executor&& exec, Policy&& policy, F&& f);
 
-    template <typename ContResult, typename Allocator, typename Future,
-        typename Policy, typename F>
+    template <typename ContResult, typename Allocator, typename Future, typename Policy, typename F>
     inline traits::detail::shared_state_ptr_t<continuation_result_t<ContResult>>
-    make_continuation_alloc(
-        Allocator const& a, Future const& future, Policy&& policy, F&& f);
+    make_continuation_alloc(Allocator const& a, Future const& future, Policy&& policy, F&& f);
 
-    template <typename ContResult, typename Allocator, typename Future,
-        typename Policy, typename F>
-    inline traits::detail::shared_state_ptr_t<ContResult>
-    make_continuation_alloc_nounwrap(
+    template <typename ContResult, typename Allocator, typename Future, typename Policy, typename F>
+    inline traits::detail::shared_state_ptr_t<ContResult> make_continuation_alloc_nounwrap(
         Allocator const& a, Future const& future, Policy&& policy, F&& f);
 
     ///////////////////////////////////////////////////////////////////////////
@@ -183,8 +174,7 @@ namespace pika::lcos::detail {
     struct future_then_dispatch
     {
         template <typename F>
-        PIKA_FORCEINLINE static decltype(auto)
-        call(Future&& /* fut */, F&& /* f */)
+        PIKA_FORCEINLINE static decltype(auto) call(Future&& /* fut */, F&& /* f */)
         {
             // dummy impl to fail compilation if this function is called
             static_assert(sizeof(Future) == 0, "Cannot use the \
@@ -193,8 +183,7 @@ namespace pika::lcos::detail {
         }
 
         template <typename T0, typename F>
-        PIKA_FORCEINLINE static decltype(auto)
-        call(Future&& /* fut */, T0&& /* t */, F&& /* f */)
+        PIKA_FORCEINLINE static decltype(auto) call(Future&& /* fut */, T0&& /* t */, F&& /* f */)
         {
             // dummy impl to fail compilation if this function is called
             static_assert(sizeof(Future) == 0, "Cannot use the \
@@ -203,8 +192,8 @@ namespace pika::lcos::detail {
         }
 
         template <typename Allocator, typename F>
-        PIKA_FORCEINLINE static decltype(auto) call_alloc(
-            Allocator const& /* alloc */, Future&& /* fut */, F&& /* f */)
+        PIKA_FORCEINLINE static decltype(auto)
+        call_alloc(Allocator const& /* alloc */, Future&& /* fut */, F&& /* f */)
         {
             // dummy impl to fail compilation if this function is called
             static_assert(sizeof(Future) == 0, "Cannot use the \
@@ -224,17 +213,14 @@ namespace pika::lcos::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Future>
-    inline traits::detail::shared_state_ptr_t<void>
-    downcast_to_void(Future& future, bool addref)
+    inline traits::detail::shared_state_ptr_t<void> downcast_to_void(Future& future, bool addref)
     {
         using shared_state_type = traits::detail::shared_state_ptr_t<void>;
         using element_type = typename shared_state_type::element_type;
 
         // same as static_pointer_cast, but with addref option
         return shared_state_type(
-            static_cast<element_type*>(
-                traits::detail::get_shared_state(future).get()),
-            addref);
+            static_cast<element_type*>(traits::detail::get_shared_state(future).get()), addref);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -260,8 +246,7 @@ namespace pika::lcos::detail {
         operation_state(operation_state const&) = delete;
         operation_state& operator=(operation_state const&) = delete;
 
-        friend void tag_invoke(pika::execution::experimental::start_t,
-            operation_state& os) noexcept
+        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
         {
             os.start_helper();
         }
@@ -275,8 +260,7 @@ namespace pika::lcos::detail {
 
                     if (!state)
                     {
-                        PIKA_THROW_EXCEPTION(pika::error::no_state,
-                            "operation_state::start",
+                        PIKA_THROW_EXCEPTION(pika::error::no_state, "operation_state::start",
                             "the future has no valid shared state");
                     }
 
@@ -288,8 +272,7 @@ namespace pika::lcos::detail {
                         {
                             if constexpr (std::is_void_v<result_type>)
                             {
-                                pika::execution::experimental::set_value(
-                                    PIKA_MOVE(receiver_));
+                                pika::execution::experimental::set_value(PIKA_MOVE(receiver_));
                             }
                             else
                             {
@@ -300,14 +283,12 @@ namespace pika::lcos::detail {
                         else if (future_.has_exception())
                         {
                             pika::execution::experimental::set_error(
-                                PIKA_MOVE(receiver_),
-                                future_.get_exception_ptr());
+                                PIKA_MOVE(receiver_), future_.get_exception_ptr());
                         }
                     });
                 },
                 [&](std::exception_ptr ep) {
-                    pika::execution::experimental::set_error(
-                        PIKA_MOVE(receiver_), PIKA_MOVE(ep));
+                    pika::execution::experimental::set_error(PIKA_MOVE(receiver_), PIKA_MOVE(ep));
                 });
         }
 
@@ -337,20 +318,17 @@ namespace pika::lcos::detail {
         using is_sender = void;
 
         using result_type = R;
-        using shared_state_type =
-            future_data_base<traits::detail::shared_state_ptr_result_t<R>>;
+        using shared_state_type = future_data_base<traits::detail::shared_state_ptr_result_t<R>>;
 
         // Sender compatibility
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-        using completion_signatures =
-            pika::execution::experimental::completion_signatures<
-                typename set_value_signature_helper<result_type>::type,
-                pika::execution::experimental::set_error_t(std::exception_ptr)>;
+        using completion_signatures = pika::execution::experimental::completion_signatures<
+            typename set_value_signature_helper<result_type>::type,
+            pika::execution::experimental::set_error_t(std::exception_ptr)>;
 #else
-        template <template <typename...> class Tuple,
-            template <typename...> class Variant>
-        using value_types = std::conditional_t<std::is_void_v<result_type>,
-            Variant<Tuple<>>, Variant<Tuple<result_type>>>;
+        template <template <typename...> class Tuple, template <typename...> class Variant>
+        using value_types = std::conditional_t<std::is_void_v<result_type>, Variant<Tuple<>>,
+            Variant<Tuple<result_type>>>;
 
         template <template <typename...> class Variant>
         using error_types = Variant<std::exception_ptr>;
@@ -360,8 +338,7 @@ namespace pika::lcos::detail {
 
     private:
         template <typename F>
-        struct future_then_dispatch
-          : lcos::detail::future_then_dispatch<Derived, F>
+        struct future_then_dispatch : lcos::detail::future_then_dispatch<Derived, F>
         {
         };
 
@@ -423,16 +400,14 @@ namespace pika::lcos::detail {
         {
             if (!shared_state_)
             {
-                PIKA_THROW_EXCEPTION(pika::error::no_state,
-                    "future_base<R>::get_exception_ptr",
+                PIKA_THROW_EXCEPTION(pika::error::no_state, "future_base<R>::get_exception_ptr",
                     "this future has no valid shared state");
             }
 
             using result_type = typename shared_state_type::result_type;
 
             error_code ec(throwmode::lightweight);
-            lcos::detail::future_get_result<result_type>::call(
-                this->shared_state_, ec);
+            lcos::detail::future_get_result<result_type>::call(this->shared_state_, ec);
             if (!ec)
             {
                 PIKA_ASSERT(!has_exception());
@@ -478,20 +453,17 @@ namespace pika::lcos::detail {
             -> decltype(future_then_dispatch<std::decay_t<F>>::call(
                 PIKA_MOVE(fut), PIKA_FORWARD(F, f)))
         {
-            using result_type =
-                decltype(future_then_dispatch<std::decay_t<F>>::call(
-                    PIKA_MOVE(fut), PIKA_FORWARD(F, f)));
+            using result_type = decltype(future_then_dispatch<std::decay_t<F>>::call(
+                PIKA_MOVE(fut), PIKA_FORWARD(F, f)));
 
             if (!fut.shared_state_)
             {
-                PIKA_THROWS_IF(ec, pika::error::no_state,
-                    "future_base<R>::then",
+                PIKA_THROWS_IF(ec, pika::error::no_state, "future_base<R>::then",
                     "this future has no valid shared state");
                 return result_type();
             }
 
-            return future_then_dispatch<std::decay_t<F>>::call(
-                PIKA_MOVE(fut), PIKA_FORWARD(F, f));
+            return future_then_dispatch<std::decay_t<F>>::call(PIKA_MOVE(fut), PIKA_FORWARD(F, f));
         }
 
         template <typename F, typename T0>
@@ -499,14 +471,12 @@ namespace pika::lcos::detail {
             -> decltype(future_then_dispatch<std::decay_t<T0>>::call(
                 PIKA_MOVE(fut), PIKA_FORWARD(T0, t0), PIKA_FORWARD(F, f)))
         {
-            using result_type =
-                decltype(future_then_dispatch<std::decay_t<T0>>::call(
-                    PIKA_MOVE(fut), PIKA_FORWARD(T0, t0), PIKA_FORWARD(F, f)));
+            using result_type = decltype(future_then_dispatch<std::decay_t<T0>>::call(
+                PIKA_MOVE(fut), PIKA_FORWARD(T0, t0), PIKA_FORWARD(F, f)));
 
             if (!fut.shared_state_)
             {
-                PIKA_THROWS_IF(ec, pika::error::no_state,
-                    "future_base<R>::then",
+                PIKA_THROWS_IF(ec, pika::error::no_state, "future_base<R>::then",
                     "this future has no valid shared state");
                 return result_type();
             }
@@ -516,19 +486,17 @@ namespace pika::lcos::detail {
         }
 
         template <typename Allocator, typename F>
-        static auto then_alloc(Allocator const& alloc, Derived&& fut, F&& f,
-            error_code& ec = throws)
+        static auto
+        then_alloc(Allocator const& alloc, Derived&& fut, F&& f, error_code& ec = throws)
             -> decltype(future_then_dispatch<std::decay_t<F>>::call_alloc(
                 alloc, PIKA_MOVE(fut), PIKA_FORWARD(F, f)))
         {
-            using result_type =
-                decltype(future_then_dispatch<std::decay_t<F>>::call_alloc(
-                    alloc, PIKA_MOVE(fut), PIKA_FORWARD(F, f)));
+            using result_type = decltype(future_then_dispatch<std::decay_t<F>>::call_alloc(
+                alloc, PIKA_MOVE(fut), PIKA_FORWARD(F, f)));
 
             if (!fut.shared_state_)
             {
-                PIKA_THROWS_IF(ec, pika::error::no_state,
-                    "future_base<R>::then_alloc",
+                PIKA_THROWS_IF(ec, pika::error::no_state, "future_base<R>::then_alloc",
                     "this future has no valid shared state");
                 return result_type();
             }
@@ -542,8 +510,7 @@ namespace pika::lcos::detail {
         {
             if (!shared_state_)
             {
-                PIKA_THROWS_IF(ec, pika::error::no_state,
-                    "future_base<R>::wait",
+                PIKA_THROWS_IF(ec, pika::error::no_state, "future_base<R>::wait",
                     "this future has no valid shared state");
                 return;
             }
@@ -562,13 +529,11 @@ namespace pika::lcos::detail {
         //     absolute timeout (30.2.4) specified by abs_time has expired.
         // Throws: timeout-related exceptions (30.2.4).
         pika::future_status wait_until(
-            pika::chrono::steady_time_point const& abs_time,
-            error_code& ec = throws) const
+            pika::chrono::steady_time_point const& abs_time, error_code& ec = throws) const
         {
             if (!shared_state_)
             {
-                PIKA_THROWS_IF(ec, pika::error::no_state,
-                    "future_base<R>::wait_until",
+                PIKA_THROWS_IF(ec, pika::error::no_state, "future_base<R>::wait_until",
                     "this future has no valid shared state");
                 return pika::future_status::uninitialized;
             }
@@ -587,8 +552,7 @@ namespace pika::lcos::detail {
         //     relative timeout (30.2.4) specified by rel_time has expired.
         // Throws: timeout-related exceptions (30.2.4).
         pika::future_status wait_for(
-            pika::chrono::steady_duration const& rel_time,
-            error_code& ec = throws) const
+            pika::chrono::steady_duration const& rel_time, error_code& ec = throws) const
         {
             return wait_until(rel_time.from_now(), ec);
         }
@@ -596,8 +560,7 @@ namespace pika::lcos::detail {
 #if defined(PIKA_HAVE_CXX20_COROUTINES)
         bool await_ready() const noexcept
         {
-            return lcos::detail::await_ready(
-                *static_cast<Derived const*>(this));
+            return lcos::detail::await_ready(*static_cast<Derived const*>(this));
         }
 
         template <typename Promise>
@@ -641,8 +604,7 @@ namespace pika {
 
         template <typename Receiver>
         friend lcos::detail::operation_state<Receiver, future>
-        tag_invoke(pika::execution::experimental::connect_t, future&& f,
-            Receiver&& receiver)
+        tag_invoke(pika::execution::experimental::connect_t, future&& f, Receiver&& receiver)
         {
             return {PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(f)};
         }
@@ -708,8 +670,7 @@ namespace pika {
         //     constructor invocation.
         //   - other.valid() == false.
         future(future<future>&& other) noexcept
-          : base_type(other.valid() ? lcos::detail::unwrap(PIKA_MOVE(other)) :
-                                      nullptr)
+          : base_type(other.valid() ? lcos::detail::unwrap(PIKA_MOVE(other)) : nullptr)
         {
         }
 
@@ -720,8 +681,7 @@ namespace pika {
         //     constructor invocation.
         //   - other.valid() == false.
         future(future<shared_future<R>>&& other) noexcept
-          : base_type(other.valid() ? lcos::detail::unwrap(PIKA_MOVE(other)) :
-                                      nullptr)
+          : base_type(other.valid() ? lcos::detail::unwrap(PIKA_MOVE(other)) : nullptr)
         {
         }
 
@@ -733,14 +693,10 @@ namespace pika {
         //   - other.valid() == false.
         template <typename T>
         future(future<T>&& other,
-            std::enable_if_t<std::is_void_v<R> && !traits::is_future_v<T>, T>* =
-                nullptr)
-          : base_type(other.valid() ?
-                    lcos::detail::downcast_to_void(other, false) :
-                    nullptr)
+            std::enable_if_t<std::is_void_v<R> && !traits::is_future_v<T>, T>* = nullptr)
+          : base_type(other.valid() ? lcos::detail::downcast_to_void(other, false) : nullptr)
         {
-            traits::future_access<future<T>>::detach_shared_state(
-                PIKA_MOVE(other));
+            traits::future_access<future<T>>::detach_shared_state(PIKA_MOVE(other));
         }
 
         // Effects:
@@ -787,15 +743,13 @@ namespace pika {
 
             using result_type = typename shared_state_type::result_type;
             result_type* result =
-                lcos::detail::future_get_result<result_type>::call(
-                    this->shared_state_);
+                lcos::detail::future_get_result<result_type>::call(this->shared_state_);
 
             // no error has been reported, return the result
             return lcos::detail::future_value<R>::get(PIKA_MOVE(*result));
         }
 
-        typename pika::traits::future_traits<future>::result_type get(
-            error_code& ec)
+        typename pika::traits::future_traits<future>::result_type get(error_code& ec)
         {
             if (!this->shared_state_)
             {
@@ -808,8 +762,7 @@ namespace pika {
 
             using result_type = typename shared_state_type::result_type;
             result_type* result =
-                lcos::detail::future_get_result<result_type>::call(
-                    this->shared_state_, ec);
+                lcos::detail::future_get_result<result_type>::call(this->shared_state_, ec);
             if (ec)
             {
                 return lcos::detail::future_value<R>::get_default();
@@ -836,8 +789,7 @@ namespace pika {
             // "error: cannot use an entity undefined in device code" without
             // specifying what entity it refers to.
             PIKA_ASSERT(false);
-            using future_type = decltype(base_type::then(
-                PIKA_MOVE(*this), PIKA_FORWARD(F, f), ec));
+            using future_type = decltype(base_type::then(PIKA_MOVE(*this), PIKA_FORWARD(F, f), ec));
             return future_type{};
 #else
             invalidate on_exit(*this);
@@ -850,13 +802,12 @@ namespace pika {
         {
 #if defined(PIKA_COMPUTE_DEVICE_CODE)
             PIKA_ASSERT(false);
-            using future_type = decltype(base_type::then(PIKA_MOVE(*this),
-                PIKA_FORWARD(T0, t0), PIKA_FORWARD(F, f), ec));
+            using future_type = decltype(base_type::then(
+                PIKA_MOVE(*this), PIKA_FORWARD(T0, t0), PIKA_FORWARD(F, f), ec));
             return future_type{};
 #else
             invalidate on_exit(*this);
-            return base_type::then(
-                PIKA_MOVE(*this), PIKA_FORWARD(T0, t0), PIKA_FORWARD(F, f), ec);
+            return base_type::then(PIKA_MOVE(*this), PIKA_FORWARD(T0, t0), PIKA_FORWARD(F, f), ec);
 #endif
         }
 
@@ -871,13 +822,12 @@ namespace pika {
         {
 #if defined(PIKA_COMPUTE_DEVICE_CODE)
             PIKA_ASSERT(false);
-            using future_type = decltype(base_type::then_alloc(
-                alloc, std::move(*this), std::forward<F>(f), ec));
+            using future_type =
+                decltype(base_type::then_alloc(alloc, std::move(*this), std::forward<F>(f), ec));
             return future_type{};
 #else
             invalidate on_exit(*this);
-            return base_type::then_alloc(
-                alloc, PIKA_MOVE(*this), PIKA_FORWARD(F, f), ec);
+            return base_type::then_alloc(alloc, PIKA_MOVE(*this), PIKA_FORWARD(F, f), ec);
 #endif
         }
 
@@ -902,9 +852,8 @@ namespace pika {
         }
         else
         {
-            return f.then(pika::launch::sync, [](pika::future<U>&& f) -> R {
-                return detail::void_guard<R>(), f.get();
-            });
+            return f.then(pika::launch::sync,
+                [](pika::future<U>&& f) -> R { return detail::void_guard<R>(), f.get(); });
         }
     }
 
@@ -919,8 +868,8 @@ namespace pika {
         }
         else
         {
-            return f.then(pika::launch::sync,
-                [conv = PIKA_FORWARD(Conv, conv)](pika::future<U>&& f) -> R {
+            return f.then(
+                pika::launch::sync, [conv = PIKA_FORWARD(Conv, conv)](pika::future<U>&& f) -> R {
                     return PIKA_INVOKE(conv, f.get());
                 });
         }
@@ -950,16 +899,14 @@ namespace pika {
 
         template <typename Receiver>
         friend lcos::detail::operation_state<Receiver, shared_future>
-        tag_invoke(pika::execution::experimental::connect_t, shared_future&& f,
-            Receiver&& receiver)
+        tag_invoke(pika::execution::experimental::connect_t, shared_future&& f, Receiver&& receiver)
         {
             return {PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(f)};
         }
 
         template <typename Receiver>
         friend lcos::detail::operation_state<Receiver, shared_future>
-        tag_invoke(pika::execution::experimental::connect_t, shared_future& f,
-            Receiver&& receiver)
+        tag_invoke(pika::execution::experimental::connect_t, shared_future& f, Receiver&& receiver)
         {
             return {PIKA_FORWARD(Receiver, receiver), f};
         }
@@ -972,8 +919,7 @@ namespace pika {
         friend struct pika::traits::detail::future_access_customization_point;
 
         // Effects: constructs a future object from an shared state
-        explicit shared_future(
-            pika::intrusive_ptr<shared_state_type> const& state)
+        explicit shared_future(pika::intrusive_ptr<shared_state_type> const& state)
           : base_type(state)
         {
         }
@@ -1021,8 +967,7 @@ namespace pika {
         //     constructor invocation.
         //   - other.valid() == false.
         shared_future(future<shared_future>&& other) noexcept
-          : base_type(
-                other.valid() ? lcos::detail::unwrap(other.share()) : nullptr)
+          : base_type(other.valid() ? lcos::detail::unwrap(other.share()) : nullptr)
         {
         }
 
@@ -1033,11 +978,8 @@ namespace pika {
         //     constructor invocation.
         template <typename T>
         shared_future(shared_future<T> const& other,
-            std::enable_if_t<std::is_void_v<R> && !traits::is_future_v<T>, T>* =
-                nullptr)
-          : base_type(other.valid() ?
-                    lcos::detail::downcast_to_void(other, true) :
-                    nullptr)
+            std::enable_if_t<std::is_void_v<R> && !traits::is_future_v<T>, T>* = nullptr)
+          : base_type(other.valid() ? lcos::detail::downcast_to_void(other, true) : nullptr)
         {
         }
 
@@ -1074,20 +1016,17 @@ namespace pika {
         // Throws: the stored exception, if an exception was stored in the
         //         shared state.
         // Postcondition: valid() == false.
-        typename pika::traits::future_traits<shared_future>::result_type
-        get() const    //-V659
+        typename pika::traits::future_traits<shared_future>::result_type get() const    //-V659
         {
             if (!this->shared_state_)
             {
-                PIKA_THROW_EXCEPTION(pika::error::no_state,
-                    "shared_future<R>::get",
+                PIKA_THROW_EXCEPTION(pika::error::no_state, "shared_future<R>::get",
                     "this future has no valid shared state");
             }
 
             using result_type = typename shared_state_type::result_type;
             result_type* result =
-                lcos::detail::future_get_result<result_type>::call(
-                    this->shared_state_);
+                lcos::detail::future_get_result<result_type>::call(this->shared_state_);
 
             // no error has been reported, return the result
             return lcos::detail::future_value<R>::get(*result);
@@ -1099,21 +1038,17 @@ namespace pika {
             using result_type = typename shared_state_type::result_type;
             if (!this->shared_state_)
             {
-                PIKA_THROWS_IF(ec, pika::error::no_state,
-                    "shared_future<R>::get",
+                PIKA_THROWS_IF(ec, pika::error::no_state, "shared_future<R>::get",
                     "this future has no valid shared state");
-                static result_type res(
-                    lcos::detail::future_value<R>::get_default());
+                static result_type res(lcos::detail::future_value<R>::get_default());
                 return res;
             }
 
             result_type* result =
-                lcos::detail::future_get_result<result_type>::call(
-                    this->shared_state_, ec);
+                lcos::detail::future_get_result<result_type>::call(this->shared_state_, ec);
             if (ec)
             {
-                static result_type res(
-                    lcos::detail::future_value<R>::get_default());
+                static result_type res(lcos::detail::future_value<R>::get_default());
                 return res;
             }
 
@@ -1133,12 +1068,11 @@ namespace pika {
         {
 #if defined(PIKA_COMPUTE_DEVICE_CODE)
             PIKA_ASSERT(false);
-            using future_type = decltype(base_type::then(
-                shared_future(*this), PIKA_FORWARD(F, f), ec));
+            using future_type =
+                decltype(base_type::then(shared_future(*this), PIKA_FORWARD(F, f), ec));
             return future_type{};
 #else
-            return base_type::then(
-                shared_future(*this), PIKA_FORWARD(F, f), ec);
+            return base_type::then(shared_future(*this), PIKA_FORWARD(F, f), ec);
 #endif
         }
 
@@ -1147,12 +1081,12 @@ namespace pika {
         {
 #if defined(PIKA_COMPUTE_DEVICE_CODE)
             PIKA_ASSERT(false);
-            using future_type = decltype(base_type::then(shared_future(*this),
-                PIKA_FORWARD(T0, t0), PIKA_FORWARD(F, f), ec));
+            using future_type = decltype(base_type::then(
+                shared_future(*this), PIKA_FORWARD(T0, t0), PIKA_FORWARD(F, f), ec));
             return future_type{};
 #else
-            return base_type::then(shared_future(*this), PIKA_FORWARD(T0, t0),
-                PIKA_FORWARD(F, f), ec);
+            return base_type::then(
+                shared_future(*this), PIKA_FORWARD(T0, t0), PIKA_FORWARD(F, f), ec);
 #endif
         }
 
@@ -1171,8 +1105,7 @@ namespace pika {
                 alloc, shared_future(*this), PIKA_FORWARD(F, f), ec));
             return future_type{};
 #else
-            return base_type::then_alloc(
-                alloc, shared_future(*this), PIKA_FORWARD(F, f), ec);
+            return base_type::then_alloc(alloc, shared_future(*this), PIKA_FORWARD(F, f), ec);
 #endif
         }
 
@@ -1191,17 +1124,14 @@ namespace pika {
             "the argument type must be implicitly convertible to the requested "
             "result type");
 
-        if constexpr (std::is_convertible_v<pika::shared_future<U>,
-                          pika::future<R>>)
+        if constexpr (std::is_convertible_v<pika::shared_future<U>, pika::future<R>>)
         {
             return pika::future<R>(PIKA_MOVE(f));
         }
         else
         {
-            return f.then(
-                pika::launch::sync, [](pika::shared_future<U>&& f) -> R {
-                    return detail::void_guard<R>(), f.get();
-                });
+            return f.then(pika::launch::sync,
+                [](pika::shared_future<U>&& f) -> R { return detail::void_guard<R>(), f.get(); });
         }
         // This silences a bogus warning from nvcc about no return from a
         // non-void function.
@@ -1219,8 +1149,7 @@ namespace pika {
             "the argument type must be convertible to the requested "
             "result type by using the supplied conversion function");
 
-        if constexpr (std::is_convertible_v<pika::shared_future<U>,
-                          pika::future<R>>)
+        if constexpr (std::is_convertible_v<pika::shared_future<U>, pika::future<R>>)
         {
             return pika::future<R>(PIKA_MOVE(f));
         }
@@ -1228,9 +1157,7 @@ namespace pika {
         {
             return f.then(pika::launch::sync,
                 [conv = PIKA_FORWARD(Conv, conv)](
-                    pika::shared_future<U> const& f) -> R {
-                    return PIKA_INVOKE(conv, f.get());
-                });
+                    pika::shared_future<U> const& f) -> R { return PIKA_INVOKE(conv, f.get()); });
         }
     }
 
@@ -1244,22 +1171,19 @@ namespace pika {
     }
 
     template <typename R>
-    pika::shared_future<R>&
-    make_shared_future(pika::shared_future<R>& f) noexcept
+    pika::shared_future<R>& make_shared_future(pika::shared_future<R>& f) noexcept
     {
         return f;
     }
 
     template <typename R>
-    pika::shared_future<R>&&
-    make_shared_future(pika::shared_future<R>&& f) noexcept
+    pika::shared_future<R>&& make_shared_future(pika::shared_future<R>&& f) noexcept
     {
         return PIKA_MOVE(f);
     }
 
     template <typename R>
-    pika::shared_future<R> const&
-    make_shared_future(pika::shared_future<R> const& f) noexcept
+    pika::shared_future<R> const& make_shared_future(pika::shared_future<R> const& f) noexcept
     {
         return f;
     }
@@ -1270,41 +1194,40 @@ namespace pika {
     ///////////////////////////////////////////////////////////////////////////
     // Extension (see wg21.link/P0319), with allocator
     template <typename T, typename Allocator, typename... Ts>
-    std::enable_if_t<std::is_constructible_v<T, Ts&&...> || std::is_void_v<T>,
-        future<T>>
+    std::enable_if_t<std::is_constructible_v<T, Ts&&...> || std::is_void_v<T>, future<T>>
     make_ready_future_alloc(Allocator const& a, Ts&&... ts)
     {
         using result_type = T;
 
         using base_allocator = Allocator;
-        using shared_state = traits::shared_state_allocator_t<
-            lcos::detail::future_data<result_type>, base_allocator>;
+        using shared_state =
+            traits::shared_state_allocator_t<lcos::detail::future_data<result_type>,
+                base_allocator>;
 
-        using other_allocator = typename std::allocator_traits<
-            base_allocator>::template rebind_alloc<shared_state>;
+        using other_allocator =
+            typename std::allocator_traits<base_allocator>::template rebind_alloc<shared_state>;
         using traits = std::allocator_traits<other_allocator>;
 
         using init_no_addref = typename shared_state::init_no_addref;
 
-        using unique_ptr = std::unique_ptr<shared_state,
-            pika::detail::allocator_deleter<other_allocator>>;
+        using unique_ptr =
+            std::unique_ptr<shared_state, pika::detail::allocator_deleter<other_allocator>>;
 
         using lcos::detail::in_place;
         other_allocator alloc(a);
-        unique_ptr p(traits::allocate(alloc, 1),
-            pika::detail::allocator_deleter<other_allocator>{alloc});
-        traits::construct(alloc, p.get(), init_no_addref{}, in_place{}, alloc,
-            PIKA_FORWARD(Ts, ts)...);
+        unique_ptr p(
+            traits::allocate(alloc, 1), pika::detail::allocator_deleter<other_allocator>{alloc});
+        traits::construct(
+            alloc, p.get(), init_no_addref{}, in_place{}, alloc, PIKA_FORWARD(Ts, ts)...);
 
-        return pika::traits::future_access<future<result_type>>::create(
-            p.release(), false);
+        return pika::traits::future_access<future<result_type>>::create(p.release(), false);
     }
 
     // Extension (see wg21.link/P0319)
     template <typename T, typename... Ts>
-    PIKA_FORCEINLINE std::enable_if_t<
-        std::is_constructible_v<T, Ts&&...> || std::is_void_v<T>, future<T>>
-    make_ready_future(Ts&&... ts)
+    PIKA_FORCEINLINE
+        std::enable_if_t<std::is_constructible_v<T, Ts&&...> || std::is_void_v<T>, future<T>>
+        make_ready_future(Ts&&... ts)
     {
         return make_ready_future_alloc<T>(
             pika::detail::internal_allocator<>{}, PIKA_FORWARD(Ts, ts)...);
@@ -1312,8 +1235,7 @@ namespace pika {
     ///////////////////////////////////////////////////////////////////////////
     // extension: create a pre-initialized future object, with allocator
     template <int DeductionGuard = 0, typename Allocator, typename T>
-    future<pika::detail::decay_unwrap_t<T>>
-    make_ready_future_alloc(Allocator const& a, T&& init)
+    future<pika::detail::decay_unwrap_t<T>> make_ready_future_alloc(Allocator const& a, T&& init)
     {
         return pika::make_ready_future_alloc<pika::detail::decay_unwrap_t<T>>(
             a, PIKA_FORWARD(T, init));
@@ -1321,8 +1243,7 @@ namespace pika {
 
     // extension: create a pre-initialized future object
     template <int DeductionGuard = 0, typename T>
-    PIKA_FORCEINLINE future<pika::detail::decay_unwrap_t<T>>
-    make_ready_future(T&& init)
+    PIKA_FORCEINLINE future<pika::detail::decay_unwrap_t<T>> make_ready_future(T&& init)
     {
         return pika::make_ready_future_alloc<pika::detail::decay_unwrap_t<T>>(
             pika::detail::internal_allocator<>{}, PIKA_FORWARD(T, init));
@@ -1337,8 +1258,7 @@ namespace pika {
         using shared_state = lcos::detail::future_data<T>;
         using init_no_addref = typename shared_state::init_no_addref;
 
-        pika::intrusive_ptr<shared_state> p(
-            new shared_state(init_no_addref{}, e), false);
+        pika::intrusive_ptr<shared_state> p(new shared_state(init_no_addref{}, e), false);
 
         return pika::traits::future_access<future<T>>::create(PIKA_MOVE(p));
     }
@@ -1362,8 +1282,8 @@ namespace pika {
     // extension: create a pre-initialized future object which gets ready at
     // a given point in time
     template <int DeductionGuard = 0, typename T>
-    future<pika::detail::decay_unwrap_t<T>> make_ready_future_at(
-        pika::chrono::steady_time_point const& abs_time, T&& init)
+    future<pika::detail::decay_unwrap_t<T>>
+    make_ready_future_at(pika::chrono::steady_time_point const& abs_time, T&& init)
     {
         using result_type = pika::detail::decay_unwrap_t<T>;
         using shared_state = lcos::detail::timed_future_data<result_type>;
@@ -1371,16 +1291,14 @@ namespace pika {
         pika::intrusive_ptr<shared_state> p(
             new shared_state(abs_time.value(), PIKA_FORWARD(T, init)));
 
-        return pika::traits::future_access<future<result_type>>::create(
-            PIKA_MOVE(p));
+        return pika::traits::future_access<future<result_type>>::create(PIKA_MOVE(p));
     }
 
     template <int DeductionGuard = 0, typename T>
-    future<pika::detail::decay_unwrap_t<T>> make_ready_future_after(
-        pika::chrono::steady_duration const& rel_time, T&& init)
+    future<pika::detail::decay_unwrap_t<T>>
+    make_ready_future_after(pika::chrono::steady_duration const& rel_time, T&& init)
     {
-        return pika::make_ready_future_at(
-            rel_time.from_now(), PIKA_FORWARD(T, init));
+        return pika::make_ready_future_at(rel_time.from_now(), PIKA_FORWARD(T, init));
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -1400,16 +1318,14 @@ namespace pika {
 
     // Extension (see wg21.link/P0319)
     template <typename T>
-    PIKA_FORCEINLINE std::enable_if_t<std::is_void_v<T>, future<void>>
-    make_ready_future()
+    PIKA_FORCEINLINE std::enable_if_t<std::is_void_v<T>, future<void>> make_ready_future()
     {
         return pika::make_ready_future();
     }
 
     // extension: create a pre-initialized future object which gets ready at
     // a given point in time
-    inline future<void> make_ready_future_at(
-        pika::chrono::steady_time_point const& abs_time)
+    inline future<void> make_ready_future_at(pika::chrono::steady_time_point const& abs_time)
     {
         using shared_state = lcos::detail::timed_future_data<void>;
 
@@ -1425,8 +1341,7 @@ namespace pika {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    inline future<void> make_ready_future_after(
-        pika::chrono::steady_duration const& rel_time)
+    inline future<void> make_ready_future_after(pika::chrono::steady_duration const& rel_time)
     {
         return pika::make_ready_future_at(rel_time.from_now());
     }
@@ -1441,5 +1356,5 @@ namespace pika {
 
 #include <pika/futures/packaged_continuation.hpp>
 
-#define PIKA_MAKE_EXCEPTIONAL_FUTURE(T, errorcode, f, msg)                     \
-    pika::make_exceptional_future<T>(PIKA_GET_EXCEPTION(errorcode, f, msg)) /**/
+#define PIKA_MAKE_EXCEPTIONAL_FUTURE(T, errorcode, f, msg)                                         \
+ pika::make_exceptional_future<T>(PIKA_GET_EXCEPTION(errorcode, f, msg)) /**/

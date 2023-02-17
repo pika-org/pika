@@ -42,23 +42,19 @@ namespace pika::cuda::experimental {
         PIKA_EXPORT cuda_stream const& get_next_stream();
 
         /// \cond NOINTERNAL
-        friend bool operator==(
-            cuda_scheduler const& lhs, cuda_scheduler const& rhs)
+        friend bool operator==(cuda_scheduler const& lhs, cuda_scheduler const& rhs)
         {
             return lhs.pool == rhs.pool;
         }
 
-        friend bool operator!=(
-            cuda_scheduler const& lhs, cuda_scheduler const& rhs)
+        friend bool operator!=(cuda_scheduler const& lhs, cuda_scheduler const& rhs)
         {
             return !(lhs == rhs);
         }
         /// \endcond
 
-        friend cuda_scheduler tag_invoke(
-            pika::execution::experimental::with_priority_t,
-            cuda_scheduler const& scheduler,
-            pika::execution::thread_priority priority)
+        friend cuda_scheduler tag_invoke(pika::execution::experimental::with_priority_t,
+            cuda_scheduler const& scheduler, pika::execution::thread_priority priority)
         {
             auto sched_with_priority = scheduler;
             sched_with_priority.priority = priority;
@@ -66,8 +62,7 @@ namespace pika::cuda::experimental {
         }
 
         friend pika::execution::thread_priority tag_invoke(
-            pika::execution::experimental::get_priority_t,
-            cuda_scheduler const& scheduler)
+            pika::execution::experimental::get_priority_t, cuda_scheduler const& scheduler)
         {
             return scheduler.priority;
         }
@@ -97,33 +92,28 @@ namespace pika::cuda::experimental {
                 operation_state& operator=(operation_state&&) = delete;
                 operation_state& operator=(operation_state const&) = delete;
 
-                friend void tag_invoke(pika::execution::experimental::start_t,
-                    operation_state& os) noexcept
+                friend void tag_invoke(
+                    pika::execution::experimental::start_t, operation_state& os) noexcept
                 {
                     // This currently only acts as an inline scheduler to signal
                     // downstream senders that they should use the
                     // cuda_scheduler.
-                    pika::execution::experimental::set_value(
-                        PIKA_MOVE(os.receiver));
+                    pika::execution::experimental::set_value(PIKA_MOVE(os.receiver));
                 }
             };
 
         public:
-            PIKA_EXPORT explicit cuda_scheduler_sender(
-                cuda_scheduler scheduler);
+            PIKA_EXPORT explicit cuda_scheduler_sender(cuda_scheduler scheduler);
             cuda_scheduler_sender(cuda_scheduler_sender&&) = default;
             cuda_scheduler_sender& operator=(cuda_scheduler_sender&&) = default;
             cuda_scheduler_sender(cuda_scheduler_sender const&) = delete;
-            cuda_scheduler_sender& operator=(
-                cuda_scheduler_sender const&) = delete;
+            cuda_scheduler_sender& operator=(cuda_scheduler_sender const&) = delete;
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-            using completion_signatures =
-                pika::execution::experimental::completion_signatures<
-                    pika::execution::experimental::set_value_t()>;
+            using completion_signatures = pika::execution::experimental::completion_signatures<
+                pika::execution::experimental::set_value_t()>;
 #else
-            template <template <typename...> class Tuple,
-                template <typename...> class Variant>
+            template <template <typename...> class Tuple, template <typename...> class Variant>
             using value_types = Variant<Tuple<>>;
 
             template <template <typename...> class Variant>
@@ -133,17 +123,14 @@ namespace pika::cuda::experimental {
 #endif
 
             template <typename Receiver>
-            friend operation_state<Receiver>
-            tag_invoke(pika::execution::experimental::connect_t,
+            friend operation_state<Receiver> tag_invoke(pika::execution::experimental::connect_t,
                 cuda_scheduler_sender&& s, Receiver&& receiver)
             {
-                return {
-                    PIKA_MOVE(s.scheduler), PIKA_FORWARD(Receiver, receiver)};
+                return {PIKA_MOVE(s.scheduler), PIKA_FORWARD(Receiver, receiver)};
             }
 
             template <typename Receiver>
-            friend operation_state<Receiver>
-            tag_invoke(pika::execution::experimental::connect_t,
+            friend operation_state<Receiver> tag_invoke(pika::execution::experimental::connect_t,
                 cuda_scheduler_sender const& s, Receiver&& receiver)
             {
                 return {s.scheduler, PIKA_FORWARD(Receiver, receiver)};
@@ -162,8 +149,8 @@ namespace pika::cuda::experimental {
                 }
             };
 
-            friend env tag_invoke(pika::execution::experimental::get_env_t,
-                cuda_scheduler_sender const& s)
+            friend env tag_invoke(
+                pika::execution::experimental::get_env_t, cuda_scheduler_sender const& s)
             {
                 return {s.scheduler};
             }
@@ -171,8 +158,8 @@ namespace pika::cuda::experimental {
     }    // namespace detail
 
     /// Schedule subsequent work for execution on a CUDA device.
-    inline auto tag_invoke(pika::execution::experimental::schedule_t,
-        cuda_scheduler scheduler) noexcept
+    inline auto tag_invoke(
+        pika::execution::experimental::schedule_t, cuda_scheduler scheduler) noexcept
     {
         return detail::cuda_scheduler_sender{PIKA_MOVE(scheduler)};
     }

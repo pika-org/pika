@@ -46,8 +46,8 @@ namespace pika::execution::experimental {
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
             template <typename Receiver_,
-                typename = std::enable_if_t<std::is_same_v<
-                    std::decay_t<Receiver_>, std::decay_t<Receiver>>>>
+                typename = std::enable_if_t<
+                    std::is_same_v<std::decay_t<Receiver_>, std::decay_t<Receiver>>>>
             operation_state(Receiver_&& receiver)
               : receiver(PIKA_FORWARD(Receiver_, receiver))
             {
@@ -62,8 +62,7 @@ namespace pika::execution::experimental {
                 pika::detail::try_catch_exception_ptr(
                     [&]() {
                         std::thread t{[&os]() mutable {
-                            pika::execution::experimental::set_value(
-                                PIKA_MOVE(os.receiver));
+                            pika::execution::experimental::set_value(PIKA_MOVE(os.receiver));
                         }};
                         t.detach();
                     },
@@ -78,8 +77,7 @@ namespace pika::execution::experimental {
         {
             using is_sender = void;
 
-            template <template <typename...> class Tuple,
-                template <typename...> class Variant>
+            template <template <typename...> class Tuple, template <typename...> class Variant>
             using value_types = Variant<Tuple<>>;
 
             template <template <typename...> class Variant>
@@ -87,11 +85,9 @@ namespace pika::execution::experimental {
 
             static constexpr bool sends_done = false;
 
-            using completion_signatures =
-                pika::execution::experimental::completion_signatures<
-                    pika::execution::experimental::set_value_t(),
-                    pika::execution::experimental::set_error_t(
-                        std::exception_ptr)>;
+            using completion_signatures = pika::execution::experimental::completion_signatures<
+                pika::execution::experimental::set_value_t(),
+                pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
             template <typename Receiver>
             friend operation_state<Receiver>
@@ -111,8 +107,7 @@ namespace pika::execution::experimental {
                 }
             };
 
-            friend constexpr env tag_invoke(
-                pika::execution::experimental::get_env_t, sender const&)
+            friend constexpr env tag_invoke(pika::execution::experimental::get_env_t, sender const&)
             {
                 return {};
             }

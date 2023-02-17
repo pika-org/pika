@@ -9,7 +9,7 @@
 
 #include <pika/config.hpp>
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <pika/execution_base/p2300_forward.hpp>
+# include <pika/execution_base/p2300_forward.hpp>
 
 namespace pika::execution::experimental {
     template <typename Receiver>
@@ -31,16 +31,16 @@ namespace pika::execution::experimental {
     };
 }    // namespace pika::execution::experimental
 #else
-#include <pika/config/constexpr.hpp>
-#include <pika/functional/tag_invoke.hpp>
+# include <pika/config/constexpr.hpp>
+# include <pika/functional/tag_invoke.hpp>
 
-#include <exception>
-#include <type_traits>
-#include <utility>
+# include <exception>
+# include <type_traits>
+# include <utility>
 
 namespace pika::execution::experimental {
 
-#if defined(DOXYGEN)
+# if defined(DOXYGEN)
     /// set_value is a customization point object. The expression
     /// `pika::execution::set_value(r, as...)` is equivalent to:
     ///     * `r.set_value(as...)`, if that expression is valid. If the function selected
@@ -82,7 +82,7 @@ namespace pika::execution::experimental {
     /// The customization is implemented in terms of `pika::functional::detail::tag_invoke`.
     template <typename R, typename E>
     void set_error(R&& r, E&& e);
-#endif
+# endif
 
     /// Receiving values from asynchronous computations is handled by the `Receiver`
     /// concept. A `Receiver` needs to be able to receive an error or be marked as
@@ -160,8 +160,7 @@ namespace pika::execution::experimental {
 
     template <typename T, typename E>
     struct is_receiver
-      : detail::is_receiver_impl<
-            std::is_move_constructible<std::decay_t<T>>::value &&
+      : detail::is_receiver_impl<std::is_move_constructible<std::decay_t<T>>::value &&
                 std::is_constructible<std::decay_t<T>, T>::value,
             T, E>
     {
@@ -182,15 +181,13 @@ namespace pika::execution::experimental {
 
         template <typename T, typename... As>
         struct is_receiver_of_impl<true, T, As...>
-          : std::integral_constant<bool,
-                std::is_invocable_v<set_value_t, std::decay_t<T>&&, As...>>
+          : std::integral_constant<bool, std::is_invocable_v<set_value_t, std::decay_t<T>&&, As...>>
         {
         };
     }    // namespace detail
 
     template <typename T, typename... As>
-    struct is_receiver_of
-      : detail::is_receiver_of_impl<is_receiver_v<T>, T, As...>
+    struct is_receiver_of : detail::is_receiver_of_impl<is_receiver_v<T>, T, As...>
     {
     };
 

@@ -21,8 +21,7 @@ static std::size_t tag_invoke_schedule_calls = 0;
 template <typename Scheduler>
 struct sender
 {
-    template <template <class...> class Tuple,
-        template <class...> class Variant>
+    template <template <class...> class Tuple, template <class...> class Variant>
     using value_types = Variant<Tuple<>>;
 
     template <template <class...> class Variant>
@@ -30,13 +29,12 @@ struct sender
 
     static constexpr bool sends_done = false;
 
-    using completion_signatures = ex::completion_signatures<ex::set_value_t(),
-        ex::set_error_t(std::exception_ptr)>;
+    using completion_signatures =
+        ex::completion_signatures<ex::set_value_t(), ex::set_error_t(std::exception_ptr)>;
 
     struct operation_state
     {
-        friend operation_state tag_invoke(
-            ex::start_t, operation_state&) noexcept
+        friend operation_state tag_invoke(ex::start_t, operation_state&) noexcept
         {
             return {};
         }
@@ -51,8 +49,7 @@ struct sender
     struct env
     {
         friend Scheduler tag_invoke(
-            ex::get_completion_scheduler_t<ex::set_value_t>,
-            env const&) noexcept
+            ex::get_completion_scheduler_t<ex::set_value_t>, env const&) noexcept
         {
             return {};
         }
@@ -121,16 +118,11 @@ sender<scheduler_2> tag_invoke(ex::schedule_t, scheduler_2)
 
 int main()
 {
-    static_assert(!ex::is_scheduler_v<non_scheduler_1>,
-        "non_scheduler_1 is not a scheduler");
-    static_assert(!ex::is_scheduler_v<non_scheduler_2>,
-        "non_scheduler_2 is not a scheduler");
-    static_assert(!ex::is_scheduler_v<non_scheduler_3>,
-        "non_scheduler_3 is not a scheduler");
-    static_assert(
-        ex::is_scheduler_v<scheduler_1>, "scheduler_1 is a scheduler");
-    static_assert(
-        ex::is_scheduler_v<scheduler_2>, "scheduler_2 is a scheduler");
+    static_assert(!ex::is_scheduler_v<non_scheduler_1>, "non_scheduler_1 is not a scheduler");
+    static_assert(!ex::is_scheduler_v<non_scheduler_2>, "non_scheduler_2 is not a scheduler");
+    static_assert(!ex::is_scheduler_v<non_scheduler_3>, "non_scheduler_3 is not a scheduler");
+    static_assert(ex::is_scheduler_v<scheduler_1>, "scheduler_1 is a scheduler");
+    static_assert(ex::is_scheduler_v<scheduler_2>, "scheduler_2 is a scheduler");
 
     scheduler_1 s1;
     auto snd1 = ex::schedule(s1);

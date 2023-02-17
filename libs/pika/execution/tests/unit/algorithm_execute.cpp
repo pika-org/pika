@@ -17,8 +17,7 @@ static std::size_t tag_invoke_execute_calls = 0;
 template <typename Scheduler>
 struct sender
 {
-    template <template <class...> class Tuple,
-        template <class...> class Variant>
+    template <template <class...> class Tuple, template <class...> class Variant>
     using value_types = Variant<Tuple<>>;
 
     template <template <class...> class Variant>
@@ -26,14 +25,13 @@ struct sender
 
     static constexpr bool sends_done = false;
 
-    using completion_signatures =
-        pika::execution::experimental::completion_signatures<
-            pika::execution::experimental::set_value_t()>;
+    using completion_signatures = pika::execution::experimental::completion_signatures<
+        pika::execution::experimental::set_value_t()>;
 
     struct operation_state
     {
-        friend void tag_invoke(pika::execution::experimental::start_t,
-            operation_state&) noexcept {};
+        friend void tag_invoke(
+            pika::execution::experimental::start_t, operation_state&) noexcept {};
     };
 
     template <typename R>
@@ -45,17 +43,15 @@ struct sender
 
     struct env
     {
-        friend Scheduler tag_invoke(
-            pika::execution::experimental::get_completion_scheduler_t<
-                pika::execution::experimental::set_value_t>,
+        friend Scheduler tag_invoke(pika::execution::experimental::get_completion_scheduler_t<
+                                        pika::execution::experimental::set_value_t>,
             env const&) noexcept
         {
             return {};
         }
     };
 
-    friend env tag_invoke(
-        pika::execution::experimental::get_env_t, sender const&) noexcept
+    friend env tag_invoke(pika::execution::experimental::get_env_t, sender const&) noexcept
     {
         return {};
     }
@@ -63,8 +59,7 @@ struct sender
 
 struct scheduler_1
 {
-    friend sender<scheduler_1> tag_invoke(
-        pika::execution::experimental::schedule_t, scheduler_1)
+    friend sender<scheduler_1> tag_invoke(pika::execution::experimental::schedule_t, scheduler_1)
     {
         ++friend_tag_invoke_schedule_calls;
         return {};
@@ -83,8 +78,7 @@ struct scheduler_1
 
 struct scheduler_2
 {
-    friend sender<scheduler_2> tag_invoke(
-        pika::execution::experimental::schedule_t, scheduler_2)
+    friend sender<scheduler_2> tag_invoke(pika::execution::experimental::schedule_t, scheduler_2)
     {
         PIKA_TEST(false);
         return {};
