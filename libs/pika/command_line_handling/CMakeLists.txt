@@ -10,12 +10,13 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(command_line_handling_headers
     pika/command_line_handling/command_line_handling.hpp
+    pika/command_line_handling/get_env_var.hpp
     pika/command_line_handling/late_command_line_handling.hpp
     pika/command_line_handling/parse_command_line.hpp
 )
 
 set(command_line_handling_sources
-    command_line_handling.cpp late_command_line_handling.cpp
+    command_line_handling.cpp get_env_var.cpp late_command_line_handling.cpp
     parse_command_line.cpp
 )
 
