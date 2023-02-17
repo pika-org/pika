@@ -353,8 +353,13 @@ namespace pika::execution::experimental {
         struct sender;
 
         using shared_state_type = detail::async_rw_mutex_shared_state<void>;
-        using shared_state_ptr_type = std::shared_ptr<shared_state_type>;
         using shared_state_weak_ptr_type = std::weak_ptr<shared_state_type>;
+
+        // nvc++ is not able to see this typedef unless it's public
+#if defined(PIKA_NVHPC_VERSION)
+    public:
+#endif
+        using shared_state_ptr_type = std::shared_ptr<shared_state_type>;
 
     public:
         using read_type = void;
@@ -622,9 +627,15 @@ namespace pika::execution::experimental {
     private:
         using shared_state_type =
             detail::async_rw_mutex_shared_state<value_type>;
-        using shared_state_ptr_type = std::shared_ptr<shared_state_type>;
         using shared_state_weak_ptr_type = std::weak_ptr<shared_state_type>;
 
+        // nvc++ is not able to see this typedef unless it's public
+#if defined(PIKA_NVHPC_VERSION)
+    public:
+#endif
+        using shared_state_ptr_type = std::shared_ptr<shared_state_type>;
+
+    private:
         template <detail::async_rw_mutex_access_type AccessType>
         struct sender
         {
