@@ -549,7 +549,7 @@ namespace pika::util::detail {
             typename std::enable_if<
                 is_effective_t<M, element_of_t<T>>::value>::type* = nullptr)
         {
-#if defined(PIKA_CUDA_VERSION)
+#if defined(PIKA_CUDA_VERSION) || defined(PIKA_NVHPC_VERSION)
             for (auto&& element : std::forward<T>(container))
 #else
             for (auto&& element : PIKA_FORWARD(T, container))
