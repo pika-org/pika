@@ -179,12 +179,12 @@ namespace pika::threads::detail {
     PIKA_EXPORT char const* set_thread_backtrace(
         thread_id_type const& id, char const* bt = nullptr, error_code& ec = throws);
 #else
-#if !defined(DOXYGEN)
+# if !defined(DOXYGEN)
     PIKA_EXPORT debug::detail::backtrace const* get_thread_backtrace(
         thread_id_type const& id, error_code& ec = throws);
     PIKA_EXPORT debug::detail::backtrace const* set_thread_backtrace(thread_id_type const& id,
         debug::detail::backtrace const* bt = nullptr, error_code& ec = throws);
-#endif
+# endif
 #endif
 
     ///////////////////////////////////////////////////////////////////////////

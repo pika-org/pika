@@ -31,8 +31,8 @@
 // guarded by whether the embedded storage can actually be used (i.e. if the
 // stored type is small enough) that path should never be taken.
 #if defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Warray-bounds"
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Warray-bounds"
 #endif
 
 namespace pika::detail {
@@ -926,7 +926,7 @@ namespace pika::detail {
 }    // namespace pika::detail
 
 #if defined(__GNUC__)
-#pragma GCC diagnostic pop
+# pragma GCC diagnostic pop
 #endif
 
 #include <pika/config/warnings_suffix.hpp>

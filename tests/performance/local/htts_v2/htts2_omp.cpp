@@ -55,16 +55,16 @@ private:
             // One stager per OS-thread.
             for (std::uint64_t n = 0; n < this->osthreads_; ++n)
 #if _OPENMP >= 200805
-#pragma omp task untied
+# pragma omp task untied
 #endif
                 for (std::uint64_t m = 0; m < this->tasks_; ++m)
 #if _OPENMP >= 200805
-#pragma omp task untied
+# pragma omp task untied
 #endif
                     htts2::payload<BaseClock>(this->payload_duration_ /* = p */);
 
 #if _OPENMP >= 200805
-#pragma omp taskwait
+# pragma omp taskwait
 #endif
 
             // w_M [nanoseconds]

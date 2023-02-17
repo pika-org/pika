@@ -7,11 +7,11 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
-#include <pika/threading_base/annotated_function.hpp>
+# include <pika/threading_base/annotated_function.hpp>
 
-#include <string>
-#include <unordered_set>
-#include <utility>
+# include <string>
+# include <unordered_set>
+# include <utility>
 
 namespace pika::detail {
     char const* store_function_annotation(std::string name)
@@ -24,7 +24,7 @@ namespace pika::detail {
 
 #else
 
-#include <string>
+# include <string>
 
 namespace pika::detail {
     char const* store_function_annotation(std::string)

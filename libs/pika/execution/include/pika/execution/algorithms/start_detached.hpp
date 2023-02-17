@@ -9,26 +9,26 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <pika/execution_base/p2300_forward.hpp>
+# include <pika/execution_base/p2300_forward.hpp>
 #else
-#include <pika/allocator_support/allocator_deleter.hpp>
-#include <pika/allocator_support/internal_allocator.hpp>
-#include <pika/allocator_support/traits/is_allocator.hpp>
-#include <pika/assert.hpp>
-#include <pika/concepts/concepts.hpp>
-#include <pika/execution_base/operation_state.hpp>
-#include <pika/execution_base/sender.hpp>
-#include <pika/functional/detail/tag_fallback_invoke.hpp>
-#include <pika/memory/intrusive_ptr.hpp>
-#include <pika/thread_support/atomic_count.hpp>
-#include <pika/type_support/unused.hpp>
+# include <pika/allocator_support/allocator_deleter.hpp>
+# include <pika/allocator_support/internal_allocator.hpp>
+# include <pika/allocator_support/traits/is_allocator.hpp>
+# include <pika/assert.hpp>
+# include <pika/concepts/concepts.hpp>
+# include <pika/execution_base/operation_state.hpp>
+# include <pika/execution_base/sender.hpp>
+# include <pika/functional/detail/tag_fallback_invoke.hpp>
+# include <pika/memory/intrusive_ptr.hpp>
+# include <pika/thread_support/atomic_count.hpp>
+# include <pika/type_support/unused.hpp>
 
-#include <atomic>
-#include <cstddef>
-#include <exception>
-#include <memory>
-#include <type_traits>
-#include <utility>
+# include <atomic>
+# include <cstddef>
+# include <exception>
+# include <memory>
+# include <type_traits>
+# include <utility>
 
 namespace pika::start_detached_detail {
     template <typename Sender, typename Allocator>
@@ -39,9 +39,9 @@ namespace pika::start_detached_detail {
             pika::intrusive_ptr<operation_state_holder> op_state;
 
             template <typename Error>
-#if !defined(__NVCC__)
+# if !defined(__NVCC__)
             [[noreturn]]
-#endif
+# endif
             friend void
             tag_invoke(pika::execution::experimental::set_error_t, start_detached_receiver&&,
                 Error&& error) noexcept

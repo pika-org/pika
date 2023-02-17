@@ -14,9 +14,9 @@
 #include <pika/modules/logging.hpp>
 
 #if defined(PIKA_WINDOWS)
-#include <process.h>
+# include <process.h>
 #elif defined(PIKA_HAVE_UNISTD_H)
-#include <unistd.h>
+# include <unistd.h>
 #endif
 
 #include <algorithm>

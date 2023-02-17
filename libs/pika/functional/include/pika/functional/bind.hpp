@@ -174,12 +174,12 @@ namespace pika::util::detail {
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
         util::itt::string_handle get_function_annotation_itt() const
         {
-#if defined(PIKA_HAVE_THREAD_DESCRIPTION)
+# if defined(PIKA_HAVE_THREAD_DESCRIPTION)
             return pika::detail::get_function_annotation_itt<F>::call(_f);
-#else
+# else
             static util::itt::string_handle sh("bound");
             return sh;
-#endif
+# endif
         }
 #endif
 
@@ -228,7 +228,7 @@ namespace pika::detail {
         }
     };
 
-#if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
+# if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
     template <typename F, typename... Ts>
     struct get_function_annotation_itt<util::detail::bound<F, Ts...>>
     {
@@ -237,6 +237,6 @@ namespace pika::detail {
             return f.get_function_annotation_itt();
         }
     };
-#endif
+# endif
 #endif
 }    // namespace pika::detail

@@ -8,13 +8,13 @@
 
 #include <pika/config.hpp>
 #ifdef PIKA_HAVE_APEX
-#include <pika/assert.hpp>
-#include <pika/threading_base/external_timer.hpp>
-#include <pika/threading_base/thread_data.hpp>
+# include <pika/assert.hpp>
+# include <pika/threading_base/external_timer.hpp>
+# include <pika/threading_base/thread_data.hpp>
 
-#include <cstdint>
-#include <memory>
-#include <string>
+# include <cstdint>
+# include <memory>
+# include <string>
 
 namespace pika::detail::external_timer {
     std::shared_ptr<task_wrapper> new_task(pika::detail::thread_description const& description,

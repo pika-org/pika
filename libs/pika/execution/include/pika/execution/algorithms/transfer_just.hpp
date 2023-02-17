@@ -9,13 +9,13 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <pika/execution_base/p2300_forward.hpp>
+# include <pika/execution_base/p2300_forward.hpp>
 #else
-#include <pika/execution/algorithms/just.hpp>
-#include <pika/execution/algorithms/transfer.hpp>
-#include <pika/functional/detail/tag_fallback_invoke.hpp>
+# include <pika/execution/algorithms/just.hpp>
+# include <pika/execution/algorithms/transfer.hpp>
+# include <pika/functional/detail/tag_fallback_invoke.hpp>
 
-#include <utility>
+# include <utility>
 
 namespace pika::execution::experimental {
     inline constexpr struct transfer_just_t final

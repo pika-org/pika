@@ -9,24 +9,24 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <pika/execution_base/p2300_forward.hpp>
+# include <pika/execution_base/p2300_forward.hpp>
 #else
-#include <pika/assert.hpp>
-#include <pika/concepts/concepts.hpp>
-#include <pika/datastructures/variant.hpp>
-#include <pika/errors/try_catch_exception_ptr.hpp>
-#include <pika/execution/algorithms/detail/partial_algorithm.hpp>
-#include <pika/execution_base/receiver.hpp>
-#include <pika/execution_base/sender.hpp>
-#include <pika/functional/detail/tag_fallback_invoke.hpp>
-#include <pika/functional/invoke_fused.hpp>
-#include <pika/type_support/detail/with_result_of.hpp>
-#include <pika/type_support/pack.hpp>
+# include <pika/assert.hpp>
+# include <pika/concepts/concepts.hpp>
+# include <pika/datastructures/variant.hpp>
+# include <pika/errors/try_catch_exception_ptr.hpp>
+# include <pika/execution/algorithms/detail/partial_algorithm.hpp>
+# include <pika/execution_base/receiver.hpp>
+# include <pika/execution_base/sender.hpp>
+# include <pika/functional/detail/tag_fallback_invoke.hpp>
+# include <pika/functional/invoke_fused.hpp>
+# include <pika/type_support/detail/with_result_of.hpp>
+# include <pika/type_support/pack.hpp>
 
-#include <exception>
-#include <tuple>
-#include <type_traits>
-#include <utility>
+# include <exception>
+# include <tuple>
+# include <type_traits>
+# include <utility>
 
 namespace pika::let_value_detail {
     template <typename PredecessorSender, typename F>
@@ -82,13 +82,13 @@ namespace pika::let_value_detail {
         using value_types = pika::util::detail::unique_t<pika::util::detail::concat_pack_of_packs_t<
             pika::util::detail::transform_t<successor_sender_types<Tuple, Variant>,
                 pika::execution::experimental::detail::value_types<Tuple, Variant>::template apply
-#if defined(PIKA_CLANG_VERSION) && PIKA_CLANG_VERSION < 110000
+# if defined(PIKA_CLANG_VERSION) && PIKA_CLANG_VERSION < 110000
                 >
             //
             >>;
-#else
+# else
                 >>>;
-#endif
+# endif
 
         // pika::util::detail::pack acts as a concrete type in place of Tuple. It is
         // required for computing successor_sender_types, but disappears
@@ -211,7 +211,7 @@ namespace pika::let_value_detail {
                                 pika::util::detail::invoke_fused(PIKA_MOVE(f), t),
                                 std::declval<Receiver>()));
 
-#if defined(PIKA_HAVE_CXX17_COPY_ELISION)
+# if defined(PIKA_HAVE_CXX17_COPY_ELISION)
                         // with_result_of is used to emplace the operation state
                         // returned from connect without any intermediate copy
                         // construction (the operation state is not required to be
@@ -222,13 +222,13 @@ namespace pika::let_value_detail {
                                     pika::util::detail::invoke_fused(PIKA_MOVE(f), t),
                                     PIKA_MOVE(receiver));
                             }));
-#else
+# else
                         // MSVC doesn't get copy elision quite right, the operation
                         // state must be constructed explicitly directly in place
                         op_state.successor_op_state.template emplace_f<operation_state_type>(
                             pika::execution::experimental::connect,
                             pika::util::detail::invoke_fused(PIKA_MOVE(f), t), PIKA_MOVE(receiver));
-#endif
+# endif
                         pika::detail::visit(start_visitor{}, op_state.successor_op_state);
                     }
                 };

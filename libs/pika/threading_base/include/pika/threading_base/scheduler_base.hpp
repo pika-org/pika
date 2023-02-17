@@ -19,7 +19,7 @@
 #include <pika/threading_base/thread_queue_init_parameters.hpp>
 #include <pika/threading_base/threading_base_fwd.hpp>
 #if defined(PIKA_HAVE_SCHEDULER_LOCAL_STORAGE)
-#include <pika/coroutines/detail/tss.hpp>
+# include <pika/coroutines/detail/tss.hpp>
 #endif
 
 #include <fmt/format.h>

@@ -116,30 +116,30 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/config.hpp>
-#include <pika/assert.hpp>
-#include <pika/async_combinators/when_any.hpp>
-#include <pika/execution_base/this_thread.hpp>
-#include <pika/functional/deferred_call.hpp>
-#include <pika/futures/future.hpp>
-#include <pika/futures/futures_factory.hpp>
-#include <pika/futures/traits/acquire_future.hpp>
-#include <pika/futures/traits/detail/future_traits.hpp>
-#include <pika/futures/traits/future_access.hpp>
-#include <pika/futures/traits/is_future.hpp>
-#include <pika/futures/traits/is_future_range.hpp>
-#include <pika/type_support/pack.hpp>
-#include <pika/util/detail/reserve.hpp>
+# include <pika/config.hpp>
+# include <pika/assert.hpp>
+# include <pika/async_combinators/when_any.hpp>
+# include <pika/execution_base/this_thread.hpp>
+# include <pika/functional/deferred_call.hpp>
+# include <pika/futures/future.hpp>
+# include <pika/futures/futures_factory.hpp>
+# include <pika/futures/traits/acquire_future.hpp>
+# include <pika/futures/traits/detail/future_traits.hpp>
+# include <pika/futures/traits/future_access.hpp>
+# include <pika/futures/traits/is_future.hpp>
+# include <pika/futures/traits/is_future_range.hpp>
+# include <pika/type_support/pack.hpp>
+# include <pika/util/detail/reserve.hpp>
 
-#include <algorithm>
-#include <atomic>
-#include <cstddef>
-#include <iterator>
-#include <memory>
-#include <tuple>
-#include <type_traits>
-#include <utility>
-#include <vector>
+# include <algorithm>
+# include <atomic>
+# include <cstddef>
+# include <iterator>
+# include <memory>
+# include <tuple>
+# include <type_traits>
+# include <utility>
+# include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {

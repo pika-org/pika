@@ -31,8 +31,8 @@
 #pragma once
 
 #if defined(PIKA_MSVC_WARNING_PRAGMA)
-#pragma warning(push)
-#pragma warning(disable : 4355)    //this used in base member initializer
+# pragma warning(push)
+# pragma warning(disable : 4355)    //this used in base member initializer
 #endif
 
 #include <pika/config.hpp>
@@ -148,5 +148,5 @@ namespace pika::threads::coroutines::detail {
 }    // namespace pika::threads::coroutines::detail
 
 #if defined(PIKA_MSVC_WARNING_PRAGMA)
-#pragma warning(pop)
+# pragma warning(pop)
 #endif

@@ -16,7 +16,7 @@
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_data.hpp>
 #if defined(PIKA_HAVE_APEX)
-#include <pika/threading_base/external_timer.hpp>
+# include <pika/threading_base/external_timer.hpp>
 #endif
 
 #include <fmt/format.h>

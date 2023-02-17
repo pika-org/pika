@@ -26,25 +26,25 @@ namespace pika::util {
         lock_data::lock_data(std::size_t trace_depth)
           : ignore_(false)
           , user_data_(nullptr)
-#ifdef PIKA_HAVE_VERIFY_LOCKS_BACKTRACE
+# ifdef PIKA_HAVE_VERIFY_LOCKS_BACKTRACE
           , backtrace_(pika::debug::detail::trace(trace_depth))
-#endif
+# endif
         {
-#ifndef PIKA_HAVE_VERIFY_LOCKS_BACKTRACE
+# ifndef PIKA_HAVE_VERIFY_LOCKS_BACKTRACE
             PIKA_UNUSED(trace_depth);
-#endif
+# endif
         }
 
         lock_data::lock_data(register_lock_data* data, std::size_t trace_depth)
           : ignore_(false)
           , user_data_(data)
-#ifdef PIKA_HAVE_VERIFY_LOCKS_BACKTRACE
+# ifdef PIKA_HAVE_VERIFY_LOCKS_BACKTRACE
           , backtrace_(pika::detail::trace(trace_depth))
-#endif
+# endif
         {
-#ifndef PIKA_HAVE_VERIFY_LOCKS_BACKTRACE
+# ifndef PIKA_HAVE_VERIFY_LOCKS_BACKTRACE
             PIKA_UNUSED(trace_depth);
-#endif
+# endif
         }
 
         lock_data::~lock_data()

@@ -37,7 +37,7 @@
 #include <pika/version.hpp>
 
 #if defined(PIKA_HAVE_TRACY)
-#include <common/TracySystem.hpp>
+# include <common/TracySystem.hpp>
 #endif
 
 #include <fmt/format.h>
@@ -85,14 +85,14 @@ namespace pika {
                 std::cerr << pika::full_build_string() << "\n";
             }
 
-#if defined(PIKA_HAVE_STACKTRACES)
+# if defined(PIKA_HAVE_STACKTRACES)
             if (verbosity >= 1)
             {
                 std::size_t const trace_depth = detail::from_string<std::size_t>(
                     get_config_entry("pika.trace_depth", PIKA_HAVE_THREAD_BACKTRACE_DEPTH));
                 std::cerr << "{stack-trace}: " << pika::debug::detail::trace(trace_depth) << "\n";
             }
-#endif
+# endif
 
             std::cerr << "{what}: " << (reason ? reason : "Unknown reason") << "\n";
         }
@@ -131,9 +131,9 @@ namespace pika {
 
 #else
 
-#include <signal.h>
-#include <stdlib.h>
-#include <string.h>
+# include <signal.h>
+# include <stdlib.h>
+# include <string.h>
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
@@ -156,14 +156,14 @@ namespace pika {
                 std::cerr << pika::full_build_string() << "\n";
             }
 
-#if defined(PIKA_HAVE_STACKTRACES)
+# if defined(PIKA_HAVE_STACKTRACES)
             if (verbosity >= 1)
             {
                 std::size_t const trace_depth = detail::from_string<std::size_t>(
                     get_config_entry("pika.trace_depth", PIKA_HAVE_THREAD_BACKTRACE_DEPTH));
                 std::cerr << "{stack-trace}: " << pika::debug::detail::trace(trace_depth) << "\n";
             }
-#endif
+# endif
 
             std::cerr << "{what}: " << (reason ? reason : "Unknown reason") << "\n";
         }
@@ -992,7 +992,7 @@ namespace pika {
 }    // namespace pika
 
 #if defined(_WIN64) && defined(PIKA_DEBUG) && !defined(PIKA_HAVE_FIBER_BASED_COROUTINES)
-#include <io.h>
+# include <io.h>
 #endif
 
 namespace pika {

@@ -38,11 +38,11 @@
 #include <vector>
 
 #if !defined(QUEUE_HOLDER_THREAD_DEBUG)
-#if defined(PIKA_DEBUG)
-#define QUEUE_HOLDER_THREAD_DEBUG false
-#else
-#define QUEUE_HOLDER_THREAD_DEBUG false
-#endif
+# if defined(PIKA_DEBUG)
+#  define QUEUE_HOLDER_THREAD_DEBUG false
+# else
+#  define QUEUE_HOLDER_THREAD_DEBUG false
+# endif
 #endif
 
 namespace pika {

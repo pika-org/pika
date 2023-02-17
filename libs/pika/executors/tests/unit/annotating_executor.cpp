@@ -8,19 +8,19 @@
 #include <pika/testing.hpp>
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
-#include <pika/execution.hpp>
-#include <pika/future.hpp>
-#include <pika/init.hpp>
-#include <pika/latch.hpp>
-#include <pika/modules/properties.hpp>
-#include <pika/thread.hpp>
+# include <pika/execution.hpp>
+# include <pika/future.hpp>
+# include <pika/init.hpp>
+# include <pika/latch.hpp>
+# include <pika/modules/properties.hpp>
+# include <pika/thread.hpp>
 
-#include <cstdlib>
-#include <functional>
-#include <string>
-#include <type_traits>
-#include <utility>
-#include <vector>
+# include <cstdlib>
+# include <functional>
+# include <string>
+# include <type_traits>
+# include <utility>
+# include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 std::string annotation;

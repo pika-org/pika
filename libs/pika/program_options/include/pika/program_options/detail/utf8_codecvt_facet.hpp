@@ -8,7 +8,7 @@
 
 // MS compatible compilers support #pragma once
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
-#pragma once
+# pragma once
 #endif
 
 /////////1/////////2/////////3/////////4/////////5/////////6/////////7/////////8

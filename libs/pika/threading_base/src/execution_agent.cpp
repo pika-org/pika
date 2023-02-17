@@ -20,8 +20,8 @@
 #include <pika/threading_base/thread_description.hpp>
 
 #ifdef PIKA_HAVE_THREAD_BACKTRACE_ON_SUSPENSION
-#include <pika/debugging/backtrace.hpp>
-#include <pika/threading_base/detail/reset_backtrace.hpp>
+# include <pika/debugging/backtrace.hpp>
+# include <pika/threading_base/detail/reset_backtrace.hpp>
 #endif
 
 #include <fmt/format.h>

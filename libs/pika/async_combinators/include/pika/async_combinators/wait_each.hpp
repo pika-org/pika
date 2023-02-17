@@ -113,17 +113,17 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/config.hpp>
-#include <pika/async_combinators/detail/throw_if_exceptional.hpp>
-#include <pika/async_combinators/when_each.hpp>
-#include <pika/futures/traits/is_future.hpp>
-#include <pika/iterator_support/traits/is_iterator.hpp>
-#include <pika/type_support/pack.hpp>
+# include <pika/config.hpp>
+# include <pika/async_combinators/detail/throw_if_exceptional.hpp>
+# include <pika/async_combinators/when_each.hpp>
+# include <pika/futures/traits/is_future.hpp>
+# include <pika/iterator_support/traits/is_iterator.hpp>
+# include <pika/type_support/pack.hpp>
 
-#include <cstddef>
-#include <type_traits>
-#include <utility>
-#include <vector>
+# include <cstddef>
+# include <type_traits>
+# include <utility>
+# include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {

@@ -8,9 +8,9 @@
 
 #include <pika/config.hpp>
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <pika/execution_base/p2300_forward.hpp>
-#include <pika/execution_base/sender.hpp>
-#include <pika/functional/tag_invoke.hpp>
+# include <pika/execution_base/p2300_forward.hpp>
+# include <pika/execution_base/sender.hpp>
+# include <pika/functional/tag_invoke.hpp>
 
 namespace pika::execution::experimental::detail {
     template <bool TagInvocable, typename CPO, typename Sender>
@@ -38,10 +38,10 @@ namespace pika::execution::experimental::detail {
     inline constexpr bool has_completion_scheduler_v = has_completion_scheduler<CPO, Sender>::value;
 }    // namespace pika::execution::experimental::detail
 #else
-#include <pika/execution_base/sender.hpp>
-#include <pika/functional/tag_invoke.hpp>
+# include <pika/execution_base/sender.hpp>
+# include <pika/functional/tag_invoke.hpp>
 
-#include <type_traits>
+# include <type_traits>
 
 namespace pika::execution::experimental {
     template <typename Scheduler>

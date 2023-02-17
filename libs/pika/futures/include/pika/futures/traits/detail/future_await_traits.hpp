@@ -10,17 +10,17 @@
 
 #if defined(PIKA_HAVE_CXX20_COROUTINES)
 
-#include <pika/futures/detail/future_data.hpp>
-#include <pika/futures/traits/future_access.hpp>
-#include <pika/memory/intrusive_ptr.hpp>
-#include <pika/modules/allocator_support.hpp>
+# include <pika/futures/detail/future_data.hpp>
+# include <pika/futures/traits/future_access.hpp>
+# include <pika/memory/intrusive_ptr.hpp>
+# include <pika/modules/allocator_support.hpp>
 
-#include <coroutine>
-#include <cstddef>
-#include <exception>
-#include <memory>
-#include <type_traits>
-#include <utility>
+# include <coroutine>
+# include <cstddef>
+# include <exception>
+# include <memory>
+# include <type_traits>
+# include <utility>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::lcos::detail {

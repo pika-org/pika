@@ -10,9 +10,9 @@
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
 
-#include <pika/errors/error_code.hpp>
-#include <pika/threading_base/thread_description.hpp>
-#include <pika/threading_base/threading_base_fwd.hpp>
+# include <pika/errors/error_code.hpp>
+# include <pika/threading_base/thread_description.hpp>
+# include <pika/threading_base/threading_base_fwd.hpp>
 
 namespace pika::threads::detail {
     struct reset_lco_description

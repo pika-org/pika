@@ -6,21 +6,21 @@
 
 #include <pika/config.hpp>
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
-#include <pika/future.hpp>
-#include <pika/init.hpp>
-#include <pika/modules/program_options.hpp>
-#include <pika/modules/timing.hpp>
+# include <pika/future.hpp>
+# include <pika/init.hpp>
+# include <pika/modules/program_options.hpp>
+# include <pika/modules/timing.hpp>
 
-#include <fmt/ostream.h>
-#include <fmt/printf.h>
+# include <fmt/ostream.h>
+# include <fmt/printf.h>
 
-#include <cstddef>
-#include <cstdint>
-#include <iostream>
-#include <numeric>
-#include <vector>
+# include <cstddef>
+# include <cstdint>
+# include <iostream>
+# include <numeric>
+# include <vector>
 
-#include "worker_timed.hpp"
+# include "worker_timed.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 std::size_t iterations = 10000;

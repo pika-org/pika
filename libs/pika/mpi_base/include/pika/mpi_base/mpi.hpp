@@ -10,20 +10,20 @@
 
 #if defined(PIKA_HAVE_MODULE_MPI_BASE)
 
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wcast-qual"
-#elif defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wcast-qual"
-#endif
+# if defined(__clang__)
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Wcast-qual"
+# elif defined(__GNUC__)
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wcast-qual"
+# endif
 
-#include <mpi.h>
+# include <mpi.h>
 
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#elif defined(__GNUC__)
-#pragma GCC diagnostic pop
-#endif
+# if defined(__clang__)
+#  pragma clang diagnostic pop
+# elif defined(__GNUC__)
+#  pragma GCC diagnostic pop
+# endif
 
 #endif

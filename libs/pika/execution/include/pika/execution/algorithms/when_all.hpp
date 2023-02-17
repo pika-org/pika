@@ -9,27 +9,27 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <pika/execution_base/p2300_forward.hpp>
+# include <pika/execution_base/p2300_forward.hpp>
 #else
-#include <pika/concepts/concepts.hpp>
-#include <pika/datastructures/member_pack.hpp>
-#include <pika/datastructures/variant.hpp>
-#include <pika/execution/algorithms/detail/helpers.hpp>
-#include <pika/execution_base/operation_state.hpp>
-#include <pika/execution_base/receiver.hpp>
-#include <pika/execution_base/sender.hpp>
-#include <pika/functional/detail/tag_fallback_invoke.hpp>
-#include <pika/functional/invoke_fused.hpp>
-#include <pika/type_support/pack.hpp>
+# include <pika/concepts/concepts.hpp>
+# include <pika/datastructures/member_pack.hpp>
+# include <pika/datastructures/variant.hpp>
+# include <pika/execution/algorithms/detail/helpers.hpp>
+# include <pika/execution_base/operation_state.hpp>
+# include <pika/execution_base/receiver.hpp>
+# include <pika/execution_base/sender.hpp>
+# include <pika/functional/detail/tag_fallback_invoke.hpp>
+# include <pika/functional/invoke_fused.hpp>
+# include <pika/type_support/pack.hpp>
 
-#include <atomic>
-#include <cstddef>
-#include <exception>
-#include <functional>
-#include <memory>
-#include <optional>
-#include <type_traits>
-#include <utility>
+# include <atomic>
+# include <cstddef>
+# include <exception>
+# include <functional>
+# include <memory>
+# include <optional>
+# include <type_traits>
+# include <utility>
 
 namespace pika::when_all_impl {
     // This is a receiver to be connected to the ith predecessor sender
@@ -209,10 +209,10 @@ namespace pika::when_all_impl {
             // The offset at which we start to emplace values sent by the
             // ith predecessor sender.
             static constexpr std::size_t i_storage_offset = 0;
-#if !defined(PIKA_CUDA_VERSION)
+# if !defined(PIKA_CUDA_VERSION)
             // The number of values sent by the ith predecessor sender.
             static constexpr std::size_t sender_pack_size = sender_pack_size_at_index<i>;
-#else
+# else
             // nvcc does not like using the helper sender_pack_size_at_index
             // here and complains about incmplete types. Lifting the helper
             // explicitly in here works.
@@ -221,7 +221,7 @@ namespace pika::when_all_impl {
                         experimental::sender_traits<pika::util::detail::at_index_t<i,
                             Senders...>>::template value_types<pika::util::detail::pack,
                             pika::util::detail::pack>>::size;
-#endif
+# endif
 
             // Number of predecessor senders that have not yet called any of
             // the set signals.
@@ -260,11 +260,11 @@ namespace pika::when_all_impl {
             operation_state(Receiver_&& receiver, Senders_&& senders)
               : receiver(PIKA_FORWARD(Receiver_, receiver))
               , op_state(pika::execution::experimental::connect(
-#if defined(PIKA_CUDA_VERSION)
+# if defined(PIKA_CUDA_VERSION)
                     std::forward<Senders_>(senders).template get<i>(),
-#else
+# else
                     PIKA_FORWARD(Senders_, senders).template get<i>(),
-#endif
+# endif
                     when_all_receiver<operation_state>(*this)))
             {
             }
@@ -337,11 +337,11 @@ namespace pika::when_all_impl {
             operation_state(Receiver_&& receiver, SendersPack_&& senders)
               : base_type(PIKA_FORWARD(Receiver_, receiver), PIKA_FORWARD(SendersPack, senders))
               , op_state(pika::execution::experimental::connect(
-#if defined(PIKA_CUDA_VERSION)
+# if defined(PIKA_CUDA_VERSION)
                     std::forward<SendersPack_>(senders).template get<i>(),
-#else
+# else
                     PIKA_FORWARD(SendersPack_, senders).template get<i>(),
-#endif
+# endif
                     when_all_receiver<operation_state>(*this)))
             {
             }

@@ -27,7 +27,7 @@
 #include <pika/config/warnings_prefix.hpp>
 
 #if !defined(GUIDED_POOL_EXECUTOR_DEBUG)
-#define GUIDED_POOL_EXECUTOR_DEBUG false
+# define GUIDED_POOL_EXECUTOR_DEBUG false
 #endif
 
 namespace pika {

@@ -12,7 +12,7 @@
 #include <pika/threading_base/thread_description.hpp>
 #include <pika/threading_base/threading_base_fwd.hpp>
 #if defined(PIKA_HAVE_APEX)
-#include <pika/threading_base/external_timer.hpp>
+# include <pika/threading_base/external_timer.hpp>
 #endif
 #include <pika/type_support/unused.hpp>
 

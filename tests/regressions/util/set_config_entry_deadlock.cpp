@@ -6,13 +6,13 @@
 
 #include <pika/config.hpp>
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
-#include <pika/functional/bind.hpp>
-#include <pika/init.hpp>
-#include <pika/runtime/config_entry.hpp>
-#include <pika/testing.hpp>
+# include <pika/functional/bind.hpp>
+# include <pika/init.hpp>
+# include <pika/runtime/config_entry.hpp>
+# include <pika/testing.hpp>
 
-#include <atomic>
-#include <string>
+# include <atomic>
+# include <string>
 
 std::atomic<bool> invoked_callback(false);
 

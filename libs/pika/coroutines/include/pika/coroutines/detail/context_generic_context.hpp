@@ -18,11 +18,11 @@
 // include unist.d conditionally to check for POSIX version. Not all OSs have the
 // unistd header...
 #if defined(PIKA_HAVE_UNISTD_H)
-#include <unistd.h>
+# include <unistd.h>
 #endif
 
 #if defined(_POSIX_VERSION)
-#include <pika/coroutines/detail/posix_utility.hpp>
+# include <pika/coroutines/detail/posix_utility.hpp>
 #endif
 
 #include <boost/context/detail/fcontext.hpp>
@@ -39,7 +39,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #if defined(PIKA_GENERIC_CONTEXT_USE_SEGMENTED_STACKS)
 
-#define PIKA_COROUTINES_SEGMENTS 10
+# define PIKA_COROUTINES_SEGMENTS 10
 
 extern "C" {
 void* __splitstack_makecontext(std::size_t, void* [PIKA_COROUTINES_SEGMENTS], std::size_t*);
@@ -51,10 +51,10 @@ void __splitstack_getcontext(void* [PIKA_COROUTINES_SEGMENTS]);
 void __splitstack_setcontext(void* [PIKA_COROUTINES_SEGMENTS]);
 }
 
-#if !defined(SIGSTKSZ)
-#define SIGSTKSZ (8 * 1024)
-#define UDEF_SIGSTKSZ
-#endif
+# if !defined(SIGSTKSZ)
+#  define SIGSTKSZ (8 * 1024)
+#  define UDEF_SIGSTKSZ
+# endif
 
 #endif
 
@@ -91,15 +91,15 @@ namespace pika::threads::coroutines {
 
             void* allocate(std::size_t size) const
             {
-#if defined(_POSIX_VERSION) &&                                                                     \
-    !(defined(__APPLE__) && (defined(arm64) || defined(__arm64) || defined(__arm64__)))
+# if defined(_POSIX_VERSION) &&                                                                    \
+     !(defined(__APPLE__) && (defined(arm64) || defined(__arm64) || defined(__arm64__)))
                 void* limit = posix::alloc_stack(size);
                 posix::watermark_stack(limit, size);
-#else
+# else
                 void* limit = std::calloc(size, sizeof(char));
                 if (!limit)
                     throw std::bad_alloc();
-#endif
+# endif
                 return static_cast<char*>(limit) + size;
             }
 
@@ -107,11 +107,11 @@ namespace pika::threads::coroutines {
             {
                 PIKA_ASSERT(vp);
                 void* limit = static_cast<char*>(vp) - size;
-#if defined(_POSIX_VERSION)
+# if defined(_POSIX_VERSION)
                 posix::free_stack(limit, size);
-#else
+# else
                 std::free(limit);
-#endif
+# endif
             }
         };
 #else
@@ -243,9 +243,9 @@ namespace pika::threads::coroutines {
                     void* limit = static_cast<char*>(stack_pointer_) - stack_size_;
                     if (posix::reset_stack(limit, stack_size_))
                     {
-#if defined(PIKA_HAVE_COROUTINE_COUNTERS)
+# if defined(PIKA_HAVE_COROUTINE_COUNTERS)
                         increment_stack_unbind_count();
-#endif
+# endif
                     }
 #else
                     // nothing we can do here ...

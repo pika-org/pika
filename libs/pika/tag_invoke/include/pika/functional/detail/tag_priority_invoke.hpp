@@ -102,12 +102,12 @@ namespace pika::functional::detail {
 }    // namespace pika::functional::detail
 #else
 
-#include <pika/config.hpp>
-#include <pika/functional/detail/tag_fallback_invoke.hpp>
-#include <pika/functional/tag_invoke.hpp>
+# include <pika/config.hpp>
+# include <pika/functional/detail/tag_fallback_invoke.hpp>
+# include <pika/functional/tag_invoke.hpp>
 
-#include <type_traits>
-#include <utility>
+# include <type_traits>
+# include <utility>
 
 namespace pika::functional::detail {
     namespace tag_override_invoke_t_ns {
@@ -140,12 +140,12 @@ namespace pika::functional::detail {
     }    // namespace tag_override_invoke_t_ns
 
     namespace tag_override_invoke_ns {
-#if !defined(PIKA_COMPUTE_DEVICE_CODE)
+# if !defined(PIKA_COMPUTE_DEVICE_CODE)
         inline constexpr tag_override_invoke_t_ns::tag_override_invoke_t tag_override_invoke = {};
-#else
+# else
         PIKA_DEVICE static tag_override_invoke_t_ns::tag_override_invoke_t const
             tag_override_invoke = {};
-#endif
+# endif
     }    // namespace tag_override_invoke_ns
 
     ///////////////////////////////////////////////////////////////////////////
@@ -179,12 +179,12 @@ namespace pika::functional::detail {
     // correctly check this condition. We default to the more relaxed
     // noexcept(true) to not falsely exclude correct overloads. However, this
     // may lead to noexcept(false) overloads falsely being candidates.
-#if defined(__NVCC__) && defined(PIKA_CUDA_VERSION) && (PIKA_CUDA_VERSION < 1102)
+# if defined(__NVCC__) && defined(PIKA_CUDA_VERSION) && (PIKA_CUDA_VERSION < 1102)
     template <typename Tag, typename... Args>
     struct is_nothrow_tag_override_invocable : std::true_type
     {
     };
-#else
+# else
     template <typename Tag, typename... Args>
     struct is_nothrow_tag_override_invocable
       : is_nothrow_tag_override_invocable_impl<
@@ -192,7 +192,7 @@ namespace pika::functional::detail {
             is_tag_override_invocable_v<Tag, Args...>>
     {
     };
-#endif
+# endif
 
     template <typename Tag, typename... Args>
     inline constexpr bool is_nothrow_tag_override_invocable_v =

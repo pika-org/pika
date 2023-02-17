@@ -7,7 +7,7 @@
 #pragma once
 
 #if defined(PIKA_HAVE_CXX_LAMBDA_CAPTURE_DECLTYPE)
-#define PIKA_FORWARD(T, ...) static_cast<decltype(__VA_ARGS__)&&>(__VA_ARGS__)
+# define PIKA_FORWARD(T, ...) static_cast<decltype(__VA_ARGS__)&&>(__VA_ARGS__)
 #else
-#define PIKA_FORWARD(T, ...) static_cast<T&&>(__VA_ARGS__)
+# define PIKA_FORWARD(T, ...) static_cast<T&&>(__VA_ARGS__)
 #endif

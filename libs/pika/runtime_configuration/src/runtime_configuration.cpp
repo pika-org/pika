@@ -36,9 +36,9 @@
 #include <vector>
 
 #if defined(PIKA_WINDOWS)
-#include <process.h>
+# include <process.h>
 #elif defined(PIKA_HAVE_UNISTD_H)
-#include <unistd.h>
+# include <unistd.h>
 #endif
 
 #include <limits>
@@ -441,18 +441,18 @@ namespace pika::util {
 #ifdef PIKA_HAVE_THREAD_MINIMAL_DEADLOCK_DETECTION
         if (util::section const* sec = get_section("pika"); nullptr != sec)
         {
-#ifdef PIKA_DEBUG
+# ifdef PIKA_DEBUG
             return pika::detail::get_entry_as<int>(*sec, "minimal_deadlock_detection", 1) != 0;
-#else
+# else
             return pika::detail::get_entry_as<int>(*sec, "minimal_deadlock_detection", 0) != 0;
-#endif
+# endif
         }
 
-#ifdef PIKA_DEBUG
+# ifdef PIKA_DEBUG
         return true;
-#else
+# else
         return false;
-#endif
+# endif
 
 #else
         return false;
@@ -465,18 +465,18 @@ namespace pika::util {
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
         if (util::section const* sec = get_section("pika"); nullptr != sec)
         {
-#ifdef PIKA_DEBUG
+# ifdef PIKA_DEBUG
             return pika::detail::get_entry_as<int>(*sec, "spinlock_deadlock_detection", 1) != 0;
-#else
+# else
             return pika::detail::get_entry_as<int>(*sec, "spinlock_deadlock_detection", 0) != 0;
-#endif
+# endif
         }
 
-#ifdef PIKA_DEBUG
+# ifdef PIKA_DEBUG
         return true;
-#else
+# else
         return false;
-#endif
+# endif
 
 #else
         return false;

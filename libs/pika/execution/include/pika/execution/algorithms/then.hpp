@@ -9,21 +9,21 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <pika/execution_base/p2300_forward.hpp>
+# include <pika/execution_base/p2300_forward.hpp>
 #else
-#include <pika/concepts/concepts.hpp>
-#include <pika/errors/try_catch_exception_ptr.hpp>
-#include <pika/execution/algorithms/detail/partial_algorithm.hpp>
-#include <pika/execution_base/completion_scheduler.hpp>
-#include <pika/execution_base/receiver.hpp>
-#include <pika/execution_base/sender.hpp>
-#include <pika/functional/detail/invoke.hpp>
-#include <pika/functional/detail/tag_fallback_invoke.hpp>
-#include <pika/type_support/pack.hpp>
+# include <pika/concepts/concepts.hpp>
+# include <pika/errors/try_catch_exception_ptr.hpp>
+# include <pika/execution/algorithms/detail/partial_algorithm.hpp>
+# include <pika/execution_base/completion_scheduler.hpp>
+# include <pika/execution_base/receiver.hpp>
+# include <pika/execution_base/sender.hpp>
+# include <pika/functional/detail/invoke.hpp>
+# include <pika/functional/detail/tag_fallback_invoke.hpp>
+# include <pika/type_support/pack.hpp>
 
-#include <exception>
-#include <type_traits>
-#include <utility>
+# include <exception>
+# include <type_traits>
+# include <utility>
 
 namespace pika::then_detail {
     template <typename Receiver, typename F>
@@ -65,22 +65,22 @@ namespace pika::then_detail {
                     {
                     // Certain versions of GCC with optimizations fail on
                     // the move with an internal compiler error.
-#if defined(PIKA_GCC_VERSION) && (PIKA_GCC_VERSION < 100000)
+# if defined(PIKA_GCC_VERSION) && (PIKA_GCC_VERSION < 100000)
                         PIKA_INVOKE(std::move(f), PIKA_FORWARD(Ts, ts)...);
-#else
+# else
                         PIKA_INVOKE(PIKA_MOVE(f), PIKA_FORWARD(Ts, ts)...);
-#endif
+# endif
                         pika::execution::experimental::set_value(PIKA_MOVE(receiver));
                     }
                     else
                     {
                     // Certain versions of GCC with optimizations fail on
                     // the move with an internal compiler error.
-#if defined(PIKA_GCC_VERSION) && (PIKA_GCC_VERSION < 100000)
+# if defined(PIKA_GCC_VERSION) && (PIKA_GCC_VERSION < 100000)
                         auto&& result = PIKA_INVOKE(std::move(f), PIKA_FORWARD(Ts, ts)...);
-#else
+# else
                         auto&& result = PIKA_INVOKE(PIKA_MOVE(f), PIKA_FORWARD(Ts, ts)...);
-#endif
+# endif
                         pika::execution::experimental::set_value(
                             PIKA_MOVE(receiver), PIKA_MOVE(result));
                     }

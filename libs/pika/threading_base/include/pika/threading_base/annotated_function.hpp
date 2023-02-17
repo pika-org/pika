@@ -9,19 +9,19 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
-#include <pika/functional/detail/invoke.hpp>
-#include <pika/functional/traits/get_function_address.hpp>
-#include <pika/functional/traits/get_function_annotation.hpp>
-#include <pika/threading_base/scoped_annotation.hpp>
-#include <pika/threading_base/thread_description.hpp>
-#include <pika/threading_base/thread_helpers.hpp>
-#include <pika/type_support/decay.hpp>
+# include <pika/functional/detail/invoke.hpp>
+# include <pika/functional/traits/get_function_address.hpp>
+# include <pika/functional/traits/get_function_annotation.hpp>
+# include <pika/threading_base/scoped_annotation.hpp>
+# include <pika/threading_base/thread_description.hpp>
+# include <pika/threading_base/thread_helpers.hpp>
+# include <pika/type_support/decay.hpp>
 
-#if PIKA_HAVE_ITTNOTIFY != 0
-#include <pika/modules/itt_notify.hpp>
-#elif defined(PIKA_HAVE_APEX)
-#include <pika/threading_base/external_timer.hpp>
-#endif
+# if PIKA_HAVE_ITTNOTIFY != 0
+#  include <pika/modules/itt_notify.hpp>
+# elif defined(PIKA_HAVE_APEX)
+#  include <pika/threading_base/external_timer.hpp>
+# endif
 #endif
 
 #include <cstddef>

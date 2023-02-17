@@ -88,9 +88,9 @@ namespace pika::threads::detail {
                         .format("queue({}): {}({:08x}.{:02x}/{:08x})", num_thread,
                             get_thread_state_name(state), *it, thrd->get_thread_phase(),
                             thrd->get_component_id())
-#ifdef PIKA_HAVE_THREAD_PARENT_REFERENCE
+# ifdef PIKA_HAVE_THREAD_PARENT_REFERENCE
                         .format(" P{:08x}", thrd->get_parent_thread_id())
-#endif
+# endif
                         .format(": {}: {}", thrd->get_description(), thrd->get_lco_description());
                 }
                 else
@@ -99,9 +99,9 @@ namespace pika::threads::detail {
                         .format("queue({}): {}({:08x}.{:02x}/{:08x})", num_thread,
                             get_thread_state_name(state), *it, thrd->get_thread_phase(),
                             thrd->get_component_id())
-#ifdef PIKA_HAVE_THREAD_PARENT_REFERENCE
+# ifdef PIKA_HAVE_THREAD_PARENT_REFERENCE
                         .format(" P{:08x}", thrd->get_parent_thread_id())
-#endif
+# endif
                         .format(": {}: {}", thrd->get_description(), thrd->get_lco_description());
                 }
                 thrd->set_marked_state(state);

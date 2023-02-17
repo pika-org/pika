@@ -130,25 +130,25 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/config.hpp>
-#include <pika/allocator_support/internal_allocator.hpp>
-#include <pika/futures/detail/future_data.hpp>
-#include <pika/futures/detail/future_transforms.hpp>
-#include <pika/futures/future.hpp>
-#include <pika/futures/traits/acquire_future.hpp>
-#include <pika/futures/traits/acquire_shared_state.hpp>
-#include <pika/futures/traits/future_access.hpp>
-#include <pika/futures/traits/future_traits.hpp>
-#include <pika/futures/traits/is_future.hpp>
-#include <pika/futures/traits/is_future_range.hpp>
-#include <pika/pack_traversal/pack_traversal_async.hpp>
+# include <pika/config.hpp>
+# include <pika/allocator_support/internal_allocator.hpp>
+# include <pika/futures/detail/future_data.hpp>
+# include <pika/futures/detail/future_transforms.hpp>
+# include <pika/futures/future.hpp>
+# include <pika/futures/traits/acquire_future.hpp>
+# include <pika/futures/traits/acquire_shared_state.hpp>
+# include <pika/futures/traits/future_access.hpp>
+# include <pika/futures/traits/future_traits.hpp>
+# include <pika/futures/traits/is_future.hpp>
+# include <pika/futures/traits/is_future_range.hpp>
+# include <pika/pack_traversal/pack_traversal_async.hpp>
 
-#include <cstddef>
-#include <iterator>
-#include <tuple>
-#include <type_traits>
-#include <utility>
-#include <vector>
+# include <cstddef>
+# include <iterator>
+# include <tuple>
+# include <type_traits>
+# include <utility>
+# include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {

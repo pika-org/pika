@@ -78,13 +78,13 @@ void category_test(
 
 // disable warning: unary minus operator applied to unsigned type, result still unsigned
 #if defined(PIKA_MSVC)
-#pragma warning(push)
-#pragma warning(disable : 4146)
+# pragma warning(push)
+# pragma warning(disable : 4146)
 #endif
     // Show that values outside the range can't be found
     PIKA_TEST(!std::binary_search(start, std::prev(finish), *finish));
 #if defined(PIKA_MSVC)
-#pragma warning(pop)
+# pragma warning(pop)
 #endif
 
     // Do the generic random_access_iterator_test
@@ -150,13 +150,13 @@ template <typename Incrementable>
 void test(Incrementable start, Incrementable finish)
 {
 #if defined(PIKA_MSVC)
-#pragma warning(push)
-#pragma warning(disable : 4146)
+# pragma warning(push)
+# pragma warning(disable : 4146)
 #endif
     test_aux(pika::util::make_counting_iterator(start), pika::util::make_counting_iterator(finish),
         start);
 #if defined(PIKA_MSVC)
-#pragma warning(pop)
+# pragma warning(pop)
 #endif
 }
 

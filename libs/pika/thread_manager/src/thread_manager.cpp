@@ -723,7 +723,7 @@ namespace pika::threads::detail {
         return result;
     }
 
-#ifdef PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES
+# ifdef PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES
     std::int64_t thread_manager::avg_creation_idle_rate(bool reset)
     {
         std::int64_t result = 0;
@@ -739,7 +739,7 @@ namespace pika::threads::detail {
             result += pool_iter->avg_cleanup_idle_rate(all_threads, reset);
         return result;
     }
-#endif
+# endif
 #endif
 
 #ifdef PIKA_HAVE_THREAD_CUMULATIVE_COUNTS
@@ -759,7 +759,7 @@ namespace pika::threads::detail {
         return result;
     }
 
-#ifdef PIKA_HAVE_THREAD_IDLE_RATES
+# ifdef PIKA_HAVE_THREAD_IDLE_RATES
     std::int64_t thread_manager::get_thread_duration(bool reset)
     {
         std::int64_t result = 0;
@@ -807,7 +807,7 @@ namespace pika::threads::detail {
             result += pool_iter->get_cumulative_thread_overhead(all_threads, reset);
         return result;
     }
-#endif
+# endif
 #endif
 
 #ifdef PIKA_HAVE_THREAD_STEALING_COUNTS

@@ -219,14 +219,14 @@ namespace pika::threads::detail {
 #if defined(PIKA_HAVE_THREAD_CUMULATIVE_COUNTS)
         std::int64_t get_executed_threads(std::size_t, bool) override;
         std::int64_t get_executed_thread_phases(std::size_t, bool) override;
-#if defined(PIKA_HAVE_THREAD_IDLE_RATES)
+# if defined(PIKA_HAVE_THREAD_IDLE_RATES)
         std::int64_t get_thread_phase_duration(std::size_t, bool) override;
         std::int64_t get_thread_duration(std::size_t, bool) override;
         std::int64_t get_thread_phase_overhead(std::size_t, bool) override;
         std::int64_t get_thread_overhead(std::size_t, bool) override;
         std::int64_t get_cumulative_thread_duration(std::size_t, bool) override;
         std::int64_t get_cumulative_thread_overhead(std::size_t, bool) override;
-#endif
+# endif
 #endif
 
         std::int64_t get_cumulative_duration(std::size_t, bool) override;
@@ -235,10 +235,10 @@ namespace pika::threads::detail {
         std::int64_t avg_idle_rate_all(bool reset) override;
         std::int64_t avg_idle_rate(std::size_t, bool) override;
 
-#if defined(PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES)
+# if defined(PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES)
         std::int64_t avg_creation_idle_rate(std::size_t, bool) override;
         std::int64_t avg_cleanup_idle_rate(std::size_t, bool) override;
-#endif
+# endif
 #endif
 
         std::int64_t get_idle_loop_count(std::size_t num, bool reset) override;
@@ -280,7 +280,7 @@ namespace pika::threads::detail {
             std::int64_t reset_executed_threads_;
             std::int64_t reset_executed_thread_phases_;
 
-#if defined(PIKA_HAVE_THREAD_IDLE_RATES)
+# if defined(PIKA_HAVE_THREAD_IDLE_RATES)
             std::int64_t reset_thread_duration_;
             std::int64_t reset_thread_duration_times_;
 
@@ -299,20 +299,20 @@ namespace pika::threads::detail {
 
             std::int64_t reset_cumulative_thread_overhead_;
             std::int64_t reset_cumulative_thread_overhead_total_;
-#endif
+# endif
 #endif
 
 #if defined(PIKA_HAVE_THREAD_IDLE_RATES)
             std::int64_t reset_idle_rate_time_;
             std::int64_t reset_idle_rate_time_total_;
 
-#if defined(PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES)
+# if defined(PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES)
             std::int64_t reset_creation_idle_rate_time_;
             std::int64_t reset_creation_idle_rate_time_total_;
 
             std::int64_t reset_cleanup_idle_rate_time_;
             std::int64_t reset_cleanup_idle_rate_time_total_;
-#endif
+# endif
 #endif
             // tfunc_impl timers
             std::int64_t exec_times_;

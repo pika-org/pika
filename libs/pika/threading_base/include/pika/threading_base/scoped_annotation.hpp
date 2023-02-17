@@ -9,16 +9,16 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
-#include <pika/threading_base/thread_description.hpp>
-#include <pika/threading_base/thread_helpers.hpp>
+# include <pika/threading_base/thread_description.hpp>
+# include <pika/threading_base/thread_helpers.hpp>
 
-#if PIKA_HAVE_ITTNOTIFY != 0
-#include <pika/modules/itt_notify.hpp>
-#elif defined(PIKA_HAVE_APEX)
-#include <pika/threading_base/external_timer.hpp>
-#elif defined(PIKA_HAVE_TRACY)
-#include <pika/threading_base/detail/tracy.hpp>
-#endif
+# if PIKA_HAVE_ITTNOTIFY != 0
+#  include <pika/modules/itt_notify.hpp>
+# elif defined(PIKA_HAVE_APEX)
+#  include <pika/threading_base/external_timer.hpp>
+# elif defined(PIKA_HAVE_TRACY)
+#  include <pika/threading_base/detail/tracy.hpp>
+# endif
 #endif
 
 #include <string>
@@ -31,7 +31,7 @@ namespace pika {
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
     ///////////////////////////////////////////////////////////////////////////
-#if defined(PIKA_COMPUTE_DEVICE_CODE)
+# if defined(PIKA_COMPUTE_DEVICE_CODE)
     struct [[nodiscard]] scoped_annotation
     {
         PIKA_NON_COPYABLE(scoped_annotation);
@@ -46,7 +46,7 @@ namespace pika {
         // add empty (but non-trivial) destructor to silence warnings
         PIKA_HOST_DEVICE ~scoped_annotation() {}
     };
-#elif PIKA_HAVE_ITTNOTIFY != 0
+# elif PIKA_HAVE_ITTNOTIFY != 0
     struct [[nodiscard]] scoped_annotation
     {
         PIKA_NON_COPYABLE(scoped_annotation);
@@ -66,7 +66,7 @@ namespace pika {
         pika::util::itt::thread_domain thread_domain_;
         pika::util::itt::task task_;
     };
-#elif defined(PIKA_HAVE_TRACY)
+# elif defined(PIKA_HAVE_TRACY)
     struct [[nodiscard]] scoped_annotation
     {
         PIKA_NON_COPYABLE(scoped_annotation);
@@ -100,12 +100,12 @@ namespace pika {
         // this scope or are meaningless since they are not evaluated in the
         // scope of the scoped_annotation constructor. We instead manually
         // enable the ScopedZone only if TRACY_ENABLE is set.
-#if defined(TRACY_ENABLE)
+#  if defined(TRACY_ENABLE)
         tracy::ScopedZone tracy_annotation{
             0, nullptr, 0, nullptr, 0, annotation, strlen(annotation), true};
-#endif
+#  endif
     };
-#else
+# else
     struct [[nodiscard]] scoped_annotation
     {
         PIKA_NON_COPYABLE(scoped_annotation);
@@ -119,11 +119,11 @@ namespace pika {
                             ->set_description(name);
             }
 
-#if defined(PIKA_HAVE_APEX)
+#  if defined(PIKA_HAVE_APEX)
             /* update the task wrapper in APEX to use the specified name */
             threads::detail::set_self_timer_data(pika::detail::external_timer::update_task(
                 threads::detail::get_self_timer_data(), std::string(name)));
-#endif
+#  endif
         }
 
         explicit scoped_annotation(std::string name)
@@ -132,20 +132,20 @@ namespace pika {
             if (self != nullptr)
             {
                 char const* name_c_str =
-#if defined(PIKA_HAVE_APEX)
+#  if defined(PIKA_HAVE_APEX)
                     detail::store_function_annotation(name);
-#else
+#  else
                     detail::store_function_annotation(PIKA_MOVE(name));
-#endif
+#  endif
                 desc_ = threads::detail::get_thread_id_data(self->get_thread_id())
                             ->set_description(name_c_str);
             }
 
-#if defined(PIKA_HAVE_APEX)
+#  if defined(PIKA_HAVE_APEX)
             /* update the task wrapper in APEX to use the specified name */
             threads::detail::set_self_timer_data(pika::detail::external_timer::update_task(
                 threads::detail::get_self_timer_data(), PIKA_MOVE(name)));
-#endif
+#  endif
         }
 
         template <typename F,
@@ -161,11 +161,11 @@ namespace pika {
                             ->set_description(desc);
             }
 
-#if defined(PIKA_HAVE_APEX)
+#  if defined(PIKA_HAVE_APEX)
             /* update the task wrapper in APEX to use the specified name */
             threads::detail::set_self_timer_data(pika::detail::external_timer::update_task(
                 threads::detail::get_self_timer_data(), desc));
-#endif
+#  endif
         }
 
         ~scoped_annotation()
@@ -176,15 +176,15 @@ namespace pika {
                 threads::detail::get_thread_id_data(self->get_thread_id())->set_description(desc_);
             }
 
-#if defined(PIKA_HAVE_APEX)
+#  if defined(PIKA_HAVE_APEX)
             threads::detail::set_self_timer_data(pika::detail::external_timer::update_task(
                 threads::detail::get_self_timer_data(), desc_));
-#endif
+#  endif
         }
 
         pika::detail::thread_description desc_;
     };
-#endif
+# endif
 
 #else
     ///////////////////////////////////////////////////////////////////////////

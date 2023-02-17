@@ -640,11 +640,11 @@ namespace pika::parallel::execution {
         ///////////////////////////////////////////////////////////////////////
 
 #define PIKA_STATIC_ASSERT_ON_PARAMETERS_AMBIGUITY(func)                                           \
-    static_assert(                                                                                 \
-        parameters_type_counter<PIKA_PP_CAT(pika::parallel::execution::detail::has_, func) <       \
-            pika::detail::decay_unwrap_t<Params>>::value... > ::value <= 1,                        \
-        "Passing more than one executor parameters type "                                          \
-        "exposing " PIKA_PP_STRINGIZE(func) " is not possible") /**/
+ static_assert(                                                                                    \
+     parameters_type_counter<PIKA_PP_CAT(pika::parallel::execution::detail::has_, func) <          \
+         pika::detail::decay_unwrap_t<Params>>::value... > ::value <= 1,                           \
+     "Passing more than one executor parameters type "                                             \
+     "exposing " PIKA_PP_STRINGIZE(func) " is not possible") /**/
 
         template <typename... Params>
         struct executor_parameters : public unwrapper<Params>...

@@ -8,11 +8,11 @@
 
 #include <pika/config.hpp>
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <pika/execution_base/p2300_forward.hpp>
+# include <pika/execution_base/p2300_forward.hpp>
 #else
-#include <pika/concepts/concepts.hpp>
-#include <pika/execution_base/sender.hpp>
-#include <pika/functional/tag_invoke.hpp>
+# include <pika/concepts/concepts.hpp>
+# include <pika/execution_base/sender.hpp>
+# include <pika/functional/tag_invoke.hpp>
 
 namespace pika::execution::experimental {
     enum class forward_progress_guarantee

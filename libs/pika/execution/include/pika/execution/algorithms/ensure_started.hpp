@@ -9,38 +9,38 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <pika/execution_base/p2300_forward.hpp>
+# include <pika/execution_base/p2300_forward.hpp>
 #else
-#include <pika/allocator_support/allocator_deleter.hpp>
-#include <pika/allocator_support/internal_allocator.hpp>
-#include <pika/allocator_support/traits/is_allocator.hpp>
-#include <pika/assert.hpp>
-#include <pika/concepts/concepts.hpp>
-#include <pika/datastructures/variant.hpp>
-#include <pika/execution/algorithms/detail/helpers.hpp>
-#include <pika/execution/algorithms/detail/partial_algorithm.hpp>
-#include <pika/execution_base/operation_state.hpp>
-#include <pika/execution_base/receiver.hpp>
-#include <pika/execution_base/sender.hpp>
-#include <pika/functional/bind_front.hpp>
-#include <pika/functional/detail/tag_fallback_invoke.hpp>
-#include <pika/functional/invoke_fused.hpp>
-#include <pika/functional/unique_function.hpp>
-#include <pika/memory/intrusive_ptr.hpp>
-#include <pika/synchronization/spinlock.hpp>
-#include <pika/thread_support/atomic_count.hpp>
-#include <pika/type_support/detail/with_result_of.hpp>
-#include <pika/type_support/pack.hpp>
+# include <pika/allocator_support/allocator_deleter.hpp>
+# include <pika/allocator_support/internal_allocator.hpp>
+# include <pika/allocator_support/traits/is_allocator.hpp>
+# include <pika/assert.hpp>
+# include <pika/concepts/concepts.hpp>
+# include <pika/datastructures/variant.hpp>
+# include <pika/execution/algorithms/detail/helpers.hpp>
+# include <pika/execution/algorithms/detail/partial_algorithm.hpp>
+# include <pika/execution_base/operation_state.hpp>
+# include <pika/execution_base/receiver.hpp>
+# include <pika/execution_base/sender.hpp>
+# include <pika/functional/bind_front.hpp>
+# include <pika/functional/detail/tag_fallback_invoke.hpp>
+# include <pika/functional/invoke_fused.hpp>
+# include <pika/functional/unique_function.hpp>
+# include <pika/memory/intrusive_ptr.hpp>
+# include <pika/synchronization/spinlock.hpp>
+# include <pika/thread_support/atomic_count.hpp>
+# include <pika/type_support/detail/with_result_of.hpp>
+# include <pika/type_support/pack.hpp>
 
-#include <atomic>
-#include <cstddef>
-#include <exception>
-#include <memory>
-#include <mutex>
-#include <optional>
-#include <tuple>
-#include <type_traits>
-#include <utility>
+# include <atomic>
+# include <cstddef>
+# include <exception>
+# include <memory>
+# include <mutex>
+# include <optional>
+# include <tuple>
+# include <type_traits>
+# include <utility>
 
 namespace pika::ensure_started_detail {
     template <typename Receiver>

@@ -23,7 +23,7 @@
 #elif defined(_POSIX_VERSION) || defined(__bgq__) || defined(__powerpc__) || defined(__s390x__) || \
     defined(__arm__) || defined(__arm64__) || defined(__aarch64__)
 
-#include <cstddef>
+# include <cstddef>
 
 namespace pika { namespace threads { namespace coroutines { namespace detail { namespace posix {
 
@@ -36,6 +36,6 @@ namespace pika { namespace threads { namespace coroutines { namespace detail { n
 
 #else
 
-#error No default_context_impl available for this system
+# error No default_context_impl available for this system
 
 #endif    // PIKA_HAVE_GENERIC_CONTEXT_COROUTINES

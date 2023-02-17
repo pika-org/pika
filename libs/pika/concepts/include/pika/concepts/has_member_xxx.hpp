@@ -18,53 +18,52 @@
 /// MEMBER name (no matter static it is or not). The generated trait
 /// ends up in a namespace where the macro itself has been placed.
 #define PIKA_HAS_MEMBER_XXX_TRAIT_DEF(MEMBER)                                                      \
-    namespace PIKA_PP_CAT(PIKA_PP_CAT(has_, MEMBER), _detail)                                      \
-    {                                                                                              \
-        struct helper                                                                              \
-        {                                                                                          \
-            void MEMBER(...);                                                                      \
-        };                                                                                         \
+ namespace PIKA_PP_CAT(PIKA_PP_CAT(has_, MEMBER), _detail)                                         \
+ {                                                                                                 \
+  struct helper                                                                                    \
+  {                                                                                                \
+   void MEMBER(...);                                                                               \
+  };                                                                                               \
                                                                                                    \
-        template <typename T>                                                                      \
-        struct helper_composed                                                                     \
-          : T                                                                                      \
-          , helper                                                                                 \
-        {                                                                                          \
-        };                                                                                         \
+  template <typename T>                                                                            \
+  struct helper_composed                                                                           \
+    : T                                                                                            \
+    , helper                                                                                       \
+  {                                                                                                \
+  };                                                                                               \
                                                                                                    \
-        template <void (helper::*)(...)>                                                           \
-        struct member_function_holder                                                              \
-        {                                                                                          \
-        };                                                                                         \
+  template <void (helper::*)(...)>                                                                 \
+  struct member_function_holder                                                                    \
+  {                                                                                                \
+  };                                                                                               \
                                                                                                    \
-        template <typename T, typename Ambiguous = member_function_holder<&helper::MEMBER>>        \
-        struct impl : std::true_type                                                               \
-        {                                                                                          \
-        };                                                                                         \
+  template <typename T, typename Ambiguous = member_function_holder<&helper::MEMBER>>              \
+  struct impl : std::true_type                                                                     \
+  {                                                                                                \
+  };                                                                                               \
                                                                                                    \
-        template <typename T>                                                                      \
-        struct impl<T, member_function_holder<&helper_composed<T>::MEMBER>> : std::false_type      \
-        {                                                                                          \
-        };                                                                                         \
-    }                                                                                              \
+  template <typename T>                                                                            \
+  struct impl<T, member_function_holder<&helper_composed<T>::MEMBER>> : std::false_type            \
+  {                                                                                                \
+  };                                                                                               \
+ }                                                                                                 \
                                                                                                    \
-    template <typename T, typename Enable = void>                                                  \
-    struct PIKA_PP_CAT(has_, MEMBER)                                                               \
-      : std::false_type                                                                            \
-    {                                                                                              \
-    };                                                                                             \
+ template <typename T, typename Enable = void>                                                     \
+ struct PIKA_PP_CAT(has_, MEMBER)                                                                  \
+   : std::false_type                                                                               \
+ {                                                                                                 \
+ };                                                                                                \
                                                                                                    \
-    template <typename T>                                                                          \
-    struct PIKA_PP_CAT(has_, MEMBER)<T, std::enable_if_t<std::is_class_v<T>>>                      \
-      : PIKA_PP_CAT(PIKA_PP_CAT(has_, MEMBER), _detail)::impl<T>                                   \
-    {                                                                                              \
-    };                                                                                             \
+ template <typename T>                                                                             \
+ struct PIKA_PP_CAT(has_, MEMBER)<T, std::enable_if_t<std::is_class_v<T>>>                         \
+   : PIKA_PP_CAT(PIKA_PP_CAT(has_, MEMBER), _detail)::impl<T>                                      \
+ {                                                                                                 \
+ };                                                                                                \
                                                                                                    \
-    template <typename T>                                                                          \
-    using PIKA_PP_CAT(PIKA_PP_CAT(has_, MEMBER), _t) =                                             \
-        typename PIKA_PP_CAT(has_, MEMBER)<T>::type;                                               \
+ template <typename T>                                                                             \
+ using PIKA_PP_CAT(PIKA_PP_CAT(has_, MEMBER), _t) = typename PIKA_PP_CAT(has_, MEMBER)<T>::type;   \
                                                                                                    \
-    template <typename T>                                                                          \
-    inline constexpr bool PIKA_PP_CAT(PIKA_PP_CAT(has_, MEMBER), _v) =                             \
-        PIKA_PP_CAT(has_, MEMBER)<T>::value;                                                       \
-    /**/
+ template <typename T>                                                                             \
+ inline constexpr bool PIKA_PP_CAT(PIKA_PP_CAT(has_, MEMBER), _v) =                                \
+     PIKA_PP_CAT(has_, MEMBER)<T>::value;                                                          \
+ /**/

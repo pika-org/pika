@@ -60,28 +60,28 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/config.hpp>
-#include <pika/errors/try_catch_exception_ptr.hpp>
-#include <pika/functional/deferred_call.hpp>
-#include <pika/futures/detail/future_data.hpp>
-#include <pika/futures/future.hpp>
-#include <pika/futures/packaged_continuation.hpp>
-#include <pika/futures/traits/acquire_future.hpp>
-#include <pika/futures/traits/acquire_shared_state.hpp>
-#include <pika/futures/traits/future_access.hpp>
-#include <pika/futures/traits/future_traits.hpp>
-#include <pika/memory/intrusive_ptr.hpp>
-#include <pika/modules/errors.hpp>
-#include <pika/type_support/pack.hpp>
-#include <pika/type_support/unused.hpp>
+# include <pika/config.hpp>
+# include <pika/errors/try_catch_exception_ptr.hpp>
+# include <pika/functional/deferred_call.hpp>
+# include <pika/futures/detail/future_data.hpp>
+# include <pika/futures/future.hpp>
+# include <pika/futures/packaged_continuation.hpp>
+# include <pika/futures/traits/acquire_future.hpp>
+# include <pika/futures/traits/acquire_shared_state.hpp>
+# include <pika/futures/traits/future_access.hpp>
+# include <pika/futures/traits/future_traits.hpp>
+# include <pika/memory/intrusive_ptr.hpp>
+# include <pika/modules/errors.hpp>
+# include <pika/type_support/pack.hpp>
+# include <pika/type_support/unused.hpp>
 
-#include <array>
-#include <cstddef>
-#include <exception>
-#include <tuple>
-#include <type_traits>
-#include <utility>
-#include <vector>
+# include <array>
+# include <cstddef>
+# include <exception>
+# include <tuple>
+# include <type_traits>
+# include <utility>
+# include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {

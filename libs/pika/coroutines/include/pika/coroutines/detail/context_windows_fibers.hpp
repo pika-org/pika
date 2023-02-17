@@ -46,8 +46,8 @@
 #include <system_error>
 
 #if defined(PIKA_HAVE_ADDRESS_SANITIZER)
-#include <processthreadsapi.h>
-#include <sanitizer/asan_interface.h>
+# include <processthreadsapi.h>
+# include <sanitizer/asan_interface.h>
 #endif
 
 #if defined(PIKA_HAVE_SWAP_CONTEXT_EMULATION)

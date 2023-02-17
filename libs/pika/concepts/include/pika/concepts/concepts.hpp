@@ -14,16 +14,14 @@
 #include <type_traits>
 
 #define PIKA_CONCEPT_REQUIRES_(...)                                                                \
-    int PIKA_PP_CAT(_concept_requires_,                                                            \
-        __LINE__) = 42,                                                                            \
-        typename std::enable_if < (PIKA_PP_CAT(_concept_requires_, __LINE__) == 43) ||             \
-        (__VA_ARGS__),                                                                             \
-        int > ::type PIKA_PP_CAT(_concept_check_, __LINE__) = 0 /**/
+ int PIKA_PP_CAT(_concept_requires_,                                                               \
+     __LINE__) = 42,                                                                               \
+     typename std::enable_if < (PIKA_PP_CAT(_concept_requires_, __LINE__) == 43) || (__VA_ARGS__), \
+     int > ::type PIKA_PP_CAT(_concept_check_, __LINE__) = 0 /**/
 
 #define PIKA_CONCEPT_REQUIRES(...)                                                                 \
-    template <int PIKA_PP_CAT(_concept_requires_, __LINE__) = 42,                                  \
-        typename std::enable_if<(PIKA_PP_CAT(_concept_requires_, __LINE__) == 43) ||               \
-                (__VA_ARGS__),                                                                     \
-            int>::type PIKA_PP_CAT(_concept_check_, __LINE__) = 0> /**/
+ template <int PIKA_PP_CAT(_concept_requires_, __LINE__) = 42,                                     \
+     typename std::enable_if<(PIKA_PP_CAT(_concept_requires_, __LINE__) == 43) || (__VA_ARGS__),   \
+         int>::type PIKA_PP_CAT(_concept_check_, __LINE__) = 0> /**/
 
 #define PIKA_CONCEPT_ASSERT(...) static_assert((__VA_ARGS__), "Concept check failed") /**/

@@ -35,11 +35,11 @@
 #include <utility>
 
 #if !defined(QUEUE_HOLDER_NUMA_DEBUG)
-#if defined(PIKA_DEBUG)
-#define QUEUE_HOLDER_NUMA_DEBUG false
-#else
-#define QUEUE_HOLDER_NUMA_DEBUG false
-#endif
+# if defined(PIKA_DEBUG)
+#  define QUEUE_HOLDER_NUMA_DEBUG false
+# else
+#  define QUEUE_HOLDER_NUMA_DEBUG false
+# endif
 #endif
 
 namespace pika {

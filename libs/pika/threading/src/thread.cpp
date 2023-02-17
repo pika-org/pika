@@ -27,7 +27,7 @@
 #include <utility>
 
 #if defined(__ANDROID__) || defined(ANDROID)
-#include <cpu-features.h>
+# include <cpu-features.h>
 #endif
 
 namespace pika {

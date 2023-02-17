@@ -45,9 +45,9 @@
 #include <pika/config/warnings_prefix.hpp>
 
 #if defined(__linux) || defined(linux) || defined(__linux__)
-#include <linux/unistd.h>
-#include <sys/mman.h>
-#define SHARED_PRIORITY_SCHEDULER_LINUX
+# include <linux/unistd.h>
+# include <sys/mman.h>
+# define SHARED_PRIORITY_SCHEDULER_LINUX
 #endif
 
 // #define SHARED_PRIORITY_SCHEDULER_DEBUG_NUMA

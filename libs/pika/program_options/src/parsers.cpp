@@ -22,9 +22,9 @@
 #include <utility>
 
 #ifdef _WIN32
-#include <stdlib.h>
+# include <stdlib.h>
 #else
-#include <unistd.h>
+# include <unistd.h>
 #endif
 
 using namespace std;

@@ -9,7 +9,7 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_CXX17_COPY_ELISION)
-#include <variant>
+# include <variant>
 
 namespace pika::detail {
     using std::get;
@@ -21,7 +21,7 @@ namespace pika::detail {
 
 #else
 
-#include <pika/datastructures/detail/variant.hpp>
+# include <pika/datastructures/detail/variant.hpp>
 
 namespace pika::detail {
     using pika::variant_ns::get;

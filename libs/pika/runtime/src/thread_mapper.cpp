@@ -16,14 +16,14 @@
 #include <thread>
 
 #if defined(PIKA_WINDOWS)
-#include <windows.h>
+# include <windows.h>
 #else
-#include <pthread.h>
+# include <pthread.h>
 #endif
 
 #if defined(__linux__) && !defined(__ANDROID) && !defined(ANDROID)
-#include <sys/syscall.h>
-#include <unistd.h>
+# include <sys/syscall.h>
+# include <unistd.h>
 #endif
 
 namespace pika::util {

@@ -9,16 +9,16 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <pika/execution_base/p2300_forward.hpp>
+# include <pika/execution_base/p2300_forward.hpp>
 #else
-#include <pika/concepts/concepts.hpp>
-#include <pika/execution/algorithms/detail/partial_algorithm.hpp>
-#include <pika/execution_base/completion_scheduler.hpp>
-#include <pika/execution_base/receiver.hpp>
-#include <pika/execution_base/sender.hpp>
-#include <pika/functional/detail/tag_priority_invoke.hpp>
+# include <pika/concepts/concepts.hpp>
+# include <pika/execution/algorithms/detail/partial_algorithm.hpp>
+# include <pika/execution_base/completion_scheduler.hpp>
+# include <pika/execution_base/receiver.hpp>
+# include <pika/execution_base/sender.hpp>
+# include <pika/functional/detail/tag_priority_invoke.hpp>
 
-#include <utility>
+# include <utility>
 
 namespace pika::execution::experimental {
     inline constexpr struct transfer_t final : pika::functional::detail::tag_priority<transfer_t>

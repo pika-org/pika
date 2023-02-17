@@ -6,7 +6,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #if !defined(JACOBI_SMP_NO_pika)
-#include <pika/init.hpp>
+# include <pika/init.hpp>
 #endif
 
 #include <pika/modules/program_options.hpp>

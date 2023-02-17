@@ -13,9 +13,9 @@
 #include <utility>
 
 #if defined(PIKA_HAVE_HIP)
-#define CUBLAS_OP_N rocblas_operation_none
-#define cusolverDnDgetrs rocsolver_dgetrs
-#define cusolverDnDgetrf rocsolver_dgetrf
+# define CUBLAS_OP_N rocblas_operation_none
+# define cusolverDnDgetrs rocsolver_dgetrs
+# define cusolverDnDgetrf rocsolver_dgetrf
 #endif
 
 namespace cu = pika::cuda::experimental;

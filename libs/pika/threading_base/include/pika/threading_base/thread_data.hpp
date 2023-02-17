@@ -24,7 +24,7 @@
 #include <pika/threading_base/thread_description.hpp>
 #include <pika/threading_base/thread_init_data.hpp>
 #if defined(PIKA_HAVE_APEX)
-#include <pika/threading_base/external_timer.hpp>
+# include <pika/threading_base/external_timer.hpp>
 #endif
 
 #include <atomic>
@@ -340,7 +340,7 @@ namespace pika::threads::detail {
 
 #if !defined(PIKA_HAVE_THREAD_BACKTRACE_ON_SUSPENSION)
 
-#ifdef PIKA_HAVE_THREAD_FULLBACKTRACE_ON_SUSPENSION
+# ifdef PIKA_HAVE_THREAD_FULLBACKTRACE_ON_SUSPENSION
         constexpr char const* get_backtrace() const noexcept
         {
             return nullptr;
@@ -349,7 +349,7 @@ namespace pika::threads::detail {
         {
             return nullptr;
         }
-#else
+# else
         constexpr debug::detail::backtrace const* get_backtrace() const noexcept
         {
             return nullptr;
@@ -358,11 +358,11 @@ namespace pika::threads::detail {
         {
             return nullptr;
         }
-#endif
+# endif
 
 #else    // defined(PIKA_HAVE_THREAD_BACKTRACE_ON_SUSPENSION
 
-#ifdef PIKA_HAVE_THREAD_FULLBACKTRACE_ON_SUSPENSION
+# ifdef PIKA_HAVE_THREAD_FULLBACKTRACE_ON_SUSPENSION
         char const* get_backtrace() const noexcept
         {
             std::lock_guard<pika::detail::spinlock> l(spinlock_pool::spinlock_for(this));
@@ -376,7 +376,7 @@ namespace pika::threads::detail {
             backtrace_ = value;
             return bt;
         }
-#else
+# else
         debug::detail::backtrace const* get_backtrace() const noexcept
         {
             std::lock_guard<pika::detail::spinlock> l(spinlock_pool::spinlock_for(this));
@@ -391,7 +391,7 @@ namespace pika::threads::detail {
             backtrace_ = value;
             return bt;
         }
-#endif
+# endif
 
         // Generate full backtrace for captured stack
         std::string backtrace()
@@ -401,11 +401,11 @@ namespace pika::threads::detail {
             std::string bt;
             if (0 != backtrace_)
             {
-#ifdef PIKA_HAVE_THREAD_FULLBACKTRACE_ON_SUSPENSION
+# ifdef PIKA_HAVE_THREAD_FULLBACKTRACE_ON_SUSPENSION
                 bt = *backtrace_;
-#else
+# else
                 bt = backtrace_->trace();
-#endif
+# endif
             }
             return bt;
         }
@@ -568,11 +568,11 @@ namespace pika::threads::detail {
 #endif
 
 #ifdef PIKA_HAVE_THREAD_BACKTRACE_ON_SUSPENSION
-#ifdef PIKA_HAVE_THREAD_FULLBACKTRACE_ON_SUSPENSION
+# ifdef PIKA_HAVE_THREAD_FULLBACKTRACE_ON_SUSPENSION
         char const* backtrace_;
-#else
+# else
         debug::detail::backtrace const* backtrace_;
-#endif
+# endif
 #endif
         ///////////////////////////////////////////////////////////////////////
         execution::thread_priority priority_;

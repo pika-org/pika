@@ -20,19 +20,19 @@ namespace pika {
 
 #if defined(PIKA_HAVE_LOGGING)
 
-#include <pika/assertion/current_function.hpp>
-#include <pika/logging/level.hpp>
-#include <pika/logging/logging.hpp>
+# include <pika/assertion/current_function.hpp>
+# include <pika/logging/level.hpp>
+# include <pika/logging/logging.hpp>
 
-#include <string>
+# include <string>
 
 ////////////////////////////////////////////////////////////////////////////////
 // specific logging
-#define LTM_(lvl) LPIKA_(lvl, "  [TM] ")  /* thread manager */
-#define LRT_(lvl) LPIKA_(lvl, "  [RT] ")  /* runtime support */
-#define LERR_(lvl) LPIKA_(lvl, " [ERR] ") /* exceptions */
-#define LLCO_(lvl) LPIKA_(lvl, " [LCO] ") /* lcos */
-#define LBT_(lvl) LPIKA_(lvl, "  [BT] ")  /* bootstrap */
+# define LTM_(lvl) LPIKA_(lvl, "  [TM] ")  /* thread manager */
+# define LRT_(lvl) LPIKA_(lvl, "  [RT] ")  /* runtime support */
+# define LERR_(lvl) LPIKA_(lvl, " [ERR] ") /* exceptions */
+# define LLCO_(lvl) LPIKA_(lvl, " [LCO] ") /* lcos */
+# define LBT_(lvl) LPIKA_(lvl, "  [BT] ")  /* bootstrap */
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace pika::util {
@@ -46,55 +46,55 @@ namespace pika::util {
     ////////////////////////////////////////////////////////////////////////
     PIKA_EXPORT PIKA_DECLARE_LOG(timing)
 
-#define LTIM_(lvl)                                                                                 \
-    PIKA_LOG_FORMAT(pika::util::timing, ::pika::util::logging::level::lvl, "{:>10} ",              \
-        ::pika::util::logging::level::lvl) /**/
-#define LPROGRESS_                                                                                 \
-    PIKA_LOG_FORMAT(pika::util::timing, ::pika::util::logging::level::fatal, " {}:{} {} ",         \
-        __FILE__, __LINE__, PIKA_ASSERT_CURRENT_FUNCTION) /**/
+# define LTIM_(lvl)                                                                                \
+  PIKA_LOG_FORMAT(pika::util::timing, ::pika::util::logging::level::lvl, "{:>10} ",                \
+      ::pika::util::logging::level::lvl) /**/
+# define LPROGRESS_                                                                                \
+  PIKA_LOG_FORMAT(pika::util::timing, ::pika::util::logging::level::fatal, " {}:{} {} ", __FILE__, \
+      __LINE__, PIKA_ASSERT_CURRENT_FUNCTION) /**/
 
-#define LTIM_ENABLED(lvl)                                                                          \
-    pika::util::timing_logger()->is_enabled(::pika::util::logging::level::lvl) /**/
+# define LTIM_ENABLED(lvl)                                                                         \
+  pika::util::timing_logger()->is_enabled(::pika::util::logging::level::lvl) /**/
 
         ////////////////////////////////////////////////////////////////////////
         PIKA_EXPORT PIKA_DECLARE_LOG(pika)
 
-#define LPIKA_(lvl, cat)                                                                           \
-    PIKA_LOG_FORMAT(pika::util::pika, ::pika::util::logging::level::lvl, "{:>10}{}",               \
-        ::pika::util::logging::level::lvl, (cat)) /**/
+# define LPIKA_(lvl, cat)                                                                          \
+  PIKA_LOG_FORMAT(pika::util::pika, ::pika::util::logging::level::lvl, "{:>10}{}",                 \
+      ::pika::util::logging::level::lvl, (cat)) /**/
 
-#define LPIKA_ENABLED(lvl)                                                                         \
-    pika::util::pika_logger()->is_enabled(::pika::util::logging::level::lvl) /**/
+# define LPIKA_ENABLED(lvl)                                                                        \
+  pika::util::pika_logger()->is_enabled(::pika::util::logging::level::lvl) /**/
 
         ////////////////////////////////////////////////////////////////////////
         PIKA_EXPORT PIKA_DECLARE_LOG(app)
 
-#define LAPP_(lvl)                                                                                 \
-    PIKA_LOG_FORMAT(pika::util::app, ::pika::util::logging::level::lvl, "{:>10} ",                 \
-        ::pika::util::logging::level::lvl) /**/
+# define LAPP_(lvl)                                                                                \
+  PIKA_LOG_FORMAT(pika::util::app, ::pika::util::logging::level::lvl, "{:>10} ",                   \
+      ::pika::util::logging::level::lvl) /**/
 
-#define LAPP_ENABLED(lvl)                                                                          \
-    pika::util::app_logger()->is_enabled(::pika::util::logging::level::lvl) /**/
+# define LAPP_ENABLED(lvl)                                                                         \
+  pika::util::app_logger()->is_enabled(::pika::util::logging::level::lvl) /**/
 
         ////////////////////////////////////////////////////////////////////////
         // special debug logging channel
         PIKA_EXPORT PIKA_DECLARE_LOG(debuglog)
 
-#define LDEB_                                                                                      \
-    PIKA_LOG_FORMAT(pika::util::debuglog, ::pika::util::logging::level::error, "{:>10} ",          \
-        ::pika::util::logging::level::error) /**/
+# define LDEB_                                                                                     \
+  PIKA_LOG_FORMAT(pika::util::debuglog, ::pika::util::logging::level::error, "{:>10} ",            \
+      ::pika::util::logging::level::error) /**/
 
-#define LDEB_ENABLED                                                                               \
-    pika::util::debuglog_logger()->is_enabled(::pika::util::logging::level::error) /**/
+# define LDEB_ENABLED                                                                              \
+  pika::util::debuglog_logger()->is_enabled(::pika::util::logging::level::error) /**/
 
         ////////////////////////////////////////////////////////////////////////
         // errors are logged in a special manner (always to cerr and additionally,
         // if enabled to 'normal' logging destination as well)
         PIKA_EXPORT PIKA_DECLARE_LOG(pika_error)
 
-#define LFATAL_                                                                                    \
-    PIKA_LOG_FORMAT(pika::util::pika_error, ::pika::util::logging::level::fatal, "{:>10} [ERR] ",  \
-        ::pika::util::logging::level::fatal) /**/
+# define LFATAL_                                                                                   \
+  PIKA_LOG_FORMAT(pika::util::pika_error, ::pika::util::logging::level::fatal, "{:>10} [ERR] ",    \
+      ::pika::util::logging::level::fatal) /**/
 
         //
         PIKA_EXPORT PIKA_DECLARE_LOG(timing_console)
@@ -107,20 +107,20 @@ namespace pika::util {
 }    // namespace pika::util
 
 ///////////////////////////////////////////////////////////////////////////////
-#define LTIM_CONSOLE_(lvl)                                                                         \
-    PIKA_LOG_USE_LOG(pika::util::timing_console, static_cast<::pika::util::logging::level>(lvl))   \
-    /**/
+# define LTIM_CONSOLE_(lvl)                                                                        \
+  PIKA_LOG_USE_LOG(pika::util::timing_console, static_cast<::pika::util::logging::level>(lvl))     \
+  /**/
 
-#define LPIKA_CONSOLE_(lvl)                                                                        \
-    PIKA_LOG_USE_LOG(pika::util::pika_console, static_cast<::pika::util::logging::level>(lvl))     \
-    /**/
+# define LPIKA_CONSOLE_(lvl)                                                                       \
+  PIKA_LOG_USE_LOG(pika::util::pika_console, static_cast<::pika::util::logging::level>(lvl))       \
+  /**/
 
-#define LAPP_CONSOLE_(lvl)                                                                         \
-    PIKA_LOG_USE_LOG(pika::util::app_console, static_cast<::pika::util::logging::level>(lvl))      \
-    /**/
+# define LAPP_CONSOLE_(lvl)                                                                        \
+  PIKA_LOG_USE_LOG(pika::util::app_console, static_cast<::pika::util::logging::level>(lvl))        \
+  /**/
 
-#define LDEB_CONSOLE_                                                                              \
-    PIKA_LOG_USE_LOG(pika::util::debuglog_console, ::pika::util::logging::level::error)            \
+# define LDEB_CONSOLE_                                                                             \
+  PIKA_LOG_USE_LOG(pika::util::debuglog_console, ::pika::util::logging::level::error)              \
 /**/
 
 // helper type to forward logging during bootstrap to two destinations

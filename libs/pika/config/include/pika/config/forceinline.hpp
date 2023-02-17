@@ -10,7 +10,7 @@
 
 #if defined(DOXYGEN)
 /// Marks a function to be forced inline.
-#define PIKA_FORCEINLINE
+# define PIKA_FORCEINLINE
 #else
 
 // clang-format off

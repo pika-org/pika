@@ -1355,4 +1355,4 @@ namespace pika {
 #include <pika/futures/packaged_continuation.hpp>
 
 #define PIKA_MAKE_EXCEPTIONAL_FUTURE(T, errorcode, f, msg)                                         \
-    pika::make_exceptional_future<T>(PIKA_GET_EXCEPTION(errorcode, f, msg)) /**/
+ pika::make_exceptional_future<T>(PIKA_GET_EXCEPTION(errorcode, f, msg)) /**/

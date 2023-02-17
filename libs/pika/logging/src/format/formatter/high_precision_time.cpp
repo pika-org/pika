@@ -32,7 +32,7 @@
 
 #if !(defined(__linux) || defined(linux) || defined(__linux__) || defined(__FreeBSD__) ||          \
     defined(__APPLE__) || defined(PIKA_MSVC))
-#include <mutex>
+# include <mutex>
 #endif
 
 namespace pika::util::logging::formatter {

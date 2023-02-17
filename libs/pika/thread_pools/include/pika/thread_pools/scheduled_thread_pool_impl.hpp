@@ -32,7 +32,7 @@
 #include <algorithm>
 #include <atomic>
 #ifdef PIKA_HAVE_MAX_CPU_COUNT
-#include <bitset>
+# include <bitset>
 #endif
 #include <cstddef>
 #include <cstdint>
@@ -709,7 +709,7 @@ namespace pika::threads::detail {
         return executed_phases - reset_executed_phases;
     }
 
-#if defined(PIKA_HAVE_THREAD_IDLE_RATES)
+# if defined(PIKA_HAVE_THREAD_IDLE_RATES)
     template <typename Scheduler>
     std::int64_t
     scheduled_thread_pool<Scheduler>::get_thread_phase_duration(std::size_t num, bool reset)
@@ -1064,8 +1064,8 @@ namespace pika::threads::detail {
 
         return std::int64_t((double(tfunc_total) - double(exec_total)) * timestamp_scale_);
     }
-#endif    // PIKA_HAVE_THREAD_IDLE_RATES
-#endif    // PIKA_HAVE_THREAD_CUMULATIVE_COUNTS
+# endif    // PIKA_HAVE_THREAD_IDLE_RATES
+#endif     // PIKA_HAVE_THREAD_CUMULATIVE_COUNTS
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Scheduler>
@@ -1106,7 +1106,7 @@ namespace pika::threads::detail {
     }
 
 #if defined(PIKA_HAVE_THREAD_IDLE_RATES)
-#if defined(PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES)
+# if defined(PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES)
     template <typename Scheduler>
     std::int64_t scheduled_thread_pool<Scheduler>::avg_creation_idle_rate(std::size_t, bool reset)
     {
@@ -1192,7 +1192,7 @@ namespace pika::threads::detail {
         double const percent = (cleanup_total / double(tfunc_total - exec_total));
         return std::int64_t(10000. * percent);    // 0.01 percent
     }
-#endif    // PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES
+# endif    // PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES
 
     template <typename Scheduler>
     std::int64_t scheduled_thread_pool<Scheduler>::avg_idle_rate_all(bool reset)

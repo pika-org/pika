@@ -9,26 +9,26 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <pika/execution_base/p2300_forward.hpp>
+# include <pika/execution_base/p2300_forward.hpp>
 #else
-#include <pika/concepts/concepts.hpp>
-#include <pika/datastructures/variant.hpp>
-#include <pika/execution_base/completion_scheduler.hpp>
-#include <pika/execution_base/receiver.hpp>
-#include <pika/execution_base/sender.hpp>
-#include <pika/functional/bind_front.hpp>
-#include <pika/functional/detail/tag_fallback_invoke.hpp>
-#include <pika/functional/invoke_fused.hpp>
-#include <pika/type_support/detail/with_result_of.hpp>
-#include <pika/type_support/pack.hpp>
+# include <pika/concepts/concepts.hpp>
+# include <pika/datastructures/variant.hpp>
+# include <pika/execution_base/completion_scheduler.hpp>
+# include <pika/execution_base/receiver.hpp>
+# include <pika/execution_base/sender.hpp>
+# include <pika/functional/bind_front.hpp>
+# include <pika/functional/detail/tag_fallback_invoke.hpp>
+# include <pika/functional/invoke_fused.hpp>
+# include <pika/type_support/detail/with_result_of.hpp>
+# include <pika/type_support/pack.hpp>
 
-#include <atomic>
-#include <cstddef>
-#include <exception>
-#include <optional>
-#include <tuple>
-#include <type_traits>
-#include <utility>
+# include <atomic>
+# include <cstddef>
+# include <exception>
+# include <optional>
+# include <tuple>
+# include <type_traits>
+# include <utility>
 
 namespace pika::schedule_from_detail {
     template <typename Sender, typename Scheduler>
@@ -98,9 +98,9 @@ namespace pika::schedule_from_detail {
             }
             // This silences a bogus warning from nvcc about no return from
             // a non-void function.
-#if defined(__NVCC__)
+# if defined(__NVCC__)
             __builtin_unreachable();
-#endif
+# endif
         }
 
         template <typename Receiver>
@@ -212,7 +212,7 @@ namespace pika::schedule_from_detail {
             void set_value_predecessor_sender(Us&&... us) noexcept
             {
                 ts.template emplace<std::tuple<std::decay_t<Us>...>>(PIKA_FORWARD(Us, us)...);
-#if defined(PIKA_HAVE_CXX17_COPY_ELISION)
+# if defined(PIKA_HAVE_CXX17_COPY_ELISION)
                 // with_result_of is used to emplace the operation
                 // state returned from connect without any
                 // intermediate copy construction (the operation
@@ -222,13 +222,13 @@ namespace pika::schedule_from_detail {
                         pika::execution::experimental::schedule(PIKA_MOVE(scheduler)),
                         scheduler_sender_receiver{*this});
                 }));
-#else
+# else
                 // MSVC doesn't get copy elision quite right, the operation
                 // state must be constructed explicitly directly in place
                 scheduler_op_state.emplace_f(pika::execution::experimental::connect,
                     pika::execution::experimental::schedule(PIKA_MOVE(scheduler)),
                     scheduler_sender_receiver{*this});
-#endif
+# endif
                 pika::execution::experimental::start(scheduler_op_state.value());
             }
 

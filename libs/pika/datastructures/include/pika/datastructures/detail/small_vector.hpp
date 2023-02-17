@@ -16,15 +16,15 @@
 #if 1    // !defined(PIKA_HAVE_CXX17_MEMORY_RESOURCE)
 
 // fall back to Boost if memory_resource is not supported
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 120000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Warray-bounds"
-#pragma GCC diagnostic ignored "-Wstringop-overread"
-#endif
-#include <boost/container/small_vector.hpp>
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 120000
-#pragma GCC diagnostic pop
-#endif
+# if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 120000
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Warray-bounds"
+#  pragma GCC diagnostic ignored "-Wstringop-overread"
+# endif
+# include <boost/container/small_vector.hpp>
+# if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 120000
+#  pragma GCC diagnostic pop
+# endif
 
 namespace pika::detail {
 
@@ -34,10 +34,10 @@ namespace pika::detail {
 
 #else
 
-#include <initializer_list>
-#include <memory_resource>
-#include <utility>
-#include <vector>
+# include <initializer_list>
+# include <memory_resource>
+# include <utility>
+# include <vector>
 
 namespace pika::detail {
 

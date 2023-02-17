@@ -14,17 +14,17 @@
     (defined(__MWERKS__) && defined(_WIN32) && (__MWERKS__ >= 0x3000)) ||                          \
     (defined(__ICL) && defined(_MSC_EXTENSIONS) && (PIKA_MSVC >= 1200))
 
-#if !defined(PIKA_AUTOLINK_LIB_NAME)
-#error "Macro PIKA_AUTOLINK_LIB_NAME not set (internal error)"
-#endif
+# if !defined(PIKA_AUTOLINK_LIB_NAME)
+#  error "Macro PIKA_AUTOLINK_LIB_NAME not set (internal error)"
+# endif
 
-#if defined(PIKA_DEBUG)
-#pragma comment(lib,                                                                               \
-    PIKA_AUTOLINK_LIB_NAME "d"                                                                     \
-                           ".lib")
-#else
-#pragma comment(lib, PIKA_AUTOLINK_LIB_NAME ".lib")
-#endif
+# if defined(PIKA_DEBUG)
+#  pragma comment(lib,                                                                             \
+      PIKA_AUTOLINK_LIB_NAME "d"                                                                   \
+                             ".lib")
+# else
+#  pragma comment(lib, PIKA_AUTOLINK_LIB_NAME ".lib")
+# endif
 
 #endif
 

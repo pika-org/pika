@@ -16,20 +16,20 @@
 #include <pika/type_support/unused.hpp>
 
 #if defined(PIKA_WINDOWS)
-#include <windows.h>
+# include <windows.h>
 #elif defined(__linux) || defined(linux) || defined(__linux__)
-#include <linux/limits.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <vector>
+# include <linux/limits.h>
+# include <sys/stat.h>
+# include <unistd.h>
+# include <vector>
 #elif __APPLE__
-#include <mach-o/dyld.h>
+# include <mach-o/dyld.h>
 #elif defined(__FreeBSD__)
-#include <algorithm>
-#include <iterator>
-#include <sys/sysctl.h>
-#include <sys/types.h>
-#include <vector>
+# include <algorithm>
+# include <iterator>
+# include <sys/sysctl.h>
+# include <sys/types.h>
+# include <vector>
 #endif
 
 #include <boost/tokenizer.hpp>
@@ -161,7 +161,7 @@ namespace pika::util {
         }
 
 #else
-#error Unsupported platform
+# error Unsupported platform
 #endif
 
         return r;

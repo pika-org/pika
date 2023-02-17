@@ -26,7 +26,7 @@
 #include <pika/util/get_and_reset_value.hpp>
 
 #ifdef PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES
-#include <pika/timing/tick_counter.hpp>
+# include <pika/timing/tick_counter.hpp>
 #endif
 
 #include <fmt/format.h>

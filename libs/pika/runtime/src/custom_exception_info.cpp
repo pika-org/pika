@@ -29,9 +29,9 @@
 #include <fmt/printf.h>
 
 #if defined(PIKA_WINDOWS)
-#include <process.h>
+# include <process.h>
 #elif defined(PIKA_HAVE_UNISTD_H)
-#include <unistd.h>
+# include <unistd.h>
 #endif
 
 #include <algorithm>
@@ -331,7 +331,7 @@ namespace pika {
             env.reserve(len);
             std::copy(&environ[0], &environ[len], std::back_inserter(env));
 #else
-#error "Don't know, how to access the execution environment on this platform"
+# error "Don't know, how to access the execution environment on this platform"
 #endif
 
             std::sort(env.begin(), env.end());

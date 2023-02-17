@@ -270,7 +270,7 @@ namespace pika::threads::detail {
         {
             return 0;
         }
-#if defined(PIKA_HAVE_THREAD_IDLE_RATES)
+# if defined(PIKA_HAVE_THREAD_IDLE_RATES)
         virtual std::int64_t get_thread_phase_duration(std::size_t /*thread_num*/, bool /*reset*/)
         {
             return 0;
@@ -297,7 +297,7 @@ namespace pika::threads::detail {
         {
             return 0;
         }
-#endif
+# endif
 #endif
 
         virtual std::int64_t get_cumulative_duration(std::size_t /*thread_num*/, bool /*reset*/)
@@ -315,7 +315,7 @@ namespace pika::threads::detail {
             return 0;
         }
 
-#if defined(PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES)
+# if defined(PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES)
         virtual std::int64_t avg_creation_idle_rate(std::size_t /*thread_num*/, bool /*reset*/)
         {
             return 0;
@@ -324,7 +324,7 @@ namespace pika::threads::detail {
         {
             return 0;
         }
-#endif
+# endif
 #endif
 
         virtual std::int64_t get_queue_length(std::size_t, bool)

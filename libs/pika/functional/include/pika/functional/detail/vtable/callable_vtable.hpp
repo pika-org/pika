@@ -40,14 +40,14 @@ namespace pika::util::detail {
         }
         char const* (*get_function_annotation)(void*);
 
-#if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
+# if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
         template <typename T>
         PIKA_FORCEINLINE static util::itt::string_handle _get_function_annotation_itt(void* f)
         {
             return pika::detail::get_function_annotation_itt<T>::call(vtable::get<T>(f));
         }
         util::itt::string_handle (*get_function_annotation_itt)(void*);
-#endif
+# endif
 #endif
 
         template <typename T>
@@ -55,10 +55,10 @@ namespace pika::util::detail {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
           : get_function_address(&callable_info_vtable::template _get_function_address<T>)
           , get_function_annotation(&callable_info_vtable::template _get_function_annotation<T>)
-#if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
+# if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
           , get_function_annotation_itt(
                 &callable_info_vtable::template _get_function_annotation_itt<T>)
-#endif
+# endif
 #endif
         {
         }
@@ -67,9 +67,9 @@ namespace pika::util::detail {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
           : get_function_address(nullptr)
           , get_function_annotation(nullptr)
-#if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
+# if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
           , get_function_annotation_itt(nullptr)
-#endif
+# endif
 #endif
         {
         }

@@ -20,7 +20,7 @@
 #if defined(PIKA_HAVE_JEMALLOC_PREFIX)
 // this is currently used only for jemalloc and if a special API prefix is
 // used for its APIs
-#include <jemalloc/jemalloc.h>
+# include <jemalloc/jemalloc.h>
 #endif
 
 #include <pika/config/warnings_prefix.hpp>

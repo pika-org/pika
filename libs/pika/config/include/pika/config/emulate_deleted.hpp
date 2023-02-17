@@ -8,7 +8,7 @@
 
 /// Marks a class as non-copyable and non-movable.
 #define PIKA_NON_COPYABLE(cls)                                                                     \
-    cls(cls const&) = delete;                                                                      \
-    cls(cls&&) = delete;                                                                           \
-    cls& operator=(cls const&) = delete;                                                           \
-    cls& operator=(cls&&) = delete /**/
+ cls(cls const&) = delete;                                                                         \
+ cls(cls&&) = delete;                                                                              \
+ cls& operator=(cls const&) = delete;                                                              \
+ cls& operator=(cls&&) = delete /**/

@@ -23,7 +23,7 @@
 #include <pika/config/warnings_prefix.hpp>
 
 #if defined(__linux__) && !defined(__ANDROID) && !defined(ANDROID)
-#include <sys/syscall.h>
+# include <sys/syscall.h>
 #endif
 
 namespace pika::util {

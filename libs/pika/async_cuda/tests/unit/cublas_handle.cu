@@ -12,8 +12,8 @@
 #include <utility>
 
 #if defined(PIKA_HAVE_HIP)
-#define cublasSasum rocblas_sasum
-#define CUBLAS_STATUS_NOT_INITIALIZED rocblas_status_invalid_handle
+# define cublasSasum rocblas_sasum
+# define CUBLAS_STATUS_NOT_INITIALIZED rocblas_status_invalid_handle
 #endif
 
 namespace cu = pika::cuda::experimental;

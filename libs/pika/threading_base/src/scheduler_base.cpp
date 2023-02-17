@@ -13,7 +13,7 @@
 #include <pika/threading_base/thread_init_data.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
 #if defined(PIKA_HAVE_SCHEDULER_LOCAL_STORAGE)
-#include <pika/coroutines/detail/tss.hpp>
+# include <pika/coroutines/detail/tss.hpp>
 #endif
 
 #include <algorithm>

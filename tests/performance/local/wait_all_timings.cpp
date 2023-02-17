@@ -6,21 +6,21 @@
 
 #include <pika/config.hpp>
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
-#include <pika/chrono.hpp>
-#include <pika/future.hpp>
-#include <pika/init.hpp>
-#include <pika/program_options.hpp>
-#include <pika/testing/performance.hpp>
+# include <pika/chrono.hpp>
+# include <pika/future.hpp>
+# include <pika/init.hpp>
+# include <pika/program_options.hpp>
+# include <pika/testing/performance.hpp>
 
-#include <fmt/format.h>
-#include <fmt/ostream.h>
-#include <fmt/printf.h>
+# include <fmt/format.h>
+# include <fmt/ostream.h>
+# include <fmt/printf.h>
 
-#include <cstddef>
-#include <cstdint>
-#include <iostream>
-#include <string>
-#include <vector>
+# include <cstddef>
+# include <cstdint>
+# include <iostream>
+# include <string>
+# include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 std::vector<pika::future<void>> create_tasks(std::size_t num_tasks, std::size_t delay)

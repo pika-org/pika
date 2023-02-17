@@ -7,7 +7,7 @@
 #include <pika/assert.hpp>
 #include <pika/execution_base/agent_ref.hpp>
 #ifdef PIKA_HAVE_VERIFY_LOCKS
-#include <pika/lock_registration/detail/register_locks.hpp>
+# include <pika/lock_registration/detail/register_locks.hpp>
 #endif
 #include <pika/execution_base/this_thread.hpp>
 

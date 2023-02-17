@@ -15,8 +15,8 @@
 #include <utility>
 
 #if defined(PIKA_MSVC_WARNING_PRAGMA)
-#pragma warning(push)
-#pragma warning(disable : 4251)
+# pragma warning(push)
+# pragma warning(disable : 4251)
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -130,5 +130,5 @@ namespace pika {
 }    // namespace pika
 
 #if defined(PIKA_MSVC_WARNING_PRAGMA)
-#pragma warning(pop)
+# pragma warning(pop)
 #endif

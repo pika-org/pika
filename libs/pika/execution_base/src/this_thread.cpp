@@ -16,7 +16,7 @@
 #include <pika/timing/steady_clock.hpp>
 
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
-#include <pika/errors/throw_exception.hpp>
+# include <pika/errors/throw_exception.hpp>
 #endif
 
 #include <fmt/format.h>
@@ -34,15 +34,15 @@
 #include <utility>
 
 #if defined(PIKA_WINDOWS)
-#include <windows.h>
+# include <windows.h>
 #else
-#ifndef _AIX
-#include <sched.h>
-#else
+# ifndef _AIX
+#  include <sched.h>
+# else
 // AIX's sched.h defines ::var which sometimes conflicts with Lambda's var
 extern "C" int sched_yield(void);
-#endif
-#include <time.h>
+# endif
+# include <time.h>
 #endif
 
 namespace pika::execution {

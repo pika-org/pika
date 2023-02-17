@@ -9,8 +9,8 @@
 
 #include <pika/config.hpp>
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
-#include <pika/future.hpp>
-#include <pika/unwrap.hpp>
+# include <pika/future.hpp>
+# include <pika/unwrap.hpp>
 
 // define large action
 double func(double x1, double, double, double, double, double, double)

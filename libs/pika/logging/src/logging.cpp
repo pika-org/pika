@@ -8,16 +8,16 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_LOGGING)
-#include <pika/detail/filesystem.hpp>
-#include <pika/modules/logging.hpp>
-#include <pika/string_util/from_string.hpp>
+# include <pika/detail/filesystem.hpp>
+# include <pika/modules/logging.hpp>
+# include <pika/string_util/from_string.hpp>
 
-#include <cstddef>
-#include <cstdint>
-#include <cstdlib>
-#include <string>
-#include <utility>
-#include <vector>
+# include <cstddef>
+# include <cstdint>
+# include <cstdlib>
+# include <string>
+# include <utility>
+# include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::util {
@@ -69,7 +69,7 @@ namespace pika::util {
 }    // namespace pika::util
 
 ///////////////////////////////////////////////////////////////////////////////
-#include <pika/logging/detail/logger.hpp>
+# include <pika/logging/detail/logger.hpp>
 
 namespace pika::util::logging {
 

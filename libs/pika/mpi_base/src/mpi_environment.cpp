@@ -119,17 +119,17 @@ namespace pika { namespace util {
 
         int required = MPI_THREAD_SINGLE;
         int minimal = MPI_THREAD_SINGLE;
-#if defined(PIKA_HAVE_MPI_MULTITHREADED)
+# if defined(PIKA_HAVE_MPI_MULTITHREADED)
         required = (pika::detail::get_entry_as(rtcfg, "pika.parcel.mpi.multithreaded", 1) != 0) ?
             MPI_THREAD_MULTIPLE :
             MPI_THREAD_SINGLE;
 
-#if defined(MVAPICH2_VERSION) && defined(_POSIX_SOURCE)
+#  if defined(MVAPICH2_VERSION) && defined(_POSIX_SOURCE)
         // This enables multi threading support in MVAPICH2 if requested.
         if (required == MPI_THREAD_MULTIPLE)
             setenv("MV2_ENABLE_AFFINITY", "0", 1);
-#endif
-#endif
+#  endif
+# endif
 
         int retval = init(argc, argv, required, minimal, provided_threading_flag_);
         if (MPI_SUCCESS != retval && MPI_ERR_OTHER != retval)

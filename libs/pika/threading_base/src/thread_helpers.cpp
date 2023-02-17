@@ -11,7 +11,7 @@
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/modules/errors.hpp>
 #ifdef PIKA_HAVE_VERIFY_LOCKS
-#include <pika/lock_registration/detail/register_locks.hpp>
+# include <pika/lock_registration/detail/register_locks.hpp>
 #endif
 #include <pika/execution_base/this_thread.hpp>
 #include <pika/threading_base/detail/reset_lco_description.hpp>
@@ -25,8 +25,8 @@
 #include <pika/type_support/unused.hpp>
 
 #ifdef PIKA_HAVE_THREAD_BACKTRACE_ON_SUSPENSION
-#include <pika/debugging/backtrace.hpp>
-#include <pika/threading_base/detail/reset_backtrace.hpp>
+# include <pika/debugging/backtrace.hpp>
+# include <pika/threading_base/detail/reset_backtrace.hpp>
 #endif
 
 #include <atomic>

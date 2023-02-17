@@ -7,26 +7,26 @@
 
 #include <pika/config.hpp>
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
-#include <pika/functional.hpp>
-#include <pika/init.hpp>
-#include <pika/modules/thread_manager.hpp>
-#include <pika/modules/timing.hpp>
+# include <pika/functional.hpp>
+# include <pika/init.hpp>
+# include <pika/modules/thread_manager.hpp>
+# include <pika/modules/timing.hpp>
 
-#include <fmt/format.h>
-#include <fmt/ostream.h>
-#include <fmt/printf.h>
+# include <fmt/format.h>
+# include <fmt/ostream.h>
+# include <fmt/printf.h>
 
-#include <cstdint>
-#include <functional>
-#include <iostream>
-#include <numeric>
-#include <random>
-#include <stdexcept>
-#include <string>
-#include <utility>
-#include <vector>
+# include <cstdint>
+# include <functional>
+# include <iostream>
+# include <numeric>
+# include <random>
+# include <stdexcept>
+# include <string>
+# include <utility>
+# include <vector>
 
-#include "worker_timed.hpp"
+# include "worker_timed.hpp"
 
 using pika::program_options::options_description;
 using pika::program_options::value;

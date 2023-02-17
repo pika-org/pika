@@ -8,10 +8,10 @@
 
 #include <pika/config.hpp>
 #if defined(PIKA_HAVE_GPU_SUPPORT)
-#include <pika/async_cuda/custom_lapack_api.hpp>
-#include <pika/errors/exception.hpp>
+# include <pika/async_cuda/custom_lapack_api.hpp>
+# include <pika/errors/exception.hpp>
 
-#include <string>
+# include <string>
 
 namespace pika::cuda::experimental {
     namespace detail {

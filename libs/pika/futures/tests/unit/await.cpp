@@ -7,7 +7,7 @@
 #include <pika/config.hpp>
 
 #if !defined(PIKA_HAVE_CXX20_COROUTINES)
-#error "This test requires compiler support for C++20 coroutines"
+# error "This test requires compiler support for C++20 coroutines"
 #endif
 
 #include <pika/future.hpp>

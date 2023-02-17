@@ -44,12 +44,12 @@
 #include <pika/version.hpp>
 
 #if defined(PIKA_HAVE_HIP)
-#include <hip/hip_runtime.h>
-#include <whip.hpp>
+# include <hip/hip_runtime.h>
+# include <whip.hpp>
 #endif
 
 #if defined(__bgq__)
-#include <cstdlib>
+# include <cstdlib>
 #endif
 
 #include <cmath>
@@ -66,7 +66,7 @@
 #include <vector>
 
 #if !defined(PIKA_WINDOWS)
-#include <signal.h>
+# include <signal.h>
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////

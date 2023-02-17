@@ -37,8 +37,8 @@
 #include <vector>
 
 #if defined(PIKA_HAVE_HIP)
-#define CUBLAS_OP_N rocblas_operation_none
-#define cublasSgemm rocblas_sgemm
+# define CUBLAS_OP_N rocblas_operation_none
+# define cublasSgemm rocblas_sgemm
 #endif
 
 std::mt19937 gen;

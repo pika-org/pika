@@ -59,21 +59,21 @@ struct ___itt_counter;
 
 #define PIKA_ITT_HEAP_FUNCTION_CREATE(name, domain) itt_heap_function_create(name, domain) /**/
 #define PIKA_ITT_HEAP_ALLOCATE_BEGIN(f, size, initialized)                                         \
-    itt_heap_allocate_begin(f, size, initialized) /**/
+ itt_heap_allocate_begin(f, size, initialized) /**/
 #define PIKA_ITT_HEAP_ALLOCATE_END(f, addr, size, initialized)                                     \
-    itt_heap_allocate_end(f, addr, size, initialized) /**/
+ itt_heap_allocate_end(f, addr, size, initialized) /**/
 #define PIKA_ITT_HEAP_FREE_BEGIN(f, addr) itt_heap_free_begin(f, addr)
 #define PIKA_ITT_HEAP_FREE_END(f, addr) itt_heap_free_end(f, addr)
 #define PIKA_ITT_HEAP_REALLOCATE_BEGIN(f, addr, new_size, initialized)                             \
-    itt_heap_reallocate_begin(f, addr, new_size, initialized) /**/
+ itt_heap_reallocate_begin(f, addr, new_size, initialized) /**/
 #define PIKA_ITT_HEAP_REALLOCATE_END(f, addr, new_addr, new_size, initialized)                     \
-    itt_heap_reallocate_end(f, addr, new_addr, new_size, initialized) /**/
+ itt_heap_reallocate_end(f, addr, new_addr, new_size, initialized) /**/
 #define PIKA_ITT_HEAP_INTERNAL_ACCESS_BEGIN() itt_heap_internal_access_begin()
 #define PIKA_ITT_HEAP_INTERNAL_ACCESS_END() itt_heap_internal_access_end()
 
 #define PIKA_ITT_COUNTER_CREATE(name, domain) itt_counter_create(name, domain) /**/
 #define PIKA_ITT_COUNTER_CREATE_TYPED(name, domain, type)                                          \
-    itt_counter_create_typed(name, domain, type)                                       /**/
+ itt_counter_create_typed(name, domain, type)                                          /**/
 #define PIKA_ITT_COUNTER_SET_VALUE(id, value_ptr) itt_counter_set_value(id, value_ptr) /**/
 #define PIKA_ITT_COUNTER_DESTROY(id) itt_counter_destroy(id)
 

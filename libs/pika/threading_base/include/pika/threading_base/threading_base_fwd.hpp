@@ -17,7 +17,7 @@
 #include <pika/modules/errors.hpp>
 
 #if defined(PIKA_HAVE_APEX)
-#include <apex_api.hpp>
+# include <apex_api.hpp>
 #endif
 
 #include <cstddef>

@@ -16,7 +16,7 @@
 #include <map>
 #include <memory>
 #ifdef PIKA_HAVE_VERIFY_LOCKS_BACKTRACE
-#include <string>
+# include <string>
 #endif
 #include <type_traits>
 #include <utility>
@@ -37,7 +37,7 @@ namespace pika::util {
 
         struct PIKA_EXPORT lock_data
         {
-#ifdef PIKA_HAVE_VERIFY_LOCKS
+# ifdef PIKA_HAVE_VERIFY_LOCKS
             lock_data(std::size_t trace_depth);
             lock_data(register_lock_data* data, std::size_t trace_depth);
 
@@ -45,10 +45,10 @@ namespace pika::util {
 
             bool ignore_;
             register_lock_data* user_data_;
-#ifdef PIKA_HAVE_VERIFY_LOCKS_BACKTRACE
+#  ifdef PIKA_HAVE_VERIFY_LOCKS_BACKTRACE
             std::string backtrace_;
-#endif
-#endif
+#  endif
+# endif
         };
     }    // namespace detail
 

@@ -14,7 +14,7 @@
 #include <pika/preprocessor/stringize.hpp>
 
 #if defined(PIKA_COMPUTE_DEVICE_CODE)
-#include <assert.h>
+# include <assert.h>
 #endif
 #include <exception>
 #include <string>
@@ -47,36 +47,36 @@ namespace pika::detail {
 ///
 /// Asserts are enabled if \a PIKA_DEBUG is set. This is the default for
 /// `CMAKE_BUILD_TYPE=Debug`
-#define PIKA_ASSERT(expr)
+# define PIKA_ASSERT(expr)
 
 /// \see PIKA_ASSERT
-#define PIKA_ASSERT_MSG(expr, msg)
+# define PIKA_ASSERT_MSG(expr, msg)
 #else
 /// \cond NOINTERNAL
-#define PIKA_ASSERT_(expr, msg)                                                                    \
-    (!!(expr) ? void() :                                                                           \
-                ::pika::detail::handle_assert(                                                     \
-                    ::pika::detail::source_location{                                               \
-                        __FILE__, static_cast<unsigned>(__LINE__), PIKA_ASSERT_CURRENT_FUNCTION},  \
-                    PIKA_PP_STRINGIZE(expr), msg)) /**/
+# define PIKA_ASSERT_(expr, msg)                                                                   \
+  (!!(expr) ? void() :                                                                             \
+              ::pika::detail::handle_assert(                                                       \
+                  ::pika::detail::source_location{                                                 \
+                      __FILE__, static_cast<unsigned>(__LINE__), PIKA_ASSERT_CURRENT_FUNCTION},    \
+                  PIKA_PP_STRINGIZE(expr), msg)) /**/
 
-#if defined(PIKA_DEBUG)
-#if defined(PIKA_COMPUTE_DEVICE_CODE)
-#define PIKA_ASSERT(expr) assert(expr)
-#define PIKA_ASSERT_MSG(expr, msg) PIKA_ASSERT(expr)
-#else
-#define PIKA_ASSERT(expr) PIKA_ASSERT_(expr, std::string())
-#define PIKA_ASSERT_MSG(expr, msg) PIKA_ASSERT_(expr, msg)
-#endif
-#else
-#define PIKA_ASSERT(expr)
-#define PIKA_ASSERT_MSG(expr, msg)
-#endif
+# if defined(PIKA_DEBUG)
+#  if defined(PIKA_COMPUTE_DEVICE_CODE)
+#   define PIKA_ASSERT(expr) assert(expr)
+#   define PIKA_ASSERT_MSG(expr, msg) PIKA_ASSERT(expr)
+#  else
+#   define PIKA_ASSERT(expr) PIKA_ASSERT_(expr, std::string())
+#   define PIKA_ASSERT_MSG(expr, msg) PIKA_ASSERT_(expr, msg)
+#  endif
+# else
+#  define PIKA_ASSERT(expr)
+#  define PIKA_ASSERT_MSG(expr, msg)
+# endif
 
-#define PIKA_UNREACHABLE                                                                           \
-    PIKA_ASSERT_(false,                                                                            \
-        "This code is meant to be unreachable. If you are seeing this error "                      \
-        "message it means that you have found a bug in pika. Please report "                       \
-        "it on https://github.com/pika-org/pika/issues.");                                         \
-    std::terminate()
+# define PIKA_UNREACHABLE                                                                          \
+  PIKA_ASSERT_(false,                                                                              \
+      "This code is meant to be unreachable. If you are seeing this error "                        \
+      "message it means that you have found a bug in pika. Please report "                         \
+      "it on https://github.com/pika-org/pika/issues.");                                           \
+  std::terminate()
 #endif

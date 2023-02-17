@@ -19,8 +19,8 @@
 #include <pika/threading_base/thread_num_tss.hpp>
 
 #if defined(PIKA_HAVE_TRACY)
-#include <pika/threading_base/detail/tracy.hpp>
-#include <common/TracyColor.hpp>
+# include <pika/threading_base/detail/tracy.hpp>
+# include <common/TracyColor.hpp>
 #endif
 
 #include <fmt/format.h>
@@ -631,7 +631,7 @@ namespace pika::threads::detail {
                                     profiler.yield();
                                 }
 #else
-#if defined(PIKA_HAVE_TRACY)
+# if defined(PIKA_HAVE_TRACY)
                                 auto const desc = thrdptr->get_description();
                                 std::ostringstream task_annotation;
                                 task_annotation
@@ -643,10 +643,10 @@ namespace pika::threads::detail {
                                                "<unknown>");
                                 auto task_annotation_str = PIKA_MOVE(task_annotation).str();
                                 ZoneTransientN(task, task_annotation_str.c_str(), true);
-#if defined(TRACY_ENABLE)
+#  if defined(TRACY_ENABLE)
                                 task.Color(tracy::Color::DimGray);
-#endif
-#endif
+#  endif
+# endif
 
                                 thrd_stat = (*thrdptr)(context_storage);
 #endif

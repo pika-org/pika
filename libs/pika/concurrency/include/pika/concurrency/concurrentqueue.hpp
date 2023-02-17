@@ -57,30 +57,30 @@
 // Disable -Wconversion warnings (spuriously triggered when Traits::size_t and
 // Traits::index_t are set to < 32 bits, causing integer promotion, causing warnings
 // upon assigning any computed values)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wconversion"
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wconversion"
 
-#ifdef MCDBGQ_USE_RELACY
-#pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
-#endif
+# ifdef MCDBGQ_USE_RELACY
+#  pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
+# endif
 #endif
 
 #if defined(__APPLE__)
-#include "TargetConditionals.h"
+# include "TargetConditionals.h"
 #endif
 
 #ifdef MCDBGQ_USE_RELACY
-#include "relacy/relacy_std.hpp"
-#include "relacy_shims.h"
+# include "relacy/relacy_std.hpp"
+# include "relacy_shims.h"
 // We only use malloc/free anyway, and the delete macro messes up `= delete` method declarations.
 // We'll override the default trait malloc ourselves without a macro.
-#undef new
-#undef delete
-#undef malloc
-#undef free
+# undef new
+# undef delete
+# undef malloc
+# undef free
 #else
-#include <atomic>    // Requires C++11. Sorry VS2010.
-#include <cassert>
+# include <atomic>    // Requires C++11. Sorry VS2010.
+# include <cassert>
 #endif
 #include <algorithm>
 #include <array>
@@ -169,19 +169,19 @@ namespace pika::concurrency::detail {
     struct thread_id_converter<thread_id_t>
     {
         using thread_id_numeric_size_t = thread_id_size<sizeof(thread_id_t)>::numeric_t;
-#if !defined(__APPLE__)
+# if !defined(__APPLE__)
         using thread_id_hash_t = std::size_t;
-#else
+# else
         using thread_id_hash_t = thread_id_numeric_size_t;
-#endif
+# endif
 
         static thread_id_hash_t prehash(thread_id_t const& x)
         {
-#if !defined(__APPLE__)
+# if !defined(__APPLE__)
             return std::hash<std::thread::id>()(x);
-#else
+# else
             return *reinterpret_cast<thread_id_hash_t const*>(&x);
-#endif
+# endif
         }
     };
 }    // namespace pika::concurrency::detail
@@ -189,14 +189,14 @@ namespace pika::concurrency::detail {
 // Use a nice trick from this answer: http://stackoverflow.com/a/8438730/21475
 // In order to get a numeric thread ID in a platform-independent way, we use a thread-local
 // static variable's address as a thread identifier :-)
-#if defined(__GNUC__) || defined(__INTEL_COMPILER)
-#define MOODYCAMEL_THREADLOCAL __thread
-#elif defined(_MSC_VER)
-#define MOODYCAMEL_THREADLOCAL __declspec(thread)
-#else
+# if defined(__GNUC__) || defined(__INTEL_COMPILER)
+#  define MOODYCAMEL_THREADLOCAL __thread
+# elif defined(_MSC_VER)
+#  define MOODYCAMEL_THREADLOCAL __declspec(thread)
+# else
 // Assume C++11 compliant compiler
-#define MOODYCAMEL_THREADLOCAL thread_local
-#endif
+#  define MOODYCAMEL_THREADLOCAL thread_local
+# endif
 namespace pika::concurrency::detail {
     using thread_id_t = std::uintptr_t;
     static const thread_id_t invalid_thread_id = 0;    // Address can't be nullptr
@@ -212,91 +212,91 @@ namespace pika::concurrency::detail {
 
 // Exceptions
 #if !defined(MOODYCAMEL_EXCEPTIONS_ENABLED)
-#if (defined(_MSC_VER) && defined(_CPPUNWIND)) || (defined(__GNUC__) && defined(__EXCEPTIONS)) ||  \
-    (!defined(_MSC_VER) && !defined(__GNUC__))
-#define MOODYCAMEL_EXCEPTIONS_ENABLED
-#endif
+# if (defined(_MSC_VER) && defined(_CPPUNWIND)) || (defined(__GNUC__) && defined(__EXCEPTIONS)) || \
+     (!defined(_MSC_VER) && !defined(__GNUC__))
+#  define MOODYCAMEL_EXCEPTIONS_ENABLED
+# endif
 #endif
 #ifdef MOODYCAMEL_EXCEPTIONS_ENABLED
-#define MOODYCAMEL_TRY try
-#define MOODYCAMEL_CATCH(...) catch (__VA_ARGS__)
-#define MOODYCAMEL_RETHROW throw
-#define MOODYCAMEL_THROW(expr) throw(expr)
+# define MOODYCAMEL_TRY try
+# define MOODYCAMEL_CATCH(...) catch (__VA_ARGS__)
+# define MOODYCAMEL_RETHROW throw
+# define MOODYCAMEL_THROW(expr) throw(expr)
 #else
-#define MOODYCAMEL_TRY if (true)
-#define MOODYCAMEL_CATCH(...) else if (false)
-#define MOODYCAMEL_RETHROW
-#define MOODYCAMEL_THROW(expr)
+# define MOODYCAMEL_TRY if (true)
+# define MOODYCAMEL_CATCH(...) else if (false)
+# define MOODYCAMEL_RETHROW
+# define MOODYCAMEL_THROW(expr)
 #endif
 
 #if !defined(MOODYCAMEL_NOEXCEPT)
-#if !defined(MOODYCAMEL_EXCEPTIONS_ENABLED)
-#define MOODYCAMEL_NOEXCEPT
-#define MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr) true
-#define MOODYCAMEL_NOEXCEPT_ASSIGN(type, valueType, expr) true
-#elif defined(_MSC_VER) && defined(_NOEXCEPT) && _MSC_VER < 1800
+# if !defined(MOODYCAMEL_EXCEPTIONS_ENABLED)
+#  define MOODYCAMEL_NOEXCEPT
+#  define MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr) true
+#  define MOODYCAMEL_NOEXCEPT_ASSIGN(type, valueType, expr) true
+# elif defined(_MSC_VER) && defined(_NOEXCEPT) && _MSC_VER < 1800
 // VS2012's std::is_nothrow_[move_]constructible is broken and returns true when it shouldn't :-(
 // We have to assume *all* non-trivial constructors may throw on VS2012!
-#define MOODYCAMEL_NOEXCEPT _NOEXCEPT
-#define MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr)                                            \
-    (std::is_rvalue_reference<valueType>::value && std::is_move_constructible<type>::value ?       \
-            std::is_trivially_move_constructible<type>::value :                                    \
-            std::is_trivially_copy_constructible<type>::value)
-#define MOODYCAMEL_NOEXCEPT_ASSIGN(type, valueType, expr)                                          \
-    ((std::is_rvalue_reference<valueType>::value && std::is_move_assignable<type>::value ?         \
-             std::is_trivially_move_assignable<type>::value ||                                     \
-                 std::is_nothrow_move_assignable<type>::value :                                    \
-             std::is_trivially_copy_assignable<type>::value ||                                     \
-                 std::is_nothrow_copy_assignable<type>::value) &&                                  \
-        MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr))
-#elif defined(_MSC_VER) && defined(_NOEXCEPT) && _MSC_VER < 1900
-#define MOODYCAMEL_NOEXCEPT _NOEXCEPT
-#define MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr)                                            \
-    (std::is_rvalue_reference<valueType>::value && std::is_move_constructible<type>::value ?       \
-            std::is_trivially_move_constructible<type>::value ||                                   \
-                std::is_nothrow_move_constructible<type>::value :                                  \
-            std::is_trivially_copy_constructible<type>::value ||                                   \
-                std::is_nothrow_copy_constructible<type>::value)
-#define MOODYCAMEL_NOEXCEPT_ASSIGN(type, valueType, expr)                                          \
-    ((std::is_rvalue_reference<valueType>::value && std::is_move_assignable<type>::value ?         \
-             std::is_trivially_move_assignable<type>::value ||                                     \
-                 std::is_nothrow_move_assignable<type>::value :                                    \
-             std::is_trivially_copy_assignable<type>::value ||                                     \
-                 std::is_nothrow_copy_assignable<type>::value) &&                                  \
-        MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr))
-#else
-#define MOODYCAMEL_NOEXCEPT noexcept
-#define MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr) noexcept(expr)
-#define MOODYCAMEL_NOEXCEPT_ASSIGN(type, valueType, expr) noexcept(expr)
-#endif
+#  define MOODYCAMEL_NOEXCEPT _NOEXCEPT
+#  define MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr)                                          \
+   (std::is_rvalue_reference<valueType>::value && std::is_move_constructible<type>::value ?        \
+           std::is_trivially_move_constructible<type>::value :                                     \
+           std::is_trivially_copy_constructible<type>::value)
+#  define MOODYCAMEL_NOEXCEPT_ASSIGN(type, valueType, expr)                                        \
+   ((std::is_rvalue_reference<valueType>::value && std::is_move_assignable<type>::value ?          \
+            std::is_trivially_move_assignable<type>::value ||                                      \
+                std::is_nothrow_move_assignable<type>::value :                                     \
+            std::is_trivially_copy_assignable<type>::value ||                                      \
+                std::is_nothrow_copy_assignable<type>::value) &&                                   \
+       MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr))
+# elif defined(_MSC_VER) && defined(_NOEXCEPT) && _MSC_VER < 1900
+#  define MOODYCAMEL_NOEXCEPT _NOEXCEPT
+#  define MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr)                                          \
+   (std::is_rvalue_reference<valueType>::value && std::is_move_constructible<type>::value ?        \
+           std::is_trivially_move_constructible<type>::value ||                                    \
+               std::is_nothrow_move_constructible<type>::value :                                   \
+           std::is_trivially_copy_constructible<type>::value ||                                    \
+               std::is_nothrow_copy_constructible<type>::value)
+#  define MOODYCAMEL_NOEXCEPT_ASSIGN(type, valueType, expr)                                        \
+   ((std::is_rvalue_reference<valueType>::value && std::is_move_assignable<type>::value ?          \
+            std::is_trivially_move_assignable<type>::value ||                                      \
+                std::is_nothrow_move_assignable<type>::value :                                     \
+            std::is_trivially_copy_assignable<type>::value ||                                      \
+                std::is_nothrow_copy_assignable<type>::value) &&                                   \
+       MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr))
+# else
+#  define MOODYCAMEL_NOEXCEPT noexcept
+#  define MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr) noexcept(expr)
+#  define MOODYCAMEL_NOEXCEPT_ASSIGN(type, valueType, expr) noexcept(expr)
+# endif
 #endif
 
 #if !defined(MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED)
-#ifdef MCDBGQ_USE_RELACY
-#define MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED
-#else
+# ifdef MCDBGQ_USE_RELACY
+#  define MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED
+# else
 // VS2013 doesn't support `thread_local`, and MinGW-w64 w/ POSIX threading has a crippling bug: http://sourceforge.net/p/mingw-w64/bugs/445
 // g++ <=4.7 doesn't support thread_local either.
 // Finally, iOS/ARM doesn't have support for it either, and g++/ARM allows it to compile but it's unconfirmed to actually work
-#if (!defined(_MSC_VER) || _MSC_VER >= 1900) &&                                                    \
-    (!defined(__MINGW32__) && !defined(__MINGW64__) || !defined(__WINPTHREADS_VERSION)) &&         \
-    (!defined(__GNUC__) || __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)) &&              \
-    (!defined(__APPLE__) || !TARGET_OS_IPHONE) && !defined(__arm__) && !defined(_M_ARM) &&         \
-    !defined(__aarch64__)
+#  if (!defined(_MSC_VER) || _MSC_VER >= 1900) &&                                                  \
+      (!defined(__MINGW32__) && !defined(__MINGW64__) || !defined(__WINPTHREADS_VERSION)) &&       \
+      (!defined(__GNUC__) || __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)) &&            \
+      (!defined(__APPLE__) || !TARGET_OS_IPHONE) && !defined(__arm__) && !defined(_M_ARM) &&       \
+      !defined(__aarch64__)
 // Assume `thread_local` is fully supported in all other C++11 compilers/platforms
 //#define MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED    // always disabled for now since several users report having problems with it on
-#endif
-#endif
+#  endif
+# endif
 #endif
 
 // VS2012 doesn't support deleted functions.
 // In this case, we declare the function normally but don't define it. A link error will be generated if the function is called.
 #if !defined(MOODYCAMEL_DELETE_FUNCTION)
-#if defined(_MSC_VER) && _MSC_VER < 1800
-#define MOODYCAMEL_DELETE_FUNCTION
-#else
-#define MOODYCAMEL_DELETE_FUNCTION = delete
-#endif
+# if defined(_MSC_VER) && _MSC_VER < 1800
+#  define MOODYCAMEL_DELETE_FUNCTION
+# else
+#  define MOODYCAMEL_DELETE_FUNCTION = delete
+# endif
 #endif
 
 // Compiler-specific likely/unlikely hints
@@ -323,7 +323,7 @@ namespace pika::concurrency::detail {
 }    // namespace pika::concurrency::detail
 
 #ifdef MOODYCAMEL_QUEUE_INTERNAL_DEBUG
-#include "internal/concurrentqueue_internal_debug.h"
+# include "internal/concurrentqueue_internal_debug.h"
 #endif
 
 namespace pika::concurrency::detail {
@@ -418,7 +418,7 @@ namespace pika::concurrency::detail {
 #if !defined(MCDBGQ_USE_RELACY)
         // Memory allocation can be customized if needed.
         // malloc should return nullptr on failure, and handle alignment like std::malloc.
-#if defined(malloc) || defined(free)
+# if defined(malloc) || defined(free)
         // Gah, this is 2015, stop defining macros that break standard code already!
         // Work around malloc/free being special macros:
         static inline void* WORKAROUND_malloc(size_t size)
@@ -437,7 +437,7 @@ namespace pika::concurrency::detail {
         {
             return WORKAROUND_free(ptr);
         }
-#else
+# else
         static inline void* malloc(size_t size)
         {
             return std::malloc(size);
@@ -446,7 +446,7 @@ namespace pika::concurrency::detail {
         {
             return std::free(ptr);
         }
-#endif
+# endif
 #else
         // Debug versions when running under the Relacy race detector (ignore
         // these in user code)
@@ -538,8 +538,8 @@ namespace pika::concurrency::detail {
     static inline bool circular_less_than(T a, T b)
     {
 #ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4554)
+# pragma warning(push)
+# pragma warning(disable : 4554)
 #endif
         static_assert(std::is_integral<T>::value && !std::numeric_limits<T>::is_signed,
             "circular_less_than is intended to be used only with "
@@ -548,7 +548,7 @@ namespace pika::concurrency::detail {
         return static_cast<T>(a - b) >
             static_cast<T>(static_cast<T>(1) << static_cast<T>(sizeof(T) * CHAR_BIT - 1));
 #ifdef _MSC_VER
-#pragma warning(pop)
+# pragma warning(pop)
 #endif
     }
 
@@ -634,10 +634,10 @@ namespace pika::concurrency::detail {
 #endif
 
 #ifdef MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED
-#ifdef MCDBGQ_USE_RELACY
+# ifdef MCDBGQ_USE_RELACY
     using ThreadExitListener = RelacyThreadExitListener;
     using ThreadExitNotifier = RelacyThreadExitNotifier;
-#else
+# else
     struct ThreadExitListener
     {
         using callback_t = void (*)(void*);
@@ -705,7 +705,7 @@ namespace pika::concurrency::detail {
     private:
         ThreadExitListener* tail;
     };
-#endif
+# endif
 #endif
 
     template <typename T>
@@ -925,10 +925,10 @@ namespace pika::concurrency::detail {
         static const std::uint32_t EXPLICIT_CONSUMER_CONSUMPTION_QUOTA_BEFORE_ROTATE =
             static_cast<std::uint32_t>(Traits::EXPLICIT_CONSUMER_CONSUMPTION_QUOTA_BEFORE_ROTATE);
 #ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(                                                                                   \
-    disable : 4307)    // + integral constant overflow (that's what the ternary expression is for!)
-#pragma warning(disable : 4309)    // static_cast: Truncation of constant value
+# pragma warning(push)
+# pragma warning(                                                                                  \
+     disable : 4307)    // + integral constant overflow (that's what the ternary expression is for!)
+# pragma warning(disable : 4309)    // static_cast: Truncation of constant value
 #endif
         static const size_t MAX_SUBQUEUE_SIZE =
             (detail::const_numeric_max<size_t>::value -
@@ -938,7 +938,7 @@ namespace pika::concurrency::detail {
             ((static_cast<size_t>(Traits::MAX_SUBQUEUE_SIZE) + (BLOCK_SIZE - 1)) / BLOCK_SIZE *
                 BLOCK_SIZE);
 #ifdef _MSC_VER
-#pragma warning(pop)
+# pragma warning(pop)
 #endif
 
         static_assert(!std::numeric_limits<size_t>::is_signed && std::is_integral<size_t>::value,
@@ -2014,8 +2014,8 @@ namespace pika::concurrency::detail {
             // arrays of Blocks all be properly aligned (not just the first one). We use a union to force
             // this.
 #if defined(PIKA_GCC_VERSION) && !defined(PIKA_CLANG_VERSION)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsubobject-linkage"
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wsubobject-linkage"
 #endif
             union
             {
@@ -2024,7 +2024,7 @@ namespace pika::concurrency::detail {
                 detail::max_align_t dummy;
             };
 #if defined(PIKA_GCC_VERSION) && !defined(PIKA_CLANG_VERSION)
-#pragma GCC diagnostic pop
+# pragma GCC diagnostic pop
 #endif
 
         public:
@@ -4360,9 +4360,9 @@ namespace pika::concurrency::detail {
             detail::ThreadExitNotifier::unsubscribe(&producer->threadExitListener);
 
             // Remove from hash
-#if MCDBGQ_NOLOCKFREE_IMPLICITPRODHASH
+# if MCDBGQ_NOLOCKFREE_IMPLICITPRODHASH
             debug::DebugLock lock(implicitProdMutex);
-#endif
+# endif
             auto hash = implicitProducerHash.load(std::memory_order_acquire);
             assert(hash !=
                 nullptr);    // The thread exit listener is only registered if we were added to a hash in the first place
@@ -4565,5 +4565,5 @@ namespace pika::concurrency::detail {
 }    // namespace pika::concurrency::detail
 
 #if defined(__GNUC__)
-#pragma GCC diagnostic pop
+# pragma GCC diagnostic pop
 #endif

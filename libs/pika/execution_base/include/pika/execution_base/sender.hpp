@@ -8,7 +8,7 @@
 
 #include <pika/config.hpp>
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <pika/execution_base/p2300_forward.hpp>
+# include <pika/execution_base/p2300_forward.hpp>
 
 namespace pika::execution::experimental {
     template <typename Scheduler>
@@ -39,20 +39,20 @@ namespace pika::execution::experimental {
     };
 }    // namespace pika::execution::experimental
 #else
-#include <pika/config/constexpr.hpp>
-#include <pika/execution_base/operation_state.hpp>
-#include <pika/execution_base/receiver.hpp>
-#include <pika/functional/tag_invoke.hpp>
-#include <pika/type_support/equality.hpp>
+# include <pika/config/constexpr.hpp>
+# include <pika/execution_base/operation_state.hpp>
+# include <pika/execution_base/receiver.hpp>
+# include <pika/functional/tag_invoke.hpp>
+# include <pika/type_support/equality.hpp>
 
-#include <cstddef>
-#include <exception>
-#include <memory>
-#include <type_traits>
-#include <utility>
+# include <cstddef>
+# include <exception>
+# include <memory>
+# include <type_traits>
+# include <utility>
 
 namespace pika::execution::experimental {
-#if defined(DOXYGEN)
+# if defined(DOXYGEN)
     /// connect is a customization point object.
     /// For some subexpression `s` and `r`, let `S` be the type such that `decltype((s))`
     /// is `S` and let `R` be the type such that `decltype((r))` is `R`. The result of
@@ -93,7 +93,7 @@ namespace pika::execution::experimental {
     /// The customization is implemented in terms of
     /// `pika::functional::detail::tag_invoke`.
 
-#endif
+# endif
     // We define an empty dummy type for compatibility. Senders can define both
     // value/error_types for our non-conformant implementation, and
     // completion_signatures for the conformant implementation. Senders do not

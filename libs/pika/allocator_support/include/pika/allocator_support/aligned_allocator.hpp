@@ -20,7 +20,7 @@
 #if defined(PIKA_HAVE_JEMALLOC_PREFIX)
 // this is currently used only for jemalloc and if a special API prefix is
 // used for its APIs
-#include <jemalloc/jemalloc.h>
+# include <jemalloc/jemalloc.h>
 
 // NOLINTNEXTLINE(bugprone-reserved-identifier)
 inline void* __aligned_alloc(std::size_t alignment, std::size_t size) noexcept
@@ -36,7 +36,7 @@ inline void __aligned_free(void* p) noexcept
 
 #elif defined(PIKA_HAVE_CXX17_STD_ALIGNED_ALLOC)
 
-#include <cstdlib>
+# include <cstdlib>
 
 // NOLINTNEXTLINE(bugprone-reserved-identifier)
 inline void* __aligned_alloc(std::size_t alignment, std::size_t size) noexcept
@@ -52,7 +52,7 @@ inline void __aligned_free(void* p) noexcept
 
 #elif defined(PIKA_HAVE_C11_ALIGNED_ALLOC)
 
-#include <stdlib.h>
+# include <stdlib.h>
 
 // NOLINTNEXTLINE(bugprone-reserved-identifier)
 inline void* __aligned_alloc(std::size_t alignment, std::size_t size) noexcept
@@ -68,7 +68,7 @@ inline void __aligned_free(void* p) noexcept
 
 #else    // !PIKA_HAVE_CXX17_STD_ALIGNED_ALLOC && !PIKA_HAVE_C11_ALIGNED_ALLOC
 
-#include <cstdlib>
+# include <cstdlib>
 
 // provide our own (simple) implementation of aligned_alloc
 // NOLINTNEXTLINE(bugprone-reserved-identifier)

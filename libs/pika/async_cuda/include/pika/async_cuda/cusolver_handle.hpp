@@ -8,13 +8,13 @@
 
 #include <pika/config.hpp>
 #if defined(PIKA_HAVE_GPU_SUPPORT)
-#include <pika/async_cuda/cuda_stream.hpp>
-#include <pika/async_cuda/custom_lapack_api.hpp>
+# include <pika/async_cuda/cuda_stream.hpp>
+# include <pika/async_cuda/custom_lapack_api.hpp>
 
-#include <fmt/format.h>
-#include <whip.hpp>
+# include <fmt/format.h>
+# include <whip.hpp>
 
-#include <string>
+# include <string>
 
 namespace pika::cuda::experimental {
     /// RAII wrapper for a cuSOLVER handle.

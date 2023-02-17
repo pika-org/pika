@@ -71,12 +71,12 @@ namespace pika::util::detail {
             // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=98503) so we disable
             // the warning locally.
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 110000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Warray-bounds"
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Warray-bounds"
 #endif
             return detail::mem_ptr_target<C>(PIKA_FORWARD(T1, t1)).*pm;
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 110000
-#pragma GCC diagnostic pop
+# pragma GCC diagnostic pop
 #endif
         }
     };
@@ -103,12 +103,12 @@ namespace pika::util::detail {
             // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=98503) so we disable
             // the warning locally.
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 110000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Warray-bounds"
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Warray-bounds"
 #endif
             return (detail::mem_ptr_target<C>(PIKA_FORWARD(T1, t1)).*pm)(PIKA_FORWARD(Tn, tn)...);
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 110000
-#pragma GCC diagnostic pop
+# pragma GCC diagnostic pop
 #endif
         }
     };

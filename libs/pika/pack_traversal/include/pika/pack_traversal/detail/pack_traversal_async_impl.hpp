@@ -177,12 +177,12 @@ namespace pika {
             {
                 bool expected = false;
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 120000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wstringop-overflow"
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wstringop-overflow"
 #endif
                 if (finished_.compare_exchange_strong(expected, true))
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 120000
-#pragma GCC diagnostic pop
+# pragma GCC diagnostic pop
 #endif
                 {
                     PIKA_INVOKE(visitor(), async_traverse_complete_tag{}, PIKA_MOVE(args_));

@@ -125,27 +125,27 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/config.hpp>
-#include <pika/async_base/launch_policy.hpp>
-#include <pika/futures/future.hpp>
-#include <pika/futures/traits/acquire_future.hpp>
-#include <pika/futures/traits/detail/future_traits.hpp>
-#include <pika/futures/traits/future_access.hpp>
-#include <pika/futures/traits/future_traits.hpp>
-#include <pika/futures/traits/is_future.hpp>
-#include <pika/futures/traits/is_future_range.hpp>
-#include <pika/iterator_support/range.hpp>
-#include <pika/memory/intrusive_ptr.hpp>
-#include <pika/type_support/decay.hpp>
-#include <pika/type_support/unwrap_reference.hpp>
+# include <pika/config.hpp>
+# include <pika/async_base/launch_policy.hpp>
+# include <pika/futures/future.hpp>
+# include <pika/futures/traits/acquire_future.hpp>
+# include <pika/futures/traits/detail/future_traits.hpp>
+# include <pika/futures/traits/future_access.hpp>
+# include <pika/futures/traits/future_traits.hpp>
+# include <pika/futures/traits/is_future.hpp>
+# include <pika/futures/traits/is_future_range.hpp>
+# include <pika/iterator_support/range.hpp>
+# include <pika/memory/intrusive_ptr.hpp>
+# include <pika/type_support/decay.hpp>
+# include <pika/type_support/unwrap_reference.hpp>
 
-#include <algorithm>
-#include <cstddef>
-#include <iterator>
-#include <tuple>
-#include <type_traits>
-#include <utility>
-#include <vector>
+# include <algorithm>
+# include <cstddef>
+# include <iterator>
+# include <tuple>
+# include <type_traits>
+# include <utility>
+# include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {

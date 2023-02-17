@@ -140,30 +140,30 @@ namespace pika {
 }    // namespace pika
 #else
 
-#include <pika/config.hpp>
-#include <pika/assert.hpp>
-#include <pika/async_combinators/detail/throw_if_exceptional.hpp>
-#include <pika/functional/deferred_call.hpp>
-#include <pika/futures/future.hpp>
-#include <pika/futures/traits/acquire_shared_state.hpp>
-#include <pika/futures/traits/detail/future_traits.hpp>
-#include <pika/futures/traits/future_access.hpp>
-#include <pika/futures/traits/is_future.hpp>
-#include <pika/iterator_support/traits/is_iterator.hpp>
-#include <pika/modules/errors.hpp>
-#include <pika/preprocessor/strip_parens.hpp>
-#include <pika/type_support/pack.hpp>
+# include <pika/config.hpp>
+# include <pika/assert.hpp>
+# include <pika/async_combinators/detail/throw_if_exceptional.hpp>
+# include <pika/functional/deferred_call.hpp>
+# include <pika/futures/future.hpp>
+# include <pika/futures/traits/acquire_shared_state.hpp>
+# include <pika/futures/traits/detail/future_traits.hpp>
+# include <pika/futures/traits/future_access.hpp>
+# include <pika/futures/traits/is_future.hpp>
+# include <pika/iterator_support/traits/is_iterator.hpp>
+# include <pika/modules/errors.hpp>
+# include <pika/preprocessor/strip_parens.hpp>
+# include <pika/type_support/pack.hpp>
 
-#include <algorithm>
-#include <array>
-#include <atomic>
-#include <cstddef>
-#include <iterator>
-#include <memory>
-#include <tuple>
-#include <type_traits>
-#include <utility>
-#include <vector>
+# include <algorithm>
+# include <array>
+# include <atomic>
+# include <cstddef>
+# include <iterator>
+# include <memory>
+# include <tuple>
+# include <type_traits>
+# include <utility>
+# include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {

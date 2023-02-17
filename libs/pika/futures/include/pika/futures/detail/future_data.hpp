@@ -248,12 +248,12 @@ namespace pika::lcos::detail {
         bool has_exception() const noexcept
         {
 #if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wstringop-overflow"
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wstringop-overflow"
 #endif
             return state_.load(std::memory_order_acquire) == exception;
 #if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic pop
+# pragma GCC diagnostic pop
 #endif
         }
 

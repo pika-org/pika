@@ -12,11 +12,11 @@
 
 #if !defined(PIKA_HAVE_BOOST_ITERATOR_TRAVERSAL_TAG_COMPATIBILITY)
 
-#include <pika/type_support/lazy_conditional.hpp>
-#include <pika/type_support/type_identity.hpp>
+# include <pika/type_support/lazy_conditional.hpp>
+# include <pika/type_support/type_identity.hpp>
 
-#include <iterator>
-#include <type_traits>
+# include <iterator>
+# include <type_traits>
 
 namespace pika::iterators {
 
@@ -118,13 +118,13 @@ namespace pika::iterators {
     };
 }    // namespace pika::iterators
 
-#define PIKA_ITERATOR_TRAVERSAL_TAG_NS pika
+# define PIKA_ITERATOR_TRAVERSAL_TAG_NS pika
 
 #else
 
-#include <boost/iterator/iterator_categories.hpp>
+# include <boost/iterator/iterator_categories.hpp>
 
-#define PIKA_ITERATOR_TRAVERSAL_TAG_NS boost
+# define PIKA_ITERATOR_TRAVERSAL_TAG_NS boost
 
 #endif    // PIKA_HAVE_BOOST_ITERATOR_TRAVERSAL_TAG_COMPATIBILITY
 

@@ -31,8 +31,8 @@
 #include <pika/thread_support/unlock_guard.hpp>
 
 #ifdef __APPLE__
-#include <crt_externs.h>
-#define environ (*_NSGetEnviron())
+# include <crt_externs.h>
+# define environ (*_NSGetEnviron())
 #elif !defined(PIKA_WINDOWS)
 extern char** environ;
 #endif

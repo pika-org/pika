@@ -27,7 +27,7 @@ void __cpuid(registers_t& CPUInfo, uint32_t InfoType)
 }
 
 #elif defined _MSC_VER
-#include <intrin.h>
+# include <intrin.h>
 #endif
 
 bool has_bit_set(uint32_t value, uint32_t bit)

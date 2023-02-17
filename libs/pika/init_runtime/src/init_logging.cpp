@@ -8,25 +8,25 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_LOGGING)
-#include <pika/assert.hpp>
-#include <pika/init_runtime/detail/init_logging.hpp>
-#include <pika/runtime/get_locality_id.hpp>
-#include <pika/runtime/get_worker_thread_num.hpp>
-#include <pika/runtime_configuration/runtime_configuration.hpp>
-#include <pika/threading_base/thread_data.hpp>
+# include <pika/assert.hpp>
+# include <pika/init_runtime/detail/init_logging.hpp>
+# include <pika/runtime/get_locality_id.hpp>
+# include <pika/runtime/get_worker_thread_num.hpp>
+# include <pika/runtime_configuration/runtime_configuration.hpp>
+# include <pika/threading_base/thread_data.hpp>
 
-#include <fmt/ostream.h>
-#include <fmt/printf.h>
+# include <fmt/ostream.h>
+# include <fmt/printf.h>
 
-#include <cstddef>
-#include <cstdint>
-#include <cstdlib>
-#include <iostream>
-#include <string>
+# include <cstddef>
+# include <cstdint>
+# include <cstdlib>
+# include <iostream>
+# include <string>
 
-#if defined(ANDROID) || defined(__ANDROID__)
-#include <android/log.h>
-#endif
+# if defined(ANDROID) || defined(__ANDROID__)
+#  include <android/log.h>
+# endif
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::util {
@@ -180,7 +180,7 @@ namespace pika::util {
         }
     };
 
-#if defined(ANDROID) || defined(__ANDROID__)
+# if defined(ANDROID) || defined(__ANDROID__)
     // default log destination for Android
     struct android_log : logging::destination::manipulator
     {
@@ -201,7 +201,7 @@ namespace pika::util {
 
         std::string tag;
     };
-#endif
+# endif
 
     ///////////////////////////////////////////////////////////////////////////
     struct dummy_thread_component_id : logging::formatter::manipulator
@@ -337,15 +337,15 @@ namespace pika::util {
             {
                 logger_writer_type& writer = timing_logger()->writer();
 
-#if defined(ANDROID) || defined(__ANDROID__)
+# if defined(ANDROID) || defined(__ANDROID__)
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = isconsole ? "android_log" : "console";
 
                 writer.set_destination("android_log", android_log("pika.timing"));
-#else
+# else
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = isconsole ? "cerr" : "console";
-#endif
+# endif
                 if (logformat.empty())
                     logformat = "|\\n";
 
@@ -383,16 +383,16 @@ namespace pika::util {
             logger_writer_type& writer = pika_logger()->writer();
             logger_writer_type& error_writer = pika_error_logger()->writer();
 
-#if defined(ANDROID) || defined(__ANDROID__)
+# if defined(ANDROID) || defined(__ANDROID__)
             if (logdest.empty())    // ensure minimal defaults
                 logdest = isconsole ? "android_log" : "console";
 
             writer.set_destination("android_log", android_log("pika"));
             error_writer.set_destination("android_log", android_log("pika"));
-#else
+# else
             if (logdest.empty())    // ensure minimal defaults
                 logdest = isconsole ? "cerr" : "console";
-#endif
+# endif
             if (logformat.empty())
                 logformat = "|\\n";
 
@@ -407,10 +407,10 @@ namespace pika::util {
 
                 // errors are logged to the given destination and to cerr
                 set_console_dest(error_writer, "console", lvl, destination_pika);    //-V106
-#if !defined(ANDROID) && !defined(__ANDROID__)
+# if !defined(ANDROID) && !defined(__ANDROID__)
                 if (logdest != "cerr")
                     error_writer.write(logformat, logdest + " cerr");
-#endif
+# endif
                 define_formatters(error_writer);
 
                 pika_error_logger()->mark_as_initialized();
@@ -426,11 +426,11 @@ namespace pika::util {
                 }
                 else
                 {
-#if defined(ANDROID) || defined(__ANDROID__)
+# if defined(ANDROID) || defined(__ANDROID__)
                     error_writer.write(logformat, "android_log");
-#else
+# else
                     error_writer.write(logformat, "cerr");
-#endif
+# endif
                 }
                 define_formatters(error_writer);
 
@@ -466,14 +466,14 @@ namespace pika::util {
             {
                 logger_writer_type& writer = app_logger()->writer();
 
-#if defined(ANDROID) || defined(__ANDROID__)
+# if defined(ANDROID) || defined(__ANDROID__)
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = isconsole ? "android_log" : "console";
                 writer.set_destination("android_log", android_log("pika.application"));
-#else
+# else
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = isconsole ? "cerr" : "console";
-#endif
+# endif
                 if (logformat.empty())
                     logformat = "|\\n";
 
@@ -513,14 +513,14 @@ namespace pika::util {
             {
                 logger_writer_type& writer = debuglog_logger()->writer();
 
-#if defined(ANDROID) || defined(__ANDROID__)
+# if defined(ANDROID) || defined(__ANDROID__)
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = isconsole ? "android_log" : "console";
                 writer.set_destination("android_log", android_log("pika.debuglog"));
-#else
+# else
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = isconsole ? "cerr" : "console";
-#endif
+# endif
                 if (logformat.empty())
                     logformat = "|\\n";
 
@@ -555,14 +555,14 @@ namespace pika::util {
             {
                 logger_writer_type& writer = timing_console_logger()->writer();
 
-#if defined(ANDROID) || defined(__ANDROID__)
+# if defined(ANDROID) || defined(__ANDROID__)
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = "android_log";
                 writer.set_destination("android_log", android_log("pika.timing"));
-#else
+# else
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = "cerr";
-#endif
+# endif
                 if (logformat.empty())
                     logformat = "|\\n";
 
@@ -591,14 +591,14 @@ namespace pika::util {
             {
                 logger_writer_type& writer = pika_console_logger()->writer();
 
-#if defined(ANDROID) || defined(__ANDROID__)
+# if defined(ANDROID) || defined(__ANDROID__)
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = "android_log";
                 writer.set_destination("android_log", android_log("pika"));
-#else
+# else
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = "cerr";
-#endif
+# endif
                 if (logformat.empty())
                     logformat = "|\\n";
 
@@ -627,14 +627,14 @@ namespace pika::util {
             {
                 logger_writer_type& writer = app_console_logger()->writer();
 
-#if defined(ANDROID) || defined(__ANDROID__)
+# if defined(ANDROID) || defined(__ANDROID__)
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = "android_log";
                 writer.set_destination("android_log", android_log("pika.application"));
-#else
+# else
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = "cerr";
-#endif
+# endif
                 if (logformat.empty())
                     logformat = "|\\n";
 
@@ -664,14 +664,14 @@ namespace pika::util {
             {
                 logger_writer_type& writer = debuglog_console_logger()->writer();
 
-#if defined(ANDROID) || defined(__ANDROID__)
+# if defined(ANDROID) || defined(__ANDROID__)
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = "android_log";
                 writer.set_destination("android_log", android_log("pika.debuglog"));
-#else
+# else
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = "cerr";
-#endif
+# endif
                 if (logformat.empty())
                     logformat = "|\\n";
 
@@ -800,12 +800,12 @@ namespace pika::util {
 
 #else
 
-#include <pika/init_runtime/detail/init_logging.hpp>
-#include <pika/modules/logging.hpp>
-#include <pika/util/get_entry_as.hpp>
+# include <pika/init_runtime/detail/init_logging.hpp>
+# include <pika/modules/logging.hpp>
+# include <pika/util/get_entry_as.hpp>
 
-#include <iostream>
-#include <string>
+# include <iostream>
+# include <string>
 
 namespace pika { namespace util {
 

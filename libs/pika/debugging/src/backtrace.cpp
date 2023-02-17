@@ -13,57 +13,57 @@
 
 #if defined(PIKA_HAVE_STACKTRACES)
 
-#include <pika/debugging/backtrace/backtrace.hpp>
+# include <pika/debugging/backtrace/backtrace.hpp>
 
-#if (defined(__linux) || defined(__APPLE__) || defined(__sun)) &&                                  \
-    (!defined(__ANDROID__) || !defined(ANDROID))
-#define PIKA_HAVE_EXECINFO
-#define PIKA_HAVE_DLFCN
-#if defined(__GNUC__) && !defined(__clang__)
-#define PIKA_HAVE_UNWIND
-#endif
-#endif
+# if (defined(__linux) || defined(__APPLE__) || defined(__sun)) &&                                 \
+     (!defined(__ANDROID__) || !defined(ANDROID))
+#  define PIKA_HAVE_EXECINFO
+#  define PIKA_HAVE_DLFCN
+#  if defined(__GNUC__) && !defined(__clang__)
+#   define PIKA_HAVE_UNWIND
+#  endif
+# endif
 
-#if defined(__GNUC__) && !defined(__bgq__)
-#define PIKA_HAVE_ABI_CXA_DEMANGLE
-#endif
+# if defined(__GNUC__) && !defined(__bgq__)
+#  define PIKA_HAVE_ABI_CXA_DEMANGLE
+# endif
 
-#ifdef PIKA_HAVE_EXECINFO
-#include <execinfo.h>
-#endif
+# ifdef PIKA_HAVE_EXECINFO
+#  include <execinfo.h>
+# endif
 
-#ifdef PIKA_HAVE_ABI_CXA_DEMANGLE
-#include <cxxabi.h>
-#endif
+# ifdef PIKA_HAVE_ABI_CXA_DEMANGLE
+#  include <cxxabi.h>
+# endif
 
-#ifdef PIKA_HAVE_DLFCN
-#include <dlfcn.h>
-#endif
-#ifdef PIKA_HAVE_UNWIND
-#include <unwind.h>
-#endif
+# ifdef PIKA_HAVE_DLFCN
+#  include <dlfcn.h>
+# endif
+# ifdef PIKA_HAVE_UNWIND
+#  include <unwind.h>
+# endif
 
-#include <cstddef>
-#include <cstdint>
-#include <cstdlib>
-#include <cstring>
-#include <iomanip>
-#include <ostream>
-#include <sstream>
-#include <string>
-#include <utility>
-#include <vector>
+# include <cstddef>
+# include <cstdint>
+# include <cstdlib>
+# include <cstring>
+# include <iomanip>
+# include <ostream>
+# include <sstream>
+# include <string>
+# include <utility>
+# include <vector>
 
-#if defined(PIKA_MSVC)
-#include <windows.h>
+# if defined(PIKA_MSVC)
+#  include <windows.h>
 
-#include <dbghelp.h>
-#include <stdlib.h>
-#include <winbase.h>
-#endif
+#  include <dbghelp.h>
+#  include <stdlib.h>
+#  include <winbase.h>
+# endif
 
 namespace pika::debug::detail::stack_trace {
-#if defined(PIKA_HAVE_EXECINFO) && defined(PIKA_HAVE_UNWIND)
+# if defined(PIKA_HAVE_EXECINFO) && defined(PIKA_HAVE_UNWIND)
     struct trace_data
     {
         trace_data(void** array, std::size_t size)
@@ -125,35 +125,35 @@ namespace pika::debug::detail::stack_trace {
         return (std::size_t(-1) != d.count_) ? d.count_ : 0;
     }
 
-#elif defined(PIKA_HAVE_EXECINFO)
+# elif defined(PIKA_HAVE_EXECINFO)
 
     std::size_t trace(void** array, std::size_t n)
     {
         return ::backtrace(array, static_cast<int>(n));
     }
 
-#elif defined(PIKA_MSVC)
+# elif defined(PIKA_MSVC)
 
     std::size_t trace(void** array, std::size_t n)
     {
-#if _WIN32_WINNT < 0x0600
+#  if _WIN32_WINNT < 0x0600
         // for Windows XP/Windows Server 2003
         if (n >= 63)
             n = 62;
-#endif
+#  endif
         return RtlCaptureStackBackTrace(ULONG(0), ULONG(n), array, nullptr);
     }
 
-#else
+# else
 
     std::size_t trace(void** /*array*/, std::size_t /*n*/)
     {
         return 0;
     }
 
-#endif
+# endif
 
-#if defined(PIKA_HAVE_EXECINFO)
+# if defined(PIKA_HAVE_EXECINFO)
     std::string get_symbol_exec_info(void* address)
     {
         char** ptr = backtrace_symbols(&address, 1);
@@ -172,9 +172,9 @@ namespace pika::debug::detail::stack_trace {
             throw;
         }
     }
-#endif
+# endif
 
-#if defined(PIKA_HAVE_DLFCN) && defined(PIKA_HAVE_ABI_CXA_DEMANGLE)
+# if defined(PIKA_HAVE_DLFCN) && defined(PIKA_HAVE_ABI_CXA_DEMANGLE)
     std::string get_symbol(void* ptr)
     {
         if (!ptr)
@@ -187,18 +187,18 @@ namespace pika::debug::detail::stack_trace {
         Dl_info info = {nullptr, nullptr, nullptr, nullptr};
         if (dladdr(ptr, &info) == 0)
         {
-#if !defined(PIKA_HAVE_EXECINFO)
+#  if !defined(PIKA_HAVE_EXECINFO)
             res << "???";
-#else
+#  else
             res << get_symbol_exec_info(ptr);
             need_offset = false;
-#endif
+#  endif
         }
         else
         {
             if (info.dli_sname)
             {
-#if defined(PIKA_HAVE_STACKTRACES_DEMANGLE_SYMBOLS)
+#  if defined(PIKA_HAVE_STACKTRACES_DEMANGLE_SYMBOLS)
                 int status = 0;
                 char* demangled = abi::__cxa_demangle(info.dli_sname, nullptr, nullptr, &status);
                 if (demangled)
@@ -210,18 +210,18 @@ namespace pika::debug::detail::stack_trace {
                 {
                     res << info.dli_sname;
                 }
-#else
+#  else
                 res << info.dli_sname;
-#endif
+#  endif
             }
             else
             {
-#if !defined(PIKA_HAVE_EXECINFO)
+#  if !defined(PIKA_HAVE_EXECINFO)
                 res << "???";
-#else
+#  else
                 res << get_symbol_exec_info(ptr);
                 need_offset = false;
-#endif
+#  endif
             }
 
             std::ptrdiff_t offset =
@@ -274,7 +274,7 @@ namespace pika::debug::detail::stack_trace {
         out << std::flush;
     }
 
-#elif defined(PIKA_HAVE_EXECINFO)
+# elif defined(PIKA_HAVE_EXECINFO)
 
     std::string get_symbol(void* address)
     {
@@ -333,7 +333,7 @@ namespace pika::debug::detail::stack_trace {
         }
     }
 
-#elif defined(PIKA_MSVC)
+# elif defined(PIKA_MSVC)
 
     namespace {
         HANDLE hProcess = nullptr;
@@ -420,7 +420,7 @@ namespace pika::debug::detail::stack_trace {
         out << std::flush;
     }
 
-#else
+# else
 
     std::string get_symbol(void* ptr)
     {
@@ -463,7 +463,7 @@ namespace pika::debug::detail::stack_trace {
         out << std::flush;
     }
 
-#endif
+# endif
 }    // namespace pika::debug::detail::stack_trace
 
 #endif

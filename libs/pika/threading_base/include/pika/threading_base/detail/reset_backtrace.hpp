@@ -10,11 +10,11 @@
 
 #ifdef PIKA_HAVE_THREAD_BACKTRACE_ON_SUSPENSION
 
-#include <pika/errors/error_code.hpp>
-#include <pika/threading_base/threading_base_fwd.hpp>
+# include <pika/errors/error_code.hpp>
+# include <pika/threading_base/threading_base_fwd.hpp>
 
-#include <memory>
-#include <string>
+# include <memory>
+# include <string>
 
 namespace pika::threads::detail {
     struct reset_backtrace
@@ -24,9 +24,9 @@ namespace pika::threads::detail {
 
         thread_id_type id_;
         std::unique_ptr<pika::debug::detail::backtrace> backtrace_;
-#ifdef PIKA_HAVE_THREAD_FULLBACKTRACE_ON_SUSPENSION
+# ifdef PIKA_HAVE_THREAD_FULLBACKTRACE_ON_SUSPENSION
         std::string full_backtrace_;
-#endif
+# endif
         error_code& ec_;
     };
 }    // namespace pika::threads::detail

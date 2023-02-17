@@ -123,28 +123,28 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/config.hpp>
-#include <pika/async_combinators/detail/throw_if_exceptional.hpp>
-#include <pika/futures/detail/future_data.hpp>
-#include <pika/futures/traits/acquire_shared_state.hpp>
-#include <pika/futures/traits/detail/future_traits.hpp>
-#include <pika/futures/traits/future_access.hpp>
-#include <pika/futures/traits/is_future.hpp>
-#include <pika/iterator_support/range.hpp>
-#include <pika/iterator_support/traits/is_iterator.hpp>
-#include <pika/memory/intrusive_ptr.hpp>
-#include <pika/type_support/decay.hpp>
-#include <pika/type_support/unwrap_reference.hpp>
+# include <pika/config.hpp>
+# include <pika/async_combinators/detail/throw_if_exceptional.hpp>
+# include <pika/futures/detail/future_data.hpp>
+# include <pika/futures/traits/acquire_shared_state.hpp>
+# include <pika/futures/traits/detail/future_traits.hpp>
+# include <pika/futures/traits/future_access.hpp>
+# include <pika/futures/traits/is_future.hpp>
+# include <pika/iterator_support/range.hpp>
+# include <pika/iterator_support/traits/is_iterator.hpp>
+# include <pika/memory/intrusive_ptr.hpp>
+# include <pika/type_support/decay.hpp>
+# include <pika/type_support/unwrap_reference.hpp>
 
-#include <algorithm>
-#include <array>
-#include <cstddef>
-#include <functional>
-#include <iterator>
-#include <tuple>
-#include <type_traits>
-#include <utility>
-#include <vector>
+# include <algorithm>
+# include <array>
+# include <cstddef>
+# include <functional>
+# include <iterator>
+# include <tuple>
+# include <type_traits>
+# include <utility>
+# include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {
@@ -408,9 +408,9 @@ namespace pika {
     }
 
     template <typename Future>
-#if !defined(PIKA_INTEL_VERSION)
+# if !defined(PIKA_INTEL_VERSION)
     PIKA_FORCEINLINE
-#endif
+# endif
         void
         wait_all_nothrow(std::vector<Future>&& values)
     {
@@ -418,9 +418,9 @@ namespace pika {
     }
 
     template <typename Future>
-#if !defined(PIKA_INTEL_VERSION)
+# if !defined(PIKA_INTEL_VERSION)
     PIKA_FORCEINLINE
-#endif
+# endif
         void
         wait_all(std::vector<Future>&& values)
     {

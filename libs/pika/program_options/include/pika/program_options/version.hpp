@@ -13,7 +13,7 @@
     cause compilation errors for existing code.
 */
 #ifdef PIKA_PROGRAM_OPTIONS_VERSION
-#error PIKA_PROGRAM_OPTIONS_VERSION already defined
+# error PIKA_PROGRAM_OPTIONS_VERSION already defined
 #endif
 #define PIKA_PROGRAM_OPTIONS_VERSION 2
 

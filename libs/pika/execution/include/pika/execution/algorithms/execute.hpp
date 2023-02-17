@@ -9,14 +9,14 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <pika/execution_base/p2300_forward.hpp>
+# include <pika/execution_base/p2300_forward.hpp>
 #else
-#include <pika/execution/algorithms/start_detached.hpp>
-#include <pika/execution/algorithms/then.hpp>
-#include <pika/execution_base/sender.hpp>
-#include <pika/functional/detail/tag_fallback_invoke.hpp>
+# include <pika/execution/algorithms/start_detached.hpp>
+# include <pika/execution/algorithms/then.hpp>
+# include <pika/execution_base/sender.hpp>
+# include <pika/functional/detail/tag_fallback_invoke.hpp>
 
-#include <utility>
+# include <utility>
 
 namespace pika::execution::experimental {
     inline constexpr struct execute_t final : pika::functional::detail::tag_fallback<execute_t>

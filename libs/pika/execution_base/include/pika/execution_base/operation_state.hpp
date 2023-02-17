@@ -8,21 +8,21 @@
 
 #include <pika/config.hpp>
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <pika/execution_base/p2300_forward.hpp>
+# include <pika/execution_base/p2300_forward.hpp>
 
 namespace pika::execution::experimental {
     template <typename OperationState>
     inline constexpr bool is_operation_state_v = operation_state<OperationState>;
 }
 #else
-#include <pika/config/constexpr.hpp>
-#include <pika/functional/tag_invoke.hpp>
+# include <pika/config/constexpr.hpp>
+# include <pika/functional/tag_invoke.hpp>
 
-#include <type_traits>
-#include <utility>
+# include <type_traits>
+# include <utility>
 
 namespace pika::execution::experimental {
-#if defined(DOXYGEN)
+# if defined(DOXYGEN)
     /// start is a customization point object. The expression
     /// `pika::execution::experimental::start(r)` is equivalent to:
     ///     * `r.start()`, if that expression is valid. If the function selected
@@ -36,7 +36,7 @@ namespace pika::execution::experimental {
     /// The customization is implemented in terms of `pika::functional::detail::tag_invoke`.
     template <typename O>
     void start(O&& o);
-#endif
+# endif
 
     /// An `operation_state` is an object representing the asynchronous operation
     /// that has been returned from calling `pika::execution::experimental::connect` with

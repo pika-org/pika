@@ -12,9 +12,9 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
-#include <pika/concurrency/deque.hpp>
+# include <pika/concurrency/deque.hpp>
 #else
-#include <boost/lockfree/queue.hpp>
+# include <boost/lockfree/queue.hpp>
 #endif
 
 #include <pika/allocator_support/aligned_allocator.hpp>

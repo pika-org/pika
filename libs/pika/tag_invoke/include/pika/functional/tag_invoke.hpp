@@ -97,10 +97,10 @@ namespace pika::functional::detail {
 }    // namespace pika::functional::detail
 #else
 
-#include <pika/config.hpp>
+# include <pika/config.hpp>
 
-#include <type_traits>
-#include <utility>
+# include <type_traits>
+# include <utility>
 
 namespace pika::functional::detail {
     template <auto& Tag>
@@ -134,11 +134,11 @@ namespace pika::functional::detail {
     }    // namespace tag_invoke_t_ns
 
     namespace tag_invoke_ns {
-#if !defined(PIKA_COMPUTE_DEVICE_CODE)
+# if !defined(PIKA_COMPUTE_DEVICE_CODE)
         inline constexpr tag_invoke_t_ns::tag_invoke_t tag_invoke = {};
-#else
+# else
         PIKA_DEVICE static tag_invoke_t_ns::tag_invoke_t const tag_invoke = {};
-#endif
+# endif
     }    // namespace tag_invoke_ns
 
     ///////////////////////////////////////////////////////////////////////////
@@ -171,19 +171,19 @@ namespace pika::functional::detail {
     // correctly check this condition. We default to the more relaxed
     // noexcept(true) to not falsely exclude correct overloads. However, this
     // may lead to noexcept(false) overloads falsely being candidates.
-#if defined(__NVCC__) && defined(PIKA_CUDA_VERSION) && (PIKA_CUDA_VERSION < 1102)
+# if defined(__NVCC__) && defined(PIKA_CUDA_VERSION) && (PIKA_CUDA_VERSION < 1102)
     template <typename Tag, typename... Args>
     struct is_nothrow_tag_invocable : is_tag_invocable<Tag, Args...>
     {
     };
-#else
+# else
     template <typename Tag, typename... Args>
     struct is_nothrow_tag_invocable
       : detail::is_nothrow_tag_invocable_impl<decltype(tag_invoke_ns::tag_invoke)(Tag, Args...),
             is_tag_invocable_v<Tag, Args...>>
     {
     };
-#endif
+# endif
 
     template <typename Tag, typename... Args>
     inline constexpr bool is_nothrow_tag_invocable_v =

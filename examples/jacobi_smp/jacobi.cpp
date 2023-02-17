@@ -6,7 +6,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #if !defined(JACOBI_SMP_NO_pika)
-#include <pika/init.hpp>
+# include <pika/init.hpp>
 #endif
 
 #include <pika/modules/program_options.hpp>
@@ -28,8 +28,8 @@ namespace jacobi_smp {
     void jacobi_kernel(double* dst, const double* src, std::size_t n)
     {
 #ifdef PIKA_INTEL_VERSION
-#pragma vector always
-#pragma unroll(4)
+# pragma vector always
+# pragma unroll(4)
 #endif
         for (std::size_t x = 1; x < n - 1; ++x)
         {
@@ -66,7 +66,7 @@ int pika_main(variables_map& vm)
 }
 
 #if !defined(PIKA_APPLICATION_STRING)
-#define PIKA_APPLICATION_STRING "jacobi"
+# define PIKA_APPLICATION_STRING "jacobi"
 #endif
 
 int main(int argc, char** argv)

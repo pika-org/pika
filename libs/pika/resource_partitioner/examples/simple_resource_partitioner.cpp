@@ -7,24 +7,24 @@
 
 #include <pika/config.hpp>
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
-#include <pika/execution.hpp>
-#include <pika/init.hpp>
-#include <pika/modules/resource_partitioner.hpp>
-#include <pika/modules/thread_pools.hpp>
-#include <pika/modules/topology.hpp>
-#include <pika/runtime.hpp>
+# include <pika/execution.hpp>
+# include <pika/init.hpp>
+# include <pika/modules/resource_partitioner.hpp>
+# include <pika/modules/thread_pools.hpp>
+# include <pika/modules/topology.hpp>
+# include <pika/runtime.hpp>
 
-#include <cmath>
-#include <cstddef>
-#include <cstdint>
-#include <iostream>
-#include <memory>
-#include <set>
-#include <string>
-#include <utility>
-#include <vector>
+# include <cmath>
+# include <cstddef>
+# include <cstdint>
+# include <iostream>
+# include <memory>
+# include <set>
+# include <string>
+# include <utility>
+# include <vector>
 
-#include "system_characteristics.hpp"
+# include "system_characteristics.hpp"
 
 // ------------------------------------------------------------------------
 static bool use_pools = false;

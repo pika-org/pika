@@ -165,13 +165,13 @@ vector<string> parse_file(stringstream& file, po::options_description& opts, po:
 }
 
 #define VERIFY(expr)                                                                               \
-    {                                                                                              \
-        if (!(expr))                                                                               \
-        {                                                                                          \
-            std::cerr << PIKA_PP_STRINGIZE(expr) << " failed!\n";                                  \
-        }                                                                                          \
-    }                                                                                              \
-    /**/
+ {                                                                                                 \
+  if (!(expr))                                                                                     \
+  {                                                                                                \
+   std::cerr << PIKA_PP_STRINGIZE(expr) << " failed!\n";                                           \
+  }                                                                                                \
+ }                                                                                                 \
+ /**/
 
 void check_results(po::variables_map& vm, vector<string> unregistered)
 {

@@ -22,8 +22,8 @@
 #include <utility>
 
 #ifdef PIKA_MSVC
-#pragma warning(push)
-#pragma warning(disable : 4251)
+# pragma warning(push)
+# pragma warning(disable : 4251)
 #endif
 
 namespace test {
@@ -149,5 +149,5 @@ namespace test {
 }    // namespace test
 
 #ifdef PIKA_MSVC
-#pragma warning(pop)
+# pragma warning(pop)
 #endif

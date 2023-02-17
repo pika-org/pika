@@ -76,9 +76,9 @@ namespace pika::util::detail {
 //////////////////////////////////////////////////////////////////////////////
 // use this to silence compiler warnings related to unused function arguments.
 #if defined(__CUDA_ARCH__)
-#define PIKA_UNUSED(x) (void) x
+# define PIKA_UNUSED(x) (void) x
 #else
-#define PIKA_UNUSED(x) ::pika::util::detail::unused = (x)
+# define PIKA_UNUSED(x) ::pika::util::detail::unused = (x)
 #endif
 
 /////////////////////////////////////////////////////////////
@@ -86,5 +86,5 @@ namespace pika::util::detail {
 #define PIKA_MAYBE_UNUSED [[maybe_unused]]
 
 #if defined(PIKA_MSVC)
-#pragma warning(pop)
+# pragma warning(pop)
 #endif

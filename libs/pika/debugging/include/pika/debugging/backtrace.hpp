@@ -9,11 +9,11 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_STACKTRACES)
-#include <pika/debugging/backtrace/backtrace.hpp>
+# include <pika/debugging/backtrace/backtrace.hpp>
 #else
 
-#include <cstddef>
-#include <string>
+# include <cstddef>
+# include <string>
 
 namespace pika::debug::detail {
     class backtrace
