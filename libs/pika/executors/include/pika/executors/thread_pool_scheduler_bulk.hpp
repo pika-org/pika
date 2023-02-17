@@ -149,6 +149,8 @@ namespace pika::thread_pool_bulk_detail {
                 return pika::execution::experimental::get_completion_scheduler<
                     CPO>(s);
             }
+
+            PIKA_UNREACHABLE;
         }
 
     private:

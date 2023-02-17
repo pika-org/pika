@@ -601,10 +601,9 @@ void test_when_all()
 
         // The exception is likely to be thrown before set_value from the second
         // sender is called because the second sender sleeps.
-        auto work1 = ex::schedule(sched) | ex::then([parent_id]() {
+        auto work1 = ex::schedule(sched) | ex::then([parent_id]() -> int {
             PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id());
             throw std::runtime_error("error");
-            return 42;
         });
 
         auto work2 = ex::schedule(sched) | ex::then([parent_id]() {
@@ -635,11 +634,10 @@ void test_when_all()
 
         // The exception is likely to be thrown after set_value from the second
         // sender is called because the first sender sleeps before throwing.
-        auto work1 = ex::schedule(sched) | ex::then([parent_id]() {
+        auto work1 = ex::schedule(sched) | ex::then([parent_id]() -> int {
             PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id());
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
             throw std::runtime_error("error");
-            return 42;
         });
 
         auto work2 = ex::schedule(sched) | ex::then([parent_id]() {
@@ -721,10 +719,9 @@ void test_when_all_vector()
 
         // The exception is likely to be thrown before set_value from the second
         // sender is called because the second sender sleeps.
-        senders.emplace_back(ex::schedule(sched) | ex::then([parent_id]() {
+        senders.emplace_back(ex::schedule(sched) | ex::then([parent_id]() -> int {
             PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id());
             throw std::runtime_error("error");
-            return 42;
         }));
 
         senders.emplace_back(ex::schedule(sched) | ex::then([parent_id]() {
@@ -769,10 +766,9 @@ void test_when_all_vector()
             return 42;
         }));
 
-        senders.emplace_back(ex::schedule(sched) | ex::then([parent_id]() {
+        senders.emplace_back(ex::schedule(sched) | ex::then([parent_id]() -> int {
             PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id());
             throw std::runtime_error("error");
-            return 43;
         }));
 
         bool exception_thrown = false;
@@ -1339,9 +1335,8 @@ void test_let_value()
 
         try
         {
-            tt::sync_wait(ex::transfer_just(sched, 43) | ex::then([](int x) {
+            tt::sync_wait(ex::transfer_just(sched, 43) | ex::then([](int x) -> int {
                 throw std::runtime_error("error");
-                return x;
             }) | ex::let_value([](int&) {
                 PIKA_TEST(false);
                 return ex::just(0);
@@ -1417,9 +1412,8 @@ void test_let_error()
 
     // int predecessor
     {
-        auto result = tt::sync_wait(ex::schedule(sched) | ex::then([]() {
+        auto result = tt::sync_wait(ex::schedule(sched) | ex::then([]() -> int {
             throw std::runtime_error("error");
-            return 43;
         }) | ex::let_error([](std::exception_ptr& ep) {
             check_exception_ptr_message(ep, "error");
             return ex::just(42);
@@ -1428,9 +1422,8 @@ void test_let_error()
     }
 
     {
-        auto result = tt::sync_wait(ex::schedule(sched) | ex::then([]() {
+        auto result = tt::sync_wait(ex::schedule(sched) | ex::then([]() -> int {
             throw std::runtime_error("error");
-            return 43;
         }) | ex::let_error([=](std::exception_ptr& ep) {
             check_exception_ptr_message(ep, "error");
             return ex::transfer_just(sched, 42);
@@ -1439,9 +1432,8 @@ void test_let_error()
     }
 
     {
-        auto result = tt::sync_wait(ex::just() | ex::then([]() {
+        auto result = tt::sync_wait(ex::just() | ex::then([]() -> int {
             throw std::runtime_error("error");
-            return 43;
         }) | ex::let_error([=](std::exception_ptr& ep) {
             check_exception_ptr_message(ep, "error");
             return ex::transfer_just(sched, 42);
@@ -2016,9 +2008,8 @@ void test_split_tuple()
     }
 
     {
-        auto [s1, s2, s3] = ex::split_tuple(ex::then(ex::schedule(sched), [] {
+        auto [s1, s2, s3] = ex::split_tuple(ex::then(ex::schedule(sched), []() -> std::tuple<int, std::string, double> {
             throw std::runtime_error("error");
-            return std::tuple(42, std::string{"hello"}, 3.14);
         }));
 
         auto check_exception = [](auto&& s) {

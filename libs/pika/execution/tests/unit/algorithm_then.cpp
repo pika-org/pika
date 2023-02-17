@@ -199,9 +199,8 @@ int main()
     {
         std::atomic<bool> set_error_called{false};
         auto s1 = ex::then(ex::just(0), [](int x) { return ++x; });
-        auto s2 = ex::then(std::move(s1), [](int x) {
+        auto s2 = ex::then(std::move(s1), [](int x) -> int {
             throw std::runtime_error("error");
-            return ++x;
         });
         auto s3 = ex::then(std::move(s2), [](int x) {
             PIKA_TEST(false);

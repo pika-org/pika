@@ -450,7 +450,8 @@ namespace pika::threads {
                         return true;
                     }
                 }
-                return false;
+
+                PIKA_UNREACHABLE;
             }
 
             std::lock_guard<mutex_type> lk(mtx_);

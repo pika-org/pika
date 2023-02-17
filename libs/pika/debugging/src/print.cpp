@@ -222,7 +222,6 @@ namespace NS_DEBUG {
         boost::crc_32_type result;
         result.process_bytes(ptr, size);
         return result.checksum();
-        return 0;
     }
 
     mem_crc32::mem_crc32(void const* a, std::size_t len)
