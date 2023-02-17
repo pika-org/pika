@@ -5,8 +5,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #if !defined(__has_cpp_attribute)
-#error                                                                         \
-    "__has_cpp_attribute not supported, assume [[no_unique_address]] is not supported"
+#error "__has_cpp_attribute not supported, assume [[no_unique_address]] is not supported"
 #else
 #if !__has_cpp_attribute(no_unique_address)
 #error "__has_cpp_attribute(no_unique_address) not supported"

@@ -46,8 +46,7 @@ pika::future<void> spawn_level(std::size_t num_tasks)
 
         for (std::size_t i = 0; i != spread && spawn_hierarchically != 0; ++i)
         {
-            std::size_t sub_spawn =
-                (std::min)(spawn_hierarchically, num_sub_tasks);
+            std::size_t sub_spawn = (std::min)(spawn_hierarchically, num_sub_tasks);
             spawn_hierarchically -= sub_spawn;
             num_tasks -= sub_spawn;
 
@@ -86,14 +85,11 @@ int pika_main(pika::program_options::variables_map& vm)
 
         auto end = std::chrono::high_resolution_clock::now();
 
-        sequential_time_per_task =
-            std::chrono::duration<double>(end - start).count() / num_tasks;
+        sequential_time_per_task = std::chrono::duration<double>(end - start).count() / num_tasks;
         std::cout << "Elapsed sequential time: "
-                  << std::chrono::duration<double>(end - start).count()
-                  << " [s], (" << sequential_time_per_task << " [s])"
-                  << std::endl;
-        pika::util::print_cdash_timing(
-            "AsyncSequential", sequential_time_per_task);
+                  << std::chrono::duration<double>(end - start).count() << " [s], ("
+                  << sequential_time_per_task << " [s])" << std::endl;
+        pika::util::print_cdash_timing("AsyncSequential", sequential_time_per_task);
     }
 
     double hierarchical_time_per_task = 0;
@@ -106,18 +102,14 @@ int pika_main(pika::program_options::variables_map& vm)
 
         auto end = std::chrono::high_resolution_clock::now();
 
-        hierarchical_time_per_task =
-            std::chrono::duration<double>(end - start).count() / num_tasks;
+        hierarchical_time_per_task = std::chrono::duration<double>(end - start).count() / num_tasks;
         std::cout << "Elapsed hierarchical time: "
-                  << std::chrono::duration<double>(end - start).count()
-                  << " [s], (" << hierarchical_time_per_task << " [s])"
-                  << std::endl;
-        pika::util::print_cdash_timing(
-            "AsyncHierarchical", hierarchical_time_per_task);
+                  << std::chrono::duration<double>(end - start).count() << " [s], ("
+                  << hierarchical_time_per_task << " [s])" << std::endl;
+        pika::util::print_cdash_timing("AsyncHierarchical", hierarchical_time_per_task);
     }
 
-    std::cout << "Ratio (speedup): "
-              << sequential_time_per_task / hierarchical_time_per_task
+    std::cout << "Ratio (speedup): " << sequential_time_per_task / hierarchical_time_per_task
               << std::endl;
 
     pika::util::print_cdash_timing(
@@ -129,8 +121,7 @@ int pika_main(pika::program_options::variables_map& vm)
 int main(int argc, char* argv[])
 {
     using namespace pika::program_options;
-    options_description desc_commandline(
-        "Usage: " PIKA_APPLICATION_STRING " [options]");
+    options_description desc_commandline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
     // clang-format off
     desc_commandline.add_options()

@@ -12,8 +12,7 @@
 
 namespace pika::execution::experimental {
     template <typename OperationState>
-    inline constexpr bool is_operation_state_v =
-        operation_state<OperationState>;
+    inline constexpr bool is_operation_state_v = operation_state<OperationState>;
 }
 #else
 #include <pika/config/constexpr.hpp>
@@ -78,8 +77,7 @@ namespace pika::execution::experimental {
     template <typename O>
     struct is_operation_state
       : detail::is_operation_state_impl<std::is_destructible<O>::value &&
-                std::is_object<O>::value &&
-                std::is_invocable_v<start_t, std::decay_t<O>&>,
+                std::is_object<O>::value && std::is_invocable_v<start_t, std::decay_t<O>&>,
             O>
     {
     };

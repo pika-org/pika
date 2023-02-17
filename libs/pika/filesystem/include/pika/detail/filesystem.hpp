@@ -21,6 +21,6 @@ namespace pika::detail::filesystem {
     PIKA_EXPORT std::string basename(std::filesystem::path const& p);
     PIKA_EXPORT std::filesystem::path canonical(
         std::filesystem::path const& p, std::filesystem::path const& base);
-    PIKA_EXPORT std::filesystem::path canonical(std::filesystem::path const& p,
-        std::filesystem::path const& base, std::error_code& ec);
+    PIKA_EXPORT std::filesystem::path canonical(
+        std::filesystem::path const& p, std::filesystem::path const& base, std::error_code& ec);
 }    // namespace pika::detail::filesystem

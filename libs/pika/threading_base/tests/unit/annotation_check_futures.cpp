@@ -48,8 +48,7 @@ void dummy_task(std::size_t n)
     {
         std::this_thread::sleep_for(std::chrono::microseconds(n) / 25);
         auto now = std::chrono::steady_clock::now();
-        auto elapsed =
-            std::chrono::duration_cast<std::chrono::microseconds>(now - start);
+        auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(now - start);
         sleep = (elapsed < std::chrono::microseconds(n));
     } while (sleep);
 }
@@ -93,16 +92,14 @@ std::string exec_string(const Executor&)
 
 // --------------------------------------------------------------------------
 template <typename Executor>
-typename std::enable_if<pika::traits::is_executor_any<Executor>::value,
-    std::string>::type
+typename std::enable_if<pika::traits::is_executor_any<Executor>::value, std::string>::type
 execution_string(const Executor& exec)
 {
     return exec_string(exec);
 }
 
 template <typename Policy>
-typename std::enable_if<pika::detail::is_launch_policy<Policy>::value,
-    std::string>::type
+typename std::enable_if<pika::detail::is_launch_policy<Policy>::value, std::string>::type
 execution_string(const Policy& policy)
 {
     return policy_string(policy);
@@ -112,9 +109,7 @@ execution_string(const Policy& policy)
 // use annotate_function
 void test_annotate_function()
 {
-    pika::async([]() {
-        pika::scoped_annotation annotate("4-char annotate_function");
-    }).get();
+    pika::async([]() { pika::scoped_annotation annotate("4-char annotate_function"); }).get();
 
     pika::async([]() {
         std::string s("4-string annotate_function");
@@ -135,21 +130,20 @@ pika::future<void> test_none()
         pika::future<int> f1 = pika::async([]() { return 5; });
         pika::future<int> f2 = pika::make_ready_future(5);
         results.emplace_back(pika::dataflow(
-            pika::annotated_function(
-                [](auto&&, auto&&) { dummy_task(std::size_t(1000)); }, dfs),
+            pika::annotated_function([](auto&&, auto&&) { dummy_task(std::size_t(1000)); }, dfs),
             f1, f2));
     }
 
     {
         pika::future<int> f1 = pika::async([]() { return 5; });
-        results.emplace_back(f1.then(pika::annotated_function(
-            [](auto&&) { dummy_task(std::size_t(1000)); }, pcs)));
+        results.emplace_back(
+            f1.then(pika::annotated_function([](auto&&) { dummy_task(std::size_t(1000)); }, pcs)));
     }
 
     {
         pika::future<int> f1 = pika::async([]() { return 5; });
-        results.emplace_back(f1.then(pika::unwrapping(pika::annotated_function(
-            [](auto&&) { dummy_task(std::size_t(1000)); }, pcsu))));
+        results.emplace_back(f1.then(pika::unwrapping(
+            pika::annotated_function([](auto&&) { dummy_task(std::size_t(1000)); }, pcsu))));
     }
 
     // wait for completion
@@ -162,10 +156,10 @@ template <typename Execution>
 pika::future<void> test_execution(Execution& exec)
 {
     static int prefix = 1;
-    std::string dfs = std::to_string(prefix++) + "-" + execution_string(exec) +
-        std::string(" Dataflow");
-    std::string pcs = std::to_string(prefix++) + "-" + execution_string(exec) +
-        std::string(" Continuation");
+    std::string dfs =
+        std::to_string(prefix++) + "-" + execution_string(exec) + std::string(" Dataflow");
+    std::string pcs =
+        std::to_string(prefix++) + "-" + execution_string(exec) + std::string(" Continuation");
     std::string pcsu = std::to_string(prefix++) + "-" + execution_string(exec) +
         std::string(" Unwrapping Continuation");
 
@@ -174,21 +168,19 @@ pika::future<void> test_execution(Execution& exec)
         pika::future<int> f1 = pika::async([]() { return 5; });
         pika::future<int> f2 = pika::make_ready_future(5);
         results.emplace_back(pika::dataflow(exec,
-            pika::annotated_function(
-                [](auto&&, auto&&) { dummy_task(std::size_t(1000)); }, dfs),
+            pika::annotated_function([](auto&&, auto&&) { dummy_task(std::size_t(1000)); }, dfs),
             f1, f2));
     }
     {
         pika::future<int> f1 = pika::async([]() { return 5; });
-        results.emplace_back(f1.then(exec,
-            pika::annotated_function(
-                [](auto&&) { dummy_task(std::size_t(1000)); }, pcs)));
+        results.emplace_back(f1.then(
+            exec, pika::annotated_function([](auto&&) { dummy_task(std::size_t(1000)); }, pcs)));
     }
     {
         pika::future<int> f1 = pika::async([]() { return 5; });
         results.emplace_back(f1.then(exec,
-            pika::unwrapping(pika::annotated_function(
-                [](auto&&) { dummy_task(std::size_t(1000)); }, pcsu))));
+            pika::unwrapping(
+                pika::annotated_function([](auto&&) { dummy_task(std::size_t(1000)); }, pcsu))));
     }
     // wait for completion
     return pika::when_all(results);

@@ -72,8 +72,7 @@ int main()
 
     {
         std::atomic<bool> set_value_called{false};
-        auto s =
-            ex::just(custom_type_non_default_constructible_non_copyable{42});
+        auto s = ex::just(custom_type_non_default_constructible_non_copyable{42});
         auto f = [](auto x) { PIKA_TEST_EQ(x.x, 42); };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));

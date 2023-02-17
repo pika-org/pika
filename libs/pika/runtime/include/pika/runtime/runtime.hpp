@@ -68,19 +68,16 @@ namespace pika {
         /// as the main pika thread function.
         using pika_main_function_type = int();
 
-        using pika_errorsink_function_type = void(
-            std::uint32_t, std::string const&);
+        using pika_errorsink_function_type = void(std::uint32_t, std::string const&);
 
         /// Construct a new pika runtime instance
-        explicit runtime(
-            pika::util::runtime_configuration& rtcfg, bool initialize);
+        explicit runtime(pika::util::runtime_configuration& rtcfg, bool initialize);
 
     protected:
         explicit runtime(pika::util::runtime_configuration& rtcfg);
 
         void set_notification_policies(notification_policy_type&& notifier,
-            threads::detail::network_background_callback_type
-                network_background_callback);
+            threads::detail::network_background_callback_type network_background_callback);
 
         /// Common initialization for different constructors
         void init();
@@ -139,8 +136,7 @@ namespace pika {
         /// \returns          This function will return the value as returned
         ///                   as the result of the invocation of the function
         ///                   object given by the parameter \p func.
-        virtual int run(
-            util::detail::function<pika_main_function_type> const& func);
+        virtual int run(util::detail::function<pika_main_function_type> const& func);
 
         /// \brief Run the pika runtime system, initially use the given number
         ///        of (OS) threads in the thread-manager and block waiting for
@@ -171,8 +167,7 @@ namespace pika {
         ///                   invocation of the function object given by the
         ///                   parameter \p func. Otherwise it will return zero.
         virtual int start(
-            util::detail::function<pika_main_function_type> const& func,
-            bool blocking = false);
+            util::detail::function<pika_main_function_type> const& func, bool blocking = false);
 
         /// \brief Start the runtime system
         ///
@@ -230,8 +225,8 @@ namespace pika {
         ///                   the error has been detected in.
         /// \param e          [in] This is an instance encapsulating an
         ///                   exception which lead to this function call.
-        virtual bool report_error(std::size_t num_thread,
-            std::exception_ptr const& e, bool terminate_all = true);
+        virtual bool report_error(
+            std::size_t num_thread, std::exception_ptr const& e, bool terminate_all = true);
 
         /// \brief Report a non-recoverable error to the runtime system
         ///
@@ -241,8 +236,7 @@ namespace pika {
         /// \note This function will retrieve the number of the current
         ///       shepherd thread and forward to the report_error function
         ///       above.
-        virtual bool report_error(
-            std::exception_ptr const& e, bool terminate_all = true);
+        virtual bool report_error(std::exception_ptr const& e, bool terminate_all = true);
 
         /// Add a function to be executed inside a pika thread before pika_main
         /// but guaranteed to be executed before any startup function registered
@@ -337,8 +331,7 @@ namespace pika {
 
         /// Access data for a given OS thread that was previously registered by
         /// \a register_thread.
-        virtual os_thread_data get_os_thread_data(
-            std::string const& label) const;
+        virtual os_thread_data get_os_thread_data(std::string const& label) const;
 
         /// Enumerate all OS threads that have registered with the runtime.
         virtual bool enumerate_os_threads(
@@ -359,8 +352,7 @@ namespace pika {
 
         virtual std::size_t get_num_worker_threads() const;
 
-        virtual std::uint32_t get_num_localities(
-            pika::launch::sync_policy, error_code& ec) const;
+        virtual std::uint32_t get_num_localities(pika::launch::sync_policy, error_code& ec) const;
 
         virtual std::uint32_t get_initial_num_localities() const;
 
@@ -383,12 +375,10 @@ namespace pika {
         void deinit_global_data();
 
         threads::detail::thread_result_type run_helper(
-            util::detail::function<runtime::pika_main_function_type> const&
-                func,
-            int& result, bool call_startup_functions);
+            util::detail::function<runtime::pika_main_function_type> const& func, int& result,
+            bool call_startup_functions);
 
-        void wait_helper(
-            std::mutex& mtx, std::condition_variable& cond, bool& running);
+        void wait_helper(std::mutex& mtx, std::condition_variable& cond, bool& running);
 
         // list of functions to call on exit
         using on_exit_type = std::vector<util::detail::function<void()>>;
@@ -431,19 +421,17 @@ namespace pika {
         ///                   return immediately. Use a second call to stop
         ///                   with this parameter set to \a true to wait for
         ///                   all internal work to be completed.
-        void stop_helper(
-            bool blocking, std::condition_variable& cond, std::mutex& mtx);
+        void stop_helper(bool blocking, std::condition_variable& cond, std::mutex& mtx);
 
         void deinit_tss_helper(char const* context, std::size_t num);
 
-        void init_tss_ex(char const* context, os_thread_type type,
-            std::size_t local_thread_num, std::size_t global_thread_num,
-            char const* pool_name, char const* postfix, bool service_thread,
-            error_code& ec);
+        void init_tss_ex(char const* context, os_thread_type type, std::size_t local_thread_num,
+            std::size_t global_thread_num, char const* pool_name, char const* postfix,
+            bool service_thread, error_code& ec);
 
-        void init_tss_helper(char const* context, os_thread_type type,
-            std::size_t local_thread_num, std::size_t global_thread_num,
-            char const* pool_name, char const* postfix, bool service_thread);
+        void init_tss_helper(char const* context, os_thread_type type, std::size_t local_thread_num,
+            std::size_t global_thread_num, char const* pool_name, char const* postfix,
+            bool service_thread);
 
         void notify_finalize();
         void wait_finalize();
@@ -477,8 +465,7 @@ namespace pika {
         ///////////////////////////////////////////////////////////////////////////
         // retrieve the command line arguments for the current locality
         PIKA_EXPORT bool retrieve_commandline_arguments(
-            std::string const& appname,
-            pika::program_options::variables_map& vm);
+            std::string const& appname, pika::program_options::variables_map& vm);
     }    // namespace util
 
     namespace threads {

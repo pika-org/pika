@@ -47,8 +47,7 @@ void test_barrier_empty_oncomplete()
         results.reserve(threads);
         for (std::size_t i = 0; i != threads; ++i)
         {
-            results.push_back(
-                pika::async(&local_barrier_test_no_completion, std::ref(b)));
+            results.push_back(pika::async(&local_barrier_test_no_completion, std::ref(b)));
         }
 
         b.arrive_and_wait();    // wait for all threads to enter the barrier
@@ -143,8 +142,7 @@ void test_barrier_empty_oncomplete_split()
         results.reserve(threads);
         for (std::size_t i = 0; i != threads; ++i)
         {
-            results.push_back(pika::async(
-                &local_barrier_test_no_completion_split, std::ref(b)));
+            results.push_back(pika::async(&local_barrier_test_no_completion_split, std::ref(b)));
         }
 
         b.arrive_and_wait();    // wait for all threads to enter the barrier
@@ -187,8 +185,7 @@ void test_barrier_oncomplete_split()
         results.reserve(threads);
         for (std::size_t i = 0; i != threads; ++i)
         {
-            results.push_back(
-                pika::async(&local_barrier_test_split, std::ref(b)));
+            results.push_back(pika::async(&local_barrier_test_split, std::ref(b)));
         }
 
         b.arrive_and_wait();    // wait for all threads to enter the barrier

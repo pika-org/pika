@@ -24,15 +24,13 @@ namespace pika::util::detail {
     template <typename T>
     using is_non_void_future = std::integral_constant<bool,
         traits::is_future<T>::value &&
-            !std::is_void<
-                typename traits::future_traits<T>::result_type>::value>;
+            !std::is_void<typename traits::future_traits<T>::result_type>::value>;
 
     /// Deduces to a true_type if the given future is instantiated with void
     template <typename T>
     using is_void_future = std::integral_constant<bool,
         traits::is_future<T>::value &&
-            std::is_void<
-                typename traits::future_traits<T>::result_type>::value>;
+            std::is_void<typename traits::future_traits<T>::result_type>::value>;
 
     /// A mapper that maps futures to its representing type
     ///
@@ -49,8 +47,7 @@ namespace pika::util::detail {
         /// inheritance and `using Base::operator()` because this
         /// isn't taken into account when doing SFINAE.
         template <typename T,
-            typename std::enable_if<
-                is_void_future<std::decay_t<T>>::value>::type* = nullptr>
+            typename std::enable_if<is_void_future<std::decay_t<T>>::value>::type* = nullptr>
         auto operator()(T&& future) const -> decltype(spread_this())
         {
 #if defined(PIKA_CUDA_VERSION)
@@ -62,8 +59,7 @@ namespace pika::util::detail {
         }
 
         template <typename T,
-            typename std::enable_if<
-                is_non_void_future<std::decay_t<T>>::value>::type* = nullptr>
+            typename std::enable_if<is_non_void_future<std::decay_t<T>>::value>::type* = nullptr>
         auto operator()(T&& future) const
             -> decltype(map_pack(future_unwrap_until_depth<Depth - 1>{},
 #if defined(PIKA_CUDA_VERSION)
@@ -87,8 +83,7 @@ namespace pika::util::detail {
         /// inheritance and `using Base::operator()` because this
         /// isn't taken into account when doing SFINAE.
         template <typename T,
-            typename std::enable_if<
-                is_void_future<std::decay_t<T>>::value>::type* = nullptr>
+            typename std::enable_if<is_void_future<std::decay_t<T>>::value>::type* = nullptr>
         auto operator()(T&& future) const -> decltype(spread_this())
         {
 #if defined(PIKA_CUDA_VERSION)
@@ -100,8 +95,7 @@ namespace pika::util::detail {
         }
 
         template <typename T,
-            typename std::enable_if<
-                is_non_void_future<std::decay_t<T>>::value>::type* = nullptr>
+            typename std::enable_if<is_non_void_future<std::decay_t<T>>::value>::type* = nullptr>
         auto operator()(T&& future) const ->
             typename traits::future_traits<std::decay_t<T>>::result_type
         {
@@ -119,8 +113,7 @@ namespace pika::util::detail {
         /// inheritance and `using Base::operator()` because this
         /// isn't taken into account when doing SFINAE.
         template <typename T,
-            typename std::enable_if<
-                is_void_future<std::decay_t<T>>::value>::type* = nullptr>
+            typename std::enable_if<is_void_future<std::decay_t<T>>::value>::type* = nullptr>
         auto operator()(T&& future) const -> decltype(spread_this())
         {
 #if defined(PIKA_CUDA_VERSION)
@@ -132,14 +125,13 @@ namespace pika::util::detail {
         }
 
         template <typename T,
-            typename std::enable_if<
-                is_non_void_future<std::decay_t<T>>::value>::type* = nullptr>
-        auto operator()(T&& future) const -> decltype(map_pack(
-            std::declval<future_unwrap_until_depth const&>(),
+            typename std::enable_if<is_non_void_future<std::decay_t<T>>::value>::type* = nullptr>
+        auto operator()(T&& future) const
+            -> decltype(map_pack(std::declval<future_unwrap_until_depth const&>(),
 #if defined(PIKA_CUDA_VERSION)
-            std::forward<T>(future).get()))
+                std::forward<T>(future).get()))
 #else
-            PIKA_FORWARD(T, future).get()))
+                PIKA_FORWARD(T, future).get()))
 #endif
         {
 #if defined(PIKA_CUDA_VERSION)
@@ -154,11 +146,10 @@ namespace pika::util::detail {
     /// until the depth Depth.
     /// This is the main entry function for immediate unwraps.
     template <std::size_t Depth, typename... Args>
-    auto unwrap_depth_impl(Args&&... args) -> decltype(map_pack(
-        future_unwrap_until_depth<Depth>{}, PIKA_FORWARD(Args, args)...))
+    auto unwrap_depth_impl(Args&&... args)
+        -> decltype(map_pack(future_unwrap_until_depth<Depth>{}, PIKA_FORWARD(Args, args)...))
     {
-        return map_pack(
-            future_unwrap_until_depth<Depth>{}, PIKA_FORWARD(Args, args)...);
+        return map_pack(future_unwrap_until_depth<Depth>{}, PIKA_FORWARD(Args, args)...);
     }
 
     /// We use a specialized class here because MSVC has issues with
@@ -171,11 +162,9 @@ namespace pika::util::detail {
         template <typename C, typename T>
         static auto apply(C&& callable, T&& unwrapped)
             // There is no trait for the invoke_fused result
-            -> decltype(invoke_fused(
-                PIKA_FORWARD(C, callable), PIKA_FORWARD(T, unwrapped)))
+            -> decltype(invoke_fused(PIKA_FORWARD(C, callable), PIKA_FORWARD(T, unwrapped)))
         {
-            return invoke_fused(
-                PIKA_FORWARD(C, callable), PIKA_FORWARD(T, unwrapped));
+            return invoke_fused(PIKA_FORWARD(C, callable), PIKA_FORWARD(T, unwrapped));
         }
     };
     template <>
@@ -185,11 +174,9 @@ namespace pika::util::detail {
         /// also when the result is a tuple like type, when we received
         /// a single argument.
         template <typename C, typename T>
-        static auto apply(C&& callable, T&& unwrapped)
-            -> std::invoke_result_t<C, T>
+        static auto apply(C&& callable, T&& unwrapped) -> std::invoke_result_t<C, T>
         {
-            return PIKA_INVOKE(
-                PIKA_FORWARD(C, callable), PIKA_FORWARD(T, unwrapped));
+            return PIKA_INVOKE(PIKA_FORWARD(C, callable), PIKA_FORWARD(T, unwrapped));
         }
     };
 
@@ -199,21 +186,19 @@ namespace pika::util::detail {
     /// - The result of the unwrap is a tuple like type
     template <bool HadMultipleArguments, typename T>
     using should_fuse_invoke = std::integral_constant<bool,
-        (HadMultipleArguments &&
-            traits::detail::is_tuple_like_v<std::decay_t<T>>)>;
+        (HadMultipleArguments && traits::detail::is_tuple_like_v<std::decay_t<T>>)>;
 
     /// Invokes the callable object with the result:
     /// - If the result is a tuple-like type `invoke_fused` is used
     /// - Otherwise `invoke` is used
     template <bool HadMultipleArguments, typename C, typename T>
     auto dispatch_wrapped_invocation_select(C&& callable, T&& unwrapped)
-        -> decltype(invoke_wrapped_invocation_select<should_fuse_invoke<
-                HadMultipleArguments, T>::value>::apply(PIKA_FORWARD(C,
-                                                            callable),
+        -> decltype(invoke_wrapped_invocation_select<
+            should_fuse_invoke<HadMultipleArguments, T>::value>::apply(PIKA_FORWARD(C, callable),
             PIKA_FORWARD(T, unwrapped)))
     {
-        return invoke_wrapped_invocation_select<should_fuse_invoke<
-            HadMultipleArguments, T>::value>::apply(PIKA_FORWARD(C, callable),
+        return invoke_wrapped_invocation_select<
+            should_fuse_invoke<HadMultipleArguments, T>::value>::apply(PIKA_FORWARD(C, callable),
             PIKA_FORWARD(T, unwrapped));
     }
 
@@ -224,21 +209,18 @@ namespace pika::util::detail {
     {
         template <typename C, typename... Args>
         static auto apply(C&& callable, Args&&... args)
-            -> decltype(dispatch_wrapped_invocation_select<(
-                    sizeof...(args) > 1)>(PIKA_FORWARD(C, callable),
-                unwrap_depth_impl<Depth>(PIKA_FORWARD(Args, args)...)))
+            -> decltype(dispatch_wrapped_invocation_select<(sizeof...(args) > 1)>(
+                PIKA_FORWARD(C, callable), unwrap_depth_impl<Depth>(PIKA_FORWARD(Args, args)...)))
         {
             return dispatch_wrapped_invocation_select<(sizeof...(args) > 1)>(
-                PIKA_FORWARD(C, callable),
-                unwrap_depth_impl<Depth>(PIKA_FORWARD(Args, args)...));
+                PIKA_FORWARD(C, callable), unwrap_depth_impl<Depth>(PIKA_FORWARD(Args, args)...));
         }
     };
     template <std::size_t Depth>
     struct invoke_wrapped_decorate_select<Depth, void>
     {
         template <typename C, typename... Args>
-        static auto apply(C&& callable, Args&&... args)
-            -> decltype(PIKA_FORWARD(C, callable)())
+        static auto apply(C&& callable, Args&&... args) -> decltype(PIKA_FORWARD(C, callable)())
         {
             unwrap_depth_impl<Depth>(PIKA_FORWARD(Args, args)...);
             return PIKA_FORWARD(C, callable)();
@@ -250,13 +232,13 @@ namespace pika::util::detail {
     template <std::size_t Depth, typename C, typename... Args>
     auto invoke_wrapped(C&& callable, Args&&... args)
         -> decltype(invoke_wrapped_decorate_select<Depth,
-            decltype(unwrap_depth_impl<Depth>(
-                PIKA_FORWARD(Args, args)...))>::apply(PIKA_FORWARD(C, callable),
+            decltype(unwrap_depth_impl<Depth>(PIKA_FORWARD(Args, args)...))>::apply(PIKA_FORWARD(C,
+                                                                                        callable),
             PIKA_FORWARD(Args, args)...))
     {
         return invoke_wrapped_decorate_select<Depth,
-            decltype(unwrap_depth_impl<Depth>(
-                PIKA_FORWARD(Args, args)...))>::apply(PIKA_FORWARD(C, callable),
+            decltype(unwrap_depth_impl<Depth>(PIKA_FORWARD(Args, args)...))>::apply(PIKA_FORWARD(C,
+                                                                                        callable),
             PIKA_FORWARD(Args, args)...);
     }
 
@@ -275,8 +257,8 @@ namespace pika::util::detail {
         }
 
         template <typename... Args>
-        auto operator()(Args&&... args) -> decltype(invoke_wrapped<Depth>(
-            std::declval<T&>(), PIKA_FORWARD(Args, args)...))
+        auto operator()(Args&&... args)
+            -> decltype(invoke_wrapped<Depth>(std::declval<T&>(), PIKA_FORWARD(Args, args)...))
         {
             return invoke_wrapped<Depth>(wrapped_, PIKA_FORWARD(Args, args)...);
         }
@@ -295,7 +277,6 @@ namespace pika::util::detail {
     auto functional_unwrap_depth_impl(T&& callable)
         -> functional_unwrap_impl<std::decay_t<T>, Depth>
     {
-        return functional_unwrap_impl<std::decay_t<T>, Depth>(
-            PIKA_FORWARD(T, callable));
+        return functional_unwrap_impl<std::decay_t<T>, Depth>(PIKA_FORWARD(T, callable));
     }
 }    // namespace pika::util::detail

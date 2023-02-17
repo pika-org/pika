@@ -46,8 +46,7 @@ bool header = true;
 ///////////////////////////////////////////////////////////////////////////////
 std::string format_build_date()
 {
-    std::chrono::time_point<std::chrono::system_clock> now =
-        std::chrono::system_clock::now();
+    std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
 
     std::time_t current_time = std::chrono::system_clock::to_time_t(now);
 
@@ -103,8 +102,7 @@ void invoke_n_workers_nowait(double& elapsed, std::uint64_t workers)
     elapsed = t.elapsed();
 }
 
-void invoke_n_workers(pika::concurrency::detail::barrier& b, double& elapsed,
-    std::uint64_t workers)
+void invoke_n_workers(pika::concurrency::detail::barrier& b, double& elapsed, std::uint64_t workers)
 {
     b.wait();
 
@@ -123,8 +121,7 @@ int app_main(variables_map& vm)
 
     for (std::uint32_t i = 0; i != threads - 1; ++i)
     {
-        workers.push_back(std::thread(
-            invoke_n_workers, std::ref(b), std::ref(elapsed[i]), tasks));
+        workers.push_back(std::thread(invoke_n_workers, std::ref(b), std::ref(elapsed[i]), tasks));
     }
 
     double total_elapsed = 0;
@@ -144,8 +141,8 @@ int app_main(variables_map& vm)
     }
 
     // Print out the results.
-    print_results(vm, total_elapsed / double(threads),
-        (total_elapsed * 1e6) / double(tasks * threads));
+    print_results(
+        vm, total_elapsed / double(threads), (total_elapsed * 1e6) / double(tasks * threads));
 
     return 0;
 }
@@ -161,8 +158,7 @@ int main(int argc, char* argv[])
 
     cmdline.add_options()("help,h", "print out program usage (this message)")
 
-        ("threads,t", value<std::uint64_t>(&threads)->default_value(1),
-            "number of threads to use")
+        ("threads,t", value<std::uint64_t>(&threads)->default_value(1), "number of threads to use")
 
             ("tasks", value<std::uint64_t>(&tasks)->default_value(500000),
                 "number of tasks to invoke")

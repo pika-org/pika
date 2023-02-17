@@ -70,19 +70,15 @@ struct scratcher
 void measure_function_futures_create_thread_hierarchical_placement(
     std::uint64_t count, const int repetitions)
 {
-    auto sched =
-        pika::threads::detail::get_self_id_data()->get_scheduler_base();
+    auto sched = pika::threads::detail::get_self_id_data()->get_scheduler_base();
 
-    if (std::string("core-shared_priority_queue_scheduler") ==
-        sched->get_description())
+    if (std::string("core-shared_priority_queue_scheduler") == sched->get_description())
     {
         using ::pika::threads::scheduler_mode;
         sched->add_scheduler_mode(scheduler_mode::assign_work_thread_parent);
         sched->remove_scheduler_mode(scheduler_mode::enable_stealing |
-            scheduler_mode::enable_stealing_numa |
-            scheduler_mode::assign_work_round_robin |
-            scheduler_mode::steal_after_local |
-            scheduler_mode::steal_high_priority_first);
+            scheduler_mode::enable_stealing_numa | scheduler_mode::assign_work_round_robin |
+            scheduler_mode::steal_after_local | scheduler_mode::steal_high_priority_first);
     }
     auto const desc = pika::detail::thread_description();
     auto prio = pika::execution::thread_priority::normal;
@@ -90,9 +86,8 @@ void measure_function_futures_create_thread_hierarchical_placement(
     auto const num_threads = pika::get_num_worker_threads();
     pika::error_code ec;
 
-    pika::util::perftests_report(
-        "future overhead - create_thread_hierarchical - latch", "no-executor",
-        repetitions, [&]() -> void {
+    pika::util::perftests_report("future overhead - create_thread_hierarchical - latch",
+        "no-executor", repetitions, [&]() -> void {
             pika::latch l(count);
 
             auto const func = [&l]() {
@@ -100,40 +95,32 @@ void measure_function_futures_create_thread_hierarchical_placement(
                 l.count_down(1);
             };
             auto const thread_func =
-                pika::threads::detail::thread_function_nullary<decltype(func)>{
-                    func};
+                pika::threads::detail::thread_function_nullary<decltype(func)>{func};
             for (std::size_t t = 0; t < num_threads; ++t)
             {
-                auto const hint = pika::execution::thread_schedule_hint(
-                    static_cast<std::int16_t>(t));
-                auto spawn_func = [&thread_func, sched, hint, t, count,
-                                      num_threads, desc, prio]() {
+                auto const hint =
+                    pika::execution::thread_schedule_hint(static_cast<std::int16_t>(t));
+                auto spawn_func = [&thread_func, sched, hint, t, count, num_threads, desc, prio]() {
                     std::uint64_t const count_start = t * count / num_threads;
-                    std::uint64_t const count_end =
-                        (t + 1) * count / num_threads;
+                    std::uint64_t const count_end = (t + 1) * count / num_threads;
                     pika::error_code ec;
                     for (std::uint64_t i = count_start; i < count_end; ++i)
                     {
                         pika::threads::detail::thread_init_data init(
-                            pika::threads::detail::thread_function_type(
-                                thread_func),
-                            desc, prio, hint, stack_size,
-                            pika::threads::detail::thread_schedule_state::
-                                pending,
+                            pika::threads::detail::thread_function_type(thread_func), desc, prio,
+                            hint, stack_size, pika::threads::detail::thread_schedule_state::pending,
                             false, sched);
                         sched->create_thread(init, nullptr, ec);
                     }
                 };
                 auto const thread_spawn_func =
-                    pika::threads::detail::thread_function_nullary<
-                        decltype(spawn_func)>{spawn_func};
+                    pika::threads::detail::thread_function_nullary<decltype(spawn_func)>{
+                        spawn_func};
 
                 pika::threads::detail::thread_init_data init(
-                    pika::threads::detail::thread_function_type(
-                        thread_spawn_func),
-                    desc, prio, hint, stack_size,
-                    pika::threads::detail::thread_schedule_state::pending,
-                    false, sched);
+                    pika::threads::detail::thread_function_type(thread_spawn_func), desc, prio,
+                    hint, stack_size, pika::threads::detail::thread_schedule_state::pending, false,
+                    sched);
                 sched->create_thread(init, nullptr, ec);
             }
             l.wait();
@@ -169,8 +156,7 @@ int pika_main(variables_map& vm)
 
         if (test_all)
         {
-            measure_function_futures_create_thread_hierarchical_placement(
-                count, repetitions);
+            measure_function_futures_create_thread_hierarchical_placement(count, repetitions);
         }
     }
 

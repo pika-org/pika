@@ -64,8 +64,8 @@ namespace pika {
     // return a string holding a formatted message.
     std::string diagnostic_information(pika::exception_info const& xi)
     {
-        int const verbosity = detail::from_string<int>(
-            get_config_entry("pika.exception_verbosity", "1"));
+        int const verbosity =
+            detail::from_string<int>(get_config_entry("pika.exception_verbosity", "1"));
 
         std::ostringstream strm;
         strm << "\n";
@@ -82,21 +82,18 @@ namespace pika {
 
         if (verbosity >= 1)
         {
-            std::string const* back_trace =
-                xi.get<pika::detail::throw_stacktrace>();
+            std::string const* back_trace = xi.get<pika::detail::throw_stacktrace>();
             if (back_trace && !back_trace->empty())
             {
                 // FIXME: add indentation to stack frame information
                 strm << "{stack-trace}: " << *back_trace << "\n";
             }
 
-            std::uint32_t const* locality =
-                xi.get<pika::detail::throw_locality>();
+            std::uint32_t const* locality = xi.get<pika::detail::throw_locality>();
             if (locality)
                 strm << "{locality-id}: " << *locality << "\n";
 
-            std::string const* hostname_ =
-                xi.get<pika::detail::throw_hostname>();
+            std::string const* hostname_ = xi.get<pika::detail::throw_hostname>();
             if (hostname_ && !hostname_->empty())
                 strm << "{hostname}: " << *hostname_ << "\n";
 
@@ -106,8 +103,7 @@ namespace pika {
 
             bool thread_info = false;
             char const* const thread_prefix = "{os-thread}: ";
-            std::size_t const* shepherd =
-                xi.get<pika::detail::throw_shepherd>();
+            std::size_t const* shepherd = xi.get<pika::detail::throw_shepherd>();
             if (shepherd && std::size_t(-1) != *shepherd)
             {
                 strm << thread_prefix << *shepherd;
@@ -121,16 +117,14 @@ namespace pika {
                 strm << ", ";
             strm << thread_name << "\n";
 
-            std::size_t const* thread_id =
-                xi.get<pika::detail::throw_thread_id>();
+            std::size_t const* thread_id = xi.get<pika::detail::throw_thread_id>();
             if (thread_id && *thread_id)
             {
                 strm << "{thread-id}: ";
                 fmt::print(strm, "{:016x}\n", *thread_id);
             }
 
-            std::string const* thread_description =
-                xi.get<pika::detail::throw_thread_name>();
+            std::string const* thread_description = xi.get<pika::detail::throw_thread_name>();
             if (thread_description && !thread_description->empty())
                 strm << "{thread-description}: " << *thread_description << "\n";
 
@@ -236,32 +230,23 @@ namespace pika {
         }
 
         pika::exception_info construct_exception_info(std::string const& func,
-            std::string const& file, long line, std::string const& back_trace,
-            std::uint32_t node, std::string const& hostname, std::int64_t pid,
-            std::size_t shepherd, std::size_t thread_id,
-            std::string const& thread_name, std::string const& env,
-            std::string const& config, std::string const& state_name,
-            std::string const& auxinfo)
+            std::string const& file, long line, std::string const& back_trace, std::uint32_t node,
+            std::string const& hostname, std::int64_t pid, std::size_t shepherd,
+            std::size_t thread_id, std::string const& thread_name, std::string const& env,
+            std::string const& config, std::string const& state_name, std::string const& auxinfo)
         {
-            return pika::exception_info().set(
-                pika::detail::throw_stacktrace(back_trace),
-                pika::detail::throw_locality(node),
-                pika::detail::throw_hostname(hostname),
-                pika::detail::throw_pid(pid),
-                pika::detail::throw_shepherd(shepherd),
+            return pika::exception_info().set(pika::detail::throw_stacktrace(back_trace),
+                pika::detail::throw_locality(node), pika::detail::throw_hostname(hostname),
+                pika::detail::throw_pid(pid), pika::detail::throw_shepherd(shepherd),
                 pika::detail::throw_thread_id(thread_id),
-                pika::detail::throw_thread_name(thread_name),
-                pika::detail::throw_function(func),
+                pika::detail::throw_thread_name(thread_name), pika::detail::throw_function(func),
                 pika::detail::throw_file(file), pika::detail::throw_line(line),
-                pika::detail::throw_env(env),
-                pika::detail::throw_config(config),
-                pika::detail::throw_state(state_name),
-                pika::detail::throw_auxinfo(auxinfo));
+                pika::detail::throw_env(env), pika::detail::throw_config(config),
+                pika::detail::throw_state(state_name), pika::detail::throw_auxinfo(auxinfo));
         }
 
         template <typename Exception>
-        std::exception_ptr
-        construct_exception(Exception const& e, pika::exception_info info)
+        std::exception_ptr construct_exception(Exception const& e, pika::exception_info info)
         {
             // create a std::exception_ptr object encapsulating the Exception to
             // be thrown and annotate it with all the local information we have
@@ -333,16 +318,14 @@ namespace pika {
             std::size_t len = get_arraylen(_environ);
             env.reserve(len);
             std::copy(&_environ[0], &_environ[len], std::back_inserter(env));
-#elif defined(linux) || defined(__linux) || defined(__linux__) ||              \
-    defined(__AIX__)
+#elif defined(linux) || defined(__linux) || defined(__linux__) || defined(__AIX__)
             std::size_t len = get_arraylen(environ);
             env.reserve(len);
             std::copy(&environ[0], &environ[len], std::back_inserter(env));
 #elif defined(__FreeBSD__)
             std::size_t len = get_arraylen(freebsd_environ);
             env.reserve(len);
-            std::copy(&freebsd_environ[0], &freebsd_environ[len],
-                std::back_inserter(env));
+            std::copy(&freebsd_environ[0], &freebsd_environ[len], std::back_inserter(env));
 #elif defined(__APPLE__)
             std::size_t len = get_arraylen(environ);
             env.reserve(len);
@@ -353,15 +336,12 @@ namespace pika {
 
             std::sort(env.begin(), env.end());
 
-            static constexpr char const* ignored_env_patterns[] = {
-                "DOCKER", "GITHUB_TOKEN"};
+            static constexpr char const* ignored_env_patterns[] = {"DOCKER", "GITHUB_TOKEN"};
             std::string retval = fmt::format("{} entries:\n", env.size());
             for (std::string const& s : env)
             {
-                if (std::all_of(std::begin(ignored_env_patterns),
-                        std::end(ignored_env_patterns), [&s](auto const e) {
-                            return s.find(e) == std::string::npos;
-                        }))
+                if (std::all_of(std::begin(ignored_env_patterns), std::end(ignored_env_patterns),
+                        [&s](auto const e) { return s.find(e) == std::string::npos; }))
                 {
                     retval += "  " + s + "\n";
                 }
@@ -371,14 +351,13 @@ namespace pika {
     }    // namespace detail
 
     namespace detail {
-        pika::exception_info custom_exception_info(std::string const& func,
-            std::string const& file, long line, std::string const& auxinfo)
+        pika::exception_info custom_exception_info(
+            std::string const& func, std::string const& file, long line, std::string const& auxinfo)
         {
             std::int64_t pid = ::getpid();
 
-            std::size_t const trace_depth =
-                detail::from_string<std::size_t>(get_config_entry(
-                    "pika.trace_depth", PIKA_HAVE_THREAD_BACKTRACE_DEPTH));
+            std::size_t const trace_depth = detail::from_string<std::size_t>(
+                get_config_entry("pika.trace_depth", PIKA_HAVE_THREAD_BACKTRACE_DEPTH));
 
             pika::debug::detail::backtrace bt(trace_depth);
             std::string back_trace = bt.trace();
@@ -391,8 +370,7 @@ namespace pika {
                 runtime_state rts_state = rt->get_state();
                 state_name = pika::detail::get_runtime_state_name(rts_state);
 
-                if (rts_state >= runtime_state::initialized &&
-                    rts_state < runtime_state::stopped)
+                if (rts_state >= runtime_state::initialized && rts_state < runtime_state::stopped)
                 {
                     hostname = get_runtime().here();
                 }
@@ -407,35 +385,27 @@ namespace pika {
             threads::detail::thread_id_type thread_id;
             detail::thread_description thread_name;
 
-            threads::detail::thread_self* self =
-                threads::detail::get_self_ptr();
+            threads::detail::thread_self* self = threads::detail::get_self_ptr();
             if (nullptr != self)
             {
                 if (threads::thread_manager_is(runtime_state::running))
                     shepherd = pika::get_worker_thread_num();
 
                 thread_id = threads::detail::get_self_id();
-                thread_name =
-                    threads::detail::get_thread_description(thread_id);
+                thread_name = threads::detail::get_thread_description(thread_id);
             }
 
             std::string env(pika::detail::get_execution_environment());
             std::string config(pika::configuration_string());
 
-            return pika::exception_info().set(
-                pika::detail::throw_stacktrace(back_trace),
-                pika::detail::throw_locality(node),
-                pika::detail::throw_hostname(hostname),
-                pika::detail::throw_pid(pid),
-                pika::detail::throw_shepherd(shepherd),
-                pika::detail::throw_thread_id(
-                    reinterpret_cast<std::size_t>(thread_id.get())),
+            return pika::exception_info().set(pika::detail::throw_stacktrace(back_trace),
+                pika::detail::throw_locality(node), pika::detail::throw_hostname(hostname),
+                pika::detail::throw_pid(pid), pika::detail::throw_shepherd(shepherd),
+                pika::detail::throw_thread_id(reinterpret_cast<std::size_t>(thread_id.get())),
                 pika::detail::throw_thread_name(detail::as_string(thread_name)),
-                pika::detail::throw_function(func),
-                pika::detail::throw_file(file), pika::detail::throw_line(line),
-                pika::detail::throw_env(env),
-                pika::detail::throw_config(config),
-                pika::detail::throw_state(state_name),
+                pika::detail::throw_function(func), pika::detail::throw_file(file),
+                pika::detail::throw_line(line), pika::detail::throw_env(env),
+                pika::detail::throw_config(config), pika::detail::throw_state(state_name),
                 pika::detail::throw_auxinfo(auxinfo));
         }
     }    // namespace detail
@@ -487,8 +457,7 @@ namespace pika {
     /// Return the stack backtrace at the point the exception was thrown.
     std::string get_error_backtrace(pika::exception_info const& xi)
     {
-        std::string const* back_trace =
-            xi.get<pika::detail::throw_stacktrace>();
+        std::string const* back_trace = xi.get<pika::detail::throw_stacktrace>();
         if (back_trace && !back_trace->empty())
             return *back_trace;
 
@@ -519,8 +488,7 @@ namespace pika {
     /// exception was thrown.
     std::string get_error_thread_description(pika::exception_info const& xi)
     {
-        std::string const* thread_description =
-            xi.get<pika::detail::throw_thread_name>();
+        std::string const* thread_description = xi.get<pika::detail::throw_thread_name>();
         if (thread_description && !thread_description->empty())
             return *thread_description;
         return std::string();

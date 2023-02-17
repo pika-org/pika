@@ -19,8 +19,7 @@
 namespace pika::threads::detail {
     struct reset_backtrace
     {
-        PIKA_EXPORT explicit reset_backtrace(
-            thread_id_type const& id, error_code& ec = throws);
+        PIKA_EXPORT explicit reset_backtrace(thread_id_type const& id, error_code& ec = throws);
         PIKA_EXPORT ~reset_backtrace();
 
         thread_id_type id_;

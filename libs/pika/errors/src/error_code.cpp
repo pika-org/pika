@@ -29,8 +29,7 @@ namespace pika {
             {
                 if (value >= static_cast<int>(pika::error::success) &&
                     value < static_cast<int>(pika::error::last_error))
-                    return std::string("pika(") + error_names[value] +
-                        ")";    //-V108
+                    return std::string("pika(") + error_names[value] + ")";    //-V108
                 if (error_code_has_system_error(value))
                     return std::string("pika(system_error)");
                 return "pika(unknown_error)";
@@ -101,8 +100,7 @@ namespace pika {
 
         bool throwmode_is_lightweight(throwmode mode)
         {
-            return static_cast<int>(mode) &
-                static_cast<int>(throwmode::lightweight);
+            return static_cast<int>(mode) & static_cast<int>(throwmode::lightweight);
         }
     }    // namespace detail
 
@@ -115,8 +113,7 @@ namespace pika {
             exception_ = detail::get_exception(e, "", mode);
     }
 
-    error_code::error_code(
-        error e, char const* func, char const* file, long line, throwmode mode)
+    error_code::error_code(error e, char const* func, char const* file, long line, throwmode mode)
       : std::error_code(detail::make_system_error_code(e, mode))
     {
         if (e != pika::error::success && e != pika::error::no_success &&
@@ -134,8 +131,8 @@ namespace pika {
             exception_ = detail::get_exception(e, msg, mode);
     }
 
-    error_code::error_code(error e, char const* msg, char const* func,
-        char const* file, long line, throwmode mode)
+    error_code::error_code(
+        error e, char const* msg, char const* func, char const* file, long line, throwmode mode)
       : std::error_code(detail::make_system_error_code(e, mode))
     {
         if (e != pika::error::success && e != pika::error::no_success &&
@@ -153,8 +150,8 @@ namespace pika {
             exception_ = detail::get_exception(e, msg, mode);
     }
 
-    error_code::error_code(error e, std::string const& msg, char const* func,
-        char const* file, long line, throwmode mode)
+    error_code::error_code(error e, std::string const& msg, char const* func, char const* file,
+        long line, throwmode mode)
       : std::error_code(detail::make_system_error_code(e, mode))
     {
         if (e != pika::error::success && e != pika::error::no_success &&
@@ -171,8 +168,7 @@ namespace pika {
     }
 
     error_code::error_code(std::exception_ptr const& e)
-      : std::error_code(
-            detail::make_system_error_code(get_error(e), throwmode::rethrow))
+      : std::error_code(detail::make_system_error_code(get_error(e), throwmode::rethrow))
       , exception_(e)
     {
     }
@@ -196,10 +192,8 @@ namespace pika {
 
     ///////////////////////////////////////////////////////////////////////////
     error_code::error_code(error_code const& rhs)
-      : std::error_code(
-            static_cast<pika::error>(rhs.value()) == pika::error::success ?
-                make_success_code(
-                    (category() == detail::get_lightweight_pika_category()) ?
+      : std::error_code(static_cast<pika::error>(rhs.value()) == pika::error::success ?
+                make_success_code((category() == detail::get_lightweight_pika_category()) ?
                         pika::throwmode::lightweight :
                         pika::throwmode::plain) :
                 rhs)
@@ -215,10 +209,10 @@ namespace pika {
             if (static_cast<pika::error>(rhs.value()) == pika::error::success)
             {
                 // if the rhs is a success code, we maintain our throw mode
-                this->std::error_code::operator=(make_success_code(
-                    (category() == detail::get_lightweight_pika_category()) ?
-                        pika::throwmode::lightweight :
-                        pika::throwmode::plain));
+                this->std::error_code::operator=(
+                    make_success_code((category() == detail::get_lightweight_pika_category()) ?
+                            pika::throwmode::lightweight :
+                            pika::throwmode::plain));
             }
             else
             {

@@ -91,10 +91,9 @@ void print_results(std::uint64_t cores, double walltime)
     std::string const max_delay_str = fmt::format("{},", max_delay);
     std::string const total_delay_str = fmt::format("{},", total_delay);
 
-    fmt::print(std::cout,
-        "{:>21} {:>21} {:>21} {:>21} {:>21} {:>21} {:10.12}\n", cores_str,
-        seed_str, tasks_str, min_delay_str, max_delay_str, total_delay_str,
-        walltime, walltime / tasks);
+    fmt::print(std::cout, "{:>21} {:>21} {:>21} {:>21} {:>21} {:>21} {:10.12}\n", cores_str,
+        seed_str, tasks_str, min_delay_str, max_delay_str, total_delay_str, walltime,
+        walltime / tasks);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -176,17 +175,14 @@ int qthreads_main(variables_map& vm)
             std::uint64_t const low_calc =
                 (total_delay - current_sum) - (max_delay * (tasks - 1 - i));
 
-            bool const negative =
-                (total_delay - current_sum) < (max_delay * (tasks - 1 - i));
+            bool const negative = (total_delay - current_sum) < (max_delay * (tasks - 1 - i));
 
-            std::uint64_t const low =
-                (negative || (low_calc < min_delay)) ? min_delay : low_calc;
+            std::uint64_t const low = (negative || (low_calc < min_delay)) ? min_delay : low_calc;
 
             std::uint64_t const high_calc =
                 (total_delay - current_sum) - (min_delay * (tasks - 1 - i));
 
-            std::uint64_t const high =
-                (high_calc > max_delay) ? max_delay : high_calc;
+            std::uint64_t const high = (high_calc > max_delay) ? max_delay : high_calc;
 
             // Our range is [low, high].
             std::uniform_int_distribution<std::uint64_t> dist(low, high);
@@ -213,8 +209,7 @@ int qthreads_main(variables_map& vm)
         if (payloads.size() != tasks)
             throw std::logic_error("incorrect number of tasks generated");
 
-        std::uint64_t const payloads_sum =
-            std::accumulate(payloads.begin(), payloads.end(), 0LLU);
+        std::uint64_t const payloads_sum = std::accumulate(payloads.begin(), payloads.end(), 0LLU);
         if (payloads_sum != total_delay)
             throw std::logic_error("incorrect total delay generated");
 
@@ -257,8 +252,7 @@ int main(int argc, char* argv[])
 
     cmdline.add_options()("help,h", "print out program usage (this message)")
 
-        ("shepherds,s", value<std::uint64_t>()->default_value(1),
-            "number of shepherds to use")
+        ("shepherds,s", value<std::uint64_t>()->default_value(1), "number of shepherds to use")
 
             ("workers-per-shepherd,w", value<std::uint64_t>()->default_value(1),
                 "number of worker OS-threads per shepherd")
@@ -266,29 +260,22 @@ int main(int argc, char* argv[])
                 ("tasks", value<std::uint64_t>(&tasks)->default_value(500000),
                     "number of tasks to invoke")
 
-                    ("min-delay",
-                        value<std::uint64_t>(&min_delay)->default_value(0),
+                    ("min-delay", value<std::uint64_t>(&min_delay)->default_value(0),
                         "minimum number of iterations in the delay loop")
 
-                        ("max-delay",
-                            value<std::uint64_t>(&max_delay)->default_value(0),
+                        ("max-delay", value<std::uint64_t>(&max_delay)->default_value(0),
                             "maximum number of iterations in the delay loop")
 
-                            ("total-delay",
-                                value<std::uint64_t>(&total_delay)
-                                    ->default_value(0),
+                            ("total-delay", value<std::uint64_t>(&total_delay)->default_value(0),
                                 "total number of delay iterations to be "
                                 "executed")
 
-                                ("seed",
-                                    value<std::uint64_t>(&seed)->default_value(
-                                        0),
+                                ("seed", value<std::uint64_t>(&seed)->default_value(0),
                                     "seed for the pseudo random number "
                                     "generator (if 0, a seed is "
                                     "chosen based on the current system time)")
 
-                                    ("no-header",
-                                        "do not print out the csv header row");
+                                    ("no-header", "do not print out the csv header row");
 
     store(command_line_parser(argc, argv).options(cmdline).run(), vm);
 
@@ -305,10 +292,8 @@ int main(int argc, char* argv[])
         header = false;
 
     // Set qthreads environment variables.
-    std::string const shepherds =
-        std::to_string(vm["shepherds"].as<std::uint64_t>());
-    std::string const workers =
-        std::to_string(vm["workers-per-shepherd"].as<std::uint64_t>());
+    std::string const shepherds = std::to_string(vm["shepherds"].as<std::uint64_t>());
+    std::string const workers = std::to_string(vm["workers-per-shepherd"].as<std::uint64_t>());
 
     setenv("QT_NUM_SHEPHERDS", shepherds.c_str(), 1);
     setenv("QT_NUM_WORKERS_PER_SHEPHERD", workers.c_str(), 1);

@@ -22,10 +22,10 @@
 #include "shared_mutex_locking_thread.hpp"
 #include "thread_group.hpp"
 
-#define CHECK_LOCKED_VALUE_EQUAL(mutex_name, value, expected_value)            \
-    {                                                                          \
-        std::unique_lock<pika::mutex> lock(mutex_name);                        \
-        PIKA_TEST_EQ(value, expected_value);                                   \
+#define CHECK_LOCKED_VALUE_EQUAL(mutex_name, value, expected_value)                                \
+    {                                                                                              \
+        std::unique_lock<pika::mutex> lock(mutex_name);                                            \
+        PIKA_TEST_EQ(value, expected_value);                                                       \
     }
 
 void test_only_one_upgrade_lock_permitted()
@@ -50,18 +50,15 @@ void test_only_one_upgrade_lock_permitted()
     {
         for (unsigned i = 0; i != number_of_threads; ++i)
         {
-            pool.create_thread(
-                test::locking_thread<pika::upgrade_lock<shared_mutex_type>>(
-                    rw_mutex, unblocked_count, unblocked_count_mutex,
-                    unblocked_condition, finish_mutex,
-                    simultaneous_running_count, max_simultaneous_running));
+            pool.create_thread(test::locking_thread<pika::upgrade_lock<shared_mutex_type>>(rw_mutex,
+                unblocked_count, unblocked_count_mutex, unblocked_condition, finish_mutex,
+                simultaneous_running_count, max_simultaneous_running));
         }
 
         // Wait for one of the threads to signal that it is unblocked
         {
             std::unique_lock<mutex_type> lk(unblocked_count_mutex);
-            unblocked_condition.wait(
-                lk, [&]() { return unblocked_count >= 1u; });
+            unblocked_condition.wait(lk, [&]() { return unblocked_count >= 1u; });
         }
 
         // Wait a moment to see if the second thread gets the lock concurrently
@@ -80,10 +77,8 @@ void test_only_one_upgrade_lock_permitted()
         PIKA_TEST(false);
     }
 
-    CHECK_LOCKED_VALUE_EQUAL(
-        unblocked_count_mutex, unblocked_count, number_of_threads);
-    CHECK_LOCKED_VALUE_EQUAL(
-        unblocked_count_mutex, max_simultaneous_running, 1u);
+    CHECK_LOCKED_VALUE_EQUAL(unblocked_count_mutex, unblocked_count, number_of_threads);
+    CHECK_LOCKED_VALUE_EQUAL(unblocked_count_mutex, max_simultaneous_running, 1u);
 }
 
 void test_can_lock_upgrade_if_currently_locked_shared()
@@ -108,20 +103,16 @@ void test_can_lock_upgrade_if_currently_locked_shared()
     {
         for (unsigned i = 0; i != reader_count; ++i)
         {
-            pool.create_thread(
-                test::locking_thread<std::shared_lock<shared_mutex_type>>(
-                    rw_mutex, unblocked_count, unblocked_count_mutex,
-                    unblocked_condition, finish_mutex,
-                    simultaneous_running_count, max_simultaneous_running));
+            pool.create_thread(test::locking_thread<std::shared_lock<shared_mutex_type>>(rw_mutex,
+                unblocked_count, unblocked_count_mutex, unblocked_condition, finish_mutex,
+                simultaneous_running_count, max_simultaneous_running));
         }
 
         pika::this_thread::yield();
 
-        pool.create_thread(
-            test::locking_thread<pika::upgrade_lock<shared_mutex_type>>(
-                rw_mutex, unblocked_count, unblocked_count_mutex,
-                unblocked_condition, finish_mutex, simultaneous_running_count,
-                max_simultaneous_running));
+        pool.create_thread(test::locking_thread<pika::upgrade_lock<shared_mutex_type>>(rw_mutex,
+            unblocked_count, unblocked_count_mutex, unblocked_condition, finish_mutex,
+            simultaneous_running_count, max_simultaneous_running));
 
         {
             std::unique_lock<mutex_type> lk(unblocked_count_mutex);
@@ -132,8 +123,7 @@ void test_can_lock_upgrade_if_currently_locked_shared()
             }
         }
 
-        CHECK_LOCKED_VALUE_EQUAL(
-            unblocked_count_mutex, unblocked_count, reader_count + 1);
+        CHECK_LOCKED_VALUE_EQUAL(unblocked_count_mutex, unblocked_count, reader_count + 1);
 
         finish_lock.unlock();
         pool.join_all();
@@ -145,10 +135,8 @@ void test_can_lock_upgrade_if_currently_locked_shared()
         PIKA_TEST(false);
     }
 
-    CHECK_LOCKED_VALUE_EQUAL(
-        unblocked_count_mutex, unblocked_count, reader_count + 1);
-    CHECK_LOCKED_VALUE_EQUAL(
-        unblocked_count_mutex, max_simultaneous_running, reader_count + 1);
+    CHECK_LOCKED_VALUE_EQUAL(unblocked_count_mutex, unblocked_count, reader_count + 1);
+    CHECK_LOCKED_VALUE_EQUAL(unblocked_count_mutex, max_simultaneous_running, reader_count + 1);
 }
 
 void test_can_lock_upgrade_to_unique_if_currently_locked_upgrade()
@@ -171,8 +159,8 @@ void test_if_other_thread_has_write_lock_try_lock_shared_returns_false()
     mutex_type unblocked_mutex;
     unsigned unblocked_count = 0;
     std::unique_lock<mutex_type> finish_lock(finish_mutex);
-    pika::thread writer(test::simple_writing_thread(
-        rw_mutex, finish_mutex, unblocked_mutex, unblocked_count));
+    pika::thread writer(
+        test::simple_writing_thread(rw_mutex, finish_mutex, unblocked_mutex, unblocked_count));
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
@@ -199,8 +187,8 @@ void test_if_other_thread_has_write_lock_try_lock_upgrade_returns_false()
     mutex_type unblocked_mutex;
     unsigned unblocked_count = 0;
     std::unique_lock<mutex_type> finish_lock(finish_mutex);
-    pika::thread writer(test::simple_writing_thread(
-        rw_mutex, finish_mutex, unblocked_mutex, unblocked_count));
+    pika::thread writer(
+        test::simple_writing_thread(rw_mutex, finish_mutex, unblocked_mutex, unblocked_count));
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
@@ -253,8 +241,8 @@ void test_if_other_thread_has_shared_lock_try_lock_shared_returns_true()
     mutex_type unblocked_mutex;
     unsigned unblocked_count = 0;
     std::unique_lock<mutex_type> finish_lock(finish_mutex);
-    pika::thread writer(test::simple_reading_thread(
-        rw_mutex, finish_mutex, unblocked_mutex, unblocked_count));
+    pika::thread writer(
+        test::simple_reading_thread(rw_mutex, finish_mutex, unblocked_mutex, unblocked_count));
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
@@ -281,8 +269,8 @@ void test_if_other_thread_has_shared_lock_try_lock_upgrade_returns_true()
     mutex_type unblocked_mutex;
     unsigned unblocked_count = 0;
     std::unique_lock<mutex_type> finish_lock(finish_mutex);
-    pika::thread writer(test::simple_reading_thread(
-        rw_mutex, finish_mutex, unblocked_mutex, unblocked_count));
+    pika::thread writer(
+        test::simple_reading_thread(rw_mutex, finish_mutex, unblocked_mutex, unblocked_count));
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
@@ -323,8 +311,8 @@ int main(int argc, char* argv[])
     // Initialize and run pika
     pika::init_params init_args;
     init_args.cfg = cfg;
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(
+        pika::init(pika_main, argc, argv, init_args), 0, "pika main exited with non-zero status");
 
     return 0;
 }

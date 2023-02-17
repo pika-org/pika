@@ -44,6 +44,5 @@ namespace pika::this_thread {
     ///         running, it will throw an \a pika#exception with an error code of
     ///         \a pika#invalid_status.
     ///
-    PIKA_EXPORT parallel::execution::current_executor get_executor(
-        error_code& ec = throws);
+    PIKA_EXPORT parallel::execution::current_executor get_executor(error_code& ec = throws);
 }    // namespace pika::this_thread

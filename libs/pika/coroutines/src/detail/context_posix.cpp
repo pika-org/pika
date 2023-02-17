@@ -14,23 +14,20 @@
 
 // left empty on purpose
 
-#elif (defined(__linux) || defined(linux) || defined(__linux__)) &&            \
-    !defined(__bgq__) && !defined(__powerpc__) && !defined(__s390x__) &&       \
-    !defined(__arm__) && !defined(__arm64__) && !defined(__aarch64__)
+#elif (defined(__linux) || defined(linux) || defined(__linux__)) && !defined(__bgq__) &&           \
+    !defined(__powerpc__) && !defined(__s390x__) && !defined(__arm__) && !defined(__arm64__) &&    \
+    !defined(__aarch64__)
 
 // left empty on purpose
 
-#elif defined(_POSIX_VERSION) || defined(__bgq__) || defined(__powerpc__) ||   \
-    defined(__s390x__) || defined(__arm__) || defined(__arm64__) ||            \
-    defined(__aarch64__)
+#elif defined(_POSIX_VERSION) || defined(__bgq__) || defined(__powerpc__) || defined(__s390x__) || \
+    defined(__arm__) || defined(__arm64__) || defined(__aarch64__)
 
 #include <cstddef>
 
-namespace pika { namespace threads { namespace coroutines { namespace detail {
-    namespace posix {
+namespace pika { namespace threads { namespace coroutines { namespace detail { namespace posix {
 
-        std::ptrdiff_t ucontext_context_impl_base::default_stack_size =
-            SIGSTKSZ;
+    std::ptrdiff_t ucontext_context_impl_base::default_stack_size = SIGSTKSZ;
 }}}}}    // namespace pika::threads::coroutines::detail::posix
 
 #elif defined(PIKA_HAVE_FIBER_BASED_COROUTINES)

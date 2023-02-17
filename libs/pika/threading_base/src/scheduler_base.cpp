@@ -35,9 +35,8 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::threads::detail {
-    scheduler_base::scheduler_base(std::size_t num_threads,
-        char const* description, thread_queue_init_parameters thread_queue_init,
-        scheduler_mode mode)
+    scheduler_base::scheduler_base(std::size_t num_threads, char const* description,
+        thread_queue_init_parameters thread_queue_init, scheduler_mode mode)
       : suspend_mtxs_(num_threads)
       , suspend_conds_(num_threads)
       , pu_mtxs_(num_threads)
@@ -79,11 +78,11 @@ namespace pika::threads::detail {
             idle_backoff_data& data = wait_counts_[num_thread].data_;
 
             // Exponential back-off with a maximum sleep time.
-            double exponent = (std::min)(double(data.wait_count_),
-                double(std::numeric_limits<double>::max_exponent - 1));
+            double exponent = (std::min)(
+                double(data.wait_count_), double(std::numeric_limits<double>::max_exponent - 1));
 
-            std::chrono::milliseconds period(std::lround((std::min)(
-                data.max_idle_backoff_time_, std::pow(2.0, exponent))));
+            std::chrono::milliseconds period(
+                std::lround((std::min)(data.max_idle_backoff_time_, std::pow(2.0, exponent))));
 
             ++data.wait_count_;
 
@@ -124,11 +123,9 @@ namespace pika::threads::detail {
         // non-blocking/locking functions to stopping or terminating, in
         // which case the state is left untouched.
         pika::runtime_state expected = runtime_state::sleeping;
-        states_[num_thread].compare_exchange_strong(
-            expected, runtime_state::running);
+        states_[num_thread].compare_exchange_strong(expected, runtime_state::running);
 
-        PIKA_ASSERT(expected == runtime_state::sleeping ||
-            expected == runtime_state::stopping ||
+        PIKA_ASSERT(expected == runtime_state::sleeping || expected == runtime_state::stopping ||
             expected == runtime_state::terminating);
     }
 
@@ -149,8 +146,7 @@ namespace pika::threads::detail {
     }
 
     std::size_t scheduler_base::select_active_pu(
-        std::unique_lock<pu_mutex_type>& l, std::size_t num_thread,
-        bool allow_fallback)
+        std::unique_lock<pu_mutex_type>& l, std::size_t num_thread, bool allow_fallback)
     {
         if (has_scheduler_mode(threads::scheduler_mode::enable_elasticity))
         {
@@ -163,14 +159,12 @@ namespace pika::threads::detail {
                 // threads are available for scheduling.
                 auto max_allowed_state = runtime_state::suspended;
 
-                pika::util::yield_while([this, states_size, &l, &num_thread,
-                                            &max_allowed_state]() {
+                pika::util::yield_while([this, states_size, &l, &num_thread, &max_allowed_state]() {
                     std::size_t num_allowed_threads = 0;
 
                     for (std::size_t offset = 0; offset < states_size; ++offset)
                     {
-                        std::size_t num_thread_local =
-                            (num_thread + offset) % states_size;
+                        std::size_t num_thread_local = (num_thread + offset) % states_size;
 
                         l = std::unique_lock<pu_mutex_type>(
                             pu_mtxs_[num_thread_local], std::try_to_lock);
@@ -222,14 +216,11 @@ namespace pika::threads::detail {
             PIKA_ASSERT(num_thread != std::size_t(-1));
             for (std::size_t offset = 0; offset < states_size; ++offset)
             {
-                std::size_t num_thread_local =
-                    (num_thread + offset) % states_size;
+                std::size_t num_thread_local = (num_thread + offset) % states_size;
 
-                l = std::unique_lock<pu_mutex_type>(
-                    pu_mtxs_[num_thread_local], std::try_to_lock);
+                l = std::unique_lock<pu_mutex_type>(pu_mtxs_[num_thread_local], std::try_to_lock);
 
-                if (l.owns_lock() &&
-                    states_[num_thread_local] <= runtime_state::suspended)
+                if (l.owns_lock() && states_[num_thread_local] <= runtime_state::suspended)
                 {
                     return num_thread_local;
                 }
@@ -240,14 +231,12 @@ namespace pika::threads::detail {
     }
 
     // allow to access/manipulate states
-    std::atomic<pika::runtime_state>& scheduler_base::get_state(
-        std::size_t num_thread)
+    std::atomic<pika::runtime_state>& scheduler_base::get_state(std::size_t num_thread)
     {
         PIKA_ASSERT(num_thread < states_.size());
         return states_[num_thread];
     }
-    std::atomic<pika::runtime_state> const& scheduler_base::get_state(
-        std::size_t num_thread) const
+    std::atomic<pika::runtime_state> const& scheduler_base::get_state(std::size_t num_thread) const
     {
         PIKA_ASSERT(num_thread < states_.size());
         return states_[num_thread];
@@ -297,12 +286,10 @@ namespace pika::threads::detail {
         return true;
     }
 
-    std::pair<pika::runtime_state, pika::runtime_state>
-    scheduler_base::get_minmax_state() const
+    std::pair<pika::runtime_state, pika::runtime_state> scheduler_base::get_minmax_state() const
     {
         std::pair<pika::runtime_state, pika::runtime_state> result(
-            runtime_state::last_valid_runtime,
-            runtime_state::first_valid_runtime);
+            runtime_state::last_valid_runtime, runtime_state::first_valid_runtime);
 
         using state_type = std::atomic<pika::runtime_state>;
         for (state_type const& state_iter : states_)
@@ -365,8 +352,7 @@ namespace pika::threads::detail {
     }
 
 #if defined(PIKA_HAVE_SCHEDULER_LOCAL_STORAGE)
-    coroutines::detail::tss_data_node* scheduler_base::find_tss_data(
-        void const* key)
+    coroutines::detail::tss_data_node* scheduler_base::find_tss_data(void const* key)
     {
         if (!thread_data_)
             return nullptr;
@@ -374,8 +360,7 @@ namespace pika::threads::detail {
     }
 
     void scheduler_base::add_new_tss_node(void const* key,
-        std::shared_ptr<coroutines::detail::tss_cleanup_function> const& func,
-        void* tss_data)
+        std::shared_ptr<coroutines::detail::tss_cleanup_function> const& func, void* tss_data)
     {
         if (!thread_data_)
         {
@@ -392,8 +377,7 @@ namespace pika::threads::detail {
 
     void* scheduler_base::get_tss_data(void const* key)
     {
-        if (coroutines::detail::tss_data_node* const current_node =
-                find_tss_data(key))
+        if (coroutines::detail::tss_data_node* const current_node = find_tss_data(key))
         {
             return current_node->get_value();
         }
@@ -401,11 +385,10 @@ namespace pika::threads::detail {
     }
 
     void scheduler_base::set_tss_data(void const* key,
-        std::shared_ptr<coroutines::detail::tss_cleanup_function> const& func,
-        void* tss_data, bool cleanup_existing)
+        std::shared_ptr<coroutines::detail::tss_cleanup_function> const& func, void* tss_data,
+        bool cleanup_existing)
     {
-        if (coroutines::detail::tss_data_node* const current_node =
-                find_tss_data(key))
+        if (coroutines::detail::tss_data_node* const current_node = find_tss_data(key))
         {
             if (func || (tss_data != 0))
                 current_node->reinit(func, tss_data, cleanup_existing);

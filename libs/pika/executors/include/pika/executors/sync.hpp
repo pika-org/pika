@@ -22,19 +22,15 @@ namespace pika::detail {
     struct sync_dispatch_launch_policy_helper;
 
     template <typename Func>
-    struct sync_dispatch_launch_policy_helper<Func,
-        std::enable_if_t<!detail::is_action_v<Func>>>
+    struct sync_dispatch_launch_policy_helper<Func, std::enable_if_t<!detail::is_action_v<Func>>>
     {
         template <typename Policy_, typename F, typename... Ts>
-        PIKA_FORCEINLINE static auto
-        call(Policy_&& launch_policy, F&& f, Ts&&... ts)
+        PIKA_FORCEINLINE static auto call(Policy_&& launch_policy, F&& f, Ts&&... ts)
             -> decltype(sync_launch_policy_dispatch<std::decay_t<F>>::call(
-                PIKA_FORWARD(Policy_, launch_policy), PIKA_FORWARD(F, f),
-                PIKA_FORWARD(Ts, ts)...))
+                PIKA_FORWARD(Policy_, launch_policy), PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))
         {
             return sync_launch_policy_dispatch<std::decay_t<F>>::call(
-                PIKA_FORWARD(Policy_, launch_policy), PIKA_FORWARD(F, f),
-                PIKA_FORWARD(Ts, ts)...);
+                PIKA_FORWARD(Policy_, launch_policy), PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
         }
     };
 
@@ -42,15 +38,12 @@ namespace pika::detail {
     struct sync_dispatch<Policy, std::enable_if_t<is_launch_policy_v<Policy>>>
     {
         template <typename Policy_, typename F, typename... Ts>
-        PIKA_FORCEINLINE static auto
-        call(Policy_&& launch_policy, F&& f, Ts&&... ts)
-            -> decltype(sync_dispatch_launch_policy_helper<
-                std::decay_t<F>>::call(PIKA_FORWARD(Policy_, launch_policy),
-                PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))
+        PIKA_FORCEINLINE static auto call(Policy_&& launch_policy, F&& f, Ts&&... ts)
+            -> decltype(sync_dispatch_launch_policy_helper<std::decay_t<F>>::call(
+                PIKA_FORWARD(Policy_, launch_policy), PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))
         {
             return sync_dispatch_launch_policy_helper<std::decay_t<F>>::call(
-                PIKA_FORWARD(Policy_, launch_policy), PIKA_FORWARD(F, f),
-                PIKA_FORWARD(Ts, ts)...);
+                PIKA_FORWARD(Policy_, launch_policy), PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
         }
     };
 
@@ -62,8 +55,7 @@ namespace pika::detail {
         template <typename F, typename... Ts>
         PIKA_FORCEINLINE static auto call(F&& f, Ts&&... ts)
             -> decltype(parallel::execution::sync_execute(
-                execution::parallel_executor(), PIKA_FORWARD(F, f),
-                PIKA_FORWARD(Ts, ts)...))
+                execution::parallel_executor(), PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))
         {
             execution::parallel_executor exec;
             return parallel::execution::sync_execute(
@@ -84,12 +76,10 @@ namespace pika::detail {
         template <typename Executor_, typename F, typename... Ts>
         PIKA_FORCEINLINE static auto call(Executor_&& exec, F&& f, Ts&&... ts)
             -> decltype(parallel::execution::sync_execute(
-                PIKA_FORWARD(Executor_, exec), PIKA_FORWARD(F, f),
-                PIKA_FORWARD(Ts, ts)...))
+                PIKA_FORWARD(Executor_, exec), PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))
         {
             return parallel::execution::sync_execute(
-                PIKA_FORWARD(Executor_, exec), PIKA_FORWARD(F, f),
-                PIKA_FORWARD(Ts, ts)...);
+                PIKA_FORWARD(Executor_, exec), PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
         }
     };
 }    // namespace pika::detail

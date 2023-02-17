@@ -17,8 +17,8 @@ namespace pika::util::detail {
     // when `pm` is a pointer to member of a class `C` and
     // `is_base_of_v<C, remove_reference_t<T>>` is `true`;
     template <typename C, typename T,
-        typename = typename std::enable_if<std::is_base_of<C,
-            typename std::remove_reference<T>::type>::value>::type>
+        typename = typename std::enable_if<
+            std::is_base_of<C, typename std::remove_reference<T>::type>::value>::type>
     static constexpr T&& mem_ptr_target(T&& v) noexcept
     {
         return PIKA_FORWARD(T, v);
@@ -62,9 +62,9 @@ namespace pika::util::detail {
         }
 
         template <typename T1>
-        constexpr auto operator()(T1&& t1) const noexcept(
-            noexcept(detail::mem_ptr_target<C>(PIKA_FORWARD(T1, t1)).*pm))
-            -> decltype(detail::mem_ptr_target<C>(PIKA_FORWARD(T1, t1)).*pm)
+        constexpr auto operator()(T1&& t1) const
+            noexcept(noexcept(detail::mem_ptr_target<C>(PIKA_FORWARD(T1, t1)).*pm))
+                -> decltype(detail::mem_ptr_target<C>(PIKA_FORWARD(T1, t1)).*pm)
         {
             // This seems to trigger a bogus warning in GCC 11 with
             // optimizations enabled (possibly the same as this:
@@ -93,11 +93,10 @@ namespace pika::util::detail {
         }
 
         template <typename T1, typename... Tn>
-        constexpr auto operator()(T1&& t1, Tn&&... tn) const
-            noexcept(noexcept((detail::mem_ptr_target<C>(PIKA_FORWARD(T1, t1)).*
-                pm)(PIKA_FORWARD(Tn, tn)...)))
-                -> decltype((detail::mem_ptr_target<C>(PIKA_FORWARD(T1, t1)).*
-                    pm)(PIKA_FORWARD(Tn, tn)...))
+        constexpr auto operator()(T1&& t1, Tn&&... tn) const noexcept(noexcept(
+            (detail::mem_ptr_target<C>(PIKA_FORWARD(T1, t1)).*pm)(PIKA_FORWARD(Tn, tn)...)))
+            -> decltype((detail::mem_ptr_target<C>(PIKA_FORWARD(T1, t1)).*pm)(
+                PIKA_FORWARD(Tn, tn)...))
         {
             // This seems to trigger a bogus warning in GCC 11 with
             // optimizations enabled (possibly the same as this:
@@ -107,8 +106,7 @@ namespace pika::util::detail {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Warray-bounds"
 #endif
-            return (detail::mem_ptr_target<C>(PIKA_FORWARD(T1, t1)).*pm)(
-                PIKA_FORWARD(Tn, tn)...);
+            return (detail::mem_ptr_target<C>(PIKA_FORWARD(T1, t1)).*pm)(PIKA_FORWARD(Tn, tn)...);
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 110000
 #pragma GCC diagnostic pop
 #endif
@@ -117,8 +115,7 @@ namespace pika::util::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename F,
-        typename FD = typename std::remove_cv<
-            typename std::remove_reference<F>::type>::type>
+        typename FD = typename std::remove_cv<typename std::remove_reference<F>::type>::type>
     struct dispatch_invoke
     {
         using type = F&&;
@@ -127,13 +124,12 @@ namespace pika::util::detail {
     template <typename F, typename T, typename C>
     struct dispatch_invoke<F, T C::*>
     {
-        using type = typename std::conditional<std::is_function<T>::value,
-            invoke_mem_fun<T, C>, invoke_mem_obj<T, C>>::type;
+        using type = typename std::conditional<std::is_function<T>::value, invoke_mem_fun<T, C>,
+            invoke_mem_obj<T, C>>::type;
     };
 
     template <typename F>
     using invoke_impl = typename dispatch_invoke<F>::type;
 
-#define PIKA_INVOKE(F, ...)                                                    \
-    (::pika::util::detail::invoke_impl<decltype((F))>(F)(__VA_ARGS__))
+#define PIKA_INVOKE(F, ...) (::pika::util::detail::invoke_impl<decltype((F))>(F)(__VA_ARGS__))
 }    // namespace pika::util::detail

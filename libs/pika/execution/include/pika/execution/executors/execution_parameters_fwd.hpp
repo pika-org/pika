@@ -25,32 +25,25 @@ namespace pika::parallel::execution {
     // Executor information customization points
     namespace detail {
         /// \cond NOINTERNAL
-        template <typename Parameters, typename Executor,
-            typename Enable = void>
+        template <typename Parameters, typename Executor, typename Enable = void>
         struct get_chunk_size_fn_helper;
 
-        template <typename Parameters, typename Executor,
-            typename Enable = void>
+        template <typename Parameters, typename Executor, typename Enable = void>
         struct maximal_number_of_chunks_fn_helper;
 
-        template <typename Parameters, typename Executor,
-            typename Enable = void>
+        template <typename Parameters, typename Executor, typename Enable = void>
         struct reset_thread_distribution_fn_helper;
 
-        template <typename Parameters, typename Executor,
-            typename Enable = void>
+        template <typename Parameters, typename Executor, typename Enable = void>
         struct processing_units_count_fn_helper;
 
-        template <typename Parameters, typename Executor,
-            typename Enable = void>
+        template <typename Parameters, typename Executor, typename Enable = void>
         struct mark_begin_execution_fn_helper;
 
-        template <typename Parameters, typename Executor,
-            typename Enable = void>
+        template <typename Parameters, typename Executor, typename Enable = void>
         struct mark_end_of_scheduling_fn_helper;
 
-        template <typename Parameters, typename Executor,
-            typename Enable = void>
+        template <typename Parameters, typename Executor, typename Enable = void>
         struct mark_end_execution_fn_helper;
         /// \endcond
     }    // namespace detail
@@ -89,15 +82,12 @@ namespace pika::parallel::execution {
                 pika::traits::is_executor_any<Executor>::value
             )>
         // clang-format on
-        friend PIKA_FORCEINLINE decltype(auto)
-        tag_fallback_invoke(get_chunk_size_t, Parameters&& params,
-            Executor&& exec, F&& f, std::size_t cores, std::size_t num_tasks)
+        friend PIKA_FORCEINLINE decltype(auto) tag_fallback_invoke(get_chunk_size_t,
+            Parameters&& params, Executor&& exec, F&& f, std::size_t cores, std::size_t num_tasks)
         {
-            return detail::get_chunk_size_fn_helper<
-                pika::detail::decay_unwrap_t<Parameters>,
+            return detail::get_chunk_size_fn_helper<pika::detail::decay_unwrap_t<Parameters>,
                 std::decay_t<Executor>>::call(PIKA_FORWARD(Parameters, params),
-                PIKA_FORWARD(Executor, exec), PIKA_FORWARD(F, f), cores,
-                num_tasks);
+                PIKA_FORWARD(Executor, exec), PIKA_FORWARD(F, f), cores, num_tasks);
         }
     } get_chunk_size{};
 
@@ -125,9 +115,8 @@ namespace pika::parallel::execution {
                 pika::traits::is_executor_any<Executor>::value
             )>
         // clang-format on
-        friend PIKA_FORCEINLINE decltype(auto)
-        tag_fallback_invoke(maximal_number_of_chunks_t, Parameters&& params,
-            Executor&& exec, std::size_t cores, std::size_t num_tasks)
+        friend PIKA_FORCEINLINE decltype(auto) tag_fallback_invoke(maximal_number_of_chunks_t,
+            Parameters&& params, Executor&& exec, std::size_t cores, std::size_t num_tasks)
         {
             return detail::maximal_number_of_chunks_fn_helper<
                 pika::detail::decay_unwrap_t<Parameters>,
@@ -157,8 +146,8 @@ namespace pika::parallel::execution {
                 pika::traits::is_executor_any<Executor>::value
             )>
         // clang-format on
-        friend PIKA_FORCEINLINE decltype(auto) tag_fallback_invoke(
-            reset_thread_distribution_t, Parameters&& params, Executor&& exec)
+        friend PIKA_FORCEINLINE decltype(auto)
+        tag_fallback_invoke(reset_thread_distribution_t, Parameters&& params, Executor&& exec)
         {
             return detail::reset_thread_distribution_fn_helper<
                 pika::detail::decay_unwrap_t<Parameters>,
@@ -188,8 +177,8 @@ namespace pika::parallel::execution {
                 pika::traits::is_executor_any<Executor>::value
             )>
         // clang-format on
-        friend PIKA_FORCEINLINE decltype(auto) tag_fallback_invoke(
-            processing_units_count_t, Parameters&& params, Executor&& exec)
+        friend PIKA_FORCEINLINE decltype(auto)
+        tag_fallback_invoke(processing_units_count_t, Parameters&& params, Executor&& exec)
         {
             return detail::processing_units_count_fn_helper<
                 pika::detail::decay_unwrap_t<Parameters>,
@@ -217,11 +206,10 @@ namespace pika::parallel::execution {
                 pika::traits::is_executor_any<Executor>::value
             )>
         // clang-format on
-        friend PIKA_FORCEINLINE decltype(auto) tag_fallback_invoke(
-            mark_begin_execution_t, Parameters&& params, Executor&& exec)
+        friend PIKA_FORCEINLINE decltype(auto)
+        tag_fallback_invoke(mark_begin_execution_t, Parameters&& params, Executor&& exec)
         {
-            return detail::mark_begin_execution_fn_helper<
-                pika::detail::decay_unwrap_t<Parameters>,
+            return detail::mark_begin_execution_fn_helper<pika::detail::decay_unwrap_t<Parameters>,
                 std::decay_t<Executor>>::call(PIKA_FORWARD(Parameters, params),
                 PIKA_FORWARD(Executor, exec));
         }
@@ -246,8 +234,8 @@ namespace pika::parallel::execution {
                 pika::traits::is_executor_any<Executor>::value
             )>
         // clang-format on
-        friend PIKA_FORCEINLINE decltype(auto) tag_fallback_invoke(
-            mark_end_of_scheduling_t, Parameters&& params, Executor&& exec)
+        friend PIKA_FORCEINLINE decltype(auto)
+        tag_fallback_invoke(mark_end_of_scheduling_t, Parameters&& params, Executor&& exec)
         {
             return detail::mark_end_of_scheduling_fn_helper<
                 pika::detail::decay_unwrap_t<Parameters>,
@@ -275,11 +263,10 @@ namespace pika::parallel::execution {
                 pika::traits::is_executor_any<Executor>::value
             )>
         // clang-format on
-        friend PIKA_FORCEINLINE decltype(auto) tag_fallback_invoke(
-            mark_end_execution_t, Parameters&& params, Executor&& exec)
+        friend PIKA_FORCEINLINE decltype(auto)
+        tag_fallback_invoke(mark_end_execution_t, Parameters&& params, Executor&& exec)
         {
-            return detail::mark_end_execution_fn_helper<
-                pika::detail::decay_unwrap_t<Parameters>,
+            return detail::mark_end_execution_fn_helper<pika::detail::decay_unwrap_t<Parameters>,
                 std::decay_t<Executor>>::call(PIKA_FORWARD(Parameters, params),
                 PIKA_FORWARD(Executor, exec));
         }

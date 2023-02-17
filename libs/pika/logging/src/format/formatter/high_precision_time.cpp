@@ -30,8 +30,8 @@
 #include <ostream>
 #include <string>
 
-#if !(defined(__linux) || defined(linux) || defined(__linux__) ||              \
-    defined(__FreeBSD__) || defined(__APPLE__) || defined(PIKA_MSVC))
+#if !(defined(__linux) || defined(linux) || defined(__linux__) || defined(__FreeBSD__) ||          \
+    defined(__APPLE__) || defined(PIKA_MSVC))
 #include <mutex>
 #endif
 
@@ -54,8 +54,8 @@ namespace pika::util::logging::formatter {
             auto const val = std::chrono::system_clock::now();
             std::time_t const tt = std::chrono::system_clock::to_time_t(val);
 
-#if defined(__linux) || defined(linux) || defined(__linux__) ||                \
-    defined(__FreeBSD__) || defined(__APPLE__)
+#if defined(__linux) || defined(linux) || defined(__linux__) || defined(__FreeBSD__) ||            \
+    defined(__APPLE__)
             std::tm local_tm;
             localtime_r(&tt, &local_tm);
 #elif defined(PIKA_MSVC)
@@ -72,20 +72,16 @@ namespace pika::util::logging::formatter {
 #endif
 
             std::chrono::nanoseconds const nanosecs =
-                std::chrono::duration_cast<std::chrono::nanoseconds>(
-                    val.time_since_epoch());
+                std::chrono::duration_cast<std::chrono::nanoseconds>(val.time_since_epoch());
             std::chrono::microseconds const microsecs =
-                std::chrono::duration_cast<std::chrono::microseconds>(
-                    val.time_since_epoch());
+                std::chrono::duration_cast<std::chrono::microseconds>(val.time_since_epoch());
             std::chrono::milliseconds const millisecs =
-                std::chrono::duration_cast<std::chrono::milliseconds>(
-                    val.time_since_epoch());
+                std::chrono::duration_cast<std::chrono::milliseconds>(val.time_since_epoch());
 
-            fmt::print(to, fmt::runtime(m_format), local_tm.tm_mday,
-                local_tm.tm_mon + 1, local_tm.tm_year + 1900,
-                local_tm.tm_year % 100, local_tm.tm_hour, local_tm.tm_min,
-                local_tm.tm_sec, millisecs.count() % 1000,
-                microsecs.count() % 1000, nanosecs.count() % 1000);
+            fmt::print(to, fmt::runtime(m_format), local_tm.tm_mday, local_tm.tm_mon + 1,
+                local_tm.tm_year + 1900, local_tm.tm_year % 100, local_tm.tm_hour, local_tm.tm_min,
+                local_tm.tm_sec, millisecs.count() % 1000, microsecs.count() % 1000,
+                nanosecs.count() % 1000);
         }
 
         /** @brief configure through script
@@ -120,11 +116,9 @@ namespace pika::util::logging::formatter {
         std::string m_format;
     };
 
-    std::unique_ptr<high_precision_time> high_precision_time::make(
-        std::string const& format)
+    std::unique_ptr<high_precision_time> high_precision_time::make(std::string const& format)
     {
-        return std::unique_ptr<high_precision_time>(
-            new high_precision_time_impl(format));
+        return std::unique_ptr<high_precision_time>(new high_precision_time_impl(format));
     }
 
 }    // namespace pika::util::logging::formatter

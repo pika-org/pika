@@ -31,8 +31,7 @@ struct counter
     {
         std::cout << "default-constructions: " << default_constructions << "\n";
         std::cout << "copy-constructions: " << copy_constructions << "\n";
-        std::cout << "move-constructions: " << move_constructions << "\n"
-                  << std::endl;
+        std::cout << "move-constructions: " << move_constructions << "\n" << std::endl;
     }
 
     counter()

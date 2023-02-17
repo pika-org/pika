@@ -27,11 +27,9 @@
 namespace pika::threads {
     ///////////////////////////////////////////////////////////////////////////
 #if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
-    using default_static_priority_queue_scheduler_terminated_queue =
-        lockfree_lifo;
+    using default_static_priority_queue_scheduler_terminated_queue = lockfree_lifo;
 #else
-    using default_static_priority_queue_scheduler_terminated_queue =
-        lockfree_fifo;
+    using default_static_priority_queue_scheduler_terminated_queue = lockfree_fifo;
 #endif
 
     ///////////////////////////////////////////////////////////////////////////
@@ -43,29 +41,26 @@ namespace pika::threads {
     /// other work is executed. Low priority threads are executed by the last
     /// OS thread whenever no other work is available.
     /// This scheduler does not do any work stealing.
-    template <typename Mutex = std::mutex,
-        typename PendingQueuing = lockfree_fifo,
+    template <typename Mutex = std::mutex, typename PendingQueuing = lockfree_fifo,
         typename StagedQueuing = lockfree_fifo,
-        typename TerminatedQueuing =
-            default_static_priority_queue_scheduler_terminated_queue>
+        typename TerminatedQueuing = default_static_priority_queue_scheduler_terminated_queue>
     class PIKA_EXPORT static_priority_queue_scheduler
-      : public local_priority_queue_scheduler<Mutex, PendingQueuing,
-            StagedQueuing, TerminatedQueuing>
+      : public local_priority_queue_scheduler<Mutex, PendingQueuing, StagedQueuing,
+            TerminatedQueuing>
     {
     public:
-        using base_type = local_priority_queue_scheduler<Mutex, PendingQueuing,
-            StagedQueuing, TerminatedQueuing>;
+        using base_type =
+            local_priority_queue_scheduler<Mutex, PendingQueuing, StagedQueuing, TerminatedQueuing>;
 
         using init_parameter_type = typename base_type::init_parameter_type;
 
-        static_priority_queue_scheduler(init_parameter_type const& init,
-            bool deferred_initialization = true)
+        static_priority_queue_scheduler(
+            init_parameter_type const& init, bool deferred_initialization = true)
           : base_type(init, deferred_initialization)
         {
             // disable thread stealing to begin with
-            this->remove_scheduler_mode(
-                scheduler_mode(scheduler_mode::enable_stealing |
-                    scheduler_mode::enable_stealing_numa));
+            this->remove_scheduler_mode(scheduler_mode(
+                scheduler_mode::enable_stealing | scheduler_mode::enable_stealing_numa));
         }
 
         void set_scheduler_mode(scheduler_mode mode) override
@@ -85,16 +80,13 @@ namespace pika::threads {
 
 template <typename Mutex, typename PendingQueuing, typename StagedQueuing,
     typename TerminatedQueuing>
-struct fmt::formatter<pika::threads::static_priority_queue_scheduler<Mutex,
-    PendingQueuing, StagedQueuing, TerminatedQueuing>>
-  : fmt::formatter<pika::threads::detail::scheduler_base>
+struct fmt::formatter<pika::threads::static_priority_queue_scheduler<Mutex, PendingQueuing,
+    StagedQueuing, TerminatedQueuing>> : fmt::formatter<pika::threads::detail::scheduler_base>
 {
     template <typename FormatContext>
-    auto format(pika::threads::detail::scheduler_base const& scheduler,
-        FormatContext& ctx)
+    auto format(pika::threads::detail::scheduler_base const& scheduler, FormatContext& ctx)
     {
-        return fmt::formatter<pika::threads::detail::scheduler_base>::format(
-            scheduler, ctx);
+        return fmt::formatter<pika::threads::detail::scheduler_base>::format(scheduler, ctx);
     }
 };
 

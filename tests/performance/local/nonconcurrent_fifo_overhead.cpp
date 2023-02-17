@@ -49,8 +49,7 @@ bool header = true;
 ///////////////////////////////////////////////////////////////////////////////
 std::string format_build_date()
 {
-    std::chrono::time_point<std::chrono::system_clock> now =
-        std::chrono::system_clock::now();
+    std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
 
     std::time_t current_time = std::chrono::system_clock::to_time_t(now);
 
@@ -73,31 +72,28 @@ void print_results(variables_map& vm, std::pair<double, double> elapsed_control,
         // Note that if we change the number of fields above, we have to
         // change the constant that we add when printing out the field # for
         // performance counters below (e.g. the last_index part).
-        std::cout
-            << "## 0:ITER:Iterations per OS-thread - Independent Variable\n"
-               "## 1:BSIZE:Maximum Queue Depth - Independent Variable\n"
-               "## 2:OSTHRDS:OS-thread - Independent Variable\n"
-               "## 3:WTIME_CTL_PUSH:Total Walltime/Push for "
-               "std::vector [nanoseconds]\n"
-               "## 4:WTIME_CTL_POP:Total Walltime/Pop for "
-               "std::vector [nanoseconds]\n"
-               "## 5:WTIME_LF_PUSH:Total Walltime/Push for "
-               "boost::lockfree::queue [nanoseconds]\n"
-               "## 6:WTIME_LF_POP:Total Walltime/Pop for "
-               "boost::lockfree::queue [nanoseconds]\n";
+        std::cout << "## 0:ITER:Iterations per OS-thread - Independent Variable\n"
+                     "## 1:BSIZE:Maximum Queue Depth - Independent Variable\n"
+                     "## 2:OSTHRDS:OS-thread - Independent Variable\n"
+                     "## 3:WTIME_CTL_PUSH:Total Walltime/Push for "
+                     "std::vector [nanoseconds]\n"
+                     "## 4:WTIME_CTL_POP:Total Walltime/Pop for "
+                     "std::vector [nanoseconds]\n"
+                     "## 5:WTIME_LF_PUSH:Total Walltime/Push for "
+                     "boost::lockfree::queue [nanoseconds]\n"
+                     "## 6:WTIME_LF_POP:Total Walltime/Pop for "
+                     "boost::lockfree::queue [nanoseconds]\n";
     }
 
     if (iterations != 0)
-        fmt::print(std::cout, "{} {} {} {:.14g} {:.14g} {:.14g} {:.14g}\n",
-            iterations, blocksize, threads,
-            (elapsed_lockfree.first / (threads * iterations)) * 1e9,
+        fmt::print(std::cout, "{} {} {} {:.14g} {:.14g} {:.14g} {:.14g}\n", iterations, blocksize,
+            threads, (elapsed_lockfree.first / (threads * iterations)) * 1e9,
             (elapsed_lockfree.second / (threads * iterations)) * 1e9,
             (elapsed_control.first / (threads * iterations)) * 1e9,
             (elapsed_control.second / (threads * iterations)) * 1e9);
     else
-        fmt::print(std::cout, "{} {} {} {:.14g} {:.14g} {:.14g} {:.14g}\n",
-            iterations, blocksize, threads,
-            elapsed_lockfree.first * 1e9 elapsed_lockfree.second * 1e9,
+        fmt::print(std::cout, "{} {} {} {:.14g} {:.14g} {:.14g} {:.14g}\n", iterations, blocksize,
+            threads, elapsed_lockfree.first * 1e9 elapsed_lockfree.second * 1e9,
             elapsed_control.first * 1e9, elapsed_control.second * 1e9);
 }
 
@@ -139,8 +135,7 @@ std::pair<double, double> bench_fifo(Fifo& fifo, std::uint64_t local_iterations)
     // Start the clock.
     high_resolution_timer t;
 
-    for (std::uint64_t block = 0; block < (local_iterations / blocksize);
-         ++block)
+    for (std::uint64_t block = 0; block < (local_iterations / blocksize); ++block)
     {
         // Restart the clock.
         t.restart();
@@ -171,8 +166,7 @@ std::pair<double, double> bench_fifo(Fifo& fifo, std::uint64_t local_iterations)
 
 ///////////////////////////////////////////////////////////////////////////////
 void perform_iterations(pika::concurrency::detail::barrier& b,
-    std::pair<double, double>& elapsed_control,
-    std::pair<double, double>& elapsed_lockfree)
+    std::pair<double, double>& elapsed_control, std::pair<double, double>& elapsed_lockfree)
 {
     {
         std::vector<std::uint64_t> fifo;
@@ -205,8 +199,8 @@ int app_main(variables_map& vm)
     pika::concurrency::detail::barrier b(threads);
 
     for (std::uint32_t i = 0; i != threads; ++i)
-        workers.push_back(std::thread(perform_iterations, std::ref(b),
-            std::ref(elapsed_control[i]), std::ref(elapsed_lockfree[i])));
+        workers.push_back(std::thread(perform_iterations, std::ref(b), std::ref(elapsed_control[i]),
+            std::ref(elapsed_lockfree[i])));
 
     for (std::thread& thread : workers)
     {
@@ -243,16 +237,13 @@ int main(int argc, char* argv[])
 
     cmdline.add_options()("help,h", "print out program usage (this message)")
 
-        ("threads,t", value<std::uint64_t>(&threads)->default_value(1),
-            "number of threads to use")
+        ("threads,t", value<std::uint64_t>(&threads)->default_value(1), "number of threads to use")
 
-            ("iterations",
-                value<std::uint64_t>(&iterations)->default_value(2000000),
+            ("iterations", value<std::uint64_t>(&iterations)->default_value(2000000),
                 "number of iterations to perform (most be divisible by block "
                 "size)")
 
-                ("blocksize",
-                    value<std::uint64_t>(&blocksize)->default_value(10000),
+                ("blocksize", value<std::uint64_t>(&blocksize)->default_value(10000),
                     "size of each block")
 
                     ("no-header", "do not print out the header");
@@ -269,8 +260,7 @@ int main(int argc, char* argv[])
     }
 
     if (iterations % blocksize)
-        throw std::invalid_argument(
-            "iterations must be cleanly divisible by blocksize\n");
+        throw std::invalid_argument("iterations must be cleanly divisible by blocksize\n");
 
     if (vm.count("no-header"))
         header = false;

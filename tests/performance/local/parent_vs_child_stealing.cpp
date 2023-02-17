@@ -93,8 +93,8 @@ int pika_main(pika::program_options::variables_map& vm)
                   << std::endl;
     }
 
-    fmt::print(std::cout, "{},{},{},{}\n", num_cores, iterations,
-        child_stealing_time, parent_stealing_time);
+    fmt::print(std::cout, "{},{},{},{}\n", num_cores, iterations, child_stealing_time,
+        parent_stealing_time);
 
     return pika::finalize();
 }
@@ -103,8 +103,7 @@ int main(int argc, char* argv[])
 {
     // Configure application-specific options.
     namespace po = pika::program_options;
-    po::options_description cmdline(
-        "usage: " PIKA_APPLICATION_STRING " [options]");
+    po::options_description cmdline("usage: " PIKA_APPLICATION_STRING " [options]");
 
     // clang-format off
     cmdline.add_options()

@@ -47,16 +47,12 @@ namespace pika::execution::detail {
             impl_ = impl;
         }
 
-        void yield(
-            char const* desc = "pika::execution::detail::agent_ref::yield");
-        void yield_k(std::size_t k,
-            char const* desc = "pika::execution::detail::agent_ref::yield_k");
-        void suspend(
-            char const* desc = "pika::execution::detail::agent_ref::suspend");
-        void resume(
-            char const* desc = "pika::execution::detail::agent_ref::resume");
-        void abort(
-            char const* desc = "pika::execution::detail::agent_ref::abort");
+        void yield(char const* desc = "pika::execution::detail::agent_ref::yield");
+        void yield_k(
+            std::size_t k, char const* desc = "pika::execution::detail::agent_ref::yield_k");
+        void suspend(char const* desc = "pika::execution::detail::agent_ref::suspend");
+        void resume(char const* desc = "pika::execution::detail::agent_ref::resume");
+        void abort(char const* desc = "pika::execution::detail::agent_ref::abort");
 
         template <typename Rep, typename Period>
         void sleep_for(std::chrono::duration<Rep, Period> const& sleep_duration,
@@ -66,10 +62,8 @@ namespace pika::execution::detail {
         }
 
         template <typename Clock, typename Duration>
-        void
-        sleep_until(std::chrono::time_point<Clock, Duration> const& sleep_time,
-            char const* desc =
-                "pika::execution::detail::agent_ref::sleep_until")
+        void sleep_until(std::chrono::time_point<Clock, Duration> const& sleep_time,
+            char const* desc = "pika::execution::detail::agent_ref::sleep_until")
         {
             sleep_until(pika::chrono::steady_time_point{sleep_time}, desc);
         }
@@ -87,19 +81,15 @@ namespace pika::execution::detail {
     private:
         agent_base* impl_;
 
-        void sleep_for(pika::chrono::steady_duration const& sleep_duration,
-            char const* desc);
-        void sleep_until(pika::chrono::steady_time_point const& sleep_time,
-            char const* desc);
+        void sleep_for(pika::chrono::steady_duration const& sleep_duration, char const* desc);
+        void sleep_until(pika::chrono::steady_time_point const& sleep_time, char const* desc);
 
-        friend constexpr bool operator==(
-            agent_ref const& lhs, agent_ref const& rhs)
+        friend constexpr bool operator==(agent_ref const& lhs, agent_ref const& rhs)
         {
             return lhs.impl_ == rhs.impl_;
         }
 
-        friend constexpr bool operator!=(
-            agent_ref const& lhs, agent_ref const& rhs)
+        friend constexpr bool operator!=(agent_ref const& lhs, agent_ref const& rhs)
         {
             return lhs.impl_ != rhs.impl_;
         }
@@ -111,13 +101,11 @@ namespace pika::execution::detail {
 }    // namespace pika::execution::detail
 
 template <>
-struct fmt::formatter<pika::execution::detail::agent_ref>
-  : fmt::formatter<std::string>
+struct fmt::formatter<pika::execution::detail::agent_ref> : fmt::formatter<std::string>
 {
     template <typename FormatContext>
     auto format(pika::execution::detail::agent_ref const& a, FormatContext& ctx)
     {
-        return fmt::formatter<std::string>::format(
-            pika::execution::detail::format(a), ctx);
+        return fmt::formatter<std::string>::format(pika::execution::detail::format(a), ctx);
     }
 };

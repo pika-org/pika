@@ -21,7 +21,6 @@ double func(double x1, double, double, double, double, double, double)
 int main(int argc, char* argv[])
 {
     pika::shared_future<double> f = pika::make_ready_future(1.0);
-    f = pika::dataflow(
-        pika::launch::sync, pika::unwrapping(&func), f, f, f, f, f, f, f);
+    f = pika::dataflow(pika::launch::sync, pika::unwrapping(&func), f, f, f, f, f, f, f);
 }
 #endif

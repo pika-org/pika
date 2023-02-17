@@ -90,16 +90,13 @@ namespace pika::execution::experimental {
                 stopped = 5,
             };
 
-            using queue_type =
-                pika::concurrency::detail::contiguous_index_queue<
-                    std::uint32_t>;
-            using queues_type = std::vector<
-                pika::concurrency::detail::cache_aligned_data<queue_type>>;
+            using queue_type = pika::concurrency::detail::contiguous_index_queue<std::uint32_t>;
+            using queues_type =
+                std::vector<pika::concurrency::detail::cache_aligned_data<queue_type>>;
 
             struct region_data_type;
-            using thread_function_helper_type = void(region_data_type&,
-                std::size_t, std::size_t, queues_type&, pika::spinlock&,
-                std::exception_ptr&) noexcept;
+            using thread_function_helper_type = void(region_data_type&, std::size_t, std::size_t,
+                queues_type&, pika::spinlock&, std::exception_ptr&) noexcept;
 
             // Members that change for each parallel region.
             struct region_data
@@ -120,21 +117,18 @@ namespace pika::execution::experimental {
             // Can't apply 'using' here as the type needs to be forward
             // declared
             struct region_data_type
-              : std::vector<
-                    pika::concurrency::detail::cache_aligned_data<region_data>>
+              : std::vector<pika::concurrency::detail::cache_aligned_data<region_data>>
             {
-                using base_type = std::vector<
-                    pika::concurrency::detail::cache_aligned_data<region_data>>;
+                using base_type =
+                    std::vector<pika::concurrency::detail::cache_aligned_data<region_data>>;
                 using base_type::base_type;
             };
 
             // Members that are used for all parallel regions executed through
             // this executor.
             threads::detail::thread_pool_base* pool_ = nullptr;
-            execution::thread_priority priority_ =
-                execution::thread_priority::default_;
-            execution::thread_stacksize stacksize_ =
-                execution::thread_stacksize::small_;
+            execution::thread_priority priority_ = execution::thread_priority::default_;
+            execution::thread_stacksize stacksize_ = execution::thread_stacksize::small_;
             loop_schedule schedule_ = loop_schedule::static_;
             std::uint64_t yield_delay_;
 
@@ -150,9 +144,9 @@ namespace pika::execution::experimental {
             queues_type queues_;
 
             template <typename Op>
-            static thread_state wait_state_this_thread_while(
-                std::atomic<thread_state> const& tstate, thread_state state,
-                std::uint64_t yield_delay, Op&& op)
+            static thread_state
+            wait_state_this_thread_while(std::atomic<thread_state> const& tstate,
+                thread_state state, std::uint64_t yield_delay, Op&& op)
             {
                 auto current = tstate.load(std::memory_order_acquire);
                 if (op(current, state))
@@ -172,8 +166,7 @@ namespace pika::execution::experimental {
                             }
                         }
 
-                        if ((util::hardware::timestamp() - base_time) >
-                            yield_delay)
+                        if ((util::hardware::timestamp() - base_time) > yield_delay)
                         {
                             pika::this_thread::yield();
                         }
@@ -208,53 +201,45 @@ namespace pika::execution::experimental {
 
                 thread_state get_state_this_thread() const noexcept
                 {
-                    return region_data_[thread_index_].data_.state_.load(
-                        std::memory_order_relaxed);
+                    return region_data_[thread_index_].data_.state_.load(std::memory_order_relaxed);
                 }
 
                 void operator()() noexcept
                 {
-                    PIKA_ASSERT(
-                        get_state_this_thread() == thread_state::starting);
+                    PIKA_ASSERT(get_state_this_thread() == thread_state::starting);
                     set_state_this_thread(thread_state::idle);
 
                     region_data& data = region_data_[thread_index_].data_;
 
                     // wait as long the state is 'idle'
                     auto state = shared_data::wait_state_this_thread_while(
-                        data.state_, thread_state::idle, yield_delay_,
-                        std::equal_to<>());
+                        data.state_, thread_state::idle, yield_delay_, std::equal_to<>());
 
                     while (state != thread_state::stopping)
                     {
-                        data.thread_function_helper_(region_data_,
-                            thread_index_, num_threads_, queues_,
-                            exception_mutex_, exception_);
+                        data.thread_function_helper_(region_data_, thread_index_, num_threads_,
+                            queues_, exception_mutex_, exception_);
 
                         // wait as long the state is 'idle'
                         state = shared_data::wait_state_this_thread_while(
-                            data.state_, thread_state::idle, yield_delay_,
-                            std::equal_to<>());
+                            data.state_, thread_state::idle, yield_delay_, std::equal_to<>());
                     }
 
-                    PIKA_ASSERT(
-                        get_state_this_thread() == thread_state::stopping);
+                    PIKA_ASSERT(get_state_this_thread() == thread_state::stopping);
                     set_state_this_thread(thread_state::stopped);
                 }
             };
 
             void set_state_main_thread(thread_state state) noexcept
             {
-                region_data_[main_thread_].data_.state_.store(
-                    state, std::memory_order_relaxed);
+                region_data_[main_thread_].data_.state_.store(state, std::memory_order_relaxed);
             }
 
             void set_state_all(thread_state state) noexcept
             {
                 for (std::size_t t = 0; t < num_threads_; ++t)
                 {
-                    region_data_[t].data_.state_.store(
-                        state, std::memory_order_release);
+                    region_data_[t].data_.state_.store(state, std::memory_order_release);
                     PIKA_SMT_PAUSE;
                 }
             }
@@ -264,8 +249,8 @@ namespace pika::execution::experimental {
                 for (std::size_t t = 0; t < num_threads_; ++t)
                 {
                     // wait for thread-state to be equal to 'state'
-                    wait_state_this_thread_while(region_data_[t].data_.state_,
-                        state, yield_delay_, std::not_equal_to<>());
+                    wait_state_this_thread_while(
+                        region_data_[t].data_.state_, state, yield_delay_, std::not_equal_to<>());
                 }
             }
 
@@ -291,27 +276,24 @@ namespace pika::execution::experimental {
                         thread_state::starting, std::memory_order_relaxed);
 
                     auto policy = launch::async_policy(priority_, stacksize_,
-                        execution::thread_schedule_hint{
-                            static_cast<std::int16_t>(t)});
+                        execution::thread_schedule_hint{static_cast<std::int16_t>(t)});
 
-                    pika::detail::async_launch_policy_dispatch<
-                        launch::async_policy>::call(policy, desc, pool_,
-                        thread_function{num_threads_, t, schedule_,
-                            exception_mutex_, exception_, yield_delay_,
-                            region_data_, queues_});
+                    pika::detail::async_launch_policy_dispatch<launch::async_policy>::call(policy,
+                        desc, pool_,
+                        thread_function{num_threads_, t, schedule_, exception_mutex_, exception_,
+                            yield_delay_, region_data_, queues_});
                 }
 
                 wait_state_all(thread_state::idle);
             }
 
-            static constexpr void init_local_work_queue(queue_type& queue,
-                std::size_t thread_index, std::size_t num_threads,
-                std::size_t size) noexcept
+            static constexpr void init_local_work_queue(queue_type& queue, std::size_t thread_index,
+                std::size_t num_threads, std::size_t size) noexcept
             {
-                auto const part_begin = static_cast<std::uint32_t>(
-                    (thread_index * size) / num_threads);
-                auto const part_end = static_cast<std::uint32_t>(
-                    ((thread_index + 1) * size) / num_threads);
+                auto const part_begin =
+                    static_cast<std::uint32_t>((thread_index * size) / num_threads);
+                auto const part_end =
+                    static_cast<std::uint32_t>(((thread_index + 1) * size) / num_threads);
                 queue.reset(part_begin, part_end);
             }
 
@@ -323,9 +305,8 @@ namespace pika::execution::experimental {
               , priority_(priority)
               , stacksize_(stacksize)
               , schedule_(schedule)
-              , yield_delay_(
-                    std::uint64_t(static_cast<double>(yield_delay.count()) /
-                        pool_->timestamp_scale()))
+              , yield_delay_(std::uint64_t(
+                    static_cast<double>(yield_delay.count()) / pool_->timestamp_scale()))
               , num_threads_(pool_->get_os_thread_count())
               , exception_mutex_()
               , exception_()
@@ -346,8 +327,7 @@ namespace pika::execution::experimental {
             bool operator==(shared_data const& rhs) const noexcept
             {
                 return pool_ == rhs.pool_ && priority_ == rhs.priority_ &&
-                    stacksize_ == rhs.stacksize_ &&
-                    schedule_ == rhs.schedule_ &&
+                    stacksize_ == rhs.stacksize_ && schedule_ == rhs.schedule_ &&
                     yield_delay_ == rhs.yield_delay_;
             }
 
@@ -367,30 +347,26 @@ namespace pika::execution::experimental {
             struct thread_function_helper
             {
                 using argument_pack_type = std::decay_t<Tuple>;
-                using index_pack_type =
-                    typename pika::util::detail::fused_index_pack<Tuple>::type;
+                using index_pack_type = typename pika::util::detail::fused_index_pack<Tuple>::type;
 
-                template <std::size_t... Is_, typename F_, typename A_,
-                    typename Tuple_>
+                template <std::size_t... Is_, typename F_, typename A_, typename Tuple_>
                 static constexpr void
-                invoke_helper(pika::util::detail::index_pack<Is_...>, F_&& f,
-                    A_&& a, Tuple_&& t)
+                invoke_helper(pika::util::detail::index_pack<Is_...>, F_&& f, A_&& a, Tuple_&& t)
                 {
                     PIKA_INVOKE(PIKA_FORWARD(F_, f), PIKA_FORWARD(A_, a),
                         std::get<Is_>(PIKA_FORWARD(Tuple_, t))...);
                 }
 
-                static void set_state(std::atomic<thread_state>& tstate,
-                    thread_state state) noexcept
+                static void set_state(
+                    std::atomic<thread_state>& tstate, thread_state state) noexcept
                 {
                     tstate.store(state, std::memory_order_release);
                 }
 
                 /// Main entry point for a single parallel region (static
                 /// scheduling).
-                static void call_static(region_data_type& rdata,
-                    std::size_t thread_index, std::size_t num_threads,
-                    queues_type&, pika::spinlock& exception_mutex,
+                static void call_static(region_data_type& rdata, std::size_t thread_index,
+                    std::size_t num_threads, queues_type&, pika::spinlock& exception_mutex,
                     std::exception_ptr& exception) noexcept
                 {
                     region_data& data = rdata[thread_index].data_;
@@ -398,29 +374,25 @@ namespace pika::execution::experimental {
                     {
                         // Cast void pointers back to the actual types given to
                         // bulk_sync_execute.
-                        auto& element_function =
-                            *static_cast<F*>(data.element_function_);
+                        auto& element_function = *static_cast<F*>(data.element_function_);
                         auto& shape = *static_cast<S const*>(data.shape_);
-                        auto& argument_pack =
-                            *static_cast<Tuple*>(data.argument_pack_);
+                        auto& argument_pack = *static_cast<Tuple*>(data.argument_pack_);
 
                         // Set up the local queues and state.
                         std::size_t size = pika::util::size(shape);
 
-                        auto part_begin = static_cast<std::uint32_t>(
-                            (thread_index * size) / num_threads);
-                        auto const part_end = static_cast<std::uint32_t>(
-                            ((thread_index + 1) * size) / num_threads);
+                        auto part_begin =
+                            static_cast<std::uint32_t>((thread_index * size) / num_threads);
+                        auto const part_end =
+                            static_cast<std::uint32_t>(((thread_index + 1) * size) / num_threads);
 
                         set_state(data.state_, thread_state::active);
 
                         // Process local items.
                         for (; part_begin != part_end; ++part_begin)
                         {
-                            auto it =
-                                std::next(pika::util::begin(shape), part_begin);
-                            invoke_helper(index_pack_type{}, element_function,
-                                *it, argument_pack);
+                            auto it = std::next(pika::util::begin(shape), part_begin);
+                            invoke_helper(index_pack_type{}, element_function, *it, argument_pack);
                         }
                     }
                     catch (...)
@@ -437,9 +409,8 @@ namespace pika::execution::experimental {
 
                 /// Main entry point for a single parallel region (dynamic
                 /// scheduling).
-                static void call_dynamic(region_data_type& rdata,
-                    std::size_t thread_index, std::size_t num_threads,
-                    queues_type& queues, pika::spinlock& exception_mutex,
+                static void call_dynamic(region_data_type& rdata, std::size_t thread_index,
+                    std::size_t num_threads, queues_type& queues, pika::spinlock& exception_mutex,
                     std::exception_ptr& exception) noexcept
                 {
                     region_data& data = rdata[thread_index].data_;
@@ -447,17 +418,14 @@ namespace pika::execution::experimental {
                     {
                         // Cast void pointers back to the actual types given to
                         // bulk_sync_execute.
-                        auto& element_function =
-                            *static_cast<F*>(data.element_function_);
+                        auto& element_function = *static_cast<F*>(data.element_function_);
                         auto& shape = *static_cast<S const*>(data.shape_);
-                        auto& argument_pack =
-                            *static_cast<Tuple*>(data.argument_pack_);
+                        auto& argument_pack = *static_cast<Tuple*>(data.argument_pack_);
 
                         // Set up the local queues and state.
                         queue_type& local_queue = queues[thread_index].data_;
                         std::size_t size = pika::util::size(shape);
-                        init_local_work_queue(
-                            local_queue, thread_index, num_threads, size);
+                        init_local_work_queue(local_queue, thread_index, num_threads, size);
 
                         set_state(data.state_, thread_state::active);
 
@@ -465,36 +433,29 @@ namespace pika::execution::experimental {
                         std::optional<std::uint32_t> index;
                         while ((index = local_queue.pop_left()))
                         {
-                            auto it = std::next(
-                                pika::util::begin(shape), index.value());
-                            invoke_helper(index_pack_type{}, element_function,
-                                *it, argument_pack);
+                            auto it = std::next(pika::util::begin(shape), index.value());
+                            invoke_helper(index_pack_type{}, element_function, *it, argument_pack);
                         }
 
                         // As loop schedule is dynamic, steal from neighboring
                         // threads.
-                        for (std::size_t offset = 1; offset < num_threads;
-                             ++offset)
+                        for (std::size_t offset = 1; offset < num_threads; ++offset)
                         {
-                            std::size_t neighbor_index =
-                                (thread_index + offset) % num_threads;
+                            std::size_t neighbor_index = (thread_index + offset) % num_threads;
 
                             if (rdata[neighbor_index].data_.state_.load(
-                                    std::memory_order_acquire) !=
-                                thread_state::active)
+                                    std::memory_order_acquire) != thread_state::active)
                             {
                                 continue;
                             }
 
-                            queue_type& neighbor_queue =
-                                queues[neighbor_index].data_;
+                            queue_type& neighbor_queue = queues[neighbor_index].data_;
 
                             while ((index = neighbor_queue.pop_right()))
                             {
-                                auto it = std::next(
-                                    pika::util::begin(shape), index.value());
-                                invoke_helper(index_pack_type{},
-                                    element_function, *it, argument_pack);
+                                auto it = std::next(pika::util::begin(shape), index.value());
+                                invoke_helper(
+                                    index_pack_type{}, element_function, *it, argument_pack);
                             }
                         }
                     }
@@ -512,9 +473,8 @@ namespace pika::execution::experimental {
             };
 
             template <typename F, typename S, typename Args>
-            thread_function_helper_type*
-            set_all_states_and_region_data(thread_state state, F& f,
-                S const& shape, Args& argument_pack) noexcept
+            thread_function_helper_type* set_all_states_and_region_data(
+                thread_state state, F& f, S const& shape, Args& argument_pack) noexcept
             {
                 thread_function_helper_type* func = nullptr;
                 if (schedule_ == loop_schedule::static_ || num_threads_ == 1)
@@ -545,26 +505,22 @@ namespace pika::execution::experimental {
             void bulk_sync_execute(F&& f, S const& shape, Ts&&... ts)
             {
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
-                static pika::util::itt::event notify_event(
-                    "fork_join_executor::bulk_sync_execute");
+                static pika::util::itt::event notify_event("fork_join_executor::bulk_sync_execute");
 
                 pika::util::itt::mark_event e(notify_event);
 #endif
 
                 // Set the data for this parallel region
-                auto argument_pack =
-                    std::forward_as_tuple(PIKA_FORWARD(Ts, ts)...);
+                auto argument_pack = std::forward_as_tuple(PIKA_FORWARD(Ts, ts)...);
 
                 // Signal all worker threads to start partitioning work for
                 // themselves, and then starting the actual work.
-                thread_function_helper_type* func =
-                    set_all_states_and_region_data(
-                        thread_state::partitioning_work, f, shape,
-                        argument_pack);
+                thread_function_helper_type* func = set_all_states_and_region_data(
+                    thread_state::partitioning_work, f, shape, argument_pack);
 
                 // Start work on the main thread.
-                func(region_data_, main_thread_, num_threads_, queues_,
-                    exception_mutex_, exception_);
+                func(region_data_, main_thread_, num_threads_, queues_, exception_mutex_,
+                    exception_);
 
                 // Wait for all threads to finish their work assigned to
                 // them in this parallel region.
@@ -578,26 +534,24 @@ namespace pika::execution::experimental {
             }
 
             template <typename F, typename S, typename... Ts>
-            std::vector<pika::future<pika::parallel::execution::detail::
-                    bulk_function_result_t<F, S, Ts...>>>
+            std::vector<pika::future<
+                pika::parallel::execution::detail::bulk_function_result_t<F, S, Ts...>>>
             bulk_async_execute(F&& f, S const& shape, Ts&&... ts)
             {
                 // Forward to the synchronous version as we can't create
                 // futures to the completion of the parallel region (this pika
                 // thread participates in computation).
                 using result_type =
-                    pika::parallel::execution::detail::bulk_function_result_t<F,
-                        S, Ts...>;
+                    pika::parallel::execution::detail::bulk_function_result_t<F, S, Ts...>;
                 std::vector<pika::future<result_type>> v;
                 try
                 {
-                    bulk_sync_execute(
-                        PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Ts, ts)...);
+                    bulk_sync_execute(PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Ts, ts)...);
                 }
                 catch (...)
                 {
-                    v.push_back(pika::make_exceptional_future<result_type>(
-                        std::current_exception()));
+                    v.push_back(
+                        pika::make_exceptional_future<result_type>(std::current_exception()));
                 }
                 return v;
             }
@@ -610,8 +564,7 @@ namespace pika::execution::experimental {
         template <typename F, typename S, typename... Ts>
         void bulk_sync_execute(F&& f, S const& shape, Ts&&... ts)
         {
-            shared_data_->bulk_sync_execute(
-                PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Ts, ts)...);
+            shared_data_->bulk_sync_execute(PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Ts, ts)...);
         }
 
         template <typename F, typename S, typename... Ts>
@@ -646,10 +599,9 @@ namespace pika::execution::experimental {
         /// \param yield_delay The time after which the executor yields to
         ///        other work if it hasn't received any new work for bulk
         ///        execution.
-        explicit fork_join_executor(execution::thread_priority priority =
-                                        execution::thread_priority::high,
-            execution::thread_stacksize stacksize =
-                execution::thread_stacksize::small_,
+        explicit fork_join_executor(
+            execution::thread_priority priority = execution::thread_priority::high,
+            execution::thread_stacksize stacksize = execution::thread_stacksize::small_,
             loop_schedule schedule = loop_schedule::static_,
             std::chrono::nanoseconds yield_delay = std::chrono::milliseconds(1))
         {
@@ -662,20 +614,18 @@ namespace pika::execution::experimental {
                     "threads are required to yield correctly when idle)");
             }
 
-            shared_data_ = std::make_shared<shared_data>(
-                priority, stacksize, schedule, yield_delay);
+            shared_data_ =
+                std::make_shared<shared_data>(priority, stacksize, schedule, yield_delay);
         }
     };
 }    // namespace pika::execution::experimental
 
 template <>
-struct fmt::formatter<
-    pika::execution::experimental::fork_join_executor::loop_schedule>
+struct fmt::formatter<pika::execution::experimental::fork_join_executor::loop_schedule>
   : fmt::formatter<std::string>
 {
     template <typename FormatContext>
-    auto format(pika::execution::experimental::fork_join_executor::loop_schedule
-                    schedule,
+    auto format(pika::execution::experimental::fork_join_executor::loop_schedule schedule,
         FormatContext& ctx)
     {
         using pika::execution::experimental::fork_join_executor;
@@ -696,9 +646,7 @@ struct fmt::formatter<
 
         return fmt::formatter<std::string>::format(
             fmt::format("{} ({})", schedule_str,
-                static_cast<
-                    std::underlying_type_t<fork_join_executor::loop_schedule>>(
-                    schedule)),
+                static_cast<std::underlying_type_t<fork_join_executor::loop_schedule>>(schedule)),
             ctx);
     }
 };
@@ -706,14 +654,14 @@ struct fmt::formatter<
 namespace pika::parallel::execution {
     /// \cond NOINTERNAL
     template <>
-    struct is_bulk_one_way_executor<
-        pika::execution::experimental::fork_join_executor> : std::true_type
+    struct is_bulk_one_way_executor<pika::execution::experimental::fork_join_executor>
+      : std::true_type
     {
     };
 
     template <>
-    struct is_bulk_two_way_executor<
-        pika::execution::experimental::fork_join_executor> : std::true_type
+    struct is_bulk_two_way_executor<pika::execution::experimental::fork_join_executor>
+      : std::true_type
     {
     };
     /// \endcond

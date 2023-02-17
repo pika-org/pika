@@ -30,9 +30,8 @@ namespace test {
         pika::mutex& finish_mutex;
 
     public:
-        locking_thread(pika::shared_mutex& rw_mutex_,
-            unsigned& unblocked_count_, pika::mutex& unblocked_count_mutex_,
-            pika::condition_variable& unblocked_condition_,
+        locking_thread(pika::shared_mutex& rw_mutex_, unsigned& unblocked_count_,
+            pika::mutex& unblocked_count_mutex_, pika::condition_variable& unblocked_condition_,
             pika::mutex& finish_mutex_, unsigned& simultaneous_running_count_,
             unsigned& max_simultaneous_running_)
           : rw_mutex(rw_mutex_)
@@ -83,9 +82,8 @@ namespace test {
         unsigned& unblocked_count;
 
     public:
-        simple_writing_thread(pika::shared_mutex& rwm_,
-            pika::mutex& finish_mutex_, pika::mutex& unblocked_mutex_,
-            unsigned& unblocked_count_)
+        simple_writing_thread(pika::shared_mutex& rwm_, pika::mutex& finish_mutex_,
+            pika::mutex& unblocked_mutex_, unsigned& unblocked_count_)
           : rwm(rwm_)
           , finish_mutex(finish_mutex_)
           , unblocked_mutex(unblocked_mutex_)
@@ -114,9 +112,8 @@ namespace test {
         unsigned& unblocked_count;
 
     public:
-        simple_reading_thread(pika::shared_mutex& rwm_,
-            pika::mutex& finish_mutex_, pika::mutex& unblocked_mutex_,
-            unsigned& unblocked_count_)
+        simple_reading_thread(pika::shared_mutex& rwm_, pika::mutex& finish_mutex_,
+            pika::mutex& unblocked_mutex_, unsigned& unblocked_count_)
           : rwm(rwm_)
           , finish_mutex(finish_mutex_)
           , unblocked_mutex(unblocked_mutex_)

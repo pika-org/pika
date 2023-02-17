@@ -80,9 +80,9 @@ namespace pika::program_options::command_line_style {
         */
         allow_long_disguise = short_case_insensitive << 1,
         /** The more-or-less traditional unix style. */
-        unix_style = (allow_short | short_allow_adjacent | short_allow_next |
-            allow_long | long_allow_adjacent | long_allow_next | allow_sticky |
-            allow_guessing | allow_dash_for_short),
+        unix_style = (allow_short | short_allow_adjacent | short_allow_next | allow_long |
+            long_allow_adjacent | long_allow_next | allow_sticky | allow_guessing |
+            allow_dash_for_short),
         /** The default style. */
         default_style = unix_style
     };

@@ -76,8 +76,8 @@ int main(int argc, char* argv[])
     // Initialize and run pika
     pika::init_params init_args;
     init_args.cfg = cfg;
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(
+        pika::init(pika_main, argc, argv, init_args), 0, "pika main exited with non-zero status");
 
     return 0;
 }

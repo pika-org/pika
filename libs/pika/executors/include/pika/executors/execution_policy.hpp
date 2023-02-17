@@ -42,14 +42,12 @@ namespace pika::execution {
 
         template <typename T>
         struct has_async_execution_policy<T,
-            std::void_t<decltype(std::declval<std::decay_t<T>>()(task))>>
-          : std::true_type
+            std::void_t<decltype(std::declval<std::decay_t<T>>()(task))>> : std::true_type
         {
         };
 
         template <typename T>
-        inline constexpr bool has_async_execution_policy_v =
-            has_async_execution_policy<T>::value;
+        inline constexpr bool has_async_execution_policy_v = has_async_execution_policy<T>::value;
     }    // namespace detail
 
     ///////////////////////////////////////////////////////////////////////////
@@ -69,8 +67,7 @@ namespace pika::execution {
         /// The type of the associated executor parameters object which is
         /// associated with this execution policy
         using executor_parameters_type =
-            parallel::execution::extract_executor_parameters<
-                executor_type>::type;
+            parallel::execution::extract_executor_parameters<executor_type>::type;
 
         /// The category of the execution agents created by this execution
         /// policy.
@@ -97,8 +94,7 @@ namespace pika::execution {
         ///
         /// \returns The new sequenced_task_policy
         ///
-        constexpr sequenced_task_policy operator()(
-            task_policy_tag /*tag*/) const
+        constexpr sequenced_task_policy operator()(task_policy_tag /*tag*/) const
         {
             return *this;
         }
@@ -107,8 +103,7 @@ namespace pika::execution {
         ///
         /// \returns The non task seqeuential policy
         ///
-        inline constexpr decltype(auto) operator()(
-            non_task_policy_tag /*tag*/) const;
+        inline constexpr decltype(auto) operator()(non_task_policy_tag /*tag*/) const;
 
         /// Create a new sequenced_task_policy from the given
         /// executor
@@ -154,10 +149,8 @@ namespace pika::execution {
         template <typename... Parameters>
         constexpr decltype(auto) with(Parameters&&... params) const
         {
-            return pika::parallel::execution::create_rebound_policy(*this,
-                executor(),
-                parallel::execution::join_executor_parameters(
-                    PIKA_FORWARD(Parameters, params)...));
+            return pika::parallel::execution::create_rebound_policy(*this, executor(),
+                parallel::execution::join_executor_parameters(PIKA_FORWARD(Parameters, params)...));
         }
 
     public:
@@ -214,8 +207,7 @@ namespace pika::execution {
         /// The category of the execution agents created by this execution
         /// policy.
         using execution_category =
-            typename pika::traits::executor_execution_category<
-                executor_type>::type;
+            typename pika::traits::executor_execution_category<executor_type>::type;
 
         /// Rebind the type of executor used by this execution policy. The
         /// execution category of Executor shall not be weaker than that of
@@ -234,8 +226,7 @@ namespace pika::execution {
         ///
         /// \returns The new sequenced_task_policy
         ///
-        constexpr sequenced_task_policy_shim const& operator()(
-            task_policy_tag /* tag */) const
+        constexpr sequenced_task_policy_shim const& operator()(task_policy_tag /* tag */) const
         {
             return *this;
         }
@@ -244,8 +235,7 @@ namespace pika::execution {
         ///
         /// \returns The non task seqeuential shim policy
         ///
-        inline constexpr decltype(auto) operator()(
-            non_task_policy_tag /*tag*/) const;
+        inline constexpr decltype(auto) operator()(non_task_policy_tag /*tag*/) const;
 
         /// Create a new sequenced_task_policy from the given
         /// executor
@@ -291,8 +281,7 @@ namespace pika::execution {
         template <typename... Parameters_>
         constexpr decltype(auto) with(Parameters_&&... params) const
         {
-            return pika::parallel::execution::create_rebound_policy(*this,
-                executor(),
+            return pika::parallel::execution::create_rebound_policy(*this, executor(),
                 parallel::execution::join_executor_parameters(
                     PIKA_FORWARD(Parameters_, params)...));
         }
@@ -323,17 +312,15 @@ namespace pika::execution {
 
         /// \cond NOINTERNAL
         template <typename Dependent = void,
-            typename Enable =
-                std::enable_if_t<std::is_constructible<Executor>::value &&
-                        std::is_constructible<Parameters>::value,
-                    Dependent>>
+            typename Enable = std::enable_if_t<std::is_constructible<Executor>::value &&
+                    std::is_constructible<Parameters>::value,
+                Dependent>>
         constexpr sequenced_task_policy_shim()
         {
         }
 
         template <typename Executor_, typename Parameters_>
-        constexpr sequenced_task_policy_shim(
-            Executor_&& exec, Parameters_&& params)
+        constexpr sequenced_task_policy_shim(Executor_&& exec, Parameters_&& params)
           : exec_(PIKA_FORWARD(Executor_, exec))
           , params_(PIKA_FORWARD(Parameters_, params))
         {
@@ -358,8 +345,7 @@ namespace pika::execution {
         /// The type of the associated executor parameters object which is
         /// associated with this execution policy
         using executor_parameters_type =
-            parallel::execution::extract_executor_parameters<
-                executor_type>::type;
+            parallel::execution::extract_executor_parameters<executor_type>::type;
 
         /// The category of the execution agents created by this execution
         /// policy.
@@ -386,8 +372,7 @@ namespace pika::execution {
         ///
         /// \returns The new sequenced_task_policy
         ///
-        constexpr sequenced_task_policy operator()(
-            task_policy_tag /*tag*/) const
+        constexpr sequenced_task_policy operator()(task_policy_tag /*tag*/) const
         {
             return sequenced_task_policy();
         }
@@ -445,10 +430,8 @@ namespace pika::execution {
         template <typename... Parameters>
         constexpr decltype(auto) with(Parameters&&... params) const
         {
-            return pika::parallel::execution::create_rebound_policy(*this,
-                executor(),
-                parallel::execution::join_executor_parameters(
-                    PIKA_FORWARD(Parameters, params)...));
+            return pika::parallel::execution::create_rebound_policy(*this, executor(),
+                parallel::execution::join_executor_parameters(PIKA_FORWARD(Parameters, params)...));
         }
 
     public:
@@ -501,8 +484,7 @@ namespace pika::execution {
         /// The category of the execution agents created by this execution
         /// policy.
         using execution_category =
-            typename pika::traits::executor_execution_category<
-                executor_type>::type;
+            typename pika::traits::executor_execution_category<executor_type>::type;
 
         /// Rebind the type of executor used by this execution policy. The
         /// execution category of Executor shall not be weaker than that of
@@ -524,8 +506,7 @@ namespace pika::execution {
         constexpr sequenced_task_policy_shim<Executor, Parameters> operator()(
             task_policy_tag /* tag */) const
         {
-            return sequenced_task_policy_shim<Executor, Parameters>(
-                exec_, params_);
+            return sequenced_task_policy_shim<Executor, Parameters>(exec_, params_);
         }
 
         /// Create a new sequenced_policy from itself.
@@ -581,8 +562,7 @@ namespace pika::execution {
         template <typename... Parameters_>
         constexpr decltype(auto) with(Parameters_&&... params) const
         {
-            return pika::parallel::execution::create_rebound_policy(*this,
-                executor(),
+            return pika::parallel::execution::create_rebound_policy(*this, executor(),
                 parallel::execution::join_executor_parameters(
                     PIKA_FORWARD(Parameters_, params)...));
         }
@@ -614,10 +594,9 @@ namespace pika::execution {
 
         /// \cond NOINTERNAL
         template <typename Dependent = void,
-            typename Enable =
-                std::enable_if_t<std::is_constructible<Executor>::value &&
-                        std::is_constructible<Parameters>::value,
-                    Dependent>>
+            typename Enable = std::enable_if_t<std::is_constructible<Executor>::value &&
+                    std::is_constructible<Parameters>::value,
+                Dependent>>
         constexpr sequenced_policy_shim()
         {
         }
@@ -652,8 +631,7 @@ namespace pika::execution {
         /// The type of the associated executor parameters object which is
         /// associated with this execution policy
         using executor_parameters_type =
-            parallel::execution::extract_executor_parameters<
-                executor_type>::type;
+            parallel::execution::extract_executor_parameters<executor_type>::type;
 
         /// The category of the execution agents created by this execution
         /// policy.
@@ -692,8 +670,7 @@ namespace pika::execution {
         ///
         /// \returns The new non task parallel_policy
         ///
-        inline constexpr decltype(auto) operator()(
-            non_task_policy_tag /*tag*/) const;
+        inline constexpr decltype(auto) operator()(non_task_policy_tag /*tag*/) const;
 
         /// Create a new parallel_task_policy from given executor
         ///
@@ -738,10 +715,8 @@ namespace pika::execution {
         template <typename... Parameters>
         constexpr decltype(auto) with(Parameters&&... params) const
         {
-            return pika::parallel::execution::create_rebound_policy(*this,
-                executor(),
-                parallel::execution::join_executor_parameters(
-                    PIKA_FORWARD(Parameters, params)...));
+            return pika::parallel::execution::create_rebound_policy(*this, executor(),
+                parallel::execution::join_executor_parameters(PIKA_FORWARD(Parameters, params)...));
         }
 
     public:
@@ -793,8 +768,7 @@ namespace pika::execution {
         /// The category of the execution agents created by this execution
         /// policy.
         using execution_category =
-            typename pika::traits::executor_execution_category<
-                executor_type>::type;
+            typename pika::traits::executor_execution_category<executor_type>::type;
 
         /// Rebind the type of executor used by this execution policy. The
         /// execution category of Executor shall not be weaker than that of
@@ -813,8 +787,7 @@ namespace pika::execution {
         ///
         /// \returns The new sequenced_task_policy
         ///
-        constexpr parallel_task_policy_shim operator()(
-            task_policy_tag /* tag */) const
+        constexpr parallel_task_policy_shim operator()(task_policy_tag /* tag */) const
         {
             return *this;
         }
@@ -826,8 +799,7 @@ namespace pika::execution {
         ///
         /// \returns The new non task parallel_policy_shim
         ///
-        inline constexpr decltype(auto) operator()(
-            non_task_policy_tag /*tag*/) const;
+        inline constexpr decltype(auto) operator()(non_task_policy_tag /*tag*/) const;
 
         /// Create a new parallel_task_policy from the given
         /// executor
@@ -873,8 +845,7 @@ namespace pika::execution {
         template <typename... Parameters_>
         constexpr decltype(auto) with(Parameters_&&... params) const
         {
-            return pika::parallel::execution::create_rebound_policy(*this,
-                executor(),
+            return pika::parallel::execution::create_rebound_policy(*this, executor(),
                 parallel::execution::join_executor_parameters(
                     PIKA_FORWARD(Parameters_, params)...));
         }
@@ -906,17 +877,15 @@ namespace pika::execution {
 
         /// \cond NOINTERNAL
         template <typename Dependent = void,
-            typename Enable =
-                std::enable_if_t<std::is_constructible<Executor>::value &&
-                        std::is_constructible<Parameters>::value,
-                    Dependent>>
+            typename Enable = std::enable_if_t<std::is_constructible<Executor>::value &&
+                    std::is_constructible<Parameters>::value,
+                Dependent>>
         constexpr parallel_task_policy_shim()
         {
         }
 
         template <typename Executor_, typename Parameters_>
-        constexpr parallel_task_policy_shim(
-            Executor_&& exec, Parameters_&& params)
+        constexpr parallel_task_policy_shim(Executor_&& exec, Parameters_&& params)
           : exec_(PIKA_FORWARD(Executor_, exec))
           , params_(PIKA_FORWARD(Parameters_, params))
         {
@@ -941,8 +910,7 @@ namespace pika::execution {
         /// The type of the associated executor parameters object which is
         /// associated with this execution policy
         using executor_parameters_type =
-            parallel::execution::extract_executor_parameters<
-                executor_type>::type;
+            parallel::execution::extract_executor_parameters<executor_type>::type;
 
         /// The category of the execution agents created by this execution
         /// policy.
@@ -1024,10 +992,8 @@ namespace pika::execution {
         template <typename... Parameters>
         constexpr decltype(auto) with(Parameters&&... params) const
         {
-            return pika::parallel::execution::create_rebound_policy(*this,
-                executor(),
-                parallel::execution::join_executor_parameters(
-                    PIKA_FORWARD(Parameters, params)...));
+            return pika::parallel::execution::create_rebound_policy(*this, executor(),
+                parallel::execution::join_executor_parameters(PIKA_FORWARD(Parameters, params)...));
         }
 
     public:
@@ -1080,8 +1046,7 @@ namespace pika::execution {
         /// The category of the execution agents created by this execution
         /// policy.
         using execution_category =
-            typename pika::traits::executor_execution_category<
-                executor_type>::type;
+            typename pika::traits::executor_execution_category<executor_type>::type;
 
         /// Rebind the type of executor used by this execution policy. The
         /// execution category of Executor shall not be weaker than that of
@@ -1103,8 +1068,7 @@ namespace pika::execution {
         constexpr parallel_task_policy_shim<Executor, Parameters> operator()(
             task_policy_tag /* tag */) const
         {
-            return parallel_task_policy_shim<Executor, Parameters>(
-                exec_, params_);
+            return parallel_task_policy_shim<Executor, Parameters>(exec_, params_);
         }
 
         /// Create a new parallel_policy from itself
@@ -1162,8 +1126,7 @@ namespace pika::execution {
         template <typename... Parameters_>
         constexpr decltype(auto) with(Parameters_&&... params) const
         {
-            return pika::parallel::execution::create_rebound_policy(*this,
-                executor(),
+            return pika::parallel::execution::create_rebound_policy(*this, executor(),
                 parallel::execution::join_executor_parameters(
                     PIKA_FORWARD(Parameters_, params)...));
         }
@@ -1195,10 +1158,9 @@ namespace pika::execution {
 
         /// \cond NOINTERNAL
         template <typename Dependent = void,
-            typename Enable =
-                std::enable_if_t<std::is_constructible<Executor>::value &&
-                        std::is_constructible<Parameters>::value,
-                    Dependent>>
+            typename Enable = std::enable_if_t<std::is_constructible<Executor>::value &&
+                    std::is_constructible<Parameters>::value,
+                Dependent>>
         constexpr parallel_policy_shim()
         {
         }
@@ -1230,8 +1192,7 @@ namespace pika::execution {
         /// The type of the associated executor parameters object which is
         /// associated with this execution policy
         using executor_parameters_type =
-            parallel::execution::extract_executor_parameters<
-                executor_type>::type;
+            parallel::execution::extract_executor_parameters<executor_type>::type;
 
         /// The category of the execution agents created by this execution
         /// policy.
@@ -1294,8 +1255,7 @@ namespace pika::execution {
         /// The type of the associated executor parameters object which is
         /// associated with this execution policy
         using executor_parameters_type =
-            parallel::execution::extract_executor_parameters<
-                executor_type>::type;
+            parallel::execution::extract_executor_parameters<executor_type>::type;
 
         /// The category of the execution agents created by this execution
         /// policy.
@@ -1346,36 +1306,28 @@ namespace pika::execution {
     /// Default vector execution policy object.
     inline constexpr unsequenced_policy unseq{};
 
-    constexpr decltype(auto) sequenced_task_policy::operator()(
-        non_task_policy_tag /*tag*/) const
+    constexpr decltype(auto) sequenced_task_policy::operator()(non_task_policy_tag /*tag*/) const
     {
         return seq.on(executor()).with(parameters());
     }
 
-    constexpr decltype(auto) parallel_task_policy::operator()(
-        non_task_policy_tag /*tag*/) const
+    constexpr decltype(auto) parallel_task_policy::operator()(non_task_policy_tag /*tag*/) const
     {
         return par.on(executor()).with(parameters());
     }
 
     template <typename Executor, typename Parameters>
     constexpr decltype(auto)
-    sequenced_task_policy_shim<Executor, Parameters>::operator()(
-        non_task_policy_tag /*tag*/) const
+    sequenced_task_policy_shim<Executor, Parameters>::operator()(non_task_policy_tag /*tag*/) const
     {
-        return sequenced_policy_shim<Executor, Parameters>{}
-            .on(executor())
-            .with(parameters());
+        return sequenced_policy_shim<Executor, Parameters>{}.on(executor()).with(parameters());
     }
 
     template <typename Executor, typename Parameters>
     constexpr decltype(auto)
-    parallel_task_policy_shim<Executor, Parameters>::operator()(
-        non_task_policy_tag /*tag*/) const
+    parallel_task_policy_shim<Executor, Parameters>::operator()(non_task_policy_tag /*tag*/) const
     {
-        return parallel_policy_shim<Executor, Parameters>{}
-            .on(executor())
-            .with(parameters());
+        return parallel_policy_shim<Executor, Parameters>{}.on(executor()).with(parameters());
     }
 
 }    // namespace pika::execution
@@ -1388,96 +1340,82 @@ namespace pika::detail {
     // construction of a generic execution_policy from any of the rebound
     // policies.
     template <typename Executor, typename Parameters>
-    struct is_rebound_execution_policy<
-        pika::execution::sequenced_policy_shim<Executor, Parameters>>
+    struct is_rebound_execution_policy<pika::execution::sequenced_policy_shim<Executor, Parameters>>
       : std::true_type
     {
     };
 
     template <typename Executor, typename Parameters>
     struct is_rebound_execution_policy<
-        pika::execution::sequenced_task_policy_shim<Executor, Parameters>>
+        pika::execution::sequenced_task_policy_shim<Executor, Parameters>> : std::true_type
+    {
+    };
+
+    template <typename Executor, typename Parameters>
+    struct is_rebound_execution_policy<pika::execution::parallel_policy_shim<Executor, Parameters>>
       : std::true_type
     {
     };
 
     template <typename Executor, typename Parameters>
     struct is_rebound_execution_policy<
-        pika::execution::parallel_policy_shim<Executor, Parameters>>
-      : std::true_type
-    {
-    };
-
-    template <typename Executor, typename Parameters>
-    struct is_rebound_execution_policy<
-        pika::execution::parallel_task_policy_shim<Executor, Parameters>>
-      : std::true_type
+        pika::execution::parallel_task_policy_shim<Executor, Parameters>> : std::true_type
     {
     };
 
     ///////////////////////////////////////////////////////////////////////////
     /// \cond NOINTERNAL
     template <>
-    struct is_execution_policy<pika::execution::parallel_policy>
-      : std::true_type
+    struct is_execution_policy<pika::execution::parallel_policy> : std::true_type
     {
     };
 
     template <typename Executor, typename Parameters>
-    struct is_execution_policy<
-        pika::execution::parallel_policy_shim<Executor, Parameters>>
+    struct is_execution_policy<pika::execution::parallel_policy_shim<Executor, Parameters>>
       : std::true_type
     {
     };
 
     template <>
-    struct is_execution_policy<pika::execution::parallel_unsequenced_policy>
-      : std::true_type
+    struct is_execution_policy<pika::execution::parallel_unsequenced_policy> : std::true_type
     {
     };
 
     template <>
-    struct is_execution_policy<pika::execution::unsequenced_policy>
-      : std::true_type
+    struct is_execution_policy<pika::execution::unsequenced_policy> : std::true_type
     {
     };
 
     template <>
-    struct is_execution_policy<pika::execution::sequenced_policy>
-      : std::true_type
+    struct is_execution_policy<pika::execution::sequenced_policy> : std::true_type
     {
     };
 
     template <typename Executor, typename Parameters>
-    struct is_execution_policy<
-        pika::execution::sequenced_policy_shim<Executor, Parameters>>
+    struct is_execution_policy<pika::execution::sequenced_policy_shim<Executor, Parameters>>
       : std::true_type
     {
     };
 
     // extension
     template <>
-    struct is_execution_policy<pika::execution::sequenced_task_policy>
-      : std::true_type
+    struct is_execution_policy<pika::execution::sequenced_task_policy> : std::true_type
     {
     };
 
     template <typename Executor, typename Parameters>
-    struct is_execution_policy<
-        pika::execution::sequenced_task_policy_shim<Executor, Parameters>>
+    struct is_execution_policy<pika::execution::sequenced_task_policy_shim<Executor, Parameters>>
       : std::true_type
     {
     };
 
     template <>
-    struct is_execution_policy<pika::execution::parallel_task_policy>
-      : std::true_type
+    struct is_execution_policy<pika::execution::parallel_task_policy> : std::true_type
     {
     };
 
     template <typename Executor, typename Parameters>
-    struct is_execution_policy<
-        pika::execution::parallel_task_policy_shim<Executor, Parameters>>
+    struct is_execution_policy<pika::execution::parallel_task_policy_shim<Executor, Parameters>>
       : std::true_type
     {
     };
@@ -1486,34 +1424,30 @@ namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     /// \cond NOINTERNAL
     template <>
-    struct is_parallel_execution_policy<pika::execution::parallel_policy>
-      : std::true_type
+    struct is_parallel_execution_policy<pika::execution::parallel_policy> : std::true_type
     {
     };
 
     template <typename Executor, typename Parameters>
-    struct is_parallel_execution_policy<
-        pika::execution::parallel_policy_shim<Executor, Parameters>>
+    struct is_parallel_execution_policy<pika::execution::parallel_policy_shim<Executor, Parameters>>
       : std::true_type
     {
     };
 
     template <>
-    struct is_parallel_execution_policy<
-        pika::execution::parallel_unsequenced_policy> : std::true_type
+    struct is_parallel_execution_policy<pika::execution::parallel_unsequenced_policy>
+      : std::true_type
     {
     };
 
     template <>
-    struct is_parallel_execution_policy<pika::execution::parallel_task_policy>
-      : std::true_type
+    struct is_parallel_execution_policy<pika::execution::parallel_task_policy> : std::true_type
     {
     };
 
     template <typename Executor, typename Parameters>
     struct is_parallel_execution_policy<
-        pika::execution::parallel_task_policy_shim<Executor, Parameters>>
-      : std::true_type
+        pika::execution::parallel_task_policy_shim<Executor, Parameters>> : std::true_type
     {
     };
     /// \endcond
@@ -1521,34 +1455,29 @@ namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     /// \cond NOINTERNAL
     template <>
-    struct is_sequenced_execution_policy<pika::execution::sequenced_task_policy>
-      : std::true_type
+    struct is_sequenced_execution_policy<pika::execution::sequenced_task_policy> : std::true_type
     {
     };
 
     template <typename Executor, typename Parameters>
     struct is_sequenced_execution_policy<
-        pika::execution::sequenced_task_policy_shim<Executor, Parameters>>
-      : std::true_type
+        pika::execution::sequenced_task_policy_shim<Executor, Parameters>> : std::true_type
     {
     };
 
     template <>
-    struct is_sequenced_execution_policy<pika::execution::sequenced_policy>
-      : std::true_type
+    struct is_sequenced_execution_policy<pika::execution::sequenced_policy> : std::true_type
     {
     };
 
     template <typename Executor, typename Parameters>
     struct is_sequenced_execution_policy<
-        pika::execution::sequenced_policy_shim<Executor, Parameters>>
-      : std::true_type
+        pika::execution::sequenced_policy_shim<Executor, Parameters>> : std::true_type
     {
     };
 
     template <>
-    struct is_sequenced_execution_policy<pika::execution::unsequenced_policy>
-      : std::true_type
+    struct is_sequenced_execution_policy<pika::execution::unsequenced_policy> : std::true_type
     {
     };
     /// \endcond
@@ -1556,28 +1485,24 @@ namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     /// \cond NOINTERNAL
     template <>
-    struct is_async_execution_policy<pika::execution::sequenced_task_policy>
-      : std::true_type
+    struct is_async_execution_policy<pika::execution::sequenced_task_policy> : std::true_type
     {
     };
 
     template <typename Executor, typename Parameters>
     struct is_async_execution_policy<
-        pika::execution::sequenced_task_policy_shim<Executor, Parameters>>
-      : std::true_type
+        pika::execution::sequenced_task_policy_shim<Executor, Parameters>> : std::true_type
     {
     };
 
     template <>
-    struct is_async_execution_policy<pika::execution::parallel_task_policy>
-      : std::true_type
+    struct is_async_execution_policy<pika::execution::parallel_task_policy> : std::true_type
     {
     };
 
     template <typename Executor, typename Parameters>
     struct is_async_execution_policy<
-        pika::execution::parallel_task_policy_shim<Executor, Parameters>>
-      : std::true_type
+        pika::execution::parallel_task_policy_shim<Executor, Parameters>> : std::true_type
     {
     };
 

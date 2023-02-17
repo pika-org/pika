@@ -150,8 +150,7 @@ namespace pika {
     template <typename Future>
     void wait_any_nothrow(std::vector<Future>& lazy_values)
     {
-        pika::wait_any_nothrow(
-            const_cast<std::vector<Future> const&>(lazy_values));
+        pika::wait_any_nothrow(const_cast<std::vector<Future> const&>(lazy_values));
     }
 
     template <typename Future>
@@ -163,8 +162,7 @@ namespace pika {
     template <typename Future>
     void wait_any_nothrow(std::vector<Future>&& lazy_values)
     {
-        pika::wait_any_nothrow(
-            const_cast<std::vector<Future> const&>(lazy_values));
+        pika::wait_any_nothrow(const_cast<std::vector<Future> const&>(lazy_values));
     }
 
     template <typename Future>
@@ -189,8 +187,7 @@ namespace pika {
     template <typename Future, std::size_t N>
     void wait_any_nothrow(std::array<Future, N>& lazy_values)
     {
-        pika::wait_any_nothrow(
-            const_cast<std::array<Future, N> const&>(lazy_values));
+        pika::wait_any_nothrow(const_cast<std::array<Future, N> const&>(lazy_values));
     }
 
     template <typename Future, std::size_t N>
@@ -202,8 +199,7 @@ namespace pika {
     template <typename Future, std::size_t N>
     void wait_any_nothrow(std::array<Future, N>&& lazy_values)
     {
-        pika::wait_any_nothrow(
-            const_cast<std::array<Future, N> const&>(lazy_values));
+        pika::wait_any_nothrow(const_cast<std::array<Future, N> const&>(lazy_values));
     }
 
     template <typename Future, std::size_t N>
@@ -214,16 +210,14 @@ namespace pika {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Iterator,
-        typename Enable =
-            std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
+        typename Enable = std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
     void wait_any_nothrow(Iterator begin, Iterator end)
     {
         pika::wait_some_nothrow(1, begin, end);
     }
 
     template <typename Iterator,
-        typename Enable =
-            std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
+        typename Enable = std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
     void wait_any(Iterator begin, Iterator end)
     {
         pika::wait_some(1, begin, end);
@@ -241,16 +235,14 @@ namespace pika {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Iterator,
-        typename Enable =
-            std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
+        typename Enable = std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
     void wait_any_n_nothrow(Iterator begin, std::size_t count)
     {
         pika::wait_some_n_nothrow(1, begin, count);
     }
 
     template <typename Iterator,
-        typename Enable =
-            std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
+        typename Enable = std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
     void wait_any_n(Iterator begin, std::size_t count)
     {
         pika::wait_some_n(1, begin, count);

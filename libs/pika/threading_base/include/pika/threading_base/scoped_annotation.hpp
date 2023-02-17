@@ -57,9 +57,8 @@ namespace pika {
         }
         template <typename F>
         explicit scoped_annotation(F&& f)
-          : task_(thread_domain_,
-                pika::detail::get_function_annotation_itt<
-                    std::decay_t<F>>::call(f))
+          : task_(
+                thread_domain_, pika::detail::get_function_annotation_itt<std::decay_t<F>>::call(f))
         {
         }
 
@@ -83,12 +82,10 @@ namespace pika {
         }
 
         template <typename F,
-            typename =
-                std::enable_if_t<!std::is_same_v<std::decay_t<F>, std::string>>>
+            typename = std::enable_if_t<!std::is_same_v<std::decay_t<F>, std::string>>>
         explicit scoped_annotation(F&& f)
         {
-            if (auto f_annotation = pika::detail::get_function_annotation<
-                    std::decay_t<F>>::call(f))
+            if (auto f_annotation = pika::detail::get_function_annotation<std::decay_t<F>>::call(f))
             {
                 annotation = f_annotation;
             }
@@ -118,16 +115,14 @@ namespace pika {
             auto* self = pika::threads::detail::get_self_ptr();
             if (self != nullptr)
             {
-                desc_ =
-                    threads::detail::get_thread_id_data(self->get_thread_id())
-                        ->set_description(name);
+                desc_ = threads::detail::get_thread_id_data(self->get_thread_id())
+                            ->set_description(name);
             }
 
 #if defined(PIKA_HAVE_APEX)
             /* update the task wrapper in APEX to use the specified name */
-            threads::detail::set_self_timer_data(
-                pika::detail::external_timer::update_task(
-                    threads::detail::get_self_timer_data(), std::string(name)));
+            threads::detail::set_self_timer_data(pika::detail::external_timer::update_task(
+                threads::detail::get_self_timer_data(), std::string(name)));
 #endif
         }
 
@@ -142,22 +137,19 @@ namespace pika {
 #else
                     detail::store_function_annotation(PIKA_MOVE(name));
 #endif
-                desc_ =
-                    threads::detail::get_thread_id_data(self->get_thread_id())
-                        ->set_description(name_c_str);
+                desc_ = threads::detail::get_thread_id_data(self->get_thread_id())
+                            ->set_description(name_c_str);
             }
 
 #if defined(PIKA_HAVE_APEX)
             /* update the task wrapper in APEX to use the specified name */
-            threads::detail::set_self_timer_data(
-                pika::detail::external_timer::update_task(
-                    threads::detail::get_self_timer_data(), PIKA_MOVE(name)));
+            threads::detail::set_self_timer_data(pika::detail::external_timer::update_task(
+                threads::detail::get_self_timer_data(), PIKA_MOVE(name)));
 #endif
         }
 
         template <typename F,
-            typename =
-                std::enable_if_t<!std::is_same_v<std::decay_t<F>, std::string>>>
+            typename = std::enable_if_t<!std::is_same_v<std::decay_t<F>, std::string>>>
         explicit scoped_annotation(F&& f)
         {
             pika::detail::thread_description desc(f);
@@ -165,16 +157,14 @@ namespace pika {
             auto* self = pika::threads::detail::get_self_ptr();
             if (self != nullptr)
             {
-                desc_ =
-                    threads::detail::get_thread_id_data(self->get_thread_id())
-                        ->set_description(desc);
+                desc_ = threads::detail::get_thread_id_data(self->get_thread_id())
+                            ->set_description(desc);
             }
 
 #if defined(PIKA_HAVE_APEX)
             /* update the task wrapper in APEX to use the specified name */
-            threads::detail::set_self_timer_data(
-                pika::detail::external_timer::update_task(
-                    threads::detail::get_self_timer_data(), desc));
+            threads::detail::set_self_timer_data(pika::detail::external_timer::update_task(
+                threads::detail::get_self_timer_data(), desc));
 #endif
         }
 
@@ -183,14 +173,12 @@ namespace pika {
             auto* self = pika::threads::detail::get_self_ptr();
             if (self != nullptr)
             {
-                threads::detail::get_thread_id_data(self->get_thread_id())
-                    ->set_description(desc_);
+                threads::detail::get_thread_id_data(self->get_thread_id())->set_description(desc_);
             }
 
 #if defined(PIKA_HAVE_APEX)
-            threads::detail::set_self_timer_data(
-                pika::detail::external_timer::update_task(
-                    threads::detail::get_self_timer_data(), desc_));
+            threads::detail::set_self_timer_data(pika::detail::external_timer::update_task(
+                threads::detail::get_self_timer_data(), desc_));
 #endif
         }
 
@@ -207,8 +195,7 @@ namespace pika {
         explicit constexpr scoped_annotation(char const* /*name*/) noexcept {}
 
         template <typename F>
-        explicit PIKA_HOST_DEVICE constexpr scoped_annotation(
-            F&& /*f*/) noexcept
+        explicit PIKA_HOST_DEVICE constexpr scoped_annotation(F&& /*f*/) noexcept
         {
         }
 

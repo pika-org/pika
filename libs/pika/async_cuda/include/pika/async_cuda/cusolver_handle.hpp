@@ -25,8 +25,7 @@ namespace pika::cuda::experimental {
         whip::stream_t stream{};
         cusolverDnHandle_t handle{};
 
-        static PIKA_EXPORT cusolverDnHandle_t create_handle(
-            int device, whip::stream_t stream);
+        static PIKA_EXPORT cusolverDnHandle_t create_handle(int device, whip::stream_t stream);
 
     public:
         PIKA_EXPORT cusolver_handle();
@@ -44,14 +43,12 @@ namespace pika::cuda::experimental {
         PIKA_EXPORT void set_stream(cuda_stream const& stream);
 
         /// \cond NOINTERNAL
-        friend bool operator==(
-            cusolver_handle const& lhs, cusolver_handle const& rhs) noexcept
+        friend bool operator==(cusolver_handle const& lhs, cusolver_handle const& rhs) noexcept
         {
             return lhs.handle == rhs.handle;
         }
 
-        friend bool operator!=(
-            cusolver_handle const& lhs, cusolver_handle const& rhs) noexcept
+        friend bool operator!=(cusolver_handle const& lhs, cusolver_handle const& rhs) noexcept
         {
             return !(lhs == rhs);
         }
@@ -60,12 +57,10 @@ namespace pika::cuda::experimental {
 }    // namespace pika::cuda::experimental
 
 template <>
-struct fmt::formatter<pika::cuda::experimental::cusolver_handle>
-  : fmt::formatter<std::string>
+struct fmt::formatter<pika::cuda::experimental::cusolver_handle> : fmt::formatter<std::string>
 {
     template <typename FormatContext>
-    auto format(pika::cuda::experimental::cusolver_handle const& handle,
-        FormatContext& ctx)
+    auto format(pika::cuda::experimental::cusolver_handle const& handle, FormatContext& ctx)
     {
         return fmt::formatter<std::string>::format(
             fmt::format("cusolver_handle({})", fmt::ptr(handle.get())), ctx);

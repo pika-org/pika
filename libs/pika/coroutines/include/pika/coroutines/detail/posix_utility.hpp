@@ -73,13 +73,11 @@
 namespace pika::threads::coroutines::detail::posix {
     PIKA_EXPORT extern bool use_guard_pages;
 
-#if defined(PIKA_HAVE_THREAD_STACK_MMAP) && defined(_POSIX_MAPPED_FILES) &&    \
-    _POSIX_MAPPED_FILES > 0
+#if defined(PIKA_HAVE_THREAD_STACK_MMAP) && defined(_POSIX_MAPPED_FILES) && _POSIX_MAPPED_FILES > 0
 
     inline void* alloc_stack(std::size_t size)
     {
-        void* real_stack = ::mmap(nullptr, size + EXEC_PAGESIZE,
-            PROT_EXEC | PROT_READ | PROT_WRITE,
+        void* real_stack = ::mmap(nullptr, size + EXEC_PAGESIZE, PROT_EXEC | PROT_READ | PROT_WRITE,
 #if defined(__APPLE__)
             MAP_PRIVATE | MAP_ANON | MAP_NORESERVE,
 #elif defined(__FreeBSD__)
@@ -91,15 +89,13 @@ namespace pika::threads::coroutines::detail::posix {
 
         if (real_stack == MAP_FAILED)
         {
-            char const* error_message =
-                "mmap() failed to allocate thread stack";
+            char const* error_message = "mmap() failed to allocate thread stack";
             if (ENOMEM == errno && use_guard_pages)
             {
-                error_message =
-                    "mmap() failed to allocate thread stack due to "
-                    "insufficient resources, increase "
-                    "/proc/sys/vm/max_map_count or add "
-                    "-Ipika.stacks.use_guard_pages=0 to the command line";
+                error_message = "mmap() failed to allocate thread stack due to "
+                                "insufficient resources, increase "
+                                "/proc/sys/vm/max_map_count or add "
+                                "-Ipika.stacks.use_guard_pages=0 to the command line";
             }
             throw std::runtime_error(error_message);
         }
@@ -110,8 +106,7 @@ namespace pika::threads::coroutines::detail::posix {
             // Add a guard page.
             ::mprotect(real_stack, EXEC_PAGESIZE, PROT_NONE);
 
-            void** stack = static_cast<void**>(real_stack) +
-                (EXEC_PAGESIZE / sizeof(void*));
+            void** stack = static_cast<void**>(real_stack) + (EXEC_PAGESIZE / sizeof(void*));
             return static_cast<void*>(stack);
         }
         return real_stack;
@@ -125,15 +120,13 @@ namespace pika::threads::coroutines::detail::posix {
         PIKA_ASSERT(size > EXEC_PAGESIZE);
 
         // Fill the bottom 8 bytes of the first page with 1s.
-        void** watermark = static_cast<void**>(stack) +
-            ((size - EXEC_PAGESIZE) / sizeof(void*));
+        void** watermark = static_cast<void**>(stack) + ((size - EXEC_PAGESIZE) / sizeof(void*));
         *watermark = reinterpret_cast<void*>(0xDEADBEEFDEADBEEFull);
     }
 
     inline bool reset_stack(void* stack, std::size_t size)
     {
-        void** watermark = static_cast<void**>(stack) +
-            ((size - EXEC_PAGESIZE) / sizeof(void*));
+        void** watermark = static_cast<void**>(stack) + ((size - EXEC_PAGESIZE) / sizeof(void*));
 
         // If the watermark has been overwritten, then we've gone past the first
         // page.
@@ -153,8 +146,7 @@ namespace pika::threads::coroutines::detail::posix {
 #if defined(PIKA_HAVE_THREAD_GUARD_PAGE)
         if (use_guard_pages)
         {
-            void** real_stack =
-                static_cast<void**>(stack) - (EXEC_PAGESIZE / sizeof(void*));
+            void** real_stack = static_cast<void**>(stack) - (EXEC_PAGESIZE / sizeof(void*));
             ::munmap(static_cast<void*>(real_stack), size + EXEC_PAGESIZE);
         }
         else
@@ -169,8 +161,7 @@ namespace pika::threads::coroutines::detail::posix {
 #else    // non-mmap()
 
     //this should be a fine default.
-    static const std::size_t
-        stack_alignment = sizeof(void*) > 16 ? sizeof(void*) : 16;
+    static const std::size_t stack_alignment = sizeof(void*) > 16 ? sizeof(void*) : 16;
 
     struct stack_aligner
     {

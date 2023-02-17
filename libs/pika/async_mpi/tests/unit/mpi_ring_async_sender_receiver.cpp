@@ -49,10 +49,9 @@ void msg_recv(int rank, int size, int /*to*/, int from, int token, unsigned tag)
     if (output)
     {
         std::ostringstream temp;
-        temp << "Rank " << std::setfill(' ') << std::setw(3) << rank << " of "
-             << std::setfill(' ') << std::setw(3) << size << " Recv token "
-             << std::setfill(' ') << std::setw(3) << token << " from rank "
-             << std::setfill(' ') << std::setw(3) << from << " tag "
+        temp << "Rank " << std::setfill(' ') << std::setw(3) << rank << " of " << std::setfill(' ')
+             << std::setw(3) << size << " Recv token " << std::setfill(' ') << std::setw(3) << token
+             << " from rank " << std::setfill(' ') << std::setw(3) << from << " tag "
              << std::setfill(' ') << std::setw(3) << tag;
         std::cout << temp.str() << std::endl;
     }
@@ -63,10 +62,9 @@ void msg_send(int rank, int size, int to, int /*from*/, int token, unsigned tag)
     if (output)
     {
         std::ostringstream temp;
-        temp << "Rank " << std::setfill(' ') << std::setw(3) << rank << " of "
-             << std::setfill(' ') << std::setw(3) << size << " Sent token "
-             << std::setfill(' ') << std::setw(3) << token << " to   rank "
-             << std::setfill(' ') << std::setw(3) << to << " tag "
+        temp << "Rank " << std::setfill(' ') << std::setw(3) << rank << " of " << std::setfill(' ')
+             << std::setw(3) << size << " Sent token " << std::setfill(' ') << std::setw(3) << token
+             << " to   rank " << std::setfill(' ') << std::setw(3) << to << " tag "
              << std::setfill(' ') << std::setw(3) << tag;
         std::cout << temp.str() << std::endl;
     }
@@ -95,9 +93,8 @@ int pika_main(pika::program_options::variables_map& vm)
 
     if (rank == 0 && output)
     {
-        std::cout << "Rank " << std::setfill(' ') << std::setw(3) << rank
-                  << " of " << std::setfill(' ') << std::setw(3) << size
-                  << std::endl;
+        std::cout << "Rank " << std::setfill(' ') << std::setw(3) << rank << " of "
+                  << std::setfill(' ') << std::setw(3) << size << std::endl;
     }
 
     {
@@ -130,13 +127,10 @@ int pika_main(pika::program_options::variables_map& vm)
                 // all ranks pre-post a receive, but when rank-0 receives it, we're done
                 if (rank == 0)
                 {
-                    auto snd = ex::just(&tokens[tag], 1, MPI_INT, rank_from,
-                                   tag, MPI_COMM_WORLD) |
-                        mpi::transform_mpi(
-                            MPI_Irecv, mpi::stream_type::receive) |
+                    auto snd = ex::just(&tokens[tag], 1, MPI_INT, rank_from, tag, MPI_COMM_WORLD) |
+                        mpi::transform_mpi(MPI_Irecv, mpi::stream_type::receive) |
                         ex::then([=, &tokens, &counter](int /*result*/) {
-                            msg_recv(rank, size, rank_to, rank_from,
-                                tokens[tag], tag);
+                            msg_recv(rank, size, rank_to, rank_from, tokens[tag], tag);
                             --counter;
                         });
                     ex::start_detached(std::move(snd));
@@ -144,25 +138,21 @@ int pika_main(pika::program_options::variables_map& vm)
                 // when ranks>0 complete receives, send the message to next rank
                 else
                 {
-                    auto recv_snd = ex::just(&tokens[tag], 1, MPI_INT,
-                                        rank_from, tag, MPI_COMM_WORLD) |
-                        mpi::transform_mpi(
-                            MPI_Irecv, mpi::stream_type::receive) |
+                    auto recv_snd =
+                        ex::just(&tokens[tag], 1, MPI_INT, rank_from, tag, MPI_COMM_WORLD) |
+                        mpi::transform_mpi(MPI_Irecv, mpi::stream_type::receive) |
                         ex::then([=, &tokens](int /*result*/) {
-                            msg_recv(rank, size, rank_to, rank_from,
-                                tokens[tag], tag);
+                            msg_recv(rank, size, rank_to, rank_from, tokens[tag], tag);
                             // increment the token
                             ++tokens[tag];
                         });
 
-                    auto send_snd =
-                        ex::when_all(ex::just(&tokens[tag], 1, MPI_INT, rank_to,
-                                         tag, MPI_COMM_WORLD),
-                            std::move(recv_snd)) |
+                    auto send_snd = ex::when_all(ex::just(&tokens[tag], 1, MPI_INT, rank_to, tag,
+                                                     MPI_COMM_WORLD),
+                                        std::move(recv_snd)) |
                         mpi::transform_mpi(MPI_Isend, mpi::stream_type::send) |
                         ex::then([=, &tokens, &counter](int /*result*/) {
-                            msg_send(rank, size, rank_to, rank_from,
-                                tokens[tag], tag);
+                            msg_send(rank, size, rank_to, rank_from, tokens[tag], tag);
                             // ranks > 0 are done after sending token
                             --counter;
                         });
@@ -172,12 +162,10 @@ int pika_main(pika::program_options::variables_map& vm)
                 // rank 0 starts the process with a send
                 if (rank == 0)
                 {
-                    auto snd0 = ex::just(&tokens[tag], 1, MPI_INT, rank_to, tag,
-                                    MPI_COMM_WORLD) |
+                    auto snd0 = ex::just(&tokens[tag], 1, MPI_INT, rank_to, tag, MPI_COMM_WORLD) |
                         mpi::transform_mpi(MPI_Isend, mpi::stream_type::send) |
                         ex::then([=, &tokens](int /*result*/) {
-                            msg_send(rank, size, rank_to, rank_from,
-                                tokens[tag], tag);
+                            msg_send(rank, size, rank_to, rank_from, tokens[tag], tag);
                         });
                     ex::start_detached(snd0);
                 }
@@ -190,8 +178,7 @@ int pika_main(pika::program_options::variables_map& vm)
         }
 
         PIKA_ASSERT(mpi::get_num_requests_in_flight() == 0);
-        std::cout << "Rank " << rank << " reached end of test " << counter
-                  << std::endl;
+        std::cout << "Rank " << rank << " reached end of test " << counter << std::endl;
 
         if (rank == 0)
         {
@@ -213,8 +200,7 @@ int main(int argc, char* argv[])
     MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
     if (provided != MPI_THREAD_MULTIPLE)
     {
-        std::cout << "Provided MPI is not : MPI_THREAD_MULTIPLE " << provided
-                  << std::endl;
+        std::cout << "Provided MPI is not : MPI_THREAD_MULTIPLE " << provided << std::endl;
     }
 
     // Configure application-specific options.

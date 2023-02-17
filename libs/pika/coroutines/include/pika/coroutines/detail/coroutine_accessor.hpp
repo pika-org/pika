@@ -35,8 +35,7 @@ namespace pika::threads::coroutines::detail {
     struct coroutine_accessor
     {
         template <typename Coroutine>
-        PIKA_FORCEINLINE static typename Coroutine::impl_ptr
-        get_impl(Coroutine& x)
+        PIKA_FORCEINLINE static typename Coroutine::impl_ptr get_impl(Coroutine& x)
         {
             return x.get_impl();
         }

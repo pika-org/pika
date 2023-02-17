@@ -28,21 +28,17 @@ namespace pika::detail {
         using mutex_type = pika::spinlock;
 
     public:
-        PIKA_EXPORT sliding_semaphore(
-            std::int64_t max_difference, std::int64_t lower_limit);
+        PIKA_EXPORT sliding_semaphore(std::int64_t max_difference, std::int64_t lower_limit);
         PIKA_EXPORT ~sliding_semaphore();
 
-        PIKA_EXPORT void set_max_difference(std::unique_lock<mutex_type>& l,
-            std::int64_t max_difference, std::int64_t lower_limit);
+        PIKA_EXPORT void set_max_difference(
+            std::unique_lock<mutex_type>& l, std::int64_t max_difference, std::int64_t lower_limit);
 
-        PIKA_EXPORT void wait(
-            std::unique_lock<mutex_type>& l, std::int64_t upper_limit);
+        PIKA_EXPORT void wait(std::unique_lock<mutex_type>& l, std::int64_t upper_limit);
 
-        PIKA_EXPORT bool try_wait(
-            std::unique_lock<mutex_type>& l, std::int64_t upper_limit);
+        PIKA_EXPORT bool try_wait(std::unique_lock<mutex_type>& l, std::int64_t upper_limit);
 
-        PIKA_EXPORT void signal(
-            std::unique_lock<mutex_type> l, std::int64_t lower_limit);
+        PIKA_EXPORT void signal(std::unique_lock<mutex_type> l, std::int64_t lower_limit);
 
         PIKA_EXPORT std::int64_t signal_all(std::unique_lock<mutex_type> l);
 

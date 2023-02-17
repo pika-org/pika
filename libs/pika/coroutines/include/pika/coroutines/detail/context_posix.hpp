@@ -53,9 +53,8 @@
 #include <unistd.h>
 #endif
 
-#if defined(__FreeBSD__) ||                                                    \
-    (defined(_XOPEN_UNIX) && defined(_XOPEN_VERSION) &&                        \
-        _XOPEN_VERSION >= 500) ||                                              \
+#if defined(__FreeBSD__) ||                                                                        \
+    (defined(_XOPEN_UNIX) && defined(_XOPEN_VERSION) && _XOPEN_VERSION >= 500) ||                  \
     defined(__bgq__) || defined(__powerpc__) || defined(__s390x__)
 
 // OS X 10.4 -- despite passing the test above -- doesn't support
@@ -70,8 +69,8 @@
 
 #include "pth/pth.h"
 
-namespace pika { namespace threads { namespace coroutines { namespace detail {
-    namespace posix { namespace pth {
+namespace pika { namespace threads { namespace coroutines { namespace detail { namespace posix {
+    namespace pth {
         inline int check_(int rc)
         {
             // The makecontext() functions return zero for success, nonzero for
@@ -84,20 +83,16 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
 
 #define PIKA_COROUTINE_POSIX_IMPL "Pth implementation"
 #define PIKA_COROUTINE_DECLARE_CONTEXT(name) pth_uctx_t name
-#define PIKA_COROUTINE_CREATE_CONTEXT(ctx)                                     \
-    pika::threads::coroutines::detail::posix::pth::check_(                     \
-        pth_uctx_create(&(ctx)))
-#define PIKA_COROUTINE_MAKE_CONTEXT(                                                  \
-    ctx, stack, size, startfunc, startarg, exitto)                                    \
-    /* const sigset_t* sigmask = nullptr: we don't expect per-context signal masks */ \
-    pika::threads::coroutines::detail::posix::pth::check_(                            \
-        pth_uctx_make(*(ctx), static_cast<char*>(stack), (size), nullptr,             \
-            (startfunc), (startarg), (exitto)))
-#define PIKA_COROUTINE_SWAP_CONTEXT(from, to)                                  \
-    pika::threads::coroutines::detail::posix::pth::check_(pth_uctx_switch(     \
-        *(from), *(to))) #define PIKA_COROUTINE_DESTROY_CONTEXT(ctx)           \
-        pika::threads::coroutines::detail::posix::pth::check_(                 \
-            pth_uctx_destroy(ctx))
+#define PIKA_COROUTINE_CREATE_CONTEXT(ctx)                                                         \
+    pika::threads::coroutines::detail::posix::pth::check_(pth_uctx_create(&(ctx)))
+#define PIKA_COROUTINE_MAKE_CONTEXT(ctx, stack, size, startfunc, startarg, exitto)                 \
+    /* const sigset_t* sigmask = nullptr: we don't expect per-context signal masks */              \
+    pika::threads::coroutines::detail::posix::pth::check_(pth_uctx_make(                           \
+        *(ctx), static_cast<char*>(stack), (size), nullptr, (startfunc), (startarg), (exitto)))
+#define PIKA_COROUTINE_SWAP_CONTEXT(from, to)                                                      \
+    pika::threads::coroutines::detail::posix::pth::check_(                                         \
+        pth_uctx_switch(*(from), *(to))) #define PIKA_COROUTINE_DESTROY_CONTEXT(ctx)               \
+        pika::threads::coroutines::detail::posix::pth::check_(pth_uctx_destroy(ctx))
 
 #else                 // generic Posix platform (e.g. OS X >= 10.5)
 
@@ -132,8 +127,7 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
 
 namespace pika::threads::coroutines::detail::posix::ucontext {
     inline int make_context(::ucontext_t* ctx, void* stack, std::ptrdiff_t size,
-        void (*startfunc)(void*), void* startarg,
-        ::ucontext_t* exitto = nullptr)
+        void (*startfunc)(void*), void* startarg, ::ucontext_t* exitto = nullptr)
     {
         int error = ::getcontext(ctx);
         if (error)
@@ -153,9 +147,8 @@ namespace pika::threads::coroutines::detail::posix::ucontext {
 #define PIKA_COROUTINE_POSIX_IMPL "ucontext implementation"
 #define PIKA_COROUTINE_DECLARE_CONTEXT(name) ::ucontext_t name
 #define PIKA_COROUTINE_CREATE_CONTEXT(ctx) /* nop */
-#define PIKA_COROUTINE_MAKE_CONTEXT(                                           \
-    ctx, stack, size, startfunc, startarg, exitto)                             \
-    pika::threads::coroutines::detail::posix::ucontext::make_context(          \
+#define PIKA_COROUTINE_MAKE_CONTEXT(ctx, stack, size, startfunc, startarg, exitto)                 \
+    pika::threads::coroutines::detail::posix::ucontext::make_context(                              \
         ctx, stack, size, startfunc, startarg, exitto)
 #define PIKA_COROUTINE_SWAP_CONTEXT(pfrom, pto) ::swapcontext((pfrom), (pto))
 #define PIKA_COROUTINE_DESTROY_CONTEXT(ctx) /* nop */
@@ -232,8 +225,7 @@ namespace pika::threads::coroutines {
              *  a new stack. The stack size can be optionally specified.
              */
             explicit ucontext_context_impl(std::ptrdiff_t stack_size = -1)
-              : m_stack_size(
-                    stack_size == -1 ? this->default_stack_size : stack_size)
+              : m_stack_size(stack_size == -1 ? this->default_stack_size : stack_size)
               , m_stack(nullptr)
               , funp_(&trampoline<CoroutineImpl>)
             {
@@ -247,8 +239,7 @@ namespace pika::threads::coroutines {
                 m_stack = alloc_stack(static_cast<std::size_t>(m_stack_size));
                 if (m_stack == nullptr)
                 {
-                    throw std::runtime_error(
-                        "could not allocate memory for stack");
+                    throw std::runtime_error("could not allocate memory for stack");
                 }
 
                 int error = PIKA_COROUTINE_MAKE_CONTEXT(
@@ -294,31 +285,27 @@ namespace pika::threads::coroutines {
                 //
                 char* stk_ptr = static_cast<char*>(uc_ctx->uc_stack.ss_sp);
 
-                std::ptrdiff_t addr_delta = (sigsegv_ptr > stk_ptr) ?
-                    (sigsegv_ptr - stk_ptr) :
-                    (stk_ptr - sigsegv_ptr);
+                std::ptrdiff_t addr_delta =
+                    (sigsegv_ptr > stk_ptr) ? (sigsegv_ptr - stk_ptr) : (stk_ptr - sigsegv_ptr);
 
                 // check the stack addresses, if they're < 10 apart, terminate
                 // program should filter segmentation faults caused by
                 // coroutine stack overflows from 'genuine' stack overflows
                 //
-                if (static_cast<size_t>(addr_delta) <
-                    COROUTINE_STACKOVERFLOW_ADDR_EPSILON)
+                if (static_cast<size_t>(addr_delta) < COROUTINE_STACKOVERFLOW_ADDR_EPSILON)
                 {
-                    std::cerr << "Stack overflow in coroutine at address "
-                              << std::internal << std::hex
-                              << std::setw(sizeof(sigsegv_ptr) * 2 + 2)
+                    std::cerr << "Stack overflow in coroutine at address " << std::internal
+                              << std::hex << std::setw(sizeof(sigsegv_ptr) * 2 + 2)
                               << std::setfill('0') << sigsegv_ptr << ".\n\n";
 
-                    std::cerr
-                        << "Configure the pika runtime to allocate a larger "
-                           "coroutine "
-                           "stack size.\n Use the pika.stacks.small_size, "
-                           "pika.stacks.medium_size,\n pika.stacks.large_size, "
-                           "or pika.stacks.huge_size configuration\nflags to "
-                           "configure "
-                           "coroutine stack sizes.\n"
-                        << std::endl;
+                    std::cerr << "Configure the pika runtime to allocate a larger "
+                                 "coroutine "
+                                 "stack size.\n Use the pika.stacks.small_size, "
+                                 "pika.stacks.medium_size,\n pika.stacks.large_size, "
+                                 "or pika.stacks.huge_size configuration\nflags to "
+                                 "configure "
+                                 "coroutine stack sizes.\n"
+                              << std::endl;
 
                     std::terminate();
                 }
@@ -350,8 +337,7 @@ namespace pika::threads::coroutines {
             {
                 if (m_stack)
                 {
-                    if (posix::reset_stack(
-                            m_stack, static_cast<std::size_t>(m_stack_size)))
+                    if (posix::reset_stack(m_stack, static_cast<std::size_t>(m_stack_size)))
                     {
 #if defined(PIKA_HAVE_COROUTINE_COUNTERS)
                         increment_stack_unbind_count();
@@ -405,14 +391,12 @@ namespace pika::threads::coroutines {
         public:
             static std::uint64_t get_stack_unbind_count(bool reset)
             {
-                return detail::get_and_reset_value(
-                    get_stack_unbind_counter(), reset);
+                return detail::get_and_reset_value(get_stack_unbind_counter(), reset);
             }
 
             static std::uint64_t get_stack_recycle_count(bool reset)
             {
-                return detail::get_and_reset_value(
-                    get_stack_recycle_counter(), reset);
+                return detail::get_and_reset_value(get_stack_recycle_counter(), reset);
             }
 #endif
 

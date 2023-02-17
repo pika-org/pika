@@ -31,8 +31,7 @@ namespace pika::cuda::experimental {
             }
             else
             {
-                detail::register_polling(
-                    pika::resource::get_thread_pool(pool_name_));
+                detail::register_polling(pika::resource::get_thread_pool(pool_name_));
             }
         }
 
@@ -44,8 +43,7 @@ namespace pika::cuda::experimental {
             }
             else
             {
-                detail::unregister_polling(
-                    pika::resource::get_thread_pool(pool_name_));
+                detail::unregister_polling(pika::resource::get_thread_pool(pool_name_));
             }
         }
 

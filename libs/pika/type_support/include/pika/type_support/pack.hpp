@@ -39,24 +39,24 @@ namespace pika::util::detail {
     {
     };
 
-#define PIKA_MAKE_INDEX_PACK_INTEGER_PACK                                      \
-    template <std::size_t N>                                                   \
-    struct make_index_pack : index_pack<__integer_pack(N)...>                  \
-    {                                                                          \
+#define PIKA_MAKE_INDEX_PACK_INTEGER_PACK                                                          \
+    template <std::size_t N>                                                                       \
+    struct make_index_pack : index_pack<__integer_pack(N)...>                                      \
+    {                                                                                              \
     };
 
-#define PIKA_MAKE_INDEX_PACK_MAKE_INTEGER_SEQ                                  \
-    template <std::size_t N>                                                   \
-    struct make_index_pack : __make_integer_seq<pack_c, std::size_t, N>        \
-    {                                                                          \
+#define PIKA_MAKE_INDEX_PACK_MAKE_INTEGER_SEQ                                                      \
+    template <std::size_t N>                                                                       \
+    struct make_index_pack : __make_integer_seq<pack_c, std::size_t, N>                            \
+    {                                                                                              \
     };
 
-#define PIKA_MAKE_INDEX_PACK_FALLBACK                                          \
-    template <std::size_t N>                                                   \
-    struct make_index_pack                                                     \
-      : make_index_pack_join<typename make_index_pack<N / 2>::type,            \
-            typename make_index_pack<N - N / 2>::type>                         \
-    {                                                                          \
+#define PIKA_MAKE_INDEX_PACK_FALLBACK                                                              \
+    template <std::size_t N>                                                                       \
+    struct make_index_pack                                                                         \
+      : make_index_pack_join<typename make_index_pack<N / 2>::type,                                \
+            typename make_index_pack<N - N / 2>::type>                                             \
+    {                                                                                              \
     };
 
 #if defined(__has_builtin)
@@ -121,8 +121,7 @@ namespace pika::util::detail {
     static std::false_type all_of_impl(...);
 
     template <typename... Ts>
-    static auto all_of_impl(int)
-        -> always_true<typename std::enable_if_t<is_true_v<Ts>>...>;
+    static auto all_of_impl(int) -> always_true<typename std::enable_if_t<is_true_v<Ts>>...>;
 
     template <typename... Ts>
     struct all_of : decltype(all_of_impl<Ts...>(0))
@@ -142,8 +141,7 @@ namespace pika::util::detail {
     static std::true_type any_of_impl(...);
 
     template <typename... Ts>
-    static auto any_of_impl(int)
-        -> always_false<std::enable_if_t<is_false_v<Ts>>...>;
+    static auto any_of_impl(int) -> always_false<std::enable_if_t<is_false_v<Ts>>...>;
 
     template <typename... Ts>
     struct any_of : decltype(any_of_impl<Ts...>(0))
@@ -176,45 +174,44 @@ namespace pika::util::detail {
     {
     };
 
-#define PIKA_AT_INDEX_IMPL_TYPE_PACK_ELEMENT                                   \
-    template <std::size_t I, typename Ts, bool InBounds = (I < Ts::size)>      \
-    struct at_index_impl : empty                                               \
-    {                                                                          \
-    };                                                                         \
-                                                                               \
-    template <std::size_t I, typename... Ts>                                   \
-    struct at_index_impl<I, pack<Ts...>, /*InBounds*/ true>                    \
-    {                                                                          \
-        using type = __type_pack_element<I, Ts...>;                            \
+#define PIKA_AT_INDEX_IMPL_TYPE_PACK_ELEMENT                                                       \
+    template <std::size_t I, typename Ts, bool InBounds = (I < Ts::size)>                          \
+    struct at_index_impl : empty                                                                   \
+    {                                                                                              \
+    };                                                                                             \
+                                                                                                   \
+    template <std::size_t I, typename... Ts>                                                       \
+    struct at_index_impl<I, pack<Ts...>, /*InBounds*/ true>                                        \
+    {                                                                                              \
+        using type = __type_pack_element<I, Ts...>;                                                \
     };
 
-#define PIKA_AT_INDEX_IMPL_FALLBACK                                            \
-    template <std::size_t I, typename T>                                       \
-    struct indexed                                                             \
-    {                                                                          \
-        using type = T;                                                        \
-    };                                                                         \
-                                                                               \
-    template <typename Ts, typename Is>                                        \
-    struct indexer;                                                            \
-                                                                               \
-    template <typename... Ts, std::size_t... Is>                               \
-    struct indexer<pack<Ts...>, pack_c<std::size_t, Is...>>                    \
-      : indexed<Is, Ts>...                                                     \
-    {                                                                          \
-    };                                                                         \
-                                                                               \
-    template <std::size_t J>                                                   \
-    static empty at_index_check(...);                                          \
-                                                                               \
-    template <std::size_t J, typename T>                                       \
-    static indexed<J, T> at_index_check(indexed<J, T> const&);                 \
-                                                                               \
-    template <std::size_t I, typename Ts>                                      \
-    struct at_index_impl                                                       \
-      : decltype(detail::at_index_check<I>(                                    \
-            indexer<Ts, typename make_index_pack<Ts::size>::type>()))          \
-    {                                                                          \
+#define PIKA_AT_INDEX_IMPL_FALLBACK                                                                \
+    template <std::size_t I, typename T>                                                           \
+    struct indexed                                                                                 \
+    {                                                                                              \
+        using type = T;                                                                            \
+    };                                                                                             \
+                                                                                                   \
+    template <typename Ts, typename Is>                                                            \
+    struct indexer;                                                                                \
+                                                                                                   \
+    template <typename... Ts, std::size_t... Is>                                                   \
+    struct indexer<pack<Ts...>, pack_c<std::size_t, Is...>> : indexed<Is, Ts>...                   \
+    {                                                                                              \
+    };                                                                                             \
+                                                                                                   \
+    template <std::size_t J>                                                                       \
+    static empty at_index_check(...);                                                              \
+                                                                                                   \
+    template <std::size_t J, typename T>                                                           \
+    static indexed<J, T> at_index_check(indexed<J, T> const&);                                     \
+                                                                                                   \
+    template <std::size_t I, typename Ts>                                                          \
+    struct at_index_impl                                                                           \
+      : decltype(detail::at_index_check<I>(                                                        \
+            indexer<Ts, typename make_index_pack<Ts::size>::type>()))                              \
+    {                                                                                              \
     };
 
 #if defined(__has_builtin)
@@ -241,8 +238,8 @@ namespace pika::util::detail {
     template <typename Pack, template <typename> class Transformer>
     struct transform;
 
-    template <template <typename> class Transformer,
-        template <typename...> class Pack, typename... Ts>
+    template <template <typename> class Transformer, template <typename...> class Pack,
+        typename... Ts>
     struct transform<Pack<Ts...>, Transformer>
     {
         using type = Pack<typename Transformer<Ts>::type...>;
@@ -261,11 +258,9 @@ namespace pika::util::detail {
         using type = Pack<Ts...>;
     };
 
-    template <template <typename...> class Pack, typename... Ts, typename U,
-        typename... Us>
+    template <template <typename...> class Pack, typename... Ts, typename U, typename... Us>
     struct unique_helper<Pack<Ts...>, Pack<U, Us...>>
-      : std::conditional<contains<U, Ts...>::value,
-            unique_helper<Pack<Ts...>, Pack<Us...>>,
+      : std::conditional<contains<U, Ts...>::value, unique_helper<Pack<Ts...>, Pack<Us...>>,
             unique_helper<Pack<Ts..., U>, Pack<Us...>>>::type
     {
     };
@@ -291,10 +286,8 @@ namespace pika::util::detail {
         using type = Pack<Ts...>;
     };
 
-    template <template <typename...> class Pack, typename... Ts, typename... Us,
-        typename... Rest>
-    struct concat<Pack<Ts...>, Pack<Us...>, Rest...>
-      : concat<Pack<Ts..., Us...>, Rest...>
+    template <template <typename...> class Pack, typename... Ts, typename... Us, typename... Rest>
+    struct concat<Pack<Ts...>, Pack<Us...>, Rest...> : concat<Pack<Ts..., Us...>, Rest...>
     {
     };
 
@@ -365,8 +358,8 @@ namespace pika::util::detail {
     template <template <typename...> class NewPack, typename OldPack>
     struct change_pack;
 
-    template <template <typename...> class NewPack,
-        template <typename...> class OldPack, typename... Ts>
+    template <template <typename...> class NewPack, template <typename...> class OldPack,
+        typename... Ts>
     struct change_pack<NewPack, OldPack<Ts...>>
     {
         using type = NewPack<Ts...>;

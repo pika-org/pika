@@ -26,18 +26,11 @@ namespace pika::util::detail {
     {
         constexpr PIKA_FORCEINLINE unused_type() noexcept = default;
 
-        constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type(
-            unused_type const&) noexcept
-        {
-        }
-        constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type(
-            unused_type&&) noexcept
-        {
-        }
+        constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type(unused_type const&) noexcept {}
+        constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type(unused_type&&) noexcept {}
 
         template <typename T>
-        constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type(
-            T const&) noexcept
+        constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type(T const&) noexcept
         {
         }
 
@@ -48,30 +41,27 @@ namespace pika::util::detail {
             return *this;
         }
         template <typename T>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type&
-        operator=(T const&) noexcept
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type& operator=(T const&) noexcept
         {
             return *this;
         }
 
-        constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type const&
-        operator=(unused_type const&) const noexcept
+        constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type const& operator=(
+            unused_type const&) const noexcept
         {
             return *this;
         }
-        constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type const&
-        operator=(unused_type&&) const noexcept
+        constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type const& operator=(
+            unused_type&&) const noexcept
         {
             return *this;
         }
 
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type& operator=(
-            unused_type const&) noexcept
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type& operator=(unused_type const&) noexcept
         {
             return *this;
         }
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type& operator=(
-            unused_type&&) noexcept
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type& operator=(unused_type&&) noexcept
         {
             return *this;
         }

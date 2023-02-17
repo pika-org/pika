@@ -65,8 +65,7 @@ namespace pika::detail {
         }
 
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
-        thread_description(
-            char const* desc, util::itt::string_handle const& sh) noexcept
+        thread_description(char const* desc, util::itt::string_handle const& sh) noexcept
           : type_(data_type_description)
         {
             data_.desc_ = desc ? desc : "<unknown>";
@@ -75,22 +74,18 @@ namespace pika::detail {
 #endif
 
         /* The priority of description is name, altname, address */
-        template <typename F,
-            typename = std::enable_if_t<!std::is_same_v<F, thread_description>>>
-        explicit thread_description(
-            F const& f, char const* altname = nullptr) noexcept
+        template <typename F, typename = std::enable_if_t<!std::is_same_v<F, thread_description>>>
+        explicit thread_description(F const& f, char const* altname = nullptr) noexcept
           : type_(data_type_description)
         {
-            char const* name =
-                pika::detail::get_function_annotation<F>::call(f);
+            char const* name = pika::detail::get_function_annotation<F>::call(f);
 
             // If a name exists, use it, not the altname.
             if (name != nullptr)    // -V547
             {
                 altname = name;
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
-                desc_itt_ =
-                    pika::detail::get_function_annotation_itt<F>::call(f);
+                desc_itt_ = pika::detail::get_function_annotation_itt<F>::call(f);
 #endif
             }
 
@@ -131,12 +126,10 @@ namespace pika::detail {
         util::itt::string_handle get_description_itt() const noexcept
         {
             PIKA_ASSERT(type_ == data_type_description);
-            return desc_itt_ ? desc_itt_ :
-                               util::itt::string_handle(get_description());
+            return desc_itt_ ? desc_itt_ : util::itt::string_handle(get_description());
         }
 
-        util::itt::task get_task_itt(
-            util::itt::domain const& domain) const noexcept
+        util::itt::task get_task_itt(util::itt::domain const& domain) const noexcept
         {
             switch (kind())
             {
@@ -196,8 +189,7 @@ namespace pika::detail {
         constexpr thread_description(char const* /*desc*/) noexcept {}
 
         template <typename F,
-            typename = typename std::enable_if_t<
-                !std::is_same_v<F, thread_description>>>
+            typename = typename std::enable_if_t<!std::is_same_v<F, thread_description>>>
         explicit constexpr thread_description(
             F const& /*f*/, char const* /*altname*/ = nullptr) noexcept
         {
@@ -220,8 +212,7 @@ namespace pika::detail {
             return util::itt::string_handle(get_description());
         }
 
-        util::itt::task get_task_itt(
-            util::itt::domain const& domain) const noexcept
+        util::itt::task get_task_itt(util::itt::domain const& domain) const noexcept
         {
             switch (kind())
             {
@@ -257,8 +248,7 @@ namespace pika::detail {
     };
 #endif
 
-    PIKA_EXPORT std::ostream& operator<<(
-        std::ostream&, thread_description const&);
+    PIKA_EXPORT std::ostream& operator<<(std::ostream&, thread_description const&);
     PIKA_EXPORT std::string as_string(thread_description const& desc);
 }    // namespace pika::detail
 
@@ -285,37 +275,30 @@ namespace pika::threads::detail {
     ///                   of pika#exception.
     PIKA_EXPORT ::pika::detail::thread_description get_thread_description(
         thread_id_type const& id, error_code& ec = throws);
-    PIKA_EXPORT ::pika::detail::thread_description set_thread_description(
-        thread_id_type const& id,
-        ::pika::detail::thread_description const& desc =
-            ::pika::detail::thread_description(),
+    PIKA_EXPORT ::pika::detail::thread_description set_thread_description(thread_id_type const& id,
+        ::pika::detail::thread_description const& desc = ::pika::detail::thread_description(),
         error_code& ec = throws);
 
     PIKA_EXPORT ::pika::detail::thread_description get_thread_lco_description(
         thread_id_type const& id, error_code& ec = throws);
     PIKA_EXPORT ::pika::detail::thread_description set_thread_lco_description(
         thread_id_type const& id,
-        ::pika::detail::thread_description const& desc =
-            ::pika::detail::thread_description(),
+        ::pika::detail::thread_description const& desc = ::pika::detail::thread_description(),
         error_code& ec = throws);
 }    // namespace pika::threads::detail
 
 template <>
-struct fmt::formatter<pika::detail::thread_description>
-  : fmt::formatter<std::string>
+struct fmt::formatter<pika::detail::thread_description> : fmt::formatter<std::string>
 {
     template <typename FormatContext>
-    auto
-    format(pika::detail::thread_description const& desc, FormatContext& ctx)
+    auto format(pika::detail::thread_description const& desc, FormatContext& ctx)
     {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
-        if (desc.kind() ==
-            pika::detail::thread_description::data_type_description)
+        if (desc.kind() == pika::detail::thread_description::data_type_description)
             return fmt::formatter<std::string>::format(
                 desc ? desc.get_description() : "<unknown>", ctx);
 
-        return fmt::formatter<std::string>::format(
-            fmt::format("{}", desc.get_address()), ctx);
+        return fmt::formatter<std::string>::format(fmt::format("{}", desc.get_address()), ctx);
 #else
         PIKA_UNUSED(desc);
         return fmt::formatter<std::string>::format("<unknown>", ctx);

@@ -16,8 +16,7 @@ struct uncustomized_scheduler
 {
     struct sender
     {
-        template <template <class...> class Tuple,
-            template <class...> class Variant>
+        template <template <class...> class Tuple, template <class...> class Variant>
         using value_types = Variant<Tuple<>>;
 
         template <template <class...> class Variant>
@@ -70,8 +69,8 @@ struct customized_scheduler : uncustomized_scheduler
 
 inline constexpr struct custom_scheduler_query_t
 {
-    friend constexpr bool tag_invoke(ex::forwarding_scheduler_query_t,
-        custom_scheduler_query_t const&) noexcept
+    friend constexpr bool tag_invoke(
+        ex::forwarding_scheduler_query_t, custom_scheduler_query_t const&) noexcept
     {
         return true;
     }
@@ -81,8 +80,7 @@ int main()
 {
     // An uncustomized scheduler has weakly_parallel forward progress guarantees
     {
-        PIKA_TEST(
-            ex::get_forward_progress_guarantee(uncustomized_scheduler{}) ==
+        PIKA_TEST(ex::get_forward_progress_guarantee(uncustomized_scheduler{}) ==
             ex::forward_progress_guarantee::weakly_parallel);
     }
 
@@ -94,8 +92,7 @@ int main()
 
     // get_forward_progress_guarantee is not a forwarding query
     {
-        static_assert(!ex::forwarding_scheduler_query(
-            ex::get_forward_progress_guarantee));
+        static_assert(!ex::forwarding_scheduler_query(ex::get_forward_progress_guarantee));
     }
 
     // The custom query is a forwarding query

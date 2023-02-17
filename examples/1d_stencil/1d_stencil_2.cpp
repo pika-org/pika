@@ -92,9 +92,8 @@ struct stepper
             // can compute U[t+1][i]
             for (std::size_t i = 0; i != nx; ++i)
             {
-                next[i] =
-                    dataflow(pika::launch::async, Op, current[idx(i, -1, nx)],
-                        current[i], current[idx(i, +1, nx)]);
+                next[i] = dataflow(pika::launch::async, Op, current[idx(i, -1, nx)], current[i],
+                    current[idx(i, +1, nx)]);
             }
         }
 
@@ -111,8 +110,7 @@ struct stepper
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main(pika::program_options::variables_map& vm)
 {
-    std::uint64_t nx =
-        vm["nx"].as<std::uint64_t>();    // Number of grid points.
+    std::uint64_t nx = vm["nx"].as<std::uint64_t>();    // Number of grid points.
     std::uint64_t nt = vm["nt"].as<std::uint64_t>();    // Number of steps.
 
     if (vm.count("no-header"))

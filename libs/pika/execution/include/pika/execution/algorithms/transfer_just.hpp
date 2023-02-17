@@ -26,8 +26,7 @@ namespace pika::execution::experimental {
         friend constexpr PIKA_FORCEINLINE auto
         tag_fallback_invoke(transfer_just_t, Scheduler&& scheduler, Ts&&... ts)
         {
-            return transfer(just(PIKA_FORWARD(Ts, ts)...),
-                PIKA_FORWARD(Scheduler, scheduler));
+            return transfer(just(PIKA_FORWARD(Ts, ts)...), PIKA_FORWARD(Scheduler, scheduler));
         }
     } transfer_just{};
 }    // namespace pika::execution::experimental

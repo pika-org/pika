@@ -39,8 +39,7 @@ struct payload_precision_tracker : htts2::clocksource<BaseClock>
     // Returns: the uncertainty of the mean lost payload.
     double precision_uncertainty() const
     {
-        return (std::max)(
-            this->clock_uncertainty(), precision_stat_uncertainty());
+        return (std::max)(this->clock_uncertainty(), precision_stat_uncertainty());
     }
 
     double average_precision() const
@@ -57,8 +56,7 @@ struct payload_precision_tracker : htts2::clocksource<BaseClock>
     // Performs approximately 'expected_' nanoseconds of artificial work.
     void operator()()
     {
-        double const measured =
-            static_cast<double>(htts2::payload<BaseClock>(expected_));
+        double const measured = static_cast<double>(htts2::payload<BaseClock>(expected_));
 
         double const lost = double(measured - expected_);
 
@@ -76,8 +74,7 @@ private:
 
         mean_lost_ = (mean_lost_ * (samples_ - 1.0) + lost) / samples_;
 
-        stdev_lost_ = std::sqrt(
-            ((samples_ - 1.0) / samples_) * (stdev_lost_ * stdev_lost_) +
+        stdev_lost_ = std::sqrt(((samples_ - 1.0) / samples_) * (stdev_lost_ * stdev_lost_) +
             (1.0 / samples_) * (lost - mean_lost_) * (lost - mean_lost_));
     }
 
@@ -138,8 +135,7 @@ private:
     {
         ///////////////////////////////////////////////////////////////////////
 
-        payload_precision_tracker<BaseClock> p(
-            this->payload_duration_ /* = p */);
+        payload_precision_tracker<BaseClock> p(this->payload_duration_ /* = p */);
 
         htts2::timer<BaseClock> t;
 
@@ -150,8 +146,7 @@ private:
         double measured_walltime = static_cast<double>(t.elapsed());
 
         // w_T [nanoseconds]
-        double theoretical_walltime =
-            static_cast<double>(this->tasks_ * this->payload_duration_);
+        double theoretical_walltime = static_cast<double>(this->tasks_ * this->payload_duration_);
 
         // Overhead = Measured Walltime - Theoretical Walltime
         double overhead = measured_walltime - theoretical_walltime;
@@ -164,8 +159,8 @@ private:
             // f = A/a with a : arbitrary constant,
             // then sigma_f = sqrt((1/a)^2*sigma_A^2)
             ,
-            std::sqrt((1.0 / this->tasks_) * (1.0 / this->tasks_) *
-                p.clock_uncertainty() * p.clock_uncertainty()));
+            std::sqrt((1.0 / this->tasks_) * (1.0 / this->tasks_) * p.clock_uncertainty() *
+                p.clock_uncertainty()));
 
         return results;
 
@@ -175,20 +170,19 @@ private:
     void print_results(results_type results) const
     {
         if (this->io_ == htts2::csv_with_headers)
-            std::cout
-                << "OS-threads (Independent Variable),"
-                << "Tasks per OS-thread (Control Variable) [tasks/OS-threads],"
-                << "Payload Duration (Control Variable) [nanoseconds],"
-                << "Average Precision per Task [nanoseconds/task],"
-                << "Precision Uncertainty per Task [nanoseconds/task],"
-                << "Amortized Overhead per Task [nanoseconds/task],"
-                << "Amortized Overhead per Task Uncertainty [nanoseconds/task]"
-                << "\n";
+            std::cout << "OS-threads (Independent Variable),"
+                      << "Tasks per OS-thread (Control Variable) [tasks/OS-threads],"
+                      << "Payload Duration (Control Variable) [nanoseconds],"
+                      << "Average Precision per Task [nanoseconds/task],"
+                      << "Precision Uncertainty per Task [nanoseconds/task],"
+                      << "Amortized Overhead per Task [nanoseconds/task],"
+                      << "Amortized Overhead per Task Uncertainty [nanoseconds/task]"
+                      << "\n";
 
-        fmt::print(std::cout, "{},{},{},{:.14g},{:.14g},{:.14g},{:.14g}\n",
-            this->osthreads_, this->tasks_, this->payload_duration_,
-            results.average_precision_, results.precision_uncertainty_,
-            results.amortized_overhead_, results.overhead_uncertainty_);
+        fmt::print(std::cout, "{},{},{},{:.14g},{:.14g},{:.14g},{:.14g}\n", this->osthreads_,
+            this->tasks_, this->payload_duration_, results.average_precision_,
+            results.precision_uncertainty_, results.amortized_overhead_,
+            results.overhead_uncertainty_);
     }
 };
 

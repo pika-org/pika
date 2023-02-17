@@ -58,12 +58,10 @@ template <typename Derived, typename CounterPolicy = thread_safe_counter>
 class intrusive_ref_counter;
 
 template <typename Derived, typename CounterPolicy>
-void intrusive_ptr_add_ref(
-    intrusive_ref_counter<Derived, CounterPolicy> const* p) noexcept;
+void intrusive_ptr_add_ref(intrusive_ref_counter<Derived, CounterPolicy> const* p) noexcept;
 
 template <typename Derived, typename CounterPolicy>
-void intrusive_ptr_release(
-    intrusive_ref_counter<Derived, CounterPolicy> const* p) noexcept;
+void intrusive_ptr_release(intrusive_ref_counter<Derived, CounterPolicy> const* p) noexcept;
 
 template <typename Derived, typename CounterPolicy>
 class intrusive_ref_counter
@@ -95,15 +93,13 @@ protected:
 };
 
 template <typename Derived, typename CounterPolicy>
-inline void intrusive_ptr_add_ref(
-    intrusive_ref_counter<Derived, CounterPolicy> const* p) noexcept
+inline void intrusive_ptr_add_ref(intrusive_ref_counter<Derived, CounterPolicy> const* p) noexcept
 {
     CounterPolicy::increment(p->ref_counter);
 }
 
 template <typename Derived, typename CounterPolicy>
-inline void intrusive_ptr_release(
-    intrusive_ref_counter<Derived, CounterPolicy> const* p) noexcept
+inline void intrusive_ptr_release(intrusive_ref_counter<Derived, CounterPolicy> const* p) noexcept
 {
     if (CounterPolicy::decrement(p->ref_counter) == 0)
         delete static_cast<Derived const*>(p);
@@ -164,8 +160,7 @@ struct async_increasing_int_sync_visitor
 };
 
 template <std::size_t ArgCount>
-struct async_increasing_int_visitor
-  : async_counter_base<async_increasing_int_visitor<ArgCount>>
+struct async_increasing_int_visitor : async_counter_base<async_increasing_int_visitor<ArgCount>>
 {
     explicit async_increasing_int_visitor(int) {}
 
@@ -201,8 +196,7 @@ void test_async_traversal_base(Args&&... args)
     // when we detach the control flow on every visit.
     {
         auto result = traverse_pack_async(
-            pika::util::async_traverse_in_place_tag<
-                async_increasing_int_sync_visitor<ArgCount>>{},
+            pika::util::async_traverse_in_place_tag<async_increasing_int_sync_visitor<ArgCount>>{},
             42, args...);
         PIKA_TEST_EQ(result->counter(), ArgCount + 1U);
     }
@@ -210,10 +204,9 @@ void test_async_traversal_base(Args&&... args)
     // Test that every element is traversed in the correct order
     // when we detach the control flow on every visit.
     {
-        auto result =
-            traverse_pack_async(pika::util::async_traverse_in_place_tag<
-                                    async_increasing_int_visitor<ArgCount>>{},
-                42, args...);
+        auto result = traverse_pack_async(
+            pika::util::async_traverse_in_place_tag<async_increasing_int_visitor<ArgCount>>{}, 42,
+            args...);
         PIKA_TEST_EQ(result->counter(), ArgCount + 1U);
     }
 }
@@ -221,8 +214,8 @@ void test_async_traversal_base(Args&&... args)
 static void test_async_traversal()
 {
     // Just test everything using a casual int pack
-    test_async_traversal_base<4U>(not_accepted_tag{}, 0U, 1U,
-        not_accepted_tag{}, 2U, 3U, not_accepted_tag{});
+    test_async_traversal_base<4U>(
+        not_accepted_tag{}, 0U, 1U, not_accepted_tag{}, 2U, 3U, not_accepted_tag{});
 }
 
 template <typename ContainerFactory>
@@ -285,14 +278,12 @@ static void test_async_tuple_like_traversal()
     test_async_traversal_base<4U>(
         not_accepted_tag{}, 0U, make_tuple(1U, not_accepted_tag{}, 2U), 3U);
     // Test by splitting the pack in two tuples
-    test_async_traversal_base<4U>(
-        make_tuple(0U, not_accepted_tag{}, 1U), make_tuple(2U, 3U));
+    test_async_traversal_base<4U>(make_tuple(0U, not_accepted_tag{}, 1U), make_tuple(2U, 3U));
     // Test by passing a huge tuple to the traversal
     test_async_traversal_base<4U>(make_tuple(0U, 1U, 2U, 3U));
 }
 
-template <typename T, typename... Args,
-    typename Vector = std::vector<std::decay_t<T>>>
+template <typename T, typename... Args, typename Vector = std::vector<std::decay_t<T>>>
 Vector vector_of(T&& first, Args&&... args)
 {
     return Vector{std::forward<T>(first), std::forward<Args>(args)...};
@@ -309,13 +300,11 @@ static void test_async_mixed_traversal()
         make_tuple(0U, vector_of(not_accepted_tag{}), vector_of(vector_of(1U))),
         make_tuple(2U, 3U));
 
-    test_async_traversal_base<4U>(
-        vector_of(vector_of(make_tuple(0U, 1U, 2U, 3U))));
+    test_async_traversal_base<4U>(vector_of(vector_of(make_tuple(0U, 1U, 2U, 3U))));
 }
 
 template <std::size_t ArgCount>
-struct async_unique_sync_visitor
-  : async_counter_base<async_unique_sync_visitor<ArgCount>>
+struct async_unique_sync_visitor : async_counter_base<async_unique_sync_visitor<ArgCount>>
 {
     explicit async_unique_sync_visitor(int) {}
 
@@ -327,8 +316,7 @@ struct async_unique_sync_visitor
     }
 
     template <typename N>
-    void operator()(
-        async_traverse_detach_tag, std::unique_ptr<std::size_t>& i, N&& next)
+    void operator()(async_traverse_detach_tag, std::unique_ptr<std::size_t>& i, N&& next)
     {
         PIKA_UNUSED(i);
         PIKA_UNUSED(next);
@@ -352,16 +340,14 @@ struct async_unique_visitor : async_counter_base<async_unique_visitor<ArgCount>>
 {
     explicit async_unique_visitor(int) {}
 
-    bool operator()(
-        async_traverse_visit_tag, std::unique_ptr<std::size_t>& i) const
+    bool operator()(async_traverse_visit_tag, std::unique_ptr<std::size_t>& i) const
     {
         PIKA_TEST_EQ(*i, this->counter());
         return false;
     }
 
     template <typename N>
-    void operator()(
-        async_traverse_detach_tag, std::unique_ptr<std::size_t>& i, N&& next)
+    void operator()(async_traverse_detach_tag, std::unique_ptr<std::size_t>& i, N&& next)
     {
         PIKA_UNUSED(i);
 
@@ -381,22 +367,19 @@ struct async_unique_visitor : async_counter_base<async_unique_visitor<ArgCount>>
 
 static void test_async_move_only_traversal()
 {
-    auto const of = [](std::size_t i) {
-        return std::unique_ptr<std::size_t>(new std::size_t(i));
-    };
+    auto const of = [](std::size_t i) { return std::unique_ptr<std::size_t>(new std::size_t(i)); };
 
     {
-        auto result =
-            traverse_pack_async(pika::util::async_traverse_in_place_tag<
-                                    async_unique_sync_visitor<4>>{},
-                42, of(0), of(1), of(2), of(3));
+        auto result = traverse_pack_async(
+            pika::util::async_traverse_in_place_tag<async_unique_sync_visitor<4>>{}, 42, of(0),
+            of(1), of(2), of(3));
         PIKA_TEST_EQ(result->counter(), 5U);
     }
 
     {
-        auto result = traverse_pack_async(
-            pika::util::async_traverse_in_place_tag<async_unique_visitor<4>>{},
-            42, of(0), of(1), of(2), of(3));
+        auto result =
+            traverse_pack_async(pika::util::async_traverse_in_place_tag<async_unique_visitor<4>>{},
+                42, of(0), of(1), of(2), of(3));
         PIKA_TEST_EQ(result->counter(), 5U);
     }
 }
@@ -412,8 +395,7 @@ struct invalidate_visitor : async_counter_base<invalidate_visitor>
     }
 
     template <typename N>
-    void
-    operator()(async_traverse_detach_tag, std::shared_ptr<int>& i, N&& next)
+    void operator()(async_traverse_detach_tag, std::shared_ptr<int>& i, N&& next)
     {
         PIKA_UNUSED(i);
 
@@ -421,8 +403,7 @@ struct invalidate_visitor : async_counter_base<invalidate_visitor>
     }
 
     // Test whether the passed pack was passed as r-value reference
-    void operator()(
-        async_traverse_complete_tag, tuple<std::shared_ptr<int>>&& pack) const
+    void operator()(async_traverse_complete_tag, tuple<std::shared_ptr<int>>&& pack) const
     {
         // Invalidate the moved object
         tuple<std::shared_ptr<int>> moved = std::move(pack);
@@ -437,8 +418,7 @@ static void test_async_complete_invalidation()
     auto value = std::make_shared<int>(22);
 
     auto frame = traverse_pack_async(
-        pika::util::async_traverse_in_place_tag<invalidate_visitor>{}, 42,
-        value);
+        pika::util::async_traverse_in_place_tag<invalidate_visitor>{}, 42, value);
 
     PIKA_TEST_EQ(value.use_count(), 1U);
 }

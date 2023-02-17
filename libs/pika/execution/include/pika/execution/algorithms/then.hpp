@@ -33,8 +33,7 @@ namespace pika::then_detail {
     };
 
     template <typename Receiver, typename F>
-    using then_receiver =
-        typename then_receiver_impl<Receiver, F>::then_receiver_type;
+    using then_receiver = typename then_receiver_impl<Receiver, F>::then_receiver_type;
 
     template <typename Receiver, typename F>
     struct then_receiver_impl<Receiver, F>::then_receiver_type
@@ -43,15 +42,15 @@ namespace pika::then_detail {
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
 
         template <typename Error>
-        friend void tag_invoke(pika::execution::experimental::set_error_t,
-            then_receiver_type&& r, Error&& error) noexcept
+        friend void tag_invoke(pika::execution::experimental::set_error_t, then_receiver_type&& r,
+            Error&& error) noexcept
         {
             pika::execution::experimental::set_error(
                 PIKA_MOVE(r.receiver), PIKA_FORWARD(Error, error));
         }
 
-        friend void tag_invoke(pika::execution::experimental::set_stopped_t,
-            then_receiver_type&& r) noexcept
+        friend void tag_invoke(
+            pika::execution::experimental::set_stopped_t, then_receiver_type&& r) noexcept
         {
             pika::execution::experimental::set_stopped(PIKA_MOVE(r.receiver));
         }
@@ -62,8 +61,7 @@ namespace pika::then_detail {
         {
             pika::detail::try_catch_exception_ptr(
                 [&]() {
-                    if constexpr (std::is_void_v<
-                                      std::invoke_result_t<F, Ts...>>)
+                    if constexpr (std::is_void_v<std::invoke_result_t<F, Ts...>>)
                     {
                     // Certain versions of GCC with optimizations fail on
                     // the move with an internal compiler error.
@@ -72,33 +70,29 @@ namespace pika::then_detail {
 #else
                         PIKA_INVOKE(PIKA_MOVE(f), PIKA_FORWARD(Ts, ts)...);
 #endif
-                        pika::execution::experimental::set_value(
-                            PIKA_MOVE(receiver));
+                        pika::execution::experimental::set_value(PIKA_MOVE(receiver));
                     }
                     else
                     {
                     // Certain versions of GCC with optimizations fail on
                     // the move with an internal compiler error.
 #if defined(PIKA_GCC_VERSION) && (PIKA_GCC_VERSION < 100000)
-                        auto&& result =
-                            PIKA_INVOKE(std::move(f), PIKA_FORWARD(Ts, ts)...);
+                        auto&& result = PIKA_INVOKE(std::move(f), PIKA_FORWARD(Ts, ts)...);
 #else
-                        auto&& result =
-                            PIKA_INVOKE(PIKA_MOVE(f), PIKA_FORWARD(Ts, ts)...);
+                        auto&& result = PIKA_INVOKE(PIKA_MOVE(f), PIKA_FORWARD(Ts, ts)...);
 #endif
                         pika::execution::experimental::set_value(
                             PIKA_MOVE(receiver), PIKA_MOVE(result));
                     }
                 },
                 [&](std::exception_ptr ep) {
-                    pika::execution::experimental::set_error(
-                        PIKA_MOVE(receiver), PIKA_MOVE(ep));
+                    pika::execution::experimental::set_error(PIKA_MOVE(receiver), PIKA_MOVE(ep));
                 });
         }
 
         template <typename... Ts>
-        friend void tag_invoke(pika::execution::experimental::set_value_t,
-            then_receiver_type&& r, Ts&&... ts) noexcept
+        friend void tag_invoke(
+            pika::execution::experimental::set_value_t, then_receiver_type&& r, Ts&&... ts) noexcept
         {
             // GCC 7 fails with an internal compiler error unless the actual
             // body is in a helper function.
@@ -128,23 +122,20 @@ namespace pika::then_detail {
         struct invoke_result_helper<Tuple<Ts...>>
         {
             using result_type = std::invoke_result_t<F, Ts...>;
-            using type = std::conditional_t<std::is_void<result_type>::value,
-                Tuple<>, Tuple<result_type>>;
+            using type =
+                std::conditional_t<std::is_void<result_type>::value, Tuple<>, Tuple<result_type>>;
         };
 
-        template <template <typename...> class Tuple,
-            template <typename...> class Variant>
-        using value_types =
-            pika::util::detail::unique_t<pika::util::detail::transform_t<
-                typename pika::execution::experimental::sender_traits<
-                    Sender>::template value_types<Tuple, Variant>,
+        template <template <typename...> class Tuple, template <typename...> class Variant>
+        using value_types = pika::util::detail::unique_t<
+            pika::util::detail::transform_t<typename pika::execution::experimental::sender_traits<
+                                                Sender>::template value_types<Tuple, Variant>,
                 invoke_result_helper>>;
 
         template <template <typename...> class Variant>
-        using error_types =
-            pika::util::detail::unique_t<pika::util::detail::prepend_t<
-                typename pika::execution::experimental::sender_traits<
-                    Sender>::template error_types<Variant>,
+        using error_types = pika::util::detail::unique_t<
+            pika::util::detail::prepend_t<typename pika::execution::experimental::sender_traits<
+                                              Sender>::template error_types<Variant>,
                 std::exception_ptr>>;
 
         static constexpr bool sends_done = false;
@@ -157,37 +148,33 @@ namespace pika::then_detail {
                         CPO, std::decay_t<Sender>>)
             // clang-format on
             >
-        friend constexpr auto tag_invoke(
-            pika::execution::experimental::get_completion_scheduler_t<CPO>,
+        friend constexpr auto
+        tag_invoke(pika::execution::experimental::get_completion_scheduler_t<CPO>,
             then_sender_type const& sender)
         {
-            return pika::execution::experimental::get_completion_scheduler<CPO>(
-                sender.sender);
+            return pika::execution::experimental::get_completion_scheduler<CPO>(sender.sender);
         }
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t,
-            then_sender_type&& s, Receiver&& receiver)
+        friend auto tag_invoke(
+            pika::execution::experimental::connect_t, then_sender_type&& s, Receiver&& receiver)
         {
             return pika::execution::experimental::connect(PIKA_MOVE(s.sender),
-                then_receiver<Receiver, F>{
-                    PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.f)});
+                then_receiver<Receiver, F>{PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.f)});
         }
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t,
-            then_sender_type const& r, Receiver&& receiver)
+        friend auto tag_invoke(pika::execution::experimental::connect_t, then_sender_type const& r,
+            Receiver&& receiver)
         {
-            return pika::execution::experimental::connect(r.sender,
-                then_receiver<Receiver, F>{
-                    PIKA_FORWARD(Receiver, receiver), r.f});
+            return pika::execution::experimental::connect(
+                r.sender, then_receiver<Receiver, F>{PIKA_FORWARD(Receiver, receiver), r.f});
         }
     };
 }    // namespace pika::then_detail
 
 namespace pika::execution::experimental {
-    inline constexpr struct then_t final
-      : pika::functional::detail::tag_fallback<then_t>
+    inline constexpr struct then_t final : pika::functional::detail::tag_fallback<then_t>
     {
     private:
         // clang-format off
@@ -196,16 +183,14 @@ namespace pika::execution::experimental {
                 is_sender_v<Sender>
             )>
         // clang-format on
-        friend constexpr PIKA_FORCEINLINE auto
-        tag_fallback_invoke(then_t, Sender&& sender, F&& f)
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(then_t, Sender&& sender, F&& f)
         {
             return then_detail::then_sender<Sender, F>{
                 PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f)};
         }
 
         template <typename F>
-        friend constexpr PIKA_FORCEINLINE auto
-        tag_fallback_invoke(then_t, F&& f)
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(then_t, F&& f)
         {
             return detail::partial_algorithm<then_t, F>{PIKA_FORWARD(F, f)};
         }

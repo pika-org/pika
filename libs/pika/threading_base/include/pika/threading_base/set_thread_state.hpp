@@ -18,7 +18,6 @@ namespace pika::threads::detail {
     PIKA_EXPORT thread_state set_thread_state(thread_id_type const& id,
         thread_schedule_state new_state, thread_restart_state new_state_ex,
         execution::thread_priority priority,
-        execution::thread_schedule_hint schedulehint =
-            execution::thread_schedule_hint(),
+        execution::thread_schedule_hint schedulehint = execution::thread_schedule_hint(),
         bool retry_on_active = true, error_code& ec = throws);
 }    // namespace pika::threads::detail

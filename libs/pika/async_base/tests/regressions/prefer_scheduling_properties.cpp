@@ -18,10 +18,9 @@ int main()
 {
     pika::experimental::prefer(
         ex::with_priority, scheduler{}, pika::execution::thread_priority::high);
-    pika::experimental::prefer(ex::with_stacksize, scheduler{},
-        pika::execution::thread_stacksize::small_);
     pika::experimental::prefer(
-        ex::with_hint, scheduler{}, pika::execution::thread_schedule_hint{});
+        ex::with_stacksize, scheduler{}, pika::execution::thread_stacksize::small_);
+    pika::experimental::prefer(ex::with_hint, scheduler{}, pika::execution::thread_schedule_hint{});
     pika::experimental::prefer(ex::with_annotation, scheduler{}, "hello");
     return 0;
 }

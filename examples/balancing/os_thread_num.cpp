@@ -22,8 +22,7 @@
 #include <map>
 
 template <typename T>
-using queue =
-    boost::lockfree::queue<T, pika::detail::aligned_allocator<std::size_t>>;
+using queue = boost::lockfree::queue<T, pika::detail::aligned_allocator<std::size_t>>;
 
 using pika::program_options::options_description;
 using pika::program_options::value;
@@ -61,8 +60,7 @@ void get_os_thread_num(barrier& barr, queue<std::size_t>& os_threads)
 ///////////////////////////////////////////////////////////////////////////////
 using result_map = std::map<std::size_t, std::size_t>;
 
-using sorter =
-    std::multimap<std::size_t, std::size_t, std::greater<std::size_t>>;
+using sorter = std::multimap<std::size_t, std::size_t, std::greater<std::size_t>>;
 
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main(variables_map& vm)
@@ -85,11 +83,9 @@ int pika_main(variables_map& vm)
             for (std::size_t j = 0; j < pxthreads; ++j)
             {
                 thread_init_data data(
-                    pika::threads::detail::make_thread_function_nullary(
-                        pika::util::detail::bind(&get_os_thread_num,
-                            std::ref(barr), std::ref(os_threads))),
-                    "get_os_thread_num",
-                    pika::execution::thread_priority::normal,
+                    pika::threads::detail::make_thread_function_nullary(pika::util::detail::bind(
+                        &get_os_thread_num, std::ref(barr), std::ref(os_threads))),
+                    "get_os_thread_num", pika::execution::thread_priority::normal,
                     pika::execution::thread_schedule_hint(0));
                 register_work(data);
             }
@@ -114,8 +110,8 @@ int pika_main(variables_map& vm)
             if (csv)
                 fmt::print(std::cout, "{},{}\n", result.second, result.first);
             else
-                fmt::print(std::cout, "OS-thread {} ran {} PX-threads\n",
-                    result.second, result.first);
+                fmt::print(
+                    std::cout, "OS-thread {} ran {} PX-threads\n", result.second, result.first);
         }
     }
 
@@ -130,8 +126,8 @@ int main(int argc, char* argv[])
     // Configure application-specific options
     options_description cmdline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
-    cmdline.add_options()("pxthreads", value<std::size_t>()->default_value(128),
-        "number of PX-threads to invoke")
+    cmdline.add_options()(
+        "pxthreads", value<std::size_t>()->default_value(128), "number of PX-threads to invoke")
 
         ("delay-iterations", value<std::uint64_t>()->default_value(65536),
             "number of iterations in the delay loop")

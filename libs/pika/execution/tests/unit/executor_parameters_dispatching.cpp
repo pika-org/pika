@@ -33,8 +33,8 @@ struct test_executor_get_chunk_size : pika::execution::parallel_executor
     }
 
     template <typename Parameters, typename F>
-    static std::size_t get_chunk_size(Parameters&& /* params */, F&& /* f */,
-        std::size_t cores, std::size_t count)
+    static std::size_t
+    get_chunk_size(Parameters&& /* params */, F&& /* f */, std::size_t cores, std::size_t count)
     {
         ++exec_count;
         return (count + cores - 1) / cores;
@@ -51,8 +51,8 @@ namespace pika::parallel::execution {
 struct test_chunk_size
 {
     template <typename Executor, typename F>
-    static std::size_t get_chunk_size(Executor&& /* exec */, F&& /* f */,
-        std::size_t cores, std::size_t count)
+    static std::size_t
+    get_chunk_size(Executor&& /* exec */, F&& /* f */, std::size_t cores, std::size_t count)
     {
         ++params_count;
         return (count + cores - 1) / cores;
@@ -76,8 +76,8 @@ void test_get_chunk_size()
         exec_count = 0;
 
         pika::parallel::execution::get_chunk_size(
-            test_chunk_size{}, pika::execution::par.executor(),
-            [](std::size_t) { return 0; }, 1, 1);
+            test_chunk_size{}, pika::execution::par.executor(), [](std::size_t) { return 0; }, 1,
+            1);
 
         PIKA_TEST_EQ(params_count, std::size_t(1));
         PIKA_TEST_EQ(exec_count, std::size_t(0));
@@ -88,8 +88,7 @@ void test_get_chunk_size()
         exec_count = 0;
 
         pika::parallel::execution::get_chunk_size(
-            test_chunk_size{}, test_executor_get_chunk_size{},
-            [](std::size_t) { return 0; }, 1, 1);
+            test_chunk_size{}, test_executor_get_chunk_size{}, [](std::size_t) { return 0; }, 1, 1);
 
         PIKA_TEST_EQ(params_count, std::size_t(0));
         PIKA_TEST_EQ(exec_count, std::size_t(1));
@@ -99,8 +98,7 @@ void test_get_chunk_size()
 ///////////////////////////////////////////////////////////////////////////////
 // maximal_number_of_chunks
 
-struct test_executor_maximal_number_of_chunks
-  : pika::execution::parallel_executor
+struct test_executor_maximal_number_of_chunks : pika::execution::parallel_executor
 {
     test_executor_maximal_number_of_chunks()
       : pika::execution::parallel_executor()
@@ -108,8 +106,7 @@ struct test_executor_maximal_number_of_chunks
     }
 
     template <typename Parameters>
-    static std::size_t
-    maximal_number_of_chunks(Parameters&&, std::size_t, std::size_t num_tasks)
+    static std::size_t maximal_number_of_chunks(Parameters&&, std::size_t, std::size_t num_tasks)
     {
         ++exec_count;
         return num_tasks;
@@ -118,8 +115,7 @@ struct test_executor_maximal_number_of_chunks
 
 namespace pika::parallel::execution {
     template <>
-    struct is_two_way_executor<test_executor_maximal_number_of_chunks>
-      : std::true_type
+    struct is_two_way_executor<test_executor_maximal_number_of_chunks> : std::true_type
     {
     };
 }    // namespace pika::parallel::execution
@@ -127,8 +123,7 @@ namespace pika::parallel::execution {
 struct test_number_of_chunks
 {
     template <typename Executor>
-    std::size_t
-    maximal_number_of_chunks(Executor&&, std::size_t, std::size_t num_tasks)
+    std::size_t maximal_number_of_chunks(Executor&&, std::size_t, std::size_t num_tasks)
     {
         ++params_count;
         return num_tasks;
@@ -161,8 +156,7 @@ void test_maximal_number_of_chunks()
         exec_count = 0;
 
         pika::parallel::execution::maximal_number_of_chunks(
-            test_number_of_chunks{}, test_executor_maximal_number_of_chunks{},
-            1, 1);
+            test_number_of_chunks{}, test_executor_maximal_number_of_chunks{}, 1, 1);
 
         PIKA_TEST_EQ(params_count, std::size_t(0));
         PIKA_TEST_EQ(exec_count, std::size_t(1));
@@ -172,8 +166,7 @@ void test_maximal_number_of_chunks()
 ///////////////////////////////////////////////////////////////////////////////
 // reset_thread_distribution
 
-struct test_executor_reset_thread_distribution
-  : pika::execution::parallel_executor
+struct test_executor_reset_thread_distribution : pika::execution::parallel_executor
 {
     test_executor_reset_thread_distribution()
       : pika::execution::parallel_executor()
@@ -189,8 +182,7 @@ struct test_executor_reset_thread_distribution
 
 namespace pika::parallel::execution {
     template <>
-    struct is_two_way_executor<test_executor_reset_thread_distribution>
-      : std::true_type
+    struct is_two_way_executor<test_executor_reset_thread_distribution> : std::true_type
     {
     };
 }    // namespace pika::parallel::execution
@@ -230,8 +222,7 @@ void test_reset_thread_distribution()
         exec_count = 0;
 
         pika::parallel::execution::reset_thread_distribution(
-            test_thread_distribution{},
-            test_executor_reset_thread_distribution{});
+            test_thread_distribution{}, test_executor_reset_thread_distribution{});
 
         PIKA_TEST_EQ(params_count, std::size_t(0));
         PIKA_TEST_EQ(exec_count, std::size_t(1));
@@ -258,8 +249,7 @@ struct test_executor_processing_units_count : pika::execution::parallel_executor
 
 namespace pika::parallel::execution {
     template <>
-    struct is_two_way_executor<test_executor_processing_units_count>
-      : std::true_type
+    struct is_two_way_executor<test_executor_processing_units_count> : std::true_type
     {
     };
 }    // namespace pika::parallel::execution
@@ -439,8 +429,7 @@ void test_mark_end_execution()
         params_count = 0;
         exec_count = 0;
 
-        pika::parallel::execution::mark_end_execution(
-            test_begin_end{}, test_executor_begin_end{});
+        pika::parallel::execution::mark_end_execution(test_begin_end{}, test_executor_begin_end{});
 
         PIKA_TEST_EQ(params_count, std::size_t(0));
         PIKA_TEST_EQ(exec_count, std::size_t(1));
@@ -470,8 +459,8 @@ int main(int argc, char* argv[])
     pika::init_params init_args;
     init_args.cfg = cfg;
 
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(
+        pika::init(pika_main, argc, argv, init_args), 0, "pika main exited with non-zero status");
 
     return 0;
 }

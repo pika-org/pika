@@ -37,8 +37,7 @@ public:
     using pointer = value_type*;
     using const_pointer = const value_type*;
     using reference = typename std::add_lvalue_reference<value_type>::type;
-    using const_reference =
-        typename std::add_lvalue_reference<const value_type>::type;
+    using const_reference = typename std::add_lvalue_reference<const value_type>::type;
 
     template <typename U>
     struct rebind

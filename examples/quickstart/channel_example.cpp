@@ -29,13 +29,9 @@ void calculate_sum()
 
     using difference_type = std::vector<int>::iterator::difference_type;
     pika::apply(&sum,
-        std::vector<int>(
-            s.begin(), s.begin() + static_cast<difference_type>(s.size()) / 2),
-        c);
-    pika::apply(&sum,
-        std::vector<int>(
-            s.begin() + static_cast<difference_type>(s.size()) / 2, s.end()),
-        c);
+        std::vector<int>(s.begin(), s.begin() + static_cast<difference_type>(s.size()) / 2), c);
+    pika::apply(
+        &sum, std::vector<int>(s.begin() + static_cast<difference_type>(s.size()) / 2, s.end()), c);
 
     int x = c.get(pika::launch::sync);    // receive from c
     int y = c.get(pika::launch::sync);
@@ -44,8 +40,7 @@ void calculate_sum()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void ping(
-    pika::lcos::local::send_channel<std::string> pings, std::string const& msg)
+void ping(pika::lcos::local::send_channel<std::string> pings, std::string const& msg)
 {
     pings.set(msg);
 }

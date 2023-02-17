@@ -68,8 +68,7 @@ namespace pika::util {
     };
 
     ///////////////////////////////////////////////////////////////////////////
-    PIKA_EXPORT bool register_lock(
-        void const* lock, register_lock_data* data = nullptr);
+    PIKA_EXPORT bool register_lock(void const* lock, register_lock_data* data = nullptr);
     PIKA_EXPORT bool unregister_lock(void const* lock);
     PIKA_EXPORT void verify_no_locks();
     PIKA_EXPORT void force_error_on_lock();
@@ -86,8 +85,7 @@ namespace pika::util {
     /// Sets a handler which gets called when verifying that no locks are held
     /// fails. Can be used to print information at the point of failure such as
     /// a backtrace.
-    PIKA_EXPORT void set_registered_locks_error_handler(
-        registered_locks_error_handler_type);
+    PIKA_EXPORT void set_registered_locks_error_handler(registered_locks_error_handler_type);
 
     using register_locks_predicate_type = util::detail::function<bool()>;
 
@@ -98,8 +96,7 @@ namespace pika::util {
     /// register, unregister, or verify locks, depending on other factors (such
     /// as if lock detection is enabled globally). The predicate may return
     /// different values depending on context.
-    PIKA_EXPORT void set_register_locks_predicate(
-        register_locks_predicate_type);
+    PIKA_EXPORT void set_register_locks_predicate(register_locks_predicate_type);
 
     ///////////////////////////////////////////////////////////////////////////
     struct ignore_all_while_checking
@@ -119,8 +116,7 @@ namespace pika::util {
         PIKA_HAS_MEMBER_XXX_TRAIT_DEF(mutex)
     }
 
-    template <typename Lock,
-        typename Enable = std::enable_if_t<detail::has_mutex_v<Lock>>>
+    template <typename Lock, typename Enable = std::enable_if_t<detail::has_mutex_v<Lock>>>
     struct ignore_while_checking
     {
         explicit ignore_while_checking(Lock const* lock)
@@ -146,17 +142,14 @@ namespace pika::util {
     PIKA_EXPORT std::unique_ptr<held_locks_data> get_held_locks_data();
 
     // set the current thread_local data about held locks
-    PIKA_EXPORT void set_held_locks_data(
-        std::unique_ptr<held_locks_data>&& data);
+    PIKA_EXPORT void set_held_locks_data(std::unique_ptr<held_locks_data>&& data);
 
 #else
 
     template <typename Lock, typename Enable = void>
     struct ignore_while_checking
     {
-        explicit constexpr ignore_while_checking(Lock const* /*lock*/) noexcept
-        {
-        }
+        explicit constexpr ignore_while_checking(Lock const* /*lock*/) noexcept {}
     };
 
     struct ignore_all_while_checking
@@ -164,8 +157,7 @@ namespace pika::util {
         constexpr ignore_all_while_checking() noexcept {}
     };
 
-    constexpr inline bool register_lock(
-        void const*, util::register_lock_data* = nullptr) noexcept
+    constexpr inline bool register_lock(void const*, util::register_lock_data* = nullptr) noexcept
     {
         return true;
     }
@@ -177,10 +169,7 @@ namespace pika::util {
     constexpr inline void force_error_on_lock() noexcept {}
     constexpr inline void enable_lock_detection() noexcept {}
     constexpr inline void disable_lock_detection() noexcept {}
-    constexpr inline void trace_depth_lock_detection(
-        std::size_t /*value*/) noexcept
-    {
-    }
+    constexpr inline void trace_depth_lock_detection(std::size_t /*value*/) noexcept {}
     constexpr inline void ignore_lock(void const* /*lock*/) noexcept {}
     constexpr inline void reset_ignored(void const* /*lock*/) noexcept {}
 
@@ -196,8 +185,7 @@ namespace pika::util {
         return std::unique_ptr<held_locks_data>();
     }
 
-    constexpr inline void set_held_locks_data(
-        std::unique_ptr<held_locks_data>&& /*data*/) noexcept
+    constexpr inline void set_held_locks_data(std::unique_ptr<held_locks_data>&& /*data*/) noexcept
     {
     }
 

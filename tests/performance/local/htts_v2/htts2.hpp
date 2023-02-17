@@ -33,14 +33,12 @@ namespace htts2 {
         using period = std::nano;
         using duration = std::chrono::duration<rep, period>;
 
-        static_assert(
-            base_clock::is_steady == true, "base_clock is not steady");
+        static_assert(base_clock::is_steady == true, "base_clock is not steady");
 
         // Returns: current time in nanoseconds.
         static rep now()
         {
-            duration d = std::chrono::duration_cast<duration>(
-                base_clock::now().time_since_epoch());
+            duration d = std::chrono::duration_cast<duration>(base_clock::now().time_since_epoch());
             rep t = d.count();
             PIKA_ASSERT(t >= 0);
             return t;
@@ -58,8 +56,7 @@ namespace htts2 {
     // Performs approximately 'expected_' nanoseconds of artificial work.
     // Returns: nanoseconds of work performed.
     template <typename BaseClock>
-    typename clocksource<BaseClock>::rep
-    payload(typename clocksource<BaseClock>::rep expected)
+    typename clocksource<BaseClock>::rep payload(typename clocksource<BaseClock>::rep expected)
     {
         using rep = typename clocksource<BaseClock>::rep;
 

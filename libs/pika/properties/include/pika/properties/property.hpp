@@ -14,8 +14,7 @@
 
 namespace pika::experimental {
 
-    inline constexpr struct prefer_t
-      : pika::functional::detail::tag_fallback<prefer_t>
+    inline constexpr struct prefer_t : pika::functional::detail::tag_fallback<prefer_t>
     {
         // clang-format off
         template <typename Tag, typename... Tn>

@@ -19,13 +19,12 @@ namespace pika::util {
 
     template <typename Generator>
     class generator_iterator
-      : public iterator_facade<generator_iterator<Generator>,
-            typename Generator::result_type, std::forward_iterator_tag,
-            typename Generator::result_type const&>
+      : public iterator_facade<generator_iterator<Generator>, typename Generator::result_type,
+            std::forward_iterator_tag, typename Generator::result_type const&>
     {
-        using base_type = iterator_facade<generator_iterator<Generator>,
-            typename Generator::result_type, std::forward_iterator_tag,
-            typename Generator::result_type const&>;
+        using base_type =
+            iterator_facade<generator_iterator<Generator>, typename Generator::result_type,
+                std::forward_iterator_tag, typename Generator::result_type const&>;
 
     public:
         generator_iterator() = default;

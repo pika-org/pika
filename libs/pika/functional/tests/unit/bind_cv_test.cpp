@@ -14,8 +14,7 @@
 #if defined(PIKA_MSVC)
 #pragma warning(disable : 4786)    // identifier truncated in debug info
 #pragma warning(disable : 4710)    // function not inlined
-#pragma warning(                                                               \
-    disable : 4711)    // function selected for automatic inline expansion
+#pragma warning(disable : 4711)    // function selected for automatic inline expansion
 #pragma warning(disable : 4514)    // unreferenced inline removed
 #endif
 
@@ -115,26 +114,22 @@ struct X
         return -(x1 + x2 + x3 + x4 + x5 + x6 + x7);
     }
 
-    int operator()(
-        int x1, int x2, int x3, int x4, int x5, int x6, int x7, int x8)
+    int operator()(int x1, int x2, int x3, int x4, int x5, int x6, int x7, int x8)
     {
         return x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8;
     }
 
-    int operator()(
-        int x1, int x2, int x3, int x4, int x5, int x6, int x7, int x8) const
+    int operator()(int x1, int x2, int x3, int x4, int x5, int x6, int x7, int x8) const
     {
         return -(x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8);
     }
 
-    int operator()(
-        int x1, int x2, int x3, int x4, int x5, int x6, int x7, int x8, int x9)
+    int operator()(int x1, int x2, int x3, int x4, int x5, int x6, int x7, int x8, int x9)
     {
         return x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9;
     }
 
-    int operator()(int x1, int x2, int x3, int x4, int x5, int x6, int x7,
-        int x8, int x9) const
+    int operator()(int x1, int x2, int x3, int x4, int x5, int x6, int x7, int x8, int x9) const
     {
         return -(x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9);
     }
@@ -156,12 +151,9 @@ int main()
     test(pika::util::detail::bind(X(), 1, 2, 3), 1 + 2 + 3);
     test(pika::util::detail::bind(X(), 1, 2, 3, 4), 1 + 2 + 3 + 4);
     test(pika::util::detail::bind(X(), 1, 2, 3, 4, 5), 1 + 2 + 3 + 4 + 5);
-    test(
-        pika::util::detail::bind(X(), 1, 2, 3, 4, 5, 6), 1 + 2 + 3 + 4 + 5 + 6);
-    test(pika::util::detail::bind(X(), 1, 2, 3, 4, 5, 6, 7),
-        1 + 2 + 3 + 4 + 5 + 6 + 7);
-    test(pika::util::detail::bind(X(), 1, 2, 3, 4, 5, 6, 7, 8),
-        1 + 2 + 3 + 4 + 5 + 6 + 7 + 8);
+    test(pika::util::detail::bind(X(), 1, 2, 3, 4, 5, 6), 1 + 2 + 3 + 4 + 5 + 6);
+    test(pika::util::detail::bind(X(), 1, 2, 3, 4, 5, 6, 7), 1 + 2 + 3 + 4 + 5 + 6 + 7);
+    test(pika::util::detail::bind(X(), 1, 2, 3, 4, 5, 6, 7, 8), 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8);
     test(pika::util::detail::bind(X(), 1, 2, 3, 4, 5, 6, 7, 8, 9),
         1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9);
 

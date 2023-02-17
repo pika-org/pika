@@ -113,8 +113,7 @@ namespace pika::detail {
     {
         auto sanity_tests = detail::global_fixture.get_tests(counter_sanity);
         auto test_tests = detail::global_fixture.get_tests(counter_test);
-        auto sanity_failures =
-            detail::global_fixture.get_failures(counter_sanity);
+        auto sanity_failures = detail::global_fixture.get_failures(counter_sanity);
         auto test_failures = detail::global_fixture.get_failures(counter_test);
 
         if (sanity_tests == 0 && test_tests == 0)
@@ -126,10 +125,9 @@ namespace pika::detail {
         else if (sanity_failures == 0 && test_failures == 0)
         {
             pika::detail::ios_flags_saver ifs(stream);
-            stream << "All tests passed. Ran " << sanity_tests
-                   << " sanity check"    //-V128
-                   << ((sanity_tests == 1) ? " and " : "s and ") << test_tests
-                   << " test" << ((test_tests == 1) ? "." : "s.") << std::endl;
+            stream << "All tests passed. Ran " << sanity_tests << " sanity check"    //-V128
+                   << ((sanity_tests == 1) ? " and " : "s and ") << test_tests << " test"
+                   << ((test_tests == 1) ? "." : "s.") << std::endl;
             return 0;
         }
         else
@@ -137,9 +135,8 @@ namespace pika::detail {
             pika::detail::ios_flags_saver ifs(stream);
             stream << "Tests failed. " << sanity_failures << "/" << sanity_tests
                    << " sanity check"    //-V128
-                   << ((sanity_tests == 1) ? " and " : "s and ")
-                   << test_failures << "/" << test_tests << " test"
-                   << ((test_tests == 1) ? " failed." : "s failed.")
+                   << ((sanity_tests == 1) ? " and " : "s and ") << test_failures << "/"
+                   << test_tests << " test" << ((test_tests == 1) ? " failed." : "s failed.")
                    << std::endl;
             return 1;
         }

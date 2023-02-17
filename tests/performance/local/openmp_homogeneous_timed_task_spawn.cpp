@@ -74,8 +74,8 @@ void print_results(int cores, double walltime)
     std::string const tasks_str = fmt::format("{},", tasks);
     std::string const delay_str = fmt::format("{},", delay);
 
-    fmt::print(std::cout, "{:>21} {:>21} {:>21} {:10.12}, {:10.12}\n",
-        cores_str, tasks_str, delay_str, walltime, walltime / tasks);
+    fmt::print(std::cout, "{:>21} {:>21} {:>21} {:10.12}, {:10.12}\n", cores_str, tasks_str,
+        delay_str, walltime, walltime / tasks);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

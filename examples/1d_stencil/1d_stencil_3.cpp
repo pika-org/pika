@@ -107,8 +107,8 @@ struct stepper
 
     // The partitioned operator, it invokes the heat operator above on all
     // elements of a partition.
-    static partition_data heat_part(partition_data const& left,
-        partition_data const& middle, partition_data const& right)
+    static partition_data heat_part(
+        partition_data const& left, partition_data const& middle, partition_data const& right)
     {
         std::size_t size = middle.size();
         partition_data next(size);
@@ -143,8 +143,7 @@ struct stepper
             space& next = U[(t + 1) % 2];
 
             for (std::size_t i = 0; i != np; ++i)
-                next[i] = heat_part(current[idx(i, -1, np)], current[i],
-                    current[idx(i, +1, np)]);
+                next[i] = heat_part(current[idx(i, -1, np)], current[i], current[idx(i, +1, np)]);
         }
 
         // Return the solution at time-step 'nt'.
@@ -156,8 +155,7 @@ struct stepper
 int pika_main(pika::program_options::variables_map& vm)
 {
     std::uint64_t np = vm["np"].as<std::uint64_t>();    // Number of partitions.
-    std::uint64_t nx =
-        vm["nx"].as<std::uint64_t>();    // Number of grid points.
+    std::uint64_t nx = vm["nx"].as<std::uint64_t>();    // Number of grid points.
     std::uint64_t nt = vm["nt"].as<std::uint64_t>();    // Number of steps.
 
     if (vm.count("no-header"))

@@ -96,8 +96,7 @@ void tss_custom_cleanup(Dummy* d)
     tss_cleanup_called = true;
 }
 
-pika::threads::detail::thread_specific_ptr<Dummy> tss_with_cleanup(
-    &tss_custom_cleanup);
+pika::threads::detail::thread_specific_ptr<Dummy> tss_with_cleanup(&tss_custom_cleanup);
 
 void tss_thread_with_custom_cleanup()
 {
@@ -155,8 +154,8 @@ struct dummy_class_tracks_deletions
 
 unsigned dummy_class_tracks_deletions::deletions = 0;
 
-pika::threads::detail::thread_specific_ptr<dummy_class_tracks_deletions>
-    tss_with_null_cleanup(nullptr);
+pika::threads::detail::thread_specific_ptr<dummy_class_tracks_deletions> tss_with_null_cleanup(
+    nullptr);
 
 void tss_thread_with_null_cleanup(dummy_class_tracks_deletions* delete_tracker)
 {
@@ -165,8 +164,7 @@ void tss_thread_with_null_cleanup(dummy_class_tracks_deletions* delete_tracker)
 
 void test_tss_does_no_cleanup_with_null_cleanup_function()
 {
-    dummy_class_tracks_deletions* delete_tracker =
-        new dummy_class_tracks_deletions;
+    dummy_class_tracks_deletions* delete_tracker = new dummy_class_tracks_deletions;
     pika::thread t(&tss_thread_with_null_cleanup, delete_tracker);
     t.join();
 
@@ -183,8 +181,7 @@ void thread_with_local_tss_ptr()
     tss_cleanup_called = false;
 
     {
-        pika::threads::detail::thread_specific_ptr<Dummy> local_tss(
-            tss_custom_cleanup);
+        pika::threads::detail::thread_specific_ptr<Dummy> local_tss(tss_custom_cleanup);
         local_tss.reset(new Dummy);
     }
 
@@ -203,8 +200,7 @@ void test_tss_does_not_call_cleanup_after_ptr_destroyed()
 ///////////////////////////////////////////////////////////////////////////////
 void test_tss_cleanup_not_called_for_null_pointer()
 {
-    pika::threads::detail::thread_specific_ptr<Dummy> local_tss(
-        tss_custom_cleanup);
+    pika::threads::detail::thread_specific_ptr<Dummy> local_tss(tss_custom_cleanup);
     local_tss.reset(new Dummy);
 
     tss_cleanup_called = false;
@@ -230,8 +226,7 @@ int pika_main()
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0, "pika main exited with non-zero status");
 
     return 0;
 }

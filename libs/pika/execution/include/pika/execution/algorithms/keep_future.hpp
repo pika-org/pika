@@ -29,18 +29,15 @@ namespace pika::keep_future_detail {
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
         std::decay_t<Future> future;
 
-        friend void tag_invoke(pika::execution::experimental::start_t,
-            operation_state& os) noexcept
+        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
         {
             pika::detail::try_catch_exception_ptr(
                 [&]() {
-                    auto state =
-                        pika::traits::detail::get_shared_state(os.future);
+                    auto state = pika::traits::detail::get_shared_state(os.future);
 
                     if (!state)
                     {
-                        PIKA_THROW_EXCEPTION(pika::error::no_state,
-                            "operation_state::start",
+                        PIKA_THROW_EXCEPTION(pika::error::no_state, "operation_state::start",
                             "the future has no valid shared state");
                     }
 
@@ -53,8 +50,7 @@ namespace pika::keep_future_detail {
                     });
                 },
                 [&](std::exception_ptr ep) {
-                    pika::execution::experimental::set_error(
-                        PIKA_MOVE(os.receiver), PIKA_MOVE(ep));
+                    pika::execution::experimental::set_error(PIKA_MOVE(os.receiver), PIKA_MOVE(ep));
                 });
         }
     };
@@ -64,8 +60,7 @@ namespace pika::keep_future_detail {
     {
         std::decay_t<Future> future;
 
-        template <template <typename...> class Tuple,
-            template <typename...> class Variant>
+        template <template <typename...> class Tuple, template <typename...> class Variant>
         using value_types = Variant<Tuple<std::decay_t<Future>>>;
 
         template <template <typename...> class Variant>
@@ -73,27 +68,24 @@ namespace pika::keep_future_detail {
 
         static constexpr bool sends_done = false;
 
-        using completion_signatures =
-            pika::execution::experimental::completion_signatures<
-                pika::execution::experimental::set_value_t(
-                    std::decay_t<Future>),
-                pika::execution::experimental::set_error_t(std::exception_ptr)>;
+        using completion_signatures = pika::execution::experimental::completion_signatures<
+            pika::execution::experimental::set_value_t(std::decay_t<Future>),
+            pika::execution::experimental::set_error_t(std::exception_ptr)>;
     };
 
     template <typename Future>
     struct keep_future_sender;
 
     template <typename T>
-    struct keep_future_sender<pika::future<T>>
-      : public keep_future_sender_base<pika::future<T>>
+    struct keep_future_sender<pika::future<T>> : public keep_future_sender_base<pika::future<T>>
     {
         using future_type = pika::future<T>;
         using base_type = keep_future_sender_base<pika::future<T>>;
         using base_type::future;
 
         template <typename Future,
-            typename = std::enable_if_t<
-                !std::is_same<std::decay_t<Future>, keep_future_sender>::value>>
+            typename =
+                std::enable_if_t<!std::is_same<std::decay_t<Future>, keep_future_sender>::value>>
         explicit keep_future_sender(Future&& future)
           : base_type{PIKA_FORWARD(Future, future)}
         {
@@ -105,17 +97,15 @@ namespace pika::keep_future_detail {
         keep_future_sender& operator=(keep_future_sender const&) = delete;
 
         template <typename Receiver>
-        friend operation_state<Receiver, future_type>
-        tag_invoke(pika::execution::experimental::connect_t,
-            keep_future_sender&& s, Receiver&& receiver)
+        friend operation_state<Receiver, future_type> tag_invoke(
+            pika::execution::experimental::connect_t, keep_future_sender&& s, Receiver&& receiver)
         {
             return {PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.future)};
         }
 
         template <typename Receiver>
         friend operation_state<Receiver, future_type>
-        tag_invoke(pika::execution::experimental::connect_t,
-            keep_future_sender const&, Receiver&&)
+        tag_invoke(pika::execution::experimental::connect_t, keep_future_sender const&, Receiver&&)
         {
             static_assert(sizeof(Receiver) == 0,
                 "Are you missing a std::move? The keep_future sender of a "
@@ -134,8 +124,8 @@ namespace pika::keep_future_detail {
         using base_type::future;
 
         template <typename Future,
-            typename = std::enable_if_t<
-                !std::is_same<std::decay_t<Future>, keep_future_sender>::value>>
+            typename =
+                std::enable_if_t<!std::is_same<std::decay_t<Future>, keep_future_sender>::value>>
         explicit keep_future_sender(Future&& future)
           : base_type{PIKA_FORWARD(Future, future)}
         {
@@ -147,17 +137,16 @@ namespace pika::keep_future_detail {
         keep_future_sender& operator=(keep_future_sender const&) = default;
 
         template <typename Receiver>
-        friend operation_state<Receiver, future_type>
-        tag_invoke(pika::execution::experimental::connect_t,
-            keep_future_sender&& s, Receiver&& receiver)
+        friend operation_state<Receiver, future_type> tag_invoke(
+            pika::execution::experimental::connect_t, keep_future_sender&& s, Receiver&& receiver)
         {
             return {PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.future)};
         }
 
         template <typename Receiver>
         friend operation_state<Receiver, future_type>
-        tag_invoke(pika::execution::experimental::connect_t,
-            keep_future_sender const& s, Receiver&& receiver)
+        tag_invoke(pika::execution::experimental::connect_t, keep_future_sender const& s,
+            Receiver&& receiver)
         {
             return {PIKA_FORWARD(Receiver, receiver), s.future};
         }

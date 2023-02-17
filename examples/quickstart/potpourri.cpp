@@ -12,8 +12,7 @@
 #include <tuple>
 #include <vector>
 
-void final_task(
-    pika::future<std::tuple<pika::future<double>, pika::future<void>>>)
+void final_task(pika::future<std::tuple<pika::future<double>, pika::future<void>>>)
 {
     std::cout << "in final_task" << std::endl;
 }
@@ -46,8 +45,8 @@ int pika_main()
 
     // You can launch other work in the meantime. Let's start an intermediate
     // task that prints to std::cout.
-    pika::future<void> intermediate_task = pika::async(
-        []() { std::cout << "hello from intermediate task" << std::endl; });
+    pika::future<void> intermediate_task =
+        pika::async([]() { std::cout << "hello from intermediate task" << std::endl; });
 
     // We launch the final task when the intermediate task is ready and result
     // is ready using when_all.
@@ -57,8 +56,7 @@ int pika_main()
     all.wait();
 
     // all must be ready at this point because we waited for it to be ready.
-    std::cout << (all.is_ready() ? "all is ready!" : "all is not ready...")
-              << std::endl;
+    std::cout << (all.is_ready() ? "all is ready!" : "all is not ready...") << std::endl;
 
     return pika::finalize();
 }

@@ -27,15 +27,13 @@ namespace pika::detail {
     struct wait_acquire_future
     {
         template <typename R>
-        PIKA_FORCEINLINE pika::future<R>
-        operator()(pika::future<R>& future) const
+        PIKA_FORCEINLINE pika::future<R> operator()(pika::future<R>& future) const
         {
             return PIKA_MOVE(future);
         }
 
         template <typename R>
-        PIKA_FORCEINLINE pika::shared_future<R>
-        operator()(pika::shared_future<R>& future) const
+        PIKA_FORCEINLINE pika::shared_future<R> operator()(pika::shared_future<R>& future) const
         {
             return future;
         }
@@ -64,8 +62,7 @@ namespace pika::detail {
         }
 
         template <typename Index>
-        void on_future_ready(
-            std::false_type, Index i, pika::execution::detail::agent_ref ctx)
+        void on_future_ready(std::false_type, Index i, pika::execution::detail::agent_ref ctx)
         {
             if (lazy_values_[i].has_value())
             {
@@ -80,8 +77,7 @@ namespace pika::detail {
         }
 
         template <typename Index>
-        void on_future_ready(
-            std::true_type, Index i, pika::execution::detail::agent_ref ctx)
+        void on_future_ready(std::true_type, Index i, pika::execution::detail::agent_ref ctx)
         {
             if (lazy_values_[i].has_value())
             {
@@ -99,8 +95,8 @@ namespace pika::detail {
         using argument_type = std::vector<Future>;
 
         template <typename F_>
-        wait_each(argument_type const& lazy_values, F_&& f,
-            std::atomic<std::size_t>* success_counter)
+        wait_each(
+            argument_type const& lazy_values, F_&& f, std::atomic<std::size_t>* success_counter)
           : lazy_values_(lazy_values)
           , ready_count_(0)
           , f_(PIKA_FORWARD(F, f))
@@ -110,8 +106,7 @@ namespace pika::detail {
         }
 
         template <typename F_>
-        wait_each(argument_type&& lazy_values, F_&& f,
-            std::atomic<std::size_t>* success_counter)
+        wait_each(argument_type&& lazy_values, F_&& f, std::atomic<std::size_t>* success_counter)
           : lazy_values_(PIKA_MOVE(lazy_values))
           , ready_count_(0)
           , f_(PIKA_FORWARD(F, f))
@@ -141,8 +136,7 @@ namespace pika::detail {
                 f_ = PIKA_MOVE(rhs.f_);
                 success_counter_ = rhs.success_counter_;
                 rhs.success_counter_ = nullptr;
-                goal_reached_on_calling_thread_ =
-                    rhs.goal_reached_on_calling_thread_;
+                goal_reached_on_calling_thread_ = rhs.goal_reached_on_calling_thread_;
                 rhs.goal_reached_on_calling_thread_ = false;
             }
             return *this;
@@ -160,16 +154,13 @@ namespace pika::detail {
             {
                 using shared_state_ptr =
                     typename traits::detail::shared_state_ptr_for<Future>::type;
-                shared_state_ptr current =
-                    traits::detail::get_shared_state(lazy_values_[i]);
+                shared_state_ptr current = traits::detail::get_shared_state(lazy_values_[i]);
 
                 current->execute_deferred();
-                current->set_on_completed(
-                    [PIKA_CXX20_CAPTURE_THIS(=)]() -> void {
-                        using is_void = std::is_void<
-                            typename traits::future_traits<Future>::type>;
-                        return on_future_ready(is_void{}, i, ctx);
-                    });
+                current->set_on_completed([PIKA_CXX20_CAPTURE_THIS(=)]() -> void {
+                    using is_void = std::is_void<typename traits::future_traits<Future>::type>;
+                    return on_future_ready(is_void{}, i, ctx);
+                });
             }
 
             // If all of the requested futures are already set then our

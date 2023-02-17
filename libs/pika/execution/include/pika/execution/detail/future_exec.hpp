@@ -34,8 +34,7 @@
 namespace pika::lcos::detail {
 
     template <typename Executor, typename Future, typename F>
-    inline pika::traits::future_then_executor_result_t<Executor,
-        std::decay_t<Future>, F>
+    inline pika::traits::future_then_executor_result_t<Executor, std::decay_t<Future>, F>
     then_execute_helper(Executor&& exec, F&& f, Future&& predecessor)
     {
         // simply forward this to executor
@@ -53,9 +52,7 @@ namespace pika::lcos::detail {
         PIKA_FORCEINLINE static pika::traits::future_then_result_t<Future, F>
         call(Future&& fut, Policy_&& policy, F&& f)
         {
-            using result_type =
-                typename pika::traits::future_then_result<Future,
-                    F>::result_type;
+            using result_type = typename pika::traits::future_then_result<Future, F>::result_type;
             using continuation_result_type = std::invoke_result_t<F, Future>;
 
             pika::traits::detail::shared_state_ptr_t<result_type> p =
@@ -63,27 +60,21 @@ namespace pika::lcos::detail {
                     pika::detail::internal_allocator<>{}, PIKA_MOVE(fut),
                     PIKA_FORWARD(Policy_, policy), PIKA_FORWARD(F, f));
 
-            return pika::traits::future_access<
-                pika::future<result_type>>::create(PIKA_MOVE(p));
+            return pika::traits::future_access<pika::future<result_type>>::create(PIKA_MOVE(p));
         }
 
         template <typename Allocator, typename Policy_, typename F>
         PIKA_FORCEINLINE static pika::traits::future_then_result_t<Future, F>
-        call_alloc(
-            Allocator const& alloc, Future&& fut, Policy_&& policy, F&& f)
+        call_alloc(Allocator const& alloc, Future&& fut, Policy_&& policy, F&& f)
         {
-            using result_type =
-                typename pika::traits::future_then_result<Future,
-                    F>::result_type;
+            using result_type = typename pika::traits::future_then_result<Future, F>::result_type;
             using continuation_result_type = std::invoke_result_t<F, Future>;
 
             pika::traits::detail::shared_state_ptr_t<result_type> p =
-                detail::make_continuation_alloc<continuation_result_type>(alloc,
-                    PIKA_MOVE(fut), PIKA_FORWARD(Policy_, policy),
-                    PIKA_FORWARD(F, f));
+                detail::make_continuation_alloc<continuation_result_type>(
+                    alloc, PIKA_MOVE(fut), PIKA_FORWARD(Policy_, policy), PIKA_FORWARD(F, f));
 
-            return pika::traits::future_access<
-                pika::future<result_type>>::create(PIKA_MOVE(p));
+            return pika::traits::future_access<pika::future<result_type>>::create(PIKA_MOVE(p));
         }
     };
 
@@ -98,22 +89,20 @@ namespace pika::lcos::detail {
             traits::is_two_way_executor_v<Executor>>>
     {
         template <typename Executor_, typename F>
-        PIKA_FORCEINLINE static pika::traits::future_then_executor_result_t<
-            Executor_, Future, F>
+        PIKA_FORCEINLINE static pika::traits::future_then_executor_result_t<Executor_, Future, F>
         call(Future&& fut, Executor_&& exec, F&& f)
         {
             // simply forward this to executor
-            return detail::then_execute_helper(PIKA_FORWARD(Executor_, exec),
-                PIKA_FORWARD(F, f), PIKA_MOVE(fut));
+            return detail::then_execute_helper(
+                PIKA_FORWARD(Executor_, exec), PIKA_FORWARD(F, f), PIKA_MOVE(fut));
         }
 
         template <typename Allocator, typename Executor_, typename F>
-        PIKA_FORCEINLINE static pika::traits::future_then_executor_result_t<
-            Executor_, Future, F>
+        PIKA_FORCEINLINE static pika::traits::future_then_executor_result_t<Executor_, Future, F>
         call_alloc(Allocator const&, Future&& fut, Executor_&& exec, F&& f)
         {
-            return call(PIKA_FORWARD(Future, fut),
-                PIKA_FORWARD(Executor_, exec), PIKA_FORWARD(F, f));
+            return call(
+                PIKA_FORWARD(Future, fut), PIKA_FORWARD(Executor_, exec), PIKA_FORWARD(F, f));
         }
     };
 
@@ -121,8 +110,7 @@ namespace pika::lcos::detail {
     template <typename Future, typename FD>
     struct future_then_dispatch<Future, FD,
         std::enable_if_t<!pika::detail::is_launch_policy_v<FD> &&
-            !(traits::is_one_way_executor_v<FD> ||
-                traits::is_two_way_executor_v<FD>)>>
+            !(traits::is_one_way_executor_v<FD> || traits::is_two_way_executor_v<FD>)>>
     {
         template <typename F>
         PIKA_FORCEINLINE static auto call(Future&& fut, F&& f)
@@ -134,8 +122,7 @@ namespace pika::lcos::detail {
         }
 
         template <typename Allocator, typename F>
-        PIKA_FORCEINLINE static auto
-        call_alloc(Allocator const& alloc, Future&& fut, F&& f)
+        PIKA_FORCEINLINE static auto call_alloc(Allocator const& alloc, Future&& fut, F&& f)
             -> decltype(future_then_dispatch<Future, launch>::call_alloc(
                 alloc, PIKA_MOVE(fut), launch::all, PIKA_FORWARD(F, f)))
         {
@@ -150,9 +137,8 @@ namespace pika::lcos::detail {
         template <typename F>
         void operator()(F&& f, pika::detail::thread_description desc)
         {
-            parallel::execution::detail::post_policy_dispatch<
-                pika::launch::async_policy>::call(pika::launch::async, desc,
-                PIKA_FORWARD(F, f));
+            parallel::execution::detail::post_policy_dispatch<pika::launch::async_policy>::call(
+                pika::launch::async, desc, PIKA_FORWARD(F, f));
         }
     };
 
@@ -189,38 +175,35 @@ namespace pika::lcos::detail {
     }
 
     // same as above, except with allocator
-    template <typename ContResult, typename Allocator, typename Future,
-        typename Policy, typename F>
+    template <typename ContResult, typename Allocator, typename Future, typename Policy, typename F>
     inline traits::detail::shared_state_ptr_t<continuation_result_t<ContResult>>
-    make_continuation_alloc(
-        Allocator const& a, Future const& future, Policy&& policy, F&& f)
+    make_continuation_alloc(Allocator const& a, Future const& future, Policy&& policy, F&& f)
     {
         using result_type = continuation_result_t<ContResult>;
 
         using base_allocator = Allocator;
-        using shared_state = traits::shared_state_allocator_t<
-            detail::continuation<Future, F, result_type>, base_allocator>;
+        using shared_state =
+            traits::shared_state_allocator_t<detail::continuation<Future, F, result_type>,
+                base_allocator>;
 
-        using other_allocator = typename std::allocator_traits<
-            base_allocator>::template rebind_alloc<shared_state>;
+        using other_allocator =
+            typename std::allocator_traits<base_allocator>::template rebind_alloc<shared_state>;
         using traits = std::allocator_traits<other_allocator>;
 
         using init_no_addref = typename shared_state::init_no_addref;
 
-        using unique_ptr = std::unique_ptr<shared_state,
-            pika::detail::allocator_deleter<other_allocator>>;
+        using unique_ptr =
+            std::unique_ptr<shared_state, pika::detail::allocator_deleter<other_allocator>>;
 
         using spawner_type = post_policy_spawner;
 
         other_allocator alloc(a);
-        unique_ptr p(traits::allocate(alloc, 1),
-            pika::detail::allocator_deleter<other_allocator>{alloc});
-        traits::construct(
-            alloc, p.get(), init_no_addref{}, alloc, PIKA_FORWARD(F, f));
+        unique_ptr p(
+            traits::allocate(alloc, 1), pika::detail::allocator_deleter<other_allocator>{alloc});
+        traits::construct(alloc, p.get(), init_no_addref{}, alloc, PIKA_FORWARD(F, f));
 
         // create a continuation
-        pika::traits::detail::shared_state_ptr_t<result_type> r(
-            p.release(), false);
+        pika::traits::detail::shared_state_ptr_t<result_type> r(p.release(), false);
 
         static_cast<shared_state*>(r.get())->template attach<spawner_type>(
             future, spawner_type{}, PIKA_FORWARD(Policy, policy));
@@ -230,48 +213,43 @@ namespace pika::lcos::detail {
 
     // same as above, except with allocator and without unwrapping returned
     // futures
-    template <typename ContResult, typename Allocator, typename Future,
-        typename Policy, typename F>
-    inline traits::detail::shared_state_ptr_t<ContResult>
-    make_continuation_alloc_nounwrap(
+    template <typename ContResult, typename Allocator, typename Future, typename Policy, typename F>
+    inline traits::detail::shared_state_ptr_t<ContResult> make_continuation_alloc_nounwrap(
         Allocator const& a, Future const& future, Policy&& policy, F&& f)
     {
         using result_type = ContResult;
 
         using base_allocator = Allocator;
-        using shared_state = traits::shared_state_allocator_t<
-            detail::continuation<Future, F, result_type>, base_allocator>;
+        using shared_state =
+            traits::shared_state_allocator_t<detail::continuation<Future, F, result_type>,
+                base_allocator>;
 
-        using other_allocator = typename std::allocator_traits<
-            base_allocator>::template rebind_alloc<shared_state>;
+        using other_allocator =
+            typename std::allocator_traits<base_allocator>::template rebind_alloc<shared_state>;
         using traits = std::allocator_traits<other_allocator>;
 
         using init_no_addref = typename shared_state::init_no_addref;
 
-        using unique_ptr = std::unique_ptr<shared_state,
-            pika::detail::allocator_deleter<other_allocator>>;
+        using unique_ptr =
+            std::unique_ptr<shared_state, pika::detail::allocator_deleter<other_allocator>>;
 
         using spawner_type = post_policy_spawner;
 
         other_allocator alloc(a);
-        unique_ptr p(traits::allocate(alloc, 1),
-            pika::detail::allocator_deleter<other_allocator>{alloc});
-        traits::construct(
-            alloc, p.get(), init_no_addref{}, alloc, PIKA_FORWARD(F, f));
+        unique_ptr p(
+            traits::allocate(alloc, 1), pika::detail::allocator_deleter<other_allocator>{alloc});
+        traits::construct(alloc, p.get(), init_no_addref{}, alloc, PIKA_FORWARD(F, f));
 
         // create a continuation
-        typename pika::traits::detail::shared_state_ptr<result_type>::type r(
-            p.release(), false);
+        typename pika::traits::detail::shared_state_ptr<result_type>::type r(p.release(), false);
 
-        static_cast<shared_state*>(r.get())
-            ->template attach_nounwrap<spawner_type>(
-                future, spawner_type{}, PIKA_FORWARD(Policy, policy));
+        static_cast<shared_state*>(r.get())->template attach_nounwrap<spawner_type>(
+            future, spawner_type{}, PIKA_FORWARD(Policy, policy));
 
         return r;
     }
 
-    template <typename ContResult, typename Future, typename Executor,
-        typename F>
+    template <typename ContResult, typename Future, typename Executor, typename F>
     inline traits::detail::shared_state_ptr_t<ContResult>
     make_continuation_exec(Future const& future, Executor&& exec, F&& f)
     {
@@ -283,19 +261,15 @@ namespace pika::lcos::detail {
         traits::detail::shared_state_ptr_t<ContResult> p(
             new shared_state(init_no_addref{}, PIKA_FORWARD(F, f)), false);
 
-        static_cast<shared_state*>(p.get())
-            ->template attach_nounwrap<spawner_type>(future,
-                spawner_type{PIKA_FORWARD(Executor, exec)},
-                launch::async_policy{});
+        static_cast<shared_state*>(p.get())->template attach_nounwrap<spawner_type>(
+            future, spawner_type{PIKA_FORWARD(Executor, exec)}, launch::async_policy{});
 
         return p;
     }
 
-    template <typename ContResult, typename Future, typename Executor,
-        typename Policy, typename F>
+    template <typename ContResult, typename Future, typename Executor, typename Policy, typename F>
     inline traits::detail::shared_state_ptr_t<ContResult>
-    make_continuation_exec_policy(
-        Future const& future, Executor&& exec, Policy&& policy, F&& f)
+    make_continuation_exec_policy(Future const& future, Executor&& exec, Policy&& policy, F&& f)
     {
         using shared_state = detail::continuation<Future, F, ContResult>;
         using init_no_addref = typename shared_state::init_no_addref;
@@ -305,10 +279,8 @@ namespace pika::lcos::detail {
         traits::detail::shared_state_ptr_t<ContResult> p(
             new shared_state(init_no_addref{}, PIKA_FORWARD(F, f)), false);
 
-        static_cast<shared_state*>(p.get())
-            ->template attach_nounwrap<spawner_type>(future,
-                spawner_type{PIKA_FORWARD(Executor, exec)},
-                PIKA_FORWARD(Policy, policy));
+        static_cast<shared_state*>(p.get())->template attach_nounwrap<spawner_type>(
+            future, spawner_type{PIKA_FORWARD(Executor, exec)}, PIKA_FORWARD(Policy, policy));
 
         return p;
     }

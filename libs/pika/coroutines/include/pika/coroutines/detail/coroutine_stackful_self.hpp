@@ -23,8 +23,7 @@ namespace pika::threads::coroutines::detail {
     class coroutine_stackful_self : public coroutine_self
     {
     public:
-        explicit coroutine_stackful_self(
-            impl_type* pimpl, coroutine_self* next_self = nullptr)
+        explicit coroutine_stackful_self(impl_type* pimpl, coroutine_self* next_self = nullptr)
           : coroutine_self(next_self)
           , pimpl_(pimpl)
         {

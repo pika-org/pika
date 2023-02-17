@@ -18,8 +18,8 @@
 #include "jacobi.hpp"
 
 namespace jacobi_smp {
-    void jacobi(std::size_t n, std::size_t iterations, std::size_t,
-        std::string const& output_filename)
+    void jacobi(
+        std::size_t n, std::size_t iterations, std::size_t, std::string const& output_filename)
     {
         using vector = std::vector<double>;
 

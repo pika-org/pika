@@ -107,8 +107,7 @@ namespace pika {
         last_error,
 
         system_error_flag = 0x4000L,
-        error_upper_bound =
-            0x7fffL    // force this enum type to be at least 16 bits.
+        error_upper_bound = 0x7fffL    // force this enum type to be at least 16 bits.
         /// \endcond
     };
 
@@ -174,8 +173,7 @@ struct fmt::formatter<pika::error> : fmt::formatter<std::string>
         if (e_int >= static_cast<int>(pika::error::success) &&
             e_int < static_cast<int>(pika::error::last_error))
         {
-            return fmt::formatter<std::string>::format(
-                pika::detail::error_names[e_int], ctx);
+            return fmt::formatter<std::string>::format(pika::detail::error_names[e_int], ctx);
         }
         else
         {

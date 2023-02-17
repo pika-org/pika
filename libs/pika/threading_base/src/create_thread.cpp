@@ -16,8 +16,8 @@
 #include <cstddef>
 
 namespace pika::threads::detail {
-    void create_thread(scheduler_base* scheduler, thread_init_data& data,
-        thread_id_ref_type& id, error_code& ec)
+    void create_thread(
+        scheduler_base* scheduler, thread_init_data& data, thread_id_ref_type& id, error_code& ec)
     {
         // verify parameters
         switch (data.initial_state)
@@ -34,9 +34,8 @@ namespace pika::threads::detail {
 
         default:
         {
-            PIKA_THROWS_IF(ec, pika::error::bad_parameter,
-                "threads::detail::create_thread", "invalid initial state: {}",
-                data.initial_state);
+            PIKA_THROWS_IF(ec, pika::error::bad_parameter, "threads::detail::create_thread",
+                "invalid initial state: {}", data.initial_state);
             return;
         }
         }
@@ -44,8 +43,8 @@ namespace pika::threads::detail {
 #ifdef PIKA_HAVE_THREAD_DESCRIPTION
         if (!data.description)
         {
-            PIKA_THROWS_IF(ec, pika::error::bad_parameter,
-                "threads::detail::create_thread", "description is nullptr");
+            PIKA_THROWS_IF(ec, pika::error::bad_parameter, "threads::detail::create_thread",
+                "description is nullptr");
             return;
         }
 #endif
@@ -57,8 +56,7 @@ namespace pika::threads::detail {
         {
             if (self)
             {
-                data.parent_id =
-                    get_thread_id_data(threads::detail::get_self_id());
+                data.parent_id = get_thread_id_data(threads::detail::get_self_id());
                 data.parent_phase = self->get_thread_phase();
             }
         }

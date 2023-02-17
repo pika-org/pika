@@ -36,11 +36,9 @@ namespace pika::util::detail {
 // we explicitly use the fallback.
 #if !defined(PIKA_HAVE_CUDA)
     template <typename Sig>
-    constexpr function_vtable<Sig, true> const*
-    get_empty_function_vtable() noexcept
+    constexpr function_vtable<Sig, true> const* get_empty_function_vtable() noexcept
     {
-        return &vtables<function_vtable<Sig, true>,
-            trivial_empty_function>::instance;
+        return &vtables<function_vtable<Sig, true>, trivial_empty_function>::instance;
     }
 #else
     template <typename Sig>

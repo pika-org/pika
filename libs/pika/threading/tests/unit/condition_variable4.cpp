@@ -40,8 +40,7 @@ void producer_consumer(double prod_sec, double cons_sec, bool interrupt)
         std::unique_lock<pika::mutex> lock{items_mtx};
         while (!stoken.stop_requested())
         {
-            if (!items_cv.wait(lock, stoken,
-                    [&] { return items.size() < max_queue_size; }))
+            if (!items_cv.wait(lock, stoken, [&] { return items.size() < max_queue_size; }))
             {
                 return;
             }
@@ -148,8 +147,7 @@ int pika_main()
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0, "pika main exited with non-zero status");
 
     return 0;
 }

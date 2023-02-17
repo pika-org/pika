@@ -26,18 +26,16 @@ namespace pika::execution::experimental {
         struct forwarding_scheduler_query_t
         {
             template <typename Query,
-                PIKA_CONCEPT_REQUIRES_(
-                    pika::functional::detail::is_nothrow_tag_invocable_v<
-                        forwarding_scheduler_query_t, Query const&>)>
+                PIKA_CONCEPT_REQUIRES_(pika::functional::detail::is_nothrow_tag_invocable_v<
+                    forwarding_scheduler_query_t, Query const&>)>
             constexpr bool operator()(Query const& query) const noexcept
             {
                 return pika::functional::detail::tag_invoke(*this, query);
             }
 
             template <typename Query,
-                PIKA_CONCEPT_REQUIRES_(
-                    !pika::functional::detail::is_nothrow_tag_invocable_v<
-                        forwarding_scheduler_query_t, Query const&>)>
+                PIKA_CONCEPT_REQUIRES_(!pika::functional::detail::is_nothrow_tag_invocable_v<
+                                       forwarding_scheduler_query_t, Query const&>)>
             constexpr bool operator()(Query const&) const noexcept
             {
                 return false;
@@ -49,8 +47,7 @@ namespace pika::execution::experimental {
             template <typename Scheduler,
                 PIKA_CONCEPT_REQUIRES_(is_scheduler_v<Scheduler>&&
                         pika::functional::detail::is_nothrow_tag_invocable_v<
-                            get_forward_progress_guarantee_t,
-                            Scheduler const&>)>
+                            get_forward_progress_guarantee_t, Scheduler const&>)>
             constexpr forward_progress_guarantee
             operator()(Scheduler const& scheduler) const noexcept
             {
@@ -61,8 +58,7 @@ namespace pika::execution::experimental {
                 PIKA_CONCEPT_REQUIRES_(is_scheduler_v<Scheduler> &&
                     !pika::functional::detail::is_nothrow_tag_invocable_v<
                         get_forward_progress_guarantee_t, Scheduler const&>)>
-            constexpr forward_progress_guarantee
-            operator()(Scheduler const&) const noexcept
+            constexpr forward_progress_guarantee operator()(Scheduler const&) const noexcept
             {
                 return forward_progress_guarantee::weakly_parallel;
             }
@@ -73,7 +69,6 @@ namespace pika::execution::experimental {
     using scheduler_queries_detail::get_forward_progress_guarantee_t;
 
     inline constexpr forwarding_scheduler_query_t forwarding_scheduler_query{};
-    inline constexpr get_forward_progress_guarantee_t
-        get_forward_progress_guarantee{};
+    inline constexpr get_forward_progress_guarantee_t get_forward_progress_guarantee{};
 }    // namespace pika::execution::experimental
 #endif

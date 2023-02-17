@@ -49,15 +49,13 @@ namespace pika::threads::coroutines::detail {
 
         using thread_id_type = pika::threads::detail::thread_id;
 
-        using result_type =
-            std::pair<threads::detail::thread_schedule_state, thread_id_type>;
+        using result_type = std::pair<threads::detail::thread_schedule_state, thread_id_type>;
         using arg_type = threads::detail::thread_restart_state;
 
-        using functor_type =
-            util::detail::unique_function<result_type(arg_type)>;
+        using functor_type = util::detail::unique_function<result_type(arg_type)>;
 
-        stackless_coroutine(functor_type&& f, thread_id_type id,
-            std::ptrdiff_t /*stack_size*/ = default_stack_size)
+        stackless_coroutine(
+            functor_type&& f, thread_id_type id, std::ptrdiff_t /*stack_size*/ = default_stack_size)
           : f_(PIKA_MOVE(f))
           , state_(ctx_ready)
           , id_(id)
@@ -229,13 +227,12 @@ namespace pika::threads::coroutines::detail {
 #include <pika/coroutines/detail/coroutine_stackless_self.hpp>
 
 namespace pika::threads::coroutines::detail {
-    PIKA_FORCEINLINE stackless_coroutine::result_type
-    stackless_coroutine::operator()(arg_type arg)
+    PIKA_FORCEINLINE stackless_coroutine::result_type stackless_coroutine::operator()(arg_type arg)
     {
         PIKA_ASSERT(is_ready());
 
-        result_type result(threads::detail::thread_schedule_state::terminated,
-            threads::detail::invalid_thread_id);
+        result_type result(
+            threads::detail::thread_schedule_state::terminated, threads::detail::invalid_thread_id);
 
         {
             coroutine_stackless_self self(this);
@@ -249,8 +246,7 @@ namespace pika::threads::coroutines::detail {
                 result = f_(arg);    // invoke wrapped function
 
                 // we always have to run to completion
-                PIKA_ASSERT(result.first ==
-                    threads::detail::thread_schedule_state::terminated);
+                PIKA_ASSERT(result.first == threads::detail::thread_schedule_state::terminated);
             }
 
             reset_tss();

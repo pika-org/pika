@@ -99,12 +99,12 @@ int pika_main()
     pika::future<double> consumer = pika::async(thread_func_1, std::ref(c));
 
     auto producer_time = producer.get();
-    std::cout << "Producer throughput: " << (NUM_TESTS / producer_time)
-              << " [op/s] (" << (producer_time / NUM_TESTS) << " [s/op])\n";
+    std::cout << "Producer throughput: " << (NUM_TESTS / producer_time) << " [op/s] ("
+              << (producer_time / NUM_TESTS) << " [s/op])\n";
 
     auto consumer_time = consumer.get();
-    std::cout << "Consumer throughput: " << (NUM_TESTS / consumer_time)
-              << " [op/s] (" << (consumer_time / NUM_TESTS) << " [s/op])\n";
+    std::cout << "Consumer throughput: " << (NUM_TESTS / consumer_time) << " [op/s] ("
+              << (consumer_time / NUM_TESTS) << " [s/op])\n";
 
     return pika::finalize();
 }

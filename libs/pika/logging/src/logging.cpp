@@ -34,8 +34,7 @@ namespace pika::util {
     PIKA_DEFINE_LOG(timing_console, disable_all)
 
     namespace detail {
-        pika::util::logging::level get_log_level(
-            std::string const& env, bool allow_always)
+        pika::util::logging::level get_log_level(std::string const& env, bool allow_always)
         {
             try
             {
@@ -46,9 +45,8 @@ namespace pika::util {
                 switch (env_val)
                 {
                 case 0:
-                    return allow_always ?
-                        pika::util::logging::level::always :
-                        pika::util::logging::level::disable_all;
+                    return allow_always ? pika::util::logging::level::always :
+                                          pika::util::logging::level::disable_all;
                 case 1:
                     return pika::util::logging::level::fatal;
                 case 2:

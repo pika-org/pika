@@ -177,8 +177,7 @@ namespace pika::lcos::local {
             return guards.size();
         }
 
-        friend PIKA_EXPORT void run_guarded(
-            guard_set& guards, detail::guard_function task);
+        friend PIKA_EXPORT void run_guarded(guard_set& guards, detail::guard_function task);
     };
 
     /// Conceptually, a guard acts like a mutex on an asynchronous task. The
@@ -189,20 +188,19 @@ namespace pika::lcos::local {
     void run_guarded(guard& guard, F&& f, Args&&... args)
     {
         return run_guarded(guard,
-            detail::guard_function(util::detail::deferred_call(
-                PIKA_FORWARD(F, f), PIKA_FORWARD(Args, args)...)));
+            detail::guard_function(
+                util::detail::deferred_call(PIKA_FORWARD(F, f), PIKA_FORWARD(Args, args)...)));
     }
 
     /// Conceptually, a guard_set acts like a set of mutexes on an asynchronous task.
     /// The mutexes are locked before the task runs, and unlocked afterwards.
-    PIKA_EXPORT void run_guarded(
-        guard_set& guards, detail::guard_function task);
+    PIKA_EXPORT void run_guarded(guard_set& guards, detail::guard_function task);
 
     template <typename F, typename... Args>
     void run_guarded(guard_set& guards, F&& f, Args&&... args)
     {
         return run_guarded(guards,
-            detail::guard_function(util::detail::deferred_call(
-                PIKA_FORWARD(F, f), PIKA_FORWARD(Args, args)...)));
+            detail::guard_function(
+                util::detail::deferred_call(PIKA_FORWARD(F, f), PIKA_FORWARD(Args, args)...)));
     }
 }    // namespace pika::lcos::local

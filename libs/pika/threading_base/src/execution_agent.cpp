@@ -33,8 +33,7 @@
 #include <utility>
 
 namespace pika::threads::detail {
-    execution_agent::execution_agent(
-        coroutines::detail::coroutine_impl* coroutine) noexcept
+    execution_agent::execution_agent(coroutines::detail::coroutine_impl* coroutine) noexcept
       : self_(coroutine)
     {
     }
@@ -44,14 +43,12 @@ namespace pika::threads::detail {
         thread_id_type id = self_.get_thread_id();
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROW_EXCEPTION(pika::error::null_thread_id,
-                "execution_agent::description",
+            PIKA_THROW_EXCEPTION(pika::error::null_thread_id, "execution_agent::description",
                 "null thread id encountered (is this executed on a "
                 "pika-thread?)");
         }
 
-        return fmt::format(
-            "{}: {}", id, get_thread_id_data(id)->get_description());
+        return fmt::format("{}: {}", id, get_thread_id_data(id)->get_description());
     }
 
     void execution_agent::yield(const char* desc)
@@ -145,14 +142,12 @@ namespace pika::threads::detail {
     };
 #endif
 
-    thread_restart_state execution_agent::do_yield(
-        const char* desc, thread_schedule_state state)
+    thread_restart_state execution_agent::do_yield(const char* desc, thread_schedule_state state)
     {
         thread_id_ref_type id = self_.get_thread_id();    // keep alive
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROW_EXCEPTION(pika::error::null_thread_id,
-                "execution_agent::do_yield",
+            PIKA_THROW_EXCEPTION(pika::error::null_thread_id, "execution_agent::do_yield",
                 "null thread id encountered (is this executed on a "
                 "pika-thread?)");
         }
@@ -171,15 +166,13 @@ namespace pika::threads::detail {
         // about it.
         PIKA_ASSERT(std::uncaught_exceptions() == 0);
 
-        thrd_data->set_last_worker_thread_num(
-            pika::get_local_worker_thread_num());
+        thrd_data->set_last_worker_thread_num(pika::get_local_worker_thread_num());
 
         thread_restart_state statex = thread_restart_state::unknown;
 
         {
 #ifdef PIKA_HAVE_THREAD_DESCRIPTION
-            reset_lco_description desc(
-                id.noref(), ::pika::detail::thread_description(desc));
+            reset_lco_description desc(id.noref(), ::pika::detail::thread_description(desc));
 #endif
 #ifdef PIKA_HAVE_THREAD_BACKTRACE_ON_SUSPENSION
             reset_backtrace bt(id);
@@ -187,12 +180,11 @@ namespace pika::threads::detail {
             on_exit_reset_held_lock_data held_locks;
             PIKA_UNUSED(held_locks);
 
-            PIKA_ASSERT(thrd_data->get_state().state() ==
-                thread_schedule_state::active);
+            PIKA_ASSERT(thrd_data->get_state().state() == thread_schedule_state::active);
             PIKA_ASSERT(state != thread_schedule_state::active);
             statex = self_.yield(thread_result_type(state, invalid_thread_id));
-            PIKA_ASSERT(get_thread_id_data(id)->get_state().state() ==
-                thread_schedule_state::active);
+            PIKA_ASSERT(
+                get_thread_id_data(id)->get_state().state() == thread_schedule_state::active);
         }
 
         // handle interruption, if needed
@@ -202,21 +194,19 @@ namespace pika::threads::detail {
         if (statex == thread_restart_state::abort)
         {
             PIKA_THROW_EXCEPTION(pika::error::yield_aborted, desc,
-                "thread({}) aborted (yield returned wait_abort)",
-                description());
+                "thread({}) aborted (yield returned wait_abort)", description());
         }
 
         return statex;
     }
 
-    void execution_agent::do_resume(
-        const char* /* desc */, thread_restart_state statex)
+    void execution_agent::do_resume(const char* /* desc */, thread_restart_state statex)
     {
         auto thrd = self_.get_thread_id();
-        set_thread_state(PIKA_MOVE(thrd), thread_schedule_state::pending,
-            statex, execution::thread_priority::normal,
-            execution::thread_schedule_hint{static_cast<std::int16_t>(
-                get_thread_id_data(thrd)->get_last_worker_thread_num())},
+        set_thread_state(PIKA_MOVE(thrd), thread_schedule_state::pending, statex,
+            execution::thread_priority::normal,
+            execution::thread_schedule_hint{
+                static_cast<std::int16_t>(get_thread_id_data(thrd)->get_last_worker_thread_num())},
             false);
     }
 }    // namespace pika::threads::detail

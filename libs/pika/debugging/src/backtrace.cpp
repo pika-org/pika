@@ -15,7 +15,7 @@
 
 #include <pika/debugging/backtrace/backtrace.hpp>
 
-#if (defined(__linux) || defined(__APPLE__) || defined(__sun)) &&              \
+#if (defined(__linux) || defined(__APPLE__) || defined(__sun)) &&                                  \
     (!defined(__ANDROID__) || !defined(ANDROID))
 #define PIKA_HAVE_EXECINFO
 #define PIKA_HAVE_DLFCN
@@ -98,9 +98,7 @@ namespace pika::debug::detail::stack_trace {
             std::uint64_t cfa = _Unwind_GetCFA(ctx);
 
             // Check if we're at the end of the stack.
-            if ((0 < d.count_) &&
-                (d.array_[d.count_ - 1] == d.array_[d.count_]) &&
-                (cfa == d.cfa_))
+            if ((0 < d.count_) && (d.array_[d.count_ - 1] == d.array_[d.count_]) && (cfa == d.cfa_))
             {
                 return _URC_END_OF_STACK;
             }
@@ -185,8 +183,7 @@ namespace pika::debug::detail::stack_trace {
         bool need_offset = true;
         std::ostringstream res;
         res.imbue(std::locale::classic());
-        res << std::left << std::setw(sizeof(void*) * 2) << std::setfill(' ')
-            << ptr << ": ";
+        res << std::left << std::setw(sizeof(void*) * 2) << std::setfill(' ') << ptr << ": ";
         Dl_info info = {nullptr, nullptr, nullptr, nullptr};
         if (dladdr(ptr, &info) == 0)
         {
@@ -203,8 +200,7 @@ namespace pika::debug::detail::stack_trace {
             {
 #if defined(PIKA_HAVE_STACKTRACES_DEMANGLE_SYMBOLS)
                 int status = 0;
-                char* demangled = abi::__cxa_demangle(
-                    info.dli_sname, nullptr, nullptr, &status);
+                char* demangled = abi::__cxa_demangle(info.dli_sname, nullptr, nullptr, &status);
                 if (demangled)
                 {
                     res << demangled;
@@ -228,8 +224,8 @@ namespace pika::debug::detail::stack_trace {
 #endif
             }
 
-            std::ptrdiff_t offset = reinterpret_cast<char*>(ptr) -
-                reinterpret_cast<char*>(info.dli_saddr);
+            std::ptrdiff_t offset =
+                reinterpret_cast<char*>(ptr) - reinterpret_cast<char*>(info.dli_saddr);
             if (need_offset)
             {
                 res << std::hex << " [0x" << offset << "]";
@@ -252,8 +248,7 @@ namespace pika::debug::detail::stack_trace {
             size -= 2;
         }
 
-        std::string res =
-            std::to_string(size) + ((1 == size) ? " frame:" : " frames:");
+        std::string res = std::to_string(size) + ((1 == size) ? " frame:" : " frames:");
         for (std::size_t i = 0; i < size; i++)
         {
             std::string tmp = get_symbol(addresses[i]);
@@ -265,8 +260,7 @@ namespace pika::debug::detail::stack_trace {
         }
         return res;
     }
-    void write_symbols(
-        void* const* addresses, std::size_t size, std::ostream& out)
+    void write_symbols(void* const* addresses, std::size_t size, std::ostream& out)
     {
         out << size << ((1 == size) ? " frame:" : " frames:");
         for (std::size_t i = 0; i < size; i++)
@@ -301,8 +295,7 @@ namespace pika::debug::detail::stack_trace {
         {
             if (ptr == nullptr)
                 return std::string();
-            std::string res =
-                std::to_string(size) + ((1 == size) ? " frame:" : " frames:");
+            std::string res = std::to_string(size) + ((1 == size) ? " frame:" : " frames:");
             for (std::size_t i = 0; i < size; i++)
             {
                 res += '\n';
@@ -319,8 +312,7 @@ namespace pika::debug::detail::stack_trace {
         }
     }
 
-    void write_symbols(
-        void* const* addresses, std::size_t size, std::ostream& out)
+    void write_symbols(void* const* addresses, std::size_t size, std::ostream& out)
     {
         char** ptr = backtrace_symbols(addresses, size);
         out << size << ((1 == size) ? " frame:" : " frames:");
@@ -368,8 +360,7 @@ namespace pika::debug::detail::stack_trace {
             return std::string();
         init();
         std::ostringstream ss;
-        ss << std::left << std::setw(sizeof(void*) * 2) << std::setfill(' ')
-           << ptr;
+        ss << std::left << std::setw(sizeof(void*) * 2) << std::setfill(' ') << ptr;
         if (syms_ready)
         {
             DWORD64 dwDisplacement = 0;
@@ -383,8 +374,7 @@ namespace pika::debug::detail::stack_trace {
 
             if (SymFromAddr(hProcess, dwAddress, &dwDisplacement, pSymbol))
             {
-                ss << ": " << pSymbol->Name << std::hex << " +0x"
-                   << dwDisplacement;
+                ss << ": " << pSymbol->Name << std::hex << " +0x" << dwDisplacement;
             }
             else
             {
@@ -403,8 +393,7 @@ namespace pika::debug::detail::stack_trace {
             size -= 2;
         }
 
-        std::string res =
-            std::to_string(size) + ((1 == size) ? " frame:" : " frames:");
+        std::string res = std::to_string(size) + ((1 == size) ? " frame:" : " frames:");
         for (std::size_t i = 0; i < size; i++)
         {
             std::string tmp = get_symbol(addresses[i]);
@@ -417,8 +406,7 @@ namespace pika::debug::detail::stack_trace {
         return res;
     }
 
-    void write_symbols(
-        void* const* addresses, std::size_t size, std::ostream& out)
+    void write_symbols(void* const* addresses, std::size_t size, std::ostream& out)
     {
         out << size << ((1 == size) ? " frame:" : " frames:");    //-V128
         for (std::size_t i = 0; i < size; i++)
@@ -440,8 +428,7 @@ namespace pika::debug::detail::stack_trace {
             return std::string();
         std::ostringstream res;
         res.imbue(std::locale::classic());
-        res << std::left << std::setw(sizeof(void*) * 2) << std::setfill(' ')
-            << ptr;
+        res << std::left << std::setw(sizeof(void*) * 2) << std::setfill(' ') << ptr;
         return res.str();
     }
 
@@ -463,16 +450,15 @@ namespace pika::debug::detail::stack_trace {
         return res.str();
     }
 
-    void write_symbols(
-        void* const* addresses, std::size_t size, std::ostream& out)
+    void write_symbols(void* const* addresses, std::size_t size, std::ostream& out)
     {
         out << size << ((1 == size) ? " frame:" : " frames:");    //-V128
         for (std::size_t i = 0; i < size; i++)
         {
             if (addresses[i] != nullptr)
                 out << '\n'
-                    << std::left << std::setw(sizeof(void*) * 2)
-                    << std::setfill(' ') << addresses[i];
+                    << std::left << std::setw(sizeof(void*) * 2) << std::setfill(' ')
+                    << addresses[i];
         }
         out << std::flush;
     }

@@ -102,8 +102,7 @@ namespace pika {
                 // relinquishes the lock before resuming the waiting thread
                 // which avoids suspension of this thread when it tries to
                 // re-lock the mutex while exiting from condition_variable::wait
-                while (cond_.data_.notify_one(
-                    PIKA_MOVE(l), execution::thread_priority::boost))
+                while (cond_.data_.notify_one(PIKA_MOVE(l), execution::thread_priority::boost))
                 {
                     l = std::unique_lock(mtx_.data_);
                 }
@@ -144,8 +143,7 @@ namespace pika {
 
             std::unique_lock l(mtx_.data_);
 
-            std::ptrdiff_t old_count =
-                counter_.fetch_sub(update, std::memory_order_relaxed);
+            std::ptrdiff_t old_count = counter_.fetch_sub(update, std::memory_order_relaxed);
             PIKA_ASSERT(old_count >= update);
 
             if (old_count > update)
@@ -164,8 +162,7 @@ namespace pika {
                 // relinquishes the lock before resuming the waiting thread
                 // which avoids suspension of this thread when it tries to
                 // re-lock the mutex while exiting from condition_variable::wait
-                while (cond_.data_.notify_one(
-                    PIKA_MOVE(l), execution::thread_priority::boost))
+                while (cond_.data_.notify_one(PIKA_MOVE(l), execution::thread_priority::boost))
                 {
                     l = std::unique_lock(mtx_.data_);
                 }
@@ -174,9 +171,7 @@ namespace pika {
 
     protected:
         mutable pika::concurrency::detail::cache_line_data<mutex_type> mtx_;
-        mutable pika::concurrency::detail::cache_line_data<
-            pika::detail::condition_variable>
-            cond_;
+        mutable pika::concurrency::detail::cache_line_data<pika::detail::condition_variable> cond_;
         std::atomic<std::ptrdiff_t> counter_;
         bool notified_;
     };

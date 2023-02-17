@@ -19,8 +19,7 @@
 #include <utility>
 
 namespace pika::execution::experimental {
-    inline constexpr struct execute_t final
-      : pika::functional::detail::tag_fallback<execute_t>
+    inline constexpr struct execute_t final : pika::functional::detail::tag_fallback<execute_t>
     {
     private:
         template <typename Scheduler, typename F>
@@ -28,8 +27,7 @@ namespace pika::execution::experimental {
         tag_fallback_invoke(execute_t, Scheduler&& scheduler, F&& f)
         {
             return start_detached(
-                then(schedule(PIKA_FORWARD(Scheduler, scheduler)),
-                    PIKA_FORWARD(F, f)));
+                then(schedule(PIKA_FORWARD(Scheduler, scheduler)), PIKA_FORWARD(F, f)));
         }
     } execute{};
 }    // namespace pika::execution::experimental

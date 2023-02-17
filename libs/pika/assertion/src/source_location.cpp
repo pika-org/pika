@@ -11,8 +11,7 @@
 namespace pika::detail {
     std::ostream& operator<<(std::ostream& os, source_location const& loc)
     {
-        os << loc.file_name << ":" << loc.line_number << ": "
-           << loc.function_name;
+        os << loc.file_name << ":" << loc.line_number << ": " << loc.function_name;
         return os;
     }
 }    // namespace pika::detail

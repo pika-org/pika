@@ -62,8 +62,7 @@ namespace pika::detail {
     }
 
     template <typename Char>
-    void
-    check_only_whitespace(std::basic_string<Char> const& s, std::size_t pos)
+    void check_only_whitespace(std::basic_string<Char> const& s, std::size_t pos)
     {
         auto i = s.begin();
         std::advance(i, pos);
@@ -71,8 +70,7 @@ namespace pika::detail {
 
         if (i != s.end())
         {
-            throw std::invalid_argument(
-                "from_string: found non-whitespace after token");
+            throw std::invalid_argument("from_string: found non-whitespace after token");
         }
     }
 
@@ -96,8 +94,7 @@ namespace pika::detail {
         }
 
         template <typename Char>
-        static void
-        call(std::basic_string<Char> const& value, long long& target)
+        static void call(std::basic_string<Char> const& value, long long& target)
         {
             std::size_t pos = 0;
             target = std::stoll(value, &pos);
@@ -105,8 +102,7 @@ namespace pika::detail {
         }
 
         template <typename Char>
-        static void
-        call(std::basic_string<Char> const& value, unsigned int& target)
+        static void call(std::basic_string<Char> const& value, unsigned int& target)
         {
             // there is no std::stoui
             unsigned long target_long;
@@ -115,8 +111,7 @@ namespace pika::detail {
         }
 
         template <typename Char>
-        static void
-        call(std::basic_string<Char> const& value, unsigned long& target)
+        static void call(std::basic_string<Char> const& value, unsigned long& target)
         {
             std::size_t pos = 0;
             target = std::stoul(value, &pos);
@@ -124,8 +119,7 @@ namespace pika::detail {
         }
 
         template <typename Char>
-        static void
-        call(std::basic_string<Char> const& value, unsigned long long& target)
+        static void call(std::basic_string<Char> const& value, unsigned long long& target)
         {
             std::size_t pos = 0;
             target = std::stoull(value, &pos);
@@ -164,8 +158,7 @@ namespace pika::detail {
         }
 
         template <typename Char>
-        static void
-        call(std::basic_string<Char> const& value, long double& target)
+        static void call(std::basic_string<Char> const& value, long double& target)
         {
             std::size_t pos = 0;
             target = std::stold(value, &pos);

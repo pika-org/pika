@@ -51,8 +51,7 @@ namespace pika::execution {
 
         /// \cond NOINTERNAL
         template <typename Executor, typename F>
-        std::size_t get_chunk_size(
-            Executor& exec, F&&, std::size_t cores, std::size_t num_tasks)
+        std::size_t get_chunk_size(Executor& exec, F&&, std::size_t cores, std::size_t num_tasks)
         {
             // Make sure the internal round robin counter of the executor is
             // reset
@@ -91,8 +90,7 @@ namespace pika::execution {
 namespace pika::parallel::execution {
     /// \cond NOINTERNAL
     template <>
-    struct is_executor_parameters<pika::execution::static_chunk_size>
-      : std::true_type
+    struct is_executor_parameters<pika::execution::static_chunk_size> : std::true_type
     {
     };
     /// \endcond

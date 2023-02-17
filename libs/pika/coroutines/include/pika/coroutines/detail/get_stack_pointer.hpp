@@ -15,9 +15,8 @@
 #if defined(PIKA_GCC_VERSION)
 #define PIKA_HAVE_THREADS_GET_STACK_POINTER
 #else
-#if defined(__x86_64__) || defined(__amd64) || defined(__i386__) ||            \
-    defined(__i486__) || defined(__i586__) || defined(__i686__) ||             \
-    defined(__powerpc__) || defined(__arm__)
+#if defined(__x86_64__) || defined(__amd64) || defined(__i386__) || defined(__i486__) ||           \
+    defined(__i586__) || defined(__i686__) || defined(__powerpc__) || defined(__arm__)
 #define PIKA_HAVE_THREADS_GET_STACK_POINTER
 #endif
 #endif
@@ -34,8 +33,7 @@ namespace pika::threads::coroutines::detail {
         std::size_t stack_ptr = (std::numeric_limits<std::size_t>::max)();
 #if defined(__x86_64__) || defined(__amd64)
         asm("movq %%rsp, %0" : "=r"(stack_ptr));
-#elif defined(__i386__) || defined(__i486__) || defined(__i586__) ||           \
-    defined(__i686__)
+#elif defined(__i386__) || defined(__i486__) || defined(__i586__) || defined(__i686__)
         asm("movl %%esp, %0" : "=r"(stack_ptr));
 #elif defined(__powerpc__)
         void* stack_ptr_p = &stack_ptr;

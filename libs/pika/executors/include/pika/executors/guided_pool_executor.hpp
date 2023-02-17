@@ -32,8 +32,7 @@
 
 namespace pika {
     // cppcheck-suppress ConfigurationNotChecked
-    static pika::debug::detail::enable_print<GUIDED_POOL_EXECUTOR_DEBUG>
-        gpx_deb("GP_EXEC");
+    static pika::debug::detail::enable_print<GUIDED_POOL_EXECUTOR_DEBUG> gpx_deb("GP_EXEC");
 }    // namespace pika
 
 // --------------------------------------------------------------------
@@ -48,8 +47,8 @@ namespace pika::parallel::execution {
         struct is_future_of_tuple_of_futures
           : std::integral_constant<bool,
                 pika::traits::is_future<Future>::value &&
-                    pika::traits::is_future_tuple<typename pika::traits::
-                            future_traits<Future>::result_type>::value>
+                    pika::traits::is_future_tuple<
+                        typename pika::traits::future_traits<Future>::result_type>::value>
         {
         };
 
@@ -77,19 +76,15 @@ namespace pika::parallel::execution {
             return t;
         }
 
-        template <typename T,
-            typename Enable = std::enable_if_t<!std::is_void<T>::value>>
+        template <typename T, typename Enable = std::enable_if_t<!std::is_void<T>::value>>
         T const& peek_future_result(pika::future<T> const& f)
         {
             PIKA_ASSERT(f.is_ready());
-            auto shared_state =
-                pika::traits::future_access<pika::future<T>>::get_shared_state(
-                    f);
+            auto shared_state = pika::traits::future_access<pika::future<T>>::get_shared_state(f);
             return *shared_state->get_result();
         }
 
-        template <typename T,
-            typename Enable = std::enable_if_t<!std::is_void<T>::value>>
+        template <typename T, typename Enable = std::enable_if_t<!std::is_void<T>::value>>
         T const& peek_future_result(pika::shared_future<T> const& f)
         {
             PIKA_ASSERT(f.is_ready());
@@ -116,42 +111,30 @@ namespace pika::parallel::execution {
                 int domain = numa_function_(peek_future_result(ts)...);
 #endif
 
-                gpx_deb.debug(
-                    debug::detail::str<>("async_schedule"), "domain ", domain);
+                gpx_deb.debug(debug::detail::str<>("async_schedule"), "domain ", domain);
 
                 // now we must forward the task+hint on to the correct dispatch function
                 using result_type =
-                    typename pika::util::detail::invoke_deferred_result<F,
-                        Ts...>::type;
+                    typename pika::util::detail::invoke_deferred_result<F, Ts...>::type;
 
                 lcos::local::futures_factory<result_type()> p(
-                    pika::util::detail::deferred_call(
-                        PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
+                    pika::util::detail::deferred_call(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
 
-                gpx_deb.debug(debug::detail::str<>("triggering apply"),
-                    "domain ", domain);
-                if (hp_sync_ &&
-                    executor_.priority_ ==
-                        pika::execution::thread_priority::high)
+                gpx_deb.debug(debug::detail::str<>("triggering apply"), "domain ", domain);
+                if (hp_sync_ && executor_.priority_ == pika::execution::thread_priority::high)
                 {
                     p.apply(executor_.pool_, "guided sync",
-                        pika::launch::sync_policy(
-                            pika::execution::thread_priority::high,
+                        pika::launch::sync_policy(pika::execution::thread_priority::high,
                             executor_.stacksize_,
                             pika::execution::thread_schedule_hint(
-                                pika::execution::thread_schedule_hint_mode::
-                                    numa,
-                                domain)));
+                                pika::execution::thread_schedule_hint_mode::numa, domain)));
                 }
                 else
                 {
                     p.apply(executor_.pool_, "guided async",
-                        pika::launch::async_policy(executor_.priority_,
-                            executor_.stacksize_,
+                        pika::launch::async_policy(executor_.priority_, executor_.stacksize_,
                             pika::execution::thread_schedule_hint(
-                                pika::execution::thread_schedule_hint_mode::
-                                    numa,
-                                domain)));
+                                pika::execution::thread_schedule_hint_mode::numa, domain)));
                 }
 
                 return p.get_future();
@@ -178,46 +161,34 @@ namespace pika::parallel::execution {
                 int domain = -1;
 #else
                 // get the argument for the numa hint function from the predecessor future
-                const auto& predecessor_value =
-                    detail::future_extract_value()(predecessor);
+                const auto& predecessor_value = detail::future_extract_value()(predecessor);
                 int domain = numa_function_(predecessor_value, ts...);
 #endif
 
-                gpx_deb.debug(
-                    debug::detail::str<>("then_schedule"), "domain ", domain);
+                gpx_deb.debug(debug::detail::str<>("then_schedule"), "domain ", domain);
 
                 // now we must forward the task+hint on to the correct dispatch function
                 using result_type =
-                    typename pika::util::detail::invoke_deferred_result<F,
-                        Future, Ts...>::type;
+                    typename pika::util::detail::invoke_deferred_result<F, Future, Ts...>::type;
 
                 lcos::local::futures_factory<result_type()> p(
                     pika::util::detail::deferred_call(PIKA_FORWARD(F, f),
-                        PIKA_FORWARD(Future, predecessor),
-                        PIKA_FORWARD(Ts, ts)...));
+                        PIKA_FORWARD(Future, predecessor), PIKA_FORWARD(Ts, ts)...));
 
-                if (hp_sync_ &&
-                    executor_.priority_ ==
-                        pika::execution::thread_priority::high)
+                if (hp_sync_ && executor_.priority_ == pika::execution::thread_priority::high)
                 {
                     p.apply(executor_.pool_, "guided then",
-                        pika::launch::sync_policy(
-                            pika::execution::thread_priority::high,
+                        pika::launch::sync_policy(pika::execution::thread_priority::high,
                             executor_.stacksize_,
                             pika::execution::thread_schedule_hint(
-                                pika::execution::thread_schedule_hint_mode::
-                                    numa,
-                                domain)));
+                                pika::execution::thread_schedule_hint_mode::numa, domain)));
                 }
                 else
                 {
                     p.apply(executor_.pool_, "guided then",
-                        pika::launch::async_policy(executor_.priority_,
-                            executor_.stacksize_,
+                        pika::launch::async_policy(executor_.priority_, executor_.stacksize_,
                             pika::execution::thread_schedule_hint(
-                                pika::execution::thread_schedule_hint_mode::
-                                    numa,
-                                domain)));
+                                pika::execution::thread_schedule_hint_mode::numa, domain)));
                 }
 
                 return p.get_future();
@@ -263,8 +234,7 @@ namespace pika::parallel::execution {
         friend struct guided_pool_executor_shim;
 
     public:
-        guided_pool_executor(
-            threads::detail::thread_pool_base* pool, bool hp_sync = false)
+        guided_pool_executor(threads::detail::thread_pool_base* pool, bool hp_sync = false)
           : pool_(pool)
           , priority_(pika::execution::thread_priority::default_)
           , stacksize_(pika::execution::thread_stacksize::default_)
@@ -298,29 +268,23 @@ namespace pika::parallel::execution {
         // of a normal async call with arbitrary arguments
         // --------------------------------------------------------------------
         template <typename F, typename... Ts>
-        future<
-            typename pika::util::detail::invoke_deferred_result<F, Ts...>::type>
+        future<typename pika::util::detail::invoke_deferred_result<F, Ts...>::type>
         async_execute(F&& f, Ts&&... ts)
         {
-            using result_type =
-                typename pika::util::detail::invoke_deferred_result<F,
-                    Ts...>::type;
+            using result_type = typename pika::util::detail::invoke_deferred_result<F, Ts...>::type;
 
             gpx_deb.debug(debug::detail::str<>("async execute"), "\n\t",
                 "Function    : ", pika::debug::detail::print_type<F>(), "\n\t",
-                "Arguments   : ", pika::debug::detail::print_type<Ts...>(" | "),
-                "\n\t", "Result      : ",
-                pika::debug::detail::print_type<result_type>(), "\n\t",
-                "Numa Hint   : ",
-                pika::debug::detail::print_type<pool_numa_hint<Tag>>());
+                "Arguments   : ", pika::debug::detail::print_type<Ts...>(" | "), "\n\t",
+                "Result      : ", pika::debug::detail::print_type<result_type>(), "\n\t",
+                "Numa Hint   : ", pika::debug::detail::print_type<pool_numa_hint<Tag>>());
 
             // hold onto the function until all futures have become ready
             // by using a dataflow operation, then call the scheduling hint
             // before passing the task onwards to the real executor
             return dataflow(launch::sync,
                 detail::pre_execution_async_domain_schedule<
-                    std::decay_t<
-                        typename std::remove_pointer<decltype(this)>::type>,
+                    std::decay_t<typename std::remove_pointer<decltype(this)>::type>,
                     pool_numa_hint<Tag>>{*this, hint_, hp_sync_},
                 PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
         }
@@ -332,25 +296,20 @@ namespace pika::parallel::execution {
         template <typename F, typename Future, typename... Ts,
             typename = std::enable_if_t<pika::traits::is_future<Future>::value>>
         auto then_execute(F&& f, Future&& predecessor, Ts&&... ts)
-            -> future<typename pika::util::detail::invoke_deferred_result<F,
-                Future, Ts...>::type>
+            -> future<typename pika::util::detail::invoke_deferred_result<F, Future, Ts...>::type>
         {
             using result_type =
-                typename pika::util::detail::invoke_deferred_result<F, Future,
-                    Ts...>::type;
+                typename pika::util::detail::invoke_deferred_result<F, Future, Ts...>::type;
 
             gpx_deb.debug(debug::detail::str<>("then execute"), "\n\t",
                 "Function    : ", pika::debug::detail::print_type<F>(), "\n\t",
-                "Predecessor  : ", pika::debug::detail::print_type<Future>(),
-                "\n\t", "Future       : ",
-                pika::debug::detail::print_type<typename pika::traits::
-                        future_traits<Future>::result_type>(),
-                "\n\t",
-                "Arguments   : ", pika::debug::detail::print_type<Ts...>(" | "),
-                "\n\t", "Result      : ",
-                pika::debug::detail::print_type<result_type>(), "\n\t",
-                "Numa Hint   : ",
-                pika::debug::detail::print_type<pool_numa_hint<Tag>>());
+                "Predecessor  : ", pika::debug::detail::print_type<Future>(), "\n\t",
+                "Future       : ",
+                pika::debug::detail::print_type<
+                    typename pika::traits::future_traits<Future>::result_type>(),
+                "\n\t", "Arguments   : ", pika::debug::detail::print_type<Ts...>(" | "), "\n\t",
+                "Result      : ", pika::debug::detail::print_type<result_type>(), "\n\t",
+                "Numa Hint   : ", pika::debug::detail::print_type<pool_numa_hint<Tag>>());
 
             // Note 1 : The Ts &&... args are not actually used in a continuation since
             // only the future becoming ready (predecessor) is actually passed onwards.
@@ -364,14 +323,12 @@ namespace pika::parallel::execution {
             // the real task will be spawned on a new task with hints - as intended
             return dataflow(
                 launch::sync,
-                [f = PIKA_FORWARD(F, f), this](
-                    Future&& predecessor, Ts&&... /* ts */) mutable {
-                    detail::pre_execution_then_domain_schedule<
-                        guided_pool_executor, pool_numa_hint<Tag>>
+                [f = PIKA_FORWARD(F, f), this](Future&& predecessor, Ts&&... /* ts */) mutable {
+                    detail::pre_execution_then_domain_schedule<guided_pool_executor,
+                        pool_numa_hint<Tag>>
                         pre_exec{*this, hint_, hp_sync_};
 
-                    return pre_exec(
-                        PIKA_MOVE(f), PIKA_FORWARD(Future, predecessor));
+                    return pre_exec(PIKA_MOVE(f), PIKA_FORWARD(Future, predecessor));
                 },
                 PIKA_FORWARD(Future, predecessor), PIKA_FORWARD(Ts, ts)...);
         }
@@ -380,29 +337,26 @@ namespace pika::parallel::execution {
         // .then() execute specialized for a when_all dispatch for any future types
         // future< tuple< is_future<a>::type, is_future<b>::type, ...> >
         // --------------------------------------------------------------------
-        template <typename F, template <typename> class OuterFuture,
-            typename... InnerFutures, typename... Ts,
+        template <typename F, template <typename> class OuterFuture, typename... InnerFutures,
+            typename... Ts,
             typename = std::enable_if_t<detail::is_future_of_tuple_of_futures<
                 OuterFuture<std::tuple<InnerFutures...>>>::value>,
-            typename = std::enable_if_t<pika::traits::is_future_tuple<
-                std::tuple<InnerFutures...>>::value>>
-        auto then_execute(F&& f,
-            OuterFuture<std::tuple<InnerFutures...>>&& predecessor, Ts&&... ts)
+            typename =
+                std::enable_if_t<pika::traits::is_future_tuple<std::tuple<InnerFutures...>>::value>>
+        auto then_execute(F&& f, OuterFuture<std::tuple<InnerFutures...>>&& predecessor, Ts&&... ts)
             -> future<typename pika::util::detail::invoke_deferred_result<F,
                 OuterFuture<std::tuple<InnerFutures...>>, Ts...>::type>
         {
 #ifdef GUIDED_EXECUTOR_DEBUG
             // get the tuple of futures from the predecessor future <tuple of futures>
-            const auto& predecessor_value =
-                detail::future_extract_value()(predecessor);
+            const auto& predecessor_value = detail::future_extract_value()(predecessor);
 
             // create a tuple of the unwrapped future values
-            auto unwrapped_futures_tuple = pika::util::map_pack(
-                detail::future_extract_value{}, predecessor_value);
+            auto unwrapped_futures_tuple =
+                pika::util::map_pack(detail::future_extract_value{}, predecessor_value);
 
-            using result_type =
-                typename pika::util::detail::invoke_deferred_result<F,
-                    OuterFuture<std::tuple<InnerFutures...>>, Ts...>::type;
+            using result_type = typename pika::util::detail::invoke_deferred_result<F,
+                OuterFuture<std::tuple<InnerFutures...>>, Ts...>::type;
 
             // clang-format off
             gpx_deb.debug(debug::detail::str<>("when_all(fut) : Predecessor")
@@ -427,16 +381,14 @@ namespace pika::parallel::execution {
                 [f = PIKA_FORWARD(F, f), this](
                     OuterFuture<std::tuple<InnerFutures...>>&& predecessor,
                     Ts&&... /* ts */) mutable {
-                    detail::pre_execution_then_domain_schedule<
-                        guided_pool_executor, pool_numa_hint<Tag>>
+                    detail::pre_execution_then_domain_schedule<guided_pool_executor,
+                        pool_numa_hint<Tag>>
                         pre_exec{*this, hint_, hp_sync_};
 
                     return pre_exec(PIKA_MOVE(f),
-                        std::forward<OuterFuture<std::tuple<InnerFutures...>>>(
-                            predecessor));
+                        std::forward<OuterFuture<std::tuple<InnerFutures...>>>(predecessor));
                 },
-                std::forward<OuterFuture<std::tuple<InnerFutures...>>>(
-                    predecessor),
+                std::forward<OuterFuture<std::tuple<InnerFutures...>>>(predecessor),
                 PIKA_FORWARD(Ts, ts)...);
         }
 
@@ -446,25 +398,23 @@ namespace pika::parallel::execution {
         // function type, result type and tuple of futures as arguments
         // --------------------------------------------------------------------
         template <typename F, typename... InnerFutures,
-            typename = std::enable_if_t<pika::traits::is_future_tuple<
-                std::tuple<InnerFutures...>>::value>>
+            typename =
+                std::enable_if_t<pika::traits::is_future_tuple<std::tuple<InnerFutures...>>::value>>
         auto async_execute(F&& f, std::tuple<InnerFutures...>&& predecessor)
             -> future<typename pika::util::detail::invoke_deferred_result<F,
                 std::tuple<InnerFutures...>>::type>
         {
-            using result_type =
-                typename pika::util::detail::invoke_deferred_result<F,
-                    std::tuple<InnerFutures...>>::type;
+            using result_type = typename pika::util::detail::invoke_deferred_result<F,
+                std::tuple<InnerFutures...>>::type;
 
             // invoke the hint function with the unwrapped tuple futures
 #ifdef GUIDED_POOL_EXECUTOR_FAKE_NOOP
             int domain = -1;
 #else
-            auto unwrapped_futures_tuple = pika::util::map_pack(
-                detail::future_extract_value{}, predecessor);
+            auto unwrapped_futures_tuple =
+                pika::util::map_pack(detail::future_extract_value{}, predecessor);
 
-            int domain = pika::util::detail::invoke_fused(
-                hint_, unwrapped_futures_tuple);
+            int domain = pika::util::detail::invoke_fused(hint_, unwrapped_futures_tuple);
 #endif
 
 #ifndef GUIDED_EXECUTOR_DEBUG
@@ -487,26 +437,22 @@ namespace pika::parallel::execution {
 #endif
 
             // forward the task execution on to the real internal executor
-            lcos::local::futures_factory<result_type()> p(
-                pika::util::detail::deferred_call(PIKA_FORWARD(F, f),
-                    std::forward<std::tuple<InnerFutures...>>(predecessor)));
+            lcos::local::futures_factory<result_type()> p(pika::util::detail::deferred_call(
+                PIKA_FORWARD(F, f), std::forward<std::tuple<InnerFutures...>>(predecessor)));
 
             if (hp_sync_ && priority_ == pika::execution::thread_priority::high)
             {
                 p.apply(pool_, "guided async",
-                    pika::launch::sync_policy(
-                        pika::execution::thread_priority::high, stacksize_,
+                    pika::launch::sync_policy(pika::execution::thread_priority::high, stacksize_,
                         pika::execution::thread_schedule_hint(
-                            pika::execution::thread_schedule_hint_mode::numa,
-                            domain)));
+                            pika::execution::thread_schedule_hint_mode::numa, domain)));
             }
             else
             {
                 p.apply(pool_, "guided async",
                     pika::launch::async_policy(priority_, stacksize_,
                         pika::execution::thread_schedule_hint(
-                            pika::execution::thread_schedule_hint_mode::numa,
-                            domain)));
+                            pika::execution::thread_schedule_hint_mode::numa, domain)));
             }
             return p.get_future();
         }
@@ -527,23 +473,21 @@ namespace pika::parallel::execution {
     struct guided_pool_executor_shim
     {
     public:
-        guided_pool_executor_shim(bool guided,
-            threads::detail::thread_pool_base* pool, bool hp_sync = false)
+        guided_pool_executor_shim(
+            bool guided, threads::detail::thread_pool_base* pool, bool hp_sync = false)
           : guided_(guided)
           , guided_exec_(pool, hp_sync)
         {
         }
 
-        guided_pool_executor_shim(bool guided,
-            threads::detail::thread_pool_base* pool,
+        guided_pool_executor_shim(bool guided, threads::detail::thread_pool_base* pool,
             pika::execution::thread_stacksize stacksize, bool hp_sync = false)
           : guided_(guided)
           , guided_exec_(pool, hp_sync, stacksize)
         {
         }
 
-        guided_pool_executor_shim(bool guided,
-            threads::detail::thread_pool_base* pool,
+        guided_pool_executor_shim(bool guided, threads::detail::thread_pool_base* pool,
             pika::execution::thread_priority priority,
             pika::execution::thread_stacksize stacksize =
                 pika::execution::thread_stacksize::default_,
@@ -557,26 +501,21 @@ namespace pika::parallel::execution {
         // async
         // --------------------------------------------------------------------
         template <typename F, typename... Ts>
-        future<
-            typename pika::util::detail::invoke_deferred_result<F, Ts...>::type>
+        future<typename pika::util::detail::invoke_deferred_result<F, Ts...>::type>
         async_execute(F&& f, Ts&&... ts)
         {
             if (guided_)
-                return guided_exec_.async_execute(
-                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
+                return guided_exec_.async_execute(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
             else
             {
                 using result_type =
-                    typename pika::util::detail::invoke_deferred_result<F,
-                        Ts...>::type;
+                    typename pika::util::detail::invoke_deferred_result<F, Ts...>::type;
 
                 lcos::local::futures_factory<result_type()> p(
-                    pika::util::detail::deferred_call(
-                        PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
+                    pika::util::detail::deferred_call(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
 
                 p.apply(guided_exec_.pool_, "guided async",
-                    pika::launch::async_policy(
-                        guided_exec_.priority_, guided_exec_.stacksize_));
+                    pika::launch::async_policy(guided_exec_.priority_, guided_exec_.stacksize_));
                 return p.get_future();
             }
         }
@@ -587,30 +526,24 @@ namespace pika::parallel::execution {
         template <typename F, typename Future, typename... Ts,
             typename = std::enable_if_t<pika::traits::is_future<Future>::value>>
         auto then_execute(F&& f, Future&& predecessor, Ts&&... ts)
-            -> future<typename pika::util::detail::invoke_deferred_result<F,
-                Future, Ts...>::type>
+            -> future<typename pika::util::detail::invoke_deferred_result<F, Future, Ts...>::type>
         {
             if (guided_)
-                return guided_exec_.then_execute(PIKA_FORWARD(F, f),
-                    PIKA_FORWARD(Future, predecessor), PIKA_FORWARD(Ts, ts)...);
+                return guided_exec_.then_execute(
+                    PIKA_FORWARD(F, f), PIKA_FORWARD(Future, predecessor), PIKA_FORWARD(Ts, ts)...);
             else
             {
                 using result_type =
-                    typename pika::util::detail::invoke_deferred_result<F,
-                        Future, Ts...>::type;
+                    typename pika::util::detail::invoke_deferred_result<F, Future, Ts...>::type;
 
-                auto func =
-                    pika::util::detail::one_shot(pika::util::detail::bind_back(
-                        PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
+                auto func = pika::util::detail::one_shot(
+                    pika::util::detail::bind_back(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
 
-                typename pika::traits::detail::shared_state_ptr<
-                    result_type>::type p =
+                typename pika::traits::detail::shared_state_ptr<result_type>::type p =
                     pika::lcos::detail::make_continuation_exec<result_type>(
-                        PIKA_FORWARD(Future, predecessor), *this,
-                        PIKA_MOVE(func));
+                        PIKA_FORWARD(Future, predecessor), *this, PIKA_MOVE(func));
 
-                return pika::traits::future_access<
-                    pika::future<result_type>>::create(PIKA_MOVE(p));
+                return pika::traits::future_access<pika::future<result_type>>::create(PIKA_MOVE(p));
             }
         }
 

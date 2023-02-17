@@ -48,8 +48,7 @@ namespace pika::util {
 
     ///////////////////////////////////////////////////////////////////////////
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-    bool handle_ini_file_env(
-        section& ini, char const* env_var, char const* file_suffix)
+    bool handle_ini_file_env(section& ini, char const* env_var, char const* file_suffix)
     // NOLINTEND(bugprone-easily-swappable-parameters)
     {
         char const* env = getenv(env_var);
@@ -61,8 +60,7 @@ namespace pika::util {
 
             if (handle_ini_file(ini, inipath.string()))
             {
-                LBT_(info).format("loaded configuration (${{{}}}): {}", env_var,
-                    inipath.string());
+                LBT_(info).format("loaded configuration (${{{}}}): {}", env_var, inipath.string());
                 return true;
             }
         }
@@ -78,8 +76,7 @@ namespace pika::util {
     {
         // fall back: use compile time prefix
         std::string ini_paths(ini.get_entry("pika.master_ini_path"));
-        std::string ini_paths_suffixes(
-            ini.get_entry("pika.master_ini_path_suffixes"));
+        std::string ini_paths_suffixes(ini.get_entry("pika.master_ini_path_suffixes"));
 
         // split off the separate paths from the given path list
         using tokenizer_type = boost::tokenizer<boost::char_separator<char>>;
@@ -91,27 +88,23 @@ namespace pika::util {
         tokenizer_type::iterator end_suffixes = tok_suffixes.end();
 
         bool result = false;
-        for (tokenizer_type::iterator it = tok_paths.begin(); it != end_paths;
-             ++it)
+        for (tokenizer_type::iterator it = tok_paths.begin(); it != end_paths; ++it)
         {
-            for (tokenizer_type::iterator jt = tok_suffixes.begin();
-                 jt != end_suffixes; ++jt)
+            for (tokenizer_type::iterator jt = tok_suffixes.begin(); jt != end_suffixes; ++jt)
             {
                 std::string path = *it;
                 path += *jt;
                 bool result2 = handle_ini_file(ini, path + "/pika.ini");
                 if (result2)
                 {
-                    LBT_(info).format(
-                        "loaded configuration: {}/pika.ini", path);
+                    LBT_(info).format("loaded configuration: {}/pika.ini", path);
                 }
                 result = result2 || result;
             }
         }
 
         // look in the current directory first
-        std::string cwd =
-            std::filesystem::current_path().string() + "/.pika.ini";
+        std::string cwd = std::filesystem::current_path().string() + "/.pika.ini";
         {
             bool result2 = handle_ini_file(ini, cwd);
             if (result2)
@@ -144,10 +137,9 @@ namespace pika::util {
             std::error_code ec;
             if (!std::filesystem::exists(pika_ini_file, ec) || ec)
             {
-                std::cerr
-                    << "pika::init: command line warning: file specified using "
-                       "--pika:config does not exist ("
-                    << pika_ini_file << ")." << std::endl;
+                std::cerr << "pika::init: command line warning: file specified using "
+                             "--pika:config does not exist ("
+                          << pika_ini_file << ")." << std::endl;
                 pika_ini_file.clear();
                 result = false;
             }
@@ -156,8 +148,7 @@ namespace pika::util {
                 bool result2 = handle_ini_file(ini, pika_ini_file);
                 if (result2)
                 {
-                    LBT_(info).format(
-                        "loaded configuration: {}", pika_ini_file);
+                    LBT_(info).format("loaded configuration: {}", pika_ini_file);
                 }
                 return result || result2;
             }
@@ -184,8 +175,7 @@ namespace pika::util {
 
         // have all path elements, now find ini files in there...
         std::vector<std::string>::iterator ini_end = ini_paths.end();
-        for (std::vector<std::string>::iterator it = ini_paths.begin();
-             it != ini_end; ++it)
+        for (std::vector<std::string>::iterator it = ini_paths.begin(); it != ini_end; ++it)
         {
             try
             {
@@ -196,8 +186,7 @@ namespace pika::util {
                 if (!std::filesystem::exists(this_path, ec) || ec)
                     continue;
 
-                for (std::filesystem::directory_iterator dir(this_path);
-                     dir != nodir; ++dir)
+                for (std::filesystem::directory_iterator dir(this_path); dir != nodir; ++dir)
                 {
                     if (dir->path().extension() != ".ini")
                         continue;
@@ -206,8 +195,7 @@ namespace pika::util {
                     try
                     {
                         ini.merge(dir->path().string());
-                        LBT_(info).format(
-                            "loaded configuration: {}", dir->path().string());
+                        LBT_(info).format("loaded configuration: {}", dir->path().string());
                     }
                     catch (pika::exception const& /*e*/)
                     {
@@ -223,15 +211,13 @@ namespace pika::util {
     }
 
     namespace detail {
-        inline bool cmppath_less(
-            std::pair<std::filesystem::path, std::string> const& lhs,
+        inline bool cmppath_less(std::pair<std::filesystem::path, std::string> const& lhs,
             std::pair<std::filesystem::path, std::string> const& rhs)
         {
             return lhs.first < rhs.first;
         }
 
-        inline bool cmppath_equal(
-            std::pair<std::filesystem::path, std::string> const& lhs,
+        inline bool cmppath_equal(std::pair<std::filesystem::path, std::string> const& lhs,
             std::pair<std::filesystem::path, std::string> const& rhs)
         {
             return lhs.first == rhs.first;

@@ -37,8 +37,7 @@ namespace pika {
     /// Register the current kernel thread with pika, this should be done once
     /// for each external OS-thread intended to invoke pika functionality.
     /// Calling this function more than once will return false.
-    PIKA_EXPORT bool register_thread(
-        runtime* rt, char const* name, error_code& ec = throws);
+    PIKA_EXPORT bool register_thread(runtime* rt, char const* name, error_code& ec = throws);
 
     /// Unregister the thread from pika, this should be done once in
     /// the end before the external thread exists.
@@ -164,8 +163,7 @@ namespace pika {
         PIKA_EXPORT void add_scheduler_mode(threads::scheduler_mode to_add);
 
         /// Remove the given flags from the scheduler mode
-        PIKA_EXPORT void remove_scheduler_mode(
-            threads::scheduler_mode to_remove);
+        PIKA_EXPORT void remove_scheduler_mode(threads::scheduler_mode to_remove);
 
         /// Get the global topology instance
         PIKA_EXPORT detail::topology const& get_topology();

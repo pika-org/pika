@@ -23,8 +23,7 @@ namespace pika::detail {
 
     /// \cond NOINTERNAL
     template <>
-    struct is_execution_policy<std::execution::sequenced_policy>
-      : std::true_type
+    struct is_execution_policy<std::execution::sequenced_policy> : std::true_type
     {
     };
 
@@ -34,39 +33,34 @@ namespace pika::detail {
     };
 
     template <>
-    struct is_execution_policy<std::execution::parallel_unsequenced_policy>
+    struct is_execution_policy<std::execution::parallel_unsequenced_policy> : std::true_type
+    {
+    };
+
+    template <>
+    struct is_parallel_execution_policy<std::execution::parallel_policy> : std::true_type
+    {
+    };
+
+    template <>
+    struct is_parallel_execution_policy<std::execution::parallel_unsequenced_policy>
       : std::true_type
     {
     };
 
     template <>
-    struct is_parallel_execution_policy<std::execution::parallel_policy>
-      : std::true_type
-    {
-    };
-
-    template <>
-    struct is_parallel_execution_policy<
-        std::execution::parallel_unsequenced_policy> : std::true_type
-    {
-    };
-
-    template <>
-    struct is_sequenced_execution_policy<std::execution::sequenced_policy>
-      : std::true_type
+    struct is_sequenced_execution_policy<std::execution::sequenced_policy> : std::true_type
     {
     };
 
 #if defined(PIKA_HAVE_CXX20_STD_EXECUTION_POLICIES)
     template <>
-    struct is_execution_policy<std::execution::unsequenced_policy>
-      : std::true_type
+    struct is_execution_policy<std::execution::unsequenced_policy> : std::true_type
     {
     };
 
     template <>
-    struct is_sequenced_execution_policy<std::execution::unsequenced_policy>
-      : std::true_type
+    struct is_sequenced_execution_policy<std::execution::unsequenced_policy> : std::true_type
     {
     };
 #endif

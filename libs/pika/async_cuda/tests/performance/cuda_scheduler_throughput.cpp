@@ -58,8 +58,7 @@ struct sMatrixSize
 // Run a simple test matrix multiply using CUBLAS
 // -------------------------------------------------------------------------
 template <typename T>
-void matrixMultiply(
-    sMatrixSize& matrix_size, std::size_t device, std::size_t iterations)
+void matrixMultiply(sMatrixSize& matrix_size, std::size_t device, std::size_t iterations)
 {
     using pika::execution::par;
 
@@ -91,26 +90,24 @@ void matrixMultiply(
     whip::malloc(&d_C, size_C * sizeof(T));
 
     // copy A and B to device
-    auto copies_done =
-        ex::when_all(ex::transfer_just(cuda_sched, d_A, h_A.data(),
-                         size_A * sizeof(T), whip::memcpy_host_to_device) |
-                cu::then_with_stream(whip::memcpy_async),
-            ex::transfer_just(cuda_sched, d_B, h_B.data(), size_B * sizeof(T),
-                whip::memcpy_host_to_device) |
-                cu::then_with_stream(whip::memcpy_async));
+    auto copies_done = ex::when_all(ex::transfer_just(cuda_sched, d_A, h_A.data(),
+                                        size_A * sizeof(T), whip::memcpy_host_to_device) |
+            cu::then_with_stream(whip::memcpy_async),
+        ex::transfer_just(
+            cuda_sched, d_B, h_B.data(), size_B * sizeof(T), whip::memcpy_host_to_device) |
+            cu::then_with_stream(whip::memcpy_async));
 
     // print something when copies complete
     tt::sync_wait(std::move(copies_done) | ex::then([] {
-        std::cout << "Async host->device copy operation completed" << std::endl
-                  << std::endl;
+        std::cout << "Async host->device copy operation completed" << std::endl << std::endl;
     }));
 
     std::cout << "Small matrix multiply tests using CUBLAS...\n\n";
     const T alpha = 1.0f;
     const T beta = 0.0f;
 
-    auto test_function = [&](cu::cuda_scheduler& cuda_sched,
-                             const std::string& msg, std::size_t n_iters) {
+    auto test_function = [&](cu::cuda_scheduler& cuda_sched, const std::string& msg,
+                             std::size_t n_iters) {
         // time many cuda kernels spawned one after each other when they complete
         pika::chrono::detail::high_resolution_timer t1;
         for (std::size_t j = 0; j < n_iters; j++)
@@ -118,18 +115,14 @@ void matrixMultiply(
             tt::sync_wait(ex::schedule(cuda_sched) |
                 cu::then_with_cublas(
                     [&](cublasHandle_t handle) {
-                        cu::check_cublas_error(cublasSgemm(handle, CUBLAS_OP_N,
-                            CUBLAS_OP_N, matrix_size.uiWB, matrix_size.uiHA,
-                            matrix_size.uiWA, &alpha, d_B, matrix_size.uiWB,
-                            d_A, matrix_size.uiWA, &beta, d_C,
-                            matrix_size.uiWA));
+                        cu::check_cublas_error(cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N,
+                            matrix_size.uiWB, matrix_size.uiHA, matrix_size.uiWA, &alpha, d_B,
+                            matrix_size.uiWB, d_A, matrix_size.uiWA, &beta, d_C, matrix_size.uiWA));
                     },
                     CUBLAS_POINTER_MODE_HOST));
         }
         double us1 = t1.elapsed<std::chrono::microseconds>();
-        std::cout << "us per iteration " << us1 / n_iters << " : " << msg
-                  << std::endl
-                  << std::endl;
+        std::cout << "us per iteration " << us1 / n_iters << " : " << msg << std::endl << std::endl;
     };
 
     test_function(cuda_sched, "Event polling based scheduler", iterations);
@@ -156,9 +149,8 @@ int pika_main(pika::program_options::variables_map& vm)
     matrix_size.uiWC = 1 * block_size * sizeMult;
     matrix_size.uiHC = 1 * block_size * sizeMult;
 
-    printf("MatrixA(%u,%u), MatrixB(%u,%u), MatrixC(%u,%u)\n\n",
-        matrix_size.uiWA, matrix_size.uiHA, matrix_size.uiWB, matrix_size.uiHB,
-        matrix_size.uiWC, matrix_size.uiHC);
+    printf("MatrixA(%u,%u), MatrixB(%u,%u), MatrixC(%u,%u)\n\n", matrix_size.uiWA, matrix_size.uiHA,
+        matrix_size.uiWB, matrix_size.uiHB, matrix_size.uiWC, matrix_size.uiHC);
 
     matrixMultiply<float>(matrix_size, device, iterations);
 

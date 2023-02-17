@@ -62,8 +62,7 @@ namespace pika::functional::detail {
     /// `pika::functional::detail::is_tag_fallback_invocable_v<Tag, Args...>` evaluates to
     /// `pika::functional::detail::is_tag_fallback_invocable<Tag, Args...>::value`
     template <typename Tag, typename... Args>
-    constexpr bool is_tag_fallback_invocable_v =
-        is_tag_fallback_invocable<Tag, Args...>::value;
+    constexpr bool is_tag_fallback_invocable_v = is_tag_fallback_invocable<Tag, Args...>::value;
 
     /// `pika::functional::detail::is_nothrow_tag_fallback_invocable<Tag, Args...>` is
     /// std::true_type if an overload of `tag_fallback_invoke(tag, args...)` can be
@@ -87,8 +86,7 @@ namespace pika::functional::detail {
     /// `pika::functional::detail::tag_fallback_invoke_result_t<Tag, Args...>` evaluates to
     /// `pika::functional::detail::tag_fallback_invoke_result_t<Tag, Args...>::type`
     template <typename Tag, typename... Args>
-    using tag_fallback_invoke_result_t =
-        typename tag_fallback_invoke_result<Tag, Args...>::type;
+    using tag_fallback_invoke_result_t = typename tag_fallback_invoke_result<Tag, Args...>::type;
 
     /// `pika::functional::detail::tag_fallback<Tag>` defines a base class that implements
     /// the necessary tag dispatching functionality for a given type `Tag`
@@ -118,24 +116,20 @@ namespace pika::functional::detail {
         {
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename Tag, typename... Ts>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
-            operator()(Tag tag, Ts&&... ts) const
-                noexcept(noexcept(tag_fallback_invoke(
-                    std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...)))
-                    -> decltype(tag_fallback_invoke(
-                        std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...))
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(Tag tag, Ts&&... ts) const
+                noexcept(
+                    noexcept(tag_fallback_invoke(std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...)))
+                    -> decltype(tag_fallback_invoke(std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...))
             {
                 return tag_fallback_invoke(tag, PIKA_FORWARD(Ts, ts)...);
             }
 
-            friend constexpr bool operator==(
-                tag_fallback_invoke_t, tag_fallback_invoke_t)
+            friend constexpr bool operator==(tag_fallback_invoke_t, tag_fallback_invoke_t)
             {
                 return true;
             }
 
-            friend constexpr bool operator!=(
-                tag_fallback_invoke_t, tag_fallback_invoke_t)
+            friend constexpr bool operator!=(tag_fallback_invoke_t, tag_fallback_invoke_t)
             {
                 return false;
             }
@@ -144,8 +138,7 @@ namespace pika::functional::detail {
 
     namespace tag_fallback_invoke_ns {
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
-        inline constexpr tag_fallback_invoke_t_ns::tag_fallback_invoke_t
-            tag_fallback_invoke = {};
+        inline constexpr tag_fallback_invoke_t_ns::tag_fallback_invoke_t tag_fallback_invoke = {};
 #else
         PIKA_DEVICE static tag_fallback_invoke_t_ns::tag_fallback_invoke_t const
             tag_fallback_invoke = {};
@@ -155,8 +148,7 @@ namespace pika::functional::detail {
     ///////////////////////////////////////////////////////////////////////////
     template <typename Tag, typename... Args>
     using is_tag_fallback_invocable =
-        std::is_invocable<decltype(tag_fallback_invoke_ns::tag_fallback_invoke),
-            Tag, Args...>;
+        std::is_invocable<decltype(tag_fallback_invoke_ns::tag_fallback_invoke), Tag, Args...>;
 
     template <typename Tag, typename... Args>
     inline constexpr bool is_tag_fallback_invocable_v =
@@ -172,8 +164,7 @@ namespace pika::functional::detail {
 
     template <typename Tag, typename... Args>
     struct is_nothrow_tag_fallback_invocable_impl<
-        decltype(tag_fallback_invoke_ns::tag_fallback_invoke)(Tag, Args...),
-        true>
+        decltype(tag_fallback_invoke_ns::tag_fallback_invoke)(Tag, Args...), true>
       : std::integral_constant<bool,
             noexcept(tag_fallback_invoke_ns::tag_fallback_invoke(
                 std::declval<Tag>(), std::declval<Args>()...))>
@@ -185,8 +176,7 @@ namespace pika::functional::detail {
     // correctly check this condition. We default to the more relaxed
     // noexcept(true) to not falsely exclude correct overloads. However, this
     // may lead to noexcept(false) overloads falsely being candidates.
-#if defined(__NVCC__) && defined(PIKA_CUDA_VERSION) &&                         \
-    (PIKA_CUDA_VERSION < 1102)
+#if defined(__NVCC__) && defined(PIKA_CUDA_VERSION) && (PIKA_CUDA_VERSION < 1102)
     template <typename Tag, typename... Args>
     struct is_nothrow_tag_fallback_invocable : std::true_type
     {
@@ -206,12 +196,11 @@ namespace pika::functional::detail {
         is_nothrow_tag_fallback_invocable<Tag, Args...>::value;
 
     template <typename Tag, typename... Args>
-    using tag_fallback_invoke_result = std::invoke_result<
-        decltype(tag_fallback_invoke_ns::tag_fallback_invoke), Tag, Args...>;
+    using tag_fallback_invoke_result =
+        std::invoke_result<decltype(tag_fallback_invoke_ns::tag_fallback_invoke), Tag, Args...>;
 
     template <typename Tag, typename... Args>
-    using tag_fallback_invoke_result_t =
-        typename tag_fallback_invoke_result<Tag, Args...>::type;
+    using tag_fallback_invoke_result_t = typename tag_fallback_invoke_result<Tag, Args...>::type;
 
     ///////////////////////////////////////////////////////////////////////////////
     namespace tag_base_ns {
@@ -257,29 +246,24 @@ namespace pika::functional::detail {
             // is tag-dispatchable
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args,
-                typename Enable =
-                    std::enable_if_t<is_tag_invocable_v<Tag, Args&&...>>>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
-            operator()(Args&&... args) const
+                typename Enable = std::enable_if_t<is_tag_invocable_v<Tag, Args&&...>>>
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(Args&&... args) const
                 noexcept(is_nothrow_tag_invocable_v<Tag, Args...>)
                     -> tag_invoke_result_t<Tag, Args&&...>
             {
-                return tag_invoke(static_cast<Tag const&>(*this),
-                    PIKA_FORWARD(Args, args)...);
+                return tag_invoke(static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
             }
 
             // is not tag-dispatchable
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args,
-                typename Enable =
-                    std::enable_if_t<!is_tag_invocable_v<Tag, Args&&...>>>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
-            operator()(Args&&... args) const
+                typename Enable = std::enable_if_t<!is_tag_invocable_v<Tag, Args&&...>>>
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(Args&&... args) const
                 noexcept(is_nothrow_tag_fallback_invocable_v<Tag, Args...>)
                     -> tag_fallback_invoke_result_t<Tag, Args&&...>
             {
-                return tag_fallback_invoke(static_cast<Tag const&>(*this),
-                    PIKA_FORWARD(Args, args)...);
+                return tag_fallback_invoke(
+                    static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
             }
         };
 
@@ -293,8 +277,8 @@ namespace pika::functional::detail {
             // is nothrow tag-fallback dispatchable
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args>
-            PIKA_HOST_DEVICE constexpr auto tag_fallback_invoke_impl(
-                std::false_type, Args&&... /*args*/) const noexcept
+            PIKA_HOST_DEVICE constexpr auto
+            tag_fallback_invoke_impl(std::false_type, Args&&... /*args*/) const noexcept
                 -> not_tag_fallback_noexcept_dispatchable<Tag, Args...>
             {
                 return not_tag_fallback_noexcept_dispatchable<Tag, Args...>{};
@@ -303,39 +287,32 @@ namespace pika::functional::detail {
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
-            tag_fallback_invoke_impl(
-                std::true_type, Args&&... args) const noexcept
+            tag_fallback_invoke_impl(std::true_type, Args&&... args) const noexcept
                 -> tag_fallback_invoke_result_t<Tag, Args&&...>
             {
-                return tag_fallback_invoke(static_cast<Tag const&>(*this),
-                    PIKA_FORWARD(Args, args)...);
+                return tag_fallback_invoke(
+                    static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
             }
 
         public:
             // is nothrow tag-dispatchable
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args,
-                typename Enable = std::enable_if_t<
-                    is_nothrow_tag_invocable_v<Tag, Args&&...>>>
+                typename Enable = std::enable_if_t<is_nothrow_tag_invocable_v<Tag, Args&&...>>>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
-            operator()(Args&&... args) const noexcept
-                -> tag_invoke_result_t<Tag, Args&&...>
+            operator()(Args&&... args) const noexcept -> tag_invoke_result_t<Tag, Args&&...>
             {
-                return tag_invoke(static_cast<Tag const&>(*this),
-                    PIKA_FORWARD(Args, args)...);
+                return tag_invoke(static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
             }
 
             // is not nothrow tag-dispatchable
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args,
-                typename IsFallbackDispatchable =
-                    is_nothrow_tag_fallback_invocable<Tag, Args&&...>,
-                typename Enable = std::enable_if_t<
-                    !is_nothrow_tag_invocable_v<Tag, Args&&...>>>
+                typename IsFallbackDispatchable = is_nothrow_tag_fallback_invocable<Tag, Args&&...>,
+                typename Enable = std::enable_if_t<!is_nothrow_tag_invocable_v<Tag, Args&&...>>>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
-            operator()(Args&&... args) const noexcept
-                -> decltype(tag_fallback_invoke_impl(
-                    IsFallbackDispatchable{}, PIKA_FORWARD(Args, args)...))
+            operator()(Args&&... args) const noexcept -> decltype(tag_fallback_invoke_impl(
+                IsFallbackDispatchable{}, PIKA_FORWARD(Args, args)...))
             {
                 return tag_fallback_invoke_impl(
                     IsFallbackDispatchable{}, PIKA_FORWARD(Args, args)...);

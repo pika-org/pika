@@ -27,8 +27,7 @@ namespace pika::detail {
 
     counting_semaphore::~counting_semaphore() = default;
 
-    void counting_semaphore::wait(
-        std::unique_lock<mutex_type>& l, std::ptrdiff_t count)
+    void counting_semaphore::wait(std::unique_lock<mutex_type>& l, std::ptrdiff_t count)
     {
         PIKA_ASSERT_OWNS_LOCK(l);
 
@@ -47,8 +46,7 @@ namespace pika::detail {
         while (value_ < count)
         {
             // return false if unblocked by timeout expiring
-            if (cond_.wait_until(
-                    l, abs_time, "counting_semaphore::wait_until") !=
+            if (cond_.wait_until(l, abs_time, "counting_semaphore::wait_until") !=
                 threads::detail::thread_restart_state::unknown)
             {
                 return false;
@@ -58,8 +56,7 @@ namespace pika::detail {
         return true;
     }
 
-    bool counting_semaphore::try_wait(
-        std::unique_lock<mutex_type>& l, std::ptrdiff_t count)
+    bool counting_semaphore::try_wait(std::unique_lock<mutex_type>& l, std::ptrdiff_t count)
     {
         PIKA_ASSERT_OWNS_LOCK(l);
 
@@ -85,8 +82,7 @@ namespace pika::detail {
         return false;
     }
 
-    void counting_semaphore::signal(
-        std::unique_lock<mutex_type> l, std::ptrdiff_t count)
+    void counting_semaphore::signal(std::unique_lock<mutex_type> l, std::ptrdiff_t count)
     {
         PIKA_ASSERT_OWNS_LOCK(l);
 
@@ -105,8 +101,7 @@ namespace pika::detail {
         }
     }
 
-    std::ptrdiff_t counting_semaphore::signal_all(
-        std::unique_lock<mutex_type> l)
+    std::ptrdiff_t counting_semaphore::signal_all(std::unique_lock<mutex_type> l)
     {
         PIKA_ASSERT_OWNS_LOCK(l);
 

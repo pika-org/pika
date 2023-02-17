@@ -21,8 +21,7 @@
 
 namespace pika::lcos::local {
     namespace detail {
-        template <typename R,
-            typename SharedState = lcos::detail::future_data<R>>
+        template <typename R, typename SharedState = lcos::detail::future_data<R>>
         class promise_base;
 
         template <typename R, typename SharedState>
@@ -46,24 +45,20 @@ namespace pika::lcos::local {
               , shared_future_retrieved_(false)
             {
                 using allocator_shared_state_type =
-                    typename traits::detail::shared_state_allocator<SharedState,
-                        Allocator>::type;
+                    typename traits::detail::shared_state_allocator<SharedState, Allocator>::type;
 
-                using other_allocator =
-                    typename std::allocator_traits<Allocator>::
-                        template rebind_alloc<allocator_shared_state_type>;
+                using other_allocator = typename std::allocator_traits<
+                    Allocator>::template rebind_alloc<allocator_shared_state_type>;
                 using traits = std::allocator_traits<other_allocator>;
-                using unique_pointer =
-                    std::unique_ptr<allocator_shared_state_type,
-                        pika::detail::allocator_deleter<other_allocator>>;
+                using unique_pointer = std::unique_ptr<allocator_shared_state_type,
+                    pika::detail::allocator_deleter<other_allocator>>;
 
                 other_allocator alloc(a);
                 unique_pointer p(traits::allocate(alloc, 1),
                     pika::detail::allocator_deleter<other_allocator>{alloc});
 
                 using lcos::detail::in_place;
-                traits::construct(
-                    alloc, p.get(), init_no_addref{}, in_place{}, alloc);
+                traits::construct(alloc, p.get(), init_no_addref{}, in_place{}, alloc);
                 shared_state_.reset(p.release(), false);
             }
 
@@ -79,16 +74,14 @@ namespace pika::lcos::local {
 
             ~promise_base()
             {
-                check_abandon_shared_state(
-                    "local::detail::promise_base<R>::~promise_base()");
+                check_abandon_shared_state("local::detail::promise_base<R>::~promise_base()");
             }
 
             promise_base& operator=(promise_base&& other) noexcept
             {
                 if (this != &other)
                 {
-                    this->check_abandon_shared_state(
-                        "local::detail::promise_base<R>::operator=");
+                    this->check_abandon_shared_state("local::detail::promise_base<R>::operator=");
 
                     shared_state_ = PIKA_MOVE(other.shared_state_);
                     future_retrieved_ = other.future_retrieved_;
@@ -105,8 +98,7 @@ namespace pika::lcos::local {
             {
                 std::swap(shared_state_, other.shared_state_);
                 std::swap(future_retrieved_, other.future_retrieved_);
-                std::swap(
-                    shared_future_retrieved_, other.shared_future_retrieved_);
+                std::swap(shared_future_retrieved_, other.shared_future_retrieved_);
             }
 
             bool valid() const noexcept
@@ -134,8 +126,7 @@ namespace pika::lcos::local {
                 }
 
                 future_retrieved_ = true;
-                return traits::future_access<pika::future<R>>::create(
-                    shared_state_);
+                return traits::future_access<pika::future<R>>::create(shared_state_);
             }
 
             pika::shared_future<R> get_shared_future(error_code& ec = throws)
@@ -157,8 +148,7 @@ namespace pika::lcos::local {
                 }
 
                 shared_future_retrieved_ = true;
-                return traits::future_access<pika::shared_future<R>>::create(
-                    shared_state_);
+                return traits::future_access<pika::shared_future<R>>::create(shared_state_);
             }
 
             template <typename... Ts>
@@ -210,12 +200,11 @@ namespace pika::lcos::local {
         protected:
             void check_abandon_shared_state(const char* fun)
             {
-                if (shared_state_ != nullptr &&
-                    (future_retrieved_ || shared_future_retrieved_) &&
+                if (shared_state_ != nullptr && (future_retrieved_ || shared_future_retrieved_) &&
                     !shared_state_->is_ready())
                 {
-                    shared_state_->set_error(pika::error::broken_promise, fun,
-                        "abandoning not ready shared state");
+                    shared_state_->set_error(
+                        pika::error::broken_promise, fun, "abandoning not ready shared state");
                 }
             }
 
@@ -549,8 +538,7 @@ namespace pika::lcos::local {
 namespace std {
     // Requires: Allocator shall be an allocator (17.6.3.5)
     template <typename R, typename Allocator>
-    struct uses_allocator<pika::lcos::local::promise<R>, Allocator>
-      : std::true_type
+    struct uses_allocator<pika::lcos::local::promise<R>, Allocator> : std::true_type
     {
     };
 }    // namespace std

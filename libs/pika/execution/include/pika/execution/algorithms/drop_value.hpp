@@ -44,8 +44,8 @@ namespace pika::drop_value_detail {
                 PIKA_MOVE(r.receiver), PIKA_FORWARD(Error, error));
         }
 
-        friend void tag_invoke(pika::execution::experimental::set_stopped_t,
-            drop_value_receiver_type&& r) noexcept
+        friend void tag_invoke(
+            pika::execution::experimental::set_stopped_t, drop_value_receiver_type&& r) noexcept
         {
             pika::execution::experimental::set_stopped(PIKA_MOVE(r.receiver));
         }
@@ -57,9 +57,8 @@ namespace pika::drop_value_detail {
             pika::execution::experimental::set_value(PIKA_MOVE(r.receiver));
         }
 
-        friend constexpr pika::execution::experimental::detail::empty_env
-        tag_invoke(pika::execution::experimental::get_env_t,
-            drop_value_receiver_type const&) noexcept
+        friend constexpr pika::execution::experimental::detail::empty_env tag_invoke(
+            pika::execution::experimental::get_env_t, drop_value_receiver_type const&) noexcept
         {
             return {};
         }
@@ -72,8 +71,7 @@ namespace pika::drop_value_detail {
     };
 
     template <typename Sender>
-    using drop_value_sender =
-        typename drop_value_sender_impl<Sender>::drop_value_sender_type;
+    using drop_value_sender = typename drop_value_sender_impl<Sender>::drop_value_sender_type;
 
     template <typename Sender>
     struct drop_value_sender_impl<Sender>::drop_value_sender_type
@@ -82,25 +80,21 @@ namespace pika::drop_value_detail {
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
         template <class...>
-        using empty_set_value =
-            pika::execution::experimental::completion_signatures<
-                pika::execution::experimental::set_value_t()>;
+        using empty_set_value = pika::execution::experimental::completion_signatures<
+            pika::execution::experimental::set_value_t()>;
 
         using completion_signatures =
             pika::execution::experimental::make_completion_signatures<Sender,
                 pika::execution::experimental::detail::empty_env,
-                pika::execution::experimental::completion_signatures<>,
-                empty_set_value>;
+                pika::execution::experimental::completion_signatures<>, empty_set_value>;
 #else
-        template <template <typename...> class Tuple,
-            template <typename...> class Variant>
+        template <template <typename...> class Tuple, template <typename...> class Variant>
         using value_types = Variant<Tuple<>>;
 
         template <template <typename...> class Variant>
-        using error_types =
-            pika::util::detail::unique_t<pika::util::detail::prepend_t<
-                typename pika::execution::experimental::sender_traits<
-                    Sender>::template error_types<Variant>,
+        using error_types = pika::util::detail::unique_t<
+            pika::util::detail::prepend_t<typename pika::execution::experimental::sender_traits<
+                                              Sender>::template error_types<Variant>,
                 std::exception_ptr>>;
 
         static constexpr bool sends_done = false;
@@ -114,30 +108,27 @@ namespace pika::drop_value_detail {
                         CPO, std::decay_t<Sender>>)
             // clang-format on
             >
-        friend constexpr auto tag_invoke(
-            pika::execution::experimental::get_completion_scheduler_t<CPO>,
+        friend constexpr auto
+        tag_invoke(pika::execution::experimental::get_completion_scheduler_t<CPO>,
             drop_value_sender_type const& sender)
         {
-            return pika::execution::experimental::get_completion_scheduler<CPO>(
-                sender.sender);
+            return pika::execution::experimental::get_completion_scheduler<CPO>(sender.sender);
         }
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t,
-            drop_value_sender_type&& s, Receiver&& receiver)
+        friend auto tag_invoke(pika::execution::experimental::connect_t, drop_value_sender_type&& s,
+            Receiver&& receiver)
         {
             return pika::execution::experimental::connect(PIKA_MOVE(s.sender),
-                drop_value_receiver<Receiver>{
-                    PIKA_FORWARD(Receiver, receiver)});
+                drop_value_receiver<Receiver>{PIKA_FORWARD(Receiver, receiver)});
         }
 
         template <typename Receiver>
         friend auto tag_invoke(pika::execution::experimental::connect_t,
             drop_value_sender_type const& r, Receiver&& receiver)
         {
-            return pika::execution::experimental::connect(r.sender,
-                drop_value_receiver<Receiver>{
-                    PIKA_FORWARD(Receiver, receiver)});
+            return pika::execution::experimental::connect(
+                r.sender, drop_value_receiver<Receiver>{PIKA_FORWARD(Receiver, receiver)});
         }
     };
 }    // namespace pika::drop_value_detail
@@ -149,8 +140,7 @@ namespace pika::execution::experimental {
         template <typename Sender, PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender>)>
         constexpr PIKA_FORCEINLINE auto operator()(Sender&& sender) const
         {
-            return drop_value_detail::drop_value_sender<Sender>{
-                PIKA_FORWARD(Sender, sender)};
+            return drop_value_detail::drop_value_sender<Sender>{PIKA_FORWARD(Sender, sender)};
         }
 
         constexpr PIKA_FORCEINLINE auto operator()() const

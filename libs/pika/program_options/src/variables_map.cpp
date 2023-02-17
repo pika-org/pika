@@ -69,11 +69,8 @@ namespace pika::program_options {
                 if (xm.m_final.count(option_name))
                     continue;
 
-                original_token = !opts.original_tokens.empty() ?
-                    opts.original_tokens[0] :
-                    "";
-                const option_description& d =
-                    desc.find(option_name, false, false, false);
+                original_token = !opts.original_tokens.empty() ? opts.original_tokens[0] : "";
+                const option_description& d = desc.find(option_name, false, false, false);
 
                 variable_value& v = m[option_name];
                 if (v.defaulted())
@@ -98,8 +95,7 @@ namespace pika::program_options {
         catch (error_with_option_name& e)
         {
             // add context and rethrow
-            e.add_context(
-                option_name, original_token, options.m_options_prefix);
+            e.add_context(option_name, original_token, options.m_options_prefix);
             throw;
         }
 
@@ -137,8 +133,7 @@ namespace pika::program_options {
                 // config file etc, the following precedence rules apply:
                 //  "--"  >  ("-" or "/")  >  ""
                 //  Precedence is set conveniently by a single call to length()
-                string canonical_name =
-                    d.canonical_display_name(options.m_options_prefix);
+                string canonical_name = d.canonical_display_name(options.m_options_prefix);
                 if (canonical_name.length() > xm.m_required[key].length())
                     xm.m_required[key] = canonical_name;
             }
@@ -160,14 +155,12 @@ namespace pika::program_options {
     {
     }
 
-    abstract_variables_map::abstract_variables_map(
-        const abstract_variables_map* next)
+    abstract_variables_map::abstract_variables_map(const abstract_variables_map* next)
       : m_next(next)
     {
     }
 
-    const variable_value& abstract_variables_map::operator[](
-        const std::string& name) const
+    const variable_value& abstract_variables_map::operator[](const std::string& name) const
     {
         const variable_value& v = get(name);
         if (v.empty() && m_next)
@@ -218,8 +211,7 @@ namespace pika::program_options {
     void variables_map::notify()
     {
         // This checks if all required options occur
-        for (map<string, string>::const_iterator r = m_required.begin();
-             r != m_required.end(); ++r)
+        for (map<string, string>::const_iterator r = m_required.begin(); r != m_required.end(); ++r)
         {
             const string& opt = r->first;
             const string& display_opt = r->second;

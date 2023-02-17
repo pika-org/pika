@@ -29,8 +29,7 @@
 namespace pika::detail {
 
     [[noreturn]] void assertion_handler(
-        pika::detail::source_location const& loc, const char* expr,
-        std::string const& msg)
+        pika::detail::source_location const& loc, const char* expr, std::string const& msg)
     {
         static thread_local bool handling_assertion = false;
 
@@ -91,9 +90,8 @@ namespace pika::detail {
         {
             if (back_trace.empty())
             {
-                LERR_(debug).format(
-                    "suspending thread while at least one lock is being held "
-                    "(stack backtrace was disabled at compile time)");
+                LERR_(debug).format("suspending thread while at least one lock is being held "
+                                    "(stack backtrace was disabled at compile time)");
             }
             else
             {
@@ -106,16 +104,14 @@ namespace pika::detail {
         {
             if (back_trace.empty())
             {
-                PIKA_THROW_EXCEPTION(pika::error::invalid_status,
-                    "verify_no_locks",
+                PIKA_THROW_EXCEPTION(pika::error::invalid_status, "verify_no_locks",
                     "suspending thread while at least one lock is "
                     "being held (stack backtrace was disabled at "
                     "compile time)");
             }
             else
             {
-                PIKA_THROW_EXCEPTION(pika::error::invalid_status,
-                    "verify_no_locks",
+                PIKA_THROW_EXCEPTION(pika::error::invalid_status, "verify_no_locks",
                     "suspending thread while at least one lock is "
                     "being held, stack backtrace: {}",
                     back_trace);
@@ -134,8 +130,7 @@ namespace pika::detail {
         pika::runtime* rt = get_runtime_ptr();
         if (rt == nullptr)
         {
-            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
-                "pika::detail::get_default_pool",
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::detail::get_default_pool",
                 "The runtime system is not active");
         }
 

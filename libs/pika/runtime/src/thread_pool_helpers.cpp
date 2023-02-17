@@ -51,8 +51,7 @@ namespace pika::resource {
         return get_partitioner().get_pool_name(pool_index);
     }
 
-    threads::detail::thread_pool_base& get_thread_pool(
-        std::string const& pool_name)
+    threads::detail::thread_pool_base& get_thread_pool(std::string const& pool_name)
     {
         return get_runtime().get_thread_manager().get_pool(pool_name);
     }
@@ -79,8 +78,8 @@ namespace pika::threads {
         return get_thread_manager().get_thread_count(state);
     }
 
-    std::int64_t get_thread_count(execution::thread_priority priority,
-        detail::thread_schedule_state state)
+    std::int64_t get_thread_count(
+        execution::thread_priority priority, detail::thread_schedule_state state)
     {
         return get_thread_manager().get_thread_count(state, priority);
     }
@@ -95,8 +94,7 @@ namespace pika::threads {
         return get_thread_manager().get_idle_core_mask();
     }
 
-    bool enumerate_threads(
-        util::detail::function<bool(detail::thread_id_type)> const& f,
+    bool enumerate_threads(util::detail::function<bool(detail::thread_id_type)> const& f,
         detail::thread_schedule_state state)
     {
         return get_thread_manager().enumerate_threads(f, state);

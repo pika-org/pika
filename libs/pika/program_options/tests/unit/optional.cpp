@@ -36,8 +36,7 @@ void test_optional()
     // clang-format on
 
     const char* cmdline1_[] = {"--foo=12", "--bar", "1"};
-    std::vector<std::string> cmdline1 =
-        sv(cmdline1_, sizeof(cmdline1_) / sizeof(const char*));
+    std::vector<std::string> cmdline1 = sv(cmdline1_, sizeof(cmdline1_) / sizeof(const char*));
 
     po::variables_map vm;
     po::store(po::command_line_parser(cmdline1).options(desc).run(), vm);

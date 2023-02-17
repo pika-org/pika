@@ -85,8 +85,7 @@ namespace pika::util::logging::destination {
         mutable mutex_type mtx_;
     };
 
-    std::unique_ptr<file> file::make(
-        std::string const& file_name, file_settings set)
+    std::unique_ptr<file> file::make(std::string const& file_name, file_settings set)
     {
         return std::unique_ptr<file>(new file_impl(file_name, set));
     }

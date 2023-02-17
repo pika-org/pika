@@ -47,8 +47,7 @@ namespace pika::split_tuple_detail {
         template <typename Error>
         void operator()(Error const& error)
         {
-            pika::execution::experimental::set_error(
-                PIKA_MOVE(receiver), error);
+            pika::execution::experimental::set_error(PIKA_MOVE(receiver), error);
         }
     };
 
@@ -57,8 +56,8 @@ namespace pika::split_tuple_detail {
     {
         struct split_tuple_receiver;
 
-        using allocator_type = typename std::allocator_traits<
-            Allocator>::template rebind_alloc<shared_state>;
+        using allocator_type =
+            typename std::allocator_traits<Allocator>::template rebind_alloc<shared_state>;
         PIKA_NO_UNIQUE_ADDRESS allocator_type alloc;
         using mutex_type = pika::spinlock;
         mutex_type mtx;
@@ -66,9 +65,8 @@ namespace pika::split_tuple_detail {
         std::atomic<bool> start_called{false};
         std::atomic<bool> predecessor_done{false};
 
-        using operation_state_type =
-            std::decay_t<pika::execution::experimental::connect_result_t<Sender,
-                split_tuple_receiver>>;
+        using operation_state_type = std::decay_t<
+            pika::execution::experimental::connect_result_t<Sender, split_tuple_receiver>>;
         // We store the operation state in an optional so that we can reset
         // it as soon as the the split_tuple_receiver has been signaled.
         // This is useful to ensure that resources held by the predecessor
@@ -77,46 +75,40 @@ namespace pika::split_tuple_detail {
 
         // nvcc does not like decay_t, so this uses decay<>::type instead.
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-        using value_type = typename std::decay<
-            pika::execution::experimental::detail::single_result_t<
+        using value_type =
+            typename std::decay<pika::execution::experimental::detail::single_result_t<
                 typename pika::execution::experimental::value_types_of_t<Sender,
-                    pika::execution::experimental::detail::empty_env,
-                    pika::util::detail::pack, pika::util::detail::pack>>>::type;
-#else
-        using value_type = typename std::decay<
-            pika::execution::experimental::detail::single_result_t<
-                typename pika::execution::experimental::sender_traits<
-                    Sender>::template value_types<pika::util::detail::pack,
+                    pika::execution::experimental::detail::empty_env, pika::util::detail::pack,
                     pika::util::detail::pack>>>::type;
+#else
+        using value_type =
+            typename std::decay<pika::execution::experimental::detail::single_result_t<
+                typename pika::execution::experimental::sender_traits<Sender>::template value_types<
+                    pika::util::detail::pack, pika::util::detail::pack>>>::type;
 #endif
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-        using error_type =
-            pika::util::detail::unique_t<pika::util::detail::prepend_t<
-                pika::util::detail::transform_t<
-                    typename pika::execution::experimental::error_types_of_t<
-                        Sender,
-                        pika::execution::experimental::detail::empty_env,
-                        pika::detail::variant>,
-                    std::decay>,
-                std::exception_ptr>>;
+        using error_type = pika::util::detail::unique_t<pika::util::detail::prepend_t<
+            pika::util::detail::transform_t<
+                typename pika::execution::experimental::error_types_of_t<Sender,
+                    pika::execution::experimental::detail::empty_env, pika::detail::variant>,
+                std::decay>,
+            std::exception_ptr>>;
 #else
-        using error_type =
-            pika::util::detail::unique_t<pika::util::detail::prepend_t<
-                pika::util::detail::transform_t<
-                    typename pika::execution::experimental::sender_traits<
-                        Sender>::template error_types<pika::detail::variant>,
-                    std::decay>,
-                std::exception_ptr>>;
+        using error_type = pika::util::detail::unique_t<pika::util::detail::prepend_t<
+            pika::util::detail::transform_t<
+                typename pika::execution::experimental::sender_traits<Sender>::template error_types<
+                    pika::detail::variant>,
+                std::decay>,
+            std::exception_ptr>>;
 #endif
-        pika::detail::variant<pika::detail::monostate,
-            pika::execution::detail::stopped_type, error_type, value_type>
+        pika::detail::variant<pika::detail::monostate, pika::execution::detail::stopped_type,
+            error_type, value_type>
             v;
 
         using continuation_type = pika::util::detail::unique_function<void()>;
 
-        std::array<continuation_type, std::tuple_size_v<value_type>>
-            continuations;
+        std::array<continuation_type, std::tuple_size_v<value_type>> continuations;
 
         struct split_tuple_receiver
         {
@@ -126,13 +118,12 @@ namespace pika::split_tuple_detail {
             friend void tag_invoke(pika::execution::experimental::set_error_t,
                 split_tuple_receiver&& r, Error&& error) noexcept
             {
-                r.state.v.template emplace<error_type>(
-                    error_type(PIKA_FORWARD(Error, error)));
+                r.state.v.template emplace<error_type>(error_type(PIKA_FORWARD(Error, error)));
                 r.state.set_predecessor_done();
             }
 
-            friend void tag_invoke(pika::execution::experimental::set_stopped_t,
-                split_tuple_receiver&& r) noexcept
+            friend void tag_invoke(
+                pika::execution::experimental::set_stopped_t, split_tuple_receiver&& r) noexcept
             {
                 r.state.set_predecessor_done();
             };
@@ -141,28 +132,25 @@ namespace pika::split_tuple_detail {
                 // parent typedef is not instantiated early enough for use
                 // here.
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-            using value_type = typename std::decay<
-                pika::execution::experimental::detail::single_result_t<
-                    typename pika::execution::experimental::value_types_of_t<
-                        Sender,
-                        pika::execution::experimental::detail::empty_env,
-                        pika::util::detail::pack, pika::util::detail::pack>>>::
-                type;
-#else
-            using value_type = typename std::decay<
-                pika::execution::experimental::detail::single_result_t<
-                    typename pika::execution::experimental::sender_traits<
-                        Sender>::template value_types<pika::util::detail::pack,
+            using value_type =
+                typename std::decay<pika::execution::experimental::detail::single_result_t<
+                    typename pika::execution::experimental::value_types_of_t<Sender,
+                        pika::execution::experimental::detail::empty_env, pika::util::detail::pack,
                         pika::util::detail::pack>>>::type;
+#else
+            using value_type =
+                typename std::decay<pika::execution::experimental::detail::single_result_t<
+                    typename pika::execution::experimental::sender_traits<Sender>::
+                        template value_types<pika::util::detail::pack, pika::util::detail::pack>>>::
+                    type;
 #endif
 
             template <typename T>
             friend auto tag_invoke(pika::execution::experimental::set_value_t,
                 split_tuple_receiver&& r, T&& t) noexcept
-                -> decltype(std::declval<pika::detail::variant<
-                                pika::detail::monostate, value_type>>()
-                                .template emplace<value_type>(
-                                    PIKA_FORWARD(T, t)),
+                -> decltype(std::declval<
+                                pika::detail::variant<pika::detail::monostate, value_type>>()
+                                .template emplace<value_type>(PIKA_FORWARD(T, t)),
                     void())
             {
                 r.state.v.template emplace<value_type>(PIKA_FORWARD(T, t));
@@ -170,17 +158,15 @@ namespace pika::split_tuple_detail {
                 r.state.set_predecessor_done();
             }
 
-            friend constexpr pika::execution::experimental::detail::empty_env
-            tag_invoke(pika::execution::experimental::get_env_t,
-                split_tuple_receiver const&) noexcept
+            friend constexpr pika::execution::experimental::detail::empty_env tag_invoke(
+                pika::execution::experimental::get_env_t, split_tuple_receiver const&) noexcept
             {
                 return {};
             }
         };
 
         template <typename Sender_,
-            typename = std::enable_if_t<
-                !std::is_same<std::decay_t<Sender_>, shared_state>::value>>
+            typename = std::enable_if_t<!std::is_same<std::decay_t<Sender_>, shared_state>::value>>
         shared_state(Sender_&& sender, allocator_type const& alloc)
           : alloc(alloc)
         {
@@ -215,14 +201,12 @@ namespace pika::split_tuple_detail {
                     pika::execution::experimental::sends_stopped<Sender,
                         pika::execution::experimental::detail::empty_env>
 #else
-                    pika::execution::experimental::sender_traits<
-                        Sender>::sends_done
+                    pika::execution::experimental::sender_traits<Sender>::sends_done
 #endif
                     ;
                 if constexpr (sends_stopped)
                 {
-                    pika::execution::experimental::set_stopped(
-                        PIKA_MOVE(receiver));
+                    pika::execution::experimental::set_stopped(PIKA_MOVE(receiver));
                 }
                 else
                 {
@@ -233,8 +217,7 @@ namespace pika::split_tuple_detail {
             void operator()(error_type const& error)
             {
                 pika::detail::visit(
-                    error_visitor<Receiver>{PIKA_FORWARD(Receiver, receiver)},
-                    error);
+                    error_visitor<Receiver>{PIKA_FORWARD(Receiver, receiver)}, error);
             }
 
             void operator()(value_type& t)
@@ -321,8 +304,7 @@ namespace pika::split_tuple_detail {
                 // values/errors have been stored into the shared state.
                 // We can trigger the continuation directly.
                 pika::detail::visit(
-                    stopped_error_value_visitor<Index, Receiver>{
-                        PIKA_FORWARD(Receiver, receiver)},
+                    stopped_error_value_visitor<Index, Receiver>{PIKA_FORWARD(Receiver, receiver)},
                     v);
             }
             else
@@ -339,9 +321,8 @@ namespace pika::split_tuple_detail {
                     // release the lock early and call the continuation
                     // directly again.
                     l.unlock();
-                    pika::detail::visit(
-                        stopped_error_value_visitor<Index, Receiver>{
-                            PIKA_FORWARD(Receiver, receiver)},
+                    pika::detail::visit(stopped_error_value_visitor<Index, Receiver>{PIKA_FORWARD(
+                                            Receiver, receiver)},
                         v);
                 }
                 else
@@ -354,12 +335,10 @@ namespace pika::split_tuple_detail {
                     // itself. The continuation will be called later
                     // when set_error/set_stopped/set_value is called.
                     continuations[Index] = [this,
-                                               receiver = PIKA_FORWARD(Receiver,
-                                                   receiver)]() mutable {
+                                               receiver =
+                                                   PIKA_FORWARD(Receiver, receiver)]() mutable {
                         pika::detail::visit(
-                            stopped_error_value_visitor<Index, Receiver>{
-                                PIKA_MOVE(receiver)},
-                            v);
+                            stopped_error_value_visitor<Index, Receiver>{PIKA_MOVE(receiver)}, v);
                     };
                 }
             }
@@ -385,8 +364,7 @@ namespace pika::split_tuple_detail {
             {
                 allocator_type other_alloc(p->alloc);
                 std::allocator_traits<allocator_type>::destroy(other_alloc, p);
-                std::allocator_traits<allocator_type>::deallocate(
-                    other_alloc, p, 1);
+                std::allocator_traits<allocator_type>::deallocate(other_alloc, p, 1);
             }
         }
     };
@@ -398,35 +376,32 @@ namespace pika::split_tuple_detail {
     };
 
     template <typename Sender, typename Allocator, std::size_t Index>
-    using split_tuple_sender = typename split_tuple_sender_impl<Sender,
-        Allocator, Index>::split_tuple_sender_type;
+    using split_tuple_sender =
+        typename split_tuple_sender_impl<Sender, Allocator, Index>::split_tuple_sender_type;
 
     template <typename Sender, typename Allocator, std::size_t Index>
-    struct split_tuple_sender_impl<Sender, Allocator,
-        Index>::split_tuple_sender_type
+    struct split_tuple_sender_impl<Sender, Allocator, Index>::split_tuple_sender_type
     {
         using allocator_type = Allocator;
         using shared_state_type = shared_state<Sender, Allocator>;
 
         // nvcc does not like decay_t, so this uses decay<>::type instead.
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-        using value_type = typename std::decay<
-            pika::execution::experimental::detail::single_result_t<
+        using value_type =
+            typename std::decay<pika::execution::experimental::detail::single_result_t<
                 typename pika::execution::experimental::value_types_of_t<Sender,
-                    pika::execution::experimental::detail::empty_env,
-                    pika::util::detail::pack, pika::util::detail::pack>>>::type;
-#else
-        using value_type = typename std::decay<
-            pika::execution::experimental::detail::single_result_t<
-                typename pika::execution::experimental::sender_traits<
-                    Sender>::template value_types<pika::util::detail::pack,
+                    pika::execution::experimental::detail::empty_env, pika::util::detail::pack,
                     pika::util::detail::pack>>>::type;
+#else
+        using value_type =
+            typename std::decay<pika::execution::experimental::detail::single_result_t<
+                typename pika::execution::experimental::sender_traits<Sender>::template value_types<
+                    pika::util::detail::pack, pika::util::detail::pack>>>::type;
 #endif
         static_assert(std::tuple_size_v<value_type> >= 1,
             "split_tuple takes a sender that sends a tuple of at least one "
             "type");
-        using split_tuple_sender_value_type =
-            std::decay_t<std::tuple_element_t<Index, value_type>>;
+        using split_tuple_sender_value_type = std::decay_t<std::tuple_element_t<Index, value_type>>;
 
         template <typename T>
         struct add_const_lvalue_reference
@@ -436,37 +411,30 @@ namespace pika::split_tuple_detail {
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
         template <typename...>
-        using set_value_helper =
-            pika::execution::experimental::completion_signatures<
-                pika::execution::experimental::set_value_t(
-                    split_tuple_sender_value_type)>;
+        using set_value_helper = pika::execution::experimental::completion_signatures<
+            pika::execution::experimental::set_value_t(split_tuple_sender_value_type)>;
 
         template <typename T>
-        using set_error_helper =
-            pika::execution::experimental::completion_signatures<
-                pika::execution::experimental::set_error_t(
-                    typename add_const_lvalue_reference<T>::type)>;
+        using set_error_helper = pika::execution::experimental::completion_signatures<
+            pika::execution::experimental::set_error_t(
+                typename add_const_lvalue_reference<T>::type)>;
 
         using completion_signatures =
             pika::execution::experimental::make_completion_signatures<Sender,
                 pika::execution::experimental::detail::empty_env,
                 pika::execution::experimental::completion_signatures<
-                    pika::execution::experimental::set_error_t(
-                        std::exception_ptr)>,
+                    pika::execution::experimental::set_error_t(std::exception_ptr)>,
                 set_value_helper, set_error_helper>;
 #else
-        template <template <typename...> class Tuple,
-            template <typename...> class Variant>
+        template <template <typename...> class Tuple, template <typename...> class Variant>
         using value_types = Variant<Tuple<split_tuple_sender_value_type>>;
 
         template <template <typename...> class Variant>
-        using error_types =
-            pika::util::detail::unique_t<pika::util::detail::prepend_t<
-                pika::util::detail::transform_t<
-                    typename pika::execution::experimental::sender_traits<
-                        Sender>::template error_types<Variant>,
-                    add_const_lvalue_reference>,
-                std::exception_ptr>>;
+        using error_types = pika::util::detail::unique_t<pika::util::detail::prepend_t<
+            pika::util::detail::transform_t<typename pika::execution::experimental::sender_traits<
+                                                Sender>::template error_types<Variant>,
+                add_const_lvalue_reference>,
+            std::exception_ptr>>;
 
         static constexpr bool sends_done =
             pika::execution::experimental::sender_traits<Sender>::sends_done;
@@ -474,15 +442,13 @@ namespace pika::split_tuple_detail {
 
         pika::intrusive_ptr<shared_state_type> state;
 
-        explicit split_tuple_sender_type(
-            pika::intrusive_ptr<shared_state_type> state)
+        explicit split_tuple_sender_type(pika::intrusive_ptr<shared_state_type> state)
           : state(std::move(state))
         {
         }
 
         split_tuple_sender_type(split_tuple_sender_type const&) = default;
-        split_tuple_sender_type& operator=(
-            split_tuple_sender_type const&) = default;
+        split_tuple_sender_type& operator=(split_tuple_sender_type const&) = default;
         split_tuple_sender_type(split_tuple_sender_type&&) = default;
         split_tuple_sender_type& operator=(split_tuple_sender_type&&) = default;
 
@@ -493,8 +459,7 @@ namespace pika::split_tuple_detail {
             pika::intrusive_ptr<shared_state_type> state;
 
             template <typename Receiver_>
-            operation_state(Receiver_&& receiver,
-                pika::intrusive_ptr<shared_state_type> state)
+            operation_state(Receiver_&& receiver, pika::intrusive_ptr<shared_state_type> state)
               : receiver(PIKA_FORWARD(Receiver_, receiver))
               , state(PIKA_MOVE(state))
             {
@@ -505,27 +470,24 @@ namespace pika::split_tuple_detail {
             operation_state(operation_state const&) = delete;
             operation_state& operator=(operation_state const&) = delete;
 
-            friend void tag_invoke(pika::execution::experimental::start_t,
-                operation_state& os) noexcept
+            friend void tag_invoke(
+                pika::execution::experimental::start_t, operation_state& os) noexcept
             {
                 os.state->start();
-                os.state->template add_continuation<Index>(
-                    PIKA_MOVE(os.receiver));
+                os.state->template add_continuation<Index>(PIKA_MOVE(os.receiver));
             }
         };
 
         template <typename Receiver>
-        friend operation_state<Receiver>
-        tag_invoke(pika::execution::experimental::connect_t,
+        friend operation_state<Receiver> tag_invoke(pika::execution::experimental::connect_t,
             split_tuple_sender_type&& s, Receiver&& receiver)
         {
             return {PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.state)};
         }
 
         template <typename Receiver>
-        friend operation_state<Receiver>
-        tag_invoke(pika::execution::experimental::connect_t,
-            split_tuple_sender_type const&, Receiver&&)
+        friend operation_state<Receiver> tag_invoke(
+            pika::execution::experimental::connect_t, split_tuple_sender_type const&, Receiver&&)
         {
             static_assert(sizeof(Receiver) == 0,
                 "Are you missing a std::move? The split_tuple sender is not "
@@ -535,8 +497,7 @@ namespace pika::split_tuple_detail {
     };
 
     template <typename Sender, typename Allocator, std::size_t... Is>
-    auto make_split_tuple_senders(
-        pika::intrusive_ptr<shared_state<Sender, Allocator>> state,
+    auto make_split_tuple_senders(pika::intrusive_ptr<shared_state<Sender, Allocator>> state,
         pika::util::detail::index_pack<Is...>)
     {
         return std::tuple(split_tuple_sender<Sender, Allocator, Is>(state)...);
@@ -551,38 +512,35 @@ namespace pika::split_tuple_detail {
         using other_allocator = typename std::allocator_traits<
             allocator_type>::template rebind_alloc<shared_state_type>;
         using allocator_traits = std::allocator_traits<other_allocator>;
-        using unique_ptr = std::unique_ptr<shared_state_type,
-            pika::detail::allocator_deleter<other_allocator>>;
+        using unique_ptr =
+            std::unique_ptr<shared_state_type, pika::detail::allocator_deleter<other_allocator>>;
 
         other_allocator alloc(allocator);
         unique_ptr p(allocator_traits::allocate(alloc, 1),
             pika::detail::allocator_deleter<other_allocator>{alloc});
 
-        new (p.get())
-            shared_state_type{PIKA_FORWARD(Sender_, sender), allocator};
+        new (p.get()) shared_state_type{PIKA_FORWARD(Sender_, sender), allocator};
         pika::intrusive_ptr<shared_state_type> state = p.release();
 
         // nvcc does not like decay_t, so this uses decay<>::type instead.
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-        using value_type = typename std::decay<
-            pika::execution::experimental::detail::single_result_t<
+        using value_type =
+            typename std::decay<pika::execution::experimental::detail::single_result_t<
                 typename pika::execution::experimental::value_types_of_t<Sender,
-                    pika::execution::experimental::detail::empty_env,
-                    pika::util::detail::pack, pika::util::detail::pack>>>::type;
-#else
-        using value_type = typename std::decay<
-            pika::execution::experimental::detail::single_result_t<
-                typename pika::execution::experimental::sender_traits<
-                    Sender>::template value_types<pika::util::detail::pack,
+                    pika::execution::experimental::detail::empty_env, pika::util::detail::pack,
                     pika::util::detail::pack>>>::type;
+#else
+        using value_type =
+            typename std::decay<pika::execution::experimental::detail::single_result_t<
+                typename pika::execution::experimental::sender_traits<Sender>::template value_types<
+                    pika::util::detail::pack, pika::util::detail::pack>>>::type;
 #endif
 
         // nvcc does not like tuple_size_v, so this uses tuple_size<>::value
         // instead.
-        return make_split_tuple_senders<std::decay_t<Sender>,
-            std::decay_t<Allocator>>(std::move(state),
-            pika::util::detail::make_index_pack_t<
-                std::tuple_size<value_type>::value>{});
+        return make_split_tuple_senders<std::decay_t<Sender>, std::decay_t<Allocator>>(
+            std::move(state),
+            pika::util::detail::make_index_pack_t<std::tuple_size<value_type>::value>{});
     }
 }    // namespace pika::split_tuple_detail
 
@@ -599,19 +557,16 @@ namespace pika::execution::experimental {
     {
     private:
         template <typename Sender, PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender>)>
-        friend constexpr PIKA_FORCEINLINE auto
-        tag_fallback_invoke(split_tuple_t, Sender&& sender)
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(split_tuple_t, Sender&& sender)
         {
             return split_tuple_detail::make_split_tuple_senders(
-                PIKA_FORWARD(Sender, sender),
-                pika::detail::internal_allocator<>{});
+                PIKA_FORWARD(Sender, sender), pika::detail::internal_allocator<>{});
         }
 
         template <typename Sender, typename Allocator,
-            PIKA_CONCEPT_REQUIRES_(
-                is_sender_v<Sender>&& pika::detail::is_allocator_v<Allocator>)>
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            split_tuple_t, Sender&& sender, Allocator const& allocator)
+            PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender>&& pika::detail::is_allocator_v<Allocator>)>
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(split_tuple_t, Sender&& sender, Allocator const& allocator)
         {
             return split_tuple_detail::make_split_tuple_senders(
                 PIKA_FORWARD(Sender, sender), allocator);
@@ -622,8 +577,7 @@ namespace pika::execution::experimental {
         friend constexpr PIKA_FORCEINLINE auto
         tag_fallback_invoke(split_tuple_t, Allocator const& allocator = {})
         {
-            return detail::partial_algorithm<split_tuple_t, Allocator>{
-                allocator};
+            return detail::partial_algorithm<split_tuple_t, Allocator>{allocator};
         }
     } split_tuple{};
 }    // namespace pika::execution::experimental

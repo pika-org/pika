@@ -42,8 +42,7 @@ void test_bulk_then_execute(Executor&& exec)
     std::iota(v.begin(), v.end(), 0);
 
     {
-        pika::future<void> fut =
-            pika::parallel::execution::bulk_then_execute(exec, &fun1, v, f);
+        pika::future<void> fut = pika::parallel::execution::bulk_then_execute(exec, &fun1, v, f);
         fut.get();
 
         PIKA_TEST_EQ(void_count.load(), 100);

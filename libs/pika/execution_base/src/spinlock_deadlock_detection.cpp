@@ -16,10 +16,8 @@
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
 namespace pika::util::detail {
     static bool spinlock_break_on_deadlock_enabled = false;
-    static std::size_t spinlock_deadlock_detection_limit =
-        PIKA_SPINLOCK_DEADLOCK_DETECTION_LIMIT;
-    static std::size_t spinlock_deadlock_warning_limit =
-        PIKA_SPINLOCK_DEADLOCK_WARNING_LIMIT;
+    static std::size_t spinlock_deadlock_detection_limit = PIKA_SPINLOCK_DEADLOCK_DETECTION_LIMIT;
+    static std::size_t spinlock_deadlock_warning_limit = PIKA_SPINLOCK_DEADLOCK_WARNING_LIMIT;
 
     void set_spinlock_break_on_deadlock_enabled(bool enabled)
     {

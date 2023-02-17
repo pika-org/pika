@@ -97,8 +97,7 @@
 
 namespace pika::program_options::detail {
 
-    struct PIKA_EXPORT utf8_codecvt_facet
-      : public std::codecvt<wchar_t, char, std::mbstate_t>
+    struct PIKA_EXPORT utf8_codecvt_facet : public std::codecvt<wchar_t, char, std::mbstate_t>
     {
     public:
         explicit utf8_codecvt_facet(std::size_t no_locale_manage = 0);
@@ -106,12 +105,11 @@ namespace pika::program_options::detail {
 
     protected:
         std::codecvt_base::result do_in(std::mbstate_t& state, const char* from,
-            const char* from_end, const char*& from_next, wchar_t* to,
-            wchar_t* to_end, wchar_t*& to_next) const override;
+            const char* from_end, const char*& from_next, wchar_t* to, wchar_t* to_end,
+            wchar_t*& to_next) const override;
 
-        std::codecvt_base::result do_out(std::mbstate_t& state,
-            const wchar_t* from, const wchar_t* from_end,
-            const wchar_t*& from_next, char* to, char* to_end,
+        std::codecvt_base::result do_out(std::mbstate_t& state, const wchar_t* from,
+            const wchar_t* from_end, const wchar_t*& from_next, char* to, char* to_end,
             char*& to_next) const override;
 
         bool invalid_continuing_octet(unsigned char octet_1) const
@@ -142,8 +140,8 @@ namespace pika::program_options::detail {
         }
 
         // UTF-8 isn't really stateful since we rewind on partial conversions
-        std::codecvt_base::result do_unshift(std::mbstate_t&, char* from,
-            char* /*to*/, char*& next) const override
+        std::codecvt_base::result do_unshift(
+            std::mbstate_t&, char* from, char* /*to*/, char*& next) const override
         {
             next = from;
             return ok;
@@ -161,11 +159,10 @@ namespace pika::program_options::detail {
             std::size_t max_limit) const noexcept override;
 
         // Nonstandard override
-        virtual int do_length(const std::mbstate_t& s, const char* from,
-            const char* from_end, std::size_t max_limit) const noexcept
+        virtual int do_length(const std::mbstate_t& s, const char* from, const char* from_end,
+            std::size_t max_limit) const noexcept
         {
-            return do_length(
-                const_cast<std::mbstate_t&>(s), from, from_end, max_limit);
+            return do_length(const_cast<std::mbstate_t&>(s), from, from_end, max_limit);
         }
 
         // Largest possible value do_length(state,from,from_end,1) could return.

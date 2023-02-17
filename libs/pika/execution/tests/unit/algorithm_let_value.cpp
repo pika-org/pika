@@ -83,8 +83,7 @@ int main()
     {
         std::atomic<bool> set_value_called{false};
         std::atomic<bool> let_value_callback_called{false};
-        auto s1 =
-            ex::just(custom_type_non_default_constructible_non_copyable{42});
+        auto s1 = ex::just(custom_type_non_default_constructible_non_copyable{42});
         auto s2 = ex::let_value(std::move(s1), [&](auto& x) {
             PIKA_TEST_EQ(x.x, 42);
             let_value_callback_called = true;

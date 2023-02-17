@@ -40,20 +40,16 @@ namespace pika::program_options {
             result.position_key = opt.position_key;
             result.unregistered = opt.unregistered;
 
-            std::transform(opt.value.begin(), opt.value.end(),
-                back_inserter(result.value),
+            std::transform(opt.value.begin(), opt.value.end(), back_inserter(result.value),
                 std::bind(from_utf8, std::placeholders::_1));
 
-            std::transform(opt.original_tokens.begin(),
-                opt.original_tokens.end(),
-                back_inserter(result.original_tokens),
-                std::bind(from_utf8, std::placeholders::_1));
+            std::transform(opt.original_tokens.begin(), opt.original_tokens.end(),
+                back_inserter(result.original_tokens), std::bind(from_utf8, std::placeholders::_1));
             return result;
         }
     }    // namespace
 
-    basic_parsed_options<wchar_t>::basic_parsed_options(
-        const parsed_options& po)
+    basic_parsed_options<wchar_t>::basic_parsed_options(const parsed_options& po)
       : description(po.description)
       , utf8_encoded_options(po)
       , m_options_prefix(po.m_options_prefix)
@@ -63,8 +59,8 @@ namespace pika::program_options {
     }
 
     template <class Char>
-    basic_parsed_options<Char> parse_config_file(std::basic_istream<Char>& is,
-        const options_description& desc, bool allow_unregistered)
+    basic_parsed_options<Char> parse_config_file(
+        std::basic_istream<Char>& is, const options_description& desc, bool allow_unregistered)
     {
         set<string> allowed_options;
 
@@ -82,25 +78,21 @@ namespace pika::program_options {
 
         // Parser return char strings
         parsed_options result(&desc);
-        copy(detail::basic_config_file_iterator<Char>(
-                 is, allowed_options, allow_unregistered),
-            detail::basic_config_file_iterator<Char>(),
-            back_inserter(result.options));
+        copy(detail::basic_config_file_iterator<Char>(is, allowed_options, allow_unregistered),
+            detail::basic_config_file_iterator<Char>(), back_inserter(result.options));
         // Convert char strings into desired type.
         return basic_parsed_options<Char>(result);
     }
 
     template PIKA_EXPORT basic_parsed_options<char> parse_config_file(
-        std::basic_istream<char>& is, const options_description& desc,
-        bool allow_unregistered);
+        std::basic_istream<char>& is, const options_description& desc, bool allow_unregistered);
 
     template PIKA_EXPORT basic_parsed_options<wchar_t> parse_config_file(
-        std::basic_istream<wchar_t>& is, const options_description& desc,
-        bool allow_unregistered);
+        std::basic_istream<wchar_t>& is, const options_description& desc, bool allow_unregistered);
 
     template <class Char>
-    basic_parsed_options<Char> parse_config_file(const char* filename,
-        const options_description& desc, bool allow_unregistered)
+    basic_parsed_options<Char> parse_config_file(
+        const char* filename, const options_description& desc, bool allow_unregistered)
     {
         // Parser return char strings
         std::basic_ifstream<Char> strm(filename);
@@ -109,8 +101,7 @@ namespace pika::program_options {
             throw reading_file(filename);
         }
 
-        basic_parsed_options<Char> result =
-            parse_config_file(strm, desc, allow_unregistered);
+        basic_parsed_options<Char> result = parse_config_file(strm, desc, allow_unregistered);
 
         if (strm.bad())
         {
@@ -121,15 +112,13 @@ namespace pika::program_options {
     }
 
     template PIKA_EXPORT basic_parsed_options<char> parse_config_file(
-        const char* filename, const options_description& desc,
-        bool allow_unregistered);
+        const char* filename, const options_description& desc, bool allow_unregistered);
 
     template PIKA_EXPORT basic_parsed_options<wchar_t> parse_config_file(
-        const char* filename, const options_description& desc,
-        bool allow_unregistered);
+        const char* filename, const options_description& desc, bool allow_unregistered);
 
-    parsed_options parse_environment(const options_description& desc,
-        const std::function<std::string(std::string)>& name_mapper)
+    parsed_options parse_environment(
+        const options_description& desc, const std::function<std::string(std::string)>& name_mapper)
     {
         parsed_options result(&desc);
 
@@ -184,14 +173,12 @@ namespace pika::program_options {
         };
     }    // namespace detail
 
-    parsed_options parse_environment(
-        const options_description& desc, const std::string& prefix)
+    parsed_options parse_environment(const options_description& desc, const std::string& prefix)
     {
         return parse_environment(desc, detail::prefix_name_mapper(prefix));
     }
 
-    parsed_options parse_environment(
-        const options_description& desc, const char* prefix)
+    parsed_options parse_environment(const options_description& desc, const char* prefix)
     {
         return parse_environment(desc, string(prefix));
     }

@@ -43,10 +43,8 @@ namespace pika {
     ///             output container will be the same as given by the input
     ///             iterator.
     template <typename InputIter,
-        typename Container = vector<
-            future<typename std::iterator_traits<InputIter>::value_type>>>
-    future<when_any_result<Container>>
-    when_any(InputIter first, InputIter last);
+        typename Container = vector<future<typename std::iterator_traits<InputIter>::value_type>>>
+    future<when_any_result<Container>> when_any(InputIter first, InputIter last);
 
     /// The function \a when_any is a non-deterministic choice operator. It
     /// OR-composes all future objects given and returns a new future object
@@ -112,10 +110,8 @@ namespace pika {
     ///
     /// \note     None of the futures in the input sequence are invalidated.
     template <typename InputIter,
-        typename Container = vector<
-            future<typename std::iterator_traits<InputIter>::value_type>>>
-    future<when_any_result<Container>>
-    when_any_n(InputIter first, std::size_t count);
+        typename Container = vector<future<typename std::iterator_traits<InputIter>::value_type>>>
+    future<when_any_result<Container>> when_any_n(InputIter first, std::size_t count);
 }    // namespace pika
 
 #else    // DOXYGEN
@@ -215,26 +211,21 @@ namespace pika {
         template <typename Sequence>
         struct set_when_any_callback_impl
         {
-            explicit set_when_any_callback_impl(
-                when_any<Sequence>& when) noexcept
+            explicit set_when_any_callback_impl(when_any<Sequence>& when) noexcept
               : when_(when)
               , idx_(0)
             {
             }
 
             template <typename Future>
-            std::enable_if_t<pika::traits::is_future_v<Future>>
-            operator()(Future& future) const
+            std::enable_if_t<pika::traits::is_future_v<Future>> operator()(Future& future) const
             {
-                std::size_t index =
-                    when_.index_.load(std::memory_order_seq_cst);
+                std::size_t index = when_.index_.load(std::memory_order_seq_cst);
 
                 if (index == when_any_result<Sequence>::index_error())
                 {
-                    using shared_state_ptr =
-                        pika::traits::detail::shared_state_ptr_for_t<Future>;
-                    shared_state_ptr const& shared_state =
-                        traits::detail::get_shared_state(future);
+                    using shared_state_ptr = pika::traits::detail::shared_state_ptr_for_t<Future>;
+                    shared_state_ptr const& shared_state = traits::detail::get_shared_state(future);
 
                     if (shared_state && !shared_state->is_ready())
                     {
@@ -246,13 +237,10 @@ namespace pika {
                         // execute_deferred might have made the future ready
                         if (!shared_state->is_ready())
                         {
-                            shared_state->set_on_completed(
-                                util::detail::deferred_call(
-                                    &detail::when_any<
-                                        Sequence>::on_future_ready,
-                                    when_.shared_from_this(), idx_,
-                                    pika::execution::this_thread::detail::
-                                        agent()));
+                            shared_state->set_on_completed(util::detail::deferred_call(
+                                &detail::when_any<Sequence>::on_future_ready,
+                                when_.shared_from_this(), idx_,
+                                pika::execution::this_thread::detail::agent()));
                             ++idx_;
                             return;
                         }
@@ -267,27 +255,23 @@ namespace pika {
             }
 
             template <typename Sequence_>
-            PIKA_FORCEINLINE
-                std::enable_if_t<pika::traits::is_future_range_v<Sequence_>>
-                operator()(Sequence_& sequence) const
+            PIKA_FORCEINLINE std::enable_if_t<pika::traits::is_future_range_v<Sequence_>>
+            operator()(Sequence_& sequence) const
             {
                 apply(sequence);
             }
 
             template <typename Tuple, std::size_t... Is>
-            PIKA_FORCEINLINE void
-            apply(Tuple& tuple, pika::util::detail::index_pack<Is...>) const
+            PIKA_FORCEINLINE void apply(Tuple& tuple, pika::util::detail::index_pack<Is...>) const
             {
-                int const _sequencer[] = {
-                    (((*this)(std::get<Is>(tuple))), 0)...};
+                int const _sequencer[] = {(((*this)(std::get<Is>(tuple))), 0)...};
                 (void) _sequencer;
             }
 
             template <typename... Ts>
             PIKA_FORCEINLINE void apply(std::tuple<Ts...>& sequence) const
             {
-                apply(sequence,
-                    pika::util::detail::make_index_pack_t<sizeof...(Ts)>());
+                apply(sequence, pika::util::detail::make_index_pack_t<sizeof...(Ts)>());
             }
 
             template <typename Sequence_>
@@ -301,8 +285,7 @@ namespace pika {
         };
 
         template <typename Sequence>
-        PIKA_FORCEINLINE void
-        set_on_completed_callback(detail::when_any<Sequence>& when)
+        PIKA_FORCEINLINE void set_on_completed_callback(detail::when_any<Sequence>& when)
         {
             set_when_any_callback_impl<Sequence> callback(when);
             callback.apply(when.lazy_values_.futures);
@@ -310,15 +293,12 @@ namespace pika {
 
         ///////////////////////////////////////////////////////////////////////
         template <typename Sequence>
-        struct when_any
-          : std::enable_shared_from_this<when_any<Sequence>>    //-V690
+        struct when_any : std::enable_shared_from_this<when_any<Sequence>>    //-V690
         {
         public:
-            void on_future_ready(
-                std::size_t idx, pika::execution::detail::agent_ref ctx)
+            void on_future_ready(std::size_t idx, pika::execution::detail::agent_ref ctx)
             {
-                std::size_t index_not_initialized =
-                    when_any_result<Sequence>::index_error();
+                std::size_t index_not_initialized = when_any_result<Sequence>::index_error();
                 if (index_.compare_exchange_strong(index_not_initialized, idx))
                 {
                     // reactivate waiting thread only if it's not us
@@ -366,8 +346,7 @@ namespace pika {
                 }
 
                 // that should not happen
-                PIKA_ASSERT(
-                    index_.load() != when_any_result<Sequence>::index_error());
+                PIKA_ASSERT(index_.load() != when_any_result<Sequence>::index_error());
 
                 lazy_values_.index = index_.load();
                 return PIKA_MOVE(lazy_values_);
@@ -391,9 +370,7 @@ namespace pika {
             pika::traits::acquire_future<result_type>()(values));
 
         lcos::local::futures_factory<pika::when_any_result<result_type>()> p(
-            [f = PIKA_MOVE(f)]() -> pika::when_any_result<result_type> {
-                return (*f)();
-            });
+            [f = PIKA_MOVE(f)]() -> pika::when_any_result<result_type> { return (*f)(); });
 
         auto result = p.get_future();
         p.apply();
@@ -402,12 +379,9 @@ namespace pika {
     }
 
     template <typename Iterator,
-        typename Container =
-            std::vector<pika::lcos::detail::future_iterator_traits_t<Iterator>>,
-        typename Enable =
-            std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
-    pika::future<pika::when_any_result<Container>>
-    when_any(Iterator begin, Iterator end)
+        typename Container = std::vector<pika::lcos::detail::future_iterator_traits_t<Iterator>>,
+        typename Enable = std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
+    pika::future<pika::when_any_result<Container>> when_any(Iterator begin, Iterator end)
     {
         Container values;
         traits::detail::reserve_if_random_access_by_range(values, begin, end);
@@ -423,12 +397,9 @@ namespace pika {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Iterator,
-        typename Container =
-            std::vector<pika::lcos::detail::future_iterator_traits_t<Iterator>>,
-        typename Enable =
-            std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
-    pika::future<pika::when_any_result<Container>>
-    when_any_n(Iterator begin, std::size_t count)
+        typename Container = std::vector<pika::lcos::detail::future_iterator_traits_t<Iterator>>,
+        typename Enable = std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
+    pika::future<pika::when_any_result<Container>> when_any_n(Iterator begin, std::size_t count)
     {
         Container values;
         traits::detail::reserve_if_reservable(values, count);
@@ -443,27 +414,22 @@ namespace pika {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename T, typename... Ts,
-        typename Enable = std::enable_if_t<!(
-            pika::traits::is_future_range_v<T> && sizeof...(Ts) == 0)>>
-    pika::future<
-        pika::when_any_result<std::tuple<pika::traits::acquire_future_t<T>,
-            pika::traits::acquire_future_t<Ts>...>>>
+        typename Enable =
+            std::enable_if_t<!(pika::traits::is_future_range_v<T> && sizeof...(Ts) == 0)>>
+    pika::future<pika::when_any_result<
+        std::tuple<pika::traits::acquire_future_t<T>, pika::traits::acquire_future_t<Ts>...>>>
     when_any(T&& t, Ts&&... ts)
     {
-        using result_type = std::tuple<pika::traits::acquire_future_t<T>,
-            pika::traits::acquire_future_t<Ts>...>;
+        using result_type =
+            std::tuple<pika::traits::acquire_future_t<T>, pika::traits::acquire_future_t<Ts>...>;
 
         pika::traits::acquire_future_disp func;
-        result_type values(
-            func(PIKA_FORWARD(T, t)), func(PIKA_FORWARD(Ts, ts))...);
+        result_type values(func(PIKA_FORWARD(T, t)), func(PIKA_FORWARD(Ts, ts))...);
 
-        auto f =
-            std::make_shared<detail::when_any<result_type>>(PIKA_MOVE(values));
+        auto f = std::make_shared<detail::when_any<result_type>>(PIKA_MOVE(values));
 
         lcos::local::futures_factory<pika::when_any_result<result_type>()> p(
-            [f = PIKA_MOVE(f)]() -> pika::when_any_result<result_type> {
-                return (*f)();
-            });
+            [f = PIKA_MOVE(f)]() -> pika::when_any_result<result_type> { return (*f)(); });
 
         auto result = p.get_future();
         p.apply();

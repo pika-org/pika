@@ -41,8 +41,7 @@ namespace pika::util {
         }
 
         // thread-specific data
-        os_thread_data::os_thread_data(
-            std::string const& label, os_thread_type type)
+        os_thread_data::os_thread_data(std::string const& label, os_thread_type type)
           : label_(label)
           , id_(std::this_thread::get_id())
           , tid_(get_system_thread_id())
@@ -83,8 +82,7 @@ namespace pika::util {
         }
     }
 
-    std::uint32_t thread_mapper::register_thread(
-        char const* name, os_thread_type type)
+    std::uint32_t thread_mapper::register_thread(char const* name, os_thread_type type)
     {
         std::lock_guard<mutex_type> m(mtx_);
 
@@ -93,8 +91,7 @@ namespace pika::util {
         {
             if (tinfo.tid_ == tid)
             {
-                PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
-                    "thread_mapper::register_thread",
+                PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "thread_mapper::register_thread",
                     "thread already registered");
             }
         }
@@ -140,8 +137,7 @@ namespace pika::util {
         return false;
     }
 
-    bool thread_mapper::register_callback(
-        std::uint32_t tix, callback_type const& cb)
+    bool thread_mapper::register_callback(std::uint32_t tix, callback_type const& cb)
     {
         std::lock_guard<mutex_type> m(mtx_);
 
@@ -181,8 +177,7 @@ namespace pika::util {
         return thread_map_[idx].id_;
     }
 
-    std::uint64_t thread_mapper::get_thread_native_handle(
-        std::uint32_t tix) const
+    std::uint64_t thread_mapper::get_thread_native_handle(std::uint32_t tix) const
     {
         std::lock_guard<mutex_type> m(mtx_);
 
@@ -233,8 +228,7 @@ namespace pika::util {
         return thread_map_[idx].type_;
     }
 
-    std::uint32_t thread_mapper::get_thread_index(
-        std::string const& label) const
+    std::uint32_t thread_mapper::get_thread_index(std::string const& label) const
     {
         std::lock_guard<mutex_type> m(mtx_);
 
@@ -254,23 +248,22 @@ namespace pika::util {
     }
 
     // retrieve all data stored for a given thread
-    os_thread_data thread_mapper::get_os_thread_data(
-        std::string const& label) const
+    os_thread_data thread_mapper::get_os_thread_data(std::string const& label) const
     {
         std::lock_guard<mutex_type> m(mtx_);
 
         auto it = label_map_.find(label);
         if (it == label_map_.end())
         {
-            return os_thread_data{"", std::thread::id{},
-                thread_mapper::invalid_tid, os_thread_type::unknown};
+            return os_thread_data{
+                "", std::thread::id{}, thread_mapper::invalid_tid, os_thread_type::unknown};
         }
 
         auto idx = static_cast<std::size_t>(it->second);
         if (idx >= thread_map_.size())
         {
-            return os_thread_data{"", std::thread::id{},
-                thread_mapper::invalid_tid, os_thread_type::unknown};
+            return os_thread_data{
+                "", std::thread::id{}, thread_mapper::invalid_tid, os_thread_type::unknown};
         }
 
         auto const& tinfo = thread_map_[idx];
@@ -283,8 +276,7 @@ namespace pika::util {
         std::lock_guard<mutex_type> m(mtx_);
         for (auto const& tinfo : thread_map_)
         {
-            os_thread_data data{
-                tinfo.label_, tinfo.id_, tinfo.tid_, tinfo.type_};
+            os_thread_data data{tinfo.label_, tinfo.id_, tinfo.tid_, tinfo.type_};
             if (!f(data))
             {
                 return false;

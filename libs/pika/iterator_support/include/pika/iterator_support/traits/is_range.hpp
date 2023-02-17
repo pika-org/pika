@@ -23,10 +23,9 @@ namespace pika::traits {
 
     template <typename T>
     struct is_range<T,
-        typename std::enable_if<pika::traits::is_sentinel_for<
-            typename util::detail::sentinel<T>::type,
-            typename util::detail::iterator<T>::type>::value>::type>
-      : std::true_type
+        typename std::enable_if<
+            pika::traits::is_sentinel_for<typename util::detail::sentinel<T>::type,
+                typename util::detail::iterator<T>::type>::value>::type> : std::true_type
     {
     };
 
@@ -57,8 +56,7 @@ namespace pika::traits {
     };
 
     template <typename R>
-    struct range_traits<R, true>
-      : std::iterator_traits<typename util::detail::iterator<R>::type>
+    struct range_traits<R, true> : std::iterator_traits<typename util::detail::iterator<R>::type>
     {
         using iterator_type = typename util::detail::iterator<R>::type;
         using sentinel_type = typename util::detail::sentinel<R>::type;

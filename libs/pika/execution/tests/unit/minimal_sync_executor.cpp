@@ -43,8 +43,7 @@ pika::thread::id sync_bulk_test(int, pika::thread::id tid,
     return pika::this_thread::get_id();
 }
 
-void sync_bulk_test_void(
-    int, pika::thread::id tid, int passed_through)    //-V813
+void sync_bulk_test_void(int, pika::thread::id tid, int passed_through)    //-V813
 {
     PIKA_TEST_EQ(tid, pika::this_thread::get_id());
     PIKA_TEST_EQ(passed_through, 42);
@@ -69,8 +68,8 @@ void then_test_void(pika::future<void> f, int passed_through)
     PIKA_TEST_EQ(passed_through, 42);
 }
 
-pika::thread::id then_bulk_test(int, pika::shared_future<void> f,
-    pika::thread::id tid, int passed_through)    //-V813
+pika::thread::id then_bulk_test(
+    int, pika::shared_future<void> f, pika::thread::id tid, int passed_through)    //-V813
 {
     PIKA_TEST(f.is_ready());    // make sure, future is ready
 
@@ -106,8 +105,7 @@ void test_sync(Executor& exec)
 template <typename Executor>
 void test_async(Executor& exec)
 {
-    PIKA_TEST(
-        pika::parallel::execution::async_execute(exec, &sync_test, 42).get() ==
+    PIKA_TEST(pika::parallel::execution::async_execute(exec, &sync_test, 42).get() ==
         pika::this_thread::get_id());
 
     pika::parallel::execution::async_execute(exec, &sync_test_void, 42).get();
@@ -117,12 +115,11 @@ template <typename Executor>
 void test_then(Executor& exec)
 {
     pika::future<void> f1 = pika::make_ready_future();
-    PIKA_TEST(pika::parallel::execution::then_execute(exec, &then_test, f1, 42)
-                  .get() == pika::this_thread::get_id());
+    PIKA_TEST(pika::parallel::execution::then_execute(exec, &then_test, f1, 42).get() ==
+        pika::this_thread::get_id());
 
     pika::future<void> f2 = pika::make_ready_future();
-    pika::parallel::execution::then_execute(exec, &then_test_void, f2, 42)
-        .get();
+    pika::parallel::execution::then_execute(exec, &then_test_void, f2, 42).get();
 }
 
 template <typename Executor>
@@ -136,25 +133,22 @@ void test_bulk_sync(Executor& exec)
     using std::placeholders::_1;
     using std::placeholders::_2;
 
-    std::vector<pika::thread::id> ids =
-        pika::parallel::execution::bulk_sync_execute(exec,
-            pika::util::detail::bind(&sync_bulk_test, _1, tid, _2), v, 42);
+    std::vector<pika::thread::id> ids = pika::parallel::execution::bulk_sync_execute(
+        exec, pika::util::detail::bind(&sync_bulk_test, _1, tid, _2), v, 42);
     for (auto const& id : ids)
     {
         PIKA_TEST_EQ(id, pika::this_thread::get_id());
     }
 
-    ids = pika::parallel::execution::bulk_sync_execute(
-        exec, &sync_bulk_test, v, tid, 42);
+    ids = pika::parallel::execution::bulk_sync_execute(exec, &sync_bulk_test, v, tid, 42);
     for (auto const& id : ids)
     {
         PIKA_TEST_EQ(id, pika::this_thread::get_id());
     }
 
-    pika::parallel::execution::bulk_sync_execute(exec,
-        pika::util::detail::bind(&sync_bulk_test_void, _1, tid, _2), v, 42);
     pika::parallel::execution::bulk_sync_execute(
-        exec, &sync_bulk_test_void, v, tid, 42);
+        exec, pika::util::detail::bind(&sync_bulk_test_void, _1, tid, _2), v, 42);
+    pika::parallel::execution::bulk_sync_execute(exec, &sync_bulk_test_void, v, tid, 42);
 }
 
 template <typename Executor>
@@ -168,20 +162,17 @@ void test_bulk_async(Executor& exec)
     using std::placeholders::_1;
     using std::placeholders::_2;
 
-    pika::when_all(
-        pika::parallel::execution::bulk_async_execute(exec,
-            pika::util::detail::bind(&sync_bulk_test, _1, tid, _2), v, 42))
-        .get();
     pika::when_all(pika::parallel::execution::bulk_async_execute(
-                       exec, &sync_bulk_test, v, tid, 42))
+                       exec, pika::util::detail::bind(&sync_bulk_test, _1, tid, _2), v, 42))
+        .get();
+    pika::when_all(pika::parallel::execution::bulk_async_execute(exec, &sync_bulk_test, v, tid, 42))
         .get();
 
-    pika::when_all(
-        pika::parallel::execution::bulk_async_execute(exec,
-            pika::util::detail::bind(&sync_bulk_test_void, _1, tid, _2), v, 42))
-        .get();
     pika::when_all(pika::parallel::execution::bulk_async_execute(
-                       exec, &sync_bulk_test_void, v, tid, 42))
+                       exec, pika::util::detail::bind(&sync_bulk_test_void, _1, tid, _2), v, 42))
+        .get();
+    pika::when_all(
+        pika::parallel::execution::bulk_async_execute(exec, &sync_bulk_test_void, v, tid, 42))
         .get();
 }
 
@@ -197,18 +188,14 @@ void test_bulk_then(Executor& exec)
     pika::shared_future<void> f = pika::make_ready_future();
 
     std::vector<pika::thread::id> tids =
-        pika::parallel::execution::bulk_then_execute(
-            exec, &then_bulk_test, v, f, tid, 42)
-            .get();
+        pika::parallel::execution::bulk_then_execute(exec, &then_bulk_test, v, f, tid, 42).get();
 
     for (auto const& tid : tids)
     {
         PIKA_TEST_EQ(tid, pika::this_thread::get_id());
     }
 
-    pika::parallel::execution::bulk_then_execute(
-        exec, &then_bulk_test_void, v, f, tid, 42)
-        .get();
+    pika::parallel::execution::bulk_then_execute(exec, &then_bulk_test_void, v, f, tid, 42).get();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -218,11 +205,9 @@ std::atomic<std::size_t> count_bulk_sync(0);
 template <typename Executor>
 void test_executor(std::array<std::size_t, 2> expected)
 {
-    using execution_category =
-        typename pika::traits::executor_execution_category<Executor>::type;
+    using execution_category = typename pika::traits::executor_execution_category<Executor>::type;
 
-    PIKA_TEST((std::is_same<pika::execution::sequenced_execution_tag,
-        execution_category>::value));
+    PIKA_TEST((std::is_same<pika::execution::sequenced_execution_tag, execution_category>::value));
 
     count_sync.store(0);
     count_bulk_sync.store(0);
@@ -251,8 +236,7 @@ struct test_sync_executor1
     sync_execute(F&& f, Ts&&... ts)
     {
         ++count_sync;
-        return pika::util::detail::invoke(
-            std::forward<F>(f), std::forward<Ts>(ts)...);
+        return pika::util::detail::invoke(std::forward<F>(f), std::forward<Ts>(ts)...);
     }
 };
 
@@ -268,13 +252,11 @@ struct test_sync_executor2 : test_sync_executor1
     using execution_category = pika::execution::sequenced_execution_tag;
 
     template <typename F, typename Shape, typename... Ts>
-    static typename pika::parallel::execution::detail::bulk_execute_result<F,
-        Shape, Ts...>::type
+    static typename pika::parallel::execution::detail::bulk_execute_result<F, Shape, Ts...>::type
     call(std::false_type, F&& f, Shape const& shape, Ts&&... ts)
     {
         using result_type =
-            typename pika::parallel::execution::detail::bulk_function_result<F,
-                Shape, Ts...>::type;
+            typename pika::parallel::execution::detail::bulk_function_result<F, Shape, Ts...>::type;
 
         std::vector<result_type> results;
         for (auto const& elem : shape)
@@ -294,18 +276,16 @@ struct test_sync_executor2 : test_sync_executor1
     }
 
     template <typename F, typename Shape, typename... Ts>
-    static typename pika::parallel::execution::detail::bulk_execute_result<F,
-        Shape, Ts...>::type
+    static typename pika::parallel::execution::detail::bulk_execute_result<F, Shape, Ts...>::type
     bulk_sync_execute(F&& f, Shape const& shape, Ts&&... ts)
     {
         ++count_bulk_sync;
 
         using is_void =
-            typename std::is_void<typename pika::parallel::execution::detail::
-                    bulk_function_result<F, Shape, Ts...>::type>::type;
+            typename std::is_void<typename pika::parallel::execution::detail::bulk_function_result<
+                F, Shape, Ts...>::type>::type;
 
-        return call(
-            is_void(), std::forward<F>(f), shape, std::forward<Ts>(ts)...);
+        return call(is_void(), std::forward<F>(f), shape, std::forward<Ts>(ts)...);
     }
 };
 
@@ -331,16 +311,15 @@ void static_check_executor(B1, B2)
     static_assert(has_bulk_sync_execute_member<Executor>::value == B2::value,
         "check has_bulk_sync_execute_member<Executor>::value");
 
-    static_assert(!has_async_execute_member<Executor>::value,
-        "!has_async_execute_member<Executor>::value");
+    static_assert(
+        !has_async_execute_member<Executor>::value, "!has_async_execute_member<Executor>::value");
     static_assert(!has_bulk_async_execute_member<Executor>::value,
         "!has_bulk_async_execute_member<Executor>::value");
-    static_assert(!has_then_execute_member<Executor>::value,
-        "!has_then_execute_member<Executor>::value");
+    static_assert(
+        !has_then_execute_member<Executor>::value, "!has_then_execute_member<Executor>::value");
     static_assert(!has_bulk_then_execute_member<Executor>::value,
         "!has_bulk_then_execute_member<Executor>::value");
-    static_assert(
-        !has_post_member<Executor>::value, "!has_post_member<Executor>::value");
+    static_assert(!has_post_member<Executor>::value, "!has_post_member<Executor>::value");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -367,8 +346,8 @@ int main(int argc, char* argv[])
     pika::init_params init_args;
     init_args.cfg = cfg;
 
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(
+        pika::init(pika_main, argc, argv, init_args), 0, "pika main exited with non-zero status");
 
     return 0;
 }

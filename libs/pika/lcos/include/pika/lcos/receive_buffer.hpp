@@ -70,8 +70,7 @@ namespace pika::lcos::local {
             bool value_set_;
         };
 
-        using buffer_map_type =
-            std::map<std::size_t, std::shared_ptr<entry_data>>;
+        using buffer_map_type = std::map<std::size_t, std::shared_ptr<entry_data>>;
         using iterator = typename buffer_map_type::iterator;
 
         struct erase_on_exit
@@ -204,8 +203,7 @@ namespace pika::lcos::local {
         }
 
         // return the number of deleted buffer entries
-        std::size_t cancel_waiting(
-            std::exception_ptr const& e, bool force_delete_entries = false)
+        std::size_t cancel_waiting(std::exception_ptr const& e, bool force_delete_entries = false)
         {
             std::lock_guard<mutex_type> l(mtx_);
 
@@ -229,8 +227,8 @@ namespace pika::lcos::local {
             iterator it = buffer_map_.find(step);
             if (it == buffer_map_.end())
             {
-                std::pair<iterator, bool> res = buffer_map_.insert(
-                    std::make_pair(step, std::make_shared<entry_data>()));
+                std::pair<iterator, bool> res =
+                    buffer_map_.insert(std::make_pair(step, std::make_shared<entry_data>()));
                 if (!res.second)
                 {
                     PIKA_THROW_EXCEPTION(pika::error::invalid_status,
@@ -294,8 +292,7 @@ namespace pika::lcos::local {
             bool value_set_;
         };
 
-        using buffer_map_type =
-            std::map<std::size_t, std::shared_ptr<entry_data>>;
+        using buffer_map_type = std::map<std::size_t, std::shared_ptr<entry_data>>;
         using iterator = typename buffer_map_type::iterator;
 
         struct erase_on_exit
@@ -426,8 +423,7 @@ namespace pika::lcos::local {
         }
 
         // return the number of deleted buffer entries
-        std::size_t cancel_waiting(
-            std::exception_ptr const& e, bool force_delete_entries = false)
+        std::size_t cancel_waiting(std::exception_ptr const& e, bool force_delete_entries = false)
         {
             std::lock_guard<mutex_type> l(mtx_);
 
@@ -451,8 +447,8 @@ namespace pika::lcos::local {
             iterator it = buffer_map_.find(step);
             if (it == buffer_map_.end())
             {
-                std::pair<iterator, bool> res = buffer_map_.insert(
-                    std::make_pair(step, std::make_shared<entry_data>()));
+                std::pair<iterator, bool> res =
+                    buffer_map_.insert(std::make_pair(step, std::make_shared<entry_data>()));
                 if (!res.second)
                 {
                     PIKA_THROW_EXCEPTION(pika::error::invalid_status,

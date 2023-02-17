@@ -115,8 +115,7 @@ namespace pika::util::logging::detail {
         }
 
         // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-        void configure(
-            std::string const& name, std::string const& configure_str)
+        void configure(std::string const& name, std::string const& configure_str)
         // NOLINTEND(bugprone-easily-swappable-parameters)
         {
             auto iter = find_named(formatters, name);
@@ -240,8 +239,7 @@ namespace pika::util::logging::detail {
         }
 
         // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-        void configure(
-            std::string const& name, std::string const& configure_str)
+        void configure(std::string const& name, std::string const& configure_str)
         // NOLINTEND(bugprone-easily-swappable-parameters)
         {
             auto iter = find_named(destinations, name);
@@ -381,8 +379,7 @@ namespace pika::util::logging::writer {
 
         /// @brief Specifies the formats and destinations in one step
         // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-        void write(
-            std::string const& format_str, std::string const& destination_str)
+        void write(std::string const& format_str, std::string const& destination_str)
         // NOLINTEND(bugprone-easily-swappable-parameters)
         {
             format(format_str);
@@ -407,8 +404,7 @@ namespace pika::util::logging::writer {
         template <typename Formatter>
         void set_formatter(std::string const& name, Formatter fmt)
         {
-            m_format.add(
-                name, detail::named_formatters::ptr_type(new Formatter(fmt)));
+            m_format.add(name, detail::named_formatters::ptr_type(new Formatter(fmt)));
         }
 
         template <typename Formatter, typename... Args>
@@ -424,15 +420,13 @@ namespace pika::util::logging::writer {
         template <typename Destination>
         void set_destination(std::string const& name, Destination dest)
         {
-            m_destination.add(name,
-                detail::named_destinations::ptr_type(new Destination(dest)));
+            m_destination.add(name, detail::named_destinations::ptr_type(new Destination(dest)));
         }
 
         template <typename Destination, typename... Args>
         void set_destination(std::string const& name, Args&&... args)
         {
-            m_destination.add(
-                name, Destination::make(PIKA_FORWARD(Args, args)...));
+            m_destination.add(name, Destination::make(PIKA_FORWARD(Args, args)...));
         }
 
     private:

@@ -42,8 +42,8 @@ namespace pika::cuda::experimental {
         template <typename Shape>
         auto shape_size(Shape&& shape)
         {
-            return shape_size_impl(std::is_integral<std::decay_t<Shape>>{},
-                PIKA_FORWARD(Shape, shape));
+            return shape_size_impl(
+                std::is_integral<std::decay_t<Shape>>{}, PIKA_FORWARD(Shape, shape));
         }
 
 #if defined(PIKA_COMPUTE_CODE)
@@ -56,8 +56,7 @@ namespace pika::cuda::experimental {
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename Shape>
-        PIKA_DEVICE auto
-        shape_dereference_impl(std::false_type, Shape&& shape, int i)
+        PIKA_DEVICE auto shape_dereference_impl(std::false_type, Shape&& shape, int i)
         {
             return pika::util::begin(shape)[i];
         }
@@ -66,13 +65,11 @@ namespace pika::cuda::experimental {
         PIKA_DEVICE auto shape_dereference(Shape&& shape, int i)
         {
             return shape_dereference_impl(
-                std::is_integral<std::decay_t<Shape>>{},
-                PIKA_FORWARD(Shape, shape), i);
+                std::is_integral<std::decay_t<Shape>>{}, PIKA_FORWARD(Shape, shape), i);
         }
 
         template <typename F, typename Shape, typename Size, typename... Ts>
-        __global__ void
-        bulk_function_kernel_integral(F f, Shape shape, Size n, Ts... ts)
+        __global__ void bulk_function_kernel_integral(F f, Shape shape, Size n, Ts... ts)
         {
             int i = threadIdx.x + blockIdx.x * blockDim.x;
             if (i < static_cast<int>(n))
@@ -92,8 +89,7 @@ namespace pika::cuda::experimental {
                 constexpr int block_dim = 256;
                 int grid_dim = (n + block_dim - 1) / block_dim;
 
-                bulk_function_kernel_integral<<<block_dim, grid_dim, 0,
-                    stream>>>(f, shape, n);
+                bulk_function_kernel_integral<<<block_dim, grid_dim, 0, stream>>>(f, shape, n);
                 whip::check_last_error();
             }
 #else
@@ -113,8 +109,7 @@ namespace pika::cuda::experimental {
                 constexpr int block_dim = 256;
                 int grid_dim = (n + block_dim - 1) / block_dim;
 
-                bulk_function_kernel_integral<<<block_dim, grid_dim, 0,
-                    stream>>>(f, shape, n, t);
+                bulk_function_kernel_integral<<<block_dim, grid_dim, 0, stream>>>(f, shape, n, t);
                 whip::check_last_error();
             }
 #else
@@ -150,11 +145,10 @@ namespace pika::cuda::experimental {
 
     /// Execute a function in bulk on a CUDA device.
     template <typename Sender, typename Shape, typename F>
-    decltype(auto) tag_invoke(pika::execution::experimental::bulk_t,
-        cuda_scheduler, Sender&& sender, Shape&& shape, F&& f)
+    decltype(auto) tag_invoke(pika::execution::experimental::bulk_t, cuda_scheduler,
+        Sender&& sender, Shape&& shape, F&& f)
     {
         return then_with_stream(PIKA_FORWARD(Sender, sender),
-            detail::bulk_launcher<Shape, F>{
-                PIKA_FORWARD(Shape, shape), PIKA_FORWARD(F, f)});
+            detail::bulk_launcher<Shape, F>{PIKA_FORWARD(Shape, shape), PIKA_FORWARD(F, f)});
     }
 }    // namespace pika::cuda::experimental

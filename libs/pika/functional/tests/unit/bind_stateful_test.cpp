@@ -14,8 +14,7 @@
 #if defined(PIKA_MSVC)
 #pragma warning(disable : 4786)    // identifier truncated in debug info
 #pragma warning(disable : 4710)    // function not inlined
-#pragma warning(                                                               \
-    disable : 4711)    // function selected for automatic inline expansion
+#pragma warning(disable : 4711)    // function selected for automatic inline expansion
 #pragma warning(disable : 4514)    // unreferenced inline removed
 #endif
 
@@ -88,14 +87,12 @@ public:
         return state_ += x1 + x2 + x3 + x4 + x5 + x6 + x7;
     }
 
-    int operator()(
-        int x1, int x2, int x3, int x4, int x5, int x6, int x7, int x8)
+    int operator()(int x1, int x2, int x3, int x4, int x5, int x6, int x7, int x8)
     {
         return state_ += x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8;
     }
 
-    int operator()(
-        int x1, int x2, int x3, int x4, int x5, int x6, int x7, int x8, int x9)
+    int operator()(int x1, int x2, int x3, int x4, int x5, int x6, int x7, int x8, int x9)
     {
         return state_ += x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9;
     }
@@ -141,8 +138,7 @@ int f7(int& state_, int x1, int x2, int x3, int x4, int x5, int x6, int x7)
     return state_ += x1 + x2 + x3 + x4 + x5 + x6 + x7;
 }
 
-int f8(
-    int& state_, int x1, int x2, int x3, int x4, int x5, int x6, int x7, int x8)
+int f8(int& state_, int x1, int x2, int x3, int x4, int x5, int x6, int x7, int x8)
 {
     return state_ += x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8;
 }
@@ -163,12 +159,9 @@ void stateful_function_object_test()
     test(pika::util::detail::bind(X(), 1, 2, 3), 0, 1 + 2 + 3);
     test(pika::util::detail::bind(X(), 1, 2, 3, 4), 0, 1 + 2 + 3 + 4);
     test(pika::util::detail::bind(X(), 1, 2, 3, 4, 5), 0, 1 + 2 + 3 + 4 + 5);
-    test(pika::util::detail::bind(X(), 1, 2, 3, 4, 5, 6), 0,
-        1 + 2 + 3 + 4 + 5 + 6);
-    test(pika::util::detail::bind(X(), 1, 2, 3, 4, 5, 6, 7), 0,
-        1 + 2 + 3 + 4 + 5 + 6 + 7);
-    test(pika::util::detail::bind(X(), 1, 2, 3, 4, 5, 6, 7, 8), 0,
-        1 + 2 + 3 + 4 + 5 + 6 + 7 + 8);
+    test(pika::util::detail::bind(X(), 1, 2, 3, 4, 5, 6), 0, 1 + 2 + 3 + 4 + 5 + 6);
+    test(pika::util::detail::bind(X(), 1, 2, 3, 4, 5, 6, 7), 0, 1 + 2 + 3 + 4 + 5 + 6 + 7);
+    test(pika::util::detail::bind(X(), 1, 2, 3, 4, 5, 6, 7, 8), 0, 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8);
     test(pika::util::detail::bind(X(), 1, 2, 3, 4, 5, 6, 7, 8, 9), 0,
         1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9);
 
@@ -191,16 +184,13 @@ void stateful_function_object_test()
     test(pika::util::detail::bind(std::ref(x), 1, 2, 3, 4), n, 1 + 2 + 3 + 4);
     n += 3 * (1 + 2 + 3 + 4);
 
-    test(pika::util::detail::bind(std::ref(x), 1, 2, 3, 4, 5), n,
-        1 + 2 + 3 + 4 + 5);
+    test(pika::util::detail::bind(std::ref(x), 1, 2, 3, 4, 5), n, 1 + 2 + 3 + 4 + 5);
     n += 3 * (1 + 2 + 3 + 4 + 5);
 
-    test(pika::util::detail::bind(std::ref(x), 1, 2, 3, 4, 5, 6), n,
-        1 + 2 + 3 + 4 + 5 + 6);
+    test(pika::util::detail::bind(std::ref(x), 1, 2, 3, 4, 5, 6), n, 1 + 2 + 3 + 4 + 5 + 6);
     n += 3 * (1 + 2 + 3 + 4 + 5 + 6);
 
-    test(pika::util::detail::bind(std::ref(x), 1, 2, 3, 4, 5, 6, 7), n,
-        1 + 2 + 3 + 4 + 5 + 6 + 7);
+    test(pika::util::detail::bind(std::ref(x), 1, 2, 3, 4, 5, 6, 7), n, 1 + 2 + 3 + 4 + 5 + 6 + 7);
     n += 3 * (1 + 2 + 3 + 4 + 5 + 6 + 7);
 
     test(pika::util::detail::bind(std::ref(x), 1, 2, 3, 4, 5, 6, 7, 8), n,
@@ -222,12 +212,9 @@ void stateful_function_test()
     test(pika::util::detail::bind(f3, 0, 1, 2, 3), 0, 1 + 2 + 3);
     test(pika::util::detail::bind(f4, 0, 1, 2, 3, 4), 0, 1 + 2 + 3 + 4);
     test(pika::util::detail::bind(f5, 0, 1, 2, 3, 4, 5), 0, 1 + 2 + 3 + 4 + 5);
-    test(pika::util::detail::bind(f6, 0, 1, 2, 3, 4, 5, 6), 0,
-        1 + 2 + 3 + 4 + 5 + 6);
-    test(pika::util::detail::bind(f7, 0, 1, 2, 3, 4, 5, 6, 7), 0,
-        1 + 2 + 3 + 4 + 5 + 6 + 7);
-    test(pika::util::detail::bind(f8, 0, 1, 2, 3, 4, 5, 6, 7, 8), 0,
-        1 + 2 + 3 + 4 + 5 + 6 + 7 + 8);
+    test(pika::util::detail::bind(f6, 0, 1, 2, 3, 4, 5, 6), 0, 1 + 2 + 3 + 4 + 5 + 6);
+    test(pika::util::detail::bind(f7, 0, 1, 2, 3, 4, 5, 6, 7), 0, 1 + 2 + 3 + 4 + 5 + 6 + 7);
+    test(pika::util::detail::bind(f8, 0, 1, 2, 3, 4, 5, 6, 7, 8), 0, 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8);
 }
 
 int main()

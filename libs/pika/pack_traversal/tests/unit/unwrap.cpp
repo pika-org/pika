@@ -71,22 +71,19 @@ void test_unwrap_n(FutureProvider&& futurize)
 
     // Futures with tuples may be unwrapped
     {
-        tuple<int, int> res =
-            unwrap_n<2>(futurize(futurize(make_tuple(0xDD, 0xDF))));
+        tuple<int, int> res = unwrap_n<2>(futurize(futurize(make_tuple(0xDD, 0xDF))));
         PIKA_TEST(res == make_tuple(0xDD, 0xDF));
     }
 
     // The value of multiple futures is returned inside a tuple
     {
-        tuple<int, int> res =
-            unwrap_n<2>(futurize(futurize(0xDD)), futurize(futurize(0xDF)));
+        tuple<int, int> res = unwrap_n<2>(futurize(futurize(0xDD)), futurize(futurize(0xDF)));
         PIKA_TEST(res == make_tuple(0xDD, 0xDF));
     }
 
     // Futures are not unwrapped beyond the given depth
     {
-        FutureType<int> res =
-            unwrap_n<3>(futurize(futurize(futurize(futurize(0xDD)))));
+        FutureType<int> res = unwrap_n<3>(futurize(futurize(futurize(futurize(0xDD)))));
         PIKA_TEST(res.get() == 0xDD);
     }
 }
@@ -96,23 +93,21 @@ void test_unwrap_all(FutureProvider&& futurize)
 {
     // Single values are unwrapped
     {
-        int res =
-            unwrap_all(futurize(futurize(futurize(futurize(futurize(0xDD))))));
+        int res = unwrap_all(futurize(futurize(futurize(futurize(futurize(0xDD))))));
         PIKA_TEST_EQ(res, 0xDD);
     }
 
     // Futures with tuples may be unwrapped
     {
-        tuple<int, int> res = unwrap_all(futurize(
-            futurize(futurize(futurize(make_tuple(futurize(futurize(0xDD)),
-                futurize(futurize(futurize(0xDF)))))))));
+        tuple<int, int> res = unwrap_all(futurize(futurize(futurize(
+            futurize(make_tuple(futurize(futurize(0xDD)), futurize(futurize(futurize(0xDF)))))))));
         PIKA_TEST(res == make_tuple(0xDD, 0xDF));
     }
 
     // The value of multiple futures is returned inside a tuple
     {
-        tuple<int, int> res = unwrap_all(
-            futurize(futurize(futurize(futurize(0xDD)))), futurize(0xDF));
+        tuple<int, int> res =
+            unwrap_all(futurize(futurize(futurize(futurize(0xDD)))), futurize(0xDF));
         PIKA_TEST(res == make_tuple(0xDD, 0xDF));
     }
 }
@@ -164,11 +159,10 @@ struct back_materializer
     }
 
     template <typename First, typename Second, typename... Rest>
-    tuple<First, Second, Rest...>
-    operator()(First&& first, Second&& second, Rest&&... rest) const
+    tuple<First, Second, Rest...> operator()(First&& first, Second&& second, Rest&&... rest) const
     {
-        return tuple<First, Second, Rest...>{std::forward<First>(first),
-            std::forward<Second>(second), std::forward<Rest>(rest)...};
+        return tuple<First, Second, Rest...>{
+            std::forward<First>(first), std::forward<Second>(second), std::forward<Rest>(rest)...};
     }
 };
 
@@ -177,15 +171,14 @@ void test_unwrapping_n(FutureProvider&& futurize)
 {
     // Single values are unwrapped
     {
-        int res =
-            unwrapping_n<2>(back_materializer{})(futurize(futurize(0xDD)));
+        int res = unwrapping_n<2>(back_materializer{})(futurize(futurize(0xDD)));
         PIKA_TEST_EQ(res, 0xDD);
     }
 
     // Futures with tuples may be unwrapped
     {
-        tuple<int, int> res = unwrapping_n<2>(back_materializer{})(
-            futurize(futurize(make_tuple(0xDD, 0xDF))));
+        tuple<int, int> res =
+            unwrapping_n<2>(back_materializer{})(futurize(futurize(make_tuple(0xDD, 0xDF))));
         PIKA_TEST(res == make_tuple(0xDD, 0xDF));
     }
 
@@ -198,8 +191,8 @@ void test_unwrapping_n(FutureProvider&& futurize)
 
     // Futures are not unwrapped beyond the given depth
     {
-        FutureType<int> res = unwrapping_n<3>(back_materializer{})(
-            futurize(futurize(futurize(futurize(0xDD)))));
+        FutureType<int> res =
+            unwrapping_n<3>(back_materializer{})(futurize(futurize(futurize(futurize(0xDD)))));
         PIKA_TEST_EQ(res.get(), 0xDD);
     }
 }
@@ -216,9 +209,8 @@ void test_unwrapping_all(FutureProvider&& futurize)
 
     // Futures with tuples may be unwrapped
     {
-        tuple<int, int> res = unwrapping_all(
-            back_materializer{})(futurize(futurize(futurize(futurize(make_tuple(
-            futurize(futurize(0xDD)), futurize(futurize(futurize(0xDF)))))))));
+        tuple<int, int> res = unwrapping_all(back_materializer{})(futurize(futurize(futurize(
+            futurize(make_tuple(futurize(futurize(0xDD)), futurize(futurize(futurize(0xDF)))))))));
         PIKA_TEST(res == make_tuple(0xDD, 0xDF));
     }
 
@@ -387,8 +379,7 @@ namespace legacy_tests {
 
             // Sync wait, multiple futures, void return.
             {
-                unwrap(
-                    async(null_thread), async(null_thread), async(null_thread));
+                unwrap(async(null_thread), async(null_thread), async(null_thread));
 
                 PIKA_TEST_EQ(3U, void_counter.load());
 
@@ -532,9 +523,8 @@ namespace legacy_tests {
 
             // Functional wrapper, future of tuple of future
             {
-                FutureType<tuple<FutureType<int>, FutureType<int>>>
-                    tuple_future =
-                        futurize(make_tuple(futurize(42), futurize(42)));
+                FutureType<tuple<FutureType<int>, FutureType<int>>> tuple_future =
+                    futurize(make_tuple(futurize(42), futurize(42)));
 
                 PIKA_TEST_EQ(unwrapping_n<2>(&add)(tuple_future), 42 + 42);
             }

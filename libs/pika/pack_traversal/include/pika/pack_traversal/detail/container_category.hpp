@@ -21,6 +21,5 @@ namespace pika::util::detail {
     /// Deduces to the container_category_tag of the given type T.
     template <typename T>
     using container_category_of_t =
-        container_category_tag<traits::is_range<T>::value,
-            traits::detail::is_tuple_like_v<T>>;
+        container_category_tag<traits::is_range<T>::value, traits::detail::is_tuple_like_v<T>>;
 }    // namespace pika::util::detail

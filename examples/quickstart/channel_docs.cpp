@@ -31,8 +31,7 @@ void minimal_channel()
 
 ///////////////////////////////////////////////////////////////////////////////
 //[local_channel_send_receive
-void do_something(pika::lcos::local::receive_channel<int> c,
-    pika::lcos::local::send_channel<> done)
+void do_something(pika::lcos::local::receive_channel<int> c, pika::lcos::local::send_channel<> done)
 {
     // prints 43
     std::cout << c.get(pika::launch::sync) << std::endl;

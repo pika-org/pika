@@ -64,12 +64,10 @@ namespace pika::traits {
     };
 
     template <typename Future>
-    struct is_ref_wrapped_future<std::reference_wrapper<Future>>
-      : is_future<Future>
+    struct is_ref_wrapped_future<std::reference_wrapper<Future>> : is_future<Future>
     {
     };
 
     template <typename R>
-    inline constexpr bool is_ref_wrapped_future_v =
-        is_ref_wrapped_future<R>::value;
+    inline constexpr bool is_ref_wrapped_future_v = is_ref_wrapped_future<R>::value;
 }    // namespace pika::traits

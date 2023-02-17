@@ -51,8 +51,8 @@ namespace pika::execution {
         ///                     to decide how many loop iterations should be
         ///                     combined.
         ///
-        explicit auto_chunk_size(pika::chrono::steady_duration const& rel_time,
-            std::uint64_t num_iters_for_timing = 0)
+        explicit auto_chunk_size(
+            pika::chrono::steady_duration const& rel_time, std::uint64_t num_iters_for_timing = 0)
           : min_time_(rel_time.value().count())
           , num_iters_for_timing_(num_iters_for_timing)
         {
@@ -61,8 +61,7 @@ namespace pika::execution {
         /// \cond NOINTERNAL
         // Estimate a chunk size based on number of cores used.
         template <typename Executor, typename F>
-        std::size_t get_chunk_size(
-            Executor&& exec, F&& f, std::size_t cores, std::size_t count)
+        std::size_t get_chunk_size(Executor&& exec, F&& f, std::size_t cores, std::size_t count)
         {
             // by default use 1% of the iterations
             if (num_iters_for_timing_ == 0)
@@ -77,20 +76,17 @@ namespace pika::execution {
                 auto t = high_resolution_clock::now();
 
                 // use executor to launch given function for measurements
-                std::size_t test_chunk_size =
-                    pika::parallel::execution::sync_execute(
-                        PIKA_FORWARD(Executor, exec), f, num_iters_for_timing_);
+                std::size_t test_chunk_size = pika::parallel::execution::sync_execute(
+                    PIKA_FORWARD(Executor, exec), f, num_iters_for_timing_);
 
                 if (test_chunk_size != 0)
                 {
-                    auto dur =
-                        (high_resolution_clock::now() - t) / test_chunk_size;
+                    auto dur = (high_resolution_clock::now() - t) / test_chunk_size;
                     if (dur.count() != 0 && min_time_ >= dur)
                     {
                         // return chunk size which will create the required
                         // amount of work
-                        return (std::min)(
-                            count, (std::size_t)(min_time_ / dur));
+                        return (std::min)(count, (std::size_t)(min_time_ / dur));
                     }
                 }
             }
@@ -113,8 +109,7 @@ namespace pika::execution {
 namespace pika::parallel::execution {
     /// \cond NOINTERNAL
     template <>
-    struct is_executor_parameters<pika::execution::auto_chunk_size>
-      : std::true_type
+    struct is_executor_parameters<pika::execution::auto_chunk_size> : std::true_type
     {
     };
     /// \endcond

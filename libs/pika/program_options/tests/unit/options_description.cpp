@@ -92,24 +92,16 @@ void test_approximation_with_multiname_options()
     PIKA_TEST_EQ(desc.find("all", true).long_name(), "everything");
     PIKA_TEST_EQ(desc.find("all-ch", true).long_name(), "chroots");
 
-    PIKA_TEST_EQ(desc.find("foo", false, false, false).long_names().second,
-        std::size_t(1));
-    PIKA_TEST_EQ(
-        desc.find("foo", false, false, false).long_names().first[0], "foo");
+    PIKA_TEST_EQ(desc.find("foo", false, false, false).long_names().second, std::size_t(1));
+    PIKA_TEST_EQ(desc.find("foo", false, false, false).long_names().first[0], "foo");
 
-    PIKA_TEST_EQ(desc.find("fe", false, false, false).long_names().second,
-        std::size_t(2));
-    PIKA_TEST_EQ(
-        desc.find("fe", false, false, false).long_names().first[0], "fe");
-    PIKA_TEST_EQ(
-        desc.find("baz", false, false, false).long_names().first[1], "baz");
+    PIKA_TEST_EQ(desc.find("fe", false, false, false).long_names().second, std::size_t(2));
+    PIKA_TEST_EQ(desc.find("fe", false, false, false).long_names().first[0], "fe");
+    PIKA_TEST_EQ(desc.find("baz", false, false, false).long_names().first[1], "baz");
 
-    PIKA_TEST_EQ(desc.find("baz", false, false, false).long_names().second,
-        std::size_t(2));
-    PIKA_TEST_EQ(
-        desc.find("baz", false, false, false).long_names().first[0], "fizbaz");
-    PIKA_TEST_EQ(
-        desc.find("baz", false, false, false).long_names().first[1], "baz");
+    PIKA_TEST_EQ(desc.find("baz", false, false, false).long_names().second, std::size_t(2));
+    PIKA_TEST_EQ(desc.find("baz", false, false, false).long_names().first[0], "fizbaz");
+    PIKA_TEST_EQ(desc.find("baz", false, false, false).long_names().first[1], "baz");
 }
 
 void test_long_names_for_option_description()
@@ -127,24 +119,16 @@ void test_long_names_for_option_description()
         ;
     // clang-format on
 
-    PIKA_TEST_EQ(desc.find("foo", false, false, false).long_names().second,
-        std::size_t(1));
-    PIKA_TEST_EQ(
-        desc.find("foo", false, false, false).long_names().first[0], "foo");
+    PIKA_TEST_EQ(desc.find("foo", false, false, false).long_names().second, std::size_t(1));
+    PIKA_TEST_EQ(desc.find("foo", false, false, false).long_names().first[0], "foo");
 
-    PIKA_TEST_EQ(desc.find("fe", false, false, false).long_names().second,
-        std::size_t(2));
-    PIKA_TEST_EQ(
-        desc.find("fe", false, false, false).long_names().first[0], "fe");
-    PIKA_TEST_EQ(
-        desc.find("baz", false, false, false).long_names().first[1], "baz");
+    PIKA_TEST_EQ(desc.find("fe", false, false, false).long_names().second, std::size_t(2));
+    PIKA_TEST_EQ(desc.find("fe", false, false, false).long_names().first[0], "fe");
+    PIKA_TEST_EQ(desc.find("baz", false, false, false).long_names().first[1], "baz");
 
-    PIKA_TEST_EQ(desc.find("qux", false, false, false).long_names().second,
-        std::size_t(2));
-    PIKA_TEST_EQ(
-        desc.find("qux", false, false, false).long_names().first[0], "qux");
-    PIKA_TEST_EQ(
-        desc.find("qux", false, false, false).long_names().first[1], "fo");
+    PIKA_TEST_EQ(desc.find("qux", false, false, false).long_names().second, std::size_t(2));
+    PIKA_TEST_EQ(desc.find("qux", false, false, false).long_names().first[0], "qux");
+    PIKA_TEST_EQ(desc.find("qux", false, false, false).long_names().first[1], "fo");
 }
 
 void test_formatting()
@@ -204,8 +188,7 @@ void test_multiname_option_formatting()
 {
     // the long_names() API function was introduced in Boost V1.68
     options_description desc;
-    desc.add_options()(
-        "foo,bar", new untyped_value(), "a multiple-name option");
+    desc.add_options()("foo,bar", new untyped_value(), "a multiple-name option");
 
     stringstream ss;
     ss << desc;
@@ -256,8 +239,7 @@ void test_formatting_description_length()
         options_description desc("", options_description::m_default_line_length,
             options_description::m_default_line_length -
                 10U);    // leaves < 23 (default option space)
-        desc.add_options()("an-option-that-encroaches-description",
-            new untyped_value(),
+        desc.add_options()("an-option-that-encroaches-description", new untyped_value(),
             "this description should always be placed on the next line, and "
             "wrapping should continue as normal");
 
@@ -276,8 +258,7 @@ void test_long_default_value()
 {
     options_description desc;
     desc.add_options()("cfgfile,c",
-        value<string>()->default_value(
-            "/usr/local/etc/myprogramXXXXXXXXX/configuration.conf"),
+        value<string>()->default_value("/usr/local/etc/myprogramXXXXXXXXX/configuration.conf"),
         "the configfile");
 
     stringstream ss;
@@ -291,16 +272,13 @@ void test_long_default_value()
 void test_word_wrapping()
 {
     options_description desc("Supported options");
-    desc.add_options()(
-        "help", "this is a sufficiently long text to require word-wrapping");
-    desc.add_options()("prefix",
-        value<string>()->default_value("/h/proj/tmp/dispatch"),
+    desc.add_options()("help", "this is a sufficiently long text to require word-wrapping");
+    desc.add_options()("prefix", value<string>()->default_value("/h/proj/tmp/dispatch"),
         "root path of the dispatch installation");
     desc.add_options()("opt1",
         "this_is_a_sufficiently_long_text_to_require_word-wrapping_but_cannot_"
         "be_wrapped");
-    desc.add_options()(
-        "opt2", "this_is_a_sufficiently long_text_to_require_word-wrapping");
+    desc.add_options()("opt2", "this_is_a_sufficiently long_text_to_require_word-wrapping");
     desc.add_options()("opt3",
         "this_is_a "
         "sufficiently_long_text_to_require_word-wrapping_but_will_not_be_"
@@ -332,8 +310,8 @@ void test_word_wrapping()
 void test_default_values()
 {
     options_description desc("Supported options");
-    desc.add_options()("maxlength", value<double>()->default_value(.1, "0.1"),
-        "Maximum edge length to keep.");
+    desc.add_options()(
+        "maxlength", value<double>()->default_value(.1, "0.1"), "Maximum edge length to keep.");
     stringstream ss;
     ss << desc;
     PIKA_TEST_EQ(ss.str(),
@@ -344,8 +322,8 @@ void test_default_values()
 void test_value_name()
 {
     options_description desc("Supported options");
-    desc.add_options()("include", value<string>()->value_name("directory"),
-        "Search for headers in 'directory'.");
+    desc.add_options()(
+        "include", value<string>()->value_name("directory"), "Search for headers in 'directory'.");
 
     stringstream ss;
     ss << desc;

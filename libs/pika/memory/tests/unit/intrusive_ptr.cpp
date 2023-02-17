@@ -15,11 +15,9 @@
 
 #pragma warning(disable : 4786)    // identifier truncated in debug info
 #pragma warning(disable : 4710)    // function not inlined
-#pragma warning(                                                               \
-    disable : 4711)    // function selected for automatic inline expansion
+#pragma warning(disable : 4711)    // function selected for automatic inline expansion
 #pragma warning(disable : 4514)    // unreferenced inline removed
-#pragma warning(                                                               \
-    disable : 4355)    // 'this' : used in base member initializer list
+#pragma warning(disable : 4355)    // 'this' : used in base member initializer list
 #pragma warning(disable : 4511)    // copy constructor could not be generated
 #pragma warning(disable : 4512)    // assignment operator could not be generated
 #pragma warning(disable : 4675)    // resolved overload found with Koenig lookup
@@ -876,8 +874,7 @@ namespace n_static_cast {
         PIKA_TEST_EQ(N::base::instances, 0);
 
         {
-            pika::intrusive_ptr<Y> py =
-                pika::static_pointer_cast<Y>(pika::intrusive_ptr<X>(new Y));
+            pika::intrusive_ptr<Y> py = pika::static_pointer_cast<Y>(pika::intrusive_ptr<X>(new Y));
             PIKA_TEST(py.get() != nullptr);
             PIKA_TEST_EQ(py->use_count(), 1);
         }
@@ -918,8 +915,8 @@ namespace n_const_cast {
         PIKA_TEST_EQ(N::base::instances, 0);
 
         {
-            pika::intrusive_ptr<X> px = pika::const_pointer_cast<X>(
-                pika::intrusive_ptr<X const>(new X));
+            pika::intrusive_ptr<X> px =
+                pika::const_pointer_cast<X>(pika::intrusive_ptr<X const>(new X));
             PIKA_TEST(px.get() != nullptr);
             PIKA_TEST_EQ(px->use_count(), 1);
         }
@@ -941,8 +938,7 @@ namespace n_dynamic_cast {
         }
 
         {
-            pika::intrusive_ptr<Y> py =
-                pika::dynamic_pointer_cast<Y>(pika::intrusive_ptr<X>());
+            pika::intrusive_ptr<Y> py = pika::dynamic_pointer_cast<Y>(pika::intrusive_ptr<X>());
             PIKA_TEST(py.get() == nullptr);
         }
 
@@ -954,8 +950,8 @@ namespace n_dynamic_cast {
         }
 
         {
-            pika::intrusive_ptr<Y> py = pika::dynamic_pointer_cast<Y>(
-                pika::intrusive_ptr<X>(static_cast<X*>(nullptr)));
+            pika::intrusive_ptr<Y> py =
+                pika::dynamic_pointer_cast<Y>(pika::intrusive_ptr<X>(static_cast<X*>(nullptr)));
             PIKA_TEST(py.get() == nullptr);
         }
 

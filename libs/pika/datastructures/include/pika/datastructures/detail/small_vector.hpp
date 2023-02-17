@@ -28,8 +28,7 @@
 
 namespace pika::detail {
 
-    template <typename T, std::size_t Size,
-        typename Allocator = std::allocator<T>>
+    template <typename T, std::size_t Size, typename Allocator = std::allocator<T>>
     using small_vector = boost::container::small_vector<T, Size, Allocator>;
 }
 
@@ -63,14 +62,12 @@ namespace pika::detail {
             return allocator_.allocate((count + sizeof(T) - 1) / sizeof(T));
         }
 
-        void do_deallocate(
-            void* ptr, std::size_t count, std::size_t) noexcept override
+        void do_deallocate(void* ptr, std::size_t count, std::size_t) noexcept override
         {
-            using value_type =
-                typename std::allocator_traits<Allocator>::value_type;
+            using value_type = typename std::allocator_traits<Allocator>::value_type;
 
-            return allocator_.deallocate(static_cast<value_type*>(ptr),
-                (count + sizeof(T) - 1) / sizeof(T));
+            return allocator_.deallocate(
+                static_cast<value_type*>(ptr), (count + sizeof(T) - 1) / sizeof(T));
         }
 
     public:
@@ -104,8 +101,7 @@ namespace pika::detail {
         memory_storage(memory_storage&& rhs) noexcept
           : memory_()    // data will be provided by small_vector ctor
           , resource_(PIKA_MOVE(rhs.resource_))
-          , pool_(
-                std::data(memory_), std::size(memory_) * sizeof(T), &resource_)
+          , pool_(std::data(memory_), std::size(memory_) * sizeof(T), &resource_)
           , allocator_(&pool_)
         {
         }
@@ -124,8 +120,7 @@ namespace pika::detail {
             resource_ = rhs.resource_;
 
             // reconstruct the memory management infrastructure
-            new (&pool_) buffer_resource_type(
-                std::data(memory_), preallocated_size, &resource_);
+            new (&pool_) buffer_resource_type(std::data(memory_), preallocated_size, &resource_);
             new (&allocator_) allocator_type(&pool_);
 
             return *this;
@@ -144,28 +139,24 @@ namespace pika::detail {
             resource_ = PIKA_MOVE(rhs.resource_);
 
             // reconstruct the memory management infrastructure
-            new (&pool_) buffer_resource_type(
-                std::data(memory_), preallocated_size, &resource_);
+            new (&pool_) buffer_resource_type(std::data(memory_), preallocated_size, &resource_);
             new (&allocator_) allocator_type(&pool_);
 
             return *this;
         }
 
         std::aligned_storage_t<sizeof(T), alignof(T)> memory_[Size];
-        PIKA_NO_UNIQUE_ADDRESS allocator_memory_resource<T, Allocator>
-            resource_;
+        PIKA_NO_UNIQUE_ADDRESS allocator_memory_resource<T, Allocator> resource_;
         buffer_resource_type pool_;
         allocator_type allocator_;
     };
 
     ///////////////////////////////////////////////////////////////////////////
-    template <typename T, std::size_t Size,
-        typename Allocator = std::allocator<T>>
+    template <typename T, std::size_t Size, typename Allocator = std::allocator<T>>
     class small_vector
     {
     private:
-        using other_allocator =
-            typename std::allocator_traits<Allocator>::template rebind_alloc<T>;
+        using other_allocator = typename std::allocator_traits<Allocator>::template rebind_alloc<T>;
 
         using storage_type = memory_storage<T, Size, other_allocator>;
         using data_type = std::pmr::vector<T>;
@@ -182,8 +173,7 @@ namespace pika::detail {
         using iterator = typename data_type::iterator;
         using const_iterator = typename data_type::const_iterator;
         using reverse_iterator = typename data_type::reverse_iterator;
-        using const_reverse_iterator =
-            typename data_type::const_reverse_iterator;
+        using const_reverse_iterator = typename data_type::const_reverse_iterator;
 
         static constexpr std::size_t static_capacity = Size;
 
@@ -201,8 +191,7 @@ namespace pika::detail {
             data_.reserve(Size);
         }
 
-        explicit small_vector(
-            size_type count, allocator_type const& alloc = allocator_type())
+        explicit small_vector(size_type count, allocator_type const& alloc = allocator_type())
           : storage_(alloc)
           , data_(count, storage_.allocator_)
         {
@@ -215,17 +204,15 @@ namespace pika::detail {
         {
         }
 
-        small_vector(std::initializer_list<T> init_list,
-            allocator_type const& alloc = allocator_type())
+        small_vector(
+            std::initializer_list<T> init_list, allocator_type const& alloc = allocator_type())
           : storage_(alloc)
-          , data_(std::cbegin(init_list), std::cend(init_list),
-                storage_.allocator_)
+          , data_(std::cbegin(init_list), std::cend(init_list), storage_.allocator_)
         {
         }
 
         template <typename Iterator>
-        small_vector(Iterator first, Iterator last,
-            allocator_type const& alloc = allocator_type())
+        small_vector(Iterator first, Iterator last, allocator_type const& alloc = allocator_type())
           : storage_(alloc)
           , data_(first, last, storage_.allocator_)
         {
@@ -271,8 +258,7 @@ namespace pika::detail {
                 storage_ = PIKA_MOVE(rhs.storage_);
 
                 // fill the new instance with the moved rhs data
-                new (&data_)
-                    data_type(PIKA_MOVE(rhs.data_), storage_.allocator_);
+                new (&data_) data_type(PIKA_MOVE(rhs.data_), storage_.allocator_);
             }
             return *this;
         }
@@ -445,8 +431,7 @@ namespace pika::detail {
         {
             return data_.insert(pos, PIKA_MOVE(value));
         }
-        iterator insert(
-            const_iterator pos, size_type count, value_type const& value)
+        iterator insert(const_iterator pos, size_type count, value_type const& value)
         {
             return data_.insert(pos, count, value);
         }

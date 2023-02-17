@@ -189,11 +189,9 @@ namespace pika {
                 }
                 else
                 {
-                    std::size_t counter =
-                        wait_.count_.load(std::memory_order_acquire);
+                    std::size_t counter = wait_.count_.load(std::memory_order_acquire);
 
-                    if (counter < wait_.needed_count_ && shared_state &&
-                        !shared_state->is_ready())
+                    if (counter < wait_.needed_count_ && shared_state && !shared_state->is_ready())
                     {
                         // handle future only if not enough futures are ready yet
                         // also, do not touch any futures which are already ready
@@ -202,12 +200,9 @@ namespace pika {
                         // execute_deferred might have made the future ready
                         if (!shared_state->is_ready())
                         {
-                            shared_state->set_on_completed(
-                                util::detail::deferred_call(
-                                    &wait_some<Sequence>::on_future_ready,
-                                    wait_.shared_from_this(),
-                                    pika::execution::this_thread::detail::
-                                        agent()));
+                            shared_state->set_on_completed(util::detail::deferred_call(
+                                &wait_some<Sequence>::on_future_ready, wait_.shared_from_this(),
+                                pika::execution::this_thread::detail::agent()));
                             return;
                         }
                     }
@@ -220,19 +215,17 @@ namespace pika {
             }
 
             template <typename Tuple, std::size_t... Is>
-            PIKA_FORCEINLINE void apply(
-                Tuple const& tuple, pika::util::detail::index_pack<Is...>) const
+            PIKA_FORCEINLINE void
+            apply(Tuple const& tuple, pika::util::detail::index_pack<Is...>) const
             {
-                int const _sequencer[] = {
-                    0, (((*this)(std::get<Is>(tuple))), 0)...};
+                int const _sequencer[] = {0, (((*this)(std::get<Is>(tuple))), 0)...};
                 (void) _sequencer;
             }
 
             template <typename... Ts>
             PIKA_FORCEINLINE void apply(std::tuple<Ts...> const& sequence) const
             {
-                apply(sequence,
-                    pika::util::detail::make_index_pack_t<sizeof...(Ts)>());
+                apply(sequence, pika::util::detail::make_index_pack_t<sizeof...(Ts)>());
             }
 
             template <typename Sequence_>
@@ -252,8 +245,7 @@ namespace pika {
         }
 
         template <typename Sequence>
-        struct wait_some
-          : std::enable_shared_from_this<wait_some<Sequence>>    //-V690
+        struct wait_some : std::enable_shared_from_this<wait_some<Sequence>>    //-V690
         {
         public:
             void on_future_ready(pika::execution::detail::agent_ref ctx)
@@ -306,8 +298,7 @@ namespace pika {
                 }
 
                 // at least N futures should be ready
-                PIKA_ASSERT(
-                    count_.load(std::memory_order_acquire) >= needed_count_);
+                PIKA_ASSERT(count_.load(std::memory_order_acquire) >= needed_count_);
             }
 
             argument_type const& values_;
@@ -327,8 +318,7 @@ namespace pika {
     template <typename Future>
     void wait_some_nothrow(std::size_t n, std::vector<Future> const& values)
     {
-        static_assert(pika::traits::is_future_v<Future>,
-            "invalid use of pika::wait_some");
+        static_assert(pika::traits::is_future_v<Future>, "invalid use of pika::wait_some");
 
         if (n == 0)
         {
@@ -357,30 +347,26 @@ namespace pika {
     template <typename Future>
     void wait_some_nothrow(std::size_t n, std::vector<Future>& values)
     {
-        return pika::wait_some_nothrow(
-            n, const_cast<std::vector<Future> const&>(values));
+        return pika::wait_some_nothrow(n, const_cast<std::vector<Future> const&>(values));
     }
 
     template <typename Future>
     void wait_some(std::size_t n, std::vector<Future>& values)
     {
-        pika::wait_some_nothrow(
-            n, const_cast<std::vector<Future> const&>(values));
+        pika::wait_some_nothrow(n, const_cast<std::vector<Future> const&>(values));
         pika::detail::throw_if_exceptional(values);
     }
 
     template <typename Future>
     void wait_some_nothrow(std::size_t n, std::vector<Future>&& values)
     {
-        return pika::wait_some_nothrow(
-            n, const_cast<std::vector<Future> const&>(values));
+        return pika::wait_some_nothrow(n, const_cast<std::vector<Future> const&>(values));
     }
 
     template <typename Future>
     void wait_some(std::size_t n, std::vector<Future>&& values)
     {
-        pika::wait_some_nothrow(
-            n, const_cast<std::vector<Future> const&>(values));
+        pika::wait_some_nothrow(n, const_cast<std::vector<Future> const&>(values));
         pika::detail::throw_if_exceptional(values);
     }
 
@@ -388,8 +374,7 @@ namespace pika {
     template <typename Future, std::size_t N>
     void wait_some_nothrow(std::size_t n, std::array<Future, N> const& values)
     {
-        static_assert(
-            pika::traits::is_future_v<Future>, "invalid use of wait_some");
+        static_assert(pika::traits::is_future_v<Future>, "invalid use of wait_some");
 
         if (n == 0)
         {
@@ -418,37 +403,32 @@ namespace pika {
     template <typename Future, std::size_t N>
     void wait_some_nothrow(std::size_t n, std::array<Future, N>& lazy_values)
     {
-        pika::wait_some_nothrow(
-            n, const_cast<std::array<Future, N> const&>(lazy_values));
+        pika::wait_some_nothrow(n, const_cast<std::array<Future, N> const&>(lazy_values));
     }
 
     template <typename Future, std::size_t N>
     void wait_some(std::size_t n, std::array<Future, N>& lazy_values)
     {
-        pika::wait_some_nothrow(
-            n, const_cast<std::array<Future, N> const&>(lazy_values));
+        pika::wait_some_nothrow(n, const_cast<std::array<Future, N> const&>(lazy_values));
         pika::detail::throw_if_exceptional(lazy_values);
     }
 
     template <typename Future, std::size_t N>
     void wait_some_nothrow(std::size_t n, std::array<Future, N>&& lazy_values)
     {
-        pika::wait_some_nothrow(
-            n, const_cast<std::array<Future, N> const&>(lazy_values));
+        pika::wait_some_nothrow(n, const_cast<std::array<Future, N> const&>(lazy_values));
     }
 
     template <typename Future, std::size_t N>
     void wait_some(std::size_t n, std::array<Future, N>&& lazy_values)
     {
-        pika::wait_some_nothrow(
-            n, const_cast<std::array<Future, N> const&>(lazy_values));
+        pika::wait_some_nothrow(n, const_cast<std::array<Future, N> const&>(lazy_values));
         pika::detail::throw_if_exceptional(lazy_values);
     }
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Iterator,
-        typename Enable =
-            std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
+        typename Enable = std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
     void wait_some_nothrow(std::size_t n, Iterator begin, Iterator end)
     {
         auto values = traits::acquire_shared_state<Iterator>()(begin, end);
@@ -457,8 +437,7 @@ namespace pika {
     }
 
     template <typename Iterator,
-        typename Enable =
-            std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
+        typename Enable = std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
     void wait_some(std::size_t n, Iterator begin, Iterator end)
     {
         auto values = traits::acquire_shared_state<Iterator>()(begin, end);
@@ -468,8 +447,7 @@ namespace pika {
     }
 
     template <typename Iterator,
-        typename Enable =
-            std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
+        typename Enable = std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
     void wait_some_n_nothrow(std::size_t n, Iterator begin, std::size_t count)
     {
         auto values = traits::acquire_shared_state<Iterator>()(begin, count);
@@ -478,8 +456,7 @@ namespace pika {
     }
 
     template <typename Iterator,
-        typename Enable =
-            std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
+        typename Enable = std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
     void wait_some_n(std::size_t n, Iterator begin, std::size_t count)
     {
         auto values = traits::acquire_shared_state<Iterator>()(begin, count);
@@ -559,8 +536,7 @@ namespace pika {
             return;
         }
 
-        using result_type =
-            std::tuple<traits::detail::shared_state_ptr_for_t<Ts>...>;
+        using result_type = std::tuple<traits::detail::shared_state_ptr_for_t<Ts>...>;
 
         result_type values(traits::detail::get_shared_state(ts)...);
         auto f = detail::get_wait_some_frame(values, n);

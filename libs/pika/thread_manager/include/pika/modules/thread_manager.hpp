@@ -95,8 +95,7 @@ namespace pika::threads::detail {
         ///               information is used for logging purposes mainly, but
         ///               might be useful for debugging as well. This parameter
         ///               is optional and defaults to an empty string.
-        thread_id_ref_type register_work(
-            thread_init_data& data, error_code& ec = throws);
+        thread_id_ref_type register_work(thread_init_data& data, error_code& ec = throws);
 
         /// The function \a register_thread adds a new work item to the thread
         /// manager. It creates a new \a thread, adds it to the internal
@@ -114,8 +113,8 @@ namespace pika::threads::detail {
         ///               information is used for logging purposes mainly, but
         ///               might be useful for debugging as well. This parameter
         ///               is optional and defaults to an empty string.
-        void register_thread(thread_init_data& data, thread_id_ref_type& id,
-            error_code& ec = throws);
+        void register_thread(
+            thread_init_data& data, thread_id_ref_type& id, error_code& ec = throws);
 
         /// \brief  Run the thread manager's work queue. This function
         ///         instantiates the specified number of OS threads in each
@@ -162,10 +161,8 @@ namespace pika::threads::detail {
         /// \brief return the number of pika-threads with the given state
         ///
         /// \note This function lock the internal OS lock in the thread manager
-        std::int64_t get_thread_count(
-            thread_schedule_state state = thread_schedule_state::unknown,
-            execution::thread_priority priority =
-                execution::thread_priority::default_,
+        std::int64_t get_thread_count(thread_schedule_state state = thread_schedule_state::unknown,
+            execution::thread_priority priority = execution::thread_priority::default_,
             std::size_t num_thread = std::size_t(-1), bool reset = false);
 
         std::int64_t get_idle_core_count();
@@ -175,8 +172,7 @@ namespace pika::threads::detail {
         std::int64_t get_background_thread_count();
 
         // Enumerate all matching threads
-        bool enumerate_threads(
-            util::detail::function<bool(thread_id_type)> const& f,
+        bool enumerate_threads(util::detail::function<bool(thread_id_type)> const& f,
             thread_schedule_state state = thread_schedule_state::unknown) const;
 
         // \brief Abort all threads which are in suspended state. This will set
@@ -240,15 +236,13 @@ namespace pika::threads::detail {
 
             for (auto& pool_iter : pools_)
             {
-                total_used_processing_punits |=
-                    pool_iter->get_used_processing_units();
+                total_used_processing_punits |= pool_iter->get_used_processing_units();
             }
 
             return total_used_processing_punits;
         }
 
-        hwloc_bitmap_ptr get_pool_numa_bitmap(
-            const std::string& pool_name) const
+        hwloc_bitmap_ptr get_pool_numa_bitmap(const std::string& pool_name) const
         {
             return get_pool(pool_name).get_numa_domain_bitmap();
         }

@@ -53,16 +53,14 @@ namespace pika::util {
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename Reference, typename Iterator>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static Reference
-        dereference(Iterator const& it)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static Reference dereference(Iterator const& it)
         {
             return it.dereference();
         }
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename Iterator, typename Distance>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void
-        advance(Iterator& it, Distance n)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void advance(Iterator& it, Distance n)
         {
             it.advance(n);
         }
@@ -99,8 +97,7 @@ namespace pika::util {
 
             using type = proxy;
 
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE static type call(
-                Reference const& x)
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE static type call(Reference const& x)
             {
                 return type(x);
             }
@@ -122,16 +119,16 @@ namespace pika::util {
 
         ///////////////////////////////////////////////////////////////////////
         // Implementation for input and forward iterators
-        template <typename Derived, typename T, typename Category,
-            typename Reference, typename Distance, typename Pointer>
+        template <typename Derived, typename T, typename Category, typename Reference,
+            typename Distance, typename Pointer>
         class iterator_facade_base
         {
         public:
             using iterator_category = Category;
             using value_type = std::remove_const_t<T>;
             using difference_type = Distance;
-            using pointer = std::conditional_t<std::is_void_v<Pointer>,
-                arrow_dispatch_t<Reference>, Pointer>;
+            using pointer =
+                std::conditional_t<std::is_void_v<Pointer>, arrow_dispatch_t<Reference>, Pointer>;
             using reference = Reference;
 
             iterator_facade_base() = default;
@@ -150,8 +147,7 @@ namespace pika::util {
         public:
             PIKA_HOST_DEVICE reference operator*() const
             {
-                return iterator_core_access::template dereference<reference>(
-                    this->derived());
+                return iterator_core_access::template dereference<reference>(this->derived());
             }
 
             PIKA_HOST_DEVICE pointer operator->() const
@@ -169,22 +165,22 @@ namespace pika::util {
 
         ////////////////////////////////////////////////////////////////////////
         // Implementation for bidirectional iterators
-        template <typename Derived, typename T, typename Reference,
-            typename Distance, typename Pointer>
-        class iterator_facade_base<Derived, T, std::bidirectional_iterator_tag,
-            Reference, Distance, Pointer>
-          : public iterator_facade_base<Derived, T, std::forward_iterator_tag,
-                Reference, Distance, Pointer>
+        template <typename Derived, typename T, typename Reference, typename Distance,
+            typename Pointer>
+        class iterator_facade_base<Derived, T, std::bidirectional_iterator_tag, Reference, Distance,
+            Pointer>
+          : public iterator_facade_base<Derived, T, std::forward_iterator_tag, Reference, Distance,
+                Pointer>
         {
-            using base_type = iterator_facade_base<Derived, T,
-                std::forward_iterator_tag, Reference, Distance, Pointer>;
+            using base_type = iterator_facade_base<Derived, T, std::forward_iterator_tag, Reference,
+                Distance, Pointer>;
 
         public:
             using iterator_category = std::bidirectional_iterator_tag;
             using value_type = std::remove_const_t<T>;
             using difference_type = Distance;
-            using pointer = std::conditional_t<std::is_void_v<Pointer>,
-                arrow_dispatch_t<Reference>, Pointer>;
+            using pointer =
+                std::conditional_t<std::is_void_v<Pointer>, arrow_dispatch_t<Reference>, Pointer>;
             using reference = Reference;
 
             iterator_facade_base() = default;
@@ -222,8 +218,7 @@ namespace pika::util {
 
         public:
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
-            PIKA_HOST_DEVICE explicit operator_brackets_proxy(
-                Iterator const& iter) noexcept
+            PIKA_HOST_DEVICE explicit operator_brackets_proxy(Iterator const& iter) noexcept
               : iter_(iter)
             {
             }
@@ -234,8 +229,7 @@ namespace pika::util {
                 return *iter_;
             }
 
-            PIKA_HOST_DEVICE operator_brackets_proxy& operator=(
-                value_type const& val)
+            PIKA_HOST_DEVICE operator_brackets_proxy& operator=(value_type const& val)
             {
                 *iter_ = val;
                 return *this;
@@ -250,17 +244,15 @@ namespace pika::util {
         template <typename ValueType>
         struct use_operator_brackets_proxy
           : std::integral_constant<bool,
-                !(std::is_copy_constructible_v<ValueType> &&
-                    std::is_const_v<ValueType>)>
+                !(std::is_copy_constructible_v<ValueType> && std::is_const_v<ValueType>)>
         {
         };
 
         template <typename Iterator, typename Value>
         struct operator_brackets_result
         {
-            using type =
-                std::conditional_t<use_operator_brackets_proxy<Value>::value,
-                    operator_brackets_proxy<Iterator>, Value>;
+            using type = std::conditional_t<use_operator_brackets_proxy<Value>::value,
+                operator_brackets_proxy<Iterator>, Value>;
         };
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
@@ -279,35 +271,33 @@ namespace pika::util {
             return *iter;
         }
 
-        template <typename Derived, typename T, typename Reference,
-            typename Distance, typename Pointer>
-        class iterator_facade_base<Derived, T, std::random_access_iterator_tag,
-            Reference, Distance, Pointer>
-          : public iterator_facade_base<Derived, T,
-                std::bidirectional_iterator_tag, Reference, Distance, Pointer>
+        template <typename Derived, typename T, typename Reference, typename Distance,
+            typename Pointer>
+        class iterator_facade_base<Derived, T, std::random_access_iterator_tag, Reference, Distance,
+            Pointer>
+          : public iterator_facade_base<Derived, T, std::bidirectional_iterator_tag, Reference,
+                Distance, Pointer>
         {
-            using base_type = iterator_facade_base<Derived, T,
-                std::bidirectional_iterator_tag, Reference, Distance, Pointer>;
+            using base_type = iterator_facade_base<Derived, T, std::bidirectional_iterator_tag,
+                Reference, Distance, Pointer>;
 
         public:
             using iterator_category = std::random_access_iterator_tag;
             using value_type = std::remove_const_t<T>;
             using difference_type = Distance;
-            using pointer = std::conditional_t<std::is_void_v<Pointer>,
-                arrow_dispatch_t<Reference>, Pointer>;
+            using pointer =
+                std::conditional_t<std::is_void_v<Pointer>, arrow_dispatch_t<Reference>, Pointer>;
             using reference = Reference;
 
             iterator_facade_base() = default;
 
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             PIKA_HOST_DEVICE
-            typename operator_brackets_result<Derived, T>::type operator[](
-                difference_type n) const
+            typename operator_brackets_result<Derived, T>::type operator[](difference_type n) const
             {
                 using use_proxy = use_operator_brackets_proxy<T>;
 
-                return make_operator_brackets_result<Derived>(
-                    this->derived() + n, use_proxy{});
+                return make_operator_brackets_result<Derived>(this->derived() + n, use_proxy{});
             }
 
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
@@ -343,16 +333,14 @@ namespace pika::util {
     }    // namespace detail
 
     ///////////////////////////////////////////////////////////////////////////
-    template <typename Derived, typename T, typename Category,
-        typename Reference = T&, typename Distance = std::ptrdiff_t,
-        typename Pointer = void>
+    template <typename Derived, typename T, typename Category, typename Reference = T&,
+        typename Distance = std::ptrdiff_t, typename Pointer = void>
     struct iterator_facade
-      : detail::iterator_facade_base<Derived, T, Category, Reference, Distance,
-            Pointer>
+      : detail::iterator_facade_base<Derived, T, Category, Reference, Distance, Pointer>
     {
     private:
-        using base_type = detail::iterator_facade_base<Derived, T, Category,
-            Reference, Distance, Pointer>;
+        using base_type =
+            detail::iterator_facade_base<Derived, T, Category, Reference, Distance, Pointer>;
 
     protected:
         // for convenience in derived classes
@@ -378,8 +366,7 @@ namespace pika::util {
         template <typename Iterator>
         class postfix_increment_proxy
         {
-            using value_type =
-                typename std::iterator_traits<Iterator>::value_type;
+            using value_type = typename std::iterator_traits<Iterator>::value_type;
 
         public:
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
@@ -407,8 +394,7 @@ namespace pika::util {
         template <typename Iterator>
         class writable_postfix_increment_proxy
         {
-            using value_type =
-                typename std::iterator_traits<Iterator>::value_type;
+            using value_type = typename std::iterator_traits<Iterator>::value_type;
 
         public:
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
@@ -466,8 +452,7 @@ namespace pika::util {
 
         template <typename Reference, typename Value>
         struct is_non_proxy_reference
-          : std::is_convertible<
-                std::remove_reference_t<Reference> const volatile*,
+          : std::is_convertible<std::remove_reference_t<Reference> const volatile*,
                 Value const volatile*>
         {
         };
@@ -488,8 +473,7 @@ namespace pika::util {
         // operations, we're not going to try to support them.  Therefore,
         // even if r++ returns a proxy, *r++ will only return a proxy if *r
         // also returns a proxy.
-        template <typename Iterator, typename Value, typename Reference,
-            typename Enable = void>
+        template <typename Iterator, typename Value, typename Reference, typename Enable = void>
         struct postfix_increment_result
         {
             using type = Iterator;
@@ -497,8 +481,7 @@ namespace pika::util {
 
         template <typename Iterator, typename Value, typename Reference>
         struct postfix_increment_result<Iterator, Value, Reference,
-            std::enable_if_t<
-                traits::has_category_v<Iterator, std::input_iterator_tag> &&
+            std::enable_if_t<traits::has_category_v<Iterator, std::input_iterator_tag> &&
                 is_non_proxy_reference_v<Reference, Value>>>
         {
             using type = postfix_increment_proxy<Iterator>;
@@ -506,8 +489,7 @@ namespace pika::util {
 
         template <typename Iterator, typename Value, typename Reference>
         struct postfix_increment_result<Iterator, Value, Reference,
-            std::enable_if_t<
-                traits::has_category_v<Iterator, std::input_iterator_tag> &&
+            std::enable_if_t<traits::has_category_v<Iterator, std::input_iterator_tag> &&
                 !is_non_proxy_reference_v<Reference, Value>>>
         {
             using type = writable_postfix_increment_proxy<Iterator>;
@@ -520,13 +502,11 @@ namespace pika::util {
 
     ///////////////////////////////////////////////////////////////////////////
     PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
-    template <typename Derived, typename T, typename Category,
-        typename Reference, typename Distance, typename Pointer>
+    template <typename Derived, typename T, typename Category, typename Reference,
+        typename Distance, typename Pointer>
     PIKA_HOST_DEVICE inline util::detail::postfix_increment_result_t<Derived,
         typename Derived::value_type, typename Derived::reference>
-    operator++(
-        iterator_facade<Derived, T, Category, Reference, Distance, Pointer>& i,
-        int)
+    operator++(iterator_facade<Derived, T, Category, Reference, Distance, Pointer>& i, int)
     {
         using iterator_type = util::detail::postfix_increment_result_t<Derived,
             typename Derived::value_type, typename Derived::reference>;
@@ -545,8 +525,7 @@ namespace pika::util {
         {
         };
 
-        template <typename Facade1, typename Facade2, typename Return,
-            typename Cond>
+        template <typename Facade1, typename Facade2, typename Return, typename Cond>
         struct enable_operator_interoperable_ex
           : std::enable_if<Cond::value &&
                     (std::is_convertible_v<Facade1, Facade2> ||
@@ -556,45 +535,37 @@ namespace pika::util {
         };
     }    // namespace detail
 
-#define PIKA_UTIL_ITERATOR_FACADE_INTEROP_HEAD(prefix, op, result_type)        \
-    template <typename Derived1, typename T1, typename Category1,              \
-        typename Reference1, typename Distance1, typename Pointer1,            \
-        typename Derived2, typename T2, typename Category2,                    \
-        typename Reference2, typename Distance2, typename Pointer2>            \
-    PIKA_HOST_DEVICE prefix                                                    \
-        typename pika::util::detail::enable_operator_interoperable<Derived1,   \
-            Derived2, result_type>::type                                       \
-        operator op(iterator_facade<Derived1, T1, Category1, Reference1,       \
-                        Distance1, Pointer1> const& lhs,                       \
-            iterator_facade<Derived2, T2, Category2, Reference2, Distance2,    \
-                Pointer2> const& rhs) /**/
+#define PIKA_UTIL_ITERATOR_FACADE_INTEROP_HEAD(prefix, op, result_type)                            \
+    template <typename Derived1, typename T1, typename Category1, typename Reference1,             \
+        typename Distance1, typename Pointer1, typename Derived2, typename T2, typename Category2, \
+        typename Reference2, typename Distance2, typename Pointer2>                                \
+    PIKA_HOST_DEVICE prefix typename pika::util::detail::enable_operator_interoperable<Derived1,   \
+        Derived2, result_type>::type                                                               \
+    operator op(                                                                                   \
+        iterator_facade<Derived1, T1, Category1, Reference1, Distance1, Pointer1> const& lhs,      \
+        iterator_facade<Derived2, T2, Category2, Reference2, Distance2, Pointer2> const& rhs) /**/
 
-#define PIKA_UTIL_ITERATOR_FACADE_INTEROP_HEAD_EX(                             \
-    prefix, op, result_type, cond)                                             \
-    template <typename Derived1, typename T1, typename Category1,              \
-        typename Reference1, typename Distance1, typename Pointer1,            \
-        typename Derived2, typename T2, typename Category2,                    \
-        typename Reference2, typename Distance2, typename Pointer2>            \
-    PIKA_HOST_DEVICE prefix                                                    \
-        typename pika::util::detail::enable_operator_interoperable_ex<         \
-            Derived1, Derived2, result_type,                                   \
-            cond<typename Derived1::iterator_category,                         \
-                typename Derived2::iterator_category>>::type                   \
-        operator op(iterator_facade<Derived1, T1, Category1, Reference1,       \
-                        Distance1, Pointer1> const& lhs,                       \
-            iterator_facade<Derived2, T2, Category2, Reference2, Distance2,    \
-                Pointer2> const& rhs) /**/
+#define PIKA_UTIL_ITERATOR_FACADE_INTEROP_HEAD_EX(prefix, op, result_type, cond)                   \
+    template <typename Derived1, typename T1, typename Category1, typename Reference1,             \
+        typename Distance1, typename Pointer1, typename Derived2, typename T2, typename Category2, \
+        typename Reference2, typename Distance2, typename Pointer2>                                \
+    PIKA_HOST_DEVICE prefix typename pika::util::detail::enable_operator_interoperable_ex<         \
+        Derived1, Derived2, result_type,                                                           \
+        cond<typename Derived1::iterator_category, typename Derived2::iterator_category>>::type    \
+    operator op(                                                                                   \
+        iterator_facade<Derived1, T1, Category1, Reference1, Distance1, Pointer1> const& lhs,      \
+        iterator_facade<Derived2, T2, Category2, Reference2, Distance2, Pointer2> const& rhs) /**/
 
     PIKA_UTIL_ITERATOR_FACADE_INTEROP_HEAD(inline, ==, bool)
     {
-        return iterator_core_access::equal(static_cast<Derived1 const&>(lhs),
-            static_cast<Derived2 const&>(rhs));
+        return iterator_core_access::equal(
+            static_cast<Derived1 const&>(lhs), static_cast<Derived2 const&>(rhs));
     }
 
     PIKA_UTIL_ITERATOR_FACADE_INTEROP_HEAD(inline, !=, bool)
     {
-        return !iterator_core_access::equal(static_cast<Derived1 const&>(lhs),
-            static_cast<Derived2 const&>(rhs));
+        return !iterator_core_access::equal(
+            static_cast<Derived1 const&>(lhs), static_cast<Derived2 const&>(rhs));
     }
 
     namespace detail {
@@ -611,33 +582,29 @@ namespace pika::util {
     PIKA_UTIL_ITERATOR_FACADE_INTEROP_HEAD_EX(
         inline, <, bool, detail::enable_random_access_operations)
     {
-        return 0 <
-            iterator_core_access::distance_to(static_cast<Derived1 const&>(lhs),
-                static_cast<Derived2 const&>(rhs));
+        return 0 < iterator_core_access::distance_to(
+                       static_cast<Derived1 const&>(lhs), static_cast<Derived2 const&>(rhs));
     }
 
     PIKA_UTIL_ITERATOR_FACADE_INTEROP_HEAD_EX(
         inline, >, bool, detail::enable_random_access_operations)
     {
-        return 0 >
-            iterator_core_access::distance_to(static_cast<Derived1 const&>(lhs),
-                static_cast<Derived2 const&>(rhs));
+        return 0 > iterator_core_access::distance_to(
+                       static_cast<Derived1 const&>(lhs), static_cast<Derived2 const&>(rhs));
     }
 
     PIKA_UTIL_ITERATOR_FACADE_INTEROP_HEAD_EX(
         inline, <=, bool, detail::enable_random_access_operations)
     {
-        return 0 <=
-            iterator_core_access::distance_to(static_cast<Derived1 const&>(lhs),
-                static_cast<Derived2 const&>(rhs));
+        return 0 <= iterator_core_access::distance_to(
+                        static_cast<Derived1 const&>(lhs), static_cast<Derived2 const&>(rhs));
     }
 
     PIKA_UTIL_ITERATOR_FACADE_INTEROP_HEAD_EX(
         inline, >=, bool, detail::enable_random_access_operations)
     {
-        return 0 >=
-            iterator_core_access::distance_to(static_cast<Derived1 const&>(lhs),
-                static_cast<Derived2 const&>(rhs));
+        return 0 >= iterator_core_access::distance_to(
+                        static_cast<Derived1 const&>(lhs), static_cast<Derived2 const&>(rhs));
     }
 
     PIKA_UTIL_ITERATOR_FACADE_INTEROP_HEAD_EX(inline, -,
@@ -645,22 +612,19 @@ namespace pika::util {
         detail::enable_random_access_operations)
     {
         return iterator_core_access::distance_to(
-            static_cast<Derived1 const&>(rhs),
-            static_cast<Derived2 const&>(lhs));
+            static_cast<Derived1 const&>(rhs), static_cast<Derived2 const&>(lhs));
     }
 
 #undef PIKA_UTIL_ITERATOR_FACADE_INTEROP_HEAD_EX
 #undef PIKA_UTIL_ITERATOR_FACADE_INTEROP_HEAD
 
     PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
-    template <typename Derived, typename T, typename Category,
-        typename Reference, typename Distance, typename Pointer>
+    template <typename Derived, typename T, typename Category, typename Reference,
+        typename Distance, typename Pointer>
     PIKA_HOST_DEVICE inline std::enable_if_t<
-        std::is_same_v<typename Derived::iterator_category,
-            std::random_access_iterator_tag>,
+        std::is_same_v<typename Derived::iterator_category, std::random_access_iterator_tag>,
         Derived>
-    operator+(iterator_facade<Derived, T, Category, Reference, Distance,
-                  Pointer> const& it,
+    operator+(iterator_facade<Derived, T, Category, Reference, Distance, Pointer> const& it,
         typename Derived::difference_type n)
     {
         Derived tmp(static_cast<Derived const&>(it));
@@ -668,15 +632,13 @@ namespace pika::util {
     }
 
     PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
-    template <typename Derived, typename T, typename Category,
-        typename Reference, typename Distance, typename Pointer>
+    template <typename Derived, typename T, typename Category, typename Reference,
+        typename Distance, typename Pointer>
     PIKA_HOST_DEVICE inline std::enable_if_t<
-        std::is_same_v<typename Derived::iterator_category,
-            std::random_access_iterator_tag>,
+        std::is_same_v<typename Derived::iterator_category, std::random_access_iterator_tag>,
         Derived>
     operator+(typename Derived::difference_type n,
-        iterator_facade<Derived, T, Category, Reference, Distance,
-            Pointer> const& it)
+        iterator_facade<Derived, T, Category, Reference, Distance, Pointer> const& it)
     {
         Derived tmp(static_cast<Derived const&>(it));
         return tmp += n;

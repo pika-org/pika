@@ -35,9 +35,8 @@ namespace pika::lcos::local {
         packaged_task() = default;
 
         template <typename F, typename FD = std::decay_t<F>,
-            typename Enable =
-                std::enable_if_t<!std::is_same_v<FD, packaged_task> &&
-                    std::is_invocable_r_v<R, FD&, Ts...>>>
+            typename Enable = std::enable_if_t<!std::is_same_v<FD, packaged_task> &&
+                std::is_invocable_r_v<R, FD&, Ts...>>>
         explicit packaged_task(F&& f)
           : function_(PIKA_FORWARD(F, f))
           , promise_()
@@ -45,9 +44,8 @@ namespace pika::lcos::local {
         }
 
         template <typename Allocator, typename F, typename FD = std::decay_t<F>,
-            typename Enable =
-                std::enable_if_t<!std::is_same_v<FD, packaged_task> &&
-                    std::is_invocable_r_v<R, FD&, Ts...>>>
+            typename Enable = std::enable_if_t<!std::is_same_v<FD, packaged_task> &&
+                std::is_invocable_r_v<R, FD&, Ts...>>>
         explicit packaged_task(std::allocator_arg_t, Allocator const& a, F&& f)
           : function_(PIKA_FORWARD(F, f))
           , promise_(std::allocator_arg, a)
@@ -70,8 +68,7 @@ namespace pika::lcos::local {
         {
             if (function_.empty())
             {
-                PIKA_THROW_EXCEPTION(pika::error::no_state,
-                    "packaged_task<Signature>::operator()",
+                PIKA_THROW_EXCEPTION(pika::error::no_state, "packaged_task<Signature>::operator()",
                     "this packaged_task has no valid shared state");
                 return;
             }
@@ -90,9 +87,7 @@ namespace pika::lcos::local {
                         promise_.set_value(function_(PIKA_FORWARD(Ts, ts)...));
                     }
                 },
-                [&](std::exception_ptr ep) {
-                    promise_.set_exception(PIKA_MOVE(ep));
-                });
+                [&](std::exception_ptr ep) { promise_.set_exception(PIKA_MOVE(ep)); });
         }
 
         // result retrieval
@@ -140,14 +135,13 @@ namespace pika::lcos::local {
 namespace std {
     // Requires: Allocator shall be an allocator (17.6.3.5)
     template <typename Sig, typename Allocator>
-    struct uses_allocator<pika::lcos::local::packaged_task<Sig>, Allocator>
-      : std::true_type
+    struct uses_allocator<pika::lcos::local::packaged_task<Sig>, Allocator> : std::true_type
     {
     };
 
     template <typename Sig>
-    void swap(pika::lcos::local::packaged_task<Sig>& lhs,
-        pika::lcos::local::packaged_task<Sig>& rhs)
+    void
+    swap(pika::lcos::local::packaged_task<Sig>& lhs, pika::lcos::local::packaged_task<Sig>& rhs)
     {
         lhs.swap(rhs);
     }

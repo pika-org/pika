@@ -22,8 +22,7 @@ using pika::program_options::variables_map;
 void do_nothing(pika::barrier<>& b1, pika::barrier<>& b2)
 {
     b1.arrive_and_wait();
-    std::this_thread::sleep_for(
-        std::chrono::milliseconds(100));    // wait for 100 ms
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));    // wait for 100 ms
     b2.arrive_and_wait();
 }
 

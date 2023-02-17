@@ -36,9 +36,8 @@ namespace pika::program_options::detail {
     utf8_codecvt_facet::~utf8_codecvt_facet() {}
 
     // Translate incoming UTF-8 into UCS-4
-    std::codecvt_base::result utf8_codecvt_facet::do_in(
-        std::mbstate_t& /*state*/, const char* from, const char* from_end,
-        const char*& from_next, wchar_t* to, wchar_t* to_end,
+    std::codecvt_base::result utf8_codecvt_facet::do_in(std::mbstate_t& /*state*/, const char* from,
+        const char* from_end, const char*& from_next, wchar_t* to, wchar_t* to_end,
         wchar_t*& to_next) const
     {
         // Basic algorithm:  The first octet determines how many
@@ -61,15 +60,13 @@ namespace pika::program_options::detail {
 
             // The first octet is   adjusted by a value dependent upon
             // the number   of "continuing octets" encoding the character
-            const int cont_octet_count =
-                static_cast<int>(get_cont_octet_count(*from));
-            const wchar_t octet1_modifier_table[] = {
-                0x00, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc};
+            const int cont_octet_count = static_cast<int>(get_cont_octet_count(*from));
+            const wchar_t octet1_modifier_table[] = {0x00, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc};
 
             // The unsigned char conversion is necessary in case char is
             // signed   (I learned this the hard way)
-            wchar_t ucs_result = (unsigned char) (*from++) -
-                octet1_modifier_table[cont_octet_count];
+            wchar_t ucs_result =
+                (unsigned char) (*from++) - octet1_modifier_table[cont_octet_count];
 
             // Invariants   :
             //   1) At the start of the loop,   'i' continuing characters have been
@@ -114,13 +111,12 @@ namespace pika::program_options::detail {
             return std::codecvt_base::partial;
     }
 
-    std::codecvt_base::result utf8_codecvt_facet::do_out(
-        std::mbstate_t& /*state*/, const wchar_t* from, const wchar_t* from_end,
-        const wchar_t*& from_next, char* to, char* to_end, char*& to_next) const
+    std::codecvt_base::result utf8_codecvt_facet::do_out(std::mbstate_t& /*state*/,
+        const wchar_t* from, const wchar_t* from_end, const wchar_t*& from_next, char* to,
+        char* to_end, char*& to_next) const
     {
         // RG - consider merging this table with the other one
-        const wchar_t octet1_modifier_table[] = {
-            0x00, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc};
+        const wchar_t octet1_modifier_table[] = {0x00, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc};
 
         wchar_t max_wchar = (std::numeric_limits<wchar_t>::max)();
         while (from != from_end && to != to_end)
@@ -151,8 +147,7 @@ namespace pika::program_options::detail {
             while (i != cont_octet_count && to != to_end)
             {
                 shift_exponent -= 6;
-                *to++ = static_cast<char>(
-                    0x80 + ((*from / (1 << shift_exponent)) % (1 << 6)));
+                *to++ = static_cast<char>(0x80 + ((*from / (1 << shift_exponent)) % (1 << 6)));
                 ++i;
             }
             // If   we filled up the out buffer before encoding the character
@@ -176,8 +171,8 @@ namespace pika::program_options::detail {
     // How many char objects can I process to get <= max_limit
     // wchar_t objects?
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-    int utf8_codecvt_facet::do_length(std::mbstate_t&, const char* from,
-        const char* from_end, std::size_t max_limit) const noexcept
+    int utf8_codecvt_facet::do_length(std::mbstate_t&, const char* from, const char* from_end,
+        std::size_t max_limit) const noexcept
     // NOLINTEND(bugprone-easily-swappable-parameters)
     {
         // RG - this code is confusing!  I need a better way to express it.
@@ -193,8 +188,7 @@ namespace pika::program_options::detail {
         std::size_t char_count = 0;
         const char* from_next = from;
         // Use "<" because the buffer may represent incomplete characters
-        while (
-            from_next + last_octet_count <= from_end && char_count <= max_limit)
+        while (from_next + last_octet_count <= from_end && char_count <= max_limit)
         {
             from_next += last_octet_count;
             last_octet_count = (get_octet_count(*from_next));

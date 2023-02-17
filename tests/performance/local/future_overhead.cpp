@@ -47,25 +47,23 @@ static std::uint64_t num_threads = 1;
 static std::string info_string = "";
 
 ///////////////////////////////////////////////////////////////////////////////
-void print_stats(const char* title, const char* wait, const char* exec,
-    std::int64_t count, double duration, bool csv)
+void print_stats(const char* title, const char* wait, const char* exec, std::int64_t count,
+    double duration, bool csv)
 {
     std::ostringstream temp;
     double us = 1e6 * duration / count;
     if (csv)
     {
-        fmt::print(temp,
-            "{}, {:27}, {:15}, {:45}, {:8}, {:8}, {:20}, {:4}, {:4}, {:20}",
-            count, title, wait, exec, duration, us, queuing, numa_sensitive,
-            num_threads, info_string);
+        fmt::print(temp, "{}, {:27}, {:15}, {:45}, {:8}, {:8}, {:20}, {:4}, {:4}, {:20}", count,
+            title, wait, exec, duration, us, queuing, numa_sensitive, num_threads, info_string);
     }
     else
     {
         fmt::print(temp,
             "invoked {:1}, futures {:27} {:15} {:18} in {:8} seconds : {:8} "
             "us/future, queue {:20}, numa {:4}, threads {:4}, info {:20}",
-            count, title, wait, exec, duration, us, queuing, numa_sensitive,
-            num_threads, info_string);
+            count, title, wait, exec, duration, us, queuing, numa_sensitive, num_threads,
+            info_string);
     }
     std::cout << temp.str() << std::endl;
     // CDash graph plotting
@@ -150,8 +148,7 @@ void function_futures_wait_all(std::uint64_t count, bool csv, Executor& exec)
 }
 
 template <typename Executor>
-void function_futures_sliding_semaphore(
-    std::uint64_t count, bool csv, Executor& exec)
+void function_futures_sliding_semaphore(std::uint64_t count, bool csv, Executor& exec)
 {
     // start the clock
     high_resolution_timer walltime;
@@ -175,8 +172,8 @@ void function_futures_sliding_semaphore(
 struct unlimited_number_of_chunks
 {
     template <typename Executor>
-    std::size_t maximal_number_of_chunks(
-        Executor&& /*executor*/, std::size_t /*cores*/, std::size_t num_tasks)
+    std::size_t
+    maximal_number_of_chunks(Executor&& /*executor*/, std::size_t /*cores*/, std::size_t num_tasks)
     {
         return num_tasks;
     }
@@ -216,14 +213,12 @@ void function_futures_create_thread(std::uint64_t count, bool csv)
 {
     pika::latch l(count);
 
-    auto const sched =
-        pika::threads::detail::get_self_id_data()->get_scheduler_base();
+    auto const sched = pika::threads::detail::get_self_id_data()->get_scheduler_base();
     auto func = [&l]() {
         null_function();
         l.count_down(1);
     };
-    auto const thread_func =
-        pika::threads::detail::thread_function_nullary<decltype(func)>{func};
+    auto const thread_func = pika::threads::detail::thread_function_nullary<decltype(func)>{func};
     auto const desc = pika::detail::thread_description();
     auto const prio = pika::execution::thread_priority::normal;
     auto const hint = pika::execution::thread_schedule_hint();
@@ -235,10 +230,8 @@ void function_futures_create_thread(std::uint64_t count, bool csv)
     for (std::uint64_t i = 0; i < count; ++i)
     {
         auto init = pika::threads::detail::thread_init_data(
-            pika::threads::detail::thread_function_type(thread_func), desc,
-            prio, hint, stack_size,
-            pika::threads::detail::thread_schedule_state::pending, false,
-            sched);
+            pika::threads::detail::thread_function_type(thread_func), desc, prio, hint, stack_size,
+            pika::threads::detail::thread_schedule_state::pending, false, sched);
         sched->create_thread(init, nullptr, ec);
     }
     l.wait();
@@ -248,31 +241,25 @@ void function_futures_create_thread(std::uint64_t count, bool csv)
     print_stats("create_thread", "latch", "none", count, duration, csv);
 }
 
-void function_futures_create_thread_hierarchical_placement(
-    std::uint64_t count, bool csv)
+void function_futures_create_thread_hierarchical_placement(std::uint64_t count, bool csv)
 {
     pika::latch l(count);
 
-    auto sched =
-        pika::threads::detail::get_self_id_data()->get_scheduler_base();
+    auto sched = pika::threads::detail::get_self_id_data()->get_scheduler_base();
 
-    if (std::string("core-shared_priority_queue_scheduler") ==
-        sched->get_description())
+    if (std::string("core-shared_priority_queue_scheduler") == sched->get_description())
     {
         using ::pika::threads::scheduler_mode;
         sched->add_scheduler_mode(scheduler_mode::assign_work_thread_parent);
         sched->remove_scheduler_mode(scheduler_mode::enable_stealing |
-            scheduler_mode::enable_stealing_numa |
-            scheduler_mode::assign_work_round_robin |
-            scheduler_mode::steal_after_local |
-            scheduler_mode::steal_high_priority_first);
+            scheduler_mode::enable_stealing_numa | scheduler_mode::assign_work_round_robin |
+            scheduler_mode::steal_after_local | scheduler_mode::steal_high_priority_first);
     }
     auto const func = [&l]() {
         null_function();
         l.count_down(1);
     };
-    auto const thread_func =
-        pika::threads::detail::thread_function_nullary<decltype(func)>{func};
+    auto const thread_func = pika::threads::detail::thread_function_nullary<decltype(func)>{func};
     auto const desc = pika::detail::thread_description();
     auto prio = pika::execution::thread_priority::normal;
     auto const stack_size = pika::execution::thread_stacksize::small_;
@@ -283,44 +270,36 @@ void function_futures_create_thread_hierarchical_placement(
     high_resolution_timer walltime;
     for (std::size_t t = 0; t < num_threads; ++t)
     {
-        auto const hint =
-            pika::execution::thread_schedule_hint(static_cast<std::int16_t>(t));
-        auto spawn_func = [&thread_func, sched, hint, t, count, num_threads,
-                              desc, prio]() {
+        auto const hint = pika::execution::thread_schedule_hint(static_cast<std::int16_t>(t));
+        auto spawn_func = [&thread_func, sched, hint, t, count, num_threads, desc, prio]() {
             std::uint64_t const count_start = t * count / num_threads;
             std::uint64_t const count_end = (t + 1) * count / num_threads;
             pika::error_code ec;
             for (std::uint64_t i = count_start; i < count_end; ++i)
             {
                 pika::threads::detail::thread_init_data init(
-                    pika::threads::detail::thread_function_type(thread_func),
-                    desc, prio, hint, stack_size,
-                    pika::threads::detail::thread_schedule_state::pending,
-                    false, sched);
+                    pika::threads::detail::thread_function_type(thread_func), desc, prio, hint,
+                    stack_size, pika::threads::detail::thread_schedule_state::pending, false,
+                    sched);
                 sched->create_thread(init, nullptr, ec);
             }
         };
         auto const thread_spawn_func =
-            pika::threads::detail::thread_function_nullary<
-                decltype(spawn_func)>{spawn_func};
+            pika::threads::detail::thread_function_nullary<decltype(spawn_func)>{spawn_func};
 
         pika::threads::detail::thread_init_data init(
-            pika::threads::detail::thread_function_type(thread_spawn_func),
-            desc, prio, hint, stack_size,
-            pika::threads::detail::thread_schedule_state::pending, false,
-            sched);
+            pika::threads::detail::thread_function_type(thread_spawn_func), desc, prio, hint,
+            stack_size, pika::threads::detail::thread_schedule_state::pending, false, sched);
         sched->create_thread(init, nullptr, ec);
     }
     l.wait();
 
     // stop the clock
     const double duration = walltime.elapsed();
-    print_stats(
-        "create_thread_hierarchical", "latch", "none", count, duration, csv);
+    print_stats("create_thread_hierarchical", "latch", "none", count, duration, csv);
 }
 
-void function_futures_apply_hierarchical_placement(
-    std::uint64_t count, bool csv)
+void function_futures_apply_hierarchical_placement(std::uint64_t count, bool csv)
 {
     pika::latch l(count);
 
@@ -334,8 +313,7 @@ void function_futures_apply_hierarchical_placement(
     high_resolution_timer walltime;
     for (std::size_t t = 0; t < num_threads; ++t)
     {
-        auto const hint =
-            pika::execution::thread_schedule_hint(static_cast<std::int16_t>(t));
+        auto const hint = pika::execution::thread_schedule_hint(static_cast<std::int16_t>(t));
         auto spawn_func = [&func, hint, t, count, num_threads]() {
             auto exec = pika::execution::parallel_executor(hint);
             std::uint64_t const count_start = t * count / num_threads;
@@ -354,8 +332,7 @@ void function_futures_apply_hierarchical_placement(
 
     // stop the clock
     const double duration = walltime.elapsed();
-    print_stats("apply_hierarchical", "latch", "parallel_executor", count,
-        duration, csv);
+    print_stats("apply_hierarchical", "latch", "parallel_executor", count, duration, csv);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -206,9 +206,7 @@ private:
     void ParseCommandLine(int argc, char* argv[])
     {
         po::options_description cmd_opts;
-        cmd_opts.add(command_line_options)
-            .add(hidden_command_line_options)
-            .add(common_options);
+        cmd_opts.add(command_line_options).add(hidden_command_line_options).add(common_options);
         store(po::command_line_parser(argc, argv)
                   .allow_unregistered()
                   .options(cmd_opts)
@@ -255,8 +253,7 @@ private:
     void ParseEnvironment()
     {
         store(po::parse_environment(common_options,
-                  std::bind(&OptionsHierarchy::EnvironmentMapper, this,
-                      std::placeholders::_1)),
+                  std::bind(&OptionsHierarchy::EnvironmentMapper, this, std::placeholders::_1)),
             results);
         notify(results);
     }
@@ -264,8 +261,7 @@ private:
     std::string EnvironmentMapper(std::string env_var)
     {
         // ensure the env_var is all caps
-        std::transform(
-            env_var.begin(), env_var.end(), env_var.begin(), ::toupper);
+        std::transform(env_var.begin(), env_var.end(), env_var.begin(), ::toupper);
 
         auto entry = env_to_option.find(env_var);
         if (entry != env_to_option.end())
@@ -297,8 +293,7 @@ private:
         std::ifstream cfg_file(filename.c_str());
         if (cfg_file)
         {
-            store(parse_config_file(cfg_file, config_opts, ALLOW_UNREGISTERED),
-                results);
+            store(parse_config_file(cfg_file, config_opts, ALLOW_UNREGISTERED), results);
             notify(results);
         }
     }
@@ -344,8 +339,7 @@ void PrintOptions(OptionsHierarchy options)
         std::cout << "   " << file << std::endl;
     }
 
-    std::cout << "GUI Enabled: " << std::boolalpha << options.GUI()
-              << std::endl;
+    std::cout << "GUI Enabled: " << std::boolalpha << options.GUI() << std::endl;
     if (options.GUI())
     {
         auto gui_values = options.GuiValues();

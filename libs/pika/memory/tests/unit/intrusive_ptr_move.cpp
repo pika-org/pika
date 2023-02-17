@@ -15,11 +15,9 @@
 
 #pragma warning(disable : 4786)    // identifier truncated in debug info
 #pragma warning(disable : 4710)    // function not inlined
-#pragma warning(                                                               \
-    disable : 4711)    // function selected for automatic inline expansion
+#pragma warning(disable : 4711)    // function selected for automatic inline expansion
 #pragma warning(disable : 4514)    // unreferenced inline removed
-#pragma warning(                                                               \
-    disable : 4355)    // 'this' : used in base member initializer list
+#pragma warning(disable : 4355)    // 'this' : used in base member initializer list
 #pragma warning(disable : 4511)    // copy constructor could not be generated
 #pragma warning(disable : 4512)    // assignment operator could not be generated
 #pragma warning(disable : 4675)    // resolved overload found with Koenig lookup
@@ -208,8 +206,7 @@ int main()
 
         X* px2 = px.get();
 
-        pika::intrusive_ptr<Y> py =
-            pika::dynamic_pointer_cast<Y>(std::move(px));
+        pika::intrusive_ptr<Y> py = pika::dynamic_pointer_cast<Y>(std::move(px));
         PIKA_TEST_EQ(py.get(), px2);
         // NOLINTNEXTLINE(bugprone-use-after-move)
         PIKA_TEST(px.get() == nullptr);
@@ -223,8 +220,7 @@ int main()
 
         X* px2 = px.get();
 
-        pika::intrusive_ptr<Y> py =
-            pika::dynamic_pointer_cast<Y>(std::move(px));
+        pika::intrusive_ptr<Y> py = pika::dynamic_pointer_cast<Y>(std::move(px));
         PIKA_TEST(py.get() == nullptr);
         // NOLINTNEXTLINE(bugprone-use-after-move)
         PIKA_TEST_EQ(px.get(), px2);

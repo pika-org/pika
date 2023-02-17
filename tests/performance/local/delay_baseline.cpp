@@ -43,8 +43,7 @@ bool header = true;
 ///////////////////////////////////////////////////////////////////////////////
 std::string format_build_date()
 {
-    std::chrono::time_point<std::chrono::system_clock> now =
-        std::chrono::system_clock::now();
+    std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
 
     std::time_t current_time = std::chrono::system_clock::to_time_t(now);
 
@@ -60,8 +59,7 @@ void print_results(variables_map& vm, double sum_, double mean_)
     {
         cout << "# BENCHMARK: " << benchmark_name << "\n";
 
-        cout << "# VERSION: " << PIKA_HAVE_GIT_COMMIT << " "
-             << format_build_date() << "\n"
+        cout << "# VERSION: " << PIKA_HAVE_GIT_COMMIT << " " << format_build_date() << "\n"
              << "#\n";
 
         // Note that if we change the number of fields above, we have to
@@ -111,8 +109,7 @@ int main(int argc, char* argv[])
 
     cmdline.add_options()("help,h", "print out program usage (this message)")
 
-        ("tasks", value<std::uint64_t>(&tasks)->default_value(100000),
-            "number of tasks to invoke")
+        ("tasks", value<std::uint64_t>(&tasks)->default_value(100000), "number of tasks to invoke")
 
             ("delay", value<std::uint64_t>(&delay)->default_value(5),
                 "duration of delay in microseconds")

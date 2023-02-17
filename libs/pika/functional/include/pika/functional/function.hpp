@@ -39,8 +39,7 @@ namespace pika::util::detail {
         // the split SFINAE prevents MSVC from eagerly instantiating things
         template <typename F, typename FD = std::decay_t<F>,
             typename Enable1 = std::enable_if_t<!std::is_same_v<FD, function>>,
-            typename Enable2 =
-                std::enable_if_t<std::is_invocable_r_v<R, FD&, Ts...>>>
+            typename Enable2 = std::enable_if_t<std::is_invocable_r_v<R, FD&, Ts...>>>
         function(F&& f)
         {
             assign(PIKA_FORWARD(F, f));
@@ -49,8 +48,7 @@ namespace pika::util::detail {
         // the split SFINAE prevents MSVC from eagerly instantiating things
         template <typename F, typename FD = std::decay_t<F>,
             typename Enable1 = std::enable_if_t<!std::is_same_v<FD, function>>,
-            typename Enable2 =
-                std::enable_if_t<std::is_invocable_r_v<R, FD&, Ts...>>>
+            typename Enable2 = std::enable_if_t<std::is_invocable_r_v<R, FD&, Ts...>>>
         function& operator=(F&& f)
         {
             assign(PIKA_FORWARD(F, f));
@@ -71,8 +69,7 @@ namespace pika::detail {
     template <typename Sig>
     struct get_function_address<util::detail::function<Sig>>
     {
-        static constexpr std::size_t call(
-            util::detail::function<Sig> const& f) noexcept
+        static constexpr std::size_t call(util::detail::function<Sig> const& f) noexcept
         {
             return f.get_function_address();
         }
@@ -81,8 +78,7 @@ namespace pika::detail {
     template <typename Sig>
     struct get_function_annotation<util::detail::function<Sig>>
     {
-        static constexpr char const* call(
-            util::detail::function<Sig> const& f) noexcept
+        static constexpr char const* call(util::detail::function<Sig> const& f) noexcept
         {
             return f.get_function_annotation();
         }
@@ -92,8 +88,7 @@ namespace pika::detail {
     template <typename Sig>
     struct get_function_annotation_itt<util::detail::function<Sig>>
     {
-        static util::itt::string_handle call(
-            util::detail::function<Sig> const& f) noexcept
+        static util::itt::string_handle call(util::detail::function<Sig> const& f) noexcept
         {
             return f.get_function_annotation_itt();
         }

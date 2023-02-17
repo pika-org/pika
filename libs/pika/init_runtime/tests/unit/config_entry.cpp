@@ -44,8 +44,7 @@ void test_set_entry()
     PIKA_TEST(!val.empty());
     PIKA_TEST_EQ(val, std::string("test"));
 
-    pika::set_config_entry_callback(
-        "pika.config.entry.test", &config_entry_callback);
+    pika::set_config_entry_callback("pika.config.entry.test", &config_entry_callback);
 
     pika::set_config_entry("pika.config.entry.test", "test1");
     val = pika::get_config_entry("pika.config.entry.test", "");

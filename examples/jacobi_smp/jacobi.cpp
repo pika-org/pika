@@ -36,8 +36,7 @@ namespace jacobi_smp {
             dst[x]
                 // x-n might underflow an unsigned type. Casting to a signed type has the
                 // wanted effect
-                = (src[std::ptrdiff_t(x - n)] + src[x + n] + src[x] +
-                      src[x - 1] + src[x + 1]) *
+                = (src[std::ptrdiff_t(x - n)] + src[x + n] + src[x] + src[x - 1] + src[x + 1]) *
                 0.2;
         }
     }
@@ -72,8 +71,7 @@ int pika_main(variables_map& vm)
 
 int main(int argc, char** argv)
 {
-    options_description desc_cmd(
-        "usage: " PIKA_APPLICATION_STRING " [options]");
+    options_description desc_cmd("usage: " PIKA_APPLICATION_STRING " [options]");
 
     // clang-format off
     desc_cmd.add_options()
@@ -90,11 +88,7 @@ int main(int argc, char** argv)
 #if defined(JACOBI_SMP_NO_pika)
     variables_map vm;
     desc_cmd.add_options()("help", "This help message");
-    store(command_line_parser(argc, argv)
-              .options(desc_cmd)
-              .allow_unregistered()
-              .run(),
-        vm);
+    store(command_line_parser(argc, argv).options(desc_cmd).allow_unregistered().run(), vm);
     if (vm.count("help"))
     {
         std::cout << desc_cmd;

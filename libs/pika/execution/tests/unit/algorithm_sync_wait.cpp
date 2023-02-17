@@ -34,8 +34,7 @@ int pika_main()
         std::atomic<bool> start_called{false};
         std::atomic<bool> connect_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
-        tt::sync_wait(custom_sender{
-            start_called, connect_called, tag_invoke_overload_called});
+        tt::sync_wait(custom_sender{start_called, connect_called, tag_invoke_overload_called});
         PIKA_TEST(start_called);
         PIKA_TEST(connect_called);
         PIKA_TEST(!tag_invoke_overload_called);
@@ -46,25 +45,17 @@ int pika_main()
     }
 
     {
-        PIKA_TEST_EQ(
-            tt::sync_wait(ex::just(custom_type_non_default_constructible{42}))
-                .x,
-            42);
+        PIKA_TEST_EQ(tt::sync_wait(ex::just(custom_type_non_default_constructible{42})).x, 42);
     }
 
     {
         PIKA_TEST_EQ(
-            tt::sync_wait(
-                ex::just(
-                    custom_type_non_default_constructible_non_copyable{42}))
-                .x,
-            42);
+            tt::sync_wait(ex::just(custom_type_non_default_constructible_non_copyable{42})).x, 42);
     }
 
     {
         int x = 42;
-        PIKA_TEST_EQ(
-            tt::sync_wait(ex::just(const_reference_sender<int>{x})).x, 42);
+        PIKA_TEST_EQ(tt::sync_wait(ex::just(const_reference_sender<int>{x})).x, 42);
     }
 
     // operator| overload
@@ -72,8 +63,7 @@ int pika_main()
         std::atomic<bool> start_called{false};
         std::atomic<bool> connect_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
-        tt::sync_wait(custom_sender{
-            start_called, connect_called, tag_invoke_overload_called});
+        tt::sync_wait(custom_sender{start_called, connect_called, tag_invoke_overload_called});
         PIKA_TEST(start_called);
         PIKA_TEST(connect_called);
         PIKA_TEST(!tag_invoke_overload_called);
@@ -88,8 +78,8 @@ int pika_main()
         std::atomic<bool> start_called{false};
         std::atomic<bool> connect_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
-        tt::sync_wait(custom_sender2{custom_sender{
-            start_called, connect_called, tag_invoke_overload_called}});
+        tt::sync_wait(custom_sender2{
+            custom_sender{start_called, connect_called, tag_invoke_overload_called}});
         PIKA_TEST(!start_called);
         PIKA_TEST(!connect_called);
         PIKA_TEST(tag_invoke_overload_called);
@@ -131,8 +121,7 @@ int pika_main()
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0, "pika main exited with non-zero status");
 
     return 0;
 }

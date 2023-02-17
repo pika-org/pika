@@ -69,12 +69,11 @@ namespace pika::util::detail {
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename... Us>
-        constexpr PIKA_HOST_DEVICE typename invoke_bound_back_result<F&,
-            util::detail::pack<Ts&...>, Us&&...>::type
-        operator()(Us&&... vs) &
+        constexpr PIKA_HOST_DEVICE
+            typename invoke_bound_back_result<F&, util::detail::pack<Ts&...>, Us&&...>::type
+            operator()(Us&&... vs) &
         {
-            return PIKA_INVOKE(
-                _f, PIKA_FORWARD(Us, vs)..., _args.template get<Is>()...);
+            return PIKA_INVOKE(_f, PIKA_FORWARD(Us, vs)..., _args.template get<Is>()...);
         }
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
@@ -83,18 +82,17 @@ namespace pika::util::detail {
             util::detail::pack<Ts const&...>, Us&&...>::type
         operator()(Us&&... vs) const&
         {
-            return PIKA_INVOKE(
-                _f, PIKA_FORWARD(Us, vs)..., _args.template get<Is>()...);
+            return PIKA_INVOKE(_f, PIKA_FORWARD(Us, vs)..., _args.template get<Is>()...);
         }
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename... Us>
-        constexpr PIKA_HOST_DEVICE typename invoke_bound_back_result<F&&,
-            util::detail::pack<Ts&&...>, Us&&...>::type
-        operator()(Us&&... vs) &&
+        constexpr PIKA_HOST_DEVICE
+            typename invoke_bound_back_result<F&&, util::detail::pack<Ts&&...>, Us&&...>::type
+            operator()(Us&&... vs) &&
         {
-            return PIKA_INVOKE(PIKA_MOVE(_f), PIKA_FORWARD(Us, vs)...,
-                PIKA_MOVE(_args).template get<Is>()...);
+            return PIKA_INVOKE(
+                PIKA_MOVE(_f), PIKA_FORWARD(Us, vs)..., PIKA_MOVE(_args).template get<Is>()...);
         }
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
@@ -103,8 +101,8 @@ namespace pika::util::detail {
             util::detail::pack<Ts const&&...>, Us&&...>::type
         operator()(Us&&... vs) const&&
         {
-            return PIKA_INVOKE(PIKA_MOVE(_f), PIKA_FORWARD(Us, vs)...,
-                PIKA_MOVE(_args).template get<Is>()...);
+            return PIKA_INVOKE(
+                PIKA_MOVE(_f), PIKA_FORWARD(Us, vs)..., PIKA_MOVE(_args).template get<Is>()...);
         }
 
         constexpr std::size_t get_function_address() const
@@ -139,14 +137,12 @@ namespace pika::util::detail {
     };
 
     template <typename F, typename... Ts>
-    constexpr bound_back<std::decay_t<F>,
-        util::detail::make_index_pack_t<sizeof...(Ts)>,
+    constexpr bound_back<std::decay_t<F>, util::detail::make_index_pack_t<sizeof...(Ts)>,
         ::pika::detail::decay_unwrap_t<Ts>...>
     bind_back(F&& f, Ts&&... vs)
     {
         using result_type = bound_back<std::decay_t<F>,
-            util::detail::make_index_pack_t<sizeof...(Ts)>,
-            ::pika::detail::decay_unwrap_t<Ts>...>;
+            util::detail::make_index_pack_t<sizeof...(Ts)>, ::pika::detail::decay_unwrap_t<Ts>...>;
 
         return result_type(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...);
     }
@@ -164,8 +160,7 @@ namespace pika::detail {
     template <typename F, typename... Ts>
     struct get_function_address<util::detail::bound_back<F, Ts...>>
     {
-        static constexpr std::size_t call(
-            util::detail::bound_back<F, Ts...> const& f) noexcept
+        static constexpr std::size_t call(util::detail::bound_back<F, Ts...> const& f) noexcept
         {
             return f.get_function_address();
         }
@@ -175,8 +170,7 @@ namespace pika::detail {
     template <typename F, typename... Ts>
     struct get_function_annotation<util::detail::bound_back<F, Ts...>>
     {
-        static constexpr char const* call(
-            util::detail::bound_back<F, Ts...> const& f) noexcept
+        static constexpr char const* call(util::detail::bound_back<F, Ts...> const& f) noexcept
         {
             return f.get_function_annotation();
         }
@@ -186,8 +180,7 @@ namespace pika::detail {
     template <typename F, typename... Ts>
     struct get_function_annotation_itt<util::detail::bound_back<F, Ts...>>
     {
-        static util::itt::string_handle call(
-            util::detail::bound_back<F, Ts...> const& f) noexcept
+        static util::itt::string_handle call(util::detail::bound_back<F, Ts...> const& f) noexcept
         {
             return f.get_function_annotation_itt();
         }

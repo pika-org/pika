@@ -117,14 +117,12 @@ int main(int ac, char* av[])
 
         if (vm.count("include-path"))
         {
-            cout << "Include paths are: "
-                 << vm["include-path"].as<vector<string>>() << "\n";
+            cout << "Include paths are: " << vm["include-path"].as<vector<string>>() << "\n";
         }
 
         if (vm.count("input-file"))
         {
-            cout << "Input files are: " << vm["input-file"].as<vector<string>>()
-                 << "\n";
+            cout << "Input files are: " << vm["input-file"].as<vector<string>>() << "\n";
         }
 
         cout << "Optimization level is " << opt << "\n";

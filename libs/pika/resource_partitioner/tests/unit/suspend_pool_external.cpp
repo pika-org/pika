@@ -25,16 +25,14 @@
 #include <utility>
 #include <vector>
 
-void test_scheduler(
-    int argc, char* argv[], pika::resource::scheduling_policy scheduler)
+void test_scheduler(int argc, char* argv[], pika::resource::scheduling_policy scheduler)
 {
     pika::init_params init_args;
 
     init_args.cfg = {"pika.os_threads=" +
-        std::to_string(((std::min)(std::size_t(4),
-            std::size_t(pika::threads::detail::hardware_concurrency()))))};
-    init_args.rp_callback = [scheduler](auto& rp,
-                                pika::program_options::variables_map const&) {
+        std::to_string(((std::min)(
+            std::size_t(4), std::size_t(pika::threads::detail::hardware_concurrency()))))};
+    init_args.rp_callback = [scheduler](auto& rp, pika::program_options::variables_map const&) {
         rp.create_thread_pool("default", scheduler);
     };
 
@@ -42,8 +40,7 @@ void test_scheduler(
 
     pika::threads::detail::thread_pool_base& default_pool =
         pika::resource::get_thread_pool("default");
-    std::size_t const default_pool_threads =
-        pika::resource::get_num_threads("default");
+    std::size_t const default_pool_threads = pika::resource::get_num_threads("default");
 
     pika::chrono::detail::high_resolution_timer t;
 
@@ -55,8 +52,7 @@ void test_scheduler(
         }
 
         bool suspended = false;
-        pika::threads::detail::suspend_pool_cb(
-            default_pool, [&suspended]() { suspended = true; });
+        pika::threads::detail::suspend_pool_cb(default_pool, [&suspended]() { suspended = true; });
 
         // NOLINTNEXTLINE(bugprone-infinite-loop)
         while (!suspended)
@@ -65,8 +61,7 @@ void test_scheduler(
         }
 
         bool resumed = false;
-        pika::threads::detail::resume_pool_cb(
-            default_pool, [&resumed]() { resumed = true; });
+        pika::threads::detail::resume_pool_cb(default_pool, [&resumed]() { resumed = true; });
 
         // NOLINTNEXTLINE(bugprone-infinite-loop)
         while (!resumed)

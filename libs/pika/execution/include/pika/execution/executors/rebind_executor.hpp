@@ -59,16 +59,14 @@ namespace pika::parallel::execution {
         using parameters_type = std::decay_t<Parameters>;
 
         using category1 = typename policy_type::execution_category;
-        using category2 = typename pika::traits::executor_execution_category<
-            executor_type>::type;
+        using category2 = typename pika::traits::executor_execution_category<executor_type>::type;
 
         static_assert(detail::is_not_weaker<category2, category1>::value,
             "detail::is_not_weaker<category2, category1>::value");
         /// \endcond
 
         /// The type of the rebound execution policy
-        using type = typename policy_type::template rebind<executor_type,
-            parameters_type>::type;
+        using type = typename policy_type::template rebind<executor_type, parameters_type>::type;
     };
 
     //////////////////////////////////////////////////////////////////////////
@@ -78,11 +76,9 @@ namespace pika::parallel::execution {
         constexpr decltype(auto)
         operator()(ExPolicy&&, Executor&& exec, Parameters&& parameters) const
         {
-            using rebound_type =
-                typename rebind_executor<ExPolicy, Executor, Parameters>::type;
+            using rebound_type = typename rebind_executor<ExPolicy, Executor, Parameters>::type;
 
-            return rebound_type(PIKA_FORWARD(Executor, exec),
-                PIKA_FORWARD(Parameters, parameters));
+            return rebound_type(PIKA_FORWARD(Executor, exec), PIKA_FORWARD(Parameters, parameters));
         }
     };
 

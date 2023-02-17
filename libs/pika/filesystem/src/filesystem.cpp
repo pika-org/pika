@@ -36,8 +36,8 @@ namespace pika::detail::filesystem {
         }
     }
 
-    std::filesystem::path canonical(std::filesystem::path const& p,
-        std::filesystem::path const& base, std::error_code& ec)
+    std::filesystem::path canonical(
+        std::filesystem::path const& p, std::filesystem::path const& base, std::error_code& ec)
     {
         if (p.is_relative())
         {

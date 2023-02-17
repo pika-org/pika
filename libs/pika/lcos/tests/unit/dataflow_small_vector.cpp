@@ -25,13 +25,12 @@
 namespace pika::traits {
 
     // support unwrapping of pika::detail::small_vector
-    template <typename NewType, typename OldType, std::size_t Size,
-        typename OldAllocator>
+    template <typename NewType, typename OldType, std::size_t Size, typename OldAllocator>
     struct pack_traversal_rebind_container<NewType,
         pika::detail::small_vector<OldType, Size, OldAllocator>>
     {
-        using NewAllocator = typename std::allocator_traits<
-            OldAllocator>::template rebind_alloc<NewType>;
+        using NewAllocator =
+            typename std::allocator_traits<OldAllocator>::template rebind_alloc<NewType>;
 
         static pika::detail::small_vector<NewType, Size, NewAllocator> call(
             pika::detail::small_vector<OldType, Size, OldAllocator> const&)
@@ -44,8 +43,7 @@ namespace pika::traits {
 }    // namespace pika::traits
 
 template <typename T>
-using small_vector =
-    pika::detail::small_vector<T, 3, pika::detail::internal_allocator<T>>;
+using small_vector = pika::detail::small_vector<T, 3, pika::detail::internal_allocator<T>>;
 
 ///////////////////////////////////////////////////////////////////////////////
 std::atomic<std::uint32_t> void_f_count;
@@ -101,8 +99,7 @@ void function_pointers(std::uint32_t num)
     int_f1_count.store(0);
     int_f2_count.store(0);
 
-    pika::future<void> f1 =
-        pika::dataflow(pika::unwrapping(&void_f1), pika::async(&int_f));
+    pika::future<void> f1 = pika::dataflow(pika::unwrapping(&void_f1), pika::async(&int_f));
     pika::future<int> f2 = pika::dataflow(pika::unwrapping(&int_f1),
         pika::dataflow(pika::unwrapping(&int_f1), pika::make_ready_future(42)));
 
@@ -116,11 +113,9 @@ void function_pointers(std::uint32_t num)
     vf.resize(num);
     for (std::uint32_t i = 0; i < num; ++i)
     {
-        vf[i] = pika::dataflow(
-            pika::unwrapping(&int_f1), pika::make_ready_future(42));
+        vf[i] = pika::dataflow(pika::unwrapping(&int_f1), pika::make_ready_future(42));
     }
-    pika::future<int> f4 =
-        pika::dataflow(pika::unwrapping(&int_f_vector), std::move(vf));
+    pika::future<int> f4 = pika::dataflow(pika::unwrapping(&int_f_vector), std::move(vf));
 
     pika::future<int> f5 = pika::dataflow(pika::unwrapping(&int_f1),
         pika::dataflow(pika::unwrapping(&int_f1), pika::make_ready_future(42)),
@@ -215,8 +210,7 @@ int pika_main()
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0, "pika main exited with non-zero status");
 
     return 0;
 }

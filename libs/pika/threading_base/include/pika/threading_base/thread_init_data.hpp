@@ -92,8 +92,8 @@ namespace pika::threads::detail {
 #ifdef PIKA_HAVE_APEX
           // PIKA_HAVE_APEX forces the PIKA_HAVE_THREAD_DESCRIPTION and
           // PIKA_HAVE_THREAD_PARENT_REFERENCE settings to be on
-          , timer_data(pika::detail::external_timer::new_task(
-                description, parent_locality_id, parent_id))
+          , timer_data(
+                pika::detail::external_timer::new_task(description, parent_locality_id, parent_id))
 #endif
           , priority(rhs.priority)
           , schedulehint(rhs.schedulehint)
@@ -106,14 +106,10 @@ namespace pika::threads::detail {
 
         template <typename F>
         thread_init_data(F&& f, ::pika::detail::thread_description const& desc,
-            execution::thread_priority priority_ =
-                execution::thread_priority::normal,
-            execution::thread_schedule_hint os_thread =
-                execution::thread_schedule_hint(),
-            execution::thread_stacksize stacksize_ =
-                execution::thread_stacksize::default_,
-            thread_schedule_state initial_state_ =
-                thread_schedule_state::pending,
+            execution::thread_priority priority_ = execution::thread_priority::normal,
+            execution::thread_schedule_hint os_thread = execution::thread_schedule_hint(),
+            execution::thread_stacksize stacksize_ = execution::thread_stacksize::default_,
+            thread_schedule_state initial_state_ = thread_schedule_state::pending,
             bool run_now_ = false,
             ::pika::threads::detail::scheduler_base* scheduler_base_ = nullptr)
           : func(PIKA_FORWARD(F, f))
@@ -128,8 +124,8 @@ namespace pika::threads::detail {
 #ifdef PIKA_HAVE_APEX
           // PIKA_HAVE_APEX forces the PIKA_HAVE_THREAD_DESCRIPTION and
           // PIKA_HAVE_THREAD_PARENT_REFERENCE settings to be on
-          , timer_data(pika::detail::external_timer::new_task(
-                description, parent_locality_id, parent_id))
+          , timer_data(
+                pika::detail::external_timer::new_task(description, parent_locality_id, parent_id))
 #endif
           , priority(priority_)
           , schedulehint(os_thread)

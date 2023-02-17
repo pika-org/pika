@@ -31,8 +31,7 @@ namespace pika::program_options::detail {
        Experiments show that the performance loss is less than 10%.
     */
     template <class ToChar, class FromChar, class Fun>
-    std::basic_string<ToChar>
-    convert(const std::basic_string<FromChar>& s, Fun fun)
+    std::basic_string<ToChar> convert(const std::basic_string<FromChar>& s, Fun fun)
 
     {
         std::basic_string<ToChar> result;
@@ -53,8 +52,7 @@ namespace pika::program_options::detail {
             ToChar* to_next = buffer;
             // Need variable because std::bind doesn't work with rvalues.
             ToChar* to_end = buffer + 32;
-            std::codecvt_base::result r =
-                fun(state, from, from_end, from, buffer, to_end, to_next);
+            std::codecvt_base::result r = fun(state, from, from_end, from, buffer, to_end, to_next);
 
             if (r == std::codecvt_base::error)
                 throw std::logic_error("character conversion failed");
@@ -76,22 +74,22 @@ namespace pika::program_options::detail {
 
 namespace pika::program_options {
 
-    std::wstring from_8_bit(const std::string& s,
-        const std::codecvt<wchar_t, char, std::mbstate_t>& cvt)
+    std::wstring from_8_bit(
+        const std::string& s, const std::codecvt<wchar_t, char, std::mbstate_t>& cvt)
     {
         using namespace std::placeholders;
         return detail::convert<wchar_t>(s,
-            std::bind(&std::codecvt<wchar_t, char, std::mbstate_t>::in, &cvt,
-                _1, _2, _3, _4, _5, _6, _7));
+            std::bind(&std::codecvt<wchar_t, char, std::mbstate_t>::in, &cvt, _1, _2, _3, _4, _5,
+                _6, _7));
     }
 
-    std::string to_8_bit(const std::wstring& s,
-        const std::codecvt<wchar_t, char, std::mbstate_t>& cvt)
+    std::string to_8_bit(
+        const std::wstring& s, const std::codecvt<wchar_t, char, std::mbstate_t>& cvt)
     {
         using namespace std::placeholders;
         return detail::convert<char>(s,
-            std::bind(&std::codecvt<wchar_t, char, std::mbstate_t>::out, &cvt,
-                _1, _2, _3, _4, _5, _6, _7));
+            std::bind(&std::codecvt<wchar_t, char, std::mbstate_t>::out, &cvt, _1, _2, _3, _4, _5,
+                _6, _7));
     }
 
     namespace {

@@ -104,8 +104,8 @@ namespace pika::concurrency::detail {
         }
 
         template <typename IntegralL, typename IntegralR>
-        static void pack_ptr_pair(compressed_ptr_pair_t& pair, Left* lptr,
-            Right* rptr, IntegralL ltag, IntegralR rtag)
+        static void pack_ptr_pair(
+            compressed_ptr_pair_t& pair, Left* lptr, Right* rptr, IntegralL ltag, IntegralR rtag)
         {
             cast_unit ret;
             ret.value.left = reinterpret_cast<compressed_ptr_t>(lptr);

@@ -25,8 +25,7 @@ int main(int argc, char* argv[])
     // pass unknown command line option that would conflict with predefined
     // alias (-w)
     std::vector<std::string> const cfg = {
-        "--pika:ini=pika.commandline.allow_unknown!=1",
-        "--pika:ini=pika.commandline.aliasing!=0"};
+        "--pika:ini=pika.commandline.allow_unknown!=1", "--pika:ini=pika.commandline.aliasing!=0"};
 
     pika::init_params init_args;
     init_args.cfg = cfg;

@@ -23,8 +23,7 @@ int pika_main()
         auto start_time = std::chrono::high_resolution_clock::now();
 
         // run for 3 seconds max
-        std::chrono::duration<double> overall_dif =
-            start_time - overall_start_time;
+        std::chrono::duration<double> overall_dif = start_time - overall_start_time;
         if (overall_dif.count() > 3.0)
             break;
 

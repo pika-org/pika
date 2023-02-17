@@ -45,18 +45,17 @@ struct unsigned_assert_nonnegative
 
 template <typename T>
 struct assert_nonnegative
-  : std::conditional<std::numeric_limits<T>::is_signed,
-        signed_assert_nonnegative<T>, unsigned_assert_nonnegative<T>>::type
+  : std::conditional<std::numeric_limits<T>::is_signed, signed_assert_nonnegative<T>,
+        unsigned_assert_nonnegative<T>>::type
 {
 };
 
 // Special tests for RandomAccess CountingIterators.
 template <typename CountingIterator, typename Value>
-void category_test(CountingIterator start, CountingIterator finish, Value,
-    std::random_access_iterator_tag)
+void category_test(
+    CountingIterator start, CountingIterator finish, Value, std::random_access_iterator_tag)
 {
-    using difference_type =
-        typename std::iterator_traits<CountingIterator>::difference_type;
+    using difference_type = typename std::iterator_traits<CountingIterator>::difference_type;
 
     difference_type distance = std::distance(start, finish);
 
@@ -72,8 +71,7 @@ void category_test(CountingIterator start, CountingIterator finish, Value,
     // Try some binary searches on the range to show that it's ordered
     PIKA_TEST(std::binary_search(start, finish, *internal));
 
-    std::pair<CountingIterator, CountingIterator> xy(
-        std::equal_range(start, finish, *internal));
+    std::pair<CountingIterator, CountingIterator> xy(std::equal_range(start, finish, *internal));
     CountingIterator x = xy.first, y = xy.second;
 
     PIKA_TEST(std::distance(x, y) == 1);
@@ -100,14 +98,12 @@ void category_test(CountingIterator start, CountingIterator finish, Value,
 
     // Note that this test requires a that the first argument is
     // dereferenceable /and/ a valid iterator prior to the first argument
-    tests::random_access_iterator_test(
-        start, static_cast<int>(v.size()), v.begin());
+    tests::random_access_iterator_test(start, static_cast<int>(v.size()), v.begin());
 }
 
 // Special tests for bidirectional CountingIterators
 template <typename CountingIterator, typename Value>
-void category_test(
-    CountingIterator start, Value v1, std::bidirectional_iterator_tag)
+void category_test(CountingIterator start, Value v1, std::bidirectional_iterator_tag)
 {
     Value v2 = v1;
     ++v2;
@@ -118,8 +114,8 @@ void category_test(
 }
 
 template <typename CountingIterator, typename Value>
-void category_test(CountingIterator start, CountingIterator finish, Value v1,
-    std::forward_iterator_tag)
+void category_test(
+    CountingIterator start, CountingIterator finish, Value v1, std::forward_iterator_tag)
 {
     Value v2 = v1;
     ++v2;
@@ -157,8 +153,8 @@ void test(Incrementable start, Incrementable finish)
 #pragma warning(push)
 #pragma warning(disable : 4146)
 #endif
-    test_aux(pika::util::make_counting_iterator(start),
-        pika::util::make_counting_iterator(finish), start);
+    test_aux(pika::util::make_counting_iterator(start), pika::util::make_counting_iterator(finish),
+        start);
 #if defined(PIKA_MSVC)
 #pragma warning(pop)
 #endif
@@ -178,14 +174,12 @@ void test_integer3(Integer* = nullptr, Category* = nullptr,
 {
     Integer start = Integer(0);
     Integer finish = Integer(120);
-    using iterator =
-        pika::util::counting_iterator<Integer, Category, Difference>;
+    using iterator = pika::util::counting_iterator<Integer, Category, Difference>;
     test_aux(iterator(start), iterator(finish), start);
 }
 
 template <typename Container>
-void test_container(
-    Container* = nullptr)    // default arg works around MSVC bug
+void test_container(Container* = nullptr)    // default arg works around MSVC bug
 {
     std::uniform_int_distribution<unsigned> dis(3, 1673);
     Container c(dis(gen));
@@ -353,18 +347,17 @@ int main(int argc, char* argv[])
 {
     // add command line option which controls the random number generator seed
     using namespace pika::program_options;
-    options_description desc_commandline(
-        "Usage: " PIKA_APPLICATION_STRING " [options]");
+    options_description desc_commandline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
-    desc_commandline.add_options()("seed,s", value<unsigned int>(),
-        "the random number generator seed to use for this run");
+    desc_commandline.add_options()(
+        "seed,s", value<unsigned int>(), "the random number generator seed to use for this run");
 
     // Initialize and run pika
     pika::init_params init_args;
     init_args.desc_cmdline = desc_commandline;
 
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(
+        pika::init(pika_main, argc, argv, init_args), 0, "pika main exited with non-zero status");
 
     return 0;
 }

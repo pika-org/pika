@@ -166,8 +166,7 @@ namespace pika::execution::experimental {
 
     template <typename T, typename E>
     struct is_receiver
-      : detail::is_receiver_impl<
-            std::is_move_constructible<std::decay_t<T>>::value &&
+      : detail::is_receiver_impl<std::is_move_constructible<std::decay_t<T>>::value &&
                 std::is_constructible<std::decay_t<T>, T>::value,
             T, E>
     {
@@ -188,15 +187,13 @@ namespace pika::execution::experimental {
 
         template <typename T, typename... As>
         struct is_receiver_of_impl<true, T, As...>
-          : std::integral_constant<bool,
-                std::is_invocable_v<set_value_t, std::decay_t<T>&&, As...>>
+          : std::integral_constant<bool, std::is_invocable_v<set_value_t, std::decay_t<T>&&, As...>>
         {
         };
     }    // namespace detail
 
     template <typename T, typename... As>
-    struct is_receiver_of
-      : detail::is_receiver_of_impl<is_receiver_v<T>, T, As...>
+    struct is_receiver_of : detail::is_receiver_of_impl<is_receiver_v<T>, T, As...>
     {
     };
 

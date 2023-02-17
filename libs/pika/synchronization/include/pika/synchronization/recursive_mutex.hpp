@@ -95,11 +95,9 @@ namespace pika::detail {
         }
 
     private:
-        bool try_recursive_lock(
-            pika::execution::detail::agent_ref current_context)
+        bool try_recursive_lock(pika::execution::detail::agent_ref current_context)
         {
-            if (locking_context.load(std::memory_order_acquire) ==
-                current_context)
+            if (locking_context.load(std::memory_order_acquire) == current_context)
             {
                 if (++recursion_count == 1)
                     util::register_lock(this);

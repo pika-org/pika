@@ -29,8 +29,7 @@ void test_post_f(int passed_through, pika::latch& l)
 {
     PIKA_TEST_EQ(passed_through, 42);
 
-    annotation = pika::threads::detail::get_thread_description(
-        pika::threads::detail::get_self_id())
+    annotation = pika::threads::detail::get_thread_description(pika::threads::detail::get_self_id())
                      .get_description();
 
     l.count_down(1);
@@ -54,8 +53,7 @@ void test_post()
 
     {
         annotation.clear();
-        auto exec =
-            pika::execution::experimental::with_annotation(executor{}, desc);
+        auto exec = pika::execution::experimental::with_annotation(executor{}, desc);
 
         pika::latch l(2);
         pika::parallel::execution::post(exec, &test_post_f, 42, std::ref(l));
@@ -69,8 +67,7 @@ pika::thread::id test(int passed_through)
 {
     PIKA_TEST_EQ(passed_through, 42);
 
-    annotation = pika::threads::detail::get_thread_description(
-        pika::threads::detail::get_self_id())
+    annotation = pika::threads::detail::get_thread_description(pika::threads::detail::get_self_id())
                      .get_description();
 
     return pika::this_thread::get_id();
@@ -92,8 +89,7 @@ void test_sync()
 
     {
         annotation.clear();
-        auto exec =
-            pika::execution::experimental::with_annotation(executor{}, desc);
+        auto exec = pika::execution::experimental::with_annotation(executor{}, desc);
 
         PIKA_TEST(pika::parallel::execution::sync_execute(exec, &test, 42) ==
             pika::this_thread::get_id());
@@ -110,19 +106,16 @@ void test_async()
         auto exec = pika::experimental::prefer(
             pika::execution::experimental::with_annotation, executor{}, desc);
 
-        PIKA_TEST(
-            pika::parallel::execution::async_execute(exec, &test, 42).get() !=
+        PIKA_TEST(pika::parallel::execution::async_execute(exec, &test, 42).get() !=
             pika::this_thread::get_id());
         PIKA_TEST_EQ(annotation, desc);
     }
 
     {
         annotation.clear();
-        auto exec =
-            pika::execution::experimental::with_annotation(executor{}, desc);
+        auto exec = pika::execution::experimental::with_annotation(executor{}, desc);
 
-        PIKA_TEST(
-            pika::parallel::execution::async_execute(exec, &test, 42).get() !=
+        PIKA_TEST(pika::parallel::execution::async_execute(exec, &test, 42).get() !=
             pika::this_thread::get_id());
         PIKA_TEST_EQ(annotation, desc);
     }
@@ -137,8 +130,7 @@ pika::thread::id test_f(pika::future<void> f, int passed_through)
 
     PIKA_TEST_EQ(passed_through, 42);
 
-    annotation = pika::threads::detail::get_thread_description(
-        pika::threads::detail::get_self_id())
+    annotation = pika::threads::detail::get_thread_description(pika::threads::detail::get_self_id())
                      .get_description();
 
     return pika::this_thread::get_id();
@@ -155,18 +147,17 @@ void test_then()
         auto exec = pika::experimental::prefer(
             pika::execution::experimental::with_annotation, executor{}, desc);
 
-        PIKA_TEST(pika::parallel::execution::then_execute(exec, &test_f, f, 42)
-                      .get() != pika::this_thread::get_id());
+        PIKA_TEST(pika::parallel::execution::then_execute(exec, &test_f, f, 42).get() !=
+            pika::this_thread::get_id());
         PIKA_TEST_EQ(annotation, desc);
     }
 
     {
         annotation.clear();
-        auto exec =
-            pika::execution::experimental::with_annotation(executor{}, desc);
+        auto exec = pika::execution::experimental::with_annotation(executor{}, desc);
 
-        PIKA_TEST(pika::parallel::execution::then_execute(exec, &test_f, f, 42)
-                      .get() != pika::this_thread::get_id());
+        PIKA_TEST(pika::parallel::execution::then_execute(exec, &test_f, f, 42).get() !=
+            pika::this_thread::get_id());
         PIKA_TEST_EQ(annotation, desc);
     }
 }
@@ -179,9 +170,9 @@ void bulk_test(int seq, pika::thread::id tid, int passed_through)    //-V813
 
     if (seq == 0)
     {
-        annotation = pika::threads::detail::get_thread_description(
-            pika::threads::detail::get_self_id())
-                         .get_description();
+        annotation =
+            pika::threads::detail::get_thread_description(pika::threads::detail::get_self_id())
+                .get_description();
     }
 }
 
@@ -204,14 +195,12 @@ void test_bulk_sync()
         PIKA_TEST_EQ(annotation, desc);
 
         annotation.clear();
-        pika::parallel::execution::bulk_sync_execute(
-            exec, &bulk_test, 107, tid, 42);
+        pika::parallel::execution::bulk_sync_execute(exec, &bulk_test, 107, tid, 42);
         PIKA_TEST_EQ(annotation, desc);
     }
 
     {
-        auto exec =
-            pika::execution::experimental::with_annotation(executor{}, desc);
+        auto exec = pika::execution::experimental::with_annotation(executor{}, desc);
 
         annotation.clear();
         pika::parallel::execution::bulk_sync_execute(
@@ -219,8 +208,7 @@ void test_bulk_sync()
         PIKA_TEST_EQ(annotation, desc);
 
         annotation.clear();
-        pika::parallel::execution::bulk_sync_execute(
-            exec, &bulk_test, 107, tid, 42);
+        pika::parallel::execution::bulk_sync_execute(exec, &bulk_test, 107, tid, 42);
         PIKA_TEST_EQ(annotation, desc);
     }
 }
@@ -240,33 +228,30 @@ void test_bulk_async()
         auto exec = pika::experimental::prefer(
             pika::execution::experimental::with_annotation, executor{}, desc);
 
-        pika::when_all(
-            pika::parallel::execution::bulk_async_execute(exec,
-                pika::util::detail::bind(&bulk_test, _1, tid, _2), 107, 42))
+        pika::when_all(pika::parallel::execution::bulk_async_execute(
+                           exec, pika::util::detail::bind(&bulk_test, _1, tid, _2), 107, 42))
             .get();
         PIKA_TEST_EQ(annotation, desc);
 
         annotation.clear();
-        pika::when_all(pika::parallel::execution::bulk_async_execute(
-                           exec, &bulk_test, 107, tid, 42))
+        pika::when_all(
+            pika::parallel::execution::bulk_async_execute(exec, &bulk_test, 107, tid, 42))
             .get();
         PIKA_TEST_EQ(annotation, desc);
     }
 
     {
-        auto exec =
-            pika::execution::experimental::with_annotation(executor{}, desc);
+        auto exec = pika::execution::experimental::with_annotation(executor{}, desc);
 
         annotation.clear();
-        pika::when_all(
-            pika::parallel::execution::bulk_async_execute(exec,
-                pika::util::detail::bind(&bulk_test, _1, tid, _2), 107, 42))
+        pika::when_all(pika::parallel::execution::bulk_async_execute(
+                           exec, pika::util::detail::bind(&bulk_test, _1, tid, _2), 107, 42))
             .get();
         PIKA_TEST_EQ(annotation, desc);
 
         annotation.clear();
-        pika::when_all(pika::parallel::execution::bulk_async_execute(
-                           exec, &bulk_test, 107, tid, 42))
+        pika::when_all(
+            pika::parallel::execution::bulk_async_execute(exec, &bulk_test, 107, tid, 42))
             .get();
         PIKA_TEST_EQ(annotation, desc);
     }
@@ -285,9 +270,9 @@ void bulk_test_f(int seq, pika::shared_future<void> f, pika::thread::id tid,
 
     if (seq == 0)
     {
-        annotation = pika::threads::detail::get_thread_description(
-            pika::threads::detail::get_self_id())
-                         .get_description();
+        annotation =
+            pika::threads::detail::get_thread_description(pika::threads::detail::get_self_id())
+                .get_description();
     }
 }
 
@@ -308,32 +293,27 @@ void test_bulk_then()
         auto exec = pika::experimental::prefer(
             pika::execution::experimental::with_annotation, executor{}, desc);
 
-        pika::parallel::execution::bulk_then_execute(exec,
-            pika::util::detail::bind(&bulk_test_f, _1, _2, tid, _3), 107, f, 42)
+        pika::parallel::execution::bulk_then_execute(
+            exec, pika::util::detail::bind(&bulk_test_f, _1, _2, tid, _3), 107, f, 42)
             .get();
         PIKA_TEST_EQ(annotation, desc);
 
         annotation.clear();
-        pika::parallel::execution::bulk_then_execute(
-            exec, &bulk_test_f, 107, f, tid, 42)
-            .get();
+        pika::parallel::execution::bulk_then_execute(exec, &bulk_test_f, 107, f, tid, 42).get();
         PIKA_TEST_EQ(annotation, desc);
     }
 
     {
-        auto exec =
-            pika::execution::experimental::with_annotation(executor{}, desc);
+        auto exec = pika::execution::experimental::with_annotation(executor{}, desc);
 
         annotation.clear();
-        pika::parallel::execution::bulk_then_execute(exec,
-            pika::util::detail::bind(&bulk_test_f, _1, _2, tid, _3), 107, f, 42)
+        pika::parallel::execution::bulk_then_execute(
+            exec, pika::util::detail::bind(&bulk_test_f, _1, _2, tid, _3), 107, f, 42)
             .get();
         PIKA_TEST_EQ(annotation, desc);
 
         annotation.clear();
-        pika::parallel::execution::bulk_then_execute(
-            exec, &bulk_test_f, 107, f, tid, 42)
-            .get();
+        pika::parallel::execution::bulk_then_execute(exec, &bulk_test_f, 107, f, tid, 42).get();
         PIKA_TEST_EQ(annotation, desc);
     }
 }
@@ -343,12 +323,10 @@ void test_post_policy_prefer()
 {
     std::string desc("test_post_policy_prefer");
     auto policy = pika::experimental::prefer(
-        pika::execution::experimental::with_annotation, pika::execution::par,
-        desc);
+        pika::execution::experimental::with_annotation, pika::execution::par, desc);
 
     pika::latch l(2);
-    pika::parallel::execution::post(
-        policy.executor(), &test_post_f, 42, std::ref(l));
+    pika::parallel::execution::post(policy.executor(), &test_post_f, 42, std::ref(l));
     l.arrive_and_wait();
 
     PIKA_TEST_EQ(annotation, desc);
@@ -357,12 +335,10 @@ void test_post_policy_prefer()
 void test_post_policy()
 {
     std::string desc("test_post_policy");
-    auto policy = pika::execution::experimental::with_annotation(
-        pika::execution::par, desc);
+    auto policy = pika::execution::experimental::with_annotation(pika::execution::par, desc);
 
     pika::latch l(2);
-    pika::parallel::execution::post(
-        policy.executor(), &test_post_f, 42, std::ref(l));
+    pika::parallel::execution::post(policy.executor(), &test_post_f, 42, std::ref(l));
     l.arrive_and_wait();
 
     PIKA_TEST_EQ(annotation, desc);
@@ -396,8 +372,8 @@ int main(int argc, char* argv[])
     pika::init_params init_args;
     init_args.cfg = cfg;
 
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(
+        pika::init(pika_main, argc, argv, init_args), 0, "pika main exited with non-zero status");
 
     return 0;
 }

@@ -32,20 +32,16 @@ namespace pika::detail {
         PIKA_EXPORT counting_semaphore(std::ptrdiff_t value = 0);
         PIKA_EXPORT ~counting_semaphore();
 
-        PIKA_EXPORT void wait(
-            std::unique_lock<mutex_type>& l, std::ptrdiff_t count);
+        PIKA_EXPORT void wait(std::unique_lock<mutex_type>& l, std::ptrdiff_t count);
 
         PIKA_EXPORT bool wait_until(std::unique_lock<mutex_type>& l,
-            pika::chrono::steady_time_point const& abs_time,
-            std::ptrdiff_t count);
+            pika::chrono::steady_time_point const& abs_time, std::ptrdiff_t count);
 
-        PIKA_EXPORT bool try_wait(
-            std::unique_lock<mutex_type>& l, std::ptrdiff_t count = 1);
+        PIKA_EXPORT bool try_wait(std::unique_lock<mutex_type>& l, std::ptrdiff_t count = 1);
 
         PIKA_EXPORT bool try_acquire(std::unique_lock<mutex_type>& l);
 
-        PIKA_EXPORT void signal(
-            std::unique_lock<mutex_type> l, std::ptrdiff_t count);
+        PIKA_EXPORT void signal(std::unique_lock<mutex_type> l, std::ptrdiff_t count);
 
         PIKA_EXPORT std::ptrdiff_t signal_all(std::unique_lock<mutex_type> l);
 

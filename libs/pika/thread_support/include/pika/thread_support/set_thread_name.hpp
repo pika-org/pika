@@ -12,8 +12,7 @@
 #include <windows.h>
 
 namespace pika::detail {
-    PIKA_EXPORT void set_thread_name(
-        char const* /*threadName*/, DWORD /*dwThreadID*/ = DWORD(-1));
+    PIKA_EXPORT void set_thread_name(char const* /*threadName*/, DWORD /*dwThreadID*/ = DWORD(-1));
 }    // namespace pika::detail
 
 #else

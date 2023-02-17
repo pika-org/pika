@@ -37,8 +37,7 @@ namespace pika::util::logging::detail {
             size_type found = escaped.find("%%", idx_start);
             if (found != std::string::npos)
             {
-                escaped.erase(
-                    escaped.begin() + static_cast<std::ptrdiff_t>(found));
+                escaped.erase(escaped.begin() + static_cast<std::ptrdiff_t>(found));
                 ++idx_start;
             }
             else
@@ -102,8 +101,7 @@ namespace pika::util::logging::detail {
             case '\0':
             {
                 // last part
-                write_steps.push_back(
-                    write_step(detail::unescape(remaining), nullptr));
+                write_steps.push_back(write_step(detail::unescape(remaining), nullptr));
                 remaining.clear();
                 break;
             }
@@ -140,8 +138,7 @@ namespace pika::util::logging::detail {
                 if (m_manipulator.empty())
                     return false;
                 if (m_manipulator.size() > 1)
-                    if (m_manipulator[0] == '%' &&
-                        (*m_manipulator.rbegin() == '%'))
+                    if (m_manipulator[0] == '%' && (*m_manipulator.rbegin() == '%'))
                         return true;
 
                 return false;
@@ -228,8 +225,7 @@ namespace pika::util::logging::detail {
         };
 
         template <typename Named, typename ParserType>
-        void
-        configure(Named& named, std::string const& format, ParserType parser)
+        void configure(Named& named, std::string const& format, ParserType parser)
         {
             // need to parse string
             bool parsing_params = false;

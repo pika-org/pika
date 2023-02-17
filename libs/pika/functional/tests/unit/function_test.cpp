@@ -649,8 +649,7 @@ static void test_one_arg()
 
 static void test_two_args()
 {
-    pika::util::detail::function<string(const string&, const string&)> cat(
-        &string_cat);
+    pika::util::detail::function<string(const string&, const string&)> cat(&string_cat);
     PIKA_TEST_EQ(cat("str", "ing"), "string");
 
     pika::util::detail::function<int(short, short)> sum(&sum_ints);
@@ -755,8 +754,7 @@ static void test_empty_ref()
     try
     {
         f2();
-        PIKA_TEST_MSG(
-            false, "Exception didn't throw for reference to empty function.");
+        PIKA_TEST_MSG(false, "Exception didn't throw for reference to empty function.");
     }
     catch (std::runtime_error const& /*e*/)
     {

@@ -107,15 +107,13 @@ namespace pika {
     }
 
     template <typename F>
-    detail::annotated_function<std::decay_t<F>>
-    annotated_function(F&& f, std::string name)
+    detail::annotated_function<std::decay_t<F>> annotated_function(F&& f, std::string name)
     {
         using result_type = detail::annotated_function<std::decay_t<F>>;
 
         // Store string in a set to ensure it lives for the entire duration of
         // the task.
-        char const* name_c_str =
-            pika::detail::store_function_annotation(PIKA_MOVE(name));
+        char const* name_c_str = pika::detail::store_function_annotation(PIKA_MOVE(name));
         return result_type(PIKA_FORWARD(F, f), name_c_str);
     }
 
@@ -145,8 +143,7 @@ namespace pika::detail {
     template <typename F>
     struct get_function_address<pika::detail::annotated_function<F>>
     {
-        static constexpr std::size_t call(
-            pika::detail::annotated_function<F> const& f) noexcept
+        static constexpr std::size_t call(pika::detail::annotated_function<F> const& f) noexcept
         {
             return f.get_function_address();
         }
@@ -155,8 +152,7 @@ namespace pika::detail {
     template <typename F>
     struct get_function_annotation<pika::detail::annotated_function<F>>
     {
-        static constexpr char const* call(
-            pika::detail::annotated_function<F> const& f) noexcept
+        static constexpr char const* call(pika::detail::annotated_function<F> const& f) noexcept
         {
             return f.get_function_annotation();
         }

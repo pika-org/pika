@@ -42,8 +42,7 @@ struct all_map_float
 
 struct my_mapper
 {
-    template <typename T,
-        std::enable_if_t<std::is_same<T, int>::value>* = nullptr>
+    template <typename T, std::enable_if_t<std::is_same<T, int>::value>* = nullptr>
     float operator()(T el) const
     {
         return float(el + 1.f);
@@ -67,12 +66,10 @@ static void test_mixed_traversal()
             std::vector<std::vector<float>>{{1.f, 2.f}, {4.f, 5.f}}, 2);
 
         auto expected = make_tuple(    // ...
-            1.f, 2.f, make_tuple(2.f, 4.f),
-            std::vector<std::vector<float>>{{2.f, 3.f}, {5.f, 6.f}},
+            1.f, 2.f, make_tuple(2.f, 4.f), std::vector<std::vector<float>>{{2.f, 3.f}, {5.f, 6.f}},
             std::vector<std::vector<float>>{{2.f, 3.f}, {5.f, 6.f}}, 3.f);
 
-        static_assert(std::is_same<decltype(res), decltype(expected)>::value,
-            "Type mismatch!");
+        static_assert(std::is_same<decltype(res), decltype(expected)>::value, "Type mismatch!");
         PIKA_TEST(res == expected);
     }
 
@@ -96,13 +93,11 @@ static void test_mixed_traversal()
 
         auto expected = make_tuple(    // ...
             1.f, 1.f,
-            make_tuple(1.f, 4.f,
-                std::vector<std::vector<float>>{{2.f, 3.f}, {5.f, 6.f}},
+            make_tuple(1.f, 4.f, std::vector<std::vector<float>>{{2.f, 3.f}, {5.f, 6.f}},
                 std::vector<std::vector<float>>{{1.f, 2.f}, {4.f, 5.f}}),
             3.f);
 
-        static_assert(std::is_same<decltype(res), decltype(expected)>::value,
-            "Type mismatch!");
+        static_assert(std::is_same<decltype(res), decltype(expected)>::value, "Type mismatch!");
         PIKA_TEST(res == expected);
     }
 
@@ -134,13 +129,11 @@ static void test_mixed_early_unwrapping()
 {
     {
         auto res = map_pack(my_unwrapper{},    // ...
-            0, 1, make_ready_future(3),
-            make_tuple(make_ready_future(4), make_ready_future(5)));
+            0, 1, make_ready_future(3), make_tuple(make_ready_future(4), make_ready_future(5)));
 
         auto expected = make_tuple(0, 1, 3, make_tuple(4, 5));
 
-        static_assert(std::is_same<decltype(res), decltype(expected)>::value,
-            "Type mismatch!");
+        static_assert(std::is_same<decltype(res), decltype(expected)>::value, "Type mismatch!");
         PIKA_TEST(res == expected);
     }
 }
@@ -206,9 +199,7 @@ static void test_mixed_container_remap()
 
     // Rebind
     {
-        auto const remapper = [](unsigned short i) -> unsigned long {
-            return i - 1;
-        };
+        auto const remapper = [](unsigned short i) -> unsigned long { return i - 1; };
 
         // Rebinds the values
         {
@@ -223,13 +214,12 @@ static void test_mixed_container_remap()
             static unsigned const canary = 78787;
 
             my_allocator<unsigned short> allocator(canary);
-            std::vector<unsigned short, my_allocator<unsigned short>> source(
-                allocator);
+            std::vector<unsigned short, my_allocator<unsigned short>> source(allocator);
 
             // Empty
             {
-                std::vector<unsigned long, my_allocator<unsigned long>>
-                    remapped = map_pack(remapper, source);
+                std::vector<unsigned long, my_allocator<unsigned long>> remapped =
+                    map_pack(remapper, source);
 
                 PIKA_TEST(remapped.get_allocator().state_ == canary);
             }
@@ -237,8 +227,8 @@ static void test_mixed_container_remap()
             // Non empty
             source.push_back(1);
             {
-                std::vector<unsigned long, my_allocator<unsigned long>>
-                    remapped = map_pack(remapper, source);
+                std::vector<unsigned long, my_allocator<unsigned long>> remapped =
+                    map_pack(remapper, source);
 
                 PIKA_TEST(remapped.get_allocator().state_ == canary);
             }
@@ -258,8 +248,7 @@ struct mytester
 
 struct my_int_mapper
 {
-    template <typename T,
-        std::enable_if_t<std::is_same<T, int>::value>* = nullptr>
+    template <typename T, std::enable_if_t<std::is_same<T, int>::value>* = nullptr>
     float operator()(T el) const
     {
         return float(el + 1.f);
@@ -268,15 +257,14 @@ struct my_int_mapper
 
 static void test_mixed_fall_through()
 {
-    traverse_pack(my_int_mapper{}, int(0),
-        std::vector<tuple<float, float>>{make_tuple(1.f, 2.f)},
+    traverse_pack(my_int_mapper{}, int(0), std::vector<tuple<float, float>>{make_tuple(1.f, 2.f)},
         make_tuple(std::vector<float>{1.f, 2.f}));
 
-    traverse_pack(my_int_mapper{}, int(0),
-        std::vector<std::vector<float>>{{1.f, 2.f}}, make_tuple(1.f, 2.f));
+    traverse_pack(
+        my_int_mapper{}, int(0), std::vector<std::vector<float>>{{1.f, 2.f}}, make_tuple(1.f, 2.f));
 
-    auto res1 = map_pack(my_int_mapper{}, int(0),
-        std::vector<std::vector<float>>{{1.f, 2.f}}, make_tuple(77.f, 2));
+    auto res1 = map_pack(
+        my_int_mapper{}, int(0), std::vector<std::vector<float>>{{1.f, 2.f}}, make_tuple(77.f, 2));
 
     auto res2 = map_pack(
         [](int) {
@@ -363,8 +351,7 @@ public:
     }
 
     template <typename T,
-        typename std::enable_if<
-            std::is_same<std::decay_t<T>, test_tag_1>::value>::type* = nullptr>
+        typename std::enable_if<std::is_same<std::decay_t<T>, test_tag_1>::value>::type* = nullptr>
     void operator()(T)
     {
         ++counter_.get();
@@ -412,8 +399,7 @@ static void test_strategic_traverse()
 
     // Remapping works across values
     {
-        tuple<int, int, int> res =
-            map_pack([](int i) { return i + 1; }, 0, 1, 2);
+        tuple<int, int, int> res = map_pack([](int i) { return i + 1; }, 0, 1, 2);
 
         auto expected = make_tuple(1, 2, 3);
         PIKA_TEST(res == expected);
@@ -434,9 +420,8 @@ static void test_strategic_traverse()
         std::unique_ptr<int> p2(new int(2));
         std::unique_ptr<int> p3(new int(3));
 
-        tuple<std::unique_ptr<unsigned>, std::unique_ptr<unsigned>,
-            std::unique_ptr<unsigned>>
-            res = map_pack(
+        tuple<std::unique_ptr<unsigned>, std::unique_ptr<unsigned>, std::unique_ptr<unsigned>> res =
+            map_pack(
                 // Since we pass the unique_ptr's as r-value,
                 // those should be passed as r-values to the mapper.
                 [](std::unique_ptr<int>&& ptr) {
@@ -462,8 +447,7 @@ static void test_strategic_traverse()
         std::vector<std::unique_ptr<int>> container;
         container.push_back(std::unique_ptr<int>(new int(3)));
 
-        std::vector<int> res =
-            map_pack([](std::unique_ptr<int>& p) { return *p; }, container);
+        std::vector<int> res = map_pack([](std::unique_ptr<int>& p) { return *p; }, container);
 
         PIKA_TEST_EQ(res.size(), 1U);
         PIKA_TEST_EQ(res[0], 3);
@@ -498,14 +482,12 @@ static void test_strategic_traverse()
         std::unique_ptr<int> ptr1(new int(6));
         std::unique_ptr<int> ptr2(new int(7));
 
-        tuple<std::unique_ptr<int> const&, std::unique_ptr<int> const&> ref =
-            map_pack(
-                [](std::unique_ptr<int> const& ref)
-                    -> std::unique_ptr<int> const& {
-                    // ...
-                    return ref;
-                },
-                ptr1, ptr2);
+        tuple<std::unique_ptr<int> const&, std::unique_ptr<int> const&> ref = map_pack(
+            [](std::unique_ptr<int> const& ref) -> std::unique_ptr<int> const& {
+                // ...
+                return ref;
+            },
+            ptr1, ptr2);
 
         PIKA_TEST_EQ(*get<0>(ref), 6);
         PIKA_TEST_EQ(*get<1>(ref), 7);
@@ -553,8 +535,7 @@ static void test_strategic_container_traverse()
                 PIKA_TEST_EQ(counter, el);
                 ++counter;
             },
-            std::vector<int>{0, 1},
-            std::vector<std::vector<int>>{{2, 3}, {4, 5}});
+            std::vector<int>{0, 1}, std::vector<std::vector<int>>{{2, 3}, {4, 5}});
         PIKA_TEST_EQ(counter, 6);
     }
 
@@ -562,8 +543,7 @@ static void test_strategic_container_traverse()
     // - Plain container
     {
         std::vector<int> container{1, 2, 3};
-        std::vector<float> res =
-            map_pack([](int) { return 0.f; }, std::move(container));
+        std::vector<float> res = map_pack([](int) { return 0.f; }, std::move(container));
         PIKA_TEST_EQ(res.size(), 3U);
     }
 
@@ -579,8 +559,7 @@ static void test_strategic_container_traverse()
         std::vector<std::unique_ptr<int>> container;
         container.push_back(std::unique_ptr<int>(new int(5)));
         std::vector<int> res =
-            map_pack([](std::unique_ptr<int>&& ptr) { return *ptr; },
-                std::move(container));
+            map_pack([](std::unique_ptr<int>&& ptr) { return *ptr; }, std::move(container));
 
         PIKA_TEST_EQ(res.size(), 1U);
         PIKA_TEST_EQ(res[0], 5);
@@ -592,8 +571,7 @@ static void test_strategic_container_traverse()
         std::vector<int> container(100, 1);
         auto res = map_pack([](int) { return 2; }, std::move(container));
 
-        PIKA_TEST((
-            std::all_of(res.begin(), res.end(), [](int i) { return i == 2; })));
+        PIKA_TEST((std::all_of(res.begin(), res.end(), [](int i) { return i == 2; })));
     }
 
     // - Nested container
@@ -606,11 +584,9 @@ static void test_strategic_container_traverse()
         }
 
         auto res = map_pack([](int) { return 2; }, std::move(container));
-        PIKA_TEST((std::all_of(
-            res.begin(), res.end(), [](std::list<int> const& nested) {
-                return std::all_of(
-                    nested.begin(), nested.end(), [](int i) { return i == 2; });
-            })));
+        PIKA_TEST((std::all_of(res.begin(), res.end(), [](std::list<int> const& nested) {
+            return std::all_of(nested.begin(), nested.end(), [](int i) { return i == 2; });
+        })));
     }
 
     /// - Ensure correct container remapping when returning references
@@ -634,12 +610,11 @@ static void test_strategic_container_traverse()
         // r-value references
         {
             std::vector<std::unique_ptr<std::unique_ptr<int>>> container;
-            container.push_back(std::unique_ptr<std::unique_ptr<int>>(
-                new std::unique_ptr<int>(new int(7))));
+            container.push_back(
+                std::unique_ptr<std::unique_ptr<int>>(new std::unique_ptr<int>(new int(7))));
 
             std::vector<std::unique_ptr<int>> res = map_pack(
-                [](std::unique_ptr<std::unique_ptr<int>>& ref)
-                    -> std::unique_ptr<int>&& {
+                [](std::unique_ptr<std::unique_ptr<int>>& ref) -> std::unique_ptr<int>&& {
                     // ...
                     return std::move(*ref);
                 },
@@ -657,8 +632,7 @@ static void test_strategic_tuple_like_traverse()
     {
         int counter = 0;
         counter_mapper mapper(counter);
-        traverse_pack(
-            mapper, make_tuple(test_tag_1{}, test_tag_2{}, test_tag_3{}));
+        traverse_pack(mapper, make_tuple(test_tag_1{}, test_tag_2{}, test_tag_3{}));
         PIKA_TEST_EQ(counter, 3);
     }
 
@@ -678,21 +652,19 @@ static void test_strategic_tuple_like_traverse()
     // The container tuple like type itself is changed
     {
         tag_shift_mapper mapper;
-        tuple<float, test_tag_2, test_tag_3, test_tag_1> res = map_pack(
-            mapper, make_tuple(1, test_tag_1{}, test_tag_2{}, test_tag_3{}));
+        tuple<float, test_tag_2, test_tag_3, test_tag_1> res =
+            map_pack(mapper, make_tuple(1, test_tag_1{}, test_tag_2{}, test_tag_3{}));
 
         PIKA_TEST_EQ(get<0>(res), 0.f);
     }
 
     // Every element in the tuple like type is remapped
     {
-        tuple<float, float, float> res =
-            map_pack([](int) { return 1.f; }, make_tuple(0, 0, 0));
+        tuple<float, float, float> res = map_pack([](int) { return 1.f; }, make_tuple(0, 0, 0));
 
         auto expected = make_tuple(1.f, 1.f, 1.f);
 
-        static_assert(std::is_same<decltype(res), decltype(expected)>::value,
-            "Type mismatch!");
+        static_assert(std::is_same<decltype(res), decltype(expected)>::value, "Type mismatch!");
         PIKA_TEST(res == expected);
     }
 
@@ -707,17 +679,14 @@ static void test_strategic_tuple_like_traverse()
     // Make it possible to pass tuples containing move only objects
     // in as reference, while returning those as reference.
     {
-        auto value = make_tuple(
-            std::unique_ptr<int>(new int(6)), std::unique_ptr<int>(new int(7)));
+        auto value = make_tuple(std::unique_ptr<int>(new int(6)), std::unique_ptr<int>(new int(7)));
 
-        tuple<std::unique_ptr<int> const&, std::unique_ptr<int> const&> ref =
-            map_pack(
-                [](std::unique_ptr<int> const& ref)
-                    -> std::unique_ptr<int> const& {
-                    // ...
-                    return ref;
-                },
-                value);
+        tuple<std::unique_ptr<int> const&, std::unique_ptr<int> const&> ref = map_pack(
+            [](std::unique_ptr<int> const& ref) -> std::unique_ptr<int> const& {
+                // ...
+                return ref;
+            },
+            value);
 
         PIKA_TEST_EQ(*get<0>(ref), 6);
         PIKA_TEST_EQ(*get<1>(ref), 7);
@@ -770,8 +739,7 @@ static void test_spread_container_traverse()
 {
     // 1:2 mappings (multiple arguments)
     {
-        std::vector<tuple<int, int>> res =
-            map_pack(duplicate_mapper{}, std::vector<int>{1});
+        std::vector<tuple<int, int>> res = map_pack(duplicate_mapper{}, std::vector<int>{1});
 
         std::vector<tuple<int, int>> expected;
         expected.push_back(make_tuple(1, 1));
@@ -793,23 +761,20 @@ static void test_spread_tuple_like_traverse()
         tuple<tuple<int, int, int, int>> res =
             map_pack(duplicate_mapper{}, make_tuple(make_tuple(1, 2)));
 
-        tuple<tuple<int, int, int, int>> expected =
-            make_tuple(make_tuple(1, 1, 2, 2));
+        tuple<tuple<int, int, int, int>> expected = make_tuple(make_tuple(1, 1, 2, 2));
 
         PIKA_TEST(res == expected);
     }
 
     // 1:0 mappings
     {
-        using Result = decltype(map_pack(
-            zero_mapper{}, make_tuple(make_tuple(1, 2), 1), 1));
+        using Result = decltype(map_pack(zero_mapper{}, make_tuple(make_tuple(1, 2), 1), 1));
         static_assert(std::is_void<Result>::value, "Failed...");
     }
 
     // 1:2 mappings (multiple arguments)
     {
-        std::array<int, 4> res =
-            map_pack(duplicate_mapper{}, std::array<int, 2>{{1, 2}});
+        std::array<int, 4> res = map_pack(duplicate_mapper{}, std::array<int, 2>{{1, 2}});
 
         std::array<int, 4> expected{{1, 1, 2, 2}};
 
@@ -818,8 +783,7 @@ static void test_spread_tuple_like_traverse()
 
     // 1:0 mappings
     {
-        using Result =
-            decltype(map_pack(zero_mapper{}, std::array<int, 2>{{1, 2}}));
+        using Result = decltype(map_pack(zero_mapper{}, std::array<int, 2>{{1, 2}}));
         static_assert(std::is_void<Result>::value, "Failed...");
     }
 }

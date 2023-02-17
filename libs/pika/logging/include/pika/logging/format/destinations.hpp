@@ -61,8 +61,7 @@ namespace pika::util::logging::destination {
 */
     struct stream : manipulator
     {
-        PIKA_EXPORT static std::unique_ptr<stream> make(
-            std::ostream* stream_ptr);
+        PIKA_EXPORT static std::unique_ptr<stream> make(std::ostream* stream_ptr);
 
         PIKA_EXPORT ~stream();
 

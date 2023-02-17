@@ -75,62 +75,52 @@ namespace pika::threads::detail {
             thrd_ = nullptr;
         }
 
-        friend constexpr bool operator==(
-            std::nullptr_t, thread_id const& rhs) noexcept
+        friend constexpr bool operator==(std::nullptr_t, thread_id const& rhs) noexcept
         {
             return nullptr == rhs.thrd_;
         }
 
-        friend constexpr bool operator!=(
-            std::nullptr_t, thread_id const& rhs) noexcept
+        friend constexpr bool operator!=(std::nullptr_t, thread_id const& rhs) noexcept
         {
             return nullptr != rhs.thrd_;
         }
 
-        friend constexpr bool operator==(
-            thread_id const& lhs, std::nullptr_t) noexcept
+        friend constexpr bool operator==(thread_id const& lhs, std::nullptr_t) noexcept
         {
             return nullptr == lhs.thrd_;
         }
 
-        friend constexpr bool operator!=(
-            thread_id const& lhs, std::nullptr_t) noexcept
+        friend constexpr bool operator!=(thread_id const& lhs, std::nullptr_t) noexcept
         {
             return nullptr != lhs.thrd_;
         }
 
-        friend constexpr bool operator==(
-            thread_id const& lhs, thread_id const& rhs) noexcept
+        friend constexpr bool operator==(thread_id const& lhs, thread_id const& rhs) noexcept
         {
             return lhs.thrd_ == rhs.thrd_;
         }
 
-        friend constexpr bool operator!=(
-            thread_id const& lhs, thread_id const& rhs) noexcept
+        friend constexpr bool operator!=(thread_id const& lhs, thread_id const& rhs) noexcept
         {
             return lhs.thrd_ != rhs.thrd_;
         }
 
-        friend constexpr bool operator<(
-            thread_id const& lhs, thread_id const& rhs) noexcept
+        friend constexpr bool operator<(thread_id const& lhs, thread_id const& rhs) noexcept
         {
             return std::less<thread_id_repr>{}(lhs.thrd_, rhs.thrd_);
         }
 
-        friend constexpr bool operator>(
-            thread_id const& lhs, thread_id const& rhs) noexcept
+        friend constexpr bool operator>(thread_id const& lhs, thread_id const& rhs) noexcept
         {
             return std::less<thread_id_repr>{}(rhs.thrd_, lhs.thrd_);
         }
 
-        friend constexpr bool operator<=(
-            thread_id const& lhs, thread_id const& rhs) noexcept
+        friend constexpr bool operator<=(thread_id const& lhs, thread_id const& rhs) noexcept
         {
             return !(rhs > lhs);
         }
 
-        friend constexpr bool operator>=(
-            thread_id const& lhs, thread_id const& rhs) noexcept
+        friend constexpr bool operator>=(thread_id const& lhs, thread_id const& rhs) noexcept
         {
             return !(rhs < lhs);
         }
@@ -164,8 +154,7 @@ namespace pika::threads::detail {
         // the initial reference count is one by default as each newly
         // created thread will be held alive by the variable returned from
         // the creation function;
-        explicit thread_data_reference_counting(
-            thread_id_addref addref = thread_id_addref::yes)
+        explicit thread_data_reference_counting(thread_id_addref addref = thread_id_addref::yes)
           : count_(addref == thread_id_addref::yes)
         {
         }
@@ -196,8 +185,7 @@ namespace pika::threads::detail {
     struct thread_id_ref
     {
     private:
-        using thread_id_repr =
-            pika::intrusive_ptr<detail::thread_data_reference_counting>;
+        using thread_id_repr = pika::intrusive_ptr<detail::thread_data_reference_counting>;
 
     public:
         thread_id_ref() noexcept = default;
@@ -230,8 +218,8 @@ namespace pika::threads::detail {
 
         using thread_repr = detail::thread_data_reference_counting;
 
-        explicit thread_id_ref(thread_repr* thrd,
-            thread_id_addref addref = thread_id_addref::yes) noexcept
+        explicit thread_id_ref(
+            thread_repr* thrd, thread_id_addref addref = thread_id_addref::yes) noexcept
           : thrd_(thrd, addref == thread_id_addref::yes)
         {
         }
@@ -305,71 +293,59 @@ namespace pika::threads::detail {
             return thrd_.detach();
         }
 
-        friend bool operator==(
-            std::nullptr_t, thread_id_ref const& rhs) noexcept
+        friend bool operator==(std::nullptr_t, thread_id_ref const& rhs) noexcept
         {
             return nullptr == rhs.thrd_;
         }
 
-        friend bool operator!=(
-            std::nullptr_t, thread_id_ref const& rhs) noexcept
+        friend bool operator!=(std::nullptr_t, thread_id_ref const& rhs) noexcept
         {
             return nullptr != rhs.thrd_;
         }
 
-        friend bool operator==(
-            thread_id_ref const& lhs, std::nullptr_t) noexcept
+        friend bool operator==(thread_id_ref const& lhs, std::nullptr_t) noexcept
         {
             return nullptr == lhs.thrd_;
         }
 
-        friend bool operator!=(
-            thread_id_ref const& lhs, std::nullptr_t) noexcept
+        friend bool operator!=(thread_id_ref const& lhs, std::nullptr_t) noexcept
         {
             return nullptr != lhs.thrd_;
         }
 
-        friend bool operator==(
-            thread_id_ref const& lhs, thread_id_ref const& rhs) noexcept
+        friend bool operator==(thread_id_ref const& lhs, thread_id_ref const& rhs) noexcept
         {
             return lhs.thrd_ == rhs.thrd_;
         }
 
-        friend bool operator!=(
-            thread_id_ref const& lhs, thread_id_ref const& rhs) noexcept
+        friend bool operator!=(thread_id_ref const& lhs, thread_id_ref const& rhs) noexcept
         {
             return lhs.thrd_ != rhs.thrd_;
         }
 
-        friend bool operator<(
-            thread_id_ref const& lhs, thread_id_ref const& rhs) noexcept
+        friend bool operator<(thread_id_ref const& lhs, thread_id_ref const& rhs) noexcept
         {
-            return std::less<thread_repr const*>{}(
-                lhs.thrd_.get(), rhs.thrd_.get());
+            return std::less<thread_repr const*>{}(lhs.thrd_.get(), rhs.thrd_.get());
         }
 
-        friend bool operator>(
-            thread_id_ref const& lhs, thread_id_ref const& rhs) noexcept
+        friend bool operator>(thread_id_ref const& lhs, thread_id_ref const& rhs) noexcept
         {
-            return std::less<thread_repr const*>{}(
-                rhs.thrd_.get(), lhs.thrd_.get());
+            return std::less<thread_repr const*>{}(rhs.thrd_.get(), lhs.thrd_.get());
         }
 
-        friend bool operator<=(
-            thread_id_ref const& lhs, thread_id_ref const& rhs) noexcept
+        friend bool operator<=(thread_id_ref const& lhs, thread_id_ref const& rhs) noexcept
         {
             return !(rhs > lhs);
         }
 
-        friend bool operator>=(
-            thread_id_ref const& lhs, thread_id_ref const& rhs) noexcept
+        friend bool operator>=(thread_id_ref const& lhs, thread_id_ref const& rhs) noexcept
         {
             return !(rhs < lhs);
         }
 
         template <typename Char, typename Traits>
-        friend std::basic_ostream<Char, Traits>& operator<<(
-            std::basic_ostream<Char, Traits>& os, thread_id_ref const& id)
+        friend std::basic_ostream<Char, Traits>&
+        operator<<(std::basic_ostream<Char, Traits>& os, thread_id_ref const& id)
         {
             os << id.get();
             return os;
@@ -386,8 +362,7 @@ namespace std {
     template <>
     struct hash<::pika::threads::detail::thread_id>
     {
-        std::size_t operator()(
-            ::pika::threads::detail::thread_id const& v) const noexcept
+        std::size_t operator()(::pika::threads::detail::thread_id const& v) const noexcept
         {
             std::hash<std::size_t> hasher_;
             return hasher_(reinterpret_cast<std::size_t>(v.get()));
@@ -397,8 +372,7 @@ namespace std {
     template <>
     struct hash<::pika::threads::detail::thread_id_ref>
     {
-        std::size_t operator()(
-            ::pika::threads::detail::thread_id_ref const& v) const noexcept
+        std::size_t operator()(::pika::threads::detail::thread_id_ref const& v) const noexcept
         {
             std::hash<std::size_t> hasher_;
             return hasher_(reinterpret_cast<std::size_t>(v.get().get()));
@@ -417,13 +391,11 @@ struct fmt::formatter<pika::threads::detail::thread_id> : fmt::formatter<void*>
 };
 
 template <>
-struct fmt::formatter<pika::threads::detail::thread_id_ref>
-  : fmt::formatter<void*>
+struct fmt::formatter<pika::threads::detail::thread_id_ref> : fmt::formatter<void*>
 {
     template <typename FormatContext>
     auto format(pika::threads::detail::thread_id_ref id, FormatContext& ctx)
     {
-        return fmt::formatter<void*>::format(
-            static_cast<void*>(id.noref().get()), ctx);
+        return fmt::formatter<void*>::format(static_cast<void*>(id.noref().get()), ctx);
     }
 };

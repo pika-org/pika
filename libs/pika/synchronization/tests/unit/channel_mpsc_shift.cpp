@@ -64,8 +64,8 @@ int pika_main()
 
     for (int i = 0; i != NUM_WORKERS; ++i)
     {
-        workers.push_back(pika::async(&thread_func, i, std::ref(channels[i]),
-            std::ref(channels[(i + 1) % NUM_WORKERS])));
+        workers.push_back(pika::async(
+            &thread_func, i, std::ref(channels[i]), std::ref(channels[(i + 1) % NUM_WORKERS])));
     }
 
     pika::wait_all(workers);

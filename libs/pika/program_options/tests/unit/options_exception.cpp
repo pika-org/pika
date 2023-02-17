@@ -36,8 +36,8 @@ void test_ambiguous()
     variables_map vm;
     try
     {
-        store(parse_command_line(sizeof(cmdline) / sizeof(const char*),
-                  const_cast<char**>(cmdline), desc),
+        store(parse_command_line(
+                  sizeof(cmdline) / sizeof(const char*), const_cast<char**>(cmdline), desc),
             vm);
     }
     catch (ambiguous_option& e)
@@ -58,14 +58,13 @@ void test_ambiguous_long()
         ("output,o", value<string>(), "the output file");
     // clang-format on
 
-    const char* cmdline[] = {
-        "program", "--cfgfile", "file", "--output", "anotherfile"};
+    const char* cmdline[] = {"program", "--cfgfile", "file", "--output", "anotherfile"};
 
     variables_map vm;
     try
     {
-        store(parse_command_line(sizeof(cmdline) / sizeof(const char*),
-                  const_cast<char**>(cmdline), desc),
+        store(parse_command_line(
+                  sizeof(cmdline) / sizeof(const char*), const_cast<char**>(cmdline), desc),
             vm);
     }
     catch (ambiguous_option& e)
@@ -92,8 +91,8 @@ void test_ambiguous_multiple_long_names()
     variables_map vm;
     try
     {
-        store(parse_command_line(sizeof(cmdline) / sizeof(const char*),
-                  const_cast<char**>(cmdline), desc),
+        store(parse_command_line(
+                  sizeof(cmdline) / sizeof(const char*), const_cast<char**>(cmdline), desc),
             vm);
     }
     catch (ambiguous_option& e)
@@ -115,8 +114,8 @@ void test_unknown_option()
     variables_map vm;
     try
     {
-        store(parse_command_line(sizeof(cmdline) / sizeof(const char*),
-                  const_cast<char**>(cmdline), desc),
+        store(parse_command_line(
+                  sizeof(cmdline) / sizeof(const char*), const_cast<char**>(cmdline), desc),
             vm);
     }
     catch (unknown_option& e)
@@ -129,17 +128,17 @@ void test_unknown_option()
 void test_multiple_values()
 {
     options_description desc;
-    desc.add_options()("cfgfile,c", value<string>()->multitoken(),
-        "the config file")("output,o", value<string>(), "the output file");
+    desc.add_options()("cfgfile,c", value<string>()->multitoken(), "the config file")(
+        "output,o", value<string>(), "the output file");
 
-    const char* cmdline[] = {"program", "-o", "fritz", "hugo", "--cfgfile",
-        "file", "c", "-o", "text.out"};
+    const char* cmdline[] = {
+        "program", "-o", "fritz", "hugo", "--cfgfile", "file", "c", "-o", "text.out"};
 
     variables_map vm;
     try
     {
-        store(parse_command_line(sizeof(cmdline) / sizeof(const char*),
-                  const_cast<char**>(cmdline), desc),
+        store(parse_command_line(
+                  sizeof(cmdline) / sizeof(const char*), const_cast<char**>(cmdline), desc),
             vm);
         notify(vm);
     }
@@ -154,8 +153,7 @@ void test_multiple_values()
         //   before reach specific validation and parsing
         //
         PIKA_TEST_EQ(e.get_option_name(), "--cfgfile");
-        PIKA_TEST_EQ(string(e.what()),
-            "option '--cfgfile' only takes a single argument");
+        PIKA_TEST_EQ(string(e.what()), "option '--cfgfile' only takes a single argument");
     }
 }
 
@@ -164,84 +162,73 @@ void test_multiple_occurrences()
     options_description desc;
     desc.add_options()("cfgfile,c", value<string>(), "the configfile");
 
-    const char* cmdline[] = {
-        "program", "--cfgfile", "file", "-c", "anotherfile"};
+    const char* cmdline[] = {"program", "--cfgfile", "file", "-c", "anotherfile"};
 
     variables_map vm;
     try
     {
-        store(parse_command_line(sizeof(cmdline) / sizeof(const char*),
-                  const_cast<char**>(cmdline), desc),
+        store(parse_command_line(
+                  sizeof(cmdline) / sizeof(const char*), const_cast<char**>(cmdline), desc),
             vm);
         notify(vm);
     }
     catch (multiple_occurrences& e)
     {
         PIKA_TEST_EQ(e.get_option_name(), "--cfgfile");
-        PIKA_TEST_EQ(string(e.what()),
-            "option '--cfgfile' cannot be specified more than once");
+        PIKA_TEST_EQ(string(e.what()), "option '--cfgfile' cannot be specified more than once");
     }
 }
 
 void test_multiple_occurrences_with_different_names()
 {
     options_description desc;
-    desc.add_options()(
-        "cfgfile,config-file,c", value<string>(), "the configfile");
+    desc.add_options()("cfgfile,config-file,c", value<string>(), "the configfile");
 
-    const char* cmdline[] = {
-        "program", "--config-file", "file", "--cfgfile", "anotherfile"};
+    const char* cmdline[] = {"program", "--config-file", "file", "--cfgfile", "anotherfile"};
 
     variables_map vm;
     try
     {
-        store(parse_command_line(sizeof(cmdline) / sizeof(const char*),
-                  const_cast<char**>(cmdline), desc),
+        store(parse_command_line(
+                  sizeof(cmdline) / sizeof(const char*), const_cast<char**>(cmdline), desc),
             vm);
         notify(vm);
     }
     catch (multiple_occurrences& e)
     {
-        PIKA_TEST((e.get_option_name() == "--cfgfile") ||
-            (e.get_option_name() == "--config-file"));
-        PIKA_TEST(
-            (string(e.what()) ==
-                "option '--cfgfile' cannot be specified more than once") ||
-            (string(e.what()) ==
-                "option '--config-file' cannot be specified more than once"));
+        PIKA_TEST((e.get_option_name() == "--cfgfile") || (e.get_option_name() == "--config-file"));
+        PIKA_TEST((string(e.what()) == "option '--cfgfile' cannot be specified more than once") ||
+            (string(e.what()) == "option '--config-file' cannot be specified more than once"));
     }
 }
 
 void test_multiple_occurrences_with_non_key_names()
 {
     options_description desc;
-    desc.add_options()(
-        "cfgfile,config-file,c", value<string>(), "the configfile");
+    desc.add_options()("cfgfile,config-file,c", value<string>(), "the configfile");
 
-    const char* cmdline[] = {
-        "program", "--config-file", "file", "-c", "anotherfile"};
+    const char* cmdline[] = {"program", "--config-file", "file", "-c", "anotherfile"};
 
     variables_map vm;
     try
     {
-        store(parse_command_line(sizeof(cmdline) / sizeof(const char*),
-                  const_cast<char**>(cmdline), desc),
+        store(parse_command_line(
+                  sizeof(cmdline) / sizeof(const char*), const_cast<char**>(cmdline), desc),
             vm);
         notify(vm);
     }
     catch (multiple_occurrences& e)
     {
         PIKA_TEST_EQ(e.get_option_name(), "--cfgfile");
-        PIKA_TEST_EQ(string(e.what()),
-            "option '--cfgfile' cannot be specified more than once");
+        PIKA_TEST_EQ(string(e.what()), "option '--cfgfile' cannot be specified more than once");
     }
 }
 
 void test_missing_value()
 {
     options_description desc;
-    desc.add_options()("cfgfile,c", value<string>()->multitoken(),
-        "the config file")("output,o", value<string>(), "the output file");
+    desc.add_options()("cfgfile,c", value<string>()->multitoken(), "the config file")(
+        "output,o", value<string>(), "the output file");
     // missing value for option '-c'
     const char* cmdline[] = {"program", "-c", "-c", "output.txt"};
 
@@ -249,8 +236,8 @@ void test_missing_value()
 
     try
     {
-        store(parse_command_line(sizeof(cmdline) / sizeof(const char*),
-                  const_cast<char**>(cmdline), desc),
+        store(parse_command_line(
+                  sizeof(cmdline) / sizeof(const char*), const_cast<char**>(cmdline), desc),
             vm);
         notify(vm);
     }

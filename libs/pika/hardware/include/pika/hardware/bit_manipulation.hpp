@@ -62,8 +62,7 @@ namespace pika::util::hardware {
     {
         T highmask = unbounded_shl<High, T>(~T());
         T lowmask = unbounded_shl<Low, T>(~T());
-        return static_cast<Result>(
-            unbounded_shr<Low, T>(T(x & (lowmask ^ highmask))));
+        return static_cast<Result>(unbounded_shr<Low, T>(T(x & (lowmask ^ highmask))));
     }
 
     template <std::size_t Low, typename Result, typename T>

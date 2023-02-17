@@ -24,8 +24,8 @@ namespace pika { namespace util {
     {
         static bool check_mpi_environment(runtime_configuration const& cfg);
 
-        static int init(int* argc, char*** argv, const int required,
-            const int minimal, int& provided);
+        static int init(
+            int* argc, char*** argv, const int required, const int minimal, int& provided);
         static void init(int* argc, char*** argv, runtime_configuration& cfg);
         static void finalize();
 

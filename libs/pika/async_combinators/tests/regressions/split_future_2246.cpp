@@ -18,8 +18,7 @@
 int pika_main()
 {
     using pair_type = std::pair<std::map<int, int>, std::set<int>>;
-    using pair_fut_type = std::pair<pika::future<std::map<int, int>>,
-        pika::future<std::set<int>>>;
+    using pair_fut_type = std::pair<pika::future<std::map<int, int>>, pika::future<std::set<int>>>;
 
     std::map<int, int> mm;
     // fill mm with arbitrary values

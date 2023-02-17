@@ -18,8 +18,7 @@ namespace pika::util::detail {
     struct copyable_vtable
     {
         template <typename T>
-        static void* _copy(void* storage, std::size_t storage_size,
-            void const* src, bool destroy)
+        static void* _copy(void* storage, std::size_t storage_size, void const* src, bool destroy)
         {
             if (destroy)
                 vtable::get<T>(storage).~T();

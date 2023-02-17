@@ -19,8 +19,7 @@
 using namespace pika::program_options;
 using namespace std;
 
-void check_equal(
-    const std::vector<string>& actual, char const** expected, int n)
+void check_equal(const std::vector<string>& actual, char const** expected, int n)
 {
     if (actual.size() != n)
     {
@@ -38,11 +37,11 @@ void check_equal(
 }
 
 #define COMMA ,
-#define TEST(input, expected)                                                  \
-    char const* PIKA_PP_CAT(e, __LINE__)[] = expected;                         \
-    vector<string> PIKA_PP_CAT(v, __LINE__) = split_winmain(input);            \
-    check_equal(PIKA_PP_CAT(v, __LINE__), PIKA_PP_CAT(e, __LINE__),            \
-        sizeof(PIKA_PP_CAT(e, __LINE__)) / sizeof(char*));                     \
+#define TEST(input, expected)                                                                      \
+    char const* PIKA_PP_CAT(e, __LINE__)[] = expected;                                             \
+    vector<string> PIKA_PP_CAT(v, __LINE__) = split_winmain(input);                                \
+    check_equal(PIKA_PP_CAT(v, __LINE__), PIKA_PP_CAT(e, __LINE__),                                \
+        sizeof(PIKA_PP_CAT(e, __LINE__)) / sizeof(char*));                                         \
     /**/
 
 void test_winmain()

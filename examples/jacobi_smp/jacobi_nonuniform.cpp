@@ -37,9 +37,8 @@ using pika::program_options::variables_map;
 
 namespace jacobi_smp {
 
-    void jacobi_kernel_nonuniform(crs_matrix<double> const& A,
-        std::vector<double>& dst, std::vector<double> const& src,
-        std::vector<double> const& b, std::size_t row)
+    void jacobi_kernel_nonuniform(crs_matrix<double> const& A, std::vector<double>& dst,
+        std::vector<double> const& src, std::vector<double> const& b, std::size_t row)
     {
         double result = b[row];
         double div = 1.0;
@@ -60,8 +59,7 @@ namespace jacobi_smp {
 namespace qi = boost::spirit::qi;
 namespace phx = boost::phoenix;
 
-void init(
-    jacobi_smp::crs_matrix<double>& M, std::size_t dim, std::size_t non_zeros)
+void init(jacobi_smp::crs_matrix<double>& M, std::size_t dim, std::size_t non_zeros)
 {
     M.values.reserve(non_zeros);
     M.indices.reserve(non_zeros);
@@ -69,8 +67,8 @@ void init(
     M.rows.push_back(0);
 }
 
-void add_entry(jacobi_smp::crs_matrix<double>& M, std::size_t& row,
-    std::size_t& n, std::size_t j, std::size_t i, double v)
+void add_entry(jacobi_smp::crs_matrix<double>& M, std::size_t& row, std::size_t& n, std::size_t j,
+    std::size_t i, double v)
 {
     M.values.push_back(v);
     M.indices.push_back(j);
@@ -116,21 +114,19 @@ int pika_main(variables_map& vm)
                     qi::int_[phx::ref(non_zero_entries) = qi::_1])[phx::bind(
                     init, phx::ref(A), dim, non_zero_entries)] >>
                     *(    // entry
-                        (qi::int_ >> qi::int_ >> qi::double_)[phx::bind(
-                            add_entry, phx::ref(A), phx::ref(current_row),
+                        (qi::int_ >> qi::int_ >>
+                            qi::double_)[phx::bind(add_entry, phx::ref(A), phx::ref(current_row),
                             phx::ref(non_zero_row), qi::_1, qi::_2, qi::_3)]),
-                qi::space |
-                    (qi::lit("%") >> *(!qi::eol >> qi::char_) >> qi::eol));
+                qi::space | (qi::lit("%") >> *(!qi::eol >> qi::char_) >> qi::eol));
 
             if (dim == 0)
             {
-                std::cerr << "Parsed zero non zero values in matrix file "
-                          << matrix << "\n";
+                std::cerr << "Parsed zero non zero values in matrix file " << matrix << "\n";
                 return 1;
             }
 
-            std::cout << "A: " << dim << "x" << dim
-                      << " number of non zeros: " << non_zero_entries << "\n";
+            std::cout << "A: " << dim << "x" << dim << " number of non zeros: " << non_zero_entries
+                      << "\n";
         }
         if (vm.count("vector"))
         {
@@ -172,15 +168,13 @@ int pika_main(variables_map& vm)
                     min_per_row = n_row;
                 }
             }
-            std::cout << "Matrix has " << A.values.size()
-                      << " non zero entries\n";
+            std::cout << "Matrix has " << A.values.size() << " non zero entries\n";
             std::cout << "order: " << b.size() << "x" << b.size() << "\n";
             std::cout << "Entries per row:\n";
             std::cout << "\tmax " << max_per_row << "\n";
             std::cout << "\tmin " << min_per_row << "\n";
             std::cout << "\tmean " << mean_per_row / double(b.size()) << "\n";
-            std::cout << "Density is: "
-                      << double(A.values.size()) / double(b.size() * b.size())
+            std::cout << "Density is: " << double(A.values.size()) / double(b.size() * b.size())
                       << "\n";
         }
         else
@@ -195,8 +189,7 @@ int pika_main(variables_map& vm)
 
 int main(int argc, char** argv)
 {
-    options_description desc_cmd(
-        "usage: " PIKA_APPLICATION_STRING " [options]");
+    options_description desc_cmd("usage: " PIKA_APPLICATION_STRING " [options]");
 
     // clang-format off
     desc_cmd.add_options()

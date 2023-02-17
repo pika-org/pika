@@ -14,10 +14,9 @@
 
 #if PIKA_HAVE_DEPRECATION_WARNINGS
 #if defined(PIKA_MSVC)
-#pragma message(                                                               \
-    "The header @old_header@ is deprecated, "                                  \
-    "please include @new_header@ instead."                                     \
-    "To disable this warning, please define PIKA_HAVE_DEPRECATION_WARNINGS=0.")
+#pragma message("The header @old_header@ is deprecated, "                                          \
+                "please include @new_header@ instead."                                             \
+                "To disable this warning, please define PIKA_HAVE_DEPRECATION_WARNINGS=0.")
 #else
 #warning "The header @old_header@ is deprecated, " \
     "please include @new_header@ instead" \

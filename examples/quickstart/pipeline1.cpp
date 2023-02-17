@@ -24,14 +24,11 @@ struct pipeline
             std::regex regex(re);
             if (std::regex_match(item, regex))
             {
-                auto trim = [](std::string const& s) {
-                    return pika::detail::trim_copy(s);
-                };
+                auto trim = [](std::string const& s) { return pika::detail::trim_copy(s); };
 
-                pika::async(trim, std::move(item))
-                    .then(pika::unwrapping([](std::string const& tc) {
-                        std::cout << "->" << tc << std::endl;
-                    }));
+                pika::async(trim, std::move(item)).then(pika::unwrapping([](std::string const& tc) {
+                    std::cout << "->" << tc << std::endl;
+                }));
             }
         };
 
@@ -47,8 +44,8 @@ struct pipeline
 
 int pika_main()
 {
-    std::string inputs[] = {"Error: foobar", "Error. foo", " Warning: barbaz",
-        "Notice: qux", "\tError: abc"};
+    std::string inputs[] = {
+        "Error: foobar", "Error. foo", " Warning: barbaz", "Notice: qux", "\tError: abc"};
     std::vector<std::string> input(std::begin(inputs), std::end(inputs));
 
     pipeline::process(input);

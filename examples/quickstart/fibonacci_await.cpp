@@ -102,8 +102,7 @@ void fibonacci_impl(std::shared_ptr<fibonacci_frame> const& frame_)
     {
         if (state == 0)
             // never paused
-            frame->result_ =
-                pika::make_ready_future(fibonacci_serial(frame->n_));
+            frame->result_ = pika::make_ready_future(fibonacci_serial(frame->n_));
         else
             frame->result_promise_.set_value(fibonacci_serial(frame->n_));
         return;
@@ -141,18 +140,15 @@ L2:
 
     if (state == 0)
         // never paused
-        frame->result_ =
-            pika::make_ready_future(frame->lhs_result_ + frame->rhs_result_);
+        frame->result_ = pika::make_ready_future(frame->lhs_result_ + frame->rhs_result_);
     else
-        frame->result_promise_.set_value(
-            frame->lhs_result_ + frame->rhs_result_);
+        frame->result_promise_.set_value(frame->lhs_result_ + frame->rhs_result_);
     return;
 }
 
 pika::future<std::uint64_t> fibonacci(std::uint64_t n)
 {
-    std::shared_ptr<fibonacci_frame> frame =
-        std::make_shared<fibonacci_frame>(n);
+    std::shared_ptr<fibonacci_frame> frame = std::make_shared<fibonacci_frame>(n);
 
     fibonacci_impl(frame);
 
@@ -202,9 +198,7 @@ int pika_main(pika::program_options::variables_map& vm)
             r = fibonacci_serial(n);
         }
 
-        std::uint64_t d =
-            duration_cast<seconds>(high_resolution_clock::now() - start)
-                .count();
+        std::uint64_t d = duration_cast<seconds>(high_resolution_clock::now() - start).count();
         constexpr char const* fmt = "fibonacci_serial({}) == {},"
                                     "elapsed time:,{},[s]\n";
         fmt::print(std::cout, fmt, n, r, d / max_runs);
@@ -224,9 +218,7 @@ int pika_main(pika::program_options::variables_map& vm)
             r = fibonacci(n).get();
         }
 
-        std::uint64_t d =
-            duration_cast<seconds>(high_resolution_clock::now() - start)
-                .count();
+        std::uint64_t d = duration_cast<seconds>(high_resolution_clock::now() - start).count();
         constexpr char const* fmt = "fibonacci_await({}) == {},"
                                     "elapsed time:,{},[s]\n";
         fmt::print(std::cout, fmt, n, r, d / max_runs);

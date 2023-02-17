@@ -25,8 +25,7 @@ namespace pika::threads::detail {
       , ec_(ec)
     {
 #ifdef PIKA_HAVE_THREAD_FULLBACKTRACE_ON_SUSPENSION
-        threads::detail::set_thread_backtrace(
-            id_, full_backtrace_.c_str(), ec_);
+        threads::detail::set_thread_backtrace(id_, full_backtrace_.c_str(), ec_);
 #else
         threads::detail::set_thread_backtrace(id_, backtrace_.get(), ec_);
 #endif

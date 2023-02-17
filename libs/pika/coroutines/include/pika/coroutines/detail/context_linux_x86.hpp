@@ -72,10 +72,8 @@
 extern "C" void swapcontext_stack(void***, void**) noexcept;
 extern "C" void swapcontext_stack2(void***, void**) noexcept;
 #else
-extern "C" void swapcontext_stack(void***, void**) noexcept
-    __attribute((regparm(2)));
-extern "C" void swapcontext_stack2(void***, void**) noexcept
-    __attribute((regparm(2)));
+extern "C" void swapcontext_stack(void***, void**) noexcept __attribute((regparm(2)));
+extern "C" void swapcontext_stack2(void***, void**) noexcept __attribute((regparm(2)));
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -122,24 +120,16 @@ namespace pika::threads::coroutines {
 
                 __builtin_prefetch(m_sp, 1, 3);
                 __builtin_prefetch(m_sp, 0, 3);
-                __builtin_prefetch(
-                    static_cast<void**>(m_sp) + 64 / sizeof(void*), 1, 3);
-                __builtin_prefetch(
-                    static_cast<void**>(m_sp) + 64 / sizeof(void*), 0, 3);
+                __builtin_prefetch(static_cast<void**>(m_sp) + 64 / sizeof(void*), 1, 3);
+                __builtin_prefetch(static_cast<void**>(m_sp) + 64 / sizeof(void*), 0, 3);
 #if !defined(__x86_64__)
-                __builtin_prefetch(
-                    static_cast<void**>(m_sp) + 32 / sizeof(void*), 1, 3);
-                __builtin_prefetch(
-                    static_cast<void**>(m_sp) + 32 / sizeof(void*), 0, 3);
-                __builtin_prefetch(
-                    static_cast<void**>(m_sp) - 32 / sizeof(void*), 1, 3);
-                __builtin_prefetch(
-                    static_cast<void**>(m_sp) - 32 / sizeof(void*), 0, 3);
+                __builtin_prefetch(static_cast<void**>(m_sp) + 32 / sizeof(void*), 1, 3);
+                __builtin_prefetch(static_cast<void**>(m_sp) + 32 / sizeof(void*), 0, 3);
+                __builtin_prefetch(static_cast<void**>(m_sp) - 32 / sizeof(void*), 1, 3);
+                __builtin_prefetch(static_cast<void**>(m_sp) - 32 / sizeof(void*), 0, 3);
 #endif
-                __builtin_prefetch(
-                    static_cast<void**>(m_sp) - 64 / sizeof(void*), 1, 3);
-                __builtin_prefetch(
-                    static_cast<void**>(m_sp) - 64 / sizeof(void*), 0, 3);
+                __builtin_prefetch(static_cast<void**>(m_sp) - 64 / sizeof(void*), 1, 3);
+                __builtin_prefetch(static_cast<void**>(m_sp) - 64 / sizeof(void*), 0, 3);
             }
 
             /**
@@ -156,25 +146,21 @@ namespace pika::threads::coroutines {
 #if defined(PIKA_HAVE_ADDRESS_SANITIZER)
             void start_switch_fiber(void** fake_stack)
             {
-                __sanitizer_start_switch_fiber(
-                    fake_stack, asan_stack_bottom, asan_stack_size);
+                __sanitizer_start_switch_fiber(fake_stack, asan_stack_bottom, asan_stack_size);
             }
-            void start_yield_fiber(
-                void** fake_stack, x86_linux_context_impl_base& caller)
+            void start_yield_fiber(void** fake_stack, x86_linux_context_impl_base& caller)
             {
-                __sanitizer_start_switch_fiber(fake_stack,
-                    caller.asan_stack_bottom, caller.asan_stack_size);
+                __sanitizer_start_switch_fiber(
+                    fake_stack, caller.asan_stack_bottom, caller.asan_stack_size);
             }
             void finish_yield_fiber(void* fake_stack)
             {
-                __sanitizer_finish_switch_fiber(
-                    fake_stack, &asan_stack_bottom, &asan_stack_size);
+                __sanitizer_finish_switch_fiber(fake_stack, &asan_stack_bottom, &asan_stack_size);
             }
-            void finish_switch_fiber(
-                void* fake_stack, x86_linux_context_impl_base& caller)
+            void finish_switch_fiber(void* fake_stack, x86_linux_context_impl_base& caller)
             {
-                __sanitizer_finish_switch_fiber(fake_stack,
-                    &caller.asan_stack_bottom, &caller.asan_stack_size);
+                __sanitizer_finish_switch_fiber(
+                    fake_stack, &caller.asan_stack_bottom, &caller.asan_stack_size);
             }
 #endif
 
@@ -205,9 +191,8 @@ namespace pika::threads::coroutines {
              *  a new stack. The stack size can be optionally specified.
              */
             explicit x86_linux_context_impl(std::ptrdiff_t stack_size = -1)
-              : m_stack_size(stack_size == -1 ?
-                        static_cast<std::ptrdiff_t>(default_stack_size) :
-                        stack_size)
+              : m_stack_size(
+                    stack_size == -1 ? static_cast<std::ptrdiff_t>(default_stack_size) : stack_size)
               , m_stack(nullptr)
             {
             }
@@ -219,35 +204,30 @@ namespace pika::threads::coroutines {
 
                 if (0 != (m_stack_size % EXEC_PAGESIZE))
                 {
-                    throw std::runtime_error(
-                        fmt::format("stack size of {} is not page "
-                                    "aligned, page size is {}",
-                            m_stack_size, EXEC_PAGESIZE));
+                    throw std::runtime_error(fmt::format("stack size of {} is not page "
+                                                         "aligned, page size is {}",
+                        m_stack_size, EXEC_PAGESIZE));
                 }
 
                 if (0 >= m_stack_size)
                 {
-                    throw std::runtime_error(fmt::format(
-                        "stack size of {} is invalid", m_stack_size));
+                    throw std::runtime_error(
+                        fmt::format("stack size of {} is invalid", m_stack_size));
                 }
 
-                m_stack =
-                    posix::alloc_stack(static_cast<std::size_t>(m_stack_size));
+                m_stack = posix::alloc_stack(static_cast<std::size_t>(m_stack_size));
                 if (m_stack == nullptr)
                 {
-                    throw std::runtime_error(
-                        "could not allocate memory for stack");
+                    throw std::runtime_error("could not allocate memory for stack");
                 }
 
-                posix::watermark_stack(
-                    m_stack, static_cast<std::size_t>(m_stack_size));
+                posix::watermark_stack(m_stack, static_cast<std::size_t>(m_stack_size));
 
                 using fun = void(void*);
                 fun* funp = trampoline<CoroutineImpl>;
 
                 m_sp = (static_cast<void**>(m_stack) +
-                           static_cast<std::size_t>(m_stack_size) /
-                               sizeof(void*)) -
+                           static_cast<std::size_t>(m_stack_size) / sizeof(void*)) -
                     context_size;
 
                 m_sp[cb_idx] = this;
@@ -256,8 +236,8 @@ namespace pika::threads::coroutines {
 #if defined(PIKA_HAVE_VALGRIND) && !defined(NVALGRIND)
                 {
                     void* eos = static_cast<char*>(m_stack) + m_stack_size;
-                    m_sp[valgrind_id_idx] = reinterpret_cast<void*>(
-                        VALGRIND_STACK_REGISTER(m_stack, eos));
+                    m_sp[valgrind_id_idx] =
+                        reinterpret_cast<void*>(VALGRIND_STACK_REGISTER(m_stack, eos));
                 }
 #endif
 #if defined(PIKA_HAVE_ADDRESS_SANITIZER)
@@ -273,22 +253,18 @@ namespace pika::threads::coroutines {
                 if (m_stack)
                 {
 #if defined(PIKA_HAVE_VALGRIND) && !defined(NVALGRIND)
-                    VALGRIND_STACK_DEREGISTER(
-                        reinterpret_cast<std::size_t>(m_sp[valgrind_id_idx]));
+                    VALGRIND_STACK_DEREGISTER(reinterpret_cast<std::size_t>(m_sp[valgrind_id_idx]));
 #endif
-                    posix::free_stack(
-                        m_stack, static_cast<std::size_t>(m_stack_size));
+                    posix::free_stack(m_stack, static_cast<std::size_t>(m_stack_size));
                 }
             }
 
-#if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) &&                              \
-    !defined(PIKA_HAVE_ADDRESS_SANITIZER)
+#if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) && !defined(PIKA_HAVE_ADDRESS_SANITIZER)
 
 // heuristic value 1 kilobyte
 #define COROUTINE_STACKOVERFLOW_ADDR_EPSILON 1000UL
 
-            static void check_coroutine_stack_overflow(
-                siginfo_t* infoptr, void* ctxptr)
+            static void check_coroutine_stack_overflow(siginfo_t* infoptr, void* ctxptr)
             {
                 ucontext_t* uc_ctx = static_cast<ucontext_t*>(ctxptr);
                 char* sigsegv_ptr = static_cast<char*>(infoptr->si_addr);
@@ -297,20 +273,17 @@ namespace pika::threads::coroutines {
                 //
                 char* stk_ptr = static_cast<char*>(uc_ctx->uc_stack.ss_sp);
 
-                std::ptrdiff_t addr_delta = (sigsegv_ptr > stk_ptr) ?
-                    (sigsegv_ptr - stk_ptr) :
-                    (stk_ptr - sigsegv_ptr);
+                std::ptrdiff_t addr_delta =
+                    (sigsegv_ptr > stk_ptr) ? (sigsegv_ptr - stk_ptr) : (stk_ptr - sigsegv_ptr);
 
                 // check the stack addresses, if they're < 10 apart, terminate
                 // program should filter segmentation faults caused by
                 // coroutine stack overflows from 'genuine' stack overflows
                 //
-                if (static_cast<size_t>(addr_delta) <
-                    COROUTINE_STACKOVERFLOW_ADDR_EPSILON)
+                if (static_cast<size_t>(addr_delta) < COROUTINE_STACKOVERFLOW_ADDR_EPSILON)
                 {
-                    std::cerr << "Stack overflow in coroutine at address "
-                              << std::internal << std::hex
-                              << std::setw(sizeof(sigsegv_ptr) * 2 + 2)
+                    std::cerr << "Stack overflow in coroutine at address " << std::internal
+                              << std::hex << std::setw(sizeof(sigsegv_ptr) * 2 + 2)
                               << std::setfill('0') << sigsegv_ptr << ".\n\n";
 
                     std::cerr << "Configure the pika runtime to "
@@ -327,12 +300,10 @@ namespace pika::threads::coroutines {
                 }
             }
 
-            static void sigsegv_handler(
-                int signum, siginfo_t* infoptr, void* ctxptr)
+            static void sigsegv_handler(int signum, siginfo_t* infoptr, void* ctxptr)
             {
                 char* reason = strsignal(signum);
-                std::cerr << "{what}: " << (reason ? reason : "Unknown signal")
-                          << std::endl;
+                std::cerr << "{what}: " << (reason ? reason : "Unknown signal") << std::endl;
 
                 check_coroutine_stack_overflow(infoptr, ctxptr);
 
@@ -349,8 +320,7 @@ namespace pika::threads::coroutines {
             void reset_stack()
             {
                 PIKA_ASSERT(m_stack);
-                if (posix::reset_stack(
-                        m_stack, static_cast<std::size_t>(m_stack_size)))
+                if (posix::reset_stack(m_stack, static_cast<std::size_t>(m_stack_size)))
                 {
 #if defined(PIKA_HAVE_COROUTINE_COUNTERS)
                     increment_stack_unbind_count();
@@ -367,8 +337,7 @@ namespace pika::threads::coroutines {
 
                 // On rebind, we initialize our stack to ensure a virgin stack
                 m_sp = (static_cast<void**>(m_stack) +
-                           static_cast<std::size_t>(m_stack_size) /
-                               sizeof(void*)) -
+                           static_cast<std::size_t>(m_stack_size) / sizeof(void*)) -
                     context_size;
 
                 using fun = void(void*);
@@ -383,8 +352,7 @@ namespace pika::threads::coroutines {
 
             std::ptrdiff_t get_available_stack_space()
             {
-                return get_stack_ptr() -
-                    reinterpret_cast<std::size_t>(m_stack) - context_size;
+                return get_stack_ptr() - reinterpret_cast<std::size_t>(m_stack) - context_size;
             }
 
             using counter_type = std::atomic<std::int64_t>;
@@ -416,14 +384,12 @@ namespace pika::threads::coroutines {
         public:
             static std::uint64_t get_stack_unbind_count(bool reset)
             {
-                return ::pika::detail::get_and_reset_value(
-                    get_stack_unbind_counter(), reset);
+                return ::pika::detail::get_and_reset_value(get_stack_unbind_counter(), reset);
             }
 
             static std::uint64_t get_stack_recycle_count(bool reset)
             {
-                return ::pika::detail::get_and_reset_value(
-                    get_stack_recycle_counter(), reset);
+                return ::pika::detail::get_and_reset_value(get_stack_recycle_counter(), reset);
             }
 #endif
 
@@ -436,8 +402,7 @@ namespace pika::threads::coroutines {
         private:
             void set_sigsegv_handler()
             {
-#if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) &&                              \
-    !defined(PIKA_HAVE_ADDRESS_SANITIZER)
+#if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) && !defined(PIKA_HAVE_ADDRESS_SANITIZER)
                 // concept inspired by the following links:
                 //
                 // https://rethinkdb.com/blog/handling-stack-overflow-on-custom-stacks/
@@ -505,8 +470,7 @@ namespace pika::threads::coroutines {
             std::ptrdiff_t m_stack_size;
             void* m_stack;
 
-#if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) &&                              \
-    !defined(PIKA_HAVE_ADDRESS_SANITIZER)
+#if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) && !defined(PIKA_HAVE_ADDRESS_SANITIZER)
             struct sigaction action;
             stack_t segv_stack;
 #endif
@@ -517,16 +481,16 @@ namespace pika::threads::coroutines {
          * and restores the context in @p to.
          * @note This function is found by ADL.
          */
-        inline void swap_context(x86_linux_context_impl_base& from,
-            x86_linux_context_impl_base const& to, default_hint)
+        inline void swap_context(
+            x86_linux_context_impl_base& from, x86_linux_context_impl_base const& to, default_hint)
         {
             //        PIKA_ASSERT(*(void**)to.m_stack == (void*)~0);
             to.prefetch();
             swapcontext_stack(&from.m_sp, to.m_sp);
         }
 
-        inline void swap_context(x86_linux_context_impl_base& from,
-            x86_linux_context_impl_base const& to, yield_hint)
+        inline void swap_context(
+            x86_linux_context_impl_base& from, x86_linux_context_impl_base const& to, yield_hint)
         {
             //        PIKA_ASSERT(*(void**)from.m_stack == (void*)~0);
             to.prefetch();

@@ -54,29 +54,21 @@ namespace pika::iterators {
         template <typename Cat>
         struct std_category_to_traversal
           : pika::detail::lazy_conditional<
-                std::is_convertible<Cat,
-                    std::random_access_iterator_tag>::value,
+                std::is_convertible<Cat, std::random_access_iterator_tag>::value,
                 ::pika::detail::type_identity<random_access_traversal_tag>,
                 pika::detail::lazy_conditional<
-                    std::is_convertible<Cat,
-                        std::bidirectional_iterator_tag>::value,
+                    std::is_convertible<Cat, std::bidirectional_iterator_tag>::value,
                     ::pika::detail::type_identity<bidirectional_traversal_tag>,
                     pika::detail::lazy_conditional<
-                        std::is_convertible<Cat,
-                            std::forward_iterator_tag>::value,
+                        std::is_convertible<Cat, std::forward_iterator_tag>::value,
                         ::pika::detail::type_identity<forward_traversal_tag>,
                         pika::detail::lazy_conditional<
-                            std::is_convertible<Cat,
-                                std::input_iterator_tag>::value,
-                            ::pika::detail::type_identity<
-                                single_pass_traversal_tag>,
+                            std::is_convertible<Cat, std::input_iterator_tag>::value,
+                            ::pika::detail::type_identity<single_pass_traversal_tag>,
                             pika::detail::lazy_conditional<
-                                std::is_convertible<Cat,
-                                    std::output_iterator_tag>::value,
-                                ::pika::detail::type_identity<
-                                    incrementable_traversal_tag>,
-                                ::pika::detail::type_identity<
-                                    no_traversal_tag>>>>>>
+                                std::is_convertible<Cat, std::output_iterator_tag>::value,
+                                ::pika::detail::type_identity<incrementable_traversal_tag>,
+                                ::pika::detail::type_identity<no_traversal_tag>>>>>>
         {
         };
     }    // namespace detail
@@ -84,18 +76,15 @@ namespace pika::iterators {
     // Convert an iterator category into a traversal tag
     template <typename Cat>
     struct iterator_category_to_traversal
-      : pika::detail::lazy_conditional<
-            std::is_convertible<Cat, incrementable_traversal_tag>::value,
-            ::pika::detail::type_identity<Cat>,
-            detail::std_category_to_traversal<Cat>>
+      : pika::detail::lazy_conditional<std::is_convertible<Cat, incrementable_traversal_tag>::value,
+            ::pika::detail::type_identity<Cat>, detail::std_category_to_traversal<Cat>>
     {
     };
 
     // Trait to get an iterator's traversal category
     template <typename Iterator>
     struct iterator_traversal
-      : iterator_category_to_traversal<
-            typename std::iterator_traits<Iterator>::iterator_category>
+      : iterator_category_to_traversal<typename std::iterator_traits<Iterator>::iterator_category>
     {
     };
 
@@ -106,23 +95,17 @@ namespace pika::iterators {
             std::is_convertible<Traversal, random_access_traversal_tag>::value,
             ::pika::detail::type_identity<random_access_traversal_tag>,
             pika::detail::lazy_conditional<
-                std::is_convertible<Traversal,
-                    bidirectional_traversal_tag>::value,
+                std::is_convertible<Traversal, bidirectional_traversal_tag>::value,
                 ::pika::detail::type_identity<bidirectional_traversal_tag>,
                 pika::detail::lazy_conditional<
-                    std::is_convertible<Traversal,
-                        forward_traversal_tag>::value,
+                    std::is_convertible<Traversal, forward_traversal_tag>::value,
                     ::pika::detail::type_identity<forward_traversal_tag>,
                     pika::detail::lazy_conditional<
-                        std::is_convertible<Traversal,
-                            single_pass_traversal_tag>::value,
-                        ::pika::detail::type_identity<
-                            single_pass_traversal_tag>,
+                        std::is_convertible<Traversal, single_pass_traversal_tag>::value,
+                        ::pika::detail::type_identity<single_pass_traversal_tag>,
                         pika::detail::lazy_conditional<
-                            std::is_convertible<Traversal,
-                                incrementable_traversal_tag>::value,
-                            ::pika::detail::type_identity<
-                                incrementable_traversal_tag>,
+                            std::is_convertible<Traversal, incrementable_traversal_tag>::value,
+                            ::pika::detail::type_identity<incrementable_traversal_tag>,
                             ::pika::detail::type_identity<no_traversal_tag>>>>>>
     {
     };
@@ -130,8 +113,7 @@ namespace pika::iterators {
     // Trait to retrieve one of the iterator traversal tags from the
     // iterator category or traversal.
     template <typename Iterator>
-    struct pure_iterator_traversal
-      : pure_traversal_tag<typename iterator_traversal<Iterator>::type>
+    struct pure_iterator_traversal : pure_traversal_tag<typename iterator_traversal<Iterator>::type>
     {
     };
 }    // namespace pika::iterators
@@ -148,14 +130,11 @@ namespace pika::iterators {
 
 namespace pika {
 
-    using PIKA_ITERATOR_TRAVERSAL_TAG_NS::iterators::
-        bidirectional_traversal_tag;
+    using PIKA_ITERATOR_TRAVERSAL_TAG_NS::iterators::bidirectional_traversal_tag;
     using PIKA_ITERATOR_TRAVERSAL_TAG_NS::iterators::forward_traversal_tag;
-    using PIKA_ITERATOR_TRAVERSAL_TAG_NS::iterators::
-        incrementable_traversal_tag;
+    using PIKA_ITERATOR_TRAVERSAL_TAG_NS::iterators::incrementable_traversal_tag;
     using PIKA_ITERATOR_TRAVERSAL_TAG_NS::iterators::no_traversal_tag;
-    using PIKA_ITERATOR_TRAVERSAL_TAG_NS::iterators::
-        random_access_traversal_tag;
+    using PIKA_ITERATOR_TRAVERSAL_TAG_NS::iterators::random_access_traversal_tag;
     using PIKA_ITERATOR_TRAVERSAL_TAG_NS::iterators::single_pass_traversal_tag;
 
     namespace traits {
@@ -163,38 +142,31 @@ namespace pika {
         ///////////////////////////////////////////////////////////////////////
         template <typename Traversal>
         using pure_traversal_tag =
-            PIKA_ITERATOR_TRAVERSAL_TAG_NS::iterators::pure_traversal_tag<
-                Traversal>;
+            PIKA_ITERATOR_TRAVERSAL_TAG_NS::iterators::pure_traversal_tag<Traversal>;
 
         template <typename Traversal>
-        using pure_traversal_tag_t =
-            typename pure_traversal_tag<Traversal>::type;
+        using pure_traversal_tag_t = typename pure_traversal_tag<Traversal>::type;
 
         template <typename Traversal>
-        inline constexpr bool pure_traversal_tag_v =
-            pure_traversal_tag<Traversal>::value;
+        inline constexpr bool pure_traversal_tag_v = pure_traversal_tag<Traversal>::value;
 
         template <typename Iterator>
         using pure_iterator_traversal =
-            PIKA_ITERATOR_TRAVERSAL_TAG_NS::iterators::pure_iterator_traversal<
-                Iterator>;
+            PIKA_ITERATOR_TRAVERSAL_TAG_NS::iterators::pure_iterator_traversal<Iterator>;
 
         template <typename Iterator>
-        using pure_iterator_traversal_t =
-            typename pure_iterator_traversal<Iterator>::type;
+        using pure_iterator_traversal_t = typename pure_iterator_traversal<Iterator>::type;
 
         template <typename Iterator>
-        inline constexpr bool pure_iterator_traversal_v =
-            pure_iterator_traversal<Iterator>::value;
+        inline constexpr bool pure_iterator_traversal_v = pure_iterator_traversal<Iterator>::value;
 
         ///////////////////////////////////////////////////////////////////////
         template <typename Cat>
-        using iterator_category_to_traversal = PIKA_ITERATOR_TRAVERSAL_TAG_NS::
-            iterators::iterator_category_to_traversal<Cat>;
+        using iterator_category_to_traversal =
+            PIKA_ITERATOR_TRAVERSAL_TAG_NS::iterators::iterator_category_to_traversal<Cat>;
 
         template <typename Cat>
-        using iterator_category_to_traversal_t =
-            typename iterator_category_to_traversal<Cat>::type;
+        using iterator_category_to_traversal_t = typename iterator_category_to_traversal<Cat>::type;
 
         template <typename Cat>
         inline constexpr bool iterator_category_to_traversal_v =
@@ -202,16 +174,13 @@ namespace pika {
 
         template <typename Iterator>
         using iterator_traversal =
-            PIKA_ITERATOR_TRAVERSAL_TAG_NS::iterators::iterator_traversal<
-                Iterator>;
+            PIKA_ITERATOR_TRAVERSAL_TAG_NS::iterators::iterator_traversal<Iterator>;
 
         template <typename Iterator>
-        using iterator_traversal_t =
-            typename iterator_traversal<Iterator>::type;
+        using iterator_traversal_t = typename iterator_traversal<Iterator>::type;
 
         template <typename Iterator>
-        inline constexpr bool iterator_traversal_v =
-            iterator_traversal<Iterator>::value;
+        inline constexpr bool iterator_traversal_v = iterator_traversal<Iterator>::value;
     }    // namespace traits
 }    // namespace pika
 

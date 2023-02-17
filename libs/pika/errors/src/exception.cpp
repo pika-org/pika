@@ -40,8 +40,7 @@ namespace pika {
     exception::exception(error e)
       : std::system_error(make_error_code(e, throwmode::plain))
     {
-        PIKA_ASSERT(
-            (e >= pika::error::success && e < pika::error::last_error) ||
+        PIKA_ASSERT((e >= pika::error::success && e < pika::error::last_error) ||
             (detail::error_code_has_system_error(static_cast<int>(e))));
         if (e != pika::error::success)
         {
@@ -77,8 +76,7 @@ namespace pika {
     exception::exception(error e, char const* msg, throwmode mode)
       : std::system_error(detail::make_system_error_code(e, mode), msg)
     {
-        PIKA_ASSERT(
-            (e >= pika::error::success && e < pika::error::last_error) ||
+        PIKA_ASSERT((e >= pika::error::success && e < pika::error::last_error) ||
             (detail::error_code_has_system_error(static_cast<int>(e))));
         if (e != pika::error::success)
         {
@@ -100,8 +98,7 @@ namespace pika {
     exception::exception(error e, std::string const& msg, throwmode mode)
       : std::system_error(detail::make_system_error_code(e, mode), msg)
     {
-        PIKA_ASSERT(
-            (e >= pika::error::success && e < pika::error::last_error) ||
+        PIKA_ASSERT((e >= pika::error::success && e < pika::error::last_error) ||
             (detail::error_code_has_system_error(static_cast<int>(e))));
         if (e != pika::error::success)
         {
@@ -142,8 +139,7 @@ namespace pika {
     namespace detail {
         static custom_exception_info_handler_type custom_exception_info_handler;
 
-        void set_custom_exception_info_handler(
-            custom_exception_info_handler_type f)
+        void set_custom_exception_info_handler(custom_exception_info_handler_type f)
         {
             custom_exception_info_handler = f;
         }
@@ -159,19 +155,16 @@ namespace pika {
 
 namespace pika::detail {
     template <typename Exception>
-    PIKA_EXPORT std::exception_ptr
-    construct_lightweight_exception(Exception const& e, std::string const& func,
-        std::string const& file, long line)
+    PIKA_EXPORT std::exception_ptr construct_lightweight_exception(
+        Exception const& e, std::string const& func, std::string const& file, long line)
     {
         // create a std::exception_ptr object encapsulating the Exception to
         // be thrown and annotate it with all the local information we have
         try
         {
             throw_with_info(e,
-                std::move(pika::exception_info().set(
-                    pika::detail::throw_function(func),
-                    pika::detail::throw_file(file),
-                    pika::detail::throw_line(line))));
+                std::move(pika::exception_info().set(pika::detail::throw_function(func),
+                    pika::detail::throw_file(file), pika::detail::throw_line(line))));
         }
         catch (...)
         {
@@ -184,8 +177,7 @@ namespace pika::detail {
     }
 
     template <typename Exception>
-    PIKA_EXPORT std::exception_ptr
-    construct_lightweight_exception(Exception const& e)
+    PIKA_EXPORT std::exception_ptr construct_lightweight_exception(Exception const& e)
     {
         // create a std::exception_ptr object encapsulating the Exception to
         // be thrown and annotate it with all the local information we have
@@ -207,9 +199,8 @@ namespace pika::detail {
         pika::thread_interrupted const&);
 
     template <typename Exception>
-    PIKA_EXPORT std::exception_ptr
-    construct_custom_exception(Exception const& e, std::string const& func,
-        std::string const& file, long line, std::string const& auxinfo)
+    PIKA_EXPORT std::exception_ptr construct_custom_exception(Exception const& e,
+        std::string const& func, std::string const& file, long line, std::string const& auxinfo)
     {
         if (!custom_exception_info_handler)
         {
@@ -220,8 +211,7 @@ namespace pika::detail {
         // be thrown and annotate it with information provided by the hook
         try
         {
-            throw_with_info(
-                e, custom_exception_info_handler(func, file, line, auxinfo));
+            throw_with_info(e, custom_exception_info_handler(func, file, line, auxinfo));
         }
         catch (...)
         {
@@ -252,8 +242,7 @@ namespace pika::detail {
     }
 
     template <typename Exception>
-    PIKA_EXPORT std::exception_ptr
-    get_exception(Exception const& e, std::string const& func,
+    PIKA_EXPORT std::exception_ptr get_exception(Exception const& e, std::string const& func,
         std::string const& file, long line, std::string const& auxinfo)
     {
         if (is_of_lightweight_pika_category(e))
@@ -265,8 +254,8 @@ namespace pika::detail {
     }
 
     template <typename Exception>
-    PIKA_EXPORT void throw_exception(Exception const& e,
-        std::string const& func, std::string const& file, long line)
+    PIKA_EXPORT void
+    throw_exception(Exception const& e, std::string const& func, std::string const& file, long line)
     {
         if (pre_exception_handler)
         {
@@ -278,52 +267,39 @@ namespace pika::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template PIKA_EXPORT std::exception_ptr get_exception(
-        pika::exception const&, std::string const&, std::string const&, long,
-        std::string const&);
+        pika::exception const&, std::string const&, std::string const&, long, std::string const&);
 
     template PIKA_EXPORT std::exception_ptr get_exception(
-        std::system_error const&, std::string const&, std::string const&, long,
-        std::string const&);
+        std::system_error const&, std::string const&, std::string const&, long, std::string const&);
 
-    template PIKA_EXPORT std::exception_ptr get_exception(std::exception const&,
+    template PIKA_EXPORT std::exception_ptr get_exception(
+        std::exception const&, std::string const&, std::string const&, long, std::string const&);
+    template PIKA_EXPORT std::exception_ptr get_exception(pika::detail::std_exception const&,
+        std::string const&, std::string const&, long, std::string const&);
+    template PIKA_EXPORT std::exception_ptr get_exception(std::bad_exception const&,
+        std::string const&, std::string const&, long, std::string const&);
+    template PIKA_EXPORT std::exception_ptr get_exception(pika::detail::bad_exception const&,
         std::string const&, std::string const&, long, std::string const&);
     template PIKA_EXPORT std::exception_ptr get_exception(
-        pika::detail::std_exception const&, std::string const&,
-        std::string const&, long, std::string const&);
-    template PIKA_EXPORT std::exception_ptr get_exception(
-        std::bad_exception const&, std::string const&, std::string const&, long,
-        std::string const&);
-    template PIKA_EXPORT std::exception_ptr get_exception(
-        pika::detail::bad_exception const&, std::string const&,
-        std::string const&, long, std::string const&);
-    template PIKA_EXPORT std::exception_ptr get_exception(
-        std::bad_typeid const&, std::string const&, std::string const&, long,
-        std::string const&);
-    template PIKA_EXPORT std::exception_ptr get_exception(
-        pika::detail::bad_typeid const&, std::string const&, std::string const&,
-        long, std::string const&);
-    template PIKA_EXPORT std::exception_ptr get_exception(std::bad_cast const&,
+        std::bad_typeid const&, std::string const&, std::string const&, long, std::string const&);
+    template PIKA_EXPORT std::exception_ptr get_exception(pika::detail::bad_typeid const&,
         std::string const&, std::string const&, long, std::string const&);
     template PIKA_EXPORT std::exception_ptr get_exception(
-        pika::detail::bad_cast const&, std::string const&, std::string const&,
-        long, std::string const&);
-    template PIKA_EXPORT std::exception_ptr get_exception(std::bad_alloc const&,
+        std::bad_cast const&, std::string const&, std::string const&, long, std::string const&);
+    template PIKA_EXPORT std::exception_ptr get_exception(pika::detail::bad_cast const&,
         std::string const&, std::string const&, long, std::string const&);
     template PIKA_EXPORT std::exception_ptr get_exception(
-        pika::detail::bad_alloc const&, std::string const&, std::string const&,
-        long, std::string const&);
+        std::bad_alloc const&, std::string const&, std::string const&, long, std::string const&);
+    template PIKA_EXPORT std::exception_ptr get_exception(pika::detail::bad_alloc const&,
+        std::string const&, std::string const&, long, std::string const&);
     template PIKA_EXPORT std::exception_ptr get_exception(
-        std::logic_error const&, std::string const&, std::string const&, long,
-        std::string const&);
+        std::logic_error const&, std::string const&, std::string const&, long, std::string const&);
+    template PIKA_EXPORT std::exception_ptr get_exception(std::runtime_error const&,
+        std::string const&, std::string const&, long, std::string const&);
     template PIKA_EXPORT std::exception_ptr get_exception(
-        std::runtime_error const&, std::string const&, std::string const&, long,
-        std::string const&);
-    template PIKA_EXPORT std::exception_ptr get_exception(
-        std::out_of_range const&, std::string const&, std::string const&, long,
-        std::string const&);
-    template PIKA_EXPORT std::exception_ptr get_exception(
-        std::invalid_argument const&, std::string const&, std::string const&,
-        long, std::string const&);
+        std::out_of_range const&, std::string const&, std::string const&, long, std::string const&);
+    template PIKA_EXPORT std::exception_ptr get_exception(std::invalid_argument const&,
+        std::string const&, std::string const&, long, std::string const&);
 
     ///////////////////////////////////////////////////////////////////////////
     template PIKA_EXPORT void throw_exception(
@@ -335,33 +311,31 @@ namespace pika::detail {
     template PIKA_EXPORT void throw_exception(
         std::exception const&, std::string const&, std::string const&, long);
     template PIKA_EXPORT void throw_exception(
-        pika::detail::std_exception const&, std::string const&,
-        std::string const&, long);
-    template PIKA_EXPORT void throw_exception(std::bad_exception const&,
-        std::string const&, std::string const&, long);
+        pika::detail::std_exception const&, std::string const&, std::string const&, long);
     template PIKA_EXPORT void throw_exception(
-        pika::detail::bad_exception const&, std::string const&,
-        std::string const&, long);
+        std::bad_exception const&, std::string const&, std::string const&, long);
+    template PIKA_EXPORT void throw_exception(
+        pika::detail::bad_exception const&, std::string const&, std::string const&, long);
     template PIKA_EXPORT void throw_exception(
         std::bad_typeid const&, std::string const&, std::string const&, long);
-    template PIKA_EXPORT void throw_exception(pika::detail::bad_typeid const&,
-        std::string const&, std::string const&, long);
+    template PIKA_EXPORT void throw_exception(
+        pika::detail::bad_typeid const&, std::string const&, std::string const&, long);
     template PIKA_EXPORT void throw_exception(
         std::bad_cast const&, std::string const&, std::string const&, long);
-    template PIKA_EXPORT void throw_exception(pika::detail::bad_cast const&,
-        std::string const&, std::string const&, long);
+    template PIKA_EXPORT void throw_exception(
+        pika::detail::bad_cast const&, std::string const&, std::string const&, long);
     template PIKA_EXPORT void throw_exception(
         std::bad_alloc const&, std::string const&, std::string const&, long);
-    template PIKA_EXPORT void throw_exception(pika::detail::bad_alloc const&,
-        std::string const&, std::string const&, long);
+    template PIKA_EXPORT void throw_exception(
+        pika::detail::bad_alloc const&, std::string const&, std::string const&, long);
     template PIKA_EXPORT void throw_exception(
         std::logic_error const&, std::string const&, std::string const&, long);
-    template PIKA_EXPORT void throw_exception(std::runtime_error const&,
-        std::string const&, std::string const&, long);
+    template PIKA_EXPORT void throw_exception(
+        std::runtime_error const&, std::string const&, std::string const&, long);
     template PIKA_EXPORT void throw_exception(
         std::out_of_range const&, std::string const&, std::string const&, long);
-    template PIKA_EXPORT void throw_exception(std::invalid_argument const&,
-        std::string const&, std::string const&, long);
+    template PIKA_EXPORT void throw_exception(
+        std::invalid_argument const&, std::string const&, std::string const&, long);
 }    // namespace pika::detail
 
 ///////////////////////////////////////////////////////////////////////////////

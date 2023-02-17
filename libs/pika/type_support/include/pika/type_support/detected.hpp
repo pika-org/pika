@@ -22,16 +22,15 @@ namespace pika::detail {
         void operator=(nonesuch const&) = delete;
     };
 
-    template <typename Default, typename AlwaysVoid,
-        template <typename...> class Op, typename... Args>
+    template <typename Default, typename AlwaysVoid, template <typename...> class Op,
+        typename... Args>
     struct detector
     {
         using value_t = std::false_type;
         using type = Default;
     };
 
-    template <typename Default, template <typename...> class Op,
-        typename... Args>
+    template <typename Default, template <typename...> class Op, typename... Args>
     struct detector<Default, std::void_t<Op<Args...>>, Op, Args...>
     {
         using value_t = std::true_type;
@@ -58,23 +57,19 @@ namespace pika::detail {
     //   std::true_type, and type is an alias for Op<Args...>;
     // - Otherwise, value_t is an alias for std::false_type and type is an
     //   alias for Default.
-    template <typename Default, template <typename...> class Op,
-        typename... Args>
+    template <typename Default, template <typename...> class Op, typename... Args>
     using detected_or = detector<Default, void, Op, Args...>;
 
-    template <typename Default, template <typename...> class Op,
-        typename... Args>
+    template <typename Default, template <typename...> class Op, typename... Args>
     using detected_or_t = typename detected_or<Default, Op, Args...>::type;
 
     // The alias template is_detected_exact checks whether
     // detected_t<Op, Args...> is Expected.
-    template <typename Expected, template <typename...> class Op,
-        typename... Args>
+    template <typename Expected, template <typename...> class Op, typename... Args>
     using is_detected_exact = std::is_same<Expected, detected_t<Op, Args...>>;
 
     // The alias template is_detected_convertible checks whether
     // detected_t<Op, Args...> is convertible to To.
     template <typename To, template <typename...> class Op, typename... Args>
-    using is_detected_convertible =
-        std::is_convertible<detected_t<Op, Args...>, To>;
+    using is_detected_convertible = std::is_convertible<detected_t<Op, Args...>, To>;
 }    // namespace pika::detail

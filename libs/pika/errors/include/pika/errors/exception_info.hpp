@@ -44,18 +44,18 @@ namespace pika {
         Type _value;
     };
 
-#define PIKA_DEFINE_ERROR_INFO(NAME, TYPE)                                     \
-    struct NAME : ::pika::error_info<NAME, TYPE>                               \
-    {                                                                          \
-        explicit NAME(TYPE const& value)                                       \
-          : error_info(value)                                                  \
-        {                                                                      \
-        }                                                                      \
-                                                                               \
-        explicit NAME(TYPE&& value)                                            \
-          : error_info(PIKA_FORWARD(TYPE, value))                              \
-        {                                                                      \
-        }                                                                      \
+#define PIKA_DEFINE_ERROR_INFO(NAME, TYPE)                                                         \
+    struct NAME : ::pika::error_info<NAME, TYPE>                                                   \
+    {                                                                                              \
+        explicit NAME(TYPE const& value)                                                           \
+          : error_info(value)                                                                      \
+        {                                                                                          \
+        }                                                                                          \
+                                                                                                   \
+        explicit NAME(TYPE&& value)                                                                \
+          : error_info(PIKA_FORWARD(TYPE, value))                                                  \
+        {                                                                                          \
+        }                                                                                          \
     } /**/
 
     ///////////////////////////////////////////////////////////////////////////
@@ -64,8 +64,7 @@ namespace pika {
         {
         public:
             virtual ~exception_info_node_base() = default;
-            virtual void const* lookup(
-                std::type_info const& tag) const noexcept = 0;
+            virtual void const* lookup(std::type_info const& tag) const noexcept = 0;
 
             std::shared_ptr<exception_info_node_base> next;
         };
@@ -82,11 +81,9 @@ namespace pika {
             {
             }
 
-            void const* lookup(
-                std::type_info const& tag) const noexcept override
+            void const* lookup(std::type_info const& tag) const noexcept override
             {
-                using entry_type =
-                    std::pair<std::type_info const&, void const*>;
+                using entry_type = std::pair<std::type_info const&, void const*>;
                 entry_type const entries[] = {{typeid(typename Ts::tag),
                     std::addressof(static_cast<Ts const*>(this)->_value)}...};
 
@@ -117,8 +114,7 @@ namespace pika {
         exception_info(exception_info const& other) noexcept = default;
         exception_info(exception_info&& other) noexcept = default;
 
-        exception_info& operator=(
-            exception_info const& other) noexcept = default;
+        exception_info& operator=(exception_info const& other) noexcept = default;
         exception_info& operator=(exception_info&& other) noexcept = default;
 
         virtual ~exception_info() = default;
@@ -128,8 +124,7 @@ namespace pika {
         {
             using node_type = detail::exception_info_node<ErrorInfo...>;
 
-            node_ptr node = std::make_shared<node_type>(
-                PIKA_FORWARD(ErrorInfo, tagged_values)...);
+            node_ptr node = std::make_shared<node_type>(PIKA_FORWARD(ErrorInfo, tagged_values)...);
             node->next = PIKA_MOVE(_data);
             _data = PIKA_MOVE(node);
             return *this;
@@ -151,8 +146,7 @@ namespace pika {
     namespace detail {
         struct exception_with_info_base : public exception_info
         {
-            exception_with_info_base(
-                std::type_info const& type, exception_info xi)
+            exception_with_info_base(std::type_info const& type, exception_info xi)
               : exception_info(PIKA_MOVE(xi))
               , type(type)
             {
@@ -181,17 +175,15 @@ namespace pika {
     }    // namespace detail
 
     template <typename E>
-    [[noreturn]] void
-    throw_with_info(E&& e, exception_info&& xi = exception_info())
+    [[noreturn]] void throw_with_info(E&& e, exception_info&& xi = exception_info())
     {
         using ED = std::decay_t<E>;
-        static_assert(std::is_class<ED>::value && !std::is_final<ED>::value,
-            "E shall be a valid base class");
-        static_assert(!std::is_base_of<exception_info, ED>::value,
-            "E shall not derive from exception_info");
+        static_assert(
+            std::is_class<ED>::value && !std::is_final<ED>::value, "E shall be a valid base class");
+        static_assert(
+            !std::is_base_of<exception_info, ED>::value, "E shall not derive from exception_info");
 
-        throw detail::exception_with_info<ED>(
-            PIKA_FORWARD(E, e), PIKA_MOVE(xi));
+        throw detail::exception_with_info<ED>(PIKA_FORWARD(E, e), PIKA_MOVE(xi));
     }
 
     template <typename E>
@@ -218,8 +210,7 @@ namespace pika {
     auto invoke_with_exception_info(E const& e, F&& f)
         -> decltype(PIKA_FORWARD(F, f)(std::declval<exception_info const*>()))
     {
-        return PIKA_FORWARD(F, f)(
-            dynamic_cast<exception_info const*>(std::addressof(e)));
+        return PIKA_FORWARD(F, f)(dynamic_cast<exception_info const*>(std::addressof(e)));
     }
 
     template <typename F>
@@ -245,7 +236,6 @@ namespace pika {
     auto invoke_with_exception_info(pika::error_code const& ec, F&& f)
         -> decltype(PIKA_FORWARD(F, f)(std::declval<exception_info const*>()))
     {
-        return invoke_with_exception_info(
-            detail::access_exception(ec), PIKA_FORWARD(F, f));
+        return invoke_with_exception_info(detail::access_exception(ec), PIKA_FORWARD(F, f));
     }
 }    // namespace pika

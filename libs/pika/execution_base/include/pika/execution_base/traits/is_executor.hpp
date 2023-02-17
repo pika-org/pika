@@ -59,8 +59,7 @@ namespace pika::parallel::execution {
     // Condition: T meets the syntactic requirements for BulkOneWayExecutor
     // Precondition: T is a complete type
     template <typename T, typename Enable = void>
-    struct is_bulk_one_way_executor
-      : detail::is_bulk_one_way_executor<std::decay_t<T>>
+    struct is_bulk_one_way_executor : detail::is_bulk_one_way_executor<std::decay_t<T>>
     {
     };
 
@@ -74,8 +73,7 @@ namespace pika::parallel::execution {
     // Condition: T meets the syntactic requirements for BulkTwoWayExecutor
     // Precondition: T is a complete type
     template <typename T, typename Enable = void>
-    struct is_bulk_two_way_executor
-      : detail::is_bulk_two_way_executor<std::decay_t<T>>
+    struct is_bulk_two_way_executor : detail::is_bulk_two_way_executor<std::decay_t<T>>
     {
     };
 }    // namespace pika::parallel::execution
@@ -83,8 +81,7 @@ namespace pika::parallel::execution {
 namespace pika::traits {
     // Concurrency TS V2: executor framework
     template <typename T, typename Enable = void>
-    struct is_one_way_executor
-      : parallel::execution::is_one_way_executor<std::decay_t<T>>
+    struct is_one_way_executor : parallel::execution::is_one_way_executor<std::decay_t<T>>
     {
     };
 
@@ -102,18 +99,15 @@ namespace pika::traits {
         typename is_never_blocking_one_way_executor<T>::type;
 
     template <typename T, typename Enable = void>
-    struct is_bulk_one_way_executor
-      : parallel::execution::is_bulk_one_way_executor<std::decay_t<T>>
+    struct is_bulk_one_way_executor : parallel::execution::is_bulk_one_way_executor<std::decay_t<T>>
     {
     };
 
     template <typename T>
-    using is_bulk_one_way_executor_t =
-        typename is_bulk_one_way_executor<T>::type;
+    using is_bulk_one_way_executor_t = typename is_bulk_one_way_executor<T>::type;
 
     template <typename T, typename Enable = void>
-    struct is_two_way_executor
-      : parallel::execution::is_two_way_executor<std::decay_t<T>>
+    struct is_two_way_executor : parallel::execution::is_two_way_executor<std::decay_t<T>>
     {
     };
 
@@ -121,21 +115,18 @@ namespace pika::traits {
     using is_two_way_executor_t = typename is_two_way_executor<T>::type;
 
     template <typename T, typename Enable = void>
-    struct is_bulk_two_way_executor
-      : parallel::execution::is_bulk_two_way_executor<std::decay_t<T>>
+    struct is_bulk_two_way_executor : parallel::execution::is_bulk_two_way_executor<std::decay_t<T>>
     {
     };
 
     template <typename T>
-    using is_bulk_two_way_executor_t =
-        typename is_bulk_two_way_executor<T>::type;
+    using is_bulk_two_way_executor_t = typename is_bulk_two_way_executor<T>::type;
 
     // trait testing for any of the above
     template <typename T, typename Enable = void>
     struct is_executor_any
-      : util::detail::any_of<is_one_way_executor<T>,
-            is_never_blocking_one_way_executor<T>, is_bulk_one_way_executor<T>,
-            is_two_way_executor<T>, is_bulk_two_way_executor<T>>
+      : util::detail::any_of<is_one_way_executor<T>, is_never_blocking_one_way_executor<T>,
+            is_bulk_one_way_executor<T>, is_two_way_executor<T>, is_bulk_two_way_executor<T>>
     {
     };
 
@@ -150,15 +141,13 @@ namespace pika::traits {
         is_never_blocking_one_way_executor<T>::value;
 
     template <typename T>
-    inline constexpr bool is_bulk_one_way_executor_v =
-        is_bulk_one_way_executor<T>::value;
+    inline constexpr bool is_bulk_one_way_executor_v = is_bulk_one_way_executor<T>::value;
 
     template <typename T>
     inline constexpr bool is_two_way_executor_v = is_two_way_executor<T>::value;
 
     template <typename T>
-    inline constexpr bool is_bulk_two_way_executor_v =
-        is_bulk_two_way_executor<T>::value;
+    inline constexpr bool is_bulk_two_way_executor_v = is_bulk_two_way_executor<T>::value;
 
     template <typename T>
     inline constexpr bool is_executor_any_v = is_executor_any<T>::value;

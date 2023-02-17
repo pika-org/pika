@@ -103,15 +103,13 @@ namespace pika::cuda::experimental {
 
     cusolver_exception::cusolver_exception(cusolverStatus_t err)
       : pika::exception(pika::error::bad_function_call,
-            std::string("cuSOLVER function returned error code ") +
-                std::to_string(err) + " (" +
+            std::string("cuSOLVER function returned error code ") + std::to_string(err) + " (" +
                 detail::cusolver_get_error_string(err) + ")")
       , err_(err)
     {
     }
 
-    cusolver_exception::cusolver_exception(
-        const std::string& msg, cusolverStatus_t err)
+    cusolver_exception::cusolver_exception(const std::string& msg, cusolverStatus_t err)
       : pika::exception(pika::error::bad_function_call, msg)
       , err_(err)
     {

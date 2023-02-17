@@ -23,8 +23,7 @@
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-std::vector<pika::future<void>> create_tasks(
-    std::size_t num_tasks, std::size_t delay)
+std::vector<pika::future<void>> create_tasks(std::size_t num_tasks, std::size_t delay)
 {
     std::vector<pika::future<void>> tasks;
     tasks.reserve(num_tasks);
@@ -36,19 +35,17 @@ std::vector<pika::future<void>> create_tasks(
         }
         else
         {
-            tasks.push_back(pika::make_ready_future_after(
-                std::chrono::microseconds(delay)));
+            tasks.push_back(pika::make_ready_future_after(std::chrono::microseconds(delay)));
         }
     }
     return tasks;
 }
 
-double wait_tasks(std::size_t num_samples, std::size_t num_tasks,
-    std::size_t num_chunks, std::size_t delay)
+double wait_tasks(
+    std::size_t num_samples, std::size_t num_tasks, std::size_t num_chunks, std::size_t delay)
 {
     std::size_t num_chunk_tasks = ((num_tasks + num_chunks) / num_chunks) - 1;
-    std::size_t last_num_chunk_tasks =
-        num_tasks - (num_chunks - 1) * num_chunk_tasks;
+    std::size_t last_num_chunk_tasks = num_tasks - (num_chunks - 1) * num_chunk_tasks;
 
     double result = 0;
 
@@ -75,8 +72,7 @@ double wait_tasks(std::size_t num_samples, std::size_t num_tasks,
         {
             for (std::size_t c = 0; c != num_chunks; ++c)
             {
-                chunk_results.push_back(
-                    pika::async([&chunks, c]() { pika::wait_all(chunks[c]); }));
+                chunk_results.push_back(pika::async([&chunks, c]() { pika::wait_all(chunks[c]); }));
             }
             pika::wait_all(chunk_results);
         }
@@ -119,26 +115,22 @@ int pika_main(pika::program_options::variables_map& vm)
 
     if (header)
     {
-        std::cout
-            << "Tasks,Chunks,Delay[s],Total Walltime[s],Walltime per Task[s]"
-            << std::endl;
+        std::cout << "Tasks,Chunks,Delay[s],Total Walltime[s],Walltime per Task[s]" << std::endl;
     }
 
     std::string const tasks_str = fmt::format("{}", num_tasks);
     std::string const chunks_str = fmt::format("{}", num_chunks);
     std::string const delay_str = fmt::format("{}", delay);
 
-    fmt::print(std::cout, "{:10},{:10},{:10},{:10.12},{:10.12}\n", tasks_str,
-        std::string("1"), delay_str, elapsed_seq, elapsed_seq / num_tasks);
+    fmt::print(std::cout, "{:10},{:10},{:10},{:10.12},{:10.12}\n", tasks_str, std::string("1"),
+        delay_str, elapsed_seq, elapsed_seq / num_tasks);
     pika::util::print_cdash_timing("WaitAll", elapsed_seq / num_tasks);
 
     if (num_chunks != 1)
     {
-        fmt::print(std::cout, "{:10},{:10},{:10},{:10.12},{:10.12}\n",
-            tasks_str, chunks_str, delay_str, elapsed_chunks,
-            elapsed_chunks / num_tasks);
-        pika::util::print_cdash_timing(
-            "WaitAllChunks", elapsed_chunks / num_tasks);
+        fmt::print(std::cout, "{:10},{:10},{:10},{:10.12},{:10.12}\n", tasks_str, chunks_str,
+            delay_str, elapsed_chunks, elapsed_chunks / num_tasks);
+        pika::util::print_cdash_timing("WaitAllChunks", elapsed_chunks / num_tasks);
     }
     return pika::finalize();
 }
@@ -149,10 +141,8 @@ int main(int argc, char* argv[])
     namespace po = pika::program_options;
 
     // Configure application-specific options.
-    po::options_description cmdline(
-        "usage: " PIKA_APPLICATION_STRING " [options]");
-    cmdline.add_options()("samples,s",
-        po::value<std::size_t>()->default_value(1000),
+    po::options_description cmdline("usage: " PIKA_APPLICATION_STRING " [options]");
+    cmdline.add_options()("samples,s", po::value<std::size_t>()->default_value(1000),
         "number of tasks to concurrently wait for (default: 1000)")("futures,f",
         po::value<std::size_t>()->default_value(100),
         "number of tasks to concurrently wait for (default: 100)")("chunks,c",
@@ -160,8 +150,7 @@ int main(int argc, char* argv[])
         "number of chunks to split tasks into (default: 1)")("delay,d",
         po::value<std::size_t>()->default_value(0),
         "number of iterations in the delay loop")("no-header,n",
-        po::value<bool>()->default_value(true),
-        "do not print out the csv header row");
+        po::value<bool>()->default_value(true), "do not print out the csv header row");
 
     // Initialize and run pika.
     pika::init_params init_args;

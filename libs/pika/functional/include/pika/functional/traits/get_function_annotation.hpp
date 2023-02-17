@@ -29,8 +29,7 @@ namespace pika::detail {
     {
         static util::itt::string_handle call(F const& f)
         {
-            static util::itt::string_handle sh(
-                get_function_annotation<F>::call(f));
+            static util::itt::string_handle sh(get_function_annotation<F>::call(f));
             return sh;
         }
     };

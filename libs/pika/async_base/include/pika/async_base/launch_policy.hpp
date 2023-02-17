@@ -38,10 +38,8 @@ namespace pika {
         struct policy_holder_base
         {
             constexpr explicit policy_holder_base(launch_policy p,
-                execution::thread_priority priority =
-                    execution::thread_priority::default_,
-                execution::thread_stacksize stacksize =
-                    execution::thread_stacksize::default_,
+                execution::thread_priority priority = execution::thread_priority::default_,
+                execution::thread_stacksize stacksize = execution::thread_stacksize::default_,
                 execution::thread_schedule_hint hint = {}) noexcept
               : policy_(p)
               , priority_(priority)
@@ -107,10 +105,8 @@ namespace pika {
         struct policy_holder : policy_holder_base
         {
             constexpr explicit policy_holder(launch_policy p,
-                execution::thread_priority priority =
-                    execution::thread_priority::default_,
-                execution::thread_stacksize stacksize =
-                    execution::thread_stacksize::default_,
+                execution::thread_priority priority = execution::thread_priority::default_,
+                execution::thread_stacksize stacksize = execution::thread_stacksize::default_,
                 execution::thread_schedule_hint hint = {}) noexcept
               : policy_holder_base(p, priority, stacksize, hint)
             {
@@ -153,10 +149,8 @@ namespace pika {
         struct policy_holder<void> : policy_holder_base
         {
             constexpr explicit policy_holder(launch_policy p,
-                execution::thread_priority priority =
-                    execution::thread_priority::default_,
-                execution::thread_stacksize stacksize =
-                    execution::thread_stacksize::default_,
+                execution::thread_priority priority = execution::thread_priority::default_,
+                execution::thread_stacksize stacksize = execution::thread_stacksize::default_,
                 execution::thread_schedule_hint hint = {}) noexcept
               : policy_holder_base(p, priority, stacksize, hint)
             {
@@ -199,20 +193,15 @@ namespace pika {
         struct async_policy : policy_holder<async_policy>
         {
             constexpr explicit async_policy(
-                execution::thread_priority priority =
-                    execution::thread_priority::default_,
-                execution::thread_stacksize stacksize =
-                    execution::thread_stacksize::default_,
+                execution::thread_priority priority = execution::thread_priority::default_,
+                execution::thread_stacksize stacksize = execution::thread_stacksize::default_,
                 execution::thread_schedule_hint hint = {}) noexcept
-              : policy_holder<async_policy>(
-                    launch_policy::async, priority, stacksize, hint)
+              : policy_holder<async_policy>(launch_policy::async, priority, stacksize, hint)
             {
             }
 
-            friend async_policy tag_invoke(
-                pika::execution::experimental::with_priority_t,
-                async_policy policy,
-                execution::thread_priority priority) noexcept
+            friend async_policy tag_invoke(pika::execution::experimental::with_priority_t,
+                async_policy policy, execution::thread_priority priority) noexcept
             {
                 auto policy_with_priority = policy;
                 policy_with_priority.set_priority(priority);
@@ -220,16 +209,13 @@ namespace pika {
             }
 
             friend constexpr pika::execution::thread_priority tag_invoke(
-                pika::execution::experimental::get_priority_t,
-                async_policy policy) noexcept
+                pika::execution::experimental::get_priority_t, async_policy policy) noexcept
             {
                 return policy.priority();
             }
 
-            friend async_policy tag_invoke(
-                pika::execution::experimental::with_stacksize_t,
-                async_policy policy,
-                execution::thread_stacksize stacksize) noexcept
+            friend async_policy tag_invoke(pika::execution::experimental::with_stacksize_t,
+                async_policy policy, execution::thread_stacksize stacksize) noexcept
             {
                 auto policy_with_stacksize = policy;
                 policy_with_stacksize.set_stacksize(stacksize);
@@ -237,15 +223,13 @@ namespace pika {
             }
 
             friend constexpr pika::execution::thread_stacksize tag_invoke(
-                pika::execution::experimental::get_stacksize_t,
-                async_policy policy) noexcept
+                pika::execution::experimental::get_stacksize_t, async_policy policy) noexcept
             {
                 return policy.stacksize();
             }
 
-            friend async_policy tag_invoke(
-                pika::execution::experimental::with_hint_t, async_policy policy,
-                execution::thread_schedule_hint hint) noexcept
+            friend async_policy tag_invoke(pika::execution::experimental::with_hint_t,
+                async_policy policy, execution::thread_schedule_hint hint) noexcept
             {
                 auto policy_with_hint = policy;
                 policy_with_hint.set_hint(hint);
@@ -253,8 +237,7 @@ namespace pika {
             }
 
             friend constexpr pika::execution::thread_schedule_hint tag_invoke(
-                pika::execution::experimental::get_hint_t,
-                async_policy policy) noexcept
+                pika::execution::experimental::get_hint_t, async_policy policy) noexcept
             {
                 return policy.hint();
             }
@@ -263,20 +246,15 @@ namespace pika {
         struct fork_policy : policy_holder<fork_policy>
         {
             constexpr explicit fork_policy(
-                execution::thread_priority priority =
-                    execution::thread_priority::boost,
-                execution::thread_stacksize stacksize =
-                    execution::thread_stacksize::default_,
+                execution::thread_priority priority = execution::thread_priority::boost,
+                execution::thread_stacksize stacksize = execution::thread_stacksize::default_,
                 execution::thread_schedule_hint hint = {}) noexcept
-              : policy_holder<fork_policy>(
-                    launch_policy::fork, priority, stacksize, hint)
+              : policy_holder<fork_policy>(launch_policy::fork, priority, stacksize, hint)
             {
             }
 
-            friend fork_policy tag_invoke(
-                pika::execution::experimental::with_priority_t,
-                fork_policy policy,
-                execution::thread_priority priority) noexcept
+            friend fork_policy tag_invoke(pika::execution::experimental::with_priority_t,
+                fork_policy policy, execution::thread_priority priority) noexcept
             {
                 auto policy_with_priority = policy;
                 policy_with_priority.set_priority(priority);
@@ -284,16 +262,13 @@ namespace pika {
             }
 
             friend constexpr pika::execution::thread_priority tag_invoke(
-                pika::execution::experimental::get_priority_t,
-                fork_policy policy) noexcept
+                pika::execution::experimental::get_priority_t, fork_policy policy) noexcept
             {
                 return policy.priority();
             }
 
-            friend fork_policy tag_invoke(
-                pika::execution::experimental::with_stacksize_t,
-                fork_policy policy,
-                execution::thread_stacksize stacksize) noexcept
+            friend fork_policy tag_invoke(pika::execution::experimental::with_stacksize_t,
+                fork_policy policy, execution::thread_stacksize stacksize) noexcept
             {
                 auto policy_with_stacksize = policy;
                 policy_with_stacksize.set_stacksize(stacksize);
@@ -301,15 +276,13 @@ namespace pika {
             }
 
             friend constexpr pika::execution::thread_stacksize tag_invoke(
-                pika::execution::experimental::get_stacksize_t,
-                fork_policy policy) noexcept
+                pika::execution::experimental::get_stacksize_t, fork_policy policy) noexcept
             {
                 return policy.stacksize();
             }
 
-            friend fork_policy tag_invoke(
-                pika::execution::experimental::with_hint_t, fork_policy policy,
-                execution::thread_schedule_hint hint) noexcept
+            friend fork_policy tag_invoke(pika::execution::experimental::with_hint_t,
+                fork_policy policy, execution::thread_schedule_hint hint) noexcept
             {
                 auto policy_with_hint = policy;
                 policy_with_hint.set_hint(hint);
@@ -317,8 +290,7 @@ namespace pika {
             }
 
             friend constexpr pika::execution::thread_schedule_hint tag_invoke(
-                pika::execution::experimental::get_hint_t,
-                fork_policy policy) noexcept
+                pika::execution::experimental::get_hint_t, fork_policy policy) noexcept
             {
                 return policy.hint();
             }
@@ -326,20 +298,16 @@ namespace pika {
 
         struct sync_policy : policy_holder<sync_policy>
         {
-            constexpr sync_policy(execution::thread_priority priority =
-                                      execution::thread_priority::default_,
-                execution::thread_stacksize stacksize =
-                    execution::thread_stacksize::default_,
+            constexpr sync_policy(
+                execution::thread_priority priority = execution::thread_priority::default_,
+                execution::thread_stacksize stacksize = execution::thread_stacksize::default_,
                 execution::thread_schedule_hint hint = {}) noexcept
-              : policy_holder<sync_policy>(
-                    launch_policy::sync, priority, stacksize, hint)
+              : policy_holder<sync_policy>(launch_policy::sync, priority, stacksize, hint)
             {
             }
 
-            friend sync_policy tag_invoke(
-                pika::execution::experimental::with_priority_t,
-                sync_policy policy,
-                execution::thread_priority priority) noexcept
+            friend sync_policy tag_invoke(pika::execution::experimental::with_priority_t,
+                sync_policy policy, execution::thread_priority priority) noexcept
             {
                 auto policy_with_priority = policy;
                 policy_with_priority.set_priority(priority);
@@ -347,16 +315,13 @@ namespace pika {
             }
 
             friend constexpr pika::execution::thread_priority tag_invoke(
-                pika::execution::experimental::get_priority_t,
-                sync_policy policy) noexcept
+                pika::execution::experimental::get_priority_t, sync_policy policy) noexcept
             {
                 return policy.priority();
             }
 
-            friend sync_policy tag_invoke(
-                pika::execution::experimental::with_stacksize_t,
-                sync_policy policy,
-                execution::thread_stacksize stacksize) noexcept
+            friend sync_policy tag_invoke(pika::execution::experimental::with_stacksize_t,
+                sync_policy policy, execution::thread_stacksize stacksize) noexcept
             {
                 auto policy_with_stacksize = policy;
                 policy_with_stacksize.set_stacksize(stacksize);
@@ -364,15 +329,13 @@ namespace pika {
             }
 
             friend constexpr pika::execution::thread_stacksize tag_invoke(
-                pika::execution::experimental::get_stacksize_t,
-                sync_policy policy) noexcept
+                pika::execution::experimental::get_stacksize_t, sync_policy policy) noexcept
             {
                 return policy.stacksize();
             }
 
-            friend sync_policy tag_invoke(
-                pika::execution::experimental::with_hint_t, sync_policy policy,
-                execution::thread_schedule_hint hint) noexcept
+            friend sync_policy tag_invoke(pika::execution::experimental::with_hint_t,
+                sync_policy policy, execution::thread_schedule_hint hint) noexcept
             {
                 auto policy_with_hint = policy;
                 policy_with_hint.set_hint(hint);
@@ -380,8 +343,7 @@ namespace pika {
             }
 
             friend constexpr pika::execution::thread_schedule_hint tag_invoke(
-                pika::execution::experimental::get_hint_t,
-                sync_policy policy) noexcept
+                pika::execution::experimental::get_hint_t, sync_policy policy) noexcept
             {
                 return policy.hint();
             }
@@ -389,20 +351,16 @@ namespace pika {
 
         struct deferred_policy : policy_holder<deferred_policy>
         {
-            constexpr deferred_policy(execution::thread_priority priority =
-                                          execution::thread_priority::default_,
-                execution::thread_stacksize stacksize =
-                    execution::thread_stacksize::default_,
+            constexpr deferred_policy(
+                execution::thread_priority priority = execution::thread_priority::default_,
+                execution::thread_stacksize stacksize = execution::thread_stacksize::default_,
                 execution::thread_schedule_hint hint = {}) noexcept
-              : policy_holder<deferred_policy>(
-                    launch_policy::deferred, priority, stacksize, hint)
+              : policy_holder<deferred_policy>(launch_policy::deferred, priority, stacksize, hint)
             {
             }
 
-            friend deferred_policy tag_invoke(
-                pika::execution::experimental::with_priority_t,
-                deferred_policy policy,
-                execution::thread_priority priority) noexcept
+            friend deferred_policy tag_invoke(pika::execution::experimental::with_priority_t,
+                deferred_policy policy, execution::thread_priority priority) noexcept
             {
                 auto policy_with_priority = policy;
                 policy_with_priority.set_priority(priority);
@@ -410,16 +368,13 @@ namespace pika {
             }
 
             friend constexpr pika::execution::thread_priority tag_invoke(
-                pika::execution::experimental::get_priority_t,
-                deferred_policy policy) noexcept
+                pika::execution::experimental::get_priority_t, deferred_policy policy) noexcept
             {
                 return policy.priority();
             }
 
-            friend deferred_policy tag_invoke(
-                pika::execution::experimental::with_stacksize_t,
-                deferred_policy policy,
-                execution::thread_stacksize stacksize) noexcept
+            friend deferred_policy tag_invoke(pika::execution::experimental::with_stacksize_t,
+                deferred_policy policy, execution::thread_stacksize stacksize) noexcept
             {
                 auto policy_with_stacksize = policy;
                 policy_with_stacksize.set_stacksize(stacksize);
@@ -427,16 +382,13 @@ namespace pika {
             }
 
             friend constexpr pika::execution::thread_stacksize tag_invoke(
-                pika::execution::experimental::get_stacksize_t,
-                deferred_policy policy) noexcept
+                pika::execution::experimental::get_stacksize_t, deferred_policy policy) noexcept
             {
                 return policy.stacksize();
             }
 
-            friend deferred_policy tag_invoke(
-                pika::execution::experimental::with_hint_t,
-                deferred_policy policy,
-                execution::thread_schedule_hint hint) noexcept
+            friend deferred_policy tag_invoke(pika::execution::experimental::with_hint_t,
+                deferred_policy policy, execution::thread_schedule_hint hint) noexcept
             {
                 auto policy_with_hint = policy;
                 policy_with_hint.set_hint(hint);
@@ -444,8 +396,7 @@ namespace pika {
             }
 
             friend constexpr pika::execution::thread_schedule_hint tag_invoke(
-                pika::execution::experimental::get_hint_t,
-                deferred_policy policy) noexcept
+                pika::execution::experimental::get_hint_t, deferred_policy policy) noexcept
             {
                 return policy.hint();
             }
@@ -453,20 +404,16 @@ namespace pika {
 
         struct apply_policy : policy_holder<apply_policy>
         {
-            constexpr apply_policy(execution::thread_priority priority =
-                                       execution::thread_priority::default_,
-                execution::thread_stacksize stacksize =
-                    execution::thread_stacksize::default_,
+            constexpr apply_policy(
+                execution::thread_priority priority = execution::thread_priority::default_,
+                execution::thread_stacksize stacksize = execution::thread_stacksize::default_,
                 execution::thread_schedule_hint hint = {}) noexcept
-              : policy_holder<apply_policy>(
-                    launch_policy::apply, priority, stacksize, hint)
+              : policy_holder<apply_policy>(launch_policy::apply, priority, stacksize, hint)
             {
             }
 
-            friend apply_policy tag_invoke(
-                pika::execution::experimental::with_priority_t,
-                apply_policy policy,
-                execution::thread_priority priority) noexcept
+            friend apply_policy tag_invoke(pika::execution::experimental::with_priority_t,
+                apply_policy policy, execution::thread_priority priority) noexcept
             {
                 auto policy_with_priority = policy;
                 policy_with_priority.set_priority(priority);
@@ -474,16 +421,13 @@ namespace pika {
             }
 
             friend constexpr pika::execution::thread_priority tag_invoke(
-                pika::execution::experimental::get_priority_t,
-                apply_policy policy) noexcept
+                pika::execution::experimental::get_priority_t, apply_policy policy) noexcept
             {
                 return policy.priority();
             }
 
-            friend apply_policy tag_invoke(
-                pika::execution::experimental::with_stacksize_t,
-                apply_policy policy,
-                execution::thread_stacksize stacksize) noexcept
+            friend apply_policy tag_invoke(pika::execution::experimental::with_stacksize_t,
+                apply_policy policy, execution::thread_stacksize stacksize) noexcept
             {
                 auto policy_with_stacksize = policy;
                 policy_with_stacksize.set_stacksize(stacksize);
@@ -491,15 +435,13 @@ namespace pika {
             }
 
             friend constexpr pika::execution::thread_stacksize tag_invoke(
-                pika::execution::experimental::get_stacksize_t,
-                apply_policy policy) noexcept
+                pika::execution::experimental::get_stacksize_t, apply_policy policy) noexcept
             {
                 return policy.stacksize();
             }
 
-            friend apply_policy tag_invoke(
-                pika::execution::experimental::with_hint_t, apply_policy policy,
-                execution::thread_schedule_hint hint) noexcept
+            friend apply_policy tag_invoke(pika::execution::experimental::with_hint_t,
+                apply_policy policy, execution::thread_schedule_hint hint) noexcept
             {
                 auto policy_with_hint = policy;
                 policy_with_hint.set_hint(hint);
@@ -507,8 +449,7 @@ namespace pika {
             }
 
             friend constexpr pika::execution::thread_schedule_hint tag_invoke(
-                pika::execution::experimental::get_hint_t,
-                apply_policy policy) noexcept
+                pika::execution::experimental::get_hint_t, apply_policy policy) noexcept
             {
                 return policy.hint();
             }
@@ -518,22 +459,18 @@ namespace pika {
         struct select_policy : policy_holder<select_policy<Pred>>
         {
             template <typename F,
-                typename U = std::enable_if_t<
-                    !std::is_same_v<select_policy<Pred>, std::decay_t<F>>>>
+                typename U =
+                    std::enable_if_t<!std::is_same_v<select_policy<Pred>, std::decay_t<F>>>>
             explicit select_policy(F&& f,
-                execution::thread_priority priority =
-                    execution::thread_priority::default_,
-                execution::thread_stacksize stacksize =
-                    execution::thread_stacksize::default_,
+                execution::thread_priority priority = execution::thread_priority::default_,
+                execution::thread_stacksize stacksize = execution::thread_stacksize::default_,
                 execution::thread_schedule_hint hint = {})    // NOLINT
-              : policy_holder<select_policy<Pred>>(
-                    launch_policy::async, priority, stacksize, hint)
+              : policy_holder<select_policy<Pred>>(launch_policy::async, priority, stacksize, hint)
               , pred_(PIKA_FORWARD(F, f))
             {
             }
 
-            constexpr launch_policy get_policy() const
-                noexcept(noexcept(std::declval<Pred>()()))
+            constexpr launch_policy get_policy() const noexcept(noexcept(std::declval<Pred>()()))
             {
                 return pred_();
             }
@@ -543,10 +480,8 @@ namespace pika {
                 return true;
             }
 
-            friend select_policy tag_invoke(
-                pika::execution::experimental::with_priority_t,
-                select_policy const& policy,
-                execution::thread_priority priority) noexcept
+            friend select_policy tag_invoke(pika::execution::experimental::with_priority_t,
+                select_policy const& policy, execution::thread_priority priority) noexcept
             {
                 auto policy_with_priority = policy;
                 policy_with_priority.set_priority(priority);
@@ -554,16 +489,13 @@ namespace pika {
             }
 
             friend constexpr pika::execution::thread_priority tag_invoke(
-                pika::execution::experimental::get_priority_t,
-                select_policy const& policy) noexcept
+                pika::execution::experimental::get_priority_t, select_policy const& policy) noexcept
             {
                 return policy.priority();
             }
 
-            friend select_policy tag_invoke(
-                pika::execution::experimental::with_stacksize_t,
-                select_policy const& policy,
-                execution::thread_stacksize stacksize) noexcept
+            friend select_policy tag_invoke(pika::execution::experimental::with_stacksize_t,
+                select_policy const& policy, execution::thread_stacksize stacksize) noexcept
             {
                 auto policy_with_stacksize = policy;
                 policy_with_stacksize.set_stacksize(stacksize);
@@ -577,10 +509,8 @@ namespace pika {
                 return policy.stacksize();
             }
 
-            friend select_policy tag_invoke(
-                pika::execution::experimental::with_hint_t,
-                select_policy const& policy,
-                execution::thread_schedule_hint hint) noexcept
+            friend select_policy tag_invoke(pika::execution::experimental::with_hint_t,
+                select_policy const& policy, execution::thread_schedule_hint hint) noexcept
             {
                 auto policy_with_hint = policy;
                 policy_with_hint.set_hint(hint);
@@ -588,8 +518,7 @@ namespace pika {
             }
 
             friend constexpr pika::execution::thread_schedule_hint tag_invoke(
-                pika::execution::experimental::get_hint_t,
-                select_policy const& policy) noexcept
+                pika::execution::experimental::get_hint_t, select_policy const& policy) noexcept
             {
                 return policy.hint();
             }
@@ -600,10 +529,8 @@ namespace pika {
 
         struct select_policy_generator
         {
-            constexpr async_policy operator()(
-                execution::thread_priority priority,
-                execution::thread_stacksize stacksize =
-                    execution::thread_stacksize::default_,
+            constexpr async_policy operator()(execution::thread_priority priority,
+                execution::thread_stacksize stacksize = execution::thread_stacksize::default_,
                 execution::thread_schedule_hint hint = {}) const noexcept
             {
                 return async_policy(priority, stacksize, hint);
@@ -611,10 +538,8 @@ namespace pika {
 
             template <typename F>
             select_policy<std::decay_t<F>> operator()(F&& f,
-                execution::thread_priority priority =
-                    execution::thread_priority::default_,
-                execution::thread_stacksize stacksize =
-                    execution::thread_stacksize::default_,
+                execution::thread_priority priority = execution::thread_priority::default_,
+                execution::thread_stacksize stacksize = execution::thread_stacksize::default_,
                 execution::thread_schedule_hint hint = {}) const
             {
                 return select_policy<std::decay_t<F>>(
@@ -625,81 +550,72 @@ namespace pika {
         ///////////////////////////////////////////////////////////////////////
         template <typename Left, typename Right>
         constexpr inline policy_holder_base
-        operator&(policy_holder<Left> const& lhs,
-            policy_holder<Right> const& rhs) noexcept
+        operator&(policy_holder<Left> const& lhs, policy_holder<Right> const& rhs) noexcept
         {
-            return policy_holder_base(
-                static_cast<launch_policy>(static_cast<int>(lhs.policy()) &
-                    static_cast<int>(rhs.policy())),
+            return policy_holder_base(static_cast<launch_policy>(static_cast<int>(lhs.policy()) &
+                                          static_cast<int>(rhs.policy())),
                 lhs.get_priority(), lhs.get_stacksize(), lhs.get_hint());
         }
 
         template <typename Left, typename Right>
         constexpr inline policy_holder_base
-        operator|(policy_holder<Left> const& lhs,
-            policy_holder<Right> const& rhs) noexcept
+        operator|(policy_holder<Left> const& lhs, policy_holder<Right> const& rhs) noexcept
         {
-            return policy_holder_base(
-                static_cast<launch_policy>(static_cast<int>(lhs.policy()) |
-                    static_cast<int>(rhs.policy())),
+            return policy_holder_base(static_cast<launch_policy>(static_cast<int>(lhs.policy()) |
+                                          static_cast<int>(rhs.policy())),
                 lhs.get_priority(), lhs.get_stacksize(), lhs.get_hint());
         }
 
         template <typename Left, typename Right>
         constexpr inline policy_holder_base
-        operator^(policy_holder<Left> const& lhs,
-            policy_holder<Right> const& rhs) noexcept
+        operator^(policy_holder<Left> const& lhs, policy_holder<Right> const& rhs) noexcept
         {
-            return policy_holder_base(
-                static_cast<launch_policy>(static_cast<int>(lhs.policy()) ^
-                    static_cast<int>(rhs.policy())),
+            return policy_holder_base(static_cast<launch_policy>(static_cast<int>(lhs.policy()) ^
+                                          static_cast<int>(rhs.policy())),
                 lhs.get_priority(), lhs.get_stacksize(), lhs.get_hint());
         }
 
         template <typename Derived>
-        constexpr inline policy_holder<Derived>
-        operator~(policy_holder<Derived> const& p) noexcept
+        constexpr inline policy_holder<Derived> operator~(policy_holder<Derived> const& p) noexcept
         {
-            return policy_holder<Derived>(
-                static_cast<launch_policy>(~static_cast<int>(p.policy())),
+            return policy_holder<Derived>(static_cast<launch_policy>(~static_cast<int>(p.policy())),
                 p.get_priority(), p.get_stacksize(), p.get_hint());
         }
 
         template <typename Left, typename Right>
-        inline policy_holder<Left> operator&=(
-            policy_holder<Left>& lhs, policy_holder<Right> const& rhs) noexcept
+        inline policy_holder<Left>
+        operator&=(policy_holder<Left>& lhs, policy_holder<Right> const& rhs) noexcept
         {
             lhs = policy_holder<Left>(lhs & rhs);
             return lhs;
         }
 
         template <typename Left, typename Right>
-        inline policy_holder<Left> operator|=(
-            policy_holder<Left>& lhs, policy_holder<Right> const& rhs) noexcept
+        inline policy_holder<Left>
+        operator|=(policy_holder<Left>& lhs, policy_holder<Right> const& rhs) noexcept
         {
             lhs = policy_holder<Left>(lhs | rhs);
             return lhs;
         }
 
         template <typename Left, typename Right>
-        inline policy_holder<Left> operator^=(
-            policy_holder<Left>& lhs, policy_holder<Right> const& rhs) noexcept
+        inline policy_holder<Left>
+        operator^=(policy_holder<Left>& lhs, policy_holder<Right> const& rhs) noexcept
         {
             lhs = policy_holder<Left>(lhs ^ rhs);
             return lhs;
         }
 
         template <typename Left, typename Right>
-        constexpr inline bool operator==(policy_holder<Left> const& lhs,
-            policy_holder<Right> const& rhs) noexcept
+        constexpr inline bool
+        operator==(policy_holder<Left> const& lhs, policy_holder<Right> const& rhs) noexcept
         {
-            return static_cast<int>(lhs.policy()) ==
-                static_cast<int>(rhs.policy());
+            return static_cast<int>(lhs.policy()) == static_cast<int>(rhs.policy());
         }
 
         template <typename Left, typename Right>
-        constexpr inline bool operator!=(policy_holder<Left> const& lhs,
-            policy_holder<Right> const& rhs) noexcept
+        constexpr inline bool
+        operator!=(policy_holder<Left> const& lhs, policy_holder<Right> const& rhs) noexcept
         {
             return !(lhs == rhs);
         }
@@ -733,54 +649,51 @@ namespace pika {
 
         /// Create a launch policy representing asynchronous execution
         constexpr launch(detail::async_policy p) noexcept
-          : detail::policy_holder<>{detail::launch_policy::async, p.priority(),
-                p.stacksize(), p.hint()}
+          : detail::policy_holder<>{
+                detail::launch_policy::async, p.priority(), p.stacksize(), p.hint()}
         {
         }
 
         /// Create a launch policy representing asynchronous execution. The
         /// new thread is executed in a preferred way
         constexpr launch(detail::fork_policy p) noexcept
-          : detail::policy_holder<>{detail::launch_policy::fork, p.priority(),
-                p.stacksize(), p.hint()}
+          : detail::policy_holder<>{
+                detail::launch_policy::fork, p.priority(), p.stacksize(), p.hint()}
         {
         }
 
         /// Create a launch policy representing synchronous execution
         constexpr launch(detail::sync_policy p) noexcept
-          : detail::policy_holder<>{detail::launch_policy::sync, p.priority(),
-                p.stacksize(), p.hint()}
+          : detail::policy_holder<>{
+                detail::launch_policy::sync, p.priority(), p.stacksize(), p.hint()}
         {
         }
 
         /// Create a launch policy representing deferred execution
         constexpr launch(detail::deferred_policy p) noexcept
-          : detail::policy_holder<>{detail::launch_policy::deferred,
-                p.priority(), p.stacksize(), p.hint()}
+          : detail::policy_holder<>{
+                detail::launch_policy::deferred, p.priority(), p.stacksize(), p.hint()}
         {
         }
 
         /// Create a launch policy representing fire and forget execution
         constexpr launch(detail::apply_policy p) noexcept
-          : detail::policy_holder<>{detail::launch_policy::apply, p.priority(),
-                p.stacksize(), p.hint()}
+          : detail::policy_holder<>{
+                detail::launch_policy::apply, p.priority(), p.stacksize(), p.hint()}
         {
         }
 
         /// Create a launch policy representing fire and forget execution
         template <typename F>
         constexpr launch(detail::select_policy<F> const& p) noexcept
-          : detail::policy_holder<>{
-                p.policy(), p.priority(), p.stacksize(), p.hint()}
+          : detail::policy_holder<>{p.policy(), p.priority(), p.stacksize(), p.hint()}
         {
         }
 
         template <typename Launch,
-            typename Enable =
-                std::enable_if_t<pika::detail::is_launch_policy_v<Launch>>>
+            typename Enable = std::enable_if_t<pika::detail::is_launch_policy_v<Launch>>>
         constexpr launch(Launch l, execution::thread_priority priority,
-            execution::thread_stacksize stacksize,
-            execution::thread_schedule_hint hint) noexcept
+            execution::thread_stacksize stacksize, execution::thread_schedule_hint hint) noexcept
           : detail::policy_holder<>(l.policy(), priority, stacksize, hint)
         {
         }
@@ -795,16 +708,13 @@ namespace pika {
         }
 
         friend constexpr pika::execution::thread_priority tag_invoke(
-            pika::execution::experimental::get_priority_t,
-            launch const& policy) noexcept
+            pika::execution::experimental::get_priority_t, launch const& policy) noexcept
         {
             return policy.priority();
         }
 
-        friend launch tag_invoke(
-            pika::execution::experimental::with_stacksize_t,
-            launch const& policy,
-            execution::thread_stacksize stacksize) noexcept
+        friend launch tag_invoke(pika::execution::experimental::with_stacksize_t,
+            launch const& policy, execution::thread_stacksize stacksize) noexcept
         {
             auto policy_with_stacksize = policy;
             policy_with_stacksize.set_stacksize(stacksize);
@@ -812,14 +722,13 @@ namespace pika {
         }
 
         friend constexpr pika::execution::thread_stacksize tag_invoke(
-            pika::execution::experimental::get_stacksize_t,
-            launch const& policy) noexcept
+            pika::execution::experimental::get_stacksize_t, launch const& policy) noexcept
         {
             return policy.stacksize();
         }
 
-        friend launch tag_invoke(pika::execution::experimental::with_hint_t,
-            launch const& policy, execution::thread_schedule_hint hint) noexcept
+        friend launch tag_invoke(pika::execution::experimental::with_hint_t, launch const& policy,
+            execution::thread_schedule_hint hint) noexcept
         {
             auto policy_with_hint = policy;
             policy_with_hint.set_hint(hint);
@@ -827,8 +736,7 @@ namespace pika {
         }
 
         friend constexpr pika::execution::thread_schedule_hint tag_invoke(
-            pika::execution::experimental::get_hint_t,
-            launch const& policy) noexcept
+            pika::execution::experimental::get_hint_t, launch const& policy) noexcept
         {
             return policy.hint();
         }
@@ -881,8 +789,7 @@ namespace pika {
         }
 
         template <typename F>
-        PIKA_FORCEINLINE constexpr bool
-        has_async_policy(detail::policy_holder<F> const& p) noexcept
+        PIKA_FORCEINLINE constexpr bool has_async_policy(detail::policy_holder<F> const& p) noexcept
         {
             return bool(static_cast<int>(p.policy()) &
                 static_cast<int>(detail::launch_policy::async_policies));
