@@ -9,12 +9,12 @@
 # iterate over cpp/etc files and join strings that are broken
 # then, rerun clang-format to rebreak the strings into good sizes
 
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 awkscript=$SCRIPT_DIR/string-join.awk
 tmpfile="$(mktemp /tmp/XXXXXXXXX.cpp)" || exit 1
 
 for file in $(git ls-files | grep -E "\.(cpp|hpp|cu)(\.in)?$"); do
-    awk -f $awkscript ${file} > ${tmpfile}
+    awk -f $awkscript ${file} >${tmpfile}
     if ! cmp -s <(git show :${file}) <(cat $tmpfile); then
         clang-format -i -style=file:$SCRIPT_DIR/../.clang-format ${tmpfile}
         mv ${tmpfile} ${file}
