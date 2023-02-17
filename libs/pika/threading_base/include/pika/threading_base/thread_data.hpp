@@ -24,7 +24,7 @@
 #include <pika/threading_base/thread_description.hpp>
 #include <pika/threading_base/thread_init_data.hpp>
 #if defined(PIKA_HAVE_APEX)
-#include <pika/threading_base/external_timer.hpp>
+# include <pika/threading_base/external_timer.hpp>
 #endif
 
 #include <atomic>
@@ -80,8 +80,7 @@ namespace pika::threads::detail {
         thread_data& operator=(thread_data&&) = delete;
 
     public:
-        using spinlock_pool =
-            pika::concurrency::detail::spinlock_pool<thread_data>;
+        using spinlock_pool = pika::concurrency::detail::spinlock_pool<thread_data>;
 
         /// The get_state function queries the state of this thread instance.
         ///
@@ -92,8 +91,7 @@ namespace pika::threads::detail {
         /// \note           This function will be seldom used directly. Most of
         ///                 the time the state of a thread will be retrieved
         ///                 by using the function \a thread_manager#get_state.
-        thread_state get_state(
-            std::memory_order order = std::memory_order_acquire) const noexcept
+        thread_state get_state(std::memory_order order = std::memory_order_acquire) const noexcept
         {
             return current_state_.load(order);
         }
@@ -114,8 +112,7 @@ namespace pika::threads::detail {
         thread_state set_state(thread_schedule_state state,
             thread_restart_state state_ex = thread_restart_state::unknown,
             std::memory_order load_order = std::memory_order_acquire,
-            std::memory_order exchange_order =
-                std::memory_order_seq_cst) noexcept
+            std::memory_order exchange_order = std::memory_order_seq_cst) noexcept
         // NOLINTEND(bugprone-easily-swappable-parameters)
         {
             thread_state prev_state = current_state_.load(load_order);
@@ -132,8 +129,8 @@ namespace pika::threads::detail {
                 if (state_ex == thread_restart_state::unknown)
                     state_ex = tmp.state_ex();
 
-                if (PIKA_LIKELY(current_state_.compare_exchange_strong(tmp,
-                        thread_state(state, state_ex, tag), exchange_order)))
+                if (PIKA_LIKELY(current_state_.compare_exchange_strong(
+                        tmp, thread_state(state, state_ex, tag), exchange_order)))
                 {
                     return prev_state;
                 }
@@ -142,17 +139,14 @@ namespace pika::threads::detail {
             }
         }
 
-        bool set_state_tagged(thread_schedule_state newstate,
-            thread_state& prev_state, thread_state& new_tagged_state,
-            std::memory_order exchange_order =
-                std::memory_order_seq_cst) noexcept
+        bool set_state_tagged(thread_schedule_state newstate, thread_state& prev_state,
+            thread_state& new_tagged_state,
+            std::memory_order exchange_order = std::memory_order_seq_cst) noexcept
         {
-            new_tagged_state = thread_state(
-                newstate, prev_state.state_ex(), prev_state.tag() + 1);
+            new_tagged_state = thread_state(newstate, prev_state.state_ex(), prev_state.tag() + 1);
 
             thread_state tmp = prev_state;
-            return current_state_.compare_exchange_strong(
-                tmp, new_tagged_state, exchange_order);
+            return current_state_.compare_exchange_strong(tmp, new_tagged_state, exchange_order);
         }
 
         /// The restore_state function changes the state of this thread
@@ -179,8 +173,7 @@ namespace pika::threads::detail {
         // NOLINTBEGIN(bugprone-easily-swappable-parameters)
         bool restore_state(thread_state new_state, thread_state old_state,
             std::memory_order load_order = std::memory_order_relaxed,
-            std::memory_order load_exchange =
-                std::memory_order_seq_cst) noexcept
+            std::memory_order load_exchange = std::memory_order_seq_cst) noexcept
         // NOLINTEND(bugprone-easily-swappable-parameters)
         {
             // ignore the state_ex while compare-exchanging
@@ -195,22 +188,20 @@ namespace pika::threads::detail {
             thread_state old_tmp(old_state.state(), state_ex, old_state.tag());
             thread_state new_tmp(new_state.state(), state_ex, tag);
 
-            return current_state_.compare_exchange_strong(
-                old_tmp, new_tmp, load_exchange);
+            return current_state_.compare_exchange_strong(old_tmp, new_tmp, load_exchange);
         }
 
-        bool restore_state(thread_schedule_state new_state,
-            thread_restart_state state_ex, thread_state old_state,
-            std::memory_order load_exchange =
-                std::memory_order_seq_cst) noexcept
+        bool restore_state(thread_schedule_state new_state, thread_restart_state state_ex,
+            thread_state old_state,
+            std::memory_order load_exchange = std::memory_order_seq_cst) noexcept
         {
             // ABA prevention for state only (not for state_ex)
             std::int64_t tag = old_state.tag();
             if (new_state != old_state.state())
                 ++tag;
 
-            return current_state_.compare_exchange_strong(old_state,
-                thread_state(new_state, state_ex, tag), load_exchange);
+            return current_state_.compare_exchange_strong(
+                old_state, thread_state(new_state, state_ex, tag), load_exchange);
         }
 
     protected:
@@ -223,11 +214,9 @@ namespace pika::threads::detail {
         /// \note           This function will be seldom used directly. Most of
         ///                 the time the state of a thread will have to be
         ///                 changed using the thread_manager.
-        thread_restart_state set_state_ex(
-            thread_restart_state new_state) noexcept
+        thread_restart_state set_state_ex(thread_restart_state new_state) noexcept
         {
-            thread_state prev_state =
-                current_state_.load(std::memory_order_acquire);
+            thread_state prev_state = current_state_.load(std::memory_order_acquire);
 
             for (;;)
             {
@@ -275,30 +264,25 @@ namespace pika::threads::detail {
 #else
         ::pika::detail::thread_description get_description() const
         {
-            std::lock_guard<pika::detail::spinlock> l(
-                spinlock_pool::spinlock_for(this));
+            std::lock_guard<pika::detail::spinlock> l(spinlock_pool::spinlock_for(this));
             return description_;
         }
-        ::pika::detail::thread_description set_description(
-            ::pika::detail::thread_description value)
+        ::pika::detail::thread_description set_description(::pika::detail::thread_description value)
         {
-            std::lock_guard<pika::detail::spinlock> l(
-                spinlock_pool::spinlock_for(this));
+            std::lock_guard<pika::detail::spinlock> l(spinlock_pool::spinlock_for(this));
             std::swap(description_, value);
             return value;
         }
 
         ::pika::detail::thread_description get_lco_description() const
         {
-            std::lock_guard<pika::detail::spinlock> l(
-                spinlock_pool::spinlock_for(this));
+            std::lock_guard<pika::detail::spinlock> l(spinlock_pool::spinlock_for(this));
             return lco_description_;
         }
         ::pika::detail::thread_description set_lco_description(
             ::pika::detail::thread_description value)
         {
-            std::lock_guard<pika::detail::spinlock> l(
-                spinlock_pool::spinlock_for(this));
+            std::lock_guard<pika::detail::spinlock> l(spinlock_pool::spinlock_for(this));
             std::swap(lco_description_, value);
             return value;
         }
@@ -356,7 +340,7 @@ namespace pika::threads::detail {
 
 #if !defined(PIKA_HAVE_THREAD_BACKTRACE_ON_SUSPENSION)
 
-#ifdef PIKA_HAVE_THREAD_FULLBACKTRACE_ON_SUSPENSION
+# ifdef PIKA_HAVE_THREAD_FULLBACKTRACE_ON_SUSPENSION
         constexpr char const* get_backtrace() const noexcept
         {
             return nullptr;
@@ -365,69 +349,63 @@ namespace pika::threads::detail {
         {
             return nullptr;
         }
-#else
+# else
         constexpr debug::detail::backtrace const* get_backtrace() const noexcept
         {
             return nullptr;
         }
-        debug::detail::backtrace const* set_backtrace(
-            debug::detail::backtrace const*) noexcept
+        debug::detail::backtrace const* set_backtrace(debug::detail::backtrace const*) noexcept
         {
             return nullptr;
         }
-#endif
+# endif
 
 #else    // defined(PIKA_HAVE_THREAD_BACKTRACE_ON_SUSPENSION
 
-#ifdef PIKA_HAVE_THREAD_FULLBACKTRACE_ON_SUSPENSION
+# ifdef PIKA_HAVE_THREAD_FULLBACKTRACE_ON_SUSPENSION
         char const* get_backtrace() const noexcept
         {
-            std::lock_guard<pika::detail::spinlock> l(
-                spinlock_pool::spinlock_for(this));
+            std::lock_guard<pika::detail::spinlock> l(spinlock_pool::spinlock_for(this));
             return backtrace_;
         }
         char const* set_backtrace(char const* value) noexcept
         {
-            std::lock_guard<pika::detail::spinlock> l(
-                spinlock_pool::spinlock_for(this));
+            std::lock_guard<pika::detail::spinlock> l(spinlock_pool::spinlock_for(this));
 
             char const* bt = backtrace_;
             backtrace_ = value;
             return bt;
         }
-#else
+# else
         debug::detail::backtrace const* get_backtrace() const noexcept
         {
-            std::lock_guard<pika::detail::spinlock> l(
-                spinlock_pool::spinlock_for(this));
+            std::lock_guard<pika::detail::spinlock> l(spinlock_pool::spinlock_for(this));
             return backtrace_;
         }
         debug::detail::backtrace const* set_backtrace(
             debug::detail::backtrace const* value) noexcept
         {
-            std::lock_guard<pika::detail::spinlock> l(
-                spinlock_pool::spinlock_for(this));
+            std::lock_guard<pika::detail::spinlock> l(spinlock_pool::spinlock_for(this));
 
             debug::detail::backtrace const* bt = backtrace_;
             backtrace_ = value;
             return bt;
         }
-#endif
+# endif
 
         // Generate full backtrace for captured stack
         std::string backtrace()
         {
-            std::lock_guard<pika::detail::spinlock> l(
-                spinlock_pool::spinlock_for(this));
+            std::lock_guard<pika::detail::spinlock> l(spinlock_pool::spinlock_for(this));
 
             std::string bt;
             if (0 != backtrace_)
             {
-#ifdef PIKA_HAVE_THREAD_FULLBACKTRACE_ON_SUSPENSION
+# ifdef PIKA_HAVE_THREAD_FULLBACKTRACE_ON_SUSPENSION
                 bt = *backtrace_;
-#else
+# else
                 bt = backtrace_->trace();
-#endif
+# endif
             }
             return bt;
         }
@@ -445,36 +423,31 @@ namespace pika::threads::detail {
         // handle thread interruption
         bool interruption_requested() const noexcept
         {
-            std::lock_guard<pika::detail::spinlock> l(
-                spinlock_pool::spinlock_for(this));
+            std::lock_guard<pika::detail::spinlock> l(spinlock_pool::spinlock_for(this));
             return requested_interrupt_;
         }
 
         bool interruption_enabled() const noexcept
         {
-            std::lock_guard<pika::detail::spinlock> l(
-                spinlock_pool::spinlock_for(this));
+            std::lock_guard<pika::detail::spinlock> l(spinlock_pool::spinlock_for(this));
             return enabled_interrupt_;
         }
 
         bool set_interruption_enabled(bool enable) noexcept
         {
-            std::lock_guard<pika::detail::spinlock> l(
-                spinlock_pool::spinlock_for(this));
+            std::lock_guard<pika::detail::spinlock> l(spinlock_pool::spinlock_for(this));
             std::swap(enabled_interrupt_, enable);
             return enable;
         }
 
         void interrupt(bool flag = true)
         {
-            std::unique_lock<pika::detail::spinlock> l(
-                spinlock_pool::spinlock_for(this));
+            std::unique_lock<pika::detail::spinlock> l(spinlock_pool::spinlock_for(this));
             if (flag && !enabled_interrupt_)
             {
                 l.unlock();
                 PIKA_THROW_EXCEPTION(pika::error::thread_not_interruptable,
-                    "thread_data::interrupt",
-                    "interrupts are disabled for this thread");
+                    "thread_data::interrupt", "interrupts are disabled for this thread");
                 return;
             }
             requested_interrupt_ = flag;
@@ -503,8 +476,7 @@ namespace pika::threads::detail {
             return last_worker_thread_num_;
         }
 
-        void set_last_worker_thread_num(
-            std::size_t last_worker_thread_num) noexcept
+        void set_last_worker_thread_num(std::size_t last_worker_thread_num) noexcept
         {
             last_worker_thread_num_ = last_worker_thread_num;
         }
@@ -554,23 +526,20 @@ namespace pika::threads::detail {
         virtual void rebind(thread_init_data& init_data) = 0;
 
 #if defined(PIKA_HAVE_APEX)
-        std::shared_ptr<pika::detail::external_timer::task_wrapper>
-        get_timer_data() const noexcept
+        std::shared_ptr<pika::detail::external_timer::task_wrapper> get_timer_data() const noexcept
         {
             return timer_data_;
         }
         void set_timer_data(
-            std::shared_ptr<pika::detail::external_timer::task_wrapper>
-                data) noexcept
+            std::shared_ptr<pika::detail::external_timer::task_wrapper> data) noexcept
         {
             timer_data_ = data;
         }
 #endif
 
         // Construct a new \a thread
-        thread_data(thread_init_data& init_data, void* queue,
-            std::ptrdiff_t stacksize, bool is_stackless = false,
-            thread_id_addref addref = thread_id_addref::yes);
+        thread_data(thread_init_data& init_data, void* queue, std::ptrdiff_t stacksize,
+            bool is_stackless = false, thread_id_addref addref = thread_id_addref::yes);
 
         virtual ~thread_data() override;
         virtual void destroy() = 0;
@@ -599,11 +568,11 @@ namespace pika::threads::detail {
 #endif
 
 #ifdef PIKA_HAVE_THREAD_BACKTRACE_ON_SUSPENSION
-#ifdef PIKA_HAVE_THREAD_FULLBACKTRACE_ON_SUSPENSION
+# ifdef PIKA_HAVE_THREAD_FULLBACKTRACE_ON_SUSPENSION
         char const* backtrace_;
-#else
+# else
         debug::detail::backtrace const* backtrace_;
-#endif
+# endif
 #endif
         ///////////////////////////////////////////////////////////////////////
         execution::thread_priority priority_;
@@ -631,8 +600,7 @@ namespace pika::threads::detail {
 #endif
     };
 
-    PIKA_FORCEINLINE thread_data* get_thread_id_data(
-        thread_id_ref_type const& tid)
+    PIKA_FORCEINLINE thread_data* get_thread_id_data(thread_id_ref_type const& tid)
     {
         return static_cast<thread_data*>(tid.get().get());
     }

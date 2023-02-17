@@ -55,11 +55,9 @@ namespace pika::program_options::detail {
         using style_t = ::pika::program_options::command_line_style::style_t;
 
         using additional_parser =
-            std::function<std::pair<std::string, std::string>(
-                const std::string&)>;
+            std::function<std::pair<std::string, std::string>(const std::string&)>;
 
-        using style_parser =
-            std::function<std::vector<option>(std::vector<std::string>&)>;
+        using style_parser = std::function<std::vector<option>(std::vector<std::string>&)>;
 
         /** Constructs a command line parser for (argc, argv) pair. Uses
             style options passed in 'style', which should be binary or'ed values
@@ -89,19 +87,16 @@ namespace pika::program_options::detail {
         void allow_unregistered();
 
         void set_options_description(const options_description& desc);
-        void set_positional_options(
-            const positional_options_description& m_positional);
+        void set_positional_options(const positional_options_description& m_positional);
 
         std::vector<option> run();
 
         std::vector<option> parse_long_option(std::vector<std::string>& args);
         std::vector<option> parse_short_option(std::vector<std::string>& args);
         std::vector<option> parse_dos_option(std::vector<std::string>& args);
-        std::vector<option> parse_disguised_long_option(
-            std::vector<std::string>& args);
+        std::vector<option> parse_disguised_long_option(std::vector<std::string>& args);
         std::vector<option> parse_terminator(std::vector<std::string>& args);
-        std::vector<option> handle_additional_parser(
-            std::vector<std::string>& args);
+        std::vector<option> handle_additional_parser(std::vector<std::string>& args);
 
         /** Set additional parser. This will be called for each token
             of command line. If first string in pair is not empty,

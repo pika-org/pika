@@ -98,36 +98,33 @@
      make copyable.
 */
 
-#if defined(PIKA_HAVE_GENERIC_CONTEXT_COROUTINES) &&                           \
-    defined(PIKA_HAVE_FIBER_BASED_COROUTINES)
+#if defined(PIKA_HAVE_GENERIC_CONTEXT_COROUTINES) && defined(PIKA_HAVE_FIBER_BASED_COROUTINES)
 #   error PIKA_HAVE_GENERIC_CONTEXT_COROUTINES and PIKA_HAVE_FIBER_BASED_COROUTINES cannot be defined at the same time.
 #endif
 
 #if defined(PIKA_HAVE_GENERIC_CONTEXT_COROUTINES)
 
-#include <pika/coroutines/detail/context_generic_context.hpp>
+# include <pika/coroutines/detail/context_generic_context.hpp>
 namespace pika { namespace threads { namespace coroutines { namespace detail {
     template <typename CoroutineImpl>
-    using default_context_impl =
-        generic_context::fcontext_context_impl<CoroutineImpl>;
+    using default_context_impl = generic_context::fcontext_context_impl<CoroutineImpl>;
 }}}}    // namespace pika::threads::coroutines::detail
 
-#elif (defined(__linux) || defined(linux) || defined(__linux__)) &&            \
-    !defined(__bgq__) && !defined(__powerpc__) && !defined(__s390x__) &&       \
-    !defined(__arm__) && !defined(arm64) && !defined(__arm64) &&               \
-    !defined(__arm64__) && !defined(__aarch64__)
+#elif (defined(__linux) || defined(linux) || defined(__linux__)) && !defined(__bgq__) &&           \
+    !defined(__powerpc__) && !defined(__s390x__) && !defined(__arm__) && !defined(arm64) &&        \
+    !defined(__arm64) && !defined(__arm64__) && !defined(__aarch64__)
 
-#include <pika/coroutines/detail/context_linux_x86.hpp>
+# include <pika/coroutines/detail/context_linux_x86.hpp>
 namespace pika::threads::coroutines::detail {
     template <typename CoroutineImpl>
     using default_context_impl = lx::x86_linux_context_impl<CoroutineImpl>;
 }    // namespace pika::threads::coroutines::detail
 
-#elif defined(_POSIX_VERSION) || defined(__bgq__) || defined(__powerpc__) ||   \
-    defined(__s390x__) || defined(__arm__) || defined(arm64) ||                \
-    defined(__arm64) || defined(__arm64__) || defined(__aarch64__)
+#elif defined(_POSIX_VERSION) || defined(__bgq__) || defined(__powerpc__) || defined(__s390x__) || \
+    defined(__arm__) || defined(arm64) || defined(__arm64) || defined(__arm64__) ||                \
+    defined(__aarch64__)
 
-#include <pika/coroutines/detail/context_posix.hpp>
+# include <pika/coroutines/detail/context_posix.hpp>
 namespace pika { namespace threads { namespace coroutines { namespace detail {
     template <typename CoroutineImpl>
     using default_context_impl = posix::ucontext_context_impl<CoroutineImpl>;
@@ -135,7 +132,7 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
 
 #elif defined(PIKA_HAVE_FIBER_BASED_COROUTINES)
 
-#include <pika/coroutines/detail/context_windows_fibers.hpp>
+# include <pika/coroutines/detail/context_windows_fibers.hpp>
 namespace pika { namespace threads { namespace coroutines { namespace detail {
     template <typename CoroutineImpl>
     using default_context_impl = windows::fibers_context_impl<CoroutineImpl>;
@@ -143,7 +140,7 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
 
 #else
 
-#error No default context switching implementation available for this system. \
+# error No default context switching implementation available for this system. \
     Your platform may be supported with the CMake option \
     PIKA_WITH_GENERIC_CONTEXT_COROUTINES=ON (requires Boost.Context).
 

@@ -104,8 +104,7 @@ namespace pika::threads::detail {
         /// \param ec         [in,out] this represents the error status on exit,
         ///                   if this is pre-initialized to \a pika#throws
         ///                   the function will throw on error instead.
-        std::size_t get_socket_number(
-            std::size_t num_thread, error_code& /*ec*/ = throws) const
+        std::size_t get_socket_number(std::size_t num_thread, error_code& /*ec*/ = throws) const
         {
             return socket_numbers_[num_thread % num_of_pus_];
         }
@@ -116,8 +115,7 @@ namespace pika::threads::detail {
         /// \param ec         [in,out] this represents the error status on exit,
         ///                   if this is pre-initialized to \a pika#throws
         ///                   the function will throw on error instead.
-        std::size_t get_numa_node_number(
-            std::size_t num_thread, error_code& /*ec*/ = throws) const
+        std::size_t get_numa_node_number(std::size_t num_thread, error_code& /*ec*/ = throws) const
         {
             return numa_node_numbers_[num_thread % num_of_pus_];
         }
@@ -140,8 +138,7 @@ namespace pika::threads::detail {
         ///                   if this is pre-initialized to \a pika#throws
         ///                   the function will throw on error instead.
         mask_type get_service_affinity_mask(
-            mask_cref_type used_processing_units,
-            error_code& ec = throws) const;
+            mask_cref_type used_processing_units, error_code& ec = throws) const;
 
         /// \brief Return a bit mask where each set bit corresponds to a
         ///        processing unit available to the given thread inside
@@ -169,8 +166,7 @@ namespace pika::threads::detail {
         /// \param ec         [in,out] this represents the error status on exit,
         ///                   if this is pre-initialized to \a pika#throws
         ///                   the function will throw on error instead.
-        mask_type get_numa_node_affinity_mask_from_numa_node(
-            std::size_t num_node) const;
+        mask_type get_numa_node_affinity_mask_from_numa_node(std::size_t num_node) const;
 
         /// \brief Return a bit mask where each set bit corresponds to a
         ///        processing unit available to the given thread inside
@@ -201,8 +197,7 @@ namespace pika::threads::detail {
         ///
         /// \note  Use this function on systems where the affinity must be
         ///        set from inside the thread itself.
-        void set_thread_affinity_mask(
-            mask_cref_type mask, error_code& ec = throws) const;
+        void set_thread_affinity_mask(mask_cref_type mask, error_code& ec = throws) const;
 
         /// \brief Return a bit mask where each set bit corresponds to a
         ///        processing unit co-located with the memory the given
@@ -211,12 +206,11 @@ namespace pika::threads::detail {
         /// \param ec         [in,out] this represents the error status on exit,
         ///                   if this is pre-initialized to \a pika#throws
         ///                   the function will throw on error instead.
-        mask_type get_thread_affinity_mask_from_lva(
-            void const* lva, error_code& ec = throws) const;
+        mask_type get_thread_affinity_mask_from_lva(void const* lva, error_code& ec = throws) const;
 
         /// \brief Prints the \param m to os in a human readable form
-        void print_affinity_mask(std::ostream& os, std::size_t num_thread,
-            mask_cref_type m, const std::string& pool_name) const;
+        void print_affinity_mask(std::ostream& os, std::size_t num_thread, mask_cref_type m,
+            const std::string& pool_name) const;
 
         /// \brief Reduce thread priority of the current thread.
         ///
@@ -252,18 +246,16 @@ namespace pika::threads::detail {
         /// \brief Return number of cores units in given socket
         std::size_t get_number_of_socket_cores(std::size_t socket) const;
 
-        std::size_t get_core_number(
-            std::size_t num_thread, error_code& /*ec*/ = throws) const
+        std::size_t get_core_number(std::size_t num_thread, error_code& /*ec*/ = throws) const
         {
             return core_numbers_[num_thread % num_of_pus_];
         }
 
-        std::size_t get_pu_number(std::size_t num_core, std::size_t num_pu,
-            error_code& ec = throws) const;
+        std::size_t get_pu_number(
+            std::size_t num_core, std::size_t num_pu, error_code& ec = throws) const;
 
         mask_type get_cpubind_mask(error_code& ec = throws) const;
-        mask_type get_cpubind_mask(
-            std::thread& handle, error_code& ec = throws) const;
+        mask_type get_cpubind_mask(std::thread& handle, error_code& ec = throws) const;
 
         /// convert a cpu mask into a numa node mask in hwloc bitmap form
         hwloc_bitmap_ptr cpuset_to_nodeset(mask_cref_type cpuset) const;
@@ -282,42 +274,33 @@ namespace pika::threads::detail {
         threads::detail::mask_type get_area_membind_nodeset(
             const void* addr, std::size_t len) const;
 
-        bool set_area_membind_nodeset(
-            const void* addr, std::size_t len, void* nodeset) const;
+        bool set_area_membind_nodeset(const void* addr, std::size_t len, void* nodeset) const;
 
         int get_numa_domain(const void* addr) const;
 
         /// Free memory that was previously allocated by allocate
         void deallocate(void* addr, std::size_t len) const;
 
-        void print_vector(
-            std::ostream& os, std::vector<std::size_t> const& v) const;
-        void print_mask_vector(
-            std::ostream& os, std::vector<mask_type> const& v) const;
+        void print_vector(std::ostream& os, std::vector<std::size_t> const& v) const;
+        void print_mask_vector(std::ostream& os, std::vector<mask_type> const& v) const;
         void print_hwloc(std::ostream&) const;
 
-        mask_type init_socket_affinity_mask_from_socket(
-            std::size_t num_socket) const;
-        mask_type init_numa_node_affinity_mask_from_numa_node(
-            std::size_t num_numa_node) const;
-        mask_type init_core_affinity_mask_from_core(std::size_t num_core,
-            mask_cref_type default_mask = empty_mask) const;
+        mask_type init_socket_affinity_mask_from_socket(std::size_t num_socket) const;
+        mask_type init_numa_node_affinity_mask_from_numa_node(std::size_t num_numa_node) const;
+        mask_type init_core_affinity_mask_from_core(
+            std::size_t num_core, mask_cref_type default_mask = empty_mask) const;
         mask_type init_thread_affinity_mask(std::size_t num_thread) const;
-        mask_type init_thread_affinity_mask(
-            std::size_t num_core, std::size_t num_pu) const;
+        mask_type init_thread_affinity_mask(std::size_t num_core, std::size_t num_pu) const;
 
-        hwloc_bitmap_t mask_to_bitmap(
-            mask_cref_type mask, hwloc_obj_type_t htype) const;
-        mask_type bitmap_to_mask(
-            hwloc_bitmap_t bitmap, hwloc_obj_type_t htype) const;
+        hwloc_bitmap_t mask_to_bitmap(mask_cref_type mask, hwloc_obj_type_t htype) const;
+        mask_type bitmap_to_mask(hwloc_bitmap_t bitmap, hwloc_obj_type_t htype) const;
 
     private:
         static mask_type empty_mask;
         static std::size_t memory_page_size_;
         friend std::size_t get_memory_page_size();
 
-        std::size_t init_node_number(
-            std::size_t num_thread, hwloc_obj_type_t type);
+        std::size_t init_node_number(std::size_t num_thread, hwloc_obj_type_t type);
 
         std::size_t init_socket_number(std::size_t num_thread)
         {
@@ -328,8 +311,7 @@ namespace pika::threads::detail {
 
         std::size_t init_core_number(std::size_t num_thread)
         {
-            return init_node_number(
-                num_thread, use_pus_as_cores_ ? HWLOC_OBJ_PU : HWLOC_OBJ_CORE);
+            return init_node_number(num_thread, use_pus_as_cores_ ? HWLOC_OBJ_PU : HWLOC_OBJ_CORE);
         }
 
         void extract_node_mask(hwloc_obj_t parent, mask_type& mask) const;
@@ -340,21 +322,18 @@ namespace pika::threads::detail {
         mask_type init_machine_affinity_mask() const;
         mask_type init_socket_affinity_mask(std::size_t num_thread) const
         {
-            return init_socket_affinity_mask_from_socket(
-                get_socket_number(num_thread));
+            return init_socket_affinity_mask_from_socket(get_socket_number(num_thread));
         }
 
         mask_type init_numa_node_affinity_mask(std::size_t num_thread) const
         {
-            return init_numa_node_affinity_mask_from_numa_node(
-                get_numa_node_number(num_thread));
+            return init_numa_node_affinity_mask_from_numa_node(get_numa_node_number(num_thread));
         }
 
         mask_type init_core_affinity_mask(std::size_t num_thread) const
         {
             mask_type default_mask = numa_node_affinity_masks_[num_thread];
-            return init_core_affinity_mask_from_core(
-                get_core_number(num_thread), default_mask);
+            return init_core_affinity_mask_from_core(get_core_number(num_thread), default_mask);
         }
 
         void init_num_of_pus();

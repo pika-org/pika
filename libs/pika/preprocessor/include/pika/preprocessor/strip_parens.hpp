@@ -18,18 +18,17 @@
 #define PIKA_PP_DETAILS_APPLY_I(macro, args) macro args
 #define PIKA_PP_DETAILS_STRIP_PARENS_I(...) 1, 1
 #define PIKA_PP_DETAILS_EVAL(test, x) PIKA_PP_DETAILS_EVAL_I(test, x)
-#define PIKA_PP_DETAILS_EVAL_I(test, x)                                        \
-    PIKA_PP_DETAILS_MAYBE_STRIP_PARENS(PIKA_PP_DETAILS_TEST_ARITY test, x)
-#define PIKA_PP_DETAILS_TEST_ARITY(...)                                        \
-    PIKA_PP_DETAILS_APPLY(PIKA_PP_DETAILS_TEST_ARITY_I, (__VA_ARGS__, 2, 1, 0))
+#define PIKA_PP_DETAILS_EVAL_I(test, x)                                                            \
+ PIKA_PP_DETAILS_MAYBE_STRIP_PARENS(PIKA_PP_DETAILS_TEST_ARITY test, x)
+#define PIKA_PP_DETAILS_TEST_ARITY(...)                                                            \
+ PIKA_PP_DETAILS_APPLY(PIKA_PP_DETAILS_TEST_ARITY_I, (__VA_ARGS__, 2, 1, 0))
 #define PIKA_PP_DETAILS_TEST_ARITY_I(a, b, c, ...) c
-#define PIKA_PP_DETAILS_MAYBE_STRIP_PARENS(cond, x)                            \
-    PIKA_PP_DETAILS_MAYBE_STRIP_PARENS_I(cond, x)
-#define PIKA_PP_DETAILS_MAYBE_STRIP_PARENS_I(cond, x)                          \
-    PIKA_PP_CAT(PIKA_PP_DETAILS_MAYBE_STRIP_PARENS_, cond)(x)
+#define PIKA_PP_DETAILS_MAYBE_STRIP_PARENS(cond, x) PIKA_PP_DETAILS_MAYBE_STRIP_PARENS_I(cond, x)
+#define PIKA_PP_DETAILS_MAYBE_STRIP_PARENS_I(cond, x)                                              \
+ PIKA_PP_CAT(PIKA_PP_DETAILS_MAYBE_STRIP_PARENS_, cond)(x)
 #define PIKA_PP_DETAILS_MAYBE_STRIP_PARENS_1(x) x
-#define PIKA_PP_DETAILS_MAYBE_STRIP_PARENS_2(x)                                \
-    PIKA_PP_DETAILS_APPLY(PIKA_PP_DETAILS_MAYBE_STRIP_PARENS_2_I, x)
+#define PIKA_PP_DETAILS_MAYBE_STRIP_PARENS_2(x)                                                    \
+ PIKA_PP_DETAILS_APPLY(PIKA_PP_DETAILS_MAYBE_STRIP_PARENS_2_I, x)
 #define PIKA_PP_DETAILS_MAYBE_STRIP_PARENS_2_I(...) __VA_ARGS__
 /// \endcond
 
@@ -58,6 +57,6 @@
  * \endcode
  */
 //==============================================================================
-#define PIKA_PP_STRIP_PARENS(X)                                                \
-    PIKA_PP_DETAILS_EVAL((PIKA_PP_DETAILS_STRIP_PARENS_I X), X)                \
-    /**/
+#define PIKA_PP_STRIP_PARENS(X)                                                                    \
+ PIKA_PP_DETAILS_EVAL((PIKA_PP_DETAILS_STRIP_PARENS_I X), X)                                       \
+ /**/

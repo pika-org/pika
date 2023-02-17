@@ -31,8 +31,7 @@ int main()
         std::atomic<bool> start_called{false};
         std::atomic<bool> connect_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
-        ex::start_detached(custom_sender{
-            start_called, connect_called, tag_invoke_overload_called});
+        ex::start_detached(custom_sender{start_called, connect_called, tag_invoke_overload_called});
         PIKA_TEST(start_called);
         PIKA_TEST(connect_called);
         PIKA_TEST(!tag_invoke_overload_called);
@@ -42,8 +41,8 @@ int main()
         std::atomic<bool> start_called{false};
         std::atomic<bool> connect_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
-        ex::start_detached(custom_typed_sender<int>{
-            0, start_called, connect_called, tag_invoke_overload_called});
+        ex::start_detached(
+            custom_typed_sender<int>{0, start_called, connect_called, tag_invoke_overload_called});
         PIKA_TEST(start_called);
         PIKA_TEST(connect_called);
         PIKA_TEST(!tag_invoke_overload_called);
@@ -58,10 +57,9 @@ int main()
         std::atomic<bool> start_called{false};
         std::atomic<bool> connect_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
-        ex::start_detached(
-            custom_typed_sender<custom_type_non_default_constructible>{
-                custom_type_non_default_constructible{0}, start_called,
-                connect_called, tag_invoke_overload_called});
+        ex::start_detached(custom_typed_sender<custom_type_non_default_constructible>{
+            custom_type_non_default_constructible{0}, start_called, connect_called,
+            tag_invoke_overload_called});
         PIKA_TEST(start_called);
         PIKA_TEST(connect_called);
         PIKA_TEST(!tag_invoke_overload_called);
@@ -71,10 +69,9 @@ int main()
         std::atomic<bool> start_called{false};
         std::atomic<bool> connect_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
-        ex::start_detached(custom_typed_sender<
-            custom_type_non_default_constructible_non_copyable>{
-            custom_type_non_default_constructible_non_copyable{0}, start_called,
-            connect_called, tag_invoke_overload_called});
+        ex::start_detached(custom_typed_sender<custom_type_non_default_constructible_non_copyable>{
+            custom_type_non_default_constructible_non_copyable{0}, start_called, connect_called,
+            tag_invoke_overload_called});
         PIKA_TEST(start_called);
         PIKA_TEST(connect_called);
         PIKA_TEST(!tag_invoke_overload_called);
@@ -87,8 +84,7 @@ int main()
         std::atomic<bool> start_called{false};
         std::atomic<bool> connect_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
-        ex::start_detached(custom_sender{
-            start_called, connect_called, tag_invoke_overload_called});
+        ex::start_detached(custom_sender{start_called, connect_called, tag_invoke_overload_called});
         PIKA_TEST(start_called);
         PIKA_TEST(connect_called);
         PIKA_TEST(!tag_invoke_overload_called);
@@ -100,8 +96,8 @@ int main()
         std::atomic<bool> start_called{false};
         std::atomic<bool> connect_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
-        ex::start_detached(custom_sender2{custom_sender{
-            start_called, connect_called, tag_invoke_overload_called}});
+        ex::start_detached(custom_sender2{
+            custom_sender{start_called, connect_called, tag_invoke_overload_called}});
         PIKA_TEST(!start_called);
         PIKA_TEST(!connect_called);
         PIKA_TEST(tag_invoke_overload_called);

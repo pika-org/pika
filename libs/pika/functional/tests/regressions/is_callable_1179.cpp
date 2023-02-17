@@ -37,8 +37,7 @@ int main()
     PIKA_TEST_MSG((is_invocable_v<mem_fun_ptr, p> == false), "mem-fun-ptr");
 
     using const_mem_fun_ptr = int (s::*)() const;
-    PIKA_TEST_MSG(
-        (is_invocable_v<const_mem_fun_ptr, p> == true), "const-mem-fun-ptr");
+    PIKA_TEST_MSG((is_invocable_v<const_mem_fun_ptr, p> == true), "const-mem-fun-ptr");
 
     PIKA_TEST_EQ(invoke(&s::f, p()), 42);
 

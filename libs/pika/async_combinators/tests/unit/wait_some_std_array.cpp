@@ -48,8 +48,7 @@ void test_wait_some()
     {
         std::array<pika::future<int>, 2> future_array;
         future_array[0] = make_future();
-        future_array[1] =
-            pika::make_exceptional_future<int>(std::runtime_error(""));
+        future_array[1] = pika::make_exceptional_future<int>(std::runtime_error(""));
 
         bool caught_exception = false;
         try
@@ -79,8 +78,7 @@ void test_wait_some()
     {
         std::array<pika::future<int>, 2> future_array;
         future_array[0] = make_future();
-        future_array[1] =
-            pika::make_exceptional_future<int>(std::runtime_error(""));
+        future_array[1] = pika::make_exceptional_future<int>(std::runtime_error(""));
 
         bool caught_exception = false;
         try
@@ -122,8 +120,7 @@ void test_wait_some_n()
     {
         std::array<pika::future<int>, 2> future_array;
         future_array[0] = make_future();
-        future_array[1] =
-            pika::make_exceptional_future<int>(std::runtime_error(""));
+        future_array[1] = pika::make_exceptional_future<int>(std::runtime_error(""));
 
         bool caught_exception = false;
         try
@@ -153,8 +150,7 @@ void test_wait_some_n()
     {
         std::array<pika::future<int>, 2> future_array;
         future_array[0] = make_future();
-        future_array[1] =
-            pika::make_exceptional_future<int>(std::runtime_error(""));
+        future_array[1] = pika::make_exceptional_future<int>(std::runtime_error(""));
 
         bool caught_exception = false;
         try

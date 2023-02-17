@@ -52,9 +52,8 @@ private:
         {
             for (std::uint64_t i = r.begin(); i != r.end(); ++i)
             {
-                payload_functor<BaseClock>& a =
-                    *new (outer.allocate_child())
-                        payload_functor<BaseClock>(outer.payload_duration_);
+                payload_functor<BaseClock>& a = *new (
+                    outer.allocate_child()) payload_functor<BaseClock>(outer.payload_duration_);
                 outer.spawn(a);
             }
         }
@@ -70,8 +69,8 @@ public:
     std::uint64_t tasks_;
     std::uint64_t payload_duration_;
 
-    stage_tasks_functor(std::uint64_t osthreads, std::uint64_t tasks,
-        std::uint64_t payload_duration)
+    stage_tasks_functor(
+        std::uint64_t osthreads, std::uint64_t tasks, std::uint64_t payload_duration)
       : osthreads_(osthreads)
       , tasks_(tasks)
       , payload_duration_(payload_duration)
@@ -83,14 +82,12 @@ public:
         set_ref_count(osthreads_ * tasks_);    // Note the lack of a +1
 
         // Note the -2; this task counts as one of the ones we're spawning
-        parallel_for(
-            tbb::blocked_range<std::uint64_t>(0, (osthreads_ * tasks_) - 2),
+        parallel_for(tbb::blocked_range<std::uint64_t>(0, (osthreads_ * tasks_) - 2),
             range_spawner(*this), tbb::auto_partitioner());
 
         {
-            payload_functor<BaseClock>& a =
-                *new (tbb::task::allocate_child())
-                    payload_functor<BaseClock>(this->payload_duration_);
+            payload_functor<BaseClock>& a = *new (tbb::task::allocate_child())
+                                                payload_functor<BaseClock>(this->payload_duration_);
 
             spawn_and_wait_for_all(a);
         }
@@ -133,9 +130,8 @@ private:
 
             {
                 stage_tasks_functor<BaseClock>& a =
-                    *new (tbb::task::allocate_root())
-                        stage_tasks_functor<BaseClock>(this->osthreads_,
-                            this->tasks_, this->payload_duration_);
+                    *new (tbb::task::allocate_root()) stage_tasks_functor<BaseClock>(
+                        this->osthreads_, this->tasks_, this->payload_duration_);
 
                 tbb::task::spawn_root_and_wait(a);
             }
@@ -152,15 +148,14 @@ private:
     void print_results(results_type results) const
     {
         if (this->io_ == htts2::csv_with_headers)
-            std::cout
-                << "OS-threads (Independent Variable),"
-                << "Tasks per OS-thread (Control Variable) [tasks/OS-threads],"
-                << "Payload Duration (Control Variable) [nanoseconds],"
-                << "Total Walltime [nanoseconds]"
-                << "\n";
+            std::cout << "OS-threads (Independent Variable),"
+                      << "Tasks per OS-thread (Control Variable) [tasks/OS-threads],"
+                      << "Payload Duration (Control Variable) [nanoseconds],"
+                      << "Total Walltime [nanoseconds]"
+                      << "\n";
 
-        fmt::print(std::cout, "{},{},{},{:.14g}\n", this->osthreads_,
-            this->tasks_, this->payload_duration_, results);
+        fmt::print(std::cout, "{},{},{},{:.14g}\n", this->osthreads_, this->tasks_,
+            this->payload_duration_, results);
     }
 };
 

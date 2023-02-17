@@ -52,8 +52,7 @@ std::int64_t skynet(std::int64_t num, std::int64_t size, std::int64_t div)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-pika::future<std::int64_t> skynet_f(
-    std::int64_t num, std::int64_t size, std::int64_t div)
+pika::future<std::int64_t> skynet_f(std::int64_t num, std::int64_t size, std::int64_t div)
 {
     if (size != 1)
     {
@@ -90,26 +89,21 @@ int pika_main()
         pika::future<std::int64_t> result = pika::async(skynet, 0, 1000000, 10);
         result.wait();
 
-        auto dur =
-            duration_cast<milliseconds>(high_resolution_clock::now() - start);
+        auto dur = duration_cast<milliseconds>(high_resolution_clock::now() - start);
 
-        std::cout << "Result 1: " << result.get() << " in " << dur.count()
-                  << " ms.\n";
+        std::cout << "Result 1: " << result.get() << " in " << dur.count() << " ms.\n";
     }
 
     {
         using namespace std::chrono;
         auto start = high_resolution_clock::now();
 
-        pika::future<std::int64_t> result =
-            pika::async(skynet_f, 0, 1000000, 10);
+        pika::future<std::int64_t> result = pika::async(skynet_f, 0, 1000000, 10);
         result.wait();
 
-        auto dur =
-            duration_cast<milliseconds>(high_resolution_clock::now() - start);
+        auto dur = duration_cast<milliseconds>(high_resolution_clock::now() - start);
 
-        std::cout << "Result 2: " << result.get() << " in " << dur.count()
-                  << " ms.\n";
+        std::cout << "Result 2: " << result.get() << " in " << dur.count() << " ms.\n";
     }
     return 0;
 }

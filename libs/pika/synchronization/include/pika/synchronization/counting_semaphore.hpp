@@ -18,8 +18,8 @@
 #include <utility>
 
 #if defined(PIKA_MSVC_WARNING_PRAGMA)
-#pragma warning(push)
-#pragma warning(disable : 4251)
+# pragma warning(push)
+# pragma warning(disable : 4251)
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -40,8 +40,7 @@ namespace pika {
     // well: one thread waiting for several other threads to touch (signal)
     // the semaphore, or several threads waiting for one other thread to touch
     // this semaphore.
-    template <std::ptrdiff_t LeastMaxValue = PTRDIFF_MAX,
-        typename Mutex = pika::spinlock>
+    template <std::ptrdiff_t LeastMaxValue = PTRDIFF_MAX, typename Mutex = pika::spinlock>
     class counting_semaphore
     {
     public:
@@ -178,5 +177,5 @@ namespace pika {
 }    // namespace pika
 
 #if defined(PIKA_MSVC_WARNING_PRAGMA)
-#pragma warning(pop)
+# pragma warning(pop)
 #endif

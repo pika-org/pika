@@ -15,6 +15,5 @@ void test_constexpr_versions()
 
 int main()
 {
-    test_constexpr_versions<pika::major_version(), pika::minor_version(),
-        pika::patch_version()>();
+    test_constexpr_versions<pika::major_version(), pika::minor_version(), pika::patch_version()>();
 }

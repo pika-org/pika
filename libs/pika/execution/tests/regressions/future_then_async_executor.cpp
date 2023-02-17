@@ -17,11 +17,9 @@ struct test_async_executor
     using execution_category = pika::execution::parallel_execution_tag;
 
     template <typename F, typename... Ts>
-    static pika::future<std::invoke_result_t<F, Ts...>>
-    async_execute(F&& f, Ts&&... ts)
+    static pika::future<std::invoke_result_t<F, Ts...>> async_execute(F&& f, Ts&&... ts)
     {
-        return pika::dataflow(
-            pika::launch::async, std::forward<F>(f), std::forward<Ts>(ts)...);
+        return pika::dataflow(pika::launch::async, std::forward<F>(f), std::forward<Ts>(ts)...);
     }
 };
 
@@ -43,8 +41,7 @@ int pika_main()
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0, "pika main exited with non-zero status");
 
     return 0;
 }

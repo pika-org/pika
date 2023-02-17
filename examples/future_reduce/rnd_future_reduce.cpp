@@ -74,12 +74,11 @@ pika::future<int> test_reduce()
         req_futures.push_back(std::move(result));
     }
 
-    pika::future<std::vector<pika::future<int>>> all_ready =
-        pika::when_all(req_futures);
+    pika::future<std::vector<pika::future<int>>> all_ready = pika::when_all(req_futures);
 
 #ifdef USE_LAMBDA
-    pika::future<int> result = all_ready.then(
-        [](pika::future<std::vector<pika::future<int>>>&& futvec) -> int {
+    pika::future<int> result =
+        all_ready.then([](pika::future<std::vector<pika::future<int>>>&& futvec) -> int {
             // futvec is ready or the lambda would not be called
             std::vector<pika::future<int>> vfs = futvec.get();
             // all futures in v are ready as fut is ready
@@ -109,14 +108,12 @@ int pika_main()
         int result = test_reduce().get();
         count += result;
     }
-    double pr_pass =
-        std::pow(1.0 - FAILURE_RATE_PERCENT / 100.0, SAMPLES_PER_LOOP);
+    double pr_pass = std::pow(1.0 - FAILURE_RATE_PERCENT / 100.0, SAMPLES_PER_LOOP);
     double exp_pass = TEST_LOOPS * pr_pass;
     std::cout << "From " << TEST_LOOPS << " tests, we got "
               << "\n " << count << " passes"
               << "\n " << exp_pass << " expected \n"
-              << "\n " << htimer.elapsed<std::chrono::seconds>()
-              << " seconds \n"
+              << "\n " << htimer.elapsed<std::chrono::seconds>() << " seconds \n"
               << std::flush;
     // Initiate shutdown of the runtime system.
     return pika::finalize();

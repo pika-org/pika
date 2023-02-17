@@ -23,8 +23,8 @@ auto tag_invoke(ex::transfer_just_t, scheduler2 s, T&& t)
 {
     s.tag_invoke_overload_called.get() = true;
 
-    return ex::transfer_just(scheduler{s.schedule_called, s.execute_called,
-                                 s.tag_invoke_overload_called},
+    return ex::transfer_just(
+        scheduler{s.schedule_called, s.execute_called, s.tag_invoke_overload_called},
         std::forward<T>(t));
 }
 
@@ -36,8 +36,8 @@ int main()
         std::atomic<bool> scheduler_schedule_called{false};
         std::atomic<bool> scheduler_execute_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
-        auto s = ex::transfer_just(scheduler{scheduler_schedule_called,
-            scheduler_execute_called, tag_invoke_overload_called});
+        auto s = ex::transfer_just(scheduler{
+            scheduler_schedule_called, scheduler_execute_called, tag_invoke_overload_called});
         auto f = [] {};
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));
@@ -53,9 +53,8 @@ int main()
         std::atomic<bool> scheduler_schedule_called{false};
         std::atomic<bool> scheduler_execute_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
-        auto s = ex::transfer_just(
-            scheduler{scheduler_schedule_called, scheduler_execute_called,
-                tag_invoke_overload_called},
+        auto s = ex::transfer_just(scheduler{scheduler_schedule_called, scheduler_execute_called,
+                                       tag_invoke_overload_called},
             3);
         auto f = [](int x) { PIKA_TEST_EQ(x, 3); };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
@@ -73,9 +72,8 @@ int main()
         std::atomic<bool> scheduler_execute_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
         int x = 3;
-        auto s = ex::transfer_just(
-            scheduler{scheduler_schedule_called, scheduler_execute_called,
-                tag_invoke_overload_called},
+        auto s = ex::transfer_just(scheduler{scheduler_schedule_called, scheduler_execute_called,
+                                       tag_invoke_overload_called},
             x);
         auto f = [](int x) { PIKA_TEST_EQ(x, 3); };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
@@ -92,9 +90,8 @@ int main()
         std::atomic<bool> scheduler_schedule_called{false};
         std::atomic<bool> scheduler_execute_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
-        auto s = ex::transfer_just(
-            scheduler{scheduler_schedule_called, scheduler_execute_called,
-                tag_invoke_overload_called},
+        auto s = ex::transfer_just(scheduler{scheduler_schedule_called, scheduler_execute_called,
+                                       tag_invoke_overload_called},
             custom_type_non_default_constructible{42});
         auto f = [](auto x) { PIKA_TEST_EQ(x.x, 42); };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
@@ -112,9 +109,8 @@ int main()
         std::atomic<bool> scheduler_execute_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
         custom_type_non_default_constructible x{42};
-        auto s = ex::transfer_just(
-            scheduler{scheduler_schedule_called, scheduler_execute_called,
-                tag_invoke_overload_called},
+        auto s = ex::transfer_just(scheduler{scheduler_schedule_called, scheduler_execute_called,
+                                       tag_invoke_overload_called},
             x);
         auto f = [](auto x) { PIKA_TEST_EQ(x.x, 42); };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
@@ -131,9 +127,8 @@ int main()
         std::atomic<bool> scheduler_schedule_called{false};
         std::atomic<bool> scheduler_execute_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
-        auto s = ex::transfer_just(
-            scheduler{scheduler_schedule_called, scheduler_execute_called,
-                tag_invoke_overload_called},
+        auto s = ex::transfer_just(scheduler{scheduler_schedule_called, scheduler_execute_called,
+                                       tag_invoke_overload_called},
             custom_type_non_default_constructible_non_copyable{42});
         auto f = [](auto x) { PIKA_TEST_EQ(x.x, 42); };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
@@ -151,9 +146,8 @@ int main()
         std::atomic<bool> scheduler_execute_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
         custom_type_non_default_constructible_non_copyable x{42};
-        auto s = ex::transfer_just(
-            scheduler{scheduler_schedule_called, scheduler_execute_called,
-                tag_invoke_overload_called},
+        auto s = ex::transfer_just(scheduler{scheduler_schedule_called, scheduler_execute_called,
+                                       tag_invoke_overload_called},
             std::move(x));
         auto f = [](auto x) { PIKA_TEST_EQ(x.x, 42); };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
@@ -170,9 +164,8 @@ int main()
         std::atomic<bool> scheduler_schedule_called{false};
         std::atomic<bool> scheduler_execute_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
-        auto s = ex::transfer_just(
-            scheduler{scheduler_schedule_called, scheduler_execute_called,
-                tag_invoke_overload_called},
+        auto s = ex::transfer_just(scheduler{scheduler_schedule_called, scheduler_execute_called,
+                                       tag_invoke_overload_called},
             std::string("hello"), 3);
         auto f = [](std::string s, int x) {
             PIKA_TEST_EQ(s, std::string("hello"));
@@ -194,9 +187,8 @@ int main()
         std::atomic<bool> tag_invoke_overload_called{false};
         std::string str{"hello"};
         int x = 3;
-        auto s = ex::transfer_just(
-            scheduler{scheduler_schedule_called, scheduler_execute_called,
-                tag_invoke_overload_called},
+        auto s = ex::transfer_just(scheduler{scheduler_schedule_called, scheduler_execute_called,
+                                       tag_invoke_overload_called},
             str, x);
         auto f = [](std::string str, int x) {
             PIKA_TEST_EQ(str, std::string("hello"));
@@ -217,9 +209,8 @@ int main()
         std::atomic<bool> scheduler_schedule_called{false};
         std::atomic<bool> scheduler_execute_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
-        auto s = ex::transfer_just(
-            scheduler2{scheduler_schedule_called, scheduler_execute_called,
-                tag_invoke_overload_called},
+        auto s = ex::transfer_just(scheduler2{scheduler_schedule_called, scheduler_execute_called,
+                                       tag_invoke_overload_called},
             3);
         auto f = [](int x) { PIKA_TEST_EQ(x, 3); };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
@@ -237,9 +228,8 @@ int main()
         std::atomic<bool> scheduler_execute_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
         int x = 3;
-        auto s = ex::transfer_just(
-            scheduler2{scheduler_schedule_called, scheduler_execute_called,
-                tag_invoke_overload_called},
+        auto s = ex::transfer_just(scheduler2{scheduler_schedule_called, scheduler_execute_called,
+                                       tag_invoke_overload_called},
             x);
         auto f = [](int x) { PIKA_TEST_EQ(x, 3); };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};

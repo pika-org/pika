@@ -17,8 +17,7 @@ int pika_main()
 {
     PIKA_TEST_EQ(test_alloc_base::count, 0);
     {
-        pika::lcos::local::promise<int> p(
-            std::allocator_arg, test_allocator<int>());
+        pika::lcos::local::promise<int> p(std::allocator_arg, test_allocator<int>());
         PIKA_TEST_EQ(test_alloc_base::count, 1);
         pika::future<int> f = p.get_future();
         PIKA_TEST_EQ(test_alloc_base::count, 1);
@@ -26,8 +25,7 @@ int pika_main()
     }
     PIKA_TEST_EQ(test_alloc_base::count, 0);
     {
-        pika::lcos::local::promise<int&> p(
-            std::allocator_arg, test_allocator<int>());
+        pika::lcos::local::promise<int&> p(std::allocator_arg, test_allocator<int>());
         PIKA_TEST_EQ(test_alloc_base::count, 1);
         pika::future<int&> f = p.get_future();
         PIKA_TEST_EQ(test_alloc_base::count, 1);
@@ -35,8 +33,7 @@ int pika_main()
     }
     PIKA_TEST_EQ(test_alloc_base::count, 0);
     {
-        pika::lcos::local::promise<void> p(
-            std::allocator_arg, test_allocator<void>());
+        pika::lcos::local::promise<void> p(std::allocator_arg, test_allocator<void>());
         PIKA_TEST_EQ(test_alloc_base::count, 1);
         pika::future<void> f = p.get_future();
         PIKA_TEST_EQ(test_alloc_base::count, 1);

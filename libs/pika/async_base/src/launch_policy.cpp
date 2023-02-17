@@ -18,11 +18,9 @@ namespace pika {
     const detail::deferred_policy launch::deferred = detail::deferred_policy{};
     const detail::apply_policy launch::apply = detail::apply_policy{};
 
-    const detail::select_policy_generator launch::select =
-        detail::select_policy_generator{};
+    const detail::select_policy_generator launch::select = detail::select_policy_generator{};
 
-    const detail::policy_holder<> launch::all =
-        detail::policy_holder<>{detail::launch_policy::all};
+    const detail::policy_holder<> launch::all = detail::policy_holder<>{detail::launch_policy::all};
     const detail::policy_holder<> launch::sync_policies =
         detail::policy_holder<>{detail::launch_policy::sync_policies};
     const detail::policy_holder<> launch::async_policies =

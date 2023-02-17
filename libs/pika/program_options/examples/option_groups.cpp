@@ -89,16 +89,14 @@ int main(int ac, char* av[])
             }
             else
             {
-                cout << "Unknown module '" << s
-                     << "' in the --help-module option\n";
+                cout << "Unknown module '" << s << "' in the --help-module option\n";
                 return 1;
             }
             return 0;
         }
         if (vm.count("num-threads"))
         {
-            cout << "The 'num-threads' options was set to "
-                 << vm["num-threads"].as<int>() << "\n";
+            cout << "The 'num-threads' options was set to " << vm["num-threads"].as<int>() << "\n";
         }
     }
     catch (std::exception const& e)

@@ -32,8 +32,7 @@ namespace pika::program_options {
         is not changed, even if 'options' specify some value.
     */
     PIKA_EXPORT
-    void store(const basic_parsed_options<char>& options, variables_map& m,
-        bool utf8 = false);
+    void store(const basic_parsed_options<char>& options, variables_map& m, bool utf8 = false);
 
     /** Stores in 'm' all options that are defined in 'options'.
         If 'm' already has a non-defaulted value of an option, that value
@@ -174,8 +173,8 @@ namespace pika::program_options {
             be changed by subsequence assignments. */
         std::set<std::string> m_final;
 
-        friend PIKA_EXPORT void store(const basic_parsed_options<char>& options,
-            variables_map& xm, bool utf8);
+        friend PIKA_EXPORT void store(
+            const basic_parsed_options<char>& options, variables_map& xm, bool utf8);
 
         /** Names of required options, filled by parser which has
             access to options_description.

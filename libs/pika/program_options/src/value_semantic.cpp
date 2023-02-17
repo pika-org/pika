@@ -35,8 +35,8 @@ namespace pika::program_options {
         }
     }    // namespace
 
-    void value_semantic_codecvt_helper<char>::parse(std::any& value_store,
-        const std::vector<std::string>& new_tokens, bool utf8) const
+    void value_semantic_codecvt_helper<char>::parse(
+        std::any& value_store, const std::vector<std::string>& new_tokens, bool utf8) const
     {
         if (utf8)
         {
@@ -56,8 +56,8 @@ namespace pika::program_options {
         }
     }
 
-    void value_semantic_codecvt_helper<wchar_t>::parse(std::any& value_store,
-        const std::vector<std::string>& new_tokens, bool utf8) const
+    void value_semantic_codecvt_helper<wchar_t>::parse(
+        std::any& value_store, const std::vector<std::string>& new_tokens, bool utf8) const
     {
         std::vector<wstring> tokens;
         if (utf8)
@@ -216,8 +216,7 @@ namespace pika::program_options {
 
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     error_with_option_name::error_with_option_name(const std::string& template_,
-        const std::string& option_name, const std::string& original_token,
-        int option_style)
+        const std::string& option_name, const std::string& original_token, int option_style)
       // NOLINTEND(bugprone-easily-swappable-parameters)
       : error(template_)
       , m_option_style(option_style)
@@ -225,8 +224,7 @@ namespace pika::program_options {
     {
         //     parameter            |     placeholder               |   value
         //     ---------            |     -----------               |   -----
-        set_substitute_default(
-            "canonical_option", "option '%canonical_option%'", "option");
+        set_substitute_default("canonical_option", "option '%canonical_option%'", "option");
         set_substitute_default("value", "argument ('%value%')", "argument");
         set_substitute_default("prefix", "%prefix%", "");
         m_substitutions["option"] = option_name;
@@ -241,8 +239,7 @@ namespace pika::program_options {
         return m_message.c_str();
     }
 
-    void error_with_option_name::replace_token(
-        const string& from, const string& to) const
+    void error_with_option_name::replace_token(const string& from, const string& to) const
     {
         for (;;)
         {
@@ -269,10 +266,9 @@ namespace pika::program_options {
         case 0:
             return "";
         }
-        throw std::logic_error(
-            "error_with_option_name::m_option_style can only be "
-            "one of [0, allow_dash_for_short, allow_slash_for_short, "
-            "allow_long_disguise or allow_long]");
+        throw std::logic_error("error_with_option_name::m_option_style can only be "
+                               "one of [0, allow_dash_for_short, allow_slash_for_short, "
+                               "allow_long_disguise or allow_long]");
     }
 
     string error_with_option_name::get_canonical_option_name() const
@@ -280,10 +276,8 @@ namespace pika::program_options {
         if (!m_substitutions.find("option")->second.length())
             return m_substitutions.find("original_token")->second;
 
-        string original_token =
-            strip_prefixes(m_substitutions.find("original_token")->second);
-        string option_name =
-            strip_prefixes(m_substitutions.find("option")->second);
+        string original_token = strip_prefixes(m_substitutions.find("original_token")->second);
+        string option_name = strip_prefixes(m_substitutions.find("option")->second);
 
         //  For long options, use option name
         if (m_option_style == command_line_style::allow_long ||
@@ -298,8 +292,7 @@ namespace pika::program_options {
         return option_name;
     }
 
-    void error_with_option_name::substitute_placeholders(
-        const string& error_template) const
+    void error_with_option_name::substitute_placeholders(const string& error_template) const
     {
         m_message = error_template;
         std::map<std::string, std::string> substitutions(m_substitutions);
@@ -315,8 +308,8 @@ namespace pika::program_options {
             if (substitutions.count(substitution_default.first) == 0 ||
                 substitutions[substitution_default.first].length() == 0)
             {
-                replace_token(substitution_default.second.first,
-                    substitution_default.second.second);
+                replace_token(
+                    substitution_default.second.first, substitution_default.second.second);
             }
         }
 
@@ -328,8 +321,7 @@ namespace pika::program_options {
             replace_token('%' + substitution.first + '%', substitution.second);
     }
 
-    void ambiguous_option::substitute_placeholders(
-        const string& original_error_template) const
+    void ambiguous_option::substitute_placeholders(const string& original_error_template) const
     {
         // For short forms, all alternatives must be identical, by
         //      definition, to the specified option, so we don't need to
@@ -337,17 +329,14 @@ namespace pika::program_options {
         if (m_option_style == command_line_style::allow_dash_for_short ||
             m_option_style == command_line_style::allow_slash_for_short)
         {
-            error_with_option_name::substitute_placeholders(
-                original_error_template);
+            error_with_option_name::substitute_placeholders(original_error_template);
             return;
         }
 
         string error_template = original_error_template;
         // remove duplicates using std::set
-        std::set<std::string> alternatives_set(
-            m_alternatives.begin(), m_alternatives.end());
-        std::vector<std::string> alternatives_vec(
-            alternatives_set.begin(), alternatives_set.end());
+        std::set<std::string> alternatives_set(m_alternatives.begin(), m_alternatives.end());
+        std::vector<std::string> alternatives_vec(alternatives_set.begin(), alternatives_set.end());
 
         error_template += " and matches ";
         // Being very cautious: should be > 1 alternative!

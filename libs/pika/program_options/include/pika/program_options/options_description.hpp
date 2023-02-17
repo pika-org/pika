@@ -66,8 +66,7 @@ namespace pika::program_options {
 
         /** Initializes the class with the passed data.
          */
-        option_description(
-            const char* name, const value_semantic* s, const char* description);
+        option_description(const char* name, const value_semantic* s, const char* description);
 
         virtual ~option_description();
 
@@ -81,8 +80,8 @@ namespace pika::program_options {
         /** Given 'option', specified in the input source,
             returns 'true' if 'option' specifies *this.
         */
-        match_result match(const std::string& option, bool approx,
-            bool long_ignore_case, bool short_ignore_case) const;
+        match_result match(const std::string& option, bool approx, bool long_ignore_case,
+            bool short_ignore_case) const;
 
         /** Returns the key that should identify the option, in
             particular in the variables_map class.
@@ -101,8 +100,7 @@ namespace pika::program_options {
             3) All other cases, returns the first long name (if present) or the short
                name, un-prefixed.
         */
-        std::string canonical_display_name(
-            int canonical_option_style = 0) const;
+        std::string canonical_display_name(int canonical_option_style = 0) const;
 
         const std::string& long_name() const;
 
@@ -154,11 +152,9 @@ namespace pika::program_options {
     public:
         options_description_easy_init(options_description* owner);
 
-        options_description_easy_init& operator()(
-            const char* name, const char* description);
+        options_description_easy_init& operator()(const char* name, const char* description);
 
-        options_description_easy_init& operator()(
-            const char* name, const value_semantic* s);
+        options_description_easy_init& operator()(const char* name, const value_semantic* s);
 
         options_description_easy_init& operator()(
             const char* name, const value_semantic* s, const char* description);
@@ -218,12 +214,10 @@ namespace pika::program_options {
         options_description_easy_init add_options();
 
         const option_description& find(const std::string& name, bool approx,
-            bool long_ignore_case = false,
-            bool short_ignore_case = false) const;
+            bool long_ignore_case = false, bool short_ignore_case = false) const;
 
-        const option_description* find_nothrow(const std::string& name,
-            bool approx, bool long_ignore_case = false,
-            bool short_ignore_case = false) const;
+        const option_description* find_nothrow(const std::string& name, bool approx,
+            bool long_ignore_case = false, bool short_ignore_case = false) const;
 
         const std::vector<std::shared_ptr<option_description>>& options() const;
 
@@ -244,8 +238,7 @@ namespace pika::program_options {
 #endif
 
         using name2index_iterator = std::map<std::string, int>::const_iterator;
-        using approximation_range =
-            std::pair<name2index_iterator, name2index_iterator>;
+        using approximation_range = std::pair<name2index_iterator, name2index_iterator>;
 
         //approximation_range find_approximation(const std::string& prefix) const;
 

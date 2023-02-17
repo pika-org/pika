@@ -54,8 +54,7 @@ namespace pika::util {
         Sentinel _sentinel;
     };
 
-    template <typename Range,
-        typename Iterator = typename traits::range_iterator<Range>::type,
+    template <typename Range, typename Iterator = typename traits::range_iterator<Range>::type,
         typename Sentinel = typename traits::range_iterator<Range>::type>
     typename std::enable_if<traits::is_range<Range>::value,
         iterator_range<Iterator, Sentinel>>::type

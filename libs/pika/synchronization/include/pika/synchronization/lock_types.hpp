@@ -121,8 +121,8 @@ namespace pika {
         {
             if (m == nullptr)
             {
-                PIKA_THROW_EXCEPTION(pika::error::lock_error, "mutex::unlock",
-                    "upgrade_lock has no mutex");
+                PIKA_THROW_EXCEPTION(
+                    pika::error::lock_error, "mutex::unlock", "upgrade_lock has no mutex");
             }
             if (owns_lock())
             {
@@ -136,8 +136,8 @@ namespace pika {
         {
             if (m == nullptr)
             {
-                PIKA_THROW_EXCEPTION(pika::error::lock_error, "mutex::unlock",
-                    "upgrade_lock has no mutex");
+                PIKA_THROW_EXCEPTION(
+                    pika::error::lock_error, "mutex::unlock", "upgrade_lock has no mutex");
             }
             if (owns_lock())
             {
@@ -151,13 +151,13 @@ namespace pika {
         {
             if (m == nullptr)
             {
-                PIKA_THROW_EXCEPTION(pika::error::lock_error, "mutex::unlock",
-                    "upgrade_lock has no mutex");
+                PIKA_THROW_EXCEPTION(
+                    pika::error::lock_error, "mutex::unlock", "upgrade_lock has no mutex");
             }
             if (!owns_lock())
             {
-                PIKA_THROW_EXCEPTION(pika::error::lock_error, "mutex::unlock",
-                    "upgrade_lock doesn't own the mutex");
+                PIKA_THROW_EXCEPTION(
+                    pika::error::lock_error, "mutex::unlock", "upgrade_lock doesn't own the mutex");
             }
             m->unlock_upgrade();
             is_locked = false;
@@ -189,8 +189,7 @@ namespace pika {
         using mutex_type = Mutex;
 
         upgrade_to_unique_lock(upgrade_to_unique_lock const&) = delete;
-        upgrade_to_unique_lock& operator=(
-            upgrade_to_unique_lock const&) = delete;
+        upgrade_to_unique_lock& operator=(upgrade_to_unique_lock const&) = delete;
 
         explicit upgrade_to_unique_lock(upgrade_lock<Mutex>& m_)
           : source(&m_)
@@ -222,8 +221,7 @@ namespace pika {
             other.source = nullptr;
         }
 
-        upgrade_to_unique_lock& operator=(
-            upgrade_to_unique_lock<Mutex>&& other) noexcept
+        upgrade_to_unique_lock& operator=(upgrade_to_unique_lock<Mutex>&& other) noexcept
         {
             upgrade_to_unique_lock temp(PIKA_MOVE(other));
             swap(temp);

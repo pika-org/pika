@@ -39,8 +39,8 @@ pika::thread::id test(int passed_through)
 template <typename Executor>
 void test_sync(Executor& exec)
 {
-    PIKA_TEST(pika::parallel::execution::sync_execute(exec, &test, 42) ==
-        pika::this_thread::get_id());
+    PIKA_TEST(
+        pika::parallel::execution::sync_execute(exec, &test, 42) == pika::this_thread::get_id());
 }
 
 template <typename Executor>
@@ -66,8 +66,7 @@ void test_then(Executor& exec)
 {
     pika::future<void> f = pika::make_ready_future();
 
-    PIKA_TEST(
-        pika::parallel::execution::then_execute(exec, &test_f, f, 42).get() !=
+    PIKA_TEST(pika::parallel::execution::then_execute(exec, &test_f, f, 42).get() !=
         pika::this_thread::get_id());
 }
 
@@ -105,12 +104,10 @@ void test_bulk_async(Executor& exec)
     using std::placeholders::_1;
     using std::placeholders::_2;
 
-    pika::when_all(
-        pika::parallel::execution::bulk_async_execute(
-            exec, pika::util::detail::bind(&bulk_test, _1, tid, _2), v, 42))
-        .get();
     pika::when_all(pika::parallel::execution::bulk_async_execute(
-                       exec, &bulk_test, v, tid, 42))
+                       exec, pika::util::detail::bind(&bulk_test, _1, tid, _2), v, 42))
+        .get();
+    pika::when_all(pika::parallel::execution::bulk_async_execute(exec, &bulk_test, v, tid, 42))
         .get();
 }
 
@@ -143,9 +140,7 @@ void test_bulk_then(Executor& exec)
     pika::parallel::execution::bulk_then_execute(
         exec, pika::util::detail::bind(&bulk_test_f, _1, _2, tid, _3), v, f, 42)
         .get();
-    pika::parallel::execution::bulk_then_execute(
-        exec, &bulk_test_f, v, f, tid, 42)
-        .get();
+    pika::parallel::execution::bulk_then_execute(exec, &bulk_test_f, v, f, tid, 42).get();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -166,8 +161,8 @@ int main()
         using sched_type = pika::threads::local_priority_queue_scheduler<>;
 
         // Choose all the parameters for the thread pool and scheduler.
-        std::size_t const num_threads = (std::min)(std::size_t(4),
-            std::size_t(pika::threads::detail::hardware_concurrency()));
+        std::size_t const num_threads =
+            (std::min)(std::size_t(4), std::size_t(pika::threads::detail::hardware_concurrency()));
         std::size_t const max_cores = num_threads;
         pika::detail::affinity_data ad{};
         ad.init(num_threads, max_cores, 0, 1, 0, "core", "balanced", true);
@@ -175,12 +170,10 @@ int main()
         pika::threads::detail::thread_queue_init_parameters thread_queue_init{};
         sched_type::init_parameter_type scheduler_init(
             num_threads, ad, num_threads, thread_queue_init, "my_scheduler");
-        pika::threads::detail::network_background_callback_type
-            network_callback{};
-        pika::threads::detail::thread_pool_init_parameters thread_pool_init(
-            "my_pool", 0, pika::threads::scheduler_mode::default_mode,
-            num_threads, 0, notifier, ad, network_callback, 0,
-            (std::numeric_limits<std::int64_t>::max)(),
+        pika::threads::detail::network_background_callback_type network_callback{};
+        pika::threads::detail::thread_pool_init_parameters thread_pool_init("my_pool", 0,
+            pika::threads::scheduler_mode::default_mode, num_threads, 0, notifier, ad,
+            network_callback, 0, (std::numeric_limits<std::int64_t>::max)(),
             (std::numeric_limits<std::int64_t>::max)());
 
         // Create the scheduler, thread pool, and associated executor.

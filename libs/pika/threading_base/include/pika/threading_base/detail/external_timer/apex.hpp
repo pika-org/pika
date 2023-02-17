@@ -30,20 +30,17 @@ namespace pika::detail::external_timer {
     using apex::yield;
 
     PIKA_EXPORT std::shared_ptr<task_wrapper> new_task(
-        pika::detail::thread_description const& description,
-        std::uint32_t parent_locality_id,
+        pika::detail::thread_description const& description, std::uint32_t parent_locality_id,
         threads::detail::thread_id_type parent_task);
 
     PIKA_EXPORT std::shared_ptr<task_wrapper> update_task(
-        std::shared_ptr<task_wrapper> wrapper,
-        pika::detail::thread_description const& description);
+        std::shared_ptr<task_wrapper> wrapper, pika::detail::thread_description const& description);
 
     // This is a scoped object around task scheduling to measure the time spent
     // executing pika threads
     struct [[nodiscard]] scoped_timer
     {
-        PIKA_EXPORT explicit scoped_timer(
-            std::shared_ptr<task_wrapper> data_ptr);
+        PIKA_EXPORT explicit scoped_timer(std::shared_ptr<task_wrapper> data_ptr);
         scoped_timer(scoped_timer&&) = delete;
         scoped_timer(scoped_timer const&) = delete;
         scoped_timer& operator=(scoped_timer&&) = delete;

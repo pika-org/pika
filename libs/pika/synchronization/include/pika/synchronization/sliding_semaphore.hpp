@@ -15,8 +15,8 @@
 #include <utility>
 
 #if defined(PIKA_MSVC_WARNING_PRAGMA)
-#pragma warning(push)
-#pragma warning(disable : 4251)
+# pragma warning(push)
+# pragma warning(disable : 4251)
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -56,8 +56,7 @@ namespace pika {
         ///                 signal()) which is allowed without suspending any
         ///                 thread calling wait().
         /// \param lower_limit  [in] The initial lower limit.
-        sliding_semaphore_var(
-            std::int64_t max_difference, std::int64_t lower_limit = 0)
+        sliding_semaphore_var(std::int64_t max_difference, std::int64_t lower_limit = 0)
           : sem_(max_difference, lower_limit)
         {
         }
@@ -70,8 +69,7 @@ namespace pika {
         ///                 signal()) which is allowed without suspending any
         ///                 thread calling wait().
         /// \param lower_limit  [in] The initial lower limit.
-        void set_max_difference(
-            std::int64_t max_difference, std::int64_t lower_limit = 0)
+        void set_max_difference(std::int64_t max_difference, std::int64_t lower_limit = 0)
         {
             std::unique_lock<mutex_type> l(mtx_);
             sem_.set_max_difference(l, max_difference, lower_limit);
@@ -132,5 +130,5 @@ namespace pika {
 }    // namespace pika
 
 #if defined(PIKA_MSVC_WARNING_PRAGMA)
-#pragma warning(pop)
+# pragma warning(pop)
 #endif

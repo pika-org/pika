@@ -37,9 +37,7 @@ int main()
     {
         std::atomic<bool> set_value_called{false};
         auto s = ex::when_all_vector(std::vector<decltype(ex::just(42))>{});
-        auto f = [](std::vector<int> v) {
-            PIKA_TEST_EQ(v.size(), std::size_t(0));
-        };
+        auto f = [](std::vector<int> v) { PIKA_TEST_EQ(v.size(), std::size_t(0)); };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));
         tag_invoke(ex::start, os);
@@ -62,8 +60,7 @@ int main()
     {
         std::atomic<bool> set_value_called{false};
         int x = 42;
-        auto s =
-            ex::when_all_vector(std::vector{const_reference_sender<int>{x}});
+        auto s = ex::when_all_vector(std::vector{const_reference_sender<int>{x}});
         auto f = [](std::vector<int> v) {
             PIKA_TEST_EQ(v.size(), std::size_t(1));
             PIKA_TEST_EQ(v[0], 42);
@@ -76,8 +73,7 @@ int main()
 
     {
         std::atomic<bool> set_value_called{false};
-        auto s = ex::when_all_vector(
-            std::vector{ex::just(42), ex::just(43), ex::just(44)});
+        auto s = ex::when_all_vector(std::vector{ex::just(42), ex::just(43), ex::just(44)});
         auto f = [](std::vector<int> v) {
             PIKA_TEST_EQ(v.size(), std::size_t(3));
             PIKA_TEST_EQ(v[0], 42);
@@ -140,8 +136,7 @@ int main()
 
     {
         std::atomic<bool> set_value_called{false};
-        auto s = ex::when_all_vector(
-            std::vector{ex::just(), ex::just(), ex::just()});
+        auto s = ex::when_all_vector(std::vector{ex::just(), ex::just(), ex::just()});
         auto f = []() {};
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));
@@ -179,14 +174,10 @@ int main()
 
     {
         std::atomic<bool> set_value_called{false};
-        std::vector<ex::any_sender<custom_type_non_default_constructible>>
-            senders;
-        senders.emplace_back(
-            ex::just(custom_type_non_default_constructible{42}));
-        senders.emplace_back(
-            ex::just(custom_type_non_default_constructible{43}));
-        senders.emplace_back(
-            ex::just(custom_type_non_default_constructible{44}));
+        std::vector<ex::any_sender<custom_type_non_default_constructible>> senders;
+        senders.emplace_back(ex::just(custom_type_non_default_constructible{42}));
+        senders.emplace_back(ex::just(custom_type_non_default_constructible{43}));
+        senders.emplace_back(ex::just(custom_type_non_default_constructible{44}));
         auto s = ex::when_all_vector(std::move(senders));
         auto f = [](std::vector<custom_type_non_default_constructible> v) {
             PIKA_TEST_EQ(v.size(), std::size_t(3));
@@ -202,24 +193,18 @@ int main()
 
     {
         std::atomic<bool> set_value_called{false};
-        std::vector<ex::unique_any_sender<
-            custom_type_non_default_constructible_non_copyable>>
+        std::vector<ex::unique_any_sender<custom_type_non_default_constructible_non_copyable>>
             senders;
-        senders.emplace_back(
-            ex::just(custom_type_non_default_constructible_non_copyable{42}));
-        senders.emplace_back(
-            ex::just(custom_type_non_default_constructible_non_copyable{43}));
-        senders.emplace_back(
-            ex::just(custom_type_non_default_constructible_non_copyable{44}));
+        senders.emplace_back(ex::just(custom_type_non_default_constructible_non_copyable{42}));
+        senders.emplace_back(ex::just(custom_type_non_default_constructible_non_copyable{43}));
+        senders.emplace_back(ex::just(custom_type_non_default_constructible_non_copyable{44}));
         auto s = ex::when_all_vector(std::move(senders));
-        auto f =
-            [](std::vector<custom_type_non_default_constructible_non_copyable>
-                    v) {
-                PIKA_TEST_EQ(v.size(), std::size_t(3));
-                PIKA_TEST_EQ(v[0].x, 42);
-                PIKA_TEST_EQ(v[1].x, 43);
-                PIKA_TEST_EQ(v[2].x, 44);
-            };
+        auto f = [](std::vector<custom_type_non_default_constructible_non_copyable> v) {
+            PIKA_TEST_EQ(v.size(), std::size_t(3));
+            PIKA_TEST_EQ(v[0].x, 42);
+            PIKA_TEST_EQ(v[1].x, 43);
+            PIKA_TEST_EQ(v[2].x, 44);
+        };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));
         ex::start(os);
@@ -245,8 +230,7 @@ int main()
         senders3.emplace_back(ex::just(45));
 
         auto s = ex::when_all(ex::when_all_vector(std::move(senders1)),
-            ex::when_all_vector(std::move(senders2)),
-            ex::when_all_vector(std::move(senders3)));
+            ex::when_all_vector(std::move(senders2)), ex::when_all_vector(std::move(senders3)));
         auto f = [](std::vector<double> v1, std::vector<int> v3) {
             PIKA_TEST_EQ(v1.size(), std::size_t(3));
             PIKA_TEST_EQ(v1[0], 13.0);
@@ -278,8 +262,7 @@ int main()
 
     {
         std::atomic<bool> set_error_called{false};
-        auto s =
-            ex::when_all_vector(std::vector{const_reference_error_sender{}});
+        auto s = ex::when_all_vector(std::vector{const_reference_error_sender{}});
         auto r = error_callback_receiver<decltype(check_exception_ptr)>{
             check_exception_ptr, set_error_called};
         auto os = ex::connect(std::move(s), std::move(r));
@@ -347,8 +330,7 @@ int main()
         PIKA_TEST(set_error_called);
     }
 
-    test_adl_isolation(
-        ex::when_all_vector(std::vector{my_namespace::my_sender{}}));
+    test_adl_isolation(ex::when_all_vector(std::vector{my_namespace::my_sender{}}));
 
     return 0;
 }

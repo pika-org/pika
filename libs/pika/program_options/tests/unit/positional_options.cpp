@@ -68,8 +68,7 @@ void test_parsing()
     args.emplace_back("file3");
 
     // Check that positional options are handled.
-    parsed_options parsed =
-        command_line_parser(args).options(desc).positional(p).run();
+    parsed_options parsed = command_line_parser(args).options(desc).positional(p).run();
 
     PIKA_TEST_EQ(parsed.options.size(), std::size_t(5));
     PIKA_TEST_EQ(parsed.options[1].string_key, "input-file");

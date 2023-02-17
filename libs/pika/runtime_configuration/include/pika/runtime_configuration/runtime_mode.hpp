@@ -41,6 +41,5 @@ namespace pika {
     /// representing the name.
     ///
     /// \param mode this represents the runtime mode
-    PIKA_EXPORT runtime_mode get_runtime_mode_from_name(
-        std::string const& mode);
+    PIKA_EXPORT runtime_mode get_runtime_mode_from_name(std::string const& mode);
 }    // namespace pika

@@ -73,14 +73,12 @@ void test_bulk_async(ExecutorArgs&&... args)
     using std::placeholders::_2;
 
     fork_join_executor exec{std::forward<ExecutorArgs>(args)...};
-    pika::when_all(pika::parallel::execution::bulk_async_execute(exec,
-                       pika::util::detail::bind(&bulk_test, _1, _2), v, 42))
+    pika::when_all(pika::parallel::execution::bulk_async_execute(
+                       exec, pika::util::detail::bind(&bulk_test, _1, _2), v, 42))
         .get();
     PIKA_TEST_EQ(count.load(), n);
 
-    pika::when_all(
-        pika::parallel::execution::bulk_async_execute(exec, &bulk_test, v, 42))
-        .get();
+    pika::when_all(pika::parallel::execution::bulk_async_execute(exec, &bulk_test, v, 42)).get();
     PIKA_TEST_EQ(count.load(), 2 * n);
 }
 
@@ -105,8 +103,7 @@ void test_bulk_sync_exception(ExecutorArgs&&... args)
     bool caught_exception = false;
     try
     {
-        pika::parallel::execution::bulk_sync_execute(
-            exec, &bulk_test_exception, v, 42);
+        pika::parallel::execution::bulk_sync_execute(exec, &bulk_test_exception, v, 42);
 
         PIKA_TEST(false);
     }
@@ -136,8 +133,7 @@ void test_bulk_async_exception(ExecutorArgs&&... args)
     bool caught_exception = false;
     try
     {
-        auto r = pika::parallel::execution::bulk_async_execute(
-            exec, &bulk_test_exception, v, 42);
+        auto r = pika::parallel::execution::bulk_async_execute(exec, &bulk_test_exception, v, 42);
         PIKA_TEST_EQ(r.size(), std::size_t(1));
         r[0].get();
 
@@ -171,14 +167,13 @@ void static_check_executor()
         "has_bulk_async_execute_member<fork_join_executor>::value");
     static_assert(!has_bulk_then_execute_member<fork_join_executor>::value,
         "!has_bulk_then_execute_member<fork_join_executor>::value");
-    static_assert(!has_post_member<fork_join_executor>::value,
-        "!has_post_member<fork_join_executor>::value");
+    static_assert(
+        !has_post_member<fork_join_executor>::value, "!has_post_member<fork_join_executor>::value");
 }
 
 template <typename... ExecutorArgs>
 void test_executor(pika::execution::thread_priority priority,
-    pika::execution::thread_stacksize stacksize,
-    fork_join_executor::loop_schedule schedule)
+    pika::execution::thread_stacksize stacksize, fork_join_executor::loop_schedule schedule)
 {
     fmt::print(std::cerr,
         "testing fork_join_executor with priority = {}, stacksize = {}, "
@@ -227,8 +222,7 @@ int pika_main()
 int main(int argc, char* argv[])
 {
     // Initialize and run pika
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0, "pika main exited with non-zero status");
 
     return 0;
 }

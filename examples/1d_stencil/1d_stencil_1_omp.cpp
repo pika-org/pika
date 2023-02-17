@@ -86,8 +86,7 @@ struct stepper
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main(pika::program_options::variables_map& vm)
 {
-    std::uint64_t nx =
-        vm["nx"].as<std::uint64_t>();    // Number of grid points.
+    std::uint64_t nx = vm["nx"].as<std::uint64_t>();    // Number of grid points.
     std::uint64_t nt = vm["nt"].as<std::uint64_t>();    // Number of steps.
 
     if (vm.count("no-header"))
@@ -141,10 +140,8 @@ int main(int argc, char* argv[])
     // clang-format on
 
     po::variables_map vm;
-    po::store(po::command_line_parser(argc, argv)
-                  .options(desc_commandline)
-                  .allow_unregistered()
-                  .run(),
+    po::store(
+        po::command_line_parser(argc, argv).options(desc_commandline).allow_unregistered().run(),
         vm);
     po::notify(vm);
 

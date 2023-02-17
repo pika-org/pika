@@ -10,17 +10,17 @@
 
 #if defined(PIKA_HAVE_CXX20_COROUTINES)
 
-#include <pika/futures/detail/future_data.hpp>
-#include <pika/futures/traits/future_access.hpp>
-#include <pika/memory/intrusive_ptr.hpp>
-#include <pika/modules/allocator_support.hpp>
+# include <pika/futures/detail/future_data.hpp>
+# include <pika/futures/traits/future_access.hpp>
+# include <pika/memory/intrusive_ptr.hpp>
+# include <pika/modules/allocator_support.hpp>
 
-#include <coroutine>
-#include <cstddef>
-#include <exception>
-#include <memory>
-#include <type_traits>
-#include <utility>
+# include <coroutine>
+# include <cstddef>
+# include <exception>
+# include <memory>
+# include <type_traits>
+# include <utility>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::lcos::detail {
@@ -58,8 +58,7 @@ namespace pika::lcos::detail {
     }
 
     template <typename T, typename Promise>
-    PIKA_FORCEINLINE void
-    await_suspend(pika::future<T>& f, coroutine_handle<Promise> rh)
+    PIKA_FORCEINLINE void await_suspend(pika::future<T>& f, coroutine_handle<Promise> rh)
     {
         // f.then([=](future<T> result) {});
         auto st = traits::detail::get_shared_state(f);
@@ -100,8 +99,7 @@ namespace pika::lcos::detail {
     }
 
     template <typename T, typename Promise>
-    PIKA_FORCEINLINE void
-    await_suspend(pika::shared_future<T>& f, coroutine_handle<Promise> rh)
+    PIKA_FORCEINLINE void await_suspend(pika::shared_future<T>& f, coroutine_handle<Promise> rh)
     {
         // f.then([=](shared_future<T> result) {})
         auto st = traits::detail::get_shared_state(f);
@@ -139,10 +137,8 @@ namespace pika::lcos::detail {
 
         pika::future<T> get_return_object()
         {
-            pika::intrusive_ptr<Derived> shared_state(
-                static_cast<Derived*>(this));
-            return pika::traits::future_access<pika::future<T>>::create(
-                PIKA_MOVE(shared_state));
+            pika::intrusive_ptr<Derived> shared_state(static_cast<Derived*>(this));
+            return pika::traits::future_access<pika::future<T>>::create(PIKA_MOVE(shared_state));
         }
 
         constexpr suspend_never initial_suspend() const noexcept
@@ -160,19 +156,17 @@ namespace pika::lcos::detail {
 
         void destroy() noexcept override
         {
-            coroutine_handle<Derived>::from_promise(
-                *static_cast<Derived*>(this))
-                .destroy();
+            coroutine_handle<Derived>::from_promise(*static_cast<Derived*>(this)).destroy();
         }
 
         // allocator support for shared coroutine state
         [[nodiscard]] static void* allocate(std::size_t size)
         {
-            using char_allocator = typename std::allocator_traits<
-                allocator_type>::template rebind_alloc<char>;
+            using char_allocator =
+                typename std::allocator_traits<allocator_type>::template rebind_alloc<char>;
             using traits = std::allocator_traits<char_allocator>;
-            using unique_ptr = std::unique_ptr<char,
-                pika::detail::allocator_deleter<char_allocator>>;
+            using unique_ptr =
+                std::unique_ptr<char, pika::detail::allocator_deleter<char_allocator>>;
 
             char_allocator alloc{};
             unique_ptr p(traits::allocate(alloc, size),
@@ -183,8 +177,8 @@ namespace pika::lcos::detail {
 
         static void deallocate(void* p, std::size_t size) noexcept
         {
-            using char_allocator = typename std::allocator_traits<
-                allocator_type>::template rebind_alloc<char>;
+            using char_allocator =
+                typename std::allocator_traits<allocator_type>::template rebind_alloc<char>;
             using traits = std::allocator_traits<char_allocator>;
 
             char_allocator alloc{};
@@ -199,14 +193,11 @@ namespace std {
     template <typename T, typename... Ts>
     struct coroutine_traits<pika::future<T>, Ts...>
     {
-        using allocator_type =
-            pika::detail::internal_allocator<coroutine_traits>;
+        using allocator_type = pika::detail::internal_allocator<coroutine_traits>;
 
-        struct promise_type
-          : pika::lcos::detail::coroutine_promise_base<T, promise_type>
+        struct promise_type : pika::lcos::detail::coroutine_promise_base<T, promise_type>
         {
-            using base_type =
-                pika::lcos::detail::coroutine_promise_base<T, promise_type>;
+            using base_type = pika::lcos::detail::coroutine_promise_base<T, promise_type>;
 
             promise_type() = default;
 
@@ -221,14 +212,12 @@ namespace std {
                 this->base_type::set_exception(std::current_exception());
             }
 
-            [[nodiscard]] PIKA_FORCEINLINE static void* operator new(
-                std::size_t size)
+            [[nodiscard]] PIKA_FORCEINLINE static void* operator new(std::size_t size)
             {
                 return base_type::allocate(size);
             }
 
-            PIKA_FORCEINLINE static void operator delete(
-                void* p, std::size_t size) noexcept
+            PIKA_FORCEINLINE static void operator delete(void* p, std::size_t size) noexcept
             {
                 base_type::deallocate(p, size);
             }
@@ -238,14 +227,11 @@ namespace std {
     template <typename... Ts>
     struct coroutine_traits<pika::future<void>, Ts...>
     {
-        using allocator_type =
-            pika::detail::internal_allocator<coroutine_traits>;
+        using allocator_type = pika::detail::internal_allocator<coroutine_traits>;
 
-        struct promise_type
-          : pika::lcos::detail::coroutine_promise_base<void, promise_type>
+        struct promise_type : pika::lcos::detail::coroutine_promise_base<void, promise_type>
         {
-            using base_type =
-                pika::lcos::detail::coroutine_promise_base<void, promise_type>;
+            using base_type = pika::lcos::detail::coroutine_promise_base<void, promise_type>;
 
             promise_type() = default;
 
@@ -259,14 +245,12 @@ namespace std {
                 this->base_type::set_exception(std::current_exception());
             }
 
-            [[nodiscard]] PIKA_FORCEINLINE static void* operator new(
-                std::size_t size)
+            [[nodiscard]] PIKA_FORCEINLINE static void* operator new(std::size_t size)
             {
                 return base_type::allocate(size);
             }
 
-            PIKA_FORCEINLINE static void operator delete(
-                void* p, std::size_t size) noexcept
+            PIKA_FORCEINLINE static void operator delete(void* p, std::size_t size) noexcept
             {
                 base_type::deallocate(p, size);
             }
@@ -278,14 +262,11 @@ namespace std {
     template <typename T, typename... Ts>
     struct coroutine_traits<pika::shared_future<T>, Ts...>
     {
-        using allocator_type =
-            pika::detail::internal_allocator<coroutine_traits>;
+        using allocator_type = pika::detail::internal_allocator<coroutine_traits>;
 
-        struct promise_type
-          : pika::lcos::detail::coroutine_promise_base<T, promise_type>
+        struct promise_type : pika::lcos::detail::coroutine_promise_base<T, promise_type>
         {
-            using base_type =
-                pika::lcos::detail::coroutine_promise_base<T, promise_type>;
+            using base_type = pika::lcos::detail::coroutine_promise_base<T, promise_type>;
 
             promise_type() = default;
 
@@ -300,14 +281,12 @@ namespace std {
                 this->base_type::set_exception(std::current_exception());
             }
 
-            [[nodiscard]] PIKA_FORCEINLINE static void* operator new(
-                std::size_t size)
+            [[nodiscard]] PIKA_FORCEINLINE static void* operator new(std::size_t size)
             {
                 return base_type::allocate(size);
             }
 
-            PIKA_FORCEINLINE static void operator delete(
-                void* p, std::size_t size) noexcept
+            PIKA_FORCEINLINE static void operator delete(void* p, std::size_t size) noexcept
             {
                 base_type::deallocate(p, size);
             }
@@ -317,14 +296,11 @@ namespace std {
     template <typename... Ts>
     struct coroutine_traits<pika::shared_future<void>, Ts...>
     {
-        using allocator_type =
-            pika::detail::internal_allocator<coroutine_traits>;
+        using allocator_type = pika::detail::internal_allocator<coroutine_traits>;
 
-        struct promise_type
-          : pika::lcos::detail::coroutine_promise_base<void, promise_type>
+        struct promise_type : pika::lcos::detail::coroutine_promise_base<void, promise_type>
         {
-            using base_type =
-                pika::lcos::detail::coroutine_promise_base<void, promise_type>;
+            using base_type = pika::lcos::detail::coroutine_promise_base<void, promise_type>;
 
             promise_type() = default;
 
@@ -338,14 +314,12 @@ namespace std {
                 this->base_type::set_exception(std::current_exception());
             }
 
-            [[nodiscard]] PIKA_FORCEINLINE static void* operator new(
-                std::size_t size)
+            [[nodiscard]] PIKA_FORCEINLINE static void* operator new(std::size_t size)
             {
                 return base_type::allocate(size);
             }
 
-            PIKA_FORCEINLINE static void operator delete(
-                void* p, std::size_t size) noexcept
+            PIKA_FORCEINLINE static void operator delete(void* p, std::size_t size) noexcept
             {
                 base_type::deallocate(p, size);
             }

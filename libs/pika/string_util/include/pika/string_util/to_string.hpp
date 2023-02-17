@@ -26,8 +26,7 @@ namespace pika::detail {
     };
 
     template <typename T>
-    struct to_string_impl<T,
-        std::enable_if_t<std::is_integral_v<T> || std::is_floating_point_v<T>>>
+    struct to_string_impl<T, std::enable_if_t<std::is_integral_v<T> || std::is_floating_point_v<T>>>
     {
         static std::string call(T const& value)
         {

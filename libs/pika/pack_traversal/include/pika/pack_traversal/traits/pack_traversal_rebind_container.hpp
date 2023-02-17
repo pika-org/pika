@@ -25,8 +25,7 @@ namespace pika::traits {
 
         // Specialization for a container with a single type T (no allocator
         // support)
-        template <typename NewType, template <class> class Base,
-            typename OldType>
+        template <typename NewType, template <class> class Base, typename OldType>
         struct pack_traversal_rebind_container<NewType, Base<OldType>>
         {
             static Base<NewType> call(Base<OldType> const& /*container*/)
@@ -38,23 +37,20 @@ namespace pika::traits {
         // Specialization for a container with a single type T and
         // a particular allocator, which is preserved across the remap.
         // -> We remap the allocator through std::allocator_traits.
-        template <typename NewType, template <class, class> class Base,
-            typename OldType, typename OldAllocator>
-        struct pack_traversal_rebind_container<NewType,
-            Base<OldType, OldAllocator>,
-            typename std::enable_if<std::uses_allocator<
-                Base<OldType, OldAllocator>, OldAllocator>::value>::type>
+        template <typename NewType, template <class, class> class Base, typename OldType,
+            typename OldAllocator>
+        struct pack_traversal_rebind_container<NewType, Base<OldType, OldAllocator>,
+            typename std::enable_if<
+                std::uses_allocator<Base<OldType, OldAllocator>, OldAllocator>::value>::type>
         {
-            using NewAllocator = typename std::allocator_traits<
-                OldAllocator>::template rebind_alloc<NewType>;
+            using NewAllocator =
+                typename std::allocator_traits<OldAllocator>::template rebind_alloc<NewType>;
 
-            static Base<NewType, NewAllocator> call(
-                Base<OldType, OldAllocator> const& container)
+            static Base<NewType, NewAllocator> call(Base<OldType, OldAllocator> const& container)
             {
                 // Create a new version of the allocator, that is capable of
                 // allocating the mapped type.
-                return Base<NewType, NewAllocator>(
-                    NewAllocator(container.get_allocator()));
+                return Base<NewType, NewAllocator>(NewAllocator(container.get_allocator()));
             }
         };
     }    // namespace detail
@@ -74,44 +70,39 @@ namespace pika::traits {
     // allocator template argument as it believes both specializations above are
     // viable. This works around by explicitly specializing the trait.
     template <typename NewType, typename OldType, typename OldAllocator>
-    struct pack_traversal_rebind_container<NewType,
-        std::vector<OldType, OldAllocator>>
+    struct pack_traversal_rebind_container<NewType, std::vector<OldType, OldAllocator>>
     {
-        using NewAllocator = typename std::allocator_traits<
-            OldAllocator>::template rebind_alloc<NewType>;
+        using NewAllocator =
+            typename std::allocator_traits<OldAllocator>::template rebind_alloc<NewType>;
 
         static std::vector<NewType, NewAllocator> call(
             std::vector<OldType, OldAllocator> const& container)
         {
             // Create a new version of the container using the new allocator
             // that is capable of allocating the mapped type.
-            return std::vector<NewType, NewAllocator>(
-                NewAllocator(container.get_allocator()));
+            return std::vector<NewType, NewAllocator>(NewAllocator(container.get_allocator()));
         }
     };
 
     template <typename NewType, typename OldType, typename OldAllocator>
-    struct pack_traversal_rebind_container<NewType,
-        std::list<OldType, OldAllocator>>
+    struct pack_traversal_rebind_container<NewType, std::list<OldType, OldAllocator>>
     {
-        using NewAllocator = typename std::allocator_traits<
-            OldAllocator>::template rebind_alloc<NewType>;
+        using NewAllocator =
+            typename std::allocator_traits<OldAllocator>::template rebind_alloc<NewType>;
 
         static std::list<NewType, NewAllocator> call(
             std::list<OldType, OldAllocator> const& container)
         {
             // Create a new version of the container using the new allocator
             // that is capable of allocating the mapped type.
-            return std::list<NewType, NewAllocator>(
-                NewAllocator(container.get_allocator()));
+            return std::list<NewType, NewAllocator>(NewAllocator(container.get_allocator()));
         }
     };
 
     template <typename NewType, typename OldType, std::size_t N>
     struct pack_traversal_rebind_container<NewType, std::array<OldType, N>>
     {
-        static std::array<NewType, N> call(
-            std::array<OldType, N> const& /*container*/)
+        static std::array<NewType, N> call(std::array<OldType, N> const& /*container*/)
         {
             return std::array<NewType, N>();
         }

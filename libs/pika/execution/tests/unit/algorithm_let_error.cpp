@@ -107,8 +107,7 @@ int main()
         auto s2 = ex::let_error(std::move(s1), [&](std::exception_ptr ep) {
             check_exception_ptr(ep);
             let_error_callback_called = true;
-            return ex::just(
-                custom_type_non_default_constructible_non_copyable{42});
+            return ex::just(custom_type_non_default_constructible_non_copyable{42});
         });
         auto f = [](auto x) { PIKA_TEST_EQ(x.x, 42); };
         auto r = callback_receiver<void_callback_helper<decltype(f)>>{
@@ -216,12 +215,10 @@ int main()
     {
         std::atomic<bool> set_value_called{false};
         std::atomic<bool> let_error_callback_called{false};
-        auto s1 =
-            ex::just(custom_type_non_default_constructible_non_copyable{42});
+        auto s1 = ex::just(custom_type_non_default_constructible_non_copyable{42});
         auto s2 = ex::let_error(std::move(s1), [&](std::exception_ptr) {
             PIKA_TEST(false);
-            return ex::just(
-                custom_type_non_default_constructible_non_copyable{43});
+            return ex::just(custom_type_non_default_constructible_non_copyable{43});
         });
         auto f = [](auto x) { PIKA_TEST_EQ(x.x, 42); };
         auto r = callback_receiver<void_callback_helper<decltype(f)>>{

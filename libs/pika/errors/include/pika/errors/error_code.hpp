@@ -52,22 +52,17 @@ namespace pika {
     namespace detail {
         PIKA_EXPORT std::error_category const& get_lightweight_pika_category();
 
-        PIKA_EXPORT std::error_category const& get_pika_category(
-            throwmode mode);
+        PIKA_EXPORT std::error_category const& get_pika_category(throwmode mode);
 
-        inline std::error_code make_system_error_code(
-            error e, throwmode mode = throwmode::plain)
+        inline std::error_code make_system_error_code(error e, throwmode mode = throwmode::plain)
         {
-            return std::error_code(
-                static_cast<int>(e), get_pika_category(mode));
+            return std::error_code(static_cast<int>(e), get_pika_category(mode));
         }
 
         ///////////////////////////////////////////////////////////////////////////
-        inline std::error_condition make_error_condition(
-            error e, throwmode mode)
+        inline std::error_condition make_error_condition(error e, throwmode mode)
         {
-            return std::error_condition(
-                static_cast<int>(e), get_pika_category(mode));
+            return std::error_condition(static_cast<int>(e), get_pika_category(mode));
         }
     }    // namespace detail
     /// \endcond
@@ -95,8 +90,7 @@ namespace pika {
         ///
         /// \throws nothing
         explicit error_code(throwmode mode = throwmode::plain)
-          : std::error_code(
-                detail::make_system_error_code(pika::error::success, mode))
+          : std::error_code(detail::make_system_error_code(pika::error::success, mode))
         {
         }
 
@@ -111,8 +105,7 @@ namespace pika {
         ///               pika_category_rethrow (if mode is \a throwmode::rethrow).
         ///
         /// \throws nothing
-        PIKA_EXPORT explicit error_code(
-            error e, throwmode mode = throwmode::plain);
+        PIKA_EXPORT explicit error_code(error e, throwmode mode = throwmode::plain);
 
         /// Construct an object of type error_code.
         ///
@@ -129,7 +122,44 @@ namespace pika {
         ///               pika_category_rethrow (if mode is \a throwmode::rethrow).
         ///
         /// \throws nothing
-        PIKA_EXPORT error_code(error e, char const* func, char const* file,
+        PIKA_EXPORT error_code(error e, char const* func, char const* file, long line,
+            throwmode mode = throwmode::plain);
+
+        /// Construct an object of type error_code.
+        ///
+        /// \param e      The parameter \p e holds the pika::error code the new
+        ///               exception should encapsulate.
+        /// \param msg    The parameter \p msg holds the error message the new
+        ///               exception should encapsulate.
+        /// \param mode   The parameter \p mode specifies whether the constructed
+        ///               pika::error_code belongs to the error category
+        ///               \a pika_category (if mode is \a throwmode::plain, this
+        ///               is the default) or to the category \a
+        ///               pika_category_rethrow (if mode is \a throwmode::rethrow).
+        ///
+        /// \throws std#bad_alloc (if allocation of a copy of
+        ///         the passed string fails).
+        PIKA_EXPORT error_code(error e, char const* msg, throwmode mode = throwmode::plain);
+
+        /// Construct an object of type error_code.
+        ///
+        /// \param e      The parameter \p e holds the pika::error code the new
+        ///               exception should encapsulate.
+        /// \param msg    The parameter \p msg holds the error message the new
+        ///               exception should encapsulate.
+        /// \param func   The name of the function where the error was raised.
+        /// \param file   The file name of the code where the error was raised.
+        /// \param line   The line number of the code line where the error was
+        ///               raised.
+        /// \param mode   The parameter \p mode specifies whether the constructed
+        ///               pika::error_code belongs to the error category
+        ///               \a pika_category (if mode is \a throwmode::plain, this is the
+        ///               default) or to the category \a pika_category_rethrow
+        ///               (if mode is \a throwmode::rethrow).
+        ///
+        /// \throws std#bad_alloc (if allocation of a copy of
+        ///         the passed string fails).
+        PIKA_EXPORT error_code(error e, char const* msg, char const* func, char const* file,
             long line, throwmode mode = throwmode::plain);
 
         /// Construct an object of type error_code.
@@ -140,52 +170,13 @@ namespace pika {
         ///               exception should encapsulate.
         /// \param mode   The parameter \p mode specifies whether the constructed
         ///               pika::error_code belongs to the error category
-        ///               \a pika_category (if mode is \a throwmode::plain, this
-        ///               is the default) or to the category \a
-        ///               pika_category_rethrow (if mode is \a throwmode::rethrow).
-        ///
-        /// \throws std#bad_alloc (if allocation of a copy of
-        ///         the passed string fails).
-        PIKA_EXPORT error_code(
-            error e, char const* msg, throwmode mode = throwmode::plain);
-
-        /// Construct an object of type error_code.
-        ///
-        /// \param e      The parameter \p e holds the pika::error code the new
-        ///               exception should encapsulate.
-        /// \param msg    The parameter \p msg holds the error message the new
-        ///               exception should encapsulate.
-        /// \param func   The name of the function where the error was raised.
-        /// \param file   The file name of the code where the error was raised.
-        /// \param line   The line number of the code line where the error was
-        ///               raised.
-        /// \param mode   The parameter \p mode specifies whether the constructed
-        ///               pika::error_code belongs to the error category
         ///               \a pika_category (if mode is \a throwmode::plain, this is the
         ///               default) or to the category \a pika_category_rethrow
         ///               (if mode is \a throwmode::rethrow).
         ///
         /// \throws std#bad_alloc (if allocation of a copy of
         ///         the passed string fails).
-        PIKA_EXPORT error_code(error e, char const* msg, char const* func,
-            char const* file, long line, throwmode mode = throwmode::plain);
-
-        /// Construct an object of type error_code.
-        ///
-        /// \param e      The parameter \p e holds the pika::error code the new
-        ///               exception should encapsulate.
-        /// \param msg    The parameter \p msg holds the error message the new
-        ///               exception should encapsulate.
-        /// \param mode   The parameter \p mode specifies whether the constructed
-        ///               pika::error_code belongs to the error category
-        ///               \a pika_category (if mode is \a throwmode::plain, this is the
-        ///               default) or to the category \a pika_category_rethrow
-        ///               (if mode is \a throwmode::rethrow).
-        ///
-        /// \throws std#bad_alloc (if allocation of a copy of
-        ///         the passed string fails).
-        PIKA_EXPORT error_code(
-            error e, std::string const& msg, throwmode mode = throwmode::plain);
+        PIKA_EXPORT error_code(error e, std::string const& msg, throwmode mode = throwmode::plain);
 
         /// Construct an object of type error_code.
         ///
@@ -205,9 +196,8 @@ namespace pika {
         ///
         /// \throws std#bad_alloc (if allocation of a copy of
         ///         the passed string fails).
-        PIKA_EXPORT error_code(error e, std::string const& msg,
-            char const* func, char const* file, long line,
-            throwmode mode = throwmode::plain);
+        PIKA_EXPORT error_code(error e, std::string const& msg, char const* func, char const* file,
+            long line, throwmode mode = throwmode::plain);
 
         /// Return a reference to the error message stored in the pika::error_code.
         ///
@@ -249,26 +239,23 @@ namespace pika {
 
     /// @{
     /// \brief Returns a new error_code constructed from the given parameters.
-    inline error_code make_error_code(
-        error e, throwmode mode = throwmode::plain)
+    inline error_code make_error_code(error e, throwmode mode = throwmode::plain)
     {
         return error_code(e, mode);
     }
-    inline error_code make_error_code(error e, char const* func,
-        char const* file, long line, throwmode mode = throwmode::plain)
+    inline error_code make_error_code(
+        error e, char const* func, char const* file, long line, throwmode mode = throwmode::plain)
     {
         return error_code(e, func, file, line, mode);
     }
 
     /// \brief Returns error_code(e, msg, mode).
-    inline error_code make_error_code(
-        error e, char const* msg, throwmode mode = throwmode::plain)
+    inline error_code make_error_code(error e, char const* msg, throwmode mode = throwmode::plain)
     {
         return error_code(e, msg, mode);
     }
-    inline error_code make_error_code(error e, char const* msg,
-        char const* func, char const* file, long line,
-        throwmode mode = throwmode::plain)
+    inline error_code make_error_code(error e, char const* msg, char const* func, char const* file,
+        long line, throwmode mode = throwmode::plain)
     {
         return error_code(e, msg, func, file, line, mode);
     }
@@ -279,9 +266,8 @@ namespace pika {
     {
         return error_code(e, msg, mode);
     }
-    inline error_code make_error_code(error e, std::string const& msg,
-        char const* func, char const* file, long line,
-        throwmode mode = throwmode::plain)
+    inline error_code make_error_code(error e, std::string const& msg, char const* func,
+        char const* file, long line, throwmode mode = throwmode::plain)
     {
         return error_code(e, msg, func, file, line, mode);
     }

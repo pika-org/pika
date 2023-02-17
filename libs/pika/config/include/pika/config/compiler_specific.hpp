@@ -10,19 +10,19 @@
 
 #if defined(DOXYGEN)
 /// Returns the GCC version pika is compiled with. Only set if compiled with GCC.
-#define PIKA_GCC_VERSION
+# define PIKA_GCC_VERSION
 /// Returns the Clang version pika is compiled with. Only set if compiled with
 /// Clang.
-#define PIKA_CLANG_VERSION
+# define PIKA_CLANG_VERSION
 /// Returns the Intel Compiler version pika is compiled with. Only set if
 /// compiled with the Intel Compiler.
-#define PIKA_INTEL_VERSION
+# define PIKA_INTEL_VERSION
 /// This macro is set if the compilation is with MSVC.
-#define PIKA_MSVC
+# define PIKA_MSVC
 /// This macro is set if the compilation is with Mingw.
-#define PIKA_MINGW
+# define PIKA_MINGW
 /// This macro is set if the compilation is for Windows.
-#define PIKA_WINDOWS
+# define PIKA_WINDOWS
 #else
 
 // clang-format off

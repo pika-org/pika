@@ -49,8 +49,8 @@ namespace pika::resource {
         mode_allow_dynamic_pools = 2
     };
 
-    using scheduler_function = util::detail::function<
-        std::unique_ptr<pika::threads::detail::thread_pool_base>(
+    using scheduler_function =
+        util::detail::function<std::unique_ptr<pika::threads::detail::thread_pool_base>(
             pika::threads::detail::thread_pool_init_parameters,
             pika::threads::detail::thread_queue_init_parameters)>;
 

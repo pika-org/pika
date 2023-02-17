@@ -48,11 +48,9 @@ int main(int argc, char* argv[])
     using pika::program_options::value;
 
     // Configure application-specific options
-    options_description desc_commandline(
-        "Usage: " PIKA_APPLICATION_STRING " [options]");
+    options_description desc_commandline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
-    desc_commandline.add_options()("num-threads,n",
-        value<std::ptrdiff_t>()->default_value(16),
+    desc_commandline.add_options()("num-threads,n", value<std::ptrdiff_t>()->default_value(16),
         "number of threads to synchronize at a local latch (default: 16)");
 
     pika::init_params init_args;

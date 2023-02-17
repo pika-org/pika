@@ -20,9 +20,8 @@
 
 namespace jacobi_smp {
 
-    void jacobi_kernel_wrap(range const& r, crs_matrix<double> const& A,
-        std::vector<double>& x_dst, std::vector<double> const& x_src,
-        std::vector<double> const& b)
+    void jacobi_kernel_wrap(range const& r, crs_matrix<double> const& A, std::vector<double>& x_dst,
+        std::vector<double> const& x_src, std::vector<double> const& b)
     {
         for (std::size_t row = r.begin(); row < r.end(); ++row)
         {
@@ -30,8 +29,8 @@ namespace jacobi_smp {
         }
     }
 
-    void jacobi(crs_matrix<double> const& A, std::vector<double> const& b,
-        std::size_t iterations, std::size_t block_size)
+    void jacobi(crs_matrix<double> const& A, std::vector<double> const& b, std::size_t iterations,
+        std::size_t block_size)
     {
         using vector_type = std::vector<double>;
 
@@ -42,16 +41,14 @@ namespace jacobi_smp {
         // pre-computing ranges for the different blocks
         for (std::size_t i = 0; i < dst->size(); i += block_size)
         {
-            block_ranges.push_back(
-                range(i, std::min<std::size_t>(dst->size(), i + block_size)));
+            block_ranges.push_back(range(i, std::min<std::size_t>(dst->size(), i + block_size)));
         }
 
         // pre-computing dependencies
         std::vector<std::vector<std::size_t>> dependencies(block_ranges.size());
         for (std::size_t b = 0; b < block_ranges.size(); ++b)
         {
-            for (std::size_t i = block_ranges[b].begin();
-                 i < block_ranges[b].end(); ++i)
+            for (std::size_t i = block_ranges[b].begin(); i < block_ranges[b].end(); ++i)
             {
                 std::size_t begin = A.row_begin(i);
                 std::size_t end = A.row_end(i);
@@ -61,12 +58,10 @@ namespace jacobi_smp {
                     std::size_t idx = A.indices[ii];
                     for (std::size_t j = 0; j < block_ranges.size(); ++j)
                     {
-                        if (block_ranges[j].begin() <= idx &&
-                            idx < block_ranges[j].end())
+                        if (block_ranges[j].begin() <= idx && idx < block_ranges[j].end())
                         {
-                            if (std::find(dependencies[b].begin(),
-                                    dependencies[b].end(),
-                                    j) == dependencies[b].end())
+                            if (std::find(dependencies[b].begin(), dependencies[b].end(), j) ==
+                                dependencies[b].end())
                             {
                                 dependencies[b].push_back(j);
                             }
@@ -99,9 +94,8 @@ namespace jacobi_smp {
                 (*deps_dst)[block] =
                     pika::when_all(std::move(trigger))
                         .then(pika::launch::async,
-                            pika::util::detail::bind(jacobi_kernel_wrap,
-                                block_ranges[block], std::cref(A),
-                                std::ref(*dst), std::cref(*src), std::cref(b)));
+                            pika::util::detail::bind(jacobi_kernel_wrap, block_ranges[block],
+                                std::cref(A), std::ref(*dst), std::cref(*src), std::cref(b)));
             }
             std::swap(dst, src);
             std::swap(deps_dst, deps_src);
@@ -111,8 +105,7 @@ namespace jacobi_smp {
         pika::wait_all(*deps_src);
 
         double time_elapsed = t.elapsed<std::chrono::seconds>();
-        std::cout << dst->size() << " "
-                  << ((double(dst->size() * iterations) / 1e6) / time_elapsed)
+        std::cout << dst->size() << " " << ((double(dst->size() * iterations) / 1e6) / time_elapsed)
                   << " MLUPS/s\n"
                   << std::flush;
     }

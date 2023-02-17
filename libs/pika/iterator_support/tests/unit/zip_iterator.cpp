@@ -67,11 +67,10 @@ int main(void)
     intset.insert(54);
     //
 
-    using zit_mixed = pika::util::zip_iterator<std::set<int>::iterator,
-        std::vector<double>::iterator>;
+    using zit_mixed =
+        pika::util::zip_iterator<std::set<int>::iterator, std::vector<double>::iterator>;
 
-    zit_mixed zip_it_mixed =
-        zit_mixed(std::make_tuple(intset.begin(), vect1.begin()));
+    zit_mixed zip_it_mixed = zit_mixed(std::make_tuple(intset.begin(), vect1.begin()));
 
     std::tuple<int, double> val_tuple(*zip_it_mixed);
 
@@ -81,8 +80,7 @@ int main(void)
     std::get<1>(ref_tuple) -= 41.;
 
     PIKA_TEST(52 == std::get<0>(val_tuple) && 42. == std::get<1>(val_tuple) &&
-        52 == std::get<0>(ref_tuple) && 1. == std::get<1>(ref_tuple) &&
-        1. == *vect1.begin());
+        52 == std::get<0>(ref_tuple) && 1. == std::get<1>(ref_tuple) && 1. == *vect1.begin());
 
     // Undo change to vect1
     std::get<1>(ref_tuple) = dblOldVal;
@@ -124,34 +122,29 @@ int main(void)
     ve4.push_back(12);
 
     // typedefs for cons lists of iterators.
-    using cons_11_its_type =
-        tuple_cat_result_of_t<std::tuple<std::set<int>::iterator>,
-            std::tuple<std::vector<int>::iterator, std::list<int>::iterator,
-                std::set<int>::iterator, std::vector<int>::iterator,
-                std::list<int>::iterator, std::set<int>::iterator,
-                std::vector<int>::iterator, std::list<int>::iterator,
-                std::set<int>::iterator, std::vector<int>::const_iterator>>;
+    using cons_11_its_type = tuple_cat_result_of_t<std::tuple<std::set<int>::iterator>,
+        std::tuple<std::vector<int>::iterator, std::list<int>::iterator, std::set<int>::iterator,
+            std::vector<int>::iterator, std::list<int>::iterator, std::set<int>::iterator,
+            std::vector<int>::iterator, std::list<int>::iterator, std::set<int>::iterator,
+            std::vector<int>::const_iterator>>;
     //
     using cons_12_its_type =
-        tuple_cat_result_of_t<std::tuple<std::list<int>::const_iterator>,
-            cons_11_its_type>;
+        tuple_cat_result_of_t<std::tuple<std::list<int>::const_iterator>, cons_11_its_type>;
 
     // typedefs for cons lists for dereferencing the zip iterator
     // made from the cons list above.
     using cons_11_refs_type = tuple_cat_result_of_t<std::tuple<const int&>,
-        std::tuple<int&, int&, const int&, int&, int&, const int&, int&, int&,
-            const int&, const int&>>;
+        std::tuple<int&, int&, const int&, int&, int&, const int&, int&, int&, const int&,
+            const int&>>;
     //
-    using cons_12_refs_type =
-        tuple_cat_result_of_t<std::tuple<const int&>, cons_11_refs_type>;
+    using cons_12_refs_type = tuple_cat_result_of_t<std::tuple<const int&>, cons_11_refs_type>;
 
     // typedef for zip iterator with 12 elements
     using zip_it_12_type = pika::util::zip_iterator<cons_12_its_type>;
 
     // Declare a 12-element zip iterator.
-    zip_it_12_type zip_it_12(li1.begin(), se1.begin(), ve1.begin(), li2.begin(),
-        se2.begin(), ve2.begin(), li3.begin(), se3.begin(), ve3.begin(),
-        li4.begin(), se4.begin(), ve4.begin());
+    zip_it_12_type zip_it_12(li1.begin(), se1.begin(), ve1.begin(), li2.begin(), se2.begin(),
+        ve2.begin(), li3.begin(), se3.begin(), ve3.begin(), li4.begin(), se4.begin(), ve4.begin());
 
     // Dereference, mess with the result a little.
     cons_12_refs_type zip_it_12_dereferenced(*zip_it_12);
@@ -163,8 +156,8 @@ int main(void)
 
     PIKA_TEST(std::get<11>(zip_it_12.get_iterator_tuple()) == ve4.begin() &&
         std::get<11>(zip_it_12_copy.get_iterator_tuple()) == ve4.end() &&
-        1 == std::get<0>(zip_it_12_dereferenced) &&
-        12 == std::get<11>(zip_it_12_dereferenced) && 42 == *(li4.begin()));
+        1 == std::get<0>(zip_it_12_dereferenced) && 12 == std::get<11>(zip_it_12_dereferenced) &&
+        42 == *(li4.begin()));
 
     /////////////////////////////////////////////////////////////////////////////
     //
@@ -177,23 +170,21 @@ int main(void)
     vect2[1] = 3.3;
     vect2[2] = 4.4;
 
-    pika::util::zip_iterator<std::tuple<std::vector<double>::const_iterator,
-        std::vector<double>::const_iterator>>
+    pika::util::zip_iterator<
+        std::tuple<std::vector<double>::const_iterator, std::vector<double>::const_iterator>>
         zip_it_begin(std::make_tuple(vect1.begin(), vect2.begin()));
 
-    pika::util::zip_iterator<std::tuple<std::vector<double>::const_iterator,
-        std::vector<double>::const_iterator>>
+    pika::util::zip_iterator<
+        std::tuple<std::vector<double>::const_iterator, std::vector<double>::const_iterator>>
         zip_it_run(std::make_tuple(vect1.begin(), vect2.begin()));
 
-    pika::util::zip_iterator<std::tuple<std::vector<double>::const_iterator,
-        std::vector<double>::const_iterator>>
+    pika::util::zip_iterator<
+        std::tuple<std::vector<double>::const_iterator, std::vector<double>::const_iterator>>
         zip_it_end(std::make_tuple(vect1.end(), vect2.end()));
 
     PIKA_TEST(zip_it_run == zip_it_begin && 42. == std::get<0>(*zip_it_run) &&
-        2.2 == std::get<1>(*zip_it_run) &&
-        43. == std::get<0>(*(++zip_it_run)) &&
-        3.3 == std::get<1>(*zip_it_run) &&
-        44. == std::get<0>(*(++zip_it_run)) &&
+        2.2 == std::get<1>(*zip_it_run) && 43. == std::get<0>(*(++zip_it_run)) &&
+        3.3 == std::get<1>(*zip_it_run) && 44. == std::get<0>(*(++zip_it_run)) &&
         4.4 == std::get<1>(*zip_it_run) && zip_it_end == ++zip_it_run);
 
     /////////////////////////////////////////////////////////////////////////////
@@ -204,10 +195,9 @@ int main(void)
 
     PIKA_TEST(zip_it_run == zip_it_end && zip_it_end == zip_it_run-- &&
         44. == std::get<0>(*zip_it_run) && 4.4 == std::get<1>(*zip_it_run) &&
-        43. == std::get<0>(*(--zip_it_run)) &&
-        3.3 == std::get<1>(*zip_it_run) &&
-        42. == std::get<0>(*(--zip_it_run)) &&
-        2.2 == std::get<1>(*zip_it_run) && zip_it_begin == zip_it_run);
+        43. == std::get<0>(*(--zip_it_run)) && 3.3 == std::get<1>(*zip_it_run) &&
+        42. == std::get<0>(*(--zip_it_run)) && 2.2 == std::get<1>(*zip_it_run) &&
+        zip_it_begin == zip_it_run);
 
     /////////////////////////////////////////////////////////////////////////////
     //
@@ -215,8 +205,8 @@ int main(void)
     //
     /////////////////////////////////////////////////////////////////////////////
 
-    pika::util::zip_iterator<std::tuple<std::vector<double>::const_iterator,
-        std::vector<double>::const_iterator>>
+    pika::util::zip_iterator<
+        std::tuple<std::vector<double>::const_iterator, std::vector<double>::const_iterator>>
         zip_it_run_copy(zip_it_run);
 
     PIKA_TEST(zip_it_run == zip_it_run && zip_it_run == zip_it_run_copy);
@@ -227,8 +217,7 @@ int main(void)
     //
     /////////////////////////////////////////////////////////////////////////////
 
-    PIKA_TEST(
-        !(zip_it_run != zip_it_run_copy) && zip_it_run != ++zip_it_run_copy);
+    PIKA_TEST(!(zip_it_run != zip_it_run_copy) && zip_it_run != ++zip_it_run_copy);
 
     /////////////////////////////////////////////////////////////////////////////
     //
@@ -238,8 +227,8 @@ int main(void)
 
     // Note: zip_it_run_copy == zip_it_run + 1
     //
-    PIKA_TEST(zip_it_run < zip_it_run_copy &&
-        !(zip_it_run < --zip_it_run_copy) && zip_it_run == zip_it_run_copy);
+    PIKA_TEST(zip_it_run < zip_it_run_copy && !(zip_it_run < --zip_it_run_copy) &&
+        zip_it_run == zip_it_run_copy);
 
     /////////////////////////////////////////////////////////////////////////////
     //
@@ -252,9 +241,8 @@ int main(void)
     ++zip_it_run;
     zip_it_run_copy += 2;
 
-    PIKA_TEST(zip_it_run <= zip_it_run_copy &&
-        zip_it_run <= --zip_it_run_copy && !(zip_it_run <= --zip_it_run_copy) &&
-        zip_it_run <= zip_it_run);
+    PIKA_TEST(zip_it_run <= zip_it_run_copy && zip_it_run <= --zip_it_run_copy &&
+        !(zip_it_run <= --zip_it_run_copy) && zip_it_run <= zip_it_run);
 
     /////////////////////////////////////////////////////////////////////////////
     //
@@ -264,8 +252,8 @@ int main(void)
 
     // Note: zip_it_run_copy == zip_it_run - 1
     //
-    PIKA_TEST(zip_it_run > zip_it_run_copy &&
-        !(zip_it_run > ++zip_it_run_copy) && zip_it_run == zip_it_run_copy);
+    PIKA_TEST(zip_it_run > zip_it_run_copy && !(zip_it_run > ++zip_it_run_copy) &&
+        zip_it_run == zip_it_run_copy);
 
     /////////////////////////////////////////////////////////////////////////////
     //
@@ -277,8 +265,8 @@ int main(void)
 
     // Note: zip_it_run == zip_it_run_copy + 1
     //
-    PIKA_TEST(zip_it_run >= zip_it_run_copy &&
-        --zip_it_run >= zip_it_run_copy && !(zip_it_run >= ++zip_it_run_copy));
+    PIKA_TEST(zip_it_run >= zip_it_run_copy && --zip_it_run >= zip_it_run_copy &&
+        !(zip_it_run >= ++zip_it_run_copy));
 
     /////////////////////////////////////////////////////////////////////////////
     //
@@ -305,8 +293,7 @@ int main(void)
     --zip_it_run_copy;
     --zip_it_run_copy;
 
-    PIKA_TEST(
-        zip_it_run == zip_it_run_copy && (zip_it_run - 1) == zip_it_begin);
+    PIKA_TEST(zip_it_run == zip_it_run_copy && (zip_it_run - 1) == zip_it_begin);
 
     /////////////////////////////////////////////////////////////////////////////
     //
@@ -340,8 +327,7 @@ int main(void)
     // Note: zip_it_run and zip_it_run_copy are both at
     // begin plus one.
     //
-    PIKA_TEST(
-        std::get<0>(zip_it_run.get_iterator_tuple()) == vect1.begin() + 1 &&
+    PIKA_TEST(std::get<0>(zip_it_run.get_iterator_tuple()) == vect1.begin() + 1 &&
         std::get<1>(zip_it_run.get_iterator_tuple()) == vect2.begin() + 1);
 
     /////////////////////////////////////////////////////////////////////////////
@@ -352,10 +338,8 @@ int main(void)
 
     std::vector<std::tuple<double, double>> vect_of_tuples(3);
 
-    std::copy(pika::util::make_zip_iterator(
-                  std::make_tuple(vect1.begin(), vect2.begin())),
-        pika::util::make_zip_iterator(
-            std::make_tuple(vect1.end(), vect2.end())),
+    std::copy(pika::util::make_zip_iterator(std::make_tuple(vect1.begin(), vect2.begin())),
+        pika::util::make_zip_iterator(std::make_tuple(vect1.end(), vect2.end())),
         vect_of_tuples.begin());
 
     PIKA_TEST(42. == std::get<0>(*vect_of_tuples.begin()) &&
@@ -371,16 +355,15 @@ int main(void)
     //
     /////////////////////////////////////////////////////////////////////////////
 
-    pika::util::zip_iterator<std::tuple<std::set<int>::const_iterator,
-        std::vector<double>::const_iterator>>
+    pika::util::zip_iterator<
+        std::tuple<std::set<int>::const_iterator, std::vector<double>::const_iterator>>
         zip_it_const(std::make_tuple(intset.begin(), vect2.begin()));
     //
-    pika::util::zip_iterator<std::tuple<std::set<int>::iterator,
-        std::vector<double>::const_iterator>>
+    pika::util::zip_iterator<
+        std::tuple<std::set<int>::iterator, std::vector<double>::const_iterator>>
         zip_it_half_const(std::make_tuple(intset.begin(), vect2.begin()));
     //
-    pika::util::zip_iterator<
-        std::tuple<std::set<int>::iterator, std::vector<double>::iterator>>
+    pika::util::zip_iterator<std::tuple<std::set<int>::iterator, std::vector<double>::iterator>>
         zip_it_non_const(std::make_tuple(intset.begin(), vect2.begin()));
 
     zip_it_half_const = ++zip_it_non_const;
@@ -390,10 +373,8 @@ int main(void)
     // Error: can't convert from const to non-const
     //  zip_it_non_const = ++zip_it_const;
 
-    PIKA_TEST(54 == std::get<0>(*zip_it_const) &&
-        4.4 == std::get<1>(*zip_it_const) &&
-        53 == std::get<0>(*zip_it_half_const) &&
-        3.3 == std::get<1>(*zip_it_half_const));
+    PIKA_TEST(54 == std::get<0>(*zip_it_const) && 4.4 == std::get<1>(*zip_it_const) &&
+        53 == std::get<0>(*zip_it_half_const) && 3.3 == std::get<1>(*zip_it_half_const));
 
     /////////////////////////////////////////////////////////////////////////////
     //
@@ -403,24 +384,23 @@ int main(void)
 
     // The big iterator of the previous test has vector, list, and set iterators.
     // Therefore, it must be bidirectional, but not random access.
-    bool bBigItIsBidirectionalIterator = std::is_convertible<
-        pika::util::zip_iterator_category<zip_it_12_type>::type,
-        std::bidirectional_iterator_tag>::value;
+    bool bBigItIsBidirectionalIterator =
+        std::is_convertible<pika::util::zip_iterator_category<zip_it_12_type>::type,
+            std::bidirectional_iterator_tag>::value;
 
-    bool bBigItIsRandomAccessIterator = std::is_convertible<
-        pika::util::zip_iterator_category<zip_it_12_type>::type,
-        std::random_access_iterator_tag>::value;
+    bool bBigItIsRandomAccessIterator =
+        std::is_convertible<pika::util::zip_iterator_category<zip_it_12_type>::type,
+            std::random_access_iterator_tag>::value;
 
     // A combining iterator with all vector iterators must have random access
     // traversal.
     //
-    using all_vects_type =
-        pika::util::zip_iterator<std::tuple<std::vector<double>::const_iterator,
-            std::vector<double>::const_iterator>>;
+    using all_vects_type = pika::util::zip_iterator<
+        std::tuple<std::vector<double>::const_iterator, std::vector<double>::const_iterator>>;
 
-    bool bAllVectsIsRandomAccessIterator = std::is_convertible<
-        pika::util::zip_iterator_category<all_vects_type>::type,
-        std::random_access_iterator_tag>::value;
+    bool bAllVectsIsRandomAccessIterator =
+        std::is_convertible<pika::util::zip_iterator_category<all_vects_type>::type,
+            std::random_access_iterator_tag>::value;
 
     // The big test.
     PIKA_TEST(bBigItIsBidirectionalIterator && !bBigItIsRandomAccessIterator &&

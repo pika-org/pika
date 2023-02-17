@@ -46,8 +46,8 @@
 #include <system_error>
 
 #if defined(PIKA_HAVE_ADDRESS_SANITIZER)
-#include <processthreadsapi.h>
-#include <sanitizer/asan_interface.h>
+# include <processthreadsapi.h>
+# include <sanitizer/asan_interface.h>
 #endif
 
 #if defined(PIKA_HAVE_SWAP_CONTEXT_EMULATION)
@@ -185,25 +185,21 @@ namespace pika::threads::coroutines {
                     GetCurrentThreadStackLimits(
                         (PULONG_PTR) &dummy, (PULONG_PTR) &asan_stack_bottom);
                 }
-                __sanitizer_start_switch_fiber(
-                    fake_stack, asan_stack_bottom, asan_stack_size);
+                __sanitizer_start_switch_fiber(fake_stack, asan_stack_bottom, asan_stack_size);
             }
-            void start_yield_fiber(
-                void** fake_stack, fibers_context_impl_base& caller)
+            void start_yield_fiber(void** fake_stack, fibers_context_impl_base& caller)
             {
-                __sanitizer_start_switch_fiber(fake_stack,
-                    caller.asan_stack_bottom, caller.asan_stack_size);
+                __sanitizer_start_switch_fiber(
+                    fake_stack, caller.asan_stack_bottom, caller.asan_stack_size);
             }
             void finish_yield_fiber(void* fake_stack)
             {
-                __sanitizer_finish_switch_fiber(
-                    fake_stack, &asan_stack_bottom, &asan_stack_size);
+                __sanitizer_finish_switch_fiber(fake_stack, &asan_stack_bottom, &asan_stack_size);
             }
-            void finish_switch_fiber(
-                void* fake_stack, fibers_context_impl_base& caller)
+            void finish_switch_fiber(void* fake_stack, fibers_context_impl_base& caller)
             {
-                __sanitizer_finish_switch_fiber(fake_stack,
-                    &caller.asan_stack_bottom, &caller.asan_stack_size);
+                __sanitizer_finish_switch_fiber(
+                    fake_stack, &caller.asan_stack_bottom, &caller.asan_stack_size);
             }
 #endif
 
@@ -253,9 +249,7 @@ namespace pika::threads::coroutines {
              *  a new stack. The stack size can be optionally specified.
              */
             explicit fibers_context_impl(std::ptrdiff_t stacksize)
-              : stacksize_(stacksize == -1 ?
-                        std::ptrdiff_t(default_stack_size) :
-                        stacksize)
+              : stacksize_(stacksize == -1 ? std::ptrdiff_t(default_stack_size) : stacksize)
             {
             }
 
@@ -265,13 +259,11 @@ namespace pika::threads::coroutines {
                     return;
 
                 m_ctx = CreateFiberEx(stacksize_, stacksize_, 0,
-                    static_cast<LPFIBER_START_ROUTINE>(
-                        &trampoline<CoroutineImpl>),
+                    static_cast<LPFIBER_START_ROUTINE>(&trampoline<CoroutineImpl>),
                     static_cast<LPVOID>(this));
                 if (nullptr == m_ctx)
                 {
-                    throw std::system_error(
-                        GetLastError(), std::system_category());
+                    throw std::system_error(GetLastError(), std::system_category());
                 }
 
 #if defined(PIKA_HAVE_ADDRESS_SANITIZER)
@@ -307,8 +299,7 @@ namespace pika::threads::coroutines {
             {
                 MEMORY_BASIC_INFORMATION mbi;                     // page range
                 VirtualQuery((PVOID) &mbi, &mbi, sizeof(mbi));    // get range
-                return (std::ptrdiff_t) &mbi -
-                    (std::ptrdiff_t) mbi.AllocationBase;
+                return (std::ptrdiff_t) &mbi - (std::ptrdiff_t) mbi.AllocationBase;
             }
 
 #if defined(PIKA_HAVE_COROUTINE_COUNTERS)
@@ -329,8 +320,7 @@ namespace pika::threads::coroutines {
         public:
             static std::uint64_t get_stack_recycle_count(bool reset) noexcept
             {
-                return detail::get_and_reset_value(
-                    get_stack_recycle_counter(), reset);
+                return detail::get_and_reset_value(get_stack_recycle_counter(), reset);
             }
 #endif
 

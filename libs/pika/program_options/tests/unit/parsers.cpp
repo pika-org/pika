@@ -67,16 +67,13 @@ namespace command_line {
     {
         // the long_names() API function was introduced in Boost V1.68
         options_description desc;
-        desc.add_options()("foo,f", new untyped_value(), "")("bar,b",
-            value<std::string>(), "")("car,voiture", new untyped_value())(
-            "dog,dawg", new untyped_value())("baz", new untyped_value())(
-            "plug*", new untyped_value());
-        const char* cmdline3_[] = {"--foo=12", "-f4", "--bar=11", "-b4",
-            "--voiture=15", "--dawg=16", "--dog=17", "--plug3=10"};
-        vector<string> cmdline3 =
-            sv(cmdline3_, sizeof(cmdline3_) / sizeof(const char*));
-        vector<option> a3 =
-            command_line_parser(cmdline3).options(desc).run().options;
+        desc.add_options()("foo,f", new untyped_value(), "")("bar,b", value<std::string>(), "")(
+            "car,voiture", new untyped_value())("dog,dawg", new untyped_value())(
+            "baz", new untyped_value())("plug*", new untyped_value());
+        const char* cmdline3_[] = {"--foo=12", "-f4", "--bar=11", "-b4", "--voiture=15",
+            "--dawg=16", "--dog=17", "--plug3=10"};
+        vector<string> cmdline3 = sv(cmdline3_, sizeof(cmdline3_) / sizeof(const char*));
+        vector<option> a3 = command_line_parser(cmdline3).options(desc).run().options;
         PIKA_TEST_EQ(a3.size(), 8u);
         check_value(a3[0], "foo", "12");
         check_value(a3[1], "foo", "4");
@@ -89,10 +86,9 @@ namespace command_line {
 
         // Regression test: check that '0' as style is interpreted as
         // 'default_style'
-        vector<option> a4 =
-            parse_command_line(sizeof(cmdline3_) / sizeof(const char*),
-                cmdline3_, desc, 0, additional_parser)
-                .options;
+        vector<option> a4 = parse_command_line(
+            sizeof(cmdline3_) / sizeof(const char*), cmdline3_, desc, 0, additional_parser)
+                                .options;
         // The default style is unix-style, where the first argument on the command-line
         // is the name of a binary, not an option value, so that should be ignored
         PIKA_TEST_EQ(a4.size(), 7u);
@@ -112,8 +108,8 @@ namespace command_line {
         options_description desc2;
         desc2.add_options()("open", value<string>());
         variables_map vm;
-        store(parse_command_line(sizeof(cmdline4) / sizeof(const char*),
-                  const_cast<char**>(cmdline4), desc2),
+        store(parse_command_line(
+                  sizeof(cmdline4) / sizeof(const char*), const_cast<char**>(cmdline4), desc2),
             vm);
     }
 
@@ -121,12 +117,11 @@ namespace command_line {
     {
         const char* cmdline5[] = {"", "-p7", "-o", "1", "2", "3", "-x8"};
         options_description desc3;
-        desc3.add_options()(",p", value<string>())(
-            ",o", value<string>()->multitoken())(",x", value<string>());
-        vector<option> a5 =
-            parse_command_line(sizeof(cmdline5) / sizeof(const char*),
-                const_cast<char**>(cmdline5), desc3, 0, additional_parser)
-                .options;
+        desc3.add_options()(",p", value<string>())(",o", value<string>()->multitoken())(
+            ",x", value<string>());
+        vector<option> a5 = parse_command_line(sizeof(cmdline5) / sizeof(const char*),
+            const_cast<char**>(cmdline5), desc3, 0, additional_parser)
+                                .options;
         PIKA_TEST_EQ(a5.size(), 3u);
         check_value(a5[0], "-p", "7");
         PIKA_TEST_EQ(a5[1].value.size(), std::size_t(3));
@@ -140,16 +135,15 @@ namespace command_line {
     void test_multitoken_and_multiname()
     {
         // the long_names() API function was introduced in Boost V1.68
-        const char* cmdline[] = {"program", "-fone", "-b", "two", "--foo",
-            "three", "four", "-zfive", "--fee", "six"};
+        const char* cmdline[] = {
+            "program", "-fone", "-b", "two", "--foo", "three", "four", "-zfive", "--fee", "six"};
         options_description desc;
-        desc.add_options()("bar,b", value<string>())("foo,fee,f",
-            value<string>()->multitoken())("fizbaz,baz,z", value<string>());
+        desc.add_options()("bar,b", value<string>())("foo,fee,f", value<string>()->multitoken())(
+            "fizbaz,baz,z", value<string>());
 
-        vector<option> parsed_options =
-            parse_command_line(sizeof(cmdline) / sizeof(const char*),
-                const_cast<char**>(cmdline), desc, 0, additional_parser)
-                .options;
+        vector<option> parsed_options = parse_command_line(sizeof(cmdline) / sizeof(const char*),
+            const_cast<char**>(cmdline), desc, 0, additional_parser)
+                                            .options;
 
         PIKA_TEST_EQ(parsed_options.size(), 5u);
         check_value(parsed_options[0], "foo", "one");
@@ -161,13 +155,12 @@ namespace command_line {
         check_value(parsed_options[3], "fizbaz", "five");
         check_value(parsed_options[4], "foo", "six");
 
-        const char* cmdline_2[] = {"program", "-fone", "-b", "two", "--fee",
-            "three", "four", "-zfive", "--foo", "six"};
+        const char* cmdline_2[] = {
+            "program", "-fone", "-b", "two", "--fee", "three", "four", "-zfive", "--foo", "six"};
 
-        parsed_options =
-            parse_command_line(sizeof(cmdline_2) / sizeof(const char*),
-                const_cast<char**>(cmdline_2), desc, 0, additional_parser)
-                .options;
+        parsed_options = parse_command_line(sizeof(cmdline_2) / sizeof(const char*),
+            const_cast<char**>(cmdline_2), desc, 0, additional_parser)
+                             .options;
 
         PIKA_TEST_EQ(parsed_options.size(), 5u);
         check_value(parsed_options[0], "foo", "one");
@@ -189,15 +182,13 @@ namespace command_line {
             "values")("file", value<std::string>(), "the file to process");
         positional_options_description p;
         p.add("file", 1);
-        const char* cmdline6[] = {
-            "", "-m", "token1", "token2", "--", "some_file"};
-        vector<option> a6 =
-            command_line_parser(sizeof(cmdline6) / sizeof(const char*),
-                const_cast<char**>(cmdline6))
-                .options(desc4)
-                .positional(p)
-                .run()
-                .options;
+        const char* cmdline6[] = {"", "-m", "token1", "token2", "--", "some_file"};
+        vector<option> a6 = command_line_parser(
+            sizeof(cmdline6) / sizeof(const char*), const_cast<char**>(cmdline6))
+                                .options(desc4)
+                                .positional(p)
+                                .run()
+                                .options;
         PIKA_TEST_EQ(a6.size(), 2u);
         PIKA_TEST_EQ(a6[0].value.size(), std::size_t(2));
         PIKA_TEST_EQ(a6[0].string_key, "multitoken");
@@ -225,9 +216,8 @@ void test_config_file(const char* config_file)
     // the long_names() API function was introduced in Boost V1.68
     options_description desc;
     desc.add_options()("gv1", new untyped_value)("gv2", new untyped_value)(
-        "empty_value", new untyped_value)("plug*", new untyped_value)(
-        "m1.v1", new untyped_value)("m1.v2", new untyped_value)(
-        "m1.v3,alias3", new untyped_value)("b", bool_switch());
+        "empty_value", new untyped_value)("plug*", new untyped_value)("m1.v1", new untyped_value)(
+        "m1.v2", new untyped_value)("m1.v3,alias3", new untyped_value)("b", bool_switch());
 
     const char content1[] = " gv1 = 0#asd\n"
                             "empty_value = \n"
@@ -265,8 +255,7 @@ void test_config_file(const char* config_file)
 void test_environment()
 {
     options_description desc;
-    desc.add_options()("foo", new untyped_value, "")(
-        "bar", new untyped_value, "");
+    desc.add_options()("foo", new untyped_value, "")("bar", new untyped_value, "");
 
 #if defined(_WIN32) || defined(__CYGWIN__)
     _putenv("PO_TEST_FOO=1");
@@ -289,13 +278,9 @@ void test_unregistered()
     options_description desc;
 
     const char* cmdline1_[] = {"--foo=12", "--bar", "1"};
-    vector<string> cmdline1 =
-        sv(cmdline1_, sizeof(cmdline1_) / sizeof(const char*));
-    vector<option> a1 = command_line_parser(cmdline1)
-                            .options(desc)
-                            .allow_unregistered()
-                            .run()
-                            .options;
+    vector<string> cmdline1 = sv(cmdline1_, sizeof(cmdline1_) / sizeof(const char*));
+    vector<option> a1 =
+        command_line_parser(cmdline1).options(desc).allow_unregistered().run().options;
 
     PIKA_TEST_EQ(a1.size(), std::size_t(3));
     PIKA_TEST_EQ(a1[0].string_key, "foo");
@@ -315,9 +300,7 @@ void test_unregistered()
     // Test that storing unregistered options has no effect
     variables_map vm;
 
-    store(
-        command_line_parser(cmdline1).options(desc).allow_unregistered().run(),
-        vm);
+    store(command_line_parser(cmdline1).options(desc).allow_unregistered().run(), vm);
 
     PIKA_TEST_EQ(vm.size(), 0u);
 

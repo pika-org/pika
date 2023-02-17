@@ -24,8 +24,7 @@ namespace pika::detail {
     struct void_guard<void>
     {
         template <typename T>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE void operator,(
-            T const&) const noexcept
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE void operator,(T const&) const noexcept
         {
         }
     };

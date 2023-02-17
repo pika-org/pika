@@ -51,8 +51,7 @@ namespace pika::threads::detail {
             return this;
         }
 
-        static pika::detail::internal_allocator<thread_data_stackful>
-            thread_alloc_;
+        static pika::detail::internal_allocator<thread_data_stackful> thread_alloc_;
 
     public:
         PIKA_FORCEINLINE coroutine_type::result_type call(
@@ -61,8 +60,7 @@ namespace pika::threads::detail {
             PIKA_ASSERT(get_state().state() == thread_schedule_state::active);
             PIKA_ASSERT(this == coroutine_.get_thread_id().get());
 
-            pika::execution::this_thread::detail::reset_agent ctx(
-                agent_storage, agent_);
+            pika::execution::this_thread::detail::reset_agent ctx(agent_storage, agent_);
             return coroutine_(set_state_ex(thread_restart_state::signaled));
         }
 
@@ -104,11 +102,10 @@ namespace pika::threads::detail {
             PIKA_ASSERT(coroutine_.is_ready());
         }
 
-        thread_data_stackful(thread_init_data& init_data, void* queue,
-            std::ptrdiff_t stacksize, thread_id_addref addref)
+        thread_data_stackful(thread_init_data& init_data, void* queue, std::ptrdiff_t stacksize,
+            thread_id_addref addref)
           : thread_data(init_data, queue, stacksize, false, addref)
-          , coroutine_(
-                PIKA_MOVE(init_data.func), thread_id_type(this_()), stacksize)
+          , coroutine_(PIKA_MOVE(init_data.func), thread_id_type(this_()), stacksize)
           , agent_(coroutine_.impl())
         {
             PIKA_ASSERT(coroutine_.is_ready());
@@ -116,9 +113,8 @@ namespace pika::threads::detail {
 
         ~thread_data_stackful();
 
-        static inline thread_data* create(thread_init_data& init_data,
-            void* queue, std::ptrdiff_t stacksize,
-            thread_id_addref addref = thread_id_addref::yes);
+        static inline thread_data* create(thread_init_data& init_data, void* queue,
+            std::ptrdiff_t stacksize, thread_id_addref addref = thread_id_addref::yes);
 
         void destroy() override
         {
@@ -132,8 +128,8 @@ namespace pika::threads::detail {
     };
 
     ////////////////////////////////////////////////////////////////////////////
-    inline thread_data* thread_data_stackful::create(thread_init_data& data,
-        void* queue, std::ptrdiff_t stacksize, thread_id_addref addref)
+    inline thread_data* thread_data_stackful::create(
+        thread_init_data& data, void* queue, std::ptrdiff_t stacksize, thread_id_addref addref)
     {
         thread_data* p = thread_alloc_.allocate(1);
         new (p) thread_data_stackful(data, queue, stacksize, addref);

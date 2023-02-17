@@ -31,12 +31,11 @@ namespace pika::detail {
 
     using mappings_type = distribution_type;
 
-    PIKA_EXPORT void parse_mappings(std::string const& spec,
-        mappings_type& mappings, error_code& ec = throws);
+    PIKA_EXPORT void parse_mappings(
+        std::string const& spec, mappings_type& mappings, error_code& ec = throws);
 
     PIKA_EXPORT void parse_affinity_options(std::string const& spec,
-        std::vector<threads::detail::mask_type>& affinities,
-        std::size_t used_cores, std::size_t max_cores, std::size_t num_threads,
-        std::vector<std::size_t>& num_pus, bool use_process_mask,
-        error_code& ec = throws);
+        std::vector<threads::detail::mask_type>& affinities, std::size_t used_cores,
+        std::size_t max_cores, std::size_t num_threads, std::vector<std::size_t>& num_pus,
+        bool use_process_mask, error_code& ec = throws);
 }    // namespace pika::detail

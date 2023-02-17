@@ -27,21 +27,21 @@
 /// The passed argument \c X will expand to \c "X". Note that the stringizing
 /// operator (#) prevents arguments from expanding. This macro circumvents this
 /// shortcoming.
-#define PIKA_PP_STRINGIZE(X)
+# define PIKA_PP_STRINGIZE(X)
 #else
 
-#include <pika/preprocessor/config.hpp>
+# include <pika/preprocessor/config.hpp>
 
-#if PIKA_PP_CONFIG_FLAGS() & PIKA_PP_CONFIG_MSVC()
-#define PIKA_PP_STRINGIZE(text) PIKA_PP_STRINGIZE_A((text))
-#define PIKA_PP_STRINGIZE_A(arg) PIKA_PP_STRINGIZE_I arg
-#elif PIKA_PP_CONFIG_FLAGS() & PIKA_PP_CONFIG_MWCC()
-#define PIKA_PP_STRINGIZE(text) PIKA_PP_STRINGIZE_OO((text))
-#define PIKA_PP_STRINGIZE_OO(par) PIKA_PP_STRINGIZE_I##par
-#else
-#define PIKA_PP_STRINGIZE(text) PIKA_PP_STRINGIZE_I(text)
-#endif
+# if PIKA_PP_CONFIG_FLAGS() & PIKA_PP_CONFIG_MSVC()
+#  define PIKA_PP_STRINGIZE(text) PIKA_PP_STRINGIZE_A((text))
+#  define PIKA_PP_STRINGIZE_A(arg) PIKA_PP_STRINGIZE_I arg
+# elif PIKA_PP_CONFIG_FLAGS() & PIKA_PP_CONFIG_MWCC()
+#  define PIKA_PP_STRINGIZE(text) PIKA_PP_STRINGIZE_OO((text))
+#  define PIKA_PP_STRINGIZE_OO(par) PIKA_PP_STRINGIZE_I##par
+# else
+#  define PIKA_PP_STRINGIZE(text) PIKA_PP_STRINGIZE_I(text)
+# endif
 
-#define PIKA_PP_STRINGIZE_I(text) #text
+# define PIKA_PP_STRINGIZE_I(text) # text
 
 #endif

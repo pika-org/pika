@@ -39,8 +39,7 @@ namespace pika {
     ///       The future returned by \a when_all will not throw an exception,
     ///       but the futures held in the output collection may.
     template <typename InputIter,
-        typename Container = vector<
-            future<typename std::iterator_traits<InputIter>::value_type>>>
+        typename Container = vector<future<typename std::iterator_traits<InputIter>::value_type>>>
     pika::future<Container> when_all(InputIter first, InputIter last);
 
     /// The function \a when_all is an operator allowing to join on the result
@@ -125,32 +124,31 @@ namespace pika {
     ///
     /// \note     None of the futures in the input sequence are invalidated.
     template <typename InputIter,
-        typename Container = vector<
-            future<typename std::iterator_traits<InputIter>::value_type>>>
+        typename Container = vector<future<typename std::iterator_traits<InputIter>::value_type>>>
     pika::future<Container> when_all_n(InputIter begin, std::size_t count);
 }    // namespace pika
 
 #else    // DOXYGEN
 
-#include <pika/config.hpp>
-#include <pika/allocator_support/internal_allocator.hpp>
-#include <pika/futures/detail/future_data.hpp>
-#include <pika/futures/detail/future_transforms.hpp>
-#include <pika/futures/future.hpp>
-#include <pika/futures/traits/acquire_future.hpp>
-#include <pika/futures/traits/acquire_shared_state.hpp>
-#include <pika/futures/traits/future_access.hpp>
-#include <pika/futures/traits/future_traits.hpp>
-#include <pika/futures/traits/is_future.hpp>
-#include <pika/futures/traits/is_future_range.hpp>
-#include <pika/pack_traversal/pack_traversal_async.hpp>
+# include <pika/config.hpp>
+# include <pika/allocator_support/internal_allocator.hpp>
+# include <pika/futures/detail/future_data.hpp>
+# include <pika/futures/detail/future_transforms.hpp>
+# include <pika/futures/future.hpp>
+# include <pika/futures/traits/acquire_future.hpp>
+# include <pika/futures/traits/acquire_shared_state.hpp>
+# include <pika/futures/traits/future_access.hpp>
+# include <pika/futures/traits/future_traits.hpp>
+# include <pika/futures/traits/is_future.hpp>
+# include <pika/futures/traits/is_future_range.hpp>
+# include <pika/pack_traversal/pack_traversal_async.hpp>
 
-#include <cstddef>
-#include <iterator>
-#include <tuple>
-#include <type_traits>
-#include <utility>
-#include <vector>
+# include <cstddef>
+# include <iterator>
+# include <tuple>
+# include <type_traits>
+# include <utility>
+# include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {
@@ -168,8 +166,7 @@ namespace pika {
         };
 
         template <typename T>
-        struct when_all_result<std::tuple<T>,
-            std::enable_if_t<pika::traits::is_future_range_v<T>>>
+        struct when_all_result<std::tuple<T>, std::enable_if_t<pika::traits::is_future_range_v<T>>>
         {
             using type = T;
 
@@ -183,16 +180,14 @@ namespace pika {
         using when_all_result_t = typename when_all_result<T>::type;
 
         template <typename Tuple>
-        class async_when_all_frame
-          : public lcos::detail::future_data<when_all_result_t<Tuple>>
+        class async_when_all_frame : public lcos::detail::future_data<when_all_result_t<Tuple>>
         {
         public:
             using result_type = when_all_result_t<Tuple>;
             using type = pika::future<result_type>;
             using base_type = pika::lcos::detail::future_data<result_type>;
 
-            explicit async_when_all_frame(
-                typename base_type::init_no_addref no_addref)
+            explicit async_when_all_frame(typename base_type::init_no_addref no_addref)
               : base_type(no_addref)
             {
             }
@@ -205,41 +200,33 @@ namespace pika {
             }
 
             template <typename T, typename N>
-            auto operator()(
-                pika::util::async_traverse_detach_tag, T&& current, N&& next)
-                -> decltype(async_detach_future(
-                    PIKA_FORWARD(T, current), PIKA_FORWARD(N, next)))
+            auto operator()(pika::util::async_traverse_detach_tag, T&& current, N&& next)
+                -> decltype(async_detach_future(PIKA_FORWARD(T, current), PIKA_FORWARD(N, next)))
             {
-                return async_detach_future(
-                    PIKA_FORWARD(T, current), PIKA_FORWARD(N, next));
+                return async_detach_future(PIKA_FORWARD(T, current), PIKA_FORWARD(N, next));
             }
 
             template <typename T>
             void operator()(pika::util::async_traverse_complete_tag, T&& pack)
             {
-                this->set_value(
-                    when_all_result<Tuple>::call(PIKA_FORWARD(T, pack)));
+                this->set_value(when_all_result<Tuple>::call(PIKA_FORWARD(T, pack)));
             }
         };
 
         template <typename... T>
-        typename async_when_all_frame<
-            std::tuple<pika::traits::acquire_future_t<T>...>>::type
+        typename async_when_all_frame<std::tuple<pika::traits::acquire_future_t<T>...>>::type
         when_all_impl(T&&... args)
         {
-            using result_type =
-                std::tuple<pika::traits::acquire_future_t<T>...>;
+            using result_type = std::tuple<pika::traits::acquire_future_t<T>...>;
             using frame_type = async_when_all_frame<result_type>;
             using no_addref = typename frame_type::base_type::init_no_addref;
 
-            auto frame = pika::util::traverse_pack_async_allocator(
-                pika::detail::internal_allocator<>{},
-                pika::util::async_traverse_in_place_tag<frame_type>{},
-                no_addref{},
-                pika::traits::acquire_future_disp()(PIKA_FORWARD(T, args))...);
+            auto frame =
+                pika::util::traverse_pack_async_allocator(pika::detail::internal_allocator<>{},
+                    pika::util::async_traverse_in_place_tag<frame_type>{}, no_addref{},
+                    pika::traits::acquire_future_disp()(PIKA_FORWARD(T, args))...);
 
-            return pika::traits::future_access<
-                typename frame_type::type>::create(PIKA_MOVE(frame));
+            return pika::traits::future_access<typename frame_type::type>::create(PIKA_MOVE(frame));
         }
     }    // namespace detail
 
@@ -252,27 +239,21 @@ namespace pika {
     }
 
     template <typename Iterator,
-        typename Container =
-            std::vector<pika::lcos::detail::future_iterator_traits_t<Iterator>>,
-        typename Enable =
-            std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
+        typename Container = std::vector<pika::lcos::detail::future_iterator_traits_t<Iterator>>,
+        typename Enable = std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
     decltype(auto) when_all(Iterator begin, Iterator end)
     {
         return pika::detail::when_all_impl(
-            pika::lcos::detail::acquire_future_iterators<Iterator, Container>(
-                begin, end));
+            pika::lcos::detail::acquire_future_iterators<Iterator, Container>(begin, end));
     }
 
     template <typename Iterator,
-        typename Container =
-            std::vector<pika::lcos::detail::future_iterator_traits_t<Iterator>>,
-        typename Enable =
-            std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
+        typename Container = std::vector<pika::lcos::detail::future_iterator_traits_t<Iterator>>,
+        typename Enable = std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
     decltype(auto) when_all_n(Iterator begin, std::size_t count)
     {
         return pika::detail::when_all_impl(
-            pika::lcos::detail::acquire_future_n<Iterator, Container>(
-                begin, count));
+            pika::lcos::detail::acquire_future_n<Iterator, Container>(begin, count));
     }
 
     inline pika::future<std::tuple<>>    //-V524

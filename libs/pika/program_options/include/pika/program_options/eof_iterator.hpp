@@ -47,8 +47,7 @@ namespace pika::program_options {
     */
     template <class Derived, class ValueType>
     class eof_iterator
-      : public util::iterator_facade<Derived, ValueType const,
-            std::forward_iterator_tag>
+      : public util::iterator_facade<Derived, ValueType const, std::forward_iterator_tag>
     {
     public:
         eof_iterator()

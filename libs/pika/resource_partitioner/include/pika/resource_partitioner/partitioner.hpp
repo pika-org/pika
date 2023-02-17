@@ -26,8 +26,8 @@ namespace pika::resource {
         static constexpr const std::size_t invalid_pu_id = std::size_t(-1);
 
     public:
-        explicit pu(std::size_t id = invalid_pu_id, core* core = nullptr,
-            std::size_t thread_occupancy = 0)
+        explicit pu(
+            std::size_t id = invalid_pu_id, core* core = nullptr, std::size_t thread_occupancy = 0)
           : id_(id)
           , core_(core)
           , thread_occupancy_(thread_occupancy)
@@ -66,8 +66,7 @@ namespace pika::resource {
         static constexpr const std::size_t invalid_core_id = std::size_t(-1);
 
     public:
-        explicit core(
-            std::size_t id = invalid_core_id, numa_domain* domain = nullptr)
+        explicit core(std::size_t id = invalid_core_id, numa_domain* domain = nullptr)
           : id_(id)
           , domain_(domain)
         {
@@ -96,8 +95,7 @@ namespace pika::resource {
 
     class numa_domain
     {
-        static constexpr const std::size_t invalid_numa_domain_id =
-            std::size_t(-1);
+        static constexpr const std::size_t invalid_numa_domain_id = std::size_t(-1);
 
     public:
         explicit numa_domain(std::size_t id = invalid_numa_domain_id)
@@ -125,9 +123,8 @@ namespace pika::resource {
 
     ///////////////////////////////////////////////////////////////////////////
     namespace detail {
-        ::pika::resource::partitioner make_partitioner(
-            resource::partitioner_mode rpmode, pika::util::section rtcfg,
-            pika::detail::affinity_data affinity_data);
+        ::pika::resource::partitioner make_partitioner(resource::partitioner_mode rpmode,
+            pika::util::section rtcfg, pika::detail::affinity_data affinity_data);
     }
 
     class partitioner
@@ -137,8 +134,7 @@ namespace pika::resource {
             resource::partitioner_mode rpmode, pika::util::section rtcfg,
             pika::detail::affinity_data affinity_data);
 
-        partitioner(resource::partitioner_mode rpmode,
-            pika::util::section rtcfg,
+        partitioner(resource::partitioner_mode rpmode, pika::util::section rtcfg,
             pika::detail::affinity_data affinity_data);
 
     public:
@@ -146,8 +142,7 @@ namespace pika::resource {
         // Create one of the predefined thread pools
         PIKA_EXPORT void create_thread_pool(std::string const& name,
             scheduling_policy sched = scheduling_policy::unspecified,
-            pika::threads::scheduler_mode =
-                pika::threads::scheduler_mode::default_mode);
+            pika::threads::scheduler_mode = pika::threads::scheduler_mode::default_mode);
 
         // Create a custom thread pool with a callback function
         PIKA_EXPORT void create_thread_pool(
@@ -161,24 +156,22 @@ namespace pika::resource {
         ///////////////////////////////////////////////////////////////////////
         // Functions to add processing units to thread pools via
         // the pu/core/numa_domain API
-        void add_resource(pika::resource::pu const& p,
-            std::string const& pool_name, std::size_t num_threads = 1)
+        void add_resource(
+            pika::resource::pu const& p, std::string const& pool_name, std::size_t num_threads = 1)
         {
             add_resource(p, pool_name, true, num_threads);
         }
-        PIKA_EXPORT void add_resource(pika::resource::pu const& p,
-            std::string const& pool_name, bool exclusive,
-            std::size_t num_threads = 1);
+        PIKA_EXPORT void add_resource(pika::resource::pu const& p, std::string const& pool_name,
+            bool exclusive, std::size_t num_threads = 1);
         PIKA_EXPORT void add_resource(std::vector<pika::resource::pu> const& pv,
             std::string const& pool_name, bool exclusive = true);
-        PIKA_EXPORT void add_resource(pika::resource::core const& c,
-            std::string const& pool_name, bool exclusive = true);
+        PIKA_EXPORT void add_resource(
+            pika::resource::core const& c, std::string const& pool_name, bool exclusive = true);
         PIKA_EXPORT void add_resource(std::vector<pika::resource::core>& cv,
             std::string const& pool_name, bool exclusive = true);
         PIKA_EXPORT void add_resource(pika::resource::numa_domain const& nd,
             std::string const& pool_name, bool exclusive = true);
-        PIKA_EXPORT void add_resource(
-            std::vector<pika::resource::numa_domain> const& ndv,
+        PIKA_EXPORT void add_resource(std::vector<pika::resource::numa_domain> const& ndv,
             std::string const& pool_name, bool exclusive = true);
 
         // Access all available NUMA domains

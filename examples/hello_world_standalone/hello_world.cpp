@@ -11,8 +11,7 @@
 
 int pika_main()
 {
-    std::cout << "Hello from pika-thread with id "
-              << pika::this_thread::get_id() << std::endl;
+    std::cout << "Hello from pika-thread with id " << pika::this_thread::get_id() << std::endl;
 
     return pika::finalize();
 }

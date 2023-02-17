@@ -13,13 +13,11 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace pika::threads::detail {
-    pika::detail::internal_allocator<thread_data_stackful>
-        thread_data_stackful::thread_alloc_;
+    pika::detail::internal_allocator<thread_data_stackful> thread_data_stackful::thread_alloc_;
 
     thread_data_stackful::~thread_data_stackful()
     {
-        LTM_(debug).format(
-            "~thread_data_stackful({}), description({}), phase({})",
-            fmt::ptr(this), this->get_description(), this->get_thread_phase());
+        LTM_(debug).format("~thread_data_stackful({}), description({}), phase({})", fmt::ptr(this),
+            this->get_description(), this->get_thread_phase());
     }
 }    // namespace pika::threads::detail

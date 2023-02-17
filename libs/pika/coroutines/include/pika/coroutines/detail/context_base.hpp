@@ -56,9 +56,9 @@
 #include <utility>
 
 ///////////////////////////////////////////////////////////////////////////////
-#define PIKA_COROUTINE_NUM_ALL_HEAPS                                           \
-    (PIKA_COROUTINE_NUM_HEAPS + PIKA_COROUTINE_NUM_HEAPS / 2 +                 \
-        PIKA_COROUTINE_NUM_HEAPS / 4 + PIKA_COROUTINE_NUM_HEAPS / 4) /**/
+#define PIKA_COROUTINE_NUM_ALL_HEAPS                                                               \
+ (PIKA_COROUTINE_NUM_HEAPS + PIKA_COROUTINE_NUM_HEAPS / 2 + PIKA_COROUTINE_NUM_HEAPS / 4 +         \
+     PIKA_COROUTINE_NUM_HEAPS / 4) /**/
 
 namespace pika::threads::coroutines::detail {
     constexpr std::ptrdiff_t const default_stack_size = -1;
@@ -308,8 +308,7 @@ namespace pika::threads::coroutines::detail {
         }
 
         // Nothrow.
-        void do_return(
-            context_exit_status status, std::exception_ptr&& info) noexcept
+        void do_return(context_exit_status status, std::exception_ptr&& info) noexcept
         {
             PIKA_ASSERT(status != ctx_not_exited);
             PIKA_ASSERT(m_state == ctx_running);

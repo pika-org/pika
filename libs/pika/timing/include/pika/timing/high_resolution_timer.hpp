@@ -36,27 +36,19 @@ namespace pika::chrono::detail {
         template <typename Unit = std::chrono::duration<double>>
         auto elapsed() const noexcept
         {
-            return std::chrono::duration_cast<Unit>(
-                take_time_stamp() - start_time_)
-                .count();
+            return std::chrono::duration_cast<Unit>(take_time_stamp() - start_time_).count();
         }
 
         // return estimated maximum value for elapsed()
         static constexpr double elapsed_max() noexcept
         {
-            return (std::chrono::duration_values<
-                       std::chrono::nanoseconds>::max)()
-                       .count() *
-                1e-9;
+            return (std::chrono::duration_values<std::chrono::nanoseconds>::max)().count() * 1e-9;
         }
 
         // return minimum value for elapsed()
         static constexpr double elapsed_min() noexcept
         {
-            return (std::chrono::duration_values<
-                       std::chrono::nanoseconds>::min)()
-                       .count() *
-                1e-9;
+            return (std::chrono::duration_values<std::chrono::nanoseconds>::min)().count() * 1e-9;
         }
 
     protected:

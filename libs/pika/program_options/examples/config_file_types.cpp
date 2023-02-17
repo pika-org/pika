@@ -27,8 +27,7 @@ bool check_float(Double1 test, Double2 expected)
     double expected_d = double(expected);
 
     double separation = expected_d * (1. + FLOAT_SEPARATION) / expected_d;
-    if ((test_d < expected_d + separation) &&
-        (test_d > expected_d - separation))
+    if ((test_d < expected_d + separation) && (test_d > expected_d - separation))
     {
         return true;
     }
@@ -151,31 +150,28 @@ po::options_description set_options()
     return opts;
 }
 
-vector<string> parse_file(
-    stringstream& file, po::options_description& opts, po::variables_map& vm)
+vector<string> parse_file(stringstream& file, po::options_description& opts, po::variables_map& vm)
 {
     const bool ALLOW_UNREGISTERED = true;
     cout << file.str() << endl;
 
-    po::parsed_options parsed =
-        parse_config_file(file, opts, ALLOW_UNREGISTERED);
+    po::parsed_options parsed = parse_config_file(file, opts, ALLOW_UNREGISTERED);
 
     store(parsed, vm);
-    vector<string> unregistered =
-        po::collect_unrecognized(parsed.options, po::exclude_positional);
+    vector<string> unregistered = po::collect_unrecognized(parsed.options, po::exclude_positional);
     notify(vm);
 
     return unregistered;
 }
 
-#define VERIFY(expr)                                                           \
-    {                                                                          \
-        if (!(expr))                                                           \
-        {                                                                      \
-            std::cerr << PIKA_PP_STRINGIZE(expr) << " failed!\n";              \
-        }                                                                      \
-    }                                                                          \
-    /**/
+#define VERIFY(expr)                                                                               \
+ {                                                                                                 \
+  if (!(expr))                                                                                     \
+  {                                                                                                \
+   std::cerr << PIKA_PP_STRINGIZE(expr) << " failed!\n";                                           \
+  }                                                                                                \
+ }                                                                                                 \
+ /**/
 
 void check_results(po::variables_map& vm, vector<string> unregistered)
 {
@@ -234,26 +230,17 @@ void check_results(po::variables_map& vm, vector<string> unregistered)
     //VERIFY(vm["ints.oct"].as<int>() == expected_int_oct);
     //VERIFY(vm["ints.bin"].as<int>() == expected_int_bin);
 
-    VERIFY(check_float(
-        vm["floats.positive"].as<float>(), expected_float_positive));
-    VERIFY(check_float(
-        vm["floats.negative"].as<float>(), expected_float_negative));
-    VERIFY(
-        check_float(vm["floats.double"].as<double>(), expected_float_double));
+    VERIFY(check_float(vm["floats.positive"].as<float>(), expected_float_positive));
+    VERIFY(check_float(vm["floats.negative"].as<float>(), expected_float_negative));
+    VERIFY(check_float(vm["floats.double"].as<double>(), expected_float_double));
     VERIFY(check_float(vm["floats.int"].as<float>(), expected_float_int));
-    VERIFY(
-        check_float(vm["floats.int_dot"].as<float>(), expected_float_int_dot));
+    VERIFY(check_float(vm["floats.int_dot"].as<float>(), expected_float_int_dot));
     VERIFY(check_float(vm["floats.dot"].as<float>(), expected_float_dot));
-    VERIFY(check_float(
-        vm["floats.exp_lower"].as<float>(), expected_float_exp_lower));
-    VERIFY(check_float(
-        vm["floats.exp_upper"].as<float>(), expected_float_exp_upper));
-    VERIFY(check_float(
-        vm["floats.exp_decimal"].as<float>(), expected_float_exp_decimal));
-    VERIFY(check_float(
-        vm["floats.exp_negative"].as<float>(), expected_float_exp_negative));
-    VERIFY(check_float(vm["floats.exp_negative_val"].as<float>(),
-        expected_float_exp_negative_val));
+    VERIFY(check_float(vm["floats.exp_lower"].as<float>(), expected_float_exp_lower));
+    VERIFY(check_float(vm["floats.exp_upper"].as<float>(), expected_float_exp_upper));
+    VERIFY(check_float(vm["floats.exp_decimal"].as<float>(), expected_float_exp_decimal));
+    VERIFY(check_float(vm["floats.exp_negative"].as<float>(), expected_float_exp_negative));
+    VERIFY(check_float(vm["floats.exp_negative_val"].as<float>(), expected_float_exp_negative_val));
     VERIFY(check_float(vm["floats.exp_negative_negative_val"].as<float>(),
         expected_float_exp_negative_negative_val));
 
@@ -265,8 +252,7 @@ void check_results(po::variables_map& vm, vector<string> unregistered)
     VERIFY(vm["booleans.tf_false"].as<bool>() == expected_tf_false);
     VERIFY(vm["booleans.onoff_true"].as<bool>() == expected_onoff_true);
     VERIFY(vm["booleans.onoff_false"].as<bool>() == expected_onoff_false);
-    VERIFY(vm["booleans.present_equal_true"].as<bool>() ==
-        expected_present_equal_true);
+    VERIFY(vm["booleans.present_equal_true"].as<bool>() == expected_present_equal_true);
     //VERIFY(vm["booleans.present_no_equal_true"].as<bool>() ==
     //    expected_present_no_equal_true);
 }

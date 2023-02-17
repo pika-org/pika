@@ -9,14 +9,14 @@
 
 #if defined(DOXYGEN)
 /// Defined if pika is compiled in debug mode.
-#define PIKA_DEBUG
+# define PIKA_DEBUG
 /// Evaluates to ``debug`` if compiled in debug mode, ``release`` otherwise.
-#define PIKA_BUILD_TYPE
+# define PIKA_BUILD_TYPE
 #else
 
-#if defined(PIKA_DEBUG)
-#define PIKA_BUILD_TYPE debug
-#else
-#define PIKA_BUILD_TYPE release
-#endif
+# if defined(PIKA_DEBUG)
+#  define PIKA_BUILD_TYPE debug
+# else
+#  define PIKA_BUILD_TYPE release
+# endif
 #endif

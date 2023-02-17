@@ -69,20 +69,17 @@ namespace pika::threads::detail {
         virtual ~manage_executor() {}
 
         // Return the requested policy element
-        virtual std::size_t get_policy_element(
-            executor_parameter p, error_code& ec) const = 0;
+        virtual std::size_t get_policy_element(executor_parameter p, error_code& ec) const = 0;
 
         // Return statistics collected by this scheduler
-        virtual void get_statistics(
-            executor_statistics& stats, error_code& ec) const = 0;
+        virtual void get_statistics(executor_statistics& stats, error_code& ec) const = 0;
 
         // Provide the given processing unit to the scheduler.
         virtual void add_processing_unit(
             std::size_t virt_core, std::size_t thread_num, error_code& ec) = 0;
 
         // Remove the given processing unit from the scheduler.
-        virtual void remove_processing_unit(
-            std::size_t thread_num, error_code& ec) = 0;
+        virtual void remove_processing_unit(std::size_t thread_num, error_code& ec) = 0;
 
         // return the description string of the underlying scheduler
         virtual char const* get_description() const = 0;
@@ -122,17 +119,15 @@ namespace pika::threads::detail {
         std::size_t thread_offset_;
         pika::threads::callback_notifier& notifier_;
         pika::detail::affinity_data const& affinity_data_;
-        pika::threads::detail::network_background_callback_type const&
-            network_background_callback_;
+        pika::threads::detail::network_background_callback_type const& network_background_callback_;
         std::size_t max_background_threads_;
         std::size_t max_idle_loop_count_;
         std::size_t max_busy_loop_count_;
         std::size_t shutdown_check_count_;
 
         // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-        thread_pool_init_parameters(std::string const& name, std::size_t index,
-            scheduler_mode mode, std::size_t num_threads,
-            std::size_t thread_offset,
+        thread_pool_init_parameters(std::string const& name, std::size_t index, scheduler_mode mode,
+            std::size_t num_threads, std::size_t thread_offset,
             pika::threads::callback_notifier& notifier,
             pika::detail::affinity_data const& affinity_data,
             pika::threads::detail::network_background_callback_type const&
@@ -173,11 +168,9 @@ namespace pika::threads::detail {
 
         virtual void init(std::size_t num_threads, std::size_t threads_offset);
 
-        virtual bool run(
-            std::unique_lock<std::mutex>& l, std::size_t num_threads) = 0;
+        virtual bool run(std::unique_lock<std::mutex>& l, std::size_t num_threads) = 0;
 
-        virtual void stop(
-            std::unique_lock<std::mutex>& l, bool blocking = true) = 0;
+        virtual void stop(std::unique_lock<std::mutex>& l, bool blocking = true) = 0;
 
         virtual void wait() = 0;
         virtual bool is_busy() = 0;
@@ -240,12 +233,11 @@ namespace pika::threads::detail {
 
         virtual void create_thread(
             thread_init_data& data, thread_id_ref_type& id, error_code& ec) = 0;
-        virtual thread_id_ref_type create_work(
-            thread_init_data& data, error_code& ec) = 0;
+        virtual thread_id_ref_type create_work(thread_init_data& data, error_code& ec) = 0;
 
-        virtual thread_state set_state(thread_id_type const& id,
-            thread_schedule_state new_state, thread_restart_state new_state_ex,
-            execution::thread_priority priority, error_code& ec) = 0;
+        virtual thread_state set_state(thread_id_type const& id, thread_schedule_state new_state,
+            thread_restart_state new_state_ex, execution::thread_priority priority,
+            error_code& ec) = 0;
 
         std::size_t get_pool_index() const
         {
@@ -270,34 +262,28 @@ namespace pika::threads::detail {
 
         // performance counters
 #if defined(PIKA_HAVE_THREAD_CUMULATIVE_COUNTS)
-        virtual std::int64_t get_executed_threads(
-            std::size_t /*thread_num*/, bool /*reset*/)
+        virtual std::int64_t get_executed_threads(std::size_t /*thread_num*/, bool /*reset*/)
         {
             return 0;
         }
-        virtual std::int64_t get_executed_thread_phases(
-            std::size_t /*thread_num*/, bool /*reset*/)
+        virtual std::int64_t get_executed_thread_phases(std::size_t /*thread_num*/, bool /*reset*/)
         {
             return 0;
         }
-#if defined(PIKA_HAVE_THREAD_IDLE_RATES)
-        virtual std::int64_t get_thread_phase_duration(
-            std::size_t /*thread_num*/, bool /*reset*/)
+# if defined(PIKA_HAVE_THREAD_IDLE_RATES)
+        virtual std::int64_t get_thread_phase_duration(std::size_t /*thread_num*/, bool /*reset*/)
         {
             return 0;
         }
-        virtual std::int64_t get_thread_duration(
-            std::size_t /*thread_num*/, bool /*reset*/)
+        virtual std::int64_t get_thread_duration(std::size_t /*thread_num*/, bool /*reset*/)
         {
             return 0;
         }
-        virtual std::int64_t get_thread_phase_overhead(
-            std::size_t /*thread_num*/, bool /*reset*/)
+        virtual std::int64_t get_thread_phase_overhead(std::size_t /*thread_num*/, bool /*reset*/)
         {
             return 0;
         }
-        virtual std::int64_t get_thread_overhead(
-            std::size_t /*thread_num*/, bool /*reset*/)
+        virtual std::int64_t get_thread_overhead(std::size_t /*thread_num*/, bool /*reset*/)
         {
             return 0;
         }
@@ -311,11 +297,10 @@ namespace pika::threads::detail {
         {
             return 0;
         }
-#endif
+# endif
 #endif
 
-        virtual std::int64_t get_cumulative_duration(
-            std::size_t /*thread_num*/, bool /*reset*/)
+        virtual std::int64_t get_cumulative_duration(std::size_t /*thread_num*/, bool /*reset*/)
         {
             return 0;
         }
@@ -330,18 +315,16 @@ namespace pika::threads::detail {
             return 0;
         }
 
-#if defined(PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES)
-        virtual std::int64_t avg_creation_idle_rate(
-            std::size_t /*thread_num*/, bool /*reset*/)
+# if defined(PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES)
+        virtual std::int64_t avg_creation_idle_rate(std::size_t /*thread_num*/, bool /*reset*/)
         {
             return 0;
         }
-        virtual std::int64_t avg_cleanup_idle_rate(
-            std::size_t /*thread_num*/, bool /*reset*/)
+        virtual std::int64_t avg_cleanup_idle_rate(std::size_t /*thread_num*/, bool /*reset*/)
         {
             return 0;
         }
-#endif
+# endif
 #endif
 
         virtual std::int64_t get_queue_length(std::size_t, bool)
@@ -355,50 +338,42 @@ namespace pika::threads::detail {
         {
             return 0;
         }
-        virtual std::int64_t get_average_task_wait_time(
-            std::size_t /*thread_num*/, bool /*reset*/)
+        virtual std::int64_t get_average_task_wait_time(std::size_t /*thread_num*/, bool /*reset*/)
         {
             return 0;
         }
 #endif
 
 #if defined(PIKA_HAVE_THREAD_STEALING_COUNTS)
-        virtual std::int64_t get_num_pending_misses(
-            std::size_t /*thread_num*/, bool /*reset*/)
+        virtual std::int64_t get_num_pending_misses(std::size_t /*thread_num*/, bool /*reset*/)
         {
             return 0;
         }
-        virtual std::int64_t get_num_pending_accesses(
-            std::size_t /*thread_num*/, bool /*reset*/)
+        virtual std::int64_t get_num_pending_accesses(std::size_t /*thread_num*/, bool /*reset*/)
         {
             return 0;
         }
 
-        virtual std::int64_t get_num_stolen_from_pending(
-            std::size_t /*thread_num*/, bool /*reset*/)
+        virtual std::int64_t get_num_stolen_from_pending(std::size_t /*thread_num*/, bool /*reset*/)
         {
             return 0;
         }
-        virtual std::int64_t get_num_stolen_to_pending(
-            std::size_t /*thread_num*/, bool /*reset*/)
+        virtual std::int64_t get_num_stolen_to_pending(std::size_t /*thread_num*/, bool /*reset*/)
         {
             return 0;
         }
-        virtual std::int64_t get_num_stolen_from_staged(
-            std::size_t /*thread_num*/, bool /*reset*/)
+        virtual std::int64_t get_num_stolen_from_staged(std::size_t /*thread_num*/, bool /*reset*/)
         {
             return 0;
         }
-        virtual std::int64_t get_num_stolen_to_staged(
-            std::size_t /*thread_num*/, bool /*reset*/)
+        virtual std::int64_t get_num_stolen_to_staged(std::size_t /*thread_num*/, bool /*reset*/)
         {
             return 0;
         }
 #endif
 
         virtual std::int64_t get_thread_count(thread_schedule_state /*state*/,
-            execution::thread_priority /*priority*/, std::size_t /*num_thread*/,
-            bool /*reset*/)
+            execution::thread_priority /*priority*/, std::size_t /*num_thread*/, bool /*reset*/)
         {
             return 0;
         }
@@ -415,8 +390,7 @@ namespace pika::threads::detail {
             return 0;
         }
 
-        std::int64_t get_thread_count_unknown(
-            std::size_t num_thread, bool reset)
+        std::int64_t get_thread_count_unknown(std::size_t num_thread, bool reset)
         {
             return get_thread_count(thread_schedule_state::unknown,
                 execution::thread_priority::default_, num_thread, reset);
@@ -426,20 +400,17 @@ namespace pika::threads::detail {
             return get_thread_count(thread_schedule_state::active,
                 execution::thread_priority::default_, num_thread, reset);
         }
-        std::int64_t get_thread_count_pending(
-            std::size_t num_thread, bool reset)
+        std::int64_t get_thread_count_pending(std::size_t num_thread, bool reset)
         {
             return get_thread_count(thread_schedule_state::pending,
                 execution::thread_priority::default_, num_thread, reset);
         }
-        std::int64_t get_thread_count_suspended(
-            std::size_t num_thread, bool reset)
+        std::int64_t get_thread_count_suspended(std::size_t num_thread, bool reset)
         {
             return get_thread_count(thread_schedule_state::suspended,
                 execution::thread_priority::default_, num_thread, reset);
         }
-        std::int64_t get_thread_count_terminated(
-            std::size_t num_thread, bool reset)
+        std::int64_t get_thread_count_terminated(std::size_t num_thread, bool reset)
         {
             return get_thread_count(thread_schedule_state::terminated,
                 execution::thread_priority::default_, num_thread, reset);
@@ -452,16 +423,12 @@ namespace pika::threads::detail {
 
         virtual std::int64_t get_scheduler_utilization() const = 0;
 
-        virtual std::int64_t get_idle_loop_count(
-            std::size_t num, bool reset) = 0;
-        virtual std::int64_t get_busy_loop_count(
-            std::size_t num, bool reset) = 0;
+        virtual std::int64_t get_idle_loop_count(std::size_t num, bool reset) = 0;
+        virtual std::int64_t get_busy_loop_count(std::size_t num, bool reset) = 0;
 
         ///////////////////////////////////////////////////////////////////////
-        virtual bool enumerate_threads(
-            util::detail::function<bool(thread_id_type)> const& /*f*/,
-            thread_schedule_state /*state*/ =
-                thread_schedule_state::unknown) const
+        virtual bool enumerate_threads(util::detail::function<bool(thread_id_type)> const& /*f*/,
+            thread_schedule_state /*state*/ = thread_schedule_state::unknown) const
         {
             return false;
         }
@@ -481,8 +448,7 @@ namespace pika::threads::detail {
 
         virtual void do_some_work(std::size_t /*num_thread*/) {}
 
-        virtual void report_error(
-            std::size_t global_thread_num, std::exception_ptr const& e)
+        virtual void report_error(std::size_t global_thread_num, std::exception_ptr const& e)
         {
             notifier_.on_error(global_thread_num, e);
         }
@@ -521,12 +487,10 @@ namespace pika::threads::detail {
 }    // namespace pika::threads::detail
 
 template <>
-struct fmt::formatter<pika::threads::detail::thread_pool_base>
-  : fmt::formatter<std::string>
+struct fmt::formatter<pika::threads::detail::thread_pool_base> : fmt::formatter<std::string>
 {
     template <typename FormatContext>
-    auto format(pika::threads::detail::thread_pool_base const& thread_pool,
-        FormatContext& ctx)
+    auto format(pika::threads::detail::thread_pool_base const& thread_pool, FormatContext& ctx)
     {
         auto id = thread_pool.get_pool_id();
         return fmt::formatter<std::string>::format(

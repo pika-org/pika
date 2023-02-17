@@ -20,8 +20,7 @@
 #include <thread>
 #include <vector>
 
-using queue = boost::lockfree::queue<std::uint64_t,
-    pika::detail::aligned_allocator<std::uint64_t>>;
+using queue = boost::lockfree::queue<std::uint64_t, pika::detail::aligned_allocator<std::uint64_t>>;
 
 std::vector<queue*> queues;
 std::vector<std::uint64_t> stolen;
@@ -73,8 +72,7 @@ int main(int argc, char** argv)
 
     variables_map vm;
 
-    options_description desc_cmdline(
-        "Usage: " PIKA_APPLICATION_STRING " [options]");
+    options_description desc_cmdline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
     // clang-format off
     desc_cmdline.add_options()
@@ -86,11 +84,7 @@ int main(int argc, char** argv)
     ;
     // clang-format on
 
-    store(command_line_parser(argc, argv)
-              .options(desc_cmdline)
-              .allow_unregistered()
-              .run(),
-        vm);
+    store(command_line_parser(argc, argv).options(desc_cmdline).allow_unregistered().run(), vm);
 
     notify(vm);
 
@@ -120,8 +114,7 @@ int main(int argc, char** argv)
         std::vector<std::thread> tg;
 
         for (std::uint64_t i = 0; i != threads; ++i)
-            tg.push_back(
-                std::thread(pika::util::detail::bind(&worker_thread, i)));
+            tg.push_back(std::thread(pika::util::detail::bind(&worker_thread, i)));
 
         for (std::thread& t : tg)
         {

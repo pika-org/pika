@@ -121,9 +121,7 @@ struct wait_for_flag
     void relative_wait_until_with_predicate()
     {
         std::unique_lock<pika::mutex> lock(mutex);
-        if (cond_var.wait_for(
-                lock, std::chrono::milliseconds(5), check_flag(flag)) &&
-            flag)
+        if (cond_var.wait_for(lock, std::chrono::milliseconds(5), check_flag(flag)) && flag)
         {
             ++woken;
         }
@@ -168,8 +166,7 @@ void test_condition_notify_one_wakes_from_wait_until()
 {
     wait_for_flag data;
 
-    pika::thread thread(
-        &wait_for_flag::wait_until_without_predicate, std::ref(data));
+    pika::thread thread(&wait_for_flag::wait_until_without_predicate, std::ref(data));
 
     {
         std::unique_lock<pika::mutex> lock(data.mutex);
@@ -186,8 +183,7 @@ void test_condition_notify_one_wakes_from_wait_until_with_predicate()
 {
     wait_for_flag data;
 
-    pika::thread thread(
-        &wait_for_flag::wait_until_with_predicate, std::ref(data));
+    pika::thread thread(&wait_for_flag::wait_until_with_predicate, std::ref(data));
 
     {
         std::unique_lock<pika::mutex> lock(data.mutex);
@@ -204,8 +200,7 @@ void test_condition_notify_one_wakes_from_relative_wait_until_with_predicate()
 {
     wait_for_flag data;
 
-    pika::thread thread(
-        &wait_for_flag::relative_wait_until_with_predicate, std::ref(data));
+    pika::thread thread(&wait_for_flag::relative_wait_until_with_predicate, std::ref(data));
 
     {
         std::unique_lock<pika::mutex> lock(data.mutex);
@@ -257,8 +252,7 @@ void test_condition_notify_all_wakes_from_wait()
     {
         for (unsigned i = 0; i < 5; ++i)
         {
-            group.push_back(pika::thread(
-                &wait_for_flag::wait_without_predicate, std::ref(data)));
+            group.push_back(pika::thread(&wait_for_flag::wait_without_predicate, std::ref(data)));
         }
 
         {
@@ -288,8 +282,7 @@ void test_condition_notify_all_wakes_from_wait_with_predicate()
     {
         for (unsigned i = 0; i < 5; ++i)
         {
-            group.push_back(pika::thread(
-                &wait_for_flag::wait_with_predicate, std::ref(data)));
+            group.push_back(pika::thread(&wait_for_flag::wait_with_predicate, std::ref(data)));
         }
 
         {
@@ -319,8 +312,8 @@ void test_condition_notify_all_wakes_from_wait_until()
     {
         for (unsigned i = 0; i < 5; ++i)
         {
-            group.push_back(pika::thread(
-                &wait_for_flag::wait_until_without_predicate, std::ref(data)));
+            group.push_back(
+                pika::thread(&wait_for_flag::wait_until_without_predicate, std::ref(data)));
         }
 
         {
@@ -350,8 +343,8 @@ void test_condition_notify_all_wakes_from_wait_until_with_predicate()
     {
         for (unsigned i = 0; i < 5; ++i)
         {
-            group.push_back(pika::thread(
-                &wait_for_flag::wait_until_with_predicate, std::ref(data)));
+            group.push_back(
+                pika::thread(&wait_for_flag::wait_until_with_predicate, std::ref(data)));
         }
 
         {
@@ -381,9 +374,8 @@ void test_condition_notify_all_wakes_from_relative_wait_until_with_predicate()
     {
         for (unsigned i = 0; i < 5; ++i)
         {
-            group.push_back(pika::thread(
-                &wait_for_flag ::relative_wait_until_with_predicate,
-                std::ref(data)));
+            group.push_back(
+                pika::thread(&wait_for_flag ::relative_wait_until_with_predicate, std::ref(data)));
         }
 
         {
@@ -514,8 +506,7 @@ void condition_test_waits(condition_test_data* data)
 
     // Test predicate wait_for
     cond_predicate pred_rel(data->notified, 5);
-    PIKA_TEST(data->condition.wait_for(
-        lock, std::chrono::milliseconds(100), pred_rel));
+    PIKA_TEST(data->condition.wait_for(lock, std::chrono::milliseconds(100), pred_rel));
     PIKA_TEST(lock ? true : false);
     PIKA_TEST(pred_rel());
     PIKA_TEST_EQ(data->notified, 5);
@@ -616,16 +607,14 @@ void test_wait_until_times_out()
     pika::mutex m;
 
     std::unique_lock<pika::mutex> lock(m);
-    std::chrono::system_clock::time_point const start =
-        std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point const start = std::chrono::system_clock::now();
     std::chrono::system_clock::time_point const timeout = start + delay;
 
     while (cond.wait_until(lock, timeout) == pika::cv_status::no_timeout)
     {
     }
 
-    std::chrono::system_clock::time_point const end =
-        std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point const end = std::chrono::system_clock::now();
     PIKA_TEST_LTE((delay - timeout_resolution).count(), (end - start).count());
 }
 
@@ -635,14 +624,12 @@ void test_wait_until_with_predicate_times_out()
     pika::mutex m;
 
     std::unique_lock<pika::mutex> lock(m);
-    std::chrono::system_clock::time_point const start =
-        std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point const start = std::chrono::system_clock::now();
     std::chrono::system_clock::time_point const timeout = start + delay;
 
     bool const res = cond.wait_until(lock, timeout, fake_predicate);
 
-    std::chrono::system_clock::time_point const end =
-        std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point const end = std::chrono::system_clock::now();
     PIKA_TEST(!res);
     PIKA_TEST_LTE((delay - timeout_resolution).count(), (end - start).count());
 }
@@ -653,13 +640,11 @@ void test_relative_wait_until_with_predicate_times_out()
     pika::mutex m;
 
     std::unique_lock<pika::mutex> lock(m);
-    std::chrono::system_clock::time_point const start =
-        std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point const start = std::chrono::system_clock::now();
 
     bool const res = cond.wait_for(lock, delay, fake_predicate);
 
-    std::chrono::system_clock::time_point const end =
-        std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point const end = std::chrono::system_clock::now();
     PIKA_TEST(!res);
     PIKA_TEST_LTE((delay - timeout_resolution).count(), (end - start).count());
 }
@@ -670,15 +655,13 @@ void test_wait_until_relative_times_out()
     pika::mutex m;
 
     std::unique_lock<pika::mutex> lock(m);
-    std::chrono::system_clock::time_point const start =
-        std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point const start = std::chrono::system_clock::now();
 
     while (cond.wait_for(lock, delay) == pika::cv_status::no_timeout)
     {
     }
 
-    std::chrono::system_clock::time_point const end =
-        std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point const end = std::chrono::system_clock::now();
     PIKA_TEST_LTE((delay - timeout_resolution).count(), (end - start).count());
 }
 

@@ -15,8 +15,7 @@
 
 namespace pika::concurrency::detail {
     template <typename T, typename Alloc = std::allocator<T>>
-    class caching_freelist
-      : public boost::lockfree::detail::freelist_stack<T, Alloc>
+    class caching_freelist : public boost::lockfree::detail::freelist_stack<T, Alloc>
     {
         using base_type = boost::lockfree::detail::freelist_stack<T, Alloc>;
 
@@ -38,8 +37,7 @@ namespace pika::concurrency::detail {
     };
 
     template <typename T, typename Alloc = std::allocator<T>>
-    class static_freelist
-      : public boost::lockfree::detail::freelist_stack<T, Alloc>
+    class static_freelist : public boost::lockfree::detail::freelist_stack<T, Alloc>
     {
         using base_type = boost::lockfree::detail::freelist_stack<T, Alloc>;
 

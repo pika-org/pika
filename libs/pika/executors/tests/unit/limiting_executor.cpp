@@ -62,15 +62,14 @@ void test_fn(atype& acnt, atype& atot, atype& amax)
 
 void test_limit()
 {
-    auto exec1 = pika::execution::parallel_executor(
-        pika::execution::thread_stacksize::small_);
+    auto exec1 = pika::execution::parallel_executor(pika::execution::thread_stacksize::small_);
     //
     const bool block_on_exit = true;
     std::vector<pika::future<void>> futures;
     // scope block for executor lifetime (block on destruction)
     {
-        pika::execution::experimental::limiting_executor<decltype(exec1)>
-            lexec1(exec1, max1 / 2, max1, block_on_exit);
+        pika::execution::experimental::limiting_executor<decltype(exec1)> lexec1(
+            exec1, max1 / 2, max1, block_on_exit);
 
         // run this loop for N seconds and launch as many tasks as we can
         // then check that there were never more than N on a given executor
@@ -78,19 +77,16 @@ void test_limit()
         auto start = std::chrono::steady_clock::now();
         while (ok)
         {
-            futures.push_back(
-                pika::async(lexec1, &test_fn, std::ref(task_1_counter),
-                    std::ref(task_1_total), std::ref(task_1_max)));
+            futures.push_back(pika::async(lexec1, &test_fn, std::ref(task_1_counter),
+                std::ref(task_1_total), std::ref(task_1_max)));
             ok = (futures.size() < 50000) &&
-                (std::chrono::steady_clock::now() - start <
-                    std::chrono::milliseconds(500));
+                (std::chrono::steady_clock::now() - start < std::chrono::milliseconds(500));
         }
-        std::cout << "Reached end of launch with futures = " << futures.size()
-                  << std::endl;
+        std::cout << "Reached end of launch with futures = " << futures.size() << std::endl;
     }
     // The executors should block until all tasks have completed
-    auto not_ready = std::count_if(
-        futures.begin(), futures.end(), [](auto& f) { return !f.is_ready(); });
+    auto not_ready =
+        std::count_if(futures.begin(), futures.end(), [](auto& f) { return !f.is_ready(); });
     // so almost all futures should be ready. The discrepancy comes from the
     // internal wrapper signaling completion to the limiting executor after the
     // callable passed to async has returned, but before the future is marked
@@ -99,19 +95,18 @@ void test_limit()
     // other worker threads because all others would have finished already. If
     // we wait a little longer all should be ready (although the required wait
     // is unbounded and depends on other work on the system).
-    PIKA_TEST_LTE(static_cast<std::size_t>(not_ready),
-        pika::get_num_worker_threads() - 1);
+    PIKA_TEST_LTE(static_cast<std::size_t>(not_ready), pika::get_num_worker_threads() - 1);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    not_ready = std::count_if(
-        futures.begin(), futures.end(), [](auto& f) { return !f.is_ready(); });
+    not_ready =
+        std::count_if(futures.begin(), futures.end(), [](auto& f) { return !f.is_ready(); });
     PIKA_TEST_EQ(not_ready, 0);
 
     // the max counters should not exceed the limit set
     // note that as the max set is not actually atomic, a race could allow the limit
     // to be exceeded by the number of threads in the worst case.
-    std::cout << "Exec 1 had max " << task_1_max << " (allowed = " << max1
-              << ") from a total of " << task_1_total << std::endl;
+    std::cout << "Exec 1 had max " << task_1_max << " (allowed = " << max1 << ") from a total of "
+              << task_1_total << std::endl;
     PIKA_TEST_LTE(task_1_max, max1);
     // if the test fails by a small number, then this would fix it
     // PIKA_TEST_LTE(task_1_max, max1 + pika::get_num_worker_threads());
@@ -134,8 +129,8 @@ int main(int argc, char* argv[])
     pika::init_params init_args;
     init_args.cfg = cfg;
 
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(
+        pika::init(pika_main, argc, argv, init_args), 0, "pika main exited with non-zero status");
 
     return 0;
 }

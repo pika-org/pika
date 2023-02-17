@@ -16,16 +16,14 @@ namespace pika::util::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Incrementable>
-    using counting_shape_type = pika::util::iterator_range<
-        pika::util::counting_iterator<Incrementable>>;
+    using counting_shape_type =
+        pika::util::iterator_range<pika::util::counting_iterator<Incrementable>>;
 
     PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
     template <typename Incrementable>
-    PIKA_HOST_DEVICE inline counting_shape_type<Incrementable>
-    make_counting_shape(Incrementable n)
+    PIKA_HOST_DEVICE inline counting_shape_type<Incrementable> make_counting_shape(Incrementable n)
     {
-        return pika::util::make_iterator_range(
-            pika::util::make_counting_iterator(Incrementable(0)),
+        return pika::util::make_iterator_range(pika::util::make_counting_iterator(Incrementable(0)),
             pika::util::make_counting_iterator(n));
     }
 }    // namespace pika::util::detail

@@ -84,13 +84,10 @@ namespace pika {
             static constexpr std::uint64_t stop_requested_flag = 1ull << 31;
 
             // bits 32-62 - source ref count (31 bits)
-            static constexpr std::uint64_t source_ref_increment =
-                token_ref_increment << 32;
-            static constexpr std::uint64_t source_ref_mask = token_ref_mask
-                << 32;
+            static constexpr std::uint64_t source_ref_increment = token_ref_increment << 32;
+            static constexpr std::uint64_t source_ref_mask = token_ref_mask << 32;
             // bit 63 - locked
-            static constexpr std::uint64_t locked_flag = stop_requested_flag
-                << 32;
+            static constexpr std::uint64_t locked_flag = stop_requested_flag << 32;
 
         public:
             stop_state()
@@ -114,14 +111,12 @@ namespace pika {
 
             void add_source_count()
             {
-                state_.fetch_add(stop_state::source_ref_increment,
-                    std::memory_order_relaxed);
+                state_.fetch_add(stop_state::source_ref_increment, std::memory_order_relaxed);
             }
 
             void remove_source_count()
             {
-                state_.fetch_sub(stop_state::source_ref_increment,
-                    std::memory_order_acq_rel);
+                state_.fetch_sub(stop_state::source_ref_increment, std::memory_order_acq_rel);
             }
 
             PIKA_EXPORT bool add_callback(stop_callback_base* cb) noexcept;
@@ -142,8 +137,7 @@ namespace pika {
             {
                 // Stop may happen, if it has already been requested or if
                 // there are still interrupt_source instances in existence.
-                return stop_requested(state) ||
-                    (state & stop_state::source_ref_mask) != 0;
+                return stop_requested(state) || (state & stop_state::source_ref_mask) != 0;
             }
 
             // Effects: locks the state and atomically sets stop-requested
@@ -156,8 +150,7 @@ namespace pika {
             //      possible. Also executes callbacks if stop was requested.
             //
             // Returns: false if stop was requested or stop is not possible
-            PIKA_EXPORT bool lock_if_not_stopped(
-                stop_callback_base* cb) noexcept;
+            PIKA_EXPORT bool lock_if_not_stopped(stop_callback_base* cb) noexcept;
 
         public:
             // Effect: locks the state
@@ -453,8 +446,8 @@ namespace pika {
         //
         // Throws: Any exception thrown by the initialization of callback.
         template <typename CB,
-            typename Enable = typename std::enable_if<
-                std::is_constructible<Callback, CB>::value>::type>
+            typename Enable =
+                typename std::enable_if<std::is_constructible<Callback, CB>::value>::type>
         explicit stop_callback(stop_token const& st, CB&& cb) noexcept(
             std::is_nothrow_constructible<Callback, CB>::value)
           : callback_(PIKA_FORWARD(CB, cb))
@@ -465,8 +458,8 @@ namespace pika {
         }
 
         template <typename CB,
-            typename Enable = typename std::enable_if<
-                std::is_constructible<Callback, CB>::value>::type>
+            typename Enable =
+                typename std::enable_if<std::is_constructible<Callback, CB>::value>::type>
         explicit stop_callback(stop_token&& st, CB&& cb) noexcept(
             std::is_nothrow_constructible<Callback, CB>::value)
           : callback_(PIKA_FORWARD(CB, cb))
@@ -518,19 +511,15 @@ namespace pika {
     //      template parameter Callback that models both invocable and
     //      destructible.
     template <typename Callback>
-    stop_callback<std::decay_t<Callback>>
-    make_stop_callback(stop_token const& st, Callback&& cb)
+    stop_callback<std::decay_t<Callback>> make_stop_callback(stop_token const& st, Callback&& cb)
     {
-        return stop_callback<std::decay_t<Callback>>(
-            st, PIKA_FORWARD(Callback, cb));
+        return stop_callback<std::decay_t<Callback>>(st, PIKA_FORWARD(Callback, cb));
     }
 
     template <typename Callback>
-    stop_callback<std::decay_t<Callback>>
-    make_stop_callback(stop_token&& st, Callback&& cb)
+    stop_callback<std::decay_t<Callback>> make_stop_callback(stop_token&& st, Callback&& cb)
     {
-        return stop_callback<std::decay_t<Callback>>(
-            PIKA_MOVE(st), PIKA_FORWARD(Callback, cb));
+        return stop_callback<std::decay_t<Callback>>(PIKA_MOVE(st), PIKA_FORWARD(Callback, cb));
     }
 
     // clang-format produces inconsistent result between different versions

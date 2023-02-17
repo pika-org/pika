@@ -10,22 +10,22 @@
 
 #if defined(PIKA_HAVE_MODULE_MPI_BASE)
 
-#include <pika/modules/runtime_configuration.hpp>
-#include <pika/mpi_base/mpi.hpp>
-#include <pika/synchronization/spinlock.hpp>
+# include <pika/modules/runtime_configuration.hpp>
+# include <pika/mpi_base/mpi.hpp>
+# include <pika/synchronization/spinlock.hpp>
 
-#include <cstdlib>
-#include <string>
+# include <cstdlib>
+# include <string>
 
-#include <pika/config/warnings_prefix.hpp>
+# include <pika/config/warnings_prefix.hpp>
 
 namespace pika { namespace util {
     struct PIKA_EXPORT mpi_environment
     {
         static bool check_mpi_environment(runtime_configuration const& cfg);
 
-        static int init(int* argc, char*** argv, const int required,
-            const int minimal, int& provided);
+        static int init(
+            int* argc, char*** argv, const int required, const int minimal, int& provided);
         static void init(int* argc, char*** argv, runtime_configuration& cfg);
         static void finalize();
 
@@ -73,13 +73,13 @@ namespace pika { namespace util {
     };
 }}    // namespace pika::util
 
-#include <pika/config/warnings_suffix.hpp>
+# include <pika/config/warnings_suffix.hpp>
 
 #else
 
-#include <pika/modules/runtime_configuration.hpp>
+# include <pika/modules/runtime_configuration.hpp>
 
-#include <pika/config/warnings_prefix.hpp>
+# include <pika/config/warnings_prefix.hpp>
 
 namespace pika { namespace util {
     struct PIKA_EXPORT mpi_environment
@@ -88,6 +88,6 @@ namespace pika { namespace util {
     };
 }}    // namespace pika::util
 
-#include <pika/config/warnings_suffix.hpp>
+# include <pika/config/warnings_suffix.hpp>
 
 #endif

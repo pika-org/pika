@@ -35,12 +35,12 @@
 // ucontext_t struct when _XOPEN_SOURCE is not defined (rdar://problem/5578699 ).
 // As a workaround, define _XOPEN_SOURCE before including ucontext.h.
 #if defined(__APPLE__) && !defined(_XOPEN_SOURCE)
-#define _XOPEN_SOURCE
+# define _XOPEN_SOURCE
 // However, the above #define will only affect <ucontext.h> if it has not yet
 // been #included by something else!
-#if defined(_STRUCT_UCONTEXT)
-#error You must #include coroutine headers before anything that #includes <ucontext.h>
-#endif
+# if defined(_STRUCT_UCONTEXT)
+#  error You must #include coroutine headers before anything that #includes <ucontext.h>
+# endif
 #endif
 
 #include <pika/assert.hpp>
@@ -50,28 +50,27 @@
 // include unist.d conditionally to check for POSIX version. Not all OSs have the
 // unistd header...
 #if defined(PIKA_HAVE_UNISTD_H)
-#include <unistd.h>
+# include <unistd.h>
 #endif
 
-#if defined(__FreeBSD__) ||                                                    \
-    (defined(_XOPEN_UNIX) && defined(_XOPEN_VERSION) &&                        \
-        _XOPEN_VERSION >= 500) ||                                              \
+#if defined(__FreeBSD__) ||                                                                        \
+    (defined(_XOPEN_UNIX) && defined(_XOPEN_VERSION) && _XOPEN_VERSION >= 500) ||                  \
     defined(__bgq__) || defined(__powerpc__) || defined(__s390x__)
 
 // OS X 10.4 -- despite passing the test above -- doesn't support
 // swapcontext() et al. Use GNU Pth workalike functions.
-#if defined(__APPLE__) && (__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 1050)
+# if defined(__APPLE__) && (__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 1050)
 
-#include <cerrno>
-#include <cstddef>
-#include <cstdint>
-#include <exception>
-#include <limits>
+#  include <cerrno>
+#  include <cstddef>
+#  include <cstdint>
+#  include <exception>
+#  include <limits>
 
-#include "pth/pth.h"
+#  include "pth/pth.h"
 
-namespace pika { namespace threads { namespace coroutines { namespace detail {
-    namespace posix { namespace pth {
+namespace pika { namespace threads { namespace coroutines { namespace detail { namespace posix {
+    namespace pth {
         inline int check_(int rc)
         {
             // The makecontext() functions return zero for success, nonzero for
@@ -82,24 +81,20 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
         }
 }}}}}}    // namespace pika::threads::coroutines::detail::posix::pth
 
-#define PIKA_COROUTINE_POSIX_IMPL "Pth implementation"
-#define PIKA_COROUTINE_DECLARE_CONTEXT(name) pth_uctx_t name
-#define PIKA_COROUTINE_CREATE_CONTEXT(ctx)                                     \
-    pika::threads::coroutines::detail::posix::pth::check_(                     \
-        pth_uctx_create(&(ctx)))
-#define PIKA_COROUTINE_MAKE_CONTEXT(                                                  \
-    ctx, stack, size, startfunc, startarg, exitto)                                    \
-    /* const sigset_t* sigmask = nullptr: we don't expect per-context signal masks */ \
-    pika::threads::coroutines::detail::posix::pth::check_(                            \
-        pth_uctx_make(*(ctx), static_cast<char*>(stack), (size), nullptr,             \
-            (startfunc), (startarg), (exitto)))
-#define PIKA_COROUTINE_SWAP_CONTEXT(from, to)                                  \
-    pika::threads::coroutines::detail::posix::pth::check_(pth_uctx_switch(     \
-        *(from), *(to))) #define PIKA_COROUTINE_DESTROY_CONTEXT(ctx)           \
-        pika::threads::coroutines::detail::posix::pth::check_(                 \
-            pth_uctx_destroy(ctx))
+#  define PIKA_COROUTINE_POSIX_IMPL "Pth implementation"
+#  define PIKA_COROUTINE_DECLARE_CONTEXT(name) pth_uctx_t name
+#  define PIKA_COROUTINE_CREATE_CONTEXT(ctx)                                                       \
+   pika::threads::coroutines::detail::posix::pth::check_(pth_uctx_create(&(ctx)))
+#  define PIKA_COROUTINE_MAKE_CONTEXT(ctx, stack, size, startfunc, startarg, exitto)               \
+   /* const sigset_t* sigmask = nullptr: we don't expect per-context signal masks */               \
+   pika::threads::coroutines::detail::posix::pth::check_(pth_uctx_make(                            \
+       *(ctx), static_cast<char*>(stack), (size), nullptr, (startfunc), (startarg), (exitto)))
+#  define PIKA_COROUTINE_SWAP_CONTEXT(from, to)                                                    \
+   pika::threads::coroutines::detail::posix::pth::check_(                                          \
+       pth_uctx_switch(*(from), *(to))) #define PIKA_COROUTINE_DESTROY_CONTEXT(ctx)                \
+       pika::threads::coroutines::detail::posix::pth::check_(pth_uctx_destroy(ctx))
 
-#else                 // generic Posix platform (e.g. OS X >= 10.5)
+# else                  // generic Posix platform (e.g. OS X >= 10.5)
 
 /*
  * makecontext based context implementation. Should be available on all
@@ -111,29 +106,28 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
  * NOTE2: makecontext and friends are declared obsolescent in SuSv3, but
  * it is unlikely that they will be removed any time soon.
  */
-#include <cstddef>    // ptrdiff_t
-#include <ucontext.h>
+#  include <cstddef>    // ptrdiff_t
+#  include <ucontext.h>
 
-#if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION)
+#  if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION)
 
-#include <cstring>
-#include <signal.h>
-#include <stdlib.h>
-#include <strings.h>
+#   include <cstring>
+#   include <signal.h>
+#   include <stdlib.h>
+#   include <strings.h>
 
-#if !defined(SEGV_STACK_SIZE)
-#define SEGV_STACK_SIZE MINSIGSTKSZ + 4096
-#endif
+#   if !defined(SEGV_STACK_SIZE)
+#    define SEGV_STACK_SIZE MINSIGSTKSZ + 4096
+#   endif
 
-#endif
+#  endif
 
-#include <iomanip>
-#include <iostream>
+#  include <iomanip>
+#  include <iostream>
 
 namespace pika::threads::coroutines::detail::posix::ucontext {
     inline int make_context(::ucontext_t* ctx, void* stack, std::ptrdiff_t size,
-        void (*startfunc)(void*), void* startarg,
-        ::ucontext_t* exitto = nullptr)
+        void (*startfunc)(void*), void* startarg, ::ucontext_t* exitto = nullptr)
     {
         int error = ::getcontext(ctx);
         if (error)
@@ -150,23 +144,22 @@ namespace pika::threads::coroutines::detail::posix::ucontext {
     }
 }    // namespace pika::threads::coroutines::detail::posix::ucontext
 
-#define PIKA_COROUTINE_POSIX_IMPL "ucontext implementation"
-#define PIKA_COROUTINE_DECLARE_CONTEXT(name) ::ucontext_t name
-#define PIKA_COROUTINE_CREATE_CONTEXT(ctx) /* nop */
-#define PIKA_COROUTINE_MAKE_CONTEXT(                                           \
-    ctx, stack, size, startfunc, startarg, exitto)                             \
-    pika::threads::coroutines::detail::posix::ucontext::make_context(          \
-        ctx, stack, size, startfunc, startarg, exitto)
-#define PIKA_COROUTINE_SWAP_CONTEXT(pfrom, pto) ::swapcontext((pfrom), (pto))
-#define PIKA_COROUTINE_DESTROY_CONTEXT(ctx) /* nop */
+#  define PIKA_COROUTINE_POSIX_IMPL "ucontext implementation"
+#  define PIKA_COROUTINE_DECLARE_CONTEXT(name) ::ucontext_t name
+#  define PIKA_COROUTINE_CREATE_CONTEXT(ctx) /* nop */
+#  define PIKA_COROUTINE_MAKE_CONTEXT(ctx, stack, size, startfunc, startarg, exitto)               \
+   pika::threads::coroutines::detail::posix::ucontext::make_context(                               \
+       ctx, stack, size, startfunc, startarg, exitto)
+#  define PIKA_COROUTINE_SWAP_CONTEXT(pfrom, pto) ::swapcontext((pfrom), (pto))
+#  define PIKA_COROUTINE_DESTROY_CONTEXT(ctx) /* nop */
 
-#endif    // generic Posix platform
+# endif    // generic Posix platform
 
-#include <pika/coroutines/detail/get_stack_pointer.hpp>
-#include <pika/coroutines/detail/posix_utility.hpp>
-#include <pika/coroutines/detail/swap_context.hpp>
-#include <atomic>
-#include <signal.h>    // SIGSTKSZ
+# include <pika/coroutines/detail/get_stack_pointer.hpp>
+# include <pika/coroutines/detail/posix_utility.hpp>
+# include <pika/coroutines/detail/swap_context.hpp>
+# include <atomic>
+# include <signal.h>    // SIGSTKSZ
 
 namespace pika::threads::coroutines {
     namespace detail {
@@ -232,8 +225,7 @@ namespace pika::threads::coroutines {
              *  a new stack. The stack size can be optionally specified.
              */
             explicit ucontext_context_impl(std::ptrdiff_t stack_size = -1)
-              : m_stack_size(
-                    stack_size == -1 ? this->default_stack_size : stack_size)
+              : m_stack_size(stack_size == -1 ? this->default_stack_size : stack_size)
               , m_stack(nullptr)
               , funp_(&trampoline<CoroutineImpl>)
             {
@@ -247,8 +239,7 @@ namespace pika::threads::coroutines {
                 m_stack = alloc_stack(static_cast<std::size_t>(m_stack_size));
                 if (m_stack == nullptr)
                 {
-                    throw std::runtime_error(
-                        "could not allocate memory for stack");
+                    throw std::runtime_error("could not allocate memory for stack");
                 }
 
                 int error = PIKA_COROUTINE_MAKE_CONTEXT(
@@ -257,7 +248,7 @@ namespace pika::threads::coroutines {
                 PIKA_UNUSED(error);
                 PIKA_ASSERT(error == 0);
 
-#if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION)
+# if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION)
                 // concept inspired by the following links:
                 //
                 // https://rethinkdb.com/blog/handling-stack-overflow-on-custom-stacks/
@@ -275,15 +266,15 @@ namespace pika::threads::coroutines {
                 sigemptyset(&action.sa_mask);
                 sigaddset(&action.sa_mask, SIGSEGV);
                 sigaction(SIGSEGV, &action, nullptr);
-#endif
+# endif
             }
 
-#if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION)
+# if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION)
 
             // heuristic value 1 kilobyte
             //
 
-#define COROUTINE_STACKOVERFLOW_ADDR_EPSILON 1000UL
+#  define COROUTINE_STACKOVERFLOW_ADDR_EPSILON 1000UL
 
             static void sigsegv_handler(int, siginfo_t* infoptr, void* ctxptr)
             {
@@ -294,36 +285,32 @@ namespace pika::threads::coroutines {
                 //
                 char* stk_ptr = static_cast<char*>(uc_ctx->uc_stack.ss_sp);
 
-                std::ptrdiff_t addr_delta = (sigsegv_ptr > stk_ptr) ?
-                    (sigsegv_ptr - stk_ptr) :
-                    (stk_ptr - sigsegv_ptr);
+                std::ptrdiff_t addr_delta =
+                    (sigsegv_ptr > stk_ptr) ? (sigsegv_ptr - stk_ptr) : (stk_ptr - sigsegv_ptr);
 
                 // check the stack addresses, if they're < 10 apart, terminate
                 // program should filter segmentation faults caused by
                 // coroutine stack overflows from 'genuine' stack overflows
                 //
-                if (static_cast<size_t>(addr_delta) <
-                    COROUTINE_STACKOVERFLOW_ADDR_EPSILON)
+                if (static_cast<size_t>(addr_delta) < COROUTINE_STACKOVERFLOW_ADDR_EPSILON)
                 {
-                    std::cerr << "Stack overflow in coroutine at address "
-                              << std::internal << std::hex
-                              << std::setw(sizeof(sigsegv_ptr) * 2 + 2)
+                    std::cerr << "Stack overflow in coroutine at address " << std::internal
+                              << std::hex << std::setw(sizeof(sigsegv_ptr) * 2 + 2)
                               << std::setfill('0') << sigsegv_ptr << ".\n\n";
 
-                    std::cerr
-                        << "Configure the pika runtime to allocate a larger "
-                           "coroutine "
-                           "stack size.\n Use the pika.stacks.small_size, "
-                           "pika.stacks.medium_size,\n pika.stacks.large_size, "
-                           "or pika.stacks.huge_size configuration\nflags to "
-                           "configure "
-                           "coroutine stack sizes.\n"
-                        << std::endl;
+                    std::cerr << "Configure the pika runtime to allocate a larger "
+                                 "coroutine "
+                                 "stack size.\n Use the pika.stacks.small_size, "
+                                 "pika.stacks.medium_size,\n pika.stacks.large_size, "
+                                 "or pika.stacks.huge_size configuration\nflags to "
+                                 "configure "
+                                 "coroutine stack sizes.\n"
+                              << std::endl;
 
                     std::terminate();
                 }
             }
-#endif
+# endif
 
             ~ucontext_context_impl()
             {
@@ -339,23 +326,22 @@ namespace pika::threads::coroutines {
 
             std::ptrdiff_t get_available_stack_space()
             {
-#if defined(PIKA_HAVE_THREADS_GET_STACK_POINTER)
+# if defined(PIKA_HAVE_THREADS_GET_STACK_POINTER)
                 return get_stack_ptr() - reinterpret_cast<std::size_t>(m_stack);
-#else
+# else
                 return (std::numeric_limits<std::ptrdiff_t>::max)();
-#endif
+# endif
             }
 
             void reset_stack()
             {
                 if (m_stack)
                 {
-                    if (posix::reset_stack(
-                            m_stack, static_cast<std::size_t>(m_stack_size)))
+                    if (posix::reset_stack(m_stack, static_cast<std::size_t>(m_stack_size)))
                     {
-#if defined(PIKA_HAVE_COROUTINE_COUNTERS)
+# if defined(PIKA_HAVE_COROUTINE_COUNTERS)
                         increment_stack_unbind_count();
-#endif
+# endif
                     }
                 }
             }
@@ -366,9 +352,9 @@ namespace pika::threads::coroutines {
                 {
                     // just reset the context stack pointer to its initial value at
                     // the stack start
-#if defined(PIKA_HAVE_COROUTINE_COUNTERS)
+# if defined(PIKA_HAVE_COROUTINE_COUNTERS)
                     increment_stack_recycle_count();
-#endif
+# endif
                     int error = PIKA_COROUTINE_MAKE_CONTEXT(
                         &m_ctx, m_stack, m_stack_size, funp_, this, nullptr);
                     PIKA_UNUSED(error);
@@ -376,7 +362,7 @@ namespace pika::threads::coroutines {
                 }
             }
 
-#if defined(PIKA_HAVE_COROUTINE_COUNTERS)
+# if defined(PIKA_HAVE_COROUTINE_COUNTERS)
             using counter_type = std::atomic<std::int64_t>;
 
         private:
@@ -405,16 +391,14 @@ namespace pika::threads::coroutines {
         public:
             static std::uint64_t get_stack_unbind_count(bool reset)
             {
-                return detail::get_and_reset_value(
-                    get_stack_unbind_counter(), reset);
+                return detail::get_and_reset_value(get_stack_unbind_counter(), reset);
             }
 
             static std::uint64_t get_stack_recycle_count(bool reset)
             {
-                return detail::get_and_reset_value(
-                    get_stack_recycle_counter(), reset);
+                return detail::get_and_reset_value(get_stack_recycle_counter(), reset);
             }
-#endif
+# endif
 
         private:
             // declare m_stack_size first so we can use it to initialize m_stack
@@ -422,10 +406,10 @@ namespace pika::threads::coroutines {
             void* m_stack;
             void (*funp_)(void*);
 
-#if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION)
+# if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION)
             struct sigaction action;
             stack_t segv_stack;
-#endif
+# endif
         };
     }    // namespace detail::posix
 }    // namespace pika::threads::coroutines
@@ -441,6 +425,6 @@ namespace pika::threads::coroutines {
  * encounter such a system, perhaps the best approach would be to twiddle the
  * #if logic in this header to use the pth.h implementation above.
  */
-#error No context implementation for this POSIX system.
+# error No context implementation for this POSIX system.
 
 #endif

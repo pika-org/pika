@@ -41,22 +41,18 @@ namespace pika::threads::detail {
 
         static thread_state_type extract_state(tagged_state_type const& i)
         {
-            return static_cast<thread_state_type>(
-                (i >> state_shift) & state_mask);
+            return static_cast<thread_state_type>((i >> state_shift) & state_mask);
         }
 
         static thread_state_ex_type extract_state_ex(tagged_state_type const& i)
         {
-            return static_cast<thread_state_ex_type>(
-                (i >> state_ex_shift) & state_ex_mask);
+            return static_cast<thread_state_ex_type>((i >> state_ex_shift) & state_ex_mask);
         }
 
-        static tagged_state_type pack_state(
-            T1 state_, T2 state_ex_, tag_type tag)
+        static tagged_state_type pack_state(T1 state_, T2 state_ex_, tag_type tag)
         {
             tagged_state_type state = static_cast<tagged_state_type>(state_);
-            tagged_state_type state_ex =
-                static_cast<tagged_state_type>(state_ex_);
+            tagged_state_type state_ex = static_cast<tagged_state_type>(state_ex_);
 
             PIKA_ASSERT(!(state & ~state_mask));
             PIKA_ASSERT(!(state_ex & ~state_ex_mask));

@@ -52,20 +52,18 @@ namespace pika { namespace util {
 
 namespace pika::util {
     template <typename Mapper, typename... T>
-    auto map_pack(Mapper&& mapper, T&&... pack)
-        -> decltype(detail::apply_pack_transform(detail::strategy_remap_tag{},
-            PIKA_FORWARD(Mapper, mapper), PIKA_FORWARD(T, pack)...))
+    auto map_pack(Mapper&& mapper, T&&... pack) -> decltype(detail::apply_pack_transform(
+        detail::strategy_remap_tag{}, PIKA_FORWARD(Mapper, mapper), PIKA_FORWARD(T, pack)...))
     {
-        return detail::apply_pack_transform(detail::strategy_remap_tag{},
-            PIKA_FORWARD(Mapper, mapper), PIKA_FORWARD(T, pack)...);
+        return detail::apply_pack_transform(
+            detail::strategy_remap_tag{}, PIKA_FORWARD(Mapper, mapper), PIKA_FORWARD(T, pack)...);
     }
 
     /// Indicate that the result shall be spread across the parent container
     /// if possible. This can be used to create a mapper function used
     /// in map_pack that maps one element to an arbitrary count (1:n).
     template <typename... T>
-    constexpr detail::spreading::spread_box<std::decay_t<T>...>
-    spread_this(T&&... args)
+    constexpr detail::spreading::spread_box<std::decay_t<T>...> spread_this(T&&... args)
     {
         return detail::spreading::spread_box<std::decay_t<T>...>(
             std::make_tuple(PIKA_FORWARD(T, args)...));
@@ -80,8 +78,8 @@ namespace pika::util {
     template <typename Mapper, typename... T>
     void traverse_pack(Mapper&& mapper, T&&... pack)
     {
-        detail::apply_pack_transform(detail::strategy_traverse_tag{},
-            PIKA_FORWARD(Mapper, mapper), PIKA_FORWARD(T, pack)...);
+        detail::apply_pack_transform(detail::strategy_traverse_tag{}, PIKA_FORWARD(Mapper, mapper),
+            PIKA_FORWARD(T, pack)...);
     }
 }    // namespace pika::util
 

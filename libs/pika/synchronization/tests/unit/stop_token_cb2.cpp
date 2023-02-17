@@ -42,21 +42,18 @@ void test_stop_callback_inits()
 
     auto stop10 = [] {};
     pika::stop_callback<decltype(stop10)> cb10{token, stop10};
-    static_assert(
-        std::is_same<decltype(cb10)::callback_type, decltype(stop10)>::value,
+    static_assert(std::is_same<decltype(cb10)::callback_type, decltype(stop10)>::value,
         "std::is_same<decltype(cb10)::callback_type, decltype(stop10)>::value");
 
     auto stop11 = [] { PIKA_TEST(false); };
     pika::stop_callback<decltype(stop11)> cb11{token, std::move(stop11)};
-    static_assert(
-        std::is_same<decltype(cb11)::callback_type, decltype(stop11)>::value,
+    static_assert(std::is_same<decltype(cb11)::callback_type, decltype(stop11)>::value,
         "std::is_same<decltype(cb11)::callback_type, decltype(stop11)>::value");
     static_assert(!std::is_reference<decltype(cb11)::callback_type>::value,
         "!std::is_reference<decltype(cb11)::callback_type>::value");
 
     auto stop12 = [] { PIKA_TEST(false); };
-    pika::stop_callback<std::reference_wrapper<decltype(stop12)>> cb12{
-        token, std::ref(stop12)};
+    pika::stop_callback<std::reference_wrapper<decltype(stop12)>> cb12{token, std::ref(stop12)};
     static_assert(std::is_same<decltype(cb12)::callback_type,
                       std::reference_wrapper<decltype(stop12)>>::value,
         "std::is_same<decltype(cb12)::callback_type, "
@@ -69,10 +66,8 @@ void test_stop_callback_inits()
     static_assert(!std::is_reference<decltype(scb13)::callback_type>::value,
         "!std::is_reference<decltype(scb13)::callback_type>::value");
 
-    pika::stop_callback<std::function<void()>> cb14{
-        token, [] { PIKA_TEST(false); }};
-    static_assert(std::is_same<decltype(cb14)::callback_type,
-                      std::function<void()>>::value,
+    pika::stop_callback<std::function<void()>> cb14{token, [] { PIKA_TEST(false); }};
+    static_assert(std::is_same<decltype(cb14)::callback_type, std::function<void()>>::value,
         "std::is_same<decltype(cb14)::callback_type, std::function<void() >> "
         "::value");
     static_assert(!std::is_reference<decltype(cb14)::callback_type>::value,
@@ -80,8 +75,7 @@ void test_stop_callback_inits()
 
     std::function<void()> stop15 = [] { PIKA_TEST(false); };
     pika::stop_callback<decltype(stop15)> cb15(token, stop15);
-    static_assert(std::is_same<decltype(cb15)::callback_type,
-                      std::function<void()>>::value,
+    static_assert(std::is_same<decltype(cb15)::callback_type, std::function<void()>>::value,
         "std::is_same<decltype(cb15)::callback_type, std::function<void() >> "
         "::value");
     static_assert(!std::is_reference<decltype(cb15)::callback_type>::value,
@@ -89,8 +83,7 @@ void test_stop_callback_inits()
 
     std::function<void()> stop16 = [] { PIKA_TEST(false); };
     pika::stop_callback<std::function<void()>> cb16{token, stop16};
-    static_assert(std::is_same<decltype(cb16)::callback_type,
-                      std::function<void()>>::value,
+    static_assert(std::is_same<decltype(cb16)::callback_type, std::function<void()>>::value,
         "std::is_same<decltype(cb16)::callback_type, std::function<void() >> "
         "::value");
     static_assert(!std::is_reference<decltype(cb16)::callback_type>::value,
@@ -109,8 +102,7 @@ void test_stop_callback_inits()
         return f;
     }();
     pika::stop_callback<std::function<void()>> cb17(token, stop17);
-    static_assert(std::is_same<decltype(cb17)::callback_type,
-                      std::function<void()>>::value,
+    static_assert(std::is_same<decltype(cb17)::callback_type, std::function<void()>>::value,
         "std::is_same<decltype(cb17)::callback_type, std::function<void() >> "
         "::value");
     static_assert(!std::is_reference<decltype(cb17)::callback_type>::value,
@@ -118,16 +110,14 @@ void test_stop_callback_inits()
 
     implicit_arg i;
     pika::stop_callback<my_callback> cb18{token, i};
-    static_assert(
-        std::is_same<decltype(cb18)::callback_type, my_callback>::value,
+    static_assert(std::is_same<decltype(cb18)::callback_type, my_callback>::value,
         "std::is_same<decltype(cb18)::callback_type, my_callback>::value");
     static_assert(!std::is_reference<decltype(cb18)::callback_type>::value,
         "!std::is_reference<decltype(cb18)::callback_type>::value");
 
     explicit_arg e;
     pika::stop_callback<my_callback> cb19{token, e};
-    static_assert(
-        std::is_same<decltype(cb19)::callback_type, my_callback>::value,
+    static_assert(std::is_same<decltype(cb19)::callback_type, my_callback>::value,
         "std::is_same<decltype(cb19)::callback_type, my_callback>::value");
     static_assert(!std::is_reference<decltype(cb19)::callback_type>::value,
         "!std::is_reference<decltype(cb19)::callback_type>::value");

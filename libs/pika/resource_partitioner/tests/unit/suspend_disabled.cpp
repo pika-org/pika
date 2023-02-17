@@ -25,8 +25,7 @@ int pika_main()
 
     try
     {
-        pika::threads::detail::thread_pool_base& tp =
-            pika::resource::get_thread_pool("default");
+        pika::threads::detail::thread_pool_base& tp = pika::resource::get_thread_pool("default");
 
         // Use .get() to throw exception
         pika::threads::detail::suspend_processing_unit(tp, 0).get();
@@ -50,13 +49,11 @@ int main(int argc, char* argv[])
 
     using ::pika::threads::scheduler_mode;
     init_args.cfg = {"pika.os_threads=" +
-        std::to_string(((std::min)(std::size_t(4),
-            std::size_t(pika::threads::detail::hardware_concurrency()))))};
-    init_args.rp_callback = [](auto& rp,
-                                pika::program_options::variables_map const&) {
+        std::to_string(((std::min)(
+            std::size_t(4), std::size_t(pika::threads::detail::hardware_concurrency()))))};
+    init_args.rp_callback = [](auto& rp, pika::program_options::variables_map const&) {
         // Explicitly disable elasticity if it is in defaults
-        rp.create_thread_pool("default",
-            pika::resource::scheduling_policy::local_priority_fifo,
+        rp.create_thread_pool("default", pika::resource::scheduling_policy::local_priority_fifo,
             scheduler_mode::default_mode & ~scheduler_mode::enable_elasticity);
     };
 

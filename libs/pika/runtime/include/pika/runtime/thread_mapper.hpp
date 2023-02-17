@@ -23,7 +23,7 @@
 #include <pika/config/warnings_prefix.hpp>
 
 #if defined(__linux__) && !defined(__ANDROID) && !defined(ANDROID)
-#include <sys/syscall.h>
+# include <sys/syscall.h>
 #endif
 
 namespace pika::util {
@@ -36,8 +36,7 @@ namespace pika::util {
     namespace detail {
 
         // type for callback function invoked when thread is unregistered
-        using thread_mapper_callback_type =
-            util::detail::function<bool(std::uint32_t)>;
+        using thread_mapper_callback_type = util::detail::function<bool(std::uint32_t)>;
 
         // thread-specific data
         class PIKA_EXPORT os_thread_data

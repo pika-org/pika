@@ -44,12 +44,12 @@
 #include <pika/version.hpp>
 
 #if defined(PIKA_HAVE_HIP)
-#include <hip/hip_runtime.h>
-#include <whip.hpp>
+# include <hip/hip_runtime.h>
+# include <whip.hpp>
 #endif
 
 #if defined(__bgq__)
-#include <cstdlib>
+# include <cstdlib>
 #endif
 
 #include <cmath>
@@ -66,7 +66,7 @@
 #include <vector>
 
 #if !defined(PIKA_WINDOWS)
-#include <signal.h>
+# include <signal.h>
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -76,8 +76,7 @@ namespace pika {
         int init_helper(pika::program_options::variables_map& /*vm*/,
             util::detail::function<int(int, char**)> const& f)
         {
-            std::string cmdline(
-                pika::get_config_entry("pika.reconstructed_cmd_line", ""));
+            std::string cmdline(pika::get_config_entry("pika.reconstructed_cmd_line", ""));
 
             using namespace pika::program_options;
 #if defined(PIKA_WINDOWS)
@@ -224,8 +223,7 @@ namespace pika {
         ///////////////////////////////////////////////////////////////////////
         void activate_global_options(detail::command_line_handling& cmdline)
         {
-#if defined(__linux) || defined(linux) || defined(__linux__) ||                \
-    defined(__FreeBSD__)
+#if defined(__linux) || defined(linux) || defined(__linux__) || defined(__FreeBSD__)
             threads::coroutines::detail::posix::use_guard_pages =
                 cmdline.rtcfg_.use_stack_guard_pages();
 #endif
@@ -260,8 +258,7 @@ namespace pika {
         }
 
         ///////////////////////////////////////////////////////////////////////
-        void add_startup_functions(pika::runtime& rt,
-            pika::program_options::variables_map& vm,
+        void add_startup_functions(pika::runtime& rt, pika::program_options::variables_map& vm,
             startup_function_type startup, shutdown_function_type shutdown)
         {
             if (vm.count("pika:app-config"))
@@ -290,15 +287,13 @@ namespace pika {
 
         ///////////////////////////////////////////////////////////////////////
         int run(pika::runtime& rt,
-            util::detail::function<int(
-                pika::program_options::variables_map& vm)> const& f,
-            pika::program_options::variables_map& vm,
-            startup_function_type startup, shutdown_function_type shutdown)
+            util::detail::function<int(pika::program_options::variables_map& vm)> const& f,
+            pika::program_options::variables_map& vm, startup_function_type startup,
+            shutdown_function_type shutdown)
         {
             LPROGRESS_;
 
-            add_startup_functions(
-                rt, vm, PIKA_MOVE(startup), PIKA_MOVE(shutdown));
+            add_startup_functions(rt, vm, PIKA_MOVE(startup), PIKA_MOVE(shutdown));
 
             // Run this runtime instance using the given function f.
             if (!f.empty())
@@ -309,15 +304,13 @@ namespace pika {
         }
 
         int start(pika::runtime& rt,
-            util::detail::function<int(
-                pika::program_options::variables_map& vm)> const& f,
-            pika::program_options::variables_map& vm,
-            startup_function_type startup, shutdown_function_type shutdown)
+            util::detail::function<int(pika::program_options::variables_map& vm)> const& f,
+            pika::program_options::variables_map& vm, startup_function_type startup,
+            shutdown_function_type shutdown)
         {
             LPROGRESS_;
 
-            add_startup_functions(
-                rt, vm, PIKA_MOVE(startup), PIKA_MOVE(shutdown));
+            add_startup_functions(rt, vm, PIKA_MOVE(startup), PIKA_MOVE(shutdown));
 
             if (!f.empty())
             {
@@ -335,13 +328,11 @@ namespace pika {
         {
             if (blocking)
             {
-                return run(*rt, cfg.pika_main_f_, cfg.vm_, PIKA_MOVE(startup),
-                    PIKA_MOVE(shutdown));
+                return run(*rt, cfg.pika_main_f_, cfg.vm_, PIKA_MOVE(startup), PIKA_MOVE(shutdown));
             }
 
             // non-blocking version
-            start(*rt, cfg.pika_main_f_, cfg.vm_, PIKA_MOVE(startup),
-                PIKA_MOVE(shutdown));
+            start(*rt, cfg.pika_main_f_, cfg.vm_, PIKA_MOVE(startup), PIKA_MOVE(shutdown));
 
             // pointer to runtime is stored in TLS
             pika::runtime* p = rt.release();
@@ -355,24 +346,19 @@ namespace pika {
         {
             PIKA_UNUSED(pika::detail::filesystem::initial_path());
 
-            pika::detail::set_assertion_handler(
-                &pika::detail::assertion_handler);
-            pika::detail::set_custom_exception_info_handler(
-                &pika::detail::custom_exception_info);
-            pika::detail::set_pre_exception_handler(
-                &pika::detail::pre_exception_handler);
+            pika::detail::set_assertion_handler(&pika::detail::assertion_handler);
+            pika::detail::set_custom_exception_info_handler(&pika::detail::custom_exception_info);
+            pika::detail::set_pre_exception_handler(&pika::detail::pre_exception_handler);
             pika::set_thread_termination_handler(
                 [](std::exception_ptr const& e) { report_error(e); });
-            pika::lcos::detail::set_run_on_completed_error_handler(
-                [](std::exception_ptr const& e) {
-                    pika::detail::report_exception_and_terminate(e);
-                });
+            pika::lcos::detail::set_run_on_completed_error_handler([](std::exception_ptr const& e) {
+                pika::detail::report_exception_and_terminate(e);
+            });
             pika::detail::set_get_full_build_string(&pika::full_build_string);
 #if defined(PIKA_HAVE_VERIFY_LOCKS)
             pika::util::set_registered_locks_error_handler(
                 &pika::detail::registered_locks_error_handler);
-            pika::util::set_register_locks_predicate(
-                &pika::detail::register_locks_predicate);
+            pika::util::set_register_locks_predicate(&pika::detail::register_locks_predicate);
 #endif
 #if !defined(PIKA_HAVE_DISABLED_SIGNAL_EXCEPTION_HANDLERS)
             if (pika::detail::get_entry_as<bool>(
@@ -382,11 +368,9 @@ namespace pika {
             }
 
 #endif
-            pika::threads::detail::set_get_default_pool(
-                &pika::detail::get_default_pool);
+            pika::threads::detail::set_get_default_pool(&pika::detail::get_default_pool);
             pika::threads::detail::set_get_locality_id(&get_locality_id);
-            pika::parallel::execution::detail::set_get_pu_mask(
-                &pika::detail::get_pu_mask);
+            pika::parallel::execution::detail::set_get_pu_mask(&pika::detail::get_pu_mask);
             pika::parallel::execution::detail::set_get_os_thread_count(
                 []() { return pika::get_os_thread_count(); });
 
@@ -423,10 +407,8 @@ namespace pika {
 
         ///////////////////////////////////////////////////////////////////////
         int run_or_start(
-            util::detail::function<int(
-                pika::program_options::variables_map& vm)> const& f,
-            int argc, const char* const* argv, init_params const& params,
-            bool blocking)
+            util::detail::function<int(pika::program_options::variables_map& vm)> const& f,
+            int argc, const char* const* argv, init_params const& params, bool blocking)
         {
             int result = 0;
             try
@@ -437,8 +419,7 @@ namespace pika {
                 }
 
                 pika::detail::command_line_handling cmdline{
-                    pika::util::runtime_configuration(
-                        argv[0], pika::runtime_mode::local),
+                    pika::util::runtime_configuration(argv[0], pika::runtime_mode::local),
                     params.cfg, f};
 
                 // scope exception handling to resource partitioner initialization
@@ -449,23 +430,19 @@ namespace pika {
                     result = cmdline.call(params.desc_cmdline, argc, argv);
 
                     pika::detail::affinity_data affinity_data{};
-                    affinity_data.init(
-                        pika::detail::get_entry_as<std::size_t>(
-                            cmdline.rtcfg_, "pika.os_threads", 0),
-                        pika::detail::get_entry_as<std::size_t>(
-                            cmdline.rtcfg_, "pika.cores", 0),
+                    affinity_data.init(pika::detail::get_entry_as<std::size_t>(
+                                           cmdline.rtcfg_, "pika.os_threads", 0),
+                        pika::detail::get_entry_as<std::size_t>(cmdline.rtcfg_, "pika.cores", 0),
                         pika::detail::get_entry_as<std::size_t>(
                             cmdline.rtcfg_, "pika.pu_offset", 0),
-                        pika::detail::get_entry_as<std::size_t>(
-                            cmdline.rtcfg_, "pika.pu_step", 0),
+                        pika::detail::get_entry_as<std::size_t>(cmdline.rtcfg_, "pika.pu_step", 0),
                         0, cmdline.rtcfg_.get_entry("pika.affinity", ""),
                         cmdline.rtcfg_.get_entry("pika.bind", ""),
                         !pika::detail::get_entry_as<bool>(
                             cmdline.rtcfg_, "pika.ignore_process_mask", false));
 
-                    pika::resource::partitioner rp =
-                        pika::resource::detail::make_partitioner(
-                            params.rp_mode, cmdline.rtcfg_, affinity_data);
+                    pika::resource::partitioner rp = pika::resource::detail::make_partitioner(
+                        params.rp_mode, cmdline.rtcfg_, affinity_data);
 
                     activate_global_options(cmdline);
 
@@ -492,8 +469,8 @@ namespace pika {
                 }
                 catch (pika::exception const& e)
                 {
-                    std::cerr << "pika::init: pika::exception caught: "
-                              << pika::get_error_what(e) << "\n";
+                    std::cerr << "pika::init: pika::exception caught: " << pika::get_error_what(e)
+                              << "\n";
                     return -1;
                 }
 
@@ -512,13 +489,12 @@ namespace pika {
                 LPROGRESS_ << "creating local runtime";
                 rt.reset(new pika::runtime(cmdline.rtcfg_, true));
 
-                result = run_or_start(blocking, PIKA_MOVE(rt), cmdline,
-                    PIKA_MOVE(params.startup), PIKA_MOVE(params.shutdown));
+                result = run_or_start(blocking, PIKA_MOVE(rt), cmdline, PIKA_MOVE(params.startup),
+                    PIKA_MOVE(params.shutdown));
             }
             catch (pika::detail::command_line_error const& e)
             {
-                std::cerr << "pika::init: std::exception caught: " << e.what()
-                          << "\n";
+                std::cerr << "pika::init: std::exception caught: " << e.what() << "\n";
                 return -1;
             }
             return result;

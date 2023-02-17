@@ -9,16 +9,16 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_TRACY)
-#if defined(__has_include)
+# if defined(__has_include)
 // Newer versions of tracy have Tracy.hpp in the subdirectory tracy
-#if __has_include(<tracy/Tracy.hpp>)
-#include <tracy/Tracy.hpp>
-#else
-#include <Tracy.hpp>
-#endif
+#  if __has_include(<tracy/Tracy.hpp>)
+#   include <tracy/Tracy.hpp>
+#  else
+#   include <Tracy.hpp>
+#  endif
 // If we can't detect tracy's includes we assume it is new enough to use the
 // tracy subdirectory
-#else
-#include <tracy/Tracy.hpp>
-#endif
+# else
+#  include <tracy/Tracy.hpp>
+# endif
 #endif

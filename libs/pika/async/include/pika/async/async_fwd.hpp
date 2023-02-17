@@ -23,7 +23,7 @@ namespace pika {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Action, typename F, typename... Ts>
-    PIKA_FORCEINLINE auto
-    async(F&& f, Ts&&... ts) -> decltype(detail::async_action_dispatch<Action,
-        std::decay_t<F>>::call(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
+    PIKA_FORCEINLINE auto async(F&& f, Ts&&... ts)
+        -> decltype(detail::async_action_dispatch<Action, std::decay_t<F>>::call(
+            PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
 }    // namespace pika

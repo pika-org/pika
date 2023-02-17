@@ -55,8 +55,7 @@ struct test_async_executor
 
     template <typename... Futures>
     struct is_tuple_of_futures<std::tuple<Futures...>>
-      : util::detail::all_of<
-            traits::is_future<std::remove_reference_t<Futures>>...>
+      : util::detail::all_of<traits::is_future<std::remove_reference_t<Futures>>...>
     {
     };
 
@@ -65,8 +64,7 @@ struct test_async_executor
       : std::integral_constant<bool,
             traits::is_future<Future>::value &&
                 is_tuple_of_futures<typename traits::future_traits<
-                    typename std::remove_reference<Future>::type>::
-                        result_type>::value>
+                    typename std::remove_reference<Future>::type>::result_type>::value>
     {
     };
 
@@ -85,10 +83,8 @@ struct test_async_executor
         template <typename T, template <typename> class Future>
         const T& operator()(const Future<T>& el) const
         {
-            using shared_state_ptr =
-                typename traits::detail::shared_state_ptr_for<Future<T>>::type;
-            shared_state_ptr const& state =
-                traits::detail::get_shared_state(el);
+            using shared_state_ptr = typename traits::detail::shared_state_ptr_for<Future<T>>::type;
+            shared_state_ptr const& state = traits::detail::get_shared_state(el);
             return *state->get_result();
         }
     };
@@ -100,21 +96,16 @@ struct test_async_executor
     template <typename F, typename... Ts>
     future<std::invoke_result_t<F, Ts...>> async_execute(F&& f, Ts&&... ts)
     {
-        using result_type =
-            typename util::detail::invoke_deferred_result<F, Ts...>::type;
+        using result_type = typename util::detail::invoke_deferred_result<F, Ts...>::type;
 
         using namespace pika::debug::detail;
-        std::cout << "async_execute : Function    : " << print_type<F>()
-                  << "\n";
-        std::cout << "async_execute : Arguments   : "
-                  << print_type<Ts...>(" | ") << "\n";
-        std::cout << "async_execute : Result      : "
-                  << print_type<result_type>() << "\n";
+        std::cout << "async_execute : Function    : " << print_type<F>() << "\n";
+        std::cout << "async_execute : Arguments   : " << print_type<Ts...>(" | ") << "\n";
+        std::cout << "async_execute : Result      : " << print_type<result_type>() << "\n";
 
         // forward the task execution on to the real internal executor
         return pika::parallel::execution::async_execute(executor_,
-            pika::annotated_function(std::forward<F>(f), "custom"),
-            std::forward<Ts>(ts)...);
+            pika::annotated_function(std::forward<F>(f), "custom"), std::forward<Ts>(ts)...);
     }
 
     // --------------------------------------------------------------------
@@ -122,45 +113,35 @@ struct test_async_executor
     // note that future<> and shared_future<> are both supported
     // --------------------------------------------------------------------
     template <typename F, typename Future, typename... Ts,
-        typename = enable_if_t<traits::is_future<
-            typename std::remove_reference<Future>::type>::value>>
-    auto then_execute(F&& f, Future&& predecessor, Ts&&... ts) -> future<
-        typename util::detail::invoke_deferred_result<F, Future, Ts...>::type>
+        typename =
+            enable_if_t<traits::is_future<typename std::remove_reference<Future>::type>::value>>
+    auto then_execute(F&& f, Future&& predecessor, Ts&&... ts)
+        -> future<typename util::detail::invoke_deferred_result<F, Future, Ts...>::type>
     {
-        using result_type = typename util::detail::invoke_deferred_result<F,
-            Future, Ts...>::type;
+        using result_type = typename util::detail::invoke_deferred_result<F, Future, Ts...>::type;
 
         using namespace pika::debug::detail;
-        std::cout << "then_execute : Function     : " << print_type<F>()
-                  << "\n";
-        std::cout << "then_execute : Predecessor  : " << print_type<Future>()
-                  << "\n";
-        std::cout
-            << "then_execute : Future       : "
-            << print_type<typename traits::future_traits<Future>::result_type>()
-            << "\n";
-        std::cout << "then_execute : Arguments    : "
-                  << print_type<Ts...>(" | ") << "\n";
-        std::cout << "then_execute : Result       : "
-                  << print_type<result_type>() << "\n";
+        std::cout << "then_execute : Function     : " << print_type<F>() << "\n";
+        std::cout << "then_execute : Predecessor  : " << print_type<Future>() << "\n";
+        std::cout << "then_execute : Future       : "
+                  << print_type<typename traits::future_traits<Future>::result_type>() << "\n";
+        std::cout << "then_execute : Arguments    : " << print_type<Ts...>(" | ") << "\n";
+        std::cout << "then_execute : Result       : " << print_type<result_type>() << "\n";
 
-        return pika::parallel::execution::then_execute(executor_,
-            std::forward<F>(f), std::forward<Future>(predecessor),
-            std::forward<Ts>(ts)...);
+        return pika::parallel::execution::then_execute(executor_, std::forward<F>(f),
+            std::forward<Future>(predecessor), std::forward<Ts>(ts)...);
     }
 
     // --------------------------------------------------------------------
     // .then() execute specialized for a when_all dispatch for any future types
     // future< tuple< is_future<a>::type, is_future<b>::type, ...> >
     // --------------------------------------------------------------------
-    template <typename F, template <typename> class OuterFuture,
-        typename... InnerFutures, typename... Ts,
-        typename = enable_if_t<is_future_of_tuple_of_futures<
-            OuterFuture<std::tuple<InnerFutures...>>>::value>,
+    template <typename F, template <typename> class OuterFuture, typename... InnerFutures,
+        typename... Ts,
         typename = enable_if_t<
-            is_tuple_of_futures<std::tuple<InnerFutures...>>::value>>
-    auto then_execute(F&& f,
-        OuterFuture<std::tuple<InnerFutures...>>&& predecessor, Ts&&... ts)
+            is_future_of_tuple_of_futures<OuterFuture<std::tuple<InnerFutures...>>>::value>,
+        typename = enable_if_t<is_tuple_of_futures<std::tuple<InnerFutures...>>::value>>
+    auto then_execute(F&& f, OuterFuture<std::tuple<InnerFutures...>>&& predecessor, Ts&&... ts)
         -> future<typename util::detail::invoke_deferred_result<F,
             OuterFuture<std::tuple<InnerFutures...>>, Ts...>::type>
     {
@@ -168,32 +149,24 @@ struct test_async_executor
             OuterFuture<std::tuple<InnerFutures...>>, Ts...>::type;
 
         // get the tuple of futures from the predecessor future <tuple of futures>
-        const auto& predecessor_value =
-            future_extract_value().operator()(predecessor);
+        const auto& predecessor_value = future_extract_value().operator()(predecessor);
 
         // create a tuple of the unwrapped future values
-        auto unwrapped_futures_tuple =
-            util::map_pack(future_extract_value{}, predecessor_value);
+        auto unwrapped_futures_tuple = util::map_pack(future_extract_value{}, predecessor_value);
 
         using namespace pika::debug::detail;
         std::cout << "when_all(fut) : Predecessor : "
-                  << print_type<OuterFuture<std::tuple<InnerFutures...>>>()
-                  << "\n";
+                  << print_type<OuterFuture<std::tuple<InnerFutures...>>>() << "\n";
         std::cout << "when_all(fut) : unwrapped   : "
-                  << print_type<decltype(unwrapped_futures_tuple)>(" | ")
-                  << "\n";
-        std::cout << "when_all(fut) : Arguments   : "
-                  << print_type<Ts...>(" | ") << "\n";
-        std::cout << "when_all(fut) : Result      : "
-                  << print_type<result_type>() << "\n";
+                  << print_type<decltype(unwrapped_futures_tuple)>(" | ") << "\n";
+        std::cout << "when_all(fut) : Arguments   : " << print_type<Ts...>(" | ") << "\n";
+        std::cout << "when_all(fut) : Result      : " << print_type<result_type>() << "\n";
 
         // invoke a function with the unwrapped tuple future types to demonstrate
         // that we can access them
         std::cout << "when_all(fut) : tuple       : ";
         util::detail::invoke_fused(
-            [](const auto&... ts) {
-                std::cout << print_type<decltype(ts)...>(" | ") << "\n";
-            },
+            [](const auto&... ts) { std::cout << print_type<decltype(ts)...>(" | ") << "\n"; },
             unwrapped_futures_tuple);
 
         // forward the task execution on to the real internal executor
@@ -209,34 +182,27 @@ struct test_async_executor
     // function type, result type and tuple of futures as arguments
     // --------------------------------------------------------------------
     template <typename F, typename... InnerFutures,
-        typename = enable_if_t<
-            traits::is_future_tuple<std::tuple<InnerFutures...>>::value>>
-    auto async_execute(F&& f, std::tuple<InnerFutures...>&& predecessor)
-        -> future<typename util::detail::invoke_deferred_result<F,
-            std::tuple<InnerFutures...>>::type>
+        typename = enable_if_t<traits::is_future_tuple<std::tuple<InnerFutures...>>::value>>
+    auto async_execute(F&& f, std::tuple<InnerFutures...>&& predecessor) -> future<
+        typename util::detail::invoke_deferred_result<F, std::tuple<InnerFutures...>>::type>
     {
-        using result_type = typename util::detail::invoke_deferred_result<F,
-            std::tuple<InnerFutures...>>::type;
+        using result_type =
+            typename util::detail::invoke_deferred_result<F, std::tuple<InnerFutures...>>::type;
 
-        auto unwrapped_futures_tuple =
-            util::map_pack(future_extract_value{}, predecessor);
+        auto unwrapped_futures_tuple = util::map_pack(future_extract_value{}, predecessor);
 
         using namespace pika::debug::detail;
-        std::cout << "dataflow      : Predecessor : "
-                  << print_type<std::tuple<InnerFutures...>>() << "\n";
-        std::cout << "dataflow      : unwrapped   : "
-                  << print_type<decltype(unwrapped_futures_tuple)>(" | ")
+        std::cout << "dataflow      : Predecessor : " << print_type<std::tuple<InnerFutures...>>()
                   << "\n";
-        std::cout << "dataflow-frame: Result      : "
-                  << print_type<result_type>() << "\n";
+        std::cout << "dataflow      : unwrapped   : "
+                  << print_type<decltype(unwrapped_futures_tuple)>(" | ") << "\n";
+        std::cout << "dataflow-frame: Result      : " << print_type<result_type>() << "\n";
 
         // invoke a function with the unwrapped tuple future types to demonstrate
         // that we can access them
         std::cout << "dataflow      : tuple       : ";
         util::detail::invoke_fused(
-            [](const auto&... ts) {
-                std::cout << print_type<decltype(ts)...>(" | ") << "\n";
-            },
+            [](const auto&... ts) { std::cout << print_type<decltype(ts)...>(" | ") << "\n"; },
             unwrapped_futures_tuple);
 
         // forward the task execution on to the real internal executor
@@ -292,13 +258,11 @@ int test(const std::string& message, Executor& exec)
     std::cout << "============================" << std::endl;
     std::cout << "Test 2a : .then()" << std::endl;
     int testval = 5;
-    future<decltype(testval)> f =
-        pika::async(&dummy_task<decltype(testval)>, testval);
+    future<decltype(testval)> f = pika::async(&dummy_task<decltype(testval)>, testval);
     //
     future<std::string> ft = f.then(exec, [testval](auto&& f) {
         std::cout << "Inside .then() " << std::endl;
-        PIKA_TEST_EQ_MSG(
-            f.is_ready(), true, "Continuation run before future ready");
+        PIKA_TEST_EQ_MSG(f.is_ready(), true, "Continuation run before future ready");
         decltype(testval) r = f.get();
         std::cout << "expected " << testval << " got " << r << std::endl;
         PIKA_TEST_EQ(r, testval);
@@ -314,8 +278,7 @@ int test(const std::string& message, Executor& exec)
     //
     future<std::string> fts = fs.then(exec, [testval](auto&& f) {
         std::cout << "Inside .then(shared)" << std::endl;
-        PIKA_TEST_EQ_MSG(
-            f.is_ready(), true, "Continuation run before future ready");
+        PIKA_TEST_EQ_MSG(f.is_ready(), true, "Continuation run before future ready");
         decltype(testval) r = f.get();
         std::cout << "expected " << testval << " got " << r << std::endl;
         PIKA_TEST_EQ(r, testval);
@@ -332,15 +295,13 @@ int test(const std::string& message, Executor& exec)
     auto fw1 = pika::async(&dummy_task<decltype(testval2)>, testval2);
     auto fw2 = pika::async(&dummy_task<decltype(testval3)>, testval3);
     //
-    auto fw = pika::when_all(fw1, fw2).then(exec,
-        [testval2, testval3](
-            future<std::tuple<future<int>, future<double>>>&& f) {
+    auto fw = pika::when_all(fw1, fw2).then(
+        exec, [testval2, testval3](future<std::tuple<future<int>, future<double>>>&& f) {
             std::cout << "Inside when_all : " << std::endl;
-            PIKA_TEST_EQ_MSG(
-                f.is_ready(), true, "Continuation run before future ready");
+            PIKA_TEST_EQ_MSG(f.is_ready(), true, "Continuation run before future ready");
             auto tup = f.get();
-            auto cmplx = std::complex<double>(
-                double(std::get<0>(tup).get()), std::get<1>(tup).get());
+            auto cmplx =
+                std::complex<double>(double(std::get<0>(tup).get()), std::get<1>(tup).get());
             auto cmplxe = std::complex<double>(double(testval2), testval3);
             std::cout << "expected " << cmplxe << " got " << cmplx << std::endl;
             PIKA_TEST_EQ(cmplx, cmplxe);
@@ -360,19 +321,15 @@ int test(const std::string& message, Executor& exec)
     auto fws =
         pika::when_all(fws1, fws2)
             .then(exec,
-                [testval4, testval5](future<std::tuple<future<std::uint64_t>,
-                        shared_future<float>>>&& f) {
+                [testval4, testval5](
+                    future<std::tuple<future<std::uint64_t>, shared_future<float>>>&& f) {
                     std::cout << "Inside when_all(shared) : " << std::endl;
-                    PIKA_TEST_EQ_MSG(f.is_ready(), true,
-                        "Continuation run before future ready");
+                    PIKA_TEST_EQ_MSG(f.is_ready(), true, "Continuation run before future ready");
                     auto tup = f.get();
-                    auto cmplx =
-                        std::complex<double>(double(std::get<0>(tup).get()),
-                            double(std::get<1>(tup).get()));
-                    auto cmplxe = std::complex<double>(
-                        double(testval4), double(testval5));
-                    std::cout << "expected " << cmplxe << " got " << cmplx
-                              << std::endl;
+                    auto cmplx = std::complex<double>(
+                        double(std::get<0>(tup).get()), double(std::get<1>(tup).get()));
+                    auto cmplxe = std::complex<double>(double(testval4), double(testval5));
+                    std::cout << "expected " << cmplxe << " got " << cmplx << std::endl;
                     PIKA_TEST_EQ(cmplx, cmplxe);
                     return std::string("when_all(shared)");
                 });
@@ -391,8 +348,8 @@ int test(const std::string& message, Executor& exec)
         exec,
         [testval6, testval7](future<std::uint16_t>&& f1, future<double>&& f2) {
             std::cout << "Inside dataflow : " << std::endl;
-            PIKA_TEST_EQ_MSG(f1.is_ready() && f2.is_ready(), true,
-                "Continuation run before future ready");
+            PIKA_TEST_EQ_MSG(
+                f1.is_ready() && f2.is_ready(), true, "Continuation run before future ready");
             double r1 = f1.get();
             double r2 = f2.get();
             auto cmplx = std::complex<double>(r1, r2);
@@ -415,11 +372,10 @@ int test(const std::string& message, Executor& exec)
     //
     auto fds = dataflow(
         exec,
-        [testval8, testval9](
-            future<std::uint32_t>&& f1, shared_future<double>&& f2) {
+        [testval8, testval9](future<std::uint32_t>&& f1, shared_future<double>&& f2) {
             std::cout << "Inside dataflow(shared) : " << std::endl;
-            PIKA_TEST_EQ_MSG(f1.is_ready() && f2.is_ready(), true,
-                "Continuation run before future ready");
+            PIKA_TEST_EQ_MSG(
+                f1.is_ready() && f2.is_ready(), true, "Continuation run before future ready");
             double r1 = f1.get();
             double r2 = f2.get();
             auto cmplx = std::complex<double>(r1, r2);
@@ -465,9 +421,7 @@ namespace pika::parallel::execution {
             std::cout << "Hint 3(a) \n";
             return 3;
         }
-        int operator()(
-            const std::tuple<future<std::uint64_t>, shared_future<float>>&)
-            const
+        int operator()(const std::tuple<future<std::uint64_t>, shared_future<float>>&) const
         {
             std::cout << "Hint 3(b) \n";
             return 3;
@@ -527,8 +481,7 @@ int pika_main()
 int main(int argc, char* argv[])
 {
     // Initialize and run pika
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0, "pika main exited with non-zero status");
 
     return 0;
 }

@@ -25,10 +25,8 @@ namespace pika::parallel::execution::detail {
     template <typename F, typename Shape, typename Future, typename... Ts>
     struct then_bulk_function_result
     {
-        using value_type =
-            typename pika::traits::range_traits<Shape>::value_type;
-        using type = pika::util::detail::invoke_deferred_result_t<F, value_type,
-            Future, Ts...>;
+        using value_type = typename pika::traits::range_traits<Shape>::value_type;
+        using type = pika::util::detail::invoke_deferred_result_t<F, value_type, Future, Ts...>;
     };
 
     template <typename F, typename Shape, typename Future, typename... Ts>
@@ -36,15 +34,13 @@ namespace pika::parallel::execution::detail {
         typename then_bulk_function_result<F, Shape, Future, Ts...>::type;
 
     ///////////////////////////////////////////////////////////////////////////
-    template <typename F, typename Shape, typename Future, bool IsVoid,
-        typename... Ts>
+    template <typename F, typename Shape, typename Future, bool IsVoid, typename... Ts>
     struct bulk_then_execute_result_impl;
 
     template <typename F, typename Shape, typename Future, typename... Ts>
     struct bulk_then_execute_result_impl<F, Shape, Future, false, Ts...>
     {
-        using type =
-            std::vector<then_bulk_function_result_t<F, Shape, Future, Ts...>>;
+        using type = std::vector<then_bulk_function_result_t<F, Shape, Future, Ts...>>;
     };
 
     template <typename F, typename Shape, typename Future, typename... Ts>
@@ -56,9 +52,7 @@ namespace pika::parallel::execution::detail {
     template <typename F, typename Shape, typename Future, typename... Ts>
     struct bulk_then_execute_result
       : bulk_then_execute_result_impl<F, Shape, Future,
-            std::is_void<
-                then_bulk_function_result_t<F, Shape, Future, Ts...>>::value,
-            Ts...>
+            std::is_void<then_bulk_function_result_t<F, Shape, Future, Ts...>>::value, Ts...>
     {
     };
 
@@ -67,28 +61,22 @@ namespace pika::parallel::execution::detail {
         typename bulk_then_execute_result<F, Shape, Future, Ts...>::type;
 
     ///////////////////////////////////////////////////////////////////////////
-    template <typename Executor, typename F, typename Shape, typename Future,
-        std::size_t... Is, typename... Ts>
-    PIKA_FORCEINLINE auto fused_bulk_sync_execute(Executor&& exec, F&& f,
-        Shape const& shape, Future&& predecessor,
-        pika::util::detail::index_pack<Is...>, std::tuple<Ts...> const& args)
-        -> decltype(execution::bulk_sync_execute(PIKA_FORWARD(Executor, exec),
-            PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Future, predecessor),
-            std::get<Is>(args)...))
+    template <typename Executor, typename F, typename Shape, typename Future, std::size_t... Is,
+        typename... Ts>
+    PIKA_FORCEINLINE auto fused_bulk_sync_execute(Executor&& exec, F&& f, Shape const& shape,
+        Future&& predecessor, pika::util::detail::index_pack<Is...>, std::tuple<Ts...> const& args)
+        -> decltype(execution::bulk_sync_execute(PIKA_FORWARD(Executor, exec), PIKA_FORWARD(F, f),
+            shape, PIKA_FORWARD(Future, predecessor), std::get<Is>(args)...))
     {
-        return execution::bulk_sync_execute(PIKA_FORWARD(Executor, exec),
-            PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Future, predecessor),
-            std::get<Is>(args)...);
+        return execution::bulk_sync_execute(PIKA_FORWARD(Executor, exec), PIKA_FORWARD(F, f), shape,
+            PIKA_FORWARD(Future, predecessor), std::get<Is>(args)...);
     }
 
-    template <typename Result, typename Executor, typename F, typename Shape,
-        typename Args>
+    template <typename Result, typename Executor, typename F, typename Shape, typename Args>
     struct fused_bulk_sync_execute_helper;
 
-    template <typename Result, typename Executor, typename F, typename Shape,
-        typename... Ts>
-    struct fused_bulk_sync_execute_helper<Result, Executor, F, Shape,
-        std::tuple<Ts...>>
+    template <typename Result, typename Executor, typename F, typename Shape, typename... Ts>
+    struct fused_bulk_sync_execute_helper<Result, Executor, F, Shape, std::tuple<Ts...>>
     {
         Executor exec_;
         F f_;
@@ -98,50 +86,38 @@ namespace pika::parallel::execution::detail {
         template <typename Future>
         Result operator()(Future&& predecessor)
         {
-            return fused_bulk_sync_execute(exec_, f_, shape_,
-                PIKA_FORWARD(Future, predecessor),
-                typename pika::util::detail::make_index_pack<sizeof...(
-                    Ts)>::type(),
-                args_);
+            return fused_bulk_sync_execute(exec_, f_, shape_, PIKA_FORWARD(Future, predecessor),
+                typename pika::util::detail::make_index_pack<sizeof...(Ts)>::type(), args_);
         }
     };
 
-    template <typename Result, typename Executor, typename F, typename Shape,
-        typename Args>
-    fused_bulk_sync_execute_helper<Result, std::decay_t<Executor>,
-        std::decay_t<F>, Shape, std::decay_t<Args>>
-    make_fused_bulk_sync_execute_helper(
-        Executor&& exec, F&& f, Shape const& shape, Args&& args)
+    template <typename Result, typename Executor, typename F, typename Shape, typename Args>
+    fused_bulk_sync_execute_helper<Result, std::decay_t<Executor>, std::decay_t<F>, Shape,
+        std::decay_t<Args>>
+    make_fused_bulk_sync_execute_helper(Executor&& exec, F&& f, Shape const& shape, Args&& args)
     {
-        return fused_bulk_sync_execute_helper<Result, std::decay_t<Executor>,
-            std::decay_t<F>, Shape, std::decay_t<Args>>{
-            PIKA_FORWARD(Executor, exec), PIKA_FORWARD(F, f), shape,
-            PIKA_FORWARD(Args, args)};
+        return fused_bulk_sync_execute_helper<Result, std::decay_t<Executor>, std::decay_t<F>,
+            Shape, std::decay_t<Args>>{
+            PIKA_FORWARD(Executor, exec), PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Args, args)};
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    template <typename Executor, typename F, typename Shape, typename Future,
-        std::size_t... Is, typename... Ts>
-    PIKA_FORCEINLINE auto fused_bulk_async_execute(Executor&& exec, F&& f,
-        Shape const& shape, Future&& predecessor,
-        pika::util::detail::index_pack<Is...>, std::tuple<Ts...> const& args)
-        -> decltype(execution::bulk_async_execute(PIKA_FORWARD(Executor, exec),
-            PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Future, predecessor),
-            std::get<Is>(args)...))
+    template <typename Executor, typename F, typename Shape, typename Future, std::size_t... Is,
+        typename... Ts>
+    PIKA_FORCEINLINE auto fused_bulk_async_execute(Executor&& exec, F&& f, Shape const& shape,
+        Future&& predecessor, pika::util::detail::index_pack<Is...>, std::tuple<Ts...> const& args)
+        -> decltype(execution::bulk_async_execute(PIKA_FORWARD(Executor, exec), PIKA_FORWARD(F, f),
+            shape, PIKA_FORWARD(Future, predecessor), std::get<Is>(args)...))
     {
-        return execution::bulk_async_execute(PIKA_FORWARD(Executor, exec),
-            PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Future, predecessor),
-            std::get<Is>(args)...);
+        return execution::bulk_async_execute(PIKA_FORWARD(Executor, exec), PIKA_FORWARD(F, f),
+            shape, PIKA_FORWARD(Future, predecessor), std::get<Is>(args)...);
     }
 
-    template <typename Result, typename Executor, typename F, typename Shape,
-        typename Args>
+    template <typename Result, typename Executor, typename F, typename Shape, typename Args>
     struct fused_bulk_async_execute_helper;
 
-    template <typename Result, typename Executor, typename F, typename Shape,
-        typename... Ts>
-    struct fused_bulk_async_execute_helper<Result, Executor, F, Shape,
-        std::tuple<Ts...>>
+    template <typename Result, typename Executor, typename F, typename Shape, typename... Ts>
+    struct fused_bulk_async_execute_helper<Result, Executor, F, Shape, std::tuple<Ts...>>
     {
         Executor exec_;
         F f_;
@@ -151,24 +127,18 @@ namespace pika::parallel::execution::detail {
         template <typename Future>
         Result operator()(Future&& predecessor)
         {
-            return fused_bulk_async_execute(exec_, f_, shape_,
-                PIKA_FORWARD(Future, predecessor),
-                typename pika::util::detail::make_index_pack<sizeof...(
-                    Ts)>::type(),
-                args_);
+            return fused_bulk_async_execute(exec_, f_, shape_, PIKA_FORWARD(Future, predecessor),
+                typename pika::util::detail::make_index_pack<sizeof...(Ts)>::type(), args_);
         }
     };
 
-    template <typename Result, typename Executor, typename F, typename Shape,
-        typename Args>
-    fused_bulk_async_execute_helper<Result, std::decay_t<Executor>,
-        std::decay_t<F>, std::decay_t<Shape>, std::decay_t<Args>>
-    make_fused_bulk_async_execute_helper(
-        Executor&& exec, F&& f, Shape&& shape, Args&& args)
+    template <typename Result, typename Executor, typename F, typename Shape, typename Args>
+    fused_bulk_async_execute_helper<Result, std::decay_t<Executor>, std::decay_t<F>,
+        std::decay_t<Shape>, std::decay_t<Args>>
+    make_fused_bulk_async_execute_helper(Executor&& exec, F&& f, Shape&& shape, Args&& args)
     {
-        return fused_bulk_async_execute_helper<Result, std::decay_t<Executor>,
-            std::decay_t<F>, std::decay_t<Shape>, std::decay_t<Args>>{
-            PIKA_FORWARD(Executor, exec), PIKA_FORWARD(F, f),
-            PIKA_FORWARD(Shape, shape), PIKA_FORWARD(Args, args)};
+        return fused_bulk_async_execute_helper<Result, std::decay_t<Executor>, std::decay_t<F>,
+            std::decay_t<Shape>, std::decay_t<Args>>{PIKA_FORWARD(Executor, exec),
+            PIKA_FORWARD(F, f), PIKA_FORWARD(Shape, shape), PIKA_FORWARD(Args, args)};
     }
 }    // namespace pika::parallel::execution::detail

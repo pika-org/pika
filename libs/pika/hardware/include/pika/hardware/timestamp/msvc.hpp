@@ -12,25 +12,25 @@
 
 #if defined(PIKA_WINDOWS)
 
-#include <cstdint>
+# include <cstdint>
 
-#include <intrin.h>
-#include <windows.h>
+# include <intrin.h>
+# include <windows.h>
 
-#if defined(PIKA_HAVE_CUDA) && defined(PIKA_COMPUTE_CODE)
-#include <pika/hardware/timestamp/cuda.hpp>
-#endif
+# if defined(PIKA_HAVE_CUDA) && defined(PIKA_COMPUTE_CODE)
+#  include <pika/hardware/timestamp/cuda.hpp>
+# endif
 
 namespace pika { namespace util { namespace hardware {
     PIKA_HOST_DEVICE inline std::uint64_t timestamp()
     {
-#if defined(PIKA_HAVE_CUDA) && defined(PIKA_COMPUTE_DEVICE_CODE)
+# if defined(PIKA_HAVE_CUDA) && defined(PIKA_COMPUTE_DEVICE_CODE)
         return timestamp_cuda();
-#else
+# else
         LARGE_INTEGER now;
         QueryPerformanceCounter(&now);
         return static_cast<std::uint64_t>(now.QuadPart);
-#endif
+# endif
     }
 }}}    // namespace pika::util::hardware
 

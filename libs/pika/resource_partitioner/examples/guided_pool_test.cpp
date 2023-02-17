@@ -40,13 +40,12 @@ void async_guided(std::size_t n, bool printout, std::string const& message)
 {
     if (printout)
     {
-        std::cout << "[async_guided] <std::size_t, bool, const std::string> "
-                  << message << " n=" << n << "\n";
+        std::cout << "[async_guided] <std::size_t, bool, const std::string> " << message
+                  << " n=" << n << "\n";
     }
     for (std::size_t i(0); i < n; ++i)
     {
-        double f = std::sin(
-            2 * M_PI * static_cast<double>(i) / static_cast<double>(n));
+        double f = std::sin(2 * M_PI * static_cast<double>(i) / static_cast<double>(n));
         if (printout)
         {
             std::cout << "sin(" << i << ") = " << f << ", ";
@@ -85,8 +84,7 @@ namespace pika::parallel::execution {
         int operator()(std::size_t i, bool b, std::string const& msg) const
         {
             std::cout << "<std::size_t, bool, const std::string> hint "
-                      << "invoked with : " << i << " " << b << " " << msg
-                      << std::endl;
+                      << "invoked with : " << i << " " << b << " " << msg << std::endl;
             return 1;
         }
 
@@ -95,8 +93,7 @@ namespace pika::parallel::execution {
         int operator()(int i, double d, std::string const& msg) const
         {
             std::cout << "<int, double, const std::string> hint "
-                      << "invoked with : " << i << " " << d << " " << msg
-                      << std::endl;
+                      << "invoked with : " << i << " " << d << " " << msg << std::endl;
             return 42;
         }
 
@@ -140,8 +137,8 @@ int pika_main()
     pika::parallel::execution::guided_pool_executor<hint_type1> guided_exec(
         &pika::resource::get_thread_pool(CUSTOM_POOL_NAME));
     // invoke an async function using our numa hint executor
-    pika::future<void> gf1 = pika::async(guided_exec, &async_guided,
-        std::size_t(5), true, std::string("Guided function"));
+    pika::future<void> gf1 = pika::async(
+        guided_exec, &async_guided, std::size_t(5), true, std::string("Guided function"));
     gf1.get();
 
     // ------------------------------------------------------------------------
@@ -155,14 +152,13 @@ int pika_main()
     // the args of the async lambda must match the args of the hint type
     using hint_type2 = pool_numa_hint<guided_test_tag>;
     // create an executor using the numa hint type
-    pika::parallel::execution::guided_pool_executor<hint_type2>
-        guided_lambda_exec(&pika::resource::get_thread_pool(CUSTOM_POOL_NAME));
+    pika::parallel::execution::guided_pool_executor<hint_type2> guided_lambda_exec(
+        &pika::resource::get_thread_pool(CUSTOM_POOL_NAME));
     // invoke a lambda asynchronously and use the numa executor
     pika::future<double> gf2 = pika::async(
         guided_lambda_exec,
         [](int, double, std::string const& msg) mutable -> double {
-            std::cout << "inside <int, double, string> async lambda " << msg
-                      << std::endl;
+            std::cout << "inside <int, double, string> async lambda " << msg << std::endl;
             // return a double as an example
             return 3.1415;
         },
@@ -172,21 +168,21 @@ int pika_main()
     // ------------------------------------------------------------------------
     // static checks for laughs
     // ------------------------------------------------------------------------
-    static_assert(
-        pika::traits::has_sync_execute_member<pika::parallel::execution::
-                guided_pool_executor<hint_type2>>::value == std::false_type(),
+    static_assert(pika::traits::has_sync_execute_member<
+                      pika::parallel::execution::guided_pool_executor<hint_type2>>::value ==
+            std::false_type(),
         "check has_sync_execute_member<Executor>::value");
     static_assert(
-        pika::traits::has_async_execute_member<pika::parallel::execution::
-                guided_pool_executor<hint_type2>>::value == std::true_type(),
+        pika::traits::has_async_execute_member<
+            pika::parallel::execution::guided_pool_executor<hint_type2>>::value == std::true_type(),
         "check has_async_execute_member<Executor>::value");
     static_assert(
-        pika::traits::has_then_execute_member<pika::parallel::execution::
-                guided_pool_executor<hint_type2>>::value == std::true_type(),
+        pika::traits::has_then_execute_member<
+            pika::parallel::execution::guided_pool_executor<hint_type2>>::value == std::true_type(),
         "has_then_execute_member<executor>::value");
-    static_assert(
-        pika::traits::has_post_member<pika::parallel::execution::
-                guided_pool_executor<hint_type2>>::value == std::false_type(),
+    static_assert(pika::traits::has_post_member<
+                      pika::parallel::execution::guided_pool_executor<hint_type2>>::value ==
+            std::false_type(),
         "has_post_member<executor>::value");
 
     // ------------------------------------------------------------------------
@@ -200,12 +196,11 @@ int pika_main()
     // the args of the async lambda must match the args of the hint type
     using hint_type3 = pool_numa_hint<guided_test_tag>;
     // create an executor using the numa hint type
-    pika::parallel::execution::guided_pool_executor<hint_type3>
-        guided_cont_exec(&pika::resource::get_thread_pool(CUSTOM_POOL_NAME));
+    pika::parallel::execution::guided_pool_executor<hint_type3> guided_cont_exec(
+        &pika::resource::get_thread_pool(CUSTOM_POOL_NAME));
     // invoke the lambda asynchronously and use the numa executor
-    auto new_future = pika::async([]() -> double {
-        return 2 * 3.1415;
-    }).then(guided_cont_exec, a_function);
+    auto new_future =
+        pika::async([]() -> double { return 2 * 3.1415; }).then(guided_cont_exec, a_function);
 
     /*
     [](double df)
@@ -220,29 +215,25 @@ int pika_main()
     return pika::finalize();
 }
 
-void init_resource_partitioner_handler(pika::resource::partitioner& rp,
-    pika::program_options::variables_map const&)
+void init_resource_partitioner_handler(
+    pika::resource::partitioner& rp, pika::program_options::variables_map const&)
 {
     // create a thread pool and supply a lambda that returns a new pool with
     // a user supplied scheduler attached
     rp.create_thread_pool(CUSTOM_POOL_NAME,
         [](pika::threads::detail::thread_pool_init_parameters init,
-            pika::threads::detail::thread_queue_init_parameters
-                thread_queue_init)
+            pika::threads::detail::thread_queue_init_parameters thread_queue_init)
             -> std::unique_ptr<pika::threads::detail::thread_pool_base> {
-            std::cout << "User defined scheduler creation callback "
-                      << std::endl;
-            high_priority_sched::init_parameter_type scheduler_init(
-                init.num_threads_, {1, 1, 64}, init.affinity_data_,
-                thread_queue_init, "shared-priority-scheduler");
-            std::unique_ptr<high_priority_sched> scheduler(
-                new high_priority_sched(scheduler_init));
+            std::cout << "User defined scheduler creation callback " << std::endl;
+            high_priority_sched::init_parameter_type scheduler_init(init.num_threads_, {1, 1, 64},
+                init.affinity_data_, thread_queue_init, "shared-priority-scheduler");
+            std::unique_ptr<high_priority_sched> scheduler(new high_priority_sched(scheduler_init));
 
             init.mode_ = scheduler_mode(scheduler_mode::delay_exit);
 
             std::unique_ptr<pika::threads::detail::thread_pool_base> pool(
-                new pika::threads::detail::scheduled_thread_pool<
-                    high_priority_sched>(std::move(scheduler), init));
+                new pika::threads::detail::scheduled_thread_pool<high_priority_sched>(
+                    std::move(scheduler), init));
             return pool;
         });
 
@@ -257,8 +248,7 @@ void init_resource_partitioner_handler(pika::resource::partitioner& rp,
             {
                 if (count < pool_threads)
                 {
-                    std::cout << "Added pu " << count++
-                              << " to " CUSTOM_POOL_NAME " pool\n";
+                    std::cout << "Added pu " << count++ << " to " CUSTOM_POOL_NAME " pool\n";
                     rp.add_resource(p, CUSTOM_POOL_NAME);
                 }
             }
@@ -281,11 +271,10 @@ int main(int argc, char* argv[])
     // pika uses a boost program options variable map, but we need it before
     // pika_main, so we will create another one here and throw it away after use
     pika::program_options::variables_map vm;
-    pika::program_options::store(
-        pika::program_options::command_line_parser(argc, argv)
-            .allow_unregistered()
-            .options(desc_cmdline)
-            .run(),
+    pika::program_options::store(pika::program_options::command_line_parser(argc, argv)
+                                     .allow_unregistered()
+                                     .options(desc_cmdline)
+                                     .run(),
         vm);
 
     pool_threads = vm["pool-threads"].as<int>();

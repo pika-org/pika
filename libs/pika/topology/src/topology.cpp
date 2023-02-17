@@ -31,24 +31,24 @@
 #include <hwloc.h>
 
 #if HWLOC_API_VERSION < 0x00010b00
-#define HWLOC_OBJ_NUMANODE HWLOC_OBJ_NODE
+# define HWLOC_OBJ_NUMANODE HWLOC_OBJ_NODE
 #endif
 
 #if defined(__ANDROID__) && defined(ANDROID)
-#include <cpu-features.h>
+# include <cpu-features.h>
 #endif
 
 #if defined(__bgq__)
-#include <hwi/include/bqc/A2_inlines.h>
+# include <hwi/include/bqc/A2_inlines.h>
 #endif
 
 #if defined(_POSIX_VERSION)
-#include <sys/resource.h>
-#include <sys/syscall.h>
+# include <sys/resource.h>
+# include <sys/syscall.h>
 #endif
 
 #if defined(PIKA_HAVE_UNISTD_H)
-#include <unistd.h>
+# include <unistd.h>
 #endif
 
 namespace pika::threads::detail {
@@ -65,12 +65,10 @@ namespace pika::threads::detail {
 
     void write_to_log_mask(char const* valuename, mask_cref_type value)
     {
-        LTM_(debug).format("topology: {}: {}", valuename,
-            pika::threads::detail::to_string(value));
+        LTM_(debug).format("topology: {}: {}", valuename, pika::threads::detail::to_string(value));
     }
 
-    void write_to_log(
-        char const* valuename, std::vector<std::size_t> const& values)
+    void write_to_log(char const* valuename, std::vector<std::size_t> const& values)
     {
         LTM_(debug).format("topology: {}s, size: {}", valuename, values.size());
 
@@ -81,16 +79,15 @@ namespace pika::threads::detail {
         }
     }
 
-    void write_to_log_mask(
-        char const* valuename, std::vector<mask_type> const& values)
+    void write_to_log_mask(char const* valuename, std::vector<mask_type> const& values)
     {
         LTM_(debug).format("topology: {}s, size: {}", valuename, values.size());
 
         std::size_t i = 0;
         for (mask_cref_type value : values)
         {
-            LTM_(debug).format("topology: {}({}): {}", valuename, i++,
-                pika::threads::detail::to_string(value));
+            LTM_(debug).format(
+                "topology: {}({}): {}", valuename, i++, pika::threads::detail::to_string(value));
         }
     }
 
@@ -135,8 +132,7 @@ namespace pika::threads::detail {
     std::size_t topology::memory_page_size_ = get_memory_page_size_impl();
 
     ///////////////////////////////////////////////////////////////////////////
-    std::ostream& operator<<(
-        std::ostream& os, pika_hwloc_bitmap_wrapper const* bmp)
+    std::ostream& operator<<(std::ostream& os, pika_hwloc_bitmap_wrapper const* bmp)
     {
         char buffer[256];
         hwloc_bitmap_snprintf(buffer, 256, bmp->bmp_);
@@ -166,28 +162,26 @@ namespace pika::threads::detail {
     {
         PIKA_UNUSED(ec);
 #ifdef PIKA_HAVE_NICE_THREADLEVEL
-#if defined(__linux__) && !defined(__ANDROID__) && !defined(__bgq__)
+# if defined(__linux__) && !defined(__ANDROID__) && !defined(__bgq__)
         pid_t tid;
         tid = syscall(SYS_gettid);
         if (setpriority(PRIO_PROCESS, tid, 19))
         {
-            PIKA_THROWS_IF(ec, pika::error::no_success,
-                "topology::reduce_thread_priority",
+            PIKA_THROWS_IF(ec, pika::error::no_success, "topology::reduce_thread_priority",
                 "setpriority returned an error");
             return false;
         }
-#elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
+# elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
 
         if (!SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_LOWEST))
         {
-            PIKA_THROWS_IF(ec, pika::error::no_success,
-                "topology::reduce_thread_priority",
+            PIKA_THROWS_IF(ec, pika::error::no_success, "topology::reduce_thread_priority",
                 "SetThreadPriority returned an error");
             return false;
         }
-#elif defined(__bgq__)
+# elif defined(__bgq__)
         ThreadPriority_Low();
-#endif
+# endif
 #endif
         return true;
     }
@@ -207,30 +201,29 @@ namespace pika::threads::detail {
         int err = hwloc_topology_init(&topo);
         if (err != 0)
         {
-            PIKA_THROW_EXCEPTION(pika::error::no_success, "topology::topology",
-                "Failed to init hwloc topology");
+            PIKA_THROW_EXCEPTION(
+                pika::error::no_success, "topology::topology", "Failed to init hwloc topology");
         }
 
 #if HWLOC_API_VERSION >= 0x00020000
-#if defined(PIKA_HAVE_ADDITIONAL_HWLOC_TESTING)
+# if defined(PIKA_HAVE_ADDITIONAL_HWLOC_TESTING)
         // Enable HWLOC filtering that makes it report no cores. This is purely
         // an option allowing to test whether things work properly on systems
         // that may not report cores in the topology at all (e.g. FreeBSD).
-        err = hwloc_topology_set_type_filter(
-            topo, HWLOC_OBJ_CORE, HWLOC_TYPE_FILTER_KEEP_NONE);
+        err = hwloc_topology_set_type_filter(topo, HWLOC_OBJ_CORE, HWLOC_TYPE_FILTER_KEEP_NONE);
         if (err != 0)
         {
             PIKA_THROW_EXCEPTION(pika::error::no_success, "topology::topology",
                 "Failed to set core filter for hwloc topology");
         }
-#endif
+# endif
 #endif
 
         err = hwloc_topology_load(topo);
         if (err != 0)
         {
-            PIKA_THROW_EXCEPTION(pika::error::no_success, "topology::topology",
-                "Failed to load hwloc topology");
+            PIKA_THROW_EXCEPTION(
+                pika::error::no_success, "topology::topology", "Failed to load hwloc topology");
         }
 
         init_num_of_pus();
@@ -289,8 +282,7 @@ namespace pika::threads::detail {
 
         for (std::size_t i = 0; i < num_of_pus_; ++i)
         {
-            numa_node_affinity_masks_.push_back(
-                init_numa_node_affinity_mask(i));
+            numa_node_affinity_masks_.push_back(init_numa_node_affinity_mask(i));
         }
 
         for (std::size_t i = 0; i < num_of_pus_; ++i)
@@ -327,16 +319,12 @@ namespace pika::threads::detail {
         detail::write_to_log("numa_node_number", numa_node_numbers_);
         detail::write_to_log("core_number", core_numbers_);
 
-        detail::write_to_log_mask(
-            "machine_affinity_mask", machine_affinity_mask_);
+        detail::write_to_log_mask("machine_affinity_mask", machine_affinity_mask_);
 
-        detail::write_to_log_mask(
-            "socket_affinity_mask", socket_affinity_masks_);
-        detail::write_to_log_mask(
-            "numa_node_affinity_mask", numa_node_affinity_masks_);
+        detail::write_to_log_mask("socket_affinity_mask", socket_affinity_masks_);
+        detail::write_to_log_mask("numa_node_affinity_mask", numa_node_affinity_masks_);
         detail::write_to_log_mask("core_affinity_mask", core_affinity_masks_);
-        detail::write_to_log_mask(
-            "thread_affinity_mask", thread_affinity_masks_);
+        detail::write_to_log_mask("thread_affinity_mask", thread_affinity_masks_);
     }
 
     topology::~topology()
@@ -365,8 +353,7 @@ namespace pika::threads::detail {
             num_cores = hwloc_get_nbobjs_by_type(topo, HWLOC_OBJ_PU);
             if (num_cores <= 0)
             {
-                PIKA_THROWS_IF(ec, pika::error::no_success,
-                    "topology::hwloc_get_nobjs_by_type",
+                PIKA_THROWS_IF(ec, pika::error::no_success, "topology::hwloc_get_nobjs_by_type",
                     "Failed to get number of cores");
                 return std::size_t(-1);
             }
@@ -377,15 +364,13 @@ namespace pika::threads::detail {
         hwloc_obj_t core_obj;
         if (!use_pus)
         {
-            core_obj = hwloc_get_obj_by_type(
-                topo, HWLOC_OBJ_CORE, static_cast<unsigned>(num_core));
+            core_obj = hwloc_get_obj_by_type(topo, HWLOC_OBJ_CORE, static_cast<unsigned>(num_core));
 
             num_pu %= core_obj->arity;    //-V101 //-V104
             return std::size_t(core_obj->children[num_pu]->logical_index);
         }
 
-        core_obj = hwloc_get_obj_by_type(
-            topo, HWLOC_OBJ_PU, static_cast<unsigned>(num_core));
+        core_obj = hwloc_get_obj_by_type(topo, HWLOC_OBJ_PU, static_cast<unsigned>(num_core));
 
         return std::size_t(core_obj->logical_index);
     }    // }}}
@@ -399,8 +384,7 @@ namespace pika::threads::detail {
         return machine_affinity_mask_;
     }
 
-    mask_cref_type topology::get_socket_affinity_mask(
-        std::size_t num_thread, error_code& ec) const
+    mask_cref_type topology::get_socket_affinity_mask(std::size_t num_thread, error_code& ec) const
     {    // {{{
         std::size_t num_pu = num_thread % num_of_pus_;
 
@@ -437,8 +421,7 @@ namespace pika::threads::detail {
         return empty_mask;
     }    // }}}
 
-    mask_cref_type topology::get_core_affinity_mask(
-        std::size_t num_thread, error_code& ec) const
+    mask_cref_type topology::get_core_affinity_mask(std::size_t num_thread, error_code& ec) const
     {
         std::size_t num_pu = num_thread % num_of_pus_;
 
@@ -456,8 +439,7 @@ namespace pika::threads::detail {
         return empty_mask;
     }
 
-    mask_cref_type topology::get_thread_affinity_mask(
-        std::size_t num_thread, error_code& ec) const
+    mask_cref_type topology::get_thread_affinity_mask(std::size_t num_thread, error_code& ec) const
     {    // {{{
         std::size_t num_pu = num_thread % num_of_pus_;
 
@@ -476,8 +458,7 @@ namespace pika::threads::detail {
     }    // }}}
 
     ///////////////////////////////////////////////////////////////////////////
-    void topology::set_thread_affinity_mask(
-        mask_cref_type mask, error_code& ec) const
+    void topology::set_thread_affinity_mask(mask_cref_type mask, error_code& ec) const
     {    // {{{
 
 #if !defined(__APPLE__)
@@ -490,18 +471,15 @@ namespace pika::threads::detail {
         {
             if (test(mask, i))
             {
-                hwloc_obj_t const pu_obj =
-                    hwloc_get_obj_by_depth(topo, pu_depth, unsigned(i));
+                hwloc_obj_t const pu_obj = hwloc_get_obj_by_depth(topo, pu_depth, unsigned(i));
                 PIKA_ASSERT(i == detail::get_index(pu_obj));
-                hwloc_bitmap_set(
-                    cpuset, static_cast<unsigned int>(pu_obj->os_index));
+                hwloc_bitmap_set(cpuset, static_cast<unsigned int>(pu_obj->os_index));
             }
         }
 
         {
             std::unique_lock<mutex_type> lk(topo_mtx);
-            if (hwloc_set_cpubind(
-                    topo, cpuset, HWLOC_CPUBIND_STRICT | HWLOC_CPUBIND_THREAD))
+            if (hwloc_set_cpubind(topo, cpuset, HWLOC_CPUBIND_STRICT | HWLOC_CPUBIND_THREAD))
             {
                 // Strict binding not supported or failed, try weak binding.
                 if (hwloc_set_cpubind(topo, cpuset, HWLOC_CPUBIND_THREAD))
@@ -520,10 +498,9 @@ namespace pika::threads::detail {
                 }
             }
         }
-#if defined(__linux) || defined(linux) || defined(__linux__) ||                \
-    defined(__FreeBSD__)
+# if defined(__linux) || defined(linux) || defined(__linux__) || defined(__FreeBSD__)
         sleep(0);    // Allow the OS to pick up the change.
-#endif
+# endif
         hwloc_bitmap_free(cpuset);
 #else
         PIKA_UNUSED(mask);
@@ -534,8 +511,7 @@ namespace pika::threads::detail {
     }    // }}}
 
     ///////////////////////////////////////////////////////////////////////////
-    mask_type topology::get_thread_affinity_mask_from_lva(
-        void const* lva, error_code& ec) const
+    mask_type topology::get_thread_affinity_mask_from_lva(void const* lva, error_code& ec) const
     {    // {{{
         if (&ec != &throws)
             ec = make_success_code();
@@ -547,11 +523,9 @@ namespace pika::threads::detail {
             std::unique_lock<mutex_type> lk(topo_mtx);
             int ret =
 #if HWLOC_API_VERSION >= 0x00010b06
-                hwloc_get_area_membind(
-                    topo, lva, 1, nodeset, &policy, HWLOC_MEMBIND_BYNODESET);
+                hwloc_get_area_membind(topo, lva, 1, nodeset, &policy, HWLOC_MEMBIND_BYNODESET);
 #else
-                hwloc_get_area_membind_nodeset(
-                    topo, lva, 1, nodeset, &policy, 0);
+                hwloc_get_area_membind_nodeset(topo, lva, 1, nodeset, &policy, 0);
 #endif
 
             if (-1 != ret)
@@ -565,12 +539,10 @@ namespace pika::threads::detail {
                 mask_type mask = mask_type();
                 resize(mask, get_number_of_pus());
 
-                int const pu_depth =
-                    hwloc_get_type_or_below_depth(topo, HWLOC_OBJ_PU);
+                int const pu_depth = hwloc_get_type_or_below_depth(topo, HWLOC_OBJ_PU);
                 for (unsigned int i = 0; std::size_t(i) != num_of_pus_; ++i)
                 {
-                    hwloc_obj_t const pu_obj =
-                        hwloc_get_obj_by_depth(topo, pu_depth, i);
+                    hwloc_obj_t const pu_obj = hwloc_get_obj_by_depth(topo, pu_depth, i);
                     unsigned idx = static_cast<unsigned>(pu_obj->os_index);
                     if (hwloc_bitmap_isset(cpuset, idx) != 0)
                         set(mask, detail::get_index(pu_obj));
@@ -607,14 +579,12 @@ namespace pika::threads::detail {
         hwloc_obj_t obj;
         {
             std::unique_lock<mutex_type> lk(topo_mtx);
-            obj = hwloc_get_obj_by_type(
-                topo, HWLOC_OBJ_PU, static_cast<unsigned>(num_pu));
+            obj = hwloc_get_obj_by_type(topo, HWLOC_OBJ_PU, static_cast<unsigned>(num_pu));
             PIKA_ASSERT(num_pu == detail::get_index(obj));
         }
 
         hwloc_obj_t tmp = nullptr;
-        while ((tmp = hwloc_get_next_obj_by_type(
-                    topo, HWLOC_OBJ_NUMANODE, tmp)) != nullptr)
+        while ((tmp = hwloc_get_next_obj_by_type(topo, HWLOC_OBJ_NUMANODE, tmp)) != nullptr)
         {
             if (hwloc_bitmap_intersects(tmp->cpuset, obj->cpuset))
             {
@@ -628,8 +598,7 @@ namespace pika::threads::detail {
 #endif
     }
 
-    std::size_t topology::init_node_number(
-        std::size_t num_thread, hwloc_obj_type_t type)
+    std::size_t topology::init_node_number(std::size_t num_thread, hwloc_obj_type_t type)
     {    // {{{
         if (std::size_t(-1) == num_thread)
             return std::size_t(-1);
@@ -641,8 +610,7 @@ namespace pika::threads::detail {
 
             {
                 std::unique_lock<mutex_type> lk(topo_mtx);
-                obj = hwloc_get_obj_by_type(
-                    topo, HWLOC_OBJ_PU, static_cast<unsigned>(num_pu));
+                obj = hwloc_get_obj_by_type(topo, HWLOC_OBJ_PU, static_cast<unsigned>(num_pu));
                 PIKA_ASSERT(num_pu == detail::get_index(obj));
             }
 
@@ -679,8 +647,7 @@ namespace pika::threads::detail {
                         std::unique_lock<mutex_type> lk(topo_mtx);
                         obj = hwloc_get_next_child(topo, parent, obj);
                     }
-                } while (obj != nullptr &&
-                    hwloc_compare_types(HWLOC_OBJ_PU, obj->type) == 0);
+                } while (obj != nullptr && hwloc_compare_types(HWLOC_OBJ_PU, obj->type) == 0);
                 return;
             }
 
@@ -808,8 +775,8 @@ namespace pika::threads::detail {
 
         {
             std::unique_lock<mutex_type> lk(topo_mtx);
-            socket_obj = hwloc_get_obj_by_type(
-                topo, HWLOC_OBJ_SOCKET, static_cast<unsigned>(num_socket));
+            socket_obj =
+                hwloc_get_obj_by_type(topo, HWLOC_OBJ_SOCKET, static_cast<unsigned>(num_socket));
         }
 
         if (socket_obj)
@@ -822,15 +789,14 @@ namespace pika::threads::detail {
         return num_of_pus_;
     }
 
-    std::size_t topology::get_number_of_numa_node_pus(
-        std::size_t numa_node) const
+    std::size_t topology::get_number_of_numa_node_pus(std::size_t numa_node) const
     {
         hwloc_obj_t node_obj = nullptr;
 
         {
             std::unique_lock<mutex_type> lk(topo_mtx);
-            node_obj = hwloc_get_obj_by_type(
-                topo, HWLOC_OBJ_NODE, static_cast<unsigned>(numa_node));
+            node_obj =
+                hwloc_get_obj_by_type(topo, HWLOC_OBJ_NODE, static_cast<unsigned>(numa_node));
         }
 
         if (node_obj)
@@ -850,8 +816,7 @@ namespace pika::threads::detail {
 
         {
             std::unique_lock<mutex_type> lk(topo_mtx);
-            core_obj = hwloc_get_obj_by_type(
-                topo, HWLOC_OBJ_CORE, static_cast<unsigned>(core));
+            core_obj = hwloc_get_obj_by_type(topo, HWLOC_OBJ_CORE, static_cast<unsigned>(core));
         }
 
         if (!use_pus_as_cores_ && core_obj)
@@ -864,36 +829,34 @@ namespace pika::threads::detail {
         return std::size_t(1);
     }
 
-    std::size_t topology::get_number_of_socket_cores(
-        std::size_t num_socket) const
+    std::size_t topology::get_number_of_socket_cores(std::size_t num_socket) const
     {
         hwloc_obj_t socket_obj = nullptr;
 
         {
             std::unique_lock<mutex_type> lk(topo_mtx);
-            socket_obj = hwloc_get_obj_by_type(
-                topo, HWLOC_OBJ_SOCKET, static_cast<unsigned>(num_socket));
+            socket_obj =
+                hwloc_get_obj_by_type(topo, HWLOC_OBJ_SOCKET, static_cast<unsigned>(num_socket));
         }
 
         if (socket_obj)
         {
             PIKA_ASSERT(num_socket == detail::get_index(socket_obj));
             std::size_t pu_count = 0;
-            return extract_node_count(socket_obj,
-                use_pus_as_cores_ ? HWLOC_OBJ_PU : HWLOC_OBJ_CORE, pu_count);
+            return extract_node_count(
+                socket_obj, use_pus_as_cores_ ? HWLOC_OBJ_PU : HWLOC_OBJ_CORE, pu_count);
         }
 
         return get_number_of_cores();
     }
 
-    std::size_t topology::get_number_of_numa_node_cores(
-        std::size_t numa_node) const
+    std::size_t topology::get_number_of_numa_node_cores(std::size_t numa_node) const
     {
         hwloc_obj_t node_obj = nullptr;
         {
             std::unique_lock<mutex_type> lk(topo_mtx);
-            node_obj = hwloc_get_obj_by_type(
-                topo, HWLOC_OBJ_NODE, static_cast<unsigned>(numa_node));
+            node_obj =
+                hwloc_get_obj_by_type(topo, HWLOC_OBJ_NODE, static_cast<unsigned>(numa_node));
         }
 
         if (node_obj)
@@ -901,8 +864,8 @@ namespace pika::threads::detail {
             PIKA_ASSERT(numa_node == detail::get_index(node_obj));
             std::size_t pu_count = 0;
             node_obj = detail::adjust_node_obj(node_obj);
-            return extract_node_count(node_obj,
-                use_pus_as_cores_ ? HWLOC_OBJ_PU : HWLOC_OBJ_CORE, pu_count);
+            return extract_node_count(
+                node_obj, use_pus_as_cores_ ? HWLOC_OBJ_PU : HWLOC_OBJ_CORE, pu_count);
         }
 
         return get_number_of_cores();
@@ -918,12 +881,10 @@ namespace pika::threads::detail {
         hwloc_cpuset_to_nodeset_strict(topo, cpuset, nodeset);
 #endif
         hwloc_bitmap_free(cpuset);
-        return std::make_shared<
-            pika::threads::detail::pika_hwloc_bitmap_wrapper>(nodeset);
+        return std::make_shared<pika::threads::detail::pika_hwloc_bitmap_wrapper>(nodeset);
     }
 
-    void print_info(
-        std::ostream& os, hwloc_obj_t obj, char const* name, bool comma)
+    void print_info(std::ostream& os, hwloc_obj_t obj, char const* name, bool comma)
     {
         if (comma)
             os << ", ";
@@ -960,21 +921,19 @@ namespace pika::threads::detail {
         }
     }
 
-    void topology::print_affinity_mask(std::ostream& os, std::size_t num_thread,
-        mask_cref_type m, const std::string& pool_name) const
+    void topology::print_affinity_mask(std::ostream& os, std::size_t num_thread, mask_cref_type m,
+        const std::string& pool_name) const
     {
         pika::detail::ios_flags_saver ifs(os);
         bool first = true;
 
         for (std::size_t i = 0; i != num_of_pus_; ++i)
         {
-            hwloc_obj_t obj =
-                hwloc_get_obj_by_type(topo, HWLOC_OBJ_PU, unsigned(i));
+            hwloc_obj_t obj = hwloc_get_obj_by_type(topo, HWLOC_OBJ_PU, unsigned(i));
             if (!obj)
             {
                 PIKA_THROW_EXCEPTION(pika::error::kernel_error,
-                    "pika::threads::detail::topology::print_affinity_mask",
-                    "object not found");
+                    "pika::threads::detail::topology::print_affinity_mask", "object not found");
                 return;
             }
 
@@ -1027,8 +986,7 @@ namespace pika::threads::detail {
         return empty_mask;
     }    // }}}
 
-    mask_type topology::init_socket_affinity_mask_from_socket(
-        std::size_t num_socket) const
+    mask_type topology::init_socket_affinity_mask_from_socket(std::size_t num_socket) const
     {    // {{{
         // If we have only one or no socket, the socket affinity mask
         // spans all processors
@@ -1038,8 +996,8 @@ namespace pika::threads::detail {
         hwloc_obj_t socket_obj = nullptr;
         {
             std::unique_lock<mutex_type> lk(topo_mtx);
-            socket_obj = hwloc_get_obj_by_type(
-                topo, HWLOC_OBJ_SOCKET, static_cast<unsigned>(num_socket));
+            socket_obj =
+                hwloc_get_obj_by_type(topo, HWLOC_OBJ_SOCKET, static_cast<unsigned>(num_socket));
         }
 
         if (socket_obj)
@@ -1056,8 +1014,7 @@ namespace pika::threads::detail {
         return machine_affinity_mask_;
     }    // }}}
 
-    mask_type topology::init_numa_node_affinity_mask_from_numa_node(
-        std::size_t numa_node) const
+    mask_type topology::init_numa_node_affinity_mask_from_numa_node(std::size_t numa_node) const
     {    // {{{
         // If we have only one or no NUMA domain, the NUMA affinity mask
         // spans all processors
@@ -1069,8 +1026,8 @@ namespace pika::threads::detail {
         hwloc_obj_t numa_node_obj = nullptr;
         {
             std::unique_lock<mutex_type> lk(topo_mtx);
-            numa_node_obj = hwloc_get_obj_by_type(
-                topo, HWLOC_OBJ_NODE, static_cast<unsigned>(numa_node));
+            numa_node_obj =
+                hwloc_get_obj_by_type(topo, HWLOC_OBJ_NODE, static_cast<unsigned>(numa_node));
         }
 
         if (numa_node_obj)
@@ -1102,8 +1059,7 @@ namespace pika::threads::detail {
         {
             std::unique_lock<mutex_type> lk(topo_mtx);
             core_obj = hwloc_get_obj_by_type(topo,
-                use_pus_as_cores_ ? HWLOC_OBJ_PU : HWLOC_OBJ_CORE,
-                static_cast<unsigned>(num_core));
+                use_pus_as_cores_ ? HWLOC_OBJ_PU : HWLOC_OBJ_CORE, static_cast<unsigned>(num_core));
         }
 
         if (core_obj)
@@ -1133,8 +1089,7 @@ namespace pika::threads::detail {
 
         {
             std::unique_lock<mutex_type> lk(topo_mtx);
-            obj = hwloc_get_obj_by_type(
-                topo, HWLOC_OBJ_PU, static_cast<unsigned>(num_pu));
+            obj = hwloc_get_obj_by_type(topo, HWLOC_OBJ_PU, static_cast<unsigned>(num_pu));
         }
 
         if (!obj)
@@ -1152,16 +1107,15 @@ namespace pika::threads::detail {
     }    // }}}
 
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-    mask_type topology::init_thread_affinity_mask(
-        std::size_t num_core, std::size_t num_pu) const
+    mask_type topology::init_thread_affinity_mask(std::size_t num_core, std::size_t num_pu) const
     // NOLINTEND(bugprone-easily-swappable-parameters)
     {    // {{{
         hwloc_obj_t obj = nullptr;
 
         {
             std::unique_lock<mutex_type> lk(topo_mtx);
-            int num_cores = hwloc_get_nbobjs_by_type(
-                topo, use_pus_as_cores_ ? HWLOC_OBJ_PU : HWLOC_OBJ_CORE);
+            int num_cores =
+                hwloc_get_nbobjs_by_type(topo, use_pus_as_cores_ ? HWLOC_OBJ_PU : HWLOC_OBJ_CORE);
 
             // If num_cores is smaller 0, we have an error, it should never be zero
             // either to avoid division by zero, we should always have at least one
@@ -1176,8 +1130,7 @@ namespace pika::threads::detail {
             }
 
             num_core = (num_core + core_offset) % std::size_t(num_cores);
-            obj = hwloc_get_obj_by_type(topo,
-                use_pus_as_cores_ ? HWLOC_OBJ_PU : HWLOC_OBJ_CORE,
+            obj = hwloc_get_obj_by_type(topo, use_pus_as_cores_ ? HWLOC_OBJ_PU : HWLOC_OBJ_CORE,
                 static_cast<unsigned>(num_core));
         }
 
@@ -1195,7 +1148,7 @@ namespace pika::threads::detail {
         }
         else
         {
-            num_pu %= obj->arity;    //-V101 //-V104
+            num_pu %= obj->arity;                                   //-V101 //-V104
             set(mask, detail::get_index(obj->children[num_pu]));    //-V106
         }
 
@@ -1251,12 +1204,10 @@ namespace pika::threads::detail {
                 return empty_mask;
             }
 
-            int const pu_depth =
-                hwloc_get_type_or_below_depth(topo, HWLOC_OBJ_PU);
+            int const pu_depth = hwloc_get_type_or_below_depth(topo, HWLOC_OBJ_PU);
             for (unsigned int i = 0; i != num_of_pus_; ++i)    //-V104
             {
-                hwloc_obj_t const pu_obj =
-                    hwloc_get_obj_by_depth(topo, pu_depth, i);
+                hwloc_obj_t const pu_obj = hwloc_get_obj_by_depth(topo, pu_depth, i);
                 unsigned idx = static_cast<unsigned>(pu_obj->os_index);
                 if (hwloc_bitmap_isset(cpuset, idx) != 0)
                     set(mask, detail::get_index(pu_obj));
@@ -1272,8 +1223,7 @@ namespace pika::threads::detail {
         return mask;
     }
 
-    mask_type topology::get_cpubind_mask(
-        std::thread& handle, error_code& ec) const
+    mask_type topology::get_cpubind_mask(std::thread& handle, error_code& ec) const
     {
         hwloc_cpuset_t cpuset = hwloc_bitmap_alloc();
 
@@ -1283,9 +1233,8 @@ namespace pika::threads::detail {
         {
             std::unique_lock<mutex_type> lk(topo_mtx);
 #if defined(PIKA_MINGW)
-            if (hwloc_get_thread_cpubind(topo,
-                    pthread_gethandle(handle.native_handle()), cpuset,
-                    HWLOC_CPUBIND_THREAD))
+            if (hwloc_get_thread_cpubind(
+                    topo, pthread_gethandle(handle.native_handle()), cpuset, HWLOC_CPUBIND_THREAD))
 #else
             if (hwloc_get_thread_cpubind(
                     topo, handle.native_handle(), cpuset, HWLOC_CPUBIND_THREAD))
@@ -1298,12 +1247,10 @@ namespace pika::threads::detail {
                 return empty_mask;
             }
 
-            int const pu_depth =
-                hwloc_get_type_or_below_depth(topo, HWLOC_OBJ_PU);
+            int const pu_depth = hwloc_get_type_or_below_depth(topo, HWLOC_OBJ_PU);
             for (unsigned int i = 0; i != num_of_pus_; ++i)    //-V104
             {
-                hwloc_obj_t const pu_obj =
-                    hwloc_get_obj_by_depth(topo, pu_depth, i);
+                hwloc_obj_t const pu_obj = hwloc_get_obj_by_depth(topo, pu_depth, i);
                 unsigned idx = static_cast<unsigned>(pu_obj->os_index);
                 if (hwloc_bitmap_isset(cpuset, idx) != 0)
                     set(mask, detail::get_index(pu_obj));
@@ -1329,34 +1276,31 @@ namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
     /// Allocate some memory on NUMA memory nodes specified by nodeset
     /// as specified by the hwloc hwloc_alloc_membind_nodeset call
-    void* topology::allocate_membind(std::size_t len, hwloc_bitmap_ptr bitmap,
-        pika_hwloc_membind_policy policy, int flags) const
+    void* topology::allocate_membind(
+        std::size_t len, hwloc_bitmap_ptr bitmap, pika_hwloc_membind_policy policy, int flags) const
     {
         return
 #if HWLOC_API_VERSION >= 0x00010b06
-            hwloc_alloc_membind(topo, len, bitmap->get_bmp(),
-                (hwloc_membind_policy_t) (policy),
+            hwloc_alloc_membind(topo, len, bitmap->get_bmp(), (hwloc_membind_policy_t) (policy),
                 flags | HWLOC_MEMBIND_BYNODESET);
 #else
-            hwloc_alloc_membind_nodeset(topo, len, bitmap->get_bmp(),
-                (hwloc_membind_policy_t) (policy), flags);
+            hwloc_alloc_membind_nodeset(
+                topo, len, bitmap->get_bmp(), (hwloc_membind_policy_t) (policy), flags);
 #endif
     }
 
-    bool topology::set_area_membind_nodeset(
-        const void* addr, std::size_t len, void* nodeset) const
+    bool topology::set_area_membind_nodeset(const void* addr, std::size_t len, void* nodeset) const
     {
 #if !defined(__APPLE__)
         hwloc_membind_policy_t policy = ::HWLOC_MEMBIND_BIND;
         hwloc_nodeset_t ns = reinterpret_cast<hwloc_nodeset_t>(nodeset);
 
         int ret =
-#if HWLOC_API_VERSION >= 0x00010b06
-            hwloc_set_area_membind(
-                topo, addr, len, ns, policy, HWLOC_MEMBIND_BYNODESET);
-#else
+# if HWLOC_API_VERSION >= 0x00010b06
+            hwloc_set_area_membind(topo, addr, len, ns, policy, HWLOC_MEMBIND_BYNODESET);
+# else
             hwloc_set_area_membind_nodeset(topo, addr, len, ns, policy, 0);
-#endif
+# endif
 
         if (ret < 0)
         {
@@ -1381,8 +1325,7 @@ namespace pika::threads::detail {
     namespace {
         pika_hwloc_bitmap_wrapper& bitmap_storage()
         {
-            static thread_local pika_hwloc_bitmap_wrapper bitmap_storage_(
-                nullptr);
+            static thread_local pika_hwloc_bitmap_wrapper bitmap_storage_(nullptr);
 
             return bitmap_storage_;
         }
@@ -1399,13 +1342,11 @@ namespace pika::threads::detail {
 
         //
         hwloc_membind_policy_t policy;
-        hwloc_nodeset_t ns =
-            reinterpret_cast<hwloc_nodeset_t>(nodeset.get_bmp());
+        hwloc_nodeset_t ns = reinterpret_cast<hwloc_nodeset_t>(nodeset.get_bmp());
 
         if (
 #if HWLOC_API_VERSION >= 0x00010b06
-            hwloc_get_area_membind(
-                topo, addr, len, ns, &policy, HWLOC_MEMBIND_BYNODESET)
+            hwloc_get_area_membind(topo, addr, len, ns, &policy, HWLOC_MEMBIND_BYNODESET)
 #else
             hwloc_get_area_membind_nodeset(topo, addr, len, ns, &policy, 0)
 #endif
@@ -1430,27 +1371,24 @@ namespace pika::threads::detail {
         }
 
         //
-        hwloc_nodeset_t ns =
-            reinterpret_cast<hwloc_nodeset_t>(nodeset.get_bmp());
+        hwloc_nodeset_t ns = reinterpret_cast<hwloc_nodeset_t>(nodeset.get_bmp());
 
-        int ret = hwloc_get_area_memlocation(
-            topo, addr, 1, ns, HWLOC_MEMBIND_BYNODESET);
+        int ret = hwloc_get_area_memlocation(topo, addr, 1, ns, HWLOC_MEMBIND_BYNODESET);
         if (ret < 0)
         {
-#if defined(__FreeBSD__)
+# if defined(__FreeBSD__)
             // on some platforms this API is not supported (e.g. FreeBSD)
             return 0;
-#else
+# else
             std::string msg(strerror(errno));
             PIKA_THROW_EXCEPTION(pika::error::kernel_error,
                 "pika::threads::detail::topology::get_numa_domain",
                 "hwloc_get_area_memlocation failed {}", msg);
             return -1;
-#endif
+# endif
         }
 
-        threads::detail::mask_type mask =
-            bitmap_to_mask(ns, HWLOC_OBJ_NUMANODE);
+        threads::detail::mask_type mask = bitmap_to_mask(ns, HWLOC_OBJ_NUMANODE);
         return static_cast<int>(threads::detail::find_first(mask));
 #else
         PIKA_UNUSED(addr);
@@ -1465,8 +1403,7 @@ namespace pika::threads::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    hwloc_bitmap_t topology::mask_to_bitmap(
-        mask_cref_type mask, hwloc_obj_type_t htype) const
+    hwloc_bitmap_t topology::mask_to_bitmap(mask_cref_type mask, hwloc_obj_type_t htype) const
     {
         hwloc_bitmap_t bitmap = hwloc_bitmap_alloc();
         hwloc_bitmap_zero(bitmap);
@@ -1477,19 +1414,16 @@ namespace pika::threads::detail {
         {
             if (test(mask, i))
             {
-                hwloc_obj_t const hw_obj =
-                    hwloc_get_obj_by_depth(topo, depth, unsigned(i));
+                hwloc_obj_t const hw_obj = hwloc_get_obj_by_depth(topo, depth, unsigned(i));
                 PIKA_ASSERT(i == detail::get_index(hw_obj));
-                hwloc_bitmap_set(
-                    bitmap, static_cast<unsigned int>(hw_obj->os_index));
+                hwloc_bitmap_set(bitmap, static_cast<unsigned int>(hw_obj->os_index));
             }
         }
         return bitmap;
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    mask_type topology::bitmap_to_mask(
-        hwloc_bitmap_t bitmap, hwloc_obj_type_t htype) const
+    mask_type topology::bitmap_to_mask(hwloc_bitmap_t bitmap, hwloc_obj_type_t htype) const
     {
         mask_type mask = mask_type();
         resize(mask, get_number_of_pus());
@@ -1498,8 +1432,7 @@ namespace pika::threads::detail {
         int const pu_depth = hwloc_get_type_or_below_depth(topo, htype);
         for (unsigned int i = 0; std::size_t(i) != num; ++i)    //-V104
         {
-            hwloc_obj_t const pu_obj =
-                hwloc_get_obj_by_depth(topo, pu_depth, i);
+            hwloc_obj_t const pu_obj = hwloc_get_obj_by_depth(topo, pu_depth, i);
             unsigned idx = static_cast<unsigned>(pu_obj->os_index);
             if (hwloc_bitmap_isset(bitmap, idx) != 0)
                 set(mask, detail::get_index(pu_obj));
@@ -1508,8 +1441,7 @@ namespace pika::threads::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    void topology::print_mask_vector(
-        std::ostream& os, std::vector<mask_type> const& v) const
+    void topology::print_mask_vector(std::ostream& os, std::vector<mask_type> const& v) const
     {
         std::size_t s = v.size();
         if (s == 0)
@@ -1525,8 +1457,7 @@ namespace pika::threads::detail {
         os << "\n";
     }
 
-    void topology::print_vector(
-        std::ostream& os, std::vector<std::size_t> const& v) const
+    void topology::print_vector(std::ostream& os, std::vector<std::size_t> const& v) const
     {
         std::size_t s = v.size();
         if (s == 0)
@@ -1546,13 +1477,11 @@ namespace pika::threads::detail {
     void topology::print_hwloc(std::ostream& os) const
     {
         os << "[HWLOC topology info] number of ...\n"
-           << std::dec << "number of sockets     : " << get_number_of_sockets()
-           << "\n"
+           << std::dec << "number of sockets     : " << get_number_of_sockets() << "\n"
            << "number of numa nodes  : " << get_number_of_numa_nodes() << "\n"
            << "number of cores       : " << get_number_of_cores() << "\n"
            << "number of PUs         : " << get_number_of_pus() << "\n"
-           << "hardware concurrency  : "
-           << pika::threads::detail::hardware_concurrency() << "\n"
+           << "hardware concurrency  : " << pika::threads::detail::hardware_concurrency() << "\n"
            << std::endl;
         //! -------------------------------------- topology (affinity masks)
         os << "[HWLOC topology info] affinity masks :\n"

@@ -21,8 +21,7 @@ int pika_main(pika::program_options::variables_map& vm)
     // extract all positional command line argument
     if (vm.count("pika:positional"))
     {
-        std::vector<std::string> positional =
-            vm["pika:positional"].as<std::vector<std::string>>();
+        std::vector<std::string> positional = vm["pika:positional"].as<std::vector<std::string>>();
         pika::cout << "positional command line options:\n";
         for (std::string const& arg : positional)
             pika::cout << arg << "\n";
@@ -40,8 +39,7 @@ int main(int argc, char* argv[])
     // Configure application-specific options.
     pika::program_options::options_description desc_commandline;
 
-    desc_commandline.add_options()("test",
-        pika::program_options::value<int>()->default_value(42),
+    desc_commandline.add_options()("test", pika::program_options::value<int>()->default_value(42),
         "additional, application-specific option");
 
     pika::init_params init_args;

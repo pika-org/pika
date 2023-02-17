@@ -22,8 +22,7 @@ namespace pika::util::detail {
     class unique_function;
 
     template <typename R, typename... Ts>
-    class unique_function<R(Ts...)>
-      : public detail::basic_function<R(Ts...), false>
+    class unique_function<R(Ts...)> : public detail::basic_function<R(Ts...), false>
     {
         using base_type = detail::basic_function<R(Ts...), false>;
 
@@ -37,10 +36,8 @@ namespace pika::util::detail {
 
         // the split SFINAE prevents MSVC from eagerly instantiating things
         template <typename F, typename FD = std::decay_t<F>,
-            typename Enable1 =
-                std::enable_if_t<!std::is_same_v<FD, unique_function>>,
-            typename Enable2 =
-                std::enable_if_t<std::is_invocable_r_v<R, FD&, Ts...>>>
+            typename Enable1 = std::enable_if_t<!std::is_same_v<FD, unique_function>>,
+            typename Enable2 = std::enable_if_t<std::is_invocable_r_v<R, FD&, Ts...>>>
         unique_function(F&& f)
         {
             assign(PIKA_FORWARD(F, f));
@@ -48,10 +45,8 @@ namespace pika::util::detail {
 
         // the split SFINAE prevents MSVC from eagerly instantiating things
         template <typename F, typename FD = std::decay_t<F>,
-            typename Enable1 =
-                std::enable_if_t<!std::is_same_v<FD, unique_function>>,
-            typename Enable2 =
-                std::enable_if_t<std::is_invocable_r_v<R, FD&, Ts...>>>
+            typename Enable1 = std::enable_if_t<!std::is_same_v<FD, unique_function>>,
+            typename Enable2 = std::enable_if_t<std::is_invocable_r_v<R, FD&, Ts...>>>
         unique_function& operator=(F&& f)
         {
             assign(PIKA_FORWARD(F, f));
@@ -72,8 +67,7 @@ namespace pika::detail {
     template <typename Sig>
     struct get_function_address<util::detail::unique_function<Sig>>
     {
-        static constexpr std::size_t call(
-            util::detail::unique_function<Sig> const& f) noexcept
+        static constexpr std::size_t call(util::detail::unique_function<Sig> const& f) noexcept
         {
             return f.get_function_address();
         }
@@ -82,23 +76,21 @@ namespace pika::detail {
     template <typename Sig>
     struct get_function_annotation<util::detail::unique_function<Sig>>
     {
-        static constexpr char const* call(
-            util::detail::unique_function<Sig> const& f) noexcept
+        static constexpr char const* call(util::detail::unique_function<Sig> const& f) noexcept
         {
             return f.get_function_annotation();
         }
     };
 
-#if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
+# if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
     template <typename Sig>
     struct get_function_annotation_itt<util::detail::unique_function<Sig>>
     {
-        static util::itt::string_handle call(
-            util::detail::unique_function<Sig> const& f) noexcept
+        static util::itt::string_handle call(util::detail::unique_function<Sig> const& f) noexcept
         {
             return f.get_function_annotation_itt();
         }
     };
-#endif
+# endif
 }    // namespace pika::detail
 #endif

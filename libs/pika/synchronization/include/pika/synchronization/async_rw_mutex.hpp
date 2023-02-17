@@ -35,25 +35,20 @@ namespace pika::execution::experimental {
         template <typename T>
         struct async_rw_mutex_shared_state
         {
-            using shared_state_ptr_type =
-                std::shared_ptr<async_rw_mutex_shared_state>;
+            using shared_state_ptr_type = std::shared_ptr<async_rw_mutex_shared_state>;
             std::atomic<bool> value_set{false};
             std::optional<T> value{std::nullopt};
             shared_state_ptr_type next_state{nullptr};
             pika::mutex mtx{};
-            pika::detail::small_vector<pika::util::detail::unique_function<void(
-                                           shared_state_ptr_type)>,
-                1>
+            pika::detail::small_vector<
+                pika::util::detail::unique_function<void(shared_state_ptr_type)>, 1>
                 continuations{};
 
             async_rw_mutex_shared_state() = default;
             async_rw_mutex_shared_state(async_rw_mutex_shared_state&&) = delete;
-            async_rw_mutex_shared_state& operator=(
-                async_rw_mutex_shared_state&&) = delete;
-            async_rw_mutex_shared_state(
-                async_rw_mutex_shared_state const&) = delete;
-            async_rw_mutex_shared_state& operator=(
-                async_rw_mutex_shared_state const&) = delete;
+            async_rw_mutex_shared_state& operator=(async_rw_mutex_shared_state&&) = delete;
+            async_rw_mutex_shared_state(async_rw_mutex_shared_state const&) = delete;
+            async_rw_mutex_shared_state& operator=(async_rw_mutex_shared_state const&) = delete;
 
             ~async_rw_mutex_shared_state()
             {
@@ -88,15 +83,13 @@ namespace pika::execution::experimental {
 
             T& get_value()
             {
-                pika::util::yield_while([this]() {
-                    return !value_set.load(std::memory_order_acquire);
-                });
+                pika::util::yield_while(
+                    [this]() { return !value_set.load(std::memory_order_acquire); });
                 PIKA_ASSERT(value);
                 return value.value();
             }
 
-            void set_next_state(
-                std::shared_ptr<async_rw_mutex_shared_state> state)
+            void set_next_state(std::shared_ptr<async_rw_mutex_shared_state> state)
             {
                 // The next state should only be set once
                 PIKA_ASSERT(!next_state);
@@ -115,23 +108,18 @@ namespace pika::execution::experimental {
         template <>
         struct async_rw_mutex_shared_state<void>
         {
-            using shared_state_ptr_type =
-                std::shared_ptr<async_rw_mutex_shared_state>;
+            using shared_state_ptr_type = std::shared_ptr<async_rw_mutex_shared_state>;
             shared_state_ptr_type next_state{nullptr};
             pika::mutex mtx{};
-            pika::detail::small_vector<pika::util::detail::unique_function<void(
-                                           shared_state_ptr_type)>,
-                1>
+            pika::detail::small_vector<
+                pika::util::detail::unique_function<void(shared_state_ptr_type)>, 1>
                 continuations{};
 
             async_rw_mutex_shared_state() = default;
             async_rw_mutex_shared_state(async_rw_mutex_shared_state&&) = delete;
-            async_rw_mutex_shared_state& operator=(
-                async_rw_mutex_shared_state&&) = delete;
-            async_rw_mutex_shared_state(
-                async_rw_mutex_shared_state const&) = delete;
-            async_rw_mutex_shared_state& operator=(
-                async_rw_mutex_shared_state const&) = delete;
+            async_rw_mutex_shared_state& operator=(async_rw_mutex_shared_state&&) = delete;
+            async_rw_mutex_shared_state(async_rw_mutex_shared_state const&) = delete;
+            async_rw_mutex_shared_state& operator=(async_rw_mutex_shared_state const&) = delete;
 
             ~async_rw_mutex_shared_state()
             {
@@ -144,8 +132,7 @@ namespace pika::execution::experimental {
                 }
             }
 
-            void set_next_state(
-                std::shared_ptr<async_rw_mutex_shared_state> state)
+            void set_next_state(std::shared_ptr<async_rw_mutex_shared_state> state)
             {
                 // The next state should only be set once
                 PIKA_ASSERT(!next_state);
@@ -161,17 +148,14 @@ namespace pika::execution::experimental {
             }
         };
 
-        template <typename ReadWriteT, typename ReadT,
-            async_rw_mutex_access_type AccessType>
+        template <typename ReadWriteT, typename ReadT, async_rw_mutex_access_type AccessType>
         struct async_rw_mutex_access_wrapper;
 
         template <typename ReadWriteT, typename ReadT>
-        struct async_rw_mutex_access_wrapper<ReadWriteT, ReadT,
-            async_rw_mutex_access_type::read>
+        struct async_rw_mutex_access_wrapper<ReadWriteT, ReadT, async_rw_mutex_access_type::read>
         {
         private:
-            using shared_state_type =
-                std::shared_ptr<async_rw_mutex_shared_state<ReadWriteT>>;
+            using shared_state_type = std::shared_ptr<async_rw_mutex_shared_state<ReadWriteT>>;
             shared_state_type state;
 
         public:
@@ -180,12 +164,9 @@ namespace pika::execution::experimental {
               : state(PIKA_MOVE(state))
             {
             }
-            async_rw_mutex_access_wrapper(
-                async_rw_mutex_access_wrapper&&) = default;
-            async_rw_mutex_access_wrapper& operator=(
-                async_rw_mutex_access_wrapper&&) = default;
-            async_rw_mutex_access_wrapper(
-                async_rw_mutex_access_wrapper const&) = default;
+            async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper&&) = default;
+            async_rw_mutex_access_wrapper& operator=(async_rw_mutex_access_wrapper&&) = default;
+            async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper const&) = default;
             async_rw_mutex_access_wrapper& operator=(
                 async_rw_mutex_access_wrapper const&) = default;
 
@@ -210,8 +191,7 @@ namespace pika::execution::experimental {
                 "async_rw_mutex_access_wrapper wrapper (ReadT is void, "
                 "ReadWriteT is non-void)");
 
-            using shared_state_type =
-                std::shared_ptr<async_rw_mutex_shared_state<ReadWriteT>>;
+            using shared_state_type = std::shared_ptr<async_rw_mutex_shared_state<ReadWriteT>>;
             shared_state_type state;
 
         public:
@@ -220,14 +200,10 @@ namespace pika::execution::experimental {
               : state(PIKA_MOVE(state))
             {
             }
-            async_rw_mutex_access_wrapper(
-                async_rw_mutex_access_wrapper&&) = default;
-            async_rw_mutex_access_wrapper& operator=(
-                async_rw_mutex_access_wrapper&&) = default;
-            async_rw_mutex_access_wrapper(
-                async_rw_mutex_access_wrapper const&) = delete;
-            async_rw_mutex_access_wrapper& operator=(
-                async_rw_mutex_access_wrapper const&) = delete;
+            async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper&&) = default;
+            async_rw_mutex_access_wrapper& operator=(async_rw_mutex_access_wrapper&&) = default;
+            async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper const&) = delete;
+            async_rw_mutex_access_wrapper& operator=(async_rw_mutex_access_wrapper const&) = delete;
 
             ReadWriteT& get()
             {
@@ -240,12 +216,10 @@ namespace pika::execution::experimental {
         // specialized separately to avoid ambiguity with the non-void
         // specializations above.
         template <>
-        struct async_rw_mutex_access_wrapper<void, void,
-            async_rw_mutex_access_type::read>
+        struct async_rw_mutex_access_wrapper<void, void, async_rw_mutex_access_type::read>
         {
         private:
-            using shared_state_type =
-                std::shared_ptr<async_rw_mutex_shared_state<void>>;
+            using shared_state_type = std::shared_ptr<async_rw_mutex_shared_state<void>>;
             shared_state_type state;
 
         public:
@@ -254,23 +228,18 @@ namespace pika::execution::experimental {
               : state(PIKA_MOVE(state))
             {
             }
-            async_rw_mutex_access_wrapper(
-                async_rw_mutex_access_wrapper&&) = default;
-            async_rw_mutex_access_wrapper& operator=(
-                async_rw_mutex_access_wrapper&&) = default;
-            async_rw_mutex_access_wrapper(
-                async_rw_mutex_access_wrapper const&) = default;
+            async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper&&) = default;
+            async_rw_mutex_access_wrapper& operator=(async_rw_mutex_access_wrapper&&) = default;
+            async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper const&) = default;
             async_rw_mutex_access_wrapper& operator=(
                 async_rw_mutex_access_wrapper const&) = default;
         };
 
         template <>
-        struct async_rw_mutex_access_wrapper<void, void,
-            async_rw_mutex_access_type::readwrite>
+        struct async_rw_mutex_access_wrapper<void, void, async_rw_mutex_access_type::readwrite>
         {
         private:
-            using shared_state_type =
-                std::shared_ptr<async_rw_mutex_shared_state<void>>;
+            using shared_state_type = std::shared_ptr<async_rw_mutex_shared_state<void>>;
             shared_state_type state;
 
         public:
@@ -279,14 +248,10 @@ namespace pika::execution::experimental {
               : state(PIKA_MOVE(state))
             {
             }
-            async_rw_mutex_access_wrapper(
-                async_rw_mutex_access_wrapper&&) = default;
-            async_rw_mutex_access_wrapper& operator=(
-                async_rw_mutex_access_wrapper&&) = default;
-            async_rw_mutex_access_wrapper(
-                async_rw_mutex_access_wrapper const&) = delete;
-            async_rw_mutex_access_wrapper& operator=(
-                async_rw_mutex_access_wrapper const&) = delete;
+            async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper&&) = default;
+            async_rw_mutex_access_wrapper& operator=(async_rw_mutex_access_wrapper&&) = default;
+            async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper const&) = delete;
+            async_rw_mutex_access_wrapper& operator=(async_rw_mutex_access_wrapper const&) = delete;
         };
     }    // namespace detail
 
@@ -360,12 +325,10 @@ namespace pika::execution::experimental {
         using read_type = void;
         using readwrite_type = void;
 
-        using read_access_type =
-            detail::async_rw_mutex_access_wrapper<readwrite_type, read_type,
-                detail::async_rw_mutex_access_type::read>;
-        using readwrite_access_type =
-            detail::async_rw_mutex_access_wrapper<readwrite_type, read_type,
-                detail::async_rw_mutex_access_type::readwrite>;
+        using read_access_type = detail::async_rw_mutex_access_wrapper<readwrite_type, read_type,
+            detail::async_rw_mutex_access_type::read>;
+        using readwrite_access_type = detail::async_rw_mutex_access_wrapper<readwrite_type,
+            read_type, detail::async_rw_mutex_access_type::readwrite>;
 
         using allocator_type = Allocator;
 
@@ -383,8 +346,7 @@ namespace pika::execution::experimental {
             if (prev_access == detail::async_rw_mutex_access_type::readwrite)
             {
                 auto shared_prev_state = PIKA_MOVE(state);
-                state = std::allocate_shared<shared_state_type, allocator_type>(
-                    alloc);
+                state = std::allocate_shared<shared_state_type, allocator_type>(alloc);
                 prev_access = detail::async_rw_mutex_access_type::read;
 
                 // Only the first access has no previous shared state. When
@@ -404,8 +366,7 @@ namespace pika::execution::experimental {
         sender<detail::async_rw_mutex_access_type::readwrite> readwrite()
         {
             auto shared_prev_state = PIKA_MOVE(state);
-            state =
-                std::allocate_shared<shared_state_type, allocator_type>(alloc);
+            state = std::allocate_shared<shared_state_type, allocator_type>(alloc);
             prev_access = detail::async_rw_mutex_access_type::readwrite;
 
             // Only the first access has no previous shared state. When there is
@@ -428,10 +389,8 @@ namespace pika::execution::experimental {
             shared_state_ptr_type state;
 
             using access_type =
-                detail::async_rw_mutex_access_wrapper<readwrite_type, read_type,
-                    AccessType>;
-            template <template <typename...> class Tuple,
-                template <typename...> class Variant>
+                detail::async_rw_mutex_access_wrapper<readwrite_type, read_type, AccessType>;
+            template <template <typename...> class Tuple, template <typename...> class Variant>
             using value_types = Variant<Tuple<access_type>>;
 
             template <template <typename...> class Variant>
@@ -439,11 +398,9 @@ namespace pika::execution::experimental {
 
             static constexpr bool sends_done = false;
 
-            using completion_signatures =
-                pika::execution::experimental::completion_signatures<
-                    pika::execution::experimental::set_value_t(access_type),
-                    pika::execution::experimental::set_error_t(
-                        std::exception_ptr)>;
+            using completion_signatures = pika::execution::experimental::completion_signatures<
+                pika::execution::experimental::set_value_t(access_type),
+                pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
             template <typename R>
             struct operation_state
@@ -453,8 +410,8 @@ namespace pika::execution::experimental {
                 shared_state_ptr_type state;
 
                 template <typename R_>
-                operation_state(R_&& r, shared_state_weak_ptr_type prev_state,
-                    shared_state_ptr_type state)
+                operation_state(
+                    R_&& r, shared_state_weak_ptr_type prev_state, shared_state_ptr_type state)
                   : r(PIKA_FORWARD(R_, r))
                   , prev_state(PIKA_MOVE(prev_state))
                   , state(PIKA_MOVE(state))
@@ -466,28 +423,25 @@ namespace pika::execution::experimental {
                 operation_state(operation_state const&) = delete;
                 operation_state& operator=(operation_state const&) = delete;
 
-                friend void tag_invoke(pika::execution::experimental::start_t,
-                    operation_state& os) noexcept
+                friend void tag_invoke(
+                    pika::execution::experimental::start_t, operation_state& os) noexcept
                 {
                     PIKA_ASSERT_MSG(os.state,
                         "async_rw_lock::sender::operation_state state is "
                         "empty, was the sender already started?");
 
-                    auto continuation =
-                        [r = PIKA_MOVE(os.r)](
-                            shared_state_ptr_type state) mutable {
-                            try
-                            {
-                                pika::execution::experimental::set_value(
-                                    PIKA_MOVE(r),
-                                    access_type{PIKA_MOVE(state)});
-                            }
-                            catch (...)
-                            {
-                                pika::execution::experimental::set_error(
-                                    PIKA_MOVE(r), std::current_exception());
-                            }
-                        };
+                    auto continuation = [r = PIKA_MOVE(os.r)](shared_state_ptr_type state) mutable {
+                        try
+                        {
+                            pika::execution::experimental::set_value(
+                                PIKA_MOVE(r), access_type{PIKA_MOVE(state)});
+                        }
+                        catch (...)
+                        {
+                            pika::execution::experimental::set_error(
+                                PIKA_MOVE(r), std::current_exception());
+                        }
+                    };
 
                     if (auto p = os.prev_state.lock())
                     {
@@ -508,11 +462,10 @@ namespace pika::execution::experimental {
             };
 
             template <typename R>
-            friend auto tag_invoke(
-                pika::execution::experimental::connect_t, sender&& s, R&& r)
+            friend auto tag_invoke(pika::execution::experimental::connect_t, sender&& s, R&& r)
             {
-                return operation_state<R>{PIKA_FORWARD(R, r),
-                    PIKA_MOVE(s.prev_state), PIKA_MOVE(s.state)};
+                return operation_state<R>{
+                    PIKA_FORWARD(R, r), PIKA_MOVE(s.prev_state), PIKA_MOVE(s.state)};
             }
         };
 
@@ -544,19 +497,16 @@ namespace pika::execution::experimental {
         using readwrite_type = std::decay_t<ReadWriteT>;
         using value_type = readwrite_type;
 
-        using read_access_type =
-            detail::async_rw_mutex_access_wrapper<readwrite_type, read_type,
-                detail::async_rw_mutex_access_type::read>;
-        using readwrite_access_type =
-            detail::async_rw_mutex_access_wrapper<readwrite_type, read_type,
-                detail::async_rw_mutex_access_type::readwrite>;
+        using read_access_type = detail::async_rw_mutex_access_wrapper<readwrite_type, read_type,
+            detail::async_rw_mutex_access_type::read>;
+        using readwrite_access_type = detail::async_rw_mutex_access_wrapper<readwrite_type,
+            read_type, detail::async_rw_mutex_access_type::readwrite>;
 
         using allocator_type = Allocator;
 
         async_rw_mutex() = delete;
         template <typename U,
-            typename = std::enable_if_t<
-                !std::is_same<std::decay_t<U>, async_rw_mutex>::value>>
+            typename = std::enable_if_t<!std::is_same<std::decay_t<U>, async_rw_mutex>::value>>
         explicit async_rw_mutex(U&& u, allocator_type const& alloc = {})
           : value(PIKA_FORWARD(U, u))
           , alloc(alloc)
@@ -572,8 +522,7 @@ namespace pika::execution::experimental {
             if (prev_access == detail::async_rw_mutex_access_type::readwrite)
             {
                 auto shared_prev_state = PIKA_MOVE(state);
-                state = std::allocate_shared<shared_state_type, allocator_type>(
-                    alloc);
+                state = std::allocate_shared<shared_state_type, allocator_type>(alloc);
                 prev_access = detail::async_rw_mutex_access_type::read;
 
                 // Only the first access has no previous shared state. When
@@ -598,8 +547,7 @@ namespace pika::execution::experimental {
         sender<detail::async_rw_mutex_access_type::readwrite> readwrite()
         {
             auto shared_prev_state = PIKA_MOVE(state);
-            state =
-                std::allocate_shared<shared_state_type, allocator_type>(alloc);
+            state = std::allocate_shared<shared_state_type, allocator_type>(alloc);
             prev_access = detail::async_rw_mutex_access_type::readwrite;
 
             // Only the first access has no previous shared state. When there is
@@ -620,8 +568,7 @@ namespace pika::execution::experimental {
         }
 
     private:
-        using shared_state_type =
-            detail::async_rw_mutex_shared_state<value_type>;
+        using shared_state_type = detail::async_rw_mutex_shared_state<value_type>;
         using shared_state_ptr_type = std::shared_ptr<shared_state_type>;
         using shared_state_weak_ptr_type = std::weak_ptr<shared_state_type>;
 
@@ -632,10 +579,8 @@ namespace pika::execution::experimental {
             shared_state_ptr_type state;
 
             using access_type =
-                detail::async_rw_mutex_access_wrapper<readwrite_type, read_type,
-                    AccessType>;
-            template <template <typename...> class Tuple,
-                template <typename...> class Variant>
+                detail::async_rw_mutex_access_wrapper<readwrite_type, read_type, AccessType>;
+            template <template <typename...> class Tuple, template <typename...> class Variant>
             using value_types = Variant<Tuple<access_type>>;
 
             template <template <typename...> class Variant>
@@ -643,11 +588,9 @@ namespace pika::execution::experimental {
 
             static constexpr bool sends_done = false;
 
-            using completion_signatures =
-                pika::execution::experimental::completion_signatures<
-                    pika::execution::experimental::set_value_t(access_type),
-                    pika::execution::experimental::set_error_t(
-                        std::exception_ptr)>;
+            using completion_signatures = pika::execution::experimental::completion_signatures<
+                pika::execution::experimental::set_value_t(access_type),
+                pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
             template <typename R>
             struct operation_state
@@ -657,8 +600,8 @@ namespace pika::execution::experimental {
                 shared_state_ptr_type state;
 
                 template <typename R_>
-                operation_state(R_&& r, shared_state_weak_ptr_type prev_state,
-                    shared_state_ptr_type state)
+                operation_state(
+                    R_&& r, shared_state_weak_ptr_type prev_state, shared_state_ptr_type state)
                   : r(PIKA_FORWARD(R_, r))
                   , prev_state(PIKA_MOVE(prev_state))
                   , state(PIKA_MOVE(state))
@@ -670,28 +613,25 @@ namespace pika::execution::experimental {
                 operation_state(operation_state const&) = delete;
                 operation_state& operator=(operation_state const&) = delete;
 
-                friend void tag_invoke(pika::execution::experimental::start_t,
-                    operation_state& os) noexcept
+                friend void tag_invoke(
+                    pika::execution::experimental::start_t, operation_state& os) noexcept
                 {
                     PIKA_ASSERT_MSG(os.state,
                         "async_rw_lock::sender::operation_state state is "
                         "empty, was the sender already started?");
 
-                    auto continuation =
-                        [r = PIKA_MOVE(os.r)](
-                            shared_state_ptr_type state) mutable {
-                            try
-                            {
-                                pika::execution::experimental::set_value(
-                                    PIKA_MOVE(r),
-                                    access_type{PIKA_MOVE(state)});
-                            }
-                            catch (...)
-                            {
-                                pika::execution::experimental::set_error(
-                                    PIKA_MOVE(r), std::current_exception());
-                            }
-                        };
+                    auto continuation = [r = PIKA_MOVE(os.r)](shared_state_ptr_type state) mutable {
+                        try
+                        {
+                            pika::execution::experimental::set_value(
+                                PIKA_MOVE(r), access_type{PIKA_MOVE(state)});
+                        }
+                        catch (...)
+                        {
+                            pika::execution::experimental::set_error(
+                                PIKA_MOVE(r), std::current_exception());
+                        }
+                    };
 
                     if (auto p = os.prev_state.lock())
                     {
@@ -712,27 +652,23 @@ namespace pika::execution::experimental {
             };
 
             template <typename R>
-            friend auto tag_invoke(
-                pika::execution::experimental::connect_t, sender&& s, R&& r)
+            friend auto tag_invoke(pika::execution::experimental::connect_t, sender&& s, R&& r)
             {
-                return operation_state<R>{PIKA_FORWARD(R, r),
-                    PIKA_MOVE(s.prev_state), PIKA_MOVE(s.state)};
+                return operation_state<R>{
+                    PIKA_FORWARD(R, r), PIKA_MOVE(s.prev_state), PIKA_MOVE(s.state)};
             }
 
             template <typename R>
-            friend auto tag_invoke(pika::execution::experimental::connect_t,
-                sender const& s, R&& r)
+            friend auto tag_invoke(pika::execution::experimental::connect_t, sender const& s, R&& r)
             {
-                if constexpr (AccessType ==
-                    detail::async_rw_mutex_access_type::readwrite)
+                if constexpr (AccessType == detail::async_rw_mutex_access_type::readwrite)
                 {
                     static_assert(sizeof(R) == 0,
                         "senders returned from async_rw_mutex::readwrite are "
                         "not l-lvalue connectable");
                 }
 
-                return operation_state<R>{
-                    PIKA_FORWARD(R, r), s.prev_state, s.state};
+                return operation_state<R>{PIKA_FORWARD(R, r), s.prev_state, s.state};
             }
         };
 

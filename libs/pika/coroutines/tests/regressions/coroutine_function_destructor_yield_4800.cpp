@@ -16,8 +16,7 @@
 
 struct thread_function_yield_destructor
 {
-    pika::threads::detail::thread_result_type operator()(
-        pika::threads::detail::thread_arg_type)
+    pika::threads::detail::thread_result_type operator()(pika::threads::detail::thread_arg_type)
     {
         return {pika::threads::detail::thread_schedule_state::terminated,
             pika::threads::detail::invalid_thread_id};
@@ -43,8 +42,7 @@ int pika_main()
     // will be called late in the coroutine call operator.
     {
         pika::threads::detail::thread_init_data data{
-            thread_function_yield_destructor{},
-            "thread_function_yield_destructor"};
+            thread_function_yield_destructor{}, "thread_function_yield_destructor"};
         pika::threads::detail::register_thread(data);
     }
 
@@ -80,8 +78,7 @@ int pika_main()
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0, "pika main exited with non-zero status");
 
     return 0;
 }

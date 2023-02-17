@@ -77,9 +77,8 @@ namespace pika::threads::detail {
     /// \param ec        [in,out] this represents the error status on exit, if this
     ///                  is pre-initialized to \a pika#throws the function will throw
     ///                  on error instead.
-    PIKA_EXPORT void suspend_processing_unit_cb(
-        util::detail::function<void(void)> callback, thread_pool_base& pool,
-        std::size_t virt_core, error_code& ec = throws);
+    PIKA_EXPORT void suspend_processing_unit_cb(util::detail::function<void(void)> callback,
+        thread_pool_base& pool, std::size_t virt_core, error_code& ec = throws);
 
     /// Resumes the thread pool. When the all OS threads on the thread pool have
     /// been resumed the returned future will be ready.

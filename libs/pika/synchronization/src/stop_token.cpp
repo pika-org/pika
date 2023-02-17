@@ -21,17 +21,15 @@ namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     void intrusive_ptr_add_ref(stop_state* p)
     {
-        p->state_.fetch_add(
-            stop_state::token_ref_increment, std::memory_order_relaxed);
+        p->state_.fetch_add(stop_state::token_ref_increment, std::memory_order_relaxed);
     }
 
     void intrusive_ptr_release(stop_state* p)
     {
-        std::uint64_t old_state = p->state_.fetch_sub(
-            stop_state::token_ref_increment, std::memory_order_acq_rel);
+        std::uint64_t old_state =
+            p->state_.fetch_sub(stop_state::token_ref_increment, std::memory_order_acq_rel);
 
-        if ((old_state & stop_state::token_ref_mask) ==
-            stop_state::token_ref_increment)
+        if ((old_state & stop_state::token_ref_mask) == stop_state::token_ref_increment)
         {
             delete p;
         }
@@ -71,16 +69,14 @@ namespace pika::detail {
         auto old_state = state_.load(std::memory_order_relaxed);
 
         auto expected = old_state & ~stop_state::locked_flag;
-        while (!state_.compare_exchange_weak(expected,
-            old_state | stop_state::locked_flag, std::memory_order_acquire,
-            std::memory_order_relaxed))
+        while (!state_.compare_exchange_weak(expected, old_state | stop_state::locked_flag,
+            std::memory_order_acquire, std::memory_order_relaxed))
         {
             old_state = expected;
 
             for (std::size_t k = 0; is_locked(old_state); ++k)
             {
-                pika::execution::this_thread::detail::yield_k(
-                    k, "stop_state::lock");
+                pika::execution::this_thread::detail::yield_k(k, "stop_state::lock");
                 old_state = state_.load(std::memory_order_relaxed);
             }
 
@@ -98,8 +94,7 @@ namespace pika::detail {
 
         auto expected = old_state & ~stop_state::locked_flag;
         while (!state_.compare_exchange_weak(expected,
-            old_state | stop_state::stop_requested_flag |
-                stop_state::locked_flag,
+            old_state | stop_state::stop_requested_flag | stop_state::locked_flag,
             std::memory_order_acquire, std::memory_order_relaxed))
         {
             old_state = expected;
@@ -129,8 +124,7 @@ namespace pika::detail {
         {
             cb->execute();
 
-            cb->callback_finished_executing_.store(
-                true, std::memory_order_release);
+            cb->callback_finished_executing_.store(true, std::memory_order_release);
 
             return false;
         }
@@ -140,24 +134,21 @@ namespace pika::detail {
         }
 
         auto expected = old_state & ~stop_state::locked_flag;
-        while (!state_.compare_exchange_weak(expected,
-            old_state | stop_state::locked_flag, std::memory_order_acquire,
-            std::memory_order_relaxed))
+        while (!state_.compare_exchange_weak(expected, old_state | stop_state::locked_flag,
+            std::memory_order_acquire, std::memory_order_relaxed))
         {
             old_state = expected;
 
             for (std::size_t k = 0; is_locked(old_state); ++k)
             {
-                pika::execution::this_thread::detail::yield_k(
-                    k, "stop_state::add_callback");
+                pika::execution::this_thread::detail::yield_k(k, "stop_state::add_callback");
                 old_state = state_.load(std::memory_order_acquire);
 
                 if (stop_requested(old_state))
                 {
                     cb->execute();
 
-                    cb->callback_finished_executing_.store(
-                        true, std::memory_order_release);
+                    cb->callback_finished_executing_.store(true, std::memory_order_release);
 
                     return false;
                 }
@@ -176,8 +167,7 @@ namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     struct scoped_lock_if_not_stopped
     {
-        scoped_lock_if_not_stopped(
-            stop_state& state, stop_callback_base* cb) noexcept
+        scoped_lock_if_not_stopped(stop_state& state, stop_callback_base* cb) noexcept
           : state_(state)
           , has_lock_(state_.lock_if_not_stopped(cb))
         {
@@ -238,10 +228,7 @@ namespace pika::detail {
             // Callback is currently executing on another thread,
             // block until it finishes executing.
             pika::util::yield_while(
-                [&]() {
-                    return !cb->callback_finished_executing_.load(
-                        std::memory_order_relaxed);
-                },
+                [&]() { return !cb->callback_finished_executing_.load(std::memory_order_relaxed); },
                 "stop_state::remove_callback");
         }
     }
@@ -306,8 +293,7 @@ namespace pika::detail {
             if (!is_removed)
             {
                 cb->is_removed_ = nullptr;
-                cb->callback_finished_executing_.store(
-                    true, std::memory_order_release);
+                cb->callback_finished_executing_.store(true, std::memory_order_release);
             }
         }
 

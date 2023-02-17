@@ -27,8 +27,7 @@ namespace pika::detail {
     /// different worker thread, but we use this nonetheless on Windows since it
     /// doesn't hurt.
     template <typename TryCallable, typename CatchCallable>
-    PIKA_FORCEINLINE decltype(auto)
-    try_catch_exception_ptr(TryCallable&& t, CatchCallable&& c)
+    PIKA_FORCEINLINE decltype(auto) try_catch_exception_ptr(TryCallable&& t, CatchCallable&& c)
     {
         std::exception_ptr ep;
         try

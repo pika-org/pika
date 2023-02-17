@@ -9,7 +9,7 @@
 #pragma once
 
 #if defined(_MSC_VER)
-#pragma once
+# pragma once
 #endif
 
 #include <pika/program_options/config.hpp>

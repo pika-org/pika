@@ -8,11 +8,11 @@
 
 #include <pika/config.hpp>
 #if defined(PIKA_HAVE_GPU_SUPPORT)
-#include <pika/async_cuda/cusolver_exception.hpp>
-#include <pika/async_cuda/custom_lapack_api.hpp>
-#include <pika/errors/exception.hpp>
+# include <pika/async_cuda/cusolver_exception.hpp>
+# include <pika/async_cuda/custom_lapack_api.hpp>
+# include <pika/errors/exception.hpp>
 
-#include <string>
+# include <string>
 
 namespace pika::cuda::experimental {
     namespace detail {
@@ -26,7 +26,7 @@ namespace pika::cuda::experimental {
                 return "CUSOLVER_STATUS_INVALID_VALUE";
             case CUSOLVER_STATUS_INTERNAL_ERROR:
                 return "CUSOLVER_STATUS_INTERNAL_ERROR";
-#if defined(PIKA_HAVE_CUDA)
+# if defined(PIKA_HAVE_CUDA)
             case CUSOLVER_STATUS_NOT_INITIALIZED:
                 return "CUSOLVER_STATUS_NOT_INITIALIZED";
             case CUSOLVER_STATUS_ALLOC_FAILED:
@@ -72,7 +72,7 @@ namespace pika::cuda::experimental {
                 return "CUSOLVER_STATUS_IRS_MATRIX_SINGULAR";
             case CUSOLVER_STATUS_INVALID_WORKSPACE:
                 return "CUSOLVER_STATUS_INVALID_WORKSPACE";
-#elif defined(PIKA_HAVE_HIP)
+# elif defined(PIKA_HAVE_HIP)
             case CUSOLVER_STATUS_INVALID_HANDLE:
                 return "CUSOLVER_STATUS_INVALID_HANDLE";
             case CUSOLVER_STATUS_NOT_IMPLEMENTED:
@@ -95,7 +95,7 @@ namespace pika::cuda::experimental {
                 return "CUSOLVER_STATUS_CONTINUE";
             case CUSOLVER_STATUS_CHECK_NUMERICS_FAIL:
                 return "CUSOLVER_STATUS_CHECK_NUMERICS_FAIL";
-#endif
+# endif
             }
             return "<unknown>";
         }
@@ -103,15 +103,13 @@ namespace pika::cuda::experimental {
 
     cusolver_exception::cusolver_exception(cusolverStatus_t err)
       : pika::exception(pika::error::bad_function_call,
-            std::string("cuSOLVER function returned error code ") +
-                std::to_string(err) + " (" +
+            std::string("cuSOLVER function returned error code ") + std::to_string(err) + " (" +
                 detail::cusolver_get_error_string(err) + ")")
       , err_(err)
     {
     }
 
-    cusolver_exception::cusolver_exception(
-        const std::string& msg, cusolverStatus_t err)
+    cusolver_exception::cusolver_exception(const std::string& msg, cusolverStatus_t err)
       : pika::exception(pika::error::bad_function_call, msg)
       , err_(err)
     {

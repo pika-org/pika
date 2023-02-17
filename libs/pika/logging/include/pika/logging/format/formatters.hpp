@@ -85,8 +85,7 @@ std::(w)string and the string that holds your logged message. See convert_format
 */
     struct high_precision_time : manipulator
     {
-        PIKA_EXPORT static std::unique_ptr<high_precision_time> make(
-            std::string const& format);
+        PIKA_EXPORT static std::unique_ptr<high_precision_time> make(std::string const& format);
 
         PIKA_EXPORT ~high_precision_time();
 

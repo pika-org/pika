@@ -25,8 +25,8 @@ namespace pika::detail {
         report_missing_config_file = 0x80
     };
 
-    commandline_error_mode operator&(commandline_error_mode const lhs,
-        commandline_error_mode const rhs) noexcept;
+    commandline_error_mode operator&(
+        commandline_error_mode const lhs, commandline_error_mode const rhs) noexcept;
     commandline_error_mode& operator&=(
         commandline_error_mode& lhs, commandline_error_mode rhs) noexcept;
     commandline_error_mode operator|(
@@ -34,27 +34,23 @@ namespace pika::detail {
     commandline_error_mode& operator|=(
         commandline_error_mode& lhs, commandline_error_mode rhs) noexcept;
     commandline_error_mode operator~(commandline_error_mode m) noexcept;
-    bool contains_error_mode(commandline_error_mode const m,
-        commandline_error_mode const b) noexcept;
+    bool contains_error_mode(
+        commandline_error_mode const m, commandline_error_mode const b) noexcept;
     std::string enquote(std::string const& arg);
 
     bool parse_commandline(pika::util::section const& rtcfg,
-        pika::program_options::options_description const& app_options,
-        std::string const& cmdline, pika::program_options::variables_map& vm,
-        commandline_error_mode error_mode =
-            commandline_error_mode::return_on_error,
+        pika::program_options::options_description const& app_options, std::string const& cmdline,
+        pika::program_options::variables_map& vm,
+        commandline_error_mode error_mode = commandline_error_mode::return_on_error,
         pika::program_options::options_description* visible = nullptr,
         std::vector<std::string>* unregistered_options = nullptr);
 
     bool parse_commandline(pika::util::section const& rtcfg,
-        pika::program_options::options_description const& app_options,
-        std::string const& arg0, std::vector<std::string> const& args,
-        pika::program_options::variables_map& vm,
-        commandline_error_mode error_mode =
-            commandline_error_mode::return_on_error,
+        pika::program_options::options_description const& app_options, std::string const& arg0,
+        std::vector<std::string> const& args, pika::program_options::variables_map& vm,
+        commandline_error_mode error_mode = commandline_error_mode::return_on_error,
         pika::program_options::options_description* visible = nullptr,
         std::vector<std::string>* unregistered_options = nullptr);
 
-    std::string reconstruct_command_line(
-        pika::program_options::variables_map const& vm);
+    std::string reconstruct_command_line(pika::program_options::variables_map const& vm);
 }    // namespace pika::detail

@@ -44,13 +44,12 @@ namespace pika::threads::detail {
         mask_type used_processing_units = mask_type();
         resize(used_processing_units, hardware_concurrency());
 
-        for (std::size_t thread_num = 0; thread_num < get_os_thread_count();
-             ++thread_num)
+        for (std::size_t thread_num = 0; thread_num < get_os_thread_count(); ++thread_num)
         {
             if (sched->get_state(thread_num).load() <= runtime_state::suspended)
             {
-                used_processing_units |= affinity_data_.get_pu_mask(
-                    topo, thread_num + get_thread_offset());
+                used_processing_units |=
+                    affinity_data_.get_pu_mask(topo, thread_num + get_thread_offset());
             }
         }
 
@@ -68,11 +67,9 @@ namespace pika::threads::detail {
     {
         std::size_t active_os_thread_count = 0;
 
-        for (std::size_t thread_num = 0; thread_num < get_os_thread_count();
-             ++thread_num)
+        for (std::size_t thread_num = 0; thread_num < get_os_thread_count(); ++thread_num)
         {
-            if (get_scheduler()->get_state(thread_num).load() <=
-                runtime_state::suspended)
+            if (get_scheduler()->get_state(thread_num).load() <= runtime_state::suspended)
             {
                 ++active_os_thread_count;
             }
@@ -86,34 +83,27 @@ namespace pika::threads::detail {
     {
         // scale timestamps to nanoseconds
         std::uint64_t base_timestamp = util::hardware::timestamp();
-        std::uint64_t base_time =
-            static_cast<std::uint64_t>(std::chrono::high_resolution_clock::now()
-                                           .time_since_epoch()
-                                           .count());
+        std::uint64_t base_time = static_cast<std::uint64_t>(
+            std::chrono::high_resolution_clock::now().time_since_epoch().count());
         std::uint64_t curr_timestamp = util::hardware::timestamp();
-        std::uint64_t curr_time =
-            static_cast<std::uint64_t>(std::chrono::high_resolution_clock::now()
-                                           .time_since_epoch()
-                                           .count());
+        std::uint64_t curr_time = static_cast<std::uint64_t>(
+            std::chrono::high_resolution_clock::now().time_since_epoch().count());
 
         while ((curr_time - base_time) <= 100000)
         {
             curr_timestamp = util::hardware::timestamp();
             curr_time = static_cast<std::uint64_t>(
-                std::chrono::high_resolution_clock::now()
-                    .time_since_epoch()
-                    .count());
+                std::chrono::high_resolution_clock::now().time_since_epoch().count());
         }
 
         if (curr_timestamp - base_timestamp != 0)
         {
-            timestamp_scale_ = double(curr_time - base_time) /
-                double(curr_timestamp - base_timestamp);
+            timestamp_scale_ =
+                double(curr_time - base_time) / double(curr_timestamp - base_timestamp);
         }
     }
 
-    void thread_pool_base::init(
-        std::size_t /* pool_threads */, std::size_t threads_offset)
+    void thread_pool_base::init(std::size_t /* pool_threads */, std::size_t threads_offset)
     {
         thread_offset_ = threads_offset;
     }

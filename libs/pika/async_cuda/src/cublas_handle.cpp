@@ -14,8 +14,7 @@
 #include <whip.hpp>
 
 namespace pika::cuda::experimental {
-    cublasHandle_t cublas_handle::create_handle(
-        int device, whip::stream_t stream)
+    cublasHandle_t cublas_handle::create_handle(int device, whip::stream_t stream)
     {
         cuda_device_scope d{device};
         cublasHandle_t handle;

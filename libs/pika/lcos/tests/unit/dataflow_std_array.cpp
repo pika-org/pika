@@ -95,11 +95,11 @@ void function_pointers()
     int_f2_count.store(0);
 
     future<void> f1 = dataflow(unwrapping(&void_f1), async(&int_f));
-    future<int> f2 = dataflow(unwrapping(&int_f1),
-        dataflow(unwrapping(&int_f1), make_ready_future(42)));
-    future<int> f3 = dataflow(unwrapping(&int_f2),
-        dataflow(unwrapping(&int_f1), make_ready_future(42)),
-        dataflow(unwrapping(&int_f1), make_ready_future(37)));
+    future<int> f2 =
+        dataflow(unwrapping(&int_f1), dataflow(unwrapping(&int_f1), make_ready_future(42)));
+    future<int> f3 =
+        dataflow(unwrapping(&int_f2), dataflow(unwrapping(&int_f1), make_ready_future(42)),
+            dataflow(unwrapping(&int_f1), make_ready_future(37)));
 
     int_f_vector_count.store(0);
     std::array<future<int>, 10> vf;
@@ -109,9 +109,9 @@ void function_pointers()
     }
     future<int> f4 = dataflow(unwrapping(&int_f_vector), std::move(vf));
 
-    future<int> f5 = dataflow(unwrapping(&int_f1),
-        dataflow(unwrapping(&int_f1), make_ready_future(42)),
-        dataflow(unwrapping(&void_f), make_ready_future()));
+    future<int> f5 =
+        dataflow(unwrapping(&int_f1), dataflow(unwrapping(&int_f1), make_ready_future(42)),
+            dataflow(unwrapping(&void_f), make_ready_future()));
 
     f1.wait();
     PIKA_TEST_EQ(f2.get(), 126);
@@ -202,8 +202,7 @@ int pika_main(variables_map&)
 int main(int argc, char* argv[])
 {
     // Configure application-specific options
-    options_description desc_commandline(
-        "Usage: " PIKA_APPLICATION_STRING " [options]");
+    options_description desc_commandline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
     // We force this test to use several threads by default.
     std::vector<std::string> const cfg = {"pika.os_threads=all"};
@@ -213,7 +212,7 @@ int main(int argc, char* argv[])
     init_args.desc_cmdline = desc_commandline;
     init_args.cfg = cfg;
 
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(
+        pika::init(pika_main, argc, argv, init_args), 0, "pika main exited with non-zero status");
     return 0;
 }

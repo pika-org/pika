@@ -43,6 +43,7 @@ namespace pika::execution::experimental {
 # include <pika/execution_base/operation_state.hpp>
 # include <pika/execution_base/receiver.hpp>
 # include <pika/functional/detail/tag_fallback_invoke.hpp>
+# include <pika/functional/tag_invoke.hpp>
 # include <pika/type_support/equality.hpp>
 
 # include <cstddef>

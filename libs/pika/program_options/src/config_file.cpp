@@ -119,8 +119,7 @@ namespace pika::program_options::detail {
                 }
                 else
                 {
-                    throw invalid_config_file_syntax(
-                        s, invalid_syntax::unrecognized_line);
+                    throw invalid_config_file_syntax(s, invalid_syntax::unrecognized_line);
                 }
             }
         }
@@ -142,7 +141,7 @@ namespace pika::program_options::detail {
         return false;
     }
 
-#if defined(__COMO_VERSION__) && __COMO_VERSION__ >= 4303 ||                   \
+#if defined(__COMO_VERSION__) && __COMO_VERSION__ >= 4303 ||                                       \
     (defined(__sgi) && defined(_COMPILER_VERSION) && _COMPILER_VERSION >= 741)
     template <>
     bool basic_config_file_iterator<wchar_t>::getline(std::string& s)

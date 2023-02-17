@@ -30,8 +30,7 @@
 
 namespace pika::mpi::experimental {
 
-    constexpr std::uint32_t max_mpi_streams =
-        static_cast<std::uint32_t>(stream_type::user);
+    constexpr std::uint32_t max_mpi_streams = static_cast<std::uint32_t>(stream_type::user);
 
     namespace detail {
         // -----------------------------------------------------------------
@@ -50,8 +49,7 @@ namespace pika::mpi::experimental {
         /// to avoid taking a lock on every invocation of an MPI function.
         /// When a thread polls for MPI completions, it moves the request_callback(s)
         /// into a vector that is passed to the mpi test function
-        using request_callback_queue_type =
-            concurrency::detail::ConcurrentQueue<request_callback>;
+        using request_callback_queue_type = concurrency::detail::ConcurrentQueue<request_callback>;
 
         // -----------------------------------------------------------------
         /// Spinlock is used as it can be called by OS threads or pika tasks
@@ -76,8 +74,7 @@ namespace pika::mpi::experimental {
             std::uint32_t index;
         };
 
-        using mpi_callback_queue_tuple =
-            std::tuple<request_callback_function_type, mpi_stream*>;
+        using mpi_callback_queue_tuple = std::tuple<request_callback_function_type, mpi_stream*>;
 
         // -----------------------------------------------------------------
         /// a convenience structure to hold state vars in one place
@@ -125,8 +122,7 @@ namespace pika::mpi::experimental {
         static mpi_data mpi_data_;
 
         // stream operator to display debug mpi_data
-        PIKA_EXPORT std::ostream& operator<<(
-            std::ostream& os, mpi_data const& info)
+        PIKA_EXPORT std::ostream& operator<<(std::ostream& os, mpi_data const& info)
         {
             // clang-format off
             os << "R "
@@ -148,8 +144,8 @@ namespace pika::mpi::experimental {
         inline size_t get_num_null_requests_in_vector()
         {
             std::vector<MPI_Request>& vec = mpi_data_.request_vector_;
-            return std::count_if(vec.begin(), vec.end(),
-                [](MPI_Request r) { return r == MPI_REQUEST_NULL; });
+            return std::count_if(
+                vec.begin(), vec.end(), [](MPI_Request r) { return r == MPI_REQUEST_NULL; });
         }
 
         // -----------------------------------------------------------------
@@ -169,8 +165,7 @@ namespace pika::mpi::experimental {
             // threads would always be woken and throttling would be compromised
             {
                 std::unique_lock lk(stream.throttling_mtx_);
-                [[maybe_unused]] auto scp =
-                    mpi_debug.scope("throttling", "wait");
+                [[maybe_unused]] auto scp = mpi_debug.scope("throttling", "wait");
                 stream.throttling_cond_.wait(lk);
             }
         }
@@ -178,8 +173,7 @@ namespace pika::mpi::experimental {
         // -----------------------------------------------------------------
         void wait_for_throttling(stream_type stream)
         {
-            wait_for_throttling_impl(
-                mpi_data_.default_queues_[static_cast<uint32_t>(stream)]);
+            wait_for_throttling_impl(mpi_data_.default_queues_[static_cast<uint32_t>(stream)]);
         }
 
         // -----------------------------------------------------------------
@@ -193,8 +187,7 @@ namespace pika::mpi::experimental {
                 // badly formed env var
                 if (def == 0)
                     def = std::uint32_t(-1);    // unlimited
-                mpi_debug.debug(
-                    debug::detail::str<>("throttling"), "default", def);
+                mpi_debug.debug(debug::detail::str<>("throttling"), "default", def);
             }
 
             for (size_t i = 0; i < mpi_data_.default_queues_.size(); ++i)
@@ -215,16 +208,14 @@ namespace pika::mpi::experimental {
             auto stream = req_callback.index_;
             if constexpr (mpi_debug.is_enabled())
             {
-                mpi_debug.debug(debug::detail::str<>("CB queued"), mpi_data_,
-                    "request", debug::detail::hex<8>(req_callback.request_),
-                    "stream",
+                mpi_debug.debug(debug::detail::str<>("CB queued"), mpi_data_, "request",
+                    debug::detail::hex<8>(req_callback.request_), "stream",
                     debug::detail::dec<2>(std::uint32_t(req_callback.index_)));
             }
 
             mpi_data_.request_callback_queue_.enqueue(PIKA_MOVE(req_callback));
             ++mpi_data_.request_queue_size_;
-            ++mpi_data_.default_queues_[static_cast<uint32_t>(stream)]
-                  .in_flight_;
+            ++mpi_data_.default_queues_[static_cast<uint32_t>(stream)].in_flight_;
             ++mpi_data_.in_flight_;
         }
 
@@ -233,14 +224,11 @@ namespace pika::mpi::experimental {
         /// that is passed to MPI_Testany. This is only called inside the
         /// polling function when a lock is held, so only one thread
         /// at a time ever enters here
-        inline void add_to_request_callback_vector(
-            request_callback&& req_callback)
+        inline void add_to_request_callback_vector(request_callback&& req_callback)
         {
             mpi_data_.request_vector_.push_back(req_callback.request_);
-            mpi_data_.callback_vector_.push_back(
-                {PIKA_MOVE(req_callback.callback_function_),
-                    &mpi_data_.default_queues_[static_cast<std::uint32_t>(
-                        req_callback.index_)]});
+            mpi_data_.callback_vector_.push_back({PIKA_MOVE(req_callback.callback_function_),
+                &mpi_data_.default_queues_[static_cast<std::uint32_t>(req_callback.index_)]});
             ++(mpi_data_.active_request_vector_size_);
 
             if constexpr (mpi_debug.is_enabled())
@@ -265,8 +253,8 @@ namespace pika::mpi::experimental {
         }
 #endif
 
-        void add_request_callback(request_callback_function_type&& callback,
-            MPI_Request request, stream_type stream)
+        void add_request_callback(
+            request_callback_function_type&& callback, MPI_Request request, stream_type stream)
         {
             PIKA_ASSERT_MSG(get_register_polling_count() != 0,
                 "MPI event polling has not been enabled on any pool. Make sure "
@@ -285,8 +273,7 @@ namespace pika::mpi::experimental {
                 // we don't notify any condition either
                 return;
             }
-            add_to_request_callback_queue(
-                request_callback{request, PIKA_MOVE(callback), stream});
+            add_to_request_callback_queue(request_callback{request, PIKA_MOVE(callback), stream});
         }
 
         // an MPI error handling type that we can use to intercept
@@ -297,8 +284,8 @@ namespace pika::mpi::experimental {
         void pika_MPI_Handler(MPI_Comm*, int* errorcode, ...)
         {
             mpi_debug.debug(debug::detail::str<>("pika_MPI_Handler"));
-            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
-                "pika_MPI_Handler", "{}", error_message(*errorcode));
+            PIKA_THROW_EXCEPTION(
+                pika::error::invalid_status, "pika_MPI_Handler", "{}", error_message(*errorcode));
         }
 
         // set an error handler for communicators that will be called
@@ -307,10 +294,8 @@ namespace pika::mpi::experimental {
         {
             mpi_debug.debug(debug::detail::str<>("set_error_handler"));
 
-            MPI_Comm_create_errhandler(
-                detail::pika_MPI_Handler, &detail::pika_mpi_errhandler);
-            MPI_Comm_set_errhandler(
-                MPI_COMM_WORLD, detail::pika_mpi_errhandler);
+            MPI_Comm_create_errhandler(detail::pika_MPI_Handler, &detail::pika_mpi_errhandler);
+            MPI_Comm_set_errhandler(MPI_COMM_WORLD, detail::pika_mpi_errhandler);
         }
 
         /// Remove all entries in request and callback vectors that are invalid
@@ -333,8 +318,7 @@ namespace pika::mpi::experimental {
             {
                 if (detail::mpi_data_.request_vector_[i] != MPI_REQUEST_NULL)
                 {
-                    detail::mpi_data_.request_vector_[pos] =
-                        detail::mpi_data_.request_vector_[i];
+                    detail::mpi_data_.request_vector_[pos] = detail::mpi_data_.request_vector_[i];
                     detail::mpi_data_.callback_vector_[pos] =
                         PIKA_MOVE(detail::mpi_data_.callback_vector_[i]);
                     pos++;
@@ -352,8 +336,7 @@ namespace pika::mpi::experimental {
         {
             using pika::threads::detail::polling_status;
 
-            if (detail::mpi_data_.in_flight_.load(std::memory_order_relaxed) ==
-                0)
+            if (detail::mpi_data_.in_flight_.load(std::memory_order_relaxed) == 0)
                 return polling_status::idle;
 
             std::unique_lock<detail::mutex_type> lk(
@@ -363,8 +346,8 @@ namespace pika::mpi::experimental {
                 if constexpr (mpi_debug.is_enabled())
                 {
                     // for debugging, create a timer
-                    static auto poll_deb = mpi_debug.make_timer(
-                        1, debug::detail::str<>("Poll - lock failed"));
+                    static auto poll_deb =
+                        mpi_debug.make_timer(1, debug::detail::str<>("Poll - lock failed"));
                     // output mpi debug info every N seconds
                     mpi_debug.timed(poll_deb, detail::mpi_data_);
                 }
@@ -374,8 +357,8 @@ namespace pika::mpi::experimental {
             if constexpr (mpi_debug.is_enabled())
             {
                 // for debugging, create a timer
-                static auto poll_deb = mpi_debug.make_timer(
-                    1, debug::detail::str<>("Poll - lock success"));
+                static auto poll_deb =
+                    mpi_debug.make_timer(1, debug::detail::str<>("Poll - lock success"));
                 // output mpi debug info every N seconds
                 mpi_debug.timed(poll_deb, detail::mpi_data_);
             }
@@ -389,8 +372,7 @@ namespace pika::mpi::experimental {
             // is moved off the queue and into the vector
 
             detail::request_callback req_callback;
-            while (detail::mpi_data_.request_callback_queue_.try_dequeue(
-                req_callback))
+            while (detail::mpi_data_.request_callback_queue_.try_dequeue(req_callback))
             {
                 --detail::mpi_data_.request_queue_size_;
                 add_to_request_callback_vector(PIKA_MOVE(req_callback));
@@ -400,10 +382,8 @@ namespace pika::mpi::experimental {
             int vsize = detail::mpi_data_.request_vector_.size();
             detail::mpi_data_.indices_vector_.resize(vsize);
             detail::mpi_data_.status_vector_.resize(vsize);
-            int result =
-                MPI_Testsome(vsize, detail::mpi_data_.request_vector_.data(),
-                    &outcount, detail::mpi_data_.indices_vector_.data(),
-                    detail::mpi_data_.status_vector_.data());
+            int result = MPI_Testsome(vsize, detail::mpi_data_.request_vector_.data(), &outcount,
+                detail::mpi_data_.indices_vector_.data(), detail::mpi_data_.status_vector_.data());
 
             if (result != MPI_SUCCESS)
             {
@@ -413,10 +393,10 @@ namespace pika::mpi::experimental {
             if constexpr (mpi_debug.is_enabled())
             {
                 // output a heartbeat every seconds
-                static auto poll_deb = mpi_debug.make_timer(
-                    1, debug::detail::str<>("Poll - success"));
-                mpi_debug.timed(poll_deb, detail::mpi_data_, "outcount",
-                    outcount, debug::detail::dec<4>(outcount));
+                static auto poll_deb =
+                    mpi_debug.make_timer(1, debug::detail::str<>("Poll - success"));
+                mpi_debug.timed(poll_deb, detail::mpi_data_, "outcount", outcount,
+                    debug::detail::dec<4>(outcount));
             }
 
             // for each completed request
@@ -426,16 +406,13 @@ namespace pika::mpi::experimental {
 
                 if constexpr (mpi_debug.is_enabled())
                 {
-                    mpi_debug.debug(debug::detail::str<>("MPI_Testsome (set)"),
-                        detail::mpi_data_, "request",
-                        debug::detail::hex<8>(
-                            detail::mpi_data_.request_vector_[index]));
+                    mpi_debug.debug(debug::detail::str<>("MPI_Testsome (set)"), detail::mpi_data_,
+                        "request", debug::detail::hex<8>(detail::mpi_data_.request_vector_[index]));
                 }
 
                 // decrement before invoking callback to avoid race
                 // if invoked code checks in_flight value
-                detail::mpi_stream* stream =
-                    std::get<1>(detail::mpi_data_.callback_vector_[index]);
+                detail::mpi_stream* stream = std::get<1>(detail::mpi_data_.callback_vector_[index]);
                 size_t inflight = --stream->in_flight_;
                 --detail::mpi_data_.in_flight_;
                 --detail::mpi_data_.active_request_vector_size_;
@@ -453,24 +430,21 @@ namespace pika::mpi::experimental {
                 // wake any thread that is waiting for throttling
                 if (inflight < stream->limit_)
                 {
-                    mpi_debug.debug(debug::detail::str<>("throttling"),
-                        "stream", debug::detail::dec<2>(stream->index),
-                        "notify_one", "in_flight",
+                    mpi_debug.debug(debug::detail::str<>("throttling"), "stream",
+                        debug::detail::dec<2>(stream->index), "notify_one", "in_flight",
                         debug::detail::dec<4>(inflight));
                     stream->throttling_cond_.notify_one();
                 }
             }
 
-            return detail::mpi_data_.in_flight_.load(
-                       std::memory_order_relaxed) == 0 ?
+            return detail::mpi_data_.in_flight_.load(std::memory_order_relaxed) == 0 ?
                 polling_status::idle :
                 polling_status::busy;
         }
 
         size_t get_work_count()
         {
-            return mpi_data_.active_request_vector_size_ +
-                mpi_data_.request_queue_size_;
+            return mpi_data_.active_request_vector_size_ + mpi_data_.request_queue_size_;
         }
 
         // -------------------------------------------------------------
@@ -490,11 +464,10 @@ namespace pika::mpi::experimental {
         {
 #if defined(PIKA_DEBUG)
             {
-                std::unique_lock<pika::mpi::experimental::detail::mutex_type>
-                    lk(detail::mpi_data_.polling_vector_mtx_);
+                std::unique_lock<pika::mpi::experimental::detail::mutex_type> lk(
+                    detail::mpi_data_.polling_vector_mtx_);
                 bool request_queue_empty =
-                    detail::mpi_data_.request_callback_queue_.size_approx() ==
-                    0;
+                    detail::mpi_data_.request_callback_queue_.size_approx() == 0;
                 bool request_vector_empty = detail::mpi_data_.in_flight_ == 0;
                 lk.unlock();
                 PIKA_ASSERT_MSG(request_queue_empty,
@@ -514,28 +487,22 @@ namespace pika::mpi::experimental {
         }
     }    // namespace detail
 
-    std::uint32_t set_max_requests_in_flight(
-        std::uint32_t N, std::optional<stream_type> s)
+    std::uint32_t set_max_requests_in_flight(std::uint32_t N, std::optional<stream_type> s)
     {
         if (!s)
         {
             // start from 1
-            for (size_t i = 1; i < detail::mpi_data_.default_queues_.size();
-                 ++i)
+            for (size_t i = 1; i < detail::mpi_data_.default_queues_.size(); ++i)
             {
                 detail::mpi_data_.default_queues_[i].limit_ = N;
             }
             // set and return stream 0
-            return std::exchange(
-                detail::mpi_data_.default_queues_[0].limit_, N);
+            return std::exchange(detail::mpi_data_.default_queues_[0].limit_, N);
         }
-        PIKA_ASSERT(static_cast<std::uint32_t>(s.value()) <=
-            detail::mpi_data_.default_queues_.size());
+        PIKA_ASSERT(
+            static_cast<std::uint32_t>(s.value()) <= detail::mpi_data_.default_queues_.size());
         return std::exchange(
-            detail::mpi_data_
-                .default_queues_[static_cast<std::uint32_t>(s.value())]
-                .limit_,
-            N);
+            detail::mpi_data_.default_queues_[static_cast<std::uint32_t>(s.value())].limit_, N);
     }
 
     std::uint32_t get_max_requests_in_flight(std::optional<stream_type> s)
@@ -544,11 +511,9 @@ namespace pika::mpi::experimental {
         {
             return detail::mpi_data_.default_queues_[0].limit_;
         }
-        PIKA_ASSERT(static_cast<std::uint32_t>(s.value()) <=
-            detail::mpi_data_.default_queues_.size());
-        return detail::mpi_data_
-            .default_queues_[static_cast<std::uint32_t>(s.value())]
-            .limit_;
+        PIKA_ASSERT(
+            static_cast<std::uint32_t>(s.value()) <= detail::mpi_data_.default_queues_.size());
+        return detail::mpi_data_.default_queues_[static_cast<std::uint32_t>(s.value())].limit_;
     }
 
     std::uint32_t get_num_requests_in_flight()
@@ -559,23 +524,19 @@ namespace pika::mpi::experimental {
     // initialize the pika::mpi background request handler
     // All ranks should call this function,
     // but only one thread per rank needs to do so
-    void init(
-        bool init_mpi, std::string const& pool_name, bool init_errorhandler)
+    void init(bool init_mpi, std::string const& pool_name, bool init_errorhandler)
     {
         if (init_mpi)
         {
             int required = MPI_THREAD_MULTIPLE;
             int minimal = MPI_THREAD_FUNNELED;
             int provided;
-            pika::util::mpi_environment::init(
-                nullptr, nullptr, required, minimal, provided);
+            pika::util::mpi_environment::init(nullptr, nullptr, required, minimal, provided);
             if (provided < MPI_THREAD_FUNNELED)
             {
                 detail::mpi_debug.error(
-                    debug::detail::str<>("pika::mpi::experimental::init"),
-                    "init failed");
-                PIKA_THROW_EXCEPTION(pika::error::invalid_status,
-                    "pika::mpi::experimental::init",
+                    debug::detail::str<>("pika::mpi::experimental::init"), "init failed");
+                PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::mpi::experimental::init",
                     "the MPI installation doesn't allow multiple threads");
             }
             MPI_Comm_rank(MPI_COMM_WORLD, &detail::mpi_data_.rank_);
@@ -597,8 +558,7 @@ namespace pika::mpi::experimental {
         }
 
         detail::mpi_debug.debug(
-            debug::detail::str<>("pika::mpi::experimental::init"),
-            detail::mpi_data_);
+            debug::detail::str<>("pika::mpi::experimental::init"), detail::mpi_data_);
 
         if (init_errorhandler)
         {
@@ -613,8 +573,7 @@ namespace pika::mpi::experimental {
         }
         else
         {
-            detail::register_polling(
-                pika::resource::get_thread_pool(pool_name));
+            detail::register_polling(pika::resource::get_thread_pool(pool_name));
         }
     }
 
@@ -633,8 +592,8 @@ namespace pika::mpi::experimental {
         // clean up if we initialized mpi
         pika::util::mpi_environment::finalize();
 
-        detail::mpi_debug.debug(debug::detail::str<>("Clearing mode"),
-            detail::mpi_data_, "disable_user_polling");
+        detail::mpi_debug.debug(
+            debug::detail::str<>("Clearing mode"), detail::mpi_data_, "disable_user_polling");
 
         if (pool_name.empty())
         {
@@ -642,8 +601,7 @@ namespace pika::mpi::experimental {
         }
         else
         {
-            detail::unregister_polling(
-                pika::resource::get_thread_pool(pool_name));
+            detail::unregister_polling(pika::resource::get_thread_pool(pool_name));
         }
     }
 }    // namespace pika::mpi::experimental

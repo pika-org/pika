@@ -35,8 +35,7 @@ void calculate_sum()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void ping(
-    pika::lcos::local::send_channel<std::string> pings, std::string const& msg)
+void ping(pika::lcos::local::send_channel<std::string> pings, std::string const& msg)
 {
     pings.set(msg);
 }
@@ -81,8 +80,8 @@ void ping_void(pika::lcos::local::send_channel<> pings)
     pings.set();
 }
 
-void pong_void(pika::lcos::local::receive_channel<> pings,
-    pika::lcos::local::send_channel<> pongs, bool& pingponged)
+void pong_void(pika::lcos::local::receive_channel<> pings, pika::lcos::local::send_channel<> pongs,
+    bool& pingponged)
 {
     pings.get(pika::launch::sync);
     pongs.set();
@@ -249,8 +248,7 @@ void closed_channel_get_generation()
 
         PIKA_TEST_EQ(c.get(pika::launch::sync, 122), 42);
 
-        int value =
-            c.get(pika::launch::sync, 123);    // asking for generation 123
+        int value = c.get(pika::launch::sync, 123);    // asking for generation 123
         PIKA_TEST(false);
         (void) value;
     }
@@ -360,8 +358,7 @@ int pika_main()
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0, "pika main exited with non-zero status");
 
     return 0;
 }

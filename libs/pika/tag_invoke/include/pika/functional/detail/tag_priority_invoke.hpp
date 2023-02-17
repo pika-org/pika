@@ -63,8 +63,7 @@ namespace pika::functional::detail {
     /// `pika::functional::detail::is_tag_override_invocable_v<Tag, Args...>` evaluates to
     /// `pika::functional::detail::is_tag_override_invocable<Tag, Args...>::value`
     template <typename Tag, typename... Args>
-    constexpr bool is_tag_override_invocable_v =
-        is_tag_override_invocable<Tag, Args...>::value;
+    constexpr bool is_tag_override_invocable_v = is_tag_override_invocable<Tag, Args...>::value;
 
     /// `pika::functional::detail::is_nothrow_tag_override_invocable<Tag, Args...>` is
     /// std::true_type if an overload of `tag_override_invoke(tag, args...)` can be
@@ -88,8 +87,7 @@ namespace pika::functional::detail {
     /// `pika::functional::detail::tag_override_invoke_result_t<Tag, Args...>` evaluates to
     /// `pika::functional::detail::tag_override_invoke_result_t<Tag, Args...>::type`
     template <typename Tag, typename... Args>
-    using tag_override_invoke_result_t =
-        typename tag_override_invoke_result<Tag, Args...>::type;
+    using tag_override_invoke_result_t = typename tag_override_invoke_result<Tag, Args...>::type;
 
     /// `pika::functional::detail::tag_override<Tag>` defines a base class that implements
     /// the necessary tag dispatching functionality for a given type `Tag`
@@ -104,12 +102,12 @@ namespace pika::functional::detail {
 }    // namespace pika::functional::detail
 #else
 
-#include <pika/config.hpp>
-#include <pika/functional/detail/tag_fallback_invoke.hpp>
-#include <pika/functional/tag_invoke.hpp>
+# include <pika/config.hpp>
+# include <pika/functional/detail/tag_fallback_invoke.hpp>
+# include <pika/functional/tag_invoke.hpp>
 
-#include <type_traits>
-#include <utility>
+# include <type_traits>
+# include <utility>
 
 namespace pika::functional::detail {
     namespace tag_override_invoke_t_ns {
@@ -121,24 +119,20 @@ namespace pika::functional::detail {
         {
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename Tag, typename... Ts>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
-            operator()(Tag tag, Ts&&... ts) const
-                noexcept(noexcept(tag_override_invoke(
-                    std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...)))
-                    -> decltype(tag_override_invoke(
-                        std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...))
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(Tag tag, Ts&&... ts) const
+                noexcept(
+                    noexcept(tag_override_invoke(std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...)))
+                    -> decltype(tag_override_invoke(std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...))
             {
                 return tag_override_invoke(tag, PIKA_FORWARD(Ts, ts)...);
             }
 
-            friend constexpr bool operator==(
-                tag_override_invoke_t, tag_override_invoke_t)
+            friend constexpr bool operator==(tag_override_invoke_t, tag_override_invoke_t)
             {
                 return true;
             }
 
-            friend constexpr bool operator!=(
-                tag_override_invoke_t, tag_override_invoke_t)
+            friend constexpr bool operator!=(tag_override_invoke_t, tag_override_invoke_t)
             {
                 return false;
             }
@@ -146,20 +140,18 @@ namespace pika::functional::detail {
     }    // namespace tag_override_invoke_t_ns
 
     namespace tag_override_invoke_ns {
-#if !defined(PIKA_COMPUTE_DEVICE_CODE)
-        inline constexpr tag_override_invoke_t_ns::tag_override_invoke_t
-            tag_override_invoke = {};
-#else
+# if !defined(PIKA_COMPUTE_DEVICE_CODE)
+        inline constexpr tag_override_invoke_t_ns::tag_override_invoke_t tag_override_invoke = {};
+# else
         PIKA_DEVICE static tag_override_invoke_t_ns::tag_override_invoke_t const
             tag_override_invoke = {};
-#endif
+# endif
     }    // namespace tag_override_invoke_ns
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Tag, typename... Args>
     using is_tag_override_invocable =
-        std::is_invocable<decltype(tag_override_invoke_ns::tag_override_invoke),
-            Tag, Args...>;
+        std::is_invocable<decltype(tag_override_invoke_ns::tag_override_invoke), Tag, Args...>;
 
     template <typename Tag, typename... Args>
     inline constexpr bool is_tag_override_invocable_v =
@@ -175,8 +167,7 @@ namespace pika::functional::detail {
 
     template <typename Tag, typename... Args>
     struct is_nothrow_tag_override_invocable_impl<
-        decltype(tag_override_invoke_ns::tag_override_invoke)(Tag, Args...),
-        true>
+        decltype(tag_override_invoke_ns::tag_override_invoke)(Tag, Args...), true>
       : std::integral_constant<bool,
             noexcept(tag_override_invoke_ns::tag_override_invoke(
                 std::declval<Tag>(), std::declval<Args>()...))>
@@ -188,13 +179,12 @@ namespace pika::functional::detail {
     // correctly check this condition. We default to the more relaxed
     // noexcept(true) to not falsely exclude correct overloads. However, this
     // may lead to noexcept(false) overloads falsely being candidates.
-#if defined(__NVCC__) && defined(PIKA_CUDA_VERSION) &&                         \
-    (PIKA_CUDA_VERSION < 1102)
+# if defined(__NVCC__) && defined(PIKA_CUDA_VERSION) && (PIKA_CUDA_VERSION < 1102)
     template <typename Tag, typename... Args>
     struct is_nothrow_tag_override_invocable : std::true_type
     {
     };
-#else
+# else
     template <typename Tag, typename... Args>
     struct is_nothrow_tag_override_invocable
       : is_nothrow_tag_override_invocable_impl<
@@ -202,19 +192,18 @@ namespace pika::functional::detail {
             is_tag_override_invocable_v<Tag, Args...>>
     {
     };
-#endif
+# endif
 
     template <typename Tag, typename... Args>
     inline constexpr bool is_nothrow_tag_override_invocable_v =
         is_nothrow_tag_override_invocable<Tag, Args...>::value;
 
     template <typename Tag, typename... Args>
-    using tag_override_invoke_result = std::invoke_result<
-        decltype(tag_override_invoke_ns::tag_override_invoke), Tag, Args...>;
+    using tag_override_invoke_result =
+        std::invoke_result<decltype(tag_override_invoke_ns::tag_override_invoke), Tag, Args...>;
 
     template <typename Tag, typename... Args>
-    using tag_override_invoke_result_t =
-        typename tag_override_invoke_result<Tag, Args...>::type;
+    using tag_override_invoke_result_t = typename tag_override_invoke_result<Tag, Args...>::type;
 
     namespace tag_base_ns {
         // poison pill
@@ -239,47 +228,40 @@ namespace pika::functional::detail {
             // Is tag-override-dispatchable
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args,
-                typename Enable = std::enable_if_t<
-                    is_tag_override_invocable_v<Tag, Args&&...>>>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
-            operator()(Args&&... args) const
+                typename Enable = std::enable_if_t<is_tag_override_invocable_v<Tag, Args&&...>>>
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(Args&&... args) const
                 noexcept(is_nothrow_tag_override_invocable_v<Tag, Args...>)
                     -> tag_override_invoke_result_t<Tag, Args&&...>
             {
-                return tag_override_invoke(static_cast<Tag const&>(*this),
-                    PIKA_FORWARD(Args, args)...);
+                return tag_override_invoke(
+                    static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
             }
 
             // Is not tag-override-dispatchable, but tag-dispatchable
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args,
-                typename Enable = std::enable_if_t<
-                    !is_tag_override_invocable_v<Tag, Args&&...> &&
+                typename Enable = std::enable_if_t<!is_tag_override_invocable_v<Tag, Args&&...> &&
                     is_tag_invocable_v<Tag, Args&&...>>>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
-            operator()(Args&&... args) const
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(Args&&... args) const
                 noexcept(is_nothrow_tag_invocable_v<Tag, Args...>)
                     -> tag_invoke_result_t<Tag, Args&&...>
             {
-                return tag_invoke(static_cast<Tag const&>(*this),
-                    PIKA_FORWARD(Args, args)...);
+                return tag_invoke(static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
             }
 
             // Is not tag-override-dispatchable, not tag-dispatchable, but
             // tag-fallback-dispatchable
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args,
-                typename Enable = std::enable_if_t<
-                    !is_tag_override_invocable_v<Tag, Args&&...> &&
+                typename Enable = std::enable_if_t<!is_tag_override_invocable_v<Tag, Args&&...> &&
                     !is_tag_invocable_v<Tag, Args&&...> &&
                     is_tag_fallback_invocable_v<Tag, Args&&...>>>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
-            operator()(Args&&... args) const
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(Args&&... args) const
                 noexcept(is_nothrow_tag_fallback_invocable_v<Tag, Args...>)
                     -> tag_fallback_invoke_result_t<Tag, Args&&...>
             {
-                return tag_fallback_invoke(static_cast<Tag const&>(*this),
-                    PIKA_FORWARD(Args, args)...);
+                return tag_fallback_invoke(
+                    static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
             }
         };
 
@@ -294,45 +276,41 @@ namespace pika::functional::detail {
             // Is nothrow tag-override-dispatchable
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args,
-                typename Enable = std::enable_if_t<
-                    is_nothrow_tag_override_invocable_v<Tag, Args&&...>>>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
-            operator()(Args&&... args) const noexcept
-                -> tag_override_invoke_result_t<Tag, Args&&...>
+                typename Enable =
+                    std::enable_if_t<is_nothrow_tag_override_invocable_v<Tag, Args&&...>>>
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
+                Args&&... args) const noexcept -> tag_override_invoke_result_t<Tag, Args&&...>
             {
-                return tag_override_invoke(static_cast<Tag const&>(*this),
-                    PIKA_FORWARD(Args, args)...);
+                return tag_override_invoke(
+                    static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
             }
 
             // Is not nothrow tag-override-dispatchable, but nothrow
             // tag-dispatchable
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args,
-                typename Enable = std::enable_if_t<
-                    !is_nothrow_tag_override_invocable_v<Tag, Args&&...> &&
-                    is_nothrow_tag_invocable_v<Tag, Args&&...>>>
+                typename Enable =
+                    std::enable_if_t<!is_nothrow_tag_override_invocable_v<Tag, Args&&...> &&
+                        is_nothrow_tag_invocable_v<Tag, Args&&...>>>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
-            operator()(Args&&... args) const noexcept
-                -> tag_invoke_result_t<Tag, Args&&...>
+            operator()(Args&&... args) const noexcept -> tag_invoke_result_t<Tag, Args&&...>
             {
-                return tag_invoke(static_cast<Tag const&>(*this),
-                    PIKA_FORWARD(Args, args)...);
+                return tag_invoke(static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
             }
 
             // Is not nothrow tag-override-dispatchable, not nothrow
             // tag-dispatchable, but nothrow tag-fallback-dispatchable
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args,
-                typename Enable = std::enable_if_t<
-                    !is_nothrow_tag_override_invocable_v<Tag, Args&&...> &&
-                    !is_nothrow_tag_invocable_v<Tag, Args&&...> &&
-                    is_nothrow_tag_fallback_invocable_v<Tag, Args&&...>>>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
-            operator()(Args&&... args) const noexcept
-                -> tag_fallback_invoke_result_t<Tag, Args&&...>
+                typename Enable =
+                    std::enable_if_t<!is_nothrow_tag_override_invocable_v<Tag, Args&&...> &&
+                        !is_nothrow_tag_invocable_v<Tag, Args&&...> &&
+                        is_nothrow_tag_fallback_invocable_v<Tag, Args&&...>>>
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
+                Args&&... args) const noexcept -> tag_fallback_invoke_result_t<Tag, Args&&...>
             {
-                return tag_fallback_invoke(static_cast<Tag const&>(*this),
-                    PIKA_FORWARD(Args, args)...);
+                return tag_fallback_invoke(
+                    static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
             }
         };
     }    // namespace tag_base_ns

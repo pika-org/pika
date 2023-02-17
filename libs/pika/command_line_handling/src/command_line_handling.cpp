@@ -74,8 +74,7 @@ namespace pika::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////
-    inline void encode(
-        std::string& str, char s, char const* r, std::size_t inc = 1ull)
+    inline void encode(std::string& str, char s, char const* r, std::size_t inc = 1ull)
     {
         std::string::size_type pos = 0;
         while ((pos = str.find_first_of(s, pos)) != std::string::npos)
@@ -143,8 +142,7 @@ namespace pika::detail {
         {
             std::string affinity_desc;
 
-            std::vector<std::string> bind_affinity =
-                vm["pika:bind"].as<std::vector<std::string>>();
+            std::vector<std::string> bind_affinity = vm["pika:bind"].as<std::vector<std::string>>();
             for (std::string const& s : bind_affinity)
             {
                 if (!affinity_desc.empty())
@@ -186,8 +184,7 @@ namespace pika::detail {
     {
         if (vm.count("pika:numa-sensitive") != 0)
         {
-            std::size_t numa_sensitive =
-                vm["pika:numa-sensitive"].as<std::size_t>();
+            std::size_t numa_sensitive = vm["pika:numa-sensitive"].as<std::size_t>();
             if (numa_sensitive > 2)
             {
                 throw pika::detail::command_line_error(
@@ -246,22 +243,18 @@ namespace pika::detail {
 
     ///////////////////////////////////////////////////////////////////////
     std::size_t handle_num_threads(detail::manage_config& cfgmap,
-        pika::util::runtime_configuration const& rtcfg,
-        pika::program_options::variables_map& vm, bool use_process_mask)
+        pika::util::runtime_configuration const& rtcfg, pika::program_options::variables_map& vm,
+        bool use_process_mask)
     {
         // If using the process mask we override "cores" and "all" options but
         // keep explicit numeric values.
-        const std::size_t init_threads =
-            get_number_of_default_threads(use_process_mask);
-        const std::size_t init_cores =
-            get_number_of_default_cores(use_process_mask);
+        const std::size_t init_threads = get_number_of_default_threads(use_process_mask);
+        const std::size_t init_cores = get_number_of_default_cores(use_process_mask);
 
         std::size_t default_threads = init_threads;
 
-        std::string threads_str =
-            cfgmap.get_value<std::string>("pika.os_threads",
-                rtcfg.get_entry(
-                    "pika.os_threads", std::to_string(default_threads)));
+        std::string threads_str = cfgmap.get_value<std::string>(
+            "pika.os_threads", rtcfg.get_entry("pika.os_threads", std::to_string(default_threads)));
 
         if ("cores" == threads_str)
         {
@@ -273,12 +266,10 @@ namespace pika::detail {
         }
         else
         {
-            default_threads =
-                pika::detail::from_string<std::size_t>(threads_str);
+            default_threads = pika::detail::from_string<std::size_t>(threads_str);
         }
 
-        std::size_t threads =
-            cfgmap.get_value<std::size_t>("pika.os_threads", default_threads);
+        std::size_t threads = cfgmap.get_value<std::size_t>("pika.os_threads", default_threads);
 
         if (vm.count("pika:threads"))
         {
@@ -330,15 +321,14 @@ namespace pika::detail {
 #if defined(PIKA_HAVE_MAX_CPU_COUNT)
         if (min_os_threads > PIKA_HAVE_MAX_CPU_COUNT)
         {
-            throw pika::detail::command_line_error(
-                "Requested more than " PIKA_PP_STRINGIZE(
-                    PIKA_HAVE_MAX_CPU_COUNT) " pika.force_min_os_threads "
-                                             "to use for this "
-                                             "application, "
-                                             "use the option "
-                                             "-DPIKA_WITH_MAX_CPU_COUNT=<"
-                                             "N> "
-                                             "when configuring pika.");
+            throw pika::detail::command_line_error("Requested more than " PIKA_PP_STRINGIZE(
+                PIKA_HAVE_MAX_CPU_COUNT) " pika.force_min_os_threads "
+                                         "to use for this "
+                                         "application, "
+                                         "use the option "
+                                         "-DPIKA_WITH_MAX_CPU_COUNT=<"
+                                         "N> "
+                                         "when configuring pika.");
         }
 #endif
 
@@ -348,8 +338,7 @@ namespace pika::detail {
     }
 
     std::size_t handle_num_cores(detail::manage_config& cfgmap,
-        pika::program_options::variables_map& vm, std::size_t num_threads,
-        bool use_process_mask)
+        pika::program_options::variables_map& vm, std::size_t num_threads, bool use_process_mask)
     {
         std::string cores_str = cfgmap.get_value<std::string>("pika.cores", "");
         if ("all" == cores_str)
@@ -358,8 +347,7 @@ namespace pika::detail {
                 std::to_string(get_number_of_default_cores(use_process_mask));
         }
 
-        std::size_t num_cores =
-            cfgmap.get_value<std::size_t>("pika.cores", num_threads);
+        std::size_t num_cores = cfgmap.get_value<std::size_t>("pika.cores", num_threads);
         if (vm.count("pika:cores"))
         {
             cores_str = vm["pika:cores"].as<std::string>();
@@ -402,14 +390,13 @@ namespace pika::detail {
             return;
         }
 
-        if (!(pu_offset_ == std::size_t(-1) || pu_offset_ == std::size_t(0)) ||
-            pu_step_ != 1 || affinity_domain_ != "pu")
+        if (!(pu_offset_ == std::size_t(-1) || pu_offset_ == std::size_t(0)) || pu_step_ != 1 ||
+            affinity_domain_ != "pu")
         {
-            throw pika::detail::command_line_error(
-                "Command line option --pika:bind "
-                "should not be used with --pika:pu-step, "
-                "--pika:pu-offset, "
-                "or --pika:affinity.");
+            throw pika::detail::command_line_error("Command line option --pika:bind "
+                                                   "should not be used with --pika:pu-step, "
+                                                   "--pika:pu-offset, "
+                                                   "or --pika:affinity.");
         }
     }
 
@@ -428,8 +415,7 @@ namespace pika::detail {
     void command_line_handling::check_pu_step() const
     {
         if (pika::threads::detail::hardware_concurrency() > 1 &&
-            (pu_step_ == 0 ||
-                pu_step_ >= pika::threads::detail::hardware_concurrency()))
+            (pu_step_ == 0 || pu_step_ >= pika::threads::detail::hardware_concurrency()))
         {
             throw pika::detail::command_line_error(
                 "Invalid command line option "
@@ -441,15 +427,13 @@ namespace pika::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     bool command_line_handling::handle_arguments(detail::manage_config& cfgmap,
-        pika::program_options::variables_map& vm,
-        std::vector<std::string>& ini_config)
+        pika::program_options::variables_map& vm, std::vector<std::string>& ini_config)
     {
         bool debug_clp = vm.count("pika:debug-clp");
 
         if (vm.count("pika:ini"))
         {
-            std::vector<std::string> cfg =
-                vm["pika:ini"].as<std::vector<std::string>>();
+            std::vector<std::string> cfg = vm["pika:ini"].as<std::vector<std::string>>();
             std::copy(cfg.begin(), cfg.end(), std::back_inserter(ini_config));
             cfgmap.add(cfg);
         }
@@ -462,8 +446,7 @@ namespace pika::detail {
                 (vm.count("pika:ignore-process-mask") > 0));
 #endif
 
-        ini_config.emplace_back(
-            "pika.ignore_process_mask!=" + std::to_string(!use_process_mask_));
+        ini_config.emplace_back("pika.ignore_process_mask!=" + std::to_string(!use_process_mask_));
 
         // handle setting related to schedulers
         queuing_ = detail::handle_queuing(cfgmap, vm, "local-priority-fifo");
@@ -480,8 +463,7 @@ namespace pika::detail {
 #if defined(__APPLE__)
             if (affinity_bind_ != "none")
             {
-                std::cerr << "Warning: thread binding set to \""
-                          << affinity_bind_
+                std::cerr << "Warning: thread binding set to \"" << affinity_bind_
                           << "\" but thread binding is not supported on macOS. "
                              "Ignoring option."
                           << std::endl;
@@ -520,8 +502,7 @@ namespace pika::detail {
             pu_offset_ = std::size_t(-1);
             ini_config.emplace_back("pika.pu_offset=0");
 #else
-            ini_config.emplace_back(
-                "pika.pu_offset=" + std::to_string(pu_offset_));
+            ini_config.emplace_back("pika.pu_offset=" + std::to_string(pu_offset_));
 #endif
         }
         else
@@ -531,15 +512,12 @@ namespace pika::detail {
 
         check_pu_offset();
 
-        numa_sensitive_ = detail::handle_numa_sensitive(
-            cfgmap, vm, affinity_bind_.empty() ? 0 : 1);
-        ini_config.emplace_back(
-            "pika.numa_sensitive=" + std::to_string(numa_sensitive_));
+        numa_sensitive_ = detail::handle_numa_sensitive(cfgmap, vm, affinity_bind_.empty() ? 0 : 1);
+        ini_config.emplace_back("pika.numa_sensitive=" + std::to_string(numa_sensitive_));
 
         // default affinity mode is now 'balanced' (only if no pu-step or
         // pu-offset is given)
-        if (pu_step_ == 1 && pu_offset_ == std::size_t(-1) &&
-            affinity_bind_.empty())
+        if (pu_step_ == 1 && pu_offset_ == std::size_t(-1) && affinity_bind_.empty())
         {
 #if defined(__APPLE__)
             affinity_bind_ = "none";
@@ -552,14 +530,11 @@ namespace pika::detail {
         check_affinity_description();
 
         // handle number of cores and threads
-        num_threads_ =
-            detail::handle_num_threads(cfgmap, rtcfg_, vm, use_process_mask_);
-        num_cores_ = detail::handle_num_cores(
-            cfgmap, vm, num_threads_, use_process_mask_);
+        num_threads_ = detail::handle_num_threads(cfgmap, rtcfg_, vm, use_process_mask_);
+        num_cores_ = detail::handle_num_cores(cfgmap, vm, num_threads_, use_process_mask_);
 
         // Set number of cores and OS threads in configuration.
-        ini_config.emplace_back(
-            "pika.os_threads=" + std::to_string(num_threads_));
+        ini_config.emplace_back("pika.os_threads=" + std::to_string(num_threads_));
         ini_config.emplace_back("pika.cores=" + std::to_string(num_cores_));
 
         if (vm_.count("pika:high-priority-threads"))
@@ -608,18 +583,15 @@ namespace pika::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     void command_line_handling::enable_logging_settings(
-        pika::program_options::variables_map& vm,
-        std::vector<std::string>& ini_config)
+        pika::program_options::variables_map& vm, std::vector<std::string>& ini_config)
     {
 #if defined(PIKA_HAVE_LOGGING)
         if (vm.count("pika:debug-pika-log"))
         {
             ini_config.emplace_back("pika.logging.console.destination=" +
-                detail::convert_to_log_file(
-                    vm["pika:debug-pika-log"].as<std::string>()));
+                detail::convert_to_log_file(vm["pika:debug-pika-log"].as<std::string>()));
             ini_config.emplace_back("pika.logging.destination=" +
-                detail::convert_to_log_file(
-                    vm["pika:debug-pika-log"].as<std::string>()));
+                detail::convert_to_log_file(vm["pika:debug-pika-log"].as<std::string>()));
             ini_config.emplace_back("pika.logging.console.level=5");
             ini_config.emplace_back("pika.logging.level=5");
         }
@@ -627,30 +599,25 @@ namespace pika::detail {
         if (vm.count("pika:debug-timing-log"))
         {
             ini_config.emplace_back("pika.logging.console.timing.destination=" +
-                detail::convert_to_log_file(
-                    vm["pika:debug-timing-log"].as<std::string>()));
+                detail::convert_to_log_file(vm["pika:debug-timing-log"].as<std::string>()));
             ini_config.emplace_back("pika.logging.timing.destination=" +
-                detail::convert_to_log_file(
-                    vm["pika:debug-timing-log"].as<std::string>()));
+                detail::convert_to_log_file(vm["pika:debug-timing-log"].as<std::string>()));
             ini_config.emplace_back("pika.logging.console.timing.level=1");
             ini_config.emplace_back("pika.logging.timing.level=1");
         }
 
         if (vm.count("pika:debug-app-log"))
         {
-            ini_config.emplace_back(
-                "pika.logging.console.application.destination=" +
-                detail::convert_to_log_file(
-                    vm["pika:debug-app-log"].as<std::string>()));
+            ini_config.emplace_back("pika.logging.console.application.destination=" +
+                detail::convert_to_log_file(vm["pika:debug-app-log"].as<std::string>()));
             ini_config.emplace_back("pika.logging.application.destination=" +
-                detail::convert_to_log_file(
-                    vm["pika:debug-app-log"].as<std::string>()));
+                detail::convert_to_log_file(vm["pika:debug-app-log"].as<std::string>()));
             ini_config.emplace_back("pika.logging.console.application.level=5");
             ini_config.emplace_back("pika.logging.application.level=5");
         }
 #else
-        if (vm.count("pika:debug-pika-log") ||
-            vm.count("pika:debug-timing-log") || vm.count("pika:debug-app-log"))
+        if (vm.count("pika:debug-pika-log") || vm.count("pika:debug-timing-log") ||
+            vm.count("pika:debug-app-log"))
         {
             // clang-format off
             throw pika::detail::command_line_error(
@@ -665,8 +632,7 @@ namespace pika::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    void command_line_handling::store_command_line(
-        int argc, const char* const* argv)
+    void command_line_handling::store_command_line(int argc, const char* const* argv)
     {
         // Collect the command line for diagnostic purposes.
         std::string command;
@@ -701,8 +667,7 @@ namespace pika::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     void command_line_handling::store_unregistered_options(
-        std::string const& cmd_name,
-        std::vector<std::string> const& unregistered_options)
+        std::string const& cmd_name, std::vector<std::string> const& unregistered_options)
     {
         std::string unregistered_options_cmd_line;
 
@@ -711,20 +676,16 @@ namespace pika::detail {
             using iterator_type = std::vector<std::string>::const_iterator;
 
             iterator_type end = unregistered_options.end();
-            for (iterator_type it = unregistered_options.begin(); it != end;
-                 ++it)
-                unregistered_options_cmd_line +=
-                    " " + detail::encode_and_enquote(*it);
+            for (iterator_type it = unregistered_options.begin(); it != end; ++it)
+                unregistered_options_cmd_line += " " + detail::encode_and_enquote(*it);
 
             ini_config_.emplace_back("pika.unknown_cmd_line!=" +
-                detail::encode_and_enquote(cmd_name) +
-                unregistered_options_cmd_line);
+                detail::encode_and_enquote(cmd_name) + unregistered_options_cmd_line);
         }
 
         ini_config_.emplace_back("pika.program_name!=" + cmd_name);
-        ini_config_.emplace_back("pika.reconstructed_cmd_line!=" +
-            encode_and_enquote(cmd_name) + " " + reconstruct_command_line(vm_) +
-            " " + unregistered_options_cmd_line);
+        ini_config_.emplace_back("pika.reconstructed_cmd_line!=" + encode_and_enquote(cmd_name) +
+            " " + reconstruct_command_line(vm_) + " " + unregistered_options_cmd_line);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -745,8 +706,8 @@ namespace pika::detail {
         if (vm_.count("pika:attach-debugger"))
         {
             std::string option = vm_["pika:attach-debugger"].as<std::string>();
-            if (option != "off" && option != "startup" &&
-                option != "exception" && option != "test-failure")
+            if (option != "off" && option != "startup" && option != "exception" &&
+                option != "test-failure")
             {
                 // clang-format off
                 std::cerr <<
@@ -813,8 +774,7 @@ namespace pika::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    std::vector<std::string> prepend_options(
-        std::vector<std::string>&& args, std::string&& options)
+    std::vector<std::string> prepend_options(std::vector<std::string>&& args, std::string&& options)
     {
         if (options.empty())
         {
@@ -831,8 +791,7 @@ namespace pika::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    int command_line_handling::call(
-        pika::program_options::options_description const& desc_cmdline,
+    int command_line_handling::call(pika::program_options::options_description const& desc_cmdline,
         int argc, const char* const* argv)
     {
         // set the flag signaling that command line parsing has been done
@@ -848,8 +807,7 @@ namespace pika::detail {
             rtcfg_.parse("<user supplied config>", e, true, false);
 
         // support re-throwing command line exceptions for testing purposes
-        commandline_error_mode error_mode =
-            commandline_error_mode::allow_unregistered;
+        commandline_error_mode error_mode = commandline_error_mode::allow_unregistered;
         if (cfgmap.get_value("pika.commandline.rethrow_errors", 0) != 0)
         {
             error_mode |= commandline_error_mode::rethrow_on_error;
@@ -857,11 +815,9 @@ namespace pika::detail {
 
         // The cfg registry may hold command line options to prepend to the
         // real command line.
-        std::string prepend_command_line =
-            rtcfg_.get_entry("pika.commandline.prepend_options");
+        std::string prepend_command_line = rtcfg_.get_entry("pika.commandline.prepend_options");
 
-        args =
-            prepend_options(PIKA_MOVE(args), PIKA_MOVE(prepend_command_line));
+        args = prepend_options(PIKA_MOVE(args), PIKA_MOVE(prepend_command_line));
 
         // Initial analysis of the command line options. This is
         // preliminary as it will not take into account any aliases as
@@ -872,8 +828,7 @@ namespace pika::detail {
             // creating a separate instance just for the preliminary
             // command line handling.
             pika::program_options::variables_map prevm;
-            if (!parse_commandline(
-                    rtcfg_, desc_cmdline, argv[0], args, prevm, error_mode))
+            if (!parse_commandline(rtcfg_, desc_cmdline, argv[0], args, prevm, error_mode))
             {
                 return -1;
             }
@@ -901,15 +856,14 @@ namespace pika::detail {
             }
 
             // append ini options from command line
-            std::copy(ini_config_.begin(), ini_config_.end(),
-                std::back_inserter(cfg));
+            std::copy(ini_config_.begin(), ini_config_.end(), std::back_inserter(cfg));
 
             // enable logging if invoked requested from command line
             std::vector<std::string> ini_config_logging;
             enable_logging_settings(prevm, ini_config_logging);
 
-            std::copy(ini_config_logging.begin(), ini_config_logging.end(),
-                std::back_inserter(cfg));
+            std::copy(
+                ini_config_logging.begin(), ini_config_logging.end(), std::back_inserter(cfg));
 
             rtcfg_.reconfigure(cfg);
         }
@@ -923,8 +877,8 @@ namespace pika::detail {
         std::vector<std::string> unregistered_options;
 
         if (!parse_commandline(rtcfg_, desc_cmdline, argv[0], args, vm_,
-                error_mode | commandline_error_mode::report_missing_config_file,
-                &help, &unregistered_options))
+                error_mode | commandline_error_mode::report_missing_config_file, &help,
+                &unregistered_options))
         {
             return -1;
         }
@@ -982,21 +936,18 @@ namespace pika::detail {
         {
             bool const command_line_arguments_given =
                 vm_.count("pika:threads") != 0 || vm_.count("pika:cores") != 0;
-            if (num_threads_ == 1 &&
-                get_number_of_default_threads(false) != 1 &&
+            if (num_threads_ == 1 && get_number_of_default_threads(false) != 1 &&
                 !command_line_arguments_given)
             {
-                std::cerr
-                    << "The pika runtime will be started with only one worker "
-                       "thread because the process mask has restricted the "
-                       "available resources to only one thread. If this is "
-                       "unintentional make sure the process mask contains the "
-                       "resources you need or use --pika:ignore-process-mask "
-                       "to use all resources. Use --pika:print-bind to print "
-                       "the thread bindings used by pika.\n";
+                std::cerr << "The pika runtime will be started with only one worker "
+                             "thread because the process mask has restricted the "
+                             "available resources to only one thread. If this is "
+                             "unintentional make sure the process mask contains the "
+                             "resources you need or use --pika:ignore-process-mask "
+                             "to use all resources. Use --pika:print-bind to print "
+                             "the thread bindings used by pika.\n";
             }
-            else if (num_cores_ == 1 &&
-                get_number_of_default_cores(false) != 1 &&
+            else if (num_cores_ == 1 && get_number_of_default_cores(false) != 1 &&
                 !command_line_arguments_given)
             {
                 fmt::print(std::cerr,

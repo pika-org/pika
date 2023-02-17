@@ -235,8 +235,7 @@ void test_callback_deregistration_doesnt_wait_for_others_to_finish_executing()
         cv.notify_all();
         cv.wait(lock, [&] { return release_callback; });
     };
-    pika::stop_callback<decltype(f)> blocking_callback(
-        src.get_token(), std::move(f));
+    pika::stop_callback<decltype(f)> blocking_callback(src.get_token(), std::move(f));
 
     std::optional<pika::stop_callback<decltype(dummy_callback)&>> cb2{
         std::in_place, src.get_token(), dummy_callback};
@@ -405,9 +404,8 @@ void test_cancellation_single_thread_performance()
     auto report = [](const char* label, auto time, std::uint64_t count) {
         auto ms = std::chrono::duration<double, std::milli>(time).count();
         auto ns = std::chrono::duration<double, std::nano>(time).count();
-        std::cout << label << " took " << ms << "ms ("
-                  << (ns / static_cast<double>(count)) << " ns/item)"
-                  << std::endl;
+        std::cout << label << " took " << ms << "ms (" << (ns / static_cast<double>(count))
+                  << " ns/item)" << std::endl;
     };
 
     report("Individual", time1, static_cast<std::uint64_t>(iteration_count));
@@ -438,8 +436,7 @@ int pika_main()
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0, "pika main exited with non-zero status");
 
     return 0;
 }

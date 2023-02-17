@@ -42,8 +42,7 @@ namespace pika {
         PIKA_ITT_SYNC_PREPARE(this);
         std::unique_lock<mutex_type> l(mtx_);
 
-        threads::detail::thread_id_type self_id =
-            threads::detail::get_self_id();
+        threads::detail::thread_id_type self_id = threads::detail::get_self_id();
         if (owner_id_ == self_id)
         {
             PIKA_ITT_SYNC_CANCEL(this);
@@ -81,8 +80,7 @@ namespace pika {
             return false;
         }
 
-        threads::detail::thread_id_type self_id =
-            threads::detail::get_self_id();
+        threads::detail::thread_id_type self_id = threads::detail::get_self_id();
         util::register_lock(this);
         PIKA_ITT_SYNC_ACQUIRED(this);
         owner_id_ = self_id;
@@ -98,8 +96,7 @@ namespace pika {
         util::unregister_lock(this);
         std::unique_lock<mutex_type> l(mtx_);
 
-        threads::detail::thread_id_type self_id =
-            threads::detail::get_self_id();
+        threads::detail::thread_id_type self_id = threads::detail::get_self_id();
         if (PIKA_UNLIKELY(owner_id_ != self_id))
         {
             l.unlock();
@@ -115,8 +112,7 @@ namespace pika {
             util::ignore_while_checking il(&l);
             PIKA_UNUSED(il);
 
-            cond_.notify_one(
-                PIKA_MOVE(l), execution::thread_priority::boost, ec);
+            cond_.notify_one(PIKA_MOVE(l), execution::thread_priority::boost, ec);
         }
     }
 
@@ -128,8 +124,7 @@ namespace pika {
 
     timed_mutex::~timed_mutex() {}
 
-    bool timed_mutex::try_lock_until(
-        pika::chrono::steady_time_point const& abs_time,
+    bool timed_mutex::try_lock_until(pika::chrono::steady_time_point const& abs_time,
         char const* /* description */, error_code& ec)
     {
         PIKA_ASSERT(threads::detail::get_self_ptr() != nullptr);
@@ -137,20 +132,17 @@ namespace pika {
         PIKA_ITT_SYNC_PREPARE(this);
         std::unique_lock<mutex_type> l(mtx_);
 
-        threads::detail::thread_id_type self_id =
-            threads::detail::get_self_id();
+        threads::detail::thread_id_type self_id = threads::detail::get_self_id();
         if (owner_id_ != threads::detail::invalid_thread_id)
         {
-            threads::detail::thread_restart_state const reason =
-                cond_.wait_until(l, abs_time, ec);
+            threads::detail::thread_restart_state const reason = cond_.wait_until(l, abs_time, ec);
             if (ec)
             {
                 PIKA_ITT_SYNC_CANCEL(this);
                 return false;
             }
 
-            if (reason ==
-                threads::detail::thread_restart_state::timeout)    //-V110
+            if (reason == threads::detail::thread_restart_state::timeout)    //-V110
             {
                 PIKA_ITT_SYNC_CANCEL(this);
                 return false;

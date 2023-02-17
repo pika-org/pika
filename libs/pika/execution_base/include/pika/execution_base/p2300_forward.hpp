@@ -8,7 +8,7 @@
 
 #include <pika/config.hpp>
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <stdexec/execution.hpp>
+# include <stdexec/execution.hpp>
 
 namespace pika::execution::experimental {
     using namespace stdexec;

@@ -9,27 +9,27 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <pika/execution_base/p2300_forward.hpp>
+# include <pika/execution_base/p2300_forward.hpp>
 #else
-#include <pika/concepts/concepts.hpp>
-#include <pika/datastructures/member_pack.hpp>
-#include <pika/datastructures/variant.hpp>
-#include <pika/execution/algorithms/detail/helpers.hpp>
-#include <pika/execution_base/operation_state.hpp>
-#include <pika/execution_base/receiver.hpp>
-#include <pika/execution_base/sender.hpp>
-#include <pika/functional/detail/tag_fallback_invoke.hpp>
-#include <pika/functional/invoke_fused.hpp>
-#include <pika/type_support/pack.hpp>
+# include <pika/concepts/concepts.hpp>
+# include <pika/datastructures/member_pack.hpp>
+# include <pika/datastructures/variant.hpp>
+# include <pika/execution/algorithms/detail/helpers.hpp>
+# include <pika/execution_base/operation_state.hpp>
+# include <pika/execution_base/receiver.hpp>
+# include <pika/execution_base/sender.hpp>
+# include <pika/functional/detail/tag_fallback_invoke.hpp>
+# include <pika/functional/invoke_fused.hpp>
+# include <pika/type_support/pack.hpp>
 
-#include <atomic>
-#include <cstddef>
-#include <exception>
-#include <functional>
-#include <memory>
-#include <optional>
-#include <type_traits>
-#include <utility>
+# include <atomic>
+# include <cstddef>
+# include <exception>
+# include <functional>
+# include <memory>
+# include <optional>
+# include <type_traits>
+# include <utility>
 
 namespace pika::when_all_impl {
     // This is a receiver to be connected to the ith predecessor sender
@@ -76,8 +76,8 @@ namespace pika::when_all_impl {
             r.op_state.finish();
         }
 
-        friend void tag_invoke(pika::execution::experimental::set_stopped_t,
-            when_all_receiver_type&& r) noexcept
+        friend void tag_invoke(
+            pika::execution::experimental::set_stopped_t, when_all_receiver_type&& r) noexcept
         {
             r.op_state.set_stopped_error_called = true;
             r.op_state.finish();
@@ -85,10 +85,8 @@ namespace pika::when_all_impl {
 
         template <typename... Ts, std::size_t... Is>
         auto set_value_helper(pika::util::detail::index_pack<Is...>, Ts&&... ts)
-            -> decltype((std::declval<typename OperationState::
-                                 value_types_storage_type>()
-                                .template get<OperationState::i_storage_offset +
-                                    Is>()
+            -> decltype((std::declval<typename OperationState::value_types_storage_type>()
+                                .template get<OperationState::i_storage_offset + Is>()
                                 .emplace(PIKA_FORWARD(Ts, ts)),
                             ...),
                 void())
@@ -96,19 +94,17 @@ namespace pika::when_all_impl {
             // op_state.ts holds values from all predecessor senders. We
             // emplace the values using the offset calculated while
             // constructing the operation state.
-            (op_state.ts.template get<OperationState::i_storage_offset + Is>()
-                    .emplace(PIKA_FORWARD(Ts, ts)),
+            (op_state.ts.template get<OperationState::i_storage_offset + Is>().emplace(
+                 PIKA_FORWARD(Ts, ts)),
                 ...);
         }
 
-        using index_pack_type = typename pika::util::detail::make_index_pack<
-            OperationState::sender_pack_size>::type;
+        using index_pack_type =
+            typename pika::util::detail::make_index_pack<OperationState::sender_pack_size>::type;
 
         template <typename... Ts>
         auto set_value(Ts&&... ts) noexcept
-            -> decltype(set_value_helper(
-                            index_pack_type{}, PIKA_FORWARD(Ts, ts)...),
-                void())
+            -> decltype(set_value_helper(index_pack_type{}, PIKA_FORWARD(Ts, ts)...), void())
         {
             if constexpr (OperationState::sender_pack_size > 0)
             {
@@ -116,8 +112,7 @@ namespace pika::when_all_impl {
                 {
                     try
                     {
-                        set_value_helper(
-                            index_pack_type{}, PIKA_FORWARD(Ts, ts)...);
+                        set_value_helper(index_pack_type{}, PIKA_FORWARD(Ts, ts)...);
                     }
                     catch (...)
                     {
@@ -144,8 +139,7 @@ namespace pika::when_all_impl {
     // unique namespace nothing but when_all_receiver should ever find this
     // overload.
     template <typename Receiver, typename... Ts>
-    auto tag_invoke(pika::execution::experimental::set_value_t, Receiver&& r,
-        Ts&&... ts) noexcept
+    auto tag_invoke(pika::execution::experimental::set_value_t, Receiver&& r, Ts&&... ts) noexcept
         -> decltype(r.set_value(PIKA_FORWARD(Ts, ts)...), void())
     {
         r.set_value(PIKA_FORWARD(Ts, ts)...);
@@ -158,20 +152,17 @@ namespace pika::when_all_impl {
     };
 
     template <typename... Senders>
-    using when_all_sender =
-        typename when_all_sender_impl<Senders...>::when_all_sender_type;
+    using when_all_sender = typename when_all_sender_impl<Senders...>::when_all_sender_type;
 
     template <typename... Senders>
     struct when_all_sender_impl<Senders...>::when_all_sender_type
     {
-        using senders_type =
-            pika::util::detail::member_pack_for<std::decay_t<Senders>...>;
+        using senders_type = pika::util::detail::member_pack_for<std::decay_t<Senders>...>;
         senders_type senders;
 
         template <typename... Senders_>
         explicit constexpr when_all_sender_type(Senders_&&... senders)
-          : senders(
-                std::piecewise_construct, PIKA_FORWARD(Senders_, senders)...)
+          : senders(std::piecewise_construct, PIKA_FORWARD(Senders_, senders)...)
         {
         }
 
@@ -181,39 +172,33 @@ namespace pika::when_all_impl {
             using type = pika::util::detail::transform_t<Tuple, std::decay>;
         };
 
-        template <template <typename...> class Tuple,
-            template <typename...> class Variant>
+        template <template <typename...> class Tuple, template <typename...> class Variant>
         using value_types = pika::util::detail::transform_t<
             pika::util::detail::concat_inner_packs_t<
-                pika::util::detail::concat_t<
-                    typename pika::execution::experimental::sender_traits<
-                        Senders>::template value_types<Tuple, Variant>...>>,
+                pika::util::detail::concat_t<typename pika::execution::experimental::sender_traits<
+                    Senders>::template value_types<Tuple, Variant>...>>,
             value_types_helper>;
 
         template <template <typename...> class Variant>
         using error_types = pika::util::detail::unique_concat_t<
-            pika::util::detail::transform_t<
-                typename pika::execution::experimental::sender_traits<
-                    Senders>::template error_types<Variant>,
+            pika::util::detail::transform_t<typename pika::execution::experimental::sender_traits<
+                                                Senders>::template error_types<Variant>,
                 std::decay>...,
             Variant<std::exception_ptr>>;
 
         static constexpr bool sends_done = false;
 
         static constexpr std::size_t num_predecessors = sizeof...(Senders);
-        static_assert(num_predecessors > 0,
-            "when_all expects at least one predecessor sender");
+        static_assert(num_predecessors > 0, "when_all expects at least one predecessor sender");
 
         template <std::size_t I>
         static constexpr std::size_t sender_pack_size_at_index =
             pika::execution::experimental::detail::single_variant_t<
                 typename pika::execution::experimental::sender_traits<
                     pika::util::detail::at_index_t<I, Senders...>>::
-                    template value_types<pika::util::detail::pack,
-                        pika::util::detail::pack>>::size;
+                    template value_types<pika::util::detail::pack, pika::util::detail::pack>>::size;
 
-        template <typename Receiver, typename SendersPack,
-            std::size_t I = num_predecessors - 1>
+        template <typename Receiver, typename SendersPack, std::size_t I = num_predecessors - 1>
         struct operation_state;
 
         template <typename Receiver, typename SendersPack>
@@ -224,21 +209,19 @@ namespace pika::when_all_impl {
             // The offset at which we start to emplace values sent by the
             // ith predecessor sender.
             static constexpr std::size_t i_storage_offset = 0;
-#if !defined(PIKA_CUDA_VERSION)
+# if !defined(PIKA_CUDA_VERSION)
             // The number of values sent by the ith predecessor sender.
-            static constexpr std::size_t sender_pack_size =
-                sender_pack_size_at_index<i>;
-#else
+            static constexpr std::size_t sender_pack_size = sender_pack_size_at_index<i>;
+# else
             // nvcc does not like using the helper sender_pack_size_at_index
             // here and complains about incmplete types. Lifting the helper
             // explicitly in here works.
             static constexpr std::size_t sender_pack_size =
-                pika::execution::experimental::detail::single_variant_t<
-                    typename pika::execution::experimental::sender_traits<
-                        pika::util::detail::at_index_t<i, Senders...>>::
-                        template value_types<pika::util::detail::pack,
+                pika::execution::experimental::detail::single_variant_t<typename pika::execution::
+                        experimental::sender_traits<pika::util::detail::at_index_t<i,
+                            Senders...>>::template value_types<pika::util::detail::pack,
                             pika::util::detail::pack>>::size;
-#endif
+# endif
 
             // Number of predecessor senders that have not yet called any of
             // the set signals.
@@ -249,12 +232,12 @@ namespace pika::when_all_impl {
             {
                 using type = std::optional<std::decay_t<T>>;
             };
-            using value_types_storage_type = pika::util::detail::change_pack_t<
-                pika::util::detail::member_pack_for,
-                pika::util::detail::transform_t<
-                    pika::util::detail::concat_pack_of_packs_t<value_types<
-                        pika::util::detail::pack, pika::util::detail::pack>>,
-                    add_optional>>;
+            using value_types_storage_type =
+                pika::util::detail::change_pack_t<pika::util::detail::member_pack_for,
+                    pika::util::detail::transform_t<
+                        pika::util::detail::concat_pack_of_packs_t<
+                            value_types<pika::util::detail::pack, pika::util::detail::pack>>,
+                        add_optional>>;
             // Values sent by all predecessor senders are stored here in the
             // base-case operation state. They are stored in a
             // member_pack<optional<T0>, ..., optional<Tn>>, where T0, ...,
@@ -277,11 +260,11 @@ namespace pika::when_all_impl {
             operation_state(Receiver_&& receiver, Senders_&& senders)
               : receiver(PIKA_FORWARD(Receiver_, receiver))
               , op_state(pika::execution::experimental::connect(
-#if defined(PIKA_CUDA_VERSION)
+# if defined(PIKA_CUDA_VERSION)
                     std::forward<Senders_>(senders).template get<i>(),
-#else
+# else
                     PIKA_FORWARD(Senders_, senders).template get<i>(),
-#endif
+# endif
                     when_all_receiver<operation_state>(*this)))
             {
             }
@@ -297,11 +280,11 @@ namespace pika::when_all_impl {
             }
 
             template <std::size_t... Is, typename... Ts>
-            void set_value_helper(pika::util::detail::member_pack<
-                pika::util::detail::index_pack<Is...>, Ts...>& ts)
+            void set_value_helper(
+                pika::util::detail::member_pack<pika::util::detail::index_pack<Is...>, Ts...>& ts)
             {
-                pika::execution::experimental::set_value(PIKA_MOVE(receiver),
-                    PIKA_MOVE(*(ts.template get<Is>()))...);
+                pika::execution::experimental::set_value(
+                    PIKA_MOVE(receiver), PIKA_MOVE(*(ts.template get<Is>()))...);
             }
 
             void finish() noexcept
@@ -317,15 +300,13 @@ namespace pika::when_all_impl {
                         pika::detail::visit(
                             [this](auto&& error) {
                                 pika::execution::experimental::set_error(
-                                    PIKA_MOVE(receiver),
-                                    PIKA_FORWARD(decltype(error), error));
+                                    PIKA_MOVE(receiver), PIKA_FORWARD(decltype(error), error));
                             },
                             PIKA_MOVE(error.value()));
                     }
                     else
                     {
-                        pika::execution::experimental::set_stopped(
-                            PIKA_MOVE(receiver));
+                        pika::execution::experimental::set_stopped(PIKA_MOVE(receiver));
                     }
                 }
             }
@@ -339,8 +320,7 @@ namespace pika::when_all_impl {
             // The index of the sender that this operation state handles.
             static constexpr std::size_t i = I;
             // The number of values sent by the ith predecessor sender.
-            static constexpr std::size_t sender_pack_size =
-                sender_pack_size_at_index<i>;
+            static constexpr std::size_t sender_pack_size = sender_pack_size_at_index<i>;
             // The offset at which we start to emplace values sent by the
             // ith predecessor sender.
             static constexpr std::size_t i_storage_offset =
@@ -355,14 +335,13 @@ namespace pika::when_all_impl {
 
             template <typename Receiver_, typename SendersPack_>
             operation_state(Receiver_&& receiver, SendersPack_&& senders)
-              : base_type(PIKA_FORWARD(Receiver_, receiver),
-                    PIKA_FORWARD(SendersPack, senders))
+              : base_type(PIKA_FORWARD(Receiver_, receiver), PIKA_FORWARD(SendersPack, senders))
               , op_state(pika::execution::experimental::connect(
-#if defined(PIKA_CUDA_VERSION)
+# if defined(PIKA_CUDA_VERSION)
                     std::forward<SendersPack_>(senders).template get<i>(),
-#else
+# else
                     PIKA_FORWARD(SendersPack_, senders).template get<i>(),
-#endif
+# endif
                     when_all_receiver<operation_state>(*this)))
             {
             }
@@ -381,18 +360,16 @@ namespace pika::when_all_impl {
 
         template <typename Receiver, typename SendersPack>
         friend void tag_invoke(pika::execution::experimental::start_t,
-            operation_state<Receiver, SendersPack, num_predecessors - 1>&
-                os) noexcept
+            operation_state<Receiver, SendersPack, num_predecessors - 1>& os) noexcept
         {
             os.start();
         }
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t,
-            when_all_sender_type&& s, Receiver&& receiver)
+        friend auto tag_invoke(
+            pika::execution::experimental::connect_t, when_all_sender_type&& s, Receiver&& receiver)
         {
-            return operation_state<Receiver, senders_type&&,
-                num_predecessors - 1>(
+            return operation_state<Receiver, senders_type&&, num_predecessors - 1>(
                 PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.senders));
         }
 
@@ -400,16 +377,14 @@ namespace pika::when_all_impl {
         friend auto tag_invoke(pika::execution::experimental::connect_t,
             when_all_sender_type const& s, Receiver&& receiver)
         {
-            return operation_state<Receiver, senders_type&,
-                num_predecessors - 1>(
+            return operation_state<Receiver, senders_type&, num_predecessors - 1>(
                 PIKA_FORWARD(Receiver, receiver), s.senders);
         }
     };
 }    // namespace pika::when_all_impl
 
 namespace pika::execution::experimental {
-    inline constexpr struct when_all_t final
-      : pika::functional::detail::tag_fallback<when_all_t>
+    inline constexpr struct when_all_t final : pika::functional::detail::tag_fallback<when_all_t>
     {
     private:
         // clang-format off
@@ -418,8 +393,7 @@ namespace pika::execution::experimental {
                 pika::util::detail::all_of_v<is_sender<Senders>...>
             )>
         // clang-format on
-        friend constexpr PIKA_FORCEINLINE auto
-        tag_fallback_invoke(when_all_t, Senders&&... senders)
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(when_all_t, Senders&&... senders)
         {
             return pika::when_all_impl::when_all_sender<Senders...>{
                 PIKA_FORWARD(Senders, senders)...};

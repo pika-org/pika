@@ -7,7 +7,7 @@
 #include <pika/assert.hpp>
 #include <pika/execution_base/agent_ref.hpp>
 #ifdef PIKA_HAVE_VERIFY_LOCKS
-#include <pika/lock_registration/detail/register_locks.hpp>
+# include <pika/lock_registration/detail/register_locks.hpp>
 #endif
 #include <pika/execution_base/this_thread.hpp>
 
@@ -60,15 +60,13 @@ namespace pika::execution::detail {
         impl_->abort(desc);
     }
 
-    void agent_ref::sleep_for(
-        pika::chrono::steady_duration const& sleep_duration, const char* desc)
+    void agent_ref::sleep_for(pika::chrono::steady_duration const& sleep_duration, const char* desc)
     {
         PIKA_ASSERT(*this == pika::execution::this_thread::detail::agent());
         impl_->sleep_for(sleep_duration, desc);
     }
 
-    void agent_ref::sleep_until(
-        pika::chrono::steady_time_point const& sleep_time, const char* desc)
+    void agent_ref::sleep_until(pika::chrono::steady_time_point const& sleep_time, const char* desc)
     {
         PIKA_ASSERT(*this == pika::execution::this_thread::detail::agent());
         impl_->sleep_until(sleep_time, desc);

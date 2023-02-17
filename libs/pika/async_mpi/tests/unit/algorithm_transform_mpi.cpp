@@ -27,8 +27,7 @@ template <typename T>
 auto tag_invoke(mpi::transform_mpi_t, custom_type<T>& c)
 {
     c.tag_invoke_overload_called = true;
-    return mpi::transform_mpi(
-        ex::just(&c.x, 1, MPI_INT, 0, MPI_COMM_WORLD), MPI_Ibcast);
+    return mpi::transform_mpi(ex::just(&c.x, 1, MPI_INT, 0, MPI_COMM_WORLD), MPI_Ibcast);
 }
 
 int pika_main()
@@ -55,8 +54,7 @@ int pika_main()
                 {
                     data = 42;
                 }
-                auto s = mpi::transform_mpi(
-                    ex::just(&data, count, datatype, 0, comm), MPI_Ibcast);
+                auto s = mpi::transform_mpi(ex::just(&data, count, datatype, 0, comm), MPI_Ibcast);
                 auto result = tt::sync_wait(PIKA_MOVE(s));
                 if (rank != 0)
                 {
@@ -75,12 +73,10 @@ int pika_main()
                 {
                     data = 42;
                 }
-                auto s = mpi::transform_mpi(
-                    ex::just(&data, count, datatype, 0, comm),
-                    [](int* data, int count, MPI_Datatype datatype, int i,
-                        MPI_Comm comm, MPI_Request* request) {
-                        return MPI_Ibcast(
-                            data, count, datatype, i, comm, request);
+                auto s = mpi::transform_mpi(ex::just(&data, count, datatype, 0, comm),
+                    [](int* data, int count, MPI_Datatype datatype, int i, MPI_Comm comm,
+                        MPI_Request* request) {
+                        return MPI_Ibcast(data, count, datatype, i, comm, request);
                     });
                 auto result = tt::sync_wait(PIKA_MOVE(s));
                 if (rank != 0)
@@ -100,10 +96,9 @@ int pika_main()
                 {
                     data = 42;
                 }
-                auto s = mpi::transform_mpi(
-                    ex::just(&data, count, datatype, 0, comm),
-                    [](int* data, int count, MPI_Datatype datatype, int i,
-                        MPI_Comm comm, MPI_Request* request) {
+                auto s = mpi::transform_mpi(ex::just(&data, count, datatype, 0, comm),
+                    [](int* data, int count, MPI_Datatype datatype, int i, MPI_Comm comm,
+                        MPI_Request* request) {
                         MPI_Ibcast(data, count, datatype, i, comm, request);
                     });
                 tt::sync_wait(PIKA_MOVE(s));
@@ -121,8 +116,8 @@ int pika_main()
                 {
                     data = 42;
                 }
-                auto s = mpi::transform_mpi(const_reference_sender<int>{count},
-                    [&](int& count, MPI_Request* request) {
+                auto s = mpi::transform_mpi(
+                    const_reference_sender<int>{count}, [&](int& count, MPI_Request* request) {
                         MPI_Ibcast(&data, count, datatype, 0, comm, request);
                     });
                 tt::sync_wait(PIKA_MOVE(s));
@@ -157,9 +152,8 @@ int pika_main()
                 {
                     data = 42;
                 }
-                auto result =
-                    tt::sync_wait(ex::just(&data, count, datatype, 0, comm) |
-                        mpi::transform_mpi(MPI_Ibcast));
+                auto result = tt::sync_wait(
+                    ex::just(&data, count, datatype, 0, comm) | mpi::transform_mpi(MPI_Ibcast));
                 if (rank != 0)
                 {
                     PIKA_TEST_EQ(data, 42);
@@ -177,8 +171,7 @@ int pika_main()
                 try
                 {
                     tt::sync_wait(mpi::transform_mpi(
-                        error_sender<int*, int, MPI_Datatype, int, MPI_Comm>{},
-                        MPI_Ibcast));
+                        error_sender<int*, int, MPI_Datatype, int, MPI_Comm>{}, MPI_Ibcast));
                     PIKA_TEST(false);
                 }
                 catch (std::runtime_error const& e)
@@ -194,9 +187,8 @@ int pika_main()
                 bool exception_thrown = false;
                 try
                 {
-                    tt::sync_wait(
-                        mpi::transform_mpi(const_reference_error_sender{},
-                            [](MPI_Request*) { PIKA_TEST(false); }));
+                    tt::sync_wait(mpi::transform_mpi(
+                        const_reference_error_sender{}, [](MPI_Request*) { PIKA_TEST(false); }));
                 }
                 catch (std::runtime_error const& e)
                 {
@@ -210,10 +202,9 @@ int pika_main()
                 // Exception in the lambda
                 bool exception_thrown = false;
                 int data = 0, count = 1;
-                auto s = mpi::transform_mpi(
-                    ex::just(&data, count, datatype, 0, comm),
-                    [](int* data, int count, MPI_Datatype datatype, int i,
-                        MPI_Comm comm, MPI_Request* request) {
+                auto s = mpi::transform_mpi(ex::just(&data, count, datatype, 0, comm),
+                    [](int* data, int count, MPI_Datatype datatype, int i, MPI_Comm comm,
+                        MPI_Request* request) {
                         MPI_Ibcast(data, count, datatype, i, comm, request);
                         throw std::runtime_error("error in lambda");
                     });
@@ -223,8 +214,7 @@ int pika_main()
                 }
                 catch (std::runtime_error const& e)
                 {
-                    PIKA_TEST_EQ(
-                        std::string(e.what()), std::string("error in lambda"));
+                    PIKA_TEST_EQ(std::string(e.what()), std::string("error in lambda"));
                     exception_thrown = true;
                 }
                 PIKA_TEST(exception_thrown);
@@ -240,8 +230,7 @@ int pika_main()
                 try
                 {
                     tt::sync_wait(mpi::transform_mpi(
-                        ex::just(data, count, MPI_DATATYPE_NULL, -1, comm),
-                        MPI_Ibcast));
+                        ex::just(data, count, MPI_DATATYPE_NULL, -1, comm), MPI_Ibcast));
                     PIKA_TEST(false);
                 }
                 catch (pika::exception const& e)
@@ -253,11 +242,11 @@ int pika_main()
                     // hope that for the rest it's enough to check that a
                     // pika::exception was thrown with invalid_status.
 #if defined(MPICH)
-                    PIKA_TEST(std::string(e.what()).find(std::string(
-                                  "Invalid datatype")) != std::string::npos);
+                    PIKA_TEST(std::string(e.what()).find(std::string("Invalid datatype")) !=
+                        std::string::npos);
 #elif defined(OPEN_MPI)
-                    PIKA_TEST(std::string(e.what()).find(std::string(
-                                  "MPI_ERR_TYPE")) != std::string::npos);
+                    PIKA_TEST(std::string(e.what()).find(std::string("MPI_ERR_TYPE")) !=
+                        std::string::npos);
 #endif
                     exception_thrown = true;
                 }
@@ -276,8 +265,7 @@ int pika_main()
                 try
                 {
                     tt::sync_wait(mpi::transform_mpi(
-                        ex::just(data, count, MPI_DATATYPE_NULL, -1, comm),
-                        MPI_Ibcast));
+                        ex::just(data, count, MPI_DATATYPE_NULL, -1, comm), MPI_Ibcast));
                     PIKA_TEST(false);
                 }
                 catch (std::runtime_error const&)
@@ -290,8 +278,7 @@ int pika_main()
         }
     }
 
-    test_adl_isolation(
-        mpi::transform_mpi(my_namespace::my_sender{}, [](MPI_Request) {}));
+    test_adl_isolation(mpi::transform_mpi(my_namespace::my_sender{}, [](MPI_Request) {}));
 
     return pika::finalize();
 }

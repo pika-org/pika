@@ -31,8 +31,7 @@ void suspend_test(barrier<>& b, std::size_t iterations)
     {
         // Enter the 'pending' state and get rescheduled.
         pika::this_thread::suspend(
-            pika::threads::detail::thread_schedule_state::pending,
-            "suspend_test");
+            pika::threads::detail::thread_schedule_state::pending, "suspend_test");
     }
 
     // Wait for all pika threads to enter the barrier.
@@ -60,8 +59,7 @@ int pika_main(variables_map& vm)
         {
             pika::threads::detail::thread_init_data data(
                 pika::threads::detail::make_thread_function_nullary(
-                    pika::util::detail::bind(
-                        &suspend_test, std::ref(b), iterations)),
+                    pika::util::detail::bind(&suspend_test, std::ref(b), iterations)),
                 "suspend_test");
             register_work(data);
         }
@@ -77,13 +75,10 @@ int pika_main(variables_map& vm)
 int main(int argc, char* argv[])
 {
     // Configure application-specific options
-    options_description desc_commandline(
-        "Usage: " PIKA_APPLICATION_STRING " [options]");
+    options_description desc_commandline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
-    desc_commandline.add_options()("pxthreads,T",
-        value<std::size_t>()->default_value(0x100),
-        "the number of PX threads to invoke")("iterations",
-        value<std::size_t>()->default_value(64),
+    desc_commandline.add_options()("pxthreads,T", value<std::size_t>()->default_value(0x100),
+        "the number of PX threads to invoke")("iterations", value<std::size_t>()->default_value(64),
         "the number of iterations to execute in each thread");
 
     // We force this test to use several threads by default.
@@ -94,7 +89,7 @@ int main(int argc, char* argv[])
     init_args.desc_cmdline = desc_commandline;
     init_args.cfg = cfg;
 
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(
+        pika::init(pika_main, argc, argv, init_args), 0, "pika main exited with non-zero status");
     return 0;
 }

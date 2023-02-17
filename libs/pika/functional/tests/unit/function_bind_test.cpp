@@ -30,10 +30,8 @@ int main(int, char*[])
 
     pika::util::detail::function<unsigned(bool, double)> f1 =
         pika::util::detail::bind(func_impl, 15, _1, _2);
-    pika::util::detail::function<unsigned(double)> f2 =
-        pika::util::detail::bind(f1, false, _1);
-    pika::util::detail::function<unsigned()> f3 =
-        pika::util::detail::bind(f2, 4.0);
+    pika::util::detail::function<unsigned(double)> f2 = pika::util::detail::bind(f1, false, _1);
+    pika::util::detail::function<unsigned()> f3 = pika::util::detail::bind(f2, 4.0);
 
     PIKA_TEST_EQ(f3(), 120u);
 

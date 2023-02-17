@@ -63,8 +63,7 @@ int pika_main(variables_map& vm)
         // Create the threads which will wait on the event
         for (std::size_t i = 0; i < pxthreads; ++i)
         {
-            futs.push_back(
-                pika::async(&local_event_test, std::ref(e), std::ref(c)));
+            futs.push_back(pika::async(&local_event_test, std::ref(e), std::ref(c)));
         }
 
         // Release all the threads.
@@ -87,13 +86,10 @@ int pika_main(variables_map& vm)
 int main(int argc, char* argv[])
 {
     // Configure application-specific options
-    options_description desc_commandline(
-        "Usage: " PIKA_APPLICATION_STRING " [options]");
+    options_description desc_commandline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
-    desc_commandline.add_options()("pxthreads,T",
-        value<std::size_t>()->default_value(64),
-        "the number of PX threads to invoke")("iterations",
-        value<std::size_t>()->default_value(64),
+    desc_commandline.add_options()("pxthreads,T", value<std::size_t>()->default_value(64),
+        "the number of PX threads to invoke")("iterations", value<std::size_t>()->default_value(64),
         "the number of times to repeat the test");
 
     // We force this test to use several threads by default.
@@ -104,7 +100,7 @@ int main(int argc, char* argv[])
     init_args.desc_cmdline = desc_commandline;
     init_args.cfg = cfg;
 
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(
+        pika::init(pika_main, argc, argv, init_args), 0, "pika main exited with non-zero status");
     return 0;
 }

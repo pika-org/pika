@@ -20,13 +20,12 @@
 #if defined(PIKA_HAVE_JEMALLOC_PREFIX)
 // this is currently used only for jemalloc and if a special API prefix is
 // used for its APIs
-#include <jemalloc/jemalloc.h>
+# include <jemalloc/jemalloc.h>
 
 // NOLINTNEXTLINE(bugprone-reserved-identifier)
 inline void* __aligned_alloc(std::size_t alignment, std::size_t size) noexcept
 {
-    return PIKA_PP_CAT(PIKA_HAVE_JEMALLOC_PREFIX, aligned_alloc)(
-        alignment, size);
+    return PIKA_PP_CAT(PIKA_HAVE_JEMALLOC_PREFIX, aligned_alloc)(alignment, size);
 }
 
 // NOLINTNEXTLINE(bugprone-reserved-identifier)
@@ -37,7 +36,7 @@ inline void __aligned_free(void* p) noexcept
 
 #elif defined(PIKA_HAVE_CXX17_STD_ALIGNED_ALLOC)
 
-#include <cstdlib>
+# include <cstdlib>
 
 // NOLINTNEXTLINE(bugprone-reserved-identifier)
 inline void* __aligned_alloc(std::size_t alignment, std::size_t size) noexcept
@@ -53,7 +52,7 @@ inline void __aligned_free(void* p) noexcept
 
 #elif defined(PIKA_HAVE_C11_ALIGNED_ALLOC)
 
-#include <stdlib.h>
+# include <stdlib.h>
 
 // NOLINTNEXTLINE(bugprone-reserved-identifier)
 inline void* __aligned_alloc(std::size_t alignment, std::size_t size) noexcept
@@ -69,7 +68,7 @@ inline void __aligned_free(void* p) noexcept
 
 #else    // !PIKA_HAVE_CXX17_STD_ALIGNED_ALLOC && !PIKA_HAVE_C11_ALIGNED_ALLOC
 
-#include <cstdlib>
+# include <cstdlib>
 
 // provide our own (simple) implementation of aligned_alloc
 // NOLINTNEXTLINE(bugprone-reserved-identifier)
@@ -87,8 +86,7 @@ inline void* __aligned_alloc(std::size_t alignment, std::size_t size) noexcept
         return nullptr;
     }
 
-    void* aligned_mem =
-        static_cast<void*>(static_cast<char*>(allocated_mem) + sizeof(void*));
+    void* aligned_mem = static_cast<void*>(static_cast<char*>(allocated_mem) + sizeof(void*));
 
     std::align(alignment, size, aligned_mem, space);
     *(static_cast<void**>(aligned_mem) - 1) = allocated_mem;
@@ -156,8 +154,7 @@ namespace pika::detail {
                 throw std::bad_array_new_length();
             }
 
-            pointer p = reinterpret_cast<pointer>(
-                __aligned_alloc(alignof(T), n * sizeof(T)));
+            pointer p = reinterpret_cast<pointer>(__aligned_alloc(alignof(T), n * sizeof(T)));
 
             if (p == nullptr)
             {
@@ -191,15 +188,13 @@ namespace pika::detail {
     };
 
     template <typename T>
-    constexpr bool
-    operator==(aligned_allocator<T> const&, aligned_allocator<T> const&)
+    constexpr bool operator==(aligned_allocator<T> const&, aligned_allocator<T> const&)
     {
         return true;
     }
 
     template <typename T>
-    constexpr bool
-    operator!=(aligned_allocator<T> const&, aligned_allocator<T> const&)
+    constexpr bool operator!=(aligned_allocator<T> const&, aligned_allocator<T> const&)
     {
         return false;
     }

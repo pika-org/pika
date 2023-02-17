@@ -62,8 +62,7 @@ namespace pika::program_options::detail {
             found_eof();
         }
         common_config_file_iterator(
-            const std::set<std::string>& allowed_options,
-            bool allow_unregistered = false);
+            const std::set<std::string>& allowed_options, bool allow_unregistered = false);
 
         virtual ~common_config_file_iterator() = default;
 
@@ -117,8 +116,7 @@ namespace pika::program_options::detail {
         /** Creates a config file parser for the specified stream.
         */
         basic_config_file_iterator(std::basic_istream<Char>& is,
-            const std::set<std::string>& allowed_options,
-            bool allow_unregistered = false);
+            const std::set<std::string>& allowed_options, bool allow_unregistered = false);
 
     private:    // base overrides
         bool getline(std::string&) override;
@@ -136,8 +134,7 @@ namespace pika::program_options::detail {
     };
 
     template <class Char>
-    basic_config_file_iterator<Char>::basic_config_file_iterator(
-        std::basic_istream<Char>& is,
+    basic_config_file_iterator<Char>::basic_config_file_iterator(std::basic_istream<Char>& is,
         const std::set<std::string>& allowed_options, bool allow_unregistered)
       : common_config_file_iterator(allowed_options, allow_unregistered)
     {

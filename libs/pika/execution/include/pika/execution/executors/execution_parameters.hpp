@@ -39,12 +39,10 @@ namespace pika::parallel::execution {
         ///////////////////////////////////////////////////////////////////////
         template <typename Property, template <typename> class CheckForProperty>
         struct with_property_t final
-          : pika::functional::detail::tag_fallback<
-                with_property_t<Property, CheckForProperty>>
+          : pika::functional::detail::tag_fallback<with_property_t<Property, CheckForProperty>>
         {
         private:
-            using derived_propery_t =
-                with_property_t<Property, CheckForProperty>;
+            using derived_propery_t = with_property_t<Property, CheckForProperty>;
 
             template <typename T>
             using check_for_property = CheckForProperty<std::decay_t<T>>;
@@ -56,9 +54,8 @@ namespace pika::parallel::execution {
                     !check_for_property<Parameters>::value
                 )>
             // clang-format on
-            friend PIKA_FORCEINLINE decltype(auto)
-            tag_fallback_invoke(derived_propery_t, Executor&& /*exec*/,
-                Parameters&& /*params*/, Property prop)
+            friend PIKA_FORCEINLINE decltype(auto) tag_fallback_invoke(
+                derived_propery_t, Executor&& /*exec*/, Parameters&& /*params*/, Property prop)
             {
                 return std::make_pair(prop, prop);
             }
@@ -72,13 +69,11 @@ namespace pika::parallel::execution {
                     check_for_property<Parameters>::value
                 )>
             // clang-format on
-            friend PIKA_FORCEINLINE decltype(auto)
-            tag_fallback_invoke(derived_propery_t, Executor&& exec,
-                Parameters&& params, Property /*prop*/)
+            friend PIKA_FORCEINLINE decltype(auto) tag_fallback_invoke(
+                derived_propery_t, Executor&& exec, Parameters&& params, Property /*prop*/)
             {
                 return std::pair<Parameters&&, Executor&&>(
-                    PIKA_FORWARD(Parameters, params),
-                    PIKA_FORWARD(Executor, exec));
+                    PIKA_FORWARD(Parameters, params), PIKA_FORWARD(Executor, exec));
             }
 
             ///////////////////////////////////////////////////////////////////
@@ -90,12 +85,11 @@ namespace pika::parallel::execution {
                     check_for_property<Executor>::value
                 )>
             // clang-format on
-            friend PIKA_FORCEINLINE decltype(auto) tag_invoke(derived_propery_t,
-                Executor&& exec, Parameters&& params, Property /*prop*/)
+            friend PIKA_FORCEINLINE decltype(auto)
+            tag_invoke(derived_propery_t, Executor&& exec, Parameters&& params, Property /*prop*/)
             {
                 return std::pair<Executor&&, Parameters&&>(
-                    PIKA_FORWARD(Executor, exec),
-                    PIKA_FORWARD(Parameters, params));
+                    PIKA_FORWARD(Executor, exec), PIKA_FORWARD(Parameters, params));
             }
         };
 
@@ -109,8 +103,8 @@ namespace pika::parallel::execution {
         {
             // default implementation
             template <typename Target, typename F>
-            PIKA_FORCEINLINE static std::size_t get_chunk_size(Target,
-                F&& /*f*/, std::size_t /*cores*/, std::size_t /*num_tasks*/)
+            PIKA_FORCEINLINE static std::size_t
+            get_chunk_size(Target, F&& /*f*/, std::size_t /*cores*/, std::size_t /*num_tasks*/)
             {
                 // return zero for the chunk-size which will tell the
                 // implementation to calculate the chunk size either based
@@ -134,27 +128,23 @@ namespace pika::parallel::execution {
             std::enable_if_t<pika::traits::is_executor_any<Executor_>::value>>
         {
             template <typename Executor, typename F>
-            PIKA_FORCEINLINE static std::size_t
-            call(Parameters& params, Executor&& exec, F&& f, std::size_t cores,
-                std::size_t num_tasks)
+            PIKA_FORCEINLINE static std::size_t call(Parameters& params, Executor&& exec, F&& f,
+                std::size_t cores, std::size_t num_tasks)
             {
-                auto withprop =
-                    with_get_chunk_size(PIKA_FORWARD(Executor, exec), params,
-                        get_chunk_size_property{});
+                auto withprop = with_get_chunk_size(
+                    PIKA_FORWARD(Executor, exec), params, get_chunk_size_property{});
 
                 return withprop.first.get_chunk_size(
-                    PIKA_FORWARD(decltype(withprop.second), withprop.second),
-                    PIKA_FORWARD(F, f), cores, num_tasks);
+                    PIKA_FORWARD(decltype(withprop.second), withprop.second), PIKA_FORWARD(F, f),
+                    cores, num_tasks);
             }
 
             template <typename AnyParameters, typename Executor, typename F>
-            PIKA_FORCEINLINE static std::size_t
-            call(AnyParameters params, Executor&& exec, F&& f,
+            PIKA_FORCEINLINE static std::size_t call(AnyParameters params, Executor&& exec, F&& f,
                 std::size_t cores, std::size_t num_tasks)
             {
-                return call(static_cast<Parameters&>(params),
-                    PIKA_FORWARD(Executor, exec), PIKA_FORWARD(F, f), cores,
-                    num_tasks);
+                return call(static_cast<Parameters&>(params), PIKA_FORWARD(Executor, exec),
+                    PIKA_FORWARD(F, f), cores, num_tasks);
             }
         };
 
@@ -184,11 +174,9 @@ namespace pika::parallel::execution {
         // Generate a type that is guaranteed to support
         // maximal_number_of_chunks
         using with_maximal_number_of_chunks_t =
-            with_property_t<maximal_number_of_chunks_property,
-                has_maximal_number_of_chunks_t>;
+            with_property_t<maximal_number_of_chunks_property, has_maximal_number_of_chunks_t>;
 
-        inline constexpr with_maximal_number_of_chunks_t
-            with_maximal_number_of_chunks{};
+        inline constexpr with_maximal_number_of_chunks_t with_maximal_number_of_chunks{};
 
         ///////////////////////////////////////////////////////////////////////
         // customization point for interface maximal_number_of_chunks()
@@ -197,24 +185,22 @@ namespace pika::parallel::execution {
             std::enable_if_t<pika::traits::is_executor_any<Executor_>::value>>
         {
             template <typename Executor>
-            PIKA_FORCEINLINE static std::size_t call(Parameters& params,
-                Executor&& exec, std::size_t cores, std::size_t num_tasks)
+            PIKA_FORCEINLINE static std::size_t
+            call(Parameters& params, Executor&& exec, std::size_t cores, std::size_t num_tasks)
             {
-                auto withprop =
-                    with_maximal_number_of_chunks(PIKA_FORWARD(Executor, exec),
-                        params, maximal_number_of_chunks_property{});
+                auto withprop = with_maximal_number_of_chunks(
+                    PIKA_FORWARD(Executor, exec), params, maximal_number_of_chunks_property{});
 
                 return withprop.first.maximal_number_of_chunks(
-                    PIKA_FORWARD(decltype(withprop.second), withprop.second),
-                    cores, num_tasks);
+                    PIKA_FORWARD(decltype(withprop.second), withprop.second), cores, num_tasks);
             }
 
             template <typename AnyParameters, typename Executor>
-            PIKA_FORCEINLINE static std::size_t call(AnyParameters params,
-                Executor&& exec, std::size_t cores, std::size_t num_tasks)
+            PIKA_FORCEINLINE static std::size_t
+            call(AnyParameters params, Executor&& exec, std::size_t cores, std::size_t num_tasks)
             {
-                return call(static_cast<Parameters&>(params),
-                    PIKA_FORWARD(Executor, exec), cores, num_tasks);
+                return call(static_cast<Parameters&>(params), PIKA_FORWARD(Executor, exec), cores,
+                    num_tasks);
             }
         };
 
@@ -238,11 +224,9 @@ namespace pika::parallel::execution {
         // Generate a type that is guaranteed to support
         // reset_thread_distribution
         using with_reset_thread_distribution_t =
-            with_property_t<reset_thread_distribution_property,
-                has_reset_thread_distribution_t>;
+            with_property_t<reset_thread_distribution_property, has_reset_thread_distribution_t>;
 
-        inline constexpr with_reset_thread_distribution_t
-            with_reset_thread_distribution{};
+        inline constexpr with_reset_thread_distribution_t with_reset_thread_distribution{};
 
         ///////////////////////////////////////////////////////////////////////
         // customization point for interface reset_thread_distribution()
@@ -251,23 +235,19 @@ namespace pika::parallel::execution {
             std::enable_if_t<pika::traits::is_executor_any<Executor_>::value>>
         {
             template <typename Executor>
-            PIKA_FORCEINLINE static void
-            call(Parameters& params, Executor&& exec)
+            PIKA_FORCEINLINE static void call(Parameters& params, Executor&& exec)
             {
-                auto withprop =
-                    with_reset_thread_distribution(PIKA_FORWARD(Executor, exec),
-                        params, reset_thread_distribution_property{});
+                auto withprop = with_reset_thread_distribution(
+                    PIKA_FORWARD(Executor, exec), params, reset_thread_distribution_property{});
 
                 withprop.first.reset_thread_distribution(
                     PIKA_FORWARD(decltype(withprop.second), withprop.second));
             }
 
             template <typename AnyParameters, typename Executor>
-            PIKA_FORCEINLINE static void
-            call(AnyParameters params, Executor&& exec)
+            PIKA_FORCEINLINE static void call(AnyParameters params, Executor&& exec)
             {
-                call(static_cast<Parameters&>(params),
-                    PIKA_FORWARD(Executor, exec));
+                call(static_cast<Parameters&>(params), PIKA_FORWARD(Executor, exec));
             }
         };
 
@@ -292,11 +272,9 @@ namespace pika::parallel::execution {
         // Generate a type that is guaranteed to support
         // reset_thread_distribution
         using with_processing_units_count_t =
-            with_property_t<processing_units_count_property,
-                has_processing_units_count_t>;
+            with_property_t<processing_units_count_property, has_processing_units_count_t>;
 
-        inline constexpr with_processing_units_count_t
-            with_processing_units_count{};
+        inline constexpr with_processing_units_count_t with_processing_units_count{};
 
         ///////////////////////////////////////////////////////////////////////
         // customization point for interface processing_units_count()
@@ -305,23 +283,19 @@ namespace pika::parallel::execution {
             std::enable_if_t<pika::traits::is_executor_any<Executor_>::value>>
         {
             template <typename Executor>
-            PIKA_FORCEINLINE static std::size_t
-            call(Parameters& params, Executor&& exec)
+            PIKA_FORCEINLINE static std::size_t call(Parameters& params, Executor&& exec)
             {
-                auto withprop =
-                    with_processing_units_count(PIKA_FORWARD(Executor, exec),
-                        params, processing_units_count_property{});
+                auto withprop = with_processing_units_count(
+                    PIKA_FORWARD(Executor, exec), params, processing_units_count_property{});
 
                 return withprop.first.processing_units_count(
                     PIKA_FORWARD(decltype(withprop.second), withprop.second));
             }
 
             template <typename AnyParameters, typename Executor>
-            PIKA_FORCEINLINE static std::size_t
-            call(AnyParameters params, Executor&& exec)
+            PIKA_FORCEINLINE static std::size_t call(AnyParameters params, Executor&& exec)
             {
-                return call(static_cast<Parameters&>(params),
-                    PIKA_FORWARD(Executor, exec));
+                return call(static_cast<Parameters&>(params), PIKA_FORWARD(Executor, exec));
             }
         };
 
@@ -345,11 +319,9 @@ namespace pika::parallel::execution {
         // Generate a type that is guaranteed to support
         // mark_begin_execution
         using with_mark_begin_execution_t =
-            with_property_t<mark_begin_execution_property,
-                has_mark_begin_execution_t>;
+            with_property_t<mark_begin_execution_property, has_mark_begin_execution_t>;
 
-        inline constexpr with_mark_begin_execution_t
-            with_mark_begin_execution{};
+        inline constexpr with_mark_begin_execution_t with_mark_begin_execution{};
 
         ///////////////////////////////////////////////////////////////////////
         // customization point for interface mark_begin_execution()
@@ -358,23 +330,19 @@ namespace pika::parallel::execution {
             std::enable_if_t<pika::traits::is_executor_any<Executor_>::value>>
         {
             template <typename Executor>
-            PIKA_FORCEINLINE static void
-            call(Parameters& params, Executor&& exec)
+            PIKA_FORCEINLINE static void call(Parameters& params, Executor&& exec)
             {
-                auto withprop =
-                    with_mark_begin_execution(PIKA_FORWARD(Executor, exec),
-                        params, mark_begin_execution_property{});
+                auto withprop = with_mark_begin_execution(
+                    PIKA_FORWARD(Executor, exec), params, mark_begin_execution_property{});
 
                 withprop.first.mark_begin_execution(
                     PIKA_FORWARD(decltype(withprop.second), withprop.second));
             }
 
             template <typename AnyParameters, typename Executor>
-            PIKA_FORCEINLINE static void
-            call(AnyParameters params, Executor&& exec)
+            PIKA_FORCEINLINE static void call(AnyParameters params, Executor&& exec)
             {
-                call(static_cast<Parameters&>(params),
-                    PIKA_FORWARD(Executor, exec));
+                call(static_cast<Parameters&>(params), PIKA_FORWARD(Executor, exec));
             }
         };
 
@@ -398,11 +366,9 @@ namespace pika::parallel::execution {
         // Generate a type that is guaranteed to support
         // mark_end_of_scheduling
         using with_mark_end_of_scheduling_t =
-            with_property_t<mark_end_of_scheduling_property,
-                has_mark_end_of_scheduling_t>;
+            with_property_t<mark_end_of_scheduling_property, has_mark_end_of_scheduling_t>;
 
-        inline constexpr with_mark_end_of_scheduling_t
-            with_mark_end_of_scheduling{};
+        inline constexpr with_mark_end_of_scheduling_t with_mark_end_of_scheduling{};
 
         ///////////////////////////////////////////////////////////////////////
         // customization point for interface mark_end_of_scheduling()
@@ -411,23 +377,19 @@ namespace pika::parallel::execution {
             std::enable_if_t<pika::traits::is_executor_any<Executor_>::value>>
         {
             template <typename Executor>
-            PIKA_FORCEINLINE static void
-            call(Parameters& params, Executor&& exec)
+            PIKA_FORCEINLINE static void call(Parameters& params, Executor&& exec)
             {
-                auto withprop =
-                    with_mark_end_of_scheduling(PIKA_FORWARD(Executor, exec),
-                        params, mark_end_of_scheduling_property{});
+                auto withprop = with_mark_end_of_scheduling(
+                    PIKA_FORWARD(Executor, exec), params, mark_end_of_scheduling_property{});
 
                 withprop.first.mark_end_of_scheduling(
                     PIKA_FORWARD(decltype(withprop.second), withprop.second));
             }
 
             template <typename AnyParameters, typename Executor>
-            PIKA_FORCEINLINE static void
-            call(AnyParameters params, Executor&& exec)
+            PIKA_FORCEINLINE static void call(AnyParameters params, Executor&& exec)
             {
-                call(static_cast<Parameters&>(params),
-                    PIKA_FORWARD(Executor, exec));
+                call(static_cast<Parameters&>(params), PIKA_FORWARD(Executor, exec));
             }
         };
 
@@ -451,8 +413,7 @@ namespace pika::parallel::execution {
         // Generate a type that is guaranteed to support
         // mark_end_execution
         using with_mark_end_execution_t =
-            with_property_t<mark_end_execution_property,
-                has_mark_end_execution_t>;
+            with_property_t<mark_end_execution_property, has_mark_end_execution_t>;
 
         inline constexpr with_mark_end_execution_t with_mark_end_execution{};
 
@@ -463,23 +424,19 @@ namespace pika::parallel::execution {
             std::enable_if_t<pika::traits::is_executor_any<Executor_>::value>>
         {
             template <typename Executor>
-            PIKA_FORCEINLINE static void
-            call(Parameters& params, Executor&& exec)
+            PIKA_FORCEINLINE static void call(Parameters& params, Executor&& exec)
             {
-                auto withprop =
-                    with_mark_end_execution(PIKA_FORWARD(Executor, exec),
-                        params, mark_end_execution_property{});
+                auto withprop = with_mark_end_execution(
+                    PIKA_FORWARD(Executor, exec), params, mark_end_execution_property{});
 
                 withprop.first.mark_end_execution(
                     PIKA_FORWARD(decltype(withprop.second), withprop.second));
             }
 
             template <typename AnyParameters, typename Executor>
-            PIKA_FORCEINLINE static void
-            call(AnyParameters params, Executor&& exec)
+            PIKA_FORCEINLINE static void call(AnyParameters params, Executor&& exec)
             {
-                call(static_cast<Parameters&>(params),
-                    PIKA_FORWARD(Executor, exec));
+                call(static_cast<Parameters&>(params), PIKA_FORWARD(Executor, exec));
             }
         };
         /// \endcond
@@ -501,8 +458,7 @@ namespace pika::parallel::execution {
         template <bool Flag1, bool... Flags>
         struct parameters_type_counter<Flag1, Flags...>
         {
-            static constexpr int value =
-                Flag1 + parameters_type_counter<Flags...>::value;
+            static constexpr int value = Flag1 + parameters_type_counter<Flags...>::value;
         };
 
         ///////////////////////////////////////////////////////////////////////
@@ -511,8 +467,8 @@ namespace pika::parallel::execution {
         {
             // generic poor-man's forwarding constructor
             template <typename U,
-                typename Enable = std::enable_if_t<
-                    !std::is_same<std::decay_t<U>, unwrapper>::value>>
+                typename Enable =
+                    std::enable_if_t<!std::is_same<std::decay_t<U>, unwrapper>::value>>
             unwrapper(U&& u)
               : T(PIKA_FORWARD(U, u))
             {
@@ -533,8 +489,7 @@ namespace pika::parallel::execution {
             PIKA_FORCEINLINE std::size_t maximal_number_of_chunks(
                 Executor&& exec, std::size_t cores, std::size_t num_tasks) const
             {
-                auto& wrapped =
-                    static_cast<unwrapper<Wrapper> const*>(this)->member_.get();
+                auto& wrapped = static_cast<unwrapper<Wrapper> const*>(this)->member_.get();
                 return wrapped.maximal_number_of_chunks(
                     PIKA_FORWARD(Executor, exec), cores, num_tasks);
             }
@@ -551,13 +506,12 @@ namespace pika::parallel::execution {
             std::enable_if_t<has_get_chunk_size<T>::value>>
         {
             template <typename Executor, typename F>
-            PIKA_FORCEINLINE std::size_t get_chunk_size(Executor&& exec, F&& f,
-                std::size_t cores, std::size_t num_tasks) const
+            PIKA_FORCEINLINE std::size_t
+            get_chunk_size(Executor&& exec, F&& f, std::size_t cores, std::size_t num_tasks) const
             {
-                auto& wrapped =
-                    static_cast<unwrapper<Wrapper> const*>(this)->member_.get();
-                return wrapped.get_chunk_size(PIKA_FORWARD(Executor, exec),
-                    PIKA_FORWARD(F, f), cores, num_tasks);
+                auto& wrapped = static_cast<unwrapper<Wrapper> const*>(this)->member_.get();
+                return wrapped.get_chunk_size(
+                    PIKA_FORWARD(Executor, exec), PIKA_FORWARD(F, f), cores, num_tasks);
             }
         };
 
@@ -574,8 +528,7 @@ namespace pika::parallel::execution {
             template <typename Executor>
             PIKA_FORCEINLINE void mark_begin_execution(Executor&& exec)
             {
-                auto& wrapped =
-                    static_cast<unwrapper<Wrapper>*>(this)->member_.get();
+                auto& wrapped = static_cast<unwrapper<Wrapper>*>(this)->member_.get();
                 wrapped.mark_begin_execution(PIKA_FORWARD(Executor, exec));
             }
         };
@@ -593,8 +546,7 @@ namespace pika::parallel::execution {
             template <typename Executor>
             PIKA_FORCEINLINE void mark_end_of_scheduling(Executor&& exec)
             {
-                auto& wrapped =
-                    static_cast<unwrapper<Wrapper>*>(this)->member_.get();
+                auto& wrapped = static_cast<unwrapper<Wrapper>*>(this)->member_.get();
                 wrapped.mark_end_of_scheduling(PIKA_FORWARD(Executor, exec));
             }
         };
@@ -612,8 +564,7 @@ namespace pika::parallel::execution {
             template <typename Executor>
             PIKA_FORCEINLINE void mark_end_execution(Executor&& exec)
             {
-                auto& wrapped =
-                    static_cast<unwrapper<Wrapper>*>(this)->member_.get();
+                auto& wrapped = static_cast<unwrapper<Wrapper>*>(this)->member_.get();
                 wrapped.mark_end_execution(PIKA_FORWARD(Executor, exec));
             }
         };
@@ -629,13 +580,10 @@ namespace pika::parallel::execution {
             std::enable_if_t<has_processing_units_count<T>::value>>
         {
             template <typename Executor>
-            PIKA_FORCEINLINE std::size_t
-            processing_units_count(Executor&& exec) const
+            PIKA_FORCEINLINE std::size_t processing_units_count(Executor&& exec) const
             {
-                auto& wrapped =
-                    static_cast<unwrapper<Wrapper> const*>(this)->member_.get();
-                return wrapped.processing_units_count(
-                    PIKA_FORWARD(Executor, exec));
+                auto& wrapped = static_cast<unwrapper<Wrapper> const*>(this)->member_.get();
+                return wrapped.processing_units_count(PIKA_FORWARD(Executor, exec));
             }
         };
 
@@ -652,8 +600,7 @@ namespace pika::parallel::execution {
             template <typename Executor>
             PIKA_FORCEINLINE void reset_thread_distribution(Executor&& exec)
             {
-                auto& wrapped =
-                    static_cast<unwrapper<Wrapper>*>(this)->member_.get();
+                auto& wrapped = static_cast<unwrapper<Wrapper>*>(this)->member_.get();
                 wrapped.reset_thread_distribution(PIKA_FORWARD(Executor, exec));
             }
         };
@@ -692,20 +639,18 @@ namespace pika::parallel::execution {
 
         ///////////////////////////////////////////////////////////////////////
 
-#define PIKA_STATIC_ASSERT_ON_PARAMETERS_AMBIGUITY(func)                       \
-    static_assert(                                                             \
-        parameters_type_counter<                                               \
-            PIKA_PP_CAT(pika::parallel::execution::detail::has_, func) <       \
-            pika::detail::decay_unwrap_t<Params>>::value... > ::value <= 1,    \
-        "Passing more than one executor parameters type "                      \
-        "exposing " PIKA_PP_STRINGIZE(func) " is not possible") /**/
+#define PIKA_STATIC_ASSERT_ON_PARAMETERS_AMBIGUITY(func)                                           \
+ static_assert(                                                                                    \
+     parameters_type_counter<PIKA_PP_CAT(pika::parallel::execution::detail::has_, func) <          \
+         pika::detail::decay_unwrap_t<Params>>::value... > ::value <= 1,                           \
+     "Passing more than one executor parameters type "                                             \
+     "exposing " PIKA_PP_STRINGIZE(func) " is not possible") /**/
 
         template <typename... Params>
         struct executor_parameters : public unwrapper<Params>...
         {
-            static_assert(
-                pika::util::detail::all_of_v<pika::traits::
-                        is_executor_parameters<std::decay_t<Params>>...>,
+            static_assert(pika::util::detail::all_of_v<
+                              pika::traits::is_executor_parameters<std::decay_t<Params>>...>,
                 "All passed parameters must be a proper executor parameters "
                 "objects");
             static_assert(sizeof...(Params) >= 2,
@@ -717,24 +662,19 @@ namespace pika::parallel::execution {
             PIKA_STATIC_ASSERT_ON_PARAMETERS_AMBIGUITY(mark_end_of_scheduling);
             PIKA_STATIC_ASSERT_ON_PARAMETERS_AMBIGUITY(mark_end_execution);
             PIKA_STATIC_ASSERT_ON_PARAMETERS_AMBIGUITY(processing_units_count);
-            PIKA_STATIC_ASSERT_ON_PARAMETERS_AMBIGUITY(
-                maximal_number_of_chunks);
-            PIKA_STATIC_ASSERT_ON_PARAMETERS_AMBIGUITY(
-                reset_thread_distribution);
+            PIKA_STATIC_ASSERT_ON_PARAMETERS_AMBIGUITY(maximal_number_of_chunks);
+            PIKA_STATIC_ASSERT_ON_PARAMETERS_AMBIGUITY(reset_thread_distribution);
 
             template <typename Dependent = void,
                 typename Enable = std::enable_if_t<
-                    pika::util::detail::all_of<
-                        std::is_constructible<Params>...>::value,
-                    Dependent>>
+                    pika::util::detail::all_of<std::is_constructible<Params>...>::value, Dependent>>
             constexpr executor_parameters()
               : unwrapper<Params>()...
             {
             }
 
             template <typename... Params_,
-                typename Enable = std::enable_if_t<
-                    pika::util::detail::pack<Params...>::size ==
+                typename Enable = std::enable_if_t<pika::util::detail::pack<Params...>::size ==
                     pika::util::detail::pack<Params_...>::size>>
             constexpr executor_parameters(Params_&&... params)
               : unwrapper<Params>(PIKA_FORWARD(Params_, params))...
@@ -751,8 +691,7 @@ namespace pika::parallel::execution {
     // specialize trait for the type-combiner
     template <typename... Parameters>
     struct is_executor_parameters<detail::executor_parameters<Parameters...>>
-      : pika::util::detail::all_of<
-            pika::traits::is_executor_parameters<Parameters>...>
+      : pika::util::detail::all_of<pika::traits::is_executor_parameters<Parameters>...>
     {
     };
 
@@ -764,12 +703,10 @@ namespace pika::parallel::execution {
     };
 
     template <typename... Params>
-    constexpr PIKA_FORCEINLINE
-        typename executor_parameters_join<Params...>::type
-        join_executor_parameters(Params&&... params)
+    constexpr PIKA_FORCEINLINE typename executor_parameters_join<Params...>::type
+    join_executor_parameters(Params&&... params)
     {
-        using joined_params =
-            typename executor_parameters_join<Params...>::type;
+        using joined_params = typename executor_parameters_join<Params...>::type;
         return joined_params(PIKA_FORWARD(Params, params)...);
     }
 
@@ -783,8 +720,7 @@ namespace pika::parallel::execution {
     template <typename Param>
     constexpr PIKA_FORCEINLINE Param&& join_executor_parameters(Param&& param)
     {
-        static_assert(
-            pika::traits::is_executor_parameters<std::decay_t<Param>>::value,
+        static_assert(pika::traits::is_executor_parameters<std::decay_t<Param>>::value,
             "The passed parameter must be a proper executor parameters object");
 
         return PIKA_FORWARD(Param, param);

@@ -10,5 +10,5 @@
 
 // re-enable warnings about dependent classes not being exported from the dll
 #if defined(PIKA_MSVC_WARNING_PRAGMA)
-#pragma warning(pop)
+# pragma warning(pop)
 #endif

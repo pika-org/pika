@@ -35,16 +35,15 @@
 #include <utility>
 
 #if !defined(QUEUE_HOLDER_NUMA_DEBUG)
-#if defined(PIKA_DEBUG)
-#define QUEUE_HOLDER_NUMA_DEBUG false
-#else
-#define QUEUE_HOLDER_NUMA_DEBUG false
-#endif
+# if defined(PIKA_DEBUG)
+#  define QUEUE_HOLDER_NUMA_DEBUG false
+# else
+#  define QUEUE_HOLDER_NUMA_DEBUG false
+# endif
 #endif
 
 namespace pika {
-    static pika::debug::detail::enable_print<QUEUE_HOLDER_NUMA_DEBUG> nq_deb(
-        "QH_NUMA");
+    static pika::debug::detail::enable_print<QUEUE_HOLDER_NUMA_DEBUG> nq_deb("QH_NUMA");
 }
 
 // ------------------------------------------------------------////////
@@ -96,17 +95,14 @@ namespace pika::threads {
         }
 
         // ----------------------------------------------------------------
-        inline bool get_next_thread_HP(std::size_t qidx,
-            threads::detail::thread_id_ref_type& thrd, bool stealing,
-            bool core_stealing)
+        inline bool get_next_thread_HP(std::size_t qidx, threads::detail::thread_id_ref_type& thrd,
+            bool stealing, bool core_stealing)
         {
             // loop over queues and take one task,
             std::size_t q = qidx;
-            for (std::size_t i = 0; i < num_queues_;
-                 ++i, q = fast_mod((qidx + i), num_queues_))
+            for (std::size_t i = 0; i < num_queues_; ++i, q = fast_mod((qidx + i), num_queues_))
             {
-                if (queues_[q]->get_next_thread_HP(
-                        thrd, (stealing || (i > 0)), i == 0))
+                if (queues_[q]->get_next_thread_HP(thrd, (stealing || (i > 0)), i == 0))
                 {
                     // clang-format off
                     nq_deb.debug(debug::detail::str<>("HP/BP get_next")
@@ -128,27 +124,23 @@ namespace pika::threads {
         }
 
         // ----------------------------------------------------------------
-        inline bool get_next_thread(std::size_t qidx,
-            threads::detail::thread_id_ref_type& thrd, bool stealing,
-            bool core_stealing)
+        inline bool get_next_thread(std::size_t qidx, threads::detail::thread_id_ref_type& thrd,
+            bool stealing, bool core_stealing)
         {
             // loop over queues and take one task,
             // starting with the requested queue
             std::size_t q = qidx;
-            for (std::size_t i = 0; i < num_queues_;
-                 ++i, q = fast_mod((qidx + i), num_queues_))
+            for (std::size_t i = 0; i < num_queues_; ++i, q = fast_mod((qidx + i), num_queues_))
             {
                 // if we got a thread, return it, only allow stealing if i>0
                 if (queues_[q]->get_next_thread(thrd, (stealing || (i > 0))))
                 {
                     nq_deb.debug(debug::detail::str<>("get_next"), "D",
-                        debug::detail::dec<2>(domain_), "Q",
-                        debug::detail::dec<3>(q), "Qidx",
+                        debug::detail::dec<2>(domain_), "Q", debug::detail::dec<3>(q), "Qidx",
                         debug::detail::dec<3>(qidx),
                         ((i == 0 && !stealing) ? "taken" : "stolen from"),
                         typename ThreadQueue::queue_data_print(queues_[q]),
-                        debug::detail::threadinfo<
-                            threads::detail::thread_id_ref_type*>(&thrd));
+                        debug::detail::threadinfo<threads::detail::thread_id_ref_type*>(&thrd));
                     return true;
                 }
                 // if stealing disabled, do not check other queues
@@ -159,16 +151,14 @@ namespace pika::threads {
         }
 
         // ----------------------------------------------------------------
-        bool add_new_HP(ThreadQueue* receiver, std::size_t qidx,
-            std::size_t& added, bool stealing, bool allow_stealing)
+        bool add_new_HP(ThreadQueue* receiver, std::size_t qidx, std::size_t& added, bool stealing,
+            bool allow_stealing)
         {
             // loop over queues and take one task,
             std::size_t q = qidx;
-            for (std::size_t i = 0; i < num_queues_;
-                 ++i, q = fast_mod((qidx + i), num_queues_))
+            for (std::size_t i = 0; i < num_queues_; ++i, q = fast_mod((qidx + i), num_queues_))
             {
-                added =
-                    receiver->add_new_HP(64, queues_[q], (stealing || (i > 0)));
+                added = receiver->add_new_HP(64, queues_[q], (stealing || (i > 0)));
                 if (added > 0)
                 {
                     // clang-format off
@@ -190,16 +180,14 @@ namespace pika::threads {
         }
 
         // ----------------------------------------------------------------
-        bool add_new(ThreadQueue* receiver, std::size_t qidx,
-            std::size_t& added, bool stealing, bool allow_stealing)
+        bool add_new(ThreadQueue* receiver, std::size_t qidx, std::size_t& added, bool stealing,
+            bool allow_stealing)
         {
             // loop over queues and take one task,
             std::size_t q = qidx;
-            for (std::size_t i = 0; i < num_queues_;
-                 ++i, q = fast_mod((qidx + i), num_queues_))
+            for (std::size_t i = 0; i < num_queues_; ++i, q = fast_mod((qidx + i), num_queues_))
             {
-                added =
-                    receiver->add_new(64, queues_[q], (stealing || (i > 0)));
+                added = receiver->add_new(64, queues_[q], (stealing || (i > 0)));
                 if (added > 0)
                 {
                     // clang-format off
@@ -230,11 +218,9 @@ namespace pika::threads {
         }
 
         // ----------------------------------------------------------------
-        inline std::int64_t get_thread_count(
-            threads::detail::thread_schedule_state state =
-                threads::detail::thread_schedule_state::unknown,
-            execution::thread_priority priority =
-                execution::thread_priority::default_) const
+        inline std::int64_t get_thread_count(threads::detail::thread_schedule_state state =
+                                                 threads::detail::thread_schedule_state::unknown,
+            execution::thread_priority priority = execution::thread_priority::default_) const
         {
             std::size_t len = 0;
             for (auto& q : queues_)
@@ -251,8 +237,7 @@ namespace pika::threads {
 
         // ----------------------------------------------------------------
         bool enumerate_threads(
-            util::detail::function<bool(threads::detail::thread_id_type)> const&
-                f,
+            util::detail::function<bool(threads::detail::thread_id_type)> const& f,
             threads::detail::thread_schedule_state state) const
         {
             bool result = true;
@@ -291,8 +276,8 @@ namespace pika::threads {
         void increment_num_stolen_to_staged(std::size_t /* num */ = 1) {}
 
         // ------------------------------------------------------------
-        bool dump_suspended_threads(std::size_t /* num_thread */,
-            std::int64_t& /* idle_loop_count */, bool /* running */)
+        bool dump_suspended_threads(
+            std::size_t /* num_thread */, std::int64_t& /* idle_loop_count */, bool /* running */)
         {
             return false;
         }
@@ -307,9 +292,6 @@ namespace pika::threads {
         // ------------------------------------------------------------
         void on_start_thread(std::size_t /* num_thread */) {}
         void on_stop_thread(std::size_t /* num_thread */) {}
-        void on_error(
-            std::size_t /* num_thread */, std::exception_ptr const& /* e */)
-        {
-        }
+        void on_error(std::size_t /* num_thread */, std::exception_ptr const& /* e */) {}
     };
 }    // namespace pika::threads

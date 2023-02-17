@@ -65,8 +65,7 @@ void test_wait_for_all_from_list_iterators()
     }
 
     pika::future<Container> r =
-        pika::when_all<typename Container::iterator, Container>(
-            futures.begin(), futures.end());
+        pika::when_all<typename Container::iterator, Container>(futures.begin(), futures.end());
 
     Container result = r.get();
 
@@ -126,8 +125,7 @@ void test_wait_for_all_three_futures()
     pika::future<int> f3 = pt3.get_future();
     pt3.apply();
 
-    using result_type =
-        std::tuple<pika::future<int>, pika::future<int>, pika::future<int>>;
+    using result_type = std::tuple<pika::future<int>, pika::future<int>, pika::future<int>>;
     pika::future<result_type> r = pika::when_all(f1, f2, f3);
 
     result_type result = r.get();
@@ -156,8 +154,8 @@ void test_wait_for_all_four_futures()
     pika::future<int> f4 = pt4.get_future();
     pt4.apply();
 
-    using result_type = std::tuple<pika::future<int>, pika::future<int>,
-        pika::future<int>, pika::future<int>>;
+    using result_type =
+        std::tuple<pika::future<int>, pika::future<int>, pika::future<int>, pika::future<int>>;
     pika::future<result_type> r = pika::when_all(f1, f2, f3, f4);
 
     result_type result = r.get();
@@ -191,8 +189,8 @@ void test_wait_for_all_five_futures()
     pika::future<int> f5 = pt5.get_future();
     pt5.apply();
 
-    using result_type = std::tuple<pika::future<int>, pika::future<int>,
-        pika::future<int>, pika::future<int>, pika::future<int>>;
+    using result_type = std::tuple<pika::future<int>, pika::future<int>, pika::future<int>,
+        pika::future<int>, pika::future<int>>;
     pika::future<result_type> r = pika::when_all(f1, f2, f3, f4, f5);
 
     result_type result = r.get();
@@ -234,10 +232,8 @@ void test_wait_for_all_late_futures()
 
 void test_wait_for_all_deferred_futures()
 {
-    pika::future<int> f1 =
-        pika::async(pika::launch::deferred, &make_int_slowly);
-    pika::future<int> f2 =
-        pika::async(pika::launch::deferred, &make_int_slowly);
+    pika::future<int> f1 = pika::async(pika::launch::deferred, &make_int_slowly);
+    pika::future<int> f2 = pika::async(pika::launch::deferred, &make_int_slowly);
 
     using result_type = std::tuple<pika::future<int>, pika::future<int>>;
     pika::future<result_type> r = pika::when_all(f1, f2);

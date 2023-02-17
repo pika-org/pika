@@ -17,8 +17,8 @@ namespace po = pika::program_options;
 std::string mapper(std::string env_var)
 {
     // ensure the env_var is all caps
-    std::transform(env_var.begin(), env_var.end(), env_var.begin(),
-        [](char c) { return std::toupper(c); });
+    std::transform(
+        env_var.begin(), env_var.end(), env_var.begin(), [](char c) { return std::toupper(c); });
 
     if (env_var == "PATH")
         return "path";
@@ -40,9 +40,7 @@ void get_env_options()
     // clang-format on
 
     po::variables_map vm;
-    store(po::parse_environment(
-              config, std::function<std::string(std::string)>(mapper)),
-        vm);
+    store(po::parse_environment(config, std::function<std::string(std::string)>(mapper)), vm);
     notify(vm);
 
     if (vm.count("path"))
@@ -51,8 +49,7 @@ void get_env_options()
         std::cout << vm["path"].as<std::string>().substr(0, 75) << std::endl;
     }
 
-    std::cout << "Verbosity: " << vm["verbosity"].as<std::string>()
-              << std::endl;
+    std::cout << "Verbosity: " << vm["verbosity"].as<std::string>() << std::endl;
 }
 
 int main()

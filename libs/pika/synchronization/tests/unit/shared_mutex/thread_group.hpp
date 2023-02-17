@@ -22,8 +22,8 @@
 #include <utility>
 
 #ifdef PIKA_MSVC
-#pragma warning(push)
-#pragma warning(disable : 4251)
+# pragma warning(push)
+# pragma warning(disable : 4251)
 #endif
 
 namespace test {
@@ -77,8 +77,7 @@ namespace test {
         pika::thread* create_thread(F&& f)
         {
             std::lock_guard<mutex_type> guard(mtx_);
-            std::unique_ptr<pika::thread> new_thread(
-                new pika::thread(PIKA_FORWARD(F, f)));
+            std::unique_ptr<pika::thread> new_thread(new pika::thread(PIKA_FORWARD(F, f)));
             threads.push_back(new_thread.get());
             return new_thread.release();
         }
@@ -115,8 +114,7 @@ namespace test {
         {
             if (is_this_thread_in())
             {
-                PIKA_THROW_EXCEPTION(pika::error::thread_resource_error,
-                    "thread_group::join_all",
+                PIKA_THROW_EXCEPTION(pika::error::thread_resource_error, "thread_group::join_all",
                     "resource_deadlock_would_occur: trying joining itself");
                 return;
             }
@@ -151,5 +149,5 @@ namespace test {
 }    // namespace test
 
 #ifdef PIKA_MSVC
-#pragma warning(pop)
+# pragma warning(pop)
 #endif

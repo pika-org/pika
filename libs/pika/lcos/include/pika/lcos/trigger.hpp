@@ -78,8 +78,8 @@ namespace pika::lcos::local {
 
     public:
         /// \brief get a future allowing to wait for the trigger to fire
-        pika::future<void> get_future(std::size_t* generation_value = nullptr,
-            error_code& ec = pika::throws)
+        pika::future<void> get_future(
+            std::size_t* generation_value = nullptr, error_code& ec = pika::throws)
         {
             std::lock_guard<mutex_type> l(mtx_);
 
@@ -135,8 +135,7 @@ namespace pika::lcos::local {
             }
 
             template <typename Condition>
-            pika::future<void>
-            get_future(Condition&& func, error_code& ec = pika::throws)
+            pika::future<void> get_future(Condition&& func, error_code& ec = pika::throws)
             {
                 return (*it_)->get_future(PIKA_FORWARD(Condition, func), ec);
             }
@@ -149,8 +148,7 @@ namespace pika::lcos::local {
         /// \brief Wait for the generational counter to reach the requested
         ///        stage.
         void synchronize(std::size_t generation_value,
-            char const* function_name = "trigger::synchronize",
-            error_code& ec = throws)
+            char const* function_name = "trigger::synchronize", error_code& ec = throws)
         {
             std::unique_lock<mutex_type> l(mtx_);
             synchronize(generation_value, l, function_name, ec);
@@ -159,8 +157,7 @@ namespace pika::lcos::local {
     protected:
         template <typename Lock>
         void synchronize(std::size_t generation_value, Lock& l,
-            char const* function_name = "trigger::synchronize",
-            error_code& ec = throws)
+            char const* function_name = "trigger::synchronize", error_code& ec = throws)
         {
             PIKA_ASSERT_OWNS_LOCK(l);
 
@@ -177,8 +174,8 @@ namespace pika::lcos::local {
                 conditional_trigger c;
                 manage_condition cond(*this, c);
 
-                pika::future<void> f = cond.get_future(util::detail::bind(
-                    &base_trigger::test_condition, this, generation_value));
+                pika::future<void> f = cond.get_future(
+                    util::detail::bind(&base_trigger::test_condition, this, generation_value));
 
                 {
                     pika::detail::unlock_guard<Lock> ul(l);
@@ -241,11 +238,9 @@ namespace pika::lcos::local {
 
         template <typename Lock>
         void synchronize(std::size_t generation_value, Lock& l,
-            char const* function_name = "trigger::synchronize",
-            error_code& ec = throws)
+            char const* function_name = "trigger::synchronize", error_code& ec = throws)
         {
-            this->base_type::synchronize(
-                generation_value, l, function_name, ec);
+            this->base_type::synchronize(generation_value, l, function_name, ec);
         }
     };
 }    // namespace pika::lcos::local

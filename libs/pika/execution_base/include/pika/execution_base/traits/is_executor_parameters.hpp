@@ -69,8 +69,7 @@ namespace pika::parallel::execution {
         };
 
         template <>
-        struct is_executor_parameters<sequential_executor_parameters>
-          : std::true_type
+        struct is_executor_parameters<sequential_executor_parameters> : std::true_type
         {
         };
 
@@ -83,8 +82,7 @@ namespace pika::parallel::execution {
     }    // namespace detail
 
     template <typename T>
-    struct is_executor_parameters
-      : detail::is_executor_parameters<std::decay_t<T>>
+    struct is_executor_parameters : detail::is_executor_parameters<std::decay_t<T>>
     {
     };
 
@@ -92,8 +90,7 @@ namespace pika::parallel::execution {
     using is_executor_parameters_t = typename is_executor_parameters<T>::type;
 
     template <typename T>
-    inline constexpr bool is_executor_parameters_v =
-        is_executor_parameters<T>::value;
+    inline constexpr bool is_executor_parameters_v = is_executor_parameters<T>::value;
 }    // namespace pika::parallel::execution
 
 namespace pika::traits {
@@ -108,6 +105,5 @@ namespace pika::traits {
     using is_executor_parameters_t = typename is_executor_parameters<T>::type;
 
     template <typename T>
-    inline constexpr bool is_executor_parameters_v =
-        is_executor_parameters<T>::value;
+    inline constexpr bool is_executor_parameters_v = is_executor_parameters<T>::value;
 }    // namespace pika::traits

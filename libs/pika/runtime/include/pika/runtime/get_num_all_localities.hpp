@@ -66,6 +66,5 @@ namespace pika {
     ///           pika::exception.
     ///
     /// \see      \a pika::find_all_localities, \a pika::get_num_localities
-    PIKA_EXPORT std::uint32_t get_num_localities(
-        launch::sync_policy, error_code& ec = throws);
+    PIKA_EXPORT std::uint32_t get_num_localities(launch::sync_policy, error_code& ec = throws);
 }    // namespace pika

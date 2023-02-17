@@ -23,8 +23,7 @@ using BaseClock = std::chrono::steady_clock;
 
 extern "C" void stage_tasks(size_t start, size_t stop, void* payload_duration_)
 {
-    htts2::payload<BaseClock>(
-        reinterpret_cast<std::uint64_t>(payload_duration_ /* = p */));
+    htts2::payload<BaseClock>(reinterpret_cast<std::uint64_t>(payload_duration_ /* = p */));
 }
 
 struct qthreads_driver : htts2::driver
@@ -74,15 +73,14 @@ private:
     void print_results(results_type results) const
     {
         if (this->io_ == htts2::csv_with_headers)
-            std::cout
-                << "OS-threads (Independent Variable),"
-                << "Tasks per OS-thread (Control Variable) [tasks/OS-threads],"
-                << "Payload Duration (Control Variable) [nanoseconds],"
-                << "Total Walltime [nanoseconds]"
-                << "\n";
+            std::cout << "OS-threads (Independent Variable),"
+                      << "Tasks per OS-thread (Control Variable) [tasks/OS-threads],"
+                      << "Payload Duration (Control Variable) [nanoseconds],"
+                      << "Total Walltime [nanoseconds]"
+                      << "\n";
 
-        fmt::print(std::cout, "{},{},{},{:.14g}\n", this->osthreads_,
-            this->tasks_, this->payload_duration_, results);
+        fmt::print(std::cout, "{},{},{},{:.14g}\n", this->osthreads_, this->tasks_,
+            this->payload_duration_, results);
     }
 };
 

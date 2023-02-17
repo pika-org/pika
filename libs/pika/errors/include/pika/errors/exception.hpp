@@ -76,8 +76,7 @@ namespace pika {
         ///               \a pika_category (if mode is \a throwmode::plain, this
         ///               is the default) or to the category \a
         ///               pika_category_rethrow (if mode is \a throwmode::rethrow).
-        exception(
-            error e, std::string const& msg, throwmode mode = throwmode::plain);
+        exception(error e, std::string const& msg, throwmode mode = throwmode::plain);
 
         /// Destruct a pika::exception
         ///
@@ -100,22 +99,18 @@ namespace pika {
         ///               \a pika_category (if mode is \a throwmode::plain, this
         ///               is the default) or to the category \a
         ///               pika_category_rethrow (if mode is \a throwmode::rethrow).
-        error_code get_error_code(
-            throwmode mode = throwmode::plain) const noexcept;
+        error_code get_error_code(throwmode mode = throwmode::plain) const noexcept;
     };
 
     namespace detail {
-        using custom_exception_info_handler_type =
-            std::function<pika::exception_info(std::string const&,
-                std::string const&, long, std::string const&)>;
+        using custom_exception_info_handler_type = std::function<pika::exception_info(
+            std::string const&, std::string const&, long, std::string const&)>;
 
-        PIKA_EXPORT void set_custom_exception_info_handler(
-            custom_exception_info_handler_type f);
+        PIKA_EXPORT void set_custom_exception_info_handler(custom_exception_info_handler_type f);
 
         using pre_exception_handler_type = std::function<void()>;
 
-        PIKA_EXPORT void set_pre_exception_handler(
-            pre_exception_handler_type f);
+        PIKA_EXPORT void set_pre_exception_handler(pre_exception_handler_type f);
     }    // namespace detail
 
     ///////////////////////////////////////////////////////////////////////////
@@ -302,12 +297,11 @@ namespace pika {
 
         template <typename Exception>
         PIKA_EXPORT std::exception_ptr
-        get_exception(pika::exception const& e, std::string const& func,
-            std::string const& file, long line, std::string const& auxinfo);
+        get_exception(pika::exception const& e, std::string const& func, std::string const& file,
+            long line, std::string const& auxinfo);
 
         template <typename Exception>
-        PIKA_EXPORT std::exception_ptr
-        construct_lightweight_exception(Exception const& e);
+        PIKA_EXPORT std::exception_ptr construct_lightweight_exception(Exception const& e);
     }    // namespace detail
     /// \endcond
 
@@ -433,8 +427,7 @@ namespace pika {
     ///             \a pika::get_error_what(), \a pika::get_error_config(),
     ///             \a pika::get_error_state()
     ///
-    PIKA_EXPORT std::string get_error_function_name(
-        pika::exception_info const& xi);
+    PIKA_EXPORT std::string get_error_function_name(pika::exception_info const& xi);
 
     /// \cond NOINTERNAL
     template <typename E>
@@ -523,9 +516,8 @@ namespace pika {
     template <typename E>
     long get_error_line_number(E const& e)
     {
-        return invoke_with_exception_info(e, [](exception_info const* xi) {
-            return xi ? get_error_line_number(*xi) : -1;
-        });
+        return invoke_with_exception_info(
+            e, [](exception_info const* xi) { return xi ? get_error_line_number(*xi) : -1; });
     }
     /// \endcond
 }    // namespace pika

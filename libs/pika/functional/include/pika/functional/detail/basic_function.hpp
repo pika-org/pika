@@ -33,8 +33,7 @@ namespace pika::util::detail {
         using vtable = function_base_vtable;
 
     public:
-        constexpr explicit function_base(
-            function_base_vtable const* empty_vptr) noexcept
+        constexpr explicit function_base(function_base_vtable const* empty_vptr) noexcept
           : vptr(empty_vptr)
           , object(nullptr)
           , storage_init()
@@ -46,8 +45,7 @@ namespace pika::util::detail {
         ~function_base();
 
         void op_assign(function_base const& other, vtable const* empty_vtable);
-        void op_assign(
-            function_base&& other, vtable const* empty_vtable) noexcept;
+        void op_assign(function_base&& other, vtable const* empty_vtable) noexcept;
 
         void destroy() noexcept;
         void reset(vtable const* empty_vptr) noexcept;
@@ -153,8 +151,8 @@ namespace pika::util::detail {
         void assign(F&& f)
         {
             using T = std::decay_t<F>;
-            static_assert(!Copyable || std::is_constructible_v<T, T const&>,
-                "F shall be CopyConstructible");
+            static_assert(
+                !Copyable || std::is_constructible_v<T, T const&>, "F shall be CopyConstructible");
 
             if (!detail::is_empty_function(f))
             {
@@ -171,8 +169,7 @@ namespace pika::util::detail {
                 {
                     destroy();
                     vptr = f_vptr;
-                    buffer = vtable::template allocate<T>(
-                        storage, function_storage_size);
+                    buffer = vtable::template allocate<T>(storage, function_storage_size);
                 }
                 object = ::new (buffer) T(PIKA_FORWARD(F, f));
             }

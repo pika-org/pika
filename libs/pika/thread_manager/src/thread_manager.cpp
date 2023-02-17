@@ -70,14 +70,13 @@ namespace pika::threads::detail {
         // Add callbacks local to thread_manager.
         notifier.add_on_start_thread_callback(
             util::detail::bind(&thread_manager::init_tss, this, _1));
-        notifier.add_on_stop_thread_callback(
-            util::detail::bind(&thread_manager::deinit_tss, this));
+        notifier.add_on_stop_thread_callback(util::detail::bind(&thread_manager::deinit_tss, this));
 
         auto& rp = pika::resource::get_partitioner();
-        notifier.add_on_start_thread_callback(util::detail::bind(
-            &resource::detail::partitioner::assign_pu, std::ref(rp), _3, _1));
-        notifier.add_on_stop_thread_callback(util::detail::bind(
-            &resource::detail::partitioner::unassign_pu, std::ref(rp), _3, _1));
+        notifier.add_on_start_thread_callback(
+            util::detail::bind(&resource::detail::partitioner::assign_pu, std::ref(rp), _3, _1));
+        notifier.add_on_stop_thread_callback(
+            util::detail::bind(&resource::detail::partitioner::unassign_pu, std::ref(rp), _3, _1));
     }
 
     void thread_manager::create_pools()
@@ -86,71 +85,46 @@ namespace pika::threads::detail {
         size_t num_pools = rp.get_num_pools();
         std::size_t thread_offset = 0;
 
-        std::size_t max_background_threads =
-            pika::detail::get_entry_as<std::size_t>(rtcfg_,
-                "pika.max_background_threads",
-                (std::numeric_limits<std::size_t>::max)());
-        std::size_t const max_idle_loop_count =
-            pika::detail::get_entry_as<std::int64_t>(
-                rtcfg_, "pika.max_idle_loop_count", PIKA_IDLE_LOOP_COUNT_MAX);
-        std::size_t const max_busy_loop_count =
-            pika::detail::get_entry_as<std::int64_t>(
-                rtcfg_, "pika.max_busy_loop_count", PIKA_BUSY_LOOP_COUNT_MAX);
+        std::size_t max_background_threads = pika::detail::get_entry_as<std::size_t>(
+            rtcfg_, "pika.max_background_threads", (std::numeric_limits<std::size_t>::max)());
+        std::size_t const max_idle_loop_count = pika::detail::get_entry_as<std::int64_t>(
+            rtcfg_, "pika.max_idle_loop_count", PIKA_IDLE_LOOP_COUNT_MAX);
+        std::size_t const max_busy_loop_count = pika::detail::get_entry_as<std::int64_t>(
+            rtcfg_, "pika.max_busy_loop_count", PIKA_BUSY_LOOP_COUNT_MAX);
 
-        std::int64_t const max_thread_count =
-            pika::detail::get_entry_as<std::int64_t>(rtcfg_,
-                "pika.thread_queue.max_thread_count",
-                PIKA_THREAD_QUEUE_MAX_THREAD_COUNT);
-        std::int64_t const min_tasks_to_steal_pending =
-            pika::detail::get_entry_as<std::int64_t>(rtcfg_,
-                "pika.thread_queue.min_tasks_to_steal_pending",
-                PIKA_THREAD_QUEUE_MIN_TASKS_TO_STEAL_PENDING);
-        std::int64_t const min_tasks_to_steal_staged =
-            pika::detail::get_entry_as<std::int64_t>(rtcfg_,
-                "pika.thread_queue.min_tasks_to_steal_staged",
-                PIKA_THREAD_QUEUE_MIN_TASKS_TO_STEAL_STAGED);
-        std::int64_t const min_add_new_count =
-            pika::detail::get_entry_as<std::int64_t>(rtcfg_,
-                "pika.thread_queue.min_add_new_count",
-                PIKA_THREAD_QUEUE_MIN_ADD_NEW_COUNT);
-        std::int64_t const max_add_new_count =
-            pika::detail::get_entry_as<std::int64_t>(rtcfg_,
-                "pika.thread_queue.max_add_new_count",
-                PIKA_THREAD_QUEUE_MAX_ADD_NEW_COUNT);
-        std::int64_t const min_delete_count =
-            pika::detail::get_entry_as<std::int64_t>(rtcfg_,
-                "pika.thread_queue.min_delete_count",
-                PIKA_THREAD_QUEUE_MIN_DELETE_COUNT);
-        std::int64_t const max_delete_count =
-            pika::detail::get_entry_as<std::int64_t>(rtcfg_,
-                "pika.thread_queue.max_delete_count",
-                PIKA_THREAD_QUEUE_MAX_DELETE_COUNT);
-        std::int64_t const max_terminated_threads =
-            pika::detail::get_entry_as<std::int64_t>(rtcfg_,
-                "pika.thread_queue.max_terminated_threads",
-                PIKA_THREAD_QUEUE_MAX_TERMINATED_THREADS);
-        std::int64_t const init_threads_count =
-            pika::detail::get_entry_as<std::int64_t>(rtcfg_,
-                "pika.thread_queue.init_threads_count",
-                PIKA_THREAD_QUEUE_INIT_THREADS_COUNT);
+        std::int64_t const max_thread_count = pika::detail::get_entry_as<std::int64_t>(
+            rtcfg_, "pika.thread_queue.max_thread_count", PIKA_THREAD_QUEUE_MAX_THREAD_COUNT);
+        std::int64_t const min_tasks_to_steal_pending = pika::detail::get_entry_as<std::int64_t>(
+            rtcfg_, "pika.thread_queue.min_tasks_to_steal_pending",
+            PIKA_THREAD_QUEUE_MIN_TASKS_TO_STEAL_PENDING);
+        std::int64_t const min_tasks_to_steal_staged = pika::detail::get_entry_as<std::int64_t>(
+            rtcfg_, "pika.thread_queue.min_tasks_to_steal_staged",
+            PIKA_THREAD_QUEUE_MIN_TASKS_TO_STEAL_STAGED);
+        std::int64_t const min_add_new_count = pika::detail::get_entry_as<std::int64_t>(
+            rtcfg_, "pika.thread_queue.min_add_new_count", PIKA_THREAD_QUEUE_MIN_ADD_NEW_COUNT);
+        std::int64_t const max_add_new_count = pika::detail::get_entry_as<std::int64_t>(
+            rtcfg_, "pika.thread_queue.max_add_new_count", PIKA_THREAD_QUEUE_MAX_ADD_NEW_COUNT);
+        std::int64_t const min_delete_count = pika::detail::get_entry_as<std::int64_t>(
+            rtcfg_, "pika.thread_queue.min_delete_count", PIKA_THREAD_QUEUE_MIN_DELETE_COUNT);
+        std::int64_t const max_delete_count = pika::detail::get_entry_as<std::int64_t>(
+            rtcfg_, "pika.thread_queue.max_delete_count", PIKA_THREAD_QUEUE_MAX_DELETE_COUNT);
+        std::int64_t const max_terminated_threads = pika::detail::get_entry_as<std::int64_t>(rtcfg_,
+            "pika.thread_queue.max_terminated_threads", PIKA_THREAD_QUEUE_MAX_TERMINATED_THREADS);
+        std::int64_t const init_threads_count = pika::detail::get_entry_as<std::int64_t>(
+            rtcfg_, "pika.thread_queue.init_threads_count", PIKA_THREAD_QUEUE_INIT_THREADS_COUNT);
         double const max_idle_backoff_time = pika::detail::get_entry_as<double>(
             rtcfg_, "pika.max_idle_backoff_time", PIKA_IDLE_BACKOFF_TIME_MAX);
 
-        std::ptrdiff_t small_stacksize =
-            rtcfg_.get_stack_size(execution::thread_stacksize::small_);
+        std::ptrdiff_t small_stacksize = rtcfg_.get_stack_size(execution::thread_stacksize::small_);
         std::ptrdiff_t medium_stacksize =
             rtcfg_.get_stack_size(execution::thread_stacksize::medium);
-        std::ptrdiff_t large_stacksize =
-            rtcfg_.get_stack_size(execution::thread_stacksize::large);
-        std::ptrdiff_t huge_stacksize =
-            rtcfg_.get_stack_size(execution::thread_stacksize::huge);
+        std::ptrdiff_t large_stacksize = rtcfg_.get_stack_size(execution::thread_stacksize::large);
+        std::ptrdiff_t huge_stacksize = rtcfg_.get_stack_size(execution::thread_stacksize::huge);
 
-        thread_queue_init_parameters thread_queue_init(max_thread_count,
-            min_tasks_to_steal_pending, min_tasks_to_steal_staged,
-            min_add_new_count, max_add_new_count, min_delete_count,
-            max_delete_count, max_terminated_threads, init_threads_count,
-            max_idle_backoff_time, small_stacksize, medium_stacksize,
-            large_stacksize, huge_stacksize);
+        thread_queue_init_parameters thread_queue_init(max_thread_count, min_tasks_to_steal_pending,
+            min_tasks_to_steal_staged, min_add_new_count, max_add_new_count, min_delete_count,
+            max_delete_count, max_terminated_threads, init_threads_count, max_idle_backoff_time,
+            small_stacksize, medium_stacksize, large_stacksize, huge_stacksize);
 
         // instantiate the pools
         for (size_t i = 0; i != num_pools; i++)
@@ -165,23 +139,20 @@ namespace pika::threads::detail {
             {
                 if (name != rp.get_default_pool_name())
                 {
-                    throw std::invalid_argument("Trying to instantiate pool " +
-                        name +
+                    throw std::invalid_argument("Trying to instantiate pool " + name +
                         " as first thread pool, but first thread pool must "
                         "be named " +
                         rp.get_default_pool_name());
                 }
             }
 
-            thread_pool_init_parameters thread_pool_init(name, i,
-                scheduler_mode, num_threads_in_pool, thread_offset, notifier_,
-                rp.get_affinity_data(), network_background_callback_,
-                max_background_threads, max_idle_loop_count,
+            thread_pool_init_parameters thread_pool_init(name, i, scheduler_mode,
+                num_threads_in_pool, thread_offset, notifier_, rp.get_affinity_data(),
+                network_background_callback_, max_background_threads, max_idle_loop_count,
                 max_busy_loop_count);
 
             std::size_t numa_sensitive =
-                pika::detail::get_entry_as<std::size_t>(
-                    rtcfg_, "pika.numa_sensitive", 0);
+                pika::detail::get_entry_as<std::size_t>(rtcfg_, "pika.numa_sensitive", 0);
 
             switch (sched_type)
             {
@@ -196,32 +167,29 @@ namespace pika::threads::detail {
             case resource::unspecified:
             {
                 throw std::invalid_argument(
-                    "cannot instantiate a thread-manager if the thread-pool" +
-                    name + " has an unspecified scheduler type");
+                    "cannot instantiate a thread-manager if the thread-pool" + name +
+                    " has an unspecified scheduler type");
             }
             case resource::local:
             {
                 // instantiate the scheduler
                 using local_sched_type = pika::threads::local_queue_scheduler<>;
 
-                local_sched_type::init_parameter_type init(
-                    thread_pool_init.num_threads_,
+                local_sched_type::init_parameter_type init(thread_pool_init.num_threads_,
                     thread_pool_init.affinity_data_, thread_queue_init,
                     "core-local_queue_scheduler");
 
-                std::unique_ptr<local_sched_type> sched(
-                    new local_sched_type(init));
+                std::unique_ptr<local_sched_type> sched(new local_sched_type(init));
 
                 // set the default scheduler flags
                 sched->set_scheduler_mode(thread_pool_init.mode_);
                 // conditionally set/unset this flag
-                sched->update_scheduler_mode(
-                    scheduler_mode::enable_stealing_numa, !numa_sensitive);
+                sched->update_scheduler_mode(scheduler_mode::enable_stealing_numa, !numa_sensitive);
 
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
-                    new pika::threads::detail::scheduled_thread_pool<
-                        local_sched_type>(PIKA_MOVE(sched), thread_pool_init));
+                    new pika::threads::detail::scheduled_thread_pool<local_sched_type>(
+                        PIKA_MOVE(sched), thread_pool_init));
                 pools_.push_back(PIKA_MOVE(pool));
                 break;
             }
@@ -232,34 +200,29 @@ namespace pika::threads::detail {
                 // perform compatibility checks
                 std::size_t num_high_priority_queues =
                     pika::detail::get_entry_as<std::size_t>(rtcfg_,
-                        "pika.thread_queue.high_priority_queues",
-                        thread_pool_init.num_threads_);
+                        "pika.thread_queue.high_priority_queues", thread_pool_init.num_threads_);
                 check_num_high_priority_queues(
                     thread_pool_init.num_threads_, num_high_priority_queues);
 
                 // instantiate the scheduler
-                using local_sched_type =
-                    pika::threads::local_priority_queue_scheduler<std::mutex,
-                        pika::threads::lockfree_fifo>;
+                using local_sched_type = pika::threads::local_priority_queue_scheduler<std::mutex,
+                    pika::threads::lockfree_fifo>;
 
-                local_sched_type::init_parameter_type init(
-                    thread_pool_init.num_threads_,
-                    thread_pool_init.affinity_data_, num_high_priority_queues,
-                    thread_queue_init, "core-local_priority_queue_scheduler");
+                local_sched_type::init_parameter_type init(thread_pool_init.num_threads_,
+                    thread_pool_init.affinity_data_, num_high_priority_queues, thread_queue_init,
+                    "core-local_priority_queue_scheduler");
 
-                std::unique_ptr<local_sched_type> sched(
-                    new local_sched_type(init));
+                std::unique_ptr<local_sched_type> sched(new local_sched_type(init));
 
                 // set the default scheduler flags
                 sched->set_scheduler_mode(thread_pool_init.mode_);
                 // conditionally set/unset this flag
-                sched->update_scheduler_mode(
-                    scheduler_mode::enable_stealing_numa, !numa_sensitive);
+                sched->update_scheduler_mode(scheduler_mode::enable_stealing_numa, !numa_sensitive);
 
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
-                    new pika::threads::detail::scheduled_thread_pool<
-                        local_sched_type>(PIKA_MOVE(sched), thread_pool_init));
+                    new pika::threads::detail::scheduled_thread_pool<local_sched_type>(
+                        PIKA_MOVE(sched), thread_pool_init));
                 pools_.push_back(PIKA_MOVE(pool));
 
                 break;
@@ -272,34 +235,29 @@ namespace pika::threads::detail {
                 // perform compatibility checks
                 std::size_t num_high_priority_queues =
                     pika::detail::get_entry_as<std::size_t>(rtcfg_,
-                        "pika.thread_queue.high_priority_queues",
-                        thread_pool_init.num_threads_);
+                        "pika.thread_queue.high_priority_queues", thread_pool_init.num_threads_);
                 check_num_high_priority_queues(
                     thread_pool_init.num_threads_, num_high_priority_queues);
 
                 // instantiate the scheduler
-                using local_sched_type =
-                    pika::threads::local_priority_queue_scheduler<std::mutex,
-                        pika::threads::lockfree_lifo>;
+                using local_sched_type = pika::threads::local_priority_queue_scheduler<std::mutex,
+                    pika::threads::lockfree_lifo>;
 
-                local_sched_type::init_parameter_type init(
-                    thread_pool_init.num_threads_,
-                    thread_pool_init.affinity_data_, num_high_priority_queues,
-                    thread_queue_init, "core-local_priority_queue_scheduler");
+                local_sched_type::init_parameter_type init(thread_pool_init.num_threads_,
+                    thread_pool_init.affinity_data_, num_high_priority_queues, thread_queue_init,
+                    "core-local_priority_queue_scheduler");
 
-                std::unique_ptr<local_sched_type> sched(
-                    new local_sched_type(init));
+                std::unique_ptr<local_sched_type> sched(new local_sched_type(init));
 
                 // set the default scheduler flags
                 sched->set_scheduler_mode(thread_pool_init.mode_);
                 // conditionally set/unset this flag
-                sched->update_scheduler_mode(
-                    scheduler_mode::enable_stealing_numa, !numa_sensitive);
+                sched->update_scheduler_mode(scheduler_mode::enable_stealing_numa, !numa_sensitive);
 
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
-                    new pika::threads::detail::scheduled_thread_pool<
-                        local_sched_type>(PIKA_MOVE(sched), thread_pool_init));
+                    new pika::threads::detail::scheduled_thread_pool<local_sched_type>(
+                        PIKA_MOVE(sched), thread_pool_init));
                 pools_.push_back(PIKA_MOVE(pool));
 #else
                 throw pika::detail::command_line_error(
@@ -313,27 +271,23 @@ namespace pika::threads::detail {
             case resource::static_:
             {
                 // instantiate the scheduler
-                using local_sched_type =
-                    pika::threads::static_queue_scheduler<>;
+                using local_sched_type = pika::threads::static_queue_scheduler<>;
 
-                local_sched_type::init_parameter_type init(
-                    thread_pool_init.num_threads_,
+                local_sched_type::init_parameter_type init(thread_pool_init.num_threads_,
                     thread_pool_init.affinity_data_, thread_queue_init,
                     "core-static_queue_scheduler");
 
-                std::unique_ptr<local_sched_type> sched(
-                    new local_sched_type(init));
+                std::unique_ptr<local_sched_type> sched(new local_sched_type(init));
 
                 // set the default scheduler flags
                 sched->set_scheduler_mode(thread_pool_init.mode_);
                 // conditionally set/unset this flag
-                sched->update_scheduler_mode(
-                    scheduler_mode::enable_stealing_numa, !numa_sensitive);
+                sched->update_scheduler_mode(scheduler_mode::enable_stealing_numa, !numa_sensitive);
 
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
-                    new pika::threads::detail::scheduled_thread_pool<
-                        local_sched_type>(PIKA_MOVE(sched), thread_pool_init));
+                    new pika::threads::detail::scheduled_thread_pool<local_sched_type>(
+                        PIKA_MOVE(sched), thread_pool_init));
                 pools_.push_back(PIKA_MOVE(pool));
                 break;
             }
@@ -344,33 +298,28 @@ namespace pika::threads::detail {
                 // perform compatibility checks
                 std::size_t num_high_priority_queues =
                     pika::detail::get_entry_as<std::size_t>(rtcfg_,
-                        "pika.thread_queue.high_priority_queues",
-                        thread_pool_init.num_threads_);
+                        "pika.thread_queue.high_priority_queues", thread_pool_init.num_threads_);
                 check_num_high_priority_queues(
                     thread_pool_init.num_threads_, num_high_priority_queues);
 
                 // instantiate the scheduler
-                using local_sched_type =
-                    pika::threads::static_priority_queue_scheduler<>;
+                using local_sched_type = pika::threads::static_priority_queue_scheduler<>;
 
-                local_sched_type::init_parameter_type init(
-                    thread_pool_init.num_threads_,
-                    thread_pool_init.affinity_data_, num_high_priority_queues,
-                    thread_queue_init, "core-static_priority_queue_scheduler");
+                local_sched_type::init_parameter_type init(thread_pool_init.num_threads_,
+                    thread_pool_init.affinity_data_, num_high_priority_queues, thread_queue_init,
+                    "core-static_priority_queue_scheduler");
 
-                std::unique_ptr<local_sched_type> sched(
-                    new local_sched_type(init));
+                std::unique_ptr<local_sched_type> sched(new local_sched_type(init));
 
                 // set the default scheduler flags
                 sched->set_scheduler_mode(thread_pool_init.mode_);
                 // conditionally set/unset this flag
-                sched->update_scheduler_mode(
-                    scheduler_mode::enable_stealing_numa, !numa_sensitive);
+                sched->update_scheduler_mode(scheduler_mode::enable_stealing_numa, !numa_sensitive);
 
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
-                    new pika::threads::detail::scheduled_thread_pool<
-                        local_sched_type>(PIKA_MOVE(sched), thread_pool_init));
+                    new pika::threads::detail::scheduled_thread_pool<local_sched_type>(
+                        PIKA_MOVE(sched), thread_pool_init));
                 pools_.push_back(PIKA_MOVE(pool));
                 break;
             }
@@ -382,35 +331,29 @@ namespace pika::threads::detail {
                 // perform compatibility checks
                 std::size_t num_high_priority_queues =
                     pika::detail::get_entry_as<std::size_t>(rtcfg_,
-                        "pika.thread_queue.high_priority_queues",
-                        thread_pool_init.num_threads_);
+                        "pika.thread_queue.high_priority_queues", thread_pool_init.num_threads_);
                 check_num_high_priority_queues(
                     thread_pool_init.num_threads_, num_high_priority_queues);
 
                 // instantiate the scheduler
-                using local_sched_type =
-                    pika::threads::local_priority_queue_scheduler<std::mutex,
-                        pika::threads::lockfree_fifo>;
+                using local_sched_type = pika::threads::local_priority_queue_scheduler<std::mutex,
+                    pika::threads::lockfree_fifo>;
 
-                local_sched_type::init_parameter_type init(
-                    thread_pool_init.num_threads_,
-                    thread_pool_init.affinity_data_, num_high_priority_queues,
-                    thread_queue_init,
+                local_sched_type::init_parameter_type init(thread_pool_init.num_threads_,
+                    thread_pool_init.affinity_data_, num_high_priority_queues, thread_queue_init,
                     "core-abp_fifo_priority_queue_scheduler");
 
-                std::unique_ptr<local_sched_type> sched(
-                    new local_sched_type(init));
+                std::unique_ptr<local_sched_type> sched(new local_sched_type(init));
 
                 // set the default scheduler flags
                 sched->set_scheduler_mode(thread_pool_init.mode_);
                 // conditionally set/unset this flag
-                sched->update_scheduler_mode(
-                    scheduler_mode::enable_stealing_numa, !numa_sensitive);
+                sched->update_scheduler_mode(scheduler_mode::enable_stealing_numa, !numa_sensitive);
 
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
-                    new pika::threads::detail::scheduled_thread_pool<
-                        local_sched_type>(PIKA_MOVE(sched), thread_pool_init));
+                    new pika::threads::detail::scheduled_thread_pool<local_sched_type>(
+                        PIKA_MOVE(sched), thread_pool_init));
                 pools_.push_back(PIKA_MOVE(pool));
 #else
                 throw pika::detail::command_line_error(
@@ -428,35 +371,29 @@ namespace pika::threads::detail {
                 // perform compatibility checks
                 std::size_t num_high_priority_queues =
                     pika::detail::get_entry_as<std::size_t>(rtcfg_,
-                        "pika.thread_queue.high_priority_queues",
-                        thread_pool_init.num_threads_);
+                        "pika.thread_queue.high_priority_queues", thread_pool_init.num_threads_);
                 check_num_high_priority_queues(
                     thread_pool_init.num_threads_, num_high_priority_queues);
 
                 // instantiate the scheduler
-                using local_sched_type =
-                    pika::threads::local_priority_queue_scheduler<std::mutex,
-                        pika::threads::lockfree_lifo>;
+                using local_sched_type = pika::threads::local_priority_queue_scheduler<std::mutex,
+                    pika::threads::lockfree_lifo>;
 
-                local_sched_type::init_parameter_type init(
-                    thread_pool_init.num_threads_,
-                    thread_pool_init.affinity_data_, num_high_priority_queues,
-                    thread_queue_init,
+                local_sched_type::init_parameter_type init(thread_pool_init.num_threads_,
+                    thread_pool_init.affinity_data_, num_high_priority_queues, thread_queue_init,
                     "core-abp_fifo_priority_queue_scheduler");
 
-                std::unique_ptr<local_sched_type> sched(
-                    new local_sched_type(init));
+                std::unique_ptr<local_sched_type> sched(new local_sched_type(init));
 
                 // set the default scheduler flags
                 sched->set_scheduler_mode(thread_pool_init.mode_);
                 // conditionally set/unset this flag
-                sched->update_scheduler_mode(
-                    scheduler_mode::enable_stealing_numa, !numa_sensitive);
+                sched->update_scheduler_mode(scheduler_mode::enable_stealing_numa, !numa_sensitive);
 
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
-                    new pika::threads::detail::scheduled_thread_pool<
-                        local_sched_type>(PIKA_MOVE(sched), thread_pool_init));
+                    new pika::threads::detail::scheduled_thread_pool<local_sched_type>(
+                        PIKA_MOVE(sched), thread_pool_init));
                 pools_.push_back(PIKA_MOVE(pool));
 #else
                 throw pika::detail::command_line_error(
@@ -470,26 +407,22 @@ namespace pika::threads::detail {
             case resource::shared_priority:
             {
                 // instantiate the scheduler
-                using local_sched_type =
-                    pika::threads::shared_priority_queue_scheduler<>;
-                local_sched_type::init_parameter_type init(
-                    thread_pool_init.num_threads_, {1, 1, 1},
+                using local_sched_type = pika::threads::shared_priority_queue_scheduler<>;
+                local_sched_type::init_parameter_type init(thread_pool_init.num_threads_, {1, 1, 1},
                     thread_pool_init.affinity_data_, thread_queue_init,
                     "core-shared_priority_queue_scheduler");
 
-                std::unique_ptr<local_sched_type> sched(
-                    new local_sched_type(init));
+                std::unique_ptr<local_sched_type> sched(new local_sched_type(init));
 
                 // set the default scheduler flags
                 sched->set_scheduler_mode(thread_pool_init.mode_);
                 // conditionally set/unset this flag
-                sched->update_scheduler_mode(
-                    scheduler_mode::enable_stealing_numa, !numa_sensitive);
+                sched->update_scheduler_mode(scheduler_mode::enable_stealing_numa, !numa_sensitive);
 
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
-                    new pika::threads::detail::scheduled_thread_pool<
-                        local_sched_type>(PIKA_MOVE(sched), thread_pool_init));
+                    new pika::threads::detail::scheduled_thread_pool<local_sched_type>(
+                        PIKA_MOVE(sched), thread_pool_init));
                 pools_.push_back(PIKA_MOVE(pool));
                 break;
             }
@@ -520,8 +453,7 @@ namespace pika::threads::detail {
         // initialize all pools
         for (auto&& pool_iter : pools_)
         {
-            std::size_t num_threads_in_pool =
-                rp.get_num_threads(pool_iter->get_pool_index());
+            std::size_t num_threads_in_pool = rp.get_num_threads(pool_iter->get_pool_index());
             pool_iter->init(num_threads_in_pool, threads_offset);
             threads_offset += num_threads_in_pool;
         }
@@ -544,8 +476,7 @@ namespace pika::threads::detail {
         return *pools_[0];
     }
 
-    thread_pool_base& thread_manager::get_pool(
-        std::string const& pool_name) const
+    thread_pool_base& thread_manager::get_pool(std::string const& pool_name) const
     {
         // if the given pool_name is default, we don't need to look for it
         // we must always return pool 0
@@ -556,8 +487,8 @@ namespace pika::threads::detail {
         }
 
         // now check the other pools - no need to check pool 0 again, so ++begin
-        auto pool = std::find_if(++pools_.begin(), pools_.end(),
-            [&pool_name](pool_type const& itp) -> bool {
+        auto pool = std::find_if(
+            ++pools_.begin(), pools_.end(), [&pool_name](pool_type const& itp) -> bool {
                 return (itp->get_pool_name() == pool_name);
             });
 
@@ -567,14 +498,11 @@ namespace pika::threads::detail {
         }
 
         //! FIXME Add names of available pools?
-        PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
-            "thread_manager::get_pool",
-            "the resource partitioner does not own a thread pool named '{}'.\n",
-            pool_name);
+        PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "thread_manager::get_pool",
+            "the resource partitioner does not own a thread pool named '{}'.\n", pool_name);
     }
 
-    thread_pool_base& thread_manager::get_pool(
-        pool_id_type const& pool_id) const
+    thread_pool_base& thread_manager::get_pool(pool_id_type const& pool_id) const
     {
         return get_pool(pool_id.name());
     }
@@ -595,8 +523,8 @@ namespace pika::threads::detail {
         }
 
         // now check the other pools - no need to check pool 0 again, so ++begin
-        auto pool = std::find_if(++pools_.begin(), pools_.end(),
-            [&pool_name](pool_type const& itp) -> bool {
+        auto pool = std::find_if(
+            ++pools_.begin(), pools_.end(), [&pool_name](pool_type const& itp) -> bool {
                 return (itp->get_pool_name() == pool_name);
             });
 
@@ -622,8 +550,7 @@ namespace pika::threads::detail {
 
         for (auto& pool_iter : pools_)
         {
-            total_count +=
-                pool_iter->get_thread_count(state, priority, num_thread, reset);
+            total_count += pool_iter->get_thread_count(state, priority, num_thread, reset);
         }
 
         return total_count;
@@ -673,8 +600,7 @@ namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
     // Enumerate all matching threads
     bool thread_manager::enumerate_threads(
-        util::detail::function<bool(thread_id_type)> const& f,
-        thread_schedule_state state) const
+        util::detail::function<bool(thread_id_type)> const& f, thread_schedule_state state) const
     {
         std::lock_guard<mutex_type> lk(mtx_);
         bool result = true;
@@ -736,8 +662,7 @@ namespace pika::threads::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    thread_id_ref_type thread_manager::register_work(
-        thread_init_data& data, error_code& ec)
+    thread_id_ref_type thread_manager::register_work(thread_init_data& data, error_code& ec)
     {
         thread_pool_base* pool = nullptr;
         auto thrd_data = get_self_id_data();
@@ -768,8 +693,7 @@ namespace pika::threads::detail {
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
-            result +=
-                pool_iter->get_average_thread_wait_time(all_threads, reset);
+            result += pool_iter->get_average_thread_wait_time(all_threads, reset);
         return result;
     }
 
@@ -799,7 +723,7 @@ namespace pika::threads::detail {
         return result;
     }
 
-#ifdef PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES
+# ifdef PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES
     std::int64_t thread_manager::avg_creation_idle_rate(bool reset)
     {
         std::int64_t result = 0;
@@ -815,7 +739,7 @@ namespace pika::threads::detail {
             result += pool_iter->avg_cleanup_idle_rate(all_threads, reset);
         return result;
     }
-#endif
+# endif
 #endif
 
 #ifdef PIKA_HAVE_THREAD_CUMULATIVE_COUNTS
@@ -835,7 +759,7 @@ namespace pika::threads::detail {
         return result;
     }
 
-#ifdef PIKA_HAVE_THREAD_IDLE_RATES
+# ifdef PIKA_HAVE_THREAD_IDLE_RATES
     std::int64_t thread_manager::get_thread_duration(bool reset)
     {
         std::int64_t result = 0;
@@ -872,8 +796,7 @@ namespace pika::threads::detail {
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
-            result +=
-                pool_iter->get_cumulative_thread_duration(all_threads, reset);
+            result += pool_iter->get_cumulative_thread_duration(all_threads, reset);
         return result;
     }
 
@@ -881,11 +804,10 @@ namespace pika::threads::detail {
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
-            result +=
-                pool_iter->get_cumulative_thread_overhead(all_threads, reset);
+            result += pool_iter->get_cumulative_thread_overhead(all_threads, reset);
         return result;
     }
-#endif
+# endif
 #endif
 
 #ifdef PIKA_HAVE_THREAD_STEALING_COUNTS
@@ -909,8 +831,7 @@ namespace pika::threads::detail {
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
-            result +=
-                pool_iter->get_num_stolen_from_pending(all_threads, reset);
+            result += pool_iter->get_num_stolen_from_pending(all_threads, reset);
         return result;
     }
 
@@ -951,8 +872,7 @@ namespace pika::threads::detail {
 
         for (auto& pool_iter : pools_)
         {
-            std::size_t num_threads_in_pool =
-                rp.get_num_threads(pool_iter->get_pool_name());
+            std::size_t num_threads_in_pool = rp.get_num_threads(pool_iter->get_pool_name());
 
             if (pool_iter->get_os_thread_count() != 0 ||
                 pool_iter->has_reached_state(runtime_state::running))
@@ -1010,10 +930,8 @@ namespace pika::threads::detail {
     void thread_manager::wait()
     {
         std::size_t shutdown_check_count =
-            ::pika::detail::get_entry_as<std::size_t>(
-                rtcfg_, "pika.shutdown_check_count", 10);
-        pika::util::detail::yield_while_count(
-            [this]() { return is_busy(); }, shutdown_check_count);
+            ::pika::detail::get_entry_as<std::size_t>(rtcfg_, "pika.shutdown_check_count", 10);
+        pika::util::detail::yield_while_count([this]() { return is_busy(); }, shutdown_check_count);
     }
 
     void thread_manager::suspend()

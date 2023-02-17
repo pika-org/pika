@@ -68,8 +68,7 @@ namespace pika {
     }
 
     exception_list::exception_list(exception_list_type&& l)
-      : pika::exception(
-            !l.empty() ? pika::get_error(l.front()) : pika::error::success)
+      : pika::exception(!l.empty() ? pika::get_error(l.front()) : pika::error::success)
       , exceptions_(PIKA_MOVE(l))
       , mtx_()
     {
@@ -93,8 +92,7 @@ namespace pika {
     {
         if (this != &l)
         {
-            *static_cast<pika::exception*>(this) =
-                static_cast<pika::exception const&>(l);
+            *static_cast<pika::exception*>(this) = static_cast<pika::exception const&>(l);
             exceptions_ = l.exceptions_;
         }
         return *this;
@@ -104,8 +102,7 @@ namespace pika {
     {
         if (this != &l)
         {
-            static_cast<pika::exception&>(*this) =
-                PIKA_MOVE(static_cast<pika::exception&>(l));
+            static_cast<pika::exception&>(*this) = PIKA_MOVE(static_cast<pika::exception&>(l));
             exceptions_ = PIKA_MOVE(l.exceptions_);
         }
         return *this;
@@ -165,8 +162,7 @@ namespace pika {
         if (exceptions_.empty())
         {
             // set the error code for our base class
-            static_cast<pika::exception&>(*this) =
-                pika::exception(pika::get_error(e));
+            static_cast<pika::exception&>(*this) = pika::exception(pika::get_error(e));
         }
         exceptions_.push_back(e);
     }

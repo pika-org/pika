@@ -16,10 +16,8 @@
 namespace pika::detail {
 
     template <typename DestType, typename Config,
-        std::enable_if_t<!std::is_same<DestType, std::string>::value, bool> =
-            false>
-    DestType get_entry_as(
-        Config const& config, std::string const& key, DestType const& dflt)
+        std::enable_if_t<!std::is_same<DestType, std::string>::value, bool> = false>
+    DestType get_entry_as(Config const& config, std::string const& key, DestType const& dflt)
     {
         std::string const& entry = config.get_entry(key, "");
         if (entry.empty())
@@ -28,10 +26,8 @@ namespace pika::detail {
     }
 
     template <typename DestType, typename Config,
-        std::enable_if_t<std::is_same<DestType, std::string>::value, bool> =
-            false>
-    DestType get_entry_as(
-        Config const& config, std::string const& key, DestType const& dflt)
+        std::enable_if_t<std::is_same<DestType, std::string>::value, bool> = false>
+    DestType get_entry_as(Config const& config, std::string const& key, DestType const& dflt)
     {
         return config.get_entry(key, dflt);
     }

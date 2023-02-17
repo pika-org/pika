@@ -33,8 +33,7 @@ PIKA_NOINLINE std::uint64_t fibonacci_serial(std::uint64_t n)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-std::uint64_t add(
-    pika::future<std::uint64_t> f1, pika::future<std::uint64_t> f2)
+std::uint64_t add(pika::future<std::uint64_t> f1, pika::future<std::uint64_t> f2)
 {
     return f1.get() + f2.get();
 }
@@ -42,8 +41,7 @@ std::uint64_t add(
 ///////////////////////////////////////////////////////////////////////////////
 struct when_all_wrapper
 {
-    using data_type =
-        std::tuple<pika::future<std::uint64_t>, pika::future<std::uint64_t>>;
+    using data_type = std::tuple<pika::future<std::uint64_t>, pika::future<std::uint64_t>>;
 
     std::uint64_t operator()(pika::future<data_type> data) const
     {
@@ -117,8 +115,7 @@ std::uint64_t fibonacci_fork(std::uint64_t n)
 
     // asynchronously launch the creation of one of the sub-terms of the
     // execution graph
-    pika::future<std::uint64_t> f =
-        pika::async(pika::launch::fork, &fibonacci_fork, n - 1);
+    pika::future<std::uint64_t> f = pika::async(pika::launch::fork, &fibonacci_fork, n - 1);
     std::uint64_t r = fibonacci_fork(n - 2);
 
     return f.get() + r;
@@ -152,8 +149,7 @@ pika::future<std::uint64_t> fibonacci_future_fork(std::uint64_t n)
 
     // asynchronously launch the creation of one of the sub-terms of the
     // execution graph
-    pika::future<std::uint64_t> f =
-        pika::async(pika::launch::fork, &fibonacci_future_fork, n - 1);
+    pika::future<std::uint64_t> f = pika::async(pika::launch::fork, &fibonacci_future_fork, n - 1);
     pika::future<std::uint64_t> r = fibonacci_future_fork(n - 2);
 
     return pika::async(&add, std::move(f), std::move(r));
@@ -170,8 +166,7 @@ pika::future<std::uint64_t> fibonacci_future_when_all(std::uint64_t n)
 
     // asynchronously launch the creation of one of the sub-terms of the
     // execution graph
-    pika::future<pika::future<std::uint64_t>> f =
-        pika::async(&fibonacci_future, n - 1);
+    pika::future<pika::future<std::uint64_t>> f = pika::async(&fibonacci_future, n - 1);
     pika::future<std::uint64_t> r = fibonacci_future(n - 2);
 
     return pika::when_all(f.get(), r).then(when_all_wrapper());
@@ -273,9 +268,7 @@ int pika_main(pika::program_options::variables_map& vm)
             r = fibonacci_serial(n);
         }
 
-        std::uint64_t d =
-            duration_cast<nanoseconds>(high_resolution_clock::now() - start)
-                .count();
+        std::uint64_t d = duration_cast<nanoseconds>(high_resolution_clock::now() - start).count();
         constexpr char const* fmt = "fibonacci_serial({}) == {},"
                                     "elapsed time:,{},[s]\n";
         fmt::print(std::cout, fmt, n, r, d / max_runs);
@@ -295,9 +288,7 @@ int pika_main(pika::program_options::variables_map& vm)
             r = fibonacci_future_one(n).get();
         }
 
-        std::uint64_t d =
-            duration_cast<nanoseconds>(high_resolution_clock::now() - start)
-                .count();
+        std::uint64_t d = duration_cast<nanoseconds>(high_resolution_clock::now() - start).count();
         constexpr char const* fmt = "fibonacci_future_one({}) == {},"
                                     "elapsed time:,{},[s]\n";
         fmt::print(std::cout, fmt, n, r, d / max_runs);
@@ -317,11 +308,8 @@ int pika_main(pika::program_options::variables_map& vm)
             r = fibonacci(n);
         }
 
-        std::uint64_t d =
-            duration_cast<nanoseconds>(high_resolution_clock::now() - start)
-                .count();
-        constexpr char const* fmt =
-            "fibonacci({}) == {},elapsed time:,{},[s]\n";
+        std::uint64_t d = duration_cast<nanoseconds>(high_resolution_clock::now() - start).count();
+        constexpr char const* fmt = "fibonacci({}) == {},elapsed time:,{},[s]\n";
         fmt::print(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
@@ -339,11 +327,8 @@ int pika_main(pika::program_options::variables_map& vm)
             r = fibonacci_fork(n);
         }
 
-        std::uint64_t d =
-            duration_cast<nanoseconds>(high_resolution_clock::now() - start)
-                .count();
-        constexpr char const* fmt =
-            "fibonacci_fork({}) == {},elapsed time:,{},[s]\n";
+        std::uint64_t d = duration_cast<nanoseconds>(high_resolution_clock::now() - start).count();
+        constexpr char const* fmt = "fibonacci_fork({}) == {},elapsed time:,{},[s]\n";
         fmt::print(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
@@ -361,11 +346,8 @@ int pika_main(pika::program_options::variables_map& vm)
             r = fibonacci_future(n).get();
         }
 
-        std::uint64_t d =
-            duration_cast<nanoseconds>(high_resolution_clock::now() - start)
-                .count();
-        constexpr char const* fmt =
-            "fibonacci_future({}) == {},elapsed time:,{},[s]\n";
+        std::uint64_t d = duration_cast<nanoseconds>(high_resolution_clock::now() - start).count();
+        constexpr char const* fmt = "fibonacci_future({}) == {},elapsed time:,{},[s]\n";
         fmt::print(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
@@ -383,11 +365,8 @@ int pika_main(pika::program_options::variables_map& vm)
             r = fibonacci_future_fork(n).get();
         }
 
-        std::uint64_t d =
-            duration_cast<nanoseconds>(high_resolution_clock::now() - start)
-                .count();
-        constexpr char const* fmt =
-            "fibonacci_future_fork({}) == {},elapsed time:,{},[s]\n";
+        std::uint64_t d = duration_cast<nanoseconds>(high_resolution_clock::now() - start).count();
+        constexpr char const* fmt = "fibonacci_future_fork({}) == {},elapsed time:,{},[s]\n";
         fmt::print(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
@@ -405,11 +384,8 @@ int pika_main(pika::program_options::variables_map& vm)
             r = fibonacci_future_when_all(n).get();
         }
 
-        std::uint64_t d =
-            duration_cast<nanoseconds>(high_resolution_clock::now() - start)
-                .count();
-        constexpr char const* fmt =
-            "fibonacci_future_when_all({}) == {},elapsed time:,{},[s]\n";
+        std::uint64_t d = duration_cast<nanoseconds>(high_resolution_clock::now() - start).count();
+        constexpr char const* fmt = "fibonacci_future_when_all({}) == {},elapsed time:,{},[s]\n";
         fmt::print(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
@@ -427,12 +403,9 @@ int pika_main(pika::program_options::variables_map& vm)
             r = fibonacci_future_unwrapped_when_all(n).get();
         }
 
-        std::uint64_t d =
-            duration_cast<nanoseconds>(high_resolution_clock::now() - start)
-                .count();
-        constexpr char const* fmt =
-            "fibonacci_future_unwrapped_when_all({}) == "
-            "{},elapsed time:,{},[s]\n";
+        std::uint64_t d = duration_cast<nanoseconds>(high_resolution_clock::now() - start).count();
+        constexpr char const* fmt = "fibonacci_future_unwrapped_when_all({}) == "
+                                    "{},elapsed time:,{},[s]\n";
         fmt::print(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
@@ -450,11 +423,8 @@ int pika_main(pika::program_options::variables_map& vm)
             r = fibonacci_future_all(n).get();
         }
 
-        std::uint64_t d =
-            duration_cast<nanoseconds>(high_resolution_clock::now() - start)
-                .count();
-        constexpr char const* fmt =
-            "fibonacci_future_all({}) == {},elapsed time:,{},[s]\n";
+        std::uint64_t d = duration_cast<nanoseconds>(high_resolution_clock::now() - start).count();
+        constexpr char const* fmt = "fibonacci_future_all({}) == {},elapsed time:,{},[s]\n";
         fmt::print(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
@@ -472,9 +442,7 @@ int pika_main(pika::program_options::variables_map& vm)
             r = fibonacci_future_all_when_all(n).get();
         }
 
-        std::uint64_t d =
-            duration_cast<nanoseconds>(high_resolution_clock::now() - start)
-                .count();
+        std::uint64_t d = duration_cast<nanoseconds>(high_resolution_clock::now() - start).count();
         constexpr char const* fmt =
             "fibonacci_future_all_when_all({}) == {},elapsed time:,{},[s]\n";
         fmt::print(std::cout, fmt, n, r, d / max_runs);

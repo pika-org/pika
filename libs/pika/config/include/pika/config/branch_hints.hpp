@@ -12,9 +12,9 @@
 #if defined(DOXYGEN)
 
 /// Hint at the compiler that \c expr is likely to be true.
-#define PIKA_LIKELY(expr)
+# define PIKA_LIKELY(expr)
 /// Hint at the compiler that \c expr is likely to be false.
-#define PIKA_UNLIKELY(expr)
+# define PIKA_UNLIKELY(expr)
 
 #else
 

@@ -13,6 +13,5 @@
 #include <cstdint>
 
 namespace pika::threads::detail {
-    using network_background_callback_type =
-        util::detail::function<bool(std::size_t)>;
+    using network_background_callback_type = util::detail::function<bool(std::size_t)>;
 }    // namespace pika::threads::detail

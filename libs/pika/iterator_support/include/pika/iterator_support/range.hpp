@@ -16,15 +16,13 @@ namespace pika::util {
     namespace detail {
         ///////////////////////////////////////////////////////////////////////
         template <typename T, std::size_t N>
-        PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE T*
-        begin_impl(T (&array)[N], long) noexcept
+        PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE T* begin_impl(T (&array)[N], long) noexcept
         {
             return &array[0];
         }
 
         template <typename T, std::size_t N>
-        PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE T*
-        end_impl(T (&array)[N], long) noexcept
+        PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE T* end_impl(T (&array)[N], long) noexcept
         {
             return &array[N];
         }
@@ -37,39 +35,36 @@ namespace pika::util {
         }
 
         template <typename T, std::size_t N>
-        PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE bool
-        empty_impl(T const (&)[N], long) noexcept
+        PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE bool empty_impl(T const (&)[N], long) noexcept
         {
             return false;
         }
 
         ///////////////////////////////////////////////////////////////////////
         template <typename C, typename R = decltype(std::declval<C&>().begin())>
-        PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE R begin_impl(
-            C& c, long) noexcept(noexcept(c.begin()))
+        PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE R begin_impl(C& c, long) noexcept(
+            noexcept(c.begin()))
         {
             return c.begin();
         }
 
         template <typename C, typename R = decltype(std::declval<C&>().end())>
-        PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE R end_impl(
-            C& c, long) noexcept(noexcept(c.begin()))
+        PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE R end_impl(C& c, long) noexcept(
+            noexcept(c.begin()))
         {
             return c.end();
         }
 
-        template <typename C,
-            typename R = decltype(std::declval<C const&>().size())>
-        PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE R size_impl(
-            C const& c, long) noexcept(noexcept(c.size()))
+        template <typename C, typename R = decltype(std::declval<C const&>().size())>
+        PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE R size_impl(C const& c, long) noexcept(
+            noexcept(c.size()))
         {
             return c.size();
         }
 
-        template <typename C,
-            typename R = decltype(std::declval<C const&>().empty())>
-        PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE R empty_impl(
-            C const& c, long) noexcept(noexcept(c.empty()))
+        template <typename C, typename R = decltype(std::declval<C const&>().empty())>
+        PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE R empty_impl(C const& c, long) noexcept(
+            noexcept(c.empty()))
         {
             return c.empty();
         }
@@ -86,20 +81,18 @@ namespace pika::util {
 
             fallback begin(fallback);
 
-            template <typename C,
-                typename R = decltype(begin(std::declval<C&>()))>
-            PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE R begin_impl(
-                C& c, int) noexcept(noexcept(begin(c)))
+            template <typename C, typename R = decltype(begin(std::declval<C&>()))>
+            PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE R begin_impl(C& c, int) noexcept(
+                noexcept(begin(c)))
             {
                 return begin(c);
             }
 
             fallback end(fallback);
 
-            template <typename C,
-                typename R = decltype(end(std::declval<C&>()))>
-            PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE R end_impl(
-                C& c, int) noexcept(noexcept(end(c)))
+            template <typename C, typename R = decltype(end(std::declval<C&>()))>
+            PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE R end_impl(C& c, int) noexcept(
+                noexcept(end(c)))
             {
                 return end(c);
             }
@@ -109,15 +102,13 @@ namespace pika::util {
         using range_impl::end_impl;
 
         template <typename C>
-        PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE std::size_t
-        size_impl(C const& c, int)
+        PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE std::size_t size_impl(C const& c, int)
         {
             return std::distance(begin_impl(c, 0L), end_impl(c, 0L));
         }
 
         template <typename C>
-        PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE bool
-        empty_impl(C const& c, int)
+        PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE bool empty_impl(C const& c, int)
         {
             return begin_impl(c, 0L) == end_impl(c, 0L);
         }
@@ -161,40 +152,35 @@ namespace pika::util {
 
     ///////////////////////////////////////////////////////////////////////////
     namespace range_adl {
-        template <typename C,
-            typename Iterator = typename detail::iterator<C>::type>
-        PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE Iterator begin(
-            C& c) noexcept(noexcept(detail::begin_impl(c, 0L)))
+        template <typename C, typename Iterator = typename detail::iterator<C>::type>
+        PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE Iterator begin(C& c) noexcept(
+            noexcept(detail::begin_impl(c, 0L)))
         {
             return detail::begin_impl(c, 0L);
         }
 
-        template <typename C,
-            typename Iterator = typename detail::iterator<C const>::type>
-        PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE Iterator begin(
-            C const& c) noexcept(noexcept(detail::begin_impl(c, 0L)))
+        template <typename C, typename Iterator = typename detail::iterator<C const>::type>
+        PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE Iterator begin(C const& c) noexcept(
+            noexcept(detail::begin_impl(c, 0L)))
         {
             return detail::begin_impl(c, 0L);
         }
 
-        template <typename C,
-            typename Sentinel = typename detail::sentinel<C>::type>
+        template <typename C, typename Sentinel = typename detail::sentinel<C>::type>
         PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE Sentinel end(C& c) noexcept(
             noexcept(detail::end_impl(c, 0L)))
         {
             return detail::end_impl(c, 0L);
         }
 
-        template <typename C,
-            typename Sentinel = typename detail::sentinel<C const>::type>
-        PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE Sentinel end(
-            C const& c) noexcept(noexcept(detail::end_impl(c, 0L)))
+        template <typename C, typename Sentinel = typename detail::sentinel<C const>::type>
+        PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE Sentinel end(C const& c) noexcept(
+            noexcept(detail::end_impl(c, 0L)))
         {
             return detail::end_impl(c, 0L);
         }
 
-        template <typename C,
-            typename Iterator = typename detail::iterator<C const>::type,
+        template <typename C, typename Iterator = typename detail::iterator<C const>::type,
             typename Sentinel = typename detail::sentinel<C const>::type>
         PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE std::size_t
         size(C const& c) noexcept(noexcept(detail::size_impl(c, 0L)))
@@ -202,8 +188,7 @@ namespace pika::util {
             return detail::size_impl(c, 0L);
         }
 
-        template <typename C,
-            typename Iterator = typename detail::iterator<C const>::type,
+        template <typename C, typename Iterator = typename detail::iterator<C const>::type,
             typename Sentinel = typename detail::sentinel<C const>::type>
         PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE bool
         empty(C const& c) noexcept(noexcept(detail::empty_impl(c, 0L)))

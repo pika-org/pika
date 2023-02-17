@@ -207,8 +207,7 @@ struct test_timedlock
         {
             // Construct and initialize an xtime for a fast time out.
             std::chrono::system_clock::time_point xt =
-                std::chrono::system_clock::now() +
-                std::chrono::milliseconds(10);
+                std::chrono::system_clock::now() + std::chrono::milliseconds(10);
 
             try_lock_for_type lock(mutex, xt);
             PIKA_TEST(lock ? true : false);
@@ -230,8 +229,7 @@ struct test_timedlock
         PIKA_TEST(!condition.wait_until(lock, timeout, fake_predicate));
         PIKA_TEST(lock ? true : false);
 
-        std::chrono::system_clock::time_point const now =
-            std::chrono::system_clock::now();
+        std::chrono::system_clock::time_point const now = std::chrono::system_clock::now();
         PIKA_TEST(timeout - timeout_resolution < now);
 
         // Test the lock, unlock and timedlock methods.

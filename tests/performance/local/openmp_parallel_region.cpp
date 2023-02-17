@@ -23,15 +23,13 @@ int main(int argc, char** argv)
 {
     pika::program_options::options_description desc_commandline;
     desc_commandline.add_options()("repetitions",
-        pika::program_options::value<std::uint64_t>()->default_value(100),
-        "Number of repetitions");
+        pika::program_options::value<std::uint64_t>()->default_value(100), "Number of repetitions");
 
     pika::program_options::variables_map vm;
-    pika::program_options::store(
-        pika::program_options::command_line_parser(argc, argv)
-            .allow_unregistered()
-            .options(desc_commandline)
-            .run(),
+    pika::program_options::store(pika::program_options::command_line_parser(argc, argv)
+                                     .allow_unregistered()
+                                     .options(desc_commandline)
+                                     .run(),
         vm);
 
     std::uint64_t repetitions = vm["repetitions"].as<std::uint64_t>();

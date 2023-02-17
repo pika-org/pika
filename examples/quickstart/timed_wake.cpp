@@ -33,12 +33,11 @@ int pika_main()
         high_resolution_timer t;
 
         // Schedule a wakeup in 5 seconds.
-        set_thread_state(get_self_id(), seconds(5),
-            pika::threads::detail::thread_schedule_state::pending);
+        set_thread_state(
+            get_self_id(), seconds(5), pika::threads::detail::thread_schedule_state::pending);
 
         // Suspend this pika thread.
-        pika::this_thread::suspend(
-            pika::threads::detail::thread_schedule_state::suspended);
+        pika::this_thread::suspend(pika::threads::detail::thread_schedule_state::suspended);
 
         std::cout << "woke up after " << t.elapsed<seconds>() << " seconds\n";
     }
@@ -51,8 +50,7 @@ int pika_main()
 int main(int argc, char* argv[])
 {
     // Configure application-specific options.
-    options_description desc_commandline(
-        "Usage: " PIKA_APPLICATION_STRING " [options]");
+    options_description desc_commandline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
     // Initialize and run pika.
     pika::init_params init_args;

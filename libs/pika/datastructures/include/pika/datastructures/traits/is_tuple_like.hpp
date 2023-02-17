@@ -16,8 +16,7 @@ namespace pika::traits::detail {
     };
 
     template <typename T>
-    struct is_tuple_like_impl<T,
-        std::void_t<decltype(std::tuple_size<T>::value)>> : std::true_type
+    struct is_tuple_like_impl<T, std::void_t<decltype(std::tuple_size<T>::value)>> : std::true_type
     {
     };
 

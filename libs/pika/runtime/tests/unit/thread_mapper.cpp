@@ -16,30 +16,25 @@
 
 void enumerate_threads(std::size_t num_custom_threads)
 {
-    std::size_t counts[std::size_t(pika::os_thread_type::custom_thread) + 1] = {
-        0};
+    std::size_t counts[std::size_t(pika::os_thread_type::custom_thread) + 1] = {0};
 
-    bool result =
-        pika::enumerate_os_threads([&counts](pika::os_thread_data const& data) {
-            if (data.type_ != pika::os_thread_type::unknown)
-            {
-                PIKA_TEST(std::size_t(data.type_) <=
-                    std::size_t(pika::os_thread_type::custom_thread));
+    bool result = pika::enumerate_os_threads([&counts](pika::os_thread_data const& data) {
+        if (data.type_ != pika::os_thread_type::unknown)
+        {
+            PIKA_TEST(std::size_t(data.type_) <= std::size_t(pika::os_thread_type::custom_thread));
 
-                ++counts[std::size_t(data.type_)];
-                PIKA_TEST(data.label_.find(pika::get_os_thread_type_name(
-                              data.type_)) != std::string::npos);
-            }
-            return true;
-        });
+            ++counts[std::size_t(data.type_)];
+            PIKA_TEST(
+                data.label_.find(pika::get_os_thread_type_name(data.type_)) != std::string::npos);
+        }
+        return true;
+    });
     PIKA_TEST(result);
 
     std::size_t num_workers = pika::get_num_worker_threads();
-    PIKA_TEST_EQ(
-        counts[std::size_t(pika::os_thread_type::worker_thread)], num_workers);
+    PIKA_TEST_EQ(counts[std::size_t(pika::os_thread_type::worker_thread)], num_workers);
 
-    PIKA_TEST_EQ(counts[std::size_t(pika::os_thread_type::custom_thread)],
-        num_custom_threads);
+    PIKA_TEST_EQ(counts[std::size_t(pika::os_thread_type::custom_thread)], num_custom_threads);
 }
 
 int pika_main()
