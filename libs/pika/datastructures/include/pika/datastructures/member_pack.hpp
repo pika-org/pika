@@ -14,7 +14,7 @@
 #include <utility>
 
 namespace pika::util::detail {
-#if defined(PIKA_HAVE_CXX20_NO_UNIQUE_ADDRESS_ATTRIBUTE)
+#if defined(PIKA_HAVE_CXX20_NO_UNIQUE_ADDRESS_ATTRIBUTE) && !(defined(PIKA_CUDA_VERSION) && PIKA_CUDA_VERSION >= 1200)
     template <std::size_t I, typename T>
     struct member_leaf
     {
