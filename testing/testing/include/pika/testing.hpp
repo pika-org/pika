@@ -83,7 +83,15 @@ namespace pika::util {
                 if (!t)
                 {
                     std::lock_guard<mutex_type> l(mutex_);
-                    fmt::print(stream_, "{}({}): {} failed in function '{}'\n",
+                    // nvc++ is not able to compile this with a stream as the
+                    // first argument. As a workaround we leave the stream_
+                    // argument out and print to the default stream. The same
+                    // workaround is applied elsewhere in this file.
+                    fmt::print(
+#if !defined(PIKA_NVHPC_VERSION)
+                            stream_,
+#endif
+                            "{}({}): {} failed in function '{}'\n",
                         file, line, msg, function);
                     increment_failures(c);
                     return false;
@@ -100,7 +108,10 @@ namespace pika::util {
                 if (!(t == u))
                 {
                     std::lock_guard<mutex_type> l(mutex_);
-                    fmt::print(stream_,
+                    fmt::print(
+#if !defined(PIKA_NVHPC_VERSION)
+                            stream_,
+#endif
                         "{}({}): {} failed in function '{}': '{} != {}'\n",
                         file, line, msg, function, make_fmt_ptr(t),
                         make_fmt_ptr(u));
@@ -120,7 +131,10 @@ namespace pika::util {
                 if (!(t != u))
                 {
                     std::lock_guard<mutex_type> l(mutex_);
-                    fmt::print(stream_,
+                    fmt::print(
+#if !defined(PIKA_NVHPC_VERSION)
+                            stream_,
+#endif
                         "{}({}): {} failed in function '{}': '{} == {}'\n",
                         file, line, msg, function, make_fmt_ptr(t),
                         make_fmt_ptr(u));
@@ -140,7 +154,10 @@ namespace pika::util {
                 {
                     std::lock_guard<mutex_type> l(mutex_);
                     pika::detail::ios_flags_saver ifs(stream_);
-                    fmt::print(stream_,
+                    fmt::print(
+#if !defined(PIKA_NVHPC_VERSION)
+                            stream_,
+#endif
                         "{}({}): {} failed in function '{}': '{} >= {}'\n",
                         file, line, msg, function, make_fmt_ptr(t),
                         make_fmt_ptr(u));
@@ -160,7 +177,10 @@ namespace pika::util {
                 if (!(t <= u))
                 {
                     std::lock_guard<mutex_type> l(mutex_);
-                    fmt::print(stream_,
+                    fmt::print(
+#if !defined(PIKA_NVHPC_VERSION)
+                            stream_,
+#endif
                         "{}({}): {} failed in function '{}': '{} > {}'\n", file,
                         line, msg, function, make_fmt_ptr(t), make_fmt_ptr(u));
                     increment_failures(c);
@@ -181,14 +201,20 @@ namespace pika::util {
                     std::lock_guard<mutex_type> l(mutex_);
                     if (!(t >= u))
                     {
-                        fmt::print(stream_,
+                        fmt::print(
+#if !defined(PIKA_NVHPC_VERSION)
+                            stream_,
+#endif
                             "{}({}): {} failed in function '{}': '{} < {}'\n",
                             file, line, msg, function, make_fmt_ptr(t),
                             make_fmt_ptr(u));
                     }
                     else
                     {
-                        fmt::print(stream_,
+                        fmt::print(
+#if !defined(PIKA_NVHPC_VERSION)
+                            stream_,
+#endif
                             "{}({}): {} failed in function '{}': '{} > {}'\n",
                             file, line, msg, function, make_fmt_ptr(t), u);
                     }
