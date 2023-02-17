@@ -42,8 +42,7 @@ void test_basic()
         std::uint32_t last = 7;
         pika::concurrency::detail::contiguous_index_queue<> q{first, last};
 
-        for (std::uint32_t curr_expected = first; curr_expected < last;
-             ++curr_expected)
+        for (std::uint32_t curr_expected = first; curr_expected < last; ++curr_expected)
         {
             std::optional<std::uint32_t> curr = q.pop_left();
             PIKA_TEST(curr);
@@ -61,8 +60,7 @@ void test_basic()
         std::uint32_t last = 7;
         pika::concurrency::detail::contiguous_index_queue<> q{first, last};
 
-        for (std::uint32_t curr_expected = last - 1; curr_expected >= first;
-             --curr_expected)
+        for (std::uint32_t curr_expected = last - 1; curr_expected >= first; --curr_expected)
         {
             std::optional<std::uint32_t> curr = q.pop_right();
             PIKA_TEST(curr);
@@ -77,8 +75,7 @@ void test_basic()
         // queue.
         q.reset(first, last);
 
-        for (std::uint32_t curr_expected = last - 1; curr_expected >= first;
-             --curr_expected)
+        for (std::uint32_t curr_expected = last - 1; curr_expected >= first; --curr_expected)
         {
             std::optional<std::uint32_t> curr = q.pop_right();
             PIKA_TEST(curr);
@@ -98,8 +95,8 @@ enum class pop_mode
     random
 };
 
-void test_concurrent_worker(pop_mode m, std::size_t thread_index,
-    pika::barrier<>& b, pika::concurrency::detail::contiguous_index_queue<>& q,
+void test_concurrent_worker(pop_mode m, std::size_t thread_index, pika::barrier<>& b,
+    pika::concurrency::detail::contiguous_index_queue<>& q,
     std::vector<std::uint32_t>& popped_indices)
 {
     std::optional<std::uint32_t> curr;
@@ -150,8 +147,8 @@ void test_concurrent(pop_mode m)
 
     for (std::size_t i = 0; i < num_threads; ++i)
     {
-        fs.push_back(pika::async(test_concurrent_worker, m, i, std::ref(b),
-            std::ref(q), std::ref(popped_indices[i])));
+        fs.push_back(pika::async(
+            test_concurrent_worker, m, i, std::ref(b), std::ref(q), std::ref(popped_indices[i])));
     }
 
     pika::wait_all(fs);
@@ -167,8 +164,7 @@ void test_concurrent(pop_mode m)
     std::size_t num_nonzero_indices_popped = 0;
     for (auto const& p : popped_indices)
     {
-        std::copy(
-            p.begin(), p.end(), std::back_inserter(collected_popped_indices));
+        std::copy(p.begin(), p.end(), std::back_inserter(collected_popped_indices));
         if (!p.empty())
         {
             ++num_nonzero_indices_popped;
@@ -210,8 +206,7 @@ int main(int argc, char** argv)
     pika::init_params i;
     pika::program_options::options_description desc_cmdline(
         "usage: " PIKA_APPLICATION_STRING " [options]");
-    desc_cmdline.add_options()("seed,s",
-        pika::program_options::value<unsigned int>(),
+    desc_cmdline.add_options()("seed,s", pika::program_options::value<unsigned int>(),
         "the random number generator seed to use for this run");
     i.desc_cmdline = desc_cmdline;
     pika::init(pika_main, argc, argv, i);

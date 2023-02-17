@@ -18,8 +18,7 @@ namespace pika::mpi::experimental {
 
     struct mpi_exception : pika::exception
     {
-        PIKA_EXPORT explicit mpi_exception(
-            int err_code, const std::string& msg = "");
+        PIKA_EXPORT explicit mpi_exception(int err_code, const std::string& msg = "");
         PIKA_EXPORT int get_mpi_errorcode() const noexcept;
 
     protected:

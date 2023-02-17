@@ -13,10 +13,10 @@
 
 #include <pika/config.hpp>
 #if defined(PIKA_HAVE_THREAD_LOCAL_STORAGE)
-#include <pika/coroutines/detail/tss.hpp>
-#include <pika/threading_base/thread_data.hpp>
+# include <pika/coroutines/detail/tss.hpp>
+# include <pika/threading_base/thread_data.hpp>
 
-#include <memory>
+# include <memory>
 
 namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
@@ -37,8 +37,7 @@ namespace pika::threads::detail {
             }
         };
 
-        struct run_custom_cleanup_function
-          : coroutines::detail::tss_cleanup_function
+        struct run_custom_cleanup_function : coroutines::detail::tss_cleanup_function
         {
             explicit run_custom_cleanup_function(void (*cleanup_function_)(T*))
               : cleanup_function(cleanup_function_)
@@ -94,8 +93,7 @@ namespace pika::threads::detail {
         T* release()
         {
             T* const temp = get();
-            coroutines::detail::set_tss_data(
-                this, std::shared_ptr<cleanup_function>());
+            coroutines::detail::set_tss_data(this, std::shared_ptr<cleanup_function>());
             return temp;
         }
         void reset(T* new_value = nullptr)
@@ -103,8 +101,7 @@ namespace pika::threads::detail {
             T* const current_value = get();
             if (current_value != new_value)
             {
-                coroutines::detail::set_tss_data(
-                    this, cleanup_, new_value, true);
+                coroutines::detail::set_tss_data(this, cleanup_, new_value, true);
             }
         }
     };

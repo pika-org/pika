@@ -34,8 +34,7 @@ namespace pika::traits {
     }
 
     template <typename T, typename Enable = void>
-    struct acquire_shared_state
-      : detail::acquire_shared_state_impl<std::decay_t<T>>
+    struct acquire_shared_state : detail::acquire_shared_state_impl<std::decay_t<T>>
     {
     };
 
@@ -57,8 +56,8 @@ namespace pika::traits {
         template <typename T, typename Enable>
         struct acquire_shared_state_impl
         {
-            static_assert(!traits::detail::is_future_or_future_range_v<T>,
-                "!is_future_or_future_range_v<T>");
+            static_assert(
+                !traits::detail::is_future_or_future_range_v<T>, "!is_future_or_future_range_v<T>");
 
             using type = T;
 
@@ -71,11 +70,9 @@ namespace pika::traits {
 
         ///////////////////////////////////////////////////////////////////////
         template <typename Future>
-        struct acquire_shared_state_impl<Future,
-            std::enable_if_t<is_future_v<Future>>>
+        struct acquire_shared_state_impl<Future, std::enable_if_t<is_future_v<Future>>>
         {
-            using type = traits::detail::shared_state_ptr_t<
-                traits::future_traits_t<Future>> const&;
+            using type = traits::detail::shared_state_ptr_t<traits::future_traits_t<Future>> const&;
 
             PIKA_FORCEINLINE type operator()(Future const& f) const
             {
@@ -85,13 +82,10 @@ namespace pika::traits {
 
         ///////////////////////////////////////////////////////////////////////
         template <typename Range>
-        struct acquire_shared_state_impl<Range,
-            std::enable_if_t<traits::is_future_range_v<Range>>>
+        struct acquire_shared_state_impl<Range, std::enable_if_t<traits::is_future_range_v<Range>>>
         {
-            using future_type =
-                typename traits::future_range_traits<Range>::future_type;
-            using shared_state_ptr =
-                traits::detail::shared_state_ptr_for_t<future_type>;
+            using future_type = typename traits::future_range_traits<Range>::future_type;
+            using shared_state_ptr = traits::detail::shared_state_ptr_for_t<future_type>;
             using type = std::vector<shared_state_ptr>;
 
             template <typename Range_>
@@ -100,8 +94,8 @@ namespace pika::traits {
                 type values;
                 detail::reserve_if_random_access_by_range(values, futures);
 
-                std::transform(util::begin(futures), util::end(futures),
-                    std::back_inserter(values), acquire_shared_state_disp());
+                std::transform(util::begin(futures), util::end(futures), std::back_inserter(values),
+                    acquire_shared_state_disp());
 
                 return values;
             }
@@ -111,10 +105,8 @@ namespace pika::traits {
         struct acquire_shared_state_impl<Iterator,
             std::enable_if_t<traits::is_iterator_v<Iterator>>>
         {
-            using future_type =
-                typename std::iterator_traits<Iterator>::value_type;
-            using shared_state_ptr =
-                traits::detail::shared_state_ptr_for_t<future_type>;
+            using future_type = typename std::iterator_traits<Iterator>::value_type;
+            using shared_state_ptr = traits::detail::shared_state_ptr_for_t<future_type>;
             using type = std::vector<shared_state_ptr>;
 
             template <typename Iter>
@@ -123,15 +115,13 @@ namespace pika::traits {
                 type values;
                 detail::reserve_if_random_access_by_range(values, begin, end);
 
-                std::transform(begin, end, std::back_inserter(values),
-                    acquire_shared_state_disp());
+                std::transform(begin, end, std::back_inserter(values), acquire_shared_state_disp());
 
                 return values;
             }
 
             template <typename Iter>
-            PIKA_FORCEINLINE type operator()(
-                Iter begin, std::size_t count) const
+            PIKA_FORCEINLINE type operator()(Iter begin, std::size_t count) const
             {
                 type values;
                 values.reserve(count);
@@ -156,10 +146,8 @@ namespace pika::traits {
         }
 
         template <typename R>
-        PIKA_FORCEINLINE
-            pika::intrusive_ptr<lcos::detail::future_data_base<R>> const&
-            get_shared_state(
-                pika::intrusive_ptr<lcos::detail::future_data_base<R>> const& t)
+        PIKA_FORCEINLINE pika::intrusive_ptr<lcos::detail::future_data_base<R>> const&
+        get_shared_state(pika::intrusive_ptr<lcos::detail::future_data_base<R>> const& t)
         {
             return t;
         }
@@ -169,8 +157,7 @@ namespace pika::traits {
         struct wait_get_shared_state
         {
             PIKA_FORCEINLINE
-            traits::detail::shared_state_ptr_for_t<Future> const& operator()(
-                Future const& f) const
+            traits::detail::shared_state_ptr_for_t<Future> const& operator()(Future const& f) const
             {
                 return traits::detail::get_shared_state(f);
             }

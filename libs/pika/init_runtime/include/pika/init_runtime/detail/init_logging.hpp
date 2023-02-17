@@ -31,8 +31,7 @@ namespace pika::util {
 
         void operator()(logging::message const& msg) override;
 
-        friend bool operator==(
-            console_local const& lhs, console_local const& rhs)
+        friend bool operator==(console_local const& lhs, console_local const& rhs)
         {
             return lhs.dest_ == rhs.dest_;
         }
@@ -51,19 +50,15 @@ namespace pika::util {
             std::string format_;
         };
 
-        PIKA_EXPORT void define_common_formatters(
-            logging::writer::named_write& writer);
+        PIKA_EXPORT void define_common_formatters(logging::writer::named_write& writer);
 
-        PIKA_EXPORT void define_formatters_local(
-            logging::writer::named_write& writer);
+        PIKA_EXPORT void define_formatters_local(logging::writer::named_write& writer);
 
-        PIKA_EXPORT log_settings get_log_settings(
-            util::section const&, char const*);
+        PIKA_EXPORT log_settings get_log_settings(util::section const&, char const*);
 
-        PIKA_EXPORT void init_logging(runtime_configuration& ini,
-            bool isconsole,
-            void (*set_console_dest)(logging::writer::named_write&, char const*,
-                logging::level, logging_destination),
+        PIKA_EXPORT void init_logging(runtime_configuration& ini, bool isconsole,
+            void (*set_console_dest)(
+                logging::writer::named_write&, char const*, logging::level, logging_destination),
             void (*define_formatters)(logging::writer::named_write&));
 
         PIKA_EXPORT void init_logging_local(runtime_configuration&);
@@ -73,9 +68,8 @@ namespace pika::util {
 
     //////////////////////////////////////////////////////////////////////////
     /// Enable logging for given destination
-    PIKA_EXPORT void enable_logging(logging_destination dest,
-        std::string const& lvl = "5", std::string logdest = "",
-        std::string logformat = "");
+    PIKA_EXPORT void enable_logging(logging_destination dest, std::string const& lvl = "5",
+        std::string logdest = "", std::string logformat = "");
 
     /// Disable all logging for the given destination
     PIKA_EXPORT void disable_logging(logging_destination dest);
@@ -90,9 +84,8 @@ namespace pika { namespace util {
     }
 
     //////////////////////////////////////////////////////////////////////////
-    PIKA_EXPORT void enable_logging(logging_destination dest,
-        std::string const& lvl = "5", std::string logdest = "",
-        std::string logformat = "");
+    PIKA_EXPORT void enable_logging(logging_destination dest, std::string const& lvl = "5",
+        std::string logdest = "", std::string logformat = "");
 
     PIKA_EXPORT void disable_logging(logging_destination dest);
 }}    // namespace pika::util

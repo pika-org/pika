@@ -26,8 +26,7 @@ void check_value(const string& option, const string& value)
 
 void split_whitespace(const options_description& description)
 {
-    const char* cmdline =
-        "prg --input input.txt \r --optimization 4  \t  --opt \n  option";
+    const char* cmdline = "prg --input input.txt \r --optimization 4  \t  --opt \n  option";
 
     vector<string> tokens = split_unix(cmdline, " \t\n\r");
 
@@ -48,8 +47,7 @@ void split_whitespace(const options_description& description)
 
 void split_equalsign(const options_description& description)
 {
-    const char* cmdline =
-        "prg --input=input.txt  --optimization=4 --opt=option";
+    const char* cmdline = "prg --input=input.txt  --optimization=4 --opt=option";
 
     vector<string> tokens = split_unix(cmdline, "= ");
 

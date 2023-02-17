@@ -36,16 +36,14 @@ namespace test {
         previous_transformer() {}
 
         // at position 'begin' it will dereference 'value', otherwise 'it-1'
-        previous_transformer(
-            IteratorBase const& begin, IteratorValue const& value)
+        previous_transformer(IteratorBase const& begin, IteratorValue const& value)
           : begin_(begin)
           , value_(value)
         {
         }
 
         template <typename Iterator>
-        typename std::iterator_traits<Iterator>::reference
-        operator()(Iterator const& it) const
+        typename std::iterator_traits<Iterator>::reference operator()(Iterator const& it) const
         {
             if (it == begin_)
                 return *value_;
@@ -59,8 +57,7 @@ namespace test {
 
     template <typename IteratorBase, typename IteratorValue>
     inline previous_transformer<IteratorBase, IteratorValue>
-    make_previous_transformer(
-        IteratorBase const& base, IteratorValue const& value)
+    make_previous_transformer(IteratorBase const& base, IteratorValue const& value)
     {
         return previous_transformer<IteratorBase, IteratorValue>(base, value);
     }
@@ -79,8 +76,7 @@ namespace test {
         }
 
         template <typename Iterator>
-        typename std::iterator_traits<Iterator>::reference
-        operator()(Iterator const& it) const
+        typename std::iterator_traits<Iterator>::reference operator()(Iterator const& it) const
         {
             if (it == end_)
                 return *value_;
@@ -108,13 +104,11 @@ void test_left_element_full()
     std::vector<int> values(10);
     std::iota(std::begin(values), std::end(values), 0);
 
-    auto transformer =
-        test::make_previous_transformer(std::begin(values), &values.back());
+    auto transformer = test::make_previous_transformer(std::begin(values), &values.back());
 
     std::ostringstream str;
 
-    std::for_each(
-        pika::util::make_transform_iterator(std::begin(values), transformer),
+    std::for_each(pika::util::make_transform_iterator(std::begin(values), transformer),
         pika::util::make_transform_iterator(std::end(values), transformer),
         [&str](int d) { str << d << " "; });
 
@@ -128,13 +122,11 @@ void test_right_element_full()
     std::vector<int> values(10);
     std::iota(std::begin(values), std::end(values), 0);
 
-    auto transformer =
-        test::make_next_transformer(std::end(values) - 1, &values.front());
+    auto transformer = test::make_next_transformer(std::end(values) - 1, &values.front());
 
     std::ostringstream str;
 
-    std::for_each(
-        pika::util::make_transform_iterator(std::begin(values), transformer),
+    std::for_each(pika::util::make_transform_iterator(std::begin(values), transformer),
         pika::util::make_transform_iterator(std::end(values), transformer),
         [&str](int d) { str << d << " "; });
 

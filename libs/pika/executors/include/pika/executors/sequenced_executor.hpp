@@ -55,24 +55,20 @@ namespace pika::execution {
 
         // OneWayExecutor interface
         template <typename F, typename... Ts>
-        static
-            typename pika::util::detail::invoke_deferred_result<F, Ts...>::type
-            sync_execute(F&& f, Ts&&... ts)
+        static typename pika::util::detail::invoke_deferred_result<F, Ts...>::type
+        sync_execute(F&& f, Ts&&... ts)
         {
-            return pika::detail::sync_launch_policy_dispatch<
-                launch::sync_policy>::call(launch::sync, PIKA_FORWARD(F, f),
-                PIKA_FORWARD(Ts, ts)...);
+            return pika::detail::sync_launch_policy_dispatch<launch::sync_policy>::call(
+                launch::sync, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
         }
 
         // TwoWayExecutor interface
         template <typename F, typename... Ts>
-        static pika::future<
-            typename pika::util::detail::invoke_deferred_result<F, Ts...>::type>
+        static pika::future<typename pika::util::detail::invoke_deferred_result<F, Ts...>::type>
         async_execute(F&& f, Ts&&... ts)
         {
-            return pika::detail::async_launch_policy_dispatch<
-                launch::deferred_policy>::call(launch::deferred,
-                PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
+            return pika::detail::async_launch_policy_dispatch<launch::deferred_policy>::call(
+                launch::deferred, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
         }
 
         // NonBlockingOneWayExecutor (adapted) interface
@@ -84,13 +80,12 @@ namespace pika::execution {
 
         // BulkTwoWayExecutor interface
         template <typename F, typename S, typename... Ts>
-        static std::vector<pika::future<typename parallel::execution::detail::
-                bulk_function_result<F, S, Ts...>::type>>
+        static std::vector<pika::future<
+            typename parallel::execution::detail::bulk_function_result<F, S, Ts...>::type>>
         bulk_async_execute(F&& f, S const& shape, Ts&&... ts)
         {
             using result_type =
-                typename parallel::execution::detail::bulk_function_result<F, S,
-                    Ts...>::type;
+                typename parallel::execution::detail::bulk_function_result<F, S, Ts...>::type;
             std::vector<pika::future<result_type>> results;
 
             try
@@ -113,12 +108,11 @@ namespace pika::execution {
         }
 
         template <typename F, typename S, typename... Ts>
-        static typename parallel::execution::detail::bulk_execute_result<F, S,
-            Ts...>::type
+        static typename parallel::execution::detail::bulk_execute_result<F, S, Ts...>::type
         bulk_sync_execute(F&& f, S const& shape, Ts&&... ts)
         {
-            return pika::unwrap(bulk_async_execute(
-                PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Ts, ts)...));
+            return pika::unwrap(
+                bulk_async_execute(PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Ts, ts)...));
         }
 
         template <typename Parameters>
@@ -133,26 +127,22 @@ namespace pika::execution {
 namespace pika::parallel::execution {
     /// \cond NOINTERNAL
     template <>
-    struct is_one_way_executor<pika::execution::sequenced_executor>
-      : std::true_type
+    struct is_one_way_executor<pika::execution::sequenced_executor> : std::true_type
     {
     };
 
     template <>
-    struct is_bulk_one_way_executor<pika::execution::sequenced_executor>
-      : std::true_type
+    struct is_bulk_one_way_executor<pika::execution::sequenced_executor> : std::true_type
     {
     };
 
     template <>
-    struct is_two_way_executor<pika::execution::sequenced_executor>
-      : std::true_type
+    struct is_two_way_executor<pika::execution::sequenced_executor> : std::true_type
     {
     };
 
     template <>
-    struct is_bulk_two_way_executor<pika::execution::sequenced_executor>
-      : std::true_type
+    struct is_bulk_two_way_executor<pika::execution::sequenced_executor> : std::true_type
     {
     };
     /// \endcond

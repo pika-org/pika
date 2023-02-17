@@ -19,16 +19,14 @@
 #include <utility>
 #include <vector>
 
-void test_scheduler(
-    int argc, char* argv[], pika::resource::scheduling_policy scheduler)
+void test_scheduler(int argc, char* argv[], pika::resource::scheduling_policy scheduler)
 {
     pika::init_params init_args;
 
     init_args.cfg = {"pika.os_threads=" +
-        std::to_string(((std::min)(std::size_t(4),
-            std::size_t(pika::threads::detail::hardware_concurrency()))))};
-    init_args.rp_callback = [scheduler](auto& rp,
-                                pika::program_options::variables_map const&) {
+        std::to_string(((std::min)(
+            std::size_t(4), std::size_t(pika::threads::detail::hardware_concurrency()))))};
+    init_args.rp_callback = [scheduler](auto& rp, pika::program_options::variables_map const&) {
         rp.create_thread_pool("default", scheduler);
     };
 

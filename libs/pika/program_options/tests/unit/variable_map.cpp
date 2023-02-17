@@ -43,8 +43,7 @@ void test_variable_map()
     // clang-format on
 
     const char* cmdline3_[] = {"--foo='12'", "--bar=11", "-z3", "-ofoo"};
-    vector<string> cmdline3 =
-        sv(cmdline3_, sizeof(cmdline3_) / sizeof(const char*));
+    vector<string> cmdline3 = sv(cmdline3_, sizeof(cmdline3_) / sizeof(const char*));
     parsed_options a3 = command_line_parser(cmdline3).options(desc).run();
 
     variables_map vm;
@@ -67,8 +66,7 @@ void test_variable_map()
     // clang-format on
 
     const char* cmdline4_[] = {"--zee", "--zak=13"};
-    vector<string> cmdline4 =
-        sv(cmdline4_, sizeof(cmdline4_) / sizeof(const char*));
+    vector<string> cmdline4 = sv(cmdline4_, sizeof(cmdline4_) / sizeof(const char*));
     parsed_options a4 = command_line_parser(cmdline4).options(desc).run();
 
     variables_map vm2;
@@ -90,8 +88,7 @@ void test_variable_map()
     // clang-format on
 
     const char* cmdline5_[] = {"--voo=1"};
-    vector<string> cmdline5 =
-        sv(cmdline5_, sizeof(cmdline5_) / sizeof(const char*));
+    vector<string> cmdline5 = sv(cmdline5_, sizeof(cmdline5_) / sizeof(const char*));
     parsed_options a5 = command_line_parser(cmdline5).options(desc2).run();
 
     variables_map vm3;
@@ -115,8 +112,7 @@ void test_variable_map()
     /* The -m option is implicit. It does not have value in inside the token,
        and we should not grab the next token.  */
     const char* cmdline6_[] = {"--imp=1", "-m", "--foo=1"};
-    vector<string> cmdline6 =
-        sv(cmdline6_, sizeof(cmdline6_) / sizeof(const char*));
+    vector<string> cmdline6 = sv(cmdline6_, sizeof(cmdline6_) / sizeof(const char*));
     parsed_options a6 = command_line_parser(cmdline6).options(desc3).run();
 
     variables_map vm4;
@@ -209,16 +205,13 @@ void test_priority()
         // This will have values in both sources, and values should be combined
         ("include", value<vector<int>>()->composing());
 
-    const char* cmdline1_[] = {
-        "--first=1", "--aux=10", "--first=3", "--include=1"};
-    vector<string> cmdline1 =
-        sv(cmdline1_, sizeof(cmdline1_) / sizeof(const char*));
+    const char* cmdline1_[] = {"--first=1", "--aux=10", "--first=3", "--include=1"};
+    vector<string> cmdline1 = sv(cmdline1_, sizeof(cmdline1_) / sizeof(const char*));
 
     parsed_options p1 = command_line_parser(cmdline1).options(desc).run();
 
     const char* cmdline2_[] = {"--first=12", "--second=7", "--include=7"};
-    vector<string> cmdline2 =
-        sv(cmdline2_, sizeof(cmdline2_) / sizeof(const char*));
+    vector<string> cmdline2 = sv(cmdline2_, sizeof(cmdline2_) / sizeof(const char*));
 
     parsed_options p2 = command_line_parser(cmdline2).options(desc).run();
 
@@ -260,8 +253,7 @@ void test_multiple_assignments_with_different_option_description()
     // in the options description provided the second time, we don't crash.
 
     options_description desc1("");
-    desc1.add_options()("help,h", "")(
-        "includes", value<vector<string>>()->composing(), "");
+    desc1.add_options()("help,h", "")("includes", value<vector<string>>()->composing(), "");
     ;
 
     options_description desc2("");

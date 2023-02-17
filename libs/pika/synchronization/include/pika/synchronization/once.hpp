@@ -48,8 +48,7 @@ namespace pika {
         long const function_complete_flag_value = 0xc15730e2;
         long const running_value = 0x7f0725e3;
 
-        while (flag.status_.load(std::memory_order_acquire) !=
-            function_complete_flag_value)
+        while (flag.status_.load(std::memory_order_acquire) != function_complete_flag_value)
         {
             long status = 0;
             if (flag.status_.compare_exchange_strong(status, running_value))
@@ -60,8 +59,7 @@ namespace pika {
                     // wrapped function was throwing an exception before
                     flag.event_.reset();
 
-                    PIKA_INVOKE(
-                        PIKA_FORWARD(F, f), PIKA_FORWARD(Args, args)...);
+                    PIKA_INVOKE(PIKA_FORWARD(F, f), PIKA_FORWARD(Args, args)...);
 
                     // set status to done, release waiting threads
                     flag.status_.store(function_complete_flag_value);

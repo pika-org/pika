@@ -39,8 +39,7 @@ namespace pika::execution {
 
         /// \cond NOINTERNAL
         template <typename Executor, typename F>
-        constexpr std::size_t
-        get_chunk_size(Executor&, F&&, std::size_t, std::size_t) const
+        constexpr std::size_t get_chunk_size(Executor&, F&&, std::size_t, std::size_t) const
         {
             return chunk_size_;
         }
@@ -56,8 +55,7 @@ namespace pika::execution {
 namespace pika::parallel::execution {
     /// \cond NOINTERNAL
     template <>
-    struct is_executor_parameters<pika::execution::dynamic_chunk_size>
-      : std::true_type
+    struct is_executor_parameters<pika::execution::dynamic_chunk_size> : std::true_type
     {
     };
     /// \endcond

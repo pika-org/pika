@@ -30,21 +30,17 @@ void print_system_characteristics()
     // -------------------------------------- //
 
     //! -------------------------------------- runtime
-    std::cout << "[Runtime], instance number " << rt->get_instance_number()
-              << "\n"
-              << "called by thread named     " << pika::get_thread_name()
-              << "\n\n";
+    std::cout << "[Runtime], instance number " << rt->get_instance_number() << "\n"
+              << "called by thread named     " << pika::get_thread_name() << "\n\n";
 
     //! -------------------------------------- thread_manager
     std::cout << "[Thread manager]\n"
-              << "worker thread number  : " << std::dec
-              << pika::get_worker_thread_num() << "\n\n";
+              << "worker thread number  : " << std::dec << pika::get_worker_thread_num() << "\n\n";
 
     //! -------------------------------------- runtime_configuration
     std::cout << "[Runtime configuration]\n"
               << "os thread count       : " << cfg.get_os_thread_count() << "\n"
-              << "                        " << pika::get_os_thread_count()
-              << "\n"
+              << "                        " << pika::get_os_thread_count() << "\n"
               << "command line          : " << cfg.get_cmd_line() << "\n\n";
 
     //! -------------------------------------- topology

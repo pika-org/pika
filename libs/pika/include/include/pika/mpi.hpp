@@ -8,5 +8,5 @@
 
 #include <pika/config.hpp>
 #if defined(PIKA_HAVE_MPI)
-#include <pika/modules/async_mpi.hpp>
+# include <pika/modules/async_mpi.hpp>
 #endif

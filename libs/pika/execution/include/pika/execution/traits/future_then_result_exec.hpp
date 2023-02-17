@@ -23,8 +23,7 @@ namespace pika::traits {
     ///////////////////////////////////////////////////////////////////////////
     namespace detail {
         ///////////////////////////////////////////////////////////////////////
-        template <typename Executor, typename Future, typename F,
-            typename Enable = void>
+        template <typename Executor, typename Future, typename F, typename Enable = void>
         struct future_then_executor_result
         {
             using type = typename continuation_not_callable<Future, F>::type;
@@ -36,14 +35,12 @@ namespace pika::traits {
         {
             using func_result_type = std::invoke_result_t<F&, Future>;
 
-            using cont_result =
-                traits::executor_future_t<Executor, func_result_type, Future>;
+            using cont_result = traits::executor_future_t<Executor, func_result_type, Future>;
 
             // perform unwrapping of future<future<R>>
             using result_type = ::pika::detail::lazy_conditional_t<
                 pika::traits::detail::is_unique_future_v<cont_result>,
-                pika::traits::future_traits<cont_result>,
-                pika::detail::type_identity<cont_result>>;
+                pika::traits::future_traits<cont_result>, pika::detail::type_identity<cont_result>>;
 
             using type = pika::future<result_type>;
         };

@@ -13,7 +13,7 @@
 #include <cstdint>
 
 #if defined(PIKA_HAVE_CUDA) && defined(PIKA_COMPUTE_CODE)
-#include <pika/hardware/timestamp/cuda.hpp>
+# include <pika/hardware/timestamp/cuda.hpp>
 #endif
 
 namespace pika { namespace util { namespace hardware {

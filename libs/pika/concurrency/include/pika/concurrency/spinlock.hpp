@@ -29,8 +29,7 @@ namespace pika::concurrency::detail {
     public:
         spinlock(char const* /*desc*/ = nullptr)
         {
-            PIKA_ITT_SYNC_CREATE(
-                this, "pika::concurrency::detail::spinlock", "");
+            PIKA_ITT_SYNC_CREATE(this, "pika::concurrency::detail::spinlock", "");
         }
 
         ~spinlock()

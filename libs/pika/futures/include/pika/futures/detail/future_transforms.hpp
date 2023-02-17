@@ -24,8 +24,7 @@ namespace pika::lcos::detail {
 
     // Returns true when the given future is ready,
     // the future is deferred executed if possible first.
-    template <typename T,
-        std::enable_if_t<traits::is_future_v<std::decay_t<T>>>* = nullptr>
+    template <typename T, std::enable_if_t<traits::is_future_v<std::decay_t<T>>>* = nullptr>
     bool async_visit_future(T&& current)
     {
         // Check for state right away as the element might not be able to
@@ -35,8 +34,7 @@ namespace pika::lcos::detail {
             return true;
         }
 
-        auto const& state =
-            traits::detail::get_shared_state(PIKA_FORWARD(T, current));
+        auto const& state = traits::detail::get_shared_state(PIKA_FORWARD(T, current));
 
         if (state.get() == nullptr)
         {
@@ -55,13 +53,11 @@ namespace pika::lcos::detail {
         std::enable_if_t<traits::is_future_v<std::decay_t<T>>>* = nullptr>
     void async_detach_future(T&& current, N&& next)
     {
-        auto const& state =
-            traits::detail::get_shared_state(PIKA_FORWARD(T, current));
+        auto const& state = traits::detail::get_shared_state(PIKA_FORWARD(T, current));
 
         // Attach a continuation to this future which will
         // re-evaluate it and continue to the next argument (if any).
-        state->set_on_completed(
-            util::detail::deferred_call(PIKA_FORWARD(N, next)));
+        state->set_on_completed(util::detail::deferred_call(PIKA_FORWARD(N, next)));
     }
 
     // Acquire a future range from the given begin and end iterator
@@ -78,8 +74,7 @@ namespace pika::lcos::detail {
                 lazy_values, static_cast<std::size_t>(difference));
         }
 
-        std::transform(begin, end, std::back_inserter(lazy_values),
-            traits::acquire_future_disp());
+        std::transform(begin, end, std::back_inserter(lazy_values), traits::acquire_future_disp());
 
         return lazy_values;
     }

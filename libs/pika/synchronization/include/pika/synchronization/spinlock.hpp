@@ -75,8 +75,7 @@ namespace pika {
             //      same.
             do
             {
-                util::yield_while(
-                    [this] { return is_locked(); }, "pika::spinlock::lock");
+                util::yield_while([this] { return is_locked(); }, "pika::spinlock::lock");
             } while (!acquire_lock());
 
             PIKA_ITT_SYNC_ACQUIRED(this);

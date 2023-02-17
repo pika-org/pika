@@ -95,20 +95,15 @@ int app_main(variables_map&)
     {
         // Credit to Spencer Ruport for putting this algorithm on
         // stackoverflow.
-        std::uint64_t const low_calc =
-            (total_delay - current_sum) - (max_delay * (tasks - 1 - i));
+        std::uint64_t const low_calc = (total_delay - current_sum) - (max_delay * (tasks - 1 - i));
 
-        bool const negative =
-            (total_delay - current_sum) < (max_delay * (tasks - 1 - i));
+        bool const negative = (total_delay - current_sum) < (max_delay * (tasks - 1 - i));
 
-        std::uint64_t const low =
-            (negative || (low_calc < min_delay)) ? min_delay : low_calc;
+        std::uint64_t const low = (negative || (low_calc < min_delay)) ? min_delay : low_calc;
 
-        std::uint64_t const high_calc =
-            (total_delay - current_sum) - (min_delay * (tasks - 1 - i));
+        std::uint64_t const high_calc = (total_delay - current_sum) - (min_delay * (tasks - 1 - i));
 
-        std::uint64_t const high =
-            (high_calc > max_delay) ? max_delay : high_calc;
+        std::uint64_t const high = (high_calc > max_delay) ? max_delay : high_calc;
 
         // Our range is [low, high].
         std::uniform_int_distribution<std::uint64_t> dist(low, high);
@@ -135,8 +130,7 @@ int app_main(variables_map&)
     if (payloads.size() != tasks)
         throw std::logic_error("incorrect number of tasks generated");
 
-    std::uint64_t const payloads_sum =
-        std::accumulate(payloads.begin(), payloads.end(), 0ULL);
+    std::uint64_t const payloads_sum = std::accumulate(payloads.begin(), payloads.end(), 0ULL);
     if (payloads_sum != total_delay)
         throw std::logic_error("incorrect total delay generated");
 
@@ -157,18 +151,15 @@ int main(int argc, char* argv[])
 
     cmdline.add_options()("help,h", "print out program usage (this message)")
 
-        ("tasks", value<std::uint64_t>(&tasks)->default_value(500000),
-            "number of tasks to invoke")
+        ("tasks", value<std::uint64_t>(&tasks)->default_value(500000), "number of tasks to invoke")
 
             ("min-delay", value<std::uint64_t>(&min_delay)->default_value(0),
                 "minimum number of iterations in the delay loop")
 
-                ("max-delay",
-                    value<std::uint64_t>(&max_delay)->default_value(0),
+                ("max-delay", value<std::uint64_t>(&max_delay)->default_value(0),
                     "maximum number of iterations in the delay loop")
 
-                    ("total-delay",
-                        value<std::uint64_t>(&total_delay)->default_value(0),
+                    ("total-delay", value<std::uint64_t>(&total_delay)->default_value(0),
                         "total number of delay iterations to be executed")
 
                         ("seed", value<std::uint64_t>(&seed)->default_value(0),

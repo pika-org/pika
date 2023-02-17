@@ -31,22 +31,18 @@ namespace htts2 {
         pika::program_options::options_description cmdline(
             std::string("Usage: ") + argv[0] + " [options]");
 
-        cmdline.add_options()(
-            "help,h", "print out program usage (this message)")
+        cmdline.add_options()("help,h", "print out program usage (this message)")
 
             ("osthreads,t",
-                pika::program_options::value<std::uint64_t>(&osthreads_)
-                    ->default_value(1),
+                pika::program_options::value<std::uint64_t>(&osthreads_)->default_value(1),
                 "number of OS-threads to use")
 
                 ("tasks",
-                    pika::program_options::value<std::uint64_t>(&tasks_)
-                        ->default_value(500000),
+                    pika::program_options::value<std::uint64_t>(&tasks_)->default_value(500000),
                     "number of tasks per OS-thread to invoke")
 
                     ("payload",
-                        pika::program_options::value<std::uint64_t>(
-                            &payload_duration_)
+                        pika::program_options::value<std::uint64_t>(&payload_duration_)
                             ->default_value(5000),
                         "duration of payload in nanoseconds")
 
@@ -54,20 +50,16 @@ namespace htts2 {
 
         if (allow_unregistered_)
         {
-            pika::program_options::store(
-                pika::program_options::command_line_parser(argc, argv)
-                    .options(cmdline)
-                    .allow_unregistered()
-                    .run(),
+            pika::program_options::store(pika::program_options::command_line_parser(argc, argv)
+                                             .options(cmdline)
+                                             .allow_unregistered()
+                                             .run(),
                 vm);
         }
         else
         {
             pika::program_options::store(
-                pika::program_options::command_line_parser(argc, argv)
-                    .options(cmdline)
-                    .run(),
-                vm);
+                pika::program_options::command_line_parser(argc, argv).options(cmdline).run(), vm);
         }
 
         pika::program_options::notify(vm);

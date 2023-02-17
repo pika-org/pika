@@ -113,17 +113,17 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/config.hpp>
-#include <pika/async_combinators/detail/throw_if_exceptional.hpp>
-#include <pika/async_combinators/when_each.hpp>
-#include <pika/futures/traits/is_future.hpp>
-#include <pika/iterator_support/traits/is_iterator.hpp>
-#include <pika/type_support/pack.hpp>
+# include <pika/config.hpp>
+# include <pika/async_combinators/detail/throw_if_exceptional.hpp>
+# include <pika/async_combinators/when_each.hpp>
+# include <pika/futures/traits/is_future.hpp>
+# include <pika/iterator_support/traits/is_iterator.hpp>
+# include <pika/type_support/pack.hpp>
 
-#include <cstddef>
-#include <type_traits>
-#include <utility>
-#include <vector>
+# include <cstddef>
+# include <type_traits>
+# include <utility>
+# include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {
@@ -156,16 +156,14 @@ namespace pika {
     }
 
     template <typename F, typename Iterator,
-        typename Enable =
-            std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
+        typename Enable = std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
     void wait_each_nothrow(F&& f, Iterator begin, Iterator end)
     {
         pika::when_each(PIKA_FORWARD(F, f), begin, end).wait();
     }
 
     template <typename F, typename Iterator,
-        typename Enable =
-            std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
+        typename Enable = std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
     void wait_each(F&& f, Iterator begin, Iterator end)
     {
         auto result = pika::when_each(PIKA_FORWARD(F, f), begin, end);
@@ -174,16 +172,14 @@ namespace pika {
     }
 
     template <typename F, typename Iterator,
-        typename Enable =
-            std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
+        typename Enable = std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
     void wait_each_n_nothrow(F&& f, Iterator begin, std::size_t count)
     {
         pika::when_each_n(PIKA_FORWARD(F, f), begin, count).wait();
     }
 
     template <typename F, typename Iterator,
-        typename Enable =
-            std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
+        typename Enable = std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
     void wait_each_n(F&& f, Iterator begin, std::size_t count)
     {
         auto result = pika::when_each_n(PIKA_FORWARD(F, f), begin, count);
@@ -207,22 +203,19 @@ namespace pika {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename F, typename... Ts,
-        typename Enable =
-            std::enable_if_t<!traits::is_future_v<std::decay_t<F>> &&
-                util::detail::all_of_v<traits::is_future<Ts>...>>>
+        typename Enable = std::enable_if_t<!traits::is_future_v<std::decay_t<F>> &&
+            util::detail::all_of_v<traits::is_future<Ts>...>>>
     void wait_each_nothrow(F&& f, Ts&&... ts)
     {
         pika::when_each(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...).wait();
     }
 
     template <typename F, typename... Ts,
-        typename Enable =
-            std::enable_if_t<!traits::is_future_v<std::decay_t<F>> &&
-                util::detail::all_of_v<traits::is_future<Ts>...>>>
+        typename Enable = std::enable_if_t<!traits::is_future_v<std::decay_t<F>> &&
+            util::detail::all_of_v<traits::is_future<Ts>...>>>
     void wait_each(F&& f, Ts&&... ts)
     {
-        auto result =
-            pika::when_each(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
+        auto result = pika::when_each(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
         result.wait();
         pika::detail::throw_if_exceptional(PIKA_MOVE(result));
     }

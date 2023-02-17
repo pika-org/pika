@@ -51,12 +51,11 @@ namespace pika::detail {
             hook_type slist_hook_;
         };
 
-        using slist_option_type = boost::intrusive::member_hook<queue_entry,
-            queue_entry::hook_type, &queue_entry::slist_hook_>;
+        using slist_option_type = boost::intrusive::member_hook<queue_entry, queue_entry::hook_type,
+            &queue_entry::slist_hook_>;
 
-        using queue_type = boost::intrusive::slist<queue_entry,
-            slist_option_type, boost::intrusive::cache_last<true>,
-            boost::intrusive::constant_time_size<true>>;
+        using queue_type = boost::intrusive::slist<queue_entry, slist_option_type,
+            boost::intrusive::cache_last<true>, boost::intrusive::constant_time_size<true>>;
 
         struct reset_queue_entry
         {
@@ -86,8 +85,7 @@ namespace pika::detail {
 
         PIKA_EXPORT bool empty(std::unique_lock<mutex_type> const& lock) const;
 
-        PIKA_EXPORT std::size_t size(
-            std::unique_lock<mutex_type> const& lock) const;
+        PIKA_EXPORT std::size_t size(std::unique_lock<mutex_type> const& lock) const;
 
         // Return false if no more threads are waiting (returns true if queue
         // is non-empty).
@@ -97,25 +95,20 @@ namespace pika::detail {
         PIKA_EXPORT void notify_all(std::unique_lock<mutex_type> lock,
             execution::thread_priority priority, error_code& ec = throws);
 
-        bool notify_one(
-            std::unique_lock<mutex_type> lock, error_code& ec = throws)
+        bool notify_one(std::unique_lock<mutex_type> lock, error_code& ec = throws)
         {
-            return notify_one(
-                PIKA_MOVE(lock), execution::thread_priority::default_, ec);
+            return notify_one(PIKA_MOVE(lock), execution::thread_priority::default_, ec);
         }
 
-        void notify_all(
-            std::unique_lock<mutex_type> lock, error_code& ec = throws)
+        void notify_all(std::unique_lock<mutex_type> lock, error_code& ec = throws)
         {
-            return notify_all(
-                PIKA_MOVE(lock), execution::thread_priority::default_, ec);
+            return notify_all(PIKA_MOVE(lock), execution::thread_priority::default_, ec);
         }
 
         PIKA_EXPORT void abort_all(std::unique_lock<mutex_type> lock);
 
         PIKA_EXPORT threads::detail::thread_restart_state wait(
-            std::unique_lock<mutex_type>& lock, char const* description,
-            error_code& ec = throws);
+            std::unique_lock<mutex_type>& lock, char const* description, error_code& ec = throws);
 
         threads::detail::thread_restart_state wait(
             std::unique_lock<mutex_type>& lock, error_code& ec = throws)
@@ -124,34 +117,26 @@ namespace pika::detail {
         }
 
         PIKA_EXPORT threads::detail::thread_restart_state wait_until(
-            std::unique_lock<mutex_type>& lock,
-            pika::chrono::steady_time_point const& abs_time,
+            std::unique_lock<mutex_type>& lock, pika::chrono::steady_time_point const& abs_time,
             char const* description, error_code& ec = throws);
 
-        threads::detail::thread_restart_state wait_until(
-            std::unique_lock<mutex_type>& lock,
-            pika::chrono::steady_time_point const& abs_time,
-            error_code& ec = throws)
+        threads::detail::thread_restart_state wait_until(std::unique_lock<mutex_type>& lock,
+            pika::chrono::steady_time_point const& abs_time, error_code& ec = throws)
         {
-            return wait_until(
-                lock, abs_time, "condition_variable::wait_until", ec);
+            return wait_until(lock, abs_time, "condition_variable::wait_until", ec);
         }
 
-        threads::detail::thread_restart_state wait_for(
-            std::unique_lock<mutex_type>& lock,
-            pika::chrono::steady_duration const& rel_time,
-            char const* description, error_code& ec = throws)
+        threads::detail::thread_restart_state wait_for(std::unique_lock<mutex_type>& lock,
+            pika::chrono::steady_duration const& rel_time, char const* description,
+            error_code& ec = throws)
         {
             return wait_until(lock, rel_time.from_now(), description, ec);
         }
 
-        threads::detail::thread_restart_state wait_for(
-            std::unique_lock<mutex_type>& lock,
-            pika::chrono::steady_duration const& rel_time,
-            error_code& ec = throws)
+        threads::detail::thread_restart_state wait_for(std::unique_lock<mutex_type>& lock,
+            pika::chrono::steady_duration const& rel_time, error_code& ec = throws)
         {
-            return wait_until(
-                lock, rel_time.from_now(), "condition_variable::wait_for", ec);
+            return wait_until(lock, rel_time.from_now(), "condition_variable::wait_for", ec);
         }
 
     private:
@@ -159,8 +144,7 @@ namespace pika::detail {
         void abort_all(std::unique_lock<Mutex> lock);
 
         // re-add the remaining items to the original queue
-        PIKA_EXPORT void prepend_entries(
-            std::unique_lock<mutex_type>& lock, queue_type& queue);
+        PIKA_EXPORT void prepend_entries(std::unique_lock<mutex_type>& lock, queue_type& queue);
 
     private:
         queue_type queue_;
@@ -182,9 +166,7 @@ namespace pika::detail {
         }
 
         pika::concurrency::detail::cache_aligned_data_derived<mutex_type> mtx_;
-        pika::concurrency::detail::cache_aligned_data_derived<
-            detail::condition_variable>
-            cond_;
+        pika::concurrency::detail::cache_aligned_data_derived<detail::condition_variable> cond_;
 
     private:
         friend PIKA_EXPORT void intrusive_ptr_add_ref(condition_variable_data*);

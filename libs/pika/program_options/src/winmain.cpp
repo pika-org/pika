@@ -7,12 +7,12 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_WINDOWS)
-#include <pika/program_options/parsers.hpp>
+# include <pika/program_options/parsers.hpp>
 
-#include <cctype>
-#include <cstddef>
-#include <string>
-#include <vector>
+# include <cctype>
+# include <cstddef>
+# include <string>
+# include <vector>
 
 using std::size_t;
 

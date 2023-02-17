@@ -8,25 +8,25 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_LOGGING)
-#include <pika/assert.hpp>
-#include <pika/init_runtime/detail/init_logging.hpp>
-#include <pika/runtime/get_locality_id.hpp>
-#include <pika/runtime/get_worker_thread_num.hpp>
-#include <pika/runtime_configuration/runtime_configuration.hpp>
-#include <pika/threading_base/thread_data.hpp>
+# include <pika/assert.hpp>
+# include <pika/init_runtime/detail/init_logging.hpp>
+# include <pika/runtime/get_locality_id.hpp>
+# include <pika/runtime/get_worker_thread_num.hpp>
+# include <pika/runtime_configuration/runtime_configuration.hpp>
+# include <pika/threading_base/thread_data.hpp>
 
-#include <fmt/ostream.h>
-#include <fmt/printf.h>
+# include <fmt/ostream.h>
+# include <fmt/printf.h>
 
-#include <cstddef>
-#include <cstdint>
-#include <cstdlib>
-#include <iostream>
-#include <string>
+# include <cstddef>
+# include <cstdint>
+# include <cstdlib>
+# include <iostream>
+# include <string>
 
-#if defined(ANDROID) || defined(__ANDROID__)
-#include <android/log.h>
-#endif
+# if defined(ANDROID) || defined(__ANDROID__)
+#  include <android/log.h>
+# endif
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::util {
@@ -78,17 +78,14 @@ namespace pika::util {
     {
         void operator()(std::ostream& to) const override
         {
-            threads::detail::thread_self* self =
-                threads::detail::get_self_ptr();
+            threads::detail::thread_self* self = threads::detail::get_self_ptr();
             if (nullptr != self)
             {
                 // called from inside a pika thread
-                threads::detail::thread_id_type id =
-                    threads::detail::get_self_id();
+                threads::detail::thread_id_type id = threads::detail::get_self_id();
                 if (id != threads::detail::invalid_thread_id)
                 {
-                    std::ptrdiff_t value =
-                        reinterpret_cast<std::ptrdiff_t>(id.get());
+                    std::ptrdiff_t value = reinterpret_cast<std::ptrdiff_t>(id.get());
                     fmt::print(to, "{:016x}", value);
                     return;
                 }
@@ -105,8 +102,7 @@ namespace pika::util {
     {
         void operator()(std::ostream& to) const override
         {
-            threads::detail::thread_self* self =
-                threads::detail::get_self_ptr();
+            threads::detail::thread_self* self = threads::detail::get_self_ptr();
             if (nullptr != self)
             {
                 // called from inside a pika thread
@@ -129,8 +125,7 @@ namespace pika::util {
     {
         void operator()(std::ostream& to) const override
         {
-            std::uint32_t parent_locality_id =
-                threads::detail::get_parent_locality_id();
+            std::uint32_t parent_locality_id = threads::detail::get_parent_locality_id();
             if (~static_cast<std::uint32_t>(0) != parent_locality_id)
             {
                 // called from inside a pika thread
@@ -150,13 +145,11 @@ namespace pika::util {
     {
         void operator()(std::ostream& to) const override
         {
-            threads::detail::thread_id_type parent_id =
-                threads::detail::get_parent_id();
+            threads::detail::thread_id_type parent_id = threads::detail::get_parent_id();
             if (nullptr != parent_id)
             {
                 // called from inside a pika thread
-                std::ptrdiff_t value =
-                    reinterpret_cast<std::ptrdiff_t>(parent_id.get());
+                std::ptrdiff_t value = reinterpret_cast<std::ptrdiff_t>(parent_id.get());
                 fmt::print(to, "{:016x}", value);
             }
             else
@@ -187,7 +180,7 @@ namespace pika::util {
         }
     };
 
-#if defined(ANDROID) || defined(__ANDROID__)
+# if defined(ANDROID) || defined(__ANDROID__)
     // default log destination for Android
     struct android_log : logging::destination::manipulator
     {
@@ -198,8 +191,7 @@ namespace pika::util {
 
         void operator()(logging::message const& msg) override
         {
-            __android_log_write(
-                ANDROID_LOG_DEBUG, tag.c_str(), msg.full_string().c_str());
+            __android_log_write(ANDROID_LOG_DEBUG, tag.c_str(), msg.full_string().c_str());
         }
 
         bool operator==(android_log const& rhs) const
@@ -209,7 +201,7 @@ namespace pika::util {
 
         std::string tag;
     };
-#endif
+# endif
 
     ///////////////////////////////////////////////////////////////////////////
     struct dummy_thread_component_id : logging::formatter::manipulator
@@ -319,49 +311,45 @@ namespace pika::util {
                 result.level_ = logini->get_entry("level", empty_string);
                 if (!result.level_.empty())
                 {
-                    result.dest_ =
-                        logini->get_entry("destination", empty_string);
-                    result.format_ = detail::unescape(
-                        logini->get_entry("format", empty_string));
+                    result.dest_ = logini->get_entry("destination", empty_string);
+                    result.format_ = detail::unescape(logini->get_entry("format", empty_string));
                 }
             }
             return result;
         }
 
         ///////////////////////////////////////////////////////////////////////
-        void get_console_local(logger_writer_type& writer, char const* name,
-            logging::level lvl, logging_destination dest)
+        void get_console_local(logger_writer_type& writer, char const* name, logging::level lvl,
+            logging_destination dest)
         {
             writer.set_destination(name, console_local(lvl, dest));
         }
 
         ///////////////////////////////////////////////////////////////////////
         // initialize logging for performance measurements
-        void init_timing_log(logging::level lvl, std::string logdest,
-            std::string logformat, bool isconsole,
-            void (*set_console_dest)(logger_writer_type&, char const*,
-                logging::level, logging_destination),
+        void init_timing_log(logging::level lvl, std::string logdest, std::string logformat,
+            bool isconsole,
+            void (*set_console_dest)(
+                logger_writer_type&, char const*, logging::level, logging_destination),
             void (*define_formatters)(logging::writer::named_write&))
         {
             if (pika::util::logging::level::disable_all != lvl)
             {
                 logger_writer_type& writer = timing_logger()->writer();
 
-#if defined(ANDROID) || defined(__ANDROID__)
+# if defined(ANDROID) || defined(__ANDROID__)
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = isconsole ? "android_log" : "console";
 
-                writer.set_destination(
-                    "android_log", android_log("pika.timing"));
-#else
+                writer.set_destination("android_log", android_log("pika.timing"));
+# else
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = isconsole ? "cerr" : "console";
-#endif
+# endif
                 if (logformat.empty())
                     logformat = "|\\n";
 
-                set_console_dest(
-                    writer, "console", lvl, destination_timing);    //-V106
+                set_console_dest(writer, "console", lvl, destination_timing);    //-V106
                 writer.write(logformat, logdest);
                 define_formatters(writer);
 
@@ -371,49 +359,46 @@ namespace pika::util {
         }
 
         void init_timing_log(runtime_configuration& ini, bool isconsole,
-            void (*set_console_dest)(logger_writer_type&, char const*,
-                logging::level, logging_destination),
+            void (*set_console_dest)(
+                logger_writer_type&, char const*, logging::level, logging_destination),
             void (*define_formatters)(logging::writer::named_write&))
         {
-            auto settings =
-                detail::get_log_settings(ini, "pika.logging.timing");
+            auto settings = detail::get_log_settings(ini, "pika.logging.timing");
 
             auto lvl = pika::util::logging::level::disable_all;
             if (!settings.level_.empty())
                 lvl = detail::get_log_level(settings.level_, true);
 
-            init_timing_log(lvl, PIKA_MOVE(settings.dest_),
-                PIKA_MOVE(settings.format_), isconsole, set_console_dest,
-                define_formatters);
+            init_timing_log(lvl, PIKA_MOVE(settings.dest_), PIKA_MOVE(settings.format_), isconsole,
+                set_console_dest, define_formatters);
         }
 
         ///////////////////////////////////////////////////////////////////////
-        void init_pika_log(logging::level lvl, std::string logdest,
-            std::string logformat, bool isconsole,
-            void (*set_console_dest)(logger_writer_type&, char const*,
-                logging::level, logging_destination),
+        void init_pika_log(logging::level lvl, std::string logdest, std::string logformat,
+            bool isconsole,
+            void (*set_console_dest)(
+                logger_writer_type&, char const*, logging::level, logging_destination),
             void (*define_formatters)(logging::writer::named_write&))
         {
             logger_writer_type& writer = pika_logger()->writer();
             logger_writer_type& error_writer = pika_error_logger()->writer();
 
-#if defined(ANDROID) || defined(__ANDROID__)
+# if defined(ANDROID) || defined(__ANDROID__)
             if (logdest.empty())    // ensure minimal defaults
                 logdest = isconsole ? "android_log" : "console";
 
             writer.set_destination("android_log", android_log("pika"));
             error_writer.set_destination("android_log", android_log("pika"));
-#else
+# else
             if (logdest.empty())    // ensure minimal defaults
                 logdest = isconsole ? "cerr" : "console";
-#endif
+# endif
             if (logformat.empty())
                 logformat = "|\\n";
 
             if (pika::util::logging::level::disable_all != lvl)
             {
-                set_console_dest(
-                    writer, "console", lvl, destination_pika);    //-V106
+                set_console_dest(writer, "console", lvl, destination_pika);    //-V106
                 writer.write(logformat, logdest);
                 define_formatters(writer);
 
@@ -421,12 +406,11 @@ namespace pika::util {
                 pika_logger()->set_enabled(lvl);
 
                 // errors are logged to the given destination and to cerr
-                set_console_dest(
-                    error_writer, "console", lvl, destination_pika);    //-V106
-#if !defined(ANDROID) && !defined(__ANDROID__)
+                set_console_dest(error_writer, "console", lvl, destination_pika);    //-V106
+# if !defined(ANDROID) && !defined(__ANDROID__)
                 if (logdest != "cerr")
                     error_writer.write(logformat, logdest + " cerr");
-#endif
+# endif
                 define_formatters(error_writer);
 
                 pika_error_logger()->mark_as_initialized();
@@ -437,29 +421,27 @@ namespace pika::util {
                 // errors are always logged to cerr
                 if (!isconsole)
                 {
-                    set_console_dest(
-                        writer, "console", lvl, destination_pika);    //-V106
+                    set_console_dest(writer, "console", lvl, destination_pika);    //-V106
                     error_writer.write(logformat, "console");
                 }
                 else
                 {
-#if defined(ANDROID) || defined(__ANDROID__)
+# if defined(ANDROID) || defined(__ANDROID__)
                     error_writer.write(logformat, "android_log");
-#else
+# else
                     error_writer.write(logformat, "cerr");
-#endif
+# endif
                 }
                 define_formatters(error_writer);
 
                 pika_error_logger()->mark_as_initialized();
-                pika_error_logger()->set_enabled(
-                    pika::util::logging::level::fatal);
+                pika_error_logger()->set_enabled(pika::util::logging::level::fatal);
             }
         }
 
         void init_pika_log(runtime_configuration& ini, bool isconsole,
-            void (*set_console_dest)(logger_writer_type&, char const*,
-                logging::level, logging_destination),
+            void (*set_console_dest)(
+                logger_writer_type&, char const*, logging::level, logging_destination),
             void (*define_formatters)(logging::writer::named_write&))
         {
             auto settings = detail::get_log_settings(ini, "pika.logging");
@@ -468,37 +450,34 @@ namespace pika::util {
             if (!settings.level_.empty())
                 lvl = detail::get_log_level(settings.level_, true);
 
-            init_pika_log(lvl, PIKA_MOVE(settings.dest_),
-                PIKA_MOVE(settings.format_), isconsole, set_console_dest,
-                define_formatters);
+            init_pika_log(lvl, PIKA_MOVE(settings.dest_), PIKA_MOVE(settings.format_), isconsole,
+                set_console_dest, define_formatters);
         }
 
         ///////////////////////////////////////////////////////////////////////
         // initialize logging for application
-        void init_app_log(logging::level lvl, std::string logdest,
-            std::string logformat, bool isconsole,
-            void (*set_console_dest)(logger_writer_type&, char const*,
-                logging::level, logging_destination),
+        void init_app_log(logging::level lvl, std::string logdest, std::string logformat,
+            bool isconsole,
+            void (*set_console_dest)(
+                logger_writer_type&, char const*, logging::level, logging_destination),
             void (*define_formatters)(logging::writer::named_write&))
         {
             if (pika::util::logging::level::disable_all != lvl)
             {
                 logger_writer_type& writer = app_logger()->writer();
 
-#if defined(ANDROID) || defined(__ANDROID__)
+# if defined(ANDROID) || defined(__ANDROID__)
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = isconsole ? "android_log" : "console";
-                writer.set_destination(
-                    "android_log", android_log("pika.application"));
-#else
+                writer.set_destination("android_log", android_log("pika.application"));
+# else
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = isconsole ? "cerr" : "console";
-#endif
+# endif
                 if (logformat.empty())
                     logformat = "|\\n";
 
-                set_console_dest(
-                    writer, "console", lvl, destination_app);    //-V106
+                set_console_dest(writer, "console", lvl, destination_app);    //-V106
                 writer.write(logformat, logdest);
                 define_formatters(writer);
 
@@ -508,48 +487,44 @@ namespace pika::util {
         }
 
         void init_app_log(runtime_configuration& ini, bool isconsole,
-            void (*set_console_dest)(logger_writer_type&, char const*,
-                logging::level, logging_destination),
+            void (*set_console_dest)(
+                logger_writer_type&, char const*, logging::level, logging_destination),
             void (*define_formatters)(logging::writer::named_write&))
         {
-            auto settings =
-                detail::get_log_settings(ini, "pika.logging.application");
+            auto settings = detail::get_log_settings(ini, "pika.logging.application");
 
             auto lvl = pika::util::logging::level::disable_all;
             if (!settings.level_.empty())
                 lvl = detail::get_log_level(settings.level_, true);
 
-            init_app_log(lvl, PIKA_MOVE(settings.dest_),
-                PIKA_MOVE(settings.format_), isconsole, set_console_dest,
-                define_formatters);
+            init_app_log(lvl, PIKA_MOVE(settings.dest_), PIKA_MOVE(settings.format_), isconsole,
+                set_console_dest, define_formatters);
         }
 
         ///////////////////////////////////////////////////////////////////////
         // initialize logging for application
-        void init_debuglog_log(logging::level lvl, std::string logdest,
-            std::string logformat, bool isconsole,
-            void (*set_console_dest)(logger_writer_type&, char const*,
-                logging::level, logging_destination),
+        void init_debuglog_log(logging::level lvl, std::string logdest, std::string logformat,
+            bool isconsole,
+            void (*set_console_dest)(
+                logger_writer_type&, char const*, logging::level, logging_destination),
             void (*define_formatters)(logging::writer::named_write&))
         {
             if (pika::util::logging::level::disable_all != lvl)
             {
                 logger_writer_type& writer = debuglog_logger()->writer();
 
-#if defined(ANDROID) || defined(__ANDROID__)
+# if defined(ANDROID) || defined(__ANDROID__)
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = isconsole ? "android_log" : "console";
-                writer.set_destination(
-                    "android_log", android_log("pika.debuglog"));
-#else
+                writer.set_destination("android_log", android_log("pika.debuglog"));
+# else
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = isconsole ? "cerr" : "console";
-#endif
+# endif
                 if (logformat.empty())
                     logformat = "|\\n";
 
-                set_console_dest(
-                    writer, "console", lvl, destination_debuglog);    //-V106
+                set_console_dest(writer, "console", lvl, destination_debuglog);    //-V106
                 writer.write(logformat, logdest);
                 define_formatters(writer);
 
@@ -559,39 +534,35 @@ namespace pika::util {
         }
 
         void init_debuglog_log(runtime_configuration& ini, bool isconsole,
-            void (*set_console_dest)(logger_writer_type&, char const*,
-                logging::level, logging_destination),
+            void (*set_console_dest)(
+                logger_writer_type&, char const*, logging::level, logging_destination),
             void (*define_formatters)(logging::writer::named_write&))
         {
-            auto settings =
-                detail::get_log_settings(ini, "pika.logging.debuglog");
+            auto settings = detail::get_log_settings(ini, "pika.logging.debuglog");
 
             auto lvl = pika::util::logging::level::disable_all;
             if (!settings.level_.empty())
                 lvl = detail::get_log_level(settings.level_, true);
 
-            init_debuglog_log(lvl, PIKA_MOVE(settings.dest_),
-                PIKA_MOVE(settings.format_), isconsole, set_console_dest,
-                define_formatters);
+            init_debuglog_log(lvl, PIKA_MOVE(settings.dest_), PIKA_MOVE(settings.format_),
+                isconsole, set_console_dest, define_formatters);
         }
 
         ///////////////////////////////////////////////////////////////////////
-        void init_timing_console_log(
-            logging::level lvl, std::string logdest, std::string logformat)
+        void init_timing_console_log(logging::level lvl, std::string logdest, std::string logformat)
         {
             if (pika::util::logging::level::disable_all != lvl)
             {
                 logger_writer_type& writer = timing_console_logger()->writer();
 
-#if defined(ANDROID) || defined(__ANDROID__)
+# if defined(ANDROID) || defined(__ANDROID__)
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = "android_log";
-                writer.set_destination(
-                    "android_log", android_log("pika.timing"));
-#else
+                writer.set_destination("android_log", android_log("pika.timing"));
+# else
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = "cerr";
-#endif
+# endif
                 if (logformat.empty())
                     logformat = "|\\n";
 
@@ -604,33 +575,30 @@ namespace pika::util {
 
         void init_timing_console_log(util::section const& ini)
         {
-            auto settings =
-                detail::get_log_settings(ini, "pika.logging.console.timing");
+            auto settings = detail::get_log_settings(ini, "pika.logging.console.timing");
 
             auto lvl = pika::util::logging::level::disable_all;
             if (!settings.level_.empty())
                 lvl = detail::get_log_level(settings.level_, true);
 
-            init_timing_console_log(
-                lvl, PIKA_MOVE(settings.dest_), PIKA_MOVE(settings.format_));
+            init_timing_console_log(lvl, PIKA_MOVE(settings.dest_), PIKA_MOVE(settings.format_));
         }
 
         ///////////////////////////////////////////////////////////////////////
-        void init_pika_console_log(
-            logging::level lvl, std::string logdest, std::string logformat)
+        void init_pika_console_log(logging::level lvl, std::string logdest, std::string logformat)
         {
             if (pika::util::logging::level::disable_all != lvl)
             {
                 logger_writer_type& writer = pika_console_logger()->writer();
 
-#if defined(ANDROID) || defined(__ANDROID__)
+# if defined(ANDROID) || defined(__ANDROID__)
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = "android_log";
                 writer.set_destination("android_log", android_log("pika"));
-#else
+# else
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = "cerr";
-#endif
+# endif
                 if (logformat.empty())
                     logformat = "|\\n";
 
@@ -643,34 +611,30 @@ namespace pika::util {
 
         void init_pika_console_log(util::section const& ini)
         {
-            auto settings =
-                detail::get_log_settings(ini, "pika.logging.console");
+            auto settings = detail::get_log_settings(ini, "pika.logging.console");
 
             auto lvl = pika::util::logging::level::disable_all;
             if (!settings.level_.empty())
                 lvl = detail::get_log_level(settings.level_, true);
 
-            init_pika_console_log(
-                lvl, PIKA_MOVE(settings.dest_), PIKA_MOVE(settings.format_));
+            init_pika_console_log(lvl, PIKA_MOVE(settings.dest_), PIKA_MOVE(settings.format_));
         }
 
         ///////////////////////////////////////////////////////////////////////
-        void init_app_console_log(
-            logging::level lvl, std::string logdest, std::string logformat)
+        void init_app_console_log(logging::level lvl, std::string logdest, std::string logformat)
         {
             if (pika::util::logging::level::disable_all != lvl)
             {
                 logger_writer_type& writer = app_console_logger()->writer();
 
-#if defined(ANDROID) || defined(__ANDROID__)
+# if defined(ANDROID) || defined(__ANDROID__)
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = "android_log";
-                writer.set_destination(
-                    "android_log", android_log("pika.application"));
-#else
+                writer.set_destination("android_log", android_log("pika.application"));
+# else
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = "cerr";
-#endif
+# endif
                 if (logformat.empty())
                     logformat = "|\\n";
 
@@ -683,15 +647,13 @@ namespace pika::util {
 
         void init_app_console_log(util::section const& ini)
         {
-            auto settings = detail::get_log_settings(
-                ini, "pika.logging.console.application");
+            auto settings = detail::get_log_settings(ini, "pika.logging.console.application");
 
             auto lvl = pika::util::logging::level::disable_all;
             if (!settings.level_.empty())
                 lvl = detail::get_log_level(settings.level_, true);
 
-            init_app_console_log(
-                lvl, PIKA_MOVE(settings.dest_), PIKA_MOVE(settings.format_));
+            init_app_console_log(lvl, PIKA_MOVE(settings.dest_), PIKA_MOVE(settings.format_));
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -700,18 +662,16 @@ namespace pika::util {
         {
             if (pika::util::logging::level::disable_all != lvl)
             {
-                logger_writer_type& writer =
-                    debuglog_console_logger()->writer();
+                logger_writer_type& writer = debuglog_console_logger()->writer();
 
-#if defined(ANDROID) || defined(__ANDROID__)
+# if defined(ANDROID) || defined(__ANDROID__)
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = "android_log";
-                writer.set_destination(
-                    "android_log", android_log("pika.debuglog"));
-#else
+                writer.set_destination("android_log", android_log("pika.debuglog"));
+# else
                 if (logdest.empty())    // ensure minimal defaults
                     logdest = "cerr";
-#endif
+# endif
                 if (logformat.empty())
                     logformat = "|\\n";
 
@@ -724,20 +684,17 @@ namespace pika::util {
 
         void init_debuglog_console_log(util::section const& ini)
         {
-            auto settings =
-                detail::get_log_settings(ini, "pika.logging.console.debuglog");
+            auto settings = detail::get_log_settings(ini, "pika.logging.console.debuglog");
 
             auto lvl = pika::util::logging::level::disable_all;
             if (!settings.level_.empty())
                 lvl = detail::get_log_level(settings.level_, true);
 
-            init_debuglog_console_log(
-                lvl, PIKA_MOVE(settings.dest_), PIKA_MOVE(settings.format_));
+            init_debuglog_console_log(lvl, PIKA_MOVE(settings.dest_), PIKA_MOVE(settings.format_));
         }
 
         ///////////////////////////////////////////////////////////////////////
-        static void (*default_set_console_dest)(logger_writer_type&,
-            char const*, logging::level,
+        static void (*default_set_console_dest)(logger_writer_type&, char const*, logging::level,
             logging_destination) = get_console_local;
 
         static void (*default_define_formatters)(
@@ -746,8 +703,8 @@ namespace pika::util {
         static bool default_isconsole = true;
 
         void init_logging(runtime_configuration& ini, bool isconsole,
-            void (*set_console_dest)(logger_writer_type&, char const*,
-                logging::level, logging_destination),
+            void (*set_console_dest)(
+                logger_writer_type&, char const*, logging::level, logging_destination),
             void (*define_formatters)(logging::writer::named_write&))
         {
             default_isconsole = isconsole;
@@ -755,12 +712,10 @@ namespace pika::util {
             default_define_formatters = define_formatters;
 
             // initialize normal logs
-            init_timing_log(
-                ini, isconsole, set_console_dest, define_formatters);
+            init_timing_log(ini, isconsole, set_console_dest, define_formatters);
             init_pika_log(ini, isconsole, set_console_dest, define_formatters);
             init_app_log(ini, isconsole, set_console_dest, define_formatters);
-            init_debuglog_log(
-                ini, isconsole, set_console_dest, define_formatters);
+            init_debuglog_log(ini, isconsole, set_console_dest, define_formatters);
 
             // initialize console logs
             init_timing_console_log(ini);
@@ -771,8 +726,8 @@ namespace pika::util {
 
         void init_logging_local(runtime_configuration& ini)
         {
-            init_logging(ini, true, util::detail::get_console_local,
-                util::detail::define_formatters_local);
+            init_logging(
+                ini, true, util::detail::get_console_local, util::detail::define_formatters_local);
         }
     }    // namespace detail
 
@@ -804,8 +759,8 @@ namespace pika::util {
     }
 
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-    void enable_logging(logging_destination dest, std::string const& level,
-        std::string logdest, std::string logformat)
+    void enable_logging(logging_destination dest, std::string const& level, std::string logdest,
+        std::string logformat)
     // NOLINTEND(bugprone-easily-swappable-parameters)
     {
         auto lvl = pika::util::logging::level::enable_all;
@@ -817,35 +772,27 @@ namespace pika::util {
         switch (dest)
         {
         case destination_pika:
-            detail::init_pika_log(lvl, logdest, logformat,
-                detail::default_isconsole, detail::default_set_console_dest,
-                detail::default_define_formatters);
-            detail::init_pika_console_log(
-                lvl, PIKA_MOVE(logdest), PIKA_MOVE(logformat));
+            detail::init_pika_log(lvl, logdest, logformat, detail::default_isconsole,
+                detail::default_set_console_dest, detail::default_define_formatters);
+            detail::init_pika_console_log(lvl, PIKA_MOVE(logdest), PIKA_MOVE(logformat));
             break;
 
         case destination_timing:
-            detail::init_debuglog_log(lvl, logdest, logformat,
-                detail::default_isconsole, detail::default_set_console_dest,
-                detail::default_define_formatters);
-            detail::init_debuglog_console_log(
-                lvl, PIKA_MOVE(logdest), PIKA_MOVE(logformat));
+            detail::init_debuglog_log(lvl, logdest, logformat, detail::default_isconsole,
+                detail::default_set_console_dest, detail::default_define_formatters);
+            detail::init_debuglog_console_log(lvl, PIKA_MOVE(logdest), PIKA_MOVE(logformat));
             break;
 
         case destination_app:
-            detail::init_app_log(lvl, logdest, logformat,
-                detail::default_isconsole, detail::default_set_console_dest,
-                detail::default_define_formatters);
-            detail::init_app_console_log(
-                lvl, PIKA_MOVE(logdest), PIKA_MOVE(logformat));
+            detail::init_app_log(lvl, logdest, logformat, detail::default_isconsole,
+                detail::default_set_console_dest, detail::default_define_formatters);
+            detail::init_app_console_log(lvl, PIKA_MOVE(logdest), PIKA_MOVE(logformat));
             break;
 
         case destination_debuglog:
-            detail::init_debuglog_log(lvl, logdest, logformat,
-                detail::default_isconsole, detail::default_set_console_dest,
-                detail::default_define_formatters);
-            detail::init_debuglog_console_log(
-                lvl, PIKA_MOVE(logdest), PIKA_MOVE(logformat));
+            detail::init_debuglog_log(lvl, logdest, logformat, detail::default_isconsole,
+                detail::default_set_console_dest, detail::default_define_formatters);
+            detail::init_debuglog_console_log(lvl, PIKA_MOVE(logdest), PIKA_MOVE(logformat));
             break;
         }
     }
@@ -853,20 +800,17 @@ namespace pika::util {
 
 #else
 
-#include <pika/init_runtime/detail/init_logging.hpp>
-#include <pika/modules/logging.hpp>
-#include <pika/util/get_entry_as.hpp>
+# include <pika/init_runtime/detail/init_logging.hpp>
+# include <pika/modules/logging.hpp>
+# include <pika/util/get_entry_as.hpp>
 
-#include <iostream>
-#include <string>
+# include <iostream>
+# include <string>
 
 namespace pika { namespace util {
 
     //////////////////////////////////////////////////////////////////////////
-    void enable_logging(
-        logging_destination, std::string const&, std::string, std::string)
-    {
-    }
+    void enable_logging(logging_destination, std::string const&, std::string, std::string) {}
 
     void disable_logging(logging_destination) {}
 
@@ -881,15 +825,13 @@ namespace pika { namespace util {
             if (get_entry_as<int>(ini, "pika.logging.level", -1) > 0 ||
                 get_entry_as<int>(ini, "pika.logging.timing.level", -1) > 0 ||
                 get_entry_as<int>(ini, "pika.logging.debuglog.level", -1) > 0 ||
-                get_entry_as<int>(ini, "pika.logging.application.level", -1) >
-                    0)
+                get_entry_as<int>(ini, "pika.logging.application.level", -1) > 0)
             {
-                std::cerr
-                    << "pika::init_logging: warning: logging is requested even "
-                       "while it was disabled at compile time. If you "
-                       "need logging to be functional, please reconfigure and "
-                       "rebuild pika with PIKA_WITH_LOGGING set to ON."
-                    << std::endl;
+                std::cerr << "pika::init_logging: warning: logging is requested even "
+                             "while it was disabled at compile time. If you "
+                             "need logging to be functional, please reconfigure and "
+                             "rebuild pika with PIKA_WITH_LOGGING set to ON."
+                          << std::endl;
             }
         }
     }    // namespace detail

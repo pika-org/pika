@@ -9,12 +9,12 @@
 
 #if defined(PIKA_HAVE_LOGGING)
 
-#include <cstddef>
-#include <iomanip>
-#include <ostream>
-#include <stdexcept>
-#include <string>
-#include <string_view>
+# include <cstddef>
+# include <iomanip>
+# include <ostream>
+# include <stdexcept>
+# include <string>
+# include <string_view>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::util::logging {

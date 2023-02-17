@@ -17,7 +17,7 @@
 #include <pika/modules/errors.hpp>
 
 #if defined(PIKA_HAVE_APEX)
-#include <apex_api.hpp>
+# include <apex_api.hpp>
 #endif
 
 #include <cstddef>
@@ -58,15 +58,14 @@ namespace pika::threads::detail {
     using thread_arg_type = thread_restart_state;
 
     using thread_function_sig = thread_result_type(thread_arg_type);
-    using thread_function_type =
-        util::detail::unique_function<thread_function_sig>;
+    using thread_function_type = util::detail::unique_function<thread_function_sig>;
 
     using thread_self = coroutines::detail::coroutine_self;
     using thread_self_impl_type = coroutines::detail::coroutine_impl;
 
 #if defined(PIKA_HAVE_APEX)
-    PIKA_EXPORT std::shared_ptr<pika::detail::external_timer::task_wrapper>
-    get_self_timer_data(void);
+    PIKA_EXPORT std::shared_ptr<pika::detail::external_timer::task_wrapper> get_self_timer_data(
+        void);
     PIKA_EXPORT void set_self_timer_data(
         std::shared_ptr<pika::detail::external_timer::task_wrapper> data);
 #endif

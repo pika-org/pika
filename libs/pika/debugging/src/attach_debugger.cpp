@@ -11,11 +11,11 @@
 #include <iostream>
 
 #if defined(PIKA_HAVE_UNISTD_H)
-#include <unistd.h>
+# include <unistd.h>
 #endif
 
 #if defined(PIKA_WINDOWS)
-#include <Windows.h>
+# include <Windows.h>
 #endif    // PIKA_WINDOWS
 
 namespace pika::debug::detail {

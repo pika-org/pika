@@ -92,61 +92,46 @@ namespace pika::execution {
         using executor_parameters_type = static_chunk_size;
 
         /// Create a new parallel executor
-        constexpr explicit parallel_policy_executor(
-            execution::thread_priority priority,
-            execution::thread_stacksize stacksize =
-                execution::thread_stacksize::default_,
+        constexpr explicit parallel_policy_executor(execution::thread_priority priority,
+            execution::thread_stacksize stacksize = execution::thread_stacksize::default_,
             execution::thread_schedule_hint schedulehint = {},
-            Policy l =
-                parallel::execution::detail::get_default_policy<Policy>::call(),
-            std::size_t hierarchical_threshold =
-                hierarchical_threshold_default_)
+            Policy l = parallel::execution::detail::get_default_policy<Policy>::call(),
+            std::size_t hierarchical_threshold = hierarchical_threshold_default_)
           : pool_(nullptr)
           , policy_(l, priority, stacksize, schedulehint)
           , hierarchical_threshold_(hierarchical_threshold)
         {
         }
 
-        constexpr explicit parallel_policy_executor(
-            execution::thread_stacksize stacksize,
+        constexpr explicit parallel_policy_executor(execution::thread_stacksize stacksize,
             execution::thread_schedule_hint schedulehint = {},
-            Policy l =
-                parallel::execution::detail::get_default_policy<Policy>::call())
+            Policy l = parallel::execution::detail::get_default_policy<Policy>::call())
           : pool_(nullptr)
-          , policy_(l, execution::thread_priority::default_, stacksize,
+          , policy_(l, execution::thread_priority::default_, stacksize, schedulehint)
+        {
+        }
+
+        constexpr explicit parallel_policy_executor(execution::thread_schedule_hint schedulehint,
+            Policy l = parallel::execution::detail::get_default_policy<Policy>::call())
+          : pool_(nullptr)
+          , policy_(l, execution::thread_priority::default_, execution::thread_stacksize::default_,
                 schedulehint)
         {
         }
 
         constexpr explicit parallel_policy_executor(
-            execution::thread_schedule_hint schedulehint,
-            Policy l =
-                parallel::execution::detail::get_default_policy<Policy>::call())
-          : pool_(nullptr)
-          , policy_(l, execution::thread_priority::default_,
-                execution::thread_stacksize::default_, schedulehint)
-        {
-        }
-
-        constexpr explicit parallel_policy_executor(
-            Policy l =
-                parallel::execution::detail::get_default_policy<Policy>::call())
+            Policy l = parallel::execution::detail::get_default_policy<Policy>::call())
           : pool_(nullptr)
           , policy_(l)
         {
         }
 
-        constexpr explicit parallel_policy_executor(
-            threads::detail::thread_pool_base* pool,
-            execution::thread_priority priority =
-                execution::thread_priority::default_,
-            execution::thread_stacksize stacksize =
-                execution::thread_stacksize::default_,
+        constexpr explicit parallel_policy_executor(threads::detail::thread_pool_base* pool,
+            execution::thread_priority priority = execution::thread_priority::default_,
+            execution::thread_stacksize stacksize = execution::thread_stacksize::default_,
             execution::thread_schedule_hint schedulehint = {},
-            Policy l =
-                parallel::execution::detail::get_default_policy<Policy>::call(),
-            std::size_t hierarchical_threshold =
-                hierarchical_threshold_default_)
+            Policy l = parallel::execution::detail::get_default_policy<Policy>::call(),
+            std::size_t hierarchical_threshold = hierarchical_threshold_default_)
           : pool_(pool)
           , policy_(l, priority, stacksize, schedulehint)
           , hierarchical_threshold_(hierarchical_threshold)
@@ -155,8 +140,7 @@ namespace pika::execution {
 
         // property implementations
         friend constexpr parallel_policy_executor tag_invoke(
-            pika::execution::experimental::with_hint_t,
-            parallel_policy_executor const& exec,
+            pika::execution::experimental::with_hint_t, parallel_policy_executor const& exec,
             pika::execution::thread_schedule_hint hint)
         {
             auto exec_with_hint = exec;
@@ -172,8 +156,7 @@ namespace pika::execution {
         }
 
         friend constexpr parallel_policy_executor tag_invoke(
-            pika::execution::experimental::with_priority_t,
-            parallel_policy_executor const& exec,
+            pika::execution::experimental::with_priority_t, parallel_policy_executor const& exec,
             pika::execution::thread_priority priority)
         {
             auto exec_with_priority = exec;
@@ -189,16 +172,15 @@ namespace pika::execution {
         }
 
         friend constexpr parallel_policy_executor tag_invoke(
-            pika::execution::experimental::with_annotation_t,
-            parallel_policy_executor const& exec, char const* annotation)
+            pika::execution::experimental::with_annotation_t, parallel_policy_executor const& exec,
+            char const* annotation)
         {
             auto exec_with_annotation = exec;
             exec_with_annotation.annotation_ = annotation;
             return exec_with_annotation;
         }
 
-        friend parallel_policy_executor tag_invoke(
-            pika::execution::experimental::with_annotation_t,
+        friend parallel_policy_executor tag_invoke(pika::execution::experimental::with_annotation_t,
             parallel_policy_executor const& exec, std::string annotation)
         {
             auto exec_with_annotation = exec;
@@ -207,23 +189,20 @@ namespace pika::execution {
             return exec_with_annotation;
         }
 
-        friend constexpr char const* tag_invoke(
-            pika::execution::experimental::get_annotation_t,
+        friend constexpr char const* tag_invoke(pika::execution::experimental::get_annotation_t,
             parallel_policy_executor const& exec) noexcept
         {
             return exec.annotation_;
         }
 
         /// \cond NOINTERNAL
-        constexpr bool operator==(
-            parallel_policy_executor const& rhs) const noexcept
+        constexpr bool operator==(parallel_policy_executor const& rhs) const noexcept
         {
             return policy_ == rhs.policy_ && pool_ == rhs.pool_ &&
                 hierarchical_threshold_ == rhs.hierarchical_threshold_;
         }
 
-        constexpr bool operator!=(
-            parallel_policy_executor const& rhs) const noexcept
+        constexpr bool operator!=(parallel_policy_executor const& rhs) const noexcept
         {
             return !(*this == rhs);
         }
@@ -241,51 +220,42 @@ namespace pika::execution {
         typename pika::util::detail::invoke_deferred_result<F, Ts...>::type
         sync_execute(F&& f, Ts&&... ts) const
         {
-            pika::scoped_annotation annotate(annotation_ ?
-                    annotation_ :
-                    "parallel_policy_executor::sync_execute");
+            pika::scoped_annotation annotate(
+                annotation_ ? annotation_ : "parallel_policy_executor::sync_execute");
             return pika::detail::sync_launch_policy_dispatch<Policy>::call(
                 launch::sync, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
         }
 
         // TwoWayExecutor interface
         template <typename F, typename... Ts>
-        pika::future<
-            typename pika::util::detail::invoke_deferred_result<F, Ts...>::type>
+        pika::future<typename pika::util::detail::invoke_deferred_result<F, Ts...>::type>
         async_execute(F&& f, Ts&&... ts) const
         {
             pika::detail::thread_description desc(f, annotation_);
-            auto pool =
-                pool_ ? pool_ : threads::detail::get_self_or_default_pool();
+            auto pool = pool_ ? pool_ : threads::detail::get_self_or_default_pool();
 
             return pika::detail::async_launch_policy_dispatch<Policy>::call(
-                policy_, desc, pool, PIKA_FORWARD(F, f),
-                PIKA_FORWARD(Ts, ts)...);
+                policy_, desc, pool, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
         }
 
         template <typename F, typename Future, typename... Ts>
-        PIKA_FORCEINLINE
-            pika::future<typename pika::util::detail::invoke_deferred_result<F,
-                Future, Ts...>::type>
-            then_execute(F&& f, Future&& predecessor, Ts&&... ts) const
+        PIKA_FORCEINLINE pika::future<
+            typename pika::util::detail::invoke_deferred_result<F, Future, Ts...>::type>
+        then_execute(F&& f, Future&& predecessor, Ts&&... ts) const
         {
             using result_type =
-                typename pika::util::detail::invoke_deferred_result<F, Future,
-                    Ts...>::type;
+                typename pika::util::detail::invoke_deferred_result<F, Future, Ts...>::type;
 
-            auto&& func =
-                pika::util::detail::one_shot(pika::util::detail::bind_back(
-                    pika::annotated_function(PIKA_FORWARD(F, f), annotation_),
-                    PIKA_FORWARD(Ts, ts)...));
+            auto&& func = pika::util::detail::one_shot(pika::util::detail::bind_back(
+                pika::annotated_function(PIKA_FORWARD(F, f), annotation_),
+                PIKA_FORWARD(Ts, ts)...));
 
-            typename pika::traits::detail::shared_state_ptr<result_type>::type
-                p = lcos::detail::make_continuation_alloc_nounwrap<result_type>(
-                    pika::detail::internal_allocator<>{},
-                    PIKA_FORWARD(Future, predecessor), policy_,
-                    PIKA_MOVE(func));
+            typename pika::traits::detail::shared_state_ptr<result_type>::type p =
+                lcos::detail::make_continuation_alloc_nounwrap<result_type>(
+                    pika::detail::internal_allocator<>{}, PIKA_FORWARD(Future, predecessor),
+                    policy_, PIKA_MOVE(func));
 
-            return pika::traits::future_access<
-                pika::future<result_type>>::create(PIKA_MOVE(p));
+            return pika::traits::future_access<pika::future<result_type>>::create(PIKA_MOVE(p));
         }
 
         // NonBlockingOneWayExecutor (adapted) interface
@@ -293,40 +263,32 @@ namespace pika::execution {
         void post(F&& f, Ts&&... ts) const
         {
             pika::detail::thread_description desc(f, annotation_);
-            auto pool =
-                pool_ ? pool_ : threads::detail::get_self_or_default_pool();
+            auto pool = pool_ ? pool_ : threads::detail::get_self_or_default_pool();
             parallel::execution::detail::post_policy_dispatch<Policy>::call(
-                policy_, desc, pool, PIKA_FORWARD(F, f),
-                PIKA_FORWARD(Ts, ts)...);
+                policy_, desc, pool, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
         }
 
         // BulkTwoWayExecutor interface
         template <typename F, typename S, typename... Ts>
-        std::vector<pika::future<typename parallel::execution::detail::
-                bulk_function_result<F, S, Ts...>::type>>
+        std::vector<pika::future<
+            typename parallel::execution::detail::bulk_function_result<F, S, Ts...>::type>>
         bulk_async_execute(F&& f, S const& shape, Ts&&... ts) const
         {
             pika::detail::thread_description desc(f, annotation_);
-            auto pool =
-                pool_ ? pool_ : threads::detail::get_self_or_default_pool();
-            return parallel::execution::detail::
-                hierarchical_bulk_async_execute_helper(desc, pool, 0,
-                    pool->get_os_thread_count(), hierarchical_threshold_,
-                    policy_, PIKA_FORWARD(F, f), shape,
-                    PIKA_FORWARD(Ts, ts)...);
+            auto pool = pool_ ? pool_ : threads::detail::get_self_or_default_pool();
+            return parallel::execution::detail::hierarchical_bulk_async_execute_helper(desc, pool,
+                0, pool->get_os_thread_count(), hierarchical_threshold_, policy_,
+                PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Ts, ts)...);
         }
 
         template <typename F, typename S, typename Future, typename... Ts>
-        pika::future<typename parallel::execution::detail::
-                bulk_then_execute_result<F, S, Future, Ts...>::type>
-        bulk_then_execute(
-            F&& f, S const& shape, Future&& predecessor, Ts&&... ts)
+        pika::future<typename parallel::execution::detail::bulk_then_execute_result<F, S, Future,
+            Ts...>::type>
+        bulk_then_execute(F&& f, S const& shape, Future&& predecessor, Ts&&... ts)
         {
-            return parallel::execution::detail::
-                hierarchical_bulk_then_execute_helper(*this, policy_,
-                    pika::annotated_function(PIKA_FORWARD(F, f), annotation_),
-                    shape, PIKA_FORWARD(Future, predecessor),
-                    PIKA_FORWARD(Ts, ts)...);
+            return parallel::execution::detail::hierarchical_bulk_then_execute_helper(*this,
+                policy_, pika::annotated_function(PIKA_FORWARD(F, f), annotation_), shape,
+                PIKA_FORWARD(Future, predecessor), PIKA_FORWARD(Ts, ts)...);
         }
         /// \endcond
 
@@ -347,20 +309,18 @@ namespace pika::execution {
 namespace pika::parallel::execution {
     /// \cond NOINTERNAL
     template <typename Policy>
-    struct is_one_way_executor<
-        pika::execution::parallel_policy_executor<Policy>> : std::true_type
+    struct is_one_way_executor<pika::execution::parallel_policy_executor<Policy>> : std::true_type
     {
     };
 
     template <typename Policy>
-    struct is_two_way_executor<
-        pika::execution::parallel_policy_executor<Policy>> : std::true_type
+    struct is_two_way_executor<pika::execution::parallel_policy_executor<Policy>> : std::true_type
     {
     };
 
     template <typename Policy>
-    struct is_bulk_two_way_executor<
-        pika::execution::parallel_policy_executor<Policy>> : std::true_type
+    struct is_bulk_two_way_executor<pika::execution::parallel_policy_executor<Policy>>
+      : std::true_type
     {
     };
     /// \endcond

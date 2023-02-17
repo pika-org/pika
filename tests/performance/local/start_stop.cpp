@@ -27,15 +27,13 @@ int main(int argc, char** argv)
 {
     pika::program_options::options_description desc_commandline;
     desc_commandline.add_options()("repetitions",
-        pika::program_options::value<std::uint64_t>()->default_value(100),
-        "Number of repetitions");
+        pika::program_options::value<std::uint64_t>()->default_value(100), "Number of repetitions");
 
     pika::program_options::variables_map vm;
-    pika::program_options::store(
-        pika::program_options::command_line_parser(argc, argv)
-            .allow_unregistered()
-            .options(desc_commandline)
-            .run(),
+    pika::program_options::store(pika::program_options::command_line_parser(argc, argv)
+                                     .allow_unregistered()
+                                     .options(desc_commandline)
+                                     .run(),
         vm);
 
     std::uint64_t repetitions = vm["repetitions"].as<std::uint64_t>();
@@ -75,8 +73,7 @@ int main(int argc, char** argv)
         auto t_stop = timer.elapsed();
         stop_time += t_stop;
 
-        std::cout << threads << ", " << t_start << ", " << t_apply << ", "
-                  << t_stop << std::endl;
+        std::cout << threads << ", " << t_start << ", " << t_apply << ", " << t_stop << std::endl;
     }
     pika::util::print_cdash_timing("StartTime", start_time);
     pika::util::print_cdash_timing("StopTime", stop_time);

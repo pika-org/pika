@@ -48,8 +48,8 @@ namespace jacobi_smp {
         std::vector<std::size_t> rows;
     };
 
-    void jacobi(crs_matrix<double> const& A, std::vector<double> const& b,
-        std::size_t iterations, std::size_t block_size);
+    void jacobi(crs_matrix<double> const& A, std::vector<double> const& b, std::size_t iterations,
+        std::size_t block_size);
 
     struct range
     {
@@ -77,7 +77,6 @@ namespace jacobi_smp {
         std::size_t end_;
     };
 
-    void jacobi_kernel_nonuniform(crs_matrix<double> const& A,
-        std::vector<double>& dst, std::vector<double> const& src,
-        std::vector<double> const& b, std::size_t row);
+    void jacobi_kernel_nonuniform(crs_matrix<double> const& A, std::vector<double>& dst,
+        std::vector<double> const& src, std::vector<double> const& b, std::size_t row);
 }    // namespace jacobi_smp

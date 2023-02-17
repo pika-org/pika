@@ -19,8 +19,7 @@
 #include <vector>
 
 namespace pika::detail {
-    inline std::size_t count_initialized(
-        std::vector<threads::detail::mask_type> const& masks)
+    inline std::size_t count_initialized(std::vector<threads::detail::mask_type> const& masks)
     {
         std::size_t count = 0;
         for (threads::detail::mask_cref_type m : masks)
@@ -43,8 +42,7 @@ namespace pika::detail {
       , use_process_mask_(true)
       , num_pus_needed_(0)
     {
-        threads::detail::resize(
-            no_affinity_, threads::detail::hardware_concurrency());
+        threads::detail::resize(no_affinity_, threads::detail::hardware_concurrency());
     }
 
     affinity_data::~affinity_data()
@@ -53,8 +51,8 @@ namespace pika::detail {
     }
 
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-    void affinity_data::init(std::size_t num_threads, std::size_t max_cores,
-        std::size_t pu_offset, std::size_t pu_step, std::size_t used_cores,
+    void affinity_data::init(std::size_t num_threads, std::size_t max_cores, std::size_t pu_offset,
+        std::size_t pu_step, std::size_t used_cores,
         std::string affinity_domain,    // -V813
         std::string const& affinity_description, bool use_process_mask)
     // NOLINTEND(bugprone-easily-swappable-parameters)
@@ -103,15 +101,13 @@ namespace pika::detail {
             for (std::size_t i = 0; i != num_threads_; ++i)
                 threads::detail::resize(affinity_masks_[i], num_system_pus);
 
-            parse_affinity_options(affinity_description, affinity_masks_,
-                used_cores, max_cores, num_threads_, pu_nums_,
-                use_process_mask_);
+            parse_affinity_options(affinity_description, affinity_masks_, used_cores, max_cores,
+                num_threads_, pu_nums_, use_process_mask_);
 
             std::size_t num_initialized = count_initialized(affinity_masks_);
             if (num_initialized != num_threads_)
             {
-                PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
-                    "affinity_data::affinity_data",
+                PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "affinity_data::affinity_data",
                     "The number of OS threads requested ({}) does not match "
                     "the number of threads to bind ({})",
                     num_threads_, num_initialized);
@@ -144,8 +140,7 @@ namespace pika::detail {
         }
 
         std::sort(cores.begin(), cores.end());
-        std::vector<std::size_t>::iterator it =
-            std::unique(cores.begin(), cores.end());
+        std::vector<std::size_t>::iterator it = std::unique(cores.begin(), cores.end());
         cores.erase(it, cores.end());
 
         std::size_t num_unique_cores = cores.size();
@@ -154,8 +149,7 @@ namespace pika::detail {
     }
 
     threads::detail::mask_cref_type affinity_data::get_pu_mask(
-        threads::detail::topology const& topo,
-        std::size_t global_thread_num) const
+        threads::detail::topology const& topo, std::size_t global_thread_num) const
     {
         // --pika:bind=none disables all affinity
         if (threads::detail::test(no_affinity_, global_thread_num))
@@ -211,8 +205,7 @@ namespace pika::detail {
             return ret;
         }
 
-        for (std::size_t thread_num = 0; thread_num < num_threads_;
-             ++thread_num)
+        for (std::size_t thread_num = 0; thread_num < num_threads_; ++thread_num)
         {
             ret |= get_pu_mask(topo, thread_num);
         }
@@ -232,15 +225,12 @@ namespace pika::detail {
         {
             threads::detail::mask_type pu_mask = threads::detail::mask_type();
 
-            threads::detail::resize(
-                pu_mask, threads::detail::hardware_concurrency());
+            threads::detail::resize(pu_mask, threads::detail::hardware_concurrency());
             threads::detail::set(pu_mask, pu_num);
 
-            for (std::size_t num_thread = 0; num_thread < num_threads_;
-                 ++num_thread)
+            for (std::size_t num_thread = 0; num_thread < num_threads_; ++num_thread)
             {
-                threads::detail::mask_cref_type affinity_mask =
-                    get_pu_mask(topo, num_thread);
+                threads::detail::mask_cref_type affinity_mask = get_pu_mask(topo, num_thread);
                 if (threads::detail::any(pu_mask & affinity_mask))
                     ++count;
             }

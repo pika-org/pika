@@ -16,7 +16,7 @@
 #include <pika/timing/steady_clock.hpp>
 
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
-#include <pika/errors/throw_exception.hpp>
+# include <pika/errors/throw_exception.hpp>
 #endif
 
 #include <fmt/format.h>
@@ -34,15 +34,15 @@
 #include <utility>
 
 #if defined(PIKA_WINDOWS)
-#include <windows.h>
+# include <windows.h>
 #else
-#ifndef _AIX
-#include <sched.h>
-#else
+# ifndef _AIX
+#  include <sched.h>
+# else
 // AIX's sched.h defines ::var which sometimes conflicts with Lambda's var
 extern "C" int sched_yield(void);
-#endif
-#include <time.h>
+# endif
+# include <time.h>
 #endif
 
 namespace pika::execution {
@@ -77,10 +77,10 @@ namespace pika::execution {
             void suspend(char const* desc) override;
             void resume(char const* desc) override;
             void abort(char const* desc) override;
-            void sleep_for(pika::chrono::steady_duration const& sleep_duration,
-                char const* desc) override;
-            void sleep_until(pika::chrono::steady_time_point const& sleep_time,
-                char const* desc) override;
+            void sleep_for(
+                pika::chrono::steady_duration const& sleep_duration, char const* desc) override;
+            void sleep_until(
+                pika::chrono::steady_time_point const& sleep_time, char const* desc) override;
 
         private:
             bool running_;
@@ -193,15 +193,13 @@ namespace pika::execution {
         }
 
         void default_agent::sleep_for(
-            pika::chrono::steady_duration const& sleep_duration,
-            char const* /* desc */)
+            pika::chrono::steady_duration const& sleep_duration, char const* /* desc */)
         {
             std::this_thread::sleep_for(sleep_duration.value());
         }
 
         void default_agent::sleep_until(
-            pika::chrono::steady_time_point const& sleep_time,
-            char const* /* desc */)
+            pika::chrono::steady_time_point const& sleep_time, char const* /* desc */)
         {
             std::this_thread::sleep_until(sleep_time.value());
         }
@@ -224,8 +222,7 @@ namespace pika::execution {
             {
             }
 
-            execution::detail::agent_base* set(
-                execution::detail::agent_base* context) noexcept
+            execution::detail::agent_base* set(execution::detail::agent_base* context) noexcept
             {
                 std::swap(context, impl_);
                 return context;
@@ -259,8 +256,7 @@ namespace pika::execution {
 
         pika::execution::detail::agent_ref agent()
         {
-            return pika::execution::detail::agent_ref(
-                detail::get_agent_storage()->impl_);
+            return pika::execution::detail::agent_ref(detail::get_agent_storage()->impl_);
         }
 
         void yield(char const* desc)
@@ -287,8 +283,7 @@ namespace pika::execution {
 
                 auto const deadlock_warning_limit =
                     pika::util::detail::get_spinlock_deadlock_warning_limit();
-                if (k >= deadlock_warning_limit &&
-                    k % deadlock_warning_limit == 0)
+                if (k >= deadlock_warning_limit && k % deadlock_warning_limit == 0)
                 {
                     fmt::print(std::cerr,
                         "desc: {}. yield_k already yielded {} times "
@@ -297,8 +292,7 @@ namespace pika::execution {
                         "pika. Stopping after "
                         "pika.spinlock_deadlock_detection_limit={} "
                         "iterations.\n",
-                        desc, k, deadlock_warning_limit,
-                        deadlock_detection_limit);
+                        desc, k, deadlock_warning_limit, deadlock_detection_limit);
                 }
             }
 

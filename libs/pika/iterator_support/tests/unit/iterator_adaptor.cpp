@@ -91,12 +91,11 @@ struct my_gen
 
 template <typename V>
 struct ptr_iterator
-  : pika::util::iterator_adaptor<ptr_iterator<V>, V*, V,
-        std::random_access_iterator_tag>
+  : pika::util::iterator_adaptor<ptr_iterator<V>, V*, V, std::random_access_iterator_tag>
 {
 private:
-    using base_adaptor_type = pika::util::iterator_adaptor<ptr_iterator<V>, V*,
-        V, std::random_access_iterator_tag>;
+    using base_adaptor_type =
+        pika::util::iterator_adaptor<ptr_iterator<V>, V*, V, std::random_access_iterator_tag>;
 
 public:
     ptr_iterator() {}
@@ -107,8 +106,8 @@ public:
     }
 
     template <typename V2>
-    ptr_iterator(const ptr_iterator<V2>& x,
-        std::enable_if_t<std::is_convertible<V2*, V*>::value>* = nullptr)
+    ptr_iterator(
+        const ptr_iterator<V2>& x, std::enable_if_t<std::is_convertible<V2*, V*>::value>* = nullptr)
       : base_adaptor_type(x.base())
     {
     }
@@ -117,19 +116,17 @@ public:
 // Non-functional iterator for category modification checking
 template <typename Iter, typename Category>
 struct modify_traversal
-  : pika::util::iterator_adaptor<modify_traversal<Iter, Category>, Iter, void,
-        Category>
+  : pika::util::iterator_adaptor<modify_traversal<Iter, Category>, Iter, void, Category>
 {
 };
 
 template <typename T>
 struct fwd_iterator
-  : pika::util::iterator_adaptor<fwd_iterator<T>,
-        tests::forward_iterator_archetype<T>>
+  : pika::util::iterator_adaptor<fwd_iterator<T>, tests::forward_iterator_archetype<T>>
 {
 private:
-    using base_adaptor_type = pika::util::iterator_adaptor<fwd_iterator<T>,
-        tests::forward_iterator_archetype<T>>;
+    using base_adaptor_type =
+        pika::util::iterator_adaptor<fwd_iterator<T>, tests::forward_iterator_archetype<T>>;
 
 public:
     fwd_iterator() {}
@@ -142,12 +139,11 @@ public:
 
 template <typename T>
 struct in_iterator
-  : pika::util::iterator_adaptor<in_iterator<T>,
-        tests::input_iterator_archetype_no_proxy<T>>
+  : pika::util::iterator_adaptor<in_iterator<T>, tests::input_iterator_archetype_no_proxy<T>>
 {
 private:
-    using base_adaptor_type = pika::util::iterator_adaptor<in_iterator<T>,
-        tests::input_iterator_archetype_no_proxy<T>>;
+    using base_adaptor_type =
+        pika::util::iterator_adaptor<in_iterator<T>, tests::input_iterator_archetype_no_proxy<T>>;
 
 public:
     in_iterator() {}
@@ -162,9 +158,8 @@ struct constant_iterator
   : pika::util::iterator_adaptor<constant_iterator<Iter>, Iter,
         typename std::iterator_traits<Iter>::value_type const>
 {
-    using base_adaptor_type =
-        pika::util::iterator_adaptor<constant_iterator<Iter>, Iter,
-            const typename std::iterator_traits<Iter>::value_type>;
+    using base_adaptor_type = pika::util::iterator_adaptor<constant_iterator<Iter>, Iter,
+        const typename std::iterator_traits<Iter>::value_type>;
 
     constant_iterator() {}
     constant_iterator(Iter it)
@@ -175,9 +170,8 @@ struct constant_iterator
 
 int main()
 {
-    tests::dummy_type array[] = {tests::dummy_type(0), tests::dummy_type(1),
-        tests::dummy_type(2), tests::dummy_type(3), tests::dummy_type(4),
-        tests::dummy_type(5)};
+    tests::dummy_type array[] = {tests::dummy_type(0), tests::dummy_type(1), tests::dummy_type(2),
+        tests::dummy_type(3), tests::dummy_type(4), tests::dummy_type(5)};
     const int N = sizeof(array) / sizeof(tests::dummy_type);
 
     // sanity check, if this doesn't pass the test is buggy
@@ -202,11 +196,10 @@ int main()
         PIKA_TEST((std::is_same<Iter1::value_type, int>::value));
         PIKA_TEST((std::is_same<Iter1::reference, int&>::value));
         PIKA_TEST((std::is_same<Iter1::pointer, int*>::value));
-        PIKA_TEST(
-            (std::is_same<Iter1::difference_type, std::ptrdiff_t>::value));
+        PIKA_TEST((std::is_same<Iter1::difference_type, std::ptrdiff_t>::value));
 
-        PIKA_TEST((std::is_convertible<Iter1::iterator_category,
-            std::random_access_iterator_tag>::value));
+        PIKA_TEST((
+            std::is_convertible<Iter1::iterator_category, std::random_access_iterator_tag>::value));
     }
 
     {
@@ -235,13 +228,12 @@ int main()
         //PIKA_TEST(boost::is_non_const_lvalue_iterator<BaseIter>::value);
         //PIKA_TEST(boost::is_lvalue_iterator<Iter>::value);
 
-        using IncrementableIter =
-            modify_traversal<BaseIter, std::input_iterator_tag>;
+        using IncrementableIter = modify_traversal<BaseIter, std::input_iterator_tag>;
 
-        PIKA_TEST((std::is_same<BaseIter::iterator_category,
-            std::random_access_iterator_tag>::value));
-        PIKA_TEST((std::is_same<IncrementableIter::iterator_category,
-            std::input_iterator_tag>::value));
+        PIKA_TEST(
+            (std::is_same<BaseIter::iterator_category, std::random_access_iterator_tag>::value));
+        PIKA_TEST(
+            (std::is_same<IncrementableIter::iterator_category, std::input_iterator_tag>::value));
     }
 
     // Test the iterator_adaptor
@@ -286,14 +278,11 @@ int main()
         using BaseIter = ptr_iterator<int>;
 
         PIKA_TEST((std::is_same<BaseIter::base_type, int*>::value));
-        PIKA_TEST((std::is_same<constant_iterator<BaseIter>::base_type,
-            BaseIter>::value));
+        PIKA_TEST((std::is_same<constant_iterator<BaseIter>::base_type, BaseIter>::value));
 
-        using IncrementableIter =
-            modify_traversal<BaseIter, std::forward_iterator_tag>;
+        using IncrementableIter = modify_traversal<BaseIter, std::forward_iterator_tag>;
 
-        PIKA_TEST(
-            (std::is_same<IncrementableIter::base_type, BaseIter>::value));
+        PIKA_TEST((std::is_same<IncrementableIter::base_type, BaseIter>::value));
     }
 
     return 0;

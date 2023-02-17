@@ -77,8 +77,6 @@ namespace pika::cuda::experimental::detail {
         }
 
         // pool is dynamically sized and can grow if needed
-        boost::lockfree::stack<whip::event_t,
-            boost::lockfree::fixed_sized<false>>
-            free_list_;
+        boost::lockfree::stack<whip::event_t, boost::lockfree::fixed_sized<false>> free_list_;
     };
 }    // namespace pika::cuda::experimental::detail

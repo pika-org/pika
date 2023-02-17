@@ -17,10 +17,8 @@ using namespace pika::program_options;
 int pika_main(variables_map& vm)
 {
     std::cout << "Value of reqopt1: " << vm["reqopt1"].as<int>() << std::endl;
-    std::cout << "Value of reqopt2: " << vm["reqopt2"].as<double>()
-              << std::endl;
-    std::cout << "Value of reqopt3: " << vm["reqopt3"].as<std::string>()
-              << std::endl;
+    std::cout << "Value of reqopt2: " << vm["reqopt2"].as<double>() << std::endl;
+    std::cout << "Value of reqopt3: " << vm["reqopt3"].as<std::string>() << std::endl;
 
     return pika::finalize();
 }

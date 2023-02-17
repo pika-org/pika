@@ -37,8 +37,7 @@ namespace pika {
     {
     private:
         using mutex_type = detail::condition_variable_data::mutex_type;
-        using data_type =
-            pika::memory::intrusive_ptr<detail::condition_variable_data>;
+        using data_type = pika::memory::intrusive_ptr<detail::condition_variable_data>;
 
     public:
         condition_variable()
@@ -91,15 +90,13 @@ namespace pika {
 
             // The following ensures that the inner lock will be unlocked
             // before the outer to avoid deadlock (fixes issue #3608)
-            std::lock_guard<std::unique_lock<mutex_type>> unlock_next(
-                l, std::adopt_lock);
+            std::lock_guard<std::unique_lock<mutex_type>> unlock_next(l, std::adopt_lock);
 
             data->cond_.wait(l, ec);
         }
 
         template <typename Mutex, typename Predicate>
-        void wait(std::unique_lock<Mutex>& lock, Predicate pred,
-            error_code& /*ec*/ = throws)
+        void wait(std::unique_lock<Mutex>& lock, Predicate pred, error_code& /*ec*/ = throws)
         {
             PIKA_ASSERT_OWNS_LOCK(lock);
 
@@ -111,8 +108,7 @@ namespace pika {
 
         template <typename Mutex>
         cv_status wait_until(std::unique_lock<Mutex>& lock,
-            pika::chrono::steady_time_point const& abs_time,
-            error_code& ec = throws)
+            pika::chrono::steady_time_point const& abs_time, error_code& ec = throws)
         {
             PIKA_ASSERT_OWNS_LOCK(lock);
 
@@ -126,8 +122,7 @@ namespace pika {
 
             // The following ensures that the inner lock will be unlocked
             // before the outer to avoid deadlock (fixes issue #3608)
-            std::lock_guard<std::unique_lock<mutex_type>> unlock_next(
-                l, std::adopt_lock);
+            std::lock_guard<std::unique_lock<mutex_type>> unlock_next(l, std::adopt_lock);
 
             threads::detail::thread_restart_state const reason =
                 data->cond_.wait_until(l, abs_time, ec);
@@ -136,17 +131,15 @@ namespace pika {
                 return cv_status::error;
 
             // if the timer has hit, the waiting period timed out
-            return (reason ==
-                       threads::detail::thread_restart_state::
-                           timeout) ?    //-V110
+            return (reason == threads::detail::thread_restart_state::timeout) ?    //-V110
                 cv_status::timeout :
                 cv_status::no_timeout;
         }
 
         template <typename Mutex, typename Predicate>
-        bool wait_until(std::unique_lock<Mutex>& lock,
-            pika::chrono::steady_time_point const& abs_time, Predicate pred,
-            error_code& ec = throws)
+        bool
+        wait_until(std::unique_lock<Mutex>& lock, pika::chrono::steady_time_point const& abs_time,
+            Predicate pred, error_code& ec = throws)
         {
             PIKA_ASSERT_OWNS_LOCK(lock);
 
@@ -160,16 +153,14 @@ namespace pika {
 
         template <typename Mutex>
         cv_status wait_for(std::unique_lock<Mutex>& lock,
-            pika::chrono::steady_duration const& rel_time,
-            error_code& ec = throws)
+            pika::chrono::steady_duration const& rel_time, error_code& ec = throws)
         {
             return wait_until(lock, rel_time.from_now(), ec);
         }
 
         template <typename Mutex, typename Predicate>
-        bool wait_for(std::unique_lock<Mutex>& lock,
-            pika::chrono::steady_duration const& rel_time, Predicate pred,
-            error_code& ec = throws)
+        bool wait_for(std::unique_lock<Mutex>& lock, pika::chrono::steady_duration const& rel_time,
+            Predicate pred, error_code& ec = throws)
         {
             return wait_until(lock, rel_time.from_now(), PIKA_MOVE(pred), ec);
         }
@@ -183,8 +174,7 @@ namespace pika {
     {
     private:
         using mutex_type = detail::condition_variable_data::mutex_type;
-        using data_type =
-            pika::memory::intrusive_ptr<detail::condition_variable_data>;
+        using data_type = pika::memory::intrusive_ptr<detail::condition_variable_data>;
 
     public:
         condition_variable_any()
@@ -238,8 +228,7 @@ namespace pika {
 
             // The following ensures that the inner lock will be unlocked
             // before the outer to avoid deadlock (fixes issue #3608)
-            std::lock_guard<std::unique_lock<mutex_type>> unlock_next(
-                l, std::adopt_lock);
+            std::lock_guard<std::unique_lock<mutex_type>> unlock_next(l, std::adopt_lock);
 
             data->cond_.wait(l, ec);
         }
@@ -256,9 +245,8 @@ namespace pika {
         }
 
         template <typename Lock>
-        cv_status
-        wait_until(Lock& lock, pika::chrono::steady_time_point const& abs_time,
-            error_code& ec = throws)
+        cv_status wait_until(
+            Lock& lock, pika::chrono::steady_time_point const& abs_time, error_code& ec = throws)
         {
             PIKA_ASSERT_OWNS_LOCK(lock);
 
@@ -272,8 +260,7 @@ namespace pika {
 
             // The following ensures that the inner lock will be unlocked
             // before the outer to avoid deadlock (fixes issue #3608)
-            std::lock_guard<std::unique_lock<mutex_type>> unlock_next(
-                l, std::adopt_lock);
+            std::lock_guard<std::unique_lock<mutex_type>> unlock_next(l, std::adopt_lock);
 
             threads::detail::thread_restart_state const reason =
                 data->cond_.wait_until(l, abs_time, ec);
@@ -282,17 +269,14 @@ namespace pika {
                 return cv_status::error;
 
             // if the timer has hit, the waiting period timed out
-            return (reason ==
-                       threads::detail::thread_restart_state::
-                           timeout) ?    //-V110
+            return (reason == threads::detail::thread_restart_state::timeout) ?    //-V110
                 cv_status::timeout :
                 cv_status::no_timeout;
         }
 
         template <typename Lock, typename Predicate>
-        bool
-        wait_until(Lock& lock, pika::chrono::steady_time_point const& abs_time,
-            Predicate pred, error_code& ec = throws)
+        bool wait_until(Lock& lock, pika::chrono::steady_time_point const& abs_time, Predicate pred,
+            error_code& ec = throws)
         {
             PIKA_ASSERT_OWNS_LOCK(lock);
 
@@ -306,23 +290,21 @@ namespace pika {
 
         template <typename Lock>
         cv_status
-        wait_for(Lock& lock, pika::chrono::steady_duration const& rel_time,
-            error_code& ec = throws)
+        wait_for(Lock& lock, pika::chrono::steady_duration const& rel_time, error_code& ec = throws)
         {
             return wait_until(lock, rel_time.from_now(), ec);
         }
 
         template <typename Lock, typename Predicate>
-        bool wait_for(Lock& lock, pika::chrono::steady_duration const& rel_time,
-            Predicate pred, error_code& ec = throws)
+        bool wait_for(Lock& lock, pika::chrono::steady_duration const& rel_time, Predicate pred,
+            error_code& ec = throws)
         {
             return wait_until(lock, rel_time.from_now(), PIKA_MOVE(pred), ec);
         }
 
         // 32.6.4.2, interruptible waits
         template <typename Lock, typename Predicate>
-        bool wait(Lock& lock, stop_token stoken, Predicate pred,
-            error_code& ec = throws)
+        bool wait(Lock& lock, stop_token stoken, Predicate pred, error_code& ec = throws)
         {
             if (stoken.stop_requested())
             {
@@ -354,8 +336,7 @@ namespace pika {
 
                 // The following ensures that the inner lock will be unlocked
                 // before the outer to avoid deadlock (fixes issue #3608)
-                std::lock_guard<std::unique_lock<mutex_type>> unlock_next(
-                    l, std::adopt_lock);
+                std::lock_guard<std::unique_lock<mutex_type>> unlock_next(l, std::adopt_lock);
 
                 data->cond_.wait(l, ec);
             }
@@ -364,9 +345,9 @@ namespace pika {
         }
 
         template <typename Lock, typename Predicate>
-        bool wait_until(Lock& lock, stop_token stoken,
-            pika::chrono::steady_time_point const& abs_time, Predicate pred,
-            error_code& ec = throws)
+        bool
+        wait_until(Lock& lock, stop_token stoken, pika::chrono::steady_time_point const& abs_time,
+            Predicate pred, error_code& ec = throws)
         {
             if (stoken.stop_requested())
             {
@@ -400,8 +381,7 @@ namespace pika {
 
                     // The following ensures that the inner lock will be unlocked
                     // before the outer to avoid deadlock (fixes issue #3608)
-                    std::lock_guard<std::unique_lock<mutex_type>> unlock_next(
-                        l, std::adopt_lock);
+                    std::lock_guard<std::unique_lock<mutex_type>> unlock_next(l, std::adopt_lock);
 
                     threads::detail::thread_restart_state const reason =
                         data->cond_.wait_until(l, abs_time, ec);
@@ -409,9 +389,7 @@ namespace pika {
                     if (ec)
                         return false;
 
-                    should_stop =
-                        (reason ==
-                            threads::detail::thread_restart_state::timeout) ||
+                    should_stop = (reason == threads::detail::thread_restart_state::timeout) ||
                         stoken.stop_requested();
                 }
 
@@ -424,12 +402,10 @@ namespace pika {
         }
 
         template <typename Lock, typename Predicate>
-        bool wait_for(Lock& lock, stop_token stoken,
-            pika::chrono::steady_duration const& rel_time, Predicate pred,
-            error_code& ec = throws)
+        bool wait_for(Lock& lock, stop_token stoken, pika::chrono::steady_duration const& rel_time,
+            Predicate pred, error_code& ec = throws)
         {
-            return wait_until(
-                lock, stoken, rel_time.from_now(), PIKA_MOVE(pred), ec);
+            return wait_until(lock, stoken, rel_time.from_now(), PIKA_MOVE(pred), ec);
         }
 
     private:

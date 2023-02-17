@@ -41,8 +41,7 @@ void required_throw_test()
         }
         catch (required_option& e)
         {
-            PIKA_TEST_EQ(e.what(),
-                string("the option '--cfgfile' is required but missing"));
+            PIKA_TEST_EQ(e.what(), string("the option '--cfgfile' is required but missing"));
             thrown = true;
         }
         PIKA_TEST(thrown);

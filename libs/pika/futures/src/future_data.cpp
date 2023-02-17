@@ -30,8 +30,7 @@ namespace pika::lcos::detail {
 
     static run_on_completed_error_handler_type run_on_completed_error_handler;
 
-    void set_run_on_completed_error_handler(
-        run_on_completed_error_handler_type f)
+    void set_run_on_completed_error_handler(run_on_completed_error_handler_type f)
     {
         run_on_completed_error_handler = f;
     }
@@ -71,15 +70,13 @@ namespace pika::lcos::detail {
         policy.set_stacksize(execution::thread_stacksize::current);
 
         // launch a new thread executing the given function
-        threads::detail::thread_id_ref_type tid =
-            p.apply("run_on_completed_on_new_thread", policy);
+        threads::detail::thread_id_ref_type tid = p.apply("run_on_completed_on_new_thread", policy);
 
         // wait for the task to run
         if (is_pika_thread)
         {
             // make sure this thread is executed last
-            this_thread::suspend(
-                threads::detail::thread_schedule_state::pending, tid.noref());
+            this_thread::suspend(threads::detail::thread_schedule_state::pending, tid.noref());
             return p.get_future().get();
         }
 
@@ -88,13 +85,11 @@ namespace pika::lcos::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    future_data_base<traits::detail::future_data_void>::~future_data_base() =
-        default;
+    future_data_base<traits::detail::future_data_void>::~future_data_base() = default;
 
     static util::detail::unused_type unused_;
 
-    util::detail::unused_type*
-    future_data_base<traits::detail::future_data_void>::get_result_void(
+    util::detail::unused_type* future_data_base<traits::detail::future_data_void>::get_result_void(
         void const* storage, error_code& ec)
     {
         // yields control if needed
@@ -127,8 +122,7 @@ namespace pika::lcos::detail {
         {
             // the value has already been moved out of this future
             PIKA_THROWS_IF(ec, pika::error::future_already_retrieved,
-                "future_data_base::get_result",
-                "this future has no valid shared state");
+                "future_data_base::get_result", "this future has no valid shared state");
             return nullptr;
         }
 
@@ -192,18 +186,15 @@ namespace pika::lcos::detail {
     // allowed
     template <typename Callback>
     void
-    future_data_base<traits::detail::future_data_void>::handle_on_completed(
-        Callback&& on_completed)
+    future_data_base<traits::detail::future_data_void>::handle_on_completed(Callback&& on_completed)
     {
         // We need to run the completion on a new thread if we are on a
         // non pika thread.
 #if defined(PIKA_HAVE_THREADS_GET_STACK_POINTER)
-        bool recurse_asynchronously =
-            !this_thread::has_sufficient_stack_space();
+        bool recurse_asynchronously = !this_thread::has_sufficient_stack_space();
 #else
         handle_continuation_recursion_count cnt;
-        bool recurse_asynchronously =
-            cnt.count_ > PIKA_CONTINUATION_MAX_RECURSION_DEPTH ||
+        bool recurse_asynchronously = cnt.count_ > PIKA_CONTINUATION_MAX_RECURSION_DEPTH ||
             (pika::threads::detail::get_self_ptr() == nullptr);
 #endif
         if (!recurse_asynchronously)
@@ -217,10 +208,9 @@ namespace pika::lcos::detail {
 
             pika::detail::try_catch_exception_ptr(
                 [&]() {
-                    constexpr void (*p)(Callback &&) =
-                        &future_data_base::run_on_completed;
-                    run_on_completed_on_new_thread(util::detail::deferred_call(
-                        p, PIKA_FORWARD(Callback, on_completed)));
+                    constexpr void (*p)(Callback &&) = &future_data_base::run_on_completed;
+                    run_on_completed_on_new_thread(
+                        util::detail::deferred_call(p, PIKA_FORWARD(Callback, on_completed)));
                 },
                 [&](std::exception_ptr ep) {
                     // If an exception while creating the new task or inside the
@@ -240,8 +230,7 @@ namespace pika::lcos::detail {
 
     // We need only one explicit instantiation here as the second version
     // (single callback) is implicitly instantiated below.
-    using completed_callback_vector_type =
-        future_data_refcnt_base::completed_callback_vector_type;
+    using completed_callback_vector_type = future_data_refcnt_base::completed_callback_vector_type;
 
     template PIKA_EXPORT void
     future_data_base<traits::detail::future_data_void>::handle_on_completed<
@@ -307,8 +296,7 @@ namespace pika::lcos::detail {
         return s;
     }
 
-    pika::future_status
-    future_data_base<traits::detail::future_data_void>::wait_until(
+    pika::future_status future_data_base<traits::detail::future_data_void>::wait_until(
         std::chrono::steady_clock::time_point const& abs_time, error_code& ec)
     {
         // block if this entry is empty
@@ -318,8 +306,7 @@ namespace pika::lcos::detail {
             if (state_.load(std::memory_order_relaxed) == empty)
             {
                 threads::detail::thread_restart_state const reason =
-                    cond_.wait_until(
-                        l, abs_time, "future_data_base::wait_until", ec);
+                    cond_.wait_until(l, abs_time, "future_data_base::wait_until", ec);
                 if (ec)
                 {
                     return pika::future_status::uninitialized;

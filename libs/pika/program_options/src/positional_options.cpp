@@ -25,8 +25,7 @@ namespace pika::program_options {
             m_trailing = name;
         else
         {
-            m_names.resize(
-                m_names.size() + static_cast<std::size_t>(max_count), name);
+            m_names.resize(m_names.size() + static_cast<std::size_t>(max_count), name);
         }
         return *this;
     }
@@ -37,8 +36,7 @@ namespace pika::program_options {
                                     (std::numeric_limits<unsigned>::max)();
     }
 
-    const std::string& positional_options_description::name_for_position(
-        unsigned position) const
+    const std::string& positional_options_description::name_for_position(unsigned position) const
     {
         PIKA_ASSERT(position < max_total_count());
 

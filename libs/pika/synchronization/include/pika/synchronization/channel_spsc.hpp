@@ -31,8 +31,7 @@ namespace pika::experimental {
     private:
         bool is_full(std::size_t tail) const noexcept
         {
-            std::size_t numitems =
-                size_ + tail - head_.data_.load(std::memory_order_acquire);
+            std::size_t numitems = size_ + tail - head_.data_.load(std::memory_order_acquire);
 
             if (numitems < size_)
             {
@@ -68,28 +67,26 @@ namespace pika::experimental {
           : size_(rhs.size_)
           , buffer_(PIKA_MOVE(rhs.buffer_))
         {
-            head_.data_.store(rhs.head_.data_.load(std::memory_order_acquire),
-                std::memory_order_relaxed);
-            tail_.data_.store(rhs.tail_.data_.load(std::memory_order_acquire),
-                std::memory_order_relaxed);
+            head_.data_.store(
+                rhs.head_.data_.load(std::memory_order_acquire), std::memory_order_relaxed);
+            tail_.data_.store(
+                rhs.tail_.data_.load(std::memory_order_acquire), std::memory_order_relaxed);
 
-            closed_.store(rhs.closed_.load(std::memory_order_acquire),
-                std::memory_order_relaxed);
+            closed_.store(rhs.closed_.load(std::memory_order_acquire), std::memory_order_relaxed);
             rhs.closed_.store(true, std::memory_order_release);
         }
 
         channel_spsc& operator=(channel_spsc&& rhs) noexcept
         {
-            head_.data_.store(rhs.head_.data_.load(std::memory_order_acquire),
-                std::memory_order_relaxed);
-            tail_.data_.store(rhs.tail_.data_.load(std::memory_order_acquire),
-                std::memory_order_relaxed);
+            head_.data_.store(
+                rhs.head_.data_.load(std::memory_order_acquire), std::memory_order_relaxed);
+            tail_.data_.store(
+                rhs.tail_.data_.load(std::memory_order_acquire), std::memory_order_relaxed);
 
             size_ = rhs.size_;
             buffer_ = PIKA_MOVE(rhs.buffer_);
 
-            closed_.store(rhs.closed_.load(std::memory_order_acquire),
-                std::memory_order_relaxed);
+            closed_.store(rhs.closed_.load(std::memory_order_acquire), std::memory_order_relaxed);
             rhs.closed_.store(true, std::memory_order_release);
 
             return *this;
@@ -182,11 +179,8 @@ namespace pika::experimental {
     private:
         // keep the mutex, the head, and the tail pointer in separate cache
         // lines
-        mutable pika::concurrency::detail::cache_aligned_data<
-            std::atomic<std::size_t>>
-            head_;
-        pika::concurrency::detail::cache_aligned_data<std::atomic<std::size_t>>
-            tail_;
+        mutable pika::concurrency::detail::cache_aligned_data<std::atomic<std::size_t>> head_;
+        pika::concurrency::detail::cache_aligned_data<std::atomic<std::size_t>> tail_;
 
         // a channel of size n can buffer n-1 items
         std::size_t size_;

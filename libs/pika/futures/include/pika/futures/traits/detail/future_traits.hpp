@@ -29,6 +29,5 @@ namespace pika::lcos::detail {
     };
 
     template <typename Iter>
-    using future_iterator_traits_t =
-        typename future_iterator_traits<Iter>::type;
+    using future_iterator_traits_t = typename future_iterator_traits<Iter>::type;
 }    // namespace pika::lcos::detail

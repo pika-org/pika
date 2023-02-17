@@ -51,11 +51,8 @@ int main(int ac, char* av[])
         p.add("input-file", -1);
 
         po::variables_map vm;
-        po::store(po::command_line_parser(ac, av)
-                      .allow_unregistered()
-                      .options(desc)
-                      .positional(p)
-                      .run(),
+        po::store(
+            po::command_line_parser(ac, av).allow_unregistered().options(desc).positional(p).run(),
             vm);
         po::notify(vm);
 
@@ -68,20 +65,17 @@ int main(int ac, char* av[])
 
         if (vm.count("include-path"))
         {
-            cout << "Include paths are: "
-                 << vm["include-path"].as<vector<string>>() << "\n";
+            cout << "Include paths are: " << vm["include-path"].as<vector<string>>() << "\n";
         }
 
         if (vm.count("input-file"))
         {
-            cout << "Input files are: " << vm["input-file"].as<vector<string>>()
-                 << "\n";
+            cout << "Input files are: " << vm["input-file"].as<vector<string>>() << "\n";
         }
 
         if (vm.count("verbose"))
         {
-            cout << "Verbosity enabled.  Level is " << vm["verbose"].as<int>()
-                 << "\n";
+            cout << "Verbosity enabled.  Level is " << vm["verbose"].as<int>() << "\n";
         }
 
         cout << "Optimization level is " << opt << "\n";

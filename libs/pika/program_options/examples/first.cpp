@@ -27,11 +27,7 @@ int main(int ac, char* av[])
         // clang-format on
 
         po::variables_map vm;
-        po::store(po::command_line_parser(ac, av)
-                      .allow_unregistered()
-                      .options(desc)
-                      .run(),
-            vm);
+        po::store(po::command_line_parser(ac, av).allow_unregistered().options(desc).run(), vm);
         po::notify(vm);
 
         if (vm.count("help"))
@@ -42,8 +38,7 @@ int main(int ac, char* av[])
 
         if (vm.count("compression"))
         {
-            cout << "Compression level was set to "
-                 << vm["compression"].as<double>() << ".\n";
+            cout << "Compression level was set to " << vm["compression"].as<double>() << ".\n";
         }
         else
         {

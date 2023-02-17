@@ -36,9 +36,9 @@
 #include <vector>
 
 #if defined(PIKA_WINDOWS)
-#include <process.h>
+# include <process.h>
 #elif defined(PIKA_HAVE_UNISTD_H)
-#include <unistd.h>
+# include <unistd.h>
 #endif
 
 #include <limits>
@@ -231,8 +231,7 @@ namespace pika::util {
             // clang-format on
         };
 
-        lines.insert(lines.end(), extra_static_ini_defs.begin(),
-            extra_static_ini_defs.end());
+        lines.insert(lines.end(), extra_static_ini_defs.begin(), extra_static_ini_defs.end());
 
         // don't overload user overrides
         this->parse("<static defaults>", lines, false, false, false);
@@ -240,8 +239,8 @@ namespace pika::util {
         need_to_call_pre_initialize = false;
     }
 
-    void runtime_configuration::post_initialize_ini(std::string& pika_ini_file_,
-        std::vector<std::string> const& cmdline_ini_defs_)
+    void runtime_configuration::post_initialize_ini(
+        std::string& pika_ini_file_, std::vector<std::string> const& cmdline_ini_defs_)
     {
         util::init_ini_data_base(*this, pika_ini_file_);
         need_to_call_pre_initialize = true;
@@ -250,8 +249,7 @@ namespace pika::util {
         if (!cmdline_ini_defs_.empty())
         {
             // do not weed out comments
-            this->parse(
-                "<command line definitions>", cmdline_ini_defs_, true, false);
+            this->parse("<command line definitions>", cmdline_ini_defs_, true, false);
             need_to_call_pre_initialize = true;
         }
     }
@@ -351,8 +349,7 @@ namespace pika::util {
 
     ///////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
-    runtime_configuration::runtime_configuration(char const* argv0_,
-        runtime_mode mode,
+    runtime_configuration::runtime_configuration(char const* argv0_, runtime_mode mode,
         std::vector<std::string> const& extra_static_ini_defs_)
       : extra_static_ini_defs(extra_static_ini_defs_)
       , mode_(mode)
@@ -391,8 +388,7 @@ namespace pika::util {
         reconfigure();
     }
 
-    void runtime_configuration::reconfigure(
-        std::vector<std::string> const& cmdline_ini_defs_)
+    void runtime_configuration::reconfigure(std::vector<std::string> const& cmdline_ini_defs_)
     {
         cmdline_ini_defs = cmdline_ini_defs_;
         reconfigure();
@@ -421,8 +417,7 @@ namespace pika::util {
 #if PIKA_HAVE_ITTNOTIFY != 0
         if (util::section const* sec = get_section("pika"); nullptr != sec)
         {
-            return pika::detail::get_entry_as<int>(*sec, "use_itt_notify", 0) !=
-                0;
+            return pika::detail::get_entry_as<int>(*sec, "use_itt_notify", 0) != 0;
         }
 #endif
         return false;
@@ -434,8 +429,7 @@ namespace pika::util {
 #ifdef PIKA_HAVE_VERIFY_LOCKS
         if (util::section const* sec = get_section("pika"); nullptr != sec)
         {
-            return pika::detail::get_entry_as<int>(*sec, "lock_detection", 0) !=
-                0;
+            return pika::detail::get_entry_as<int>(*sec, "lock_detection", 0) != 0;
         }
 #endif
         return false;
@@ -447,20 +441,18 @@ namespace pika::util {
 #ifdef PIKA_HAVE_THREAD_MINIMAL_DEADLOCK_DETECTION
         if (util::section const* sec = get_section("pika"); nullptr != sec)
         {
-#ifdef PIKA_DEBUG
-            return pika::detail::get_entry_as<int>(
-                       *sec, "minimal_deadlock_detection", 1) != 0;
-#else
-            return pika::detail::get_entry_as<int>(
-                       *sec, "minimal_deadlock_detection", 0) != 0;
-#endif
+# ifdef PIKA_DEBUG
+            return pika::detail::get_entry_as<int>(*sec, "minimal_deadlock_detection", 1) != 0;
+# else
+            return pika::detail::get_entry_as<int>(*sec, "minimal_deadlock_detection", 0) != 0;
+# endif
         }
 
-#ifdef PIKA_DEBUG
+# ifdef PIKA_DEBUG
         return true;
-#else
+# else
         return false;
-#endif
+# endif
 
 #else
         return false;
@@ -473,20 +465,18 @@ namespace pika::util {
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
         if (util::section const* sec = get_section("pika"); nullptr != sec)
         {
-#ifdef PIKA_DEBUG
-            return pika::detail::get_entry_as<int>(
-                       *sec, "spinlock_deadlock_detection", 1) != 0;
-#else
-            return pika::detail::get_entry_as<int>(
-                       *sec, "spinlock_deadlock_detection", 0) != 0;
-#endif
+# ifdef PIKA_DEBUG
+            return pika::detail::get_entry_as<int>(*sec, "spinlock_deadlock_detection", 1) != 0;
+# else
+            return pika::detail::get_entry_as<int>(*sec, "spinlock_deadlock_detection", 0) != 0;
+# endif
         }
 
-#ifdef PIKA_DEBUG
+# ifdef PIKA_DEBUG
         return true;
-#else
+# else
         return false;
-#endif
+# endif
 
 #else
         return false;
@@ -494,15 +484,13 @@ namespace pika::util {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    std::size_t
-    runtime_configuration::get_spinlock_deadlock_detection_limit() const
+    std::size_t runtime_configuration::get_spinlock_deadlock_detection_limit() const
     {
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
         if (util::section const* sec = get_section("pika"); nullptr != sec)
         {
-            return pika::detail::get_entry_as<std::size_t>(*sec,
-                "spinlock_deadlock_detection_limit",
-                PIKA_SPINLOCK_DEADLOCK_DETECTION_LIMIT);
+            return pika::detail::get_entry_as<std::size_t>(
+                *sec, "spinlock_deadlock_detection_limit", PIKA_SPINLOCK_DEADLOCK_DETECTION_LIMIT);
         }
         return PIKA_SPINLOCK_DEADLOCK_DETECTION_LIMIT;
 #else
@@ -510,15 +498,13 @@ namespace pika::util {
 #endif
     }
 
-    std::size_t
-    runtime_configuration::get_spinlock_deadlock_warning_limit() const
+    std::size_t runtime_configuration::get_spinlock_deadlock_warning_limit() const
     {
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
         if (util::section const* sec = get_section("pika"); nullptr != sec)
         {
-            return pika::detail::get_entry_as<std::size_t>(*sec,
-                "spinlock_deadlock_warning_limit",
-                PIKA_SPINLOCK_DEADLOCK_WARNING_LIMIT);
+            return pika::detail::get_entry_as<std::size_t>(
+                *sec, "spinlock_deadlock_warning_limit", PIKA_SPINLOCK_DEADLOCK_WARNING_LIMIT);
         }
         return PIKA_SPINLOCK_DEADLOCK_WARNING_LIMIT;
 #else
@@ -543,8 +529,7 @@ namespace pika::util {
             num_os_threads = 1;
             if (util::section const* sec = get_section("pika"); nullptr != sec)
             {
-                num_os_threads = pika::detail::get_entry_as<std::uint32_t>(
-                    *sec, "os_threads", 1);
+                num_os_threads = pika::detail::get_entry_as<std::uint32_t>(*sec, "os_threads", 1);
             }
         }
         return static_cast<std::size_t>(num_os_threads);
@@ -560,11 +545,9 @@ namespace pika::util {
     }
 
     // Return the configured sizes of any of the know thread pools
-    std::size_t runtime_configuration::get_thread_pool_size(
-        char const* poolname) const
+    std::size_t runtime_configuration::get_thread_pool_size(char const* poolname) const
     {
-        if (util::section const* sec = get_section("pika.threadpools");
-            nullptr != sec)
+        if (util::section const* sec = get_section("pika.threadpools"); nullptr != sec)
         {
             return pika::detail::get_entry_as<std::size_t>(
                 *sec, std::string(poolname) + "_size", 2);
@@ -573,30 +556,25 @@ namespace pika::util {
     }
 
     // Will return the stack size to use for all pika-threads.
-    std::ptrdiff_t runtime_configuration::init_stack_size(char const* entryname,
-        char const* defaultvaluestr, std::ptrdiff_t defaultvalue) const
+    std::ptrdiff_t runtime_configuration::init_stack_size(
+        char const* entryname, char const* defaultvaluestr, std::ptrdiff_t defaultvalue) const
     {
-        if (util::section const* sec = get_section("pika.stacks");
-            nullptr != sec)
+        if (util::section const* sec = get_section("pika.stacks"); nullptr != sec)
         {
             std::string entry = sec->get_entry(entryname, defaultvaluestr);
             char* endptr = nullptr;
-            std::ptrdiff_t val =
-                std::strtoll(entry.c_str(), &endptr, /*base:*/ 0);
+            std::ptrdiff_t val = std::strtoll(entry.c_str(), &endptr, /*base:*/ 0);
             return endptr != entry.c_str() ? val : defaultvalue;
         }
         return defaultvalue;
     }
 
-#if defined(__linux) || defined(linux) || defined(__linux__) ||                \
-    defined(__FreeBSD__)
+#if defined(__linux) || defined(linux) || defined(__linux__) || defined(__FreeBSD__)
     bool runtime_configuration::use_stack_guard_pages() const
     {
-        if (util::section const* sec = get_section("pika.stacks");
-            nullptr != sec)
+        if (util::section const* sec = get_section("pika.stacks"); nullptr != sec)
         {
-            return pika::detail::get_entry_as<int>(
-                       *sec, "use_guard_pages", 1) != 0;
+            return pika::detail::get_entry_as<int>(*sec, "use_guard_pages", 1) != 0;
         }
         return true;    // default is true
     }
@@ -604,31 +582,30 @@ namespace pika::util {
 
     std::ptrdiff_t runtime_configuration::init_small_stack_size() const
     {
-        return init_stack_size("small_size",
-            PIKA_PP_STRINGIZE(PIKA_SMALL_STACK_SIZE), PIKA_SMALL_STACK_SIZE);
+        return init_stack_size(
+            "small_size", PIKA_PP_STRINGIZE(PIKA_SMALL_STACK_SIZE), PIKA_SMALL_STACK_SIZE);
     }
 
     std::ptrdiff_t runtime_configuration::init_medium_stack_size() const
     {
-        return init_stack_size("medium_size",
-            PIKA_PP_STRINGIZE(PIKA_MEDIUM_STACK_SIZE), PIKA_MEDIUM_STACK_SIZE);
+        return init_stack_size(
+            "medium_size", PIKA_PP_STRINGIZE(PIKA_MEDIUM_STACK_SIZE), PIKA_MEDIUM_STACK_SIZE);
     }
 
     std::ptrdiff_t runtime_configuration::init_large_stack_size() const
     {
-        return init_stack_size("large_size",
-            PIKA_PP_STRINGIZE(PIKA_LARGE_STACK_SIZE), PIKA_LARGE_STACK_SIZE);
+        return init_stack_size(
+            "large_size", PIKA_PP_STRINGIZE(PIKA_LARGE_STACK_SIZE), PIKA_LARGE_STACK_SIZE);
     }
 
     std::ptrdiff_t runtime_configuration::init_huge_stack_size() const
     {
-        return init_stack_size("huge_size",
-            PIKA_PP_STRINGIZE(PIKA_HUGE_STACK_SIZE), PIKA_HUGE_STACK_SIZE);
+        return init_stack_size(
+            "huge_size", PIKA_PP_STRINGIZE(PIKA_HUGE_STACK_SIZE), PIKA_HUGE_STACK_SIZE);
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    bool runtime_configuration::load_application_configuration(
-        char const* filename, error_code& ec)
+    bool runtime_configuration::load_application_configuration(char const* filename, error_code& ec)
     {
         try
         {
@@ -642,8 +619,7 @@ namespace pika::util {
             // file doesn't exist or is ill-formed
             if (&ec == &throws)
                 throw;
-            ec = make_error_code(
-                e.get_error(), e.what(), pika::throwmode::rethrow);
+            ec = make_error_code(e.get_error(), e.what(), pika::throwmode::rethrow);
             return false;
         }
         return true;

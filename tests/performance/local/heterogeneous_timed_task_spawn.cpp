@@ -7,26 +7,26 @@
 
 #include <pika/config.hpp>
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
-#include <pika/functional.hpp>
-#include <pika/init.hpp>
-#include <pika/modules/thread_manager.hpp>
-#include <pika/modules/timing.hpp>
+# include <pika/functional.hpp>
+# include <pika/init.hpp>
+# include <pika/modules/thread_manager.hpp>
+# include <pika/modules/timing.hpp>
 
-#include <fmt/format.h>
-#include <fmt/ostream.h>
-#include <fmt/printf.h>
+# include <fmt/format.h>
+# include <fmt/ostream.h>
+# include <fmt/printf.h>
 
-#include <cstdint>
-#include <functional>
-#include <iostream>
-#include <numeric>
-#include <random>
-#include <stdexcept>
-#include <string>
-#include <utility>
-#include <vector>
+# include <cstdint>
+# include <functional>
+# include <iostream>
+# include <numeric>
+# include <random>
+# include <stdexcept>
+# include <string>
+# include <utility>
+# include <vector>
 
-#include "worker_timed.hpp"
+# include "worker_timed.hpp"
 
 using pika::program_options::options_description;
 using pika::program_options::value;
@@ -69,10 +69,9 @@ void print_results(std::uint64_t cores, double walltime)
     std::string const max_delay_str = fmt::format("{},", max_delay);
     std::string const total_delay_str = fmt::format("{},", total_delay);
 
-    fmt::print(std::cout,
-        "{:>21} {:>21} {:>21} {:>21} {:>21} {:>21} {:10.12}, {:10.12}\n",
-        cores_str, seed_str, tasks_str, min_delay_str, max_delay_str,
-        total_delay_str, walltime, walltime / tasks);
+    fmt::print(std::cout, "{:>21} {:>21} {:>21} {:>21} {:>21} {:>21} {:10.12}, {:10.12}\n",
+        cores_str, seed_str, tasks_str, min_delay_str, max_delay_str, total_delay_str, walltime,
+        walltime / tasks);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -145,17 +144,14 @@ int pika_main(variables_map& vm)
             std::uint64_t const low_calc =
                 (total_delay - current_sum) - (max_delay * (tasks - 1 - i));
 
-            bool const negative =
-                (total_delay - current_sum) < (max_delay * (tasks - 1 - i));
+            bool const negative = (total_delay - current_sum) < (max_delay * (tasks - 1 - i));
 
-            std::uint64_t const low =
-                (negative || (low_calc < min_delay)) ? min_delay : low_calc;
+            std::uint64_t const low = (negative || (low_calc < min_delay)) ? min_delay : low_calc;
 
             std::uint64_t const high_calc =
                 (total_delay - current_sum) - (min_delay * (tasks - 1 - i));
 
-            std::uint64_t const high =
-                (high_calc > max_delay) ? max_delay : high_calc;
+            std::uint64_t const high = (high_calc > max_delay) ? max_delay : high_calc;
 
             // Our range is [low, high].
             std::uniform_int_distribution<std::uint64_t> dist(low, high);
@@ -181,8 +177,7 @@ int pika_main(variables_map& vm)
         if (payloads.size() != tasks)
             throw std::logic_error("incorrect number of tasks generated");
 
-        std::uint64_t const payloads_sum =
-            std::accumulate(payloads.begin(), payloads.end(), 0ULL);
+        std::uint64_t const payloads_sum = std::accumulate(payloads.begin(), payloads.end(), 0ULL);
         if (payloads_sum != total_delay)
             throw std::logic_error("incorrect total delay generated");
 
@@ -194,9 +189,8 @@ int pika_main(variables_map& vm)
         // Queue the tasks in a serial loop.
         for (std::uint64_t i = 0; i < tasks; ++i)
         {
-            thread_init_data data(
-                make_thread_function_nullary(pika::util::detail::bind(
-                    &worker_timed, payloads[i] * 1000)),
+            thread_init_data data(make_thread_function_nullary(
+                                      pika::util::detail::bind(&worker_timed, payloads[i] * 1000)),
                 "worker_timed");
             register_work(data);
         }
@@ -209,8 +203,7 @@ int pika_main(variables_map& vm)
             // should be resumed after most of the null pika-threads have been
             // executed. If we haven't, we just reschedule ourselves again.
             suspend();
-        } while (
-            get_thread_count(pika::execution::thread_priority::normal) > 1);
+        } while (get_thread_count(pika::execution::thread_priority::normal) > 1);
 
         ///////////////////////////////////////////////////////////////////////
         // Print the results.

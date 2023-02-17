@@ -163,8 +163,7 @@ void test_exchange_token()
             int num_interrupts = 0;
             try
             {
-                for ([[maybe_unused]] int i = 0; num_interrupts < 2 && i < 500;
-                     ++i)
+                for ([[maybe_unused]] int i = 0; num_interrupts < 2 && i < 500; ++i)
                 {
                     // if we get a new interrupt token from the caller, take it
                     if (pstoken.load() != nullptr)
@@ -330,8 +329,7 @@ int pika_main()
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0, "pika main exited with non-zero status");
 
     return 0;
 }

@@ -15,8 +15,8 @@
 #include <utility>
 
 #if defined(PIKA_MSVC_WARNING_PRAGMA)
-#pragma warning(push)
-#pragma warning(disable : 4251)
+# pragma warning(push)
+# pragma warning(disable : 4251)
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -28,21 +28,17 @@ namespace pika::detail {
         using mutex_type = pika::spinlock;
 
     public:
-        PIKA_EXPORT sliding_semaphore(
-            std::int64_t max_difference, std::int64_t lower_limit);
+        PIKA_EXPORT sliding_semaphore(std::int64_t max_difference, std::int64_t lower_limit);
         PIKA_EXPORT ~sliding_semaphore();
 
-        PIKA_EXPORT void set_max_difference(std::unique_lock<mutex_type>& l,
-            std::int64_t max_difference, std::int64_t lower_limit);
+        PIKA_EXPORT void set_max_difference(
+            std::unique_lock<mutex_type>& l, std::int64_t max_difference, std::int64_t lower_limit);
 
-        PIKA_EXPORT void wait(
-            std::unique_lock<mutex_type>& l, std::int64_t upper_limit);
+        PIKA_EXPORT void wait(std::unique_lock<mutex_type>& l, std::int64_t upper_limit);
 
-        PIKA_EXPORT bool try_wait(
-            std::unique_lock<mutex_type>& l, std::int64_t upper_limit);
+        PIKA_EXPORT bool try_wait(std::unique_lock<mutex_type>& l, std::int64_t upper_limit);
 
-        PIKA_EXPORT void signal(
-            std::unique_lock<mutex_type> l, std::int64_t lower_limit);
+        PIKA_EXPORT void signal(std::unique_lock<mutex_type> l, std::int64_t lower_limit);
 
         PIKA_EXPORT std::int64_t signal_all(std::unique_lock<mutex_type> l);
 
@@ -54,5 +50,5 @@ namespace pika::detail {
 }    // namespace pika::detail
 
 #if defined(PIKA_MSVC_WARNING_PRAGMA)
-#pragma warning(pop)
+# pragma warning(pop)
 #endif

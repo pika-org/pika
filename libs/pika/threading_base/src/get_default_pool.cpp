@@ -13,8 +13,7 @@
 #include <pika/threading_base/thread_pool_base.hpp>
 
 // The following implementation has been divided for Linux and Mac OSX
-#if (defined(__linux) || defined(__linux__) || defined(linux) ||               \
-    defined(__APPLE__))
+#if (defined(__linux) || defined(__linux__) || defined(linux) || defined(__APPLE__))
 
 namespace pika_start {
     // Redefining weak variables defined in pika_main.hpp to facilitate error

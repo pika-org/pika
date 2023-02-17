@@ -47,8 +47,7 @@ struct ___itt_counter;
 #define PIKA_ITT_THREAD_IGNORE() itt_thread_ignore()
 
 #define PIKA_ITT_TASK_BEGIN(domain, name) itt_task_begin(domain, name)
-#define PIKA_ITT_TASK_BEGIN_ID(domain, id, name)                               \
-    itt_task_begin(domain, id, name)
+#define PIKA_ITT_TASK_BEGIN_ID(domain, id, name) itt_task_begin(domain, id, name)
 #define PIKA_ITT_TASK_END(domain) itt_task_end(domain)
 
 #define PIKA_ITT_DOMAIN_CREATE(name) itt_domain_create(name)
@@ -58,31 +57,27 @@ struct ___itt_counter;
 #define PIKA_ITT_ID_CREATE(domain, id) itt_id_create(domain, id)
 #define PIKA_ITT_ID_DESTROY(id) itt_id_destroy(id)
 
-#define PIKA_ITT_HEAP_FUNCTION_CREATE(name, domain)                            \
-    itt_heap_function_create(name, domain) /**/
-#define PIKA_ITT_HEAP_ALLOCATE_BEGIN(f, size, initialized)                     \
-    itt_heap_allocate_begin(f, size, initialized) /**/
-#define PIKA_ITT_HEAP_ALLOCATE_END(f, addr, size, initialized)                 \
-    itt_heap_allocate_end(f, addr, size, initialized) /**/
+#define PIKA_ITT_HEAP_FUNCTION_CREATE(name, domain) itt_heap_function_create(name, domain) /**/
+#define PIKA_ITT_HEAP_ALLOCATE_BEGIN(f, size, initialized)                                         \
+ itt_heap_allocate_begin(f, size, initialized) /**/
+#define PIKA_ITT_HEAP_ALLOCATE_END(f, addr, size, initialized)                                     \
+ itt_heap_allocate_end(f, addr, size, initialized) /**/
 #define PIKA_ITT_HEAP_FREE_BEGIN(f, addr) itt_heap_free_begin(f, addr)
 #define PIKA_ITT_HEAP_FREE_END(f, addr) itt_heap_free_end(f, addr)
-#define PIKA_ITT_HEAP_REALLOCATE_BEGIN(f, addr, new_size, initialized)         \
-    itt_heap_reallocate_begin(f, addr, new_size, initialized) /**/
-#define PIKA_ITT_HEAP_REALLOCATE_END(f, addr, new_addr, new_size, initialized) \
-    itt_heap_reallocate_end(f, addr, new_addr, new_size, initialized) /**/
+#define PIKA_ITT_HEAP_REALLOCATE_BEGIN(f, addr, new_size, initialized)                             \
+ itt_heap_reallocate_begin(f, addr, new_size, initialized) /**/
+#define PIKA_ITT_HEAP_REALLOCATE_END(f, addr, new_addr, new_size, initialized)                     \
+ itt_heap_reallocate_end(f, addr, new_addr, new_size, initialized) /**/
 #define PIKA_ITT_HEAP_INTERNAL_ACCESS_BEGIN() itt_heap_internal_access_begin()
 #define PIKA_ITT_HEAP_INTERNAL_ACCESS_END() itt_heap_internal_access_end()
 
-#define PIKA_ITT_COUNTER_CREATE(name, domain)                                  \
-    itt_counter_create(name, domain) /**/
-#define PIKA_ITT_COUNTER_CREATE_TYPED(name, domain, type)                      \
-    itt_counter_create_typed(name, domain, type) /**/
-#define PIKA_ITT_COUNTER_SET_VALUE(id, value_ptr)                              \
-    itt_counter_set_value(id, value_ptr) /**/
+#define PIKA_ITT_COUNTER_CREATE(name, domain) itt_counter_create(name, domain) /**/
+#define PIKA_ITT_COUNTER_CREATE_TYPED(name, domain, type)                                          \
+ itt_counter_create_typed(name, domain, type)                                          /**/
+#define PIKA_ITT_COUNTER_SET_VALUE(id, value_ptr) itt_counter_set_value(id, value_ptr) /**/
 #define PIKA_ITT_COUNTER_DESTROY(id) itt_counter_destroy(id)
 
-#define PIKA_ITT_METADATA_ADD(domain, id, key, data)                           \
-    itt_metadata_add(domain, id, key, data) /**/
+#define PIKA_ITT_METADATA_ADD(domain, id, key, data) itt_metadata_add(domain, id, key, data) /**/
 
 ///////////////////////////////////////////////////////////////////////////////
 // decide whether to use the ITT notify API if it's available
@@ -91,8 +86,7 @@ struct ___itt_counter;
 PIKA_EXPORT extern bool use_ittnotify_api;
 
 ///////////////////////////////////////////////////////////////////////////////
-PIKA_EXPORT void itt_sync_create(
-    void* addr, const char* objtype, const char* objname) noexcept;
+PIKA_EXPORT void itt_sync_create(void* addr, const char* objtype, const char* objname) noexcept;
 PIKA_EXPORT void itt_sync_rename(void* addr, const char* name) noexcept;
 PIKA_EXPORT void itt_sync_prepare(void* addr) noexcept;
 PIKA_EXPORT void itt_sync_acquired(void* addr) noexcept;
@@ -106,10 +100,8 @@ PIKA_EXPORT void itt_stack_enter(___itt_caller* ctx) noexcept;
 PIKA_EXPORT void itt_stack_leave(___itt_caller* ctx) noexcept;
 PIKA_EXPORT void itt_stack_destroy(___itt_caller* ctx) noexcept;
 
-PIKA_EXPORT void itt_frame_begin(
-    ___itt_domain const* frame, ___itt_id* id) noexcept;
-PIKA_EXPORT void itt_frame_end(
-    ___itt_domain const* frame, ___itt_id* id) noexcept;
+PIKA_EXPORT void itt_frame_begin(___itt_domain const* frame, ___itt_id* id) noexcept;
+PIKA_EXPORT void itt_frame_end(___itt_domain const* frame, ___itt_id* id) noexcept;
 
 PIKA_EXPORT int itt_mark_create(char const*) noexcept;
 PIKA_EXPORT void itt_mark_off(int mark) noexcept;
@@ -118,39 +110,30 @@ PIKA_EXPORT void itt_mark(int mark, char const*) noexcept;
 PIKA_EXPORT void itt_thread_set_name(char const*) noexcept;
 PIKA_EXPORT void itt_thread_ignore() noexcept;
 
-PIKA_EXPORT void itt_task_begin(
-    ___itt_domain const*, ___itt_string_handle*) noexcept;
-PIKA_EXPORT void itt_task_begin(
-    ___itt_domain const*, ___itt_id*, ___itt_string_handle*) noexcept;
+PIKA_EXPORT void itt_task_begin(___itt_domain const*, ___itt_string_handle*) noexcept;
+PIKA_EXPORT void itt_task_begin(___itt_domain const*, ___itt_id*, ___itt_string_handle*) noexcept;
 PIKA_EXPORT void itt_task_end(___itt_domain const*) noexcept;
 
 PIKA_EXPORT ___itt_domain* itt_domain_create(char const*) noexcept;
-PIKA_EXPORT ___itt_string_handle* itt_string_handle_create(
-    char const*) noexcept;
+PIKA_EXPORT ___itt_string_handle* itt_string_handle_create(char const*) noexcept;
 
 PIKA_EXPORT ___itt_id* itt_make_id(void*, std::size_t);
 PIKA_EXPORT void itt_id_create(___itt_domain const*, ___itt_id* id) noexcept;
 PIKA_EXPORT void itt_id_destroy(___itt_id* id) noexcept;
 
-PIKA_EXPORT __itt_heap_function itt_heap_function_create(
-    const char*, const char*) noexcept;
-PIKA_EXPORT void itt_heap_allocate_begin(
-    __itt_heap_function, std::size_t, int) noexcept;
-PIKA_EXPORT void itt_heap_allocate_end(
-    __itt_heap_function, void**, std::size_t, int) noexcept;
+PIKA_EXPORT __itt_heap_function itt_heap_function_create(const char*, const char*) noexcept;
+PIKA_EXPORT void itt_heap_allocate_begin(__itt_heap_function, std::size_t, int) noexcept;
+PIKA_EXPORT void itt_heap_allocate_end(__itt_heap_function, void**, std::size_t, int) noexcept;
 PIKA_EXPORT void itt_heap_free_begin(__itt_heap_function, void*) noexcept;
 PIKA_EXPORT void itt_heap_free_end(__itt_heap_function, void*) noexcept;
-PIKA_EXPORT void itt_heap_reallocate_begin(
-    __itt_heap_function, void*, std::size_t, int) noexcept;
+PIKA_EXPORT void itt_heap_reallocate_begin(__itt_heap_function, void*, std::size_t, int) noexcept;
 PIKA_EXPORT void itt_heap_reallocate_end(
     __itt_heap_function, void*, void**, std::size_t, int) noexcept;
 PIKA_EXPORT void itt_heap_internal_access_begin() noexcept;
 PIKA_EXPORT void itt_heap_internal_access_end() noexcept;
 
-PIKA_EXPORT ___itt_counter* itt_counter_create(
-    char const*, char const*) noexcept;
-PIKA_EXPORT ___itt_counter* itt_counter_create_typed(
-    char const*, char const*, int) noexcept;
+PIKA_EXPORT ___itt_counter* itt_counter_create(char const*, char const*) noexcept;
+PIKA_EXPORT ___itt_counter* itt_counter_create_typed(char const*, char const*, int) noexcept;
 PIKA_EXPORT void itt_counter_destroy(___itt_counter*) noexcept;
 PIKA_EXPORT void itt_counter_set_value(___itt_counter*, void*) noexcept;
 
@@ -158,14 +141,14 @@ PIKA_EXPORT int itt_event_create(char const* name, int namelen) noexcept;
 PIKA_EXPORT int itt_event_start(int evnt) noexcept;
 PIKA_EXPORT int itt_event_end(int evnt) noexcept;
 
-PIKA_EXPORT void itt_metadata_add(___itt_domain* domain, ___itt_id* id,
-    ___itt_string_handle* key, std::uint64_t const& data) noexcept;
-PIKA_EXPORT void itt_metadata_add(___itt_domain* domain, ___itt_id* id,
-    ___itt_string_handle* key, double const& data) noexcept;
-PIKA_EXPORT void itt_metadata_add(___itt_domain* domain, ___itt_id* id,
-    ___itt_string_handle* key, char const* data) noexcept;
-PIKA_EXPORT void itt_metadata_add(___itt_domain* domain, ___itt_id* id,
-    ___itt_string_handle* key, void const* data) noexcept;
+PIKA_EXPORT void itt_metadata_add(___itt_domain* domain, ___itt_id* id, ___itt_string_handle* key,
+    std::uint64_t const& data) noexcept;
+PIKA_EXPORT void itt_metadata_add(
+    ___itt_domain* domain, ___itt_id* id, ___itt_string_handle* key, double const& data) noexcept;
+PIKA_EXPORT void itt_metadata_add(
+    ___itt_domain* domain, ___itt_id* id, ___itt_string_handle* key, char const* data) noexcept;
+PIKA_EXPORT void itt_metadata_add(
+    ___itt_domain* domain, ___itt_id* id, ___itt_string_handle* key, void const* data) noexcept;
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::detail {
@@ -230,8 +213,7 @@ namespace pika { namespace util { namespace itt {
 
     struct id
     {
-        PIKA_EXPORT id(
-            domain const& domain, void* addr, unsigned long extra = 0) noexcept;
+        PIKA_EXPORT id(domain const& domain, void* addr, unsigned long extra = 0) noexcept;
         PIKA_EXPORT ~id();
 
         id(id const& rhs) = delete;
@@ -258,8 +240,7 @@ namespace pika { namespace util { namespace itt {
     ///////////////////////////////////////////////////////////////////////////
     struct frame_context
     {
-        PIKA_EXPORT frame_context(
-            domain const& domain, id* ident = nullptr) noexcept;
+        PIKA_EXPORT frame_context(domain const& domain, id* ident = nullptr) noexcept;
         PIKA_EXPORT ~frame_context();
 
         domain const& domain_;
@@ -339,19 +320,14 @@ namespace pika { namespace util { namespace itt {
     ///////////////////////////////////////////////////////////////////////////
     struct task
     {
-        PIKA_EXPORT task(domain const&, string_handle const&,
-            std::uint64_t metadata) noexcept;
+        PIKA_EXPORT task(domain const&, string_handle const&, std::uint64_t metadata) noexcept;
         PIKA_EXPORT task(domain const&, string_handle const&) noexcept;
         PIKA_EXPORT ~task();
 
-        PIKA_EXPORT void add_metadata(
-            string_handle const& name, std::uint64_t val) noexcept;
-        PIKA_EXPORT void add_metadata(
-            string_handle const& name, double val) noexcept;
-        PIKA_EXPORT void add_metadata(
-            string_handle const& name, char const* val) noexcept;
-        PIKA_EXPORT void add_metadata(
-            string_handle const& name, void const* val) noexcept;
+        PIKA_EXPORT void add_metadata(string_handle const& name, std::uint64_t val) noexcept;
+        PIKA_EXPORT void add_metadata(string_handle const& name, double val) noexcept;
+        PIKA_EXPORT void add_metadata(string_handle const& name, char const* val) noexcept;
+        PIKA_EXPORT void add_metadata(string_handle const& name, void const* val) noexcept;
 
         template <typename T>
         void add_metadata(string_handle const& name, T const& val) noexcept
@@ -367,8 +343,7 @@ namespace pika { namespace util { namespace itt {
     ///////////////////////////////////////////////////////////////////////////
     struct heap_function
     {
-        PIKA_EXPORT heap_function(
-            char const* name, char const* domain) noexcept;
+        PIKA_EXPORT heap_function(char const* name, char const* domain) noexcept;
 
         __itt_heap_function heap_function_ = nullptr;
     };
@@ -382,8 +357,7 @@ namespace pika { namespace util { namespace itt {
     struct heap_allocate
     {
         template <typename T>
-        heap_allocate(heap_function& heap_function, T**& addr, std::size_t size,
-            int init) noexcept
+        heap_allocate(heap_function& heap_function, T**& addr, std::size_t size, int init) noexcept
           : heap_function_(heap_function)
           , addr_(reinterpret_cast<void**&>(addr))
           , size_(size)
@@ -391,8 +365,7 @@ namespace pika { namespace util { namespace itt {
         {
             if (use_ittnotify_api)
             {
-                PIKA_ITT_HEAP_ALLOCATE_BEGIN(
-                    heap_function_.heap_function_, size_, init_);
+                PIKA_ITT_HEAP_ALLOCATE_BEGIN(heap_function_.heap_function_, size_, init_);
             }
         }
 
@@ -400,8 +373,7 @@ namespace pika { namespace util { namespace itt {
         {
             if (use_ittnotify_api)
             {
-                PIKA_ITT_HEAP_ALLOCATE_END(
-                    heap_function_.heap_function_, addr_, size_, init_);
+                PIKA_ITT_HEAP_ALLOCATE_END(heap_function_.heap_function_, addr_, size_, init_);
             }
         }
 
@@ -414,8 +386,7 @@ namespace pika { namespace util { namespace itt {
 
     struct heap_free
     {
-        PIKA_EXPORT heap_free(
-            heap_function& heap_function, void* addr) noexcept;
+        PIKA_EXPORT heap_free(heap_function& heap_function, void* addr) noexcept;
         PIKA_EXPORT ~heap_free();
 
     private:
@@ -427,8 +398,7 @@ namespace pika { namespace util { namespace itt {
     struct counter
     {
         PIKA_EXPORT counter(char const* name, char const* domain) noexcept;
-        PIKA_EXPORT counter(
-            char const* name, char const* domain, int type) noexcept;
+        PIKA_EXPORT counter(char const* name, char const* domain, int type) noexcept;
         PIKA_EXPORT ~counter();
 
         template <typename T>
@@ -509,9 +479,7 @@ namespace pika { namespace util { namespace itt {
 
 #else
 
-inline constexpr void itt_sync_create(void*, const char*, const char*) noexcept
-{
-}
+inline constexpr void itt_sync_create(void*, const char*, const char*) noexcept {}
 inline constexpr void itt_sync_rename(void*, const char*) noexcept {}
 inline constexpr void itt_sync_prepare(void*) noexcept {}
 inline constexpr void itt_sync_acquired(void*) noexcept {}
@@ -528,12 +496,8 @@ inline constexpr void itt_stack_enter(___itt_caller*) noexcept {}
 inline constexpr void itt_stack_leave(___itt_caller*) noexcept {}
 inline constexpr void itt_stack_destroy(___itt_caller*) noexcept {}
 
-inline constexpr void itt_frame_begin(___itt_domain const*, ___itt_id*) noexcept
-{
-}
-inline constexpr void itt_frame_end(___itt_domain const*, ___itt_id*) noexcept
-{
-}
+inline constexpr void itt_frame_begin(___itt_domain const*, ___itt_id*) noexcept {}
+inline constexpr void itt_frame_end(___itt_domain const*, ___itt_id*) noexcept {}
 
 inline constexpr int itt_mark_create(char const*) noexcept
 {
@@ -545,10 +509,7 @@ inline constexpr void itt_mark(int, char const*) noexcept {}
 inline constexpr void itt_thread_set_name(char const*) noexcept {}
 inline constexpr void itt_thread_ignore() noexcept {}
 
-inline constexpr void itt_task_begin(
-    ___itt_domain const*, ___itt_string_handle*) noexcept
-{
-}
+inline constexpr void itt_task_begin(___itt_domain const*, ___itt_string_handle*) noexcept {}
 inline constexpr void itt_task_begin(
     ___itt_domain const*, ___itt_id*, ___itt_string_handle*) noexcept
 {
@@ -559,8 +520,7 @@ inline constexpr ___itt_domain* itt_domain_create(char const*) noexcept
 {
     return nullptr;
 }
-inline constexpr ___itt_string_handle* itt_string_handle_create(
-    char const*) noexcept
+inline constexpr ___itt_string_handle* itt_string_handle_create(char const*) noexcept
 {
     return nullptr;
 }
@@ -569,27 +529,18 @@ inline constexpr ___itt_id* itt_make_id(void*, unsigned long)
 {
     return nullptr;
 }
-inline constexpr void itt_id_create(___itt_domain const*, ___itt_id*) noexcept
-{
-}
+inline constexpr void itt_id_create(___itt_domain const*, ___itt_id*) noexcept {}
 inline constexpr void itt_id_destroy(___itt_id*) noexcept {}
 
-inline constexpr __itt_heap_function itt_heap_function_create(
-    const char*, const char*) noexcept
+inline constexpr __itt_heap_function itt_heap_function_create(const char*, const char*) noexcept
 {
     return nullptr;
 }
-inline constexpr void itt_heap_allocate_begin(
-    __itt_heap_function, std::size_t, int) noexcept
+inline constexpr void itt_heap_allocate_begin(__itt_heap_function, std::size_t, int) noexcept {}
+inline constexpr void itt_heap_allocate_end(__itt_heap_function, void**, std::size_t, int) noexcept
 {
 }
-inline constexpr void itt_heap_allocate_end(
-    __itt_heap_function, void**, std::size_t, int) noexcept
-{
-}
-inline constexpr void itt_heap_free_begin(__itt_heap_function, void*) noexcept
-{
-}
+inline constexpr void itt_heap_free_begin(__itt_heap_function, void*) noexcept {}
 inline constexpr void itt_heap_free_end(__itt_heap_function, void*) noexcept {}
 inline constexpr void itt_heap_reallocate_begin(
     __itt_heap_function, void*, std::size_t, int) noexcept
@@ -602,13 +553,11 @@ inline constexpr void itt_heap_reallocate_end(
 inline constexpr void itt_heap_internal_access_begin() noexcept {}
 inline constexpr void itt_heap_internal_access_end() noexcept {}
 
-inline constexpr ___itt_counter* itt_counter_create(
-    char const*, char const*) noexcept
+inline constexpr ___itt_counter* itt_counter_create(char const*, char const*) noexcept
 {
     return nullptr;
 }
-inline constexpr ___itt_counter* itt_counter_create_typed(
-    char const*, char const*, int) noexcept
+inline constexpr ___itt_counter* itt_counter_create_typed(char const*, char const*, int) noexcept
 {
     return nullptr;
 }
@@ -628,8 +577,8 @@ inline constexpr int itt_event_end(int) noexcept
     return 0;
 }
 
-inline constexpr void itt_metadata_add(___itt_domain*, ___itt_id*,
-    ___itt_string_handle*, std::uint64_t const&) noexcept
+inline constexpr void itt_metadata_add(
+    ___itt_domain*, ___itt_id*, ___itt_string_handle*, std::uint64_t const&) noexcept
 {
 }
 inline constexpr void itt_metadata_add(
@@ -723,10 +672,7 @@ namespace pika::util::itt {
     //////////////////////////////////////////////////////////////////////////
     struct task
     {
-        constexpr task(
-            domain const&, string_handle const&, std::uint64_t) noexcept
-        {
-        }
+        constexpr task(domain const&, string_handle const&, std::uint64_t) noexcept {}
         constexpr task(domain const&, string_handle const&) noexcept {}
 
         ~task() = default;
@@ -742,8 +688,7 @@ namespace pika::util::itt {
     struct heap_allocate
     {
         template <typename T>
-        constexpr heap_allocate(
-            heap_function& /*heap_function*/, T**, std::size_t, int) noexcept
+        constexpr heap_allocate(heap_function& /*heap_function*/, T**, std::size_t, int) noexcept
         {
         }
         ~heap_allocate() = default;
@@ -763,9 +708,7 @@ namespace pika::util::itt {
 
     struct counter
     {
-        constexpr counter(char const* /*name*/, char const* /*domain*/) noexcept
-        {
-        }
+        constexpr counter(char const* /*name*/, char const* /*domain*/) noexcept {}
         ~counter() = default;
     };
 

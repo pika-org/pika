@@ -56,11 +56,11 @@
 // Used to wrap function call parameters to prevent evaluation
 // when debugging is disabled
 #define PIKA_DP_LAZY(printer, Expr) printer.eval([&] { return Expr; })
-#define PIKA_DP_ONLY(printer, Expr)                                            \
-    if constexpr (printer.is_enabled())                                        \
-    {                                                                          \
-        printer.Expr;                                                          \
-    };
+#define PIKA_DP_ONLY(printer, Expr)                                                                \
+ if constexpr (printer.is_enabled())                                                               \
+ {                                                                                                 \
+  printer.Expr;                                                                                    \
+ };
 
 #define NS_DEBUG pika::debug::detail
 
@@ -89,8 +89,7 @@ namespace NS_DEBUG {
 
         T const& data_;
 
-        friend std::ostream& operator<<(
-            std::ostream& os, dec_impl<N, T> const& d)
+        friend std::ostream& operator<<(std::ostream& os, dec_impl<N, T> const& d)
         {
             print_dec(os, d.data_, N);
             return os;
@@ -113,8 +112,7 @@ namespace NS_DEBUG {
 
         void const* data_;
 
-        PIKA_EXPORT friend std::ostream& operator<<(
-            std::ostream& os, ptr const& d);
+        PIKA_EXPORT friend std::ostream& operator<<(std::ostream& os, ptr const& d);
     };
 
     // ------------------------------------------------------------------
@@ -136,8 +134,7 @@ namespace NS_DEBUG {
 
         T const& data_;
 
-        friend std::ostream& operator<<(
-            std::ostream& os, hex_impl<N, T> const& d)
+        friend std::ostream& operator<<(std::ostream& os, hex_impl<N, T> const& d)
         {
             print_hex(os, d.data_, N);
             return os;
@@ -157,8 +154,7 @@ namespace NS_DEBUG {
 
         T const& data_;
 
-        friend std::ostream& operator<<(
-            std::ostream& os, hex_impl<N, T> const& d)
+        friend std::ostream& operator<<(std::ostream& os, hex_impl<N, T> const& d)
         {
             print_ptr(os, static_cast<void*>(d.data_), N);
             return os;
@@ -187,8 +183,7 @@ namespace NS_DEBUG {
 
         T const& data_;
 
-        friend std::ostream& operator<<(
-            std::ostream& os, bin_impl<N, T> const& d)
+        friend std::ostream& operator<<(std::ostream& os, bin_impl<N, T> const& d)
         {
             print_bin(os, d.data_, N);
             return os;
@@ -234,8 +229,7 @@ namespace NS_DEBUG {
         std::uint8_t const* data_;
         std::uint32_t const ipdata_;
 
-        PIKA_EXPORT friend std::ostream& operator<<(
-            std::ostream& os, ipaddr const& p);
+        PIKA_EXPORT friend std::ostream& operator<<(std::ostream& os, ipaddr const& p);
     };
 
     // ------------------------------------------------------------------
@@ -264,13 +258,11 @@ namespace NS_DEBUG {
         std::uint64_t const* addr_;
         std::size_t const len_;
 
-        PIKA_EXPORT friend std::ostream& operator<<(
-            std::ostream& os, mem_crc32 const& p);
+        PIKA_EXPORT friend std::ostream& operator<<(std::ostream& os, mem_crc32 const& p);
     };
 
     template <typename TupleType, std::size_t... I>
-    void
-    tuple_print(std::ostream& os, TupleType const& t, std::index_sequence<I...>)
+    void tuple_print(std::ostream& os, TupleType const& t, std::index_sequence<I...>)
     {
         (..., (os << (I == 0 ? "" : " ") << std::get<I>(t)));
     }
@@ -405,8 +397,7 @@ namespace NS_DEBUG {
         {
             auto now = std::chrono::steady_clock::now();
             double elapsed_ =
-                std::chrono::duration_cast<std::chrono::duration<double>>(
-                    now - time_check_)
+                std::chrono::duration_cast<std::chrono::duration<double>>(now - time_check_)
                     .count();
 
             if (elapsed_ > delay_)
@@ -424,8 +415,7 @@ namespace NS_DEBUG {
                 .count();
         }
 
-        friend std::ostream& operator<<(
-            std::ostream& os, timed_var<Args...> const& ti)
+        friend std::ostream& operator<<(std::ostream& os, timed_var<Args...> const& ti)
         {
             tuple_print(os, ti.message_);
             return os;
@@ -519,8 +509,7 @@ namespace NS_DEBUG {
     };
 
     template <typename T>
-    PIKA_EXPORT void
-    print_array(std::string const& name, T const* data, std::size_t size);
+    PIKA_EXPORT void print_array(std::string const& name, T const* data, std::size_t size);
 
     // when true, debug statements produce valid output
     template <>
@@ -597,8 +586,7 @@ namespace NS_DEBUG {
         }
 
         template <typename T>
-        void
-        array(std::string const& name, T const* data, std::size_t size) const
+        void array(std::string const& name, T const* data, std::size_t size) const
         {
             print_array(name, data, size);
         }
@@ -616,8 +604,7 @@ namespace NS_DEBUG {
         }
 
         template <typename... Args>
-        constexpr timed_var<Args...>
-        make_timer(const double delay, const Args... args) const
+        constexpr timed_var<Args...> make_timer(const double delay, const Args... args) const
         {
             return timed_var<Args...>(delay, args...);
         }

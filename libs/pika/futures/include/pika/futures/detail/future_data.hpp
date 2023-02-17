@@ -53,8 +53,7 @@ namespace pika::lcos::detail {
 
     using run_on_completed_error_handler_type =
         util::detail::function<void(std::exception_ptr const& e)>;
-    PIKA_EXPORT void set_run_on_completed_error_handler(
-        run_on_completed_error_handler_type f);
+    PIKA_EXPORT void set_run_on_completed_error_handler(run_on_completed_error_handler_type f);
 
     ///////////////////////////////////////////////////////////////////////
     template <typename Result>
@@ -72,8 +71,7 @@ namespace pika::lcos::detail {
         // future shared states are non-copyable and non-movable
         future_data_refcnt_base(future_data_refcnt_base const&) = delete;
         future_data_refcnt_base(future_data_refcnt_base&&) = delete;
-        future_data_refcnt_base& operator=(
-            future_data_refcnt_base const&) = delete;
+        future_data_refcnt_base& operator=(future_data_refcnt_base const&) = delete;
         future_data_refcnt_base& operator=(future_data_refcnt_base&&) = delete;
 
     public:
@@ -187,14 +185,12 @@ namespace pika::lcos::detail {
         // determine the required alignment, define aligned storage of proper
         // size
         static constexpr std::size_t max_alignment =
-            (std::alignment_of_v<value_type> >
-                std::alignment_of_v<error_type>) ?
+            (std::alignment_of_v<value_type> > std::alignment_of_v<error_type>) ?
             std::alignment_of_v<value_type> :
             std::alignment_of_v<error_type>;
 
         static constexpr std::size_t max_size =
-            (sizeof(value_type) > sizeof(error_type)) ? sizeof(value_type) :
-                                                        sizeof(error_type);
+            (sizeof(value_type) > sizeof(error_type)) ? sizeof(value_type) : sizeof(error_type);
 
         using type = std::aligned_storage_t<max_size, max_alignment>;
     };
@@ -207,8 +203,7 @@ namespace pika::lcos::detail {
     struct future_data_base;
 
     template <>
-    struct PIKA_EXPORT future_data_base<traits::detail::future_data_void>
-      : future_data_refcnt_base
+    struct PIKA_EXPORT future_data_base<traits::detail::future_data_void> : future_data_refcnt_base
     {
         using mutex_type = pika::spinlock;
 
@@ -240,8 +235,7 @@ namespace pika::lcos::detail {
 
         /// Return whether or not the data is available for this
         /// \a future.
-        bool is_ready(
-            std::memory_order order = std::memory_order_acquire) const noexcept
+        bool is_ready(std::memory_order order = std::memory_order_acquire) const noexcept
         {
             return (state_.load(order) & ready) != 0;
         }
@@ -254,12 +248,12 @@ namespace pika::lcos::detail {
         bool has_exception() const noexcept
         {
 #if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wstringop-overflow"
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wstringop-overflow"
 #endif
             return state_.load(std::memory_order_acquire) == exception;
 #if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic pop
+# pragma GCC diagnostic pop
 #endif
         }
 
@@ -272,14 +266,11 @@ namespace pika::lcos::detail {
         }
         virtual void cancel()
         {
-            PIKA_THROW_EXCEPTION(
-                pika::error::future_does_not_support_cancellation,
-                "future_data_base::cancel",
-                "this future does not support cancellation");
+            PIKA_THROW_EXCEPTION(pika::error::future_does_not_support_cancellation,
+                "future_data_base::cancel", "this future does not support cancellation");
         }
 
-        result_type* get_result_void(
-            void const* storage, error_code& ec = throws);
+        result_type* get_result_void(void const* storage, error_code& ec = throws);
         virtual result_type* get_result_void(error_code& ec = throws) = 0;
 
         virtual void set_exception(std::exception_ptr data) = 0;
@@ -287,10 +278,8 @@ namespace pika::lcos::detail {
         // continuation support
 
         // deferred execution of a given continuation
-        static void run_on_completed(
-            completed_callback_type&& on_completed) noexcept;
-        static void run_on_completed(
-            completed_callback_vector_type&& on_completed) noexcept;
+        static void run_on_completed(completed_callback_type&& on_completed) noexcept;
+        static void run_on_completed(completed_callback_vector_type&& on_completed) noexcept;
 
         // make sure continuation invocation does not recurse deeper than
         // allowed
@@ -305,8 +294,7 @@ namespace pika::lcos::detail {
         virtual state wait(error_code& ec = throws);
 
         virtual pika::future_status wait_until(
-            std::chrono::steady_clock::time_point const& abs_time,
-            error_code& ec = throws);
+            std::chrono::steady_clock::time_point const& abs_time, error_code& ec = throws);
 
         virtual std::exception_ptr get_exception_ptr() const = 0;
 
@@ -324,8 +312,7 @@ namespace pika::lcos::detail {
         }
         virtual bool register_as(std::string /*name*/, bool /*manage_lifetime*/)
         {
-            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
-                "future_data_base::register_as",
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "future_data_base::register_as",
                 "this future does not support name registration");
         }
 
@@ -352,19 +339,16 @@ namespace pika::lcos::detail {
         template <typename T, typename... Ts>
         static void construct(void* p, T&& t, Ts&&... ts)
         {
-            ::new (p)
-                result_type(future_data_result<Result>::set(PIKA_FORWARD(T, t)),
-                    PIKA_FORWARD(Ts, ts)...);
+            ::new (p) result_type(
+                future_data_result<Result>::set(PIKA_FORWARD(T, t)), PIKA_FORWARD(Ts, ts)...);
         }
 
     public:
         using result_type = future_data_result_t<Result>;
         using base_type = future_data_base<traits::detail::future_data_void>;
         using init_no_addref = typename base_type::init_no_addref;
-        using completed_callback_type =
-            typename base_type::completed_callback_type;
-        using completed_callback_vector_type =
-            typename base_type::completed_callback_vector_type;
+        using completed_callback_type = typename base_type::completed_callback_type;
+        using completed_callback_vector_type = typename base_type::completed_callback_vector_type;
 
     protected:
         using mutex_type = typename base_type::mutex_type;
@@ -389,16 +373,14 @@ namespace pika::lcos::detail {
         future_data_base(init_no_addref no_addref, std::exception_ptr const& e)
           : base_type(no_addref)
         {
-            std::exception_ptr* exception_ptr =
-                reinterpret_cast<std::exception_ptr*>(&storage_);
+            std::exception_ptr* exception_ptr = reinterpret_cast<std::exception_ptr*>(&storage_);
             ::new ((void*) exception_ptr) std::exception_ptr(e);
             state_.store(exception, std::memory_order_relaxed);
         }
         future_data_base(init_no_addref no_addref, std::exception_ptr&& e)
           : base_type(no_addref)
         {
-            std::exception_ptr* exception_ptr =
-                reinterpret_cast<std::exception_ptr*>(&storage_);
+            std::exception_ptr* exception_ptr = reinterpret_cast<std::exception_ptr*>(&storage_);
             ::new ((void*) exception_ptr) std::exception_ptr(PIKA_MOVE(e));
             state_.store(exception, std::memory_order_relaxed);
         }
@@ -433,8 +415,7 @@ namespace pika::lcos::detail {
             return nullptr;
         }
 
-        util::detail::unused_type* get_result_void(
-            error_code& ec = throws) override
+        util::detail::unused_type* get_result_void(error_code& ec = throws) override
         {
             return base_type::get_result_void(&storage_, ec);
         }
@@ -464,15 +445,13 @@ namespace pika::lcos::detail {
             // The value has been set, changing the state to 'value' at this
             // point signals to all other threads that this future is ready.
             state expected = empty;
-            if (!state_.compare_exchange_strong(
-                    expected, value, std::memory_order_release))
+            if (!state_.compare_exchange_strong(expected, value, std::memory_order_release))
             {
                 // this future should be 'empty' still (it can't be made ready
                 // more than once).
                 l.unlock();
                 PIKA_THROW_EXCEPTION(pika::error::promise_already_satisfied,
-                    "future_data_base::set_value",
-                    "data has already been set for this future");
+                    "future_data_base::set_value", "data has already been set for this future");
                 return;
             }
 
@@ -483,8 +462,7 @@ namespace pika::lcos::detail {
             //       relinquishes the lock before resuming the waiting thread
             //       which avoids suspension of this thread when it tries to
             //       re-lock the mutex while exiting from condition_variable::wait
-            while (cond_.notify_one(
-                PIKA_MOVE(l), execution::thread_priority::boost))
+            while (cond_.notify_one(PIKA_MOVE(l), execution::thread_priority::boost))
             {
                 l = std::unique_lock<mutex_type>(mtx_);
             }
@@ -508,8 +486,7 @@ namespace pika::lcos::detail {
             //       attempting to set the value by definition.
 
             // set the data
-            std::exception_ptr* exception_ptr =
-                reinterpret_cast<std::exception_ptr*>(&storage_);
+            std::exception_ptr* exception_ptr = reinterpret_cast<std::exception_ptr*>(&storage_);
             ::new ((void*) exception_ptr) std::exception_ptr(PIKA_MOVE(data));
 
             // At this point the lock needs to be acquired to safely access the
@@ -523,15 +500,13 @@ namespace pika::lcos::detail {
             // The value has been set, changing the state to 'exception' at this
             // point signals to all other threads that this future is ready.
             state expected = empty;
-            if (!state_.compare_exchange_strong(
-                    expected, exception, std::memory_order_release))
+            if (!state_.compare_exchange_strong(expected, exception, std::memory_order_release))
             {
                 // this future should be 'empty' still (it can't be made ready
                 // more than once).
                 l.unlock();
                 PIKA_THROW_EXCEPTION(pika::error::promise_already_satisfied,
-                    "future_data_base::set_exception",
-                    "data has already been set for this future");
+                    "future_data_base::set_exception", "data has already been set for this future");
                 return;
             }
 
@@ -542,8 +517,7 @@ namespace pika::lcos::detail {
             //       relinquishes the lock before resuming the waiting thread
             //       which avoids suspension of this thread when it tries to
             //       re-lock the mutex while exiting from condition_variable::wait
-            while (cond_.notify_one(
-                PIKA_MOVE(l), execution::thread_priority::boost))
+            while (cond_.notify_one(PIKA_MOVE(l), execution::thread_priority::boost))
             {
                 l = std::unique_lock<mutex_type>(mtx_);
             }
@@ -563,16 +537,14 @@ namespace pika::lcos::detail {
         template <typename T>
         void set_data(T&& result)
         {
-            pika::detail::try_catch_exception_ptr(
-                [&]() { set_value(PIKA_FORWARD(T, result)); },
+            pika::detail::try_catch_exception_ptr([&]() { set_value(PIKA_FORWARD(T, result)); },
                 [&](std::exception_ptr ep) { set_exception(PIKA_MOVE(ep)); });
         }
 
         // trigger the future with the given error condition
         void set_error(error e, char const* f, char const* msg)
         {
-            pika::detail::try_catch_exception_ptr(
-                [&]() { PIKA_THROW_EXCEPTION(e, f, "{}", msg); },
+            pika::detail::try_catch_exception_ptr([&]() { PIKA_THROW_EXCEPTION(e, f, "{}", msg); },
                 [&](std::exception_ptr ep) { set_exception(PIKA_MOVE(ep)); });
         }
 
@@ -588,8 +560,7 @@ namespace pika::lcos::detail {
             {
             case value:
             {
-                result_type* value_ptr =
-                    reinterpret_cast<result_type*>(&storage_);
+                result_type* value_ptr = reinterpret_cast<result_type*>(&storage_);
                 value_ptr->~result_type();
                 break;
             }
@@ -629,8 +600,7 @@ namespace pika::lcos::detail {
     template <typename Result>
     struct future_data : future_data_base<Result>
     {
-        using init_no_addref =
-            typename future_data_base<Result>::init_no_addref;
+        using init_no_addref = typename future_data_base<Result>::init_no_addref;
 
         future_data() = default;
 
@@ -641,8 +611,7 @@ namespace pika::lcos::detail {
 
         template <typename... Ts>
         future_data(init_no_addref no_addref, in_place in_place, Ts&&... ts)
-          : future_data_base<Result>(
-                no_addref, in_place, PIKA_FORWARD(Ts, ts)...)
+          : future_data_base<Result>(no_addref, in_place, PIKA_FORWARD(Ts, ts)...)
         {
         }
 
@@ -664,11 +633,11 @@ namespace pika::lcos::detail {
     {
         using init_no_addref = typename future_data<Result>::init_no_addref;
 
-        using allocated_type = std::conditional_t<std::is_void_v<Derived>,
-            future_data_allocator, Derived>;
+        using allocated_type =
+            std::conditional_t<std::is_void_v<Derived>, future_data_allocator, Derived>;
 
-        using other_allocator = typename std::allocator_traits<
-            Allocator>::template rebind_alloc<allocated_type>;
+        using other_allocator =
+            typename std::allocator_traits<Allocator>::template rebind_alloc<allocated_type>;
 
         explicit future_data_allocator(other_allocator const& alloc) noexcept
           : future_data<Result>()
@@ -676,30 +645,29 @@ namespace pika::lcos::detail {
         {
         }
 
-        future_data_allocator(
-            init_no_addref no_addref, other_allocator const& alloc) noexcept
+        future_data_allocator(init_no_addref no_addref, other_allocator const& alloc) noexcept
           : future_data<Result>(no_addref)
           , alloc_(alloc)
         {
         }
 
         template <typename... T>
-        future_data_allocator(init_no_addref no_addref, in_place in_place,
-            other_allocator const& alloc, T&&... ts)
+        future_data_allocator(
+            init_no_addref no_addref, in_place in_place, other_allocator const& alloc, T&&... ts)
           : future_data<Result>(no_addref, in_place, PIKA_FORWARD(T, ts)...)
           , alloc_(alloc)
         {
         }
 
-        future_data_allocator(init_no_addref no_addref,
-            std::exception_ptr const& e, other_allocator const& alloc)
+        future_data_allocator(
+            init_no_addref no_addref, std::exception_ptr const& e, other_allocator const& alloc)
           : future_data<Result>(no_addref, e)
           , alloc_(alloc)
         {
         }
 
-        future_data_allocator(init_no_addref no_addref, std::exception_ptr&& e,
-            other_allocator const& alloc)
+        future_data_allocator(
+            init_no_addref no_addref, std::exception_ptr&& e, other_allocator const& alloc)
           : future_data<Result>(no_addref, PIKA_MOVE(e))
           , alloc_(alloc)
         {
@@ -731,43 +699,36 @@ namespace pika::lcos::detail {
         timed_future_data() = default;
 
         template <typename Result_>
-        timed_future_data(std::chrono::steady_clock::time_point const& abs_time,
-            Result_&& init)
+        timed_future_data(std::chrono::steady_clock::time_point const& abs_time, Result_&& init)
         {
             pika::intrusive_ptr<timed_future_data> this_(this);
 
             error_code ec;
             threads::detail::thread_init_data data(
                 threads::detail::make_thread_function_nullary(
-                    [this_ = PIKA_MOVE(this_),
-                        init = PIKA_FORWARD(Result_, init)]() {
+                    [this_ = PIKA_MOVE(this_), init = PIKA_FORWARD(Result_, init)]() {
                         this_->set_value(init);
                     }),
-                "timed_future_data<Result>::timed_future_data",
-                execution::thread_priority::boost,
-                execution::thread_schedule_hint(),
-                execution::thread_stacksize::current,
+                "timed_future_data<Result>::timed_future_data", execution::thread_priority::boost,
+                execution::thread_schedule_hint(), execution::thread_stacksize::current,
                 threads::detail::thread_schedule_state::suspended, true);
-            threads::detail::thread_id_ref_type id =
-                threads::detail::register_thread(data, ec);
+            threads::detail::thread_id_ref_type id = threads::detail::register_thread(data, ec);
             if (ec)
             {
                 // thread creation failed, report error to the new future
-                this->base_type::set_exception(
-                    pika::detail::access_exception(ec));
+                this->base_type::set_exception(pika::detail::access_exception(ec));
                 return;
             }
 
             // start new thread at given point in time
             threads::detail::set_thread_state(id.noref(), abs_time,
                 threads::detail::thread_schedule_state::pending,
-                threads::detail::thread_restart_state::timeout,
-                execution::thread_priority::boost, true, ec);
+                threads::detail::thread_restart_state::timeout, execution::thread_priority::boost,
+                true, ec);
             if (ec)
             {
                 // thread scheduling failed, report error to the new future
-                this->base_type::set_exception(
-                    pika::detail::access_exception(ec));
+                this->base_type::set_exception(pika::detail::access_exception(ec));
             }
         }
     };
@@ -822,8 +783,7 @@ namespace pika::lcos::detail {
         }
 
         pika::future_status wait_until(
-            std::chrono::steady_clock::time_point const& abs_time,
-            error_code& ec = throws) override
+            std::chrono::steady_clock::time_point const& abs_time, error_code& ec = throws) override
         {
             if (!started_test())
             {
@@ -864,8 +824,7 @@ namespace pika::lcos::detail {
             if (started_)
             {
                 l.unlock();
-                PIKA_THROW_EXCEPTION(pika::error::task_already_started,
-                    "task_base::check_started",
+                PIKA_THROW_EXCEPTION(pika::error::task_already_started, "task_base::check_started",
                     "this task has already been started");
                 return;
             }
@@ -882,8 +841,8 @@ namespace pika::lcos::detail {
 
         // run in a separate thread
         virtual threads::detail::thread_id_ref_type apply(
-            threads::detail::thread_pool_base* /*pool*/,
-            const char* /*annotation*/, launch /*policy*/, error_code& /*ec*/)
+            threads::detail::thread_pool_base* /*pool*/, const char* /*annotation*/,
+            launch /*policy*/, error_code& /*ec*/)
         {
             PIKA_ASSERT(false);    // shouldn't ever be called
             return threads::detail::invalid_thread_id;
@@ -1005,17 +964,14 @@ namespace pika::lcos::detail {
                         this->started_ = true;
 
                         l.unlock();
-                        this->set_error(pika::error::future_cancelled,
-                            "task_base<Result>::cancel",
+                        this->set_error(pika::error::future_cancelled, "task_base<Result>::cancel",
                             "future has been canceled");
                     }
                     else
                     {
                         l.unlock();
-                        PIKA_THROW_EXCEPTION(
-                            pika::error::future_can_not_be_cancelled,
-                            "task_base<Result>::cancel",
-                            "future can't be canceled at this time");
+                        PIKA_THROW_EXCEPTION(pika::error::future_can_not_be_cancelled,
+                            "task_base<Result>::cancel", "future can't be canceled at this time");
                     }
                 },
                 [&](std::exception_ptr ep) {

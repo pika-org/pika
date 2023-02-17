@@ -12,7 +12,6 @@
 #include <pika/threading_base/threading_base_fwd.hpp>
 
 namespace pika::threads::detail {
-    PIKA_EXPORT void create_thread(scheduler_base* scheduler,
-        thread_init_data& data, thread_id_ref_type& id,
-        error_code& ec = throws);
+    PIKA_EXPORT void create_thread(scheduler_base* scheduler, thread_init_data& data,
+        thread_id_ref_type& id, error_code& ec = throws);
 }    // namespace pika::threads::detail

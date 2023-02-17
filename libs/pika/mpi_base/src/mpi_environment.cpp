@@ -23,28 +23,24 @@ namespace pika { namespace util {
 
     namespace detail {
 
-        bool detect_mpi_environment(
-            util::runtime_configuration const& cfg, char const* default_env)
+        bool detect_mpi_environment(util::runtime_configuration const& cfg, char const* default_env)
         {
 #if defined(__bgq__)
             // If running on BG/Q, we can safely assume to always run in an
             // MPI environment
             return true;
 #else
-            std::string mpi_environment_strings =
-                cfg.get_entry("pika.parcel.mpi.env", default_env);
+            std::string mpi_environment_strings = cfg.get_entry("pika.parcel.mpi.env", default_env);
 
             boost::char_separator<char> sep(";,: ");
-            boost::tokenizer<boost::char_separator<char>> tokens(
-                mpi_environment_strings, sep);
+            boost::tokenizer<boost::char_separator<char>> tokens(mpi_environment_strings, sep);
             for (auto const& tok : tokens)
             {
                 char* env = std::getenv(tok.c_str());
                 if (env)
                 {
-                    LBT_(debug)
-                        << "Found MPI environment variable: " << tok << "="
-                        << std::string(env) << ", enabling MPI support\n";
+                    LBT_(debug) << "Found MPI environment variable: " << tok << "="
+                                << std::string(env) << ", enabling MPI support\n";
                     return true;
                 }
             }
@@ -56,8 +52,7 @@ namespace pika { namespace util {
         }
     }    // namespace detail
 
-    bool mpi_environment::check_mpi_environment(
-        util::runtime_configuration const& cfg)
+    bool mpi_environment::check_mpi_environment(util::runtime_configuration const& cfg)
     {
         // log message was already generated
         return detail::detect_mpi_environment(cfg, PIKA_HAVE_MPI_ENV);
@@ -77,8 +72,7 @@ namespace pika { namespace util {
     int mpi_environment::is_initialized_ = -1;
 
     ///////////////////////////////////////////////////////////////////////////
-    int mpi_environment::init(
-        int*, char***, const int required, const int minimal, int& provided)
+    int mpi_environment::init(int*, char***, const int required, const int minimal, int& provided)
     {
         has_called_init_ = false;
 
@@ -109,8 +103,7 @@ namespace pika { namespace util {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    void mpi_environment::init(
-        int* argc, char*** argv, util::runtime_configuration& rtcfg)
+    void mpi_environment::init(int* argc, char*** argv, util::runtime_configuration& rtcfg)
     {
         if (enabled_)
             return;    // don't call twice
@@ -126,21 +119,19 @@ namespace pika { namespace util {
 
         int required = MPI_THREAD_SINGLE;
         int minimal = MPI_THREAD_SINGLE;
-#if defined(PIKA_HAVE_MPI_MULTITHREADED)
-        required = (pika::detail::get_entry_as(
-                        rtcfg, "pika.parcel.mpi.multithreaded", 1) != 0) ?
+# if defined(PIKA_HAVE_MPI_MULTITHREADED)
+        required = (pika::detail::get_entry_as(rtcfg, "pika.parcel.mpi.multithreaded", 1) != 0) ?
             MPI_THREAD_MULTIPLE :
             MPI_THREAD_SINGLE;
 
-#if defined(MVAPICH2_VERSION) && defined(_POSIX_SOURCE)
+#  if defined(MVAPICH2_VERSION) && defined(_POSIX_SOURCE)
         // This enables multi threading support in MVAPICH2 if requested.
         if (required == MPI_THREAD_MULTIPLE)
             setenv("MV2_ENABLE_AFFINITY", "0", 1);
-#endif
-#endif
+#  endif
+# endif
 
-        int retval =
-            init(argc, argv, required, minimal, provided_threading_flag_);
+        int retval = init(argc, argv, required, minimal, provided_threading_flag_);
         if (MPI_SUCCESS != retval && MPI_ERR_OTHER != retval)
         {
             enabled_ = false;
@@ -167,12 +158,11 @@ namespace pika { namespace util {
         {
             enabled_ = false;
             has_called_init_ = false;
-            throw std::runtime_error(
-                "mpi_environment::init: MPI_Init_thread: "
-                "The underlying MPI implementation only supports "
-                "MPI_THREAD_FUNNELED. This mode is not supported by pika. "
-                "Please pass -Ipika.parcel.mpi.multithreaded=0 to explicitly "
-                "disable MPI multi-threading.");
+            throw std::runtime_error("mpi_environment::init: MPI_Init_thread: "
+                                     "The underlying MPI implementation only supports "
+                                     "MPI_THREAD_FUNNELED. This mode is not supported by pika. "
+                                     "Please pass -Ipika.parcel.mpi.multithreaded=0 to explicitly "
+                                     "disable MPI multi-threading.");
         }
 
         this_rank = rank();

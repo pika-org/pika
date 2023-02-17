@@ -75,10 +75,8 @@ struct checker
     const std::size_t count_max = count_min;
 
     // Access types are differently tagged for read-only and read-write access.
-    using void_read_access_type =
-        typename async_rw_mutex<void>::read_access_type;
-    using void_readwrite_access_type =
-        typename async_rw_mutex<void>::readwrite_access_type;
+    using void_read_access_type = typename async_rw_mutex<void>::read_access_type;
+    using void_readwrite_access_type = typename async_rw_mutex<void>::readwrite_access_type;
 
     void operator()(void_read_access_type)
     {
@@ -94,8 +92,7 @@ struct checker
 
     // Non-void access types must be convertible to (const) references of the
     // types on which the async_rw_mutex is templated.
-    using size_t_read_access_type =
-        typename async_rw_mutex<std::size_t>::read_access_type;
+    using size_t_read_access_type = typename async_rw_mutex<std::size_t>::read_access_type;
     using size_t_readwrite_access_type =
         typename async_rw_mutex<std::size_t>::readwrite_access_type;
 
@@ -116,8 +113,7 @@ struct checker
 
     // Non-void access types must be convertible to (const) references of the
     // types on which the async_rw_mutex is templated.
-    using mytype_read_access_type =
-        typename async_rw_mutex<mytype, mytype_base>::read_access_type;
+    using mytype_read_access_type = typename async_rw_mutex<mytype, mytype_base>::read_access_type;
     using mytype_readwrite_access_type =
         typename async_rw_mutex<mytype, mytype_base>::readwrite_access_type;
 
@@ -142,9 +138,7 @@ void submit_senders(Executor&& exec, Senders& senders)
 {
     for (auto& sender : senders)
     {
-        execute(exec, [sender = std::move(sender)]() mutable {
-            sync_wait(std::move(sender));
-        });
+        execute(exec, [sender = std::move(sender)]() mutable { sync_wait(std::move(sender)); });
     }
 }
 
@@ -176,18 +170,17 @@ void test_moved(async_rw_mutex<ReadWriteT, ReadT> rwm)
 }
 
 template <typename ReadWriteT, typename ReadT = ReadWriteT>
-void test_multiple_accesses(
-    async_rw_mutex<ReadWriteT, ReadT> rwm, std::size_t iterations)
+void test_multiple_accesses(async_rw_mutex<ReadWriteT, ReadT> rwm, std::size_t iterations)
 {
     thread_pool_scheduler exec{};
 
     std::atomic<std::size_t> count{0};
 
     // Read-only and read-write access return senders of different types
-    using r_sender_type = std::decay_t<decltype(rwm.read() | transfer(exec) |
-        then(checker{true, 0, count, 0}))>;
-    using rw_sender_type = std::decay_t<decltype(rwm.readwrite() |
-        transfer(exec) | then(checker{false, 0, count, 0}))>;
+    using r_sender_type =
+        std::decay_t<decltype(rwm.read() | transfer(exec) | then(checker{true, 0, count, 0}))>;
+    using rw_sender_type = std::decay_t<decltype(rwm.readwrite() | transfer(exec) |
+        then(checker{false, 0, count, 0}))>;
     std::vector<r_sender_type> r_senders;
     std::vector<rw_sender_type> rw_senders;
 
@@ -207,14 +200,14 @@ void test_multiple_accesses(
             if (readonly)
             {
                 r_senders.push_back(rwm.read() | transfer(exec) |
-                    then(checker{readonly, expected_predecessor_count, count,
-                        min_expected_count, max_expected_count}));
+                    then(checker{readonly, expected_predecessor_count, count, min_expected_count,
+                        max_expected_count}));
             }
             else
             {
                 rw_senders.push_back(rwm.readwrite() | transfer(exec) |
-                    then(checker{readonly, expected_predecessor_count, count,
-                        min_expected_count, max_expected_count}));
+                    then(checker{readonly, expected_predecessor_count, count, min_expected_count,
+                        max_expected_count}));
                 // Only read-write access is allowed to change the value
                 ++expected_predecessor_count;
             }
@@ -289,8 +282,7 @@ int pika_main(pika::program_options::variables_map& vm)
     constexpr std::size_t iterations = 1000;
     test_multiple_accesses(async_rw_mutex<void>{}, iterations);
     test_multiple_accesses(async_rw_mutex<std::size_t>{0}, iterations);
-    test_multiple_accesses(
-        async_rw_mutex<mytype, mytype_base>{mytype{}}, iterations);
+    test_multiple_accesses(async_rw_mutex<mytype, mytype_base>{mytype{}}, iterations);
 
     test_shared_state_deadlock(async_rw_mutex<void>{});
     test_shared_state_deadlock(async_rw_mutex<std::size_t>{0});
@@ -308,8 +300,7 @@ int main(int argc, char* argv[])
     pika::init_params i;
     pika::program_options::options_description desc_cmdline(
         "usage: " PIKA_APPLICATION_STRING " [options]");
-    desc_cmdline.add_options()("seed,s",
-        pika::program_options::value<unsigned int>(),
+    desc_cmdline.add_options()("seed,s", pika::program_options::value<unsigned int>(),
         "the random number generator seed to use for this run");
     i.desc_cmdline = desc_cmdline;
 

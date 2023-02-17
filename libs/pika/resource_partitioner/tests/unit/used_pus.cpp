@@ -19,8 +19,7 @@
 int pika_main()
 {
     std::size_t num_threads = pika::resource::get_num_threads("default");
-    pika::threads::detail::thread_pool_base& tp =
-        pika::resource::get_thread_pool("default");
+    pika::threads::detail::thread_pool_base& tp = pika::resource::get_thread_pool("default");
 
     auto used_pu_mask = tp.get_used_processing_units();
     PIKA_TEST_EQ(pika::threads::detail::count(used_pu_mask), num_threads);
@@ -38,8 +37,8 @@ int main(int argc, char* argv[])
 {
     pika::init_params init_args;
     init_args.cfg = {"pika.os_threads=" +
-        std::to_string(((std::min)(std::size_t(4),
-            std::size_t(pika::threads::detail::hardware_concurrency()))))};
+        std::to_string(((std::min)(
+            std::size_t(4), std::size_t(pika::threads::detail::hardware_concurrency()))))};
 
     // now run the test
     PIKA_TEST_EQ(pika::init(pika_main, argc, argv, init_args), 0);

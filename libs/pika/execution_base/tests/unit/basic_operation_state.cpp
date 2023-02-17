@@ -21,15 +21,12 @@ namespace mylib {
 
     struct state_2
     {
-        friend void tag_invoke(pika::execution::experimental::start_t, state_2&)
-        {
-        }
+        friend void tag_invoke(pika::execution::experimental::start_t, state_2&) {}
     };
 
     struct state_3
     {
-        friend void tag_invoke(
-            pika::execution::experimental::start_t, state_3&) noexcept
+        friend void tag_invoke(pika::execution::experimental::start_t, state_3&) noexcept
         {
             start_called = true;
         }
@@ -53,20 +50,15 @@ namespace mylib {
 
 int main()
 {
-    static_assert(
-        !pika::execution::experimental::is_operation_state_v<mylib::state_1>,
+    static_assert(!pika::execution::experimental::is_operation_state_v<mylib::state_1>,
         "mylib::state_1 is not an operation state");
-    static_assert(
-        !pika::execution::experimental::is_operation_state_v<mylib::state_2>,
+    static_assert(!pika::execution::experimental::is_operation_state_v<mylib::state_2>,
         "mylib::state_2 is not an operation state");
-    static_assert(
-        pika::execution::experimental::is_operation_state_v<mylib::state_3>,
+    static_assert(pika::execution::experimental::is_operation_state_v<mylib::state_3>,
         "mylib::state_3 is an operation state");
-    static_assert(
-        !pika::execution::experimental::is_operation_state_v<mylib::state_4>,
+    static_assert(!pika::execution::experimental::is_operation_state_v<mylib::state_4>,
         "mylib::state_4 is not an operation state");
-    static_assert(
-        pika::execution::experimental::is_operation_state_v<mylib::state_5>,
+    static_assert(pika::execution::experimental::is_operation_state_v<mylib::state_5>,
         "mylib::state_5 is an operation state");
 
     {

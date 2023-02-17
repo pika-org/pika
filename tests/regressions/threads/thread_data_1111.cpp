@@ -21,10 +21,9 @@ struct thread_data
 
 int get_thread_num()
 {
-    pika::threads::detail::thread_id_type thread_id =
-        pika::threads::detail::get_self_id();
-    thread_data* data = reinterpret_cast<thread_data*>(
-        pika::threads::detail::get_thread_data(thread_id));
+    pika::threads::detail::thread_id_type thread_id = pika::threads::detail::get_self_id();
+    thread_data* data =
+        reinterpret_cast<thread_data*>(pika::threads::detail::get_thread_data(thread_id));
     PIKA_TEST(data);
     return data ? data->thread_num : 0;
 }
@@ -34,8 +33,7 @@ int pika_main()
     std::unique_ptr<thread_data> data_struct(new thread_data());
     data_struct->thread_num = 42;
 
-    pika::threads::detail::thread_id_type thread_id =
-        pika::threads::detail::get_self_id();
+    pika::threads::detail::thread_id_type thread_id = pika::threads::detail::get_self_id();
     pika::threads::detail::set_thread_data(
         thread_id, reinterpret_cast<std::size_t>(data_struct.get()));
 

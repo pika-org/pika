@@ -32,8 +32,7 @@ namespace pika::resource::detail {
     {
     public:
         // mechanism for adding resources (zero-based index)
-        void add_resource(
-            std::size_t pu_index, bool exclusive, std::size_t num_threads);
+        void add_resource(std::size_t pu_index, bool exclusive, std::size_t num_threads);
 
         void print_pool(std::ostream&) const;
 
@@ -51,8 +50,8 @@ namespace pika::resource::detail {
         static std::size_t num_threads_overall;
 
     private:
-        init_pool_data(const std::string& name, scheduling_policy policy,
-            pika::threads::scheduler_mode mode);
+        init_pool_data(
+            const std::string& name, scheduling_policy policy, pika::threads::scheduler_mode mode);
 
         init_pool_data(std::string const& name, scheduler_function create_func,
             pika::threads::scheduler_mode mode);
@@ -86,32 +85,29 @@ namespace pika::resource::detail {
         // create a thread_pool
         void create_thread_pool(std::string const& name,
             scheduling_policy sched = scheduling_policy::unspecified,
-            pika::threads::scheduler_mode =
-                pika::threads::scheduler_mode::default_mode);
+            pika::threads::scheduler_mode = pika::threads::scheduler_mode::default_mode);
 
         // create a thread_pool with a callback function for creating a custom
         // scheduler
-        void create_thread_pool(
-            std::string const& name, scheduler_function scheduler_creation);
+        void create_thread_pool(std::string const& name, scheduler_function scheduler_creation);
 
         // Functions to add processing units to thread pools via
         // the pu/core/numa_domain API
-        void add_resource(pika::resource::pu const& p,
-            std::string const& pool_name, std::size_t num_threads = 1)
+        void add_resource(
+            pika::resource::pu const& p, std::string const& pool_name, std::size_t num_threads = 1)
         {
             add_resource(p, pool_name, true, num_threads);
         }
-        void add_resource(pika::resource::pu const& p,
-            std::string const& pool_name, bool exclusive,
+        void add_resource(pika::resource::pu const& p, std::string const& pool_name, bool exclusive,
             std::size_t num_threads = 1);
-        void add_resource(const std::vector<pika::resource::pu>& pv,
-            std::string const& pool_name, bool exclusive = true);
-        void add_resource(const pika::resource::core& c,
-            std::string const& pool_name, bool exclusive = true);
-        void add_resource(const std::vector<pika::resource::core>& cv,
-            std::string const& pool_name, bool exclusive = true);
-        void add_resource(const pika::resource::numa_domain& nd,
-            std::string const& pool_name, bool exclusive = true);
+        void add_resource(const std::vector<pika::resource::pu>& pv, std::string const& pool_name,
+            bool exclusive = true);
+        void add_resource(
+            const pika::resource::core& c, std::string const& pool_name, bool exclusive = true);
+        void add_resource(const std::vector<pika::resource::core>& cv, std::string const& pool_name,
+            bool exclusive = true);
+        void add_resource(const pika::resource::numa_domain& nd, std::string const& pool_name,
+            bool exclusive = true);
         void add_resource(const std::vector<pika::resource::numa_domain>& ndv,
             std::string const& pool_name, bool exclusive = true);
 
@@ -144,15 +140,13 @@ namespace pika::resource::detail {
         std::size_t get_num_threads(std::string const& pool_name) const;
         std::size_t get_num_threads(std::size_t pool_index) const;
 
-        pika::threads::scheduler_mode get_scheduler_mode(
-            std::size_t pool_index) const;
+        pika::threads::scheduler_mode get_scheduler_mode(std::size_t pool_index) const;
 
         std::string const& get_pool_name(std::size_t index) const;
         std::size_t get_pool_index(std::string const& pool_name) const;
 
         std::size_t get_pu_num(std::size_t global_thread_num);
-        threads::detail::mask_cref_type get_pu_mask(
-            std::size_t global_thread_num) const;
+        threads::detail::mask_cref_type get_pu_mask(std::size_t global_thread_num) const;
 
         void init(resource::partitioner_mode rpmode, pika::util::section cfg,
             pika::detail::affinity_data affinity_data);
@@ -172,8 +166,8 @@ namespace pika::resource::detail {
 
         std::size_t shrink_pool(std::string const& pool_name,
             util::detail::function<void(std::size_t)> const& remove_pu);
-        std::size_t expand_pool(std::string const& pool_name,
-            util::detail::function<void(std::size_t)> const& add_pu);
+        std::size_t expand_pool(
+            std::string const& pool_name, util::detail::function<void(std::size_t)> const& add_pu);
 
         void set_default_pool_name(const std::string& name)
         {
@@ -205,13 +199,11 @@ namespace pika::resource::detail {
         // has to be private because pointers become invalid after data member
         // thread_pools_ is resized we don't want to allow the user to use it
         detail::init_pool_data const& get_pool_data(
-            std::unique_lock<mutex_type>& l,
-            std::string const& pool_name) const;
+            std::unique_lock<mutex_type>& l, std::string const& pool_name) const;
         detail::init_pool_data& get_pool_data(
             std::unique_lock<mutex_type>& l, std::string const& pool_name);
 
-        void set_scheduler(
-            scheduling_policy sched, std::string const& pool_name);
+        void set_scheduler(scheduling_policy sched, std::string const& pool_name);
 
         ////////////////////////////////////////////////////////////////////////
         // counter for instance numbers

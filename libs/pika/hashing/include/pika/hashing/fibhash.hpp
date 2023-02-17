@@ -30,13 +30,11 @@ namespace pika::util {
         template <std::uint64_t N>
         struct hash_helper
         {
-            static constexpr std::uint64_t log2 =
-                hash_helper<(N >> 1)>::log2 + 1;
+            static constexpr std::uint64_t log2 = hash_helper<(N >> 1)>::log2 + 1;
             static constexpr std::uint64_t shift_amount = 64 - log2;
         };
 
-        static inline constexpr std::uint64_t golden_ratio =
-            11400714819323198485llu;
+        static inline constexpr std::uint64_t golden_ratio = 11400714819323198485llu;
     }    // namespace detail
 
     // This function calculates the hash based on a multiplicative Fibonacci
@@ -46,9 +44,7 @@ namespace pika::util {
     {
         using helper = detail::hash_helper<N>;
         static_assert(N != 0, "This algorithm only works with N != 0");
-        static_assert(
-            (1 << helper::log2) == N, "N must be a power of two");    // -V104
-        return (detail::golden_ratio * (i ^ (i >> helper::shift_amount))) >>
-            helper::shift_amount;
+        static_assert((1 << helper::log2) == N, "N must be a power of two");    // -V104
+        return (detail::golden_ratio * (i ^ (i >> helper::shift_amount))) >> helper::shift_amount;
     }
 }    // namespace pika::util

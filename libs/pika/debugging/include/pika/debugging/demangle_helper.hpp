@@ -29,9 +29,9 @@ namespace pika::debug::detail {
 
 #if defined(__GNUG__)
 
-#include <cxxabi.h>
-#include <memory>
-#include <stdlib.h>
+# include <cxxabi.h>
+# include <memory>
+# include <stdlib.h>
 
 // --------------------------------------------------------------------
 // if available : demangle an arbitrary c++ type using gnu utility
@@ -42,9 +42,7 @@ namespace pika::debug::detail {
     {
     public:
         cxxabi_demangle_helper()
-          : demangled_{abi::__cxa_demangle(
-                           typeid(T).name(), nullptr, nullptr, nullptr),
-                std::free}
+          : demangled_{abi::__cxa_demangle(typeid(T).name(), nullptr, nullptr, nullptr), std::free}
         {
         }
 
@@ -86,8 +84,7 @@ namespace pika::debug::detail {
     };
 
     template <typename T>
-    cxxabi_demangle_helper<T>
-        cxx_type_id<T>::typeid_ = cxxabi_demangle_helper<T>();
+    cxxabi_demangle_helper<T> cxx_type_id<T>::typeid_ = cxxabi_demangle_helper<T>();
 #else
     template <typename T>
     using cxx_type_id = type_id<T>;
@@ -111,8 +108,7 @@ namespace pika::debug::detail {
     }
 
     template <typename T, typename... Args>
-    inline std::enable_if_t<sizeof...(Args) != 0, std::string>
-    print_type(const char* delim = "")
+    inline std::enable_if_t<sizeof...(Args) != 0, std::string> print_type(const char* delim = "")
     {
         std::string temp(cxx_type_id<T>::typeid_.type_id());
         return temp + delim + print_type<Args...>(delim);

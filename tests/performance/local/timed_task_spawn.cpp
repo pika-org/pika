@@ -77,8 +77,7 @@ std::uint64_t no_suspend_step = 1;
 ///////////////////////////////////////////////////////////////////////////////
 std::string format_build_date()
 {
-    std::chrono::time_point<std::chrono::system_clock> now =
-        std::chrono::system_clock::now();
+    std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
 
     std::time_t current_time = std::chrono::system_clock::to_time_t(now);
 
@@ -111,11 +110,10 @@ void print_results(std::uint64_t cores, double walltime, double warmup_estimate,
 
     if (header)
     {
-        cout << "# BENCHMARK: " << benchmark_name << " (" << scaling
-             << " scaling, " << distribution << " distribution)\n";
+        cout << "# BENCHMARK: " << benchmark_name << " (" << scaling << " scaling, " << distribution
+             << " distribution)\n";
 
-        cout << "# VERSION: " << PIKA_HAVE_GIT_COMMIT << " "
-             << format_build_date() << "\n"
+        cout << "# VERSION: " << PIKA_HAVE_GIT_COMMIT << " " << format_build_date() << "\n"
              << "#\n";
 
         // Note that if we change the number of fields above, we have to
@@ -132,8 +130,8 @@ void print_results(std::uint64_t cores, double walltime, double warmup_estimate,
 
         for (std::uint64_t i = 0; i < counter_shortnames.size(); ++i)
         {
-            cout << "## " << (i + 1 + last_index) << ":"
-                 << counter_shortnames[i] << ":" << ac->name(i);
+            cout << "## " << (i + 1 + last_index) << ":" << counter_shortnames[i] << ":"
+                 << ac->name(i);
 
             if (!ac->unit_of_measure(i).empty())
                 cout << " [" << ac->unit_of_measure(i) << "]";
@@ -142,14 +140,13 @@ void print_results(std::uint64_t cores, double walltime, double warmup_estimate,
         }
     }
 
-    fmt::print(cout, "{}, {}, {}, {}, {:.14g}, {:.14g}", delay, tasks,
-        suspended_tasks, cores, walltime, warmup_estimate);
+    fmt::print(cout, "{}, {}, {}, {}, {:.14g}, {:.14g}", delay, tasks, suspended_tasks, cores,
+        walltime, warmup_estimate);
 
     if (ac)
     {
         for (std::uint64_t i = 0; i < counter_shortnames.size(); ++i)
-            fmt::print(
-                cout, ", {:.14g}", counter_values[i].get_value<double>());
+            fmt::print(cout, ", {:.14g}", counter_values[i].get_value<double>());
     }
 
     cout << "\n";
@@ -158,20 +155,17 @@ void print_results(std::uint64_t cores, double walltime, double warmup_estimate,
 ///////////////////////////////////////////////////////////////////////////////
 void wait_for_tasks(pika::barrier& finished, std::uint64_t suspended_tasks)
 {
-    std::uint64_t const pending_count =
-        get_thread_count(pika::execution::thread_priority::normal,
-            pika::threads::detail::thread_schedule_state::pending);
+    std::uint64_t const pending_count = get_thread_count(pika::execution::thread_priority::normal,
+        pika::threads::detail::thread_schedule_state::pending);
 
     if (pending_count == 0)
     {
-        std::uint64_t const all_count =
-            get_thread_count(pika::execution::thread_priority::normal);
+        std::uint64_t const all_count = get_thread_count(pika::execution::thread_priority::normal);
 
         if (all_count != suspended_tasks + 1)
         {
-            thread_init_data data(
-                make_thread_function_nullary(pika::util::detail::bind(
-                    &wait_for_tasks, std::ref(finished), suspended_tasks)),
+            thread_init_data data(make_thread_function_nullary(pika::util::detail::bind(
+                                      &wait_for_tasks, std::ref(finished), suspended_tasks)),
                 "wait_for_tasks", pika::execution::thread_priority::low);
             register_work(data);
             return;
@@ -210,51 +204,39 @@ pika::threads::detail::thread_result_type invoke_worker_timed_suspension(
 ///////////////////////////////////////////////////////////////////////////////
 using stage_worker_function = void (*)(std::uint64_t, bool);
 
-void stage_worker_static_balanced_stackbased(
-    std::uint64_t target_thread, bool suspend)
+void stage_worker_static_balanced_stackbased(std::uint64_t target_thread, bool suspend)
 {
     if (suspend)
     {
-        pika::threads::detail::thread_init_data data(
-            &invoke_worker_timed_suspension, "invoke_worker_timed_suspension",
-            pika::execution::thread_priority::normal,
-            pika::execution::thread_schedule_hint(
-                static_cast<std::int16_t>(target_thread)));
+        pika::threads::detail::thread_init_data data(&invoke_worker_timed_suspension,
+            "invoke_worker_timed_suspension", pika::execution::thread_priority::normal,
+            pika::execution::thread_schedule_hint(static_cast<std::int16_t>(target_thread)));
         pika::threads::detail::register_work(data);
     }
     else
     {
-        pika::threads::detail::thread_init_data data(
-            &invoke_worker_timed_no_suspension,
-            "invoke_worker_timed_no_suspension",
-            pika::execution::thread_priority::normal,
-            pika::execution::thread_schedule_hint(
-                static_cast<std::int16_t>(target_thread)));
+        pika::threads::detail::thread_init_data data(&invoke_worker_timed_no_suspension,
+            "invoke_worker_timed_no_suspension", pika::execution::thread_priority::normal,
+            pika::execution::thread_schedule_hint(static_cast<std::int16_t>(target_thread)));
         pika::threads::detail::register_work(data);
     }
 }
 
-void stage_worker_static_balanced_stackless(
-    std::uint64_t target_thread, bool suspend)
+void stage_worker_static_balanced_stackless(std::uint64_t target_thread, bool suspend)
 {
     if (suspend)
     {
-        pika::threads::detail::thread_init_data data(
-            &invoke_worker_timed_suspension, "invoke_worker_timed_suspension",
-            pika::execution::thread_priority::normal,
-            pika::execution::thread_schedule_hint(
-                static_cast<std::int16_t>(target_thread)),
+        pika::threads::detail::thread_init_data data(&invoke_worker_timed_suspension,
+            "invoke_worker_timed_suspension", pika::execution::thread_priority::normal,
+            pika::execution::thread_schedule_hint(static_cast<std::int16_t>(target_thread)),
             pika::execution::thread_stacksize::nostack);
         pika::threads::detail::register_work(data);
     }
     else
     {
-        pika::threads::detail::thread_init_data data(
-            &invoke_worker_timed_no_suspension,
-            "invoke_worker_timed_no_suspension",
-            pika::execution::thread_priority::normal,
-            pika::execution::thread_schedule_hint(
-                static_cast<std::int16_t>(target_thread)),
+        pika::threads::detail::thread_init_data data(&invoke_worker_timed_no_suspension,
+            "invoke_worker_timed_no_suspension", pika::execution::thread_priority::normal,
+            pika::execution::thread_schedule_hint(static_cast<std::int16_t>(target_thread)),
             pika::execution::thread_stacksize::nostack);
         pika::threads::detail::register_work(data);
     }
@@ -264,18 +246,15 @@ void stage_worker_static_imbalanced(std::uint64_t target_thread, bool suspend)
 {
     if (suspend)
     {
-        pika::threads::detail::thread_init_data data(
-            &invoke_worker_timed_suspension, "invoke_worker_timed_suspension",
-            pika::execution::thread_priority::normal,
+        pika::threads::detail::thread_init_data data(&invoke_worker_timed_suspension,
+            "invoke_worker_timed_suspension", pika::execution::thread_priority::normal,
             pika::execution::thread_schedule_hint(0));
         pika::threads::detail::register_work(data);
     }
     else
     {
-        pika::threads::detail::thread_init_data data(
-            &invoke_worker_timed_no_suspension,
-            "invoke_worker_timed_no_suspension",
-            pika::execution::thread_priority::normal,
+        pika::threads::detail::thread_init_data data(&invoke_worker_timed_no_suspension,
+            "invoke_worker_timed_no_suspension", pika::execution::thread_priority::normal,
             pika::execution::thread_schedule_hint(0));
         pika::threads::detail::register_work(data);
     }
@@ -292,25 +271,22 @@ void stage_worker_round_robin(std::uint64_t target_thread, bool suspend)
     else
     {
         pika::threads::detail::thread_init_data data(
-            &invoke_worker_timed_no_suspension,
-            "invoke_worker_timed_no_suspension");
+            &invoke_worker_timed_no_suspension, "invoke_worker_timed_no_suspension");
         pika::threads::detail::register_work(data);
     }
 }
 
-void stage_workers(std::uint64_t target_thread, std::uint64_t local_tasks,
-    stage_worker_function stage_worker)
+void stage_workers(
+    std::uint64_t target_thread, std::uint64_t local_tasks, stage_worker_function stage_worker)
 {
     std::uint64_t num_thread = pika::get_worker_thread_num();
 
     if (num_thread != target_thread)
     {
-        thread_init_data data(
-            make_thread_function_nullary(pika::util::detail::bind(
-                &stage_workers, target_thread, local_tasks, stage_worker)),
+        thread_init_data data(make_thread_function_nullary(pika::util::detail::bind(
+                                  &stage_workers, target_thread, local_tasks, stage_worker)),
             "stage_workers", pika::execution::thread_priority::normal,
-            pika::execution::thread_schedule_hint(
-                static_cast<std::int16_t>(target_thread)));
+            pika::execution::thread_schedule_hint(static_cast<std::int16_t>(target_thread)));
         register_work(data);
         return;
     }
@@ -344,8 +320,7 @@ int pika_main(variables_map& vm)
             throw std::invalid_argument("count of 0 tasks specified\n");
 
         if (suspended_tasks > tasks)
-            throw std::invalid_argument(
-                "suspended tasks must be smaller than tasks\n");
+            throw std::invalid_argument("suspended tasks must be smaller than tasks\n");
 
         std::uint64_t const os_thread_count = get_os_thread_count();
 
@@ -370,10 +345,9 @@ int pika_main(variables_map& vm)
         }
         else
         {
-            throw std::invalid_argument(
-                "invalid distribution type specified (valid options are "
-                "\"static-balanced\", \"static-imbalanced\" or "
-                "\"round-robin\")");
+            throw std::invalid_argument("invalid distribution type specified (valid options are "
+                                        "\"static-balanced\", \"static-imbalanced\" or "
+                                        "\"round-robin\")");
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -386,8 +360,7 @@ int pika_main(variables_map& vm)
         {
             if (tasks % os_thread_count)
             {
-                throw std::invalid_argument(
-                    "tasks must be cleanly divisible by OS-thread count\n");
+                throw std::invalid_argument("tasks must be cleanly divisible by OS-thread count\n");
             }
             if (suspended_tasks % os_thread_count)
             {
@@ -417,8 +390,7 @@ int pika_main(variables_map& vm)
         ///////////////////////////////////////////////////////////////////////
         if (suspended_tasks != 0)
         {
-            std::uint64_t gcd = boost::integer::gcd(
-                tasks_per_feeder, suspended_tasks_per_feeder);
+            std::uint64_t gcd = boost::integer::gcd(tasks_per_feeder, suspended_tasks_per_feeder);
 
             suspend_step = suspended_tasks_per_feeder / gcd;
             // We check earlier to make sure that there are never more
@@ -431,14 +403,12 @@ int pika_main(variables_map& vm)
         std::vector<std::string> counters;
         if (vm.count("counter"))
         {
-            std::vector<std::string> raw_counters =
-                vm["counter"].as<std::vector<std::string>>();
+            std::vector<std::string> raw_counters = vm["counter"].as<std::vector<std::string>>();
 
             for (auto& raw_counter : raw_counters)
             {
                 std::vector<std::string> entry;
-                pika::detail::split(entry, raw_counter,
-                    pika::detail::is_any_of(","),
+                pika::detail::split(entry, raw_counter, pika::detail::is_any_of(","),
                     pika::detail::token_compress_mode::on);
 
                 PIKA_TEST_EQ(entry.size(), 2);
@@ -472,12 +442,10 @@ int pika_main(variables_map& vm)
             if (num_thread == i)
                 continue;
 
-            thread_init_data data(
-                make_thread_function_nullary(pika::util::detail::bind(
-                    &stage_workers, i, tasks_per_feeder, stage_worker)),
+            thread_init_data data(make_thread_function_nullary(pika::util::detail::bind(
+                                      &stage_workers, i, tasks_per_feeder, stage_worker)),
                 "stage_workers", pika::execution::thread_priority::normal,
-                pika::execution::thread_schedule_hint(
-                    static_cast<std::int16_t>(i)));
+                pika::execution::thread_schedule_hint(static_cast<std::int16_t>(i)));
             register_work(data);
         }
 
@@ -490,9 +458,8 @@ int pika_main(variables_map& vm)
         // executed, and then it
         pika::barrier finished(2);
 
-        thread_init_data data(
-            make_thread_function_nullary(pika::util::detail::bind(
-                &wait_for_tasks, std::ref(finished), total_suspended_tasks)),
+        thread_init_data data(make_thread_function_nullary(pika::util::detail::bind(
+                                  &wait_for_tasks, std::ref(finished), total_suspended_tasks)),
             "wait_for_tasks", pika::execution::thread_priority::low);
         register_work(data);
 
@@ -501,8 +468,7 @@ int pika_main(variables_map& vm)
         // Stop the clock
         double time_elapsed = t.elapsed();
 
-        print_results(os_thread_count, time_elapsed, warmup_estimate,
-            counter_shortnames, ac);
+        print_results(os_thread_count, time_elapsed, warmup_estimate, counter_shortnames, ac);
     }
 
     if (suspended_tasks != 0)

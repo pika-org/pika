@@ -28,8 +28,8 @@
 #include <utility>
 #include <vector>
 
-std::size_t const max_threads = (std::min)(
-    std::size_t(4), std::size_t(pika::threads::detail::hardware_concurrency()));
+std::size_t const max_threads =
+    (std::min)(std::size_t(4), std::size_t(pika::threads::detail::hardware_concurrency()));
 
 int pika_main()
 {
@@ -38,8 +38,7 @@ int pika_main()
     try
     {
         // Use .get() to throw exception
-        pika::threads::detail::suspend_pool(*pika::this_thread::get_pool())
-            .get();
+        pika::threads::detail::suspend_pool(*pika::this_thread::get_pool()).get();
         PIKA_TEST_MSG(false, "Suspending should not be allowed on own pool");
     }
     catch (pika::exception const&)
@@ -51,10 +50,8 @@ int pika_main()
 
     pika::threads::detail::thread_pool_base& worker_pool =
         pika::resource::get_thread_pool("worker");
-    pika::execution::parallel_executor worker_exec(
-        &pika::resource::get_thread_pool("worker"));
-    std::size_t const worker_pool_threads =
-        pika::resource::get_num_threads("worker");
+    pika::execution::parallel_executor worker_exec(&pika::resource::get_thread_pool("worker"));
+    std::size_t const worker_pool_threads = pika::resource::get_num_threads("worker");
 
     {
         // Suspend and resume pool with future
@@ -92,16 +89,14 @@ int pika_main()
                 fs.push_back(pika::async(worker_exec, []() {}));
             }
 
-            pika::threads::detail::suspend_pool_cb(
-                worker_pool, [&sem]() { sem.release(); });
+            pika::threads::detail::suspend_pool_cb(worker_pool, [&sem]() { sem.release(); });
 
             sem.acquire();
 
             // All work should be done when pool has been suspended
             PIKA_TEST(pika::when_all(std::move(fs)).is_ready());
 
-            pika::threads::detail::resume_pool_cb(
-                worker_pool, [&sem]() { sem.release(); });
+            pika::threads::detail::resume_pool_cb(worker_pool, [&sem]() { sem.release(); });
 
             sem.acquire();
         }
@@ -113,17 +108,14 @@ int pika_main()
 
         while (t.elapsed() < 1)
         {
-            for (std::size_t thread_num = 0;
-                 thread_num < worker_pool_threads - 1; ++thread_num)
+            for (std::size_t thread_num = 0; thread_num < worker_pool_threads - 1; ++thread_num)
             {
-                pika::threads::detail::suspend_processing_unit(
-                    worker_pool, thread_num);
+                pika::threads::detail::suspend_processing_unit(worker_pool, thread_num);
             }
 
             std::vector<pika::future<void>> fs;
 
-            for (std::size_t i = 0;
-                 i < pika::resource::get_num_threads("default") * 10000; ++i)
+            for (std::size_t i = 0; i < pika::resource::get_num_threads("default") * 10000; ++i)
             {
                 fs.push_back(pika::async(worker_exec, []() {}));
             }
@@ -140,14 +132,12 @@ int pika_main()
     return pika::finalize();
 }
 
-void test_scheduler(
-    int argc, char* argv[], pika::resource::scheduling_policy scheduler)
+void test_scheduler(int argc, char* argv[], pika::resource::scheduling_policy scheduler)
 {
     pika::init_params init_args;
 
     init_args.cfg = {"pika.os_threads=" + std::to_string(max_threads)};
-    init_args.rp_callback = [scheduler](auto& rp,
-                                pika::program_options::variables_map const&) {
+    init_args.rp_callback = [scheduler](auto& rp, pika::program_options::variables_map const&) {
         rp.create_thread_pool("worker", scheduler);
 
         std::size_t const worker_pool_threads = max_threads - 1;

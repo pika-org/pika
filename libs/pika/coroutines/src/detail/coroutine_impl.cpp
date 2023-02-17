@@ -53,8 +53,8 @@ namespace pika::threads::coroutines::detail {
         context_exit_status status = super_type::ctx_not_exited;
 
         // yield value once the thread function has finished executing
-        result_type result_last(threads::detail::thread_schedule_state::unknown,
-            threads::detail::invalid_thread_id);
+        result_type result_last(
+            threads::detail::thread_schedule_state::unknown, threads::detail::invalid_thread_id);
 
         // loop as long this coroutine has been rebound
         do
@@ -70,8 +70,8 @@ namespace pika::threads::coroutines::detail {
                 try
                 {
                     result_last = m_fun(*this->args());
-                    PIKA_ASSERT(result_last.first ==
-                        threads::detail::thread_schedule_state::terminated);
+                    PIKA_ASSERT(
+                        result_last.first == threads::detail::thread_schedule_state::terminated);
                     status = super_type::ctx_exited_return;
                 }
                 catch (...)

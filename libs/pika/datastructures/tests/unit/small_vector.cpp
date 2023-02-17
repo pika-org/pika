@@ -49,14 +49,12 @@ namespace test {
             delete[](reinterpret_cast<char*>(p));
         }
 
-        friend bool operator==(
-            simple_allocator const&, simple_allocator const&) noexcept
+        friend bool operator==(simple_allocator const&, simple_allocator const&) noexcept
         {
             return true;
         }
 
-        friend bool operator!=(
-            simple_allocator const&, simple_allocator const&) noexcept
+        friend bool operator!=(simple_allocator const&, simple_allocator const&) noexcept
         {
             return false;
         }
@@ -101,15 +99,13 @@ namespace test {
             --count;
         }
 
-        movable_and_copyable_int& operator=(
-            movable_and_copyable_int const& mi) noexcept
+        movable_and_copyable_int& operator=(movable_and_copyable_int const& mi) noexcept
         {
             this->int_ = mi.int_;
             return *this;
         }
 
-        movable_and_copyable_int& operator=(
-            movable_and_copyable_int&& mmi) noexcept
+        movable_and_copyable_int& operator=(movable_and_copyable_int&& mmi) noexcept
         {
             this->int_ = mmi.int_;
             mmi.int_ = 0;
@@ -123,38 +119,38 @@ namespace test {
             return *this;
         }
 
-        friend bool operator==(const movable_and_copyable_int& l,
-            const movable_and_copyable_int& r) noexcept
+        friend bool operator==(
+            const movable_and_copyable_int& l, const movable_and_copyable_int& r) noexcept
         {
             return l.int_ == r.int_;
         }
 
-        friend bool operator!=(const movable_and_copyable_int& l,
-            const movable_and_copyable_int& r) noexcept
+        friend bool operator!=(
+            const movable_and_copyable_int& l, const movable_and_copyable_int& r) noexcept
         {
             return l.int_ != r.int_;
         }
 
-        friend bool operator<(const movable_and_copyable_int& l,
-            const movable_and_copyable_int& r) noexcept
+        friend bool operator<(
+            const movable_and_copyable_int& l, const movable_and_copyable_int& r) noexcept
         {
             return l.int_ < r.int_;
         }
 
-        friend bool operator<=(const movable_and_copyable_int& l,
-            const movable_and_copyable_int& r) noexcept
+        friend bool operator<=(
+            const movable_and_copyable_int& l, const movable_and_copyable_int& r) noexcept
         {
             return l.int_ <= r.int_;
         }
 
-        friend bool operator>=(const movable_and_copyable_int& l,
-            const movable_and_copyable_int& r) noexcept
+        friend bool operator>=(
+            const movable_and_copyable_int& l, const movable_and_copyable_int& r) noexcept
         {
             return l.int_ >= r.int_;
         }
 
-        friend bool operator>(const movable_and_copyable_int& l,
-            const movable_and_copyable_int& r) noexcept
+        friend bool operator>(
+            const movable_and_copyable_int& l, const movable_and_copyable_int& r) noexcept
         {
             return l.int_ > r.int_;
         }
@@ -164,14 +160,12 @@ namespace test {
             return int_;
         }
 
-        friend bool operator==(
-            const movable_and_copyable_int& l, int r) noexcept
+        friend bool operator==(const movable_and_copyable_int& l, int r) noexcept
         {
             return l.get_int() == r;
         }
 
-        friend bool operator==(
-            int l, const movable_and_copyable_int& r) noexcept
+        friend bool operator==(int l, const movable_and_copyable_int& r) noexcept
         {
             return l == r.get_int();
         }
@@ -411,24 +405,20 @@ namespace test {
         std::size_t dist2 = std::distance(itcont_b, itcont_b_end);
         PIKA_TEST_EQ(dist2, cont_b.size());
 
-        for (std::size_t i = 0; itcont_a != itcont_a_end;
-             ++itcont_a, ++itcont_b, ++i)
+        for (std::size_t i = 0; itcont_a != itcont_a_end; ++itcont_a, ++itcont_b, ++i)
         {
             PIKA_TEST_EQ(*itcont_a, *itcont_b);
         }
     }
 
     template <typename SeqContainer>
-    void
-    test_insert_range(std::deque<int>& std_deque, SeqContainer& seq_container,
+    void test_insert_range(std::deque<int>& std_deque, SeqContainer& seq_container,
         std::deque<int> const& input_deque, std::size_t index)
     {
         check_equal_containers(std_deque, seq_container);
 
-        std_deque.insert(
-            std_deque.begin() + index, input_deque.begin(), input_deque.end());
-        seq_container.insert(seq_container.begin() + index, input_deque.begin(),
-            input_deque.end());
+        std_deque.insert(std_deque.begin() + index, input_deque.begin(), input_deque.end());
+        seq_container.insert(seq_container.begin() + index, input_deque.begin(), input_deque.end());
 
         check_equal_containers(std_deque, seq_container);
     }
@@ -547,11 +537,8 @@ namespace test {
                     aux_vect2[i] = -1;
                 }
 
-                auto insert_it =
-                    vector.insert(vector.end(), &aux_vect[0], aux_vect + 50);
-                PIKA_TEST_EQ(
-                    std::size_t(std::distance(insert_it, vector.end())),
-                    std::size_t(50));
+                auto insert_it = vector.insert(vector.end(), &aux_vect[0], aux_vect + 50);
+                PIKA_TEST_EQ(std::size_t(std::distance(insert_it, vector.end())), std::size_t(50));
 
                 v.insert(v.end(), aux_vect2, aux_vect2 + 50);
                 test::check_equal_containers(vector, v);
@@ -582,8 +569,8 @@ namespace test {
                 }
 
                 auto old_size = vector.size();
-                auto insert_it = vector.insert(
-                    vector.begin() + old_size / 2, &aux_vect[0], aux_vect + 50);
+                auto insert_it =
+                    vector.insert(vector.begin() + old_size / 2, &aux_vect[0], aux_vect + 50);
                 PIKA_TEST(vector.begin() + old_size / 2 == insert_it);
 
                 v.insert(v.begin() + old_size / 2, aux_vect2, aux_vect2 + 50);
@@ -648,8 +635,7 @@ namespace test {
             // Test insertion from list
             {
                 std::list<int> l(50, int(1));
-                auto it_insert =
-                    vector.insert(vector.begin(), l.begin(), l.end());
+                auto it_insert = vector.insert(vector.begin(), l.begin(), l.end());
                 PIKA_TEST(vector.begin() == it_insert);
 
                 v.insert(v.begin(), l.begin(), l.end());
@@ -679,8 +665,7 @@ namespace test {
     class emplace_int
     {
     public:
-        emplace_int(
-            int a = 0, int b = 0, int c = 0, int d = 0, int e = 0) noexcept
+        emplace_int(int a = 0, int b = 0, int c = 0, int d = 0, int e = 0) noexcept
           : a_(a)
           , b_(b)
           , c_(c)
@@ -712,8 +697,7 @@ namespace test {
 
         friend bool operator==(emplace_int const& l, emplace_int const& r)
         {
-            return l.a_ == r.a_ && l.b_ == r.b_ && l.c_ == r.c_ &&
-                l.d_ == r.d_ && l.e_ == r.e_;
+            return l.a_ == r.a_ && l.b_ == r.b_ && l.c_ == r.c_ && l.d_ == r.d_ && l.e_ == r.e_;
         }
 
         friend bool operator<(emplace_int const& l, emplace_int const& r)
@@ -748,8 +732,7 @@ namespace test {
     static emplace_int expected[10];
 
     template <typename Container>
-    void
-    test_expected_container(Container const& ec, emplace_int const* expected,
+    void test_expected_container(Container const& ec, emplace_int const* expected,
         unsigned int only_first_n, unsigned int cont_offset = 0)
     {
         PIKA_TEST(cont_offset <= ec.size());
@@ -903,8 +886,7 @@ namespace test {
             check_equal_containers(tested_vector, expected_vector);
         }
         {
-            VectorContainerType const tested_vector(
-                {1, 2, 3}, allocator_type());
+            VectorContainerType const tested_vector({1, 2, 3}, allocator_type());
             std::vector<int> const expected_vector = {1, 2, 3};
             check_equal_containers(tested_vector, expected_vector);
         }
@@ -945,8 +927,7 @@ int main()
 
     // Emplace testing
     test::test_emplace_back<pika::detail::small_vector<test::emplace_int, 5>>();
-    test::test_emplace_before<
-        pika::detail::small_vector<test::emplace_int, 5>>();
+    test::test_emplace_before<pika::detail::small_vector<test::emplace_int, 5>>();
 
     // Initializer lists testing
     test::test_vector_methods_with_initializer_list_as_argument_for<

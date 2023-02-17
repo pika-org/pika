@@ -42,52 +42,44 @@ namespace pika::util {
         template <typename Iterator>
         struct category_iterator_traits_helper
         {
-            using type =
-                typename std::iterator_traits<Iterator>::iterator_category;
+            using type = typename std::iterator_traits<Iterator>::iterator_category;
         };
 
         template <typename Iterator>
         struct difference_type_iterator_traits_helper
         {
-            using type =
-                typename std::iterator_traits<Iterator>::difference_type;
+            using type = typename std::iterator_traits<Iterator>::difference_type;
         };
 
         // A meta-function which computes an iterator_adaptor's base class,
         // a specialization of iterator_facade.
-        template <typename Derived, typename Base, typename Value,
-            typename Category, typename Reference, typename Difference,
-            typename Pointer>
+        template <typename Derived, typename Base, typename Value, typename Category,
+            typename Reference, typename Difference, typename Pointer>
         struct iterator_adaptor_base
         {
             // the following type calculations use lazy_conditional to avoid
             // premature instantiations
             using value_type = std::conditional_t<std::is_void<Value>::value,
-                ::pika::detail::lazy_conditional_t<
-                    std::is_void<Reference>::value,
-                    value_type_iterator_traits_helper<Base>,
-                    std::remove_reference<Reference>>,
+                ::pika::detail::lazy_conditional_t<std::is_void<Reference>::value,
+                    value_type_iterator_traits_helper<Base>, std::remove_reference<Reference>>,
                 Value>;
 
-            using reference_type = std::conditional_t<
-                std::is_void<Reference>::value,
+            using reference_type = std::conditional_t<std::is_void<Reference>::value,
                 ::pika::detail::lazy_conditional_t<std::is_void<Value>::value,
-                    reference_iterator_traits_helper<Base>,
-                    std::add_lvalue_reference<Value>>,
+                    reference_iterator_traits_helper<Base>, std::add_lvalue_reference<Value>>,
                 Reference>;
 
-            using iterator_category = ::pika::detail::lazy_conditional_t<
-                std::is_void<Category>::value,
-                category_iterator_traits_helper<Base>,
-                ::pika::detail::type_identity<Category>>;
+            using iterator_category =
+                ::pika::detail::lazy_conditional_t<std::is_void<Category>::value,
+                    category_iterator_traits_helper<Base>, ::pika::detail::type_identity<Category>>;
 
-            using difference_type = ::pika::detail::lazy_conditional_t<
-                std::is_void<Difference>::value,
-                difference_type_iterator_traits_helper<Base>,
-                ::pika::detail::type_identity<Difference>>;
+            using difference_type =
+                ::pika::detail::lazy_conditional_t<std::is_void<Difference>::value,
+                    difference_type_iterator_traits_helper<Base>,
+                    ::pika::detail::type_identity<Difference>>;
 
-            using type = iterator_facade<Derived, value_type, iterator_category,
-                reference_type, difference_type, Pointer>;
+            using type = iterator_facade<Derived, value_type, iterator_category, reference_type,
+                difference_type, Pointer>;
         };
     }    // namespace detail
 
@@ -114,17 +106,15 @@ namespace pika::util {
     //   Difference - the difference_type of the resulting iterator. If not
     //      supplied, iterator_traits<Base>::difference_type is used.
     //
-    template <typename Derived, typename Base, typename Value = void,
-        typename Category = void, typename Reference = void,
-        typename Difference = void, typename Pointer = void>
+    template <typename Derived, typename Base, typename Value = void, typename Category = void,
+        typename Reference = void, typename Difference = void, typename Pointer = void>
     class iterator_adaptor
-      : public pika::util::detail::iterator_adaptor_base<Derived, Base, Value,
-            Category, Reference, Difference, Pointer>::type
+      : public pika::util::detail::iterator_adaptor_base<Derived, Base, Value, Category, Reference,
+            Difference, Pointer>::type
     {
     protected:
-        using base_adaptor_type =
-            typename pika::util::detail::iterator_adaptor_base<Derived, Base,
-                Value, Category, Reference, Difference, Pointer>::type;
+        using base_adaptor_type = typename pika::util::detail::iterator_adaptor_base<Derived, Base,
+            Value, Category, Reference, Difference, Pointer>::type;
 
         friend class pika::util::iterator_core_access;
 
@@ -145,8 +135,8 @@ namespace pika::util {
 
     protected:
         // for convenience in derived classes
-        using iterator_adaptor_ = iterator_adaptor<Derived, Base, Value,
-            Category, Reference, Difference, Pointer>;
+        using iterator_adaptor_ =
+            iterator_adaptor<Derived, Base, Value, Category, Reference, Difference, Pointer>;
 
         // lvalue access to the Base object for Derived
         PIKA_HOST_DEVICE PIKA_FORCEINLINE Base const& base_reference() const
@@ -164,17 +154,15 @@ namespace pika::util {
         // to prevent temptation for Derived classes to use it, which
         // will often result in an error.  Derived classes should use
         // base_reference(), above, to get direct access to m_iterator.
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE typename base_adaptor_type::reference
-        dereference() const
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE typename base_adaptor_type::reference dereference() const
         {
             return *iterator_;
         }
 
-        template <typename OtherDerived, typename OtherIterator, typename V,
-            typename C, typename R, typename D, typename P>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE bool equal(
-            iterator_adaptor<OtherDerived, OtherIterator, V, C, R, D, P> const&
-                x) const
+        template <typename OtherDerived, typename OtherIterator, typename V, typename C, typename R,
+            typename D, typename P>
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE bool
+        equal(iterator_adaptor<OtherDerived, OtherIterator, V, C, R, D, P> const& x) const
         {
             // Maybe re-add with same_distance
             //  static_assert(
@@ -197,19 +185,17 @@ namespace pika::util {
 
         // prevent this function from being instantiated if not needed
         template <typename Iterator = Base,
-            typename Enable = typename std::enable_if<
-                traits::is_bidirectional_iterator<Iterator>::value>::type>
+            typename Enable =
+                typename std::enable_if<traits::is_bidirectional_iterator<Iterator>::value>::type>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE void decrement()
         {
             --iterator_;
         }
 
-        template <typename OtherDerived, typename OtherIterator, typename V,
-            typename C, typename R, typename D, typename P>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE
-            typename base_adaptor_type::difference_type
-            distance_to(iterator_adaptor<OtherDerived, OtherIterator, V, C, R,
-                D, P> const& y) const
+        template <typename OtherDerived, typename OtherIterator, typename V, typename C, typename R,
+            typename D, typename P>
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE typename base_adaptor_type::difference_type
+        distance_to(iterator_adaptor<OtherDerived, OtherIterator, V, C, R, D, P> const& y) const
         {
             // Maybe re-add with same_distance
             //  static_assert(

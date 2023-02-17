@@ -44,21 +44,17 @@ namespace pika::threads {
     /// The local_queue_scheduler maintains exactly one queue of work
     /// items (threads) per OS thread, where this OS thread pulls its next work
     /// from.
-    template <typename Mutex = std::mutex,
-        typename PendingQueuing = lockfree_fifo,
+    template <typename Mutex = std::mutex, typename PendingQueuing = lockfree_fifo,
         typename StagedQueuing = lockfree_fifo,
-        typename TerminatedQueuing =
-            default_static_queue_scheduler_terminated_queue>
+        typename TerminatedQueuing = default_static_queue_scheduler_terminated_queue>
     class static_queue_scheduler
-      : public local_queue_scheduler<Mutex, PendingQueuing, StagedQueuing,
-            TerminatedQueuing>
+      : public local_queue_scheduler<Mutex, PendingQueuing, StagedQueuing, TerminatedQueuing>
     {
     public:
-        using base_type = local_queue_scheduler<Mutex, PendingQueuing,
-            StagedQueuing, TerminatedQueuing>;
+        using base_type =
+            local_queue_scheduler<Mutex, PendingQueuing, StagedQueuing, TerminatedQueuing>;
 
-        static_queue_scheduler(
-            typename base_type::init_parameter_type const& init,
+        static_queue_scheduler(typename base_type::init_parameter_type const& init,
             bool deferred_initialization = true)
           : base_type(init, deferred_initialization)
         {
@@ -80,8 +76,7 @@ namespace pika::threads {
         /// Return the next thread to be executed, return false if none is
         /// available
         bool get_next_thread(std::size_t num_thread, bool,
-            threads::detail::thread_id_ref_type& thrd,
-            bool /*enable_stealing*/) override
+            threads::detail::thread_id_ref_type& thrd, bool /*enable_stealing*/) override
         {
             using thread_queue_type = typename base_type::thread_queue_type;
 
@@ -104,9 +99,8 @@ namespace pika::threads {
         /// manager to allow for maintenance tasks to be executed in the
         /// scheduler. Returns true if the OS thread calling this function
         /// has to be terminated (i.e. no more work has to be done).
-        bool wait_or_add_new(std::size_t num_thread, bool running,
-            std::int64_t& idle_loop_count, bool /*enable_stealing*/,
-            std::size_t& added) override
+        bool wait_or_add_new(std::size_t num_thread, bool running, std::int64_t& idle_loop_count,
+            bool /*enable_stealing*/, std::size_t& added) override
         {
             PIKA_ASSERT(num_thread < this->queues_.size());
 
@@ -114,9 +108,7 @@ namespace pika::threads {
 
             bool result = true;
 
-            result =
-                this->queues_[num_thread]->wait_or_add_new(running, added) &&
-                result;
+            result = this->queues_[num_thread]->wait_or_add_new(running, added) && result;
             if (0 != added)
                 return result;
 
@@ -128,23 +120,20 @@ namespace pika::threads {
 
 #ifdef PIKA_HAVE_THREAD_MINIMAL_DEADLOCK_DETECTION
             // no new work is available, are we deadlocked?
-            if (PIKA_UNLIKELY(get_minimal_deadlock_detection_enabled() &&
-                    LPIKA_ENABLED(error)))
+            if (PIKA_UNLIKELY(get_minimal_deadlock_detection_enabled() && LPIKA_ENABLED(error)))
             {
                 bool suspended_only = true;
 
-                for (std::size_t i = 0;
-                     suspended_only && i != this->queues_.size(); ++i)
+                for (std::size_t i = 0; suspended_only && i != this->queues_.size(); ++i)
                 {
-                    suspended_only = this->queues_[i]->dump_suspended_threads(
-                        i, idle_loop_count, running);
+                    suspended_only =
+                        this->queues_[i]->dump_suspended_threads(i, idle_loop_count, running);
                 }
 
                 if (PIKA_UNLIKELY(suspended_only))
                 {
                     LTM_(warning).format(
-                        "queue({}): no new work available, are we deadlocked?",
-                        num_thread);
+                        "queue({}): no new work available, are we deadlocked?", num_thread);
                 }
             }
 #else
@@ -158,16 +147,14 @@ namespace pika::threads {
 
 template <typename Mutex, typename PendingQueuing, typename StagedQueuing,
     typename TerminatedQueuing>
-struct fmt::formatter<pika::threads::static_queue_scheduler<Mutex,
-    PendingQueuing, StagedQueuing, TerminatedQueuing>>
+struct fmt::formatter<
+    pika::threads::static_queue_scheduler<Mutex, PendingQueuing, StagedQueuing, TerminatedQueuing>>
   : fmt::formatter<pika::threads::detail::scheduler_base>
 {
     template <typename FormatContext>
-    auto format(pika::threads::detail::scheduler_base const& scheduler,
-        FormatContext& ctx)
+    auto format(pika::threads::detail::scheduler_base const& scheduler, FormatContext& ctx)
     {
-        return fmt::formatter<pika::threads::detail::scheduler_base>::format(
-            scheduler, ctx);
+        return fmt::formatter<pika::threads::detail::scheduler_base>::format(scheduler, ctx);
     }
 };
 

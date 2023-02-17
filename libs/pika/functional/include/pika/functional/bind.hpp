@@ -27,8 +27,7 @@ namespace pika::util::detail {
     struct bind_eval_placeholder
     {
         template <typename T, typename... Us>
-        static constexpr PIKA_HOST_DEVICE decltype(auto)
-        call(T&& /*t*/, Us&&... vs)
+        static constexpr PIKA_HOST_DEVICE decltype(auto) call(T&& /*t*/, Us&&... vs)
         {
             return util::detail::member_pack_for<Us&&...>(
                 std::piecewise_construct, PIKA_FORWARD(Us, vs)...)
@@ -36,8 +35,7 @@ namespace pika::util::detail {
         }
     };
 
-    template <typename T, std::size_t NumUs, typename TD = std::decay_t<T>,
-        typename Enable = void>
+    template <typename T, std::size_t NumUs, typename TD = std::decay_t<T>, typename Enable = void>
     struct bind_eval
     {
         template <typename... Us>
@@ -49,20 +47,17 @@ namespace pika::util::detail {
 
     template <typename T, std::size_t NumUs, typename TD>
     struct bind_eval<T, NumUs, TD,
-        std::enable_if_t<std::is_placeholder_v<TD> != 0 &&
-            (std::is_placeholder_v<TD> <= NumUs)>>
+        std::enable_if_t<std::is_placeholder_v<TD> != 0 && (std::is_placeholder_v<TD> <= NumUs)>>
       : bind_eval_placeholder<(std::size_t) std::is_placeholder_v<TD> - 1>
     {
     };
 
     template <typename T, std::size_t NumUs, typename TD>
-    struct bind_eval<T, NumUs, TD,
-        std::enable_if_t<pika::detail::is_bind_expression_v<TD>>>
+    struct bind_eval<T, NumUs, TD, std::enable_if_t<pika::detail::is_bind_expression_v<TD>>>
     {
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename... Us>
-        static constexpr PIKA_HOST_DEVICE std::invoke_result_t<T, Us...>
-        call(T&& t, Us&&... vs)
+        static constexpr PIKA_HOST_DEVICE std::invoke_result_t<T, Us...> call(T&& t, Us&&... vs)
         {
             return PIKA_INVOKE(PIKA_FORWARD(T, t), PIKA_FORWARD(Us, vs)...);
         }
@@ -81,8 +76,7 @@ namespace pika::util::detail {
     };
 
     template <typename F, typename Ts, typename... Us>
-    using invoke_bound_result_t =
-        typename invoke_bound_result<F, Ts, Us...>::type;
+    using invoke_bound_result_t = typename invoke_bound_result<F, Ts, Us...>::type;
 
     ///////////////////////////////////////////////////////////////////////
     template <typename F, typename Is, typename... Ts>
@@ -123,9 +117,8 @@ namespace pika::util::detail {
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename... Us>
-        constexpr PIKA_HOST_DEVICE
-            invoke_bound_result_t<F&, util::detail::pack<Ts&...>, Us&&...>
-            operator()(Us&&... vs) &
+        constexpr PIKA_HOST_DEVICE invoke_bound_result_t<F&, util::detail::pack<Ts&...>, Us&&...>
+        operator()(Us&&... vs) &
         {
             return PIKA_INVOKE(_f,
                 detail::bind_eval<Ts&, sizeof...(Us)>::call(
@@ -134,9 +127,9 @@ namespace pika::util::detail {
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename... Us>
-        constexpr PIKA_HOST_DEVICE invoke_bound_result_t<F const&,
-            util::detail::pack<Ts const&...>, Us&&...>
-        operator()(Us&&... vs) const&
+        constexpr PIKA_HOST_DEVICE
+            invoke_bound_result_t<F const&, util::detail::pack<Ts const&...>, Us&&...>
+            operator()(Us&&... vs) const&
         {
             return PIKA_INVOKE(_f,
                 detail::bind_eval<Ts const&, sizeof...(Us)>::call(
@@ -145,26 +138,23 @@ namespace pika::util::detail {
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename... Us>
-        constexpr PIKA_HOST_DEVICE
-            invoke_bound_result_t<F&&, util::detail::pack<Ts&&...>, Us&&...>
-            operator()(Us&&... vs) &&
+        constexpr PIKA_HOST_DEVICE invoke_bound_result_t<F&&, util::detail::pack<Ts&&...>, Us&&...>
+        operator()(Us&&... vs) &&
         {
             return PIKA_INVOKE(PIKA_MOVE(_f),
                 detail::bind_eval<Ts, sizeof...(Us)>::call(
-                    PIKA_MOVE(_args).template get<Is>(),
-                    PIKA_FORWARD(Us, vs)...)...);
+                    PIKA_MOVE(_args).template get<Is>(), PIKA_FORWARD(Us, vs)...)...);
         }
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename... Us>
-        constexpr PIKA_HOST_DEVICE invoke_bound_result_t<F const&&,
-            util::detail::pack<Ts const&&...>, Us&&...>
-        operator()(Us&&... vs) const&&
+        constexpr PIKA_HOST_DEVICE
+            invoke_bound_result_t<F const&&, util::detail::pack<Ts const&&...>, Us&&...>
+            operator()(Us&&... vs) const&&
         {
             return PIKA_INVOKE(PIKA_MOVE(_f),
                 detail::bind_eval<Ts const, sizeof...(Us)>::call(
-                    PIKA_MOVE(_args).template get<Is>(),
-                    PIKA_FORWARD(Us, vs)...)...);
+                    PIKA_MOVE(_args).template get<Is>(), PIKA_FORWARD(Us, vs)...)...);
         }
 
         constexpr std::size_t get_function_address() const
@@ -184,12 +174,12 @@ namespace pika::util::detail {
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
         util::itt::string_handle get_function_annotation_itt() const
         {
-#if defined(PIKA_HAVE_THREAD_DESCRIPTION)
+# if defined(PIKA_HAVE_THREAD_DESCRIPTION)
             return pika::detail::get_function_annotation_itt<F>::call(_f);
-#else
+# else
             static util::itt::string_handle sh("bound");
             return sh;
-#endif
+# endif
         }
 #endif
 
@@ -200,13 +190,11 @@ namespace pika::util::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename F, typename... Ts>
-    constexpr bound<std::decay_t<F>,
-        util::detail::make_index_pack_t<sizeof...(Ts)>,
+    constexpr bound<std::decay_t<F>, util::detail::make_index_pack_t<sizeof...(Ts)>,
         ::pika::detail::decay_unwrap_t<Ts>...>
     bind(F&& f, Ts&&... vs)
     {
-        using result_type = bound<std::decay_t<F>,
-            util::detail::make_index_pack_t<sizeof...(Ts)>,
+        using result_type = bound<std::decay_t<F>, util::detail::make_index_pack_t<sizeof...(Ts)>,
             ::pika::detail::decay_unwrap_t<Ts>...>;
 
         return result_type(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...);
@@ -224,8 +212,7 @@ namespace pika::detail {
     template <typename F, typename... Ts>
     struct get_function_address<util::detail::bound<F, Ts...>>
     {
-        static constexpr std::size_t call(
-            util::detail::bound<F, Ts...> const& f) noexcept
+        static constexpr std::size_t call(util::detail::bound<F, Ts...> const& f) noexcept
         {
             return f.get_function_address();
         }
@@ -235,23 +222,21 @@ namespace pika::detail {
     template <typename F, typename... Ts>
     struct get_function_annotation<util::detail::bound<F, Ts...>>
     {
-        static constexpr char const* call(
-            util::detail::bound<F, Ts...> const& f) noexcept
+        static constexpr char const* call(util::detail::bound<F, Ts...> const& f) noexcept
         {
             return f.get_function_annotation();
         }
     };
 
-#if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
+# if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
     template <typename F, typename... Ts>
     struct get_function_annotation_itt<util::detail::bound<F, Ts...>>
     {
-        static util::itt::string_handle call(
-            util::detail::bound<F, Ts...> const& f) noexcept
+        static util::itt::string_handle call(util::detail::bound<F, Ts...> const& f) noexcept
         {
             return f.get_function_annotation_itt();
         }
     };
-#endif
+# endif
 #endif
 }    // namespace pika::detail

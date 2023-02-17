@@ -16,10 +16,8 @@ template <typename Launch>
 void test_policy(Launch policy)
 {
     PIKA_TEST(policy.priority() == pika::execution::thread_priority::default_);
-    PIKA_TEST(
-        policy.stacksize() == pika::execution::thread_stacksize::default_);
-    PIKA_TEST(
-        policy.hint().mode == pika::execution::thread_schedule_hint_mode::none);
+    PIKA_TEST(policy.stacksize() == pika::execution::thread_stacksize::default_);
+    PIKA_TEST(policy.hint().mode == pika::execution::thread_schedule_hint_mode::none);
     PIKA_TEST_EQ(policy.hint().hint, std::int16_t(-1));
 
     policy.set_priority(pika::execution::thread_priority::normal);
@@ -27,8 +25,8 @@ void test_policy(Launch policy)
 
     auto p = pika::execution::experimental::with_priority(
         policy, pika::execution::thread_priority::high);
-    PIKA_TEST(pika::execution::experimental::get_priority(p) ==
-        pika::execution::thread_priority::high);
+    PIKA_TEST(
+        pika::execution::experimental::get_priority(p) == pika::execution::thread_priority::high);
 
     policy.set_stacksize(pika::execution::thread_stacksize::medium);
     PIKA_TEST(policy.stacksize() == pika::execution::thread_stacksize::medium);
@@ -53,8 +51,7 @@ int main()
 {
     static_assert(sizeof(pika::launch::async_policy) <= sizeof(std::int64_t));
     static_assert(sizeof(pika::launch::sync_policy) <= sizeof(std::int64_t));
-    static_assert(
-        sizeof(pika::launch::deferred_policy) <= sizeof(std::int64_t));
+    static_assert(sizeof(pika::launch::deferred_policy) <= sizeof(std::int64_t));
     static_assert(sizeof(pika::launch::fork_policy) <= sizeof(std::int64_t));
     static_assert(sizeof(pika::launch::apply_policy) <= sizeof(std::int64_t));
     static_assert(sizeof(pika::launch) <= sizeof(std::int64_t));

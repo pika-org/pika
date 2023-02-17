@@ -79,8 +79,8 @@ void print_results(std::uint64_t cores, double walltime)
     std::string const tasks_str = fmt::format("{},", tasks);
     std::string const delay_str = fmt::format("{},", delay);
 
-    fmt::print(std::cout, "{:>21} {:>21} {:>21} {:10.12}, {:10.12}\n",
-        cores_str, tasks_str, delay_str, walltime, walltime / tasks);
+    fmt::print(std::cout, "{:>21} {:>21} {:>21} {:10.12}, {:10.12}\n", cores_str, tasks_str,
+        delay_str, walltime, walltime / tasks);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -146,8 +146,7 @@ int main(int argc, char** argv)
 
     cmdline.add_options()("help,h", "print out program usage (this message)")
 
-        ("shepherds,s", value<std::uint64_t>()->default_value(1),
-            "number of shepherds to use")
+        ("shepherds,s", value<std::uint64_t>()->default_value(1), "number of shepherds to use")
 
             ("workers-per-shepherd,w", value<std::uint64_t>()->default_value(1),
                 "number of worker OS-threads per shepherd")
@@ -173,10 +172,8 @@ int main(int argc, char** argv)
     }
 
     // Set qthreads environment variables.
-    std::string const shepherds =
-        std::to_string(vm["shepherds"].as<std::uint64_t>());
-    std::string const workers =
-        std::to_string(vm["workers-per-shepherd"].as<std::uint64_t>());
+    std::string const shepherds = std::to_string(vm["shepherds"].as<std::uint64_t>());
+    std::string const workers = std::to_string(vm["workers-per-shepherd"].as<std::uint64_t>());
 
     setenv("QT_NUM_SHEPHERDS", shepherds.c_str(), 1);
     setenv("QT_NUM_WORKERS_PER_SHEPHERD", workers.c_str(), 1);

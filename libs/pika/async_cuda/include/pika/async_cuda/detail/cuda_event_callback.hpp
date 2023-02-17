@@ -24,18 +24,13 @@
 #include <string>
 
 namespace pika::cuda::experimental::detail {
-    using event_callback_function_type =
-        pika::util::detail::unique_function<void(whip::error_t)>;
+    using event_callback_function_type = pika::util::detail::unique_function<void(whip::error_t)>;
 
-    PIKA_EXPORT void add_event_callback(event_callback_function_type&& f,
-        whip::stream_t stream,
-        pika::execution::thread_priority =
-            pika::execution::thread_priority::default_);
+    PIKA_EXPORT void add_event_callback(event_callback_function_type&& f, whip::stream_t stream,
+        pika::execution::thread_priority = pika::execution::thread_priority::default_);
     PIKA_EXPORT void add_event_callback(
         event_callback_function_type&& f, cuda_stream const& stream);
 
-    PIKA_EXPORT void register_polling(
-        pika::threads::detail::thread_pool_base& pool);
-    PIKA_EXPORT void unregister_polling(
-        pika::threads::detail::thread_pool_base& pool);
+    PIKA_EXPORT void register_polling(pika::threads::detail::thread_pool_base& pool);
+    PIKA_EXPORT void unregister_polling(pika::threads::detail::thread_pool_base& pool);
 }    // namespace pika::cuda::experimental::detail

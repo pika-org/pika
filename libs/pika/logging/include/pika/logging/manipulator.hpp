@@ -39,8 +39,8 @@ namespace pika::util::logging {
         {
             virtual void operator()(std::ostream&) const = 0;
 
-            friend void format_value(std::ostream& os,
-                std::string_view /*spec*/, manipulator const& value)
+            friend void format_value(
+                std::ostream& os, std::string_view /*spec*/, manipulator const& value)
             {
                 value(os);
             }

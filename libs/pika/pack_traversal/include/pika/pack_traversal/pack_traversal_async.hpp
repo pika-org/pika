@@ -151,8 +151,7 @@ namespace pika::util {
     /// traversal behavior and capabilities.
     ///
     template <typename Allocator, typename Visitor, typename... T>
-    auto traverse_pack_async_allocator(
-        Allocator const& alloc, Visitor&& visitor, T&&... pack)
+    auto traverse_pack_async_allocator(Allocator const& alloc, Visitor&& visitor, T&&... pack)
         -> decltype(detail::apply_pack_transform_async_allocator(
             alloc, PIKA_FORWARD(Visitor, visitor), PIKA_FORWARD(T, pack)...))
     {

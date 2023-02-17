@@ -41,8 +41,7 @@ namespace pika::experimental::detail {
     template <typename Iterator>
     PIKA_FORCEINLINE Iterator previous(Iterator const& it)
     {
-        return previous(
-            it, pika::traits::is_random_access_iterator<Iterator>());
+        return previous(it, pika::traits::is_random_access_iterator<Iterator>());
     }
 
     template <typename Iterator>
@@ -68,9 +67,8 @@ namespace pika::experimental::detail {
 // Version of stencil3_iterator which handles boundary elements internally
 namespace pika::experimental {
     ///////////////////////////////////////////////////////////////////////////
-    template <typename Iterator, typename IterBegin = Iterator,
-        typename IterValueBegin = Iterator, typename IterEnd = IterBegin,
-        typename IterValueEnd = IterValueBegin>
+    template <typename Iterator, typename IterBegin = Iterator, typename IterValueBegin = Iterator,
+        typename IterEnd = IterBegin, typename IterValueEnd = IterValueBegin>
     class stencil3_iterator_full;
 
     namespace detail {
@@ -81,16 +79,14 @@ namespace pika::experimental {
             previous_transformer() {}
 
             // at position 'begin' it will dereference 'value', otherwise 'it-1'
-            previous_transformer(
-                IteratorBase const& begin, IteratorValue const& value)
+            previous_transformer(IteratorBase const& begin, IteratorValue const& value)
               : begin_(begin)
               , value_(value)
             {
             }
 
             template <typename Iterator>
-            typename std::iterator_traits<Iterator>::reference
-            operator()(Iterator const& it) const
+            typename std::iterator_traits<Iterator>::reference operator()(Iterator const& it) const
             {
                 if (it == begin_)
                     return *value_;
@@ -104,11 +100,9 @@ namespace pika::experimental {
 
         template <typename IteratorBase, typename IteratorValue>
         inline previous_transformer<IteratorBase, IteratorValue>
-        make_previous_transformer(
-            IteratorBase const& base, IteratorValue const& value)
+        make_previous_transformer(IteratorBase const& base, IteratorValue const& value)
         {
-            return previous_transformer<IteratorBase, IteratorValue>(
-                base, value);
+            return previous_transformer<IteratorBase, IteratorValue>(base, value);
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -118,16 +112,14 @@ namespace pika::experimental {
             next_transformer() {}
 
             // at position 'end' it will dereference 'value', otherwise 'it+1'
-            next_transformer(
-                IteratorBase const& end, IteratorValue const& value)
+            next_transformer(IteratorBase const& end, IteratorValue const& value)
               : end_(end)
               , value_(value)
             {
             }
 
             template <typename Iterator>
-            typename std::iterator_traits<Iterator>::reference
-            operator()(Iterator const& it) const
+            typename std::iterator_traits<Iterator>::reference operator()(Iterator const& it) const
             {
                 if (it == end_)
                     return *value_;
@@ -141,70 +133,61 @@ namespace pika::experimental {
 
         template <typename IteratorBase, typename IteratorValue>
         inline next_transformer<IteratorBase, IteratorValue>
-        make_next_transformer(
-            IteratorBase const& base, IteratorValue const& value)
+        make_next_transformer(IteratorBase const& base, IteratorValue const& value)
         {
             return next_transformer<IteratorBase, IteratorValue>(base, value);
         }
 
         ///////////////////////////////////////////////////////////////////////
-        template <typename Iterator, typename IterBegin,
-            typename IterValueBegin, typename IterEnd, typename IterValueEnd>
+        template <typename Iterator, typename IterBegin, typename IterValueBegin, typename IterEnd,
+            typename IterValueEnd>
         struct stencil3_iterator_base
         {
-            using left_transformer =
-                previous_transformer<IterBegin, IterValueBegin>;
+            using left_transformer = previous_transformer<IterBegin, IterValueBegin>;
             using right_transformer = next_transformer<IterEnd, IterValueEnd>;
 
-            using left_iterator =
-                util::transform_iterator<Iterator, left_transformer>;
-            using right_iterator =
-                util::transform_iterator<Iterator, right_transformer>;
+            using left_iterator = util::transform_iterator<Iterator, left_transformer>;
+            using right_iterator = util::transform_iterator<Iterator, right_transformer>;
 
             using type = util::detail::zip_iterator_base<
                 std::tuple<left_iterator, Iterator, right_iterator>,
-                stencil3_iterator_full<Iterator, IterBegin, IterValueBegin,
-                    IterEnd, IterValueEnd>>;
+                stencil3_iterator_full<Iterator, IterBegin, IterValueBegin, IterEnd, IterValueEnd>>;
 
             static type create(Iterator const& it, IterBegin const& begin,
-                IterValueBegin const& begin_val, IterEnd const& end,
-                IterValueEnd const& end_val)
+                IterValueBegin const& begin_val, IterEnd const& end, IterValueEnd const& end_val)
             {
                 auto prev = make_previous_transformer(begin, begin_val);
                 auto next = make_next_transformer(end, end_val);
 
-                return type(
-                    std::make_tuple(util::make_transform_iterator(it, prev), it,
-                        util::make_transform_iterator(it, next)));
+                return type(std::make_tuple(util::make_transform_iterator(it, prev), it,
+                    util::make_transform_iterator(it, next)));
             }
 
             static type create(Iterator const& it)
             {
-                return type(std::make_tuple(
-                    util::make_transform_iterator(it, left_transformer()), it,
-                    util::make_transform_iterator(it, right_transformer())));
+                return type(std::make_tuple(util::make_transform_iterator(it, left_transformer()),
+                    it, util::make_transform_iterator(it, right_transformer())));
             }
         };
     }    // namespace detail
 
     ///////////////////////////////////////////////////////////////////////////
-    template <typename Iterator, typename IterBegin, typename IterValueBegin,
-        typename IterEnd, typename IterValueEnd>
+    template <typename Iterator, typename IterBegin, typename IterValueBegin, typename IterEnd,
+        typename IterValueEnd>
     class stencil3_iterator_full
-      : public detail::stencil3_iterator_base<Iterator, IterBegin,
-            IterValueBegin, IterEnd, IterValueEnd>::type
+      : public detail::stencil3_iterator_base<Iterator, IterBegin, IterValueBegin, IterEnd,
+            IterValueEnd>::type
     {
     private:
-        using base_maker = detail::stencil3_iterator_base<Iterator, IterBegin,
-            IterValueBegin, IterEnd, IterValueEnd>;
+        using base_maker = detail::stencil3_iterator_base<Iterator, IterBegin, IterValueBegin,
+            IterEnd, IterValueEnd>;
         using base_type = typename base_maker::type;
 
     public:
         stencil3_iterator_full() {}
 
         stencil3_iterator_full(Iterator const& it, IterBegin const& begin,
-            IterValueBegin const& begin_val, IterEnd const& end,
-            IterValueEnd const& end_val)
+            IterValueBegin const& begin_val, IterEnd const& end, IterValueEnd const& end_val)
           : base_type(base_maker::create(it, begin, begin_val, end, end_val))
         {
         }
@@ -224,16 +207,14 @@ namespace pika::experimental {
         }
     };
 
-    template <typename Iterator, typename IterBegin, typename IterValueBegin,
-        typename IterEnd, typename IterValueEnd>
-    inline stencil3_iterator_full<Iterator, IterBegin, IterValueBegin, IterEnd,
-        IterValueEnd>
+    template <typename Iterator, typename IterBegin, typename IterValueBegin, typename IterEnd,
+        typename IterValueEnd>
+    inline stencil3_iterator_full<Iterator, IterBegin, IterValueBegin, IterEnd, IterValueEnd>
     make_stencil3_full_iterator(Iterator const& it, IterBegin const& begin,
-        IterValueBegin const& begin_val, IterEnd const& end,
-        IterValueEnd const& end_val)
+        IterValueBegin const& begin_val, IterEnd const& end, IterValueEnd const& end_val)
     {
-        using result_type = stencil3_iterator_full<Iterator, IterBegin,
-            IterValueBegin, IterEnd, IterValueEnd>;
+        using result_type =
+            stencil3_iterator_full<Iterator, IterBegin, IterValueBegin, IterEnd, IterValueEnd>;
         return result_type(it, begin, begin_val, end, end_val);
     }
 
@@ -244,15 +225,13 @@ namespace pika::experimental {
     }
 
     template <typename Iterator, typename IterValue>
-    inline std::pair<stencil3_iterator_full<Iterator, Iterator, IterValue,
-                         Iterator, IterValue>,
-        stencil3_iterator_full<Iterator, Iterator, IterValue, Iterator,
-            IterValue>>
-    make_stencil3_full_range(Iterator const& begin, Iterator const& end,
-        IterValue const& begin_val, IterValue const& end_val)
+    inline std::pair<stencil3_iterator_full<Iterator, Iterator, IterValue, Iterator, IterValue>,
+        stencil3_iterator_full<Iterator, Iterator, IterValue, Iterator, IterValue>>
+    make_stencil3_full_range(Iterator const& begin, Iterator const& end, IterValue const& begin_val,
+        IterValue const& end_val)
     {
-        auto b = make_stencil3_full_iterator(
-            begin, begin, begin_val, detail::previous(end), end_val);
+        auto b =
+            make_stencil3_full_iterator(begin, begin, begin_val, detail::previous(end), end_val);
         return std::make_pair(b, make_stencil3_full_iterator<decltype(b)>(end));
     }
 }    // namespace pika::experimental
@@ -284,21 +263,18 @@ std::chrono::duration<double> bench_stencil3_iterator_full()
 namespace pika::experimental {
     template <typename Iterator>
     class stencil3_iterator_v1
-      : public util::detail::zip_iterator_base<
-            std::tuple<Iterator, Iterator, Iterator>,
+      : public util::detail::zip_iterator_base<std::tuple<Iterator, Iterator, Iterator>,
             stencil3_iterator_v1<Iterator>>
     {
     private:
-        using base_type = util::detail::zip_iterator_base<
-            std::tuple<Iterator, Iterator, Iterator>,
+        using base_type = util::detail::zip_iterator_base<std::tuple<Iterator, Iterator, Iterator>,
             stencil3_iterator_v1<Iterator>>;
 
     public:
         stencil3_iterator_v1() {}
 
         explicit stencil3_iterator_v1(Iterator const& it)
-          : base_type(
-                std::make_tuple(detail::previous(it), it, detail::next(it)))
+          : base_type(std::make_tuple(detail::previous(it), it, detail::next(it)))
         {
         }
 
@@ -313,19 +289,16 @@ namespace pika::experimental {
     };
 
     template <typename Iterator>
-    inline stencil3_iterator_v1<Iterator>
-    make_stencil3_iterator_v1(Iterator const& it)
+    inline stencil3_iterator_v1<Iterator> make_stencil3_iterator_v1(Iterator const& it)
     {
         return stencil3_iterator_v1<Iterator>(it);
     }
 
     template <typename Iterator>
-    inline std::pair<stencil3_iterator_v1<Iterator>,
-        stencil3_iterator_v1<Iterator>>
+    inline std::pair<stencil3_iterator_v1<Iterator>, stencil3_iterator_v1<Iterator>>
     make_stencil3_range_v1(Iterator const& begin, Iterator const& end)
     {
-        return std::make_pair(
-            make_stencil3_iterator_v1(begin), make_stencil3_iterator_v1(end));
+        return std::make_pair(make_stencil3_iterator_v1(begin), make_stencil3_iterator_v1(end));
     }
 }    // namespace pika::experimental
 
@@ -336,8 +309,7 @@ std::chrono::duration<double> bench_stencil3_iterator_v1()
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    auto r = pika::experimental::make_stencil3_range_v1(
-        values.begin() + 1, values.end() - 1);
+    auto r = pika::experimental::make_stencil3_range_v1(values.begin() + 1, values.end() - 1);
 
     using reference = std::iterator_traits<decltype(r.first)>::reference;
 
@@ -364,10 +336,8 @@ namespace pika::experimental {
             template <typename Iterator>
             struct result
             {
-                using element_type =
-                    typename std::iterator_traits<Iterator>::reference;
-                using type =
-                    std::tuple<element_type, element_type, element_type>;
+                using element_type = typename std::iterator_traits<Iterator>::reference;
+                using type = std::tuple<element_type, element_type, element_type>;
             };
 
             // it will dereference tuple(it-1, it, it+1)
@@ -381,10 +351,8 @@ namespace pika::experimental {
     }    // namespace detail
 
     ///////////////////////////////////////////////////////////////////////////
-    template <typename Iterator,
-        typename Transformer = detail::stencil_transformer_v2>
-    class stencil3_iterator_v2
-      : public pika::util::transform_iterator<Iterator, Transformer>
+    template <typename Iterator, typename Transformer = detail::stencil_transformer_v2>
+    class stencil3_iterator_v2 : public pika::util::transform_iterator<Iterator, Transformer>
     {
     private:
         using base_type = pika::util::transform_iterator<Iterator, Transformer>;
@@ -413,28 +381,24 @@ namespace pika::experimental {
     template <typename Iterator, typename Transformer>
     inline std::pair<stencil3_iterator_v2<Iterator, Transformer>,
         stencil3_iterator_v2<Iterator, Transformer>>
-    make_stencil3_range_v2(
-        Iterator const& begin, Iterator const& end, Transformer const& t)
+    make_stencil3_range_v2(Iterator const& begin, Iterator const& end, Transformer const& t)
     {
-        return std::make_pair(make_stencil3_iterator_v2(begin, t),
-            make_stencil3_iterator_v2(end, t));
+        return std::make_pair(
+            make_stencil3_iterator_v2(begin, t), make_stencil3_iterator_v2(end, t));
     }
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Iterator>
-    inline stencil3_iterator_v2<Iterator>
-    make_stencil3_iterator_v2(Iterator const& it)
+    inline stencil3_iterator_v2<Iterator> make_stencil3_iterator_v2(Iterator const& it)
     {
         return stencil3_iterator_v2<Iterator>(it);
     }
 
     template <typename Iterator>
-    inline std::pair<stencil3_iterator_v2<Iterator>,
-        stencil3_iterator_v2<Iterator>>
+    inline std::pair<stencil3_iterator_v2<Iterator>, stencil3_iterator_v2<Iterator>>
     make_stencil3_range_v2(Iterator const& begin, Iterator const& end)
     {
-        return std::make_pair(
-            make_stencil3_iterator_v2(begin), make_stencil3_iterator_v2(end));
+        return std::make_pair(make_stencil3_iterator_v2(begin), make_stencil3_iterator_v2(end));
     }
 }    // namespace pika::experimental
 
@@ -445,8 +409,7 @@ std::chrono::duration<double> bench_stencil3_iterator_v2()
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    auto r = pika::experimental::make_stencil3_range_v2(
-        values.begin() + 1, values.end() - 1);
+    auto r = pika::experimental::make_stencil3_range_v2(values.begin() + 1, values.end() - 1);
 
     using reference = std::iterator_traits<decltype(r.first)>::reference;
 
@@ -477,10 +440,8 @@ std::chrono::duration<double> bench_stencil3_iterator_explicit()
 
     auto range = pika::detail::irange(1, partition_size - 1);
 
-    std::for_each(
-        std::begin(range), std::end(range), [&result, &values](std::size_t i) {
-            result += values[i - 1] + values[i] + values[i + 1];
-        });
+    std::for_each(std::begin(range), std::end(range),
+        [&result, &values](std::size_t i) { result += values[i - 1] + values[i] + values[i + 1]; });
 
     result += values[partition_size - 2] + values.back() + values.front();
     PIKA_UNUSED(result);
@@ -513,8 +474,7 @@ int pika_main(pika::program_options::variables_map& vm)
             for (int i = 0; i != test_count; ++i)
                 t += bench_stencil3_iterator_full();
             std::cout << "full: " << t.count() / test_count << std::endl;
-            pika::util::print_cdash_timing(
-                "Stencil3Full", t.count() / test_count);
+            pika::util::print_cdash_timing("Stencil3Full", t.count() / test_count);
         }
 
         // now run explicit (no-check) stencil3 tests
@@ -523,8 +483,7 @@ int pika_main(pika::program_options::variables_map& vm)
             for (int i = 0; i != test_count; ++i)
                 t += bench_stencil3_iterator_v1();
             std::cout << "nocheck(v1): " << t.count() / test_count << std::endl;
-            pika::util::print_cdash_timing(
-                "Stencil3NocheckV1", t.count() / test_count);
+            pika::util::print_cdash_timing("Stencil3NocheckV1", t.count() / test_count);
         }
 
         {
@@ -532,8 +491,7 @@ int pika_main(pika::program_options::variables_map& vm)
             for (int i = 0; i != test_count; ++i)
                 t += bench_stencil3_iterator_v2();
             std::cout << "nocheck(v2): " << t.count() / test_count << std::endl;
-            pika::util::print_cdash_timing(
-                "Stencil3NocheckV2", t.count() / test_count);
+            pika::util::print_cdash_timing("Stencil3NocheckV2", t.count() / test_count);
         }
 
         // now run explicit tests
@@ -542,8 +500,7 @@ int pika_main(pika::program_options::variables_map& vm)
             for (int i = 0; i != test_count; ++i)
                 t += bench_stencil3_iterator_explicit();
             std::cout << "explicit: " << t.count() / test_count << std::endl;
-            pika::util::print_cdash_timing(
-                "Stencil3Explicit", t.count() / test_count);
+            pika::util::print_cdash_timing("Stencil3Explicit", t.count() / test_count);
         }
     }
 

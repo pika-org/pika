@@ -24,8 +24,7 @@
 void test(pika::execution::thread_stacksize stacksize)
 {
     pika::execution::parallel_executor exec(stacksize);
-    pika::execution::parallel_executor exec_current(
-        pika::execution::thread_stacksize::current);
+    pika::execution::parallel_executor exec_current(pika::execution::thread_stacksize::current);
 
     pika::async(exec, [&exec_current, stacksize]() {
         // This thread should have the stack size stacksize; it has been
@@ -33,8 +32,7 @@ void test(pika::execution::thread_stacksize stacksize)
         pika::execution::thread_stacksize self_stacksize =
             pika::threads::detail::get_self_stacksize_enum();
         PIKA_TEST_EQ(self_stacksize, stacksize);
-        PIKA_TEST_NEQ(
-            self_stacksize, pika::execution::thread_stacksize::current);
+        PIKA_TEST_NEQ(self_stacksize, pika::execution::thread_stacksize::current);
 
         pika::async(exec_current, [stacksize]() {
             // This thread should also have the stack size stacksize; it has
@@ -42,16 +40,14 @@ void test(pika::execution::thread_stacksize stacksize)
             pika::execution::thread_stacksize self_stacksize =
                 pika::threads::detail::get_self_stacksize_enum();
             PIKA_TEST_EQ(self_stacksize, stacksize);
-            PIKA_TEST_NEQ(
-                self_stacksize, pika::execution::thread_stacksize::current);
+            PIKA_TEST_NEQ(self_stacksize, pika::execution::thread_stacksize::current);
         }).get();
     }).get();
 }
 
 int pika_main()
 {
-    for (pika::execution::thread_stacksize stacksize =
-             pika::execution::thread_stacksize::minimal;
+    for (pika::execution::thread_stacksize stacksize = pika::execution::thread_stacksize::minimal;
          stacksize < pika::execution::thread_stacksize::maximal;
          stacksize = static_cast<pika::execution::thread_stacksize>(
              static_cast<std::size_t>(stacksize) + 1))
@@ -64,9 +60,8 @@ int pika_main()
 
 int main(int argc, char** argv)
 {
-    std::vector<std::string> schedulers = {"local", "local-priority-fifo",
-        "local-priority-lifo", "static", "static-priority", "abp-priority-fifo",
-        "abp-priority-lifo", "shared-priority"};
+    std::vector<std::string> schedulers = {"local", "local-priority-fifo", "local-priority-lifo",
+        "static", "static-priority", "abp-priority-fifo", "abp-priority-lifo", "shared-priority"};
     for (auto const& scheduler : schedulers)
     {
         pika::init_params iparams;

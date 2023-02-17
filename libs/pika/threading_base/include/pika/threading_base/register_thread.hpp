@@ -58,8 +58,7 @@ namespace pika::threads::detail {
             p->run_thread_exit_callbacks();
             p->free_thread_exit_callbacks();
 
-            return thread_result_type(
-                thread_schedule_state::terminated, invalid_thread_id);
+            return thread_result_type(thread_schedule_state::terminated, invalid_thread_id);
         }
     };
 
@@ -84,8 +83,7 @@ namespace pika::threads::detail {
             p->run_thread_exit_callbacks();
             p->free_thread_exit_callbacks();
 
-            return thread_result_type(
-                thread_schedule_state::terminated, invalid_thread_id);
+            return thread_result_type(thread_schedule_state::terminated, invalid_thread_id);
         }
     };
 
@@ -150,8 +148,7 @@ namespace pika::threads::detail {
     ///                   throw but returns the result code using the
     ///                   parameter \a ec. Otherwise it throws an instance
     ///                   of pika#exception.
-    inline thread_id_ref_type register_thread(
-        thread_init_data& data, error_code& ec = throws)
+    inline thread_id_ref_type register_thread(thread_init_data& data, error_code& ec = throws)
     {
         return register_thread(data, get_self_or_default_pool(), ec);
     }
@@ -195,8 +192,7 @@ namespace pika::threads::detail {
     ///                   throw but returns the result code using the
     ///                   parameter \a ec. Otherwise it throws an instance
     ///                   of pika#exception.
-    inline thread_id_ref_type register_work(
-        thread_init_data& data, error_code& ec = throws)
+    inline thread_id_ref_type register_work(thread_init_data& data, error_code& ec = throws)
     {
         return register_work(data, get_self_or_default_pool(), ec);
     }

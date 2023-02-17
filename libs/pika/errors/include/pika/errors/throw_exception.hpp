@@ -28,40 +28,31 @@
 /// \cond NODETAIL
 namespace pika::detail {
     template <typename Exception>
-    [[noreturn]] PIKA_EXPORT void throw_exception(Exception const& e,
+    [[noreturn]] PIKA_EXPORT void throw_exception(
+        Exception const& e, std::string const& func, std::string const& file, long line);
+
+    [[noreturn]] PIKA_EXPORT void throw_exception(error errcode, std::string const& msg,
         std::string const& func, std::string const& file, long line);
 
-    [[noreturn]] PIKA_EXPORT void throw_exception(error errcode,
-        std::string const& msg, std::string const& func,
-        std::string const& file, long line);
-
-    [[noreturn]] PIKA_EXPORT void rethrow_exception(
-        exception const& e, std::string const& func);
+    [[noreturn]] PIKA_EXPORT void rethrow_exception(exception const& e, std::string const& func);
 
     template <typename Exception>
     PIKA_EXPORT std::exception_ptr
     get_exception(Exception const& e, std::string const& func = "<unknown>",
-        std::string const& file = "<unknown>", long line = -1,
-        std::string const& auxinfo = "");
+        std::string const& file = "<unknown>", long line = -1, std::string const& auxinfo = "");
 
-    PIKA_EXPORT std::exception_ptr get_exception(error errcode,
-        std::string const& msg, throwmode mode,
-        std::string const& func = "<unknown>",
-        std::string const& file = "<unknown>", long line = -1,
-        std::string const& auxinfo = "");
+    PIKA_EXPORT std::exception_ptr get_exception(error errcode, std::string const& msg,
+        throwmode mode, std::string const& func = "<unknown>",
+        std::string const& file = "<unknown>", long line = -1, std::string const& auxinfo = "");
 
-    PIKA_EXPORT std::exception_ptr get_exception(std::error_code const& ec,
-        std::string const& msg, throwmode mode,
-        std::string const& func = "<unknown>",
-        std::string const& file = "<unknown>", long line = -1,
-        std::string const& auxinfo = "");
+    PIKA_EXPORT std::exception_ptr get_exception(std::error_code const& ec, std::string const& msg,
+        throwmode mode, std::string const& func = "<unknown>",
+        std::string const& file = "<unknown>", long line = -1, std::string const& auxinfo = "");
 
-    PIKA_EXPORT void throws_if(pika::error_code& ec, error errcode,
-        std::string const& msg, std::string const& func,
-        std::string const& file, long line);
+    PIKA_EXPORT void throws_if(pika::error_code& ec, error errcode, std::string const& msg,
+        std::string const& func, std::string const& file, long line);
 
-    PIKA_EXPORT void rethrows_if(
-        pika::error_code& ec, exception const& e, std::string const& func);
+    PIKA_EXPORT void rethrows_if(pika::error_code& ec, exception const& e, std::string const& func);
 
     [[noreturn]] PIKA_EXPORT void throw_thread_interrupted_exception();
 }    // namespace pika::detail
@@ -83,49 +74,48 @@ namespace pika {
 ///////////////////////////////////////////////////////////////////////////////
 // helper macro allowing to prepend file name and line number to a generated
 // exception
-#define PIKA_THROW_STD_EXCEPTION(except, func)                                 \
-    pika::detail::throw_exception(except, func, __FILE__, __LINE__) /**/
+#define PIKA_THROW_STD_EXCEPTION(except, func)                                                     \
+ pika::detail::throw_exception(except, func, __FILE__, __LINE__) /**/
 
 #define PIKA_RETHROW_EXCEPTION(e, f) pika::detail::rethrow_exception(e, f) /**/
 
 #define PIKA_RETHROWS_IF(ec, e, f) pika::detail::rethrows_if(ec, e, f) /**/
 
 ///////////////////////////////////////////////////////////////////////////////
-#define PIKA_GET_EXCEPTION(...)                                                \
-    PIKA_GET_EXCEPTION_(__VA_ARGS__)                                           \
-    /**/
+#define PIKA_GET_EXCEPTION(...)                                                                    \
+ PIKA_GET_EXCEPTION_(__VA_ARGS__)                                                                  \
+ /**/
 
-#define PIKA_GET_EXCEPTION_(...)                                               \
-    PIKA_PP_EXPAND(PIKA_PP_CAT(                                                \
-        PIKA_GET_EXCEPTION_, PIKA_PP_NARGS(__VA_ARGS__))(__VA_ARGS__))         \
+#define PIKA_GET_EXCEPTION_(...)                                                                   \
+ PIKA_PP_EXPAND(PIKA_PP_CAT(PIKA_GET_EXCEPTION_, PIKA_PP_NARGS(__VA_ARGS__))(__VA_ARGS__))         \
 /**/
-#define PIKA_GET_EXCEPTION_3(errcode, f, msg)                                  \
-    PIKA_GET_EXCEPTION_4(errcode, pika::throwmode::plain, f, msg)              \
+#define PIKA_GET_EXCEPTION_3(errcode, f, msg)                                                      \
+ PIKA_GET_EXCEPTION_4(errcode, pika::throwmode::plain, f, msg)                                     \
 /**/
-#define PIKA_GET_EXCEPTION_4(errcode, mode, f, msg)                            \
-    pika::detail::get_exception(errcode, msg, mode, f, __FILE__, __LINE__) /**/
+#define PIKA_GET_EXCEPTION_4(errcode, mode, f, msg)                                                \
+ pika::detail::get_exception(errcode, msg, mode, f, __FILE__, __LINE__) /**/
 
 ///////////////////////////////////////////////////////////////////////////////
-#define PIKA_THROW_IN_CURRENT_FUNC(errcode, msg)                               \
-    PIKA_THROW_EXCEPTION(errcode, PIKA_ASSERTION_CURRENT_FUNCTION, msg)        \
-    /**/
+#define PIKA_THROW_IN_CURRENT_FUNC(errcode, msg)                                                   \
+ PIKA_THROW_EXCEPTION(errcode, PIKA_ASSERTION_CURRENT_FUNCTION, msg)                               \
+ /**/
 
-#define PIKA_RETHROW_IN_CURRENT_FUNC(errcode, msg)                             \
-    PIKA_RETHROW_EXCEPTION(errcode, PIKA_ASSERTION_CURRENT_FUNCTION, msg)      \
-    /**/
-
-///////////////////////////////////////////////////////////////////////////////
-#define PIKA_THROWS_IN_CURRENT_FUNC_IF(ec, errcode, msg)                       \
-    PIKA_THROWS_IF(ec, errcode, PIKA_ASSERTION_CURRENT_FUNCTION, msg)          \
-    /**/
-
-#define PIKA_RETHROWS_IN_CURRENT_FUNC_IF(ec, errcode, msg)                     \
-    PIKA_RETHROWS_IF(ec, errcode, PIKA_ASSERTION_CURRENT_FUNCTION, msg)        \
-    /**/
+#define PIKA_RETHROW_IN_CURRENT_FUNC(errcode, msg)                                                 \
+ PIKA_RETHROW_EXCEPTION(errcode, PIKA_ASSERTION_CURRENT_FUNCTION, msg)                             \
+ /**/
 
 ///////////////////////////////////////////////////////////////////////////////
-#define PIKA_THROW_THREAD_INTERRUPTED_EXCEPTION()                              \
-    pika::detail::throw_thread_interrupted_exception() /**/
+#define PIKA_THROWS_IN_CURRENT_FUNC_IF(ec, errcode, msg)                                           \
+ PIKA_THROWS_IF(ec, errcode, PIKA_ASSERTION_CURRENT_FUNCTION, msg)                                 \
+ /**/
+
+#define PIKA_RETHROWS_IN_CURRENT_FUNC_IF(ec, errcode, msg)                                         \
+ PIKA_RETHROWS_IF(ec, errcode, PIKA_ASSERTION_CURRENT_FUNCTION, msg)                               \
+ /**/
+
+///////////////////////////////////////////////////////////////////////////////
+#define PIKA_THROW_THREAD_INTERRUPTED_EXCEPTION()                                                  \
+ pika::detail::throw_thread_interrupted_exception() /**/
 /// \endcond
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -156,9 +146,8 @@ namespace pika {
 ///      }
 /// \endcode
 ///
-#define PIKA_THROW_EXCEPTION(errcode, f, ...)                                  \
-    pika::detail::throw_exception(                                             \
-        errcode, fmt::format(__VA_ARGS__), f, __FILE__, __LINE__) /**/
+#define PIKA_THROW_EXCEPTION(errcode, f, ...)                                                      \
+ pika::detail::throw_exception(errcode, fmt::format(__VA_ARGS__), f, __FILE__, __LINE__) /**/
 
 /// \def PIKA_THROWS_IF(ec, errcode, f, msg)
 /// \brief Either throw a pika::exception or initialize \a pika::error_code from
@@ -175,8 +164,7 @@ namespace pika {
 /// name of the function exception is thrown from and the parameter \p msg
 /// holds the error message the new exception should encapsulate.
 ///
-#define PIKA_THROWS_IF(ec, errcode, f, ...)                                    \
-    pika::detail::throws_if(                                                   \
-        ec, errcode, fmt::format(__VA_ARGS__), f, __FILE__, __LINE__) /**/
+#define PIKA_THROWS_IF(ec, errcode, f, ...)                                                        \
+ pika::detail::throws_if(ec, errcode, fmt::format(__VA_ARGS__), f, __FILE__, __LINE__) /**/
 
 #include <pika/config/warnings_suffix.hpp>

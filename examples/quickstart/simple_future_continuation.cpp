@@ -19,16 +19,14 @@ int get_id(int i)
 
 int func1()
 {
-    std::cout << "func1 thread id: " << pika::this_thread::get_id()
-              << std::endl;
+    std::cout << "func1 thread id: " << pika::this_thread::get_id() << std::endl;
     return get_id(1) ? 123 : 0;
 }
 
 // this continuation function will be executed by an pika thread
 int cont1(pika::future<int> f)
 {
-    std::cout << "cont1 thread id: " << pika::this_thread::get_id()
-              << std::endl;
+    std::cout << "cont1 thread id: " << pika::this_thread::get_id() << std::endl;
     std::cout << "Status code (pika thread): " << f.get() << std::endl;
     std::cout << std::flush;
     return 1;

@@ -18,8 +18,7 @@
 
 namespace pika::util::detail {
     template <typename Tuple>
-    struct fused_index_pack
-      : make_index_pack<std::tuple_size_v<std::decay_t<Tuple>>>
+    struct fused_index_pack : make_index_pack<std::tuple_size_v<std::decay_t<Tuple>>>
     {
     };
 
@@ -41,19 +40,16 @@ namespace pika::util::detail {
 
     template <typename F, typename Tuple>
     struct invoke_fused_result
-      : invoke_fused_result_impl<F, Tuple&&,
-            typename fused_index_pack<Tuple>::type>
+      : invoke_fused_result_impl<F, Tuple&&, typename fused_index_pack<Tuple>::type>
     {
     };
 
     ///////////////////////////////////////////////////////////////////////
     template <std::size_t... Is, typename F, typename Tuple>
-    constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE
-        typename invoke_fused_result<F, Tuple>::type
-        invoke_fused_impl(index_pack<Is...>, F&& f, Tuple&& t)
+    constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE typename invoke_fused_result<F, Tuple>::type
+    invoke_fused_impl(index_pack<Is...>, F&& f, Tuple&& t)
     {
-        return PIKA_INVOKE(
-            PIKA_FORWARD(F, f), std::get<Is>(PIKA_FORWARD(Tuple, t))...);
+        return PIKA_INVOKE(PIKA_FORWARD(F, f), std::get<Is>(PIKA_FORWARD(Tuple, t))...);
     }
 
     /// Invokes the given callable object f with the content of
@@ -74,13 +70,11 @@ namespace pika::util::detail {
     ///
     /// \note This function is similar to `std::apply` (C++17)
     template <typename F, typename Tuple>
-    constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE
-        typename detail::invoke_fused_result<F, Tuple>::type
-        invoke_fused(F&& f, Tuple&& t)
+    constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE typename detail::invoke_fused_result<F, Tuple>::type
+    invoke_fused(F&& f, Tuple&& t)
     {
         using index_pack = typename detail::fused_index_pack<Tuple>::type;
-        return detail::invoke_fused_impl(
-            index_pack{}, PIKA_FORWARD(F, f), PIKA_FORWARD(Tuple, t));
+        return detail::invoke_fused_impl(index_pack{}, PIKA_FORWARD(F, f), PIKA_FORWARD(Tuple, t));
     }
 
     /// \copydoc invoke_fused
@@ -88,12 +82,10 @@ namespace pika::util::detail {
     /// \tparam R The result type of the function when it's called
     ///           with the content of the given sequenced type.
     template <typename R, typename F, typename Tuple>
-    constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE R invoke_fused_r(
-        F&& f, Tuple&& t)
+    constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE R invoke_fused_r(F&& f, Tuple&& t)
     {
         using index_pack = typename detail::fused_index_pack<Tuple>::type;
         return ::pika::detail::void_guard<R>(),
-               detail::invoke_fused_impl(
-                   index_pack{}, PIKA_FORWARD(F, f), PIKA_FORWARD(Tuple, t));
+               detail::invoke_fused_impl(index_pack{}, PIKA_FORWARD(F, f), PIKA_FORWARD(Tuple, t));
     }
 }    // namespace pika::util::detail

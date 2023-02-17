@@ -20,10 +20,9 @@ namespace pika::threads {
     class PIKA_EXPORT callback_notifier
     {
     public:
-        using on_startstop_type = util::detail::function<void(
-            std::size_t, std::size_t, char const*, char const*)>;
-        using on_error_type = util::detail::function<bool(
-            std::size_t, std::exception_ptr const&)>;
+        using on_startstop_type =
+            util::detail::function<void(std::size_t, std::size_t, char const*, char const*)>;
+        using on_error_type = util::detail::function<bool(std::size_t, std::exception_ptr const&)>;
 
         callback_notifier()
           : on_start_thread_callbacks_()
@@ -32,36 +31,31 @@ namespace pika::threads {
         {
         }
 
-        void on_start_thread(std::size_t local_thread_num,
-            std::size_t global_thread_num, char const* pool_name,
-            char const* postfix) const
+        void on_start_thread(std::size_t local_thread_num, std::size_t global_thread_num,
+            char const* pool_name, char const* postfix) const
         {
             for (auto& callback : on_start_thread_callbacks_)
             {
                 if (callback)
                 {
-                    callback(local_thread_num, global_thread_num, pool_name,
-                        postfix);
+                    callback(local_thread_num, global_thread_num, pool_name, postfix);
                 }
             }
         }
 
-        void on_stop_thread(std::size_t local_thread_num,
-            std::size_t global_thread_num, char const* pool_name,
-            char const* postfix) const
+        void on_stop_thread(std::size_t local_thread_num, std::size_t global_thread_num,
+            char const* pool_name, char const* postfix) const
         {
             for (auto& callback : on_stop_thread_callbacks_)
             {
                 if (callback)
                 {
-                    callback(local_thread_num, global_thread_num, pool_name,
-                        postfix);
+                    callback(local_thread_num, global_thread_num, pool_name, postfix);
                 }
             }
         }
 
-        bool on_error(
-            std::size_t global_thread_num, std::exception_ptr const& e) const
+        bool on_error(std::size_t global_thread_num, std::exception_ptr const& e) const
         {
             if (on_error_)
             {

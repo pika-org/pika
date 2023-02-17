@@ -6,13 +6,13 @@
 
 #include <pika/config.hpp>
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
-#include <pika/functional/bind.hpp>
-#include <pika/init.hpp>
-#include <pika/runtime/config_entry.hpp>
-#include <pika/testing.hpp>
+# include <pika/functional/bind.hpp>
+# include <pika/init.hpp>
+# include <pika/runtime/config_entry.hpp>
+# include <pika/testing.hpp>
 
-#include <atomic>
-#include <string>
+# include <atomic>
+# include <string>
 
 std::atomic<bool> invoked_callback(false);
 
@@ -36,8 +36,8 @@ int pika_main()
     PIKA_TEST(!val.empty());
     PIKA_TEST_EQ(val, std::string("test"));
 
-    pika::set_config_entry_callback("pika.config.entry.test",
-        pika::util::detail::bind(&config_entry_callback));
+    pika::set_config_entry_callback(
+        "pika.config.entry.test", pika::util::detail::bind(&config_entry_callback));
 
     pika::set_config_entry("pika.config.entry.test", "test1");
     PIKA_TEST(invoked_callback.load());

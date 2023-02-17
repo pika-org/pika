@@ -67,10 +67,8 @@ void test_non_unit_stride()
     test(pika::detail::strided_irange(10, 15, 3), std::vector<int>{10, 13});
     test(pika::detail::strided_irange(-10, -12, -3), std::vector<int>{-10});
     test(pika::detail::strided_irange(-10, -13, -3), std::vector<int>{-10});
-    test(
-        pika::detail::strided_irange(-10, -14, -3), std::vector<int>{-10, -13});
-    test(
-        pika::detail::strided_irange(-10, -15, -3), std::vector<int>{-10, -13});
+    test(pika::detail::strided_irange(-10, -14, -3), std::vector<int>{-10, -13});
+    test(pika::detail::strided_irange(-10, -15, -3), std::vector<int>{-10, -13});
 }
 
 int main()

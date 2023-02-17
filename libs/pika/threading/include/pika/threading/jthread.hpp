@@ -21,8 +21,7 @@ namespace pika {
     {
     private:
         template <typename F, typename... Ts>
-        static void
-        invoke(std::false_type, F&& f, stop_token&& /* st */, Ts&&... ts)
+        static void invoke(std::false_type, F&& f, stop_token&& /* st */, Ts&&... ts)
         {
             // started thread does not expect a stop token:
             PIKA_INVOKE(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
@@ -32,8 +31,7 @@ namespace pika {
         static void invoke(std::true_type, F&& f, stop_token&& st, Ts&&... ts)
         {
             // pass the stop_token as first argument to the started thread:
-            PIKA_INVOKE(
-                PIKA_FORWARD(F, f), PIKA_MOVE(st), PIKA_FORWARD(Ts, ts)...);
+            PIKA_INVOKE(PIKA_FORWARD(F, f), PIKA_MOVE(st), PIKA_FORWARD(Ts, ts)...);
         }
 
     public:
@@ -100,23 +98,22 @@ namespace pika {
         //          would be exceeded.
         //
         template <typename F, typename... Ts,
-            typename Enable = typename std::enable_if<
-                !std::is_same<std::decay_t<F>, jthread>::value>::type>
+            typename Enable =
+                typename std::enable_if<!std::is_same<std::decay_t<F>, jthread>::value>::type>
         explicit jthread(F&& f, Ts&&... ts)
           : ssource_{}    // initialize stop_source
           , thread_{
                 // lambda called in the thread
                 [](stop_token st, F&& f, Ts&&... ts) -> void {
                     // perform tasks of the thread
-                    using use_stop_token =
-                        typename std::is_invocable<F, stop_token, Ts...>::type;
+                    using use_stop_token = typename std::is_invocable<F, stop_token, Ts...>::type;
 
-                    jthread::invoke(use_stop_token{}, PIKA_FORWARD(F, f),
-                        PIKA_MOVE(st), PIKA_FORWARD(Ts, ts)...);
+                    jthread::invoke(use_stop_token{}, PIKA_FORWARD(F, f), PIKA_MOVE(st),
+                        PIKA_FORWARD(Ts, ts)...);
                 },
                 // not captured due to possible races if immediately set
                 ssource_.get_token(), PIKA_FORWARD(F, f),    // pass callable
-                PIKA_FORWARD(Ts, ts)...    // pass arguments for callable
+                PIKA_FORWARD(Ts, ts)...                      // pass arguments for callable
             }
         {
         }

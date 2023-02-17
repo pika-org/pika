@@ -38,8 +38,7 @@ void dummy_task(std::size_t n)
     {
         std::this_thread::sleep_for(std::chrono::microseconds(n) / 25);
         auto now = std::chrono::steady_clock::now();
-        auto elapsed =
-            std::chrono::duration_cast<std::chrono::microseconds>(now - start);
+        auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(now - start);
         sleep = (elapsed < std::chrono::microseconds(n));
     } while (sleep);
 }
@@ -51,34 +50,27 @@ inline std::size_t st_rand()
 
 int pika_main(variables_map& vm)
 {
-    auto const sched =
-        pika::threads::detail::get_self_id_data()->get_scheduler_base();
+    auto const sched = pika::threads::detail::get_self_id_data()->get_scheduler_base();
     std::cout << "Scheduler is " << sched->get_description() << std::endl;
-    if (std::string("core-shared_priority_queue_scheduler") ==
-        sched->get_description())
+    if (std::string("core-shared_priority_queue_scheduler") == sched->get_description())
     {
         using ::pika::threads::scheduler_mode;
         std::cout << "Setting shared-priority mode flags" << std::endl;
         sched->add_scheduler_mode(scheduler_mode::enable_stealing |
-            scheduler_mode::enable_stealing_numa |
-            scheduler_mode::assign_work_round_robin |
+            scheduler_mode::enable_stealing_numa | scheduler_mode::assign_work_round_robin |
             scheduler_mode::steal_high_priority_first);
         sched->remove_scheduler_mode(scheduler_mode::assign_work_thread_parent |
-            scheduler_mode::steal_after_local |
-            scheduler_mode::do_background_work |
-            scheduler_mode::reduce_thread_priority |
-            scheduler_mode::delay_exit | scheduler_mode::fast_idle_mode |
-            scheduler_mode::enable_elasticity);
+            scheduler_mode::steal_after_local | scheduler_mode::do_background_work |
+            scheduler_mode::reduce_thread_priority | scheduler_mode::delay_exit |
+            scheduler_mode::fast_idle_mode | scheduler_mode::enable_elasticity);
     }
 
     // setup executors for different task priorities on the pools
     pika::execution::parallel_executor HP_executor(
-        &pika::resource::get_thread_pool("default"),
-        pika::execution::thread_priority::high);
+        &pika::resource::get_thread_pool("default"), pika::execution::thread_priority::high);
 
     pika::execution::parallel_executor NP_executor(
-        &pika::resource::get_thread_pool("default"),
-        pika::execution::thread_priority::default_);
+        &pika::resource::get_thread_pool("default"), pika::execution::thread_priority::default_);
 
     // randomly create normal priority tasks
     // and then a set of HP tasks in periodic bursts
@@ -147,8 +139,7 @@ int pika_main(variables_map& vm)
                                                 [&]() {
                                                     ++hp_task_count;
                                                     dec_counter dec(count_down);
-                                                    dummy_task(
-                                                        std::size_t(hp_m));
+                                                    dummy_task(std::size_t(hp_m));
                                                 },
                                                 "HP task"));
                                     }

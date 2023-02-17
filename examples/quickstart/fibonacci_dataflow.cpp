@@ -45,8 +45,7 @@ pika::future<std::uint64_t> fibonacci(std::uint64_t n)
     pika::future<std::uint64_t> rhs_future = fibonacci(n - 2);
 
     return pika::dataflow(
-        pika::unwrapping(
-            [](std::uint64_t lhs, std::uint64_t rhs) { return lhs + rhs; }),
+        pika::unwrapping([](std::uint64_t lhs, std::uint64_t rhs) { return lhs + rhs; }),
         std::move(lhs_future), std::move(rhs_future));
 }
 
@@ -62,21 +61,19 @@ int pika_main(pika::program_options::variables_map& vm)
 
     if (max_runs == 0)
     {
-        std::cerr
-            << "fibonacci_dataflow: wrong command line argument value for "
-               "option 'n-runs', should not be zero"
-            << std::endl;
+        std::cerr << "fibonacci_dataflow: wrong command line argument value for "
+                     "option 'n-runs', should not be zero"
+                  << std::endl;
         return -1;
     }
 
     threshold = vm["threshold"].as<unsigned int>();
     if (threshold < 2 || threshold > n)
     {
-        std::cerr
-            << "fibonacci_dataflow: wrong command line argument value for "
-               "option 'threshold', should be in between 2 and n-value"
-               ", value specified: "
-            << threshold << std::endl;
+        std::cerr << "fibonacci_dataflow: wrong command line argument value for "
+                     "option 'threshold', should be in between 2 and n-value"
+                     ", value specified: "
+                  << threshold << std::endl;
         return -1;
     }
 
@@ -95,9 +92,7 @@ int pika_main(pika::program_options::variables_map& vm)
             r = fibonacci_serial(n);
         }
 
-        std::uint64_t d =
-            duration_cast<nanoseconds>(high_resolution_clock::now() - start)
-                .count();
+        std::uint64_t d = duration_cast<nanoseconds>(high_resolution_clock::now() - start).count();
         constexpr char const* fmt = "fibonacci_serial({}) == {},"
                                     "elapsed time:,{},[s]\n";
         fmt::print(std::cout, fmt, n, r, d / max_runs);
@@ -117,9 +112,7 @@ int pika_main(pika::program_options::variables_map& vm)
             r = fibonacci(n).get();
         }
 
-        std::uint64_t d =
-            duration_cast<nanoseconds>(high_resolution_clock::now() - start)
-                .count();
+        std::uint64_t d = duration_cast<nanoseconds>(high_resolution_clock::now() - start).count();
         constexpr char const* fmt = "fibonacci_await({}) == {},"
                                     "elapsed time:,{},[s]\n";
         fmt::print(std::cout, fmt, n, r, d / max_runs);
@@ -129,12 +122,11 @@ int pika_main(pika::program_options::variables_map& vm)
 
     if (!executed_one)
     {
-        std::cerr
-            << "fibonacci_dataflow: wrong command line argument value for "
-               "option 'tests', should be either 'all' or a number between "
-               "zero "
-               "and 1, value specified: "
-            << test << std::endl;
+        std::cerr << "fibonacci_dataflow: wrong command line argument value for "
+                     "option 'tests', should be either 'all' or a number between "
+                     "zero "
+                     "and 1, value specified: "
+                  << test << std::endl;
     }
 
     return 0;

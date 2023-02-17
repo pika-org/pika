@@ -9,26 +9,26 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <pika/execution_base/p2300_forward.hpp>
+# include <pika/execution_base/p2300_forward.hpp>
 #else
-#include <pika/concepts/concepts.hpp>
-#include <pika/datastructures/variant.hpp>
-#include <pika/execution_base/completion_scheduler.hpp>
-#include <pika/execution_base/receiver.hpp>
-#include <pika/execution_base/sender.hpp>
-#include <pika/functional/bind_front.hpp>
-#include <pika/functional/detail/tag_fallback_invoke.hpp>
-#include <pika/functional/invoke_fused.hpp>
-#include <pika/type_support/detail/with_result_of.hpp>
-#include <pika/type_support/pack.hpp>
+# include <pika/concepts/concepts.hpp>
+# include <pika/datastructures/variant.hpp>
+# include <pika/execution_base/completion_scheduler.hpp>
+# include <pika/execution_base/receiver.hpp>
+# include <pika/execution_base/sender.hpp>
+# include <pika/functional/bind_front.hpp>
+# include <pika/functional/detail/tag_fallback_invoke.hpp>
+# include <pika/functional/invoke_fused.hpp>
+# include <pika/type_support/detail/with_result_of.hpp>
+# include <pika/type_support/pack.hpp>
 
-#include <atomic>
-#include <cstddef>
-#include <exception>
-#include <optional>
-#include <tuple>
-#include <type_traits>
-#include <utility>
+# include <atomic>
+# include <cstddef>
+# include <exception>
+# include <optional>
+# include <tuple>
+# include <type_traits>
+# include <utility>
 
 namespace pika::schedule_from_detail {
     template <typename Sender, typename Scheduler>
@@ -38,39 +38,34 @@ namespace pika::schedule_from_detail {
     };
 
     template <typename Sender, typename Scheduler>
-    using schedule_from_sender = typename schedule_from_sender_impl<Sender,
-        Scheduler>::schedule_from_sender_type;
+    using schedule_from_sender =
+        typename schedule_from_sender_impl<Sender, Scheduler>::schedule_from_sender_type;
 
     template <typename Sender, typename Scheduler>
-    struct schedule_from_sender_impl<Sender,
-        Scheduler>::schedule_from_sender_type
+    struct schedule_from_sender_impl<Sender, Scheduler>::schedule_from_sender_type
     {
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Sender> predecessor_sender;
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Scheduler> scheduler;
 
-        template <template <typename...> class Tuple,
-            template <typename...> class Variant>
-        using value_types =
-            typename pika::execution::experimental::sender_traits<
-                Sender>::template value_types<Tuple, Variant>;
+        template <template <typename...> class Tuple, template <typename...> class Variant>
+        using value_types = typename pika::execution::experimental::sender_traits<
+            Sender>::template value_types<Tuple, Variant>;
 
         template <template <typename...> class Variant>
         using predecessor_sender_error_types =
-            typename pika::execution::experimental::sender_traits<
-                Sender>::template error_types<Variant>;
+            typename pika::execution::experimental::sender_traits<Sender>::template error_types<
+                Variant>;
 
         using scheduler_sender_type =
-            std::invoke_result_t<pika::execution::experimental::schedule_t,
-                Scheduler>;
+            std::invoke_result_t<pika::execution::experimental::schedule_t, Scheduler>;
         template <template <typename...> class Variant>
-        using scheduler_sender_error_types =
-            typename pika::execution::experimental::sender_traits<
-                scheduler_sender_type>::template error_types<Variant>;
+        using scheduler_sender_error_types = typename pika::execution::experimental::sender_traits<
+            scheduler_sender_type>::template error_types<Variant>;
 
         template <template <typename...> class Variant>
-        using error_types = pika::util::detail::unique_concat_t<
-            predecessor_sender_error_types<Variant>,
-            scheduler_sender_error_types<Variant>>;
+        using error_types =
+            pika::util::detail::unique_concat_t<predecessor_sender_error_types<Variant>,
+                scheduler_sender_error_types<Variant>>;
 
         static constexpr bool sends_done = false;
 
@@ -87,8 +82,8 @@ namespace pika::schedule_from_detail {
                                 std::decay_t<Sender>>))
             // clang-format on
             >
-        friend constexpr auto tag_invoke(
-            pika::execution::experimental::get_completion_scheduler_t<CPO>,
+        friend constexpr auto
+        tag_invoke(pika::execution::experimental::get_completion_scheduler_t<CPO>,
             schedule_from_sender_type const& sender)
         {
             if constexpr (std::is_same_v<std::decay_t<CPO>,
@@ -98,14 +93,14 @@ namespace pika::schedule_from_detail {
             }
             else
             {
-                return pika::execution::experimental::get_completion_scheduler<
-                    CPO>(sender.predecessor_sender);
+                return pika::execution::experimental::get_completion_scheduler<CPO>(
+                    sender.predecessor_sender);
             }
             // This silences a bogus warning from nvcc about no return from
             // a non-void function.
-#if defined(__NVCC__)
+# if defined(__NVCC__)
             __builtin_unreachable();
-#endif
+# endif
         }
 
         template <typename Receiver>
@@ -126,8 +121,7 @@ namespace pika::schedule_from_detail {
             using value_type = pika::util::detail::prepend_t<
                 pika::util::detail::transform_t<
                     typename pika::execution::experimental::sender_traits<
-                        Sender>::template value_types<std::tuple,
-                        pika::detail::variant>,
+                        Sender>::template value_types<std::tuple, pika::detail::variant>,
                     value_types_helper>,
                 pika::detail::monostate>;
             value_type ts;
@@ -137,21 +131,18 @@ namespace pika::schedule_from_detail {
                     predecessor_sender_receiver>;
             sender_operation_state_type sender_os;
 
-            using scheduler_operation_state_type =
-                pika::execution::experimental::connect_result_t<
-                    std::invoke_result_t<
-                        pika::execution::experimental::schedule_t, Scheduler>,
-                    scheduler_sender_receiver>;
+            using scheduler_operation_state_type = pika::execution::experimental::connect_result_t<
+                std::invoke_result_t<pika::execution::experimental::schedule_t, Scheduler>,
+                scheduler_sender_receiver>;
             std::optional<scheduler_operation_state_type> scheduler_op_state;
 
             template <typename Sender_, typename Scheduler_, typename Receiver_>
-            operation_state(Sender_&& predecessor_sender,
-                Scheduler_&& scheduler, Receiver_&& receiver)
+            operation_state(
+                Sender_&& predecessor_sender, Scheduler_&& scheduler, Receiver_&& receiver)
               : scheduler(PIKA_FORWARD(Scheduler_, scheduler))
               , receiver(PIKA_FORWARD(Receiver_, receiver))
               , sender_os(pika::execution::experimental::connect(
-                    PIKA_FORWARD(Sender_, predecessor_sender),
-                    predecessor_sender_receiver{*this}))
+                    PIKA_FORWARD(Sender_, predecessor_sender), predecessor_sender_receiver{*this}))
             {
             }
 
@@ -165,16 +156,13 @@ namespace pika::schedule_from_detail {
                 operation_state& op_state;
 
                 template <typename Error>
-                friend void
-                tag_invoke(pika::execution::experimental::set_error_t,
+                friend void tag_invoke(pika::execution::experimental::set_error_t,
                     predecessor_sender_receiver&& r, Error&& error) noexcept
                 {
-                    r.op_state.set_error_predecessor_sender(
-                        PIKA_FORWARD(Error, error));
+                    r.op_state.set_error_predecessor_sender(PIKA_FORWARD(Error, error));
                 }
 
-                friend void tag_invoke(
-                    pika::execution::experimental::set_stopped_t,
+                friend void tag_invoke(pika::execution::experimental::set_stopped_t,
                     predecessor_sender_receiver&& r) noexcept
                 {
                     r.op_state.set_stopped_predecessor_sender();
@@ -186,30 +174,25 @@ namespace pika::schedule_from_detail {
                 template <typename Tuple>
                 struct value_types_helper
                 {
-                    using type =
-                        pika::util::detail::transform_t<Tuple, std::decay>;
+                    using type = pika::util::detail::transform_t<Tuple, std::decay>;
                 };
 
                 using value_type = pika::util::detail::prepend_t<
                     pika::util::detail::transform_t<
                         typename pika::execution::experimental::sender_traits<
-                            Sender>::template value_types<std::tuple,
-                            pika::detail::variant>,
+                            Sender>::template value_types<std::tuple, pika::detail::variant>,
                         value_types_helper>,
                     pika::detail::monostate>;
 
                 template <typename... Ts>
-                friend auto
-                tag_invoke(pika::execution::experimental::set_value_t,
+                friend auto tag_invoke(pika::execution::experimental::set_value_t,
                     predecessor_sender_receiver&& r, Ts&&... ts) noexcept
                     -> decltype(std::declval<value_type>()
-                                    .template emplace<
-                                        std::tuple<std::decay_t<Ts>...>>(
+                                    .template emplace<std::tuple<std::decay_t<Ts>...>>(
                                         PIKA_FORWARD(Ts, ts)...),
                         void())
                 {
-                    r.op_state.set_value_predecessor_sender(
-                        PIKA_FORWARD(Ts, ts)...);
+                    r.op_state.set_value_predecessor_sender(PIKA_FORWARD(Ts, ts)...);
                 }
             };
 
@@ -228,30 +211,25 @@ namespace pika::schedule_from_detail {
             template <typename... Us>
             void set_value_predecessor_sender(Us&&... us) noexcept
             {
-                ts.template emplace<std::tuple<std::decay_t<Us>...>>(
-                    PIKA_FORWARD(Us, us)...);
-#if defined(PIKA_HAVE_CXX17_COPY_ELISION)
+                ts.template emplace<std::tuple<std::decay_t<Us>...>>(PIKA_FORWARD(Us, us)...);
+# if defined(PIKA_HAVE_CXX17_COPY_ELISION)
                 // with_result_of is used to emplace the operation
                 // state returned from connect without any
                 // intermediate copy construction (the operation
                 // state is not required to be copyable nor movable).
                 scheduler_op_state.emplace(pika::detail::with_result_of([&]() {
                     return pika::execution::experimental::connect(
-                        pika::execution::experimental::schedule(
-                            PIKA_MOVE(scheduler)),
+                        pika::execution::experimental::schedule(PIKA_MOVE(scheduler)),
                         scheduler_sender_receiver{*this});
                 }));
-#else
+# else
                 // MSVC doesn't get copy elision quite right, the operation
                 // state must be constructed explicitly directly in place
-                scheduler_op_state.emplace_f(
-                    pika::execution::experimental::connect,
-                    pika::execution::experimental::schedule(
-                        PIKA_MOVE(scheduler)),
+                scheduler_op_state.emplace_f(pika::execution::experimental::connect,
+                    pika::execution::experimental::schedule(PIKA_MOVE(scheduler)),
                     scheduler_sender_receiver{*this});
-#endif
-                pika::execution::experimental::start(
-                    scheduler_op_state.value());
+# endif
+                pika::execution::experimental::start(scheduler_op_state.value());
             }
 
             struct scheduler_sender_receiver
@@ -259,23 +237,19 @@ namespace pika::schedule_from_detail {
                 operation_state& op_state;
 
                 template <typename Error>
-                friend void
-                tag_invoke(pika::execution::experimental::set_error_t,
+                friend void tag_invoke(pika::execution::experimental::set_error_t,
                     scheduler_sender_receiver&& r, Error&& error) noexcept
                 {
-                    r.op_state.set_error_scheduler_sender(
-                        PIKA_FORWARD(Error, error));
+                    r.op_state.set_error_scheduler_sender(PIKA_FORWARD(Error, error));
                 }
 
-                friend void tag_invoke(
-                    pika::execution::experimental::set_stopped_t,
+                friend void tag_invoke(pika::execution::experimental::set_stopped_t,
                     scheduler_sender_receiver&& r) noexcept
                 {
                     r.op_state.set_stopped_scheduler_sender();
                 }
 
-                friend void tag_invoke(
-                    pika::execution::experimental::set_value_t,
+                friend void tag_invoke(pika::execution::experimental::set_value_t,
                     scheduler_sender_receiver&& r) noexcept
                 {
                     r.op_state.set_value_scheduler_sender();
@@ -292,14 +266,13 @@ namespace pika::schedule_from_detail {
                 }
 
                 template <typename Ts,
-                    typename = std::enable_if_t<!std::is_same_v<
-                        std::decay_t<Ts>, pika::detail::monostate>>>
+                    typename = std::enable_if_t<
+                        !std::is_same_v<std::decay_t<Ts>, pika::detail::monostate>>>
                 void operator()(Ts&& ts)
                 {
                     pika::util::detail::invoke_fused(
                         pika::util::detail::bind_front(
-                            pika::execution::experimental::set_value,
-                            PIKA_MOVE(receiver)),
+                            pika::execution::experimental::set_value, PIKA_MOVE(receiver)),
                         PIKA_FORWARD(Ts, ts));
                 }
             };
@@ -322,20 +295,18 @@ namespace pika::schedule_from_detail {
             {
                 scheduler_op_state.reset();
                 pika::detail::visit(
-                    scheduler_sender_value_visitor{PIKA_MOVE(receiver)},
-                    PIKA_MOVE(ts));
+                    scheduler_sender_value_visitor{PIKA_MOVE(receiver)}, PIKA_MOVE(ts));
             }
 
-            friend void tag_invoke(pika::execution::experimental::start_t,
-                operation_state& os) noexcept
+            friend void tag_invoke(
+                pika::execution::experimental::start_t, operation_state& os) noexcept
             {
                 pika::execution::experimental::start(os.sender_os);
             }
         };
 
         template <typename Receiver>
-        friend operation_state<Receiver>
-        tag_invoke(pika::execution::experimental::connect_t,
+        friend operation_state<Receiver> tag_invoke(pika::execution::experimental::connect_t,
             schedule_from_sender_type&& s, Receiver&& receiver)
         {
             return {PIKA_MOVE(s.predecessor_sender), PIKA_MOVE(s.scheduler),
@@ -343,12 +314,10 @@ namespace pika::schedule_from_detail {
         }
 
         template <typename Receiver>
-        friend operation_state<Receiver>
-        tag_invoke(pika::execution::experimental::connect_t,
+        friend operation_state<Receiver> tag_invoke(pika::execution::experimental::connect_t,
             schedule_from_sender_type const& s, Receiver&& receiver)
         {
-            return {s.predecessor_sender, s.scheduler,
-                PIKA_FORWARD(Receiver, receiver)};
+            return {s.predecessor_sender, s.scheduler, PIKA_FORWARD(Receiver, receiver)};
         }
     };
 }    // namespace pika::schedule_from_detail
@@ -364,12 +333,11 @@ namespace pika::execution::experimental {
                 is_sender_v<Sender>
             )>
         // clang-format on
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            schedule_from_t, Scheduler&& scheduler, Sender&& predecessor_sender)
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(schedule_from_t, Scheduler&& scheduler, Sender&& predecessor_sender)
         {
-            return schedule_from_detail::schedule_from_sender<Sender,
-                Scheduler>{PIKA_FORWARD(Sender, predecessor_sender),
-                PIKA_FORWARD(Scheduler, scheduler)};
+            return schedule_from_detail::schedule_from_sender<Sender, Scheduler>{
+                PIKA_FORWARD(Sender, predecessor_sender), PIKA_FORWARD(Scheduler, scheduler)};
         }
     } schedule_from{};
 }    // namespace pika::execution::experimental

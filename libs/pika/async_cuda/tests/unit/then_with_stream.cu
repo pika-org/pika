@@ -32,8 +32,7 @@ struct const_reference_cuda_sender
     std::reference_wrapper<std::decay_t<T>> x;
     cu::cuda_scheduler sched;
 
-    template <template <class...> class Tuple,
-        template <class...> class Variant>
+    template <template <class...> class Tuple, template <class...> class Variant>
     using value_types = Variant<Tuple<std::decay_t<T> const&>>;
 
     template <template <class...> class Variant>
@@ -41,10 +40,9 @@ struct const_reference_cuda_sender
 
     static constexpr bool sends_done = false;
 
-    using completion_signatures =
-        pika::execution::experimental::completion_signatures<
-            pika::execution::experimental::set_value_t(std::decay_t<T>&),
-            pika::execution::experimental::set_error_t(std::exception_ptr)>;
+    using completion_signatures = pika::execution::experimental::completion_signatures<
+        pika::execution::experimental::set_value_t(std::decay_t<T>&),
+        pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
     template <typename R>
     struct operation_state
@@ -52,24 +50,21 @@ struct const_reference_cuda_sender
         std::reference_wrapper<std::decay_t<T>> const x;
         std::decay_t<R> r;
 
-        friend void tag_invoke(pika::execution::experimental::start_t,
-            operation_state& os) noexcept
+        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
         {
-            pika::execution::experimental::set_value(
-                std::move(os.r), os.x.get());
+            pika::execution::experimental::set_value(std::move(os.r), os.x.get());
         };
     };
 
     template <typename R>
-    friend auto tag_invoke(pika::execution::experimental::connect_t,
-        const_reference_cuda_sender&& s, R&& r)
+    friend auto
+    tag_invoke(pika::execution::experimental::connect_t, const_reference_cuda_sender&& s, R&& r)
     {
         return operation_state<R>{std::move(s.x), std::forward<R>(r)};
     }
 
-    friend cu::cuda_scheduler tag_invoke(
-        pika::execution::experimental::get_completion_scheduler_t<
-            pika::execution::experimental::set_value_t>,
+    friend cu::cuda_scheduler tag_invoke(pika::execution::experimental::get_completion_scheduler_t<
+                                             pika::execution::experimental::set_value_t>,
         const_reference_cuda_sender const& s) noexcept
     {
         return s.sched;
@@ -83,8 +78,7 @@ struct const_reference_error_cuda_sender
     PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
     ~const_reference_error_cuda_sender() = default;
 
-    template <template <class...> class Tuple,
-        template <class...> class Variant>
+    template <template <class...> class Tuple, template <class...> class Variant>
     using value_types = Variant<Tuple<>>;
 
     template <template <class...> class Variant>
@@ -92,18 +86,15 @@ struct const_reference_error_cuda_sender
 
     static constexpr bool sends_done = false;
 
-    using completion_signatures =
-        pika::execution::experimental::completion_signatures<
-            pika::execution::experimental::set_value_t(),
-            pika::execution::experimental::set_error_t(
-                std::exception_ptr const&)>;
+    using completion_signatures = pika::execution::experimental::completion_signatures<
+        pika::execution::experimental::set_value_t(),
+        pika::execution::experimental::set_error_t(std::exception_ptr const&)>;
 
     template <typename R>
     struct operation_state
     {
         std::decay_t<R> r;
-        friend void tag_invoke(pika::execution::experimental::start_t,
-            operation_state& os) noexcept
+        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
         {
             auto const e = std::make_exception_ptr(std::runtime_error("error"));
             pika::execution::experimental::set_error(std::move(os.r), e);
@@ -112,15 +103,13 @@ struct const_reference_error_cuda_sender
 
     template <typename R>
     friend operation_state<R>
-    tag_invoke(pika::execution::experimental::connect_t,
-        const_reference_error_cuda_sender, R&& r)
+    tag_invoke(pika::execution::experimental::connect_t, const_reference_error_cuda_sender, R&& r)
     {
         return {std::forward<R>(r)};
     }
 
-    friend cu::cuda_scheduler tag_invoke(
-        pika::execution::experimental::get_completion_scheduler_t<
-            pika::execution::experimental::set_value_t>,
+    friend cu::cuda_scheduler tag_invoke(pika::execution::experimental::get_completion_scheduler_t<
+                                             pika::execution::experimental::set_value_t>,
         const_reference_error_cuda_sender const& s) noexcept
     {
         return s.sched;
@@ -292,8 +281,7 @@ struct increment
     }
 };
 
-auto non_default_constructible_params(
-    custom_type_non_default_constructible& x, whip::stream_t)
+auto non_default_constructible_params(custom_type_non_default_constructible& x, whip::stream_t)
 {
     return std::move(x);
 }
@@ -312,8 +300,8 @@ int pika_main()
     // Only stream transform
     {
         dummy::reset_counts();
-        auto s = ex::just() | ex::transfer(cu::cuda_scheduler{pool}) |
-            cu::then_with_stream(dummy{});
+        auto s =
+            ex::just() | ex::transfer(cu::cuda_scheduler{pool}) | cu::then_with_stream(dummy{});
         // NOTE: then_with_stream calls triggers the receiver on a plain
         // std::thread. We explicitly change the context back to an pika::thread.
         tt::sync_wait(ex::transfer(std::move(s), ex::thread_pool_scheduler{}));
@@ -343,9 +331,8 @@ int pika_main()
     {
         dummy::reset_counts();
         auto s = ex::just() | ex::transfer(cu::cuda_scheduler(pool)) |
-            cu::then_with_stream(dummy{}) |
-            ex::transfer(ex::thread_pool_scheduler{}) | ex::then(dummy{}) |
-            ex::transfer(cu::cuda_scheduler(pool)) |
+            cu::then_with_stream(dummy{}) | ex::transfer(ex::thread_pool_scheduler{}) |
+            ex::then(dummy{}) | ex::transfer(cu::cuda_scheduler(pool)) |
             cu::then_with_stream(dummy{});
         tt::sync_wait(ex::transfer(std::move(s), ex::thread_pool_scheduler{}));
         PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(1));
@@ -359,8 +346,7 @@ int pika_main()
     {
         dummy::reset_counts();
         auto s = ex::schedule(ex::thread_pool_scheduler{}) | ex::then(dummy{}) |
-            ex::transfer(cu::cuda_scheduler(pool)) |
-            cu::then_with_stream(dummy{}) |
+            ex::transfer(cu::cuda_scheduler(pool)) | cu::then_with_stream(dummy{}) |
             ex::transfer(ex::thread_pool_scheduler{}) | ex::then(dummy{});
         tt::sync_wait(std::move(s));
         PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(2));
@@ -374,11 +360,9 @@ int pika_main()
     // Only stream transform with non-void values
     {
         dummy::reset_counts();
-        auto s = ex::just(1) | ex::transfer(cu::cuda_scheduler{pool}) |
-            cu::then_with_stream(dummy{});
-        PIKA_TEST_EQ(tt::sync_wait(ex::transfer(
-                         std::move(s), ex::thread_pool_scheduler{})),
-            2.0);
+        auto s =
+            ex::just(1) | ex::transfer(cu::cuda_scheduler{pool}) | cu::then_with_stream(dummy{});
+        PIKA_TEST_EQ(tt::sync_wait(ex::transfer(std::move(s), ex::thread_pool_scheduler{})), 2.0);
         PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::host_int_calls.load(), std::size_t(0));
@@ -392,9 +376,7 @@ int pika_main()
         auto s = ex::just(1) | ex::transfer(cu::cuda_scheduler{pool}) |
             cu::then_with_stream(dummy{}) | cu::then_with_stream(dummy{}) |
             cu::then_with_stream(dummy{});
-        PIKA_TEST_EQ(tt::sync_wait(ex::transfer(
-                         std::move(s), ex::thread_pool_scheduler{})),
-            4.0);
+        PIKA_TEST_EQ(tt::sync_wait(ex::transfer(std::move(s), ex::thread_pool_scheduler{})), 4.0);
         PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::host_int_calls.load(), std::size_t(0));
@@ -408,35 +390,24 @@ int pika_main()
         auto s = ex::just(custom_type_non_default_constructible{42}) |
             ex::transfer(cu::cuda_scheduler{pool}) |
             cu::then_with_stream(&non_default_constructible_params);
-        PIKA_TEST_EQ(tt::sync_wait(ex::transfer(std::move(s),
-                                       ex::thread_pool_scheduler{}))
-                         .x,
-            42);
+        PIKA_TEST_EQ(tt::sync_wait(ex::transfer(std::move(s), ex::thread_pool_scheduler{})).x, 42);
     }
 
     {
-        auto s =
-            ex::just(custom_type_non_default_constructible_non_copyable{42}) |
+        auto s = ex::just(custom_type_non_default_constructible_non_copyable{42}) |
             ex::transfer(cu::cuda_scheduler{pool}) |
-            cu::then_with_stream(
-                &non_default_constructible_non_copyable_params);
-        PIKA_TEST_EQ(tt::sync_wait(ex::transfer(std::move(s),
-                                       ex::thread_pool_scheduler{}))
-                         .x,
-            42);
+            cu::then_with_stream(&non_default_constructible_non_copyable_params);
+        PIKA_TEST_EQ(tt::sync_wait(ex::transfer(std::move(s), ex::thread_pool_scheduler{})).x, 42);
     }
 
     // Mixing stream transform with host scheduler with non-void values
     {
         dummy::reset_counts();
         auto s = ex::just(1) | ex::transfer(cu::cuda_scheduler{pool}) |
-            cu::then_with_stream(dummy{}) |
-            ex::transfer(ex::thread_pool_scheduler{}) | ex::then(dummy{}) |
-            ex::transfer(cu::cuda_scheduler{pool}) |
+            cu::then_with_stream(dummy{}) | ex::transfer(ex::thread_pool_scheduler{}) |
+            ex::then(dummy{}) | ex::transfer(cu::cuda_scheduler{pool}) |
             cu::then_with_stream(dummy{});
-        PIKA_TEST_EQ(tt::sync_wait(ex::transfer(
-                         std::move(s), ex::thread_pool_scheduler{})),
-            4.0);
+        PIKA_TEST_EQ(tt::sync_wait(ex::transfer(std::move(s), ex::thread_pool_scheduler{})), 4.0);
         PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::host_int_calls.load(), std::size_t(0));
@@ -447,9 +418,8 @@ int pika_main()
 
     {
         dummy::reset_counts();
-        auto s = ex::just(1) | ex::transfer(ex::thread_pool_scheduler{}) |
-            ex::then(dummy{}) | ex::transfer(cu::cuda_scheduler{pool}) |
-            cu::then_with_stream(dummy{}) |
+        auto s = ex::just(1) | ex::transfer(ex::thread_pool_scheduler{}) | ex::then(dummy{}) |
+            ex::transfer(cu::cuda_scheduler{pool}) | cu::then_with_stream(dummy{}) |
             ex::transfer(ex::thread_pool_scheduler{}) | ex::then(dummy{});
         PIKA_TEST_EQ(tt::sync_wait(std::move(s)), 4.0);
         PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
@@ -463,10 +433,10 @@ int pika_main()
     {
         dummy::reset_counts();
 
-        auto s = ex::transfer_just(ex::thread_pool_scheduler{}, 1) |
-            ex::then(dummy{}) | ex::transfer(cu::cuda_scheduler{pool}) |
-            cu::then_with_stream(dummy{}) | cu::then_with_stream(dummy{}) |
-            ex::transfer(ex::thread_pool_scheduler{}) | ex::then(dummy{});
+        auto s = ex::transfer_just(ex::thread_pool_scheduler{}, 1) | ex::then(dummy{}) |
+            ex::transfer(cu::cuda_scheduler{pool}) | cu::then_with_stream(dummy{}) |
+            cu::then_with_stream(dummy{}) | ex::transfer(ex::thread_pool_scheduler{}) |
+            ex::then(dummy{});
         PIKA_TEST_EQ(tt::sync_wait(std::move(s)), 5.0);
         PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));
@@ -481,25 +451,20 @@ int pika_main()
         whip::stream_t first_stream{};
         whip::stream_t second_stream{};
         tt::sync_wait(ex::schedule(cu::cuda_scheduler{pool}) |
+            cu::then_with_stream([&](whip::stream_t stream) { first_stream = stream; }) |
             cu::then_with_stream(
-                [&](whip::stream_t stream) { first_stream = stream; }) |
-            cu::then_with_stream([&](whip::stream_t stream) {
-                PIKA_TEST_EQ(stream, first_stream);
-            }) |
-            cu::then_with_stream([&](whip::stream_t stream) {
-                PIKA_TEST_EQ(stream, first_stream);
-            }) |
+                [&](whip::stream_t stream) { PIKA_TEST_EQ(stream, first_stream); }) |
+            cu::then_with_stream(
+                [&](whip::stream_t stream) { PIKA_TEST_EQ(stream, first_stream); }) |
             ex::transfer(cu::cuda_scheduler{pool}) |
             cu::then_with_stream([&](whip::stream_t stream) {
                 PIKA_TEST_NEQ(stream, first_stream);
                 second_stream = stream;
             }) |
-            cu::then_with_stream([&](whip::stream_t stream) {
-                PIKA_TEST_EQ(stream, second_stream);
-            }) |
-            cu::then_with_stream([&](whip::stream_t stream) {
-                PIKA_TEST_EQ(stream, second_stream);
-            }));
+            cu::then_with_stream(
+                [&](whip::stream_t stream) { PIKA_TEST_EQ(stream, second_stream); }) |
+            cu::then_with_stream(
+                [&](whip::stream_t stream) { PIKA_TEST_EQ(stream, second_stream); }));
     }
 
     {
@@ -510,21 +475,14 @@ int pika_main()
         whip::malloc(&p, sizeof(type));
 
         auto s = ex::just(p, &p_h, sizeof(type), whip::memcpy_host_to_device) |
-            ex::transfer(cu::cuda_scheduler{pool}) |
-            cu::then_with_stream(whip::memcpy_async) |
-            ex::transfer(ex::thread_pool_scheduler{}) |
-            ex::then([p] { return p; }) |
-            ex::transfer(cu::cuda_scheduler{pool}) |
-            cu::then_with_stream(increment{}) |
-            cu::then_with_stream(increment{}) |
-            cu::then_with_stream(increment{});
-        tt::sync_wait(
-            ex::when_all(ex::just(&p_h), std::move(s), ex::just(sizeof(type)),
-                ex::just(whip::memcpy_device_to_host)) |
-            ex::transfer(cu::cuda_scheduler{pool}) |
-            cu::then_with_stream(whip::memcpy_async) |
-            ex::transfer(ex::thread_pool_scheduler{}) |
-            ex::then([&p_h] { PIKA_TEST_EQ(p_h, 3); }) |
+            ex::transfer(cu::cuda_scheduler{pool}) | cu::then_with_stream(whip::memcpy_async) |
+            ex::transfer(ex::thread_pool_scheduler{}) | ex::then([p] { return p; }) |
+            ex::transfer(cu::cuda_scheduler{pool}) | cu::then_with_stream(increment{}) |
+            cu::then_with_stream(increment{}) | cu::then_with_stream(increment{});
+        tt::sync_wait(ex::when_all(ex::just(&p_h), std::move(s), ex::just(sizeof(type)),
+                          ex::just(whip::memcpy_device_to_host)) |
+            ex::transfer(cu::cuda_scheduler{pool}) | cu::then_with_stream(whip::memcpy_async) |
+            ex::transfer(ex::thread_pool_scheduler{}) | ex::then([&p_h] { PIKA_TEST_EQ(p_h, 3); }) |
             ex::transfer(ex::thread_pool_scheduler{}));
 
         whip::free(p);
@@ -533,12 +491,11 @@ int pika_main()
     // cuBLAS and cuSOLVER
     {
         dummy::reset_counts();
-        auto s = ex::just(1) | ex::transfer(ex::thread_pool_scheduler{}) |
-            ex::then(dummy{}) | ex::transfer(cu::cuda_scheduler{pool}) |
-            cu::then_with_stream(dummy{}) |
+        auto s = ex::just(1) | ex::transfer(ex::thread_pool_scheduler{}) | ex::then(dummy{}) |
+            ex::transfer(cu::cuda_scheduler{pool}) | cu::then_with_stream(dummy{}) |
             cu::then_with_cublas(dummy{}, CUBLAS_POINTER_MODE_HOST) |
-            cu::then_with_cusolver(dummy{}) |
-            ex::transfer(ex::thread_pool_scheduler{}) | ex::then(dummy{});
+            cu::then_with_cusolver(dummy{}) | ex::transfer(ex::thread_pool_scheduler{}) |
+            ex::then(dummy{});
         PIKA_TEST_EQ(tt::sync_wait(std::move(s)), 6);
         PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));
@@ -566,12 +523,11 @@ int pika_main()
 
     {
         dummy::reset_counts();
-        auto s = ex::just(1) | ex::transfer(ex::thread_pool_scheduler{}) |
-            ex::then(dummy{}) | ex::transfer(cu::cuda_scheduler{pool}) |
-            cu::then_with_stream(dummy{}) | cu::then_on_host(dummy{}) |
-            cu::then_with_cublas(dummy{}, CUBLAS_POINTER_MODE_HOST) |
-            cu::then_with_cusolver(dummy{}) |
-            ex::transfer(ex::thread_pool_scheduler{}) | ex::then(dummy{});
+        auto s = ex::just(1) | ex::transfer(ex::thread_pool_scheduler{}) | ex::then(dummy{}) |
+            ex::transfer(cu::cuda_scheduler{pool}) | cu::then_with_stream(dummy{}) |
+            cu::then_on_host(dummy{}) | cu::then_with_cublas(dummy{}, CUBLAS_POINTER_MODE_HOST) |
+            cu::then_with_cusolver(dummy{}) | ex::transfer(ex::thread_pool_scheduler{}) |
+            ex::then(dummy{});
         PIKA_TEST_EQ(tt::sync_wait(std::move(s)), 7.0);
         PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));
@@ -601,9 +557,9 @@ int pika_main()
     // them to the operation state)
     {
         int x = 42;
-        auto result = tt::sync_wait(cu::then_with_stream(
-            const_reference_cuda_sender<int>{x, cu::cuda_scheduler{pool}},
-            [](int& x, whip::stream_t) { return x + 1; }));
+        auto result = tt::sync_wait(
+            cu::then_with_stream(const_reference_cuda_sender<int>{x, cu::cuda_scheduler{pool}},
+                [](int& x, whip::stream_t) { return x + 1; }));
         PIKA_TEST_EQ(result, 43);
     }
 
@@ -611,9 +567,9 @@ int pika_main()
         bool exception_thrown = false;
         try
         {
-            tt::sync_wait(cu::then_with_stream(
-                const_reference_error_cuda_sender{cu::cuda_scheduler{pool}},
-                [](whip::stream_t) { PIKA_TEST(false); }));
+            tt::sync_wait(
+                cu::then_with_stream(const_reference_error_cuda_sender{cu::cuda_scheduler{pool}},
+                    [](whip::stream_t) { PIKA_TEST(false); }));
         }
         catch (std::runtime_error const& e)
         {
@@ -628,8 +584,7 @@ int pika_main()
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0, "pika main exited with non-zero status");
 
     return 0;
 }

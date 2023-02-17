@@ -25,38 +25,31 @@ namespace pika::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Action>
-    struct sync_launch_policy_dispatch<Action,
-        std::enable_if_t<!detail::is_action_v<Action>>>
+    struct sync_launch_policy_dispatch<Action, std::enable_if_t<!detail::is_action_v<Action>>>
     {
         // general case execute on separate thread (except launch::sync)
         template <typename F, typename... Ts>
-        PIKA_FORCEINLINE static pika::util::detail::invoke_deferred_result_t<F,
-            Ts...>
+        PIKA_FORCEINLINE static pika::util::detail::invoke_deferred_result_t<F, Ts...>
         call(launch policy, F&& f, Ts&&... ts)
         {
-            using result_type =
-                util::detail::invoke_deferred_result_t<F, Ts...>;
+            using result_type = util::detail::invoke_deferred_result_t<F, Ts...>;
 
             if (policy == launch::sync)
             {
-                return call(
-                    launch::sync, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
+                return call(launch::sync, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
             }
 
             lcos::local::futures_factory<result_type()> p(
-                util::detail::deferred_call(
-                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
+                util::detail::deferred_call(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
 
             if (pika::detail::has_async_policy(policy))
             {
-                threads::detail::thread_id_ref_type tid =
-                    p.apply(policy, policy.priority());
+                threads::detail::thread_id_ref_type tid = p.apply(policy, policy.priority());
                 if (tid && policy == launch::fork)
                 {
                     // make sure this thread is executed last
                     // yield_to
-                    pika::this_thread::suspend(
-                        threads::detail::thread_schedule_state::pending,
+                    pika::this_thread::suspend(threads::detail::thread_schedule_state::pending,
                         tid.noref(), "sync_launch_policy_dispatch<fork>");
                 }
             }
@@ -66,8 +59,7 @@ namespace pika::detail {
 
         // launch::sync execute inline
         template <typename F, typename... Ts>
-        PIKA_FORCEINLINE static pika::util::detail::invoke_deferred_result_t<F,
-            Ts...>
+        PIKA_FORCEINLINE static pika::util::detail::invoke_deferred_result_t<F, Ts...>
         call(launch::sync_policy, F&& f, Ts&&... ts)
         {
             try

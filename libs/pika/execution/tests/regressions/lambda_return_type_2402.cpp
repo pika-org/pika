@@ -22,16 +22,15 @@ int pika_main()
     auto zip_it_begin = pika::util::make_zip_iterator(large.begin());
     auto zip_it_end = pika::util::make_zip_iterator(large.end());
 
-    pika::for_each(
-        pika::execution::par_simd, zip_it_begin, zip_it_end, [](auto t) {
-            using comp_type = typename std::tuple_element<0, decltype(t)>::type;
-            using var_type = std::decay_t<comp_type>;
+    pika::for_each(pika::execution::par_simd, zip_it_begin, zip_it_end, [](auto t) {
+        using comp_type = typename std::tuple_element<0, decltype(t)>::type;
+        using var_type = std::decay_t<comp_type>;
 
-            var_type mass_density = 0.0;
-            mass_density(mass_density > 0.0) = 7.0;
+        var_type mass_density = 0.0;
+        mass_density(mass_density > 0.0) = 7.0;
 
-            PIKA_TEST(all_of(mass_density == 0.0));
-        });
+        PIKA_TEST(all_of(mass_density == 0.0));
+    });
 
     return pika::finalize();    // Handles pika shutdown
 }

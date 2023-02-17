@@ -71,15 +71,13 @@ namespace pika::functional::detail {
     /// `pika::functional::detail::is_tag_invocable_v<Tag, Args...>` evaluates to
     /// `pika::functional::detail::is_tag_invocable<Tag, Args...>::value`
     template <typename Tag, typename... Args>
-    constexpr bool is_nothrow_tag_invocable_v =
-        is_nothrow_tag_invocable<Tag, Args...>::value;
+    constexpr bool is_nothrow_tag_invocable_v = is_nothrow_tag_invocable<Tag, Args...>::value;
 
     /// `pika::functional::detail::tag_invoke_result<Tag, Args...>` is the trait
     /// returning the result type of the call pika::functional::detail::tag_invoke. This
     /// can be used in a SFINAE context.
     template <typename Tag, typename... Args>
-    using tag_invoke_result =
-        std::invoke_result<decltype(tag_invoke), Tag, Args...>;
+    using tag_invoke_result = std::invoke_result<decltype(tag_invoke), Tag, Args...>;
 
     /// `pika::functional::detail::tag_invoke_result_t<Tag, Args...>` evaluates to
     /// `pika::functional::detail::tag_invoke_result_t<Tag, Args...>::type`
@@ -99,10 +97,10 @@ namespace pika::functional::detail {
 }    // namespace pika::functional::detail
 #else
 
-#include <pika/config.hpp>
+# include <pika/config.hpp>
 
-#include <type_traits>
-#include <utility>
+# include <type_traits>
+# include <utility>
 
 namespace pika::functional::detail {
     template <auto& Tag>
@@ -116,11 +114,9 @@ namespace pika::functional::detail {
         {
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename Tag, typename... Ts>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
-            operator()(Tag tag, Ts&&... ts) const noexcept(noexcept(
-                tag_invoke(std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...)))
-                -> decltype(tag_invoke(
-                    std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...))
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(Tag tag, Ts&&... ts) const
+                noexcept(noexcept(tag_invoke(std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...)))
+                    -> decltype(tag_invoke(std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...))
             {
                 return tag_invoke(tag, PIKA_FORWARD(Ts, ts)...);
             }
@@ -138,21 +134,19 @@ namespace pika::functional::detail {
     }    // namespace tag_invoke_t_ns
 
     namespace tag_invoke_ns {
-#if !defined(PIKA_COMPUTE_DEVICE_CODE)
+# if !defined(PIKA_COMPUTE_DEVICE_CODE)
         inline constexpr tag_invoke_t_ns::tag_invoke_t tag_invoke = {};
-#else
+# else
         PIKA_DEVICE static tag_invoke_t_ns::tag_invoke_t const tag_invoke = {};
-#endif
+# endif
     }    // namespace tag_invoke_ns
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Tag, typename... Args>
-    using is_tag_invocable =
-        std::is_invocable<decltype(tag_invoke_ns::tag_invoke), Tag, Args...>;
+    using is_tag_invocable = std::is_invocable<decltype(tag_invoke_ns::tag_invoke), Tag, Args...>;
 
     template <typename Tag, typename... Args>
-    inline constexpr bool is_tag_invocable_v =
-        is_tag_invocable<Tag, Args...>::value;
+    inline constexpr bool is_tag_invocable_v = is_tag_invocable<Tag, Args...>::value;
 
     namespace detail {
         template <typename Sig, bool Dispatchable>
@@ -164,11 +158,10 @@ namespace pika::functional::detail {
         };
 
         template <typename Tag, typename... Args>
-        struct is_nothrow_tag_invocable_impl<
-            decltype(tag_invoke_ns::tag_invoke)(Tag, Args...), true>
+        struct is_nothrow_tag_invocable_impl<decltype(tag_invoke_ns::tag_invoke)(Tag, Args...),
+            true>
           : std::integral_constant<bool,
-                noexcept(tag_invoke_ns::tag_invoke(
-                    std::declval<Tag>(), std::declval<Args>()...))>
+                noexcept(tag_invoke_ns::tag_invoke(std::declval<Tag>(), std::declval<Args>()...))>
         {
         };
     }    // namespace detail
@@ -178,29 +171,26 @@ namespace pika::functional::detail {
     // correctly check this condition. We default to the more relaxed
     // noexcept(true) to not falsely exclude correct overloads. However, this
     // may lead to noexcept(false) overloads falsely being candidates.
-#if defined(__NVCC__) && defined(PIKA_CUDA_VERSION) &&                         \
-    (PIKA_CUDA_VERSION < 1102)
+# if defined(__NVCC__) && defined(PIKA_CUDA_VERSION) && (PIKA_CUDA_VERSION < 1102)
     template <typename Tag, typename... Args>
     struct is_nothrow_tag_invocable : is_tag_invocable<Tag, Args...>
     {
     };
-#else
+# else
     template <typename Tag, typename... Args>
     struct is_nothrow_tag_invocable
-      : detail::is_nothrow_tag_invocable_impl<
-            decltype(tag_invoke_ns::tag_invoke)(Tag, Args...),
+      : detail::is_nothrow_tag_invocable_impl<decltype(tag_invoke_ns::tag_invoke)(Tag, Args...),
             is_tag_invocable_v<Tag, Args...>>
     {
     };
-#endif
+# endif
 
     template <typename Tag, typename... Args>
     inline constexpr bool is_nothrow_tag_invocable_v =
         is_nothrow_tag_invocable<Tag, Args...>::value;
 
     template <typename Tag, typename... Args>
-    using tag_invoke_result =
-        std::invoke_result<decltype(tag_invoke_ns::tag_invoke), Tag, Args...>;
+    using tag_invoke_result = std::invoke_result<decltype(tag_invoke_ns::tag_invoke), Tag, Args...>;
 
     template <typename Tag, typename... Args>
     using tag_invoke_result_t = typename tag_invoke_result<Tag, Args...>::type;
@@ -217,13 +207,11 @@ namespace pika::functional::detail {
         {
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
-            operator()(Args&&... args) const
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(Args&&... args) const
                 noexcept(is_nothrow_tag_invocable_v<Tag, Args...>)
                     -> tag_invoke_result_t<Tag, Args...>
             {
-                return tag_invoke(static_cast<Tag const&>(*this),
-                    PIKA_FORWARD(Args, args)...);
+                return tag_invoke(static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
             }
         };
 
@@ -232,14 +220,11 @@ namespace pika::functional::detail {
         {
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args,
-                typename Enable =
-                    std::enable_if_t<is_nothrow_tag_invocable_v<Tag, Args...>>>
+                typename Enable = std::enable_if_t<is_nothrow_tag_invocable_v<Tag, Args...>>>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
-            operator()(Args&&... args) const noexcept
-                -> tag_invoke_result_t<Tag, decltype(args)...>
+            operator()(Args&&... args) const noexcept -> tag_invoke_result_t<Tag, decltype(args)...>
             {
-                return tag_invoke(static_cast<Tag const&>(*this),
-                    PIKA_FORWARD(Args, args)...);
+                return tag_invoke(static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
             }
         };
     }    // namespace tag_base_ns

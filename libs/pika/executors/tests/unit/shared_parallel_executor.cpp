@@ -22,8 +22,7 @@
 struct shared_parallel_executor
 {
     template <typename F, typename... Ts>
-    pika::shared_future<std::invoke_result_t<F, Ts...>>
-    async_execute(F&& f, Ts&&... ts)
+    pika::shared_future<std::invoke_result_t<F, Ts...>> async_execute(F&& f, Ts&&... ts)
     {
         return pika::async(std::forward<F>(f), std::forward<Ts>(ts)...);
     }
@@ -48,8 +47,8 @@ void test_sync()
     using executor = shared_parallel_executor;
 
     executor exec;
-    PIKA_TEST(pika::parallel::execution::sync_execute(exec, &test, 42) !=
-        pika::this_thread::get_id());
+    PIKA_TEST(
+        pika::parallel::execution::sync_execute(exec, &test, 42) != pika::this_thread::get_id());
 }
 
 void test_async()
@@ -102,13 +101,11 @@ void test_bulk_async()
     using std::placeholders::_2;
 
     executor exec;
-    std::vector<pika::shared_future<void>> futs =
-        pika::parallel::execution::bulk_async_execute(
-            exec, pika::util::detail::bind(&bulk_test, _1, tid, _2), v, 42);
+    std::vector<pika::shared_future<void>> futs = pika::parallel::execution::bulk_async_execute(
+        exec, pika::util::detail::bind(&bulk_test, _1, tid, _2), v, 42);
     pika::when_all(futs).get();
 
-    futs = pika::parallel::execution::bulk_async_execute(
-        exec, &bulk_test, v, tid, 42);
+    futs = pika::parallel::execution::bulk_async_execute(exec, &bulk_test, v, tid, 42);
     pika::when_all(futs).get();
 }
 
@@ -131,8 +128,7 @@ void test_async_void()
     using executor = shared_parallel_executor;
 
     executor exec;
-    pika::shared_future<void> fut =
-        pika::parallel::execution::async_execute(exec, &void_test, 42);
+    pika::shared_future<void> fut = pika::parallel::execution::async_execute(exec, &void_test, 42);
     fut.get();
 }
 
@@ -159,8 +155,8 @@ int main(int argc, char* argv[])
     pika::init_params init_args;
     init_args.cfg = cfg;
 
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(
+        pika::init(pika_main, argc, argv, init_args), 0, "pika main exited with non-zero status");
 
     return 0;
 }

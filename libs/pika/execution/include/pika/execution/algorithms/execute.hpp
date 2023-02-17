@@ -9,18 +9,17 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <pika/execution_base/p2300_forward.hpp>
+# include <pika/execution_base/p2300_forward.hpp>
 #else
-#include <pika/execution/algorithms/start_detached.hpp>
-#include <pika/execution/algorithms/then.hpp>
-#include <pika/execution_base/sender.hpp>
-#include <pika/functional/detail/tag_fallback_invoke.hpp>
+# include <pika/execution/algorithms/start_detached.hpp>
+# include <pika/execution/algorithms/then.hpp>
+# include <pika/execution_base/sender.hpp>
+# include <pika/functional/detail/tag_fallback_invoke.hpp>
 
-#include <utility>
+# include <utility>
 
 namespace pika::execution::experimental {
-    inline constexpr struct execute_t final
-      : pika::functional::detail::tag_fallback<execute_t>
+    inline constexpr struct execute_t final : pika::functional::detail::tag_fallback<execute_t>
     {
     private:
         template <typename Scheduler, typename F>
@@ -28,8 +27,7 @@ namespace pika::execution::experimental {
         tag_fallback_invoke(execute_t, Scheduler&& scheduler, F&& f)
         {
             return start_detached(
-                then(schedule(PIKA_FORWARD(Scheduler, scheduler)),
-                    PIKA_FORWARD(F, f)));
+                then(schedule(PIKA_FORWARD(Scheduler, scheduler)), PIKA_FORWARD(F, f)));
         }
     } execute{};
 }    // namespace pika::execution::experimental

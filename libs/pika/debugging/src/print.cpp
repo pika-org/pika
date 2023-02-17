@@ -45,35 +45,24 @@ namespace NS_DEBUG {
     template <typename Int>
     PIKA_EXPORT void print_dec(std::ostream& os, Int const& v, int N)
     {
-        os << std::right << std::setfill('0') << std::setw(N) << std::noshowbase
-           << std::dec << v;
+        os << std::right << std::setfill('0') << std::setw(N) << std::noshowbase << std::dec << v;
     }
 
     template PIKA_EXPORT void print_dec(std::ostream&, bool const&, int);
-    template PIKA_EXPORT void print_dec(
-        std::ostream&, std::int16_t const&, int);
-    template PIKA_EXPORT void print_dec(
-        std::ostream&, std::uint16_t const&, int);
-    template PIKA_EXPORT void print_dec(
-        std::ostream&, std::int32_t const&, int);
-    template PIKA_EXPORT void print_dec(
-        std::ostream&, std::uint32_t const&, int);
-    template PIKA_EXPORT void print_dec(
-        std::ostream&, std::int64_t const&, int);
-    template PIKA_EXPORT void print_dec(
-        std::ostream&, std::uint64_t const&, int);
+    template PIKA_EXPORT void print_dec(std::ostream&, std::int16_t const&, int);
+    template PIKA_EXPORT void print_dec(std::ostream&, std::uint16_t const&, int);
+    template PIKA_EXPORT void print_dec(std::ostream&, std::int32_t const&, int);
+    template PIKA_EXPORT void print_dec(std::ostream&, std::uint32_t const&, int);
+    template PIKA_EXPORT void print_dec(std::ostream&, std::int64_t const&, int);
+    template PIKA_EXPORT void print_dec(std::ostream&, std::uint64_t const&, int);
 #if defined(__APPLE__)
     // Explicit instantiation necessary to solve undefined symbol for MacOS
-    template PIKA_EXPORT void print_dec(
-        std::ostream&, unsigned long const&, int);
+    template PIKA_EXPORT void print_dec(std::ostream&, unsigned long const&, int);
 #endif
 
-    template PIKA_EXPORT void print_dec(
-        std::ostream&, std::atomic<int> const&, int);
-    template PIKA_EXPORT void print_dec(
-        std::ostream&, std::atomic<unsigned int> const&, int);
-    template PIKA_EXPORT void print_dec(
-        std::ostream&, std::atomic<unsigned long> const&, int);
+    template PIKA_EXPORT void print_dec(std::ostream&, std::atomic<int> const&, int);
+    template PIKA_EXPORT void print_dec(std::ostream&, std::atomic<unsigned int> const&, int);
+    template PIKA_EXPORT void print_dec(std::ostream&, std::atomic<unsigned long> const&, int);
 
     // ------------------------------------------------------------------
     // format as pointer
@@ -90,8 +79,7 @@ namespace NS_DEBUG {
 
     std::ostream& operator<<(std::ostream& os, ptr const& d)
     {
-        os << std::internal << std::hex << std::setw(10) << std::setfill('0')
-           << d.data_;
+        os << std::internal << std::hex << std::setw(10) << std::setfill('0') << d.data_;
         return os;
     }
 
@@ -101,8 +89,8 @@ namespace NS_DEBUG {
     template <typename Int>
     void print_hex(std::ostream& os, Int v, int N)
     {
-        os << std::right << "0x" << std::setfill('0') << std::setw(N)
-           << std::noshowbase << std::hex << v;
+        os << std::right << "0x" << std::setfill('0') << std::setw(N) << std::noshowbase << std::hex
+           << v;
     }
 
     template PIKA_EXPORT void print_hex(std::ostream&, std::thread::id, int);
@@ -172,8 +160,8 @@ namespace NS_DEBUG {
 
     std::ostream& operator<<(std::ostream& os, ipaddr const& p)
     {
-        os << std::dec << int(p.data_[0]) << "." << int(p.data_[1]) << "."
-           << int(p.data_[2]) << "." << int(p.data_[3]);
+        os << std::dec << int(p.data_[0]) << "." << int(p.data_[1]) << "." << int(p.data_[2]) << "."
+           << int(p.data_[3]);
         return os;
     }
 
@@ -182,13 +170,11 @@ namespace NS_DEBUG {
     // ------------------------------------------------------------------
     std::ostream& operator<<(std::ostream& os, current_time_print_helper const&)
     {
-        static std::chrono::steady_clock::time_point log_t_start =
-            std::chrono::steady_clock::now();
+        static std::chrono::steady_clock::time_point log_t_start = std::chrono::steady_clock::now();
 
         auto now = std::chrono::steady_clock::now();
-        auto nowt = std::chrono::duration_cast<std::chrono::microseconds>(
-            now - log_t_start)
-                        .count();
+        auto nowt =
+            std::chrono::duration_cast<std::chrono::microseconds>(now - log_t_start).count();
 
         os << dec<10>(nowt) << " ";
         return os;
@@ -233,15 +219,13 @@ namespace NS_DEBUG {
 
     std::ostream& operator<<(std::ostream& os, mem_crc32 const& p)
     {
-        std::uint64_t const* uintBuf =
-            static_cast<std::uint64_t const*>(p.addr_);
+        std::uint64_t const* uintBuf = static_cast<std::uint64_t const*>(p.addr_);
         os << "Memory:";
         os << " address " << ptr(p.addr_) << " length " << hex<6>(p.len_)
            << " CRC32:" << hex<8>(detail::crc32(p.addr_, p.len_)) << "\n";
 
-        for (std::size_t i = 0; i <
-             (std::min)(size_t(std::ceil(static_cast<double>(p.len_) / 8.0)),
-                 std::size_t(128));
+        for (std::size_t i = 0;
+             i < (std::min)(size_t(std::ceil(static_cast<double>(p.len_) / 8.0)), std::size_t(128));
              i++)
         {
             os << hex<16>(*uintBuf++) << " ";
@@ -301,15 +285,13 @@ namespace NS_DEBUG {
 
     ///////////////////////////////////////////////////////////////////////
     template <typename T>
-    PIKA_EXPORT void
-    print_array(std::string const& name, T const* data, std::size_t size)
+    PIKA_EXPORT void print_array(std::string const& name, T const* data, std::size_t size)
     {
         std::cout << str<20>(name.c_str()) << ": {" << dec<4>(size) << "} : ";
         std::copy(data, data + size, std::ostream_iterator<T>(std::cout, ", "));
         std::cout << "\n";
     }
 
-    template PIKA_EXPORT void print_array(
-        std::string const&, std::size_t const*, std::size_t);
+    template PIKA_EXPORT void print_array(std::string const&, std::size_t const*, std::size_t);
 }    // namespace NS_DEBUG
 /// \endcond

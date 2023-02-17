@@ -66,8 +66,7 @@ int main()
 
     {
         std::atomic<bool> set_value_called{false};
-        auto s = ex::then(
-            ex::just(42), [](auto i) { return i + 1; });    // generic lambda
+        auto s = ex::then(ex::just(42), [](auto i) { return i + 1; });    // generic lambda
         auto f = [](int x) { PIKA_TEST_EQ(x, 43); };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));
@@ -78,8 +77,7 @@ int main()
     {
         std::atomic<bool> set_value_called{false};
         int x = 42;
-        auto s = ex::then(const_reference_sender<decltype(x)>{x},
-            [](int i) { return i + 1; });
+        auto s = ex::then(const_reference_sender<decltype(x)>{x}, [](int i) { return i + 1; });
         auto f = [](int x) { PIKA_TEST_EQ(x, 43); };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));
@@ -103,8 +101,7 @@ int main()
 
     {
         std::atomic<bool> set_value_called{false};
-        auto s = ex::then(
-            ex::just(custom_type_non_default_constructible_non_copyable{0}),
+        auto s = ex::then(ex::just(custom_type_non_default_constructible_non_copyable{0}),
             [](custom_type_non_default_constructible_non_copyable&& x) {
                 ++(x.x);
                 return std::move(x);
@@ -134,8 +131,7 @@ int main()
         auto s1 = ex::then(ex::just(), []() { return 3; });
         auto s2 = ex::then(std::move(s1), [](int x) { return x / 1.5; });
         auto s3 = ex::then(std::move(s2), [](double x) { return x / 2; });
-        auto s4 =
-            ex::then(std::move(s3), [](int x) { return std::to_string(x); });
+        auto s4 = ex::then(std::move(s3), [](int x) { return std::to_string(x); });
         auto f = [](std::string x) { PIKA_TEST_EQ(x, std::string("1")); };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
         auto os = ex::connect(std::move(s4), std::move(r));
@@ -147,8 +143,7 @@ int main()
     {
         std::atomic<bool> set_value_called{false};
         auto s = ex::just() | ex::then([]() { return 3; }) |
-            ex::then([](int x) { return x / 1.5; }) |
-            ex::then([](double x) { return x / 2; }) |
+            ex::then([](int x) { return x / 1.5; }) | ex::then([](double x) { return x / 2; }) |
             ex::then([](int x) { return std::to_string(x); });
         auto f = [](std::string x) { PIKA_TEST_EQ(x, std::string("1")); };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
@@ -163,8 +158,8 @@ int main()
         std::atomic<bool> tag_invoke_overload_called{false};
         std::atomic<bool> custom_transformer_call_operator_called{false};
         auto s = ex::then(ex::just(),
-            custom_transformer{tag_invoke_overload_called,
-                custom_transformer_call_operator_called, false});
+            custom_transformer{
+                tag_invoke_overload_called, custom_transformer_call_operator_called, false});
         auto f = [] {};
         auto r = callback_receiver<decltype(f)>{f, receiver_set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));
@@ -177,8 +172,7 @@ int main()
     // Failure path
     {
         std::atomic<bool> set_error_called{false};
-        auto s =
-            ex::then(ex::just(), [] { throw std::runtime_error("error"); });
+        auto s = ex::then(ex::just(), [] { throw std::runtime_error("error"); });
         auto r = error_callback_receiver<decltype(check_exception_ptr)>{
             check_exception_ptr, set_error_called};
         auto os = ex::connect(std::move(s), std::move(r));
@@ -223,8 +217,8 @@ int main()
         std::atomic<bool> tag_invoke_overload_called{false};
         std::atomic<bool> custom_transformer_call_operator_called{false};
         auto s = ex::then(ex::just(),
-            custom_transformer{tag_invoke_overload_called,
-                custom_transformer_call_operator_called, true});
+            custom_transformer{
+                tag_invoke_overload_called, custom_transformer_call_operator_called, true});
         auto r = error_callback_receiver<decltype(check_exception_ptr)>{
             check_exception_ptr, receiver_set_error_called};
         auto os = ex::connect(std::move(s), std::move(r));

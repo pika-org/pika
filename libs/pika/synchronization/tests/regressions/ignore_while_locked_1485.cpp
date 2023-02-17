@@ -29,8 +29,8 @@ struct wait_for_flag
     {
     }
 
-    void wait(pika::spinlock& local_mutex,
-        pika::condition_variable_any& local_cond_var, bool& running)
+    void wait(
+        pika::spinlock& local_mutex, pika::condition_variable_any& local_cond_var, bool& running)
     {
         bool first = true;
         while (!flag)
@@ -68,8 +68,8 @@ void test_condition_with_mutex()
     pika::spinlock local_mutex;
     pika::condition_variable_any local_cond_var;
 
-    pika::thread thread(&wait_for_flag::wait, std::ref(data),
-        std::ref(local_mutex), std::ref(local_cond_var), std::ref(running));
+    pika::thread thread(&wait_for_flag::wait, std::ref(data), std::ref(local_mutex),
+        std::ref(local_cond_var), std::ref(running));
 
     // wait for the thread to run
     {
@@ -102,8 +102,7 @@ int pika_main()
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0, "pika main exited with non-zero status");
 
     return 0;
 }

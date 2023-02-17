@@ -119,8 +119,7 @@ namespace tests {
         };
 
         template <typename T>
-        struct is_incrementable<T, std::void_t<decltype(++std::declval<T&>())>>
-          : std::true_type
+        struct is_incrementable<T, std::void_t<decltype(++std::declval<T&>())>> : std::true_type
         {
         };
 
@@ -130,8 +129,8 @@ namespace tests {
         };
 
         template <typename T>
-        struct is_postfix_incrementable<T,
-            std::void_t<decltype(std::declval<T&>()++)>> : std::true_type
+        struct is_postfix_incrementable<T, std::void_t<decltype(std::declval<T&>()++)>>
+          : std::true_type
         {
         };
     }    // namespace traits
@@ -166,8 +165,7 @@ namespace tests {
 
         readable_iterator_traversal_test(i1, v,
             typename std::integral_constant<bool,
-                tests::traits::is_postfix_incrementable<Iterator>::value>::
-                type());
+                tests::traits::is_postfix_incrementable<Iterator>::value>::type());
 
         // I think we don't really need this as it checks the same things as
         // the above code.
@@ -366,8 +364,7 @@ namespace tests {
         {
             PIKA_TEST(i == k - c);
             PIKA_TEST(*i == vals[N - 1 - c]);
-            typename std::iterator_traits<Iterator>::value_type x =
-                j[N - 1 - c];
+            typename std::iterator_traits<Iterator>::value_type x = j[N - 1 - c];
             PIKA_TEST(*i == x);
             Iterator q = k - c;
             PIKA_TEST(*i == *q);
@@ -449,11 +446,9 @@ namespace tests {
         Iterator i2(i);    // Copy Constructible
         *i2 = v;
 
-        writable_iterator_traversal_test(i, v2,
-            typename std::integral_constant < bool,
+        writable_iterator_traversal_test(i, v2, typename std::integral_constant < bool,
             tests::traits::is_incrementable<Iterator>::value&&
-                    tests::traits::is_postfix_incrementable<Iterator>::value >
-                ());
+                    tests::traits::is_postfix_incrementable<Iterator>::value > ());
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -537,10 +532,7 @@ namespace tests {
         using pointer = const T*;
         using difference_type = std::ptrdiff_t;
         input_iterator_archetype_no_proxy() {}
-        input_iterator_archetype_no_proxy(
-            input_iterator_archetype_no_proxy const&)
-        {
-        }
+        input_iterator_archetype_no_proxy(input_iterator_archetype_no_proxy const&) {}
         self& operator=(const self&)
         {
             return *this;

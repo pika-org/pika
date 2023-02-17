@@ -30,8 +30,7 @@ namespace pika::concurrency::detail {
 
     // Computes the padding required to fill up a full cache line after
     // data_size bytes.
-    constexpr std::size_t get_cache_line_padding_size(
-        std::size_t data_size) noexcept
+    constexpr std::size_t get_cache_line_padding_size(std::size_t data_size) noexcept
     {
         return (get_cache_line_size() - (data_size % get_cache_line_size())) %
             get_cache_line_size();
@@ -55,8 +54,7 @@ namespace pika::concurrency::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     // special struct to ensure cache line alignment of a data type
-    template <typename Data,
-        typename NeedsPadding = typename detail::needs_padding<Data>::type>
+    template <typename Data, typename NeedsPadding = typename detail::needs_padding<Data>::type>
     struct cache_aligned_data
     {
         // We have an explicit (non-default) constructor here to avoid for
@@ -106,8 +104,7 @@ namespace pika::concurrency::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     // special struct to ensure cache line alignment of a data type
-    template <typename Data,
-        typename NeedsPadding = typename detail::needs_padding<Data>::type>
+    template <typename Data, typename NeedsPadding = typename detail::needs_padding<Data>::type>
     struct cache_aligned_data_derived : Data
     {
         // We have an explicit (non-default) constructor here to avoid for

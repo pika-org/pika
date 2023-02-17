@@ -20,8 +20,7 @@
 #include <vector>
 
 namespace pika::resource::detail {
-    PIKA_EXPORT partitioner& create_partitioner(
-        resource::partitioner_mode rpmode, pika::util::section rtcfg,
-        pika::detail::affinity_data affinity_data);
+    PIKA_EXPORT partitioner& create_partitioner(resource::partitioner_mode rpmode,
+        pika::util::section rtcfg, pika::detail::affinity_data affinity_data);
 
 }    // namespace pika::resource::detail

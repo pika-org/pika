@@ -65,8 +65,7 @@ void threadLoop()
     // launch tasks on threads using numbering 0,1,2,3...0,1,2,3
     for (std::size_t i = 0; i < iterations; ++i)
     {
-        auto exec = pika::execution::parallel_executor(
-            pika::execution::thread_priority::bound,
+        auto exec = pika::execution::parallel_executor(pika::execution::thread_priority::bound,
             pika::execution::thread_stacksize::default_,
             pika::execution::thread_schedule_hint(std::int16_t(i % threads)));
         pika::async(exec, f, i, (i % threads)).get();
@@ -75,22 +74,20 @@ void threadLoop()
     do
     {
         pika::this_thread::yield();
-        pika::deb_schbin.debug(pika::debug::detail::str<15>("count_down"),
-            pika::debug::detail::dec<4>(count_down));
+        pika::deb_schbin.debug(
+            pika::debug::detail::str<15>("count_down"), pika::debug::detail::dec<4>(count_down));
     } while (count_down > 0);
 
-    pika::deb_schbin.debug(pika::debug::detail::str<15>("complete"),
-        pika::debug::detail::dec<4>(count_down));
+    pika::deb_schbin.debug(
+        pika::debug::detail::str<15>("complete"), pika::debug::detail::dec<4>(count_down));
     PIKA_TEST_EQ(count_down, 0);
 }
 
 int pika_main()
 {
-    auto const current =
-        pika::threads::detail::get_self_id_data()->get_scheduler_base();
+    auto const current = pika::threads::detail::get_self_id_data()->get_scheduler_base();
     std::cout << "Scheduler is " << current->get_description() << std::endl;
-    if (std::string("core-shared_priority_queue_scheduler") !=
-        current->get_description())
+    if (std::string("core-shared_priority_queue_scheduler") != current->get_description())
     {
         std::cout << "The scheduler might not work properly " << std::endl;
     }
@@ -106,11 +103,9 @@ int main(int argc, char* argv[])
 {
     pika::init_params init_args;
 
-    init_args.rp_callback = [](auto& rp,
-                                pika::program_options::variables_map const&) {
+    init_args.rp_callback = [](auto& rp, pika::program_options::variables_map const&) {
         // setup the default pool with a numa/binding aware scheduler
-        rp.create_thread_pool("default",
-            pika::resource::scheduling_policy::shared_priority,
+        rp.create_thread_pool("default", pika::resource::scheduling_policy::shared_priority,
             pika::threads::scheduler_mode::default_mode);
     };
 

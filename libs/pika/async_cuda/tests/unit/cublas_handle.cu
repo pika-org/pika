@@ -12,8 +12,8 @@
 #include <utility>
 
 #if defined(PIKA_HAVE_HIP)
-#define cublasSasum rocblas_sasum
-#define CUBLAS_STATUS_NOT_INITIALIZED rocblas_status_invalid_handle
+# define cublasSasum rocblas_sasum
+# define CUBLAS_STATUS_NOT_INITIALIZED rocblas_status_invalid_handle
 #endif
 
 namespace cu = pika::cuda::experimental;
@@ -132,14 +132,12 @@ int main()
 
         try
         {
-            cu::check_cublas_error(
-                cublasSetPointerMode(handle.get(), CUBLAS_POINTER_MODE_HOST));
+            cu::check_cublas_error(cublasSetPointerMode(handle.get(), CUBLAS_POINTER_MODE_HOST));
             PIKA_TEST(false);
         }
         catch (cu::cublas_exception const& e)
         {
-            PIKA_TEST_EQ(
-                e.get_cublas_errorcode(), CUBLAS_STATUS_NOT_INITIALIZED);
+            PIKA_TEST_EQ(e.get_cublas_errorcode(), CUBLAS_STATUS_NOT_INITIALIZED);
         }
         catch (...)
         {

@@ -54,16 +54,14 @@ namespace pika::traits {
         };
 
         template <typename Future>
-        using shared_state_ptr_result_t =
-            typename shared_state_ptr_result<Future>::type;
+        using shared_state_ptr_result_t = typename shared_state_ptr_result<Future>::type;
 
         ///////////////////////////////////////////////////////////////////////
         template <typename R>
         struct shared_state_ptr
         {
             using result_type = shared_state_ptr_result_t<R>;
-            using type = pika::intrusive_ptr<
-                lcos::detail::future_data_base<result_type>>;
+            using type = pika::intrusive_ptr<lcos::detail::future_data_base<result_type>>;
         };
 
         template <typename Future>
@@ -71,8 +69,7 @@ namespace pika::traits {
 
         ///////////////////////////////////////////////////////////////////////
         template <typename Future, typename Enable = void>
-        struct shared_state_ptr_for
-          : shared_state_ptr<typename traits::future_traits<Future>::type>
+        struct shared_state_ptr_for : shared_state_ptr<typename traits::future_traits<Future>::type>
         {
         };
 
@@ -94,13 +91,11 @@ namespace pika::traits {
         template <typename Future>
         struct shared_state_ptr_for<std::vector<Future>>
         {
-            using type =
-                std::vector<typename shared_state_ptr_for<Future>::type>;
+            using type = std::vector<typename shared_state_ptr_for<Future>::type>;
         };
 
         template <typename Future>
-        using shared_state_ptr_for_t =
-            typename shared_state_ptr_for<Future>::type;
+        using shared_state_ptr_for_t = typename shared_state_ptr_for<Future>::type;
 
         ///////////////////////////////////////////////////////////////////////
         template <typename SharedState, typename Allocator>
@@ -114,8 +109,7 @@ namespace pika::traits {
     };
 
     template <typename R>
-    struct is_shared_state<
-        pika::intrusive_ptr<lcos::detail::future_data_base<R>>> : std::true_type
+    struct is_shared_state<pika::intrusive_ptr<lcos::detail::future_data_base<R>>> : std::true_type
     {
     };
 
@@ -137,67 +131,60 @@ namespace pika::traits {
     struct future_access<pika::future<R>>
     {
         template <typename SharedState>
-        static pika::future<R>
-        create(pika::intrusive_ptr<SharedState> const& shared_state)
+        static pika::future<R> create(pika::intrusive_ptr<SharedState> const& shared_state)
         {
             return pika::future<R>(shared_state);
         }
 
         template <typename T = void>
-        static pika::future<R> create(
-            detail::shared_state_ptr_for_t<pika::future<pika::future<R>>> const&
-                shared_state)
+        static pika::future<R>
+        create(detail::shared_state_ptr_for_t<pika::future<pika::future<R>>> const& shared_state)
         {
             return pika::future<pika::future<R>>(shared_state);
         }
 
         template <typename SharedState>
-        static pika::future<R>
-        create(pika::intrusive_ptr<SharedState>&& shared_state)
+        static pika::future<R> create(pika::intrusive_ptr<SharedState>&& shared_state)
         {
             return pika::future<R>(PIKA_MOVE(shared_state));
         }
 
         template <typename T = void>
         static pika::future<R>
-        create(detail::shared_state_ptr_for_t<pika::future<pika::future<R>>>&&
-                shared_state)
+        create(detail::shared_state_ptr_for_t<pika::future<pika::future<R>>>&& shared_state)
         {
             return pika::future<pika::future<R>>(PIKA_MOVE(shared_state));
         }
 
         template <typename SharedState>
-        static pika::future<R>
-        create(SharedState* shared_state, bool addref = true)
+        static pika::future<R> create(SharedState* shared_state, bool addref = true)
         {
-            return pika::future<R>(
-                pika::intrusive_ptr<SharedState>(shared_state, addref));
+            return pika::future<R>(pika::intrusive_ptr<SharedState>(shared_state, addref));
         }
 
-        PIKA_FORCEINLINE static traits::detail::shared_state_ptr_t<R> const&
-        get_shared_state(pika::future<R> const& f)
+        PIKA_FORCEINLINE static traits::detail::shared_state_ptr_t<R> const& get_shared_state(
+            pika::future<R> const& f)
         {
             return f.shared_state_;
         }
 
-        PIKA_FORCEINLINE static
-            typename traits::detail::shared_state_ptr_t<R>::element_type*
-            detach_shared_state(pika::future<R>&& f)
+        PIKA_FORCEINLINE static typename traits::detail::shared_state_ptr_t<R>::element_type*
+        detach_shared_state(pika::future<R>&& f)
         {
             return f.shared_state_.detach();
         }
 
     private:
         template <typename Destination>
-        PIKA_FORCEINLINE static void transfer_result_impl(
-            pika::future<R>&& src, Destination& dest, std::false_type)
+        PIKA_FORCEINLINE static void
+        transfer_result_impl(pika::future<R>&& src, Destination& dest, std::false_type)
         {
             dest.set_value(src.get());
         }
 
         template <typename Destination>
-        PIKA_FORCEINLINE static void transfer_result_impl(
-            pika::future<R>&& src, Destination& dest, std::true_type)
+        PIKA_FORCEINLINE static void
+        transfer_result_impl(pika::future<R>&& src, Destination& dest, std::true_type)
         {
             src.get();
             dest.set_value(util::detail::unused);
@@ -205,8 +192,7 @@ namespace pika::traits {
 
     public:
         template <typename Destination>
-        PIKA_FORCEINLINE static void
-        transfer_result(pika::future<R>&& src, Destination& dest)
+        PIKA_FORCEINLINE static void transfer_result(pika::future<R>&& src, Destination& dest)
         {
             transfer_result_impl(PIKA_MOVE(src), dest, std::is_void<R>{});
         }
@@ -216,66 +202,61 @@ namespace pika::traits {
     struct future_access<pika::shared_future<R>>
     {
         template <typename SharedState>
-        static pika::shared_future<R>
-        create(pika::intrusive_ptr<SharedState> const& shared_state)
+        static pika::shared_future<R> create(pika::intrusive_ptr<SharedState> const& shared_state)
         {
             return pika::shared_future<R>(shared_state);
         }
 
         template <typename T = void>
-        static pika::shared_future<R> create(detail::shared_state_ptr_for_t<
-            pika::shared_future<pika::future<R>>> const& shared_state)
+        static pika::shared_future<R>
+        create(detail::shared_state_ptr_for_t<pika::shared_future<pika::future<R>>> const&
+                shared_state)
         {
             return pika::shared_future<pika::future<R>>(shared_state);
         }
 
         template <typename SharedState>
-        static pika::shared_future<R>
-        create(pika::intrusive_ptr<SharedState>&& shared_state)
+        static pika::shared_future<R> create(pika::intrusive_ptr<SharedState>&& shared_state)
         {
             return pika::shared_future<R>(PIKA_MOVE(shared_state));
         }
 
         template <typename T = void>
-        static pika::shared_future<R> create(detail::shared_state_ptr_for_t<
-            pika::shared_future<pika::future<R>>>&& shared_state)
+        static pika::shared_future<R>
+        create(detail::shared_state_ptr_for_t<pika::shared_future<pika::future<R>>>&& shared_state)
         {
-            return pika::shared_future<pika::future<R>>(
-                PIKA_MOVE(shared_state));
+            return pika::shared_future<pika::future<R>>(PIKA_MOVE(shared_state));
         }
 
         template <typename SharedState>
-        static pika::shared_future<R>
-        create(SharedState* shared_state, bool addref = true)
+        static pika::shared_future<R> create(SharedState* shared_state, bool addref = true)
         {
-            return pika::shared_future<R>(
-                pika::intrusive_ptr<SharedState>(shared_state, addref));
+            return pika::shared_future<R>(pika::intrusive_ptr<SharedState>(shared_state, addref));
         }
 
-        PIKA_FORCEINLINE static traits::detail::shared_state_ptr_t<R> const&
-        get_shared_state(pika::shared_future<R> const& f)
+        PIKA_FORCEINLINE static traits::detail::shared_state_ptr_t<R> const& get_shared_state(
+            pika::shared_future<R> const& f)
         {
             return f.shared_state_;
         }
 
-        PIKA_FORCEINLINE static
-            typename traits::detail::shared_state_ptr_t<R>::element_type*
-            detach_shared_state(pika::shared_future<R> const& f)
+        PIKA_FORCEINLINE static typename traits::detail::shared_state_ptr_t<R>::element_type*
+        detach_shared_state(pika::shared_future<R> const& f)
         {
             return f.shared_state_.get();
         }
 
     private:
         template <typename Destination>
-        PIKA_FORCEINLINE static void transfer_result_impl(
-            pika::shared_future<R>&& src, Destination& dest, std::false_type)
+        PIKA_FORCEINLINE static void
+        transfer_result_impl(pika::shared_future<R>&& src, Destination& dest, std::false_type)
         {
             dest.set_value(src.get());
         }
 
         template <typename Destination>
-        PIKA_FORCEINLINE static void transfer_result_impl(
-            pika::shared_future<R>&& src, Destination& dest, std::true_type)
+        PIKA_FORCEINLINE static void
+        transfer_result_impl(pika::shared_future<R>&& src, Destination& dest, std::true_type)
         {
             src.get();
             dest.set_value(util::detail::unused);
@@ -292,12 +273,10 @@ namespace pika::traits {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename SharedState, typename Allocator>
-    struct shared_state_allocator
-      : detail::shared_state_allocator<SharedState, Allocator>
+    struct shared_state_allocator : detail::shared_state_allocator<SharedState, Allocator>
     {
     };
 
     template <typename SharedState, typename Allocator>
-    using shared_state_allocator_t =
-        typename shared_state_allocator<SharedState, Allocator>::type;
+    using shared_state_allocator_t = typename shared_state_allocator<SharedState, Allocator>::type;
 }    // namespace pika::traits

@@ -24,8 +24,7 @@ void test_exception_from_continuation1()
 
     pika::future<void> f2 = f1.then([](pika::future<void>&& f1) {
         PIKA_TEST(f1.has_value());
-        PIKA_THROW_EXCEPTION(
-            pika::error::invalid_status, "lambda", "testing exceptions");
+        PIKA_THROW_EXCEPTION(pika::error::invalid_status, "lambda", "testing exceptions");
     });
 
     p.set_value();
@@ -47,16 +46,14 @@ void test_exception_from_continuation2()
     results.push_back(p.get_future());
     for (std::size_t i = 0; i != NUM_FUTURES; ++i)
     {
-        results.push_back(
-            results.back().then([&](pika::shared_future<void>&& f) {
-                ++recursion_level;
+        results.push_back(results.back().then([&](pika::shared_future<void>&& f) {
+            ++recursion_level;
 
-                f.get();    // rethrow, if has exception
+            f.get();    // rethrow, if has exception
 
-                ++exceptions_thrown;
-                PIKA_THROW_EXCEPTION(pika::error::invalid_status, "lambda",
-                    "testing exceptions");
-            }));
+            ++exceptions_thrown;
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "lambda", "testing exceptions");
+        }));
     }
 
     // make futures ready in backwards sequence

@@ -55,17 +55,16 @@ private:
             // One stager per OS-thread.
             for (std::uint64_t n = 0; n < this->osthreads_; ++n)
 #if _OPENMP >= 200805
-#pragma omp task untied
+# pragma omp task untied
 #endif
                 for (std::uint64_t m = 0; m < this->tasks_; ++m)
 #if _OPENMP >= 200805
-#pragma omp task untied
+# pragma omp task untied
 #endif
-                    htts2::payload<BaseClock>(
-                        this->payload_duration_ /* = p */);
+                    htts2::payload<BaseClock>(this->payload_duration_ /* = p */);
 
 #if _OPENMP >= 200805
-#pragma omp taskwait
+# pragma omp taskwait
 #endif
 
             // w_M [nanoseconds]
@@ -80,15 +79,14 @@ private:
     void print_results(results_type results) const
     {
         if (this->io_ == htts2::csv_with_headers)
-            std::cout
-                << "OS-threads (Independent Variable),"
-                << "Tasks per OS-thread (Control Variable) [tasks/OS-threads],"
-                << "Payload Duration (Control Variable) [nanoseconds],"
-                << "Total Walltime [nanoseconds]"
-                << "\n";
+            std::cout << "OS-threads (Independent Variable),"
+                      << "Tasks per OS-thread (Control Variable) [tasks/OS-threads],"
+                      << "Payload Duration (Control Variable) [nanoseconds],"
+                      << "Total Walltime [nanoseconds]"
+                      << "\n";
 
-        fmt::print(std::cout, "{},{},{},{:.14g}\n", this->osthreads_,
-            this->tasks_, this->payload_duration_, results);
+        fmt::print(std::cout, "{},{},{},{:.14g}\n", this->osthreads_, this->tasks_,
+            this->payload_duration_, results);
     }
 };
 

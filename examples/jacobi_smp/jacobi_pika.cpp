@@ -19,8 +19,8 @@
 
 namespace jacobi_smp {
 
-    void jacobi_kernel_wrap(range const& y_range, std::size_t n,
-        std::vector<double>& dst, std::vector<double> const& src)
+    void jacobi_kernel_wrap(range const& y_range, std::size_t n, std::vector<double>& dst,
+        std::vector<double> const& src)
     {
         for (std::size_t y = y_range.begin(); y < y_range.end(); ++y)
         {
@@ -40,13 +40,11 @@ namespace jacobi_smp {
 
         using deps_vector = std::vector<pika::shared_future<void>>;
 
-        std::size_t n_block = static_cast<std::size_t>(std::ceil(
-            static_cast<double>(n) / static_cast<double>(block_size)));
+        std::size_t n_block = static_cast<std::size_t>(
+            std::ceil(static_cast<double>(n) / static_cast<double>(block_size)));
 
-        std::shared_ptr<deps_vector> deps_new(
-            new deps_vector(n_block, pika::make_ready_future()));
-        std::shared_ptr<deps_vector> deps_old(
-            new deps_vector(n_block, pika::make_ready_future()));
+        std::shared_ptr<deps_vector> deps_new(new deps_vector(n_block, pika::make_ready_future()));
+        std::shared_ptr<deps_vector> deps_old(new deps_vector(n_block, pika::make_ready_future()));
 
         pika::chrono::detail::high_resolution_timer t;
         for (std::size_t i = 0; i < iterations; ++i)
@@ -81,9 +79,8 @@ namespace jacobi_smp {
                 (*deps_new)[j] =
                     pika::when_all(std::move(trigger))
                         .then(pika::launch::async,
-                            pika::util::detail::bind(jacobi_kernel_wrap,
-                                range(y, y_end), n, std::ref(*grid_new),
-                                std::cref(*grid_old)));
+                            pika::util::detail::bind(jacobi_kernel_wrap, range(y, y_end), n,
+                                std::ref(*grid_new), std::cref(*grid_old)));
             }
 
             std::swap(grid_new, grid_old);

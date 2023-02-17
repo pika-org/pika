@@ -84,14 +84,12 @@ namespace pika::util::detail {
         return leaf;
     }
     template <std::size_t I, typename T>
-    static constexpr T const&
-    member_get(member_leaf<I, T, false> const& leaf) noexcept
+    static constexpr T const& member_get(member_leaf<I, T, false> const& leaf) noexcept
     {
         return leaf.member;
     }
     template <std::size_t I, typename T>
-    static constexpr T const&
-    member_get(member_leaf<I, T, true> const& leaf) noexcept
+    static constexpr T const& member_get(member_leaf<I, T, true> const& leaf) noexcept
     {
         return leaf;
     }
@@ -109,8 +107,7 @@ namespace pika::util::detail {
 
         template <typename... Us>
         explicit constexpr member_pack(std::piecewise_construct_t, Us&&... us)
-          : member_leaf<Is, Ts>(
-                std::piecewise_construct, PIKA_FORWARD(Us, us))...
+          : member_leaf<Is, Ts>(std::piecewise_construct, PIKA_FORWARD(Us, us))...
         {
         }
 
@@ -139,7 +136,6 @@ namespace pika::util::detail {
     };
 
     template <typename... Ts>
-    using member_pack_for =
-        member_pack<util::detail::make_index_pack_t<sizeof...(Ts)>, Ts...>;
+    using member_pack_for = member_pack<util::detail::make_index_pack_t<sizeof...(Ts)>, Ts...>;
 
 }    // namespace pika::util::detail

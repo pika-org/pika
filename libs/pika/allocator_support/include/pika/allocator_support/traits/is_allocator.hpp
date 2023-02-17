@@ -51,15 +51,14 @@ namespace pika::detail {
         using pointer = decltype(std::declval<T>().allocate(0));
 
         template <typename Alloc, typename Pointer>
-        static auto test(Alloc&& a, Pointer&& p)
-            -> decltype(a.deallocate(p, 0), std::true_type());
+        static auto test(Alloc&& a, Pointer&& p) -> decltype(a.deallocate(p, 0), std::true_type());
 
         template <typename Alloc, typename Pointer>
         static auto test(Alloc const& a, Pointer&& p) -> std::false_type;
 
     public:
-        static constexpr bool value = decltype(test<T>(
-            std::declval<T>(), std::declval<pointer>()))::value;
+        static constexpr bool value =
+            decltype(test<T>(std::declval<T>(), std::declval<pointer>()))::value;
     };
 
     template <typename T>
@@ -72,8 +71,7 @@ namespace pika::detail {
     template <typename T>
     struct is_allocator
       : std::integral_constant<bool,
-            has_value_type<T>::value && has_allocate<T>::value &&
-                has_deallocate<T>::value>
+            has_value_type<T>::value && has_allocate<T>::value && has_deallocate<T>::value>
     {
     };
 

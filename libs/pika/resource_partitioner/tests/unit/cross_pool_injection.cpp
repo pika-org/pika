@@ -60,17 +60,14 @@ int pika_main()
     // print partition characteristics
     pika::threads::get_thread_manager().print_pools(std::cout);
 
-    auto const sched =
-        pika::threads::detail::get_self_id_data()->get_scheduler_base();
-    if (std::string("core-shared_priority_queue_scheduler") ==
-        sched->get_description())
+    auto const sched = pika::threads::detail::get_self_id_data()->get_scheduler_base();
+    if (std::string("core-shared_priority_queue_scheduler") == sched->get_description())
     {
         using ::pika::threads::scheduler_mode;
-        sched->add_scheduler_mode(scheduler_mode::assign_work_thread_parent |
-            scheduler_mode::steal_after_local);
+        sched->add_scheduler_mode(
+            scheduler_mode::assign_work_thread_parent | scheduler_mode::steal_after_local);
         sched->remove_scheduler_mode(scheduler_mode::enable_stealing |
-            scheduler_mode::enable_stealing_numa |
-            scheduler_mode::assign_work_round_robin |
+            scheduler_mode::enable_stealing_numa | scheduler_mode::assign_work_round_robin |
             scheduler_mode::steal_high_priority_first);
     }
 
@@ -80,8 +77,8 @@ int pika_main()
     for (std::size_t i = 0; i < num_pools; ++i)
     {
         std::string pool_name = "pool-" + std::to_string(i);
-        HP_executors.emplace_back(&pika::resource::get_thread_pool(pool_name),
-            pika::execution::thread_priority::high);
+        HP_executors.emplace_back(
+            &pika::resource::get_thread_pool(pool_name), pika::execution::thread_priority::high);
         NP_executors.emplace_back(&pika::resource::get_thread_pool(pool_name),
             pika::execution::thread_priority::default_);
     }
@@ -199,8 +196,7 @@ int pika_main()
 }
 
 void init_resource_partitioner_handler(pika::resource::partitioner& rp,
-    pika::program_options::variables_map const&,
-    pika::resource::scheduling_policy policy)
+    pika::program_options::variables_map const&, pika::resource::scheduling_policy policy)
 {
     num_pools = 0;
 
@@ -226,15 +222,12 @@ void init_resource_partitioner_handler(pika::resource::partitioner& rp,
                 if (threads_in_pool == 0)
                 {
                     // pick a random number of threads less than the max
-                    threads_in_pool = 1 +
-                        st_rand(
-                            0, ((std::max)(std::size_t(1), max_threads / 2)));
+                    threads_in_pool = 1 + st_rand(0, ((std::max)(std::size_t(1), max_threads / 2)));
                     pool_name = "pool-" + std::to_string(num_pools);
                     rp.create_thread_pool(pool_name, policy);
                     num_pools++;
                 }
-                std::cout << "Added pu " << p.id() << " to " << pool_name
-                          << "\n";
+                std::cout << "Added pu " << p.id() << " to " << pool_name << "\n";
                 rp.add_resource(p, pool_name);
                 threads_in_pool--;
                 if (threads_remaining-- == 0)
@@ -246,12 +239,11 @@ void init_resource_partitioner_handler(pika::resource::partitioner& rp,
     }
 }
 
-void test_scheduler(
-    int argc, char* argv[], pika::resource::scheduling_policy scheduler)
+void test_scheduler(int argc, char* argv[], pika::resource::scheduling_policy scheduler)
 {
     pika::init_params init_args;
-    init_args.rp_callback = pika::util::detail::bind_back(
-        init_resource_partitioner_handler, scheduler);
+    init_args.rp_callback =
+        pika::util::detail::bind_back(init_resource_partitioner_handler, scheduler);
     PIKA_TEST_EQ(pika::init(pika_main, argc, argv, init_args), 0);
 }
 

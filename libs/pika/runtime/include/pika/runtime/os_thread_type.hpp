@@ -34,8 +34,8 @@ namespace pika {
     /// internally
     struct os_thread_data
     {
-        std::string label_;     ///< name used for thread registration
-        std::thread::id id_;    ///< thread id of corresponding kernel thread
+        std::string label_;              ///< name used for thread registration
+        std::thread::id id_;             ///< thread id of corresponding kernel thread
         std::uint64_t native_handle_;    ///< the threads native handle
         os_thread_type type_;            ///< pika thread type
     };

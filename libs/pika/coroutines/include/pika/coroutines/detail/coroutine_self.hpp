@@ -69,12 +69,10 @@ namespace pika::threads::coroutines::detail {
     public:
         using thread_id_type = pika::threads::detail::thread_id;
 
-        using result_type =
-            std::pair<threads::detail::thread_schedule_state, thread_id_type>;
+        using result_type = std::pair<threads::detail::thread_schedule_state, thread_id_type>;
         using arg_type = threads::detail::thread_restart_state;
 
-        using yield_decorator_type =
-            util::detail::function<arg_type(result_type)>;
+        using yield_decorator_type = util::detail::function<arg_type(result_type)>;
 
         explicit coroutine_self(coroutine_self* next_self)
           : next_self_(next_self)
@@ -83,9 +81,8 @@ namespace pika::threads::coroutines::detail {
 
         arg_type yield(result_type arg = result_type())
         {
-            return !yield_decorator_.empty() ?
-                yield_decorator_(PIKA_MOVE(arg)) :
-                yield_impl(PIKA_MOVE(arg));
+            return !yield_decorator_.empty() ? yield_decorator_(PIKA_MOVE(arg)) :
+                                               yield_impl(PIKA_MOVE(arg));
         }
 
         template <typename F>
@@ -166,8 +163,7 @@ namespace pika::threads::coroutines::detail {
     struct reset_self_on_exit
     {
         // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-        reset_self_on_exit(
-            coroutine_self* val, coroutine_self* old_val = nullptr)
+        reset_self_on_exit(coroutine_self* val, coroutine_self* old_val = nullptr)
           // NOLINTEND(bugprone-easily-swappable-parameters)
           : old_self(old_val)
         {

@@ -24,9 +24,7 @@ namespace pika::detail {
     {
         command_line_handling(pika::util::runtime_configuration rtcfg,
             std::vector<std::string> ini_config,
-            util::detail::function<int(
-                pika::program_options::variables_map& vm)>
-                pika_main_f)
+            util::detail::function<int(pika::program_options::variables_map& vm)> pika_main_f)
           : rtcfg_(rtcfg)
           , ini_config_(ini_config)
           // NOLINTNEXTLINE(bugprone-throw-keyword-missing)
@@ -43,15 +41,14 @@ namespace pika::detail {
         {
         }
 
-        int call(pika::program_options::options_description const& desc_cmdline,
-            int argc, const char* const* argv);
+        int call(pika::program_options::options_description const& desc_cmdline, int argc,
+            const char* const* argv);
 
         pika::program_options::variables_map vm_;
         pika::util::runtime_configuration rtcfg_;
 
         std::vector<std::string> ini_config_;
-        util::detail::function<int(pika::program_options::variables_map& vm)>
-            pika_main_f_;
+        util::detail::function<int(pika::program_options::variables_map& vm)> pika_main_f_;
 
         std::size_t num_threads_;
         std::size_t num_cores_;
@@ -74,21 +71,18 @@ namespace pika::detail {
         void check_pu_step() const;
 
         bool handle_arguments(detail::manage_config& cfgmap,
-            pika::program_options::variables_map& vm,
-            std::vector<std::string>& ini_config);
+            pika::program_options::variables_map& vm, std::vector<std::string>& ini_config);
 
-        void enable_logging_settings(pika::program_options::variables_map& vm,
-            std::vector<std::string>& ini_config);
+        void enable_logging_settings(
+            pika::program_options::variables_map& vm, std::vector<std::string>& ini_config);
 
         void store_command_line(int argc, const char* const* argv);
-        void store_unregistered_options(std::string const& cmd_name,
-            std::vector<std::string> const& unregistered_options);
-        bool handle_help_options(
-            pika::program_options::options_description const& help);
+        void store_unregistered_options(
+            std::string const& cmd_name, std::vector<std::string> const& unregistered_options);
+        bool handle_help_options(pika::program_options::options_description const& help);
 
         void handle_attach_debugger();
 
-        std::vector<std::string> preprocess_config_settings(
-            int argc, const char* const* argv);
+        std::vector<std::string> preprocess_config_settings(int argc, const char* const* argv);
     };
 }    // namespace pika::detail

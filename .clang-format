@@ -59,7 +59,7 @@ BreakBeforeInheritanceComma: true
 BreakBeforeTernaryOperators: false
 BreakConstructorInitializersBeforeComma: true
 BreakStringLiterals: true
-ColumnLimit: 80
+ColumnLimit: 100
 CommentPragmas: "///"
 CompactNamespaces: true
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
@@ -89,6 +89,7 @@ IncludeCategories:
 IndentCaseLabels: false
 IndentWidth: 4
 IndentWrappedFunctionNames: false
+IndentPPDirectives: AfterHash
 KeepEmptyLinesAtTheStartOfBlocks: false
 Language: Cpp
 # MacroBlockBegin: ''
@@ -102,6 +103,7 @@ PenaltyBreakString: 1000
 PenaltyExcessCharacter: 1000000
 PenaltyReturnTypeOnItsOwnLine: 20
 PointerAlignment: Left
+PPIndentWidth: 1
 ReflowComments: false
 SortIncludes:    true
 SpaceAfterCStyleCast: true

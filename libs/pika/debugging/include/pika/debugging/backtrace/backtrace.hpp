@@ -21,18 +21,15 @@
 namespace pika::debug::detail {
     namespace stack_trace {
         PIKA_EXPORT std::size_t trace(void** addresses, std::size_t size);
-        PIKA_EXPORT void write_symbols(
-            void* const* addresses, std::size_t size, std::ostream&);
+        PIKA_EXPORT void write_symbols(void* const* addresses, std::size_t size, std::ostream&);
         PIKA_EXPORT std::string get_symbol(void* address);
-        PIKA_EXPORT std::string get_symbols(
-            void* const* address, std::size_t size);
+        PIKA_EXPORT std::string get_symbols(void* const* address, std::size_t size);
     }    // namespace stack_trace
 
     class backtrace
     {
     public:
-        explicit backtrace(
-            std::size_t frames_no = PIKA_HAVE_THREAD_BACKTRACE_DEPTH)
+        explicit backtrace(std::size_t frames_no = PIKA_HAVE_THREAD_BACKTRACE_DEPTH)
         {
             if (frames_no == 0)
                 return;
@@ -118,8 +115,7 @@ namespace pika::debug::detail {
         return trace_manip(tr);
     }
 
-    inline std::string trace(
-        std::size_t frames_no = PIKA_HAVE_THREAD_BACKTRACE_DEPTH)    //-V659
+    inline std::string trace(std::size_t frames_no = PIKA_HAVE_THREAD_BACKTRACE_DEPTH)    //-V659
     {
         return backtrace(frames_no).trace();
     }

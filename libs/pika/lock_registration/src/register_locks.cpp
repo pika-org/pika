@@ -26,25 +26,25 @@ namespace pika::util {
         lock_data::lock_data(std::size_t trace_depth)
           : ignore_(false)
           , user_data_(nullptr)
-#ifdef PIKA_HAVE_VERIFY_LOCKS_BACKTRACE
+# ifdef PIKA_HAVE_VERIFY_LOCKS_BACKTRACE
           , backtrace_(pika::debug::detail::trace(trace_depth))
-#endif
+# endif
         {
-#ifndef PIKA_HAVE_VERIFY_LOCKS_BACKTRACE
+# ifndef PIKA_HAVE_VERIFY_LOCKS_BACKTRACE
             PIKA_UNUSED(trace_depth);
-#endif
+# endif
         }
 
         lock_data::lock_data(register_lock_data* data, std::size_t trace_depth)
           : ignore_(false)
           , user_data_(data)
-#ifdef PIKA_HAVE_VERIFY_LOCKS_BACKTRACE
+# ifdef PIKA_HAVE_VERIFY_LOCKS_BACKTRACE
           , backtrace_(pika::detail::trace(trace_depth))
-#endif
+# endif
         {
-#ifndef PIKA_HAVE_VERIFY_LOCKS_BACKTRACE
+# ifndef PIKA_HAVE_VERIFY_LOCKS_BACKTRACE
             PIKA_UNUSED(trace_depth);
-#endif
+# endif
         }
 
         lock_data::~lock_data()
@@ -123,8 +123,7 @@ namespace pika::util {
         };
 
         bool register_locks::lock_detection_enabled_ = false;
-        std::size_t register_locks::lock_detection_trace_depth_ =
-            PIKA_HAVE_THREAD_BACKTRACE_DEPTH;
+        std::size_t register_locks::lock_detection_trace_depth_ = PIKA_HAVE_THREAD_BACKTRACE_DEPTH;
 
         struct reset_lock_enabled_on_exit
         {
@@ -172,8 +171,7 @@ namespace pika::util {
 
     static registered_locks_error_handler_type registered_locks_error_handler;
 
-    void set_registered_locks_error_handler(
-        registered_locks_error_handler_type f)
+    void set_registered_locks_error_handler(registered_locks_error_handler_type f)
     {
         registered_locks_error_handler = f;
     }
@@ -193,8 +191,7 @@ namespace pika::util {
         if (register_locks::lock_detection_enabled_ &&
             (!register_locks_predicate || register_locks_predicate()))
         {
-            register_locks::held_locks_map& held_locks =
-                register_locks::get_lock_map();
+            register_locks::held_locks_map& held_locks = register_locks::get_lock_map();
 
             register_locks::held_locks_map::iterator it = held_locks.find(lock);
             if (it != held_locks.end())
@@ -203,15 +200,13 @@ namespace pika::util {
             std::pair<register_locks::held_locks_map::iterator, bool> p;
             if (!data)
             {
-                p = held_locks.insert(std::make_pair(lock,
-                    detail::lock_data(
-                        register_locks::lock_detection_trace_depth_)));
+                p = held_locks.insert(std::make_pair(
+                    lock, detail::lock_data(register_locks::lock_detection_trace_depth_)));
             }
             else
             {
-                p = held_locks.insert(std::make_pair(lock,
-                    detail::lock_data(
-                        data, register_locks::lock_detection_trace_depth_)));
+                p = held_locks.insert(std::make_pair(
+                    lock, detail::lock_data(data, register_locks::lock_detection_trace_depth_)));
             }
             return p.second;
         }
@@ -226,8 +221,7 @@ namespace pika::util {
         if (register_locks::lock_detection_enabled_ &&
             (!register_locks_predicate || register_locks_predicate()))
         {
-            register_locks::held_locks_map& held_locks =
-                register_locks::get_lock_map();
+            register_locks::held_locks_map& held_locks = register_locks::get_lock_map();
 
             register_locks::held_locks_map::iterator it = held_locks.find(lock);
             if (it == held_locks.end())
@@ -241,8 +235,7 @@ namespace pika::util {
     // verify that no locks are held by this pika-thread
     namespace detail {
 
-        inline bool some_locks_are_not_ignored(
-            register_locks::held_locks_map const& held_locks)
+        inline bool some_locks_are_not_ignored(register_locks::held_locks_map const& held_locks)
         {
             using iterator = register_locks::held_locks_map::const_iterator;
 
@@ -262,14 +255,12 @@ namespace pika::util {
     {
         using detail::register_locks;
 
-        bool enabled = register_locks::get_ignore_all_locks() &&
-            register_locks::get_lock_enabled();
+        bool enabled = register_locks::get_ignore_all_locks() && register_locks::get_lock_enabled();
 
         if (enabled && register_locks::lock_detection_enabled_ &&
             (!register_locks_predicate || register_locks_predicate()))
         {
-            register_locks::held_locks_map& held_locks =
-                register_locks::get_lock_map();
+            register_locks::held_locks_map& held_locks = register_locks::get_lock_map();
 
             // we create a log message if there are still registered locks for
             // this OS-thread
@@ -287,8 +278,7 @@ namespace pika::util {
                     }
                     else
                     {
-                        PIKA_THROW_EXCEPTION(pika::error::invalid_status,
-                            "verify_no_locks",
+                        PIKA_THROW_EXCEPTION(pika::error::invalid_status, "verify_no_locks",
                             "suspending thread while at least one lock is "
                             "being held (default handler)");
                     }
@@ -325,11 +315,9 @@ namespace pika::util {
             if (register_locks::lock_detection_enabled_ &&
                 (!register_locks_predicate || register_locks_predicate()))
             {
-                register_locks::held_locks_map& held_locks =
-                    register_locks::get_lock_map();
+                register_locks::held_locks_map& held_locks = register_locks::get_lock_map();
 
-                register_locks::held_locks_map::iterator it =
-                    held_locks.find(lock);
+                register_locks::held_locks_map::iterator it = held_locks.find(lock);
                 if (it == held_locks.end())
                 {
                     // this can happen if the lock was registered to be ignore

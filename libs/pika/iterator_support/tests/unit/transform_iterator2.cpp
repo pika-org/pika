@@ -129,13 +129,11 @@ int main()
         for (int k2 = 0; k2 < N; ++k2)
             x[k2] = x[k2] * 2;
 
-        using iter_t =
-            pika::util::transform_iterator<int*, adaptable_mult_functor>;
+        using iter_t = pika::util::transform_iterator<int*, adaptable_mult_functor>;
         iter_t i(y, adaptable_mult_functor(2));
 
         tests::input_iterator_test(i, x[0], x[1]);
-        tests::input_iterator_test(
-            iter_t(&y[0], adaptable_mult_functor(2)), x[0], x[1]);
+        tests::input_iterator_test(iter_t(&y[0], adaptable_mult_functor(2)), x[0], x[1]);
 
         tests::random_access_readable_iterator_test(i, N, x);
     }
@@ -159,24 +157,21 @@ int main()
     }
 
     // Test transform_iterator default argument handling
-    {{using iter_t =
-            pika::util::transform_iterator<int*, adaptable_mult_functor, float>;
+    {{using iter_t = pika::util::transform_iterator<int*, adaptable_mult_functor, float>;
 
     PIKA_TEST((std::is_same<iter_t::reference, float>::value));
     PIKA_TEST((std::is_same<iter_t::value_type, float>::value));
 }
 
 {
-    using iter_t = pika::util::transform_iterator<int*, adaptable_mult_functor,
-        int&, float>;
+    using iter_t = pika::util::transform_iterator<int*, adaptable_mult_functor, int&, float>;
 
     PIKA_TEST((std::is_same<iter_t::reference, int&>::value));
     PIKA_TEST((std::is_same<iter_t::value_type, float>::value));
 }
 
 {
-    using iter_t = pika::util::transform_iterator<int*, adaptable_mult_functor,
-        float, double>;
+    using iter_t = pika::util::transform_iterator<int*, adaptable_mult_functor, float, double>;
 
     PIKA_TEST((std::is_same<iter_t::reference, float>::value));
     PIKA_TEST((std::is_same<iter_t::value_type, double>::value));
@@ -193,8 +188,7 @@ int main()
     for (int k2 = 0; k2 < N; ++k2)
         x[k2] = x[k2] * 2;
 
-    tests::input_iterator_test(
-        pika::util::make_transform_iterator(&y[0], &mult_2), x[0], x[1]);
+    tests::input_iterator_test(pika::util::make_transform_iterator(&y[0], &mult_2), x[0], x[1]);
 
     tests::random_access_readable_iterator_test(
         pika::util::make_transform_iterator(&y[0], &mult_2), N, x);
@@ -214,35 +208,25 @@ int main()
         y[i] = N - (i + 1);
     }
 
-    std::copy(x, x + N,
-        pika::util::make_transform_iterator((pair_t*) values, select_first()));
+    std::copy(x, x + N, pika::util::make_transform_iterator((pair_t*) values, select_first()));
 
-    std::copy(y, y + N,
-        pika::util::make_transform_iterator((pair_t*) values, select_second()));
+    std::copy(y, y + N, pika::util::make_transform_iterator((pair_t*) values, select_second()));
 
     tests::random_access_readable_iterator_test(
-        pika::util::make_transform_iterator(
-            (pair_t*) values, value_select_first()),
-        N, x);
+        pika::util::make_transform_iterator((pair_t*) values, value_select_first()), N, x);
 
     tests::random_access_readable_iterator_test(
-        pika::util::make_transform_iterator(
-            (pair_t*) values, const_select_first()),
-        N, x);
+        pika::util::make_transform_iterator((pair_t*) values, const_select_first()), N, x);
 
     tests::constant_lvalue_iterator_test(
-        pika::util::make_transform_iterator(
-            (pair_t*) values, const_select_first()),
-        x[0]);
+        pika::util::make_transform_iterator((pair_t*) values, const_select_first()), x[0]);
 
     tests::non_const_lvalue_iterator_test(
-        pika::util::make_transform_iterator((pair_t*) values, select_first()),
-        x[0], 17);
+        pika::util::make_transform_iterator((pair_t*) values, select_first()), x[0], 17);
 
     tests::const_nonconst_iterator_test(
         ++pika::util::make_transform_iterator((pair_t*) values, select_first()),
-        pika::util::make_transform_iterator(
-            (pair_t*) values, const_select_first()));
+        pika::util::make_transform_iterator((pair_t*) values, const_select_first()));
 }
 
 // Test transform_iterator with polymorphic object function
@@ -256,12 +240,10 @@ int main()
         x[k2] = x[k2] * 2;
 
     tests::input_iterator_test(
-        pika::util::make_transform_iterator(&y[0], polymorphic_mult_functor()),
-        x[0], x[1]);
+        pika::util::make_transform_iterator(&y[0], polymorphic_mult_functor()), x[0], x[1]);
 
     tests::random_access_readable_iterator_test(
-        pika::util::make_transform_iterator(&y[0], polymorphic_mult_functor()),
-        N, x);
+        pika::util::make_transform_iterator(&y[0], polymorphic_mult_functor()), N, x);
 }
 
 return 0;

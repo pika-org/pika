@@ -10,7 +10,7 @@
 #include <pika/preprocessor/identity.hpp>
 
 #if defined(PIKA_HAVE_CXX20_LAMBDA_CAPTURE)
-#define PIKA_CXX20_CAPTURE_THIS(...) PIKA_PP_IDENTITY(__VA_ARGS__, this)
+# define PIKA_CXX20_CAPTURE_THIS(...) PIKA_PP_IDENTITY(__VA_ARGS__, this)
 #else
-#define PIKA_CXX20_CAPTURE_THIS(...) __VA_ARGS__
+# define PIKA_CXX20_CAPTURE_THIS(...) __VA_ARGS__
 #endif

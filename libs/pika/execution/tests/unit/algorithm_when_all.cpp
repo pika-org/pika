@@ -44,8 +44,7 @@ int main()
 
     {
         std::atomic<bool> set_value_called{false};
-        auto s = ex::when_all(
-            ex::just(42), ex::just(std::string("hello")), ex::just(3.14));
+        auto s = ex::when_all(ex::just(42), ex::just(std::string("hello")), ex::just(3.14));
         auto f = [](int x, std::string y, double z) {
             PIKA_TEST_EQ(x, 42);
             PIKA_TEST_EQ(y, std::string("hello"));
@@ -59,8 +58,7 @@ int main()
 
     {
         std::atomic<bool> set_value_called{false};
-        auto s = ex::when_all(
-            ex::just(), ex::just(std::string("hello")), ex::just(3.14));
+        auto s = ex::when_all(ex::just(), ex::just(std::string("hello")), ex::just(3.14));
         auto f = [](std::string y, double z) {
             PIKA_TEST_EQ(y, std::string("hello"));
             PIKA_TEST_EQ(z, 3.14);
@@ -96,8 +94,7 @@ int main()
 
     {
         std::atomic<bool> set_value_called{false};
-        auto s = ex::when_all(
-            ex::just(42), ex::just(std::string("hello")), ex::just());
+        auto s = ex::when_all(ex::just(42), ex::just(std::string("hello")), ex::just());
         auto f = [](int x, std::string y) {
             PIKA_TEST_EQ(x, 42);
             PIKA_TEST_EQ(y, std::string("hello"));
@@ -124,39 +121,12 @@ int main()
 
     {
         std::atomic<bool> set_value_called{false};
-        auto s =
-            ex::when_all(ex::just(42, std::string("hello")), ex::just(3.14));
+        auto s = ex::when_all(ex::just(42, std::string("hello")), ex::just(3.14));
         auto f = [](int x, std::string y, double z) {
             PIKA_TEST_EQ(x, 42);
             PIKA_TEST_EQ(y, std::string("hello"));
             PIKA_TEST_EQ(z, 3.14);
         };
-        auto r = callback_receiver<decltype(f)>{f, set_value_called};
-        auto os = ex::connect(std::move(s), std::move(r));
-        ex::start(os);
-        PIKA_TEST(set_value_called);
-    }
-
-    {
-        std::atomic<bool> set_value_called{false};
-        auto s = ex::when_all(ex::just(), ex::just(42, std::string("hello")),
-            ex::just(), ex::just(3.14), ex::just());
-        auto f = [](int x, std::string y, double z) {
-            PIKA_TEST_EQ(x, 42);
-            PIKA_TEST_EQ(y, std::string("hello"));
-            PIKA_TEST_EQ(z, 3.14);
-        };
-        auto r = callback_receiver<decltype(f)>{f, set_value_called};
-        auto os = ex::connect(std::move(s), std::move(r));
-        ex::start(os);
-        PIKA_TEST(set_value_called);
-    }
-
-    {
-        std::atomic<bool> set_value_called{false};
-        auto s =
-            ex::when_all(ex::just(custom_type_non_default_constructible(42)));
-        auto f = [](auto x) { PIKA_TEST_EQ(x.x, 42); };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));
         ex::start(os);
@@ -166,7 +136,31 @@ int main()
     {
         std::atomic<bool> set_value_called{false};
         auto s = ex::when_all(
-            ex::just(custom_type_non_default_constructible_non_copyable(42)));
+            ex::just(), ex::just(42, std::string("hello")), ex::just(), ex::just(3.14), ex::just());
+        auto f = [](int x, std::string y, double z) {
+            PIKA_TEST_EQ(x, 42);
+            PIKA_TEST_EQ(y, std::string("hello"));
+            PIKA_TEST_EQ(z, 3.14);
+        };
+        auto r = callback_receiver<decltype(f)>{f, set_value_called};
+        auto os = ex::connect(std::move(s), std::move(r));
+        ex::start(os);
+        PIKA_TEST(set_value_called);
+    }
+
+    {
+        std::atomic<bool> set_value_called{false};
+        auto s = ex::when_all(ex::just(custom_type_non_default_constructible(42)));
+        auto f = [](auto x) { PIKA_TEST_EQ(x.x, 42); };
+        auto r = callback_receiver<decltype(f)>{f, set_value_called};
+        auto os = ex::connect(std::move(s), std::move(r));
+        ex::start(os);
+        PIKA_TEST(set_value_called);
+    }
+
+    {
+        std::atomic<bool> set_value_called{false};
+        auto s = ex::when_all(ex::just(custom_type_non_default_constructible_non_copyable(42)));
         auto f = [](auto x) { PIKA_TEST_EQ(x.x, 42); };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));
@@ -177,8 +171,7 @@ int main()
     {
         std::atomic<bool> receiver_set_value_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
-        auto s = ex::when_all(
-            custom_sender_tag_invoke{tag_invoke_overload_called}, ex::just(42));
+        auto s = ex::when_all(custom_sender_tag_invoke{tag_invoke_overload_called}, ex::just(42));
         auto f = [](int x) { PIKA_TEST_EQ(x, 42); };
         auto r = callback_receiver<decltype(f)>{f, receiver_set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));
@@ -205,9 +198,8 @@ int main()
         // The reference implementation does not remove_cvref the types sent.
         PIKA_UNUSED(s);
 #else
-        using value_types =
-            typename pika::execution::experimental::sender_traits<decltype(s)>::
-                template value_types<std::tuple, pika::detail::variant>;
+        using value_types = typename pika::execution::experimental::sender_traits<
+            decltype(s)>::template value_types<std::tuple, pika::detail::variant>;
         using expected_value_types = pika::detail::variant<std::tuple<int>>;
         static_assert(std::is_same_v<value_types, expected_value_types>,
             "when_all should remove_cvref the value types sent");

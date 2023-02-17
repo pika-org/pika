@@ -9,18 +9,18 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <pika/execution_base/p2300_forward.hpp>
+# include <pika/execution_base/p2300_forward.hpp>
 #else
-#include <pika/datastructures/member_pack.hpp>
-#include <pika/errors/try_catch_exception_ptr.hpp>
-#include <pika/execution_base/receiver.hpp>
-#include <pika/execution_base/sender.hpp>
-#include <pika/type_support/pack.hpp>
+# include <pika/datastructures/member_pack.hpp>
+# include <pika/errors/try_catch_exception_ptr.hpp>
+# include <pika/execution_base/receiver.hpp>
+# include <pika/execution_base/sender.hpp>
+# include <pika/type_support/pack.hpp>
 
-#include <cstddef>
-#include <exception>
-#include <stdexcept>
-#include <utility>
+# include <cstddef>
+# include <exception>
+# include <stdexcept>
+# include <utility>
 
 namespace pika::just_detail {
     template <typename Is, typename... Ts>
@@ -36,8 +36,7 @@ namespace pika::just_detail {
             constexpr just_sender_type() = default;
 
             template <typename T,
-                typename = std::enable_if_t<
-                    !std::is_same_v<std::decay_t<T>, just_sender_type>>>
+                typename = std::enable_if_t<!std::is_same_v<std::decay_t<T>, just_sender_type>>>
             explicit constexpr just_sender_type(T&& t)
               : ts(std::piecewise_construct, PIKA_FORWARD(T, t))
             {
@@ -45,8 +44,8 @@ namespace pika::just_detail {
 
             template <typename T0, typename T1, typename... Ts_>
             explicit constexpr just_sender_type(T0&& t0, T1&& t1, Ts_&&... ts)
-              : ts(std::piecewise_construct, PIKA_FORWARD(T0, t0),
-                    PIKA_FORWARD(T1, t1), PIKA_FORWARD(Ts_, ts)...)
+              : ts(std::piecewise_construct, PIKA_FORWARD(T0, t0), PIKA_FORWARD(T1, t1),
+                    PIKA_FORWARD(Ts_, ts)...)
             {
             }
 
@@ -55,8 +54,7 @@ namespace pika::just_detail {
             just_sender_type& operator=(just_sender_type&&) = default;
             just_sender_type& operator=(just_sender_type const&) = default;
 
-            template <template <typename...> class Tuple,
-                template <typename...> class Variant>
+            template <template <typename...> class Tuple, template <typename...> class Variant>
             using value_types = Variant<Tuple<std::decay_t<Ts>...>>;
 
             template <template <typename...> class Variant>
@@ -83,14 +81,13 @@ namespace pika::just_detail {
                 operation_state(operation_state const&) = delete;
                 operation_state& operator=(operation_state const&) = delete;
 
-                friend void tag_invoke(pika::execution::experimental::start_t,
-                    operation_state& os) noexcept
+                friend void tag_invoke(
+                    pika::execution::experimental::start_t, operation_state& os) noexcept
                 {
                     pika::detail::try_catch_exception_ptr(
                         [&]() {
                             pika::execution::experimental::set_value(
-                                PIKA_MOVE(os.receiver),
-                                PIKA_MOVE(os.ts).template get<Is>()...);
+                                PIKA_MOVE(os.receiver), PIKA_MOVE(os.ts).template get<Is>()...);
                         },
                         [&](std::exception_ptr ep) {
                             pika::execution::experimental::set_error(
@@ -100,19 +97,17 @@ namespace pika::just_detail {
             };
 
             template <typename Receiver>
-            friend auto tag_invoke(pika::execution::experimental::connect_t,
-                just_sender_type&& s, Receiver&& receiver)
+            friend auto tag_invoke(
+                pika::execution::experimental::connect_t, just_sender_type&& s, Receiver&& receiver)
             {
-                return operation_state<Receiver>{
-                    PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.ts)};
+                return operation_state<Receiver>{PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.ts)};
             }
 
             template <typename Receiver>
             friend auto tag_invoke(pika::execution::experimental::connect_t,
                 just_sender_type const& s, Receiver&& receiver)
             {
-                return operation_state<Receiver>{
-                    PIKA_FORWARD(Receiver, receiver), s.ts};
+                return operation_state<Receiver>{PIKA_FORWARD(Receiver, receiver), s.ts};
             }
         };
     };
@@ -128,9 +123,8 @@ namespace pika::execution::experimental {
         constexpr PIKA_FORCEINLINE auto operator()(Ts&&... ts) const
         {
             return just_detail::just_sender<
-                typename pika::util::detail::make_index_pack<sizeof...(
-                    Ts)>::type,
-                Ts...>{PIKA_FORWARD(Ts, ts)...};
+                typename pika::util::detail::make_index_pack<sizeof...(Ts)>::type, Ts...>{
+                PIKA_FORWARD(Ts, ts)...};
         }
     } just{};
 }    // namespace pika::execution::experimental

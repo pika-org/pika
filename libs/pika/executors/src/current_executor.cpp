@@ -13,8 +13,8 @@ namespace pika::threads {
     {
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROWS_IF(ec, pika::error::null_thread_id,
-                "pika::threads::get_executor", "null thread id encountered");
+            PIKA_THROWS_IF(ec, pika::error::null_thread_id, "pika::threads::get_executor",
+                "null thread id encountered");
             return parallel::execution::current_executor();
         }
 
@@ -22,9 +22,7 @@ namespace pika::threads {
             ec = make_success_code();
 
         return parallel::execution::current_executor(
-            detail::get_thread_id_data(id)
-                ->get_scheduler_base()
-                ->get_parent_pool());
+            detail::get_thread_id_data(id)->get_scheduler_base()->get_parent_pool());
     }
 }    // namespace pika::threads
 

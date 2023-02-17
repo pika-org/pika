@@ -29,54 +29,47 @@ namespace pika::util::detail {
         template <typename T>
         PIKA_FORCEINLINE static std::size_t _get_function_address(void* f)
         {
-            return pika::detail::get_function_address<T>::call(
-                vtable::get<T>(f));
+            return pika::detail::get_function_address<T>::call(vtable::get<T>(f));
         }
         std::size_t (*get_function_address)(void*);
 
         template <typename T>
         PIKA_FORCEINLINE static char const* _get_function_annotation(void* f)
         {
-            return pika::detail::get_function_annotation<T>::call(
-                vtable::get<T>(f));
+            return pika::detail::get_function_annotation<T>::call(vtable::get<T>(f));
         }
         char const* (*get_function_annotation)(void*);
 
-#if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
+# if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
         template <typename T>
-        PIKA_FORCEINLINE static util::itt::string_handle
-        _get_function_annotation_itt(void* f)
+        PIKA_FORCEINLINE static util::itt::string_handle _get_function_annotation_itt(void* f)
         {
-            return pika::detail::get_function_annotation_itt<T>::call(
-                vtable::get<T>(f));
+            return pika::detail::get_function_annotation_itt<T>::call(vtable::get<T>(f));
         }
         util::itt::string_handle (*get_function_annotation_itt)(void*);
-#endif
+# endif
 #endif
 
         template <typename T>
         constexpr callable_info_vtable(construct_vtable<T>) noexcept
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
-          : get_function_address(
-                &callable_info_vtable::template _get_function_address<T>)
-          , get_function_annotation(
-                &callable_info_vtable::template _get_function_annotation<T>)
-#if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
+          : get_function_address(&callable_info_vtable::template _get_function_address<T>)
+          , get_function_annotation(&callable_info_vtable::template _get_function_annotation<T>)
+# if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
           , get_function_annotation_itt(
                 &callable_info_vtable::template _get_function_annotation_itt<T>)
-#endif
+# endif
 #endif
         {
         }
 
-        constexpr callable_info_vtable(
-            construct_vtable<trivial_empty_function>) noexcept
+        constexpr callable_info_vtable(construct_vtable<trivial_empty_function>) noexcept
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
           : get_function_address(nullptr)
           , get_function_annotation(nullptr)
-#if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
+# if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
           , get_function_annotation_itt(nullptr)
-#endif
+# endif
 #endif
         {
         }
@@ -107,8 +100,7 @@ namespace pika::util::detail {
             return throw_bad_function_call<R>();
         }
 
-        constexpr callable_vtable(
-            construct_vtable<trivial_empty_function>) noexcept
+        constexpr callable_vtable(construct_vtable<trivial_empty_function>) noexcept
           : invoke(&callable_vtable::_empty_invoke)
         {
         }

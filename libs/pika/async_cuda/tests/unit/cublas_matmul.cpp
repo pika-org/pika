@@ -45,8 +45,8 @@
 #include <vector>
 
 #if defined(PIKA_HAVE_HIP)
-#define CUBLAS_OP_N rocblas_operation_none
-#define cublasSgemm rocblas_sgemm
+# define CUBLAS_OP_N rocblas_operation_none
+# define cublasSgemm rocblas_sgemm
 #endif
 
 std::mt19937 gen;
@@ -72,8 +72,7 @@ struct sMatrixSize
 // @param wB         width of matrix B
 // -------------------------------------------------------------------------
 template <typename T>
-void matrixMulCPU(T* C, const T* A, const T* B, unsigned int hA,
-    unsigned int wA, unsigned int wB)
+void matrixMulCPU(T* C, const T* A, const T* B, unsigned int hA, unsigned int wA, unsigned int wB)
 {
     for (unsigned int i = 0; i < hA; ++i)
     {
@@ -93,8 +92,8 @@ void matrixMulCPU(T* C, const T* A, const T* B, unsigned int hA,
 
 // -------------------------------------------------------------------------
 // Compute the L2 norm difference between two arrays
-inline bool compare_L2_err(const float* reference, const float* data,
-    const unsigned int len, const float epsilon)
+inline bool compare_L2_err(
+    const float* reference, const float* data, const unsigned int len, const float epsilon)
 {
     PIKA_ASSERT(epsilon >= 0);
 
@@ -124,9 +123,8 @@ inline bool compare_L2_err(const float* reference, const float* data,
 // Run a simple test matrix multiply using CUBLAS
 // -------------------------------------------------------------------------
 template <typename T>
-void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
-    sMatrixSize& matrix_size, std::size_t /* device */,
-    [[maybe_unused]] std::size_t iterations)
+void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched, sMatrixSize& matrix_size,
+    std::size_t /* device */, [[maybe_unused]] std::size_t iterations)
 {
     // Allocate host memory for matrices A and B
     unsigned int size_A = matrix_size.uiWA * matrix_size.uiHA;
@@ -149,16 +147,14 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
     whip::malloc(&d_C, size_C * sizeof(T));
 
     auto copy_A = ex::schedule(cuda_sched) |
-        cu::then_with_stream(pika::util::detail::bind_front(whip::memcpy_async,
-            d_A, h_A.data(), size_A * sizeof(T), whip::memcpy_host_to_device));
+        cu::then_with_stream(pika::util::detail::bind_front(
+            whip::memcpy_async, d_A, h_A.data(), size_A * sizeof(T), whip::memcpy_host_to_device));
     auto copy_B = ex::schedule(cuda_sched) |
-        cu::then_with_stream(pika::util::detail::bind_front(whip::memcpy_async,
-            d_B, h_B.data(), size_B * sizeof(T), whip::memcpy_host_to_device));
-    auto copy_AB =
-        ex::when_all(std::move(copy_A), std::move(copy_B)) | ex::then([]() {
-            std::cout << "The async host->device copy operations completed"
-                      << std::endl;
-        });
+        cu::then_with_stream(pika::util::detail::bind_front(
+            whip::memcpy_async, d_B, h_B.data(), size_B * sizeof(T), whip::memcpy_host_to_device));
+    auto copy_AB = ex::when_all(std::move(copy_A), std::move(copy_B)) | ex::then([]() {
+        std::cout << "The async host->device copy operations completed" << std::endl;
+    });
     tt::sync_wait(std::move(copy_AB));
 
     std::cout << "Computing result using CUBLAS...\n";
@@ -173,10 +169,9 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
     auto gemm = ex::transfer_just(cuda_sched) |
         cu::then_with_cublas(
             [&](cublasHandle_t handle) {
-                cu::check_cublas_error(cublasSgemm(handle, CUBLAS_OP_N,
-                    CUBLAS_OP_N, matrix_size.uiWB, matrix_size.uiHA,
-                    matrix_size.uiWA, &alpha, d_B, matrix_size.uiWB, d_A,
-                    matrix_size.uiWA, &beta, d_C, matrix_size.uiWA));
+                cu::check_cublas_error(cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N,
+                    matrix_size.uiWB, matrix_size.uiHA, matrix_size.uiWA, &alpha, d_B,
+                    matrix_size.uiWB, d_A, matrix_size.uiWA, &beta, d_C, matrix_size.uiWA));
             },
             CUBLAS_POINTER_MODE_HOST);
 
@@ -193,10 +188,9 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
     // See https://github.com/brycelelbach/wg21_p2300_std_execution/issues/466
     // for details.
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-    std::cout
-        << "skipping remainder of test because the P2300 reference "
-           "implementation of split does not yet support move-only senders"
-        << std::endl;
+    std::cout << "skipping remainder of test because the P2300 reference "
+                 "implementation of split does not yet support move-only senders"
+              << std::endl;
 #else
     pika::chrono::detail::high_resolution_timer t2;
 
@@ -209,10 +203,9 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
         gemms_finished = std::move(gemms_finished) | ex::transfer(cuda_sched) |
             cu::then_with_cublas(
                 [&](cublasHandle_t handle) {
-                    cu::check_cublas_error(cublasSgemm(handle, CUBLAS_OP_N,
-                        CUBLAS_OP_N, matrix_size.uiWB, matrix_size.uiHA,
-                        matrix_size.uiWA, &alpha, d_B, matrix_size.uiWB, d_A,
-                        matrix_size.uiWA, &beta, d_C, matrix_size.uiWA));
+                    cu::check_cublas_error(cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N,
+                        matrix_size.uiWB, matrix_size.uiHA, matrix_size.uiWA, &alpha, d_B,
+                        matrix_size.uiWB, d_A, matrix_size.uiWA, &beta, d_C, matrix_size.uiWA));
                 },
                 CUBLAS_POINTER_MODE_HOST);
     }
@@ -221,15 +214,14 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
 
     auto matrix_print_finished = gemms_finished_split | ex::then([&]() {
         double us2 = t2.elapsed<std::chrono::microseconds>();
-        std::cout << "actual: elapsed_microseconds " << us2 << " iterations "
-                  << iterations << std::endl;
+        std::cout << "actual: elapsed_microseconds " << us2 << " iterations " << iterations
+                  << std::endl;
 
         // Compute and print the performance
         double usecPerMatrixMul = us2 / iterations;
-        double flopsPerMatrixMul = 2.0 * (double) matrix_size.uiWA *
-            (double) matrix_size.uiHA * (double) matrix_size.uiWB;
-        double gigaFlops =
-            (flopsPerMatrixMul * 1.0e-9) / (usecPerMatrixMul / 1e6);
+        double flopsPerMatrixMul =
+            2.0 * (double) matrix_size.uiWA * (double) matrix_size.uiHA * (double) matrix_size.uiWB;
+        double gigaFlops = (flopsPerMatrixMul * 1.0e-9) / (usecPerMatrixMul / 1e6);
         printf("Performance = %.2f GFlop/s, Time = %.3f msec/iter, "
                "Size = %.0f "
                "Ops\n",
@@ -237,15 +229,12 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
     });
 
     // when the matrix operations complete, copy the result to the host
-    auto copy_finished = std::move(gemms_finished_split) |
-        ex::transfer(cuda_sched) |
-        cu::then_with_stream(
-            pika::util::detail::bind_front(whip::memcpy_async, h_CUBLAS.data(),
-                d_C, size_C * sizeof(T), whip::memcpy_device_to_host));
+    auto copy_finished = std::move(gemms_finished_split) | ex::transfer(cuda_sched) |
+        cu::then_with_stream(pika::util::detail::bind_front(whip::memcpy_async, h_CUBLAS.data(),
+            d_C, size_C * sizeof(T), whip::memcpy_device_to_host));
 
-    auto all_done = ex::when_all(std::move(matrix_print_finished),
-                        std::move(copy_finished)) |
-        ex::then([&]() {
+    auto all_done =
+        ex::when_all(std::move(matrix_print_finished), std::move(copy_finished)) | ex::then([&]() {
             // compute reference solution on the CPU
             std::cout << "\nComputing result using host CPU...\n";
 
@@ -254,15 +243,13 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
             std::vector<T> reference(size_C);
 
             pika::chrono::detail::high_resolution_timer t3;
-            matrixMulCPU<T>(reference.data(), h_A.data(), h_B.data(),
-                matrix_size.uiHA, matrix_size.uiWA, matrix_size.uiWB);
+            matrixMulCPU<T>(reference.data(), h_A.data(), h_B.data(), matrix_size.uiHA,
+                matrix_size.uiWA, matrix_size.uiWB);
             double us3 = t3.elapsed<std::chrono::microseconds>();
-            std::cout << "CPU elapsed_microseconds (1 iteration) " << us3
-                      << std::endl;
+            std::cout << "CPU elapsed_microseconds (1 iteration) " << us3 << std::endl;
 
             // check result (CUBLAS)
-            bool resCUBLAS =
-                compare_L2_err(reference.data(), h_CUBLAS.data(), size_C, 1e-6);
+            bool resCUBLAS = compare_L2_err(reference.data(), h_CUBLAS.data(), size_C, 1e-6);
             PIKA_TEST_MSG(resCUBLAS, "matrix CPU/GPU comparison error");
 
             // if the result was incorrect, we throw an exception, so here it's ok
@@ -315,9 +302,8 @@ int pika_main(pika::program_options::variables_map& vm)
     matrix_size.uiWC = 2 * block_size * sizeMult;
     matrix_size.uiHC = 4 * block_size * sizeMult;
 
-    printf("MatrixA(%u,%u), MatrixB(%u,%u), MatrixC(%u,%u)\n\n",
-        matrix_size.uiWA, matrix_size.uiHA, matrix_size.uiWB, matrix_size.uiHB,
-        matrix_size.uiWC, matrix_size.uiHC);
+    printf("MatrixA(%u,%u), MatrixB(%u,%u), MatrixC(%u,%u)\n\n", matrix_size.uiWA, matrix_size.uiHA,
+        matrix_size.uiWB, matrix_size.uiHB, matrix_size.uiWC, matrix_size.uiHC);
 
     // --------------------------------
     // test matrix multiply using cuda scheduler

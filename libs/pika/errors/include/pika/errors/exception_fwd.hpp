@@ -26,8 +26,7 @@ namespace pika {
     {
         plain = 0,
         rethrow = 1,
-        lightweight =
-            0x80,    // do not generate an exception for this error_code
+        lightweight = 0x80,    // do not generate an exception for this error_code
         /// \cond NODETAIL
         lightweight_rethrow = lightweight | rethrow
         /// \endcond

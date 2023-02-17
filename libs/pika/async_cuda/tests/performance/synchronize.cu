@@ -40,9 +40,8 @@ int pika_main(pika::program_options::variables_map& vm)
             whip::stream_synchronize(cuda_stream);
         }
         double elapsed = timer.elapsed();
-        std::cout
-            << "native + synchronize (warmup):                                 "
-            << elapsed << '\n';
+        std::cout << "native + synchronize (warmup):                                 " << elapsed
+                  << '\n';
     }
 
     {
@@ -53,9 +52,8 @@ int pika_main(pika::program_options::variables_map& vm)
             whip::stream_synchronize(cuda_stream);
         }
         double elapsed = timer.elapsed();
-        std::cout
-            << "native + synchronize:                                          "
-            << elapsed << '\n';
+        std::cout << "native + synchronize:                                          " << elapsed
+                  << '\n';
     }
 
     {
@@ -77,17 +75,14 @@ int pika_main(pika::program_options::variables_map& vm)
         whip::stream_synchronize(cuda_stream);
 
         double elapsed = timer.elapsed();
-        std::cout
-            << "native + synchronize batched:                                  "
-            << elapsed << '\n';
+        std::cout << "native + synchronize batched:                                  " << elapsed
+                  << '\n';
     }
 
     {
         cu::enable_user_polling poll("default");
 
-        auto const f = [](whip::stream_t cuda_stream) {
-            dummy<<<1, 1, 0, cuda_stream>>>();
-        };
+        auto const f = [](whip::stream_t cuda_stream) { dummy<<<1, 1, 0, cuda_stream>>>(); };
 
         pika::chrono::detail::high_resolution_timer timer;
         for (std::size_t i = 0; i != iterations; ++i)
@@ -95,17 +90,14 @@ int pika_main(pika::program_options::variables_map& vm)
             tt::sync_wait(ex::schedule(sched) | cu::then_with_stream(f));
         }
         double elapsed = timer.elapsed();
-        std::cout
-            << "then_with_stream:                                              "
-            << elapsed << '\n';
+        std::cout << "then_with_stream:                                              " << elapsed
+                  << '\n';
     }
 
     {
         cu::enable_user_polling poll("default");
 
-        auto const f = [](whip::stream_t cuda_stream) {
-            dummy<<<1, 1, 0, cuda_stream>>>();
-        };
+        auto const f = [](whip::stream_t cuda_stream) { dummy<<<1, 1, 0, cuda_stream>>>(); };
 
         pika::chrono::detail::high_resolution_timer timer;
         for (std::size_t i = 0; i < batch_iterations; ++i)
@@ -113,12 +105,10 @@ int pika_main(pika::program_options::variables_map& vm)
             // We have to manually unroll this loop, because the type of the
             // sender changes for each additional then_with_stream call. The
             // number of unrolled calls must match batch_size above.
-            tt::sync_wait(ex::schedule(sched) | cu::then_with_stream(f) |
-                cu::then_with_stream(f) | cu::then_with_stream(f) |
-                cu::then_with_stream(f) | cu::then_with_stream(f) |
-                cu::then_with_stream(f) | cu::then_with_stream(f) |
-                cu::then_with_stream(f) | cu::then_with_stream(f) |
-                cu::then_with_stream(f));
+            tt::sync_wait(ex::schedule(sched) | cu::then_with_stream(f) | cu::then_with_stream(f) |
+                cu::then_with_stream(f) | cu::then_with_stream(f) | cu::then_with_stream(f) |
+                cu::then_with_stream(f) | cu::then_with_stream(f) | cu::then_with_stream(f) |
+                cu::then_with_stream(f) | cu::then_with_stream(f));
         }
         // Do the remainder one-by-one
         for (std::size_t i = 0; i < non_batch_iterations; ++i)
@@ -126,21 +116,17 @@ int pika_main(pika::program_options::variables_map& vm)
             tt::sync_wait(ex::schedule(sched) | cu::then_with_stream(f));
         }
         double elapsed = timer.elapsed();
-        std::cout
-            << "then_with_stream batched:                                      "
-            << elapsed << '\n';
+        std::cout << "then_with_stream batched:                                      " << elapsed
+                  << '\n';
     }
 
 // The compilation of this loop unrolling with llvm-amdgpu's
 // Clang 5.3.3 is hanging.
-#if !(defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION) ||                     \
-    defined(PIKA_HAVE_HIP))
+#if !(defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION) || defined(PIKA_HAVE_HIP))
     {
         cu::enable_user_polling poll("default");
 
-        auto const f = [](whip::stream_t cuda_stream) {
-            dummy<<<1, 1, 0, cuda_stream>>>();
-        };
+        auto const f = [](whip::stream_t cuda_stream) { dummy<<<1, 1, 0, cuda_stream>>>(); };
 
         pika::chrono::detail::high_resolution_timer timer;
         for (std::size_t i = 0; i < batch_iterations; ++i)
@@ -152,24 +138,20 @@ int pika_main(pika::program_options::variables_map& vm)
             // then_with_stream calls to force synchronization between the
             // kernel launches.
             tt::sync_wait(ex::schedule(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) |
-                ex::transfer(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) |
-                ex::transfer(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) |
-                ex::transfer(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) |
-                ex::transfer(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) |
-                ex::transfer(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) |
-                ex::transfer(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) |
-                ex::transfer(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) |
-                ex::transfer(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) |
-                ex::transfer(sched) | cu::then_with_stream(f));
+                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) | ex::transfer(sched) |
+                cu::then_with_stream(f) | ex::transfer(ex::thread_pool_scheduler{}) |
+                ex::then([] {}) | ex::transfer(sched) | cu::then_with_stream(f) |
+                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) | ex::transfer(sched) |
+                cu::then_with_stream(f) | ex::transfer(ex::thread_pool_scheduler{}) |
+                ex::then([] {}) | ex::transfer(sched) | cu::then_with_stream(f) |
+                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) | ex::transfer(sched) |
+                cu::then_with_stream(f) | ex::transfer(ex::thread_pool_scheduler{}) |
+                ex::then([] {}) | ex::transfer(sched) | cu::then_with_stream(f) |
+                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) | ex::transfer(sched) |
+                cu::then_with_stream(f) | ex::transfer(ex::thread_pool_scheduler{}) |
+                ex::then([] {}) | ex::transfer(sched) | cu::then_with_stream(f) |
+                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) | ex::transfer(sched) |
+                cu::then_with_stream(f));
         }
         // Do the remainder one-by-one
         for (std::size_t i = 0; i < non_batch_iterations; ++i)
@@ -177,18 +159,15 @@ int pika_main(pika::program_options::variables_map& vm)
             tt::sync_wait(ex::schedule(sched) | cu::then_with_stream(f));
         }
         double elapsed = timer.elapsed();
-        std::cout
-            << "then_with_stream force synchronize batched:                    "
-            << elapsed << '\n';
+        std::cout << "then_with_stream force synchronize batched:                    " << elapsed
+                  << '\n';
     }
 #endif
 
     {
         cu::enable_user_polling poll("default");
 
-        auto const f = [](whip::stream_t cuda_stream) {
-            dummy<<<1, 1, 0, cuda_stream>>>();
-        };
+        auto const f = [](whip::stream_t cuda_stream) { dummy<<<1, 1, 0, cuda_stream>>>(); };
 
         pika::chrono::detail::high_resolution_timer timer;
         for (std::size_t i = 0; i != iterations; ++i)
@@ -197,17 +176,14 @@ int pika_main(pika::program_options::variables_map& vm)
                 ex::transfer(ex::thread_pool_scheduler{}));
         }
         double elapsed = timer.elapsed();
-        std::cout
-            << "then_with_stream with transfer:                                "
-            << elapsed << '\n';
+        std::cout << "then_with_stream with transfer:                                " << elapsed
+                  << '\n';
     }
 
     {
         cu::enable_user_polling poll("default");
 
-        auto const f = [](whip::stream_t cuda_stream) {
-            dummy<<<1, 1, 0, cuda_stream>>>();
-        };
+        auto const f = [](whip::stream_t cuda_stream) { dummy<<<1, 1, 0, cuda_stream>>>(); };
 
         pika::chrono::detail::high_resolution_timer timer;
         for (std::size_t i = 0; i < batch_iterations; ++i)
@@ -215,12 +191,10 @@ int pika_main(pika::program_options::variables_map& vm)
             // We have to manually unroll this loop, because the type of the
             // sender changes for each additional then_with_stream call. The
             // number of unrolled calls must match batch_size above.
-            tt::sync_wait(ex::schedule(sched) | cu::then_with_stream(f) |
+            tt::sync_wait(ex::schedule(sched) | cu::then_with_stream(f) | cu::then_with_stream(f) |
+                cu::then_with_stream(f) | cu::then_with_stream(f) | cu::then_with_stream(f) |
+                cu::then_with_stream(f) | cu::then_with_stream(f) | cu::then_with_stream(f) |
                 cu::then_with_stream(f) | cu::then_with_stream(f) |
-                cu::then_with_stream(f) | cu::then_with_stream(f) |
-                cu::then_with_stream(f) | cu::then_with_stream(f) |
-                cu::then_with_stream(f) | cu::then_with_stream(f) |
-                cu::then_with_stream(f) |
                 ex::transfer(ex::thread_pool_scheduler{}));
         }
         // Do the remainder one-by-one
@@ -230,9 +204,8 @@ int pika_main(pika::program_options::variables_map& vm)
                 ex::transfer(ex::thread_pool_scheduler{}));
         }
         double elapsed = timer.elapsed();
-        std::cout
-            << "then_with_stream with transfer batched:                        "
-            << elapsed << '\n';
+        std::cout << "then_with_stream with transfer batched:                        " << elapsed
+                  << '\n';
     }
 
     return pika::finalize();

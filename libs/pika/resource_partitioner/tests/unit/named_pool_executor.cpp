@@ -21,8 +21,8 @@
 #include <utility>
 #include <vector>
 
-std::size_t const max_threads = (std::min)(
-    std::size_t(4), std::size_t(pika::threads::detail::hardware_concurrency()));
+std::size_t const max_threads =
+    (std::min)(std::size_t(4), std::size_t(pika::threads::detail::hardware_concurrency()));
 
 // dummy function we will call using async
 void dummy_task(std::size_t n, std::string const& text)
@@ -36,8 +36,7 @@ void dummy_task(std::size_t n, std::string const& text)
 int pika_main()
 {
     PIKA_TEST_EQ(std::size_t(max_threads), pika::resource::get_num_threads());
-    PIKA_TEST_EQ(
-        std::size_t(max_threads), pika::resource::get_num_thread_pools());
+    PIKA_TEST_EQ(std::size_t(max_threads), pika::resource::get_num_thread_pools());
     PIKA_TEST_EQ(std::size_t(0), pika::resource::get_pool_index("default"));
     PIKA_TEST_EQ(std::size_t(0), pika::resource::get_pool_index("pool-0"));
     PIKA_TEST(pika::resource::pool_exists("default"));
@@ -64,21 +63,17 @@ int pika_main()
     // segfaults or exceptions in any of the following will cause
     // the test to fail
     pika::execution::parallel_executor exec_0_hp(
-        &pika::resource::get_thread_pool("default"),
-        pika::execution::thread_priority::high);
+        &pika::resource::get_thread_pool("default"), pika::execution::thread_priority::high);
 
     pika::execution::parallel_executor exec_0(
-        &pika::resource::get_thread_pool("default"),
-        pika::execution::thread_priority::default_);
+        &pika::resource::get_thread_pool("default"), pika::execution::thread_priority::default_);
 
     std::vector<pika::future<void>> lotsa_futures;
 
     // use executors to schedule work on pools
-    lotsa_futures.push_back(
-        pika::async(exec_0_hp, &dummy_task, 3, "HP default"));
+    lotsa_futures.push_back(pika::async(exec_0_hp, &dummy_task, 3, "HP default"));
 
-    lotsa_futures.push_back(
-        pika::async(exec_0, &dummy_task, 3, "Normal default"));
+    lotsa_futures.push_back(pika::async(exec_0, &dummy_task, 3, "Normal default"));
 
     std::vector<pika::execution::parallel_executor> execs;
     std::vector<pika::execution::parallel_executor> execs_hp;
@@ -86,29 +81,26 @@ int pika_main()
     for (std::size_t i = 0; i < max_threads; ++i)
     {
         std::string pool_name = "pool-" + std::to_string(i);
-        execs.push_back(pika::execution::parallel_executor(
-            &pika::resource::get_thread_pool(pool_name),
-            pika::execution::thread_priority::default_));
+        execs.push_back(
+            pika::execution::parallel_executor(&pika::resource::get_thread_pool(pool_name),
+                pika::execution::thread_priority::default_));
         execs_hp.push_back(pika::execution::parallel_executor(
-            &pika::resource::get_thread_pool(pool_name),
-            pika::execution::thread_priority::high));
+            &pika::resource::get_thread_pool(pool_name), pika::execution::thread_priority::high));
     }
 
     for (std::size_t i = 0; i < max_threads; ++i)
     {
         std::string pool_name = "pool-" + std::to_string(i);
-        lotsa_futures.push_back(
-            pika::async(execs[i], &dummy_task, 3, pool_name + " normal"));
-        lotsa_futures.push_back(
-            pika::async(execs_hp[i], &dummy_task, 3, pool_name + " HP"));
+        lotsa_futures.push_back(pika::async(execs[i], &dummy_task, 3, pool_name + " normal"));
+        lotsa_futures.push_back(pika::async(execs_hp[i], &dummy_task, 3, pool_name + " HP"));
     }
 
     // check that the default executor still works
     pika::execution::parallel_executor large_stack_executor(
         pika::execution::thread_stacksize::large);
 
-    lotsa_futures.push_back(pika::async(
-        large_stack_executor, &dummy_task, 3, "true default + large stack"));
+    lotsa_futures.push_back(
+        pika::async(large_stack_executor, &dummy_task, 3, "true default + large stack"));
 
     // just wait until everything is done
     pika::when_all(lotsa_futures).get();
@@ -116,8 +108,8 @@ int pika_main()
     return pika::finalize();
 }
 
-void init_resource_partitioner_handler(pika::resource::partitioner& rp,
-    pika::program_options::variables_map const&)
+void init_resource_partitioner_handler(
+    pika::resource::partitioner& rp, pika::program_options::variables_map const&)
 {
     // before adding pools - set the default pool name to "pool-0"
     rp.set_default_pool_name("pool-0");
@@ -126,8 +118,7 @@ void init_resource_partitioner_handler(pika::resource::partitioner& rp,
     for (std::size_t i = 0; i < max_threads; i++)
     {
         std::string pool_name = "pool-" + std::to_string(i);
-        rp.create_thread_pool(
-            pool_name, pika::resource::scheduling_policy::local_priority_fifo);
+        rp.create_thread_pool(pool_name, pika::resource::scheduling_policy::local_priority_fifo);
     }
 
     // add one PU to each pool
@@ -140,10 +131,8 @@ void init_resource_partitioner_handler(pika::resource::partitioner& rp,
             {
                 if (thread_count < max_threads)
                 {
-                    std::string pool_name =
-                        "pool-" + std::to_string(thread_count);
-                    std::cout << "Added pu " << thread_count << " to "
-                              << pool_name << "\n";
+                    std::string pool_name = "pool-" + std::to_string(thread_count);
+                    std::cout << "Added pu " << thread_count << " to " << pool_name << "\n";
                     rp.add_resource(p, pool_name);
                     thread_count++;
                 }

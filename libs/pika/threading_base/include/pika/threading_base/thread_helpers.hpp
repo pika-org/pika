@@ -66,8 +66,7 @@ namespace pika::threads::detail {
     PIKA_EXPORT thread_state set_thread_state(thread_id_type const& id,
         thread_schedule_state state = thread_schedule_state::pending,
         thread_restart_state stateex = thread_restart_state::signaled,
-        execution::thread_priority priority =
-            execution::thread_priority::normal,
+        execution::thread_priority priority = execution::thread_priority::normal,
         bool retry_on_active = true, pika::error_code& ec = throws);
 
     ///////////////////////////////////////////////////////////////////////
@@ -100,24 +99,21 @@ namespace pika::threads::detail {
     ///                   parameter \a ec. Otherwise it throws an instance
     ///                   of pika#exception.
     PIKA_EXPORT thread_id_ref_type set_thread_state(thread_id_type const& id,
-        pika::chrono::steady_time_point const& abs_time,
-        std::atomic<bool>* started,
+        pika::chrono::steady_time_point const& abs_time, std::atomic<bool>* started,
         thread_schedule_state state = thread_schedule_state::pending,
         thread_restart_state stateex = thread_restart_state::timeout,
-        execution::thread_priority priority =
-            execution::thread_priority::normal,
+        execution::thread_priority priority = execution::thread_priority::normal,
         bool retry_on_active = true, error_code& ec = throws);
 
     inline thread_id_ref_type set_thread_state(thread_id_type const& id,
         pika::chrono::steady_time_point const& abs_time,
         thread_schedule_state state = thread_schedule_state::pending,
         thread_restart_state stateex = thread_restart_state::timeout,
-        execution::thread_priority priority =
-            execution::thread_priority::normal,
+        execution::thread_priority priority = execution::thread_priority::normal,
         bool retry_on_active = true, error_code& /*ec*/ = throws)
     {
-        return set_thread_state(id, abs_time, nullptr, state, stateex, priority,
-            retry_on_active, throws);
+        return set_thread_state(
+            id, abs_time, nullptr, state, stateex, priority, retry_on_active, throws);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -151,12 +147,11 @@ namespace pika::threads::detail {
         pika::chrono::steady_duration const& rel_time,
         thread_schedule_state state = thread_schedule_state::pending,
         thread_restart_state stateex = thread_restart_state::timeout,
-        execution::thread_priority priority =
-            execution::thread_priority::normal,
+        execution::thread_priority priority = execution::thread_priority::normal,
         bool retry_on_active = true, error_code& ec = throws)
     {
-        return set_thread_state(id, rel_time.from_now(), state, stateex,
-            priority, retry_on_active, ec);
+        return set_thread_state(
+            id, rel_time.from_now(), state, stateex, priority, retry_on_active, ec);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -180,18 +175,16 @@ namespace pika::threads::detail {
     ///                   parameter \a ec. Otherwise it throws an instance
     ///                   of pika#exception.
 #ifdef PIKA_HAVE_THREAD_FULLBACKTRACE_ON_SUSPENSION
-    PIKA_EXPORT char const* get_thread_backtrace(
-        thread_id_type const& id, error_code& ec = throws);
-    PIKA_EXPORT char const* set_thread_backtrace(thread_id_type const& id,
-        char const* bt = nullptr, error_code& ec = throws);
+    PIKA_EXPORT char const* get_thread_backtrace(thread_id_type const& id, error_code& ec = throws);
+    PIKA_EXPORT char const* set_thread_backtrace(
+        thread_id_type const& id, char const* bt = nullptr, error_code& ec = throws);
 #else
-#if !defined(DOXYGEN)
+# if !defined(DOXYGEN)
     PIKA_EXPORT debug::detail::backtrace const* get_thread_backtrace(
         thread_id_type const& id, error_code& ec = throws);
-    PIKA_EXPORT debug::detail::backtrace const* set_thread_backtrace(
-        thread_id_type const& id, debug::detail::backtrace const* bt = nullptr,
-        error_code& ec = throws);
-#endif
+    PIKA_EXPORT debug::detail::backtrace const* set_thread_backtrace(thread_id_type const& id,
+        debug::detail::backtrace const* bt = nullptr, error_code& ec = throws);
+# endif
 #endif
 
     ///////////////////////////////////////////////////////////////////////////
@@ -214,8 +207,7 @@ namespace pika::threads::detail {
     ///                   throw but returns the result code using the
     ///                   parameter \a ec. Otherwise it throws an instance
     ///                   of pika#exception.
-    PIKA_EXPORT thread_state get_thread_state(
-        thread_id_type const& id, error_code& ec = throws);
+    PIKA_EXPORT thread_state get_thread_state(thread_id_type const& id, error_code& ec = throws);
 
     ///////////////////////////////////////////////////////////////////////////
     /// The function get_thread_phase is part of the thread related API.
@@ -237,8 +229,7 @@ namespace pika::threads::detail {
     ///                   throw but returns the result code using the
     ///                   parameter \a ec. Otherwise it throws an instance
     ///                   of pika#exception.
-    PIKA_EXPORT std::size_t get_thread_phase(
-        thread_id_type const& id, error_code& ec = throws);
+    PIKA_EXPORT std::size_t get_thread_phase(thread_id_type const& id, error_code& ec = throws);
 
     ///////////////////////////////////////////////////////////////////////////
     /// Returns whether the given thread can be interrupted at this point.
@@ -318,11 +309,9 @@ namespace pika::threads::detail {
     ///                   throw but returns the result code using the
     ///                   parameter \a ec. Otherwise it throws an instance
     ///                   of pika#exception.
-    PIKA_EXPORT void interrupt_thread(
-        thread_id_type const& id, bool flag, error_code& ec = throws);
+    PIKA_EXPORT void interrupt_thread(thread_id_type const& id, bool flag, error_code& ec = throws);
 
-    inline void interrupt_thread(
-        thread_id_type const& id, error_code& ec = throws)
+    inline void interrupt_thread(thread_id_type const& id, error_code& ec = throws)
     {
         interrupt_thread(id, true, ec);
     }
@@ -342,8 +331,7 @@ namespace pika::threads::detail {
     ///                   throw but returns the result code using the
     ///                   parameter \a ec. Otherwise it throws an instance
     ///                   of pika#exception.
-    PIKA_EXPORT void interruption_point(
-        thread_id_type const& id, error_code& ec = throws);
+    PIKA_EXPORT void interruption_point(thread_id_type const& id, error_code& ec = throws);
 
     ///////////////////////////////////////////////////////////////////////////
     /// Return priority of the given thread
@@ -376,23 +364,19 @@ namespace pika::threads::detail {
     ///                   throw but returns the result code using the
     ///                   parameter \a ec. Otherwise it throws an instance
     ///                   of pika#exception.
-    PIKA_EXPORT std::ptrdiff_t get_stack_size(
-        thread_id_type const& id, error_code& ec = throws);
+    PIKA_EXPORT std::ptrdiff_t get_stack_size(thread_id_type const& id, error_code& ec = throws);
 
     ///////////////////////////////////////////////////////////////////////////
     /// \cond NOINTERNAL
-    PIKA_EXPORT void run_thread_exit_callbacks(
-        thread_id_type const& id, error_code& ec = throws);
+    PIKA_EXPORT void run_thread_exit_callbacks(thread_id_type const& id, error_code& ec = throws);
 
-    PIKA_EXPORT bool add_thread_exit_callback(thread_id_type const& id,
-        util::detail::function<void()> const& f, error_code& ec = throws);
+    PIKA_EXPORT bool add_thread_exit_callback(
+        thread_id_type const& id, util::detail::function<void()> const& f, error_code& ec = throws);
 
-    PIKA_EXPORT void free_thread_exit_callbacks(
-        thread_id_type const& id, error_code& ec = throws);
+    PIKA_EXPORT void free_thread_exit_callbacks(thread_id_type const& id, error_code& ec = throws);
 
     ///////////////////////////////////////////////////////////////////////////
-    PIKA_EXPORT std::size_t get_thread_data(
-        thread_id_type const& id, error_code& ec = throws);
+    PIKA_EXPORT std::size_t get_thread_data(thread_id_type const& id, error_code& ec = throws);
 
     PIKA_EXPORT std::size_t set_thread_data(
         thread_id_type const& id, std::size_t data, error_code& ec = throws);
@@ -435,10 +419,9 @@ namespace pika::this_thread {
     ///         \a pika#invalid_status.
     ///
     PIKA_EXPORT threads::detail::thread_restart_state suspend(
-        threads::detail::thread_schedule_state state,
-        threads::detail::thread_id_type id,
-        detail::thread_description const& description =
-            detail::thread_description("this_thread::suspend"),
+        threads::detail::thread_schedule_state state, threads::detail::thread_id_type id,
+        detail::thread_description const& description = detail::thread_description(
+            "this_thread::suspend"),
         error_code& ec = throws);
 
     /// The function \a suspend will return control to the thread manager
@@ -460,12 +443,11 @@ namespace pika::this_thread {
     inline threads::detail::thread_restart_state suspend(
         threads::detail::thread_schedule_state state =
             threads::detail::thread_schedule_state::pending,
-        detail::thread_description const& description =
-            detail::thread_description("this_thread::suspend"),
+        detail::thread_description const& description = detail::thread_description(
+            "this_thread::suspend"),
         error_code& ec = throws)
     {
-        return suspend(
-            state, threads::detail::invalid_thread_id, description, ec);
+        return suspend(state, threads::detail::invalid_thread_id, description, ec);
     }
 
     /// The function \a suspend will return control to the thread manager
@@ -486,10 +468,9 @@ namespace pika::this_thread {
     ///         \a pika#invalid_status.
     ///
     PIKA_EXPORT threads::detail::thread_restart_state suspend(
-        pika::chrono::steady_time_point const& abs_time,
-        threads::detail::thread_id_type id,
-        detail::thread_description const& description =
-            detail::thread_description("this_thread::suspend"),
+        pika::chrono::steady_time_point const& abs_time, threads::detail::thread_id_type id,
+        detail::thread_description const& description = detail::thread_description(
+            "this_thread::suspend"),
         error_code& ec = throws);
 
     /// The function \a suspend will return control to the thread manager
@@ -511,12 +492,11 @@ namespace pika::this_thread {
     ///
     inline threads::detail::thread_restart_state suspend(
         pika::chrono::steady_time_point const& abs_time,
-        detail::thread_description const& description =
-            detail::thread_description("this_thread::suspend"),
+        detail::thread_description const& description = detail::thread_description(
+            "this_thread::suspend"),
         error_code& ec = throws)
     {
-        return suspend(
-            abs_time, threads::detail::invalid_thread_id, description, ec);
+        return suspend(abs_time, threads::detail::invalid_thread_id, description, ec);
     }
 
     /// The function \a suspend will return control to the thread manager
@@ -538,12 +518,11 @@ namespace pika::this_thread {
     ///
     inline threads::detail::thread_restart_state suspend(
         pika::chrono::steady_duration const& rel_time,
-        detail::thread_description const& description =
-            detail::thread_description("this_thread::suspend"),
+        detail::thread_description const& description = detail::thread_description(
+            "this_thread::suspend"),
         error_code& ec = throws)
     {
-        return suspend(rel_time.from_now(), threads::detail::invalid_thread_id,
-            description, ec);
+        return suspend(rel_time.from_now(), threads::detail::invalid_thread_id, description, ec);
     }
 
     /// The function \a suspend will return control to the thread manager
@@ -564,10 +543,9 @@ namespace pika::this_thread {
     ///         \a pika#invalid_status.
     ///
     inline threads::detail::thread_restart_state suspend(
-        pika::chrono::steady_duration const& rel_time,
-        threads::detail::thread_id_type const& id,
-        detail::thread_description const& description =
-            detail::thread_description("this_thread::suspend"),
+        pika::chrono::steady_duration const& rel_time, threads::detail::thread_id_type const& id,
+        detail::thread_description const& description = detail::thread_description(
+            "this_thread::suspend"),
         error_code& ec = throws)
     {
         return suspend(rel_time.from_now(), id, description, ec);
@@ -591,12 +569,12 @@ namespace pika::this_thread {
     ///         \a pika#invalid_status.
     ///
     inline threads::detail::thread_restart_state suspend(std::uint64_t ms,
-        detail::thread_description const& description =
-            detail::thread_description("this_thread::suspend"),
+        detail::thread_description const& description = detail::thread_description(
+            "this_thread::suspend"),
         error_code& ec = throws)
     {
-        return suspend(std::chrono::milliseconds(ms),
-            threads::detail::invalid_thread_id, description, ec);
+        return suspend(
+            std::chrono::milliseconds(ms), threads::detail::invalid_thread_id, description, ec);
     }
 
     /// Returns a pointer to the pool that was used to run the current thread
@@ -610,8 +588,7 @@ namespace pika::this_thread {
     ///         If this function is called while the thread-manager is not
     ///         running, it will throw an \a pika#exception with an error code of
     ///         \a pika#invalid_status.
-    PIKA_EXPORT threads::detail::thread_pool_base* get_pool(
-        error_code& ec = throws);
+    PIKA_EXPORT threads::detail::thread_pool_base* get_pool(error_code& ec = throws);
 
     /// \cond NOINTERNAL
     // returns the remaining available stack space
@@ -620,7 +597,6 @@ namespace pika::this_thread {
     // returns whether the remaining stack-space is at least as large as
     // requested
     PIKA_EXPORT bool has_sufficient_stack_space(
-        std::size_t space_needed = static_cast<std::size_t>(8) *
-            PIKA_THREADS_STACK_OVERHEAD);
+        std::size_t space_needed = static_cast<std::size_t>(8) * PIKA_THREADS_STACK_OVERHEAD);
     /// \endcond
 }    // namespace pika::this_thread

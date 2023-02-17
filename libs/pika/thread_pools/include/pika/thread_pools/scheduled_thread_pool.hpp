@@ -45,8 +45,8 @@ namespace pika::threads::detail {
     {
     public:
         ///////////////////////////////////////////////////////////////////
-        scheduled_thread_pool(std::unique_ptr<Scheduler> sched,
-            thread_pool_init_parameters const& init);
+        scheduled_thread_pool(
+            std::unique_ptr<Scheduler> sched, thread_pool_init_parameters const& init);
         virtual ~scheduled_thread_pool();
 
         void print_pool(std::ostream& os) override;
@@ -71,18 +71,15 @@ namespace pika::threads::detail {
             sched_->Scheduler::do_some_work(num_thread);
         }
 
-        void create_thread(thread_init_data& data, thread_id_ref_type& id,
+        void create_thread(thread_init_data& data, thread_id_ref_type& id, error_code& ec) override;
+
+        thread_id_ref_type create_work(thread_init_data& data, error_code& ec) override;
+
+        thread_state set_state(thread_id_type const& id, thread_schedule_state new_state,
+            thread_restart_state new_state_ex, execution::thread_priority priority,
             error_code& ec) override;
 
-        thread_id_ref_type create_work(
-            thread_init_data& data, error_code& ec) override;
-
-        thread_state set_state(thread_id_type const& id,
-            thread_schedule_state new_state, thread_restart_state new_state_ex,
-            execution::thread_priority priority, error_code& ec) override;
-
-        void report_error(
-            std::size_t num, std::exception_ptr const& e) override;
+        void report_error(std::size_t num, std::exception_ptr const& e) override;
 
         void abort_all_suspended_threads() override
         {
@@ -95,11 +92,9 @@ namespace pika::threads::detail {
         }
 
         std::int64_t get_thread_count(thread_schedule_state state,
-            execution::thread_priority priority, std::size_t num,
-            bool reset) override
+            execution::thread_priority priority, std::size_t num, bool reset) override
         {
-            return sched_->Scheduler::get_thread_count(
-                state, priority, num, reset);
+            return sched_->Scheduler::get_thread_count(state, priority, num, reset);
         }
 
         std::int64_t get_idle_core_count() const override;
@@ -111,8 +106,7 @@ namespace pika::threads::detail {
             return sched_->Scheduler::get_background_thread_count();
         }
 
-        bool enumerate_threads(
-            util::detail::function<bool(thread_id_type)> const& f,
+        bool enumerate_threads(util::detail::function<bool(thread_id_type)> const& f,
             thread_schedule_state state) const override
         {
             return sched_->Scheduler::enumerate_threads(f, state);
@@ -124,13 +118,11 @@ namespace pika::threads::detail {
         }
 
         ///////////////////////////////////////////////////////////////////
-        bool run(
-            std::unique_lock<std::mutex>& l, std::size_t pool_threads) override;
+        bool run(std::unique_lock<std::mutex>& l, std::size_t pool_threads) override;
 
         template <typename Lock>
         void stop_locked(Lock& l, bool blocking = true);
-        void stop(
-            std::unique_lock<std::mutex>& l, bool blocking = true) override;
+        void stop(std::unique_lock<std::mutex>& l, bool blocking = true) override;
 
         void wait() override;
         bool is_busy() override;
@@ -145,11 +137,9 @@ namespace pika::threads::detail {
             std::size_t virt_core, error_code& = pika::throws) override;
 
         ///////////////////////////////////////////////////////////////////
-        std::thread& get_os_thread_handle(
-            std::size_t global_thread_num) override
+        std::thread& get_os_thread_handle(std::size_t global_thread_num) override
         {
-            std::size_t num_thread_local =
-                global_thread_num - this->thread_offset_;
+            std::size_t num_thread_local = global_thread_num - this->thread_offset_;
             PIKA_ASSERT(num_thread_local < threads_.size());
             return threads_[num_thread_local];
         }
@@ -165,11 +155,9 @@ namespace pika::threads::detail {
         std::size_t get_active_os_thread_count() const override
         {
             std::size_t active_os_thread_count = 0;
-            for (std::size_t thread_num = 0; thread_num < threads_.size();
-                 ++thread_num)
+            for (std::size_t thread_num = 0; thread_num < threads_.size(); ++thread_num)
             {
-                if (sched_->Scheduler::get_state(thread_num).load() ==
-                    runtime_state::running)
+                if (sched_->Scheduler::get_state(thread_num).load() == runtime_state::running)
                 {
                     ++active_os_thread_count;
                 }
@@ -179,57 +167,48 @@ namespace pika::threads::detail {
         }
 
 #ifdef PIKA_HAVE_THREAD_STEALING_COUNTS
-        std::int64_t get_num_pending_misses(
-            std::size_t num, bool reset) override
+        std::int64_t get_num_pending_misses(std::size_t num, bool reset) override
         {
             return sched_->Scheduler::get_num_pending_misses(num, reset);
         }
 
-        std::int64_t get_num_pending_accesses(
-            std::size_t num, bool reset) override
+        std::int64_t get_num_pending_accesses(std::size_t num, bool reset) override
         {
             return sched_->Scheduler::get_num_pending_accesses(num, reset);
         }
 
-        std::int64_t get_num_stolen_from_pending(
-            std::size_t num, bool reset) override
+        std::int64_t get_num_stolen_from_pending(std::size_t num, bool reset) override
         {
             return sched_->Scheduler::get_num_stolen_from_pending(num, reset);
         }
 
-        std::int64_t get_num_stolen_to_pending(
-            std::size_t num, bool reset) override
+        std::int64_t get_num_stolen_to_pending(std::size_t num, bool reset) override
         {
             return sched_->Scheduler::get_num_stolen_to_pending(num, reset);
         }
 
-        std::int64_t get_num_stolen_from_staged(
-            std::size_t num, bool reset) override
+        std::int64_t get_num_stolen_from_staged(std::size_t num, bool reset) override
         {
             return sched_->Scheduler::get_num_stolen_from_staged(num, reset);
         }
 
-        std::int64_t get_num_stolen_to_staged(
-            std::size_t num, bool reset) override
+        std::int64_t get_num_stolen_to_staged(std::size_t num, bool reset) override
         {
             return sched_->Scheduler::get_num_stolen_to_staged(num, reset);
         }
 #endif
-        std::int64_t get_queue_length(
-            std::size_t num_thread, bool /* reset */) override
+        std::int64_t get_queue_length(std::size_t num_thread, bool /* reset */) override
         {
             return sched_->Scheduler::get_queue_length(num_thread);
         }
 
 #ifdef PIKA_HAVE_THREAD_QUEUE_WAITTIME
-        std::int64_t get_average_thread_wait_time(
-            std::size_t num_thread, bool /* reset */) override
+        std::int64_t get_average_thread_wait_time(std::size_t num_thread, bool /* reset */) override
         {
             return sched_->Scheduler::get_average_thread_wait_time(num_thread);
         }
 
-        std::int64_t get_average_task_wait_time(
-            std::size_t num_thread, bool /* reset */) override
+        std::int64_t get_average_task_wait_time(std::size_t num_thread, bool /* reset */) override
         {
             return sched_->Scheduler::get_average_task_wait_time(num_thread);
         }
@@ -240,14 +219,14 @@ namespace pika::threads::detail {
 #if defined(PIKA_HAVE_THREAD_CUMULATIVE_COUNTS)
         std::int64_t get_executed_threads(std::size_t, bool) override;
         std::int64_t get_executed_thread_phases(std::size_t, bool) override;
-#if defined(PIKA_HAVE_THREAD_IDLE_RATES)
+# if defined(PIKA_HAVE_THREAD_IDLE_RATES)
         std::int64_t get_thread_phase_duration(std::size_t, bool) override;
         std::int64_t get_thread_duration(std::size_t, bool) override;
         std::int64_t get_thread_phase_overhead(std::size_t, bool) override;
         std::int64_t get_thread_overhead(std::size_t, bool) override;
         std::int64_t get_cumulative_thread_duration(std::size_t, bool) override;
         std::int64_t get_cumulative_thread_overhead(std::size_t, bool) override;
-#endif
+# endif
 #endif
 
         std::int64_t get_cumulative_duration(std::size_t, bool) override;
@@ -256,10 +235,10 @@ namespace pika::threads::detail {
         std::int64_t avg_idle_rate_all(bool reset) override;
         std::int64_t avg_idle_rate(std::size_t, bool) override;
 
-#if defined(PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES)
+# if defined(PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES)
         std::int64_t avg_creation_idle_rate(std::size_t, bool) override;
         std::int64_t avg_cleanup_idle_rate(std::size_t, bool) override;
-#endif
+# endif
 #endif
 
         std::int64_t get_idle_loop_count(std::size_t num, bool reset) override;
@@ -272,10 +251,8 @@ namespace pika::threads::detail {
         void resume_internal(bool blocking, error_code& ec);
         void suspend_internal(error_code& ec);
 
-        void remove_processing_unit_internal(
-            std::size_t virt_core, error_code& = pika::throws);
-        void add_processing_unit_internal(std::size_t virt_core,
-            std::size_t thread_num,
+        void remove_processing_unit_internal(std::size_t virt_core, error_code& = pika::throws);
+        void add_processing_unit_internal(std::size_t virt_core, std::size_t thread_num,
             std::shared_ptr<pika::concurrency::detail::barrier> startup,
             error_code& ec = pika::throws);
 
@@ -303,7 +280,7 @@ namespace pika::threads::detail {
             std::int64_t reset_executed_threads_;
             std::int64_t reset_executed_thread_phases_;
 
-#if defined(PIKA_HAVE_THREAD_IDLE_RATES)
+# if defined(PIKA_HAVE_THREAD_IDLE_RATES)
             std::int64_t reset_thread_duration_;
             std::int64_t reset_thread_duration_times_;
 
@@ -322,20 +299,20 @@ namespace pika::threads::detail {
 
             std::int64_t reset_cumulative_thread_overhead_;
             std::int64_t reset_cumulative_thread_overhead_total_;
-#endif
+# endif
 #endif
 
 #if defined(PIKA_HAVE_THREAD_IDLE_RATES)
             std::int64_t reset_idle_rate_time_;
             std::int64_t reset_idle_rate_time_total_;
 
-#if defined(PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES)
+# if defined(PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES)
             std::int64_t reset_creation_idle_rate_time_;
             std::int64_t reset_creation_idle_rate_time_total_;
 
             std::int64_t reset_cleanup_idle_rate_time_;
             std::int64_t reset_cleanup_idle_rate_time_total_;
-#endif
+# endif
 #endif
             // tfunc_impl timers
             std::int64_t exec_times_;

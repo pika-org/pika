@@ -30,8 +30,8 @@ namespace pika::detail {
 
     inline auto is_any_of(char const* chars)
     {
-        return is_any_of_pred<char, std::char_traits<char>,
-            std::allocator<char>>{std::string{chars}};
+        return is_any_of_pred<char, std::char_traits<char>, std::allocator<char>>{
+            std::string{chars}};
     }
 
 }    // namespace pika::detail

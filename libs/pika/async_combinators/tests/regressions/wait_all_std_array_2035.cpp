@@ -13,8 +13,7 @@
 
 int pika_main()
 {
-    std::array<pika::shared_future<int>, 1> future_array{
-        {pika::make_ready_future(0)}};
+    std::array<pika::shared_future<int>, 1> future_array{{pika::make_ready_future(0)}};
 
     pika::wait_all(future_array.cbegin(), future_array.cend());
 

@@ -42,51 +42,43 @@ namespace pika::detail {
         // do secondary command line processing, check validity of options only
         try
         {
-            std::string unknown_cmd_line(
-                ini.get_entry("pika.unknown_cmd_line", ""));
+            std::string unknown_cmd_line(ini.get_entry("pika.unknown_cmd_line", ""));
             if (!unknown_cmd_line.empty())
             {
-                std::string runtime_mode(
-                    ini.get_entry("pika.runtime_mode", ""));
+                std::string runtime_mode(ini.get_entry("pika.runtime_mode", ""));
                 pika::program_options::variables_map vm;
 
-                commandline_error_mode mode =
-                    commandline_error_mode::rethrow_on_error;
-                std::string allow_unknown(
-                    ini.get_entry("pika.commandline.allow_unknown", "0"));
+                commandline_error_mode mode = commandline_error_mode::rethrow_on_error;
+                std::string allow_unknown(ini.get_entry("pika.commandline.allow_unknown", "0"));
                 if (allow_unknown != "0")
                     mode = commandline_error_mode::allow_unregistered;
 
                 std::vector<std::string> still_unregistered_options;
-                parse_commandline(ini, options, unknown_cmd_line, vm, mode,
-                    nullptr, &still_unregistered_options);
+                parse_commandline(
+                    ini, options, unknown_cmd_line, vm, mode, nullptr, &still_unregistered_options);
 
                 std::string still_unknown_commandline;
-                for (std::size_t i = 1; i < still_unregistered_options.size();
-                     ++i)
+                for (std::size_t i = 1; i < still_unregistered_options.size(); ++i)
                 {
                     if (i != 1)
                     {
                         still_unknown_commandline += " ";
                     }
-                    still_unknown_commandline +=
-                        enquote(still_unregistered_options[i]);
+                    still_unknown_commandline += enquote(still_unregistered_options[i]);
                 }
 
                 if (!still_unknown_commandline.empty())
                 {
                     util::section* s = ini.get_section("pika");
                     PIKA_ASSERT(s != nullptr);
-                    s->add_entry(
-                        "unknown_cmd_line_option", still_unknown_commandline);
+                    s->add_entry("unknown_cmd_line_option", still_unknown_commandline);
                 }
             }
 
             std::string fullhelp(ini.get_entry("pika.cmd_line_help", ""));
             if (!fullhelp.empty())
             {
-                std::string help_option(
-                    ini.get_entry("pika.cmd_line_help_option", ""));
+                std::string help_option(ini.get_entry("pika.cmd_line_help_option", ""));
                 if (0 == std::string("full").find(help_option))
                 {
                     std::cout << decode_string(fullhelp);
@@ -94,24 +86,21 @@ namespace pika::detail {
                 }
                 else
                 {
-                    throw pika::detail::command_line_error(
-                        "unknown help option: " + help_option);
+                    throw pika::detail::command_line_error("unknown help option: " + help_option);
                 }
                 return 1;
             }
 
             // secondary command line handling, looking for --exit and other
             // options
-            std::string cmd_line =
-                ini.get_entry("pika.commandline.command", "") + " " +
+            std::string cmd_line = ini.get_entry("pika.commandline.command", "") + " " +
                 ini.get_entry("pika.commandline.prepend_options", "") +
                 ini.get_entry("pika.commandline.options", "") +
                 ini.get_entry("pika.commandline.config_options", "");
 
             if (!cmd_line.empty())
             {
-                std::string runtime_mode(
-                    ini.get_entry("pika.runtime_mode", ""));
+                std::string runtime_mode(ini.get_entry("pika.runtime_mode", ""));
                 pika::program_options::variables_map vm;
 
                 parse_commandline(ini, options, cmd_line, vm,
@@ -121,8 +110,7 @@ namespace pika::detail {
                 if (vm.count("pika:print-bind"))
                 {
                     std::size_t num_threads =
-                        pika::detail::from_string<std::size_t>(
-                            ini.get_entry("pika.os_threads", 1));
+                        pika::detail::from_string<std::size_t>(ini.get_entry("pika.os_threads", 1));
                     handle_print_bind(num_threads);
                 }
 

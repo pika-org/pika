@@ -31,25 +31,21 @@ namespace pika::parallel::execution::detail {
     struct post_policy_dispatch<launch::fork_policy>
     {
         template <typename F, typename... Ts>
-        static void call(launch::fork_policy const& policy,
-            pika::detail::thread_description const& desc,
+        static void
+        call(launch::fork_policy const& policy, pika::detail::thread_description const& desc,
             threads::detail::thread_pool_base* pool, F&& f, Ts&&... ts)
         {
             threads::detail::thread_init_data data(
                 threads::detail::make_thread_function_nullary(
-                    pika::util::detail::deferred_call(
-                        PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)),
+                    pika::util::detail::deferred_call(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)),
                 desc, policy.priority(),
                 pika::execution::thread_schedule_hint(
                     static_cast<std::int16_t>(get_worker_thread_num())),
-                policy.stacksize(),
-                threads::detail::thread_schedule_state::pending_do_not_schedule,
+                policy.stacksize(), threads::detail::thread_schedule_state::pending_do_not_schedule,
                 true);
 
-            threads::detail::thread_id_ref_type tid =
-                threads::detail::register_thread(data, pool);
-            threads::detail::thread_id_type tid_self =
-                threads::detail::get_self_id();
+            threads::detail::thread_id_ref_type tid = threads::detail::register_thread(data, pool);
+            threads::detail::thread_id_type tid_self = threads::detail::get_self_id();
 
             // make sure this thread is executed last
             if (tid && tid_self &&
@@ -57,8 +53,7 @@ namespace pika::parallel::execution::detail {
                     get_thread_id_data(tid_self)->get_scheduler_base())
             {
                 // yield_to(tid)
-                pika::this_thread::suspend(
-                    threads::detail::thread_schedule_state::pending,
+                pika::this_thread::suspend(threads::detail::thread_schedule_state::pending,
                     tid.noref(), "post_policy_dispatch(suspend)");
             }
         }
@@ -67,8 +62,8 @@ namespace pika::parallel::execution::detail {
         static void call(launch::fork_policy const& policy,
             pika::detail::thread_description const& desc, F&& f, Ts&&... ts)
         {
-            call(policy, desc, threads::detail::get_self_or_default_pool(),
-                PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
+            call(policy, desc, threads::detail::get_self_or_default_pool(), PIKA_FORWARD(F, f),
+                PIKA_FORWARD(Ts, ts)...);
         }
     };
 
@@ -76,21 +71,18 @@ namespace pika::parallel::execution::detail {
     struct post_policy_dispatch<launch::sync_policy>
     {
         template <typename F, typename... Ts>
-        static void call(launch::sync_policy const&,
-            pika::detail::thread_description const& /* desc */,
+        static void
+        call(launch::sync_policy const&, pika::detail::thread_description const& /* desc */,
             threads::detail::thread_pool_base* /* pool */, F&& f, Ts&&... ts)
         {
-            pika::detail::call_sync(
-                PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
+            pika::detail::call_sync(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
         }
 
         template <typename F, typename... Ts>
         static void call(launch::sync_policy const& /* policy */,
-            pika::detail::thread_description const& /* desc */, F&& f,
-            Ts&&... ts) noexcept
+            pika::detail::thread_description const& /* desc */, F&& f, Ts&&... ts) noexcept
         {
-            pika::detail::call_sync(
-                PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
+            pika::detail::call_sync(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
         }
     };
 
@@ -98,30 +90,27 @@ namespace pika::parallel::execution::detail {
     struct post_policy_dispatch
     {
         template <typename F, typename... Ts>
-        static void
-        call(Policy const& policy, pika::detail::thread_description const& desc,
+        static void call(Policy const& policy, pika::detail::thread_description const& desc,
             threads::detail::thread_pool_base* pool, F&& f, Ts&&... ts)
         {
             if (policy == launch::sync)
             {
-                pika::detail::call_sync(
-                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
+                pika::detail::call_sync(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
                 return;
             }
             else if (policy == launch::fork)
             {
-                auto fork_policy = launch::fork_policy(
-                    policy.priority(), policy.stacksize(), policy.hint());
+                auto fork_policy =
+                    launch::fork_policy(policy.priority(), policy.stacksize(), policy.hint());
 
-                post_policy_dispatch<launch::fork_policy>::call(fork_policy,
-                    desc, pool, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
+                post_policy_dispatch<launch::fork_policy>::call(
+                    fork_policy, desc, pool, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
                 return;
             }
 
             threads::detail::thread_init_data data(
                 threads::detail::make_thread_function_nullary(
-                    pika::util::detail::deferred_call(
-                        PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)),
+                    pika::util::detail::deferred_call(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)),
                 desc, policy.priority(), policy.hint(), policy.stacksize(),
                 threads::detail::thread_schedule_state::pending);
 
@@ -129,29 +118,27 @@ namespace pika::parallel::execution::detail {
         }
 
         template <typename F, typename... Ts>
-        static void call(Policy const& policy,
-            pika::detail::thread_description const& desc, F&& f, Ts&&... ts)
+        static void
+        call(Policy const& policy, pika::detail::thread_description const& desc, F&& f, Ts&&... ts)
         {
             if (policy == launch::sync)
             {
-                pika::detail::call_sync(
-                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
+                pika::detail::call_sync(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
                 return;
             }
             else if (policy == launch::fork)
             {
-                auto fork_policy = launch::fork_policy(
-                    policy.priority(), policy.stacksize(), policy.hint());
+                auto fork_policy =
+                    launch::fork_policy(policy.priority(), policy.stacksize(), policy.hint());
 
-                post_policy_dispatch<launch::fork_policy>::call(fork_policy,
-                    desc, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
+                post_policy_dispatch<launch::fork_policy>::call(
+                    fork_policy, desc, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
                 return;
             }
 
             threads::detail::thread_init_data data(
                 threads::detail::make_thread_function_nullary(
-                    pika::util::detail::deferred_call(
-                        PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)),
+                    pika::util::detail::deferred_call(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)),
                 desc, policy.priority(), policy.hint(), policy.stacksize(),
                 threads::detail::thread_schedule_state::pending);
 

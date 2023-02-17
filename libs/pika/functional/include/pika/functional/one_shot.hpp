@@ -22,8 +22,7 @@ namespace pika::util::detail {
     class one_shot_wrapper    //-V690
     {
     public:
-        template <typename F_,
-            typename = std::enable_if_t<std::is_constructible_v<F, F_>>>
+        template <typename F_, typename = std::enable_if_t<std::is_constructible_v<F, F_>>>
         constexpr explicit one_shot_wrapper(F_&& f)
           : _f(PIKA_FORWARD(F_, f))
 #if defined(PIKA_DEBUG)
@@ -52,8 +51,7 @@ namespace pika::util::detail {
         }
 
         template <typename... Ts>
-        constexpr PIKA_HOST_DEVICE std::invoke_result_t<F, Ts...>
-        operator()(Ts&&... vs)
+        constexpr PIKA_HOST_DEVICE std::invoke_result_t<F, Ts...> operator()(Ts&&... vs)
         {
             check_call();
 
@@ -77,12 +75,12 @@ namespace pika::util::detail {
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
         util::itt::string_handle get_function_annotation_itt() const
         {
-#if defined(PIKA_HAVE_THREAD_DESCRIPTION)
+# if defined(PIKA_HAVE_THREAD_DESCRIPTION)
             return pika::detail::get_function_annotation_itt<F>::call(_f);
-#else
+# else
             static util::itt::string_handle sh("one_shot_wrapper");
             return sh;
-#endif
+# endif
         }
 #endif
 
@@ -107,8 +105,7 @@ namespace pika::detail {
     template <typename F>
     struct get_function_address<util::detail::one_shot_wrapper<F>>
     {
-        static constexpr std::size_t call(
-            util::detail::one_shot_wrapper<F> const& f) noexcept
+        static constexpr std::size_t call(util::detail::one_shot_wrapper<F> const& f) noexcept
         {
             return f.get_function_address();
         }
@@ -118,23 +115,21 @@ namespace pika::detail {
     template <typename F>
     struct get_function_annotation<util::detail::one_shot_wrapper<F>>
     {
-        static constexpr char const* call(
-            util::detail::one_shot_wrapper<F> const& f) noexcept
+        static constexpr char const* call(util::detail::one_shot_wrapper<F> const& f) noexcept
         {
             return f.get_function_annotation();
         }
     };
 
-#if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
+# if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
     template <typename F>
     struct get_function_annotation_itt<util::detail::one_shot_wrapper<F>>
     {
-        static util::itt::string_handle call(
-            util::detail::one_shot_wrapper<F> const& f) noexcept
+        static util::itt::string_handle call(util::detail::one_shot_wrapper<F> const& f) noexcept
         {
             return f.get_function_annotation_itt();
         }
     };
-#endif
+# endif
 #endif
 }    // namespace pika::detail

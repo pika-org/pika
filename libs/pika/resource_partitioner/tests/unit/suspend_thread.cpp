@@ -24,8 +24,8 @@
 #include <utility>
 #include <vector>
 
-std::size_t const max_threads = (std::min)(
-    std::size_t(4), std::size_t(pika::threads::detail::hardware_concurrency()));
+std::size_t const max_threads =
+    (std::min)(std::size_t(4), std::size_t(pika::threads::detail::hardware_concurrency()));
 
 int pika_main()
 {
@@ -33,28 +33,23 @@ int pika_main()
 
     PIKA_TEST_EQ(std::size_t(max_threads), num_threads);
 
-    pika::threads::detail::thread_pool_base& tp =
-        pika::resource::get_thread_pool("default");
+    pika::threads::detail::thread_pool_base& tp = pika::resource::get_thread_pool("default");
 
     PIKA_TEST_EQ(tp.get_active_os_thread_count(), std::size_t(max_threads));
 
     {
         // Check number of used resources
-        for (std::size_t thread_num = 0; thread_num < num_threads - 1;
-             ++thread_num)
+        for (std::size_t thread_num = 0; thread_num < num_threads - 1; ++thread_num)
         {
-            pika::threads::detail::suspend_processing_unit(tp, thread_num)
-                .get();
-            PIKA_TEST_EQ(std::size_t(num_threads - thread_num - 1),
-                tp.get_active_os_thread_count());
+            pika::threads::detail::suspend_processing_unit(tp, thread_num).get();
+            PIKA_TEST_EQ(
+                std::size_t(num_threads - thread_num - 1), tp.get_active_os_thread_count());
         }
 
-        for (std::size_t thread_num = 0; thread_num < num_threads - 1;
-             ++thread_num)
+        for (std::size_t thread_num = 0; thread_num < num_threads - 1; ++thread_num)
         {
             pika::threads::detail::resume_processing_unit(tp, thread_num).get();
-            PIKA_TEST_EQ(
-                std::size_t(thread_num + 2), tp.get_active_os_thread_count());
+            PIKA_TEST_EQ(std::size_t(thread_num + 2), tp.get_active_os_thread_count());
         }
     }
 
@@ -64,43 +59,36 @@ int pika_main()
         // NOTE: This only works as long as there is another OS thread which has
         // no work and is able to steal.
         std::size_t worker_thread_num = pika::get_worker_thread_num();
-        pika::threads::detail::suspend_processing_unit(tp, worker_thread_num)
-            .get();
-        pika::threads::detail::resume_processing_unit(tp, worker_thread_num)
-            .get();
+        pika::threads::detail::suspend_processing_unit(tp, worker_thread_num).get();
+        pika::threads::detail::resume_processing_unit(tp, worker_thread_num).get();
     }
 
     {
         // Check when suspending all but one, we end up on the same thread
         std::size_t thread_num = 0;
         auto test_function = [&thread_num, &tp]() {
-            PIKA_TEST_EQ(thread_num + tp.get_thread_offset(),
-                pika::get_worker_thread_num());
+            PIKA_TEST_EQ(thread_num + tp.get_thread_offset(), pika::get_worker_thread_num());
         };
 
         for (thread_num = 0; thread_num < num_threads; ++thread_num)
         {
-            for (std::size_t thread_num_suspend = 0;
-                 thread_num_suspend < num_threads; ++thread_num_suspend)
+            for (std::size_t thread_num_suspend = 0; thread_num_suspend < num_threads;
+                 ++thread_num_suspend)
             {
                 if (thread_num != thread_num_suspend)
                 {
-                    pika::threads::detail::suspend_processing_unit(
-                        tp, thread_num_suspend)
-                        .get();
+                    pika::threads::detail::suspend_processing_unit(tp, thread_num_suspend).get();
                 }
             }
 
             pika::async(test_function).wait();
 
-            for (std::size_t thread_num_resume = 0;
-                 thread_num_resume < num_threads; ++thread_num_resume)
+            for (std::size_t thread_num_resume = 0; thread_num_resume < num_threads;
+                 ++thread_num_resume)
             {
                 if (thread_num != thread_num_resume)
                 {
-                    pika::threads::detail::resume_processing_unit(
-                        tp, thread_num_resume)
-                        .get();
+                    pika::threads::detail::resume_processing_unit(tp, thread_num_resume).get();
                 }
             }
         }
@@ -109,16 +97,13 @@ int pika_main()
     {
         // Check suspending and resuming the same thread without waiting for
         // each to finish.
-        for (std::size_t thread_num = 0;
-             thread_num < pika::resource::get_num_threads("default");
+        for (std::size_t thread_num = 0; thread_num < pika::resource::get_num_threads("default");
              ++thread_num)
         {
             std::vector<pika::future<void>> fs;
 
-            fs.push_back(
-                pika::threads::detail::suspend_processing_unit(tp, thread_num));
-            fs.push_back(
-                pika::threads::detail::resume_processing_unit(tp, thread_num));
+            fs.push_back(pika::threads::detail::suspend_processing_unit(tp, thread_num));
+            fs.push_back(pika::threads::detail::resume_processing_unit(tp, thread_num));
 
             pika::wait_all(fs);
 
@@ -132,8 +117,7 @@ int pika_main()
             // as no thread is available to steal from the current thread.
             for (std::size_t i = 0; i < max_threads - 1; ++i)
             {
-                fs.push_back(pika::threads::detail::suspend_processing_unit(
-                    tp, thread_num));
+                fs.push_back(pika::threads::detail::suspend_processing_unit(tp, thread_num));
             }
 
             pika::wait_all(fs);
@@ -144,8 +128,7 @@ int pika_main()
             // as no thread is available to steal from the current thread.
             for (std::size_t i = 0; i < max_threads - 1; ++i)
             {
-                fs.push_back(pika::threads::detail::resume_processing_unit(
-                    tp, thread_num));
+                fs.push_back(pika::threads::detail::resume_processing_unit(tp, thread_num));
             }
 
             pika::wait_all(fs);
@@ -160,8 +143,7 @@ int pika_main()
         pika::chrono::detail::high_resolution_timer t;
         while (t.elapsed() < 2)
         {
-            for (std::size_t i = 0;
-                 i < pika::resource::get_num_threads("default") * 10; ++i)
+            for (std::size_t i = 0; i < pika::resource::get_num_threads("default") * 10; ++i)
             {
                 fs.push_back(pika::async([]() {}));
             }
@@ -170,9 +152,7 @@ int pika_main()
             {
                 if (thread_num < pika::resource::get_num_threads("default") - 1)
                 {
-                    pika::threads::detail::suspend_processing_unit(
-                        tp, thread_num)
-                        .get();
+                    pika::threads::detail::suspend_processing_unit(tp, thread_num).get();
                 }
 
                 ++thread_num;
@@ -185,8 +165,7 @@ int pika_main()
             }
             else
             {
-                pika::threads::detail::resume_processing_unit(tp, thread_num)
-                    .get();
+                pika::threads::detail::resume_processing_unit(tp, thread_num).get();
 
                 if (thread_num > 0)
                 {
@@ -202,27 +181,23 @@ int pika_main()
         pika::when_all(std::move(fs)).get();
 
         // Don't exit with suspended pus
-        for (std::size_t thread_num_resume = 0; thread_num_resume < thread_num;
-             ++thread_num_resume)
+        for (std::size_t thread_num_resume = 0; thread_num_resume < thread_num; ++thread_num_resume)
         {
-            pika::threads::detail::resume_processing_unit(tp, thread_num_resume)
-                .get();
+            pika::threads::detail::resume_processing_unit(tp, thread_num_resume).get();
         }
     }
 
     return pika::finalize();
 }
 
-void test_scheduler(
-    int argc, char* argv[], pika::resource::scheduling_policy scheduler)
+void test_scheduler(int argc, char* argv[], pika::resource::scheduling_policy scheduler)
 {
     using ::pika::threads::scheduler_mode;
     pika::init_params init_args;
     init_args.cfg = {"pika.os_threads=" + std::to_string(max_threads)};
-    init_args.rp_callback = [scheduler](auto& rp,
-                                pika::program_options::variables_map const&) {
-        rp.create_thread_pool("default", scheduler,
-            scheduler_mode::default_mode | scheduler_mode::enable_elasticity);
+    init_args.rp_callback = [scheduler](auto& rp, pika::program_options::variables_map const&) {
+        rp.create_thread_pool(
+            "default", scheduler, scheduler_mode::default_mode | scheduler_mode::enable_elasticity);
     };
 
     PIKA_TEST_EQ(pika::init(pika_main, argc, argv, init_args), 0);

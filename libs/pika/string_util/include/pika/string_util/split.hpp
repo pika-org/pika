@@ -18,8 +18,7 @@
 namespace pika::detail {
     template <typename It, typename CharT, typename Traits, typename Allocator>
     std::basic_string<CharT, Traits, Allocator>
-    substr(std::basic_string<CharT, Traits, Allocator> const& s,
-        It const& first, It const& last)
+    substr(std::basic_string<CharT, Traits, Allocator> const& s, It const& first, It const& last)
     {
         std::size_t const pos = std::distance(std::begin(s), first);
         std::size_t const count = std::distance(first, last);
@@ -32,12 +31,10 @@ namespace pika::detail {
         on
     };
 
-    template <typename Container, typename Predicate, typename CharT,
-        typename Traits, typename Allocator>
-    void split(Container& container,
-        std::basic_string<CharT, Traits, Allocator> const& str,
-        Predicate&& pred,
-        token_compress_mode compress_mode = token_compress_mode::off)
+    template <typename Container, typename Predicate, typename CharT, typename Traits,
+        typename Allocator>
+    void split(Container& container, std::basic_string<CharT, Traits, Allocator> const& str,
+        Predicate&& pred, token_compress_mode compress_mode = token_compress_mode::off)
     {
         container.clear();
 
@@ -70,7 +67,6 @@ namespace pika::detail {
     void split(Container& container, char const* str, Predicate&& pred,
         token_compress_mode compress_mode = token_compress_mode::off)
     {
-        split(container, std::string{str}, PIKA_FORWARD(Predicate, pred),
-            compress_mode);
+        split(container, std::string{str}, PIKA_FORWARD(Predicate, pred), compress_mode);
     }
 }    // namespace pika::detail

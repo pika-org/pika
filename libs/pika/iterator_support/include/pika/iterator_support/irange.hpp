@@ -87,20 +87,17 @@ namespace pika::detail {
                 return *this;
             }
 
-            constexpr friend iterator operator+(
-                iterator const it, difference_type const n) noexcept
+            constexpr friend iterator operator+(iterator const it, difference_type const n) noexcept
             {
                 return iterator{it.value + n};
             }
 
-            constexpr friend iterator operator+(
-                difference_type const n, iterator const it) noexcept
+            constexpr friend iterator operator+(difference_type const n, iterator const it) noexcept
             {
                 return iterator{it.value + n};
             }
 
-            constexpr friend iterator operator-(
-                iterator const it, difference_type const n) noexcept
+            constexpr friend iterator operator-(iterator const it, difference_type const n) noexcept
             {
                 return iterator{it.value - n};
             }
@@ -123,38 +120,32 @@ namespace pika::detail {
                 return static_cast<value_type>(value + d);
             }
 
-            constexpr friend bool operator==(
-                iterator const lhs, iterator const rhs) noexcept
+            constexpr friend bool operator==(iterator const lhs, iterator const rhs) noexcept
             {
                 return lhs.value == rhs.value;
             }
 
-            constexpr friend bool operator!=(
-                iterator const lhs, iterator const rhs) noexcept
+            constexpr friend bool operator!=(iterator const lhs, iterator const rhs) noexcept
             {
                 return lhs.value != rhs.value;
             }
 
-            constexpr friend bool operator<(
-                iterator const lhs, iterator const rhs) noexcept
+            constexpr friend bool operator<(iterator const lhs, iterator const rhs) noexcept
             {
                 return lhs.value < rhs.value;
             }
 
-            constexpr friend bool operator>(
-                iterator const lhs, iterator const rhs) noexcept
+            constexpr friend bool operator>(iterator const lhs, iterator const rhs) noexcept
             {
                 return lhs.value > rhs.value;
             }
 
-            constexpr friend bool operator<=(
-                iterator const lhs, iterator const rhs) noexcept
+            constexpr friend bool operator<=(iterator const lhs, iterator const rhs) noexcept
             {
                 return lhs.value <= rhs.value;
             }
 
-            constexpr friend bool operator>=(
-                iterator const lhs, iterator const rhs) noexcept
+            constexpr friend bool operator>=(iterator const lhs, iterator const rhs) noexcept
             {
                 return lhs.value >= rhs.value;
             }
@@ -184,8 +175,7 @@ namespace pika::detail {
         static_assert(std::is_integral_v<T>);
 
     public:
-        constexpr strided_irange(
-            T const b, T const e, T const step = 1) noexcept
+        constexpr strided_irange(T const b, T const e, T const step = 1) noexcept
           : b(b)
           , e(e)
           , step(step)
@@ -255,20 +245,17 @@ namespace pika::detail {
                 return *this;
             }
 
-            constexpr friend iterator operator+(
-                iterator const it, difference_type const n) noexcept
+            constexpr friend iterator operator+(iterator const it, difference_type const n) noexcept
             {
                 return iterator{it.value + n * it.step, it.step};
             }
 
-            constexpr friend iterator operator+(
-                difference_type const n, iterator const it) noexcept
+            constexpr friend iterator operator+(difference_type const n, iterator const it) noexcept
             {
                 return iterator{it.value + n * it.step, it.step};
             }
 
-            constexpr friend iterator operator-(
-                iterator const it, difference_type const n) noexcept
+            constexpr friend iterator operator-(iterator const it, difference_type const n) noexcept
             {
                 return iterator{it.value - n * it.step, it.step};
             }
@@ -293,38 +280,32 @@ namespace pika::detail {
                 return static_cast<value_type>(value + d * step);
             }
 
-            constexpr friend bool operator==(
-                iterator const lhs, iterator const rhs) noexcept
+            constexpr friend bool operator==(iterator const lhs, iterator const rhs) noexcept
             {
                 return lhs.value == rhs.value;
             }
 
-            constexpr friend bool operator!=(
-                iterator const lhs, iterator const rhs) noexcept
+            constexpr friend bool operator!=(iterator const lhs, iterator const rhs) noexcept
             {
                 return lhs.value != rhs.value;
             }
 
-            constexpr friend bool operator<(
-                iterator const lhs, iterator const rhs) noexcept
+            constexpr friend bool operator<(iterator const lhs, iterator const rhs) noexcept
             {
                 return lhs.value < rhs.value;
             }
 
-            constexpr friend bool operator>(
-                iterator const lhs, iterator const rhs) noexcept
+            constexpr friend bool operator>(iterator const lhs, iterator const rhs) noexcept
             {
                 return lhs.value > rhs.value;
             }
 
-            constexpr friend bool operator<=(
-                iterator const lhs, iterator const rhs) noexcept
+            constexpr friend bool operator<=(iterator const lhs, iterator const rhs) noexcept
             {
                 return lhs.value <= rhs.value;
             }
 
-            constexpr friend bool operator>=(
-                iterator const lhs, iterator const rhs) noexcept
+            constexpr friend bool operator>=(iterator const lhs, iterator const rhs) noexcept
             {
                 return lhs.value >= rhs.value;
             }
@@ -365,6 +346,5 @@ namespace pika::detail {
     irange(T const, T const) -> irange<std::decay_t<T>>;
 
     template <typename T, typename U = T>
-    strided_irange(T const, T const, U const)
-        -> strided_irange<std::decay_t<T>, std::decay_t<U>>;
+    strided_irange(T const, T const, U const) -> strided_irange<std::decay_t<T>, std::decay_t<U>>;
 }    // namespace pika::detail

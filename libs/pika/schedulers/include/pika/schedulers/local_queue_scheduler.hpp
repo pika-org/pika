@@ -51,23 +51,20 @@ namespace pika::threads {
     /// The local_queue_scheduler maintains exactly one queue of work
     /// items (threads) per OS thread, where this OS thread pulls its next work
     /// from.
-    template <typename Mutex = std::mutex,
-        typename PendingQueuing = lockfree_fifo,
+    template <typename Mutex = std::mutex, typename PendingQueuing = lockfree_fifo,
         typename StagedQueuing = lockfree_fifo,
-        typename TerminatedQueuing =
-            default_local_queue_scheduler_terminated_queue>
+        typename TerminatedQueuing = default_local_queue_scheduler_terminated_queue>
     class PIKA_EXPORT local_queue_scheduler : public detail::scheduler_base
     {
     public:
         using has_periodic_maintenance = std::false_type;
 
-        using thread_queue_type = thread_queue<Mutex, PendingQueuing,
-            StagedQueuing, TerminatedQueuing>;
+        using thread_queue_type =
+            thread_queue<Mutex, PendingQueuing, StagedQueuing, TerminatedQueuing>;
 
         struct init_parameter
         {
-            init_parameter(std::size_t num_queues,
-                pika::detail::affinity_data const& affinity_data,
+            init_parameter(std::size_t num_queues, pika::detail::affinity_data const& affinity_data,
                 detail::thread_queue_init_parameters thread_queue_init = {},
                 char const* description = "local_queue_scheduler")
               : num_queues_(num_queues)
@@ -77,8 +74,7 @@ namespace pika::threads {
             {
             }
 
-            init_parameter(std::size_t num_queues,
-                pika::detail::affinity_data const& affinity_data,
+            init_parameter(std::size_t num_queues, pika::detail::affinity_data const& affinity_data,
                 char const* description)
               : num_queues_(num_queues)
               , thread_queue_init_()
@@ -94,26 +90,22 @@ namespace pika::threads {
         };
         using init_parameter_type = init_parameter;
 
-        local_queue_scheduler(init_parameter_type const& init,
-            bool deferred_initialization = true)
-          : detail::scheduler_base(
-                init.num_queues_, init.description_, init.thread_queue_init_)
+        local_queue_scheduler(init_parameter_type const& init, bool deferred_initialization = true)
+          : detail::scheduler_base(init.num_queues_, init.description_, init.thread_queue_init_)
           , queues_(init.num_queues_)
           , curr_queue_(0)
           , affinity_data_(init.affinity_data_)
           , steals_in_numa_domain_()
           , steals_outside_numa_domain_()
           , numa_domain_masks_(init.num_queues_,
-                ::pika::threads::detail::create_topology()
-                    .get_machine_affinity_mask())
+                ::pika::threads::detail::create_topology().get_machine_affinity_mask())
           , outside_numa_domain_masks_(init.num_queues_,
-                ::pika::threads::detail::create_topology()
-                    .get_machine_affinity_mask())
+                ::pika::threads::detail::create_topology().get_machine_affinity_mask())
         {
-            ::pika::threads::detail::resize(steals_in_numa_domain_,
-                threads::detail::hardware_concurrency());
-            ::pika::threads::detail::resize(steals_outside_numa_domain_,
-                threads::detail::hardware_concurrency());
+            ::pika::threads::detail::resize(
+                steals_in_numa_domain_, threads::detail::hardware_concurrency());
+            ::pika::threads::detail::resize(
+                steals_outside_numa_domain_, threads::detail::hardware_concurrency());
 
             if (!deferred_initialization)
             {
@@ -157,107 +149,89 @@ namespace pika::threads {
 #endif
 
 #ifdef PIKA_HAVE_THREAD_STEALING_COUNTS
-        std::int64_t get_num_pending_misses(
-            std::size_t num_thread, bool reset) override
+        std::int64_t get_num_pending_misses(std::size_t num_thread, bool reset) override
         {
             std::int64_t num_pending_misses = 0;
             if (num_thread == std::size_t(-1))
             {
                 for (std::size_t i = 0; i != queues_.size(); ++i)
-                    num_pending_misses +=
-                        queues_[i]->get_num_pending_misses(reset);
+                    num_pending_misses += queues_[i]->get_num_pending_misses(reset);
 
                 return num_pending_misses;
             }
 
-            num_pending_misses +=
-                queues_[num_thread]->get_num_pending_misses(reset);
+            num_pending_misses += queues_[num_thread]->get_num_pending_misses(reset);
             return num_pending_misses;
         }
 
-        std::int64_t get_num_pending_accesses(
-            std::size_t num_thread, bool reset) override
+        std::int64_t get_num_pending_accesses(std::size_t num_thread, bool reset) override
         {
             std::int64_t num_pending_accesses = 0;
             if (num_thread == std::size_t(-1))
             {
                 for (std::size_t i = 0; i != queues_.size(); ++i)
-                    num_pending_accesses +=
-                        queues_[i]->get_num_pending_accesses(reset);
+                    num_pending_accesses += queues_[i]->get_num_pending_accesses(reset);
 
                 return num_pending_accesses;
             }
 
-            num_pending_accesses +=
-                queues_[num_thread]->get_num_pending_accesses(reset);
+            num_pending_accesses += queues_[num_thread]->get_num_pending_accesses(reset);
             return num_pending_accesses;
         }
 
-        std::int64_t get_num_stolen_from_pending(
-            std::size_t num_thread, bool reset) override
+        std::int64_t get_num_stolen_from_pending(std::size_t num_thread, bool reset) override
         {
             std::int64_t num_stolen_threads = 0;
             if (num_thread == std::size_t(-1))
             {
                 for (std::size_t i = 0; i != queues_.size(); ++i)
-                    num_stolen_threads +=
-                        queues_[i]->get_num_stolen_from_pending(reset);
+                    num_stolen_threads += queues_[i]->get_num_stolen_from_pending(reset);
                 return num_stolen_threads;
             }
 
-            num_stolen_threads +=
-                queues_[num_thread]->get_num_stolen_from_pending(reset);
+            num_stolen_threads += queues_[num_thread]->get_num_stolen_from_pending(reset);
             return num_stolen_threads;
         }
 
-        std::int64_t get_num_stolen_to_pending(
-            std::size_t num_thread, bool reset) override
+        std::int64_t get_num_stolen_to_pending(std::size_t num_thread, bool reset) override
         {
             std::int64_t num_stolen_threads = 0;
             if (num_thread == std::size_t(-1))
             {
                 for (std::size_t i = 0; i != queues_.size(); ++i)
-                    num_stolen_threads +=
-                        queues_[i]->get_num_stolen_to_pending(reset);
+                    num_stolen_threads += queues_[i]->get_num_stolen_to_pending(reset);
                 return num_stolen_threads;
             }
 
-            num_stolen_threads +=
-                queues_[num_thread]->get_num_stolen_to_pending(reset);
+            num_stolen_threads += queues_[num_thread]->get_num_stolen_to_pending(reset);
             return num_stolen_threads;
         }
 
-        std::int64_t get_num_stolen_from_staged(
-            std::size_t num_thread, bool reset) override
+        std::int64_t get_num_stolen_from_staged(std::size_t num_thread, bool reset) override
         {
             std::int64_t num_stolen_threads = 0;
             if (num_thread == std::size_t(-1))
             {
                 for (std::size_t i = 0; i != queues_.size(); ++i)
-                    num_stolen_threads +=
-                        queues_[i]->get_num_stolen_from_staged(reset);
+                    num_stolen_threads += queues_[i]->get_num_stolen_from_staged(reset);
                 return num_stolen_threads;
             }
 
-            num_stolen_threads +=
-                queues_[num_thread]->get_num_stolen_from_staged(reset);
+            num_stolen_threads += queues_[num_thread]->get_num_stolen_from_staged(reset);
             return num_stolen_threads;
         }
 
-        std::int64_t get_num_stolen_to_staged(
-            std::size_t num_thread, bool reset) override
+        std::int64_t get_num_stolen_to_staged(std::size_t num_thread, bool reset) override
         {
             std::int64_t num_stolen_threads = 0;
             if (num_thread == std::size_t(-1))
             {
                 for (std::size_t i = 0; i != queues_.size(); ++i)
-                    num_stolen_threads +=
-                        queues_[i]->get_num_stolen_to_staged(reset);
+                    num_stolen_threads += queues_[i]->get_num_stolen_to_staged(reset);
                 return num_stolen_threads;
             }
 
-            num_stolen_threads +=
-                queues_[num_thread]->get_num_stolen_to_staged(reset);
+            num_stolen_threads += queues_[num_thread]->get_num_stolen_to_staged(reset);
             return num_stolen_threads;
         }
 #endif
@@ -279,8 +253,7 @@ namespace pika::threads {
             return empty;
         }
 
-        bool cleanup_terminated(
-            std::size_t num_thread, bool delete_all) override
+        bool cleanup_terminated(std::size_t num_thread, bool delete_all) override
         {
             return queues_[num_thread]->cleanup_terminated(delete_all);
         }
@@ -291,8 +264,8 @@ namespace pika::threads {
         void create_thread(threads::detail::thread_init_data& data,
             threads::detail::thread_id_ref_type* id, error_code& ec) override
         {
-            std::size_t num_thread = data.schedulehint.mode ==
-                    execution::thread_schedule_hint_mode::thread ?
+            std::size_t num_thread =
+                data.schedulehint.mode == execution::thread_schedule_hint_mode::thread ?
                 data.schedulehint.hint :
                 std::size_t(-1);
 
@@ -344,8 +317,7 @@ namespace pika::threads {
                     return true;
                 q->increment_num_pending_misses();
 
-                bool have_staged =
-                    q->get_staged_queue_length(std::memory_order_relaxed) != 0;
+                bool have_staged = q->get_staged_queue_length(std::memory_order_relaxed) != 0;
 
                 // Give up, we should have work to convert.
                 if (have_staged)
@@ -357,8 +329,7 @@ namespace pika::threads {
                 return false;
             }
 
-            bool numa_stealing =
-                has_scheduler_mode(scheduler_mode::enable_stealing_numa);
+            bool numa_stealing = has_scheduler_mode(scheduler_mode::enable_stealing_numa);
             if (!numa_stealing)
             {
                 // steal work items: first try to steal from other cores in
@@ -388,8 +359,7 @@ namespace pika::threads {
                         if (q->get_next_thread(thrd, running))
                         {
                             q->increment_num_stolen_from_pending();
-                            queues_[num_thread]
-                                ->increment_num_stolen_to_pending();
+                            queues_[num_thread]->increment_num_stolen_to_pending();
                             return true;
                         }
                     }
@@ -419,8 +389,7 @@ namespace pika::threads {
                         if (q->get_next_thread(thrd, running))
                         {
                             q->increment_num_stolen_from_pending();
-                            queues_[num_thread]
-                                ->increment_num_stolen_to_pending();
+                            queues_[num_thread]->increment_num_stolen_to_pending();
                             return true;
                         }
                     }
@@ -452,13 +421,11 @@ namespace pika::threads {
         /// Schedule the passed thread
         void schedule_thread(threads::detail::thread_id_ref_type thrd,
             execution::thread_schedule_hint schedulehint, bool allow_fallback,
-            execution::thread_priority /* priority */ =
-                execution::thread_priority::normal) override
+            execution::thread_priority /* priority */ = execution::thread_priority::normal) override
         {
             // NOTE: This scheduler ignores NUMA hints.
             std::size_t num_thread = std::size_t(-1);
-            if (schedulehint.mode ==
-                execution::thread_schedule_hint_mode::thread)
+            if (schedulehint.mode == execution::thread_schedule_hint_mode::thread)
             {
                 num_thread = schedulehint.hint;
             }
@@ -497,13 +464,11 @@ namespace pika::threads {
 
         void schedule_thread_last(threads::detail::thread_id_ref_type thrd,
             execution::thread_schedule_hint schedulehint, bool allow_fallback,
-            execution::thread_priority /* priority */ =
-                execution::thread_priority::normal) override
+            execution::thread_priority /* priority */ = execution::thread_priority::normal) override
         {
             // NOTE: This scheduler ignores NUMA hints.
             std::size_t num_thread = std::size_t(-1);
-            if (schedulehint.mode ==
-                execution::thread_schedule_hint_mode::thread)
+            if (schedulehint.mode == execution::thread_schedule_hint_mode::thread)
             {
                 num_thread = schedulehint.hint;
             }
@@ -541,8 +506,7 @@ namespace pika::threads {
 
         ///////////////////////////////////////////////////////////////////////
         // This returns the current length of the queues (work items and new items)
-        std::int64_t get_queue_length(
-            std::size_t num_thread = std::size_t(-1)) const override
+        std::int64_t get_queue_length(std::size_t num_thread = std::size_t(-1)) const override
         {
             // Return queue length of one specific queue.
             std::int64_t count = 0;
@@ -561,13 +525,10 @@ namespace pika::threads {
 
         ///////////////////////////////////////////////////////////////////////
         // Queries the current thread count of the queues.
-        std::int64_t get_thread_count(
-            threads::detail::thread_schedule_state state =
-                threads::detail::thread_schedule_state::unknown,
-            execution::thread_priority priority =
-                execution::thread_priority::default_,
-            std::size_t num_thread = std::size_t(-1),
-            bool /* reset */ = false) const override
+        std::int64_t get_thread_count(threads::detail::thread_schedule_state state =
+                                          threads::detail::thread_schedule_state::unknown,
+            execution::thread_priority priority = execution::thread_priority::default_,
+            std::size_t num_thread = std::size_t(-1), bool /* reset */ = false) const override
         {
             // Return thread count of one specific queue.
             std::int64_t count = 0;
@@ -635,8 +596,7 @@ namespace pika::threads {
         ///////////////////////////////////////////////////////////////////////
         // Enumerate matching threads from all queues
         bool enumerate_threads(
-            util::detail::function<bool(threads::detail::thread_id_type)> const&
-                f,
+            util::detail::function<bool(threads::detail::thread_id_type)> const& f,
             threads::detail::thread_schedule_state state =
                 threads::detail::thread_schedule_state::unknown) const override
         {
@@ -661,8 +621,7 @@ namespace pika::threads {
             {
                 PIKA_ASSERT(num_thread < queues_.size());
 
-                wait_time +=
-                    queues_[num_thread]->get_average_thread_wait_time();
+                wait_time += queues_[num_thread]->get_average_thread_wait_time();
                 return wait_time / (count + 1);
             }
 
@@ -706,8 +665,7 @@ namespace pika::threads {
         /// scheduler. Returns true if the OS thread calling this function
         /// has to be terminated (i.e. no more work has to be done).
         virtual bool wait_or_add_new(std::size_t num_thread, bool running,
-            std::int64_t& idle_loop_count,
-            bool /* scheduler_mode::enable_stealing */,
+            std::int64_t& idle_loop_count, bool /* scheduler_mode::enable_stealing */,
             std::size_t& added) override
         {
             std::size_t queues_size = queues_.size();
@@ -717,8 +675,7 @@ namespace pika::threads {
 
             bool result = true;
 
-            result =
-                queues_[num_thread]->wait_or_add_new(running, added) && result;
+            result = queues_[num_thread]->wait_or_add_new(running, added) && result;
             if (0 != added)
                 return result;
 
@@ -728,8 +685,7 @@ namespace pika::threads {
                 return true;
             }
 
-            bool numa_stealing_ =
-                has_scheduler_mode(scheduler_mode::enable_stealing_numa);
+            bool numa_stealing_ = has_scheduler_mode(scheduler_mode::enable_stealing_numa);
             // limited or no stealing across domains
             if (!numa_stealing_)
             {
@@ -754,15 +710,13 @@ namespace pika::threads {
                         {
                             continue;
                         }
-                        result = queues_[num_thread]->wait_or_add_new(
-                                     running, added, queues_[idx]) &&
+                        result =
+                            queues_[num_thread]->wait_or_add_new(running, added, queues_[idx]) &&
                             result;
                         if (0 != added)
                         {
-                            queues_[idx]->increment_num_stolen_from_staged(
-                                added);
-                            queues_[num_thread]->increment_num_stolen_to_staged(
-                                added);
+                            queues_[idx]->increment_num_stolen_from_staged(added);
+                            queues_[num_thread]->increment_num_stolen_to_staged(added);
                             return result;
                         }
                     }
@@ -787,15 +741,13 @@ namespace pika::threads {
                             continue;
                         }
 
-                        result = queues_[num_thread]->wait_or_add_new(
-                                     running, added, queues_[idx]) &&
+                        result =
+                            queues_[num_thread]->wait_or_add_new(running, added, queues_[idx]) &&
                             result;
                         if (0 != added)
                         {
-                            queues_[idx]->increment_num_stolen_from_staged(
-                                added);
-                            queues_[num_thread]->increment_num_stolen_to_staged(
-                                added);
+                            queues_[idx]->increment_num_stolen_from_staged(added);
+                            queues_[num_thread]->increment_num_stolen_to_staged(added);
                             return result;
                         }
                     }
@@ -811,14 +763,12 @@ namespace pika::threads {
 
                     PIKA_ASSERT(idx != num_thread);
 
-                    result = queues_[num_thread]->wait_or_add_new(
-                                 running, added, queues_[idx]) &&
+                    result = queues_[num_thread]->wait_or_add_new(running, added, queues_[idx]) &&
                         result;
                     if (0 != added)
                     {
                         queues_[idx]->increment_num_stolen_from_staged(added);
-                        queues_[num_thread]->increment_num_stolen_to_staged(
-                            added);
+                        queues_[num_thread]->increment_num_stolen_to_staged(added);
                         return result;
                     }
                 }
@@ -826,33 +776,29 @@ namespace pika::threads {
 
 #ifdef PIKA_HAVE_THREAD_MINIMAL_DEADLOCK_DETECTION
             // no new work is available, are we deadlocked?
-            if (PIKA_UNLIKELY(get_minimal_deadlock_detection_enabled() &&
-                    LPIKA_ENABLED(error)))
+            if (PIKA_UNLIKELY(get_minimal_deadlock_detection_enabled() && LPIKA_ENABLED(error)))
             {
                 bool suspended_only = true;
 
-                for (std::size_t i = 0; suspended_only && i != queues_.size();
-                     ++i)
+                for (std::size_t i = 0; suspended_only && i != queues_.size(); ++i)
                 {
-                    suspended_only = queues_[i]->dump_suspended_threads(
-                        i, idle_loop_count, running);
+                    suspended_only =
+                        queues_[i]->dump_suspended_threads(i, idle_loop_count, running);
                 }
 
                 if (PIKA_UNLIKELY(suspended_only))
                 {
                     if (running)
                     {
-                        LTM_(warning).format(
-                            "pool({}), scheduler({}), queue({}): no new work "
-                            "available, are we deadlocked?",
+                        LTM_(warning).format("pool({}), scheduler({}), queue({}): no new work "
+                                             "available, are we deadlocked?",
                             *this->get_parent_pool(), *this, num_thread);
                     }
                     else
                     {
                         LPIKA_CONSOLE_(pika::util::logging::level::warning)
-                            .format(
-                                "  [TM] pool({}), scheduler({}), queue({}): no "
-                                "new work available, are we deadlocked?\n",
+                            .format("  [TM] pool({}), scheduler({}), queue({}): no "
+                                    "new work available, are we deadlocked?\n",
                                 *this->get_parent_pool(), *this, num_thread);
                     }
                 }
@@ -868,13 +814,11 @@ namespace pika::threads {
         void on_start_thread(std::size_t num_thread) override
         {
             pika::threads::detail::set_local_thread_num_tss(num_thread);
-            pika::threads::detail::set_thread_pool_num_tss(
-                parent_pool_->get_pool_id().index());
+            pika::threads::detail::set_thread_pool_num_tss(parent_pool_->get_pool_id().index());
 
             if (nullptr == queues_[num_thread])
             {
-                queues_[num_thread] =
-                    new thread_queue_type(num_thread, thread_queue_init_);
+                queues_[num_thread] = new thread_queue_type(num_thread, thread_queue_init_);
             }
 
             queues_[num_thread]->on_start_thread(num_thread);
@@ -883,23 +827,20 @@ namespace pika::threads {
 
             // pre-calculate certain constants for the given thread number
             std::size_t num_pu = affinity_data_.get_pu_num(num_thread);
-            ::pika::threads::detail::mask_cref_type machine_mask =
-                topo.get_machine_affinity_mask();
+            ::pika::threads::detail::mask_cref_type machine_mask = topo.get_machine_affinity_mask();
             ::pika::threads::detail::mask_cref_type core_mask =
                 topo.get_thread_affinity_mask(num_pu);
             ::pika::threads::detail::mask_cref_type node_mask =
                 topo.get_numa_node_affinity_mask(num_pu);
 
-            if (::pika::threads::detail::any(core_mask) &&
-                ::pika::threads::detail::any(node_mask))
+            if (::pika::threads::detail::any(core_mask) && ::pika::threads::detail::any(node_mask))
             {
                 ::pika::threads::detail::set(steals_in_numa_domain_, num_pu);
                 numa_domain_masks_[num_thread] = node_mask;
             }
 
             // we allow the thread on the boundary of the NUMA domain to steal
-            ::pika::threads::detail::mask_type first_mask =
-                ::pika::threads::detail::mask_type();
+            ::pika::threads::detail::mask_type first_mask = ::pika::threads::detail::mask_type();
             ::pika::threads::detail::resize(
                 first_mask, ::pika::threads::detail::mask_size(core_mask));
 
@@ -909,13 +850,10 @@ namespace pika::threads {
             else
                 first_mask = core_mask;
 
-            bool numa_stealing =
-                has_scheduler_mode(scheduler_mode::enable_stealing_numa);
-            if (numa_stealing &&
-                ::pika::threads::detail::any(first_mask & core_mask))
+            bool numa_stealing = has_scheduler_mode(scheduler_mode::enable_stealing_numa);
+            if (numa_stealing && ::pika::threads::detail::any(first_mask & core_mask))
             {
-                ::pika::threads::detail::set(
-                    steals_outside_numa_domain_, num_pu);
+                ::pika::threads::detail::set(steals_outside_numa_domain_, num_pu);
                 outside_numa_domain_masks_[num_thread] =
                     ::pika::threads::detail::not_(node_mask) & machine_mask;
             }
@@ -926,8 +864,7 @@ namespace pika::threads {
             queues_[num_thread]->on_stop_thread(num_thread);
         }
 
-        void on_error(
-            std::size_t num_thread, std::exception_ptr const& e) override
+        void on_error(std::size_t num_thread, std::exception_ptr const& e) override
         {
             queues_[num_thread]->on_error(num_thread, e);
         }
@@ -941,23 +878,20 @@ namespace pika::threads {
         ::pika::threads::detail::mask_type steals_in_numa_domain_;
         ::pika::threads::detail::mask_type steals_outside_numa_domain_;
         std::vector<::pika::threads::detail::mask_type> numa_domain_masks_;
-        std::vector<::pika::threads::detail::mask_type>
-            outside_numa_domain_masks_;
+        std::vector<::pika::threads::detail::mask_type> outside_numa_domain_masks_;
     };
 }    // namespace pika::threads
 
 template <typename Mutex, typename PendingQueuing, typename StagedQueuing,
     typename TerminatedQueuing>
-struct fmt::formatter<pika::threads::local_queue_scheduler<Mutex,
-    PendingQueuing, StagedQueuing, TerminatedQueuing>>
+struct fmt::formatter<
+    pika::threads::local_queue_scheduler<Mutex, PendingQueuing, StagedQueuing, TerminatedQueuing>>
   : fmt::formatter<pika::threads::detail::scheduler_base>
 {
     template <typename FormatContext>
-    auto format(pika::threads::detail::scheduler_base const& scheduler,
-        FormatContext& ctx)
+    auto format(pika::threads::detail::scheduler_base const& scheduler, FormatContext& ctx)
     {
-        return fmt::formatter<pika::threads::detail::scheduler_base>::format(
-            scheduler, ctx);
+        return fmt::formatter<pika::threads::detail::scheduler_base>::format(scheduler, ctx);
     }
 };
 

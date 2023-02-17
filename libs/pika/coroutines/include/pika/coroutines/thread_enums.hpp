@@ -78,14 +78,12 @@ namespace pika::threads::detail {
 
     /// Get the readable string representing the name of the given
     /// thread_restart_state constant.
-    PIKA_EXPORT char const* get_thread_state_ex_name(
-        thread_restart_state state);
+    PIKA_EXPORT char const* get_thread_state_ex_name(thread_restart_state state);
 
     /// \cond NOINTERNAL
     // special type storing both state in one tagged structure
     using thread_state =
-        threads::detail::combined_tagged_state<thread_schedule_state,
-            thread_restart_state>;
+        threads::detail::combined_tagged_state<thread_schedule_state, thread_restart_state>;
     /// \endcond
 
     /// Get the readable string representing the name of the given
@@ -139,8 +137,7 @@ namespace pika::execution {
         /// constant.
         ///
         /// \param this represents the thread priority.
-        PIKA_EXPORT char const* get_thread_priority_name(
-            thread_priority priority);
+        PIKA_EXPORT char const* get_thread_priority_name(thread_priority priority);
     }    // namespace detail
 
     ///////////////////////////////////////////////////////////////////////////
@@ -216,8 +213,7 @@ namespace pika::execution {
 
         /// Construct a hint with mode thread_schedule_hint_mode::thread and the
         /// given hint as the local thread number.
-        constexpr explicit thread_schedule_hint(
-            std::int16_t thread_hint) noexcept
+        constexpr explicit thread_schedule_hint(std::int16_t thread_hint) noexcept
           : hint(thread_hint)
           , mode(thread_schedule_hint_mode::thread)
         {
@@ -225,8 +221,7 @@ namespace pika::execution {
 
         /// Construct a hint with the given mode and hint. The numerical hint is
         /// unused when the mode is thread_schedule_hint_mode::none.
-        constexpr thread_schedule_hint(
-            thread_schedule_hint_mode mode, std::int16_t hint) noexcept
+        constexpr thread_schedule_hint(thread_schedule_hint_mode mode, std::int16_t hint) noexcept
           : hint(hint)
           , mode(mode)
         {
@@ -254,12 +249,10 @@ namespace pika::execution {
 }    // namespace pika::execution
 
 template <>
-struct fmt::formatter<pika::threads::detail::thread_schedule_state>
-  : fmt::formatter<char const*>
+struct fmt::formatter<pika::threads::detail::thread_schedule_state> : fmt::formatter<char const*>
 {
     template <typename FormatContext>
-    auto format(pika::threads::detail::thread_schedule_state const& t,
-        FormatContext& ctx)
+    auto format(pika::threads::detail::thread_schedule_state const& t, FormatContext& ctx)
     {
         return fmt::formatter<char const*>::format(
             pika::threads::detail::get_thread_state_name(t), ctx);
@@ -267,12 +260,10 @@ struct fmt::formatter<pika::threads::detail::thread_schedule_state>
 };
 
 template <>
-struct fmt::formatter<pika::threads::detail::thread_restart_state>
-  : fmt::formatter<char const*>
+struct fmt::formatter<pika::threads::detail::thread_restart_state> : fmt::formatter<char const*>
 {
     template <typename FormatContext>
-    auto format(pika::threads::detail::thread_restart_state const& t,
-        FormatContext& ctx)
+    auto format(pika::threads::detail::thread_restart_state const& t, FormatContext& ctx)
     {
         return fmt::formatter<char const*>::format(
             pika::threads::detail::get_thread_state_ex_name(t), ctx);
@@ -280,8 +271,7 @@ struct fmt::formatter<pika::threads::detail::thread_restart_state>
 };
 
 template <>
-struct fmt::formatter<pika::execution::thread_priority>
-  : fmt::formatter<char const*>
+struct fmt::formatter<pika::execution::thread_priority> : fmt::formatter<char const*>
 {
     template <typename FormatContext>
     auto format(pika::execution::thread_priority const& t, FormatContext& ctx)
@@ -292,8 +282,7 @@ struct fmt::formatter<pika::execution::thread_priority>
 };
 
 template <>
-struct fmt::formatter<pika::execution::thread_stacksize>
-  : fmt::formatter<char const*>
+struct fmt::formatter<pika::execution::thread_stacksize> : fmt::formatter<char const*>
 {
     template <typename FormatContext>
     auto format(pika::execution::thread_stacksize const& t, FormatContext& ctx)

@@ -82,23 +82,19 @@ static void do_nothing() {}
 int main(int, char*[])
 {
     pika::util::detail::function<int(int, int)> f;
-    f.assign(plus_int<disable_small_object_optimization>(),
-        counting_allocator<int>());
+    f.assign(plus_int<disable_small_object_optimization>(), counting_allocator<int>());
     f.clear();
     PIKA_CHECK(alloc_count == 1);
     PIKA_CHECK(dealloc_count == 1);
     alloc_count = 0;
     dealloc_count = 0;
-    f.assign(plus_int<enable_small_object_optimization>(),
-        counting_allocator<int>());
+    f.assign(plus_int<enable_small_object_optimization>(), counting_allocator<int>());
     f.clear();
     PIKA_CHECK(alloc_count == 0);
     PIKA_CHECK(dealloc_count == 0);
-    f.assign(
-        plus_int<disable_small_object_optimization>(), std::allocator<int>());
+    f.assign(plus_int<disable_small_object_optimization>(), std::allocator<int>());
     f.clear();
-    f.assign(
-        plus_int<enable_small_object_optimization>(), std::allocator<int>());
+    f.assign(plus_int<enable_small_object_optimization>(), std::allocator<int>());
     f.clear();
 
     alloc_count = 0;
@@ -113,23 +109,19 @@ int main(int, char*[])
     pika::util::detail::function<void()> fv;
     alloc_count = 0;
     dealloc_count = 0;
-    fv.assign(DoNothing<disable_small_object_optimization>(),
-        counting_allocator<int>());
+    fv.assign(DoNothing<disable_small_object_optimization>(), counting_allocator<int>());
     fv.clear();
     PIKA_CHECK(alloc_count == 1);
     PIKA_CHECK(dealloc_count == 1);
     alloc_count = 0;
     dealloc_count = 0;
-    fv.assign(DoNothing<enable_small_object_optimization>(),
-        counting_allocator<int>());
+    fv.assign(DoNothing<enable_small_object_optimization>(), counting_allocator<int>());
     fv.clear();
     PIKA_CHECK(alloc_count == 0);
     PIKA_CHECK(dealloc_count == 0);
-    fv.assign(
-        DoNothing<disable_small_object_optimization>(), std::allocator<int>());
+    fv.assign(DoNothing<disable_small_object_optimization>(), std::allocator<int>());
     fv.clear();
-    fv.assign(
-        DoNothing<enable_small_object_optimization>(), std::allocator<int>());
+    fv.assign(DoNothing<enable_small_object_optimization>(), std::allocator<int>());
     fv.clear();
 
     alloc_count = 0;

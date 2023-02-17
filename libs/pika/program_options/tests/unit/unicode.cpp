@@ -33,8 +33,7 @@ void test_unicode_to_unicode()
     args.push_back(L"--foo=\x044F");
 
     variables_map vm;
-    basic_parsed_options<wchar_t> parsed =
-        wcommand_line_parser(args).options(desc).run();
+    basic_parsed_options<wchar_t> parsed = wcommand_line_parser(args).options(desc).run();
     store(parsed, vm);
 
     PIKA_TEST(vm["foo"].as<wstring>() == L"\x044F");
@@ -107,12 +106,9 @@ void test_command_line()
         ("bar,b", value<std::string>(), "")("baz", new untyped_value())(
             "qux,plug*", new untyped_value());
 
-    const wchar_t* cmdline4_[] = {
-        L"--foo=1\u0FF52", L"-f4", L"--bar=11", L"-b4", L"--plug3=10"};
-    vector<wstring> cmdline4 =
-        sv(cmdline4_, sizeof(cmdline4_) / sizeof(cmdline4_[0]));
-    vector<woption> a4 =
-        wcommand_line_parser(cmdline4).options(desc).run().options;
+    const wchar_t* cmdline4_[] = {L"--foo=1\u0FF52", L"-f4", L"--bar=11", L"-b4", L"--plug3=10"};
+    vector<wstring> cmdline4 = sv(cmdline4_, sizeof(cmdline4_) / sizeof(cmdline4_[0]));
+    vector<woption> a4 = wcommand_line_parser(cmdline4).options(desc).run().options;
 
     PIKA_TEST_EQ(a4.size(), std::size_t(5));
 

@@ -23,7 +23,7 @@
 #include <memory>
 
 #ifdef PIKA_WINDOWS
-#include <windows.h>
+# include <windows.h>
 #endif
 
 namespace pika::util::logging::destination {

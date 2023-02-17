@@ -25,17 +25,15 @@
 ///////////////////////////////////////////////////////////////////////////////
 void blocker(pika::barrier<>& exit_barrier, std::atomic<std::uint64_t>& entered,
     std::atomic<std::uint64_t>& started,
-    std::unique_ptr<std::atomic<std::uint64_t>[]>& blocked_threads,
-    std::uint64_t worker)
+    std::unique_ptr<std::atomic<std::uint64_t>[]>& blocked_threads, std::uint64_t worker)
 {
     // reschedule if we are not on the correct OS thread...
     if (worker != pika::get_worker_thread_num())
     {
         pika::threads::detail::thread_init_data data(
             pika::threads::detail::make_thread_function_nullary(
-                pika::util::detail::bind(&blocker, std::ref(exit_barrier),
-                    std::ref(entered), std::ref(started),
-                    std::ref(blocked_threads), worker)),
+                pika::util::detail::bind(&blocker, std::ref(exit_barrier), std::ref(entered),
+                    std::ref(started), std::ref(blocked_threads), worker)),
             "blocker", pika::execution::thread_priority::normal,
             pika::execution::thread_schedule_hint(worker));
         pika::threads::detail::register_work(data);
@@ -83,9 +81,8 @@ int pika_main()
 
             pika::threads::detail::thread_init_data data(
                 pika::threads::detail::make_thread_function_nullary(
-                    pika::util::detail::bind(&blocker, std::ref(exit_barrier),
-                        std::ref(entered), std::ref(started),
-                        std::ref(blocked_threads), i)),
+                    pika::util::detail::bind(&blocker, std::ref(exit_barrier), std::ref(entered),
+                        std::ref(started), std::ref(blocked_threads), i)),
                 "blocker", pika::execution::thread_priority::normal,
                 pika::execution::thread_schedule_hint(i));
             pika::threads::detail::register_work(data);
@@ -126,8 +123,7 @@ int main(int argc, char* argv[])
     // Configure application-specific options.
     options_description cmdline("usage: " PIKA_APPLICATION_STRING " [options]");
 
-    cmdline.add_options()("delay",
-        value<std::uint64_t>(&delay)->default_value(100),
+    cmdline.add_options()("delay", value<std::uint64_t>(&delay)->default_value(100),
         "time in micro-seconds for the delay loop");
 
     // We force this test to use all available threads by default.
