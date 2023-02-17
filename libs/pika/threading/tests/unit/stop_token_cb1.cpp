@@ -204,7 +204,7 @@ void test_callback_deregistered_from_within_callback_does_not_deadlock()
     pika::stop_source src;
     std::optional<pika::stop_callback<std::function<void()>>> cb;
 
-    cb.emplace(src.get_token(), [&] { cb.reset(); });
+    [[maybe_unused]] auto& cb_ref = cb.emplace(src.get_token(), [&] { cb.reset(); });
 
     src.request_stop();
 
