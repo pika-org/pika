@@ -251,8 +251,7 @@ namespace pika::threads::detail {
         if (PIKA_UNLIKELY(p == nullptr))
         {
             PIKA_THROW_EXCEPTION(pika::error::null_thread_id, "get_self",
-                "null thread id encountered (is this executed on a "
-                "pika-thread?)");
+                "null thread id encountered (is this executed on a pika-thread?)");
         }
         return *p;
     }
@@ -282,8 +281,7 @@ namespace pika::threads::detail {
         if (PIKA_UNLIKELY(p == nullptr))
         {
             PIKA_THROWS_IF(ec, pika::error::null_thread_id, "get_self_ptr_checked",
-                "null thread id encountered (is this executed on a "
-                "pika-thread?)");
+                "null thread id encountered (is this executed on a pika-thread?)");
             return nullptr;
         }
 

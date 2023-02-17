@@ -456,8 +456,7 @@ namespace pika::threads {
                     {
                         DEBUG(spq_deb<5>,
                             debug(debug::detail::str<>(prefix),
-                                "scheduler_mode::steal_high_priority_first "
-                                "BP/HP",
+                                "scheduler_mode::steal_high_priority_first BP/HP",
                                 (d == 0 ? "taken" : "stolen"), "D", debug::detail::dec<2>(domain),
                                 "Q", debug::detail::dec<3>(q_index)));
                         return result;
@@ -475,8 +474,7 @@ namespace pika::threads {
                     {
                         DEBUG(spq_deb<5>,
                             debug(debug::detail::str<>(prefix),
-                                "scheduler_mode::steal_high_priority_first "
-                                "NP/LP",
+                                "scheduler_mode::steal_high_priority_first NP/LP",
                                 (d == 0 ? "taken" : "stolen"), "D", debug::detail::dec<2>(domain),
                                 "Q", debug::detail::dec<3>(q_index)));
                         return result;
@@ -513,9 +511,8 @@ namespace pika::threads {
                         {
                             DEBUG(spq_deb<5>,
                                 debug(debug::detail::str<>(prefix),
-                                    "scheduler_mode::steal_after_local this "
-                                    "numa",
-                                    "stolen", "D", debug::detail::dec<2>(domain), "Q",
+                                    "scheduler_mode::steal_after_local this numa", "stolen", "D",
+                                    debug::detail::dec<2>(domain), "Q",
                                     debug::detail::dec<3>(q_index)));
                             return result;
                         }
@@ -534,8 +531,7 @@ namespace pika::threads {
                         {
                             DEBUG(spq_deb<5>,
                                 debug(debug::detail::str<>(prefix),
-                                    "scheduler_mode::steal_after_local other "
-                                    "numa BP/HP",
+                                    "scheduler_mode::steal_after_local other numa BP/HP",
                                     (d == 0 ? "taken" : "stolen"), "D",
                                     debug::detail::dec<2>(domain), "Q",
                                     debug::detail::dec<3>(q_index)));
@@ -552,8 +548,7 @@ namespace pika::threads {
                         {
                             DEBUG(spq_deb<5>,
                                 debug(debug::detail::str<>(prefix),
-                                    "scheduler_mode::steal_after_local other "
-                                    "numa NP/LP",
+                                    "scheduler_mode::steal_after_local other numa NP/LP",
                                     (d == 0 ? "taken" : "stolen"), "D",
                                     debug::detail::dec<2>(domain), "Q",
                                     debug::detail::dec<3>(q_index)));
@@ -1205,16 +1200,16 @@ namespace pika::threads {
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "shared_priority_scheduler::get_creation_time",
-                "the shared_priority_scheduler does not support the "
-                "get_creation_time performance counter");
+                "the shared_priority_scheduler does not support the get_creation_time performance "
+                "counter");
             return 0;
         }
         std::uint64_t get_cleanup_time(bool /* reset */) override
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "shared_priority_scheduler::get_cleanup_time",
-                "the shared_priority_scheduler does not support the "
-                "get_cleanup_time performance counter");
+                "the shared_priority_scheduler does not support the get_cleanup_time performance "
+                "counter");
             return 0;
         }
 #endif
@@ -1224,8 +1219,8 @@ namespace pika::threads {
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "shared_priority_scheduler::get_num_pending_misses",
-                "the shared_priority_scheduler does not support the "
-                "get_num_pending_misses performance counter");
+                "the shared_priority_scheduler does not support the get_num_pending_misses "
+                "performance counter");
             return 0;
         }
 
@@ -1233,8 +1228,8 @@ namespace pika::threads {
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "shared_priority_scheduler::get_num_pending_accesses",
-                "the shared_priority_scheduler does not support the "
-                "get_num_pending_accesses performance counter");
+                "the shared_priority_scheduler does not support the get_num_pending_accesses "
+                "performance counter");
             return 0;
         }
 
@@ -1242,8 +1237,8 @@ namespace pika::threads {
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "shared_priority_scheduler::get_num_stolen_from_pending",
-                "the shared_priority_scheduler does not support the "
-                "get_num_stolen_from_pending performance counter");
+                "the shared_priority_scheduler does not support the get_num_stolen_from_pending "
+                "performance counter");
             return 0;
         }
 
@@ -1251,8 +1246,8 @@ namespace pika::threads {
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "shared_priority_scheduler::get_creation_time",
-                "the shared_priority_scheduler does not support the "
-                "get_creation_time performance counter");
+                "the shared_priority_scheduler does not support the get_creation_time performance "
+                "counter");
             return 0;
         }
 
@@ -1260,8 +1255,8 @@ namespace pika::threads {
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "shared_priority_scheduler::get_num_stolen_from_staged",
-                "the shared_priority_scheduler does not support the "
-                "get_num_stolen_from_staged performance counter");
+                "the shared_priority_scheduler does not support the get_num_stolen_from_staged "
+                "performance counter");
             return 0;
         }
 
@@ -1269,8 +1264,8 @@ namespace pika::threads {
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "shared_priority_scheduler::get_num_stolen_to_staged",
-                "the shared_priority_scheduler does not support the "
-                "get_num_stolen_to_staged performance counter");
+                "the shared_priority_scheduler does not support the get_num_stolen_to_staged "
+                "performance counter");
             return 0;
         }
 #endif
@@ -1281,8 +1276,8 @@ namespace pika::threads {
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "shared_priority_scheduler::get_average_thread_wait_time",
-                "the shared_priority_scheduler does not support the "
-                "get_average_thread_wait_time performance counter");
+                "the shared_priority_scheduler does not support the get_average_thread_wait_time "
+                "performance counter");
             return 0;
         }
         std::int64_t get_average_task_wait_time(
@@ -1290,8 +1285,8 @@ namespace pika::threads {
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "shared_priority_scheduler::get_average_task_wait_time",
-                "the shared_priority_scheduler does not support the "
-                "get_average_task_wait_time performance counter");
+                "the shared_priority_scheduler does not support the get_average_task_wait_time "
+                "performance counter");
             return 0;
         }
 #endif

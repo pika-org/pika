@@ -422,8 +422,7 @@ namespace pika::program_options {
                 if (count(par.begin(), par.end(), '\t') > 1)
                 {
                     throw program_options::error(
-                        "Only one tab per paragraph is allowed in the options "
-                        "description");
+                        "Only one tab per paragraph is allowed in the options description");
                 }
 
                 // erase tab from string

@@ -274,9 +274,8 @@ namespace pika::execution {
                 if (k >= deadlock_detection_limit)
                 {
                     PIKA_THROW_EXCEPTION(pika::error::deadlock, desc,
-                        "yield_k yielded {} times. This may indicate a "
-                        "deadlock in your application or a bug in pika. "
-                        "Stopping because "
+                        "yield_k yielded {} times. This may indicate a deadlock in your "
+                        "application or a bug in pika. Stopping because "
                         "pika.spinlock_deadlock_detection_limit={}.",
                         k, deadlock_detection_limit);
                 }
@@ -287,11 +286,9 @@ namespace pika::execution {
                 {
                     fmt::print(std::cerr,
                         "desc: {}. yield_k already yielded {} times "
-                        "(pika.spinlock_deadlock_warning_limit={}). This may "
-                        "indicate a deadlock in your application or a bug in "
-                        "pika. Stopping after "
-                        "pika.spinlock_deadlock_detection_limit={} "
-                        "iterations.\n",
+                        "(pika.spinlock_deadlock_warning_limit={}). This may indicate a deadlock "
+                        "in your application or a bug in pika. Stopping after "
+                        "pika.spinlock_deadlock_detection_limit={} iterations.\n",
                         desc, k, deadlock_warning_limit, deadlock_detection_limit);
                 }
             }

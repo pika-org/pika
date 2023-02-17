@@ -35,28 +35,24 @@ namespace pika::program_options {
         switch (kind)
         {
         case empty_adjacent_parameter:
-            msg = "the argument for option '%canonical_option%' should follow "
-                  "immediately after the equal sign";
+            msg = "the argument for option '%canonical_option%' should follow immediately after "
+                  "the equal sign";
             break;
         case missing_parameter:
-            msg = "the required argument for option '%canonical_option%' is "
-                  "missing";
+            msg = "the required argument for option '%canonical_option%' is missing";
             break;
         case unrecognized_line:
-            msg = "the options configuration file contains an invalid line "
-                  "'%invalid_line%'";
+            msg = "the options configuration file contains an invalid line '%invalid_line%'";
             break;
         // none of the following are currently used:
         case long_not_allowed:
             msg = "the unabbreviated option '%canonical_option%' is not valid";
             break;
         case long_adjacent_not_allowed:
-            msg = "the unabbreviated option '%canonical_option%' does not take "
-                  "any arguments";
+            msg = "the unabbreviated option '%canonical_option%' does not take any arguments";
             break;
         case short_adjacent_not_allowed:
-            msg = "the abbreviated option '%canonical_option%' does not take "
-                  "any arguments";
+            msg = "the abbreviated option '%canonical_option%' does not take any arguments";
             break;
         case extra_parameter:
             msg = "option '%canonical_option%' does not take any arguments";
@@ -114,30 +110,23 @@ namespace pika::program_options::detail {
 
         const char* error = nullptr;
         if (allow_some_long && !(style & long_allow_adjacent) && !(style & long_allow_next))
-            error = "pika::program_options misconfiguration: "
-                    "choose one or other of 'command_line_style::long_allow_next' "
-                    "(whitespace separated arguments) or "
-                    "'command_line_style::long_allow_adjacent' ('=' separated "
-                    "arguments) for "
-                    "long options.";
+            error = "pika::program_options misconfiguration: choose one or other of "
+                    "'command_line_style::long_allow_next' (whitespace separated arguments) or "
+                    "'command_line_style::long_allow_adjacent' ('=' separated arguments) for long "
+                    "options.";
 
         if (!error && (style & allow_short) && !(style & short_allow_adjacent) &&
             !(style & short_allow_next))
-            error = "pika::program_options misconfiguration: "
-                    "choose one or other of 'command_line_style::short_allow_next' "
-                    "(whitespace separated arguments) or "
-                    "'command_line_style::short_allow_adjacent' ('=' separated "
-                    "arguments) for "
+            error = "pika::program_options misconfiguration: choose one or other of "
+                    "'command_line_style::short_allow_next' (whitespace separated arguments) or "
+                    "'command_line_style::short_allow_adjacent' ('=' separated arguments) for "
                     "short options.";
 
         if (!error && (style & allow_short) && !(style & allow_dash_for_short) &&
             !(style & allow_slash_for_short))
-            error = "pika::program_options misconfiguration: "
-                    "choose one or other of "
-                    "'command_line_style::allow_slash_for_short' "
-                    "(slashes) or 'command_line_style::allow_dash_for_short' "
-                    "(dashes) for "
-                    "short options.";
+            error = "pika::program_options misconfiguration: choose one or other of "
+                    "'command_line_style::allow_slash_for_short' (slashes) or "
+                    "'command_line_style::allow_dash_for_short' (dashes) for short options.";
 
         if (error)
             throw invalid_command_line_style(error);

@@ -68,15 +68,13 @@ namespace pika::threads::detail {
                 {
                     if (running)
                     {
-                        LTM_(warning).format("Listing suspended threads "
-                                             "while queue ({}) is empty:",
-                            num_thread);
+                        LTM_(warning).format(
+                            "Listing suspended threads while queue ({}) is empty:", num_thread);
                     }
                     else
                     {
                         LPIKA_CONSOLE_(pika::util::logging::level::warning)
-                            .format("  [TM] Listing suspended threads "
-                                    "while queue ({}) is empty:\n",
+                            .format("  [TM] Listing suspended threads while queue ({}) is empty:\n",
                                 num_thread);
                     }
                     logged_headline = true;

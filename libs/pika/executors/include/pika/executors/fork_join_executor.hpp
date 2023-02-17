@@ -609,9 +609,8 @@ namespace pika::execution::experimental {
             {
                 PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
                     "fork_join_executor::fork_join_executor",
-                    "The fork_join_executor does not support using "
-                    "thread_stacksize::nostack as the stacksize (stackful "
-                    "threads are required to yield correctly when idle)");
+                    "The fork_join_executor does not support using thread_stacksize::nostack as "
+                    "the stacksize (stackful threads are required to yield correctly when idle)");
             }
 
             shared_data_ =

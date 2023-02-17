@@ -128,8 +128,8 @@ namespace pika::lcos::local {
                         l.unlock();
                         return pika::make_exceptional_future<T>(PIKA_GET_EXCEPTION(
                             pika::error::invalid_status, "pika::lcos::local::channel::get",
-                            "this channel is empty and is not accessible "
-                            "by any other thread causing a deadlock"));
+                            "this channel is empty and is not accessible by any other thread "
+                            "causing a deadlock"));
                     }
                 }
 
@@ -147,8 +147,8 @@ namespace pika::lcos::local {
                         l.unlock();
                         return pika::make_exceptional_future<T>(PIKA_GET_EXCEPTION(
                             pika::error::invalid_status, "pika::lcos::local::channel::get",
-                            "this channel is closed and the requested value"
-                            "has not been received yet"));
+                            "this channel is closed and the requested valuehas not been received "
+                            "yet"));
                     }
                     return f;
                 }
@@ -298,8 +298,7 @@ namespace pika::lcos::local {
                         l.unlock();
                         return pika::make_exceptional_future<void>(
                             PIKA_GET_EXCEPTION(pika::error::invalid_status,
-                                "pika::lcos::local::detail::"
-                                "one_element_queue_async::push",
+                                "pika::lcos::local::detail::one_element_queue_async::push",
                                 "attempting to write to a busy queue"));
                     }
 
@@ -344,8 +343,7 @@ namespace pika::lcos::local {
                         l.unlock();
                         return pika::make_exceptional_future<T>(
                             PIKA_GET_EXCEPTION(pika::error::invalid_status,
-                                "pika::lcos::local::detail::"
-                                "one_element_queue_async::pop",
+                                "pika::lcos::local::detail::one_element_queue_async::pop",
                                 "attempting to read from an empty queue"));
                     }
 
@@ -424,8 +422,8 @@ namespace pika::lcos::local {
                         l.unlock();
                         return pika::make_exceptional_future<T>(PIKA_GET_EXCEPTION(
                             pika::error::invalid_status, "pika::lcos::local::channel::get",
-                            "this channel is empty and is not accessible "
-                            "by any other thread causing a deadlock"));
+                            "this channel is empty and is not accessible by any other thread "
+                            "causing a deadlock"));
                     }
                 }
 
@@ -437,8 +435,7 @@ namespace pika::lcos::local {
                     l.unlock();
                     return pika::make_exceptional_future<T>(PIKA_GET_EXCEPTION(
                         pika::error::invalid_status, "pika::lcos::local::channel::get",
-                        "this channel is closed and the requested value"
-                        "has not been received yet"));
+                        "this channel is closed and the requested valuehas not been received yet"));
                 }
 
                 return f;

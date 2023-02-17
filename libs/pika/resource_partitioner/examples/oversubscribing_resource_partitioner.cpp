@@ -71,8 +71,8 @@ int pika_main(/*pika::program_options::variables_map& vm*/)
     if (num_threads == 1)
     {
         PIKA_THROW_EXCEPTION(pika::error::commandline_option_error, "pika_main",
-            "the oversubscribing_resource_partitioner example requires at "
-            "least 2 worker threads (1 given)");
+            "the oversubscribing_resource_partitioner example requires at least 2 worker threads "
+            "(1 given)");
     }
 
     std::size_t loop_count = num_threads * 1;

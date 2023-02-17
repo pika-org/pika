@@ -651,11 +651,9 @@ namespace pika::parallel::execution {
         {
             static_assert(pika::util::detail::all_of_v<
                               pika::traits::is_executor_parameters<std::decay_t<Params>>...>,
-                "All passed parameters must be a proper executor parameters "
-                "objects");
+                "All passed parameters must be a proper executor parameters objects");
             static_assert(sizeof...(Params) >= 2,
-                "This type is meant to be used with at least 2 parameters "
-                "objects");
+                "This type is meant to be used with at least 2 parameters objects");
 
             PIKA_STATIC_ASSERT_ON_PARAMETERS_AMBIGUITY(get_chunk_size);
             PIKA_STATIC_ASSERT_ON_PARAMETERS_AMBIGUITY(mark_begin_execution);

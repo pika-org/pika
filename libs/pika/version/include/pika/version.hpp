@@ -74,13 +74,12 @@ namespace pika {
     // Returns the copyright string.
     constexpr std::string_view copyright()
     {
-        char const* const copyright = "pika\n\n"
-                                      "Copyright (c) 2021-2022, ETH Zurich,\n"
-                                      "https://github.com/pika-org/pika\n\n"
-                                      "Distributed under the Boost Software License, "
-                                      "Version 1.0. (See accompanying\n"
-                                      "file LICENSE_1_0.txt or copy at "
-                                      "http://www.boost.org/LICENSE_1_0.txt)\n";
+        char const* const copyright =
+            "pika\n\n"
+            "Copyright (c) 2021-2022, ETH Zurich,\n"
+            "https://github.com/pika-org/pika\n\n"
+            "Distributed under the Boost Software License, Version 1.0. (See accompanying\n"
+            "file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)\n";
         return copyright;
     }
 

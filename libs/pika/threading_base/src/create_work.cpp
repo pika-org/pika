@@ -44,8 +44,7 @@ namespace pika::threads::detail {
 #endif
 
         LTM_(info)
-            .format("create_work: pool({}), scheduler({}), initial_state({}), "
-                    "thread_priority({})",
+            .format("create_work: pool({}), scheduler({}), initial_state({}), thread_priority({})",
                 *scheduler->get_parent_pool(), *scheduler,
                 get_thread_state_name(data.initial_state),
                 execution::detail::get_thread_priority_name(data.priority))

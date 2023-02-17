@@ -129,8 +129,8 @@ void split_escape(const options_description& description)
 
 void split_single_quote(const options_description& description)
 {
-    const char* cmdline = "prg --input 'input.txt input.txt' --optimization 4 "
-                          "--opt 'option1 option2'";
+    const char* cmdline =
+        "prg --input 'input.txt input.txt' --optimization 4 --opt 'option1 option2'";
 
     vector<string> tokens = split_unix(cmdline, " ", "'");
 
@@ -150,8 +150,8 @@ void split_single_quote(const options_description& description)
 
 void split_defaults(const options_description& description)
 {
-    const char* cmdline = "prg --input \t \'input file.txt\' \t   "
-                          "--optimization 4 --opt \\\"option1\\ option2\\\"";
+    const char* cmdline =
+        "prg --input \t \'input file.txt\' \t   --optimization 4 --opt \\\"option1\\ option2\\\"";
 
     vector<string> tokens = split_unix(cmdline);
 

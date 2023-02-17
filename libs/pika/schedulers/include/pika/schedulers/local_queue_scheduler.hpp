@@ -287,8 +287,7 @@ namespace pika::threads {
             queues_[num_thread]->create_thread(data, id, ec);
 
             LTM_(debug)
-                .format("local_queue_scheduler::create_thread: pool({}), "
-                        "scheduler({}), "
+                .format("local_queue_scheduler::create_thread: pool({}), scheduler({}), "
                         "worker_thread({}), thread({})",
                     *this->get_parent_pool(), *this, num_thread,
                     id ? *id : threads::detail::invalid_thread_id)
@@ -452,9 +451,8 @@ namespace pika::threads {
 
             PIKA_ASSERT(num_thread < queues_.size());
 
-            LTM_(debug).format("local_queue_scheduler::schedule_thread: "
-                               "pool({}), scheduler({}), worker_thread({}), "
-                               "thread({}), description({})",
+            LTM_(debug).format("local_queue_scheduler::schedule_thread: pool({}), scheduler({}), "
+                               "worker_thread({}), thread({}), description({})",
                 *this->get_parent_pool(), *this, num_thread,
                 get_thread_id_data(thrd)->get_thread_id(),
                 get_thread_id_data(thrd)->get_description());
@@ -551,8 +549,7 @@ namespace pika::threads {
                 {
                     PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
                         "local_queue_scheduler::get_thread_count",
-                        "unknown thread priority value "
-                        "(execution::thread_priority::unknown)");
+                        "unknown thread priority value (execution::thread_priority::unknown)");
                     return 0;
                 }
                 }
@@ -579,8 +576,7 @@ namespace pika::threads {
             {
                 PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
                     "local_queue_scheduler::get_thread_count",
-                    "unknown thread priority value "
-                    "(execution::thread_priority::unknown)");
+                    "unknown thread priority value (execution::thread_priority::unknown)");
                 return 0;
             }
             }
@@ -797,8 +793,8 @@ namespace pika::threads {
                     else
                     {
                         LPIKA_CONSOLE_(pika::util::logging::level::warning)
-                            .format("  [TM] pool({}), scheduler({}), queue({}): no "
-                                    "new work available, are we deadlocked?\n",
+                            .format("  [TM] pool({}), scheduler({}), queue({}): no new work "
+                                    "available, are we deadlocked?\n",
                                 *this->get_parent_pool(), *this, num_thread);
                     }
                 }

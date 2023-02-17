@@ -108,10 +108,9 @@ namespace pika::keep_future_detail {
         tag_invoke(pika::execution::experimental::connect_t, keep_future_sender const&, Receiver&&)
         {
             static_assert(sizeof(Receiver) == 0,
-                "Are you missing a std::move? The keep_future sender of a "
-                "future is not copyable (because future is not copyable) and "
-                "thus not l-value connectable. Make sure you are passing an "
-                "r-value reference of the sender.");
+                "Are you missing a std::move? The keep_future sender of a future is not copyable "
+                "(because future is not copyable) and thus not l-value connectable. Make sure you "
+                "are passing an r-value reference of the sender.");
         }
     };
 

@@ -69,8 +69,8 @@ bool header = true;
 void print_results(std::uint64_t cores, double walltime)
 {
     if (header)
-        std::cout << "OS-threads,Tasks,Delay (iterations),"
-                     "Total Walltime (seconds),Walltime per Task (seconds)\n";
+        std::cout << "OS-threads,Tasks,Delay (iterations),Total Walltime (seconds),Walltime per "
+                     "Task (seconds)\n";
 
     std::string const cores_str = fmt::format("{},", cores);
     std::string const tasks_str = fmt::format("{},", tasks);

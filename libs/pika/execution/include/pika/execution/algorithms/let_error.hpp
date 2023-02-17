@@ -57,16 +57,15 @@ namespace pika::let_error_detail {
                 std::decay>;
         static_assert(!std::is_same<predecessor_error_types<pika::util::detail::pack>,
                           pika::util::detail::pack<>>::value,
-            "let_error used with a predecessor that has an empty "
-            "error_types. Is let_error misplaced?");
+            "let_error used with a predecessor that has an empty error_types. Is let_error "
+            "misplaced?");
 
         template <typename Error>
         struct successor_sender_types_helper
         {
             using type = std::invoke_result_t<F, std::add_lvalue_reference_t<Error>>;
             static_assert(pika::execution::experimental::is_sender<std::decay_t<type>>::value,
-                "let_error expects the invocable sender factory to return "
-                "a sender");
+                "let_error expects the invocable sender factory to return a sender");
         };
 
         // Type of the potential senders returned from the sender factory F
@@ -281,9 +280,9 @@ namespace pika::let_error_detail {
             pika::execution::experimental::connect_t, let_error_sender_type const&, Receiver&&)
         {
             static_assert(sizeof(Receiver) == 0,
-                "Are you missing a std::move? The let_error sender is not "
-                "copyable and thus not l-value connectable. Make sure you are "
-                "passing an r-value reference of the sender.");
+                "Are you missing a std::move? The let_error sender is not copyable and thus not "
+                "l-value connectable. Make sure you are passing an r-value reference of the "
+                "sender.");
         }
     };
 }    // namespace pika::let_error_detail

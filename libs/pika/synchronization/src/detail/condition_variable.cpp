@@ -213,8 +213,8 @@ namespace pika::detail {
 
                 if (PIKA_UNLIKELY(!ctx))
                 {
-                    LERR_(fatal).format("condition_variable::abort_all: null "
-                                        "thread id encountered");
+                    LERR_(fatal).format(
+                        "condition_variable::abort_all: null thread id encountered");
                     continue;
                 }
 

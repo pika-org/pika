@@ -841,8 +841,7 @@ namespace pika {
     pika::future<R> make_future(pika::future<U>&& f)
     {
         static_assert(std::is_convertible_v<U, R> || std::is_void_v<R>,
-            "the argument type must be implicitly convertible to the requested "
-            "result type");
+            "the argument type must be implicitly convertible to the requested result type");
 
         if constexpr (std::is_convertible_v<pika::future<U>, pika::future<R>>)
         {
@@ -1119,8 +1118,7 @@ namespace pika {
     pika::future<R> make_future(pika::shared_future<U> f)
     {
         static_assert(std::is_convertible_v<R, U> || std::is_void_v<R>,
-            "the argument type must be implicitly convertible to the requested "
-            "result type");
+            "the argument type must be implicitly convertible to the requested result type");
 
         if constexpr (std::is_convertible_v<pika::shared_future<U>, pika::future<R>>)
         {
@@ -1144,8 +1142,8 @@ namespace pika {
     pika::future<R> make_future(pika::shared_future<U> f, Conv&& conv)
     {
         static_assert(std::is_invocable_r_v<R, Conv, U>,
-            "the argument type must be convertible to the requested "
-            "result type by using the supplied conversion function");
+            "the argument type must be convertible to the requested result type by using the "
+            "supplied conversion function");
 
         if constexpr (std::is_convertible_v<pika::shared_future<U>, pika::future<R>>)
         {

@@ -122,8 +122,8 @@ namespace pika::detail {
             if (num_threads > num_pus_proc_mask)
             {
                 PIKA_THROWS_IF(ec, pika::error::bad_parameter, "check_num_threads",
-                    "specified number of threads ({}) is larger than number "
-                    "of processing units available in process mask ({})",
+                    "specified number of threads ({}) is larger than number of processing units "
+                    "available in process mask ({})",
                     num_threads, num_pus_proc_mask);
             }
         }
@@ -134,8 +134,8 @@ namespace pika::detail {
             if (num_threads > num_threads_available)
             {
                 PIKA_THROWS_IF(ec, pika::error::bad_parameter, "check_num_threads",
-                    "specified number of threads ({}) is larger than number "
-                    "of available processing units ({})",
+                    "specified number of threads ({}) is larger than number of available "
+                    "processing units ({})",
                     num_threads, num_threads_available);
             }
         }

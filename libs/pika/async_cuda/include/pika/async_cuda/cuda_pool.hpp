@@ -109,9 +109,8 @@ struct fmt::formatter<pika::cuda::experimental::cuda_pool> : fmt::formatter<std:
         auto normal_priority_streams =
             valid ? pool.data->normal_priority_streams.num_streams_per_thread : 0;
         return fmt::formatter<std::string>::format(
-            fmt::format("cuda_pool({}, num_high_priority_streams_per_thread "
-                        "= {}, num_normal_priority_streams_per_thread = "
-                        "{})",
+            fmt::format("cuda_pool({}, num_high_priority_streams_per_thread = {}, "
+                        "num_normal_priority_streams_per_thread = {})",
                 fmt::ptr(pool.data.get()), high_priority_streams, normal_priority_streams),
             ctx);
     }

@@ -88,8 +88,7 @@ int pika_main(pika::program_options::variables_map& vm)
 
     if (print_header)
     {
-        std::cout << "num_cores,num_threads,child_stealing_time[s],parent_"
-                     "stealing_time[s]"
+        std::cout << "num_cores,num_threads,child_stealing_time[s],parent_stealing_time[s]"
                   << std::endl;
     }
 

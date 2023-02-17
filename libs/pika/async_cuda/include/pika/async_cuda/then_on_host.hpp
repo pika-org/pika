@@ -229,8 +229,8 @@ namespace pika::cuda::experimental {
             auto completion_sched = pika::execution::experimental::get_completion_scheduler<
                 pika::execution::experimental::set_value_t>(sender);
             static_assert(std::is_same_v<std::decay_t<decltype(completion_sched)>, cuda_scheduler>,
-                "then_on_host can only be used with senders whose "
-                "completion scheduler is cuda_scheduler");
+                "then_on_host can only be used with senders whose completion scheduler is "
+                "cuda_scheduler");
 
             return then_on_host_detail::then_on_host_sender<Sender, F>{
                 PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), std::move(completion_sched)};

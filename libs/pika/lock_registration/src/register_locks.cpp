@@ -279,8 +279,8 @@ namespace pika::util {
                     else
                     {
                         PIKA_THROW_EXCEPTION(pika::error::invalid_status, "verify_no_locks",
-                            "suspending thread while at least one lock is "
-                            "being held (default handler)");
+                            "suspending thread while at least one lock is being held (default "
+                            "handler)");
                     }
                 }
             }

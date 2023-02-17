@@ -485,10 +485,8 @@ namespace pika::threads {
                 high_priority_queues_[num].data_->create_thread(data, id, ec);
 
                 LTM_(debug)
-                    .format("local_priority_queue_scheduler::create_thread, "
-                            "high priority queue: "
-                            "pool({}), scheduler({}), worker_thread({}), "
-                            "thread({}), priority({})",
+                    .format("local_priority_queue_scheduler::create_thread, high priority queue: "
+                            "pool({}), scheduler({}), worker_thread({}), thread({}), priority({})",
                         *this->get_parent_pool(), *this, num,
                         id ? *id : threads::detail::invalid_thread_id, data.priority)
 #ifdef PIKA_HAVE_THREAD_DESCRIPTION
@@ -504,8 +502,7 @@ namespace pika::threads {
                 low_priority_queue_.create_thread(data, id, ec);
 
                 LTM_(debug)
-                    .format("local_priority_queue_scheduler::create_thread, "
-                            "low priority queue: "
+                    .format("local_priority_queue_scheduler::create_thread, low priority queue: "
                             "pool({}), scheduler({}), thread({}), priority({})",
                         *this->get_parent_pool(), *this,
                         id ? *id : threads::detail::invalid_thread_id, data.priority)
@@ -521,10 +518,8 @@ namespace pika::threads {
             queues_[num_thread].data_->create_thread(data, id, ec);
 
             LTM_(debug)
-                .format("local_priority_queue_scheduler::create_thread normal "
-                        "priority queue: pool({}), scheduler({}), "
-                        "worker_thread({}), "
-                        "thread({}), priority({})",
+                .format("local_priority_queue_scheduler::create_thread normal priority queue: "
+                        "pool({}), scheduler({}), worker_thread({}), thread({}), priority({})",
                     *this->get_parent_pool(), *this, num_thread,
                     id ? *id : threads::detail::invalid_thread_id, data.priority)
 #ifdef PIKA_HAVE_THREAD_DESCRIPTION
@@ -640,10 +635,9 @@ namespace pika::threads {
                 priority == execution::thread_priority::boost)
             {
                 std::size_t num = num_thread % num_high_priority_queues_;
-                LTM_(debug).format("local_priority_queue_scheduler::schedule_thread, "
-                                   "high priority queue: "
-                                   "pool({}), scheduler({}), worker_thread({}), "
-                                   "thread({}), priority({}), description({})",
+                LTM_(debug).format("local_priority_queue_scheduler::schedule_thread, high priority "
+                                   "queue: pool({}), scheduler({}), worker_thread({}), thread({}), "
+                                   "priority({}), description({})",
                     *this->get_parent_pool(), *this, num, thrdptr->get_thread_id(), priority,
                     thrdptr->get_description());
 
@@ -651,10 +645,9 @@ namespace pika::threads {
             }
             else if (priority == execution::thread_priority::low)
             {
-                LTM_(debug).format("local_priority_queue_scheduler::schedule_thread, "
-                                   "low priority queue: "
-                                   "pool({}), scheduler({}), "
-                                   "thread({}), priority({}), description({})",
+                LTM_(debug).format(
+                    "local_priority_queue_scheduler::schedule_thread, low priority queue: "
+                    "pool({}), scheduler({}), thread({}), priority({}), description({})",
                     *this->get_parent_pool(), *this, thrdptr->get_thread_id(), priority,
                     thrdptr->get_description());
 
@@ -664,9 +657,8 @@ namespace pika::threads {
             {
                 PIKA_ASSERT(num_thread < num_queues_);
 
-                LTM_(debug).format("local_priority_queue_scheduler::schedule_thread, "
-                                   "normal priority queue: "
-                                   "pool({}), scheduler({}), worker_thread({}), "
+                LTM_(debug).format("local_priority_queue_scheduler::schedule_thread, normal "
+                                   "priority queue: pool({}), scheduler({}), worker_thread({}), "
                                    "thread({}), priority({}), description({})",
                     *this->get_parent_pool(), *this, num_thread, thrdptr->get_thread_id(), priority,
                     thrdptr->get_description());
@@ -813,8 +805,7 @@ namespace pika::threads {
                 {
                     PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
                         "local_priority_queue_scheduler::get_thread_count",
-                        "unknown thread priority value "
-                        "(execution::thread_priority::unknown)");
+                        "unknown thread priority value (execution::thread_priority::unknown)");
                     return 0;
                 }
                 }
@@ -867,8 +858,7 @@ namespace pika::threads {
             {
                 PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
                     "local_priority_queue_scheduler::get_thread_count",
-                    "unknown thread priority value "
-                    "(execution::thread_priority::unknown)");
+                    "unknown thread priority value (execution::thread_priority::unknown)");
                 return 0;
             }
             }
@@ -1087,17 +1077,15 @@ namespace pika::threads {
                 {
                     if (running)
                     {
-                        LTM_(error).format("pool({}), scheduler({}), "
-                                           "worker_thread({}): no new work "
-                                           "available, are we deadlocked?",
+                        LTM_(error).format("pool({}), scheduler({}), worker_thread({}): no new "
+                                           "work available, are we deadlocked?",
                             *this->get_parent_pool(), *this, num_thread);
                     }
                     else
                     {
                         LPIKA_CONSOLE_(pika::util::logging::level::error)
-                            .format("  [TM] pool({}), scheduler({}), "
-                                    "worker_thread({}): "
-                                    "no new work available, are we deadlocked?\n",
+                            .format("  [TM] pool({}), scheduler({}), worker_thread({}): no new "
+                                    "work available, are we deadlocked?\n",
                                 *this->get_parent_pool(), *this, num_thread);
                     }
                 }

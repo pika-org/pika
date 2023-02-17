@@ -109,10 +109,8 @@ namespace pika::parallel::execution::detail {
         std::size_t first_thread, std::size_t num_threads, std::size_t hierarchical_threshold,
         Launch policy, F&& f, S const& shape, Ts&&... ts)
     {
-        pika::detail::thread_description const desc(f,
-            "pika::parallel::execution::detail::hierarchical_bulk_async_"
-            "execute_"
-            "helper");
+        pika::detail::thread_description const desc(
+            f, "pika::parallel::execution::detail::hierarchical_bulk_async_execute_helper");
 
         return hierarchical_bulk_async_execute_helper(desc, pool, first_thread, num_threads,
             hierarchical_threshold, policy, PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Ts, ts)...);

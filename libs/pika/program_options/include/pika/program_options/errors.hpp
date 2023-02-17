@@ -49,8 +49,7 @@ namespace pika::program_options {
     {
     public:
         too_many_positional_options_error()
-          : error("too many positional options have been specified on the "
-                  "command line")
+          : error("too many positional options have been specified on the command line")
         {
         }
     };
@@ -217,8 +216,7 @@ namespace pika::program_options {
     {
     public:
         multiple_occurrences()
-          : error_with_option_name("option '%canonical_option%' cannot be "
-                                   "specified more than once")
+          : error_with_option_name("option '%canonical_option%' cannot be specified more than once")
         {
         }
 

@@ -167,9 +167,8 @@ namespace pika::cuda::experimental::detail {
             event_callback continuation{event, PIKA_MOVE(f)};
 
             PIKA_ASSERT_MSG(get_register_polling_count() != 0,
-                "CUDA event polling has not been enabled on any pool. Make "
-                "sure that CUDA event polling is enabled on at least one "
-                "thread pool.");
+                "CUDA event polling has not been enabled on any pool. Make sure that CUDA event "
+                "polling is enabled on at least one thread pool.");
 
             event_callback_queue.enqueue(PIKA_MOVE(continuation));
 
@@ -296,9 +295,8 @@ namespace pika::cuda::experimental::detail {
 #if defined(PIKA_DEBUG)
         {
             PIKA_ASSERT_MSG(get_work_count() == 0,
-                "CUDA event polling was disabled while there are unprocessed "
-                "CUDA events. Make sure CUDA event polling is not disabled too "
-                "early.");
+                "CUDA event polling was disabled while there are unprocessed CUDA events. Make "
+                "sure CUDA event polling is not disabled too early.");
         }
 #endif
         cud_debug.debug(debug::detail::str<>("disable polling"));

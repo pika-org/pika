@@ -45,8 +45,7 @@ namespace pika { namespace util {
                 }
             }
 
-            LBT_(info) << "No known MPI environment variable found, disabling "
-                          "MPI support\n";
+            LBT_(info) << "No known MPI environment variable found, disabling MPI support\n";
             return false;
 #endif
         }
@@ -158,11 +157,10 @@ namespace pika { namespace util {
         {
             enabled_ = false;
             has_called_init_ = false;
-            throw std::runtime_error("mpi_environment::init: MPI_Init_thread: "
-                                     "The underlying MPI implementation only supports "
-                                     "MPI_THREAD_FUNNELED. This mode is not supported by pika. "
-                                     "Please pass -Ipika.parcel.mpi.multithreaded=0 to explicitly "
-                                     "disable MPI multi-threading.");
+            throw std::runtime_error(
+                "mpi_environment::init: MPI_Init_thread: The underlying MPI implementation only "
+                "supports MPI_THREAD_FUNNELED. This mode is not supported by pika. Please pass "
+                "-Ipika.parcel.mpi.multithreaded=0 to explicitly disable MPI multi-threading.");
         }
 
         this_rank = rank();

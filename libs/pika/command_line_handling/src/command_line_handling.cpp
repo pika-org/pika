@@ -188,10 +188,8 @@ namespace pika::detail {
             if (numa_sensitive > 2)
             {
                 throw pika::detail::command_line_error(
-                    "Invalid argument "
-                    "value for --pika:numa-sensitive. Allowed values "
-                    "are "
-                    "0, 1, or 2");
+                    "Invalid argument value for --pika:numa-sensitive. Allowed values are 0, 1, or "
+                    "2");
             }
             return numa_sensitive;
         }
@@ -313,22 +311,16 @@ namespace pika::detail {
         if (min_os_threads == 0)
         {
             throw pika::detail::command_line_error(
-                "Number of pika.force_min_os_threads must be greater "
-                "than "
-                "0");
+                "Number of pika.force_min_os_threads must be greater than 0");
         }
 
 #if defined(PIKA_HAVE_MAX_CPU_COUNT)
         if (min_os_threads > PIKA_HAVE_MAX_CPU_COUNT)
         {
             throw pika::detail::command_line_error("Requested more than " PIKA_PP_STRINGIZE(
-                PIKA_HAVE_MAX_CPU_COUNT) " pika.force_min_os_threads "
-                                         "to use for this "
-                                         "application, "
-                                         "use the option "
-                                         "-DPIKA_WITH_MAX_CPU_COUNT=<"
-                                         "N> "
-                                         "when configuring pika.");
+                PIKA_HAVE_MAX_CPU_COUNT) " pika.force_min_os_threads to use for this application, "
+                                         "use the option -DPIKA_WITH_MAX_CPU_COUNT=<N> when "
+                                         "configuring pika.");
         }
 #endif
 
@@ -375,10 +367,8 @@ namespace pika::detail {
                 0 != std::string("machine").find(affinity_domain_))
             {
                 throw pika::detail::command_line_error(
-                    "Invalid command line option "
-                    "--pika:affinity, value must be one of: pu, core, "
-                    "numa, "
-                    "or machine.");
+                    "Invalid command line option --pika:affinity, value must be one of: pu, core, "
+                    "numa, or machine.");
             }
         }
     }
@@ -393,10 +383,9 @@ namespace pika::detail {
         if (!(pu_offset_ == std::size_t(-1) || pu_offset_ == std::size_t(0)) || pu_step_ != 1 ||
             affinity_domain_ != "pu")
         {
-            throw pika::detail::command_line_error("Command line option --pika:bind "
-                                                   "should not be used with --pika:pu-step, "
-                                                   "--pika:pu-offset, "
-                                                   "or --pika:affinity.");
+            throw pika::detail::command_line_error(
+                "Command line option --pika:bind should not be used with --pika:pu-step, "
+                "--pika:pu-offset, or --pika:affinity.");
         }
     }
 
@@ -406,9 +395,8 @@ namespace pika::detail {
             pu_offset_ >= pika::threads::detail::hardware_concurrency())
         {
             throw pika::detail::command_line_error(
-                "Invalid command line option "
-                "--pika:pu-offset, value must be smaller than number of "
-                "available processing units.");
+                "Invalid command line option --pika:pu-offset, value must be smaller than number "
+                "of available processing units.");
         }
     }
 
@@ -418,10 +406,8 @@ namespace pika::detail {
             (pu_step_ == 0 || pu_step_ >= pika::threads::detail::hardware_concurrency()))
         {
             throw pika::detail::command_line_error(
-                "Invalid command line option "
-                "--pika:pu-step, value must be non-zero and smaller "
-                "than "
-                "number of available processing units.");
+                "Invalid command line option --pika:pu-step, value must be non-zero and smaller "
+                "than number of available processing units.");
         }
     }
 
@@ -464,8 +450,7 @@ namespace pika::detail {
             if (affinity_bind_ != "none")
             {
                 std::cerr << "Warning: thread binding set to \"" << affinity_bind_
-                          << "\" but thread binding is not supported on macOS. "
-                             "Ignoring option."
+                          << "\" but thread binding is not supported on macOS. Ignoring option."
                           << std::endl;
             }
             affinity_bind_ = "";
@@ -479,8 +464,7 @@ namespace pika::detail {
         if (pu_step_ != 1)
         {
             std::cerr << "Warning: PU step set to \"" << pu_step_
-                      << "\" but thread binding is not supported on macOS. "
-                         "Ignoring option."
+                      << "\" but thread binding is not supported on macOS. Ignoring option."
                       << std::endl;
             pu_step_ = 1;
         }
@@ -496,8 +480,7 @@ namespace pika::detail {
         {
 #if defined(__APPLE__)
             std::cerr << "Warning: PU offset set to \"" << pu_offset_
-                      << "\" but thread binding is not supported on macOS. "
-                         "Ignoring option."
+                      << "\" but thread binding is not supported on macOS. Ignoring option."
                       << std::endl;
             pu_offset_ = std::size_t(-1);
             ini_config.emplace_back("pika.pu_offset=0");
@@ -545,20 +528,16 @@ namespace pika::detail {
                 num_high_priority_queues > num_threads_)
             {
                 throw pika::detail::command_line_error(
-                    "Invalid command line option: "
-                    "number of high priority threads ("
-                    "--pika:high-priority-threads), should not be "
-                    "larger "
-                    "than number of threads (--pika:threads)");
+                    "Invalid command line option: number of high priority threads "
+                    "(--pika:high-priority-threads), should not be larger than number of threads "
+                    "(--pika:threads)");
             }
 
             if (!(queuing_ == "local-priority" || queuing_ == "abp-priority"))
             {
                 throw pika::detail::command_line_error(
-                    "Invalid command line option "
-                    "--pika:high-priority-threads, "
-                    "valid for --pika:queuing=local-priority and "
-                    "--pika:queuing=abp-priority only");
+                    "Invalid command line option --pika:high-priority-threads, valid for "
+                    "--pika:queuing=local-priority and --pika:queuing=abp-priority only");
             }
 
             ini_config.emplace_back("pika.thread_queue.high_priority_queues!=" +
@@ -939,25 +918,22 @@ namespace pika::detail {
             if (num_threads_ == 1 && get_number_of_default_threads(false) != 1 &&
                 !command_line_arguments_given)
             {
-                std::cerr << "The pika runtime will be started with only one worker "
-                             "thread because the process mask has restricted the "
-                             "available resources to only one thread. If this is "
-                             "unintentional make sure the process mask contains the "
-                             "resources you need or use --pika:ignore-process-mask "
-                             "to use all resources. Use --pika:print-bind to print "
-                             "the thread bindings used by pika.\n";
+                std::cerr
+                    << "The pika runtime will be started with only one worker thread because the "
+                       "process mask has restricted the available resources to only one thread. If "
+                       "this is unintentional make sure the process mask contains the resources "
+                       "you need or use --pika:ignore-process-mask to use all resources. Use "
+                       "--pika:print-bind to print the thread bindings used by pika.\n";
             }
             else if (num_cores_ == 1 && get_number_of_default_cores(false) != 1 &&
                 !command_line_arguments_given)
             {
                 fmt::print(std::cerr,
-                    "The pika runtime will be started on only one core with {} "
-                    "worker threads because the process mask has restricted "
-                    "the available resources to only one core. If this is "
-                    "unintentional make sure the process mask contains the "
-                    "resources you need or use --pika:ignore-process-mask to "
-                    "use all resources. Use --pika:print-bind to print the "
-                    "thread bindings used by pika.\n",
+                    "The pika runtime will be started on only one core with {} worker threads "
+                    "because the process mask has restricted the available resources to only one "
+                    "core. If this is unintentional make sure the process mask contains the "
+                    "resources you need or use --pika:ignore-process-mask to use all resources. "
+                    "Use --pika:print-bind to print the thread bindings used by pika.\n",
                     num_threads_);
             }
         }

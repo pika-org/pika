@@ -215,9 +215,9 @@ namespace pika::detail {
         {
             if (contains_error_mode(error_mode, commandline_error_mode::report_missing_config_file))
             {
-                std::cerr << "pika::init: command line warning: command line "
-                             "options file not found ("
-                          << filename << ")" << std::endl;
+                std::cerr
+                    << "pika::init: command line warning: command line options file not found ("
+                    << filename << ")" << std::endl;
             }
             return false;
         }

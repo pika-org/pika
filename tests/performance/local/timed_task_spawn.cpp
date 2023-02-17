@@ -345,9 +345,9 @@ int pika_main(variables_map& vm)
         }
         else
         {
-            throw std::invalid_argument("invalid distribution type specified (valid options are "
-                                        "\"static-balanced\", \"static-imbalanced\" or "
-                                        "\"round-robin\")");
+            throw std::invalid_argument(
+                "invalid distribution type specified (valid options are \"static-balanced\", "
+                "\"static-imbalanced\" or \"round-robin\")");
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -365,8 +365,7 @@ int pika_main(variables_map& vm)
             if (suspended_tasks % os_thread_count)
             {
                 throw std::invalid_argument(
-                    "suspended tasks must be cleanly divisible by OS-thread "
-                    "count\n");
+                    "suspended tasks must be cleanly divisible by OS-thread count\n");
             }
             tasks_per_feeder = tasks / os_thread_count;
             //total_tasks      = tasks;
@@ -382,9 +381,8 @@ int pika_main(variables_map& vm)
         }
         else
         {
-            throw std::invalid_argument(
-                "invalid scaling type specified (valid options are \"strong\" "
-                "or \"weak\")");
+            throw std::invalid_argument("invalid scaling type specified (valid options are "
+                                        "\"strong\                " or \"weak\")");
         }
 
         ///////////////////////////////////////////////////////////////////////

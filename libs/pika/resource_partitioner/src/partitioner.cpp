@@ -110,8 +110,8 @@ namespace pika::resource {
             // if the resource partitioner is not accessed for the first time
             // if the command-line parsing has not yet been done
             PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::resource::get_partitioner",
-                "can be called only after the resource partitioner has "
-                "been initialized and before it has been deleted.");
+                "can be called only after the resource partitioner has been initialized and before "
+                "it has been deleted.");
         }
 
         return *rp;

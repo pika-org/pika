@@ -187,11 +187,10 @@ namespace pika::mpi::experimental {
                                         [&](auto&... ts) mutable {
                                             PIKA_INVOKE(PIKA_MOVE(r.op_state.f), ts..., &request);
                                             PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
-                                                "The MPI_Request is still "
-                                                "MPI_REQUEST_NULL after being "
-                                                "passed to the user callback "
-                                                "in transform_mpi. Did you "
-                                                "forget to use the request?");
+                                                "The MPI_Request is still MPI_REQUEST_NULL after "
+                                                "being passed to the user callback in "
+                                                "transform_mpi. Did you forget to use the "
+                                                "request?");
 
                                             // When the return type is void,
                                             // there is no value to forward to
@@ -208,11 +207,10 @@ namespace pika::mpi::experimental {
                                                 PIKA_INVOKE(
                                                     PIKA_MOVE(r.op_state.f), ts..., &request));
                                             PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
-                                                "The MPI_Request is still "
-                                                "MPI_REQUEST_NULL after being "
-                                                "passed to the user callback "
-                                                "in transform_mpi. Did you "
-                                                "forget to use the request?");
+                                                "The MPI_Request is still MPI_REQUEST_NULL after "
+                                                "being passed to the user callback in "
+                                                "transform_mpi. Did you forget to use the "
+                                                "request?");
 
                                             // When the return type is non-void,
                                             // we have to forward the value to

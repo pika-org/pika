@@ -70,8 +70,8 @@ namespace pika::program_options {
             const option_description& d = *option;
 
             if (d.long_name().empty())
-                throw error("abbreviated option names are not permitted in "
-                            "options configuration files");
+                throw error(
+                    "abbreviated option names are not permitted in options configuration files");
 
             allowed_options.insert(d.long_name());
         }

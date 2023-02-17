@@ -1165,8 +1165,8 @@ namespace pika {
                         std::string boundcpu_str = threads::detail::to_string(boundcpu);
                         std::string pu_mask_str = threads::detail::to_string(pu_mask);
                         PIKA_THROW_EXCEPTION(pika::error::invalid_status, "handle_print_bind",
-                            "unexpected mismatch between locality {}: binding "
-                            "reported from HWLOC({}) and pika({}) on thread {}",
+                            "unexpected mismatch between locality {}: binding reported from "
+                            "HWLOC({}) and pika({}) on thread {}",
                             pika::get_locality_id(), boundcpu_str, pu_mask_str, i);
                     }
                 }
@@ -1189,8 +1189,7 @@ namespace pika {
                     get_config(), options, &detail::handle_print_bind);
                 if (result)
                 {
-                    lbt_ << "runtime::run_helper: bootstrap "
-                            "aborted, bailing out";
+                    lbt_ << "runtime::run_helper: bootstrap aborted, bailing out";
 
                     set_state(runtime_state::running);
                     finalize(-1.0);
@@ -1216,8 +1215,7 @@ namespace pika {
             // Now, execute the user supplied thread function (pika_main)
             if (!!func)
             {
-                lbt_ << "(last stage) runtime::run_helper: about to "
-                        "invoke pika_main";
+                lbt_ << "(last stage) runtime::run_helper: about to invoke pika_main";
 
                 // Change our thread description, as we're about to call pika_main
                 threads::detail::set_thread_description(
@@ -1280,8 +1278,7 @@ namespace pika {
 
         // {{{ launch main
         // register the given main function with the thread manager
-        lbt_ << "(1st stage) runtime::start: launching run_helper "
-                "pika thread";
+        lbt_ << "(1st stage) runtime::start: launching run_helper pika thread";
 
         threads::detail::thread_init_data data(
             util::detail::bind(&runtime::run_helper, this, func, std::ref(result_), true),

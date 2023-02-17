@@ -236,8 +236,8 @@ int pika_main(pika::program_options::variables_map& vm)
 
     if (max_runs == 0)
     {
-        std::cerr << "fibonacci_futures: wrong command line argument value for "
-                     "option 'n-runs', should not be zero"
+        std::cerr << "fibonacci_futures: wrong command line argument value for option 'n-runs', "
+                     "should not be zero"
                   << std::endl;
         return -1;
     }
@@ -245,9 +245,8 @@ int pika_main(pika::program_options::variables_map& vm)
     threshold = vm["threshold"].as<unsigned int>();
     if (threshold < 2 || threshold > n)
     {
-        std::cerr << "fibonacci_futures: wrong command line argument value for "
-                     "option 'threshold', should be in between 2 and n-value"
-                     ", value specified: "
+        std::cerr << "fibonacci_futures: wrong command line argument value for option 'threshold', "
+                     "should be in between 2 and n-value, value specified: "
                   << threshold << std::endl;
         return -1;
     }
@@ -269,8 +268,7 @@ int pika_main(pika::program_options::variables_map& vm)
         }
 
         std::uint64_t d = duration_cast<nanoseconds>(high_resolution_clock::now() - start).count();
-        constexpr char const* fmt = "fibonacci_serial({}) == {},"
-                                    "elapsed time:,{},[s]\n";
+        constexpr char const* fmt = "fibonacci_serial({}) == {},elapsed time:,{},[s]\n";
         fmt::print(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
@@ -289,8 +287,7 @@ int pika_main(pika::program_options::variables_map& vm)
         }
 
         std::uint64_t d = duration_cast<nanoseconds>(high_resolution_clock::now() - start).count();
-        constexpr char const* fmt = "fibonacci_future_one({}) == {},"
-                                    "elapsed time:,{},[s]\n";
+        constexpr char const* fmt = "fibonacci_future_one({}) == {},elapsed time:,{},[s]\n";
         fmt::print(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
@@ -404,8 +401,8 @@ int pika_main(pika::program_options::variables_map& vm)
         }
 
         std::uint64_t d = duration_cast<nanoseconds>(high_resolution_clock::now() - start).count();
-        constexpr char const* fmt = "fibonacci_future_unwrapped_when_all({}) == "
-                                    "{},elapsed time:,{},[s]\n";
+        constexpr char const* fmt =
+            "fibonacci_future_unwrapped_when_all({}) == {},elapsed time:,{},[s]\n";
         fmt::print(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
@@ -452,10 +449,8 @@ int pika_main(pika::program_options::variables_map& vm)
 
     if (!executed_one)
     {
-        std::cerr << "fibonacci_futures: wrong command line argument value for "
-                     "option 'tests', should be either 'all' or a number "
-                     "between zero "
-                     "and 7, value specified: "
+        std::cerr << "fibonacci_futures: wrong command line argument value for option 'tests', "
+                     "should be either 'all' or a number between zero and 7, value specified: "
                   << test << std::endl;
     }
 
