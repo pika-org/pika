@@ -1,4 +1,4 @@
-# Copyright (c) 2019 The STE||AR-Group
+# Copyright (c) 2023 ETH Zurich
 #
 # SPDX-License-Identifier: BSL-1.0
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -27,8 +27,8 @@ BEGIN {
     in_string=0 
 }
 
-# if we see "clang-format off" turn off processing
-# if we see "clang-forma on" turn back on processing
+# if we see "// clang-format off" turn off processing
+# if we see "// clang-format on" turn back on processing
 /\/\/ clang-format off/    { enabled=0; clear_buffer(); print $0; next }
 /\/\/ clang-format on/     { enabled=1; print $0; next }
 
@@ -48,7 +48,7 @@ BEGIN {
 # disallow string ending with \n"
 /\\n\"[[:space:]]*$/ { string_end=0 }
 # disallow string ending with \"
-/\\"[[:space:]]*$/   { string_end=0 ; print "2"}
+/\\"[[:space:]]*$/   { string_end=0 }
 
 # if we're in a string and this line starts with string : join
 in_string && string_start {

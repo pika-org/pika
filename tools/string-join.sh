@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright (c) 2019 The STE||AR-Group
+# Copyright (c) 2023 ETH Zurich
 #
 # SPDX-License-Identifier: BSL-1.0
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -14,9 +14,9 @@ awkscript=$SCRIPT_DIR/string-join.awk
 tmpfile="$(mktemp /tmp/XXXXXXXXX.cpp)" || exit 1
 
 for file in $(git ls-files | grep -E "\.(cpp|hpp|cu)(\.in)?$"); do
-    awk -f $awkscript ${file} >${tmpfile}
-    if ! cmp -s <(git show :${file}) <(cat $tmpfile); then
-        clang-format -i -style=file:$SCRIPT_DIR/../.clang-format ${tmpfile}
-        mv ${tmpfile} ${file}
+    awk -f "$awkscript" "${file}" >"${tmpfile}"
+    if ! cmp -s <(git show :"${file}") <(cat "$tmpfile"); then
+        clang-format -i -style=file:"$SCRIPT_DIR/../.clang-format" "${tmpfile}"
+        mv "${tmpfile}" "${file}"
     fi
 done
