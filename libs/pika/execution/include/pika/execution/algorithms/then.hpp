@@ -156,7 +156,7 @@ namespace pika::then_detail {
                 r.sender, then_receiver<Receiver, F>{PIKA_FORWARD(Receiver, receiver), r.f});
         }
 
-        friend constexpr decltype(auto) tag_invoke(
+        friend decltype(auto) tag_invoke(
             pika::execution::experimental::get_env_t, then_sender_type const& s)
         {
             return pika::execution::experimental::get_env(s.sender);

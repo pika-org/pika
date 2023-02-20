@@ -75,8 +75,9 @@ namespace pika::schedule_from_detail {
             PIKA_NO_UNIQUE_ADDRESS Env e;
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Scheduler> scheduler;
 
-            friend auto tag_invoke(pika::execution::experimental::get_completion_scheduler_t<
-                                       pika::execution::experimental::set_value_t>,
+            friend std::decay_t<Scheduler> tag_invoke(
+                pika::execution::experimental::get_completion_scheduler_t<
+                    pika::execution::experimental::set_value_t>,
                 env const& e) noexcept
             {
                 return e.scheduler;
