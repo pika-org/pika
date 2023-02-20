@@ -62,11 +62,11 @@
   printer.Expr;                                                                                    \
  };
 
-#define NS_DEBUG pika::debug::detail
+#define PIKA_NS_DEBUG pika::debug::detail
 
 // ------------------------------------------------------------
 /// \cond NODETAIL
-namespace NS_DEBUG {
+namespace PIKA_NS_DEBUG {
 
     // ------------------------------------------------------------------
     // format as zero padded int
@@ -623,5 +623,5 @@ namespace NS_DEBUG {
         // inherit constructor
         using base_type::base_type;
     };
-}    // namespace NS_DEBUG
+}    // namespace PIKA_NS_DEBUG
 /// \endcond
