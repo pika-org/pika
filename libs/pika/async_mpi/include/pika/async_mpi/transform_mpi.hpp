@@ -359,7 +359,8 @@ namespace pika::mpi::experimental {
     {
     private:
         template <typename Sender, typename F,
-            PIKA_CONCEPT_REQUIRES_(pika::execution::experimental::is_sender_v<Sender>)>
+            PIKA_CONCEPT_REQUIRES_(
+                pika::execution::experimental::is_sender_v<std::decay_t<Sender>>)>
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(transform_mpi_t, Sender&& sender,
             F&& f, mpi::experimental::stream_type s = mpi::experimental::stream_type::automatic)
         {
