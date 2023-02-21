@@ -61,18 +61,16 @@ namespace mpi = pika::mpi::experimental;
 namespace tt = pika::this_thread::experimental;
 namespace deb = pika::debug::detail;
 
-namespace pika::execution {
-    template <typename Sender>
-    auto async(Sender&& sender)
-    {
-        namespace ex = pika::execution::experimental;
-        auto sched = ex::thread_pool_scheduler{&pika::resource::get_thread_pool("default")};
-        auto snd = ex::schedule(sched) | ex::then([sender = std::move(sender)]() mutable {
-            ex::start_detached(std::move(sender));
-        });
-        ex::start_detached(std::move(snd));
-    }
-}    // namespace pika::execution
+template <typename Sender>
+auto launch_on_default_pool(Sender&& sender)
+{
+    namespace ex = pika::execution::experimental;
+    auto sched = ex::thread_pool_scheduler{&pika::resource::get_thread_pool("default")};
+    auto snd = ex::schedule(sched) | ex::then([sender = std::forward<Sender>(sender)]() mutable {
+        ex::start_detached(std::move(sender));
+    });
+    ex::start_detached(std::move(snd));
+}
 
 //----------------------------------------------------------------------------
 // namespace aliases
@@ -271,7 +269,7 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
                         "send in flight", sends_in_flight);
                     return result;
                 });
-            pika::execution::async(std::move(ssnd));
+            launch_on_default_pool(std::move(ssnd));
         }
         messages_sent++;
         //

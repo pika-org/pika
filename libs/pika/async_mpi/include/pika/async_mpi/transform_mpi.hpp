@@ -518,6 +518,7 @@ namespace pika::mpi::experimental {
             if constexpr (pika::execution::experimental::detail::has_completion_scheduler_v<
                               pika::execution::experimental::set_value_t, std::decay_t<Sender>>)
             {
+                throw std::runtime_error("This should be fixed");
                 return pika::execution::experimental::transfer(
                     transform_mpi_sender<Sender, F>{
                         PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), s},
@@ -733,7 +734,10 @@ namespace pika::mpi::experimental {
 */
                 else
                 {
-                    throw std::runtime_error("Unsupported transfer mode " + std::to_string(mode));
+                    PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "transform_mpi",
+                        "Unsupported transfer mode: {} (valid options are between {} and {} and "
+                        "can be set with env{PIKA_MPI_COMPLETION_MODE}",
+                        mode, 0, 10);
                     auto snd1 = transform_mpi_sender<Sender, F>{
                         PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), s};
                     return make_unique_any_sender(std::move(snd1));

@@ -6,9 +6,6 @@
 
 #include <pika/assert.hpp>
 #include <pika/execution.hpp>
-#if __has_include(<pika/executors/thread_pool_scheduler_queue_bypass.hpp>)
-# include <pika/executors/thread_pool_scheduler_queue_bypass.hpp>
-#endif
 #include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/mpi.hpp>
@@ -177,19 +174,10 @@ void release_msg_buffer(message_buffer* buffer)
     msr_deb<6>.debug(str<>("message_buffers"), std::uint64_t(message_buffers_size_.load()));
 }
 
-namespace pika::execution {
-    template <typename Sender>
-    auto async(Sender&& sender)
-    {
-        namespace ex = pika::execution::experimental;
-        auto sched = ex::thread_pool_scheduler{&pika::resource::get_thread_pool("default")};
-        auto snd =
-            ex::schedule(sched) | ex::then([sender = std::forward<Sender>(sender)]() mutable {
-                ex::start_detached(std::move(sender));
-            });
-        ex::start_detached(std::move(snd));
-    }
-}    // namespace pika::execution
+auto get_default_scheduler()
+{
+    return ex::thread_pool_scheduler{&pika::resource::get_thread_pool("default")};
+}
 
 struct message_receiver
 {
@@ -248,7 +236,7 @@ struct message_receiver
 
             // launch the receive for the next msg and launch the sending forward
             msr_deb<6>.debug(str<>("start_detached"), "tx_snd2", step, round);
-            pika::execution::async(std::move(tx_snd2));
+            ex::start_detached(std::move(tx_snd2));
         }
         else
         {
@@ -280,9 +268,9 @@ struct message_receiver
 
             // launch the receive for the next msg and launch the sending forward
             msr_deb<6>.debug(str<>("start_detached"), "rx_snd2", step, round);
-            pika::execution::async(std::move(rx_snd2));
+            ex::start_detached(std::move(rx_snd2));
             msr_deb<6>.debug(str<>("start_detached"), "tx_snd2", step, round);
-            pika::execution::async(std::move(tx_snd2));
+            ex::start_detached(std::move(tx_snd2));
         }
     }
 };
@@ -324,8 +312,9 @@ int pika_main(pika::program_options::variables_map& vm)
     const std::uint64_t num_rounds = vm["rounds"].as<std::uint64_t>();
     output = vm.count("output") != 0;
     //
-    auto in_flight = vm["in-flight-limit"].as<std::uint32_t>();
-    mpi::set_max_requests_in_flight(in_flight, mpi::stream_type::user_1);
+    auto in_flight =
+        mpi::get_max_requests_in_flight();    // vm["in-flight-limit"].as<std::uint32_t>();
+    //    mpi::set_max_requests_in_flight(in_flight, mpi::stream_type::user_1);
 
     mpi_poll_size = vm["mpi-polling-size"].as<std::uint32_t>();
     mpi::set_max_polling_size(mpi_poll_size);
@@ -378,7 +367,7 @@ int pika_main(pika::program_options::variables_map& vm)
                     mpi::transform_mpi(MPI_Irecv, mpi::stream_type::receive_1) |
                     ex::then(reclambda);
                 msr_deb<6>.debug(str<>("start_detached"), "rx_snd1", i, orank);
-                pika::execution::async(std::move(rx_snd1));
+                ex::start_detached(std::move(rx_snd1));
             }
 
             // start the ring (first message) message for this iteration/rank
@@ -396,7 +385,7 @@ int pika_main(pika::program_options::variables_map& vm)
                 });
             msg_info(rank, size, msg_type::send, buf->token_val_, tag, 0, 0, "init");
             msr_deb<6>.debug(str<>("start_detached"), "send_snd", i);
-            pika::execution::async(std::move(send_snd));
+            ex::start_detached(std::move(send_snd));
         }
 
         // don't exit until all messages are drained
