@@ -12,6 +12,7 @@
 #include <pika/debugging/print.hpp>
 
 namespace pika::cuda::experimental::detail {
-    using print_on = debug::detail::enable_print<false>;
-    static constexpr print_on cud_debug("CUDA");
+    using namespace pika::debug::detail;
+    template <int Level>
+    static print_threshold<Level, 1> cud_debug("CUDA-EX");
 }    // namespace pika::cuda::experimental::detail
