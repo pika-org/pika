@@ -8,6 +8,7 @@
 #include <pika/assert.hpp>
 #include <pika/async_mpi/mpi_exception.hpp>
 #include <pika/async_mpi/mpi_polling.hpp>
+#include <pika/command_line_handling/get_env_var.hpp>
 #include <pika/concurrency/spinlock.hpp>
 #include <pika/datastructures/detail/small_vector.hpp>
 #include <pika/debugging/print.hpp>
@@ -283,39 +284,18 @@ namespace pika::mpi::experimental {
         }
 
         // -----------------------------------------------------------------
-        std::uint32_t get_env_value(const char* s, std::uint32_t def)
-        {
-            std::uint32_t val = def;
-            using namespace pika::debug::detail;
-            char* env = std::getenv(s);
-            if (env)
-            {
-                try
-                {
-                    val = std::stoi(env);
-                }
-                catch (...)
-                {
-                    val = def;
-                    std::cerr << str<>("get_env_value") << " invalid " << s << " " << dec<4>(def)
-                              << std::endl;
-                    PIKA_DP(mpi_debug<3>, error(str<>("get_env_value"), "invalid", s, dec<4>(val)));
-                }
-                PIKA_DP(mpi_debug<3>, debug(str<>("get_env_value"), s, dec<4>(val)));
-            }
-            return val;
-        }
-
-        // -----------------------------------------------------------------
         std::uint32_t get_throttling_default()
         {
             // if the global throttling var is set, set all streams
             std::uint32_t def = std::uint32_t(-1);    // unlimited
-            std::uint32_t val = get_env_value("PIKA_MPI_MSG_THROTTLE", def);
+            std::uint32_t val = pika::get_env_value("PIKA_MPI_MSG_THROTTLE", def);
             for (size_t i = 0; i < mpi_data_.default_queues_.size(); ++i)
             {
                 mpi_data_.default_queues_[i].limit_ = val;
+                // mpi_data_.default_queues_[i].semaphore_ = std::move(pika::counting_semaphore<>{val});
+#ifdef PIKA_DEBUG
                 mpi_data_.default_queues_[i].index_ = i;
+#endif
             }
             // check env settings for individual streams
             for (size_t i = 0; i < mpi_data_.default_queues_.size(); ++i)
@@ -324,18 +304,23 @@ namespace pika::mpi::experimental {
                     "PIKA_MPI_MSG_THROTTLE_" + std::string(stream_name(stream_type(i)));
                 std::transform(str.begin(), str.end(), str.begin(),
                     [](unsigned char c) { return std::toupper(c); });
-                val = get_env_value(str.c_str(), def);
+                val = pika::get_env_value(str.c_str(), def);
                 if (val != def)
+                {
                     mpi_data_.default_queues_[i].limit_ = val;
+                    // mpi_data_.default_queues_[i].semaphore_ = pika::counting_semaphore<>{val};
+                }
             }
             // return default val for automatic (unspecified) stream
+            std::cout << "get_throttling_default " << get_stream_ref(stream_type::automatic).limit_
+                      << std::endl;
             return get_stream_ref(stream_type::automatic).limit_;
         }
 
         // -----------------------------------------------------------------
         std::size_t get_polling_default()
         {
-            std::uint32_t val = get_env_value("PIKA_MPI_POLLING_SIZE", 8);
+            std::uint32_t val = pika::get_env_value("PIKA_MPI_POLLING_SIZE", 8);
             mpi_data_.max_polling_requests = val;
             return val;
         }
@@ -344,7 +329,7 @@ namespace pika::mpi::experimental {
         std::size_t get_completion_mode_default()
         {
             // inline continuations are default
-            return detail::get_env_value("PIKA_MPI_COMPLETION_MODE", 1);
+            return pika::get_env_value("PIKA_MPI_COMPLETION_MODE", 1);
         }
 
         // -----------------------------------------------------------------
