@@ -112,8 +112,7 @@ namespace pika::lcos::local {
                 {
                     PIKA_THROWS_IF(ec, pika::error::future_already_retrieved,
                         "local::detail::promise_base<R>::get_future",
-                        "future or shared future has already been retrieved "
-                        "from this promise");
+                        "future or shared future has already been retrieved from this promise");
                     return pika::future<R>();
                 }
 

@@ -449,9 +449,9 @@ namespace pika::ensure_started_detail {
             pika::execution::experimental::connect_t, ensure_started_sender_type const&, Receiver&&)
         {
             static_assert(sizeof(Receiver) == 0,
-                "Are you missing a std::move? The ensure_started sender is not "
-                "copyable and thus not l-value connectable. Make sure you are "
-                "passing an r-value reference of the sender.");
+                "Are you missing a std::move? The ensure_started sender is not copyable and thus "
+                "not l-value connectable. Make sure you are passing an r-value reference of the "
+                "sender.");
         }
     };
 

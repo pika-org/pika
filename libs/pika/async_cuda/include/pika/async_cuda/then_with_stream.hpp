@@ -76,8 +76,8 @@ namespace pika::cuda::experimental::then_with_stream_detail {
         {
             pika::execution::experimental::set_error(PIKA_FORWARD(R, r),
                 std::make_exception_ptr(pika::exception(pika::error::unknown_error,
-                    fmt::format("Getting event after CUDA stream transform "
-                                "failed with status {} ({})",
+                    fmt::format(
+                        "Getting event after CUDA stream transform failed with status {} ({})",
                         status, whip::get_error_string(status)))));
         }
     }
@@ -557,8 +557,8 @@ namespace pika::cuda::experimental::then_with_stream_detail {
         auto completion_sched = pika::execution::experimental::get_completion_scheduler<
             pika::execution::experimental::set_value_t>(sender);
         static_assert(std::is_same_v<std::decay_t<decltype(completion_sched)>, cuda_scheduler>,
-            "then_with_cuda_stream can only be used with senders whose "
-            "completion scheduler is cuda_scheduler");
+            "then_with_cuda_stream can only be used with senders whose completion scheduler is "
+            "cuda_scheduler");
 
         return then_with_stream_detail::then_with_cuda_stream_sender<Sender, F>{
             PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), std::move(completion_sched)};

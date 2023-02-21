@@ -43,10 +43,10 @@ namespace pika::threads::detail {
         if (current_state.state() == previous_state.state() && current_state != previous_state)
         {
             // NOLINTNEXTLINE(bugprone-branch-clone)
-            LTM_(warning).format("set_active_state: thread is still active, however it was "
-                                 "non-active since the original set_state request was issued, "
-                                 "aborting state change, thread({}), description({}), new "
-                                 "state({})",
+            LTM_(warning).format(
+                "set_active_state: thread is still active, however it was non-active since the "
+                "original set_state request was issued, aborting state change, thread({}), "
+                "description({}), new state({})",
                 thrd, get_thread_id_data(thrd)->get_description(), get_thread_state_name(newstate));
             return thread_result_type(thread_schedule_state::terminated, invalid_thread_id);
         }
@@ -93,9 +93,9 @@ namespace pika::threads::detail {
             if (new_state == previous_state_val)
             {
                 // NOLINTNEXTLINE(bugprone-branch-clone)
-                LTM_(warning).format("set_thread_state: old thread state is the same as new "
-                                     "thread state, aborting state change, thread({}), "
-                                     "description({}), new state({})",
+                LTM_(warning).format(
+                    "set_thread_state: old thread state is the same as new thread state, aborting "
+                    "state change, thread({}), description({}), new state({})",
                     thrd, get_thread_id_data(thrd)->get_description(),
                     get_thread_state_name(new_state));
 
@@ -115,9 +115,8 @@ namespace pika::threads::detail {
                 {
                     // schedule a new thread to set the state
                     // NOLINTNEXTLINE(bugprone-branch-clone)
-                    LTM_(warning).format("set_thread_state: thread is currently active, "
-                                         "scheduling new thread, thread({}), description({}), "
-                                         "new state({})",
+                    LTM_(warning).format("set_thread_state: thread is currently active, scheduling "
+                                         "new thread, thread({}), description({}), new state({})",
                         thrd, get_thread_id_data(thrd)->get_description(),
                         get_thread_state_name(new_state));
 
@@ -139,8 +138,8 @@ namespace pika::threads::detail {
 
                     // NOLINTNEXTLINE(bugprone-branch-clone)
                     LTM_(warning).format("set_thread_state: thread is currently active, but not "
-                                         "scheduling new thread because retry_on_active = "
-                                         "false, thread({}), description({}), new state({})",
+                                         "scheduling new thread because retry_on_active = false, "
+                                         "thread({}), description({}), new state({})",
                         thrd, get_thread_id_data(thrd)->get_description(),
                         get_thread_state_name(new_state));
 
@@ -177,9 +176,8 @@ namespace pika::threads::detail {
                     // we do not allow explicit resetting of a state to suspended
                     // without the thread being executed.
                     std::string str =
-                        fmt::format("set_thread_state: invalid new state, can't demote a "
-                                    "pending thread, thread({}), description({}), new "
-                                    "state({})",
+                        fmt::format("set_thread_state: invalid new state, can't demote a pending "
+                                    "thread, thread({}), description({}), new state({})",
                             thrd, get_thread_id_data(thrd)->get_description(), new_state);
 
                     // NOLINTNEXTLINE(bugprone-branch-clone)
@@ -211,9 +209,9 @@ namespace pika::threads::detail {
             // (if it's not pending anymore).
 
             // NOLINTNEXTLINE(bugprone-branch-clone)
-            LTM_(info).format("set_thread_state: thread({}), description({}), "
-                              "new state({}), old state({})",
-                thrd, get_thread_id_data(thrd)->get_description(), get_thread_state_name(new_state),
+            LTM_(info).format(
+                "set_thread_state: thread({}), description({}), new state({}), old state({})", thrd,
+                get_thread_id_data(thrd)->get_description(), get_thread_state_name(new_state),
                 get_thread_state_name(previous_state_val));
 
             // So all what we do here is to set the new state.
@@ -224,9 +222,9 @@ namespace pika::threads::detail {
 
             // state has changed since we fetched it from the thread, retry
             // NOLINTNEXTLINE(bugprone-branch-clone)
-            LTM_(warning).format("set_thread_state: state has been changed since it was "
-                                 "fetched, retrying, thread({}), description({}), new "
-                                 "state({}), old state({})",
+            LTM_(warning).format(
+                "set_thread_state: state has been changed since it was fetched, retrying, "
+                "thread({}), description({}), new state({}), old state({})",
                 thrd, get_thread_id_data(thrd)->get_description(), get_thread_state_name(new_state),
                 get_thread_state_name(previous_state_val));
         } while (true);

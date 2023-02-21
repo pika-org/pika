@@ -1001,9 +1001,9 @@ namespace pika::threads {
                 {
                     if (new_tasks_count != 0)
                     {
-                        LTM_(debug).format("thread_queue::wait_or_add_new: not enough threads "
-                                           "to steal from queue {} to queue {}, have {} but "
-                                           "need at least {}",
+                        LTM_(debug).format(
+                            "thread_queue::wait_or_add_new: not enough threads to steal from queue "
+                            "{} to queue {}, have {} but need at least {}",
                             fmt::ptr(addfrom), fmt::ptr(this), new_tasks_count,
                             parameters_.min_tasks_to_steal_staged_);
                     }
@@ -1089,10 +1089,9 @@ namespace pika::threads {
             // with the default stack size
             static_assert(
                 execution::thread_stacksize::default_ == execution::thread_stacksize::small_,
-                "This assumes that the default stacksize is \"small_\". If the "
-                "default changes, so should this code. If this static_assert "
-                "fails you've most likely changed the default without changing "
-                "the code here.");
+                "This assumes that the default stacksize is \"small_\". If the default changes, so "
+                "should this code. If this static_assert fails you've most likely changed the "
+                "default without changing the code here.");
 
             std::lock_guard<mutex_type> lk(mtx_);
             for (std::int64_t i = 0; i < parameters_.init_threads_count_; ++i)

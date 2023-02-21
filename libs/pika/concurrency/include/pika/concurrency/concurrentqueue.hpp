@@ -527,8 +527,7 @@ namespace pika::concurrency::detail {
     static inline size_t hash_thread_id(thread_id_t id)
     {
         static_assert(sizeof(thread_id_t) <= 8,
-            "Expected a platform where thread IDs are at most 64-bit "
-            "values");
+            "Expected a platform where thread IDs are at most 64-bit values");
         return static_cast<size_t>(
             hash_32_or_64<sizeof(thread_id_converter<thread_id_t>::thread_id_hash_t)>::hash(
                 thread_id_converter<thread_id_t>::prehash(id)));
@@ -542,9 +541,7 @@ namespace pika::concurrency::detail {
 # pragma warning(disable : 4554)
 #endif
         static_assert(std::is_integral<T>::value && !std::numeric_limits<T>::is_signed,
-            "circular_less_than is intended to be used only with "
-            "unsigned "
-            "integer types");
+            "circular_less_than is intended to be used only with unsigned integer types");
         return static_cast<T>(a - b) >
             static_cast<T>(static_cast<T>(1) << static_cast<T>(sizeof(T) * CHAR_BIT - 1));
 #ifdef _MSC_VER
@@ -563,9 +560,7 @@ namespace pika::concurrency::detail {
     static inline T ceil_to_pow_2(T x)
     {
         static_assert(std::is_integral<T>::value && !std::numeric_limits<T>::is_signed,
-            "ceil_to_pow_2 is intended to be used only with unsigned "
-            "integer "
-            "types");
+            "ceil_to_pow_2 is intended to be used only with unsigned integer types");
 
         // Adapted from http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
         --x;
@@ -684,10 +679,8 @@ namespace pika::concurrency::detail {
         {
             // This thread is about to exit, let everyone know!
             assert(this == &instance() &&
-                "If this assert fails, you likely have a buggy "
-                "compiler! "
-                "Change the preprocessor conditions such that "
-                "MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED is no longer "
+                "If this assert fails, you likely have a buggy compiler! Change the preprocessor "
+                "conditions such that MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED is no longer "
                 "defined.");
             for (auto ptr = tail; ptr != nullptr; ptr = ptr->next)
             {
@@ -946,35 +939,27 @@ namespace pika::concurrency::detail {
         static_assert(!std::numeric_limits<index_t>::is_signed && std::is_integral<index_t>::value,
             "Traits::index_t must be an unsigned integral type");
         static_assert(sizeof(index_t) >= sizeof(size_t),
-            "Traits::index_t must be at least as wide as "
-            "Traits::size_t");
+            "Traits::index_t must be at least as wide as Traits::size_t");
         static_assert((BLOCK_SIZE > 1) && !(BLOCK_SIZE & (BLOCK_SIZE - 1)),
             "Traits::BLOCK_SIZE must be a power of 2 (and at least 2)");
         static_assert((EXPLICIT_BLOCK_EMPTY_COUNTER_THRESHOLD > 1) &&
                 !(EXPLICIT_BLOCK_EMPTY_COUNTER_THRESHOLD &
                     (EXPLICIT_BLOCK_EMPTY_COUNTER_THRESHOLD - 1)),
-            "Traits::EXPLICIT_BLOCK_EMPTY_COUNTER_THRESHOLD must be a "
-            "power of "
-            "2 (and greater than 1)");
+            "Traits::EXPLICIT_BLOCK_EMPTY_COUNTER_THRESHOLD must be a power of 2 (and greater than "
+            "1)");
         static_assert((EXPLICIT_INITIAL_INDEX_SIZE > 1) &&
                 !(EXPLICIT_INITIAL_INDEX_SIZE & (EXPLICIT_INITIAL_INDEX_SIZE - 1)),
-            "Traits::EXPLICIT_INITIAL_INDEX_SIZE must be a power of 2 "
-            "(and "
-            "greater than 1)");
+            "Traits::EXPLICIT_INITIAL_INDEX_SIZE must be a power of 2 (and greater than 1)");
         static_assert((IMPLICIT_INITIAL_INDEX_SIZE > 1) &&
                 !(IMPLICIT_INITIAL_INDEX_SIZE & (IMPLICIT_INITIAL_INDEX_SIZE - 1)),
-            "Traits::IMPLICIT_INITIAL_INDEX_SIZE must be a power of 2 "
-            "(and "
-            "greater than 1)");
+            "Traits::IMPLICIT_INITIAL_INDEX_SIZE must be a power of 2 (and greater than 1)");
         static_assert((INITIAL_IMPLICIT_PRODUCER_HASH_SIZE == 0) ||
                 !(INITIAL_IMPLICIT_PRODUCER_HASH_SIZE & (INITIAL_IMPLICIT_PRODUCER_HASH_SIZE - 1)),
-            "Traits::INITIAL_IMPLICIT_PRODUCER_HASH_SIZE must be a "
-            "power of 2");
+            "Traits::INITIAL_IMPLICIT_PRODUCER_HASH_SIZE must be a power of 2");
         static_assert(
             INITIAL_IMPLICIT_PRODUCER_HASH_SIZE == 0 || INITIAL_IMPLICIT_PRODUCER_HASH_SIZE >= 1,
-            "Traits::INITIAL_IMPLICIT_PRODUCER_HASH_SIZE must be at "
-            "least 1 "
-            "(or 0 to disable implicit enqueueing)");
+            "Traits::INITIAL_IMPLICIT_PRODUCER_HASH_SIZE must be at least 1 (or 0 to disable "
+            "implicit enqueueing)");
 
     public:
         // Creates a queue with at least `capacity` element slots; note that the
@@ -2007,8 +1992,7 @@ namespace pika::concurrency::detail {
             // alignment, but this is hard to do in a cross-platform way. Assert for this case:
             static_assert(
                 std::alignment_of<T>::value <= std::alignment_of<detail::max_align_t>::value,
-                "The queue does not support super-aligned types at "
-                "this time");
+                "The queue does not support super-aligned types at this time");
             // Additionally, we need the alignment of Block itself to be a multiple of max_align_t since
             // otherwise the appropriate padding will not be added at the end of Block in order to make
             // arrays of Blocks all be properly aligned (not just the first one). We use a union to force
@@ -2046,9 +2030,7 @@ namespace pika::concurrency::detail {
         };
         static_assert(
             std::alignment_of<Block>::value >= std::alignment_of<detail::max_align_t>::value,
-            "Internal error: Blocks must be at least as aligned as the "
-            "type "
-            "they are wrapping");
+            "Internal error: Blocks must be at least as aligned as the type they are wrapping");
 
 #if MCDBGQ_TRACKMEM
     public:

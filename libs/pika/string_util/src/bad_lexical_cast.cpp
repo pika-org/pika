@@ -11,8 +11,7 @@
 namespace pika::detail {
     const char* bad_lexical_cast::what() const noexcept
     {
-        return "bad lexical cast: "
-               "source type value could not be interpreted as target";
+        return "bad lexical cast: source type value could not be interpreted as target";
     }
 
     bad_lexical_cast::~bad_lexical_cast() noexcept = default;

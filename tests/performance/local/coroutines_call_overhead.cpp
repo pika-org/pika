@@ -196,14 +196,11 @@ int main(int argc, char* argv[])
             "number of contexts use")
 
             ("iterations", value<std::uint64_t>(&iterations)->default_value(100000),
-                "number of iterations to invoke (2 * iterations context "
-                "switches "
-                "will occur)")
+                "number of iterations to invoke (2 * iterations context switches will occur)")
 
                 ("seed", value<std::uint64_t>(&seed)->default_value(0),
-                    "seed for the pseudo random number generator (if 0, a seed "
-                    "is "
-                    "chosen based on the current system time)")
+                    "seed for the pseudo random number generator (if 0, a seed is chosen based on "
+                    "the current system time)")
 
                     ("no-header", "do not print out the header");
 

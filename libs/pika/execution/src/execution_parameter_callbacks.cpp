@@ -36,12 +36,10 @@ namespace pika::parallel::execution::detail {
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "pika::parallel::execution::detail::get_os_thread_count",
-                "No fallback handler for get_os_thread_count is installed. "
-                "Please start the runtime if you haven't done so. If you "
-                "intended to not use the runtime make sure you have "
-                "implemented get_os_thread_count for your executor or install "
-                "a fallback handler with "
-                "pika::parallel::execution::detail::set_get_os_thread_count.");
+                "No fallback handler for get_os_thread_count is installed. Please start the "
+                "runtime if you haven't done so. If you intended to not use the runtime make sure "
+                "you have implemented get_os_thread_count for your executor or install a fallback "
+                "handler with pika::parallel::execution::detail::set_get_os_thread_count.");
             return std::size_t(-1);
         }
     }
@@ -68,11 +66,9 @@ namespace pika::parallel::execution::detail {
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "pika::parallel::execution::detail::get_pu_mask",
-                "No fallback handler for get_pu_mask is installed. Please "
-                "start the runtime if you haven't done so. If you intended "
-                "to not use the runtime make sure you have implemented "
-                "get_pu_mask for your executor or install a fallback "
-                "handler with "
+                "No fallback handler for get_pu_mask is installed. Please start the runtime if you "
+                "haven't done so. If you intended to not use the runtime make sure you have "
+                "implemented get_pu_mask for your executor or install a fallback handler with "
                 "pika::parallel::execution::detail::set_get_pu_mask.");
 
             static threads::detail::mask_type mask{};

@@ -420,15 +420,15 @@ namespace pika::threads::detail {
             topo.set_thread_affinity_mask(mask, ec);
             if (ec)
             {
-                LTM_(warning).format("thread_func: {} setting thread affinity "
-                                     "on OS thread {} failed with: {}",
+                LTM_(warning).format(
+                    "thread_func: {} setting thread affinity on OS thread {} failed with: {}",
                     id_.name(), global_thread_num, ec.get_message());
             }
         }
         else
         {
-            LTM_(debug).format("thread_func: {} setting thread affinity on OS "
-                               "thread {} was explicitly disabled.",
+            LTM_(debug).format(
+                "thread_func: {} setting thread affinity on OS thread {} was explicitly disabled.",
                 id_.name(), global_thread_num);
         }
 
@@ -441,8 +441,8 @@ namespace pika::threads::detail {
             topo.reduce_thread_priority(ec);
             if (ec)
             {
-                LTM_(warning).format("thread_func: {} reducing thread priority "
-                                     "on OS thread {} failed with: {}",
+                LTM_(warning).format(
+                    "thread_func: {} reducing thread priority on OS thread {} failed with: {}",
                     id_.name(), global_thread_num, ec.get_message());
             }
         }
@@ -505,8 +505,8 @@ namespace pika::threads::detail {
             }
             catch (pika::exception const& e)
             {
-                LFATAL_.format("thread_func: {} thread_num:{} : caught "
-                               "pika::exception: {}, aborted thread execution",
+                LFATAL_.format("thread_func: {} thread_num:{} : caught pika::exception: {}, "
+                               "aborted thread execution",
                     id_.name(), global_thread_num, e.what());
 
                 report_error(global_thread_num, std::current_exception());
@@ -514,8 +514,8 @@ namespace pika::threads::detail {
             }
             catch (std::system_error const& e)
             {
-                LFATAL_.format("thread_func: {} thread_num:{} : caught "
-                               "std::system_error: {}, aborted thread execution",
+                LFATAL_.format("thread_func: {} thread_num:{} : caught std::system_error: {}, "
+                               "aborted thread execution",
                     id_.name(), global_thread_num, e.what());
 
                 report_error(global_thread_num, std::current_exception());
@@ -529,16 +529,16 @@ namespace pika::threads::detail {
         }
         catch (...)
         {
-            LFATAL_.format("thread_func: {} thread_num:{} : caught "
-                           "unexpected exception, aborted thread execution",
+            LFATAL_.format("thread_func: {} thread_num:{} : caught unexpected exception, aborted "
+                           "thread execution",
                 id_.name(), global_thread_num);
 
             report_error(global_thread_num, std::current_exception());
             return;
         }
 
-        LTM_(info).format("thread_func: {} thread_num: {}, ending OS thread, "
-                          "executed {} pika threads",
+        LTM_(info).format(
+            "thread_func: {} thread_num: {}, ending OS thread, executed {} pika threads",
             id_.name(), global_thread_num, counter_data_[global_thread_num].executed_threads_);
     }
 
@@ -1353,8 +1353,7 @@ namespace pika::threads::detail {
             l.unlock();
             PIKA_THROWS_IF(ec, pika::error::bad_parameter,
                 "scheduled_thread_pool<Scheduler>::add_processing_unit",
-                "the given virtual core has already been added to this "
-                "thread pool");
+                "the given virtual core has already been added to this thread pool");
             return;
         }
 
@@ -1382,8 +1381,7 @@ namespace pika::threads::detail {
             l.unlock();
             PIKA_THROWS_IF(ec, pika::error::bad_parameter,
                 "scheduled_thread_pool<Scheduler>::remove_processing_unit",
-                "the given virtual core has already been stopped to run on "
-                "this thread pool");
+                "the given virtual core has already been stopped to run on this thread pool");
             return;
         }
 
@@ -1436,10 +1434,8 @@ namespace pika::threads::detail {
         {
             l.unlock();
             PIKA_THROWS_IF(ec, pika::error::bad_parameter,
-                "scheduled_thread_pool<Scheduler>::suspend_processing_unit_"
-                "direct",
-                "the given virtual core has already been stopped to run on "
-                "this thread pool");
+                "scheduled_thread_pool<Scheduler>::suspend_processing_unit_direct",
+                "the given virtual core has already been stopped to run on this thread pool");
             return;
         }
 
@@ -1474,8 +1470,7 @@ namespace pika::threads::detail {
             l.unlock();
             PIKA_THROWS_IF(ec, pika::error::bad_parameter,
                 "scheduled_thread_pool<Scheduler>::resume_processing_unit",
-                "the given virtual core has already been stopped to run on "
-                "this thread pool");
+                "the given virtual core has already been stopped to run on this thread pool");
             return;
         }
 

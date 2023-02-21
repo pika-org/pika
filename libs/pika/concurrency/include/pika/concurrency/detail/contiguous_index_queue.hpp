@@ -27,8 +27,8 @@ namespace pika::concurrency::detail {
     class contiguous_index_queue
     {
         static_assert(sizeof(T) <= 4,
-            "contiguous_index_queue assumes at most 32 bit indices to fit two "
-            "indices in an at most 64 bit struct");
+            "contiguous_index_queue assumes at most 32 bit indices to fit two indices in an at "
+            "most 64 bit struct");
         static_assert(
             std::is_integral_v<T>, "contiguous_index_queue only works with integral indices");
 

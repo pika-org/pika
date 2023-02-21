@@ -34,8 +34,7 @@ namespace pika::execution::experimental::detail {
     struct single_result
     {
         static_assert(sizeof(Variants) == 0,
-            "expected a single variant with a single type in "
-            "sender_traits<>::value_types");
+            "expected a single variant with a single type in sender_traits<>::value_types");
     };
 
     template <>
@@ -54,17 +53,16 @@ namespace pika::execution::experimental::detail {
     struct single_result<pika::util::detail::pack<pika::util::detail::pack<T, U, Ts...>>>
     {
         static_assert(sizeof(T) == 0,
-            "expected a single variant with a single type in "
-            "sender_traits<>::value_types (single variant with two or more "
-            "types given)");
+            "expected a single variant with a single type in sender_traits<>::value_types (single "
+            "variant with two or more types given)");
     };
 
     template <typename T, typename U, typename... Ts>
     struct single_result<pika::util::detail::pack<T, U, Ts...>>
     {
         static_assert(sizeof(T) == 0,
-            "expected a single variant with a single type in "
-            "sender_traits<>::value_types (two or more variants)");
+            "expected a single variant with a single type in sender_traits<>::value_types (two or "
+            "more variants)");
     };
 
     template <typename Variants>

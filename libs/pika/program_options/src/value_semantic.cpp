@@ -266,9 +266,9 @@ namespace pika::program_options {
         case 0:
             return "";
         }
-        throw std::logic_error("error_with_option_name::m_option_style can only be "
-                               "one of [0, allow_dash_for_short, allow_slash_for_short, "
-                               "allow_long_disguise or allow_long]");
+        throw std::logic_error(
+            "error_with_option_name::m_option_style can only be one of [0, allow_dash_for_short, "
+            "allow_slash_for_short, allow_long_disguise or allow_long]");
     }
 
     string error_with_option_name::get_canonical_option_name() const
@@ -365,13 +365,11 @@ namespace pika::program_options {
         switch (kind)
         {
         case invalid_bool_value:
-            msg = "the argument ('%value%') for option '%canonical_option%' is "
-                  "invalid. Valid choices are 'on|off', 'yes|no', '1|0' and "
-                  "'true|false'";
+            msg = "the argument ('%value%') for option '%canonical_option%' is invalid. Valid "
+                  "choices are 'on|off', 'yes|no', '1|0' and 'true|false'";
             break;
         case invalid_option_value:
-            msg = "the argument ('%value%') for option '%canonical_option%' is "
-                  "invalid";
+            msg = "the argument ('%value%') for option '%canonical_option%' is invalid";
             break;
         case multiple_values_not_allowed:
             msg = "option '%canonical_option%' only takes a single argument";

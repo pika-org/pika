@@ -62,8 +62,8 @@ namespace pika::util {
     void print_cdash_timing(const char* name, double time)
     {
         fmt::print(std::cout,
-            "<DartMeasurement name=\"{}\" "
-            "type=\"numeric/double\">{}</DartMeasurement>\n",
+            "<DartMeasurement name=\"{}\            " type =\"numeric/double\">{}</"
+                                                             "DartMeasurement>\n",
             name, time);
     }
 

@@ -179,9 +179,8 @@ namespace pika::split_tuple_detail {
         ~shared_state()
         {
             PIKA_ASSERT_MSG(start_called,
-                "start was never called on the operation state of split_tuple. "
-                "Did you forget to connect the sender to a receiver, or call "
-                "start on the operation state?");
+                "start was never called on the operation state of split_tuple. Did you forget to "
+                "connect the sender to a receiver, or call start on the operation state?");
         }
 
         template <std::size_t Index, typename Receiver>
@@ -399,8 +398,7 @@ namespace pika::split_tuple_detail {
                     pika::util::detail::pack, pika::util::detail::pack>>>::type;
 #endif
         static_assert(std::tuple_size_v<value_type> >= 1,
-            "split_tuple takes a sender that sends a tuple of at least one "
-            "type");
+            "split_tuple takes a sender that sends a tuple of at least one type");
         using split_tuple_sender_value_type = std::decay_t<std::tuple_element_t<Index, value_type>>;
 
         template <typename T>
@@ -490,9 +488,9 @@ namespace pika::split_tuple_detail {
             pika::execution::experimental::connect_t, split_tuple_sender_type const&, Receiver&&)
         {
             static_assert(sizeof(Receiver) == 0,
-                "Are you missing a std::move? The split_tuple sender is not "
-                "copyable and thus not l-value connectable. Make sure you are "
-                "passing an r-value reference of the sender.");
+                "Are you missing a std::move? The split_tuple sender is not copyable and thus not "
+                "l-value connectable. Make sure you are passing an r-value reference of the "
+                "sender.");
         }
     };
 

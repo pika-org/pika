@@ -257,9 +257,8 @@ namespace pika::mpi::experimental {
             request_callback_function_type&& callback, MPI_Request request, stream_type stream)
         {
             PIKA_ASSERT_MSG(get_register_polling_count() != 0,
-                "MPI event polling has not been enabled on any pool. Make sure "
-                "that MPI event polling is enabled on at least one thread "
-                "pool.");
+                "MPI event polling has not been enabled on any pool. Make sure that MPI event "
+                "polling is enabled on at least one thread pool.");
 
             // Eagerly check if request already completed. If it did, call the
             // callback immediately.
@@ -471,13 +470,11 @@ namespace pika::mpi::experimental {
                 bool request_vector_empty = detail::mpi_data_.in_flight_ == 0;
                 lk.unlock();
                 PIKA_ASSERT_MSG(request_queue_empty,
-                    "MPI request polling was disabled while there are "
-                    "unprocessed MPI requests. Make sure MPI request polling "
-                    "is not disabled too early.");
+                    "MPI request polling was disabled while there are unprocessed MPI requests. "
+                    "Make sure MPI request polling is not disabled too early.");
                 PIKA_ASSERT_MSG(request_vector_empty,
-                    "MPI request polling was disabled while there are active "
-                    "MPI futures. Make sure MPI request polling is not "
-                    "disabled too early.");
+                    "MPI request polling was disabled while there are active MPI futures. Make "
+                    "sure MPI request polling is not disabled too early.");
             }
 #endif
             if constexpr (mpi_debug.is_enabled())

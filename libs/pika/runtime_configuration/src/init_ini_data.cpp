@@ -137,8 +137,8 @@ namespace pika::util {
             std::error_code ec;
             if (!std::filesystem::exists(pika_ini_file, ec) || ec)
             {
-                std::cerr << "pika::init: command line warning: file specified using "
-                             "--pika:config does not exist ("
+                std::cerr << "pika::init: command line warning: file specified using --pika:config "
+                             "does not exist ("
                           << pika_ini_file << ")." << std::endl;
                 pika_ini_file.clear();
                 result = false;

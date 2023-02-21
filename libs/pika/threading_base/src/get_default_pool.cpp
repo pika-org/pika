@@ -51,9 +51,8 @@ namespace pika::threads::detail {
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "pika::threads::detail::get_self_or_default_pool",
-                "Attempting to register a thread outside the pika "
-                "runtime and no default pool handler is installed. "
-                "Did you mean to run this on an pika thread?");
+                "Attempting to register a thread outside the pika runtime and no default pool "
+                "handler is installed. Did you mean to run this on an pika thread?");
         }
 
         return pool;

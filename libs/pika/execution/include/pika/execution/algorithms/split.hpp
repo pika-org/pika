@@ -222,9 +222,8 @@ namespace pika::split_detail {
             ~shared_state()
             {
                 PIKA_ASSERT_MSG(start_called,
-                    "start was never called on the operation state of "
-                    "split. Did you forget to connect the sender to a "
-                    "receiver, or call start on the operation state?");
+                    "start was never called on the operation state of split. Did you forget to "
+                    "connect the sender to a receiver, or call start on the operation state?");
             }
 
             template <typename Receiver>

@@ -66,8 +66,7 @@ namespace pika::let_value_detail {
         {
             using type = std::invoke_result_t<F, std::add_lvalue_reference_t<Ts>...>;
             static_assert(pika::execution::experimental::is_sender<std::decay_t<type>>::value,
-                "let_value expects the invocable sender factory to return "
-                "a sender");
+                "let_value expects the invocable sender factory to return a sender");
         };
 
         // Type of the potential senders returned from the sender factory F
@@ -308,9 +307,9 @@ namespace pika::let_value_detail {
             pika::execution::experimental::connect_t, let_value_sender_type const&, Receiver&&)
         {
             static_assert(sizeof(Receiver) == 0,
-                "Are you missing a std::move? The let_value sender is not "
-                "copyable and thus not l-value connectable. Make sure you are "
-                "passing an r-value reference of the sender.");
+                "Are you missing a std::move? The let_value sender is not copyable and thus not "
+                "l-value connectable. Make sure you are passing an r-value reference of the "
+                "sender.");
         }
     };
 }    // namespace pika::let_value_detail

@@ -452,8 +452,7 @@ namespace pika::util::detail {
             -> decltype(rebind_container<mapped_type_from_t<T, M>>(container))
         {
             static_assert(has_push_back<std::decay_t<T>, element_of_t<T>>::value,
-                "Can only remap containers that provide a push_back "
-                "method!");
+                "Can only remap containers that provide a push_back method!");
 
             // Create the new container, which is capable of holding
             // the re-mapped types.

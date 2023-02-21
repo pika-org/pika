@@ -49,10 +49,9 @@ namespace pika::threads::detail {
         if (num_high_priority_queues > num_threads)
         {
             throw pika::detail::command_line_error(
-                "Invalid command line option: "
-                "number of high priority threads ("
-                "--pika:high-priority-threads), should not be larger "
-                "than number of threads (--pika:threads)");
+                "Invalid command line option: number of high priority threads "
+                "(--pika:high-priority-threads), should not be larger than number of threads "
+                "(--pika:threads)");
         }
     }
 
@@ -140,8 +139,7 @@ namespace pika::threads::detail {
                 if (name != rp.get_default_pool_name())
                 {
                     throw std::invalid_argument("Trying to instantiate pool " + name +
-                        " as first thread pool, but first thread pool must "
-                        "be named " +
+                        " as first thread pool, but first thread pool must be named " +
                         rp.get_default_pool_name());
                 }
             }
@@ -261,9 +259,8 @@ namespace pika::threads::detail {
                 pools_.push_back(PIKA_MOVE(pool));
 #else
                 throw pika::detail::command_line_error(
-                    "Command line option --pika:queuing=local-priority-lifo "
-                    "is not configured in this build. Please make sure 128bit "
-                    "atomics are available.");
+                    "Command line option --pika:queuing=local-priority-lifo is not configured in "
+                    "this build. Please make sure 128bit atomics are available.");
 #endif
                 break;
             }
@@ -357,9 +354,8 @@ namespace pika::threads::detail {
                 pools_.push_back(PIKA_MOVE(pool));
 #else
                 throw pika::detail::command_line_error(
-                    "Command line option --pika:queuing=abp-priority-fifo "
-                    "is not configured in this build. Please make sure 128bit "
-                    "atomics are available.");
+                    "Command line option --pika:queuing=abp-priority-fifo is not configured in "
+                    "this build. Please make sure 128bit atomics are available.");
 #endif
                 break;
             }
@@ -397,9 +393,8 @@ namespace pika::threads::detail {
                 pools_.push_back(PIKA_MOVE(pool));
 #else
                 throw pika::detail::command_line_error(
-                    "Command line option --pika:queuing=abp-priority-lifo "
-                    "is not configured in this build. Please make sure 128bit "
-                    "atomics are available.");
+                    "Command line option --pika:queuing=abp-priority-lifo is not configured in "
+                    "this build. Please make sure 128bit atomics are available.");
 #endif
                 break;
             }

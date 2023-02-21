@@ -204,9 +204,9 @@ namespace pika::threads::coroutines {
 
                 if (0 != (m_stack_size % EXEC_PAGESIZE))
                 {
-                    throw std::runtime_error(fmt::format("stack size of {} is not page "
-                                                         "aligned, page size is {}",
-                        m_stack_size, EXEC_PAGESIZE));
+                    throw std::runtime_error(
+                        fmt::format("stack size of {} is not page aligned, page size is {}",
+                            m_stack_size, EXEC_PAGESIZE));
                 }
 
                 if (0 >= m_stack_size)
@@ -286,17 +286,12 @@ namespace pika::threads::coroutines {
                               << std::hex << std::setw(sizeof(sigsegv_ptr) * 2 + 2)
                               << std::setfill('0') << sigsegv_ptr << ".\n\n";
 
-                    std::cerr << "Configure the pika runtime to "
-                                 "allocate a larger "
-                                 "coroutine stack size.\n Use the "
-                                 "pika.stacks.small_size, "
-                                 "pika.stacks.medium_size,\n "
-                                 "pika.stacks.large_size, or "
-                                 "pika.stacks.huge_size "
-                                 "configuration\nflags to "
-                                 "configure coroutine stack "
-                                 "sizes.\n"
-                              << std::endl;
+                    std::cerr
+                        << "Configure the pika runtime to allocate a larger coroutine stack "
+                           "size.\n Use the pika.stacks.small_size, pika.stacks.medium_size,\n "
+                           "pika.stacks.large_size, or pika.stacks.huge_size configuration\nflags "
+                           "to configure coroutine stack sizes.\n"
+                        << std::endl;
                 }
             }
 

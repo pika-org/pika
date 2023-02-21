@@ -90,8 +90,7 @@ namespace test {
                 {
                     PIKA_THROW_EXCEPTION(pika::error::thread_resource_error,
                         "thread_group::add_thread",
-                        "resource_deadlock_would_occur: trying to add a "
-                        "duplicated thread");
+                        "resource_deadlock_would_occur: trying to add a duplicated thread");
                     return;
                 };
 

@@ -125,8 +125,7 @@ namespace pika {
         if (!is_running())
         {
             PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::finalize",
-                "the runtime system is not active (did you already "
-                "call finalize?)");
+                "the runtime system is not active (did you already call finalize?)");
             return -1;
         }
 
@@ -137,8 +136,7 @@ namespace pika {
         if (nullptr == rt)
         {
             PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::finalize",
-                "the runtime system is not active (did you already "
-                "call pika::stop?)");
+                "the runtime system is not active (did you already call pika::stop?)");
             return -1;
         }
 
@@ -160,8 +158,7 @@ namespace pika {
         if (nullptr == rt.get())
         {
             PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::stop",
-                "the runtime system is not active (did you already "
-                "call pika::stop?)");
+                "the runtime system is not active (did you already call pika::stop?)");
             return -1;
         }
 
@@ -187,8 +184,7 @@ namespace pika {
         if (nullptr == rt)
         {
             PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::suspend",
-                "the runtime system is not active (did you already "
-                "call pika::stop?)");
+                "the runtime system is not active (did you already call pika::stop?)");
             return -1;
         }
 
@@ -209,8 +205,7 @@ namespace pika {
         if (nullptr == rt)
         {
             PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::resume",
-                "the runtime system is not active (did you already "
-                "call pika::stop?)");
+                "the runtime system is not active (did you already call pika::stop?)");
             return -1;
         }
 
@@ -398,8 +393,8 @@ namespace pika {
             // make sure the runtime system is not active yet
             if (get_runtime_ptr() != nullptr)
             {
-                std::cerr << "pika::init: can't initialize runtime system "
-                             "more than once! Exiting...\n";
+                std::cerr
+                    << "pika::init: can't initialize runtime system more than once! Exiting...\n";
                 return -1;
             }
             return 0;

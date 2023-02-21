@@ -766,9 +766,9 @@ namespace pika::execution::experimental {
         tag_invoke(pika::execution::experimental::connect_t, unique_any_sender const&, R&&)
         {
             static_assert(sizeof(R) == 0,
-                "Are you missing a std::move? unique_any_sender is not "
-                "copyable and thus not l-value connectable. Make sure you are "
-                "passing an r-value reference of the sender.");
+                "Are you missing a std::move? unique_any_sender is not copyable and thus not "
+                "l-value connectable. Make sure you are passing an r-value reference of the "
+                "sender.");
         }
 
         bool empty() const noexcept
@@ -803,9 +803,8 @@ namespace pika::execution::experimental {
         any_sender(Sender&& sender)
         {
             static_assert(std::is_copy_constructible_v<std::decay_t<Sender>>,
-                "any_sender requires the given sender to be copy "
-                "constructible. Ensure the used sender type is copy "
-                "constructible or use unique_any_sender if you do not require "
+                "any_sender requires the given sender to be copy constructible. Ensure the used "
+                "sender type is copy constructible or use unique_any_sender if you do not require "
                 "copyability.");
             storage.template store<impl_type<Sender>>(PIKA_FORWARD(Sender, sender));
         }
@@ -815,9 +814,8 @@ namespace pika::execution::experimental {
         any_sender& operator=(Sender&& sender)
         {
             static_assert(std::is_copy_constructible_v<std::decay_t<Sender>>,
-                "any_sender requires the given sender to be copy "
-                "constructible. Ensure the used sender type is copy "
-                "constructible or use unique_any_sender if you do not require "
+                "any_sender requires the given sender to be copy constructible. Ensure the used "
+                "sender type is copy constructible or use unique_any_sender if you do not require "
                 "copyability.");
             storage.template store<impl_type<Sender>>(PIKA_FORWARD(Sender, sender));
             return *this;
@@ -887,8 +885,8 @@ namespace pika::execution::experimental {
                     template value_types<pika::util::detail::pack, pika::util::detail::pack>;
 #endif
             static_assert(value_types_pack::size == 1,
-                "any_sender and unique_any_sender require the predecessor "
-                "sender to send exactly one variant");
+                "any_sender and unique_any_sender require the predecessor sender to send exactly "
+                "one variant");
             using single_value_type_variant =
                 typename pika::util::detail::at_index_impl<0, value_types_pack>::type;
             using any_sender_type =

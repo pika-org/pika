@@ -79,9 +79,9 @@ bool header = false;
 void print_results(std::uint64_t cores, double walltime)
 {
     if (header)
-        std::cout << "OS-threads,Seed,Tasks,Minimum Delay (iterations),"
-                     "Maximum Delay (iterations),Total Delay (iterations),"
-                     "Total Walltime (seconds),Walltime per Task (seconds)\n";
+        std::cout
+            << "OS-threads,Seed,Tasks,Minimum Delay (iterations),Maximum Delay (iterations),Total "
+               "Delay (iterations),Total Walltime (seconds),Walltime per Task (seconds)\n";
 
     std::string const cores_str = fmt::format("{},", cores);
     std::string const seed_str = fmt::format("{},", seed);
@@ -135,26 +135,21 @@ int qthreads_main(variables_map& vm)
             throw std::invalid_argument("count of 0 tasks specified\n");
 
         if (min_delay > max_delay)
-            throw std::invalid_argument("minimum delay cannot be larger than "
-                                        "maximum delay\n");
+            throw std::invalid_argument("minimum delay cannot be larger than maximum delay\n");
 
         if (min_delay > total_delay)
-            throw std::invalid_argument("minimum delay cannot be larger than"
-                                        "total delay\n");
+            throw std::invalid_argument("minimum delay cannot be larger thantotal delay\n");
 
         if (max_delay > total_delay)
-            throw std::invalid_argument("maximum delay cannot be larger than "
-                                        "total delay\n");
+            throw std::invalid_argument("maximum delay cannot be larger than total delay\n");
 
         if ((min_delay * tasks) > total_delay)
-            throw std::invalid_argument("minimum delay is too small for the "
-                                        "specified total delay and number of "
-                                        "tasks\n");
+            throw std::invalid_argument(
+                "minimum delay is too small for the specified total delay and number of tasks\n");
 
         if ((max_delay * tasks) < total_delay)
-            throw std::invalid_argument("maximum delay is too small for the "
-                                        "specified total delay and number of "
-                                        "tasks\n");
+            throw std::invalid_argument(
+                "maximum delay is too small for the specified total delay and number of tasks\n");
 
         ///////////////////////////////////////////////////////////////////////
         // Randomly generate a description of the heterogeneous workload.
@@ -267,12 +262,10 @@ int main(int argc, char* argv[])
                             "maximum number of iterations in the delay loop")
 
                             ("total-delay", value<std::uint64_t>(&total_delay)->default_value(0),
-                                "total number of delay iterations to be "
-                                "executed")
+                                "total number of delay iterations to be executed")
 
                                 ("seed", value<std::uint64_t>(&seed)->default_value(0),
-                                    "seed for the pseudo random number "
-                                    "generator (if 0, a seed is "
+                                    "seed for the pseudo random number generator (if 0, a seed is "
                                     "chosen based on the current system time)")
 
                                     ("no-header", "do not print out the csv header row");

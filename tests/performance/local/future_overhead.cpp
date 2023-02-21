@@ -60,8 +60,8 @@ void print_stats(const char* title, const char* wait, const char* exec, std::int
     else
     {
         fmt::print(temp,
-            "invoked {:1}, futures {:27} {:15} {:18} in {:8} seconds : {:8} "
-            "us/future, queue {:20}, numa {:4}, threads {:4}, info {:20}",
+            "invoked {:1}, futures {:27} {:15} {:18} in {:8} seconds : {:8} us/future, queue "
+            "{:20}, numa {:4}, threads {:4}, info {:20}",
             count, title, wait, exec, duration, us, queuing, numa_sensitive, num_threads,
             info_string);
     }

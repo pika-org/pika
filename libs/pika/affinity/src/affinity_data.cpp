@@ -108,8 +108,8 @@ namespace pika::detail {
             if (num_initialized != num_threads_)
             {
                 PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "affinity_data::affinity_data",
-                    "The number of OS threads requested ({}) does not match "
-                    "the number of threads to bind ({})",
+                    "The number of OS threads requested ({}) does not match the number of threads "
+                    "to bind ({})",
                     num_threads_, num_initialized);
             }
         }

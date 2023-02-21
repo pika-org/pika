@@ -188,8 +188,8 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched, sMatri
     // See https://github.com/brycelelbach/wg21_p2300_std_execution/issues/466
     // for details.
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-    std::cout << "skipping remainder of test because the P2300 reference "
-                 "implementation of split does not yet support move-only senders"
+    std::cout << "skipping remainder of test because the P2300 reference implementation of split "
+                 "does not yet support move-only senders"
               << std::endl;
 #else
     pika::chrono::detail::high_resolution_timer t2;
@@ -222,10 +222,8 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched, sMatri
         double flopsPerMatrixMul =
             2.0 * (double) matrix_size.uiWA * (double) matrix_size.uiHA * (double) matrix_size.uiWB;
         double gigaFlops = (flopsPerMatrixMul * 1.0e-9) / (usecPerMatrixMul / 1e6);
-        printf("Performance = %.2f GFlop/s, Time = %.3f msec/iter, "
-               "Size = %.0f "
-               "Ops\n",
-            gigaFlops, 1e-3 * usecPerMatrixMul, flopsPerMatrixMul);
+        printf("Performance = %.2f GFlop/s, Time = %.3f msec/iter, Size = %.0f Ops\n", gigaFlops,
+            1e-3 * usecPerMatrixMul, flopsPerMatrixMul);
     });
 
     // when the matrix operations complete, copy the result to the host
@@ -255,8 +253,7 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched, sMatri
             // if the result was incorrect, we throw an exception, so here it's ok
             if (resCUBLAS)
             {
-                std::cout << "\nComparing CUBLAS Matrix Multiply with CPU "
-                             "results: OK \n";
+                std::cout << "\nComparing CUBLAS Matrix Multiply with CPU results: OK \n";
             }
         });
 

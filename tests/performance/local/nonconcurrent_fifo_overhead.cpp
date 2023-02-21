@@ -72,17 +72,14 @@ void print_results(variables_map& vm, std::pair<double, double> elapsed_control,
         // Note that if we change the number of fields above, we have to
         // change the constant that we add when printing out the field # for
         // performance counters below (e.g. the last_index part).
-        std::cout << "## 0:ITER:Iterations per OS-thread - Independent Variable\n"
-                     "## 1:BSIZE:Maximum Queue Depth - Independent Variable\n"
-                     "## 2:OSTHRDS:OS-thread - Independent Variable\n"
-                     "## 3:WTIME_CTL_PUSH:Total Walltime/Push for "
-                     "std::vector [nanoseconds]\n"
-                     "## 4:WTIME_CTL_POP:Total Walltime/Pop for "
-                     "std::vector [nanoseconds]\n"
-                     "## 5:WTIME_LF_PUSH:Total Walltime/Push for "
-                     "boost::lockfree::queue [nanoseconds]\n"
-                     "## 6:WTIME_LF_POP:Total Walltime/Pop for "
-                     "boost::lockfree::queue [nanoseconds]\n";
+        std::cout
+            << "## 0:ITER:Iterations per OS-thread - Independent Variable\n"
+               "## 1:BSIZE:Maximum Queue Depth - Independent Variable\n"
+               "## 2:OSTHRDS:OS-thread - Independent Variable\n"
+               "## 3:WTIME_CTL_PUSH:Total Walltime/Push for std::vector [nanoseconds]\n"
+               "## 4:WTIME_CTL_POP:Total Walltime/Pop for std::vector [nanoseconds]\n"
+               "## 5:WTIME_LF_PUSH:Total Walltime/Push for boost::lockfree::queue [nanoseconds]\n"
+               "## 6:WTIME_LF_POP:Total Walltime/Pop for boost::lockfree::queue [nanoseconds]\n";
     }
 
     if (iterations != 0)
@@ -240,8 +237,7 @@ int main(int argc, char* argv[])
         ("threads,t", value<std::uint64_t>(&threads)->default_value(1), "number of threads to use")
 
             ("iterations", value<std::uint64_t>(&iterations)->default_value(2000000),
-                "number of iterations to perform (most be divisible by block "
-                "size)")
+                "number of iterations to perform (most be divisible by block size)")
 
                 ("blocksize", value<std::uint64_t>(&blocksize)->default_value(10000),
                     "size of each block")

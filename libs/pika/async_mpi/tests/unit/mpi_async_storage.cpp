@@ -107,8 +107,8 @@ void display(perf const& data, const test_options& options)
         {
             // a complete set of results that our python matplotlib script will ingest
             constexpr char const* msg =
-                "CSVData, {}, network, {}, ranks, {}, threads, {}, Memory, {}, "
-                "IOPsize, {}, IOPS/s, {}, BW(MB/s), {}, in_flight, {}\n";
+                "CSVData, {}, network, {}, ranks, {}, threads, {}, Memory, {}, IOPsize, {}, "
+                "IOPS/s, {}, BW(MB/s), {}, in_flight, {}\n";
             fmt::print(temp, msg, data.mode.c_str(), "pika-mpi", data.nranks, options.threads,
                 data.dataMB, options.transfer_size_B, IOPs_s, BW, options.in_flight_limit);
         }
@@ -353,8 +353,8 @@ int pika_main(pika::program_options::variables_map& vm)
 
     if (rank == 0)
     {
-        constexpr char const* msg = "hello world from OS-thread {:02} on "
-                                    "locality {:04} rank {:04} hostname {}\n\n";
+        constexpr char const* msg =
+            "hello world from OS-thread {:02} on locality {:04} rank {:04} hostname {}\n\n";
         fmt::print(std::cout, msg, current, pika::get_locality_id(), rank, name.c_str());
     }
 

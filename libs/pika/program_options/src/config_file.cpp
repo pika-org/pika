@@ -55,8 +55,7 @@ namespace pika::program_options::detail {
             }
             if (bad_prefixes)
                 throw error("options '" + string(name) + "' and '" + *i +
-                    "*' will both match the same "
-                    "arguments from the configuration file");
+                    "*' will both match the same arguments from the configuration file");
             allowed_prefixes.insert(s);
         }
     }

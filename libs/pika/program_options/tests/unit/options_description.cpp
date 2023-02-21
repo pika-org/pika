@@ -240,16 +240,15 @@ void test_formatting_description_length()
             options_description::m_default_line_length -
                 10U);    // leaves < 23 (default option space)
         desc.add_options()("an-option-that-encroaches-description", new untyped_value(),
-            "this description should always be placed on the next line, and "
-            "wrapping should continue as normal");
+            "this description should always be placed on the next line, and wrapping should "
+            "continue as normal");
 
         stringstream ss;
         ss << desc;
         PIKA_TEST_EQ(ss.str(),
             "  --an-option-that-encroaches-description arg\n"
             //123456789_123456789_
-            "          this description should always be placed on the next "
-            "line, and \n"
+            "          this description should always be placed on the next line, and \n"
             "          wrapping should continue as normal\n");
     }
 }
@@ -264,8 +263,7 @@ void test_long_default_value()
     stringstream ss;
     ss << desc;
     PIKA_TEST_EQ(ss.str(),
-        "  -c [ --cfgfile ] arg "
-        "(=/usr/local/etc/myprogramXXXXXXXXX/configuration.conf)\n"
+        "  -c [ --cfgfile ] arg (=/usr/local/etc/myprogramXXXXXXXXX/configuration.conf)\n"
         "                                        the configfile\n");
 }
 
@@ -275,34 +273,24 @@ void test_word_wrapping()
     desc.add_options()("help", "this is a sufficiently long text to require word-wrapping");
     desc.add_options()("prefix", value<string>()->default_value("/h/proj/tmp/dispatch"),
         "root path of the dispatch installation");
-    desc.add_options()("opt1",
-        "this_is_a_sufficiently_long_text_to_require_word-wrapping_but_cannot_"
-        "be_wrapped");
+    desc.add_options()(
+        "opt1", "this_is_a_sufficiently_long_text_to_require_word-wrapping_but_cannot_be_wrapped");
     desc.add_options()("opt2", "this_is_a_sufficiently long_text_to_require_word-wrapping");
     desc.add_options()("opt3",
-        "this_is_a "
-        "sufficiently_long_text_to_require_word-wrapping_but_will_not_be_"
-        "wrapped");
+        "this_is_a sufficiently_long_text_to_require_word-wrapping_but_will_not_be_wrapped");
 
     stringstream ss;
     ss << desc;
     PIKA_TEST_EQ(ss.str(),
         "Supported options:\n"
-        "  --help                               this is a sufficiently long "
-        "text to \n"
+        "  --help                               this is a sufficiently long text to \n"
         "                                       require word-wrapping\n"
-        "  --prefix arg (=/h/proj/tmp/dispatch) root path of the dispatch "
-        "installation\n"
-        "  --opt1                               "
-        "this_is_a_sufficiently_long_text_to_requ\n"
-        "                                       "
+        "  --prefix arg (=/h/proj/tmp/dispatch) root path of the dispatch installation\n"
+        "  --opt1                               this_is_a_sufficiently_long_text_to_requ\n"
         "ire_word-wrapping_but_cannot_be_wrapped\n"
         "  --opt2                               this_is_a_sufficiently \n"
-        "                                       "
         "long_text_to_require_word-wrapping\n"
-        "  --opt3                               this_is_a "
-        "sufficiently_long_text_to_requ\n"
-        "                                       "
+        "  --opt3                               this_is_a sufficiently_long_text_to_requ\n"
         "ire_word-wrapping_but_will_not_be_wrappe\n"
         "                                       d\n");
 }

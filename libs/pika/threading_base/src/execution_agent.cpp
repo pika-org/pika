@@ -44,8 +44,7 @@ namespace pika::threads::detail {
         if (PIKA_UNLIKELY(!id))
         {
             PIKA_THROW_EXCEPTION(pika::error::null_thread_id, "execution_agent::description",
-                "null thread id encountered (is this executed on a "
-                "pika-thread?)");
+                "null thread id encountered (is this executed on a pika-thread?)");
         }
 
         return fmt::format("{}: {}", id, get_thread_id_data(id)->get_description());
@@ -148,8 +147,7 @@ namespace pika::threads::detail {
         if (PIKA_UNLIKELY(!id))
         {
             PIKA_THROW_EXCEPTION(pika::error::null_thread_id, "execution_agent::do_yield",
-                "null thread id encountered (is this executed on a "
-                "pika-thread?)");
+                "null thread id encountered (is this executed on a pika-thread?)");
         }
 
         // handle interruption, if needed

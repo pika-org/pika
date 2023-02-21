@@ -183,13 +183,11 @@ namespace pika::execution::experimental {
         {
         private:
             static_assert(!std::is_void<ReadWriteT>::value,
-                "Cannot mix void and non-void type in "
-                "async_rw_mutex_access_wrapper wrapper (ReadWriteT is void, "
-                "ReadT is non-void)");
+                "Cannot mix void and non-void type in async_rw_mutex_access_wrapper wrapper "
+                "(ReadWriteT is void, ReadT is non-void)");
             static_assert(!std::is_void<ReadT>::value,
-                "Cannot mix void and non-void type in "
-                "async_rw_mutex_access_wrapper wrapper (ReadT is void, "
-                "ReadWriteT is non-void)");
+                "Cannot mix void and non-void type in async_rw_mutex_access_wrapper wrapper (ReadT "
+                "is void, ReadWriteT is non-void)");
 
             using shared_state_type = std::shared_ptr<async_rw_mutex_shared_state<ReadWriteT>>;
             shared_state_type state;
@@ -427,8 +425,8 @@ namespace pika::execution::experimental {
                     pika::execution::experimental::start_t, operation_state& os) noexcept
                 {
                     PIKA_ASSERT_MSG(os.state,
-                        "async_rw_lock::sender::operation_state state is "
-                        "empty, was the sender already started?");
+                        "async_rw_lock::sender::operation_state state is empty, was the sender "
+                        "already started?");
 
                     auto continuation = [r = PIKA_MOVE(os.r)](shared_state_ptr_type state) mutable {
                         try
@@ -483,11 +481,11 @@ namespace pika::execution::experimental {
     {
     private:
         static_assert(!std::is_void<ReadWriteT>::value,
-            "Cannot mix void and non-void type in async_rw_mutex (ReadWriteT "
-            "is void, ReadT is non-void)");
+            "Cannot mix void and non-void type in async_rw_mutex (ReadWriteT is void, ReadT is "
+            "non-void)");
         static_assert(!std::is_void<ReadT>::value,
-            "Cannot mix void and non-void type in async_rw_mutex (ReadT is "
-            "void, ReadWriteT is non-void)");
+            "Cannot mix void and non-void type in async_rw_mutex (ReadT is void, ReadWriteT is "
+            "non-void)");
 
         template <detail::async_rw_mutex_access_type AccessType>
         struct sender;
@@ -617,8 +615,8 @@ namespace pika::execution::experimental {
                     pika::execution::experimental::start_t, operation_state& os) noexcept
                 {
                     PIKA_ASSERT_MSG(os.state,
-                        "async_rw_lock::sender::operation_state state is "
-                        "empty, was the sender already started?");
+                        "async_rw_lock::sender::operation_state state is empty, was the sender "
+                        "already started?");
 
                     auto continuation = [r = PIKA_MOVE(os.r)](shared_state_ptr_type state) mutable {
                         try
@@ -664,8 +662,8 @@ namespace pika::execution::experimental {
                 if constexpr (AccessType == detail::async_rw_mutex_access_type::readwrite)
                 {
                     static_assert(sizeof(R) == 0,
-                        "senders returned from async_rw_mutex::readwrite are "
-                        "not l-lvalue connectable");
+                        "senders returned from async_rw_mutex::readwrite are not l-lvalue "
+                        "connectable");
                 }
 
                 return operation_state<R>{PIKA_FORWARD(R, r), s.prev_state, s.state};

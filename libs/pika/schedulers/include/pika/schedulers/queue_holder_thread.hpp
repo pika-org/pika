@@ -759,8 +759,7 @@ namespace pika::threads {
             {
                 PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
                     "queue_holder_thread::get_thread_count_staged",
-                    "unknown thread priority value "
-                    "(execution::thread_priority::unknown)");
+                    "unknown thread priority value (execution::thread_priority::unknown)");
             }
             }
             return 0;
@@ -803,8 +802,7 @@ namespace pika::threads {
             {
                 PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
                     "queue_holder_thread::get_thread_count_pending",
-                    "unknown thread priority value "
-                    "(execution::thread_priority::unknown)");
+                    "unknown thread priority value (execution::thread_priority::unknown)");
             }
             }
             return 0;

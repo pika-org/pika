@@ -24,8 +24,7 @@ namespace pika::debug::detail {
 #if defined(_POSIX_VERSION) && defined(PIKA_HAVE_UNISTD_H)
         volatile int i = 0;
         std::cerr << "PID: " << getpid()
-                  << " ready for attaching debugger. Once attached set i = 1 "
-                     "and continue"
+                  << " ready for attaching debugger. Once attached set i = 1 and continue"
                   << std::endl;
         while (i == 0)
         {

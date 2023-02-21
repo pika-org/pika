@@ -58,26 +58,21 @@ int app_main(variables_map&)
         throw std::invalid_argument("count of 0 tasks specified\n");
 
     if (min_delay > max_delay)
-        throw std::invalid_argument("minimum delay cannot be larger than "
-                                    "maximum delay\n");
+        throw std::invalid_argument("minimum delay cannot be larger than maximum delay\n");
 
     if (min_delay > total_delay)
-        throw std::invalid_argument("minimum delay cannot be larger than"
-                                    "total delay\n");
+        throw std::invalid_argument("minimum delay cannot be larger thantotal delay\n");
 
     if (max_delay > total_delay)
-        throw std::invalid_argument("maximum delay cannot be larger than "
-                                    "total delay\n");
+        throw std::invalid_argument("maximum delay cannot be larger than total delay\n");
 
     if ((min_delay * tasks) > total_delay)
-        throw std::invalid_argument("minimum delay is too small for the "
-                                    "specified total delay and number of "
-                                    "tasks\n");
+        throw std::invalid_argument(
+            "minimum delay is too small for the specified total delay and number of tasks\n");
 
     if ((max_delay * tasks) < total_delay)
-        throw std::invalid_argument("maximum delay is too small for the "
-                                    "specified total delay and number of "
-                                    "tasks\n");
+        throw std::invalid_argument(
+            "maximum delay is too small for the specified total delay and number of tasks\n");
 
     ///////////////////////////////////////////////////////////////////////
     // Randomly generate a description of the heterogeneous workload.
@@ -163,9 +158,8 @@ int main(int argc, char* argv[])
                         "total number of delay iterations to be executed")
 
                         ("seed", value<std::uint64_t>(&seed)->default_value(0),
-                            "seed for the pseudo random number generator (if "
-                            "0, a seed is "
-                            "chosen based on the current system time)");
+                            "seed for the pseudo random number generator (if 0, a seed is chosen "
+                            "based on the current system time)");
 
     store(command_line_parser(argc, argv).options(cmdline).run(), vm);
 

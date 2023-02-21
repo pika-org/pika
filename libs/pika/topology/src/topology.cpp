@@ -490,8 +490,7 @@ namespace pika::threads::detail {
                     hwloc_bitmap_free(cpuset);
 
                     PIKA_THROWS_IF(ec, pika::error::kernel_error,
-                        "pika::threads::detail::topology::set_thread_affinity_"
-                        "mask",
+                        "pika::threads::detail::topology::set_thread_affinity_mask",
                         "failed to set thread affinity mask ({}) for cpuset {}",
                         pika::threads::detail::to_string(mask), buffer.get());
                     return;
@@ -558,9 +557,7 @@ namespace pika::threads::detail {
                 lk.unlock();
                 PIKA_THROW_EXCEPTION(pika::error::no_success,
                     "topology::get_thread_affinity_mask_from_lva",
-                    "failed calling 'hwloc_get_area_membind_nodeset', "
-                    "reported error: {}",
-                    errstr);
+                    "failed calling 'hwloc_get_area_membind_nodeset', reported error: {}", errstr);
             }
         }
 
@@ -1123,8 +1120,7 @@ namespace pika::threads::detail {
             if (num_cores <= 0)
             {
                 PIKA_THROW_EXCEPTION(pika::error::kernel_error,
-                    "pika::threads::detail::topology::init_thread_affinity_"
-                    "mask",
+                    "pika::threads::detail::topology::init_thread_affinity_mask",
                     "hwloc_get_nbobjs_by_type failed");
                 return empty_mask;
             }

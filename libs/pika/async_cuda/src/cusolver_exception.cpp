@@ -56,8 +56,7 @@ namespace pika::cuda::experimental {
             case CUSOLVER_STATUS_IRS_OUT_OF_RANGE:
                 return "CUSOLVER_STATUS_IRS_OUT_OF_RANGE";
             case CUSOLVER_STATUS_IRS_NRHS_NOT_SUPPORTED_FOR_REFINE_GMRES:
-                return "CUSOLVER_STATUS_IRS_NRHS_NOT_SUPPORTED_FOR_REFINE_"
-                       "GMRES";
+                return "CUSOLVER_STATUS_IRS_NRHS_NOT_SUPPORTED_FOR_REFINE_GMRES";
             case CUSOLVER_STATUS_IRS_INFOS_NOT_INITIALIZED:
                 return "CUSOLVER_STATUS_IRS_INFOS_NOT_INITIALIZED";
             case CUSOLVER_STATUS_IRS_PARAMS_INVALID_PREC:

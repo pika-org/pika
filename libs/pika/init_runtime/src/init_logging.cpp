@@ -827,10 +827,9 @@ namespace pika { namespace util {
                 get_entry_as<int>(ini, "pika.logging.debuglog.level", -1) > 0 ||
                 get_entry_as<int>(ini, "pika.logging.application.level", -1) > 0)
             {
-                std::cerr << "pika::init_logging: warning: logging is requested even "
-                             "while it was disabled at compile time. If you "
-                             "need logging to be functional, please reconfigure and "
-                             "rebuild pika with PIKA_WITH_LOGGING set to ON."
+                std::cerr << "pika::init_logging: warning: logging is requested even while it was "
+                             "disabled at compile time. If you need logging to be functional, "
+                             "please reconfigure and rebuild pika with PIKA_WITH_LOGGING set to ON."
                           << std::endl;
             }
         }

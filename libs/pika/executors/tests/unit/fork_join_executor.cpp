@@ -176,9 +176,8 @@ void test_executor(pika::execution::thread_priority priority,
     pika::execution::thread_stacksize stacksize, fork_join_executor::loop_schedule schedule)
 {
     fmt::print(std::cerr,
-        "testing fork_join_executor with priority = {}, stacksize = {}, "
-        "schedule = {}\n",
-        priority, stacksize, schedule);
+        "testing fork_join_executor with priority = {}, stacksize = {}, schedule = {}\n", priority,
+        stacksize, schedule);
     test_bulk_sync(priority, stacksize, schedule);
     test_bulk_async(priority, stacksize, schedule);
     test_bulk_sync_exception(priority, stacksize, schedule);
