@@ -315,8 +315,6 @@ namespace pika::mpi::experimental {
                 }
             }
             // return default val for automatic (unspecified) stream
-            std::cout << "get_throttling_default " << get_stream_ref(stream_type::automatic).limit_
-                      << std::endl;
             return get_stream_ref(stream_type::automatic).limit_;
         }
 
