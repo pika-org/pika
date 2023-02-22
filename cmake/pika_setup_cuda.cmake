@@ -20,8 +20,10 @@ if(PIKA_WITH_CUDA AND NOT TARGET Cuda::cuda)
     endif()
 
     find_package(CUDAToolkit MODULE REQUIRED)
-    target_link_libraries(pika_base_libraries INTERFACE CUDA::cudart)
-    target_link_libraries(pika_base_libraries INTERFACE CUDA::cublas CUDA::cusolver)
+    if(NOT PIKA_FIND_PACKAGE)
+      target_link_libraries(pika_base_libraries INTERFACE CUDA::cudart)
+      target_link_libraries(pika_base_libraries INTERFACE CUDA::cublas CUDA::cusolver)
+    endif()
     add_library(Cuda::cuda INTERFACE IMPORTED)
   else()
     # Check and set CUDA standard
