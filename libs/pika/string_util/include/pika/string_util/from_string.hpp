@@ -19,40 +19,79 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika::util {
-    namespace detail {
-        template <typename T, typename Enable = void>
-        struct from_string
+namespace pika::detail {
+    template <typename T, typename Enable = void>
+    struct from_string_impl
+    {
+        template <typename Char>
+        static void call(std::basic_string<Char> const& value, T& target)
         {
-            template <typename Char>
-            static void call(std::basic_string<Char> const& value, T& target)
-            {
-                std::basic_istringstream<Char> stream(value);
-                stream.exceptions(std::ios_base::failbit);
-                stream >> target;
-            }
-        };
+            std::basic_istringstream<Char> stream(value);
+            stream.exceptions(std::ios_base::failbit);
+            stream >> target;
+        }
+    };
 
-        template <typename T, typename U>
-        T check_out_of_range(U const& value)
+    template <typename T, typename U>
+    T check_out_of_range(U const& value)
+    {
+        U const min = (std::numeric_limits<T>::min)();
+        U const max = (std::numeric_limits<T>::max)();
+        if constexpr (std::is_unsigned_v<U>)
         {
-            U const min = (std::numeric_limits<T>::min)();
-            U const max = (std::numeric_limits<T>::max)();
-            if constexpr (std::is_unsigned_v<U>)
+            if (value > max)
             {
-                if (value > max)
-                {
-                    throw std::out_of_range("from_string: out of range");
-                }
+                throw std::out_of_range("from_string: out of range");
             }
-            else
+        }
+        else
+        {
+            if (value < min || value > max)
             {
-                if (value < min || value > max)
-                {
-                    throw std::out_of_range("from_string: out of range");
-                }
+                throw std::out_of_range("from_string: out of range");
             }
-            return static_cast<T>(value);
+        }
+        return static_cast<T>(value);
+    }
+
+    template <typename Char>
+    void check_only_whitespace(std::basic_string<Char> const& s, std::size_t pos)
+    {
+        auto i = s.begin();
+        std::advance(i, pos);
+        i = std::find_if(i, s.end(), [](int c) { return !std::isspace(c); });
+
+        if (i != s.end())
+        {
+            throw std::invalid_argument("from_string: found non-whitespace after token");
+        }
+    }
+
+    template <typename T>
+    struct from_string_impl<T, std::enable_if_t<std::is_integral_v<T>>>
+    {
+        template <typename Char>
+        static void call(std::basic_string<Char> const& value, int& target)
+        {
+            std::size_t pos = 0;
+            target = std::stoi(value, &pos);
+            check_only_whitespace(value, pos);
+        }
+
+        template <typename Char>
+        static void call(std::basic_string<Char> const& value, long& target)
+        {
+            std::size_t pos = 0;
+            target = std::stol(value, &pos);
+            check_only_whitespace(value, pos);
+        }
+
+        template <typename Char>
+        static void call(std::basic_string<Char> const& value, long long& target)
+        {
+            std::size_t pos = 0;
+            target = std::stoll(value, &pos);
+            check_only_whitespace(value, pos);
         }
 
         template <typename Char>
