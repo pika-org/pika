@@ -287,10 +287,13 @@ void test_word_wrapping()
         "                                       require word-wrapping\n"
         "  --prefix arg (=/h/proj/tmp/dispatch) root path of the dispatch installation\n"
         "  --opt1                               this_is_a_sufficiently_long_text_to_requ\n"
+        "                                       "
         "ire_word-wrapping_but_cannot_be_wrapped\n"
         "  --opt2                               this_is_a_sufficiently \n"
+        "                                       "
         "long_text_to_require_word-wrapping\n"
         "  --opt3                               this_is_a sufficiently_long_text_to_requ\n"
+        "                                       "
         "ire_word-wrapping_but_will_not_be_wrappe\n"
         "                                       d\n");
 }
