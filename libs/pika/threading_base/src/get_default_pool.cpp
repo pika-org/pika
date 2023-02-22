@@ -13,8 +13,7 @@
 #include <pika/threading_base/thread_pool_base.hpp>
 
 // The following implementation has been divided for Linux and Mac OSX
-#if (defined(__linux) || defined(__linux__) || defined(linux) ||               \
-    defined(__APPLE__))
+#if (defined(__linux) || defined(__linux__) || defined(linux) || defined(__APPLE__))
 
 namespace pika_start {
     // Redefining weak variables defined in pika_main.hpp to facilitate error
@@ -52,9 +51,8 @@ namespace pika::threads::detail {
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "pika::threads::detail::get_self_or_default_pool",
-                "Attempting to register a thread outside the pika "
-                "runtime and no default pool handler is installed. "
-                "Did you mean to run this on an pika thread?");
+                "Attempting to register a thread outside the pika runtime and no default pool "
+                "handler is installed. Did you mean to run this on an pika thread?");
         }
 
         return pool;

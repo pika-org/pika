@@ -23,13 +23,11 @@ namespace pika::lcos::local {
 
         conditional_trigger(conditional_trigger&& rhs) noexcept = default;
 
-        conditional_trigger& operator=(
-            conditional_trigger&& rhs) noexcept = default;
+        conditional_trigger& operator=(conditional_trigger&& rhs) noexcept = default;
 
         /// \brief get a future allowing to wait for the trigger to fire
         template <typename Condition>
-        pika::future<void>
-        get_future(Condition&& func, error_code& ec = pika::throws)
+        pika::future<void> get_future(Condition&& func, error_code& ec = pika::throws)
         {
             cond_.assign(PIKA_FORWARD(Condition, func));
 

@@ -32,20 +32,18 @@ __global__ void saxpy(int n, float a, float* x, float* y)
 }
 
 template <typename Sender>
-auto launch_saxpy_kernel(pika::cuda::experimental::cuda_scheduler& cuda_sched,
-    Sender&& predecessor, unsigned int& blocks, unsigned int& threads,
-    void** args)
+auto launch_saxpy_kernel(pika::cuda::experimental::cuda_scheduler& cuda_sched, Sender&& predecessor,
+    unsigned int& blocks, unsigned int& threads, void** args)
 {
     return ex::when_all(std::forward<Sender>(predecessor),
-               ex::just(reinterpret_cast<const void*>(&saxpy), dim3(blocks),
-                   dim3(threads), args, std::size_t(0))) |
+               ex::just(reinterpret_cast<const void*>(&saxpy), dim3(blocks), dim3(threads), args,
+                   std::size_t(0))) |
         ex::transfer(cuda_sched) | cu::then_with_stream(whip::launch_kernel);
 }
 
 template <typename T>
 __global__ void trivial_kernel(T val)
 {
-    // TODO: Fingers crossed that printf now works with HIP?
     printf("hello from gpu with value %f\n", static_cast<double>(val));
 }
 
@@ -78,11 +76,11 @@ void test_saxpy(pika::cuda::experimental::cuda_scheduler& cuda_sched)
 
     // copy both arrays from cpu to gpu, putting both copies onto the stream
     // no need to get a future back yet
-    auto copy_A = ex::transfer_just(cuda_sched, d_A, h_A, N * sizeof(float),
-                      whip::memcpy_host_to_device) |
+    auto copy_A =
+        ex::transfer_just(cuda_sched, d_A, h_A, N * sizeof(float), whip::memcpy_host_to_device) |
         cu::then_with_stream(whip::memcpy_async);
-    auto copy_B = ex::transfer_just(cuda_sched, d_B, h_B, N * sizeof(float),
-                      whip::memcpy_host_to_device) |
+    auto copy_B =
+        ex::transfer_just(cuda_sched, d_B, h_B, N * sizeof(float), whip::memcpy_host_to_device) |
         cu::then_with_stream(whip::memcpy_async);
 
     unsigned int threads = 256;
@@ -91,19 +89,16 @@ void test_saxpy(pika::cuda::experimental::cuda_scheduler& cuda_sched)
 
     // now launch a kernel on the stream
     void* args[] = {&N, &ratio, &d_A, &d_B};
-    auto s = launch_saxpy_kernel(cuda_sched,
-                 ex::when_all(std::move(copy_A), std::move(copy_B)), blocks,
-                 threads, args) |
+    auto s = launch_saxpy_kernel(cuda_sched, ex::when_all(std::move(copy_A), std::move(copy_B)),
+                 blocks, threads, args) |
         // finally, perform a copy from the gpu back to the cpu all on the same stream
         // grab a future to when this completes
-        cu::then_with_stream(pika::util::detail::bind_front(whip::memcpy_async,
-            h_B, d_B, N * sizeof(float), whip::memcpy_device_to_host)) |
+        cu::then_with_stream(pika::util::detail::bind_front(
+            whip::memcpy_async, h_B, d_B, N * sizeof(float), whip::memcpy_device_to_host)) |
         // we can add a continuation to the memcpy sender, so that when the
         // memory copy completes, we can do new things ...
         ex::transfer(ex::thread_pool_scheduler{}) | ex::then([&]() {
-            std::cout
-                << "saxpy completed on GPU, checking results in continuation"
-                << std::endl;
+            std::cout << "saxpy completed on GPU, checking results in continuation" << std::endl;
             float max_error = 0.0f;
             for (int jdx = 0; jdx < N; jdx++)
             {
@@ -126,8 +121,16 @@ int pika_main(pika::program_options::variables_map& vm)
     std::size_t device = vm["device"].as<std::size_t>();
     //
     unsigned int seed = (unsigned int) std::time(nullptr);
+#if !defined(PIKA_HAVE_HIP)
+    // ROCm Clang-15 (HIP 5.3.3) fails to compile this with an internal compiler
+    // error. See https://github.com/pika-org/pika/issues/585 for more details.
     if (vm.count("seed"))
         seed = vm["seed"].as<unsigned int>();
+#else
+    std::cout << "The --seed command line argument is ignored because HIP is ";
+    std::cout << "enabled. See https://github.com/pika-org/pika/issues/585 ";
+    std::cout << "for more details." << std::endl;
+#endif
 
     std::cout << "using seed: " << seed << std::endl;
     std::srand(seed);
@@ -142,15 +145,15 @@ int pika_main(pika::program_options::variables_map& vm)
     // test kernel launch<float> using then_with_stream
     float testf = 1.2345;
     std::cout << "schedule : cuda kernel <float>  : " << testf << std::endl;
-    tt::sync_wait(ex::transfer_just(cuda_sched, testf) |
-        cu::then_with_stream(&cuda_trivial_kernel<float>));
+    tt::sync_wait(
+        ex::transfer_just(cuda_sched, testf) | cu::then_with_stream(&cuda_trivial_kernel<float>));
 
     // --------------------
     // test kernel launch<double> using apply and async
     double testd = 1.2345;
     std::cout << "schedule : cuda kernel <double>  : " << testd << std::endl;
-    tt::sync_wait(ex::transfer_just(cuda_sched, testd) |
-        cu::then_with_stream(&cuda_trivial_kernel<double>));
+    tt::sync_wait(
+        ex::transfer_just(cuda_sched, testd) | cu::then_with_stream(&cuda_trivial_kernel<double>));
 
     // --------------------
     // test adding a continuation to a cuda call
@@ -165,7 +168,7 @@ int pika_main(pika::program_options::variables_map& vm)
     // and adding a continuation with a copy of a copy
     std::cout << "Copying executor : " << testd2 + 1 << std::endl;
     auto cuda_sched_copy = cuda_sched;
-    tt::sync_wait(ex::transfer_just(cuda_sched, testd2 + 1) |
+    tt::sync_wait(ex::transfer_just(cuda_sched_copy, testd2 + 1) |
         cu::then_with_stream(&cuda_trivial_kernel<double>) |
         cu::then_on_host([] { std::cout << "copy continuation triggered\n"; }));
 
@@ -183,8 +186,7 @@ int main(int argc, char** argv)
 
     using namespace pika::program_options;
     options_description cmdline("usage: " PIKA_APPLICATION_STRING " [options]");
-    cmdline.add_options()("device",
-        pika::program_options::value<std::size_t>()->default_value(0),
+    cmdline.add_options()("device", pika::program_options::value<std::size_t>()->default_value(0),
         "Device to use")("iterations",
         pika::program_options::value<std::size_t>()->default_value(30),
         "iterations")("seed,s", pika::program_options::value<unsigned int>(),

@@ -27,10 +27,8 @@ void do_more_work()
 
 int pika_main()
 {
-    pika::future<pika::future<void>> fut =
-        pika::async([]() -> pika::future<void> {
-            return pika::async([]() -> void { do_more_work(); });
-        });
+    pika::future<pika::future<void>> fut = pika::async(
+        []() -> pika::future<void> { return pika::async([]() -> void { do_more_work(); }); });
 
     pika::chrono::detail::high_resolution_timer t;
 
@@ -45,8 +43,7 @@ int pika_main()
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0, "pika main exited with non-zero status");
 
     return 0;
 }

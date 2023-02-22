@@ -42,8 +42,7 @@ struct external_future_executor
     {
         // The completion of f is signalled out-of-band.
         pika::invoke(std::forward<F>(f), std::forward<Ts>(ts)...);
-        return pika::async(
-            []() { pika::util::yield_while([]() { return !done; }); });
+        return pika::async([]() { pika::util::yield_while([]() { return !done; }); });
     }
 
     template <typename F, typename... Ts>
@@ -60,15 +59,12 @@ struct external_future_executor
     template <typename F, typename... Ts>
     decltype(auto) async_execute(F&& f, Ts&&... ts)
     {
-        using is_void = typename std::is_void<
-            typename pika::util::detail::invoke_result<F, Ts...>::type>;
-        return async_execute_helper(
-            is_void{}, std::forward<F>(f), std::forward<Ts>(ts)...);
+        using is_void = typename std::is_void<std::invoke_result_t<F, Ts...>>;
+        return async_execute_helper(is_void{}, std::forward<F>(f), std::forward<Ts>(ts)...);
     }
 
     template <typename Frame, typename F, typename Futures>
-    void dataflow_finalize_helper(
-        std::true_type, Frame frame, F&& f, Futures&& futures)
+    void dataflow_finalize_helper(std::true_type, Frame frame, F&& f, Futures&& futures)
     {
         pika::detail::try_catch_exception_ptr(
             [&]() {
@@ -76,22 +72,18 @@ struct external_future_executor
                     std::forward<F>(f), std::forward<Futures>(futures));
 
                 // Signal completion from another thread/task.
-                pika::intrusive_ptr<
-                    typename std::remove_pointer<std::decay_t<Frame>>::type>
+                pika::intrusive_ptr<typename std::remove_pointer<std::decay_t<Frame>>::type>
                     frame_p(frame);
                 pika::apply([frame_p = std::move(frame_p)]() {
                     pika::util::yield_while([]() { return !done; });
                     frame_p->set_data(pika::util::detail::unused_type{});
                 });
             },
-            [&](std::exception_ptr ep) {
-                frame->set_exception(std::move(ep));
-            });
+            [&](std::exception_ptr ep) { frame->set_exception(std::move(ep)); });
     }
 
     template <typename Frame, typename F, typename Futures>
-    void dataflow_finalize_helper(
-        std::false_type, Frame frame, F&& f, Futures&& futures)
+    void dataflow_finalize_helper(std::false_type, Frame frame, F&& f, Futures&& futures)
     {
         pika::detail::try_catch_exception_ptr(
             [&]() {
@@ -99,26 +91,22 @@ struct external_future_executor
                     std::forward<F>(f), std::forward<Futures>(futures));
 
                 // Signal completion from another thread/task.
-                pika::intrusive_ptr<
-                    typename std::remove_pointer<std::decay_t<Frame>>::type>
+                pika::intrusive_ptr<typename std::remove_pointer<std::decay_t<Frame>>::type>
                     frame_p(frame);
                 pika::apply([frame_p = std::move(frame_p), r = std::move(r)]() {
                     pika::util::yield_while([]() { return !done; });
                     frame_p->set_data(std::move(r));
                 });
             },
-            [&](std::exception_ptr ep) {
-                frame->set_exception(std::move(ep));
-            });
+            [&](std::exception_ptr ep) { frame->set_exception(std::move(ep)); });
     }
 
     template <typename Frame, typename F, typename Futures>
     void dataflow_finalize(Frame&& frame, F&& f, Futures&& futures)
     {
-        using is_void =
-            typename std::remove_pointer<std::decay_t<Frame>>::type::is_void;
-        dataflow_finalize_helper(is_void{}, std::forward<Frame>(frame),
-            std::forward<F>(f), std::forward<Futures>(futures));
+        using is_void = typename std::remove_pointer<std::decay_t<Frame>>::type::is_void;
+        dataflow_finalize_helper(is_void{}, std::forward<Frame>(frame), std::forward<F>(f),
+            std::forward<Futures>(futures));
     }
 };
 
@@ -135,18 +123,15 @@ struct external_future_additional_argument_executor
     decltype(auto) async_execute_helper(std::true_type, F&& f, Ts&&... ts)
     {
         // The completion of f is signalled out-of-band.
-        pika::invoke(
-            std::forward<F>(f), additional_argument{}, std::forward<Ts>(ts)...);
-        return pika::async(
-            []() { pika::util::yield_while([]() { return !done; }); });
+        pika::invoke(std::forward<F>(f), additional_argument{}, std::forward<Ts>(ts)...);
+        return pika::async([]() { pika::util::yield_while([]() { return !done; }); });
     }
 
     template <typename F, typename... Ts>
     decltype(auto) async_execute_helper(std::false_type, F&& f, Ts&&... ts)
     {
         // The completion of f is signalled out-of-band.
-        auto&& r = pika::invoke(
-            std::forward<F>(f), additional_argument{}, std::forward<Ts>(ts)...);
+        auto&& r = pika::invoke(std::forward<F>(f), additional_argument{}, std::forward<Ts>(ts)...);
         return pika::async([r = std::move(r)]() {
             pika::util::yield_while([]() { return !done; });
             return r;
@@ -156,70 +141,56 @@ struct external_future_additional_argument_executor
     template <typename F, typename... Ts>
     decltype(auto) async_execute(F&& f, Ts&&... ts)
     {
-        using is_void =
-            typename std::is_void<typename pika::util::detail::invoke_result<F,
-                additional_argument, Ts...>::type>;
-        return async_execute_helper(
-            is_void{}, std::forward<F>(f), std::forward<Ts>(ts)...);
+        using is_void = typename std::is_void<std::invoke_result_t<F, additional_argument, Ts...>>;
+        return async_execute_helper(is_void{}, std::forward<F>(f), std::forward<Ts>(ts)...);
     }
 
     template <typename Frame, typename F, typename Futures>
-    void dataflow_finalize_helper(
-        std::true_type, Frame frame, F&& f, Futures&& futures)
+    void dataflow_finalize_helper(std::true_type, Frame frame, F&& f, Futures&& futures)
     {
         pika::detail::try_catch_exception_ptr(
             [&]() {
                 additional_argument a{};
                 pika::util::detail::invoke_fused(std::forward<F>(f),
-                    std::tuple_cat(
-                        std::tie(a), std::forward<Futures>(futures)));
+                    std::tuple_cat(std::tie(a), std::forward<Futures>(futures)));
 
                 // Signal completion from another thread/task.
-                pika::intrusive_ptr<
-                    typename std::remove_pointer<std::decay_t<Frame>>::type>
+                pika::intrusive_ptr<typename std::remove_pointer<std::decay_t<Frame>>::type>
                     frame_p(frame);
                 pika::apply([frame_p = std::move(frame_p)]() {
                     pika::util::yield_while([]() { return !done; });
                     frame_p->set_data(pika::util::detail::unused_type{});
                 });
             },
-            [&](std::exception_ptr ep) {
-                frame->set_exception(std::move(ep));
-            });
+            [&](std::exception_ptr ep) { frame->set_exception(std::move(ep)); });
     }
 
     template <typename Frame, typename F, typename Futures>
-    void dataflow_finalize_helper(
-        std::false_type, Frame frame, F&& f, Futures&& futures)
+    void dataflow_finalize_helper(std::false_type, Frame frame, F&& f, Futures&& futures)
     {
         pika::detail::try_catch_exception_ptr(
             [&]() {
                 additional_argument a{};
                 auto&& r = pika::util::detail::invoke_fused(std::forward<F>(f),
-                    std::tuple_cat(
-                        std::tie(a), std::forward<Futures>(futures)));
+                    std::tuple_cat(std::tie(a), std::forward<Futures>(futures)));
 
                 // Signal completion from another thread/task.
-                pika::intrusive_ptr<
-                    typename std::remove_pointer<std::decay_t<Frame>>::type>
+                pika::intrusive_ptr<typename std::remove_pointer<std::decay_t<Frame>>::type>
                     frame_p(frame);
                 pika::apply([frame_p = std::move(frame_p), r = std::move(r)]() {
                     pika::util::yield_while([]() { return !done; });
                     frame_p->set_data(std::move(r));
                 });
             },
-            [&](std::exception_ptr ep) {
-                frame->set_exception(std::move(ep));
-            });
+            [&](std::exception_ptr ep) { frame->set_exception(std::move(ep)); });
     }
 
     template <typename Frame, typename F, typename Futures>
     void dataflow_finalize(Frame&& frame, F&& f, Futures&& futures)
     {
-        using is_void =
-            typename std::remove_pointer<std::decay_t<Frame>>::type::is_void;
-        dataflow_finalize_helper(is_void{}, std::forward<Frame>(frame),
-            std::forward<F>(f), std::forward<Futures>(futures));
+        using is_void = typename std::remove_pointer<std::decay_t<Frame>>::type::is_void;
+        dataflow_finalize_helper(is_void{}, std::forward<Frame>(frame), std::forward<F>(f),
+            std::forward<Futures>(futures));
     }
 };
 
@@ -230,8 +201,7 @@ namespace pika::parallel::execution {
     };
 
     template <>
-    struct is_two_way_executor<external_future_additional_argument_executor>
-      : std::true_type
+    struct is_two_way_executor<external_future_additional_argument_executor> : std::true_type
     {
     };
 }    // namespace pika::parallel::execution
@@ -333,8 +303,7 @@ int pika_main()
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0, "pika main exited with non-zero status");
 
     return 0;
 }

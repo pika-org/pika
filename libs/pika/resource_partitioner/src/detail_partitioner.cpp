@@ -33,14 +33,12 @@
 
 namespace pika::resource::detail {
     ///////////////////////////////////////////////////////////////////////////
-    [[noreturn]] void throw_runtime_error(
-        std::string const& func, std::string const& message)
+    [[noreturn]] void throw_runtime_error(std::string const& func, std::string const& message)
     {
         PIKA_THROW_EXCEPTION(pika::error::invalid_status, func, "{}", message);
     }
 
-    [[noreturn]] void throw_invalid_argument(
-        std::string const& func, std::string const& message)
+    [[noreturn]] void throw_invalid_argument(std::string const& func, std::string const& message)
     {
         PIKA_THROW_EXCEPTION(pika::error::bad_parameter, func, "{}", message);
     }
@@ -48,8 +46,8 @@ namespace pika::resource::detail {
     ///////////////////////////////////////////////////////////////////////////
     std::size_t init_pool_data::num_threads_overall = 0;
 
-    init_pool_data::init_pool_data(std::string const& name,
-        scheduling_policy sched, pika::threads::scheduler_mode mode)
+    init_pool_data::init_pool_data(
+        std::string const& name, scheduling_policy sched, pika::threads::scheduler_mode mode)
       : pool_name_(name)
       , scheduling_policy_(sched)
       , num_threads_(0)
@@ -58,13 +56,12 @@ namespace pika::resource::detail {
         if (name.empty())
         {
             throw_invalid_argument("init_pool_data::init_pool_data",
-                "cannot instantiate a thread_pool with empty string as a "
-                "name.");
+                "cannot instantiate a thread_pool with empty string as a name.");
         }
     }
 
-    init_pool_data::init_pool_data(std::string const& name,
-        scheduler_function create_func, pika::threads::scheduler_mode mode)
+    init_pool_data::init_pool_data(
+        std::string const& name, scheduler_function create_func, pika::threads::scheduler_mode mode)
       : pool_name_(name)
       , scheduling_policy_(user_defined)
       , num_threads_(0)
@@ -74,25 +71,21 @@ namespace pika::resource::detail {
         if (name.empty())
         {
             throw_invalid_argument("init_pool_data::init_pool_data",
-                "cannot instantiate a thread_pool with empty string "
-                "as a name.");
+                "cannot instantiate a thread_pool with empty string as a name.");
         }
     }
 
     // mechanism for adding resources
     // num threads = number of threads desired on a PU. defaults to 1.
     // note: if num_threads > 1 => oversubscription
-    void init_pool_data::add_resource(
-        std::size_t pu_index, bool exclusive, std::size_t num_threads)
+    void init_pool_data::add_resource(std::size_t pu_index, bool exclusive, std::size_t num_threads)
     {
         if (pu_index >= pika::threads::detail::hardware_concurrency())
         {
             throw_invalid_argument("init_pool_data::add_resource",
-                "init_pool_data::add_resource: processing unit index "
-                "out of bounds. The total available number of "
-                "processing units on this machine is " +
-                    std::to_string(
-                        pika::threads::detail::hardware_concurrency()));
+                "init_pool_data::add_resource: processing unit index out of bounds. The total "
+                "available number of processing units on this machine is " +
+                    std::to_string(pika::threads::detail::hardware_concurrency()));
         }
 
         // Increment thread_num count (for pool-count and global count)
@@ -101,16 +94,14 @@ namespace pika::resource::detail {
 
         // Add pu mask to internal data structure
         threads::detail::mask_type pu_mask = threads::detail::mask_type();
-        threads::detail::resize(
-            pu_mask, threads::detail::hardware_concurrency());
+        threads::detail::resize(pu_mask, threads::detail::hardware_concurrency());
         threads::detail::set(pu_mask, pu_index);
 
         // Add one mask for each OS-thread
         for (std::size_t i = 0; i != num_threads; i++)
         {
             assigned_pus_.push_back(pu_mask);
-            assigned_pu_nums_.push_back(
-                std::make_tuple(pu_index, exclusive, false));
+            assigned_pu_nums_.push_back(std::make_tuple(pu_index, exclusive, false));
         }
     }
 
@@ -199,8 +190,7 @@ namespace pika::resource::detail {
         for (std::size_t i = 0; i != num_threads_; ++i)
         {
             std::size_t& pu_num = std::get<0>(assigned_pu_nums_[i]);
-            pu_num =
-                (pu_num + first_core) % threads::detail::hardware_concurrency();
+            pu_num = (pu_num + first_core) % threads::detail::hardware_concurrency();
 
             threads::detail::reset(assigned_pus_[i]);
             threads::detail::set(assigned_pus_[i], pu_num);
@@ -227,10 +217,9 @@ namespace pika::resource::detail {
         {
             throw_runtime_error("partitioner::partioner",
                 fmt::format(
-                    "Currently, PIKA_HAVE_MAX_CPU_COUNT is set to {0} while "
-                    "your system has {1} processing units. Please reconfigure "
-                    "pika with -DPIKA_WITH_MAX_CPU_COUNT={1} (or higher) to "
-                    "increase the maximal CPU count supported by pika.",
+                    "Currently, PIKA_HAVE_MAX_CPU_COUNT is set to {0} while your system has {1} "
+                    "processing units. Please reconfigure pika with -DPIKA_WITH_MAX_CPU_COUNT={1} "
+                    "(or higher) to increase the maximal CPU count supported by pika.",
                     PIKA_HAVE_MAX_CPU_COUNT, topo_.get_number_of_pus()));
         }
 #endif
@@ -239,19 +228,16 @@ namespace pika::resource::detail {
             rtcfg_.get_entry("pika.default_scheduler_mode", std::string());
         if (!default_scheduler_mode_str.empty())
         {
-            default_scheduler_mode_ =
-                threads::scheduler_mode(pika::util::from_string<std::size_t>(
-                    default_scheduler_mode_str));
-            PIKA_ASSERT_MSG((default_scheduler_mode_ &
-                                ~threads::scheduler_mode::all_flags) ==
+            default_scheduler_mode_ = threads::scheduler_mode(
+                pika::detail::from_string<std::size_t>(default_scheduler_mode_str));
+            PIKA_ASSERT_MSG((default_scheduler_mode_ & ~threads::scheduler_mode::all_flags) ==
                     threads::scheduler_mode{},
-                "pika.default_scheduler_mode contains unknown scheduler "
-                "modes");
+                "pika.default_scheduler_mode contains unknown scheduler modes");
         }
 
         // Create the default pool
-        initial_thread_pools_.push_back(init_pool_data("default",
-            scheduling_policy::unspecified, default_scheduler_mode_));
+        initial_thread_pools_.push_back(
+            init_pool_data("default", scheduling_policy::unspecified, default_scheduler_mode_));
     }
 
     partitioner::~partitioner()
@@ -263,13 +249,11 @@ namespace pika::resource::detail {
     bool partitioner::pu_exposed(std::size_t pu_num)
     {
         threads::detail::mask_type pu_mask = threads::detail::mask_type();
-        threads::detail::resize(
-            pu_mask, threads::detail::hardware_concurrency());
+        threads::detail::resize(pu_mask, threads::detail::hardware_concurrency());
         threads::detail::set(pu_mask, pu_num);
         threads::detail::topology& topo = get_topology();
 
-        threads::detail::mask_type comp =
-            affinity_data_.get_used_pus_mask(topo, pu_num);
+        threads::detail::mask_type comp = affinity_data_.get_used_pus_mask(topo, pu_num);
         return threads::detail::any(comp & pu_mask);
     }
 
@@ -310,16 +294,14 @@ namespace pika::resource::detail {
                 {
                     if (pu_exposed(pid))
                     {
-                        c.pus_.emplace_back(pid, &c,
-                            affinity_data_.get_thread_occupancy(topo, pid));
+                        c.pus_.emplace_back(
+                            pid, &c, affinity_data_.get_thread_occupancy(topo, pid));
                         pu& p = c.pus_.back();
 
                         if (p.thread_occupancy_ == 0)
                         {
-                            throw_runtime_error(
-                                "partitioner::fill_topology_vectors",
-                                "PU #" + std::to_string(pid) +
-                                    " has thread occupancy 0");
+                            throw_runtime_error("partitioner::fill_topology_vectors",
+                                "PU #" + std::to_string(pid) + " has thread occupancy 0");
                         }
                         core_contains_exposed_pus = true;
                     }
@@ -351,8 +333,7 @@ namespace pika::resource::detail {
         if (first_core_ != first_core)
         {
             std::size_t offset = first_core;
-            std::size_t num_pus_core =
-                get_topology().get_number_of_core_pus(offset);
+            std::size_t num_pus_core = get_topology().get_number_of_core_pus(offset);
 
             if (first_core_ != std::size_t(-1))
             {
@@ -412,8 +393,8 @@ namespace pika::resource::detail {
             l.unlock();
             throw_runtime_error("partitioner::setup_pools",
                 "Default pool " + get_default_pool_name() +
-                    " has no threads assigned. Please rerun with "
-                    "--pika:threads=X and check the pool thread assignment");
+                    " has no threads assigned. Please rerun with --pika:threads=X and check the "
+                    "pool thread assignment");
         }
 
         // Check whether any of the pools defined up to now are empty
@@ -422,9 +403,8 @@ namespace pika::resource::detail {
             l.unlock();
             print_init_pool_data(std::cout);
             throw_runtime_error("partitioner::setup_pools",
-                "Pools empty of resources are not allowed. Please re-run this "
-                "application with allow-empty-pool-policy (not implemented "
-                "yet)");
+                "Pools empty of resources are not allowed. Please re-run this application with "
+                "allow-empty-pool-policy (not implemented yet)");
         }
         //! FIXME add allow-empty-pools policy. Wait, does this even make sense??
     }
@@ -437,20 +417,17 @@ namespace pika::resource::detail {
         // select the default scheduler
         scheduling_policy default_scheduler;
 
-        std::string default_scheduler_str =
-            rtcfg_.get_entry("pika.scheduler", std::string());
+        std::string default_scheduler_str = rtcfg_.get_entry("pika.scheduler", std::string());
 
         if (0 == std::string("local").find(default_scheduler_str))
         {
             default_scheduler = scheduling_policy::local;
         }
-        else if (0 ==
-            std::string("local-priority-fifo").find(default_scheduler_str))
+        else if (0 == std::string("local-priority-fifo").find(default_scheduler_str))
         {
             default_scheduler = scheduling_policy::local_priority_fifo;
         }
-        else if (0 ==
-            std::string("local-priority-lifo").find(default_scheduler_str))
+        else if (0 == std::string("local-priority-lifo").find(default_scheduler_str))
         {
             default_scheduler = scheduling_policy::local_priority_lifo;
         }
@@ -458,23 +435,19 @@ namespace pika::resource::detail {
         {
             default_scheduler = scheduling_policy::static_;
         }
-        else if (0 ==
-            std::string("static-priority").find(default_scheduler_str))
+        else if (0 == std::string("static-priority").find(default_scheduler_str))
         {
             default_scheduler = scheduling_policy::static_priority;
         }
-        else if (0 ==
-            std::string("abp-priority-fifo").find(default_scheduler_str))
+        else if (0 == std::string("abp-priority-fifo").find(default_scheduler_str))
         {
             default_scheduler = scheduling_policy::abp_priority_fifo;
         }
-        else if (0 ==
-            std::string("abp-priority-lifo").find(default_scheduler_str))
+        else if (0 == std::string("abp-priority-lifo").find(default_scheduler_str))
         {
             default_scheduler = scheduling_policy::abp_priority_lifo;
         }
-        else if (0 ==
-            std::string("shared-priority").find(default_scheduler_str))
+        else if (0 == std::string("shared-priority").find(default_scheduler_str))
         {
             default_scheduler = scheduling_policy::shared_priority;
         }
@@ -567,23 +540,20 @@ namespace pika::resource::detail {
     }
 
     // create a new thread_pool
-    void partitioner::create_thread_pool(std::string const& pool_name,
-        scheduling_policy sched, pika::threads::scheduler_mode mode)
+    void partitioner::create_thread_pool(
+        std::string const& pool_name, scheduling_policy sched, pika::threads::scheduler_mode mode)
     {
         if (pool_name.empty())
         {
-            throw std::invalid_argument(
-                "partitioner::create_thread_pool: "
-                "cannot instantiate a initial_thread_pool with empty string "
-                "as a name.");
+            throw std::invalid_argument("partitioner::create_thread_pool: cannot instantiate a "
+                                        "initial_thread_pool with empty string as a name.");
         }
 
         std::unique_lock<mutex_type> l(mtx_);
 
         if (pool_name == get_default_pool_name())
         {
-            initial_thread_pools_[0] =
-                detail::init_pool_data(get_default_pool_name(), sched, mode);
+            initial_thread_pools_[0] = detail::init_pool_data(get_default_pool_name(), sched, mode);
             return;
         }
 
@@ -595,14 +565,12 @@ namespace pika::resource::detail {
             {
                 l.unlock();
                 throw std::invalid_argument(
-                    "partitioner::create_thread_pool: "
-                    "there already exists a pool named '" +
+                    "partitioner::create_thread_pool: there already exists a pool named '" +
                     pool_name + "'.\n");
             }
         }
 
-        initial_thread_pools_.push_back(
-            detail::init_pool_data(pool_name, sched, mode));
+        initial_thread_pools_.push_back(detail::init_pool_data(pool_name, sched, mode));
     }
 
     // create a new thread_pool
@@ -611,19 +579,16 @@ namespace pika::resource::detail {
     {
         if (pool_name.empty())
         {
-            throw std::invalid_argument(
-                "partitioner::create_thread_pool: "
-                "cannot instantiate a initial_thread_pool with empty string "
-                "as a name.");
+            throw std::invalid_argument("partitioner::create_thread_pool: cannot instantiate a "
+                                        "initial_thread_pool with empty string as a name.");
         }
 
         std::unique_lock<mutex_type> l(mtx_);
 
         if (pool_name == get_default_pool_name())
         {
-            initial_thread_pools_[0] =
-                detail::init_pool_data(get_default_pool_name(),
-                    PIKA_MOVE(scheduler_creation), default_scheduler_mode_);
+            initial_thread_pools_[0] = detail::init_pool_data(
+                get_default_pool_name(), PIKA_MOVE(scheduler_creation), default_scheduler_mode_);
             return;
         }
 
@@ -635,8 +600,7 @@ namespace pika::resource::detail {
             {
                 l.unlock();
                 throw std::invalid_argument(
-                    "partitioner::create_thread_pool: "
-                    "there already exists a pool named '" +
+                    "partitioner::create_thread_pool: there already exists a pool named '" +
                     pool_name + "'.\n");
             }
         }
@@ -648,24 +612,22 @@ namespace pika::resource::detail {
     // ----------------------------------------------------------------------
     // Add processing units to pools via pu/core/domain api
     // ----------------------------------------------------------------------
-    void partitioner::add_resource(pu const& p, std::string const& pool_name,
-        bool exclusive, std::size_t num_threads)
+    void partitioner::add_resource(
+        pu const& p, std::string const& pool_name, bool exclusive, std::size_t num_threads)
     {
         std::unique_lock<mutex_type> l(mtx_);
 
         if (!exclusive && !(mode_ & mode_allow_dynamic_pools))
         {
             l.unlock();
-            throw std::invalid_argument(
-                "partitioner::add_resource: dynamic pools have not been "
-                "enabled for this partitioner");
+            throw std::invalid_argument("partitioner::add_resource: dynamic pools have not been "
+                                        "enabled for this partitioner");
         }
 
         if (mode_ & mode_allow_oversubscription)
         {
             // increment occupancy counter
-            get_pool_data(l, pool_name)
-                .add_resource(p.id_, exclusive, num_threads);
+            get_pool_data(l, pool_name).add_resource(p.id_, exclusive, num_threads);
             ++p.thread_occupancy_count_;
             return;
         }
@@ -673,36 +635,29 @@ namespace pika::resource::detail {
         // check occupancy counter and increment it
         if (p.thread_occupancy_count_ == 0)
         {
-            get_pool_data(l, pool_name)
-                .add_resource(p.id_, exclusive, num_threads);
+            get_pool_data(l, pool_name).add_resource(p.id_, exclusive, num_threads);
             ++p.thread_occupancy_count_;
 
             // Make sure the total number of requested threads does not exceed
             // the number of threads requested on the command line
-            std::size_t num_threads = ::pika::detail::get_entry_as<std::size_t>(
-                rtcfg_, "pika.os_threads", 0);
+            std::size_t num_threads =
+                ::pika::detail::get_entry_as<std::size_t>(rtcfg_, "pika.os_threads", 0);
             PIKA_ASSERT(num_threads != 0);
 
             if (detail::init_pool_data::num_threads_overall > num_threads)
             {
                 l.unlock();
-                throw std::runtime_error("partitioner::add_resource: "
-                                         "Creation of " +
-                    std::to_string(
-                        detail::init_pool_data::num_threads_overall) +
-                    " threads requested by the resource partitioner, but "
-                    "only " +
-                    std::to_string(num_threads) +
-                    " provided on the command-line.");
+                throw std::runtime_error("partitioner::add_resource: Creation of " +
+                    std::to_string(detail::init_pool_data::num_threads_overall) +
+                    " threads requested by the resource partitioner, but only " +
+                    std::to_string(num_threads) + " provided on the command-line.");
             }
         }
         else
         {
             l.unlock();
-            throw std::runtime_error("partitioner::add_resource: "
-                                     "PU #" +
-                std::to_string(p.id_) + " can be assigned only " +
-                std::to_string(p.thread_occupancy_) +
+            throw std::runtime_error("partitioner::add_resource: PU #" + std::to_string(p.id_) +
+                " can be assigned only " + std::to_string(p.thread_occupancy_) +
                 " threads according to affinity bindings.");
         }
     }
@@ -716,14 +671,13 @@ namespace pika::resource::detail {
         }
     }
 
-    void partitioner::add_resource(
-        core const& c, std::string const& pool_name, bool exclusive)
+    void partitioner::add_resource(core const& c, std::string const& pool_name, bool exclusive)
     {
         add_resource(c.pus_, pool_name, exclusive);
     }
 
-    void partitioner::add_resource(std::vector<core> const& cv,
-        std::string const& pool_name, bool exclusive)
+    void partitioner::add_resource(
+        std::vector<core> const& cv, std::string const& pool_name, bool exclusive)
     {
         for (const core& c : cv)
         {
@@ -737,8 +691,8 @@ namespace pika::resource::detail {
         add_resource(nd.cores_, pool_name, exclusive);
     }
 
-    void partitioner::add_resource(std::vector<numa_domain> const& ndv,
-        std::string const& pool_name, bool exclusive)
+    void partitioner::add_resource(
+        std::vector<numa_domain> const& ndv, std::string const& pool_name, bool exclusive)
     {
         for (const numa_domain& d : ndv)
         {
@@ -746,8 +700,7 @@ namespace pika::resource::detail {
         }
     }
 
-    void partitioner::set_scheduler(
-        scheduling_policy sched, std::string const& pool_name)
+    void partitioner::set_scheduler(scheduling_policy sched, std::string const& pool_name)
     {
         std::unique_lock<mutex_type> l(mtx_);
         get_pool_data(l, pool_name).scheduling_policy_ = sched;
@@ -768,13 +721,11 @@ namespace pika::resource::detail {
         std::unique_lock<mutex_type> l(mtx_);
 
         // look up which scheduler is needed
-        scheduling_policy sched_type =
-            get_pool_data(l, pool_name).scheduling_policy_;
+        scheduling_policy sched_type = get_pool_data(l, pool_name).scheduling_policy_;
         if (sched_type == unspecified)
         {
             l.unlock();
-            throw std::invalid_argument(
-                "partitioner::which_scheduler: Thread pool " + pool_name +
+            throw std::invalid_argument("partitioner::which_scheduler: Thread pool " + pool_name +
                 " cannot be instantiated with unspecified scheduler type.");
         }
         return sched_type;
@@ -826,8 +777,7 @@ namespace pika::resource::detail {
         return get_pool_data(l, pool_name).num_threads_;
     }
 
-    pika::threads::scheduler_mode partitioner::get_scheduler_mode(
-        std::size_t pool_index) const
+    pika::threads::scheduler_mode partitioner::get_scheduler_mode(std::size_t pool_index) const
     {
         std::unique_lock<mutex_type> l(mtx_);
         return get_pool_data(l, pool_index).mode_;
@@ -842,8 +792,7 @@ namespace pika::resource::detail {
             throw_invalid_argument("partitioner::get_pool_data",
                 "pool index " + std::to_string(pool_index) +
                     " too large: the resource partitioner owns only " +
-                    std::to_string(initial_thread_pools_.size()) +
-                    " thread pools.");
+                    std::to_string(initial_thread_pools_.size()) + " thread pools.");
         }
         return initial_thread_pools_[pool_index];
     }
@@ -854,8 +803,7 @@ namespace pika::resource::detail {
         {
             throw_invalid_argument("partitioner::get_pool_name: ",
                 "pool " + std::to_string(index) +
-                    " (zero-based index) requested out of bounds. The "
-                    "partitioner owns only " +
+                    " (zero-based index) requested out of bounds. The partitioner owns only " +
                     std::to_string(initial_thread_pools_.size()) + " pools");
         }
         return initial_thread_pools_[index].pool_name_;
@@ -866,14 +814,13 @@ namespace pika::resource::detail {
         return affinity_data_.get_pu_num(global_thread_num);
     }
 
-    threads::detail::mask_cref_type partitioner::get_pu_mask(
-        std::size_t global_thread_num) const
+    threads::detail::mask_cref_type partitioner::get_pu_mask(std::size_t global_thread_num) const
     {
         return affinity_data_.get_pu_mask(topo_, global_thread_num);
     }
 
-    void partitioner::init(resource::partitioner_mode rpmode,
-        pika::util::section rtcfg, pika::detail::affinity_data affinity_data)
+    void partitioner::init(resource::partitioner_mode rpmode, pika::util::section rtcfg,
+        pika::detail::affinity_data affinity_data)
     {
         mode_ = rpmode;
         rtcfg_ = rtcfg;
@@ -895,29 +842,26 @@ namespace pika::resource::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    void partitioner::assign_pu(
-        std::string const& pool_name, std::size_t virt_core)
+    void partitioner::assign_pu(std::string const& pool_name, std::size_t virt_core)
     {
         std::unique_lock<mutex_type> l(mtx_);
         detail::init_pool_data& data = get_pool_data(l, pool_name);
         data.assign_pu(virt_core);
     }
 
-    void partitioner::unassign_pu(
-        std::string const& pool_name, std::size_t virt_core)
+    void partitioner::unassign_pu(std::string const& pool_name, std::size_t virt_core)
     {
         std::unique_lock<mutex_type> l(mtx_);
         detail::init_pool_data& data = get_pool_data(l, pool_name);
         data.unassign_pu(virt_core);
     }
 
-    std::size_t partitioner::shrink_pool(std::string const& pool_name,
-        util::detail::function<void(std::size_t)> const& remove_pu)
+    std::size_t partitioner::shrink_pool(
+        std::string const& pool_name, util::detail::function<void(std::size_t)> const& remove_pu)
     {
         if (!(mode_ & mode_allow_dynamic_pools))
         {
-            PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
-                "partitioner::shrink_pool",
+            PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "partitioner::shrink_pool",
                 "dynamic pools have not been enabled for the partitioner");
         }
 
@@ -945,8 +889,7 @@ namespace pika::resource::detail {
 
         if (!has_non_exclusive_pus)
         {
-            PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
-                "partitioner::shrink_pool",
+            PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "partitioner::shrink_pool",
                 "pool '{}' has no non-exclusive pus associated", pool_name);
         }
 
@@ -958,13 +901,12 @@ namespace pika::resource::detail {
         return pu_nums_to_remove.size();
     }
 
-    std::size_t partitioner::expand_pool(std::string const& pool_name,
-        util::detail::function<void(std::size_t)> const& add_pu)
+    std::size_t partitioner::expand_pool(
+        std::string const& pool_name, util::detail::function<void(std::size_t)> const& add_pu)
     {
         if (!(mode_ & mode_allow_dynamic_pools))
         {
-            PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
-                "partitioner::expand_pool",
+            PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "partitioner::expand_pool",
                 "dynamic pools have not been enabled for the partitioner");
         }
 
@@ -992,8 +934,7 @@ namespace pika::resource::detail {
 
         if (!has_non_exclusive_pus)
         {
-            PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
-                "partitioner::expand_pool",
+            PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "partitioner::expand_pool",
                 "pool '{}' has no non-exclusive pus associated", pool_name);
         }
 
@@ -1027,8 +968,7 @@ namespace pika::resource::detail {
         }
 
         throw_invalid_argument("partitioner::get_pool_index",
-            "the resource partitioner does not own a thread pool named '" +
-                pool_name + "'");
+            "the resource partitioner does not own a thread pool named '" + pool_name + "'");
     }
 
     // has to be private bc pointers become invalid after data member
@@ -1036,8 +976,7 @@ namespace pika::resource::detail {
     detail::init_pool_data const& partitioner::get_pool_data(
         std::unique_lock<mutex_type>& l, std::string const& pool_name) const
     {
-        auto pool = std::find_if(initial_thread_pools_.begin(),
-            initial_thread_pools_.end(),
+        auto pool = std::find_if(initial_thread_pools_.begin(), initial_thread_pools_.end(),
             [&pool_name](detail::init_pool_data const& itp) -> bool {
                 return (itp.pool_name_ == pool_name);
             });
@@ -1049,15 +988,13 @@ namespace pika::resource::detail {
 
         l.unlock();
         throw_invalid_argument("partitioner::get_pool_data",
-            "the resource partitioner does not own a thread pool named '" +
-                pool_name + "'");
+            "the resource partitioner does not own a thread pool named '" + pool_name + "'");
     }
 
     detail::init_pool_data& partitioner::get_pool_data(
         std::unique_lock<mutex_type>& l, std::string const& pool_name)
     {
-        auto pool = std::find_if(initial_thread_pools_.begin(),
-            initial_thread_pools_.end(),
+        auto pool = std::find_if(initial_thread_pools_.begin(), initial_thread_pools_.end(),
             [&pool_name](detail::init_pool_data const& itp) -> bool {
                 return (itp.pool_name_ == pool_name);
             });
@@ -1069,8 +1006,7 @@ namespace pika::resource::detail {
 
         l.unlock();
         throw_invalid_argument("partitioner::get_pool_data",
-            "the resource partitioner does not own a thread pool named '" +
-                pool_name + "'");
+            "the resource partitioner does not own a thread pool named '" + pool_name + "'");
     }
 
     void partitioner::print_init_pool_data(std::ostream& os) const

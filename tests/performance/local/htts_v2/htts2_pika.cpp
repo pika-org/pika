@@ -36,13 +36,10 @@ struct pika_driver : htts2::driver
 
     void run()
     {
-        std::vector<std::string> const cfg = {
-            "pika.os_threads=" + std::to_string(osthreads_),
+        std::vector<std::string> const cfg = {"pika.os_threads=" + std::to_string(osthreads_),
             "pika.run_pika_main!=0", "pika.commandline.allow_unknown!=1"};
 
-        pika::util::detail::function<int(
-            pika::program_options::variables_map & vm)>
-            f;
+        pika::util::detail::function<int(pika::program_options::variables_map & vm)> f;
         pika::program_options::options_description desc;
 
         pika::init_params init_args;
@@ -52,8 +49,7 @@ struct pika_driver : htts2::driver
         using std::placeholders::_1;
 
         pika::init(std::function<int(pika::program_options::variables_map&)>(
-                       pika::util::detail::bind(
-                           &pika_driver::run_impl, std::ref(*this), _1)),
+                       pika::util::detail::bind(&pika_driver::run_impl, std::ref(*this), _1)),
             argc_, argv_, init_args);
     }
 
@@ -91,9 +87,8 @@ private:
         {
             // Reschedule in an attempt to correct.
             pika::threads::detail::thread_init_data data(
-                pika::threads::detail::make_thread_function_nullary(
-                    pika::util::detail::bind(&pika_driver::stage_tasks,
-                        std::ref(*this), target_osthread)),
+                pika::threads::detail::make_thread_function_nullary(pika::util::detail::bind(
+                    &pika_driver::stage_tasks, std::ref(*this), target_osthread)),
                 nullptr    // No pika-thread name.
                 ,
                 pika::execution::thread_priority::normal
@@ -121,21 +116,20 @@ private:
 
     void wait_for_tasks(pika::barrier<>& finished)
     {
-        std::uint64_t const pending_count = pika::threads::get_thread_count(
-            pika::execution::thread_priority::normal,
-            pika::threads::detail::thread_schedule_state::pending);
+        std::uint64_t const pending_count =
+            pika::threads::get_thread_count(pika::execution::thread_priority::normal,
+                pika::threads::detail::thread_schedule_state::pending);
 
         if (pending_count == 0)
         {
-            std::uint64_t const all_count = pika::threads::get_thread_count(
-                pika::execution::thread_priority::normal);
+            std::uint64_t const all_count =
+                pika::threads::get_thread_count(pika::execution::thread_priority::normal);
 
             if (all_count != 1)
             {
                 pika::threads::detail::thread_init_data data(
-                    pika::threads::detail::make_thread_function_nullary(
-                        pika::util::detail::bind(&pika_driver::wait_for_tasks,
-                            std::ref(*this), std::ref(finished))),
+                    pika::threads::detail::make_thread_function_nullary(pika::util::detail::bind(
+                        &pika_driver::wait_for_tasks, std::ref(*this), std::ref(finished))),
                     nullptr, pika::execution::thread_priority::low);
                 register_work(data);
                 return;
@@ -168,8 +162,7 @@ private:
 
             pika::threads::detail::thread_init_data data(
                 pika::threads::detail::make_thread_function_nullary(
-                    pika::util::detail::bind(
-                        &pika_driver::stage_tasks, std::ref(*this), i)),
+                    pika::util::detail::bind(&pika_driver::stage_tasks, std::ref(*this), i)),
                 nullptr    // No pika-thread name.
                 ,
                 pika::execution::thread_priority::normal
@@ -199,9 +192,8 @@ private:
         pika::barrier<> finished(2);
 
         pika::threads::detail::thread_init_data data(
-            pika::threads::detail::make_thread_function_nullary(
-                pika::util::detail::bind(&pika_driver::wait_for_tasks,
-                    std::ref(*this), std::ref(finished))),
+            pika::threads::detail::make_thread_function_nullary(pika::util::detail::bind(
+                &pika_driver::wait_for_tasks, std::ref(*this), std::ref(finished))),
             nullptr, pika::execution::thread_priority::low);
         register_work(data);
 
@@ -218,15 +210,14 @@ private:
     void print_results(results_type results) const
     {
         if (this->io_ == htts2::csv_with_headers)
-            std::cout
-                << "OS-threads (Independent Variable),"
-                << "Tasks per OS-thread (Control Variable) [tasks/OS-threads],"
-                << "Payload Duration (Control Variable) [nanoseconds],"
-                << "Total Walltime [nanoseconds]"
-                << "\n";
+            std::cout << "OS-threads (Independent Variable),"
+                      << "Tasks per OS-thread (Control Variable) [tasks/OS-threads],"
+                      << "Payload Duration (Control Variable) [nanoseconds],"
+                      << "Total Walltime [nanoseconds]"
+                      << "\n";
 
-        fmt::print(std::cout, "{},{},{},{:.14g}\n", this->osthreads_,
-            this->tasks_, this->payload_duration_, results);
+        fmt::print(std::cout, "{},{},{},{:.14g}\n", this->osthreads_, this->tasks_,
+            this->payload_duration_, results);
     }
 
     //    std::atomic<std::uint64_t> count_;

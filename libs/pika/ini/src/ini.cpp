@@ -31,8 +31,8 @@
 #include <pika/thread_support/unlock_guard.hpp>
 
 #ifdef __APPLE__
-#include <crt_externs.h>
-#define environ (*_NSGetEnviron())
+# include <crt_externs.h>
+# define environ (*_NSGetEnviron())
 #elif !defined(PIKA_WINDOWS)
 extern char** environ;
 #endif
@@ -176,8 +176,7 @@ namespace pika::util {
     bool force_entry(std::string& str)
     {
         std::string::size_type p = str.find_last_of('!');
-        if (p != std::string::npos &&
-            str.find_first_not_of(" \t", p + 1) == std::string::npos)
+        if (p != std::string::npos && str.find_first_not_of(" \t", p + 1) == std::string::npos)
         {
             str = str.substr(0, p);    // remove forcing modifier ('!')
             return true;
@@ -186,9 +185,8 @@ namespace pika::util {
     }
 
     // parse file
-    void section::parse(std::string const& sourcename,
-        std::vector<std::string> const& lines, bool verify_existing,
-        bool weed_out_comments, bool replace_existing)
+    void section::parse(std::string const& sourcename, std::vector<std::string> const& lines,
+        bool verify_existing, bool weed_out_comments, bool replace_existing)
     {
         int linenum = 0;
         section* current = this;
@@ -196,8 +194,7 @@ namespace pika::util {
         std::regex regex_comment(pattern_comment, std::regex_constants::icase);
 
         std::vector<std::string>::const_iterator end = lines.end();
-        for (std::vector<std::string>::const_iterator it = lines.begin();
-             it != end; ++it)
+        for (std::vector<std::string>::const_iterator it = lines.begin(); it != end; ++it)
         {
             ++linenum;
 
@@ -235,11 +232,9 @@ namespace pika::util {
                 std::string sec_name(line.substr(1, line.size() - 2));
                 std::string::size_type pos = 0;
                 for (std::string::size_type pos1 = sec_name.find_first_of('.');
-                     std::string::npos != pos1;
-                     pos1 = sec_name.find_first_of('.', pos = pos1 + 1))
+                     std::string::npos != pos1; pos1 = sec_name.find_first_of('.', pos = pos1 + 1))
                 {
-                    current = current->add_section_if_new(
-                        sec_name.substr(pos, pos1 - pos));
+                    current = current->add_section_if_new(sec_name.substr(pos, pos1 - pos));
                 }
 
                 current = current->add_section_if_new(sec_name.substr(pos));
@@ -250,8 +245,7 @@ namespace pika::util {
             std::string::size_type assign_pos = line.find('=');
             if (assign_pos != std::string::npos)
             {
-                std::string sec_key =
-                    detail::trim_whitespace(line.substr(0, assign_pos));
+                std::string sec_key = detail::trim_whitespace(line.substr(0, assign_pos));
                 std::string value = detail::trim_whitespace(
                     line.substr(assign_pos + 1, line.size() - assign_pos - 1));
 
@@ -261,13 +255,11 @@ namespace pika::util {
                 std::string::size_type pos = 0;
                 // Check if we have a qualified key name
                 // Example: pika.commandline.allow_unknown
-                for (std::string::size_type dot_pos =
-                         sec_key.find_first_of('.');
+                for (std::string::size_type dot_pos = sec_key.find_first_of('.');
                      std::string::npos != dot_pos;
                      dot_pos = sec_key.find_first_of('.', pos = dot_pos + 1))
                 {
-                    current = current->add_section_if_new(
-                        sec_key.substr(pos, dot_pos - pos));
+                    current = current->add_section_if_new(sec_key.substr(pos, dot_pos - pos));
                 }
                 // if we don't have section qualifiers, restore current...
                 if (current == this)
@@ -280,11 +272,9 @@ namespace pika::util {
                 // add key/val to this section
                 std::unique_lock<mutex_type> l(current->mtx_);
 
-                if (!force_entry(key) && verify_existing &&
-                    !current->has_entry(l, key))
+                if (!force_entry(key) && verify_existing && !current->has_entry(l, key))
                 {
-                    line_msg("Attempt to initialize unknown entry: ",
-                        sourcename, linenum, line);
+                    line_msg("Attempt to initialize unknown entry: ", sourcename, linenum, line);
                 }
 
                 if (replace_existing || !current->has_entry(l, key))
@@ -305,8 +295,8 @@ namespace pika::util {
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    void section::add_section(std::unique_lock<mutex_type>& /* l */,
-        std::string const& sec_name, section& sec, section* root)
+    void section::add_section(std::unique_lock<mutex_type>& /* l */, std::string const& sec_name,
+        section& sec, section* root)
     {
         // setting name and root
         sec.name_ = sec_name;
@@ -331,8 +321,7 @@ namespace pika::util {
         return get_section(l, sec_name);
     }
 
-    bool section::has_section(
-        std::unique_lock<mutex_type>& l, std::string const& sec_name) const
+    bool section::has_section(std::unique_lock<mutex_type>& l, std::string const& sec_name) const
     {
         std::string::size_type i = sec_name.find('.');
         if (i != std::string::npos)
@@ -351,8 +340,7 @@ namespace pika::util {
         return sections_.find(sec_name) != sections_.end();
     }
 
-    section* section::get_section(
-        std::unique_lock<mutex_type>& l, std::string const& sec_name)
+    section* section::get_section(std::unique_lock<mutex_type>& l, std::string const& sec_name)
     {
         std::string::size_type i = sec_name.find('.');
         if (i != std::string::npos)
@@ -370,9 +358,8 @@ namespace pika::util {
             if (name.empty())
                 name = "<root>";
 
-            PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
-                "section::get_section", "No such section ({}) in section: {}",
-                sec_name, name);
+            PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "section::get_section",
+                "No such section ({}) in section: {}", sec_name, name);
             return nullptr;
         }
 
@@ -404,9 +391,8 @@ namespace pika::util {
             if (name.empty())
                 name = "<root>";
 
-            PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
-                "section::get_section", "No such section ({}) in section: {}",
-                sec_name, name);
+            PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "section::get_section",
+                "No such section ({}) in section: {}", sec_name, name);
             return nullptr;
         }
 
@@ -419,12 +405,11 @@ namespace pika::util {
         return nullptr;
     }
 
-    void section::add_entry(std::unique_lock<mutex_type>& l,
-        std::string const& fullkey, std::string const& key, std::string val)
+    void section::add_entry(std::unique_lock<mutex_type>& l, std::string const& fullkey,
+        std::string const& key, std::string val)
     {
         // first expand the full property name in the value (avoids infinite recursion)
-        expand_only(
-            l, val, std::string::size_type(-1), get_full_name() + "." + key);
+        expand_only(l, val, std::string::size_type(-1), get_full_name() + "." + key);
 
         std::string::size_type i = key.find_last_of('.');
         if (i != std::string::npos)
@@ -436,11 +421,9 @@ namespace pika::util {
 
             std::string::size_type pos = 0;
             for (std::string::size_type pos1 = sec_name.find_first_of('.');
-                 std::string::npos != pos1;
-                 pos1 = sec_name.find_first_of('.', pos = pos1 + 1))
+                 std::string::npos != pos1; pos1 = sec_name.find_first_of('.', pos = pos1 + 1))
             {
-                current = current->add_section_if_new(
-                    l, sec_name.substr(pos, pos1 - pos));
+                current = current->add_section_if_new(l, sec_name.substr(pos, pos1 - pos));
             }
 
             current = current->add_section_if_new(l, sec_name.substr(pos));
@@ -460,8 +443,7 @@ namespace pika::util {
                     std::string value = e.first;
                     entry_changed_func f = e.second;
 
-                    pika::detail::unlock_guard<std::unique_lock<mutex_type>> ul(
-                        l);
+                    pika::detail::unlock_guard<std::unique_lock<mutex_type>> ul(l);
                     f(fullkey, value);
                 }
             }
@@ -473,9 +455,8 @@ namespace pika::util {
         }
     }
 
-    void section::add_entry(std::unique_lock<mutex_type>& l,
-        std::string const& fullkey, std::string const& key,
-        entry_type const& val)
+    void section::add_entry(std::unique_lock<mutex_type>& l, std::string const& fullkey,
+        std::string const& key, entry_type const& val)
     {
         std::string::size_type i = key.find_last_of('.');
         if (i != std::string::npos)
@@ -487,11 +468,9 @@ namespace pika::util {
 
             std::string::size_type pos = 0;
             for (std::string::size_type pos1 = sec_name.find_first_of('.');
-                 std::string::npos != pos1;
-                 pos1 = sec_name.find_first_of('.', pos = pos1 + 1))
+                 std::string::npos != pos1; pos1 = sec_name.find_first_of('.', pos = pos1 + 1))
             {
-                current = current->add_section_if_new(
-                    l, sec_name.substr(pos, pos1 - pos));
+                current = current->add_section_if_new(l, sec_name.substr(pos, pos1 - pos));
             }
 
             current = current->add_section_if_new(l, sec_name.substr(pos));
@@ -510,8 +489,7 @@ namespace pika::util {
                     std::string value = it->second.first;
                     entry_changed_func f = it->second.second;
 
-                    pika::detail::unlock_guard<std::unique_lock<mutex_type>> ul(
-                        l);
+                    pika::detail::unlock_guard<std::unique_lock<mutex_type>> ul(l);
                     f(fullkey, value);
                 }
             }
@@ -528,8 +506,7 @@ namespace pika::util {
                     std::string value = p.first->second.first;
                     entry_changed_func f = p.first->second.second;
 
-                    pika::detail::unlock_guard<std::unique_lock<mutex_type>> ul(
-                        l);
+                    pika::detail::unlock_guard<std::unique_lock<mutex_type>> ul(l);
                     f(key, value);
                 }
             }
@@ -560,9 +537,8 @@ namespace pika::util {
     };
 
     template <typename F1, typename F2>
-    static PIKA_FORCEINLINE
-        util::detail::function<void(std::string const&, std::string const&)>
-        compose_callback(F1&& f1, F2&& f2)
+    static PIKA_FORCEINLINE util::detail::function<void(std::string const&, std::string const&)>
+    compose_callback(F1&& f1, F2&& f2)
     {
         if (!f1)
             return PIKA_FORWARD(F2, f2);
@@ -570,13 +546,12 @@ namespace pika::util {
             return PIKA_FORWARD(F1, f1);
 
         // otherwise create a combined callback
-        using result_type =
-            compose_callback_impl<std::decay_t<F1>, std::decay_t<F2>>;
+        using result_type = compose_callback_impl<std::decay_t<F1>, std::decay_t<F2>>;
         return result_type(PIKA_FORWARD(F1, f1), PIKA_FORWARD(F2, f2));
     }
 
-    void section::add_notification_callback(std::unique_lock<mutex_type>& l,
-        std::string const& key, entry_changed_func const& callback)
+    void section::add_notification_callback(
+        std::unique_lock<mutex_type>& l, std::string const& key, entry_changed_func const& callback)
     {
         std::string::size_type i = key.find_last_of('.');
         if (i != std::string::npos)
@@ -588,11 +563,9 @@ namespace pika::util {
 
             std::string::size_type pos = 0;
             for (std::string::size_type pos1 = sec_name.find_first_of('.');
-                 std::string::npos != pos1;
-                 pos1 = sec_name.find_first_of('.', pos = pos1 + 1))
+                 std::string::npos != pos1; pos1 = sec_name.find_first_of('.', pos = pos1 + 1))
             {
-                current = current->add_section_if_new(
-                    l, sec_name.substr(pos, pos1 - pos));
+                current = current->add_section_if_new(l, sec_name.substr(pos, pos1 - pos));
             }
 
             current = current->add_section_if_new(l, sec_name.substr(pos));
@@ -606,8 +579,7 @@ namespace pika::util {
             entry_map::iterator it = entries_.find(key);
             if (it != entries_.end())
             {
-                it->second.second =
-                    compose_callback(callback, it->second.second);
+                it->second.second = compose_callback(callback, it->second.second);
             }
             else
             {
@@ -616,8 +588,7 @@ namespace pika::util {
         }
     }
 
-    bool section::has_entry(
-        std::unique_lock<mutex_type>& l, std::string const& key) const
+    bool section::has_entry(std::unique_lock<mutex_type>& l, std::string const& key) const
     {
         std::string::size_type i = key.find('.');
         if (i != std::string::npos)
@@ -636,8 +607,7 @@ namespace pika::util {
         return entries_.find(key) != entries_.end();
     }
 
-    std::string section::get_entry(
-        std::unique_lock<mutex_type>& l, std::string const& key) const
+    std::string section::get_entry(std::unique_lock<mutex_type>& l, std::string const& key) const
     {
         std::string::size_type i = key.find('.');
         if (i != std::string::npos)
@@ -652,9 +622,8 @@ namespace pika::util {
                 return (*cit).second.get_entry(sub_key);
             }
 
-            PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
-                "section::get_entry", "No such key ({}) in section: {}", key,
-                get_name());
+            PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "section::get_entry",
+                "No such key ({}) in section: {}", key, get_name());
             return "";
         }
 
@@ -671,26 +640,23 @@ namespace pika::util {
     }
 
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-    std::string section::get_entry(std::unique_lock<mutex_type>& l,
-        std::string const& key, std::string const& default_val) const
+    std::string section::get_entry(std::unique_lock<mutex_type>& l, std::string const& key,
+        std::string const& default_val) const
     // NOLINTEND(bugprone-easily-swappable-parameters)
     {
         using string_vector = std::vector<std::string>;
 
         string_vector split_key;
-        pika::string_util::split(
-            split_key, key, pika::string_util::is_any_of("."));
+        pika::detail::split(split_key, key, pika::detail::is_any_of("."));
 
         std::string sk = split_key.back();
         split_key.pop_back();
 
         section const* cur_section = this;
-        for (string_vector::const_iterator iter = split_key.begin(),
-                                           end = split_key.end();
+        for (string_vector::const_iterator iter = split_key.begin(), end = split_key.end();
              iter != end; ++iter)
         {
-            section_map::const_iterator next =
-                cur_section->sections_.find(*iter);
+            section_map::const_iterator next = cur_section->sections_.find(*iter);
             if (cur_section->sections_.end() == next)
                 return expand(l, default_val);
             cur_section = &next->second;
@@ -748,8 +714,8 @@ namespace pika::util {
             if (expansion != i->second.first)
                 // If the expansion is different from the real entry, then print
                 // it out.
-                strm << "'" << i->first << "' : '" << i->second.first
-                     << "' -> '" << expansion << "'\n";
+                strm << "'" << i->first << "' : '" << i->second.first << "' -> '" << expansion
+                     << "'\n";
             else
                 strm << "'" << i->first << "' : '" << i->second.first << "'\n";
         }
@@ -808,8 +774,8 @@ namespace pika::util {
     }
 
     /////////////////////////////////////////////////////////////////////////////////
-    void section::line_msg(std::string msg, std::string const& file, int lnum,
-        std::string const& line)
+    void section::line_msg(
+        std::string msg, std::string const& file, int lnum, std::string const& line)
     {
         msg += " " + file;
         if (lnum > 0)
@@ -817,8 +783,7 @@ namespace pika::util {
         if (!line.empty())
             msg += " (offending entry: " + line + ")";
 
-        PIKA_THROW_EXCEPTION(
-            pika::error::no_success, "section::line_msg", "{}", msg);
+        PIKA_THROW_EXCEPTION(pika::error::no_success, "section::line_msg", "{}", msg);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -839,8 +804,8 @@ namespace pika::util {
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    void section::expand(std::unique_lock<mutex_type>& l, std::string& value,
-        std::string::size_type begin) const
+    void section::expand(
+        std::unique_lock<mutex_type>& l, std::string& value, std::string::size_type begin) const
     {
         std::string::size_type p = value.find_first_of('$', begin + 1);
         while (p != std::string::npos && value.size() - 1 != p)
@@ -853,8 +818,8 @@ namespace pika::util {
         }
     }
 
-    void section::expand_bracket(std::unique_lock<mutex_type>& l,
-        std::string& value, std::string::size_type begin) const
+    void section::expand_bracket(
+        std::unique_lock<mutex_type>& l, std::string& value, std::string::size_type begin) const
     {
         // expand all keys embedded inside this key
         expand(l, value, begin);
@@ -867,20 +832,19 @@ namespace pika::util {
             std::string::size_type colon = find_next(":", to_expand);
             if (colon == std::string::npos)
             {
-                value.replace(begin, end - begin + 1,
-                    root_->get_entry(l, to_expand, std::string("")));
+                value.replace(
+                    begin, end - begin + 1, root_->get_entry(l, to_expand, std::string("")));
             }
             else
             {
                 value.replace(begin, end - begin + 1,
-                    root_->get_entry(l, to_expand.substr(0, colon),
-                        to_expand.substr(colon + 1)));
+                    root_->get_entry(l, to_expand.substr(0, colon), to_expand.substr(colon + 1)));
             }
         }
     }
 
-    void section::expand_brace(std::unique_lock<mutex_type>& l,
-        std::string& value, std::string::size_type begin) const
+    void section::expand_brace(
+        std::unique_lock<mutex_type>& l, std::string& value, std::string::size_type begin) const
     {
         // expand all keys embedded inside this key
         expand(l, value, begin);
@@ -894,30 +858,26 @@ namespace pika::util {
             if (colon == std::string::npos)
             {
                 char* env = getenv(to_expand.c_str());
-                value.replace(
-                    begin, end - begin + 1, nullptr != env ? env : "");
+                value.replace(begin, end - begin + 1, nullptr != env ? env : "");
             }
             else
             {
                 char* env = getenv(to_expand.substr(0, colon).c_str());
                 value.replace(begin, end - begin + 1,
-                    nullptr != env ? std::string(env) :
-                                     to_expand.substr(colon + 1));
+                    nullptr != env ? std::string(env) : to_expand.substr(colon + 1));
             }
         }
     }
 
-    std::string section::expand(
-        std::unique_lock<mutex_type>& l, std::string value) const
+    std::string section::expand(std::unique_lock<mutex_type>& l, std::string value) const
     {
         expand(l, value, std::string::size_type(-1));
         return value;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    void section::expand_only(std::unique_lock<mutex_type>& l,
-        std::string& value, std::string::size_type begin,
-        std::string const& expand_this) const
+    void section::expand_only(std::unique_lock<mutex_type>& l, std::string& value,
+        std::string::size_type begin, std::string const& expand_this) const
     {
         std::string::size_type p = value.find_first_of('$', begin + 1);
         while (p != std::string::npos && value.size() - 1 != p)
@@ -930,9 +890,8 @@ namespace pika::util {
         }
     }
 
-    void section::expand_bracket_only(std::unique_lock<mutex_type>& l,
-        std::string& value, std::string::size_type begin,
-        std::string const& expand_this) const
+    void section::expand_bracket_only(std::unique_lock<mutex_type>& l, std::string& value,
+        std::string::size_type begin, std::string const& expand_this) const
     {
         // expand all keys embedded inside this key
         expand_only(l, value, begin, expand_this);
@@ -947,22 +906,20 @@ namespace pika::util {
             {
                 if (to_expand == expand_this)
                 {
-                    value.replace(begin, end - begin + 1,
-                        root_->get_entry(l, to_expand, std::string("")));
+                    value.replace(
+                        begin, end - begin + 1, root_->get_entry(l, to_expand, std::string("")));
                 }
             }
             else if (to_expand.substr(0, colon) == expand_this)
             {
                 value.replace(begin, end - begin + 1,
-                    root_->get_entry(l, to_expand.substr(0, colon),
-                        to_expand.substr(colon + 1)));
+                    root_->get_entry(l, to_expand.substr(0, colon), to_expand.substr(colon + 1)));
             }
         }
     }
 
-    void section::expand_brace_only(std::unique_lock<mutex_type>& l,
-        std::string& value, std::string::size_type begin,
-        std::string const& expand_this) const
+    void section::expand_brace_only(std::unique_lock<mutex_type>& l, std::string& value,
+        std::string::size_type begin, std::string const& expand_this) const
     {
         // expand all keys embedded inside this key
         expand_only(l, value, begin, expand_this);
@@ -976,21 +933,19 @@ namespace pika::util {
             if (colon == std::string::npos)
             {
                 char* env = getenv(to_expand.c_str());
-                value.replace(
-                    begin, end - begin + 1, nullptr != env ? env : "");
+                value.replace(begin, end - begin + 1, nullptr != env ? env : "");
             }
             else
             {
                 char* env = getenv(to_expand.substr(0, colon).c_str());
                 value.replace(begin, end - begin + 1,
-                    nullptr != env ? std::string(env) :
-                                     to_expand.substr(colon + 1));
+                    nullptr != env ? std::string(env) : to_expand.substr(colon + 1));
             }
         }
     }
 
-    std::string section::expand_only(std::unique_lock<mutex_type>& l,
-        std::string value, std::string const& expand_this) const
+    std::string section::expand_only(
+        std::unique_lock<mutex_type>& l, std::string value, std::string const& expand_this) const
     {
         expand_only(l, value, std::string::size_type(-1), expand_this);
         return value;

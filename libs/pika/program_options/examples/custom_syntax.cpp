@@ -52,11 +52,7 @@ int main(int ac, char* av[])
         // clang-format on
 
         variables_map vm;
-        store(command_line_parser(ac, av)
-                  .options(desc)
-                  .extra_parser(reg_foo)
-                  .run(),
-            vm);
+        store(command_line_parser(ac, av).options(desc).extra_parser(reg_foo).run(), vm);
 
         if (vm.count("help"))
         {
@@ -65,8 +61,7 @@ int main(int ac, char* av[])
         }
         if (vm.count("foo"))
         {
-            cout << "foo value with the value of " << vm["foo"].as<string>()
-                 << "\n";
+            cout << "foo value with the value of " << vm["foo"].as<string>() << "\n";
         }
     }
     catch (exception const& e)

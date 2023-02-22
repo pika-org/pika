@@ -58,8 +58,7 @@ namespace pika::memory {
         }
 
         template <typename U,
-            typename Enable =
-                std::enable_if_t<memory::detail::sp_convertible_v<U, T>>>
+            typename Enable = std::enable_if_t<memory::detail::sp_convertible_v<U, T>>>
         intrusive_ptr(intrusive_ptr<U> const& rhs)
           : px(rhs.get())
         {
@@ -68,14 +67,14 @@ namespace pika::memory {
         }
 
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 120000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wuse-after-free"
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wuse-after-free"
 #endif
         intrusive_ptr(intrusive_ptr const& rhs)
           : px(rhs.px)
         {
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 120000
-#pragma GCC diagnostic pop
+# pragma GCC diagnostic pop
 #endif
             if (px != nullptr)
                 intrusive_ptr_add_ref(px);
@@ -111,8 +110,7 @@ namespace pika::memory {
         friend class intrusive_ptr;
 
         template <typename U,
-            typename Enable =
-                std::enable_if_t<memory::detail::sp_convertible_v<U, T>>>
+            typename Enable = std::enable_if_t<memory::detail::sp_convertible_v<U, T>>>
         constexpr intrusive_ptr(intrusive_ptr<U>&& rhs) noexcept
           : px(rhs.px)
         {
@@ -195,15 +193,13 @@ namespace pika::memory {
     };
 
     template <typename T, typename U>
-    inline constexpr bool
-    operator==(intrusive_ptr<T> const& a, intrusive_ptr<U> const& b) noexcept
+    inline constexpr bool operator==(intrusive_ptr<T> const& a, intrusive_ptr<U> const& b) noexcept
     {
         return a.get() == b.get();
     }
 
     template <typename T, typename U>
-    inline constexpr bool
-    operator!=(intrusive_ptr<T> const& a, intrusive_ptr<U> const& b) noexcept
+    inline constexpr bool operator!=(intrusive_ptr<T> const& a, intrusive_ptr<U> const& b) noexcept
     {
         return a.get() != b.get();
     }
@@ -233,36 +229,31 @@ namespace pika::memory {
     }
 
     template <typename T>
-    inline constexpr bool
-    operator==(intrusive_ptr<T> const& p, std::nullptr_t) noexcept
+    inline constexpr bool operator==(intrusive_ptr<T> const& p, std::nullptr_t) noexcept
     {
         return p.get() == nullptr;
     }
 
     template <typename T>
-    inline constexpr bool
-    operator==(std::nullptr_t, intrusive_ptr<T> const& p) noexcept
+    inline constexpr bool operator==(std::nullptr_t, intrusive_ptr<T> const& p) noexcept
     {
         return p.get() == nullptr;
     }
 
     template <typename T>
-    inline constexpr bool
-    operator!=(intrusive_ptr<T> const& p, std::nullptr_t) noexcept
+    inline constexpr bool operator!=(intrusive_ptr<T> const& p, std::nullptr_t) noexcept
     {
         return p.get() != nullptr;
     }
 
     template <typename T>
-    inline constexpr bool
-    operator!=(std::nullptr_t, intrusive_ptr<T> const& p) noexcept
+    inline constexpr bool operator!=(std::nullptr_t, intrusive_ptr<T> const& p) noexcept
     {
         return p.get() != nullptr;
     }
 
     template <typename T>
-    inline constexpr bool
-    operator<(intrusive_ptr<T> const& a, intrusive_ptr<T> const& b) noexcept
+    inline constexpr bool operator<(intrusive_ptr<T> const& a, intrusive_ptr<T> const& b) noexcept
     {
         return std::less<T*>{}(a.get(), b.get());
     }
@@ -300,8 +291,7 @@ namespace pika::memory {
     }
 
     template <typename T, typename U>
-    constexpr intrusive_ptr<T>
-    static_pointer_cast(intrusive_ptr<U>&& p) noexcept
+    constexpr intrusive_ptr<T> static_pointer_cast(intrusive_ptr<U>&& p) noexcept
     {
         return intrusive_ptr<T>(static_cast<T*>(p.detach()), false);
     }
@@ -364,8 +354,7 @@ namespace std {
     {
         using result_type = std::size_t;
 
-        result_type operator()(
-            pika::memory::intrusive_ptr<T> const& p) const noexcept
+        result_type operator()(pika::memory::intrusive_ptr<T> const& p) const noexcept
         {
             return hash<T*>{}(p.get());
         }

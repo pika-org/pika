@@ -11,11 +11,11 @@
 #include <iostream>
 
 #if defined(PIKA_HAVE_UNISTD_H)
-#include <unistd.h>
+# include <unistd.h>
 #endif
 
 #if defined(PIKA_WINDOWS)
-#include <Windows.h>
+# include <Windows.h>
 #endif    // PIKA_WINDOWS
 
 namespace pika::debug::detail {
@@ -24,8 +24,7 @@ namespace pika::debug::detail {
 #if defined(_POSIX_VERSION) && defined(PIKA_HAVE_UNISTD_H)
         volatile int i = 0;
         std::cerr << "PID: " << getpid()
-                  << " ready for attaching debugger. Once attached set i = 1 "
-                     "and continue"
+                  << " ready for attaching debugger. Once attached set i = 1 and continue"
                   << std::endl;
         while (i == 0)
         {

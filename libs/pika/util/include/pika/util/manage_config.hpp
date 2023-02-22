@@ -29,7 +29,7 @@ namespace pika::detail {
         {
             map_type::const_iterator it = config_.find(key);
             if (it != config_.end())
-                return pika::util::from_string<T>((*it).second, dflt);
+                return pika::detail::from_string<T>((*it).second, dflt);
             return dflt;
         }
 

@@ -15,8 +15,7 @@ namespace pika::detail {
     struct policy_holder_base;
 
     template <typename Policy>
-    struct is_launch_policy
-      : std::is_base_of<policy_holder_base, std::decay_t<Policy>>
+    struct is_launch_policy : std::is_base_of<policy_holder_base, std::decay_t<Policy>>
     {
     };
 

@@ -37,20 +37,17 @@
 namespace pika::parallel::execution::detail {
 
     template <typename Launch, typename F, typename S, typename... Ts>
-    std::vector<
-        pika::future<typename detail::bulk_function_result<F, S, Ts...>::type>>
+    std::vector<pika::future<typename detail::bulk_function_result<F, S, Ts...>::type>>
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-    hierarchical_bulk_async_execute_helper(
-        pika::detail::thread_description const& desc,
-        threads::detail::thread_pool_base* pool, std::size_t first_thread,
-        std::size_t num_threads, std::size_t hierarchical_threshold,
-        Launch policy, F&& f, S const& shape, Ts&&... ts)
+    hierarchical_bulk_async_execute_helper(pika::detail::thread_description const& desc,
+        threads::detail::thread_pool_base* pool, std::size_t first_thread, std::size_t num_threads,
+        std::size_t hierarchical_threshold, Launch policy, F&& f, S const& shape, Ts&&... ts)
     // NOLINTEND(bugprone-easily-swappable-parameters)
     {
         PIKA_ASSERT(pool);
 
-        using result_type = std::vector<pika::future<
-            typename detail::bulk_function_result<F, S, Ts...>::type>>;
+        using result_type =
+            std::vector<pika::future<typename detail::bulk_function_result<F, S, Ts...>::type>>;
 
         result_type results;
         std::size_t const size = pika::util::size(shape);
@@ -68,21 +65,18 @@ namespace pika::parallel::execution::detail {
             std::size_t const part_size = part_end - part_begin;
 
             auto async_policy = policy;
-            async_policy.set_hint(pika::execution::thread_schedule_hint{
-                static_cast<std::int16_t>(first_thread + t)});
+            async_policy.set_hint(
+                pika::execution::thread_schedule_hint{static_cast<std::int16_t>(first_thread + t)});
 
             if (part_size > hierarchical_threshold)
             {
-                detail::post_policy_dispatch<Launch>::call(post_policy, desc,
-                    pool,
-                    [&, part_begin, part_end, part_size, f, it]() mutable {
-                        for (std::size_t part_i = part_begin; part_i < part_end;
-                             ++part_i)
+                detail::post_policy_dispatch<Launch>::call(
+                    post_policy, desc, pool, [&, part_begin, part_end, part_size, f, it]() mutable {
+                        for (std::size_t part_i = part_begin; part_i < part_end; ++part_i)
                         {
                             results[part_i] =
-                                pika::detail::async_launch_policy_dispatch<
-                                    Launch>::call(async_policy, desc, pool, f,
-                                    *it, ts...);
+                                pika::detail::async_launch_policy_dispatch<Launch>::call(
+                                    async_policy, desc, pool, f, *it, ts...);
                             ++it;
                         }
                         l.count_down(part_size);
@@ -92,13 +86,10 @@ namespace pika::parallel::execution::detail {
             }
             else
             {
-                for (std::size_t part_i = part_begin; part_i < part_end;
-                     ++part_i)
+                for (std::size_t part_i = part_begin; part_i < part_end; ++part_i)
                 {
-                    results[part_i] =
-                        pika::detail::async_launch_policy_dispatch<
-                            Launch>::call(async_policy, desc, pool, f, *it,
-                            ts...);
+                    results[part_i] = pika::detail::async_launch_policy_dispatch<Launch>::call(
+                        async_policy, desc, pool, f, *it, ts...);
                     ++it;
                 }
                 l.count_down(part_size);
@@ -113,65 +104,54 @@ namespace pika::parallel::execution::detail {
     }
 
     template <typename Launch, typename F, typename S, typename... Ts>
-    std::vector<
-        pika::future<typename detail::bulk_function_result<F, S, Ts...>::type>>
-    hierarchical_bulk_async_execute_helper(
-        threads::detail::thread_pool_base* pool, std::size_t first_thread,
-        std::size_t num_threads, std::size_t hierarchical_threshold,
+    std::vector<pika::future<typename detail::bulk_function_result<F, S, Ts...>::type>>
+    hierarchical_bulk_async_execute_helper(threads::detail::thread_pool_base* pool,
+        std::size_t first_thread, std::size_t num_threads, std::size_t hierarchical_threshold,
         Launch policy, F&& f, S const& shape, Ts&&... ts)
     {
-        pika::detail::thread_description const desc(f,
-            "pika::parallel::execution::detail::hierarchical_bulk_async_"
-            "execute_"
-            "helper");
+        pika::detail::thread_description const desc(
+            f, "pika::parallel::execution::detail::hierarchical_bulk_async_execute_helper");
 
-        return hierarchical_bulk_async_execute_helper(desc, pool, first_thread,
-            num_threads, hierarchical_threshold, policy, PIKA_FORWARD(F, f),
-            shape, PIKA_FORWARD(Ts, ts)...);
+        return hierarchical_bulk_async_execute_helper(desc, pool, first_thread, num_threads,
+            hierarchical_threshold, policy, PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Ts, ts)...);
     }
 
-    template <typename Executor, typename Launch, typename F, typename S,
-        typename Future, typename... Ts>
-    pika::future<
-        typename detail::bulk_then_execute_result<F, S, Future, Ts...>::type>
-    hierarchical_bulk_then_execute_helper(Executor&& executor, Launch policy,
-        F&& f, S const& shape, Future&& predecessor, Ts&&... ts)
+    template <typename Executor, typename Launch, typename F, typename S, typename Future,
+        typename... Ts>
+    pika::future<typename detail::bulk_then_execute_result<F, S, Future, Ts...>::type>
+    hierarchical_bulk_then_execute_helper(
+        Executor&& executor, Launch policy, F&& f, S const& shape, Future&& predecessor, Ts&&... ts)
     {
-        using func_result_type = typename detail::then_bulk_function_result<F,
-            S, Future, Ts...>::type;
+        using func_result_type =
+            typename detail::then_bulk_function_result<F, S, Future, Ts...>::type;
 
         // std::vector<future<func_result_type>>
         using result_type = std::vector<pika::future<func_result_type>>;
 
         auto&& func = detail::make_fused_bulk_async_execute_helper<result_type>(
-            executor, PIKA_FORWARD(F, f), shape,
-            std::make_tuple(PIKA_FORWARD(Ts, ts)...));
+            executor, PIKA_FORWARD(F, f), shape, std::make_tuple(PIKA_FORWARD(Ts, ts)...));
 
         // void or std::vector<func_result_type>
-        using vector_result_type = typename detail::bulk_then_execute_result<F,
-            S, Future, Ts...>::type;
+        using vector_result_type =
+            typename detail::bulk_then_execute_result<F, S, Future, Ts...>::type;
 
         // future<vector_result_type>
         using result_future_type = pika::future<vector_result_type>;
 
         using shared_state_type =
-            typename pika::traits::detail::shared_state_ptr<
-                vector_result_type>::type;
+            typename pika::traits::detail::shared_state_ptr<vector_result_type>::type;
 
         using future_type = std::decay_t<Future>;
 
         // vector<future<func_result_type>> -> vector<func_result_type>
-        shared_state_type p = pika::lcos::detail::make_continuation_exec_policy<
-            vector_result_type>(PIKA_FORWARD(Future, predecessor), executor,
-            policy,
-            [func = PIKA_MOVE(func)](
-                future_type&& predecessor) mutable -> vector_result_type {
+        shared_state_type p = pika::lcos::detail::make_continuation_exec_policy<vector_result_type>(
+            PIKA_FORWARD(Future, predecessor), executor, policy,
+            [func = PIKA_MOVE(func)](future_type&& predecessor) mutable -> vector_result_type {
                 // use unwrap directly (instead of lazily) to avoid
                 // having to pull in dataflow
                 return pika::unwrap(func(PIKA_MOVE(predecessor)));
             });
 
-        return pika::traits::future_access<result_future_type>::create(
-            PIKA_MOVE(p));
+        return pika::traits::future_access<result_future_type>::create(PIKA_MOVE(p));
     }
 }    // namespace pika::parallel::execution::detail

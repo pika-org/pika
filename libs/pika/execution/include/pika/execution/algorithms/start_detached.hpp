@@ -9,27 +9,26 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <pika/execution_base/p2300_forward.hpp>
+# include <pika/execution_base/p2300_forward.hpp>
 #else
-#include <pika/allocator_support/allocator_deleter.hpp>
-#include <pika/allocator_support/internal_allocator.hpp>
-#include <pika/allocator_support/traits/is_allocator.hpp>
-#include <pika/assert.hpp>
-#include <pika/concepts/concepts.hpp>
-#include <pika/execution_base/operation_state.hpp>
-#include <pika/execution_base/sender.hpp>
-#include <pika/functional/detail/tag_fallback_invoke.hpp>
-#include <pika/functional/invoke_result.hpp>
-#include <pika/memory/intrusive_ptr.hpp>
-#include <pika/thread_support/atomic_count.hpp>
-#include <pika/type_support/unused.hpp>
+# include <pika/allocator_support/allocator_deleter.hpp>
+# include <pika/allocator_support/internal_allocator.hpp>
+# include <pika/allocator_support/traits/is_allocator.hpp>
+# include <pika/assert.hpp>
+# include <pika/concepts/concepts.hpp>
+# include <pika/execution_base/operation_state.hpp>
+# include <pika/execution_base/sender.hpp>
+# include <pika/functional/detail/tag_fallback_invoke.hpp>
+# include <pika/memory/intrusive_ptr.hpp>
+# include <pika/thread_support/atomic_count.hpp>
+# include <pika/type_support/unused.hpp>
 
-#include <atomic>
-#include <cstddef>
-#include <exception>
-#include <memory>
-#include <type_traits>
-#include <utility>
+# include <atomic>
+# include <cstddef>
+# include <exception>
+# include <memory>
+# include <type_traits>
+# include <utility>
 
 namespace pika::start_detached_detail {
     template <typename Sender, typename Allocator>
@@ -40,30 +39,27 @@ namespace pika::start_detached_detail {
             pika::intrusive_ptr<operation_state_holder> op_state;
 
             template <typename Error>
-#if !defined(__NVCC__)
+# if !defined(__NVCC__)
             [[noreturn]]
-#endif
+# endif
             friend void
-            tag_invoke(pika::execution::experimental::set_error_t,
-                start_detached_receiver&&, Error&& error) noexcept
+            tag_invoke(pika::execution::experimental::set_error_t, start_detached_receiver&&,
+                Error&& error) noexcept
             {
-                if constexpr (std::is_same_v<std::decay_t<Error>,
-                                  std::exception_ptr>)
+                if constexpr (std::is_same_v<std::decay_t<Error>, std::exception_ptr>)
                 {
                     std::rethrow_exception(PIKA_FORWARD(Error, error));
                 }
 
                 PIKA_ASSERT_MSG(false,
-                    "set_error was called on the receiver of "
-                    "start_detached, "
-                    "terminating. If you want to allow errors from the "
-                    "predecessor sender, handle them first with e.g. "
+                    "set_error was called on the receiver of start_detached, terminating. If you "
+                    "want to allow errors from the predecessor sender, handle them first with e.g. "
                     "let_error.");
                 std::terminate();
             }
 
-            friend void tag_invoke(pika::execution::experimental::set_stopped_t,
-                start_detached_receiver&& r) noexcept
+            friend void tag_invoke(
+                pika::execution::experimental::set_stopped_t, start_detached_receiver&& r) noexcept
             {
                 r.op_state.reset();
             };
@@ -77,22 +73,20 @@ namespace pika::start_detached_detail {
         };
 
     private:
-        using allocator_type = typename std::allocator_traits<
-            Allocator>::template rebind_alloc<operation_state_holder>;
+        using allocator_type = typename std::allocator_traits<Allocator>::template rebind_alloc<
+            operation_state_holder>;
         PIKA_NO_UNIQUE_ADDRESS allocator_type alloc;
         pika::detail::atomic_count count{0};
 
         using operation_state_type =
-            pika::execution::experimental::connect_result_t<Sender,
-                start_detached_receiver>;
+            pika::execution::experimental::connect_result_t<Sender, start_detached_receiver>;
         std::decay_t<operation_state_type> op_state;
 
     public:
         template <typename Sender_,
-            typename = std::enable_if_t<!std::is_same<std::decay_t<Sender_>,
-                operation_state_holder>::value>>
-        explicit operation_state_holder(
-            Sender_&& sender, allocator_type const& alloc)
+            typename = std::enable_if_t<
+                !std::is_same<std::decay_t<Sender_>, operation_state_holder>::value>>
+        explicit operation_state_holder(Sender_&& sender, allocator_type const& alloc)
           : alloc(alloc)
           , op_state(pika::execution::experimental::connect(
                 PIKA_FORWARD(Sender_, sender), start_detached_receiver{this}))
@@ -112,8 +106,7 @@ namespace pika::start_detached_detail {
             {
                 allocator_type other_alloc(p->alloc);
                 std::allocator_traits<allocator_type>::destroy(other_alloc, p);
-                std::allocator_traits<allocator_type>::deallocate(
-                    other_alloc, p, 1);
+                std::allocator_traits<allocator_type>::deallocate(other_alloc, p, 1);
             }
         }
     };
@@ -132,14 +125,12 @@ namespace pika::execution::experimental {
                 pika::detail::is_allocator_v<Allocator>
             )>
         // clang-format on
-        friend constexpr PIKA_FORCEINLINE void
-        tag_fallback_invoke(start_detached_t, Sender&& sender,
-            Allocator const& allocator = Allocator{})
+        friend constexpr PIKA_FORCEINLINE void tag_fallback_invoke(
+            start_detached_t, Sender&& sender, Allocator const& allocator = Allocator{})
         {
             using allocator_type = Allocator;
             using operation_state_type =
-                start_detached_detail::operation_state_holder<Sender,
-                    Allocator>;
+                start_detached_detail::operation_state_holder<Sender, Allocator>;
             using other_allocator = typename std::allocator_traits<
                 allocator_type>::template rebind_alloc<operation_state_type>;
             using allocator_traits = std::allocator_traits<other_allocator>;
@@ -150,8 +141,7 @@ namespace pika::execution::experimental {
             unique_ptr p(allocator_traits::allocate(alloc, 1),
                 pika::detail::allocator_deleter<other_allocator>{alloc});
 
-            new (p.get())
-                operation_state_type{PIKA_FORWARD(Sender, sender), alloc};
+            new (p.get()) operation_state_type{PIKA_FORWARD(Sender, sender), alloc};
             PIKA_UNUSED(p.release());
         }
     } start_detached{};

@@ -28,23 +28,19 @@ namespace pika::execution::experimental {
     struct annotating_executor
     {
         template <typename Executor,
-            typename Enable = std::enable_if_t<
-                pika::traits::is_executor_any_v<Executor> &&
+            typename Enable = std::enable_if_t<pika::traits::is_executor_any_v<Executor> &&
                 !std::is_same_v<std::decay_t<Executor>, annotating_executor>>>
-        constexpr explicit annotating_executor(
-            Executor&& exec, char const* annotation = nullptr)
+        constexpr explicit annotating_executor(Executor&& exec, char const* annotation = nullptr)
           : exec_(PIKA_FORWARD(Executor, exec))
           , annotation_(annotation)
         {
         }
 
         template <typename Executor,
-            typename Enable =
-                std::enable_if_t<pika::traits::is_executor_any_v<Executor>>>
+            typename Enable = std::enable_if_t<pika::traits::is_executor_any_v<Executor>>>
         explicit annotating_executor(Executor&& exec, std::string annotation)
           : exec_(PIKA_FORWARD(Executor, exec))
-          , annotation_(
-                pika::detail::store_function_annotation(PIKA_MOVE(annotation)))
+          , annotation_(pika::detail::store_function_annotation(PIKA_MOVE(annotation)))
         {
         }
 
@@ -66,23 +62,19 @@ namespace pika::execution::experimental {
         /// \endcond
 
         /// \cond NOINTERNAL
-        using execution_category =
-            pika::traits::executor_execution_category_t<BaseExecutor>;
+        using execution_category = pika::traits::executor_execution_category_t<BaseExecutor>;
 
-        using parameters_type =
-            pika::traits::executor_parameters_type_t<BaseExecutor>;
+        using parameters_type = pika::traits::executor_parameters_type_t<BaseExecutor>;
 
         template <typename T, typename... Ts>
-        using future_type =
-            pika::traits::executor_future_t<BaseExecutor, T, Ts...>;
+        using future_type = pika::traits::executor_future_t<BaseExecutor, T, Ts...>;
 
         // NonBlockingOneWayExecutor interface
         template <typename F, typename... Ts>
         decltype(auto) post(F&& f, Ts&&... ts)
         {
             return parallel::execution::post(exec_,
-                pika::annotated_function(PIKA_FORWARD(F, f), annotation_),
-                PIKA_FORWARD(Ts, ts)...);
+                pika::annotated_function(PIKA_FORWARD(F, f), annotation_), PIKA_FORWARD(Ts, ts)...);
         }
 
         // OneWayExecutor interface
@@ -90,8 +82,7 @@ namespace pika::execution::experimental {
         decltype(auto) sync_execute(F&& f, Ts&&... ts)
         {
             return parallel::execution::sync_execute(exec_,
-                pika::annotated_function(PIKA_FORWARD(F, f), annotation_),
-                PIKA_FORWARD(Ts, ts)...);
+                pika::annotated_function(PIKA_FORWARD(F, f), annotation_), PIKA_FORWARD(Ts, ts)...);
         }
 
         // TwoWayExecutor interface
@@ -99,8 +90,7 @@ namespace pika::execution::experimental {
         decltype(auto) async_execute(F&& f, Ts&&... ts)
         {
             return parallel::execution::async_execute(exec_,
-                pika::annotated_function(PIKA_FORWARD(F, f), annotation_),
-                PIKA_FORWARD(Ts, ts)...);
+                pika::annotated_function(PIKA_FORWARD(F, f), annotation_), PIKA_FORWARD(Ts, ts)...);
         }
 
         template <typename F, typename Future, typename... Ts>
@@ -116,40 +106,37 @@ namespace pika::execution::experimental {
         decltype(auto) bulk_async_execute(F&& f, S const& shape, Ts&&... ts)
         {
             return parallel::execution::bulk_async_execute(exec_,
-                pika::annotated_function(PIKA_FORWARD(F, f), annotation_),
-                shape, PIKA_FORWARD(Ts, ts)...);
+                pika::annotated_function(PIKA_FORWARD(F, f), annotation_), shape,
+                PIKA_FORWARD(Ts, ts)...);
         }
 
         template <typename F, typename S, typename... Ts>
         decltype(auto) bulk_sync_execute(F&& f, S const& shape, Ts&&... ts)
         {
             return parallel::execution::bulk_sync_execute(exec_,
-                pika::annotated_function(PIKA_FORWARD(F, f), annotation_),
-                shape, PIKA_FORWARD(Ts, ts)...);
+                pika::annotated_function(PIKA_FORWARD(F, f), annotation_), shape,
+                PIKA_FORWARD(Ts, ts)...);
         }
 
         template <typename F, typename S, typename Future, typename... Ts>
-        decltype(auto) bulk_then_execute(
-            F&& f, S const& shape, Future&& predecessor, Ts&&... ts)
+        decltype(auto) bulk_then_execute(F&& f, S const& shape, Future&& predecessor, Ts&&... ts)
         {
             return parallel::execution::bulk_then_execute(exec_,
-                pika::annotated_function(PIKA_FORWARD(F, f), annotation_),
-                shape, PIKA_FORWARD(Future, predecessor),
-                PIKA_FORWARD(Ts, ts)...);
+                pika::annotated_function(PIKA_FORWARD(F, f), annotation_), shape,
+                PIKA_FORWARD(Future, predecessor), PIKA_FORWARD(Ts, ts)...);
         }
 
         // support with_annotation property
         friend constexpr annotating_executor tag_invoke(
-            pika::execution::experimental::with_annotation_t,
-            annotating_executor const& exec, char const* annotation)
+            pika::execution::experimental::with_annotation_t, annotating_executor const& exec,
+            char const* annotation)
         {
             auto exec_with_annotation = exec;
             exec_with_annotation.annotation_ = annotation;
             return exec_with_annotation;
         }
 
-        friend annotating_executor tag_invoke(
-            pika::execution::experimental::with_annotation_t,
+        friend annotating_executor tag_invoke(pika::execution::experimental::with_annotation_t,
             annotating_executor const& exec, std::string annotation)
         {
             auto exec_with_annotation = exec;
@@ -159,8 +146,7 @@ namespace pika::execution::experimental {
         }
 
         // support get_annotation property
-        friend constexpr char const* tag_invoke(
-            pika::execution::experimental::get_annotation_t,
+        friend constexpr char const* tag_invoke(pika::execution::experimental::get_annotation_t,
             annotating_executor const& exec) noexcept
         {
             return exec.annotation_;
@@ -186,8 +172,7 @@ namespace pika::execution::experimental {
             pika::traits::is_executor_any_v<Executor>
         )>
     // clang-format on
-    constexpr auto tag_fallback_invoke(
-        with_annotation_t, Executor&& exec, char const* annotation)
+    constexpr auto tag_fallback_invoke(with_annotation_t, Executor&& exec, char const* annotation)
     {
         return annotating_executor<std::decay_t<Executor>>(
             PIKA_FORWARD(Executor, exec), annotation);
@@ -199,8 +184,7 @@ namespace pika::execution::experimental {
             pika::traits::is_executor_any_v<Executor>
          )>
     // clang-format on
-    auto tag_fallback_invoke(
-        with_annotation_t, Executor&& exec, std::string annotation)
+    auto tag_fallback_invoke(with_annotation_t, Executor&& exec, std::string annotation)
     {
         return annotating_executor<std::decay_t<Executor>>(
             PIKA_FORWARD(Executor, exec), PIKA_MOVE(annotation));
@@ -214,8 +198,7 @@ namespace pika::parallel::execution {
 
     /// \cond NOINTERNAL
     template <typename BaseExecutor>
-    struct is_one_way_executor<
-        pika::execution::experimental::annotating_executor<BaseExecutor>>
+    struct is_one_way_executor<pika::execution::experimental::annotating_executor<BaseExecutor>>
       : is_one_way_executor<BaseExecutor>
     {
     };
@@ -235,8 +218,7 @@ namespace pika::parallel::execution {
     };
 
     template <typename BaseExecutor>
-    struct is_two_way_executor<
-        pika::execution::experimental::annotating_executor<BaseExecutor>>
+    struct is_two_way_executor<pika::execution::experimental::annotating_executor<BaseExecutor>>
       : is_two_way_executor<BaseExecutor>
     {
     };

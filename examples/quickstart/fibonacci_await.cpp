@@ -102,8 +102,7 @@ void fibonacci_impl(std::shared_ptr<fibonacci_frame> const& frame_)
     {
         if (state == 0)
             // never paused
-            frame->result_ =
-                pika::make_ready_future(fibonacci_serial(frame->n_));
+            frame->result_ = pika::make_ready_future(fibonacci_serial(frame->n_));
         else
             frame->result_promise_.set_value(fibonacci_serial(frame->n_));
         return;
@@ -141,18 +140,15 @@ L2:
 
     if (state == 0)
         // never paused
-        frame->result_ =
-            pika::make_ready_future(frame->lhs_result_ + frame->rhs_result_);
+        frame->result_ = pika::make_ready_future(frame->lhs_result_ + frame->rhs_result_);
     else
-        frame->result_promise_.set_value(
-            frame->lhs_result_ + frame->rhs_result_);
+        frame->result_promise_.set_value(frame->lhs_result_ + frame->rhs_result_);
     return;
 }
 
 pika::future<std::uint64_t> fibonacci(std::uint64_t n)
 {
-    std::shared_ptr<fibonacci_frame> frame =
-        std::make_shared<fibonacci_frame>(n);
+    std::shared_ptr<fibonacci_frame> frame = std::make_shared<fibonacci_frame>(n);
 
     fibonacci_impl(frame);
 
@@ -171,8 +167,8 @@ int pika_main(pika::program_options::variables_map& vm)
 
     if (max_runs == 0)
     {
-        std::cerr << "fibonacci_await: wrong command line argument value for "
-                     "option 'n-runs', should not be zero"
+        std::cerr << "fibonacci_await: wrong command line argument value for option 'n-runs', "
+                     "should not be zero"
                   << std::endl;
         return -1;
     }
@@ -180,9 +176,8 @@ int pika_main(pika::program_options::variables_map& vm)
     threshold = vm["threshold"].as<unsigned int>();
     if (threshold < 2 || threshold > n)
     {
-        std::cerr << "fibonacci_await: wrong command line argument value for "
-                     "option 'threshold', should be in between 2 and n-value"
-                     ", value specified: "
+        std::cerr << "fibonacci_await: wrong command line argument value for option 'threshold', "
+                     "should be in between 2 and n-value, value specified: "
                   << threshold << std::endl;
         return -1;
     }
@@ -202,11 +197,8 @@ int pika_main(pika::program_options::variables_map& vm)
             r = fibonacci_serial(n);
         }
 
-        std::uint64_t d =
-            duration_cast<seconds>(high_resolution_clock::now() - start)
-                .count();
-        constexpr char const* fmt = "fibonacci_serial({}) == {},"
-                                    "elapsed time:,{},[s]\n";
+        std::uint64_t d = duration_cast<seconds>(high_resolution_clock::now() - start).count();
+        constexpr char const* fmt = "fibonacci_serial({}) == {},elapsed time:,{},[s]\n";
         fmt::print(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
@@ -224,11 +216,8 @@ int pika_main(pika::program_options::variables_map& vm)
             r = fibonacci(n).get();
         }
 
-        std::uint64_t d =
-            duration_cast<seconds>(high_resolution_clock::now() - start)
-                .count();
-        constexpr char const* fmt = "fibonacci_await({}) == {},"
-                                    "elapsed time:,{},[s]\n";
+        std::uint64_t d = duration_cast<seconds>(high_resolution_clock::now() - start).count();
+        constexpr char const* fmt = "fibonacci_await({}) == {},elapsed time:,{},[s]\n";
         fmt::print(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
@@ -236,10 +225,8 @@ int pika_main(pika::program_options::variables_map& vm)
 
     if (!executed_one)
     {
-        std::cerr << "fibonacci_await: wrong command line argument value for "
-                     "option 'tests', should be either 'all' or a number "
-                     "between zero "
-                     "and 1, value specified: "
+        std::cerr << "fibonacci_await: wrong command line argument value for option 'tests', "
+                     "should be either 'all' or a number between zero and 1, value specified: "
                   << test << std::endl;
     }
 

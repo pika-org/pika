@@ -8,9 +8,9 @@
 
 #include <pika/config.hpp>
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <pika/execution_base/p2300_forward.hpp>
-#include <pika/execution_base/sender.hpp>
-#include <pika/functional/tag_invoke.hpp>
+# include <pika/execution_base/p2300_forward.hpp>
+# include <pika/execution_base/sender.hpp>
+# include <pika/functional/tag_invoke.hpp>
 
 namespace pika::execution::experimental::detail {
     template <bool TagInvocable, typename CPO, typename Sender>
@@ -20,42 +20,39 @@ namespace pika::execution::experimental::detail {
 
     template <typename CPO, typename Sender>
     struct has_completion_scheduler_impl<true, CPO, Sender>
-      : pika::execution::experimental::is_scheduler<
-            pika::functional::tag_invoke_result_t<
-                get_completion_scheduler_t<CPO>, std::decay_t<Sender> const&>>
+      : pika::execution::experimental::is_scheduler<pika::functional::detail::tag_invoke_result_t<
+            get_completion_scheduler_t<CPO>, std::decay_t<Sender> const&>>
     {
     };
 
     template <typename CPO, typename Sender>
     struct has_completion_scheduler
       : has_completion_scheduler_impl<
-            pika::functional::is_tag_invocable_v<
-                get_completion_scheduler_t<CPO>, std::decay_t<Sender> const&>,
+            pika::functional::detail::is_tag_invocable_v<get_completion_scheduler_t<CPO>,
+                std::decay_t<Sender> const&>,
             CPO, Sender>
     {
     };
 
     template <typename CPO, typename Sender>
-    inline constexpr bool has_completion_scheduler_v =
-        has_completion_scheduler<CPO, Sender>::value;
+    inline constexpr bool has_completion_scheduler_v = has_completion_scheduler<CPO, Sender>::value;
 }    // namespace pika::execution::experimental::detail
 #else
-#include <pika/execution_base/sender.hpp>
-#include <pika/functional/tag_invoke.hpp>
+# include <pika/execution_base/sender.hpp>
+# include <pika/functional/tag_invoke.hpp>
 
-#include <type_traits>
+# include <type_traits>
 
 namespace pika::execution::experimental {
     template <typename Scheduler>
     struct get_completion_scheduler_t final
-      : pika::functional::tag<get_completion_scheduler_t<Scheduler>>
+      : pika::functional::detail::tag<get_completion_scheduler_t<Scheduler>>
     {
     };
 
     template <typename Scheduler>
-    PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE
-        get_completion_scheduler_t<Scheduler>
-            get_completion_scheduler{};
+    PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE get_completion_scheduler_t<Scheduler>
+        get_completion_scheduler{};
 
     namespace detail {
         template <bool TagInvocable, typename CPO, typename Sender>
@@ -65,17 +62,17 @@ namespace pika::execution::experimental {
 
         template <typename CPO, typename Sender>
         struct has_completion_scheduler_impl<true, CPO, Sender>
-          : pika::execution::experimental::is_scheduler<pika::functional::
-                    tag_invoke_result_t<get_completion_scheduler_t<CPO>,
-                        std::decay_t<Sender> const&>>
+          : pika::execution::experimental::is_scheduler<
+                pika::functional::detail::tag_invoke_result_t<get_completion_scheduler_t<CPO>,
+                    std::decay_t<Sender> const&>>
         {
         };
 
         template <typename CPO, typename Sender>
         struct has_completion_scheduler
-          : has_completion_scheduler_impl<pika::functional::is_tag_invocable_v<
-                                              get_completion_scheduler_t<CPO>,
-                                              std::decay_t<Sender> const&>,
+          : has_completion_scheduler_impl<
+                pika::functional::detail::is_tag_invocable_v<get_completion_scheduler_t<CPO>,
+                    std::decay_t<Sender> const&>,
                 CPO, Sender>
         {
         };
@@ -84,41 +81,36 @@ namespace pika::execution::experimental {
         inline constexpr bool has_completion_scheduler_v =
             has_completion_scheduler<CPO, Sender>::value;
 
-        template <bool HasCompletionScheduler, typename ReceiverCPO,
-            typename Sender, typename AlgorithmCPO, typename... Ts>
+        template <bool HasCompletionScheduler, typename ReceiverCPO, typename Sender,
+            typename AlgorithmCPO, typename... Ts>
         struct is_completion_scheduler_tag_invocable_impl : std::false_type
         {
         };
 
-        template <typename ReceiverCPO, typename Sender, typename AlgorithmCPO,
-            typename... Ts>
-        struct is_completion_scheduler_tag_invocable_impl<true, ReceiverCPO,
-            Sender, AlgorithmCPO, Ts...>
+        template <typename ReceiverCPO, typename Sender, typename AlgorithmCPO, typename... Ts>
+        struct is_completion_scheduler_tag_invocable_impl<true, ReceiverCPO, Sender, AlgorithmCPO,
+            Ts...>
           : std::integral_constant<bool,
-                pika::functional::is_tag_invocable_v<AlgorithmCPO,
-                    pika::functional::tag_invoke_result_t<
-                        pika::execution::experimental::
-                            get_completion_scheduler_t<ReceiverCPO>,
+                pika::functional::detail::is_tag_invocable_v<AlgorithmCPO,
+                    pika::functional::detail::tag_invoke_result_t<
+                        pika::execution::experimental::get_completion_scheduler_t<ReceiverCPO>,
                         Sender>,
                     Sender, Ts...>>
         {
         };
 
-        template <typename ReceiverCPO, typename Sender, typename AlgorithmCPO,
-            typename... Ts>
+        template <typename ReceiverCPO, typename Sender, typename AlgorithmCPO, typename... Ts>
         struct is_completion_scheduler_tag_invocable
           : is_completion_scheduler_tag_invocable_impl<
-                pika::execution::experimental::detail::
-                    has_completion_scheduler_v<ReceiverCPO, Sender>,
+                pika::execution::experimental::detail::has_completion_scheduler_v<ReceiverCPO,
+                    Sender>,
                 ReceiverCPO, Sender, AlgorithmCPO, Ts...>
         {
         };
 
-        template <typename ReceiverCPO, typename Sender, typename AlgorithmCPO,
-            typename... Ts>
+        template <typename ReceiverCPO, typename Sender, typename AlgorithmCPO, typename... Ts>
         inline constexpr bool is_completion_scheduler_tag_invocable_v =
-            is_completion_scheduler_tag_invocable<ReceiverCPO, Sender,
-                AlgorithmCPO, Ts...>::value;
+            is_completion_scheduler_tag_invocable<ReceiverCPO, Sender, AlgorithmCPO, Ts...>::value;
 
     }    // namespace detail
 }    // namespace pika::execution::experimental

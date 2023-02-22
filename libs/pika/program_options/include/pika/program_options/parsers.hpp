@@ -95,8 +95,7 @@ namespace pika::program_options {
     /** Augments basic_parsed_options<wchar_t> with conversion from
         'parsed_options' */
 
-    using ext_parser =
-        std::function<std::pair<std::string, std::string>(const std::string&)>;
+    using ext_parser = std::function<std::pair<std::string, std::string>(const std::string&)>;
 
     /** Command line parser.
 
@@ -119,8 +118,7 @@ namespace pika::program_options {
         /** Creates a command line parser for the specified arguments
             list. The 'args' parameter should not include program name.
         */
-        basic_command_line_parser(
-            const std::vector<std::basic_string<Char>>& args);
+        basic_command_line_parser(const std::vector<std::basic_string<Char>>& args);
         /** Creates a command line parser for the specified arguments
             list. The parameters should be the same as passed to 'main'.
         */
@@ -129,8 +127,7 @@ namespace pika::program_options {
         /** Sets options descriptions to use. */
         basic_command_line_parser& options(const options_description& desc);
         /** Sets positional options description to use. */
-        basic_command_line_parser& positional(
-            const positional_options_description& desc);
+        basic_command_line_parser& positional(const positional_options_description& desc);
 
         /** Sets the command line style. */
         basic_command_line_parser& style(int);
@@ -167,19 +164,17 @@ namespace pika::program_options {
         and returns the result of calling the 'run' method.
      */
     template <class Char>
-    basic_parsed_options<Char> parse_command_line(int argc,
-        const Char* const argv[], const options_description&, int style = 0,
-        std::function<std::pair<std::string, std::string>(const std::string&)>
-            ext = ext_parser());
+    basic_parsed_options<Char> parse_command_line(int argc, const Char* const argv[],
+        const options_description&, int style = 0,
+        std::function<std::pair<std::string, std::string>(const std::string&)> ext = ext_parser());
 
     /** Parse a config file.
 
         Read from given stream.
     */
     template <class Char>
-    PIKA_EXPORT basic_parsed_options<Char>
-    parse_config_file(std::basic_istream<Char>&, const options_description&,
-        bool allow_unregistered = false);
+    PIKA_EXPORT basic_parsed_options<Char> parse_config_file(
+        std::basic_istream<Char>&, const options_description&, bool allow_unregistered = false);
 
     /** Parse a config file.
 
@@ -187,9 +182,8 @@ namespace pika::program_options {
         passed to the file stream.
     */
     template <class Char = char>
-    PIKA_EXPORT basic_parsed_options<Char>
-    parse_config_file(const char* filename, const options_description&,
-        bool allow_unregistered = false);
+    PIKA_EXPORT basic_parsed_options<Char> parse_config_file(
+        const char* filename, const options_description&, bool allow_unregistered = false);
 
     /** Controls if the 'collect_unregistered' function should
         include positional options, or not. */
@@ -206,9 +200,8 @@ namespace pika::program_options {
         options.
     */
     template <class Char>
-    std::vector<std::basic_string<Char>>
-    collect_unrecognized(const std::vector<basic_option<Char>>& options,
-        enum collect_unrecognized_mode mode);
+    std::vector<std::basic_string<Char>> collect_unrecognized(
+        const std::vector<basic_option<Char>>& options, enum collect_unrecognized_mode mode);
 
     /** Parse environment.
 
@@ -219,8 +212,8 @@ namespace pika::program_options {
         This is done since naming of environment variables is typically
         different from the naming of command line options.
     */
-    PIKA_EXPORT parsed_options parse_environment(const options_description&,
-        const std::function<std::string(std::string)>& name_mapper);
+    PIKA_EXPORT parsed_options parse_environment(
+        const options_description&, const std::function<std::string(std::string)>& name_mapper);
 
     /** Parse environment.
 
@@ -236,8 +229,7 @@ namespace pika::program_options {
         functions when second argument is of 'char*' type. There's implicit
         conversion to both std::function and string.
     */
-    PIKA_EXPORT parsed_options parse_environment(
-        const options_description&, const char* prefix);
+    PIKA_EXPORT parsed_options parse_environment(const options_description&, const char* prefix);
 
     /** Splits a given string to a collection of single strings which
         can be passed to command_line_parser. The second parameter is
@@ -251,9 +243,9 @@ namespace pika::program_options {
         const std::string& escape = "\\");
 
     /** @overload */
-    PIKA_EXPORT std::vector<std::wstring> split_unix(
-        const std::wstring& cmdline, const std::wstring& separator = L" \t",
-        const std::wstring& quote = L"'\"", const std::wstring& escape = L"\\");
+    PIKA_EXPORT std::vector<std::wstring> split_unix(const std::wstring& cmdline,
+        const std::wstring& separator = L" \t", const std::wstring& quote = L"'\"",
+        const std::wstring& escape = L"\\");
 
 #ifdef PIKA_WINDOWS
     /** Parses the char* string which is passed to WinMain function on
@@ -262,12 +254,10 @@ namespace pika::program_options {
         runtime library and if it always exists.
         This function is available only on Windows.
     */
-    PIKA_EXPORT std::vector<std::string> split_winmain(
-        const std::string& cmdline);
+    PIKA_EXPORT std::vector<std::string> split_winmain(const std::string& cmdline);
 
     /** @overload */
-    PIKA_EXPORT std::vector<std::wstring> split_winmain(
-        const std::wstring& cmdline);
+    PIKA_EXPORT std::vector<std::wstring> split_winmain(const std::wstring& cmdline);
 #endif
 
 }    // namespace pika::program_options

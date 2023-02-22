@@ -8,5 +8,5 @@
 
 #include <pika/config.hpp>
 #if defined(PIKA_HAVE_GPU_SUPPORT)
-#include <pika/modules/async_cuda.hpp>
+# include <pika/modules/async_cuda.hpp>
 #endif

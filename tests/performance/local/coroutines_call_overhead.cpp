@@ -41,8 +41,7 @@ bool header = true;
 ///////////////////////////////////////////////////////////////////////////////
 std::string format_build_date()
 {
-    std::chrono::time_point<std::chrono::system_clock> now =
-        std::chrono::system_clock::now();
+    std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
 
     std::time_t current_time = std::chrono::system_clock::to_time_t(now);
 
@@ -58,8 +57,7 @@ void print_results(double w_M)
     {
         cout << "# BENCHMARK: " << benchmark_name << "\n";
 
-        cout << "# VERSION: " << PIKA_HAVE_GIT_COMMIT << " "
-             << format_build_date() << "\n"
+        cout << "# VERSION: " << PIKA_HAVE_GIT_COMMIT << " " << format_build_date() << "\n"
              << "#\n";
 
         // Note that if we change the number of fields above, we have to
@@ -79,8 +77,7 @@ void print_results(double w_M)
     //     double E = w_T/w_M;
     double O = w_M - w_T;
 
-    fmt::print(cout, "{} {} {} {} {} {:.14g}", payload, os_thread_count,
-        contexts, iterations, seed,
+    fmt::print(cout, "{} {} {} {} {} {:.14g}", payload, os_thread_count, contexts, iterations, seed,
         (O / (2 * iterations * os_thread_count)) * 1e9);
 
     cout << "\n";
@@ -89,8 +86,7 @@ void print_results(double w_M)
 ///////////////////////////////////////////////////////////////////////////////
 struct kernel
 {
-    pika::threads::detail::thread_result_type operator()(
-        thread_restart_state) const
+    pika::threads::detail::thread_result_type operator()(thread_restart_state) const
     {
         worker_timed(payload * 1000);
 
@@ -120,8 +116,7 @@ double perform_2n_iterations()
 
     for (std::uint64_t i = 0; i < contexts; ++i)
     {
-        coroutine_type* c =
-            new coroutine_type(k, pika::threads::detail::invalid_thread_id);
+        coroutine_type* c = new coroutine_type(k, pika::threads::detail::invalid_thread_id);
         coroutines.push_back(c);
     }
 
@@ -194,23 +189,18 @@ int main(int argc, char* argv[])
     // Configure application-specific options.
     options_description cmdline("usage: " PIKA_APPLICATION_STRING " [options]");
 
-    cmdline.add_options()("payload",
-        value<std::uint64_t>(&payload)->default_value(0),
+    cmdline.add_options()("payload", value<std::uint64_t>(&payload)->default_value(0),
         "artificial delay of each coroutine")
 
         ("contexts", value<std::uint64_t>(&contexts)->default_value(100000),
             "number of contexts use")
 
-            ("iterations",
-                value<std::uint64_t>(&iterations)->default_value(100000),
-                "number of iterations to invoke (2 * iterations context "
-                "switches "
-                "will occur)")
+            ("iterations", value<std::uint64_t>(&iterations)->default_value(100000),
+                "number of iterations to invoke (2 * iterations context switches will occur)")
 
                 ("seed", value<std::uint64_t>(&seed)->default_value(0),
-                    "seed for the pseudo random number generator (if 0, a seed "
-                    "is "
-                    "chosen based on the current system time)")
+                    "seed for the pseudo random number generator (if 0, a seed is chosen based on "
+                    "the current system time)")
 
                     ("no-header", "do not print out the header");
 

@@ -44,10 +44,8 @@ namespace pika::lcos::local {
 
             virtual ~channel_impl_base() = default;
 
-            virtual pika::future<T> get(
-                std::size_t generation, bool blocking = false) = 0;
-            virtual bool try_get(
-                std::size_t generation, pika::future<T>* f = nullptr) = 0;
+            virtual pika::future<T> get(std::size_t generation, bool blocking = false) = 0;
+            virtual bool try_get(std::size_t generation, pika::future<T>* f = nullptr) = 0;
             virtual pika::future<void> set(std::size_t generation, T&& t) = 0;
             virtual std::size_t close(bool force_delete_entries = false) = 0;
 
@@ -120,20 +118,18 @@ namespace pika::lcos::local {
                     if (closed_)
                     {
                         l.unlock();
-                        return pika::make_exceptional_future<T>(
-                            PIKA_GET_EXCEPTION(pika::error::invalid_status,
-                                "pika::lcos::local::channel::get",
-                                "this channel is empty and was closed"));
+                        return pika::make_exceptional_future<T>(PIKA_GET_EXCEPTION(
+                            pika::error::invalid_status, "pika::lcos::local::channel::get",
+                            "this channel is empty and was closed"));
                     }
 
                     if (blocking && this->use_count() == 1)
                     {
                         l.unlock();
-                        return pika::make_exceptional_future<T>(
-                            PIKA_GET_EXCEPTION(pika::error::invalid_status,
-                                "pika::lcos::local::channel::get",
-                                "this channel is empty and is not accessible "
-                                "by any other thread causing a deadlock"));
+                        return pika::make_exceptional_future<T>(PIKA_GET_EXCEPTION(
+                            pika::error::invalid_status, "pika::lcos::local::channel::get",
+                            "this channel is empty and is not accessible by any other thread "
+                            "causing a deadlock"));
                     }
                 }
 
@@ -149,11 +145,10 @@ namespace pika::lcos::local {
                     if (!buffer_.try_receive(generation, &f))
                     {
                         l.unlock();
-                        return pika::make_exceptional_future<T>(
-                            PIKA_GET_EXCEPTION(pika::error::invalid_status,
-                                "pika::lcos::local::channel::get",
-                                "this channel is closed and the requested value"
-                                "has not been received yet"));
+                        return pika::make_exceptional_future<T>(PIKA_GET_EXCEPTION(
+                            pika::error::invalid_status, "pika::lcos::local::channel::get",
+                            "this channel is closed and the requested valuehas not been received "
+                            "yet"));
                     }
                     return f;
                 }
@@ -184,10 +179,9 @@ namespace pika::lcos::local {
                 if (closed_)
                 {
                     l.unlock();
-                    return pika::make_exceptional_future<void>(
-                        PIKA_GET_EXCEPTION(pika::error::invalid_status,
-                            "pika::lcos::local::channel::set",
-                            "attempting to write to a closed channel"));
+                    return pika::make_exceptional_future<void>(PIKA_GET_EXCEPTION(
+                        pika::error::invalid_status, "pika::lcos::local::channel::set",
+                        "attempting to write to a closed channel"));
                 }
 
                 ++set_generation_;
@@ -218,11 +212,9 @@ namespace pika::lcos::local {
                 std::exception_ptr e;
 
                 {
-                    ::pika::detail::unlock_guard<std::unique_lock<mutex_type>>
-                        ul(l);
+                    ::pika::detail::unlock_guard<std::unique_lock<mutex_type>> ul(l);
                     e = PIKA_GET_EXCEPTION(pika::error::future_cancelled,
-                        pika::throwmode::lightweight,
-                        "pika::lcos::local::close",
+                        pika::throwmode::lightweight, "pika::lcos::local::close",
                         "canceled waiting on this entry");
                 }
 
@@ -260,8 +252,7 @@ namespace pika::lcos::local {
             // correctly if this is noexcept. pika::util::result_of (and
             // std::result_of) inside deferred_call does not detect that the
             // call is valid, and compilation fails.
-#if !(defined(PIKA_CUDA_VERSION) && defined(PIKA_GCC_VERSION) &&               \
-    (PIKA_GCC_VERSION < 100000))
+#if !(defined(PIKA_CUDA_VERSION) && defined(PIKA_GCC_VERSION) && (PIKA_GCC_VERSION < 100000))
                 noexcept
 #endif
             {
@@ -281,13 +272,11 @@ namespace pika::lcos::local {
             local::packaged_task<void()> push_pt(T1&& val)
             {
                 return local::packaged_task<void()>(util::detail::deferred_call(
-                    &one_element_queue_async::set_deferred, this,
-                    PIKA_FORWARD(T1, val)));
+                    &one_element_queue_async::set_deferred, this, PIKA_FORWARD(T1, val)));
             }
             local::packaged_task<T()> pop_pt()
             {
-                return local::packaged_task<T()>(
-                    [this]() -> T { return get(); });
+                return local::packaged_task<T()>([this]() -> T { return get(); });
             }
 
         public:
@@ -309,8 +298,7 @@ namespace pika::lcos::local {
                         l.unlock();
                         return pika::make_exceptional_future<void>(
                             PIKA_GET_EXCEPTION(pika::error::invalid_status,
-                                "pika::lcos::local::detail::"
-                                "one_element_queue_async::push",
+                                "pika::lcos::local::detail::one_element_queue_async::push",
                                 "attempting to write to a busy queue"));
                     }
 
@@ -355,8 +343,7 @@ namespace pika::lcos::local {
                         l.unlock();
                         return pika::make_exceptional_future<T>(
                             PIKA_GET_EXCEPTION(pika::error::invalid_status,
-                                "pika::lcos::local::detail::"
-                                "one_element_queue_async::pop",
+                                "pika::lcos::local::detail::one_element_queue_async::pop",
                                 "attempting to read from an empty queue"));
                     }
 
@@ -425,20 +412,18 @@ namespace pika::lcos::local {
                     if (closed_)
                     {
                         l.unlock();
-                        return pika::make_exceptional_future<T>(
-                            PIKA_GET_EXCEPTION(pika::error::invalid_status,
-                                "pika::lcos::local::channel::get",
-                                "this channel is empty and was closed"));
+                        return pika::make_exceptional_future<T>(PIKA_GET_EXCEPTION(
+                            pika::error::invalid_status, "pika::lcos::local::channel::get",
+                            "this channel is empty and was closed"));
                     }
 
                     if (blocking && this->use_count() == 1)
                     {
                         l.unlock();
-                        return pika::make_exceptional_future<T>(
-                            PIKA_GET_EXCEPTION(pika::error::invalid_status,
-                                "pika::lcos::local::channel::get",
-                                "this channel is empty and is not accessible "
-                                "by any other thread causing a deadlock"));
+                        return pika::make_exceptional_future<T>(PIKA_GET_EXCEPTION(
+                            pika::error::invalid_status, "pika::lcos::local::channel::get",
+                            "this channel is empty and is not accessible by any other thread "
+                            "causing a deadlock"));
                     }
                 }
 
@@ -448,11 +433,9 @@ namespace pika::lcos::local {
                     // the requested item must be available, otherwise this
                     // would create a deadlock
                     l.unlock();
-                    return pika::make_exceptional_future<T>(
-                        PIKA_GET_EXCEPTION(pika::error::invalid_status,
-                            "pika::lcos::local::channel::get",
-                            "this channel is closed and the requested value"
-                            "has not been received yet"));
+                    return pika::make_exceptional_future<T>(PIKA_GET_EXCEPTION(
+                        pika::error::invalid_status, "pika::lcos::local::channel::get",
+                        "this channel is closed and the requested valuehas not been received yet"));
                 }
 
                 return f;
@@ -462,8 +445,7 @@ namespace pika::lcos::local {
             {
                 std::unique_lock<mutex_type> l(mtx_);
 
-                if (buffer_.is_empty(l) && !buffer_.has_pending_request(l) &&
-                    closed_)
+                if (buffer_.is_empty(l) && !buffer_.has_pending_request(l) && closed_)
                 {
                     return false;
                 }
@@ -482,10 +464,9 @@ namespace pika::lcos::local {
                 if (closed_)
                 {
                     l.unlock();
-                    return pika::make_exceptional_future<void>(
-                        PIKA_GET_EXCEPTION(pika::error::invalid_status,
-                            "pika::lcos::local::channel::set",
-                            "attempting to write to a closed channel"));
+                    return pika::make_exceptional_future<void>(PIKA_GET_EXCEPTION(
+                        pika::error::invalid_status, "pika::lcos::local::channel::set",
+                        "attempting to write to a closed channel"));
                 }
 
                 return buffer_.push(PIKA_MOVE(t), l);
@@ -515,12 +496,9 @@ namespace pika::lcos::local {
                 // canceled at this point
                 std::exception_ptr e;
                 {
-                    ::pika::detail::unlock_guard<std::unique_lock<mutex_type>>
-                        ul(l);
-                    e = std::exception_ptr(
-                        PIKA_GET_EXCEPTION(pika::error::future_cancelled,
-                            "pika::lcos::local::close",
-                            "canceled waiting on this entry"));
+                    ::pika::detail::unlock_guard<std::unique_lock<mutex_type>> ul(l);
+                    e = std::exception_ptr(PIKA_GET_EXCEPTION(pika::error::future_cancelled,
+                        "pika::lcos::local::close", "canceled waiting on this entry"));
                 }
 
                 return buffer_.cancel(PIKA_MOVE(e), l);
@@ -561,11 +539,10 @@ namespace pika::lcos::local {
     ///////////////////////////////////////////////////////////////////////////
     template <typename T>
     class channel_iterator
-      : public pika::util::iterator_facade<channel_iterator<T>, T const,
-            std::input_iterator_tag>
+      : public pika::util::iterator_facade<channel_iterator<T>, T const, std::input_iterator_tag>
     {
-        using base_type = pika::util::iterator_facade<channel_iterator<T>,
-            T const, std::input_iterator_tag>;
+        using base_type =
+            pika::util::iterator_facade<channel_iterator<T>, T const, std::input_iterator_tag>;
 
     public:
         channel_iterator()
@@ -592,8 +569,7 @@ namespace pika::lcos::local {
 
         bool equal(channel_iterator const& rhs) const
         {
-            return (channel_ == rhs.channel_ &&
-                       data_.second == rhs.data_.second) ||
+            return (channel_ == rhs.channel_ && data_.second == rhs.data_.second) ||
                 (!data_.second && rhs.channel_ == nullptr) ||
                 (channel_ == nullptr && !rhs.data_.second);
         }
@@ -618,11 +594,11 @@ namespace pika::lcos::local {
     ///////////////////////////////////////////////////////////////////////////
     template <typename T>
     class channel_async_iterator
-      : public pika::util::iterator_facade<channel_async_iterator<T>,
-            pika::future<T>, std::input_iterator_tag, pika::future<T>>
+      : public pika::util::iterator_facade<channel_async_iterator<T>, pika::future<T>,
+            std::input_iterator_tag, pika::future<T>>
     {
-        using base_type = pika::util::iterator_facade<channel_async_iterator<T>,
-            pika::future<T>, std::input_iterator_tag, pika::future<T>>;
+        using base_type = pika::util::iterator_facade<channel_async_iterator<T>, pika::future<T>,
+            std::input_iterator_tag, pika::future<T>>;
 
     public:
         channel_async_iterator()
@@ -631,8 +607,7 @@ namespace pika::lcos::local {
         {
         }
 
-        inline explicit channel_async_iterator(
-            detail::channel_base<T> const* c);
+        inline explicit channel_async_iterator(detail::channel_base<T> const* c);
 
     private:
         std::pair<pika::future<T>, bool> get_checked() const
@@ -649,8 +624,7 @@ namespace pika::lcos::local {
 
         bool equal(channel_async_iterator const& rhs) const
         {
-            return (channel_ == rhs.channel_ &&
-                       data_.second == rhs.data_.second) ||
+            return (channel_ == rhs.channel_ && data_.second == rhs.data_.second) ||
                 (!data_.second && rhs.channel_ == nullptr) ||
                 (channel_ == nullptr && !rhs.data_.second);
         }
@@ -708,8 +682,8 @@ namespace pika::lcos::local {
 
         public:
             ///////////////////////////////////////////////////////////////////
-            pika::future<T> get(launch::async_policy,
-                std::size_t generation = std::size_t(-1)) const
+            pika::future<T> get(
+                launch::async_policy, std::size_t generation = std::size_t(-1)) const
             {
                 return channel_->get(generation);
             }
@@ -723,8 +697,8 @@ namespace pika::lcos::local {
             {
                 return channel_->get(generation, true).get(ec);
             }
-            T get(launch::sync_policy, error_code& ec,
-                std::size_t generation = std::size_t(-1)) const
+            T get(
+                launch::sync_policy, error_code& ec, std::size_t generation = std::size_t(-1)) const
             {
                 return channel_->get(generation, true).get(ec);
             }
@@ -734,13 +708,12 @@ namespace pika::lcos::local {
             {
                 channel_->set(generation, PIKA_MOVE(val)).get();
             }
-            void set(launch::sync_policy, T val,
-                std::size_t generation = std::size_t(-1))
+            void set(launch::sync_policy, T val, std::size_t generation = std::size_t(-1))
             {
                 channel_->set(generation, PIKA_MOVE(val)).get();
             }
-            pika::future<void> set(launch::async_policy, T val,
-                std::size_t generation = std::size_t(-1))
+            pika::future<void> set(
+                launch::async_policy, T val, std::size_t generation = std::size_t(-1))
             {
                 return channel_->set(generation, PIKA_MOVE(val));
             }
@@ -887,8 +860,7 @@ namespace pika::lcos::local {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename T>
-    inline channel_iterator<T>::channel_iterator(
-        detail::channel_base<T> const* c)
+    inline channel_iterator<T>::channel_iterator(detail::channel_base<T> const* c)
       : channel_(c ? c->get_channel_impl() : nullptr)
       , data_(c ? get_checked() : std::make_pair(T(), false))
     {
@@ -902,8 +874,7 @@ namespace pika::lcos::local {
     }
 
     template <typename T>
-    inline channel_async_iterator<T>::channel_async_iterator(
-        detail::channel_base<T> const* c)
+    inline channel_async_iterator<T>::channel_async_iterator(detail::channel_base<T> const* c)
       : channel_(c ? c->get_channel_impl() : nullptr)
       , data_(c ? get_checked() : std::make_pair(pika::future<T>(), false))
     {
@@ -920,8 +891,8 @@ namespace pika::lcos::local {
 
     template <>
     class channel_iterator<void>
-      : public pika::util::iterator_facade<channel_iterator<void>,
-            util::detail::unused_type const, std::input_iterator_tag>
+      : public pika::util::iterator_facade<channel_iterator<void>, util::detail::unused_type const,
+            std::input_iterator_tag>
     {
         using base_type = pika::util::iterator_facade<channel_iterator<void>,
             util::detail::unused_type const, std::input_iterator_tag>;
@@ -953,8 +924,7 @@ namespace pika::lcos::local {
         bool equal(channel_iterator const& rhs) const
         {
             return (channel_ == rhs.channel_ && data_ == rhs.data_) ||
-                (!data_ && rhs.channel_ == nullptr) ||
-                (channel_ == nullptr && !rhs.data_);
+                (!data_ && rhs.channel_ == nullptr) || (channel_ == nullptr && !rhs.data_);
         }
 
         void increment()
@@ -970,9 +940,7 @@ namespace pika::lcos::local {
         }
 
     private:
-        pika::intrusive_ptr<
-            detail::channel_impl_base<util::detail::unused_type>>
-            channel_;
+        pika::intrusive_ptr<detail::channel_impl_base<util::detail::unused_type>> channel_;
         bool data_;
     };
 
@@ -983,31 +951,28 @@ namespace pika::lcos::local {
         class channel_base<void>
         {
         public:
-            explicit channel_base(
-                detail::channel_impl_base<util::detail::unused_type>* impl)
+            explicit channel_base(detail::channel_impl_base<util::detail::unused_type>* impl)
               : channel_(impl)
             {
             }
 
             ///////////////////////////////////////////////////////////////////////
-            pika::future<void> get(launch::async_policy,
-                std::size_t generation = std::size_t(-1)) const
+            pika::future<void> get(
+                launch::async_policy, std::size_t generation = std::size_t(-1)) const
             {
                 return channel_->get(generation);
             }
-            pika::future<void> get(
-                std::size_t generation = std::size_t(-1)) const
+            pika::future<void> get(std::size_t generation = std::size_t(-1)) const
             {
                 return get(launch::async, generation);
             }
-            void get(launch::sync_policy,
-                std::size_t generation = std::size_t(-1),
+            void get(launch::sync_policy, std::size_t generation = std::size_t(-1),
                 error_code& ec = throws) const
             {
                 channel_->get(generation, true).get(ec);
             }
-            void get(launch::sync_policy, error_code& ec,
-                std::size_t generation = std::size_t(-1)) const
+            void get(
+                launch::sync_policy, error_code& ec, std::size_t generation = std::size_t(-1)) const
             {
                 channel_->get(generation, true).get(ec);
             }
@@ -1015,20 +980,15 @@ namespace pika::lcos::local {
             ///////////////////////////////////////////////////////////////////////
             void set(std::size_t generation = std::size_t(-1))
             {
-                channel_->set(generation, pika::util::detail::unused_type())
-                    .get();
+                channel_->set(generation, pika::util::detail::unused_type()).get();
             }
-            void set(
-                launch::sync_policy, std::size_t generation = std::size_t(-1))
+            void set(launch::sync_policy, std::size_t generation = std::size_t(-1))
             {
-                channel_->set(generation, pika::util::detail::unused_type())
-                    .get();
+                channel_->set(generation, pika::util::detail::unused_type()).get();
             }
-            pika::future<void> set(
-                launch::async_policy, std::size_t generation = std::size_t(-1))
+            pika::future<void> set(launch::async_policy, std::size_t generation = std::size_t(-1))
             {
-                return channel_->set(
-                    generation, pika::util::detail::unused_type());
+                return channel_->set(generation, pika::util::detail::unused_type());
             }
 
             std::size_t close(bool force_delete_entries = false)
@@ -1067,8 +1027,7 @@ namespace pika::lcos::local {
             }
 
         protected:
-            pika::intrusive_ptr<channel_impl_base<util::detail::unused_type>>
-                channel_;
+            pika::intrusive_ptr<channel_impl_base<util::detail::unused_type>> channel_;
         };
     }    // namespace detail
 
@@ -1087,8 +1046,7 @@ namespace pika::lcos::local {
         using value_type = void;
 
         channel()
-          : base_type(
-                new detail::unlimited_channel<util::detail::unused_type>())
+          : base_type(new detail::unlimited_channel<util::detail::unused_type>())
         {
         }
 
@@ -1114,8 +1072,7 @@ namespace pika::lcos::local {
         using value_type = void;
 
         one_element_channel()
-          : base_type(
-                new detail::one_element_channel<util::detail::unused_type>())
+          : base_type(new detail::one_element_channel<util::detail::unused_type>())
         {
         }
 
@@ -1174,15 +1131,13 @@ namespace pika::lcos::local {
     };
 
     ///////////////////////////////////////////////////////////////////////////
-    inline channel_iterator<void>::channel_iterator(
-        detail::channel_base<void> const* c)
+    inline channel_iterator<void>::channel_iterator(detail::channel_base<void> const* c)
       : channel_(c ? c->get_channel_impl() : nullptr)
       , data_(c ? get_checked() : false)
     {
     }
 
-    inline channel_iterator<void>::channel_iterator(
-        receive_channel<void> const* c)
+    inline channel_iterator<void>::channel_iterator(receive_channel<void> const* c)
       : channel_(c ? c->get_channel_impl() : nullptr)
       , data_(c ? get_checked() : false)
     {

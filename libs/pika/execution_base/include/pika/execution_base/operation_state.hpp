@@ -8,22 +8,21 @@
 
 #include <pika/config.hpp>
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <pika/execution_base/p2300_forward.hpp>
+# include <pika/execution_base/p2300_forward.hpp>
 
 namespace pika::execution::experimental {
     template <typename OperationState>
-    inline constexpr bool is_operation_state_v =
-        operation_state<OperationState>;
+    inline constexpr bool is_operation_state_v = operation_state<OperationState>;
 }
 #else
-#include <pika/config/constexpr.hpp>
-#include <pika/functional/tag_invoke.hpp>
+# include <pika/config/constexpr.hpp>
+# include <pika/functional/tag_invoke.hpp>
 
-#include <type_traits>
-#include <utility>
+# include <type_traits>
+# include <utility>
 
 namespace pika::execution::experimental {
-#if defined(DOXYGEN)
+# if defined(DOXYGEN)
     /// start is a customization point object. The expression
     /// `pika::execution::experimental::start(r)` is equivalent to:
     ///     * `r.start()`, if that expression is valid. If the function selected
@@ -34,10 +33,10 @@ namespace pika::execution::experimental {
     ///       `void start();`
     ///     * Otherwise, the expression is ill-formed.
     ///
-    /// The customization is implemented in terms of `pika::functional::tag_invoke`.
+    /// The customization is implemented in terms of `pika::functional::detail::tag_invoke`.
     template <typename O>
     void start(O&& o);
-#endif
+# endif
 
     /// An `operation_state` is an object representing the asynchronous operation
     /// that has been returned from calling `pika::execution::experimental::connect` with
@@ -55,7 +54,7 @@ namespace pika::execution::experimental {
     struct is_operation_state;
 
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE
-    struct start_t : pika::functional::tag_noexcept<start_t>
+    struct start_t : pika::functional::detail::tag_noexcept<start_t>
     {
     } start{};
 
@@ -78,8 +77,7 @@ namespace pika::execution::experimental {
     template <typename O>
     struct is_operation_state
       : detail::is_operation_state_impl<std::is_destructible<O>::value &&
-                std::is_object<O>::value &&
-                std::is_invocable_v<start_t, std::decay_t<O>&>,
+                std::is_object<O>::value && std::is_invocable_v<start_t, std::decay_t<O>&>,
             O>
     {
     };

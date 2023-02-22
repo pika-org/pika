@@ -78,8 +78,7 @@ void test_apply_with_executor(Executor& exec)
 
         pika::apply(exec, &increment_with_future, f);
         pika::apply(exec, pika::util::detail::bind(&increment_with_future, f));
-        pika::apply(
-            exec, pika::util::detail::bind(&increment_with_future, _1), f);
+        pika::apply(exec, pika::util::detail::bind(&increment_with_future, _1), f);
     }
 
     {
@@ -96,10 +95,8 @@ void test_apply_with_executor(Executor& exec)
         using std::placeholders::_1;
 
         pika::apply(exec, &increment_type::call, inc, 1);
-        pika::apply(
-            exec, pika::util::detail::bind(&increment_type::call, inc, 1));
-        pika::apply(
-            exec, pika::util::detail::bind(&increment_type::call, inc, _1), 1);
+        pika::apply(exec, pika::util::detail::bind(&increment_type::call, inc, 1));
+        pika::apply(exec, pika::util::detail::bind(&increment_type::call, inc, _1), 1);
     }
 
     {
@@ -123,8 +120,7 @@ void test_apply_with_executor(Executor& exec)
     pika::no_mutex result_mutex;
     std::unique_lock<pika::no_mutex> l(result_mutex);
     result_cv.wait_for(l, std::chrono::seconds(1),
-        pika::util::detail::bind(
-            std::equal_to<std::int32_t>(), std::ref(accumulator), 18));
+        pika::util::detail::bind(std::equal_to<std::int32_t>(), std::ref(accumulator), 18));
 
     PIKA_TEST_EQ(accumulator.load(), 18);
 }
@@ -147,8 +143,7 @@ int pika_main()
 int main(int argc, char* argv[])
 {
     // Initialize and run pika
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0, "pika main exited with non-zero status");
 
     return 0;
 }

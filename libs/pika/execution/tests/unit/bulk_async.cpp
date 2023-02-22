@@ -16,8 +16,7 @@
 #include <vector>
 
 ////////////////////////////////////////////////////////////////////////////////
-int bulk_test(
-    pika::thread::id tid, int value, bool is_par, int passed_through)    //-V813
+int bulk_test(pika::thread::id tid, int value, bool is_par, int passed_through)    //-V813
 {
     PIKA_TEST_EQ(is_par, (tid != pika::this_thread::get_id()));
     PIKA_TEST_EQ(passed_through, 42);
@@ -38,8 +37,7 @@ void test_bulk_sync(Executor& exec)
     std::vector<int> results = pika::parallel::execution::bulk_sync_execute(
         exec, pika::util::detail::bind(&bulk_test, tid, _1, false, _2), v, 42);
 
-    PIKA_TEST(
-        std::equal(std::begin(results), std::end(results), std::begin(v)));
+    PIKA_TEST(std::equal(std::begin(results), std::end(results), std::begin(v)));
 }
 
 template <typename Executor>
@@ -53,14 +51,11 @@ void test_bulk_async(Executor& exec)
     using std::placeholders::_1;
     using std::placeholders::_2;
 
-    std::vector<pika::future<int>> results =
-        pika::parallel::execution::bulk_async_execute(exec,
-            pika::util::detail::bind(&bulk_test, tid, _1, true, _2), v, 42);
+    std::vector<pika::future<int>> results = pika::parallel::execution::bulk_async_execute(
+        exec, pika::util::detail::bind(&bulk_test, tid, _1, true, _2), v, 42);
 
     PIKA_TEST(std::equal(std::begin(results), std::end(results), std::begin(v),
-        [](pika::future<int>& lhs, const int& rhs) {
-            return lhs.get() == rhs;
-        }));
+        [](pika::future<int>& lhs, const int& rhs) { return lhs.get() == rhs; }));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -86,8 +81,8 @@ int main(int argc, char* argv[])
     pika::init_params init_args;
     init_args.cfg = cfg;
 
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(
+        pika::init(pika_main, argc, argv, init_args), 0, "pika main exited with non-zero status");
 
     return 0;
 }

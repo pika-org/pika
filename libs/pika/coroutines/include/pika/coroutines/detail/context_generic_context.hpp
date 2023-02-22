@@ -18,11 +18,11 @@
 // include unist.d conditionally to check for POSIX version. Not all OSs have the
 // unistd header...
 #if defined(PIKA_HAVE_UNISTD_H)
-#include <unistd.h>
+# include <unistd.h>
 #endif
 
 #if defined(_POSIX_VERSION)
-#include <pika/coroutines/detail/posix_utility.hpp>
+# include <pika/coroutines/detail/posix_utility.hpp>
 #endif
 
 #include <boost/context/detail/fcontext.hpp>
@@ -39,11 +39,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 #if defined(PIKA_GENERIC_CONTEXT_USE_SEGMENTED_STACKS)
 
-#define PIKA_COROUTINES_SEGMENTS 10
+# define PIKA_COROUTINES_SEGMENTS 10
 
 extern "C" {
-void* __splitstack_makecontext(
-    std::size_t, void* [PIKA_COROUTINES_SEGMENTS], std::size_t*);
+void* __splitstack_makecontext(std::size_t, void* [PIKA_COROUTINES_SEGMENTS], std::size_t*);
 void __splitstack_releasecontext(void* [PIKA_COROUTINES_SEGMENTS]);
 void __splitstack_resetcontext(void* [PIKA_COROUTINES_SEGMENTS]);
 void __splitstack_block_signals_context(
@@ -52,10 +51,10 @@ void __splitstack_getcontext(void* [PIKA_COROUTINES_SEGMENTS]);
 void __splitstack_setcontext(void* [PIKA_COROUTINES_SEGMENTS]);
 }
 
-#if !defined(SIGSTKSZ)
-#define SIGSTKSZ (8 * 1024)
-#define UDEF_SIGSTKSZ
-#endif
+# if !defined(SIGSTKSZ)
+#  define SIGSTKSZ (8 * 1024)
+#  define UDEF_SIGSTKSZ
+# endif
 
 #endif
 
@@ -92,16 +91,15 @@ namespace pika::threads::coroutines {
 
             void* allocate(std::size_t size) const
             {
-#if defined(_POSIX_VERSION) &&                                                 \
-    !(defined(__APPLE__) &&                                                    \
-        (defined(arm64) || defined(__arm64) || defined(__arm64__)))
+# if defined(_POSIX_VERSION) &&                                                                    \
+     !(defined(__APPLE__) && (defined(arm64) || defined(__arm64) || defined(__arm64__)))
                 void* limit = posix::alloc_stack(size);
                 posix::watermark_stack(limit, size);
-#else
+# else
                 void* limit = std::calloc(size, sizeof(char));
                 if (!limit)
                     throw std::bad_alloc();
-#endif
+# endif
                 return static_cast<char*>(limit) + size;
             }
 
@@ -109,11 +107,11 @@ namespace pika::threads::coroutines {
             {
                 PIKA_ASSERT(vp);
                 void* limit = static_cast<char*>(vp) - size;
-#if defined(_POSIX_VERSION)
+# if defined(_POSIX_VERSION)
                 posix::free_stack(limit, size);
-#else
+# else
                 std::free(limit);
-#endif
+# endif
             }
         };
 #else
@@ -134,16 +132,14 @@ namespace pika::threads::coroutines {
 
             static std::size_t minimum_stacksize()
             {
-                return SIGSTKSZ + sizeof(boost::context::detail::fcontext_t) +
-                    15;
+                return SIGSTKSZ + sizeof(boost::context::detail::fcontext_t) + 15;
             }
 
             void* allocate(std::size_t size) const
             {
                 PIKA_ASSERT(default_stacksize() <= size);
 
-                void* limit =
-                    __splitstack_makecontext(size, segments_ctx_, &size);
+                void* limit = __splitstack_makecontext(size, segments_ctx_, &size);
                 if (!limit)
                     throw std::bad_alloc();
 
@@ -167,9 +163,8 @@ namespace pika::threads::coroutines {
         template <typename T>
         PIKA_FORCEINLINE void trampoline(boost::context::detail::transfer_t tr)
         {
-            auto arg = reinterpret_cast<
-                std::pair<void*, boost::context::detail::fcontext_t*>*>(
-                tr.data);
+            auto arg =
+                reinterpret_cast<std::pair<void*, boost::context::detail::fcontext_t*>*>(tr.data);
 
             PIKA_ASSERT(arg->second);
             *arg->second = tr.fctx;
@@ -197,8 +192,8 @@ namespace pika::threads::coroutines {
               , funp_(&trampoline<CoroutineImpl>)
               , ctx_(0)
               , alloc_()
-              , stack_size_((stack_size == -1) ? alloc_.minimum_stacksize() :
-                                                 std::size_t(stack_size))
+              , stack_size_(
+                    (stack_size == -1) ? alloc_.minimum_stacksize() : std::size_t(stack_size))
               , stack_pointer_(nullptr)
             {
             }
@@ -211,11 +206,9 @@ namespace pika::threads::coroutines {
                 stack_pointer_ = alloc_.allocate(stack_size_);
                 if (stack_pointer_ == nullptr)
                 {
-                    throw std::runtime_error(
-                        "could not allocate memory for stack");
+                    throw std::runtime_error("could not allocate memory for stack");
                 }
-                ctx_ = boost::context::detail::make_fcontext(
-                    stack_pointer_, stack_size_, funp_);
+                ctx_ = boost::context::detail::make_fcontext(stack_pointer_, stack_size_, funp_);
             }
 
             ~fcontext_context_impl()
@@ -236,8 +229,7 @@ namespace pika::threads::coroutines {
             {
 #if defined(PIKA_HAVE_THREADS_GET_STACK_POINTER)
                 return stack_size_ -
-                    (reinterpret_cast<std::size_t>(stack_pointer_) -
-                        get_stack_ptr());
+                    (reinterpret_cast<std::size_t>(stack_pointer_) - get_stack_ptr());
 #else
                 return (std::numeric_limits<std::ptrdiff_t>::max)();
 #endif
@@ -248,13 +240,12 @@ namespace pika::threads::coroutines {
                 if (ctx_)
                 {
 #if defined(_POSIX_VERSION)
-                    void* limit =
-                        static_cast<char*>(stack_pointer_) - stack_size_;
+                    void* limit = static_cast<char*>(stack_pointer_) - stack_size_;
                     if (posix::reset_stack(limit, stack_size_))
                     {
-#if defined(PIKA_HAVE_COROUTINE_COUNTERS)
+# if defined(PIKA_HAVE_COROUTINE_COUNTERS)
                         increment_stack_unbind_count();
-#endif
+# endif
                     }
 #else
                     // nothing we can do here ...
@@ -269,8 +260,8 @@ namespace pika::threads::coroutines {
 #if defined(PIKA_HAVE_COROUTINE_COUNTERS)
                     increment_stack_recycle_count();
 #endif
-                    ctx_ = boost::context::detail::make_fcontext(
-                        stack_pointer_, stack_size_, funp_);
+                    ctx_ =
+                        boost::context::detail::make_fcontext(stack_pointer_, stack_size_, funp_);
                 }
             }
 
@@ -303,20 +294,18 @@ namespace pika::threads::coroutines {
         public:
             static std::uint64_t get_stack_unbind_count(bool reset)
             {
-                return detail::get_and_reset_value(
-                    get_stack_unbind_counter(), reset);
+                return detail::get_and_reset_value(get_stack_unbind_counter(), reset);
             }
 
             static std::uint64_t get_stack_recycle_count(bool reset)
             {
-                return detail::get_and_reset_value(
-                    get_stack_recycle_counter(), reset);
+                return detail::get_and_reset_value(get_stack_recycle_counter(), reset);
             }
 #endif
 
         private:
-            friend void swap_context(fcontext_context_impl& from,
-                fcontext_context_impl& to, detail::default_hint)
+            friend void swap_context(
+                fcontext_context_impl& from, fcontext_context_impl& to, detail::default_hint)
             {
 #if defined(PIKA_GENERIC_CONTEXT_USE_SEGMENTED_STACKS)
                 __splitstack_getcontext(from.alloc_.segments_ctx_);

@@ -27,8 +27,7 @@ int main()
         cu::cuda_stream stream{};
 
         PIKA_TEST_EQ(stream.get_device(), 0);
-        PIKA_TEST_EQ(
-            stream.get_priority(), pika::execution::thread_priority::default_);
+        PIKA_TEST_EQ(stream.get_priority(), pika::execution::thread_priority::default_);
 
         PIKA_TEST_NEQ(stream.get(), whip::stream_t{});
 
@@ -46,8 +45,7 @@ int main()
         cu::cuda_stream stream{0};
 
         PIKA_TEST_EQ(stream.get_device(), 0);
-        PIKA_TEST_EQ(
-            stream.get_priority(), pika::execution::thread_priority::default_);
+        PIKA_TEST_EQ(stream.get_priority(), pika::execution::thread_priority::default_);
 
         PIKA_TEST_NEQ(stream.get(), whip::stream_t{});
 
@@ -62,8 +60,7 @@ int main()
         cu::cuda_stream stream{0, pika::execution::thread_priority::normal};
 
         PIKA_TEST_EQ(stream.get_device(), 0);
-        PIKA_TEST_EQ(
-            stream.get_priority(), pika::execution::thread_priority::normal);
+        PIKA_TEST_EQ(stream.get_priority(), pika::execution::thread_priority::normal);
 
         PIKA_TEST_NEQ(stream.get(), whip::stream_t{});
 
@@ -71,10 +68,8 @@ int main()
 
         PIKA_TEST_EQ(stream.get(), whip::stream_t{});
         PIKA_TEST_NEQ(stream2.get(), whip::stream_t{});
-        PIKA_TEST_EQ(
-            stream.get_priority(), pika::execution::thread_priority::default_);
-        PIKA_TEST_EQ(
-            stream2.get_priority(), pika::execution::thread_priority::normal);
+        PIKA_TEST_EQ(stream.get_priority(), pika::execution::thread_priority::default_);
+        PIKA_TEST_EQ(stream2.get_priority(), pika::execution::thread_priority::normal);
 
         cu::cuda_stream stream3{stream};
         cu::cuda_stream stream4{stream2};
@@ -82,18 +77,15 @@ int main()
         PIKA_TEST_EQ(stream3.get(), whip::stream_t{});
         PIKA_TEST_NEQ(stream4.get(), whip::stream_t{});
         PIKA_TEST_NEQ(stream4.get(), stream2.get());
-        PIKA_TEST_EQ(
-            stream3.get_priority(), pika::execution::thread_priority::default_);
-        PIKA_TEST_EQ(
-            stream4.get_priority(), pika::execution::thread_priority::normal);
+        PIKA_TEST_EQ(stream3.get_priority(), pika::execution::thread_priority::default_);
+        PIKA_TEST_EQ(stream4.get_priority(), pika::execution::thread_priority::normal);
     }
 
     {
         cu::cuda_stream stream{0, pika::execution::thread_priority::high};
 
         PIKA_TEST_EQ(stream.get_device(), 0);
-        PIKA_TEST_EQ(
-            stream.get_priority(), pika::execution::thread_priority::high);
+        PIKA_TEST_EQ(stream.get_priority(), pika::execution::thread_priority::high);
 
         PIKA_TEST_NEQ(stream.get(), whip::stream_t{});
 
@@ -101,10 +93,8 @@ int main()
 
         PIKA_TEST_EQ(stream.get(), whip::stream_t{});
         PIKA_TEST_NEQ(stream2.get(), whip::stream_t{});
-        PIKA_TEST_EQ(
-            stream.get_priority(), pika::execution::thread_priority::default_);
-        PIKA_TEST_EQ(
-            stream2.get_priority(), pika::execution::thread_priority::high);
+        PIKA_TEST_EQ(stream.get_priority(), pika::execution::thread_priority::default_);
+        PIKA_TEST_EQ(stream2.get_priority(), pika::execution::thread_priority::high);
 
         cu::cuda_stream stream3{stream};
         cu::cuda_stream stream4{stream2};
@@ -112,10 +102,8 @@ int main()
         PIKA_TEST_EQ(stream3.get(), whip::stream_t{});
         PIKA_TEST_NEQ(stream4.get(), whip::stream_t{});
         PIKA_TEST_NEQ(stream4.get(), stream2.get());
-        PIKA_TEST_EQ(
-            stream3.get_priority(), pika::execution::thread_priority::default_);
-        PIKA_TEST_EQ(
-            stream4.get_priority(), pika::execution::thread_priority::high);
+        PIKA_TEST_EQ(stream3.get_priority(), pika::execution::thread_priority::default_);
+        PIKA_TEST_EQ(stream4.get_priority(), pika::execution::thread_priority::high);
     }
 
     {
@@ -129,8 +117,7 @@ int main()
         PIKA_TEST_EQ(flags, expected_flags);
 
         expected_flags = 0;
-        cu::cuda_stream stream2{
-            0, pika::execution::thread_priority::default_, expected_flags};
+        cu::cuda_stream stream2{0, pika::execution::thread_priority::default_, expected_flags};
 
         flags = 0;
         whip::stream_get_flags(stream2.get(), &flags);
@@ -138,8 +125,7 @@ int main()
         PIKA_TEST_EQ(flags, expected_flags);
 
         expected_flags = whip::stream_non_blocking;
-        cu::cuda_stream stream3{
-            0, pika::execution::thread_priority::default_, expected_flags};
+        cu::cuda_stream stream3{0, pika::execution::thread_priority::default_, expected_flags};
 
         flags = 0;
         whip::stream_get_flags(stream3.get(), &flags);
@@ -189,8 +175,7 @@ int main()
         whip::device_synchronize();
         std::vector<int> s(streams.size(), 0);
 
-        whip::memcpy(s.data(), p, sizeof(int) * streams.size(),
-            whip::memcpy_device_to_host);
+        whip::memcpy(s.data(), p, sizeof(int) * streams.size(), whip::memcpy_device_to_host);
         whip::free(p);
 
         for (int i = 0; i < static_cast<int>(streams.size()); ++i)

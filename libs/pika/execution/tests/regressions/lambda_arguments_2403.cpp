@@ -23,8 +23,7 @@ int pika_main()
     pika::for_each(pika::execution::par_simd, zip_it_begin, zip_it_end,
         [](auto& t) -> void { std::get<0>(t) = 10.0; });
 
-    PIKA_TEST_EQ(std::count(large.begin(), large.end(), 10.0),
-        std::ptrdiff_t(large.size()));
+    PIKA_TEST_EQ(std::count(large.begin(), large.end(), 10.0), std::ptrdiff_t(large.size()));
 
     return pika::finalize();    // Handles pika shutdown
 }

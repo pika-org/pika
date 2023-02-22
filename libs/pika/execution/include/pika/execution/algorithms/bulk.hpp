@@ -10,26 +10,25 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <pika/execution_base/p2300_forward.hpp>
+# include <pika/execution_base/p2300_forward.hpp>
 #else
-#include <pika/concepts/concepts.hpp>
-#include <pika/datastructures/variant.hpp>
-#include <pika/errors/try_catch_exception_ptr.hpp>
-#include <pika/execution/algorithms/detail/partial_algorithm.hpp>
-#include <pika/execution/algorithms/then.hpp>
-#include <pika/execution_base/completion_scheduler.hpp>
-#include <pika/execution_base/receiver.hpp>
-#include <pika/execution_base/sender.hpp>
-#include <pika/functional/detail/tag_priority_invoke.hpp>
-#include <pika/functional/invoke_result.hpp>
-#include <pika/iterator_support/counting_shape.hpp>
-#include <pika/type_support/pack.hpp>
+# include <pika/concepts/concepts.hpp>
+# include <pika/datastructures/variant.hpp>
+# include <pika/errors/try_catch_exception_ptr.hpp>
+# include <pika/execution/algorithms/detail/partial_algorithm.hpp>
+# include <pika/execution/algorithms/then.hpp>
+# include <pika/execution_base/completion_scheduler.hpp>
+# include <pika/execution_base/receiver.hpp>
+# include <pika/execution_base/sender.hpp>
+# include <pika/functional/detail/tag_priority_invoke.hpp>
+# include <pika/iterator_support/counting_shape.hpp>
+# include <pika/type_support/pack.hpp>
 
-#include <exception>
-#include <iterator>
-#include <tuple>
-#include <type_traits>
-#include <utility>
+# include <exception>
+# include <iterator>
+# include <tuple>
+# include <type_traits>
+# include <utility>
 
 namespace pika::bulk_detail {
     template <typename Sender, typename Shape, typename F>
@@ -39,8 +38,7 @@ namespace pika::bulk_detail {
     };
 
     template <typename Sender, typename Shape, typename F>
-    using bulk_sender =
-        typename bulk_sender_impl<Sender, Shape, F>::bulk_sender_type;
+    using bulk_sender = typename bulk_sender_impl<Sender, Shape, F>::bulk_sender_type;
 
     template <typename Sender, typename Shape, typename F>
     struct bulk_sender_impl<Sender, Shape, F>::bulk_sender_type
@@ -49,17 +47,14 @@ namespace pika::bulk_detail {
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Shape> shape;
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
 
-        template <template <typename...> class Tuple,
-            template <typename...> class Variant>
-        using value_types =
-            typename pika::execution::experimental::sender_traits<
-                Sender>::template value_types<Tuple, Variant>;
+        template <template <typename...> class Tuple, template <typename...> class Variant>
+        using value_types = typename pika::execution::experimental::sender_traits<
+            Sender>::template value_types<Tuple, Variant>;
 
         template <template <typename...> class Variant>
-        using error_types =
-            pika::util::detail::unique_t<pika::util::detail::prepend_t<
-                typename pika::execution::experimental::sender_traits<
-                    Sender>::template error_types<Variant>,
+        using error_types = pika::util::detail::unique_t<
+            pika::util::detail::prepend_t<typename pika::execution::experimental::sender_traits<
+                                              Sender>::template error_types<Variant>,
                 std::exception_ptr>>;
 
         static constexpr bool sends_done = false;
@@ -72,12 +67,11 @@ namespace pika::bulk_detail {
                         CPO, std::decay_t<Sender>>)
             // clang-format on
             >
-        friend constexpr auto tag_invoke(
-            pika::execution::experimental::get_completion_scheduler_t<CPO>,
+        friend constexpr auto
+        tag_invoke(pika::execution::experimental::get_completion_scheduler_t<CPO>,
             bulk_sender_type const& sender)
         {
-            return pika::execution::experimental::get_completion_scheduler<CPO>(
-                sender.sender);
+            return pika::execution::experimental::get_completion_scheduler<CPO>(sender.sender);
         }
 
         template <typename Receiver>
@@ -96,18 +90,17 @@ namespace pika::bulk_detail {
             }
 
             template <typename Error>
-            friend void tag_invoke(pika::execution::experimental::set_error_t,
-                bulk_receiver&& r, Error&& error) noexcept
+            friend void tag_invoke(pika::execution::experimental::set_error_t, bulk_receiver&& r,
+                Error&& error) noexcept
             {
                 pika::execution::experimental::set_error(
                     PIKA_MOVE(r.receiver), PIKA_FORWARD(Error, error));
             }
 
-            friend void tag_invoke(pika::execution::experimental::set_stopped_t,
-                bulk_receiver&& r) noexcept
+            friend void tag_invoke(
+                pika::execution::experimental::set_stopped_t, bulk_receiver&& r) noexcept
             {
-                pika::execution::experimental::set_stopped(
-                    PIKA_MOVE(r.receiver));
+                pika::execution::experimental::set_stopped(PIKA_MOVE(r.receiver));
             }
 
             template <typename... Ts>
@@ -129,11 +122,10 @@ namespace pika::bulk_detail {
             }
 
             template <typename... Ts>
-            friend auto tag_invoke(pika::execution::experimental::set_value_t,
-                bulk_receiver&& r, Ts&&... ts) noexcept
+            friend auto tag_invoke(
+                pika::execution::experimental::set_value_t, bulk_receiver&& r, Ts&&... ts) noexcept
                 -> decltype(pika::execution::experimental::set_value(
-                                std::declval<std::decay_t<Receiver>&&>(),
-                                PIKA_FORWARD(Ts, ts)...),
+                                std::declval<std::decay_t<Receiver>&&>(), PIKA_FORWARD(Ts, ts)...),
                     void())
             {
                 // set_value is in a member function only because of a
@@ -145,28 +137,26 @@ namespace pika::bulk_detail {
         };
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t,
-            bulk_sender_type&& s, Receiver&& receiver)
+        friend auto tag_invoke(
+            pika::execution::experimental::connect_t, bulk_sender_type&& s, Receiver&& receiver)
         {
             return pika::execution::experimental::connect(PIKA_MOVE(s.sender),
-                bulk_receiver<Receiver>(PIKA_FORWARD(Receiver, receiver),
-                    PIKA_MOVE(s.shape), PIKA_MOVE(s.f)));
+                bulk_receiver<Receiver>(
+                    PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.shape), PIKA_MOVE(s.f)));
         }
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t,
-            bulk_sender_type& s, Receiver&& receiver)
+        friend auto tag_invoke(pika::execution::experimental::connect_t, bulk_sender_type const& s,
+            Receiver&& receiver)
         {
-            return pika::execution::experimental::connect(s.sender,
-                bulk_receiver<Receiver>(
-                    PIKA_FORWARD(Receiver, receiver), s.shape, s.f));
+            return pika::execution::experimental::connect(
+                s.sender, bulk_receiver<Receiver>(PIKA_FORWARD(Receiver, receiver), s.shape, s.f));
         }
     };
 }    // namespace pika::bulk_detail
 
 namespace pika::execution::experimental {
-    inline constexpr struct bulk_t final
-      : pika::functional::detail::tag_priority<bulk_t>
+    inline constexpr struct bulk_t final : pika::functional::detail::tag_priority<bulk_t>
     {
     private:
         // clang-format off
@@ -181,10 +171,9 @@ namespace pika::execution::experimental {
         friend constexpr PIKA_FORCEINLINE auto
         tag_override_invoke(bulk_t, Sender&& sender, Shape const& shape, F&& f)
         {
-            auto scheduler =
-                pika::execution::experimental::get_completion_scheduler<
-                    pika::execution::experimental::set_value_t>(sender);
-            return pika::functional::tag_invoke(bulk_t{}, PIKA_MOVE(scheduler),
+            auto scheduler = pika::execution::experimental::get_completion_scheduler<
+                pika::execution::experimental::set_value_t>(sender);
+            return pika::functional::detail::tag_invoke(bulk_t{}, PIKA_MOVE(scheduler),
                 PIKA_FORWARD(Sender, sender), shape, PIKA_FORWARD(F, f));
         }
 
@@ -198,10 +187,8 @@ namespace pika::execution::experimental {
         friend constexpr PIKA_FORCEINLINE auto
         tag_fallback_invoke(bulk_t, Sender&& sender, Shape const& shape, F&& f)
         {
-            return bulk_detail::bulk_sender<Sender,
-                pika::util::detail::counting_shape_type<Shape>, F>{
-                PIKA_FORWARD(Sender, sender),
-                pika::util::detail::make_counting_shape(shape),
+            return bulk_detail::bulk_sender<Sender, pika::util::detail::counting_shape_type<Shape>,
+                F>{PIKA_FORWARD(Sender, sender), pika::util::detail::make_counting_shape(shape),
                 PIKA_FORWARD(F, f)};
         }
 
@@ -216,13 +203,11 @@ namespace pika::execution::experimental {
         tag_fallback_invoke(bulk_t, Sender&& sender, Shape&& shape, F&& f)
         {
             return bulk_detail::bulk_sender<Sender, Shape, F>{
-                PIKA_FORWARD(Sender, sender), PIKA_FORWARD(Shape, shape),
-                PIKA_FORWARD(F, f)};
+                PIKA_FORWARD(Sender, sender), PIKA_FORWARD(Shape, shape), PIKA_FORWARD(F, f)};
         }
 
         template <typename Shape, typename F>
-        friend constexpr PIKA_FORCEINLINE auto
-        tag_fallback_invoke(bulk_t, Shape&& shape, F&& f)
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(bulk_t, Shape&& shape, F&& f)
         {
             return detail::partial_algorithm<bulk_t, Shape, F>{
                 PIKA_FORWARD(Shape, shape), PIKA_FORWARD(F, f)};

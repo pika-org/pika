@@ -28,15 +28,13 @@ namespace pika::execution::experimental::detail {
     };
 
     template <typename T>
-    using result_type_signature_helper_t =
-        typename result_type_signature_helper<T>::type;
+    using result_type_signature_helper_t = typename result_type_signature_helper<T>::type;
 
     template <typename Variants>
     struct single_result
     {
         static_assert(sizeof(Variants) == 0,
-            "expected a single variant with a single type in "
-            "sender_traits<>::value_types");
+            "expected a single variant with a single type in sender_traits<>::value_types");
     };
 
     template <>
@@ -52,21 +50,19 @@ namespace pika::execution::experimental::detail {
     };
 
     template <typename T, typename U, typename... Ts>
-    struct single_result<
-        pika::util::detail::pack<pika::util::detail::pack<T, U, Ts...>>>
+    struct single_result<pika::util::detail::pack<pika::util::detail::pack<T, U, Ts...>>>
     {
         static_assert(sizeof(T) == 0,
-            "expected a single variant with a single type in "
-            "sender_traits<>::value_types (single variant with two or more "
-            "types given)");
+            "expected a single variant with a single type in sender_traits<>::value_types (single "
+            "variant with two or more types given)");
     };
 
     template <typename T, typename U, typename... Ts>
     struct single_result<pika::util::detail::pack<T, U, Ts...>>
     {
         static_assert(sizeof(T) == 0,
-            "expected a single variant with a single type in "
-            "sender_traits<>::value_types (two or more variants)");
+            "expected a single variant with a single type in sender_traits<>::value_types (two or "
+            "more variants)");
     };
 
     template <typename Variants>
@@ -76,19 +72,17 @@ namespace pika::execution::experimental::detail {
     struct single_result_non_void
     {
         using type = typename single_result<Variants>::type;
-        static_assert(!std::is_void<type>::value,
-            "expected a non-void type in single_result");
+        static_assert(!std::is_void<type>::value, "expected a non-void type in single_result");
     };
 
     template <typename Variants>
-    using single_result_non_void_t =
-        typename single_result_non_void<Variants>::type;
+    using single_result_non_void_t = typename single_result_non_void<Variants>::type;
 
     template <typename Variants>
     struct single_variant
     {
-        static_assert(sizeof(Variants) == 0,
-            "expected a single variant sender_traits<>::value_types");
+        static_assert(
+            sizeof(Variants) == 0, "expected a single variant sender_traits<>::value_types");
     };
 
     template <typename T>

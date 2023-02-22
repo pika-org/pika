@@ -37,10 +37,8 @@ namespace test {
             template <typename Iterator>
             struct result
             {
-                using element_type =
-                    typename std::iterator_traits<Iterator>::reference;
-                using type =
-                    std::tuple<element_type, element_type, element_type>;
+                using element_type = typename std::iterator_traits<Iterator>::reference;
+                using type = std::tuple<element_type, element_type, element_type>;
             };
 
             // it will dereference tuple(it-1, it, it+1)
@@ -54,10 +52,8 @@ namespace test {
     }    // namespace detail
 
     ///////////////////////////////////////////////////////////////////////////
-    template <typename Iterator,
-        typename Transformer = detail::stencil_transformer>
-    class stencil3_iterator
-      : public pika::util::transform_iterator<Iterator, Transformer>
+    template <typename Iterator, typename Transformer = detail::stencil_transformer>
+    class stencil3_iterator : public pika::util::transform_iterator<Iterator, Transformer>
     {
     private:
         using base_type = pika::util::transform_iterator<Iterator, Transformer>;
@@ -86,17 +82,14 @@ namespace test {
     template <typename Iterator, typename Transformer>
     inline std::pair<stencil3_iterator<Iterator, Transformer>,
         stencil3_iterator<Iterator, Transformer>>
-    make_stencil3_range(
-        Iterator const& begin, Iterator const& end, Transformer const& t)
+    make_stencil3_range(Iterator const& begin, Iterator const& end, Transformer const& t)
     {
-        return std::make_pair(
-            make_stencil3_iterator(begin, t), make_stencil3_iterator(end, t));
+        return std::make_pair(make_stencil3_iterator(begin, t), make_stencil3_iterator(end, t));
     }
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Iterator>
-    inline stencil3_iterator<Iterator>
-    make_stencil3_iterator(Iterator const& it)
+    inline stencil3_iterator<Iterator> make_stencil3_iterator(Iterator const& it)
     {
         return stencil3_iterator<Iterator>(it);
     }
@@ -105,8 +98,7 @@ namespace test {
     inline std::pair<stencil3_iterator<Iterator>, stencil3_iterator<Iterator>>
     make_stencil3_range(Iterator const& begin, Iterator const& end)
     {
-        return std::make_pair(
-            make_stencil3_iterator(begin), make_stencil3_iterator(end));
+        return std::make_pair(make_stencil3_iterator(begin), make_stencil3_iterator(end));
     }
 }    // namespace test
 
@@ -138,10 +130,8 @@ namespace test {
         template <typename Iterator>
         struct result
         {
-            using element_type =
-                typename std::iterator_traits<Iterator>::reference;
-            using value_type = typename pika::util::detail::invoke_result<F,
-                element_type>::type;
+            using element_type = typename std::iterator_traits<Iterator>::reference;
+            using value_type = std::invoke_result_t<F, element_type>;
 
             using type = std::tuple<value_type, element_type, value_type>;
         };
@@ -163,8 +153,7 @@ namespace test {
     };
 
     template <typename F>
-    inline custom_stencil_transformer<std::decay_t<F>>
-    make_custom_stencil_transformer(F&& f)
+    inline custom_stencil_transformer<std::decay_t<F>> make_custom_stencil_transformer(F&& f)
     {
         using transformer_type = custom_stencil_transformer<std::decay_t<F>>;
         return transformer_type(std::forward<F>(f));
@@ -176,8 +165,7 @@ void test_stencil3_iterator_custom()
     std::vector<int> values(10);
     std::iota(std::begin(values), std::end(values), 0);
 
-    auto t = test::make_custom_stencil_transformer(
-        [](int i) -> int { return 2 * i; });
+    auto t = test::make_custom_stencil_transformer([](int i) -> int { return 2 * i; });
     auto r = test::make_stencil3_range(values.begin() + 1, values.end() - 1, t);
 
     using reference = std::iterator_traits<decltype(r.first)>::reference;
@@ -189,8 +177,7 @@ void test_stencil3_iterator_custom()
         str << get<0>(val) << get<1>(val) << get<2>(val) << " ";
     });
 
-    PIKA_TEST_EQ(
-        str.str(), std::string("014 226 438 6410 8512 10614 12716 14818 "));
+    PIKA_TEST_EQ(str.str(), std::string("014 226 438 6410 8512 10614 12716 14818 "));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

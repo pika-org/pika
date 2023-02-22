@@ -31,8 +31,7 @@ namespace pika::mpi::experimental {
     // exception type for failed launch of MPI functions
     mpi_exception::mpi_exception(int err_code, const std::string& msg)
       : pika::exception(pika::error::bad_function_call,
-            msg + std::string(" MPI returned with error: ") +
-                detail::error_message(err_code))
+            msg + std::string(" MPI returned with error: ") + detail::error_message(err_code))
       , err_code_(err_code)
     {
     }

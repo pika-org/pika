@@ -46,8 +46,8 @@ inline void channel_set(pika::experimental::channel_mpmc<T>& c, T val)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void produce_numbers(pika::experimental::channel_mpmc<int>& c2,
-    pika::experimental::channel_mpmc<int>& c3)
+void produce_numbers(
+    pika::experimental::channel_mpmc<int>& c2, pika::experimental::channel_mpmc<int>& c3)
 {
     int f1 = 1, f2 = 0;
 
@@ -70,8 +70,7 @@ void produce_numbers(pika::experimental::channel_mpmc<int>& c2,
 }
 
 void consume_numbers(int n, pika::experimental::channel_mpmc<bool>& c1,
-    pika::experimental::channel_mpmc<int>& c2,
-    pika::experimental::channel_mpmc<int>& c3)
+    pika::experimental::channel_mpmc<int>& c2, pika::experimental::channel_mpmc<int>& c3)
 {
     channel_set(c2, n);
 
@@ -91,11 +90,10 @@ int pika_main()
     pika::experimental::channel_mpmc<int> c2(1);
     pika::experimental::channel_mpmc<int> c3(5);
 
-    pika::future<void> producer =
-        pika::async(&produce_numbers, std::ref(c2), std::ref(c3));
+    pika::future<void> producer = pika::async(&produce_numbers, std::ref(c2), std::ref(c3));
 
-    pika::future<void> consumer = pika::async(
-        &consume_numbers, 22, std::ref(c1), std::ref(c2), std::ref(c3));
+    pika::future<void> consumer =
+        pika::async(&consume_numbers, 22, std::ref(c1), std::ref(c2), std::ref(c3));
 
     pika::wait_all(producer, consumer);
 

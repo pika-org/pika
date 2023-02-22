@@ -14,24 +14,18 @@
 int main()
 {
     // pika::lcos::local::promise
-    static_assert(std::uses_allocator<pika::lcos::local::promise<int>,
-                      test_allocator<int>>::value,
-        "std::uses_allocator<local::promise<int>, test_allocator<int> "
-        ">::value");
-    static_assert(std::uses_allocator<pika::lcos::local::promise<int&>,
-                      test_allocator<int>>::value,
-        "std::uses_allocator<local::promise<int&>, test_allocator<int> "
-        ">::value");
-    static_assert(std::uses_allocator<pika::lcos::local::promise<void>,
-                      test_allocator<void>>::value,
-        "std::uses_allocator<local::promise<void>, test_allocator<void> "
-        ">::value");
+    static_assert(std::uses_allocator<pika::lcos::local::promise<int>, test_allocator<int>>::value,
+        "std::uses_allocator<local::promise<int>, test_allocator<int> >::value");
+    static_assert(std::uses_allocator<pika::lcos::local::promise<int&>, test_allocator<int>>::value,
+        "std::uses_allocator<local::promise<int&>, test_allocator<int> >::value");
+    static_assert(
+        std::uses_allocator<pika::lcos::local::promise<void>, test_allocator<void>>::value,
+        "std::uses_allocator<local::promise<void>, test_allocator<void> >::value");
 
     // pika::lcos::local::packaged_task
-    static_assert(std::uses_allocator<pika::lcos::local::packaged_task<int()>,
-                      test_allocator<int>>::value,
-        "std::uses_allocator<local::packaged_task<int()>, "
-        "test_allocator<int> >::value");
+    static_assert(
+        std::uses_allocator<pika::lcos::local::packaged_task<int()>, test_allocator<int>>::value,
+        "std::uses_allocator<local::packaged_task<int()>, test_allocator<int> >::value");
 
     return 0;
 }

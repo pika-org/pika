@@ -12,15 +12,13 @@
 #include <exception>
 
 namespace pika::parallel::detail {
-    exception_list_termination_handler_type&
-    get_exception_list_termination_handler()
+    exception_list_termination_handler_type& get_exception_list_termination_handler()
     {
         static exception_list_termination_handler_type f;
         return f;
     }
 
-    void set_exception_list_termination_handler(
-        exception_list_termination_handler_type f)
+    void set_exception_list_termination_handler(exception_list_termination_handler_type f)
     {
         get_exception_list_termination_handler() = f;
     }

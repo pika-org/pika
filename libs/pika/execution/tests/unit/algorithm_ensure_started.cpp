@@ -21,8 +21,7 @@ namespace ex = pika::execution::experimental;
 // This overload is only used to check dispatching. It is not a useful
 // implementation.
 template <typename Allocator = pika::detail::internal_allocator<>>
-auto tag_invoke(ex::ensure_started_t, custom_sender_tag_invoke s,
-    Allocator const& = Allocator{})
+auto tag_invoke(ex::ensure_started_t, custom_sender_tag_invoke s, Allocator const& = Allocator{})
 {
     s.tag_invoke_overload_called = true;
     return void_sender{};
@@ -83,8 +82,7 @@ int main()
     {
         std::atomic<bool> set_value_called{false};
         std::atomic<bool> started{false};
-        auto s1 = ex::then(
-            ex::just(custom_type_non_default_constructible_non_copyable{42}),
+        auto s1 = ex::then(ex::just(custom_type_non_default_constructible_non_copyable{42}),
             [&](custom_type_non_default_constructible_non_copyable&& x) {
                 started = true;
                 return std::move(x);
@@ -126,8 +124,7 @@ int main()
     {
         std::atomic<bool> receiver_set_value_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
-        auto s = custom_sender_tag_invoke{tag_invoke_overload_called} |
-            ex::ensure_started();
+        auto s = custom_sender_tag_invoke{tag_invoke_overload_called} | ex::ensure_started();
         auto f = [] {};
         auto r = callback_receiver<decltype(f)>{f, receiver_set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));
@@ -159,8 +156,8 @@ int main()
 
     {
         std::atomic<bool> set_error_called{false};
-        auto s = error_sender{} | ex::ensure_started() | ex::ensure_started() |
-            ex::ensure_started();
+        auto s =
+            error_sender{} | ex::ensure_started() | ex::ensure_started() | ex::ensure_started();
         auto r = error_callback_receiver<decltype(check_exception_ptr)>{
             check_exception_ptr, set_error_called};
         auto os = ex::connect(std::move(s), std::move(r));

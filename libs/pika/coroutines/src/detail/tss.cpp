@@ -11,59 +11,58 @@
 
 #include <pika/config.hpp>
 #if defined(PIKA_HAVE_THREAD_LOCAL_STORAGE)
-#include <pika/assert.hpp>
-#include <pika/coroutines/coroutine.hpp>
-#include <pika/coroutines/detail/coroutine_self.hpp>
-#include <pika/coroutines/detail/tss.hpp>
-#include <pika/modules/errors.hpp>
-#include <pika/type_support/unused.hpp>
+# include <pika/assert.hpp>
+# include <pika/coroutines/coroutine.hpp>
+# include <pika/coroutines/detail/coroutine_self.hpp>
+# include <pika/coroutines/detail/tss.hpp>
+# include <pika/modules/errors.hpp>
+# include <pika/type_support/unused.hpp>
 
-#include <cstddef>
-#include <map>
-#include <memory>
+# include <cstddef>
+# include <map>
+# include <memory>
 
 namespace pika::threads::coroutines::detail {
     ///////////////////////////////////////////////////////////////////////////
     void tss_data_node::cleanup(bool cleanup_existing)
     {
-#ifdef PIKA_HAVE_THREAD_LOCAL_STORAGE
+# ifdef PIKA_HAVE_THREAD_LOCAL_STORAGE
         if (cleanup_existing && func_ && (value_ != nullptr))
         {
             (*func_)(value_);
         }
         func_.reset();
         value_ = nullptr;
-#else
+# else
         PIKA_UNUSED(cleanup_existing);
-#endif
+# endif
     }
 
     ///////////////////////////////////////////////////////////////////////////
     tss_storage* create_tss_storage()
     {
-#ifdef PIKA_HAVE_THREAD_LOCAL_STORAGE
+# ifdef PIKA_HAVE_THREAD_LOCAL_STORAGE
         return new tss_storage;
-#else
-        throw std::runtime_error(
-            "thread local storage has been disabled at configuration time, "
-            "please specify PIKA_WITH_THREAD_LOCAL_STORAGE=ON to cmake");
+# else
+        throw std::runtime_error("thread local storage has been disabled at configuration time, "
+                                 "please specify PIKA_WITH_THREAD_LOCAL_STORAGE=ON to cmake");
         return nullptr;
-#endif
+# endif
     }
 
     void delete_tss_storage(tss_storage*& storage)
     {
-#ifdef PIKA_HAVE_THREAD_LOCAL_STORAGE
+# ifdef PIKA_HAVE_THREAD_LOCAL_STORAGE
         delete storage;
         storage = nullptr;
-#else
+# else
         PIKA_UNUSED(storage);
-#endif
+# endif
     }
 
     std::size_t get_tss_thread_data(tss_storage*)
     {
-#ifdef PIKA_HAVE_THREAD_LOCAL_STORAGE
+# ifdef PIKA_HAVE_THREAD_LOCAL_STORAGE
         coroutine_self* self = coroutine_self::get_self();
         if (nullptr == self)
         {
@@ -82,17 +81,16 @@ namespace pika::threads::coroutines::detail {
             return 0;
 
         return node->get_data<std::size_t>();
-#else
-        throw std::runtime_error(
-            "thread local storage has been disabled at configuration time, "
-            "please specify PIKA_WITH_THREAD_LOCAL_STORAGE=ON to cmake");
+# else
+        throw std::runtime_error("thread local storage has been disabled at configuration time, "
+                                 "please specify PIKA_WITH_THREAD_LOCAL_STORAGE=ON to cmake");
         return 0;
-#endif
+# endif
     }
 
     std::size_t set_tss_thread_data(tss_storage*, std::size_t data)
     {
-#ifdef PIKA_HAVE_THREAD_LOCAL_STORAGE
+# ifdef PIKA_HAVE_THREAD_LOCAL_STORAGE
         coroutine_self* self = coroutine_self::get_self();
         if (nullptr == self)
         {
@@ -120,25 +118,23 @@ namespace pika::threads::coroutines::detail {
         node->set_data(data);
 
         return prev_val;
-#else
+# else
         PIKA_UNUSED(data);
-        throw std::runtime_error(
-            "thread local storage has been disabled at configuration time, "
-            "please specify PIKA_WITH_THREAD_LOCAL_STORAGE=ON to cmake");
+        throw std::runtime_error("thread local storage has been disabled at configuration time, "
+                                 "please specify PIKA_WITH_THREAD_LOCAL_STORAGE=ON to cmake");
         return 0;
-#endif
+# endif
     }
 
     ///////////////////////////////////////////////////////////////////////////
     tss_data_node* find_tss_data(void const* key)
     {
-#ifdef PIKA_HAVE_THREAD_LOCAL_STORAGE
+# ifdef PIKA_HAVE_THREAD_LOCAL_STORAGE
         coroutine_self* self = coroutine_self::get_self();
         if (nullptr == self)
         {
             PIKA_THROW_EXCEPTION(pika::error::null_thread_id,
-                "pika::threads::coroutines::detail::find_tss_data",
-                "null thread id encountered");
+                "pika::threads::coroutines::detail::find_tss_data", "null thread id encountered");
             return nullptr;
         }
 
@@ -147,30 +143,29 @@ namespace pika::threads::coroutines::detail {
             return nullptr;
 
         return tss_map->find(key);
-#else
+# else
         PIKA_UNUSED(key);
-        throw std::runtime_error(
-            "thread local storage has been disabled at configuration time, "
-            "please specify PIKA_WITH_THREAD_LOCAL_STORAGE=ON to cmake");
+        throw std::runtime_error("thread local storage has been disabled at configuration time, "
+                                 "please specify PIKA_WITH_THREAD_LOCAL_STORAGE=ON to cmake");
         return nullptr;
-#endif
+# endif
     }
 
     void* get_tss_data(void const* key)
     {
-#ifdef PIKA_HAVE_THREAD_LOCAL_STORAGE
+# ifdef PIKA_HAVE_THREAD_LOCAL_STORAGE
         if (tss_data_node* const current_node = find_tss_data(key))
             return current_node->get_value();
-#else
+# else
         PIKA_UNUSED(key);
-#endif
+# endif
         return nullptr;
     }
 
-    void add_new_tss_node(void const* key,
-        std::shared_ptr<tss_cleanup_function> const& func, void* tss_data)
+    void add_new_tss_node(
+        void const* key, std::shared_ptr<tss_cleanup_function> const& func, void* tss_data)
     {
-#ifdef PIKA_HAVE_THREAD_LOCAL_STORAGE
+# ifdef PIKA_HAVE_THREAD_LOCAL_STORAGE
         coroutine_self* self = coroutine_self::get_self();
         if (nullptr == self)
         {
@@ -188,39 +183,37 @@ namespace pika::threads::coroutines::detail {
         }
 
         tss_map->insert(key, func, tss_data);
-#else
+# else
         PIKA_UNUSED(key);
         PIKA_UNUSED(func);
         PIKA_UNUSED(tss_data);
-#endif
+# endif
     }
 
     void erase_tss_node(void const* key, bool cleanup_existing)
     {
-#ifdef PIKA_HAVE_THREAD_LOCAL_STORAGE
+# ifdef PIKA_HAVE_THREAD_LOCAL_STORAGE
         coroutine_self* self = coroutine_self::get_self();
         if (nullptr == self)
         {
             PIKA_THROW_EXCEPTION(pika::error::null_thread_id,
-                "pika::threads::coroutines::detail::erase_tss_node",
-                "null thread id encountered");
+                "pika::threads::coroutines::detail::erase_tss_node", "null thread id encountered");
             return;
         }
 
         tss_storage* tss_map = self->get_thread_tss_data();
         if (nullptr != tss_map)
             tss_map->erase(key, cleanup_existing);
-#else
+# else
         PIKA_UNUSED(key);
         PIKA_UNUSED(cleanup_existing);
-#endif
+# endif
     }
 
-    void set_tss_data(void const* key,
-        std::shared_ptr<tss_cleanup_function> const& func, void* tss_data,
-        bool cleanup_existing)
+    void set_tss_data(void const* key, std::shared_ptr<tss_cleanup_function> const& func,
+        void* tss_data, bool cleanup_existing)
     {
-#ifdef PIKA_HAVE_THREAD_LOCAL_STORAGE
+# ifdef PIKA_HAVE_THREAD_LOCAL_STORAGE
         if (tss_data_node* const current_node = find_tss_data(key))
         {
             if (func || (tss_data != nullptr))
@@ -232,12 +225,12 @@ namespace pika::threads::coroutines::detail {
         {
             add_new_tss_node(key, func, tss_data);
         }
-#else
+# else
         PIKA_UNUSED(key);
         PIKA_UNUSED(func);
         PIKA_UNUSED(tss_data);
         PIKA_UNUSED(cleanup_existing);
-#endif
+# endif
     }
 }    // namespace pika::threads::coroutines::detail
 #endif

@@ -41,12 +41,10 @@ namespace pika::resource {
     PIKA_EXPORT std::string const& get_pool_name(std::size_t pool_index);
 
     /// Return the name of the pool given its name
-    PIKA_EXPORT threads::detail::thread_pool_base& get_thread_pool(
-        std::string const& pool_name);
+    PIKA_EXPORT threads::detail::thread_pool_base& get_thread_pool(std::string const& pool_name);
 
     /// Return the thread pool given its internal index
-    PIKA_EXPORT threads::detail::thread_pool_base& get_thread_pool(
-        std::size_t pool_index);
+    PIKA_EXPORT threads::detail::thread_pool_base& get_thread_pool(std::size_t pool_index);
 
     /// Return true if the pool with the given name exists
     PIKA_EXPORT bool pool_exists(std::string const& pool_name);
@@ -67,8 +65,7 @@ namespace pika::threads {
     ///       of registered task descriptions (which have not been
     ///       converted into threads yet).
     PIKA_EXPORT std::int64_t get_thread_count(
-        detail::thread_schedule_state state =
-            detail::thread_schedule_state::unknown);
+        detail::thread_schedule_state state = detail::thread_schedule_state::unknown);
 
     /// The function \a get_thread_count returns the number of currently
     /// known threads.
@@ -82,10 +79,8 @@ namespace pika::threads {
     ///       number of currently existing threads, but will add the number
     ///       of registered task descriptions (which have not been
     ///       converted into threads yet).
-    PIKA_EXPORT std::int64_t get_thread_count(
-        execution::thread_priority priority,
-        detail::thread_schedule_state state =
-            detail::thread_schedule_state::unknown);
+    PIKA_EXPORT std::int64_t get_thread_count(execution::thread_priority priority,
+        detail::thread_schedule_state state = detail::thread_schedule_state::unknown);
 
     /// The function \a get_idle_core_count returns the number of currently
     /// idling threads (cores).
@@ -105,6 +100,5 @@ namespace pika::threads {
     ///                 threads should be enumerated.
     PIKA_EXPORT bool enumerate_threads(
         util::detail::function<bool(detail::thread_id_type)> const& f,
-        detail::thread_schedule_state state =
-            detail::thread_schedule_state::unknown);
+        detail::thread_schedule_state state = detail::thread_schedule_state::unknown);
 }    // namespace pika::threads

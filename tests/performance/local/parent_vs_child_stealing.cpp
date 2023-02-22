@@ -6,21 +6,21 @@
 
 #include <pika/config.hpp>
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
-#include <pika/future.hpp>
-#include <pika/init.hpp>
-#include <pika/modules/program_options.hpp>
-#include <pika/modules/timing.hpp>
+# include <pika/future.hpp>
+# include <pika/init.hpp>
+# include <pika/modules/program_options.hpp>
+# include <pika/modules/timing.hpp>
 
-#include <fmt/ostream.h>
-#include <fmt/printf.h>
+# include <fmt/ostream.h>
+# include <fmt/printf.h>
 
-#include <cstddef>
-#include <cstdint>
-#include <iostream>
-#include <numeric>
-#include <vector>
+# include <cstddef>
+# include <cstdint>
+# include <iostream>
+# include <numeric>
+# include <vector>
 
-#include "worker_timed.hpp"
+# include "worker_timed.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 std::size_t iterations = 10000;
@@ -88,13 +88,12 @@ int pika_main(pika::program_options::variables_map& vm)
 
     if (print_header)
     {
-        std::cout << "num_cores,num_threads,child_stealing_time[s],parent_"
-                     "stealing_time[s]"
+        std::cout << "num_cores,num_threads,child_stealing_time[s],parent_stealing_time[s]"
                   << std::endl;
     }
 
-    fmt::print(std::cout, "{},{},{},{}\n", num_cores, iterations,
-        child_stealing_time, parent_stealing_time);
+    fmt::print(std::cout, "{},{},{},{}\n", num_cores, iterations, child_stealing_time,
+        parent_stealing_time);
 
     return pika::finalize();
 }
@@ -103,8 +102,7 @@ int main(int argc, char* argv[])
 {
     // Configure application-specific options.
     namespace po = pika::program_options;
-    po::options_description cmdline(
-        "usage: " PIKA_APPLICATION_STRING " [options]");
+    po::options_description cmdline("usage: " PIKA_APPLICATION_STRING " [options]");
 
     // clang-format off
     cmdline.add_options()

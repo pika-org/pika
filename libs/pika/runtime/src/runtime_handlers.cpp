@@ -29,16 +29,14 @@
 namespace pika::detail {
 
     [[noreturn]] void assertion_handler(
-        pika::detail::source_location const& loc, const char* expr,
-        std::string const& msg)
+        pika::detail::source_location const& loc, const char* expr, std::string const& msg)
     {
         static thread_local bool handling_assertion = false;
 
         if (handling_assertion)
         {
             std::ostringstream strm;
-            strm << "Trying to handle failed assertion while handling another "
-                    "failed assertion!"
+            strm << "Trying to handle failed assertion while handling another failed assertion!"
                  << std::endl;
             strm << "Assertion '" << expr << "' failed";
             if (!msg.empty())
@@ -91,14 +89,13 @@ namespace pika::detail {
         {
             if (back_trace.empty())
             {
-                LERR_(debug).format(
-                    "suspending thread while at least one lock is being held "
-                    "(stack backtrace was disabled at compile time)");
+                LERR_(debug).format("suspending thread while at least one lock is being held "
+                                    "(stack backtrace was disabled at compile time)");
             }
             else
             {
-                LERR_(debug).format("suspending thread while at least one lock "
-                                    "is being held, stack backtrace: {}",
+                LERR_(debug).format(
+                    "suspending thread while at least one lock is being held, stack backtrace: {}",
                     back_trace);
             }
         }
@@ -106,18 +103,14 @@ namespace pika::detail {
         {
             if (back_trace.empty())
             {
-                PIKA_THROW_EXCEPTION(pika::error::invalid_status,
-                    "verify_no_locks",
-                    "suspending thread while at least one lock is "
-                    "being held (stack backtrace was disabled at "
-                    "compile time)");
+                PIKA_THROW_EXCEPTION(pika::error::invalid_status, "verify_no_locks",
+                    "suspending thread while at least one lock is being held (stack backtrace was "
+                    "disabled at compile time)");
             }
             else
             {
-                PIKA_THROW_EXCEPTION(pika::error::invalid_status,
-                    "verify_no_locks",
-                    "suspending thread while at least one lock is "
-                    "being held, stack backtrace: {}",
+                PIKA_THROW_EXCEPTION(pika::error::invalid_status, "verify_no_locks",
+                    "suspending thread while at least one lock is being held, stack backtrace: {}",
                     back_trace);
             }
         }
@@ -134,8 +127,7 @@ namespace pika::detail {
         pika::runtime* rt = get_runtime_ptr();
         if (rt == nullptr)
         {
-            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
-                "pika::detail::get_default_pool",
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::detail::get_default_pool",
                 "The runtime system is not active");
         }
 

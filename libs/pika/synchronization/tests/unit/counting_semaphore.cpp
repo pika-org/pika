@@ -48,8 +48,7 @@ struct semaphore_acquire_and_release_test
 
     void run()
     {
-        pika::thread release_thread(
-            &semaphore_acquire_and_release_test::acquire_and_release, this);
+        pika::thread release_thread(&semaphore_acquire_and_release_test::acquire_and_release, this);
         sem_.acquire();
         release_thread.join();
     }

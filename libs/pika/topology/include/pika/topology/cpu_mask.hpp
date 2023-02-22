@@ -32,7 +32,7 @@
 
 namespace pika::threads::detail {
     /// \cond NOINTERNAL
-#if !defined(PIKA_HAVE_MORE_THAN_64_THREADS) ||                                \
+#if !defined(PIKA_HAVE_MORE_THAN_64_THREADS) ||                                                    \
     (defined(PIKA_HAVE_MAX_CPU_COUNT) && PIKA_HAVE_MAX_CPU_COUNT <= 64)
     using mask_type = std::uint64_t;
     using mask_cref_type = std::uint64_t;

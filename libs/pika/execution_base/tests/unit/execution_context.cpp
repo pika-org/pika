@@ -46,13 +46,8 @@ struct dummy_agent : pika::execution::detail::agent_base
     void suspend(char const*) override {}
     void resume(char const*) override {}
     void abort(char const*) override {}
-    void sleep_for(pika::chrono::steady_duration const&, char const*) override
-    {
-    }
-    void sleep_until(
-        pika::chrono::steady_time_point const&, char const*) override
-    {
-    }
+    void sleep_for(pika::chrono::steady_duration const&, char const*) override {}
+    void sleep_until(pika::chrono::steady_time_point const&, char const*) override {}
 
     dummy_context context_;
 };
@@ -79,8 +74,7 @@ void test_basic_functionality()
     {
         auto context = pika::execution::this_thread::detail::agent();
         std::thread t([&context]() {
-            PIKA_TEST_NEQ(
-                context, pika::execution::this_thread::detail::agent());
+            PIKA_TEST_NEQ(context, pika::execution::this_thread::detail::agent());
         });
         t.join();
     }
@@ -112,8 +106,7 @@ void test_yield()
     simple_spinlock mutex;
     std::size_t counter = 0;
     std::size_t repetitions = 1000;
-    for (std::size_t i = 0; i !=
-         static_cast<std::size_t>(std::thread::hardware_concurrency()) * 10;
+    for (std::size_t i = 0; i != static_cast<std::size_t>(std::thread::hardware_concurrency()) * 10;
          ++i)
     {
         ts.emplace_back([&mutex, &counter, repetitions]() {
@@ -128,8 +121,7 @@ void test_yield()
     for (auto& t : ts)
         t.join();
 
-    PIKA_TEST_EQ(
-        counter, std::thread::hardware_concurrency() * repetitions * 10);
+    PIKA_TEST_EQ(counter, std::thread::hardware_concurrency() * repetitions * 10);
 }
 
 void test_suspend_resume()

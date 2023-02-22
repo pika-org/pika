@@ -71,16 +71,14 @@ namespace pika::execution::experimental {
         template <typename F, typename B = BaseExecutor, typename Enable = void>
         struct throttling_wrapper
         {
-            throttling_wrapper(
-                limiting_executor& lim, BaseExecutor const& /* base */, F&& f)
+            throttling_wrapper(limiting_executor& lim, BaseExecutor const& /* base */, F&& f)
               : limiting_(lim)
               , f_(PIKA_FORWARD(F, f))
             {
                 limiting_.count_up();
                 if (exceeds_upper())
                 {
-                    lim_debug.debug(
-                        pika::debug::detail::str<>("Exceeds_upper"));
+                    lim_debug.debug(pika::debug::detail::str<>("Exceeds_upper"));
                     pika::util::yield_while([&]() { return exceeds_lower(); });
                     lim_debug.debug(pika::debug::detail::str<>("Below_lower"));
                 }
@@ -118,24 +116,19 @@ namespace pika::execution::experimental {
         // (above) still works
         template <typename F, typename B>
         struct throttling_wrapper<F, B,
-            typename std::enable_if<
-                detail::has_in_flight_estimate<BaseExecutor>::value &&
+            typename std::enable_if<detail::has_in_flight_estimate<BaseExecutor>::value &&
                 std::is_same<B, BaseExecutor>::value>::type>
         {
-            throttling_wrapper(
-                limiting_executor const& lim, BaseExecutor const& base, F&& f)
+            throttling_wrapper(limiting_executor const& lim, BaseExecutor const& base, F&& f)
               : limiting_(lim)
               , f_(PIKA_FORWARD(F, f))
             {
                 if (exceeds_upper(base))
                 {
-                    lim_debug.debug(pika::debug::detail::str<>("Exceeds_upper"),
-                        "in_flight",
+                    lim_debug.debug(pika::debug::detail::str<>("Exceeds_upper"), "in_flight",
                         pika::debug::detail::dec<4>(base.in_flight_estimate()));
-                    pika::util::yield_while(
-                        [&]() { return exceeds_lower(base); });
-                    lim_debug.debug(pika::debug::detail::str<>("Below_lower"),
-                        "in_flight",
+                    pika::util::yield_while([&]() { return exceeds_lower(base); });
+                    lim_debug.debug(pika::debug::detail::str<>("Below_lower"), "in_flight",
                         pika::debug::detail::dec<4>(base.in_flight_estimate()));
                 }
             }
@@ -150,8 +143,7 @@ namespace pika::execution::experimental {
             // (after invocation probably)
             bool exceeds_upper(BaseExecutor const& base) const
             {
-                return (
-                    base.in_flight_estimate() >= limiting_.upper_threshold_);
+                return (base.in_flight_estimate() >= limiting_.upper_threshold_);
             }
             bool exceeds_lower(BaseExecutor const& base) const
             {
@@ -164,12 +156,11 @@ namespace pika::execution::experimental {
 
     public:
         using execution_category = typename BaseExecutor::execution_category;
-        using executor_parameters_type =
-            typename BaseExecutor::executor_parameters_type;
+        using executor_parameters_type = typename BaseExecutor::executor_parameters_type;
 
         // --------------------------------------------------------------------
-        limiting_executor(BaseExecutor& ex, std::size_t lower,
-            std::size_t upper, bool block_on_destruction = true)
+        limiting_executor(BaseExecutor& ex, std::size_t lower, std::size_t upper,
+            bool block_on_destruction = true)
           : executor_(ex)
           , count_(0)
           , lower_threshold_(lower)
@@ -178,8 +169,7 @@ namespace pika::execution::experimental {
         {
         }
 
-        limiting_executor(std::size_t lower, std::size_t upper,
-            bool block_on_destruction = true)
+        limiting_executor(std::size_t lower, std::size_t upper, bool block_on_destruction = true)
           : executor_(BaseExecutor{})
           , count_(0)
           , lower_threshold_(lower)
@@ -248,19 +238,16 @@ namespace pika::execution::experimental {
         template <typename F, typename S, typename... Ts>
         decltype(auto) bulk_async_execute(F&& f, S const& shape, Ts&&... ts)
         {
-            return pika::parallel::execution::bulk_async_execute(executor_,
-                shape,
+            return pika::parallel::execution::bulk_async_execute(executor_, shape,
                 throttling_wrapper<F>(*this, executor_, PIKA_FORWARD(F, f)),
                 PIKA_FORWARD(Ts, ts)...);
         }
 
         // --------------------------------------------------------------------
         template <typename F, typename S, typename Future, typename... Ts>
-        decltype(auto) bulk_then_execute(
-            F&& f, S const& shape, Future&& predecessor, Ts&&... ts)
+        decltype(auto) bulk_then_execute(F&& f, S const& shape, Future&& predecessor, Ts&&... ts)
         {
-            return pika::parallel::execution::bulk_then_execute(executor_,
-                shape,
+            return pika::parallel::execution::bulk_then_execute(executor_, shape,
                 throttling_wrapper<F>(*this, executor_, PIKA_FORWARD(F, f)),
                 PIKA_FORWARD(Future, predecessor), PIKA_FORWARD(Ts, ts)...);
         }
@@ -270,8 +257,7 @@ namespace pika::execution::experimental {
         // drops to the lower threshold
         void wait()
         {
-            pika::util::yield_while(
-                [&]() { return (count_ > lower_threshold_); });
+            pika::util::yield_while([&]() { return (count_ > lower_threshold_); });
         }
 
         // --------------------------------------------------------------------
@@ -320,8 +306,7 @@ namespace pika::parallel::execution {
     // simple forwarding implementations of executor traits
     // --------------------------------------------------------------------
     template <typename BaseExecutor>
-    struct is_one_way_executor<
-        pika::execution::experimental::limiting_executor<BaseExecutor>>
+    struct is_one_way_executor<pika::execution::experimental::limiting_executor<BaseExecutor>>
       : is_one_way_executor<std::decay_t<BaseExecutor>>
     {
     };
@@ -334,22 +319,19 @@ namespace pika::parallel::execution {
     };
 
     template <typename BaseExecutor>
-    struct is_two_way_executor<
-        pika::execution::experimental::limiting_executor<BaseExecutor>>
+    struct is_two_way_executor<pika::execution::experimental::limiting_executor<BaseExecutor>>
       : is_two_way_executor<std::decay_t<BaseExecutor>>
     {
     };
 
     template <typename BaseExecutor>
-    struct is_bulk_one_way_executor<
-        pika::execution::experimental::limiting_executor<BaseExecutor>>
+    struct is_bulk_one_way_executor<pika::execution::experimental::limiting_executor<BaseExecutor>>
       : is_bulk_one_way_executor<std::decay_t<BaseExecutor>>
     {
     };
 
     template <typename BaseExecutor>
-    struct is_bulk_two_way_executor<
-        pika::execution::experimental::limiting_executor<BaseExecutor>>
+    struct is_bulk_two_way_executor<pika::execution::experimental::limiting_executor<BaseExecutor>>
       : is_bulk_two_way_executor<std::decay_t<BaseExecutor>>
     {
     };

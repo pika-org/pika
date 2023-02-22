@@ -22,8 +22,8 @@
 #include <utility>
 #include <vector>
 
-std::size_t const max_threads = (std::min)(
-    std::size_t(4), std::size_t(pika::threads::detail::hardware_concurrency()));
+std::size_t const max_threads =
+    (std::min)(std::size_t(4), std::size_t(pika::threads::detail::hardware_concurrency()));
 
 int pika_main()
 {
@@ -31,8 +31,7 @@ int pika_main()
 
     PIKA_TEST_EQ(std::size_t(max_threads), num_threads);
 
-    pika::threads::detail::thread_pool_base& tp =
-        pika::resource::get_thread_pool("default");
+    pika::threads::detail::thread_pool_base& tp = pika::resource::get_thread_pool("default");
 
     PIKA_TEST_EQ(tp.get_active_os_thread_count(), std::size_t(max_threads));
 
@@ -52,17 +51,15 @@ int pika_main()
     return pika::finalize();
 }
 
-void test_scheduler(
-    int argc, char* argv[], pika::resource::scheduling_policy scheduler)
+void test_scheduler(int argc, char* argv[], pika::resource::scheduling_policy scheduler)
 {
     pika::init_params init_args;
 
     using ::pika::threads::scheduler_mode;
     init_args.cfg = {"pika.os_threads=" + std::to_string(max_threads)};
-    init_args.rp_callback = [scheduler](auto& rp,
-                                pika::program_options::variables_map const&) {
-        rp.create_thread_pool("default", scheduler,
-            scheduler_mode::default_mode | scheduler_mode::enable_elasticity);
+    init_args.rp_callback = [scheduler](auto& rp, pika::program_options::variables_map const&) {
+        rp.create_thread_pool(
+            "default", scheduler, scheduler_mode::default_mode | scheduler_mode::enable_elasticity);
     };
 
     PIKA_TEST_EQ(pika::init(pika_main, argc, argv, init_args), 0);

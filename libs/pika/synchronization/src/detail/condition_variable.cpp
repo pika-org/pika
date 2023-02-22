@@ -32,8 +32,7 @@ namespace pika::detail {
     {
         if (!queue_.empty())
         {
-            LERR_(fatal).format(
-                "~condition_variable: queue is not empty, aborting threads");
+            LERR_(fatal).format("~condition_variable: queue is not empty, aborting threads");
 
             pika::no_mutex no_mtx;
             std::unique_lock<pika::no_mutex> lock(no_mtx);
@@ -41,8 +40,7 @@ namespace pika::detail {
         }
     }
 
-    bool condition_variable::empty(
-        std::unique_lock<mutex_type> const& lock) const
+    bool condition_variable::empty(std::unique_lock<mutex_type> const& lock) const
     {
         PIKA_ASSERT(lock.owns_lock());
         PIKA_UNUSED(lock);
@@ -50,8 +48,7 @@ namespace pika::detail {
         return queue_.empty();
     }
 
-    std::size_t condition_variable::size(
-        std::unique_lock<mutex_type> const& lock) const
+    std::size_t condition_variable::size(std::unique_lock<mutex_type> const& lock) const
     {
         PIKA_ASSERT(lock.owns_lock());
         PIKA_UNUSED(lock);
@@ -78,8 +75,7 @@ namespace pika::detail {
             {
                 lock.unlock();
 
-                PIKA_THROWS_IF(ec, pika::error::null_thread_id,
-                    "condition_variable::notify_one",
+                PIKA_THROWS_IF(ec, pika::error::null_thread_id, "condition_variable::notify_one",
                     "null thread id encountered");
                 return false;
             }
@@ -127,8 +123,7 @@ namespace pika::detail {
                     lock.unlock();
 
                     PIKA_THROWS_IF(ec, pika::error::null_thread_id,
-                        "condition_variable::notify_all",
-                        "null thread id encountered");
+                        "condition_variable::notify_all", "null thread id encountered");
                     return;
                 }
 
@@ -152,8 +147,7 @@ namespace pika::detail {
     }
 
     threads::detail::thread_restart_state condition_variable::wait(
-        std::unique_lock<mutex_type>& lock, char const* /* description */,
-        error_code& /* ec */)
+        std::unique_lock<mutex_type>& lock, char const* /* description */, error_code& /* ec */)
     {
         PIKA_ASSERT(lock.owns_lock());
 
@@ -174,8 +168,7 @@ namespace pika::detail {
     }
 
     threads::detail::thread_restart_state condition_variable::wait_until(
-        std::unique_lock<mutex_type>& lock,
-        pika::chrono::steady_time_point const& abs_time,
+        std::unique_lock<mutex_type>& lock, pika::chrono::steady_time_point const& abs_time,
         char const* /* description */, error_code& /* ec */)
     {
         PIKA_ASSERT(lock.owns_lock());
@@ -220,17 +213,15 @@ namespace pika::detail {
 
                 if (PIKA_UNLIKELY(!ctx))
                 {
-                    LERR_(fatal).format("condition_variable::abort_all: null "
-                                        "thread id encountered");
+                    LERR_(fatal).format(
+                        "condition_variable::abort_all: null thread id encountered");
                     continue;
                 }
 
-                LERR_(fatal).format(
-                    "condition_variable::abort_all: pending thread: {}", ctx);
+                LERR_(fatal).format("condition_variable::abort_all: pending thread: {}", ctx);
 
                 // unlock while notifying thread as this can suspend
-                ::pika::detail::unlock_guard<std::unique_lock<Mutex>> unlock(
-                    lock);
+                ::pika::detail::unlock_guard<std::unique_lock<Mutex>> unlock(lock);
 
                 // forcefully abort thread, do not throw
                 ctx.abort();
@@ -239,8 +230,7 @@ namespace pika::detail {
     }
 
     // re-add the remaining items to the original queue
-    void condition_variable::prepend_entries(
-        std::unique_lock<mutex_type>& lock, queue_type& queue)
+    void condition_variable::prepend_entries(std::unique_lock<mutex_type>& lock, queue_type& queue)
     {
         PIKA_ASSERT(lock.owns_lock());
         PIKA_UNUSED(lock);

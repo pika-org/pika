@@ -55,8 +55,8 @@ namespace pika::program_options {
             is desired. May be be called several times if value of the same
             option is specified more than once.
         */
-        virtual void parse(std::any& value_store,
-            const std::vector<std::string>& new_tokens, bool utf8) const = 0;
+        virtual void parse(
+            std::any& value_store, const std::vector<std::string>& new_tokens, bool utf8) const = 0;
 
         /** Called to assign default value to 'value_store'. Returns
             true if default value is assigned, and false if no default
@@ -87,17 +87,15 @@ namespace pika::program_options {
         or with UTF8->ascii conversion.
     */
     template <>
-    class PIKA_EXPORT value_semantic_codecvt_helper<char>
-      : public value_semantic
+    class PIKA_EXPORT value_semantic_codecvt_helper<char> : public value_semantic
     {
     private:    // base overrides
-        PIKA_EXPORT void parse(std::any& value_store,
-            const std::vector<std::string>& new_tokens,
+        PIKA_EXPORT void parse(std::any& value_store, const std::vector<std::string>& new_tokens,
             bool utf8) const override;
 
     protected:    // interface for derived classes.
-        virtual void xparse(std::any& value_store,
-            const std::vector<std::string>& new_tokens) const = 0;
+        virtual void xparse(
+            std::any& value_store, const std::vector<std::string>& new_tokens) const = 0;
     };
 
     /** Helper conversion class for values that accept ascii
@@ -108,17 +106,15 @@ namespace pika::program_options {
         pass it unmodified.
     */
     template <>
-    class PIKA_EXPORT value_semantic_codecvt_helper<wchar_t>
-      : public value_semantic
+    class PIKA_EXPORT value_semantic_codecvt_helper<wchar_t> : public value_semantic
     {
     private:    // base overrides
-        PIKA_EXPORT void parse(std::any& value_store,
-            const std::vector<std::string>& new_tokens,
+        PIKA_EXPORT void parse(std::any& value_store, const std::vector<std::string>& new_tokens,
             bool utf8) const override;
 
     protected:    // interface for derived classes.
-        virtual void xparse(std::any& value_store,
-            const std::vector<std::wstring>& new_tokens) const = 0;
+        virtual void xparse(
+            std::any& value_store, const std::vector<std::wstring>& new_tokens) const = 0;
     };
 
     /** Class which specifies a simple handling of a value: the value will
@@ -151,8 +147,8 @@ namespace pika::program_options {
             the first string from 'new_tokens' to 'value_store', without
             any modifications.
          */
-        void xparse(std::any& value_store,
-            const std::vector<std::string>& new_tokens) const override;
+        void xparse(
+            std::any& value_store, const std::vector<std::string>& new_tokens) const override;
 
         /** Does nothing. */
         bool apply_default(std::any&) const override
@@ -210,7 +206,7 @@ namespace pika::program_options {
         typed_value* default_value(const T& v)
         {
             m_default_value = std::any(v);
-            m_default_value_as_text = pika::util::to_string(v);
+            m_default_value_as_text = pika::detail::to_string(v);
             return this;
         }
 
@@ -234,7 +230,7 @@ namespace pika::program_options {
         typed_value* implicit_value(const T& v)
         {
             m_implicit_value = std::any(v);
-            m_implicit_value_as_text = pika::util::to_string(v);
+            m_implicit_value_as_text = pika::detail::to_string(v);
             return this;
         }
 
@@ -351,8 +347,7 @@ namespace pika::program_options {
         /** Creates an instance of the 'validator' class and calls
             its operator() to perform the actual conversion. */
         void xparse(std::any& value_store,
-            const std::vector<std::basic_string<Char>>& new_tokens)
-            const override;
+            const std::vector<std::basic_string<Char>>& new_tokens) const override;
 
         /** If default value was specified via previous call to
             'default_value', stores that value into 'value_store'.

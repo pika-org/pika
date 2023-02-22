@@ -102,8 +102,7 @@ public:
 
     std::uint64_t operator()(std::uint64_t const& z_, std::uint64_t const& w_)
     {
-        std::cout << "big_object: call(" << x_ << ", " << y_ << z_ << ", " << w_
-                  << ")\n";
+        std::cout << "big_object: call(" << x_ << ", " << y_ << z_ << ", " << w_ << ")\n";
         return x_ + y_ + z_ + w_;
     }
 };
@@ -146,11 +145,9 @@ int main()
 
         big_object const f(5, 12);
 
-        function<std::uint64_t(std::uint64_t const&, std::uint64_t const&)> f0(
-            f);
+        function<std::uint64_t(std::uint64_t const&, std::uint64_t const&)> f0(f);
 
-        function<std::uint64_t(std::uint64_t const&, std::uint64_t const&)> f1(
-            f0);
+        function<std::uint64_t(std::uint64_t const&, std::uint64_t const&)> f1(f0);
 
         function<std::uint64_t(std::uint64_t const&, std::uint64_t const&)> f2;
 

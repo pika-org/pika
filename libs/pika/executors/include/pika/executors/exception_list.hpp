@@ -120,8 +120,7 @@ namespace pika::parallel {
                 }
                 catch (std::bad_alloc const&)
                 {
-                    return pika::make_exceptional_future<Result>(
-                        std::current_exception());
+                    return pika::make_exceptional_future<Result>(std::current_exception());
                 }
                 catch (pika::exception_list const& el)
                 {
@@ -137,29 +136,29 @@ namespace pika::parallel {
 
         ///////////////////////////////////////////////////////////////////////
         template <typename Result>
-        struct handle_exception_impl<pika::execution::sequenced_task_policy,
-            Result> : handle_exception_task_impl<Result>
+        struct handle_exception_impl<pika::execution::sequenced_task_policy, Result>
+          : handle_exception_task_impl<Result>
         {
         };
 
         template <typename Executor, typename Parameters, typename Result>
         struct handle_exception_impl<
-            pika::execution::sequenced_task_policy_shim<Executor, Parameters>,
-            Result> : handle_exception_task_impl<Result>
+            pika::execution::sequenced_task_policy_shim<Executor, Parameters>, Result>
+          : handle_exception_task_impl<Result>
         {
         };
 
         ///////////////////////////////////////////////////////////////////////
         template <typename Result>
-        struct handle_exception_impl<pika::execution::parallel_task_policy,
-            Result> : handle_exception_task_impl<Result>
+        struct handle_exception_impl<pika::execution::parallel_task_policy, Result>
+          : handle_exception_task_impl<Result>
         {
         };
 
         template <typename Executor, typename Parameters, typename Result>
         struct handle_exception_impl<
-            pika::execution::parallel_task_policy_shim<Executor, Parameters>,
-            Result> : handle_exception_task_impl<Result>
+            pika::execution::parallel_task_policy_shim<Executor, Parameters>, Result>
+          : handle_exception_task_impl<Result>
         {
         };
 
@@ -171,13 +170,12 @@ namespace pika::parallel {
         };
 
         template <typename Result>
-        struct handle_exception_impl<pika::execution::par_simd_task_policy,
-            Result> : handle_exception_task_impl<Result>
+        struct handle_exception_impl<pika::execution::par_simd_task_policy, Result>
+          : handle_exception_task_impl<Result>
         {
         };
 
-        using exception_list_termination_handler_type =
-            pika::util::detail::function<void()>;
+        using exception_list_termination_handler_type = pika::util::detail::function<void()>;
 
         PIKA_EXPORT void set_exception_list_termination_handler(
             exception_list_termination_handler_type f);
@@ -186,8 +184,7 @@ namespace pika::parallel {
 
         ///////////////////////////////////////////////////////////////////////
         template <typename Result>
-        struct handle_exception_impl<
-            pika::execution::parallel_unsequenced_policy, Result>
+        struct handle_exception_impl<pika::execution::parallel_unsequenced_policy, Result>
         {
             using type = Result;
 
@@ -198,22 +195,19 @@ namespace pika::parallel {
                 exception_list_termination_handler();
             }
 
-            [[noreturn]] static pika::future<Result> call(
-                pika::future<Result>&&)
+            [[noreturn]] static pika::future<Result> call(pika::future<Result>&&)
             {
                 exception_list_termination_handler();
             }
 
-            [[noreturn]] static pika::future<Result> call(
-                std::exception_ptr const&)
+            [[noreturn]] static pika::future<Result> call(std::exception_ptr const&)
             {
                 exception_list_termination_handler();
             }
         };
 
         template <typename Result>
-        struct handle_exception_impl<pika::execution::unsequenced_policy,
-            Result>
+        struct handle_exception_impl<pika::execution::unsequenced_policy, Result>
         {
             using type = Result;
 
@@ -224,22 +218,19 @@ namespace pika::parallel {
                 exception_list_termination_handler();
             }
 
-            [[noreturn]] static pika::future<Result> call(
-                pika::future<Result>&&)
+            [[noreturn]] static pika::future<Result> call(pika::future<Result>&&)
             {
                 exception_list_termination_handler();
             }
 
-            [[noreturn]] static pika::future<Result> call(
-                std::exception_ptr const&)
+            [[noreturn]] static pika::future<Result> call(std::exception_ptr const&)
             {
                 exception_list_termination_handler();
             }
         };
 
         template <typename ExPolicy, typename Result = void>
-        struct handle_exception
-          : handle_exception_impl<std::decay_t<ExPolicy>, Result>
+        struct handle_exception : handle_exception_impl<std::decay_t<ExPolicy>, Result>
         {
         };
         /// \endcond

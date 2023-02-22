@@ -19,13 +19,13 @@ namespace pika::program_options {
 
     /** Converts from local 8 bit encoding into wchar_t string using
         the specified locale facet. */
-    PIKA_EXPORT std::wstring from_8_bit(const std::string& s,
-        const std::codecvt<wchar_t, char, std::mbstate_t>& cvt);
+    PIKA_EXPORT std::wstring from_8_bit(
+        const std::string& s, const std::codecvt<wchar_t, char, std::mbstate_t>& cvt);
 
     /** Converts from wchar_t string into local 8 bit encoding into using
         the specified locale facet. */
-    PIKA_EXPORT std::string to_8_bit(const std::wstring& s,
-        const std::codecvt<wchar_t, char, std::mbstate_t>& cvt);
+    PIKA_EXPORT std::string to_8_bit(
+        const std::wstring& s, const std::codecvt<wchar_t, char, std::mbstate_t>& cvt);
 
     /** Converts 's', which is assumed to be in UTF8 encoding, into wide
         string. */

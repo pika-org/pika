@@ -33,8 +33,7 @@ struct void_parallel_executor : pika::execution::parallel_executor
     using base_type = pika::execution::parallel_executor;
 
     template <typename F, typename Shape, typename... Ts>
-    std::vector<pika::future<void>>
-    bulk_async_execute(F&& f, Shape const& shape, Ts&&... ts)
+    std::vector<pika::future<void>> bulk_async_execute(F&& f, Shape const& shape, Ts&&... ts)
     {
         std::vector<pika::future<void>> results;
         for (auto const& elem : shape)
@@ -47,8 +46,7 @@ struct void_parallel_executor : pika::execution::parallel_executor
     template <typename F, typename Shape, typename... Ts>
     void bulk_sync_execute(F&& f, Shape const& shape, Ts&&... ts)
     {
-        return pika::unwrap(bulk_async_execute(
-            std::forward<F>(f), shape, std::forward<Ts>(ts)...));
+        return pika::unwrap(bulk_async_execute(std::forward<F>(f), shape, std::forward<Ts>(ts)...));
     }
 };
 
@@ -104,12 +102,10 @@ void test_void_bulk_async()
     using std::placeholders::_2;
 
     executor exec;
-    pika::when_all(
-        pika::parallel::execution::bulk_async_execute(
-            exec, pika::util::detail::bind(&bulk_test, _1, tid, _2), v, 42))
-        .get();
     pika::when_all(pika::parallel::execution::bulk_async_execute(
-                       exec, &bulk_test, v, tid, 42))
+                       exec, pika::util::detail::bind(&bulk_test, _1, tid, _2), v, 42))
+        .get();
+    pika::when_all(pika::parallel::execution::bulk_async_execute(exec, &bulk_test, v, tid, 42))
         .get();
 }
 
@@ -117,8 +113,7 @@ void test_void_bulk_async()
 // Sum using pika's parallel_executor and the above void_parallel_executor
 
 // Create shape argument for parallel_executor
-std::vector<pika::util::iterator_range<iter>> split(
-    iter first, iter last, int parts)
+std::vector<pika::util::iterator_range<iter>> split(iter first, iter last, int parts)
 {
     using sz_type = std::iterator_traits<iter>::difference_type;
     sz_type count = std::distance(first, last);
@@ -139,16 +134,14 @@ int parallel_sum(iter first, iter last, int num_parts)
 {
     pika::execution::parallel_executor exec;
 
-    std::vector<pika::util::iterator_range<iter>> input =
-        split(first, last, num_parts);
+    std::vector<pika::util::iterator_range<iter>> input = split(first, last, num_parts);
 
-    std::vector<pika::future<int>> v =
-        pika::parallel::execution::bulk_async_execute(
-            exec,
-            [](pika::util::iterator_range<iter> const& rng) -> int {
-                return std::accumulate(std::begin(rng), std::end(rng), 0);
-            },
-            input);
+    std::vector<pika::future<int>> v = pika::parallel::execution::bulk_async_execute(
+        exec,
+        [](pika::util::iterator_range<iter> const& rng) -> int {
+            return std::accumulate(std::begin(rng), std::end(rng), 0);
+        },
+        input);
 
     return std::accumulate(std::begin(v), std::end(v), 0,
         [](int a, pika::future<int>& b) -> int { return a + b.get(); });
@@ -164,19 +157,17 @@ int void_parallel_sum(iter first, iter last, int num_parts)
 
     std::ptrdiff_t section_size = std::distance(first, last) / num_parts;
 
-    std::vector<pika::future<void>> f =
-        pika::parallel::execution::bulk_async_execute(
-            exec,
-            [&](const int& i) {
-                iter b = first + i * section_size;    //-V104
-                iter e = first +
-                    (std::min)(std::distance(first, last),
-                        static_cast<std::ptrdiff_t>(
-                            (i + 1) * section_size)    //-V104
-                    );
-                temp[i] = std::accumulate(b, e, 0);    //-V108
-            },
-            temp);
+    std::vector<pika::future<void>> f = pika::parallel::execution::bulk_async_execute(
+        exec,
+        [&](const int& i) {
+            iter b = first + i * section_size;    //-V104
+            iter e = first +
+                (std::min)(std::distance(first, last),
+                    static_cast<std::ptrdiff_t>((i + 1) * section_size)    //-V104
+                );
+            temp[i] = std::accumulate(b, e, 0);    //-V108
+        },
+        temp);
 
     pika::when_all(f).get();
 
@@ -225,11 +216,10 @@ int main(int argc, char* argv[])
 {
     // add command line option which controls the random number generator seed
     using namespace pika::program_options;
-    options_description desc_commandline(
-        "Usage: " PIKA_APPLICATION_STRING " [options]");
+    options_description desc_commandline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
-    desc_commandline.add_options()("seed,s", value<unsigned int>(),
-        "the random number generator seed to use for this run");
+    desc_commandline.add_options()(
+        "seed,s", value<unsigned int>(), "the random number generator seed to use for this run");
 
     // By default this test should run on all available cores
     std::vector<std::string> const cfg = {"pika.os_threads=all"};
@@ -239,8 +229,8 @@ int main(int argc, char* argv[])
     init_args.desc_cmdline = desc_commandline;
     init_args.cfg = cfg;
 
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(
+        pika::init(pika_main, argc, argv, init_args), 0, "pika main exited with non-zero status");
 
     return 0;
 }

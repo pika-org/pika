@@ -69,15 +69,15 @@ bool header = true;
 void print_results(std::uint64_t cores, double walltime)
 {
     if (header)
-        std::cout << "OS-threads,Tasks,Delay (iterations),"
-                     "Total Walltime (seconds),Walltime per Task (seconds)\n";
+        std::cout << "OS-threads,Tasks,Delay (iterations),Total Walltime (seconds),Walltime per "
+                     "Task (seconds)\n";
 
     std::string const cores_str = fmt::format("{},", cores);
     std::string const tasks_str = fmt::format("{},", tasks);
     std::string const delay_str = fmt::format("{},", delay);
 
-    fmt::print(std::cout, "{:>21} {:>21} {:>21} {:10.12}, {:10.12}\n",
-        cores_str, tasks_str, delay_str, walltime, walltime / tasks);
+    fmt::print(std::cout, "{:>21} {:>21} {:>21} {:10.12}, {:10.12}\n", cores_str, tasks_str,
+        delay_str, walltime, walltime / tasks);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -140,8 +140,7 @@ int main(int argc, char** argv)
 
     cmdline.add_options()("help,h", "print out program usage (this message)")
 
-        ("threads,t", value<std::uint64_t>()->default_value(1),
-            "number of OS-threads to use")
+        ("threads,t", value<std::uint64_t>()->default_value(1), "number of OS-threads to use")
 
             ("tasks", value<std::uint64_t>(&tasks)->default_value(500000),
                 "number of tasks (e.g. px-threads) to invoke")

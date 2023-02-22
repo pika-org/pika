@@ -8,19 +8,17 @@
 
 #include <pika/config.hpp>
 #ifdef PIKA_HAVE_APEX
-#include <pika/assert.hpp>
-#include <pika/threading_base/external_timer.hpp>
-#include <pika/threading_base/thread_data.hpp>
+# include <pika/assert.hpp>
+# include <pika/threading_base/external_timer.hpp>
+# include <pika/threading_base/thread_data.hpp>
 
-#include <cstdint>
-#include <memory>
-#include <string>
+# include <cstdint>
+# include <memory>
+# include <string>
 
 namespace pika::detail::external_timer {
-    std::shared_ptr<task_wrapper> new_task(
-        pika::detail::thread_description const& description,
-        std::uint32_t /* parent_locality_id */,
-        threads::detail::thread_id_type parent_task)
+    std::shared_ptr<task_wrapper> new_task(pika::detail::thread_description const& description,
+        std::uint32_t /* parent_locality_id */, threads::detail::thread_id_type parent_task)
     {
         std::shared_ptr<task_wrapper> parent_wrapper = nullptr;
         if (parent_task != nullptr)
@@ -28,24 +26,20 @@ namespace pika::detail::external_timer {
             parent_wrapper = get_thread_id_data(parent_task)->get_timer_data();
         }
 
-        if (description.kind() ==
-            pika::detail::thread_description::data_type_description)
+        if (description.kind() == pika::detail::thread_description::data_type_description)
         {
             return external_timer::new_task(
                 description.get_description(), UINTMAX_MAX, parent_wrapper);
         }
         else
         {
-            PIKA_ASSERT(description.kind() ==
-                pika::detail::thread_description::data_type_address);
-            return external_timer::new_task(
-                description.get_address(), UINTMAX_MAX, parent_wrapper);
+            PIKA_ASSERT(description.kind() == pika::detail::thread_description::data_type_address);
+            return external_timer::new_task(description.get_address(), UINTMAX_MAX, parent_wrapper);
         }
     }
 
     std::shared_ptr<task_wrapper> update_task(
-        std::shared_ptr<task_wrapper> wrapper,
-        pika::detail::thread_description const& description)
+        std::shared_ptr<task_wrapper> wrapper, pika::detail::thread_description const& description)
     {
         if (wrapper == nullptr)
         {
@@ -53,19 +47,15 @@ namespace pika::detail::external_timer {
             // doesn't matter which locality we use, the parent is null
             return external_timer::new_task(description, 0, parent_task);
         }
-        else if (description.kind() ==
-            pika::detail::thread_description::data_type_description)
+        else if (description.kind() == pika::detail::thread_description::data_type_description)
         {
             // Disambiguate the call by making a temporary string object
-            return external_timer::update_task(
-                wrapper, std::string(description.get_description()));
+            return external_timer::update_task(wrapper, std::string(description.get_description()));
         }
         else
         {
-            PIKA_ASSERT(description.kind() ==
-                pika::detail::thread_description::data_type_address);
-            return external_timer::update_task(
-                wrapper, description.get_address());
+            PIKA_ASSERT(description.kind() == pika::detail::thread_description::data_type_address);
+            return external_timer::update_task(wrapper, description.get_address());
         }
     }
 

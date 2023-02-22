@@ -43,8 +43,7 @@ const int s_extra_parameter = 8;
 
 int translate_syntax_error_kind(invalid_command_line_syntax::kind_t k)
 {
-    invalid_command_line_syntax::kind_t table[] = {
-        invalid_command_line_syntax::long_not_allowed,
+    invalid_command_line_syntax::kind_t table[] = {invalid_command_line_syntax::long_not_allowed,
         invalid_command_line_syntax::long_adjacent_not_allowed,
         invalid_command_line_syntax::short_adjacent_not_allowed,
         invalid_command_line_syntax::empty_adjacent_parameter,
@@ -111,8 +110,7 @@ void apply_syntax(options_description& desc, const char* syntax)
     }
 }
 
-void test_cmdline(const char* syntax, command_line_style::style_t style,
-    const test_case* cases)
+void test_cmdline(const char* syntax, command_line_style::style_t style, const test_case* cases)
 {
     for (int i = 0; cases[i].input; ++i)
     {
@@ -185,8 +183,7 @@ void test_long_options()
     using namespace command_line_style;
     cmdline::style_t style = cmdline::style_t(allow_long | long_allow_adjacent);
 
-    test_case test_cases1[] = {
-        // Test that long options are recognized and everything else
+    test_case test_cases1[] = {// Test that long options are recognized and everything else
         // is treated like arguments
         {"--foo foo -123 /asd", s_success, "foo: foo -123 /asd"},
 
@@ -200,8 +197,7 @@ void test_long_options()
         {"--foo=13", s_extra_parameter, ""},
 
         // Test option with required parameter
-        {"--bar=", s_empty_adjacent_parameter, ""},
-        {"--bar", s_missing_parameter, ""},
+        {"--bar=", s_empty_adjacent_parameter, ""}, {"--bar", s_missing_parameter, ""},
 
         {"--bar=123", s_success, "bar:123"},
 
@@ -219,22 +215,19 @@ void test_long_options()
         {"--bar --foo", s_success, "bar:--foo"}, {nullptr, 0, nullptr}};
 
     test_cmdline("foo bar=", style, test_cases2);
-    style =
-        cmdline::style_t(allow_long | long_allow_adjacent | long_allow_next);
+    style = cmdline::style_t(allow_long | long_allow_adjacent | long_allow_next);
 
-    test_case test_cases3[] = {{"--bar=10", s_success, "bar:10"},
-        {"--bar 11", s_success, "bar:11"}, {nullptr, 0, nullptr}};
+    test_case test_cases3[] = {{"--bar=10", s_success, "bar:10"}, {"--bar 11", s_success, "bar:11"},
+        {nullptr, 0, nullptr}};
     test_cmdline("foo bar=", style, test_cases3);
 
-    style = cmdline::style_t(
-        allow_long | long_allow_adjacent | long_allow_next | case_insensitive);
+    style = cmdline::style_t(allow_long | long_allow_adjacent | long_allow_next | case_insensitive);
 
     // Test case insensitive style.
     // Note that option names are normalized to lower case.
-    test_case test_cases4[] = {{"--foo", s_success, "foo:"},
-        {"--Foo", s_success, "foo:"}, {"--bar=Ab", s_success, "bar:Ab"},
-        {"--Bar=ab", s_success, "bar:ab"}, {"--giz", s_success, "Giz:"},
-        {nullptr, 0, nullptr}};
+    test_case test_cases4[] = {{"--foo", s_success, "foo:"}, {"--Foo", s_success, "foo:"},
+        {"--bar=Ab", s_success, "bar:Ab"}, {"--Bar=ab", s_success, "bar:ab"},
+        {"--giz", s_success, "Giz:"}, {nullptr, 0, nullptr}};
     test_cmdline("foo bar= baz? Giz", style, test_cases4);
 }
 
@@ -243,8 +236,7 @@ void test_short_options()
     using namespace command_line_style;
     cmdline::style_t style;
 
-    style = cmdline::style_t(
-        allow_short | allow_dash_for_short | short_allow_adjacent);
+    style = cmdline::style_t(allow_short | allow_dash_for_short | short_allow_adjacent);
 
     test_case test_cases1[] = {{"-d d /bar", s_success, "-d: d /bar"},
         // This is treated as error when long options are disabled
@@ -253,32 +245,27 @@ void test_short_options()
         {"-f", s_missing_parameter, ""}, {nullptr, 0, nullptr}};
     test_cmdline(",d ,f= ,g", style, test_cases1);
 
-    style =
-        cmdline::style_t(allow_short | allow_dash_for_short | short_allow_next);
+    style = cmdline::style_t(allow_short | allow_dash_for_short | short_allow_next);
 
-    test_case test_cases2[] = {{"-f 13", s_success, "-f:13"},
-        {"-f -13", s_success, "-f:-13"}, {"-f", s_missing_parameter, ""},
-        {"-f /foo", s_success, "-f:/foo"}, {"-f -d", s_missing_parameter, ""},
-        {nullptr, 0, nullptr}};
+    test_case test_cases2[] = {{"-f 13", s_success, "-f:13"}, {"-f -13", s_success, "-f:-13"},
+        {"-f", s_missing_parameter, ""}, {"-f /foo", s_success, "-f:/foo"},
+        {"-f -d", s_missing_parameter, ""}, {nullptr, 0, nullptr}};
     test_cmdline(",d ,f=", style, test_cases2);
 
-    style = cmdline::style_t(allow_short | short_allow_next |
-        allow_dash_for_short | short_allow_adjacent);
+    style = cmdline::style_t(
+        allow_short | short_allow_next | allow_dash_for_short | short_allow_adjacent);
 
-    test_case test_cases3[] = {{"-f10", s_success, "-f:10"},
-        {"-f 10", s_success, "-f:10"}, {"-f -d", s_missing_parameter, ""},
-        {nullptr, 0, nullptr}};
+    test_case test_cases3[] = {{"-f10", s_success, "-f:10"}, {"-f 10", s_success, "-f:10"},
+        {"-f -d", s_missing_parameter, ""}, {nullptr, 0, nullptr}};
     test_cmdline(",d ,f=", style, test_cases3);
 
-    style = cmdline::style_t(allow_short | short_allow_next |
-        allow_dash_for_short | short_allow_adjacent | allow_sticky);
+    style = cmdline::style_t(allow_short | short_allow_next | allow_dash_for_short |
+        short_allow_adjacent | allow_sticky);
 
-    test_case test_cases4[] = {{"-de", s_success, "-d: -e:"},
-        {"-df10", s_success, "-d: -f:10"},
+    test_case test_cases4[] = {{"-de", s_success, "-d: -e:"}, {"-df10", s_success, "-d: -f:10"},
         // FIXME: review
         //{"-d12", s_extra_parameter, ""},
-        {"-f12", s_success, "-f:12"}, {"-fe", s_success, "-f:e"},
-        {nullptr, 0, nullptr}};
+        {"-f12", s_success, "-f:12"}, {"-fe", s_success, "-f:e"}, {nullptr, 0, nullptr}};
     test_cmdline(",d ,f= ,e", style, test_cases4);
 }
 
@@ -287,20 +274,18 @@ void test_dos_options()
     using namespace command_line_style;
     cmdline::style_t style;
 
-    style = cmdline::style_t(
-        allow_short | allow_slash_for_short | short_allow_adjacent);
+    style = cmdline::style_t(allow_short | allow_slash_for_short | short_allow_adjacent);
 
     test_case test_cases1[] = {{"/d d -bar", s_success, "-d: d -bar"},
         {"--foo", s_success, "--foo"}, {"/d13", s_extra_parameter, ""},
-        {"/f14", s_success, "-f:14"}, {"/f", s_missing_parameter, ""},
-        {nullptr, 0, nullptr}};
+        {"/f14", s_success, "-f:14"}, {"/f", s_missing_parameter, ""}, {nullptr, 0, nullptr}};
     test_cmdline(",d ,f=", style, test_cases1);
 
-    style = cmdline::style_t(allow_short | allow_slash_for_short |
-        short_allow_next | short_allow_adjacent | allow_sticky);
+    style = cmdline::style_t(allow_short | allow_slash_for_short | short_allow_next |
+        short_allow_adjacent | allow_sticky);
 
-    test_case test_cases2[] = {{"/de", s_extra_parameter, ""},
-        {"/fe", s_success, "-f:e"}, {nullptr, 0, nullptr}};
+    test_case test_cases2[] = {
+        {"/de", s_extra_parameter, ""}, {"/fe", s_success, "-f:e"}, {nullptr, 0, nullptr}};
     test_cmdline(",d ,f= ,e", style, test_cases2);
 }
 
@@ -309,18 +294,17 @@ void test_disguised_long()
     using namespace command_line_style;
     cmdline::style_t style;
 
-    style = cmdline::style_t(allow_short | short_allow_adjacent |
-        allow_dash_for_short | short_allow_next | allow_long_disguise |
-        long_allow_adjacent);
+    style = cmdline::style_t(allow_short | short_allow_adjacent | allow_dash_for_short |
+        short_allow_next | allow_long_disguise | long_allow_adjacent);
 
     test_case test_cases1[] = {{"-foo -f", s_success, "foo: foo:"},
-        {"-goo=x -gy", s_success, "goo:x goo:y"},
-        {"-bee=x -by", s_success, "bee:x bee:y"}, {nullptr, 0, nullptr}};
+        {"-goo=x -gy", s_success, "goo:x goo:y"}, {"-bee=x -by", s_success, "bee:x bee:y"},
+        {nullptr, 0, nullptr}};
     test_cmdline("foo,f goo,g= bee,b?", style, test_cases1);
 
     style = cmdline::style_t(style | allow_slash_for_short);
-    test_case test_cases2[] = {{"/foo -f", s_success, "foo: foo:"},
-        {"/goo=x", s_success, "goo:x"}, {nullptr, 0, nullptr}};
+    test_case test_cases2[] = {
+        {"/foo -f", s_success, "foo: foo:"}, {"/goo=x", s_success, "goo:x"}, {nullptr, 0, nullptr}};
     test_cmdline("foo,f goo,g= bee,b?", style, test_cases2);
 }
 
@@ -329,21 +313,18 @@ void test_guessing()
     using namespace command_line_style;
     cmdline::style_t style;
 
-    style = cmdline::style_t(allow_short | short_allow_adjacent |
-        allow_dash_for_short | allow_long | long_allow_adjacent |
-        allow_guessing | allow_long_disguise);
+    style = cmdline::style_t(allow_short | short_allow_adjacent | allow_dash_for_short |
+        allow_long | long_allow_adjacent | allow_guessing | allow_long_disguise);
 
-    test_case test_cases1[] = {{"--opt1", s_success, "opt123:"},
-        {"--opt", s_ambiguous_option, ""}, {"--f=1", s_success, "foo:1"},
-        {"-far", s_success, "foo:ar"}, {nullptr, 0, nullptr}};
+    test_case test_cases1[] = {{"--opt1", s_success, "opt123:"}, {"--opt", s_ambiguous_option, ""},
+        {"--f=1", s_success, "foo:1"}, {"-far", s_success, "foo:ar"}, {nullptr, 0, nullptr}};
     test_cmdline("opt123 opt56 foo,f=", style, test_cases1);
 
     test_case test_cases2[] = {
         {"--fname file --fname2 file2", s_success, "fname: file fname2: file2"},
         {"--fnam file --fnam file2", s_ambiguous_option, ""},
         {"--fnam file --fname2 file2", s_ambiguous_option, ""},
-        {"--fname2 file2 --fnam file", s_ambiguous_option, ""},
-        {nullptr, 0, nullptr}};
+        {"--fname2 file2 --fnam file", s_ambiguous_option, ""}, {nullptr, 0, nullptr}};
     test_cmdline("fname fname2", style, test_cases2);
 }
 
@@ -355,21 +336,17 @@ void test_arguments()
     style = cmdline::style_t(allow_short | allow_long | allow_dash_for_short |
         short_allow_adjacent | long_allow_adjacent);
 
-    test_case test_cases1[] = {
-        {"-f file -gx file2", s_success, "-f: file -g:x file2"},
-        {"-f - -gx - -- -e", s_success, "-f: - -g:x - -e"},
-        {nullptr, 0, nullptr}};
+    test_case test_cases1[] = {{"-f file -gx file2", s_success, "-f: file -g:x file2"},
+        {"-f - -gx - -- -e", s_success, "-f: - -g:x - -e"}, {nullptr, 0, nullptr}};
     test_cmdline(",f ,g= ,e", style, test_cases1);
 
     // "--" should stop options regardless of whether long options are
     // allowed or not.
 
-    style = cmdline::style_t(
-        allow_short | short_allow_adjacent | allow_dash_for_short);
+    style = cmdline::style_t(allow_short | short_allow_adjacent | allow_dash_for_short);
 
     test_case test_cases2[] = {
-        {"-f - -gx - -- -e", s_success, "-f: - -g:x - -e"},
-        {nullptr, 0, nullptr}};
+        {"-f - -gx - -- -e", s_success, "-f: - -g:x - -e"}, {nullptr, 0, nullptr}};
     test_cmdline(",f ,g= ,e", style, test_cases2);
 }
 
@@ -381,8 +358,7 @@ void test_prefix()
     style = cmdline::style_t(allow_short | allow_long | allow_dash_for_short |
         short_allow_adjacent | long_allow_adjacent);
 
-    test_case test_cases1[] = {
-        {"--foo.bar=12", s_success, "foo.bar:12"}, {nullptr, 0, nullptr}};
+    test_case test_cases1[] = {{"--foo.bar=12", s_success, "foo.bar:12"}, {nullptr, 0, nullptr}};
 
     test_cmdline("foo*=", style, test_cases1);
 }
@@ -568,8 +544,7 @@ void test_implicit_value()
 
     style = cmdline::style_t(allow_long | long_allow_adjacent);
 
-    test_case test_cases1[] = {
-        // 'bar' does not even look like option, so is consumed
+    test_case test_cases1[] = {// 'bar' does not even look like option, so is consumed
         {"--foo bar", s_success, "foo:bar"},
         // '--bar' looks like option, and such option exists, so we don't
         // consume this token

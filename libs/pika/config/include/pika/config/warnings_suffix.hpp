@@ -4,12 +4,11 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-// This file can be included multiple times and does not use #pragma once.
-// pikainspect:nopragmaonce
+// #pragma once to silence inshpect check for #pragma once
 
 #include <pika/config/compiler_specific.hpp>
 
 // re-enable warnings about dependent classes not being exported from the dll
 #if defined(PIKA_MSVC_WARNING_PRAGMA)
-#pragma warning(pop)
+# pragma warning(pop)
 #endif

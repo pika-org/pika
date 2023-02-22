@@ -33,8 +33,7 @@ struct custom_type_non_copyable
     custom_type_non_copyable(custom_type_non_copyable&&) = default;
     custom_type_non_copyable& operator=(custom_type_non_copyable&&) = default;
     custom_type_non_copyable(custom_type_non_copyable const&) = delete;
-    custom_type_non_copyable& operator=(
-        custom_type_non_copyable const&) = delete;
+    custom_type_non_copyable& operator=(custom_type_non_copyable const&) = delete;
 };
 
 template <typename... Ts>
@@ -42,8 +41,7 @@ struct non_copyable_sender
 {
     std::tuple<std::decay_t<Ts>...> ts;
 
-    template <template <class...> class Tuple,
-        template <class...> class Variant>
+    template <template <class...> class Tuple, template <class...> class Variant>
     using value_types = Variant<Tuple<Ts...>>;
 
     template <template <class...> class Variant>
@@ -51,15 +49,13 @@ struct non_copyable_sender
 
     static constexpr bool sends_done = false;
 
-    using completion_signatures =
-        pika::execution::experimental::completion_signatures<
-            pika::execution::experimental::set_value_t(Ts...),
-            pika::execution::experimental::set_error_t(std::exception_ptr)>;
+    using completion_signatures = pika::execution::experimental::completion_signatures<
+        pika::execution::experimental::set_value_t(Ts...),
+        pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
     non_copyable_sender() = default;
     template <typename T,
-        typename = std::enable_if_t<
-            !std::is_same_v<std::decay_t<T>, non_copyable_sender>>>
+        typename = std::enable_if_t<!std::is_same_v<std::decay_t<T>, non_copyable_sender>>>
     non_copyable_sender(T&& t)
       : ts(std::forward<T>(t))
     {
@@ -80,8 +76,7 @@ struct non_copyable_sender
         std::decay_t<R> r;
         std::tuple<std::decay_t<Ts>...> ts;
 
-        friend void tag_invoke(pika::execution::experimental::start_t,
-            operation_state& os) noexcept
+        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
         {
             pika::util::detail::invoke_fused(
                 pika::util::detail::bind_front(
@@ -92,8 +87,7 @@ struct non_copyable_sender
 
     template <typename R>
     friend operation_state<R>
-    tag_invoke(pika::execution::experimental::connect_t,
-        non_copyable_sender&& s, R&& r) noexcept
+    tag_invoke(pika::execution::experimental::connect_t, non_copyable_sender&& s, R&& r) noexcept
     {
         return {std::forward<R>(r), std::move(s.ts)};
     }
@@ -104,8 +98,7 @@ struct sender
 {
     std::tuple<std::decay_t<Ts>...> ts;
 
-    template <template <class...> class Tuple,
-        template <class...> class Variant>
+    template <template <class...> class Tuple, template <class...> class Variant>
     using value_types = Variant<Tuple<Ts...>>;
 
     template <template <class...> class Variant>
@@ -113,14 +106,12 @@ struct sender
 
     static constexpr bool sends_done = false;
 
-    using completion_signatures =
-        pika::execution::experimental::completion_signatures<
-            pika::execution::experimental::set_value_t(Ts...),
-            pika::execution::experimental::set_error_t(std::exception_ptr)>;
+    using completion_signatures = pika::execution::experimental::completion_signatures<
+        pika::execution::experimental::set_value_t(Ts...),
+        pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
     sender() = default;
-    template <typename T,
-        typename = std::enable_if_t<!std::is_same_v<std::decay_t<T>, sender>>>
+    template <typename T, typename = std::enable_if_t<!std::is_same_v<std::decay_t<T>, sender>>>
     sender(T&& t)
       : ts(std::forward<T>(t))
     {
@@ -141,8 +132,7 @@ struct sender
         std::decay_t<R> r;
         std::tuple<std::decay_t<Ts>...> ts;
 
-        friend void tag_invoke(pika::execution::experimental::start_t,
-            operation_state& os) noexcept
+        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
         {
             pika::util::detail::invoke_fused(
                 pika::util::detail::bind_front(
@@ -160,7 +150,7 @@ struct sender
 
     template <typename R>
     friend operation_state<R>
-    tag_invoke(pika::execution::experimental::connect_t, sender& s, R&& r)
+    tag_invoke(pika::execution::experimental::connect_t, sender const& s, R&& r)
     {
         return {std::forward<R>(r), s.ts};
     }
@@ -175,23 +165,21 @@ struct large_non_copyable_sender : non_copyable_sender<Ts...>
 
     large_non_copyable_sender() = default;
     template <typename T,
-        typename = std::enable_if_t<
-            !std::is_same_v<std::decay_t<T>, large_non_copyable_sender>>>
+        typename = std::enable_if_t<!std::is_same_v<std::decay_t<T>, large_non_copyable_sender>>>
     large_non_copyable_sender(T&& t)
       : non_copyable_sender<Ts...>(std::forward<T>(t))
     {
     }
     template <typename T1, typename T2, typename... Ts_>
     large_non_copyable_sender(T1&& t1, T2&& t2, Ts_&&... ts)
-      : non_copyable_sender<Ts...>(std::forward<T1>(t1), std::forward<T2>(t2),
-            std::forward<Ts_>(ts)...)
+      : non_copyable_sender<Ts...>(
+            std::forward<T1>(t1), std::forward<T2>(t2), std::forward<Ts_>(ts)...)
     {
     }
     large_non_copyable_sender(large_non_copyable_sender&&) = default;
     large_non_copyable_sender(large_non_copyable_sender const&) = delete;
     large_non_copyable_sender& operator=(large_non_copyable_sender&&) = default;
-    large_non_copyable_sender& operator=(
-        large_non_copyable_sender const&) = delete;
+    large_non_copyable_sender& operator=(large_non_copyable_sender const&) = delete;
 };
 
 template <typename... Ts>
@@ -203,16 +191,14 @@ struct large_sender : sender<Ts...>
 
     large_sender() = default;
     template <typename T,
-        typename =
-            std::enable_if_t<!std::is_same_v<std::decay_t<T>, large_sender>>>
+        typename = std::enable_if_t<!std::is_same_v<std::decay_t<T>, large_sender>>>
     large_sender(T&& t)
       : sender<Ts...>(std::forward<T>(t))
     {
     }
     template <typename T1, typename T2, typename... Ts_>
     large_sender(T1&& t1, T2&& t2, Ts_&&... ts)
-      : sender<Ts...>(std::forward<T1>(t1), std::forward<T2>(t2),
-            std::forward<Ts_>(ts)...)
+      : sender<Ts...>(std::forward<T1>(t1), std::forward<T2>(t2), std::forward<Ts_>(ts)...)
     {
     }
     large_sender(large_sender&&) = default;
@@ -223,8 +209,7 @@ struct large_sender : sender<Ts...>
 
 struct error_sender
 {
-    template <template <typename...> class Tuple,
-        template <typename...> class Variant>
+    template <template <typename...> class Tuple, template <typename...> class Variant>
     using value_types = Variant<Tuple<>>;
 
     template <template <typename...> class Variant>
@@ -232,17 +217,15 @@ struct error_sender
 
     static constexpr bool sends_done = false;
 
-    using completion_signatures =
-        pika::execution::experimental::completion_signatures<
-            pika::execution::experimental::set_value_t(),
-            pika::execution::experimental::set_error_t(std::exception_ptr)>;
+    using completion_signatures = pika::execution::experimental::completion_signatures<
+        pika::execution::experimental::set_value_t(),
+        pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
     template <typename R>
     struct operation_state
     {
         std::decay_t<R> r;
-        friend void tag_invoke(pika::execution::experimental::start_t,
-            operation_state& os) noexcept
+        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
         {
             try
             {
@@ -250,8 +233,7 @@ struct error_sender
             }
             catch (...)
             {
-                pika::execution::experimental::set_error(
-                    std::move(os.r), std::current_exception());
+                pika::execution::experimental::set_error(std::move(os.r), std::current_exception());
             }
         }
     };
@@ -271,29 +253,28 @@ struct callback_receiver
     std::atomic<bool>& set_value_called;
 
     template <typename E>
-    friend void tag_invoke(pika::execution::experimental::set_error_t,
-        callback_receiver&&, E&&) noexcept
+    friend void
+    tag_invoke(pika::execution::experimental::set_error_t, callback_receiver&&, E&&) noexcept
     {
         PIKA_TEST(false);
     }
 
-    friend void tag_invoke(pika::execution::experimental::set_stopped_t,
-        callback_receiver&&) noexcept
+    friend void tag_invoke(
+        pika::execution::experimental::set_stopped_t, callback_receiver&&) noexcept
     {
         PIKA_TEST(false);
     };
 
     template <typename... Ts>
-    friend auto tag_invoke(pika::execution::experimental::set_value_t,
-        callback_receiver&& r, Ts&&... ts) noexcept
+    friend auto tag_invoke(
+        pika::execution::experimental::set_value_t, callback_receiver&& r, Ts&&... ts) noexcept
     {
         PIKA_INVOKE(std::move(r.f), std::forward<Ts>(ts)...);
         r.set_value_called = true;
     }
 
-    friend constexpr pika::execution::experimental::detail::empty_env
-    tag_invoke(pika::execution::experimental::get_env_t,
-        callback_receiver const&) noexcept
+    friend constexpr pika::execution::experimental::detail::empty_env tag_invoke(
+        pika::execution::experimental::get_env_t, callback_receiver const&) noexcept
     {
         return {};
     }
@@ -303,8 +284,8 @@ struct error_receiver
 {
     std::atomic<bool>& set_error_called;
 
-    friend void tag_invoke(pika::execution::experimental::set_error_t,
-        error_receiver&& r, std::exception_ptr&& e) noexcept
+    friend void tag_invoke(pika::execution::experimental::set_error_t, error_receiver&& r,
+        std::exception_ptr&& e) noexcept
     {
         try
         {
@@ -321,22 +302,20 @@ struct error_receiver
         r.set_error_called = true;
     }
 
-    friend void tag_invoke(
-        pika::execution::experimental::set_stopped_t, error_receiver&&) noexcept
+    friend void tag_invoke(pika::execution::experimental::set_stopped_t, error_receiver&&) noexcept
     {
         PIKA_TEST(false);
     };
 
     template <typename... Ts>
-    friend void tag_invoke(pika::execution::experimental::set_value_t,
-        error_receiver&&, Ts&&...) noexcept
+    friend void
+    tag_invoke(pika::execution::experimental::set_value_t, error_receiver&&, Ts&&...) noexcept
     {
         PIKA_TEST(false);
     }
 
-    friend constexpr pika::execution::experimental::detail::empty_env
-    tag_invoke(pika::execution::experimental::get_env_t,
-        error_receiver const&) noexcept
+    friend constexpr pika::execution::experimental::detail::empty_env tag_invoke(
+        pika::execution::experimental::get_env_t, error_receiver const&) noexcept
     {
         return {};
     }
@@ -371,8 +350,7 @@ void test_any_sender(F&& f, Ts&&... ts)
 
     {
         std::atomic<bool> set_value_called{false};
-        auto os = ex::connect(
-            std::move(as1), callback_receiver<F>{f, set_value_called});
+        auto os = ex::connect(std::move(as1), callback_receiver<F>{f, set_value_called});
         ex::start(os);
         PIKA_TEST(set_value_called);
         PIKA_TEST(as1.empty());
@@ -390,8 +368,7 @@ void test_any_sender(F&& f, Ts&&... ts)
 
     {
         std::atomic<bool> set_value_called{false};
-        auto os = ex::connect(
-            std::move(as2), callback_receiver<F>{f, set_value_called});
+        auto os = ex::connect(std::move(as2), callback_receiver<F>{f, set_value_called});
         ex::start(os);
         PIKA_TEST(set_value_called);
         PIKA_TEST(as2.empty());
@@ -458,8 +435,7 @@ void test_unique_any_sender(F&& f, Ts&&... ts)
     // We expect set_value to be called here
     {
         std::atomic<bool> set_value_called = false;
-        auto os = ex::connect(
-            std::move(as2), callback_receiver<F>{f, set_value_called});
+        auto os = ex::connect(std::move(as2), callback_receiver<F>{f, set_value_called});
         ex::start(os);
         PIKA_TEST(set_value_called);
         PIKA_TEST(as2.empty());
@@ -652,10 +628,8 @@ void test_globals()
 {
     // TODO: No ensure_started implementation in reference implementation.
 #if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-    global_unique_any_sender =
-        std::move(global_unique_any_sender) | ex::ensure_started();
-    global_any_sender =
-        std::move(global_any_sender) | ex::ensure_started() | ex::split();
+    global_unique_any_sender = std::move(global_unique_any_sender) | ex::ensure_started();
+    global_any_sender = std::move(global_any_sender) | ex::ensure_started() | ex::split();
 #endif
 }
 
@@ -673,23 +647,17 @@ void test_empty_any_sender()
 void test_make_any_sender()
 {
     static_assert(
-        std::is_same_v<decltype(ex::make_unique_any_sender(ex::just())),
-            ex::unique_any_sender<>>);
-    static_assert(std::is_same_v<decltype(ex::make_any_sender(ex::just())),
-        ex::any_sender<>>);
+        std::is_same_v<decltype(ex::make_unique_any_sender(ex::just())), ex::unique_any_sender<>>);
+    static_assert(std::is_same_v<decltype(ex::make_any_sender(ex::just())), ex::any_sender<>>);
+    static_assert(std::is_same_v<decltype(ex::make_unique_any_sender(ex::just(3))),
+        ex::unique_any_sender<int>>);
+    static_assert(std::is_same_v<decltype(ex::make_any_sender(ex::just(42))), ex::any_sender<int>>);
     static_assert(
-        std::is_same_v<decltype(ex::make_unique_any_sender(ex::just(3))),
-            ex::unique_any_sender<int>>);
-    static_assert(std::is_same_v<decltype(ex::make_any_sender(ex::just(42))),
-        ex::any_sender<int>>);
-    static_assert(std::is_same_v<decltype(ex::make_unique_any_sender(
-                                     ex::just(3, std::string("hello")))),
-        ex::unique_any_sender<int, std::string>>);
-    static_assert(std::is_same_v<decltype(ex::make_any_sender(
-                                     ex::just(42, std::string("bye")))),
+        std::is_same_v<decltype(ex::make_unique_any_sender(ex::just(3, std::string("hello")))),
+            ex::unique_any_sender<int, std::string>>);
+    static_assert(std::is_same_v<decltype(ex::make_any_sender(ex::just(42, std::string("bye")))),
         ex::any_sender<int, std::string>>);
-    static_assert(!std::is_same_v<decltype(ex::make_any_sender(
-                                      ex::just(42, std::string("bye")))),
+    static_assert(!std::is_same_v<decltype(ex::make_any_sender(ex::just(42, std::string("bye")))),
                   ex::any_sender<int, std::string, double>>);
 }
 
@@ -734,8 +702,7 @@ int main()
         42, 3.14);
 
     test_unique_any_sender<large_sender>([] {});
-    test_unique_any_sender<large_sender, int>(
-        [](int x) { PIKA_TEST_EQ(x, 42); }, 42);
+    test_unique_any_sender<large_sender, int>([](int x) { PIKA_TEST_EQ(x, 42); }, 42);
     test_unique_any_sender<large_sender, int, double>(
         [](int x, double y) {
             PIKA_TEST_EQ(x, 42);
@@ -744,16 +711,14 @@ int main()
         42, 3.14);
 
     test_unique_any_sender<non_copyable_sender>([] {});
-    test_unique_any_sender<non_copyable_sender, int>(
-        [](int x) { PIKA_TEST_EQ(x, 42); }, 42);
+    test_unique_any_sender<non_copyable_sender, int>([](int x) { PIKA_TEST_EQ(x, 42); }, 42);
     test_unique_any_sender<non_copyable_sender, int, double>(
         [](int x, double y) {
             PIKA_TEST_EQ(x, 42);
             PIKA_TEST_EQ(y, 3.14);
         },
         42, 3.14);
-    test_unique_any_sender<non_copyable_sender, int, double,
-        custom_type_non_copyable>(
+    test_unique_any_sender<non_copyable_sender, int, double, custom_type_non_copyable>(
         [](int x, double y, custom_type_non_copyable z) {
             PIKA_TEST_EQ(x, 42);
             PIKA_TEST_EQ(y, 3.14);
@@ -762,16 +727,14 @@ int main()
         42, 3.14, custom_type_non_copyable(43));
 
     test_unique_any_sender<large_non_copyable_sender>([] {});
-    test_unique_any_sender<large_non_copyable_sender, int>(
-        [](int x) { PIKA_TEST_EQ(x, 42); }, 42);
+    test_unique_any_sender<large_non_copyable_sender, int>([](int x) { PIKA_TEST_EQ(x, 42); }, 42);
     test_unique_any_sender<large_non_copyable_sender, int, double>(
         [](int x, double y) {
             PIKA_TEST_EQ(x, 42);
             PIKA_TEST_EQ(y, 3.14);
         },
         42, 3.14);
-    test_unique_any_sender<large_non_copyable_sender, int, double,
-        custom_type_non_copyable>(
+    test_unique_any_sender<large_non_copyable_sender, int, double, custom_type_non_copyable>(
         [](int x, double y, custom_type_non_copyable z) {
             PIKA_TEST_EQ(x, 42);
             PIKA_TEST_EQ(y, 3.14);

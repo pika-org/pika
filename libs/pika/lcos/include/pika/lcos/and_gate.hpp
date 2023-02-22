@@ -94,10 +94,8 @@ namespace pika::lcos::local {
     protected:
         /// \brief get a future allowing to wait for the gate to fire
         template <typename OuterLock>
-        pika::future<void>
-        get_future(OuterLock& outer_lock, std::size_t count = std::size_t(-1),
-            std::size_t* generation_value = nullptr,
-            error_code& ec = pika::throws)
+        pika::future<void> get_future(OuterLock& outer_lock, std::size_t count = std::size_t(-1),
+            std::size_t* generation_value = nullptr, error_code& ec = pika::throws)
         {
             std::unique_lock<mutex_type> l(mtx_);
 
@@ -126,8 +124,7 @@ namespace pika::lcos::local {
 
     public:
         pika::future<void> get_future(std::size_t count = std::size_t(-1),
-            std::size_t* generation_value = nullptr,
-            error_code& ec = pika::throws)
+            std::size_t* generation_value = nullptr, error_code& ec = pika::throws)
         {
             no_mutex mtx;
             std::unique_lock<no_mutex> lk(mtx);
@@ -137,10 +134,9 @@ namespace pika::lcos::local {
     protected:
         /// \brief get a shared future allowing to wait for the gate to fire
         template <typename OuterLock>
-        pika::shared_future<void> get_shared_future(OuterLock& outer_lock,
-            std::size_t count = std::size_t(-1),
-            std::size_t* generation_value = nullptr,
-            error_code& ec = pika::throws)
+        pika::shared_future<void>
+        get_shared_future(OuterLock& outer_lock, std::size_t count = std::size_t(-1),
+            std::size_t* generation_value = nullptr, error_code& ec = pika::throws)
         {
             std::unique_lock<mutex_type> l(mtx_);
 
@@ -171,10 +167,8 @@ namespace pika::lcos::local {
         }
 
     public:
-        pika::shared_future<void> get_shared_future(
-            std::size_t count = std::size_t(-1),
-            std::size_t* generation_value = nullptr,
-            error_code& ec = pika::throws)
+        pika::shared_future<void> get_shared_future(std::size_t count = std::size_t(-1),
+            std::size_t* generation_value = nullptr, error_code& ec = pika::throws)
         {
             no_mutex mtx;
             std::unique_lock<no_mutex> lk(mtx);
@@ -184,8 +178,7 @@ namespace pika::lcos::local {
     protected:
         /// \brief Set the data which has to go into the segment \a which.
         template <typename OuterLock>
-        bool
-        set(std::size_t which, OuterLock outer_lock, error_code& ec = throws)
+        bool set(std::size_t which, OuterLock outer_lock, error_code& ec = throws)
         {
             PIKA_ASSERT_OWNS_LOCK(outer_lock);
 
@@ -195,8 +188,7 @@ namespace pika::lcos::local {
                 // out of bounds index
                 l.unlock();
                 outer_lock.unlock();
-                PIKA_THROWS_IF(ec, pika::error::bad_parameter,
-                    "base_and_gate<>::set",
+                PIKA_THROWS_IF(ec, pika::error::bad_parameter, "base_and_gate<>::set",
                     "index is out of range for this base_and_gate");
                 return false;
             }
@@ -205,8 +197,7 @@ namespace pika::lcos::local {
                 // segment already filled, logic error
                 l.unlock();
                 outer_lock.unlock();
-                PIKA_THROWS_IF(ec, pika::error::bad_parameter,
-                    "base_and_gate<>::set",
+                PIKA_THROWS_IF(ec, pika::error::bad_parameter, "base_and_gate<>::set",
                     "input with the given index has already been triggered");
                 return false;
             }
@@ -267,8 +258,7 @@ namespace pika::lcos::local {
             }
 
             template <typename Condition>
-            pika::future<void>
-            get_future(Condition&& func, error_code& ec = pika::throws)
+            pika::future<void> get_future(Condition&& func, error_code& ec = pika::throws)
             {
                 return (*it_)->get_future(PIKA_FORWARD(Condition, func), ec);
             }
@@ -281,8 +271,7 @@ namespace pika::lcos::local {
         /// \brief Wait for the generational counter to reach the requested
         ///        stage.
         void synchronize(std::size_t generation_value,
-            char const* function_name = "base_and_gate<>::synchronize",
-            error_code& ec = throws)
+            char const* function_name = "base_and_gate<>::synchronize", error_code& ec = throws)
         {
             std::unique_lock<mutex_type> l(mtx_);
             synchronize(generation_value, l, function_name, ec);
@@ -291,8 +280,7 @@ namespace pika::lcos::local {
     protected:
         template <typename Lock>
         void synchronize(std::size_t generation_value, Lock& l,
-            char const* function_name = "base_and_gate<>::synchronize",
-            error_code& ec = throws)
+            char const* function_name = "base_and_gate<>::synchronize", error_code& ec = throws)
         {
             PIKA_ASSERT_OWNS_LOCK(l);
 
@@ -310,8 +298,8 @@ namespace pika::lcos::local {
                 conditional_trigger c;
                 manage_condition cond(*this, c);
 
-                pika::future<void> f = cond.get_future(util::detail::bind(
-                    &base_and_gate::test_condition, this, generation_value));
+                pika::future<void> f = cond.get_future(
+                    util::detail::bind(&base_and_gate::test_condition, this, generation_value));
 
                 {
                     pika::detail::unlock_guard<Lock> ul(l);
@@ -343,16 +331,14 @@ namespace pika::lcos::local {
 
     protected:
         template <typename OuterLock, typename Lock>
-        void init_locked(OuterLock& outer_lock, Lock& l, std::size_t count,
-            error_code& ec = throws)
+        void init_locked(OuterLock& outer_lock, Lock& l, std::size_t count, error_code& ec = throws)
         {
             if (0 != received_segments_.count())
             {
                 // reset happens while part of the slots are filled
                 l.unlock();
                 outer_lock.unlock();
-                PIKA_THROWS_IF(ec, pika::error::bad_parameter,
-                    "base_and_gate<>::init",
+                PIKA_THROWS_IF(ec, pika::error::bad_parameter, "base_and_gate<>::init",
                     "initializing this base_and_gate while slots are filled");
                 return;
             }
@@ -401,22 +387,17 @@ namespace pika::lcos::local {
         }
 
         template <typename Lock>
-        pika::future<void>
-        get_future(Lock& l, std::size_t count = std::size_t(-1),
-            std::size_t* generation_value = nullptr,
-            error_code& ec = pika::throws)
+        pika::future<void> get_future(Lock& l, std::size_t count = std::size_t(-1),
+            std::size_t* generation_value = nullptr, error_code& ec = pika::throws)
         {
             return this->base_type::get_future(l, count, generation_value, ec);
         }
 
         template <typename Lock>
-        pika::shared_future<void>
-        get_shared_future(Lock& l, std::size_t count = std::size_t(-1),
-            std::size_t* generation_value = nullptr,
-            error_code& ec = pika::throws)
+        pika::shared_future<void> get_shared_future(Lock& l, std::size_t count = std::size_t(-1),
+            std::size_t* generation_value = nullptr, error_code& ec = pika::throws)
         {
-            return this->base_type::get_shared_future(
-                l, count, generation_value, ec);
+            return this->base_type::get_shared_future(l, count, generation_value, ec);
         }
 
         template <typename Lock>
@@ -427,11 +408,9 @@ namespace pika::lcos::local {
 
         template <typename Lock>
         void synchronize(std::size_t generation_value, Lock& l,
-            char const* function_name = "and_gate::synchronize",
-            error_code& ec = throws)
+            char const* function_name = "and_gate::synchronize", error_code& ec = throws)
         {
-            this->base_type::synchronize(
-                generation_value, l, function_name, ec);
+            this->base_type::synchronize(generation_value, l, function_name, ec);
         }
     };
 }    // namespace pika::lcos::local

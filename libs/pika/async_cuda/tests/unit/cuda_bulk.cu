@@ -39,9 +39,7 @@ int pika_main()
 #endif
         return p;
     };
-    auto f = [] PIKA_HOST_DEVICE(element_type i, void* p) {
-        static_cast<element_type*>(p)[i] = i;
-    };
+    auto f = [] PIKA_HOST_DEVICE(element_type i, void* p) { static_cast<element_type*>(p)[i] = i; };
     auto free = [](void* p, whip::stream_t stream) {
 #if PIKA_CUDA_VERSION >= 1102
         whip::free_async(p, stream);
@@ -68,9 +66,8 @@ int pika_main()
             return p;
         };
 
-        auto s = ex::transfer_just(sched, device_ptr, n) |
-            cu::then_with_stream(malloc) | ex::bulk(n, f) |
-            cu::then_with_stream(memcpy) | cu::then_with_stream(free);
+        auto s = ex::transfer_just(sched, device_ptr, n) | cu::then_with_stream(malloc) |
+            ex::bulk(n, f) | cu::then_with_stream(memcpy) | cu::then_with_stream(free);
         tt::sync_wait(std::move(s));
 
         for (element_type i = 0; i < n; ++i)
@@ -98,10 +95,9 @@ int pika_main()
             return p;
         };
 
-        auto s = ex::transfer_just(sched, device_ptr, n) |
-            cu::then_with_stream(malloc) |
-            ex::bulk(pika::util::detail::make_counting_shape(n), f) |
-            cu::then_with_stream(memcpy) | cu::then_with_stream(free);
+        auto s = ex::transfer_just(sched, device_ptr, n) | cu::then_with_stream(malloc) |
+            ex::bulk(pika::util::detail::make_counting_shape(n), f) | cu::then_with_stream(memcpy) |
+            cu::then_with_stream(free);
         tt::sync_wait(std::move(s));
 
         for (element_type i = 0; i < n; ++i)

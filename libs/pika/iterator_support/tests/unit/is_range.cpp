@@ -16,8 +16,7 @@ void array_range()
     using range = int[3];
 
     PIKA_TEST_MSG((pika::traits::is_range<range>::value == true), "array");
-    PIKA_TEST_MSG(
-        (pika::traits::is_range<range const>::value == true), "array-const");
+    PIKA_TEST_MSG((pika::traits::is_range<range const>::value == true), "array-const");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -50,10 +49,8 @@ void member_range()
 {
     using range = member;
 
-    PIKA_TEST_MSG(
-        (pika::traits::is_range<range>::value == true), "member-const");
-    PIKA_TEST_MSG(
-        (pika::traits::is_range<range const>::value == true), "member-const");
+    PIKA_TEST_MSG((pika::traits::is_range<range>::value == true), "member-const");
+    PIKA_TEST_MSG((pika::traits::is_range<range const>::value == true), "member-const");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -89,8 +86,7 @@ void adl_range()
     using range = adl::free;
 
     PIKA_TEST_MSG((pika::traits::is_range<range>::value == true), "adl-const");
-    PIKA_TEST_MSG(
-        (pika::traits::is_range<range const>::value == true), "adl-const");
+    PIKA_TEST_MSG((pika::traits::is_range<range const>::value == true), "adl-const");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -99,8 +95,7 @@ void vector_range()
     using range = std::vector<int>;
 
     PIKA_TEST_MSG((pika::traits::is_range<range>::value == true), "vector");
-    PIKA_TEST_MSG(
-        (pika::traits::is_range<range const>::value == true), "vector-const");
+    PIKA_TEST_MSG((pika::traits::is_range<range const>::value == true), "vector-const");
 }
 
 ///////////////////////////////////////////////////////////////////////////////

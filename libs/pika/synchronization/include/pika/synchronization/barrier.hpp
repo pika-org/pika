@@ -116,8 +116,7 @@ namespace pika {
         //                 end note]
         // Throws:         Any exception thrown by CompletionFunction's move
         //                 constructor.
-        barrier(
-            std::ptrdiff_t expected, OnCompletion completion = OnCompletion())
+        barrier(std::ptrdiff_t expected, OnCompletion completion = OnCompletion())
           : expected_(expected)
           , arrived_(expected)
           , completion_(PIKA_MOVE(completion))

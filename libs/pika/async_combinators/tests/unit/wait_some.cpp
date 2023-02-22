@@ -56,8 +56,7 @@ void test_wait_some()
     {
         std::vector<pika::future<int>> future_array;
         future_array.push_back(make_future());
-        future_array.push_back(
-            pika::make_exceptional_future<int>(std::runtime_error("")));
+        future_array.push_back(pika::make_exceptional_future<int>(std::runtime_error("")));
 
         bool caught_exception = false;
         try
@@ -88,8 +87,7 @@ void test_wait_some()
     {
         std::vector<pika::future<int>> future_array;
         future_array.push_back(make_future());
-        future_array.push_back(
-            pika::make_exceptional_future<int>(std::runtime_error("")));
+        future_array.push_back(pika::make_exceptional_future<int>(std::runtime_error("")));
 
         bool caught_exception = false;
         try
@@ -151,14 +149,12 @@ void test_wait_some_n()
     {
         std::vector<pika::future<int>> future_array;
         future_array.push_back(make_future());
-        future_array.push_back(
-            pika::make_exceptional_future<int>(std::runtime_error("")));
+        future_array.push_back(pika::make_exceptional_future<int>(std::runtime_error("")));
 
         bool caught_exception = false;
         try
         {
-            pika::wait_some_n_nothrow(
-                1, future_array.begin(), future_array.size());
+            pika::wait_some_n_nothrow(1, future_array.begin(), future_array.size());
 
             int count = 0;
             for (auto& f : future_array)
@@ -183,8 +179,7 @@ void test_wait_some_n()
     {
         std::vector<pika::future<int>> future_array;
         future_array.push_back(make_future());
-        future_array.push_back(
-            pika::make_exceptional_future<int>(std::runtime_error("")));
+        future_array.push_back(pika::make_exceptional_future<int>(std::runtime_error("")));
 
         bool caught_exception = false;
         try

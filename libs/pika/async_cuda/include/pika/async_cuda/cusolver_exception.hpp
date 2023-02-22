@@ -8,22 +8,20 @@
 
 #include <pika/config.hpp>
 #if defined(PIKA_HAVE_GPU_SUPPORT)
-#include <pika/async_cuda/custom_lapack_api.hpp>
-#include <pika/errors/exception.hpp>
+# include <pika/async_cuda/custom_lapack_api.hpp>
+# include <pika/errors/exception.hpp>
 
-#include <string>
+# include <string>
 
 namespace pika::cuda::experimental {
     namespace detail {
-        PIKA_EXPORT const char* cusolver_get_error_string(
-            cusolverStatus_t error);
+        PIKA_EXPORT const char* cusolver_get_error_string(cusolverStatus_t error);
     }    // namespace detail
 
     struct cusolver_exception : pika::exception
     {
         PIKA_EXPORT explicit cusolver_exception(cusolverStatus_t err);
-        PIKA_EXPORT cusolver_exception(
-            const std::string& msg, cusolverStatus_t err);
+        PIKA_EXPORT cusolver_exception(const std::string& msg, cusolverStatus_t err);
         PIKA_EXPORT cusolverStatus_t get_cusolver_errorcode() const noexcept;
 
     protected:

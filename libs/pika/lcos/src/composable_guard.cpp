@@ -71,8 +71,7 @@ namespace pika::lcos::local {
         std::size_t n;
         detail::guard_task** stages;
 
-        stage_data(detail::guard_function task_,
-            std::vector<std::shared_ptr<guard>>& guards)
+        stage_data(detail::guard_function task_, std::vector<std::shared_ptr<guard>>& guards)
           : gs()
           , task(PIKA_MOVE(task_))
           , n(guards.size())

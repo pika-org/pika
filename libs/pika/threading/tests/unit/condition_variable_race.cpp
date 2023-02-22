@@ -162,8 +162,7 @@ void test_cv_mutex()
         cv->notify_one();
         cv->~condition_variable();
         // NOLINTNEXTLINE(bugprone-undefined-memory-manipulation)
-        std::memset(
-            (void*) cv, 0x55, sizeof(*cv));    // UB but OK to ensure the check
+        std::memset((void*) cv, 0x55, sizeof(*cv));    // UB but OK to ensure the check
     });
 
     t1.join();
@@ -205,8 +204,7 @@ void test_cv_any_mutex()
         cv->notify_one();
         cv->~condition_variable_any();
         // NOLINTNEXTLINE(bugprone-undefined-memory-manipulation)
-        std::memset(
-            (void*) cv, 0x55, sizeof(*cv));    // UB but OK to ensure the check
+        std::memset((void*) cv, 0x55, sizeof(*cv));    // UB but OK to ensure the check
     });
 
     t1.join();
@@ -233,8 +231,7 @@ int pika_main()
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0, "pika main exited with non-zero status");
 
     return 0;
 }

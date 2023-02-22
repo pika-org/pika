@@ -92,8 +92,7 @@ namespace pika::util::logging {
         }
 
         template <typename... Args>
-        message&
-        format(std::string_view format_str, Args const&... args) noexcept
+        message& format(std::string_view format_str, Args const&... args) noexcept
         {
             // Using fmt::runtime below means that the format string is not
             // checked at compile time. With some refactoring of the logging

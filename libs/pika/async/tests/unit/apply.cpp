@@ -92,8 +92,7 @@ int pika_main()
 
         pika::apply(&increment_type::call, inc, 1);
         pika::apply(pika::util::detail::bind(&increment_type::call, inc, 1));
-        pika::apply(
-            pika::util::detail::bind(&increment_type::call, inc, _1), 1);
+        pika::apply(pika::util::detail::bind(&increment_type::call, inc, _1), 1);
     }
 
     {
@@ -117,8 +116,7 @@ int pika_main()
     pika::no_mutex result_mutex;
     std::unique_lock<pika::no_mutex> l(result_mutex);
     result_cv.wait_for(l, std::chrono::seconds(1),
-        pika::util::detail::bind(
-            std::equal_to<std::int32_t>(), std::ref(accumulator), 18));
+        pika::util::detail::bind(std::equal_to<std::int32_t>(), std::ref(accumulator), 18));
 
     PIKA_TEST_EQ(accumulator.load(), 18);
 
@@ -130,8 +128,7 @@ int main(int argc, char* argv[])
     accumulator.store(0);
 
     // Initialize and run pika
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0, "pika main exited with non-zero status");
 
     return 0;
 }

@@ -53,8 +53,7 @@ int main()
 
     {
         std::atomic<bool> set_value_called{false};
-        auto s =
-            ex::drop_value(ex::just(custom_type_non_default_constructible{0}));
+        auto s = ex::drop_value(ex::just(custom_type_non_default_constructible{0}));
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));
         ex::start(os);
@@ -63,8 +62,7 @@ int main()
 
     {
         std::atomic<bool> set_value_called{false};
-        auto s = ex::drop_value(
-            ex::just(custom_type_non_default_constructible_non_copyable{0}));
+        auto s = ex::drop_value(ex::just(custom_type_non_default_constructible_non_copyable{0}));
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));
         ex::start(os);
@@ -114,8 +112,7 @@ int main()
     // Failure path
     {
         std::atomic<bool> set_error_called{false};
-        auto s = ex::drop_value(
-            ex::then(ex::just(), [] { throw std::runtime_error("error"); }));
+        auto s = ex::drop_value(ex::then(ex::just(), [] { throw std::runtime_error("error"); }));
         auto r = error_callback_receiver<decltype(check_exception_ptr)>{
             check_exception_ptr, set_error_called};
         auto os = ex::connect(std::move(s), std::move(r));

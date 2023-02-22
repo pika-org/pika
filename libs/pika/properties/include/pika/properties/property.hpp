@@ -14,8 +14,7 @@
 
 namespace pika::experimental {
 
-    inline constexpr struct prefer_t
-      : pika::functional::detail::tag_fallback<prefer_t>
+    inline constexpr struct prefer_t : pika::functional::detail::tag_fallback<prefer_t>
     {
         // clang-format off
         template <typename Tag, typename... Tn>
@@ -34,7 +33,7 @@ namespace pika::experimental {
                 prefer_t, Tag, T0&& t0, Tn&&...)
             noexcept(noexcept(PIKA_FORWARD(T0, t0)))
             -> std::enable_if_t<
-                    !pika::functional::is_tag_invocable_v<
+                    !pika::functional::detail::is_tag_invocable_v<
                         prefer_t, Tag, T0, Tn...> &&
                     !std::is_invocable_v<Tag, T0, Tn...>,
                     decltype(PIKA_FORWARD(T0, t0))>

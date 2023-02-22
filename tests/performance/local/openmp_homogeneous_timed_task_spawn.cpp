@@ -67,15 +67,15 @@ bool header = true;
 void print_results(int cores, double walltime)
 {
     if (header)
-        std::cout << "OS-threads,Tasks,Delay (iterations),"
-                     "Total Walltime (seconds),Walltime per Task (seconds)\n";
+        std::cout << "OS-threads,Tasks,Delay (iterations),Total Walltime (seconds),Walltime per "
+                     "Task (seconds)\n";
 
     std::string const cores_str = fmt::format("{},", cores);
     std::string const tasks_str = fmt::format("{},", tasks);
     std::string const delay_str = fmt::format("{},", delay);
 
-    fmt::print(std::cout, "{:>21} {:>21} {:>21} {:10.12}, {:10.12}\n",
-        cores_str, tasks_str, delay_str, walltime, walltime / tasks);
+    fmt::print(std::cout, "{:>21} {:>21} {:>21} {:10.12}, {:10.12}\n", cores_str, tasks_str,
+        delay_str, walltime, walltime / tasks);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -93,13 +93,13 @@ int omp_main(variables_map&)
     {
         for (std::uint64_t i = 0; i < tasks; ++i)
 #if _OPENMP >= 200805
-#pragma omp task untied
+# pragma omp task untied
 #endif
             worker_timed(delay * 1000);
 
 // Yield until all work is done.
 #if _OPENMP >= 200805
-#pragma omp taskwait
+# pragma omp taskwait
 #endif
 
         print_results(omp_get_num_threads(), t.elapsed());

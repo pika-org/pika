@@ -27,10 +27,8 @@ namespace pika::program_options {
     }
 
     template <class Char>
-    basic_command_line_parser<Char>::basic_command_line_parser(
-        int argc, const Char* const argv[])
-      : detail::cmdline(to_internal(
-            std::vector<std::basic_string<Char>>(argv + 1, argv + argc)))
+    basic_command_line_parser<Char>::basic_command_line_parser(int argc, const Char* const argv[])
+      : detail::cmdline(to_internal(std::vector<std::basic_string<Char>>(argv + 1, argv + argc)))
       , m_desc()
     {
     }
@@ -46,32 +44,28 @@ namespace pika::program_options {
 
     template <class Char>
     basic_command_line_parser<Char>&
-    basic_command_line_parser<Char>::positional(
-        const positional_options_description& desc)
+    basic_command_line_parser<Char>::positional(const positional_options_description& desc)
     {
         detail::cmdline::set_positional_options(desc);
         return *this;
     }
 
     template <class Char>
-    basic_command_line_parser<Char>&
-    basic_command_line_parser<Char>::style(int xstyle)
+    basic_command_line_parser<Char>& basic_command_line_parser<Char>::style(int xstyle)
     {
         detail::cmdline::style(xstyle);
         return *this;
     }
 
     template <class Char>
-    basic_command_line_parser<Char>&
-    basic_command_line_parser<Char>::extra_parser(ext_parser ext)
+    basic_command_line_parser<Char>& basic_command_line_parser<Char>::extra_parser(ext_parser ext)
     {
         detail::cmdline::set_additional_parser(ext);
         return *this;
     }
 
     template <class Char>
-    basic_command_line_parser<Char>&
-    basic_command_line_parser<Char>::allow_unregistered()
+    basic_command_line_parser<Char>& basic_command_line_parser<Char>::allow_unregistered()
     {
         detail::cmdline::allow_unregistered();
         return *this;
@@ -92,8 +86,7 @@ namespace pika::program_options {
         //    eventually inside the parsed results
         //    This will be handy to format recognizable options
         //    for diagnostic messages if everything blows up much later on
-        parsed_options result(
-            m_desc, detail::cmdline::get_canonical_option_prefix());
+        parsed_options result(m_desc, detail::cmdline::get_canonical_option_prefix());
         result.options = detail::cmdline::run();
 
         // Presence of parsed_options -> wparsed_options conversion
@@ -102,10 +95,9 @@ namespace pika::program_options {
     }
 
     template <class Char>
-    basic_parsed_options<Char> parse_command_line(int argc,
-        const Char* const argv[], const options_description& desc, int style,
-        std::function<std::pair<std::string, std::string>(const std::string&)>
-            ext)
+    basic_parsed_options<Char>
+    parse_command_line(int argc, const Char* const argv[], const options_description& desc,
+        int style, std::function<std::pair<std::string, std::string>(const std::string&)> ext)
     {
         return basic_command_line_parser<Char>(argc, argv)
             .options(desc)
@@ -115,9 +107,8 @@ namespace pika::program_options {
     }
 
     template <class Char>
-    std::vector<std::basic_string<Char>>
-    collect_unrecognized(const std::vector<basic_option<Char>>& options,
-        enum collect_unrecognized_mode mode)
+    std::vector<std::basic_string<Char>> collect_unrecognized(
+        const std::vector<basic_option<Char>>& options, enum collect_unrecognized_mode mode)
     {
         std::vector<std::basic_string<Char>> result;
         for (std::size_t i = 0; i < options.size(); ++i)
@@ -125,8 +116,7 @@ namespace pika::program_options {
             if (options[i].unregistered ||
                 (mode == include_positional && options[i].position_key != -1))
             {
-                std::copy(options[i].original_tokens.begin(),
-                    options[i].original_tokens.end(),
+                std::copy(options[i].original_tokens.begin(), options[i].original_tokens.end(),
                     std::back_inserter(result));
             }
         }

@@ -20,7 +20,7 @@
 #if defined(PIKA_HAVE_JEMALLOC_PREFIX)
 // this is currently used only for jemalloc and if a special API prefix is
 // used for its APIs
-#include <jemalloc/jemalloc.h>
+# include <jemalloc/jemalloc.h>
 #endif
 
 #include <pika/config/warnings_prefix.hpp>
@@ -105,15 +105,13 @@ namespace pika::detail {
     };
 
     template <typename T>
-    constexpr bool
-    operator==(internal_allocator<T> const&, internal_allocator<T> const&)
+    constexpr bool operator==(internal_allocator<T> const&, internal_allocator<T> const&)
     {
         return true;
     }
 
     template <typename T>
-    constexpr bool
-    operator!=(internal_allocator<T> const&, internal_allocator<T> const&)
+    constexpr bool operator!=(internal_allocator<T> const&, internal_allocator<T> const&)
     {
         return false;
     }

@@ -14,12 +14,10 @@
 #include <pika/async_cuda/then_with_stream.hpp>
 
 namespace pika::cuda::experimental::then_with_stream_detail {
-    pika::cuda::experimental::cublas_handle const&
-    get_thread_local_cublas_handle(
+    pika::cuda::experimental::cublas_handle const& get_thread_local_cublas_handle(
         cuda_stream const& stream, cublasPointerMode_t pointer_mode)
     {
-        static thread_local pika::cuda::experimental::cublas_handle handle{
-            stream};
+        static thread_local pika::cuda::experimental::cublas_handle handle{stream};
 
         handle.set_stream(stream);
         handle.set_pointer_mode(pointer_mode);
@@ -27,11 +25,10 @@ namespace pika::cuda::experimental::then_with_stream_detail {
         return handle;
     }
 
-    pika::cuda::experimental::cusolver_handle const&
-    get_thread_local_cusolver_handle(cuda_stream const& stream)
+    pika::cuda::experimental::cusolver_handle const& get_thread_local_cusolver_handle(
+        cuda_stream const& stream)
     {
-        static thread_local pika::cuda::experimental::cusolver_handle handle{
-            stream};
+        static thread_local pika::cuda::experimental::cusolver_handle handle{stream};
 
         handle.set_stream(stream);
 

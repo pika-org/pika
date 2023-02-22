@@ -28,8 +28,8 @@ void test_sync()
     using executor = pika::execution::parallel_executor;
 
     executor exec;
-    PIKA_TEST(pika::parallel::execution::sync_execute(exec, &test, 42) ==
-        pika::this_thread::get_id());
+    PIKA_TEST(
+        pika::parallel::execution::sync_execute(exec, &test, 42) == pika::this_thread::get_id());
 }
 
 void test_async()
@@ -59,8 +59,7 @@ void test_then()
     pika::future<void> f = pika::make_ready_future();
 
     executor exec;
-    PIKA_TEST(
-        pika::parallel::execution::then_execute(exec, &test_f, f, 42).get() !=
+    PIKA_TEST(pika::parallel::execution::then_execute(exec, &test_f, f, 42).get() !=
         pika::this_thread::get_id());
 }
 
@@ -103,12 +102,10 @@ void test_bulk_async()
     using std::placeholders::_2;
 
     executor exec;
-    pika::when_all(
-        pika::parallel::execution::bulk_async_execute(
-            exec, pika::util::detail::bind(&bulk_test, _1, tid, _2), v, 42))
-        .get();
     pika::when_all(pika::parallel::execution::bulk_async_execute(
-                       exec, &bulk_test, v, tid, 42))
+                       exec, pika::util::detail::bind(&bulk_test, _1, tid, _2), v, 42))
+        .get();
+    pika::when_all(pika::parallel::execution::bulk_async_execute(exec, &bulk_test, v, tid, 42))
         .get();
 }
 
@@ -143,9 +140,7 @@ void test_bulk_then()
     pika::parallel::execution::bulk_then_execute(
         exec, pika::util::detail::bind(&bulk_test_f, _1, _2, tid, _3), v, f, 42)
         .get();
-    pika::parallel::execution::bulk_then_execute(
-        exec, &bulk_test_f, v, f, tid, 42)
-        .get();
+    pika::parallel::execution::bulk_then_execute(exec, &bulk_test_f, v, f, tid, 42).get();
 }
 
 void static_check_executor()
@@ -153,20 +148,19 @@ void static_check_executor()
     using namespace pika::traits;
     using executor = pika::execution::parallel_executor;
 
-    static_assert(has_sync_execute_member<executor>::value,
-        "has_sync_execute_member<executor>::value");
-    static_assert(has_async_execute_member<executor>::value,
-        "has_async_execute_member<executor>::value");
-    static_assert(has_then_execute_member<executor>::value,
-        "has_then_execute_member<executor>::value");
+    static_assert(
+        has_sync_execute_member<executor>::value, "has_sync_execute_member<executor>::value");
+    static_assert(
+        has_async_execute_member<executor>::value, "has_async_execute_member<executor>::value");
+    static_assert(
+        has_then_execute_member<executor>::value, "has_then_execute_member<executor>::value");
     static_assert(!has_bulk_sync_execute_member<executor>::value,
         "!has_bulk_sync_execute_member<executor>::value");
     static_assert(has_bulk_async_execute_member<executor>::value,
         "has_bulk_async_execute_member<executor>::value");
     static_assert(has_bulk_then_execute_member<executor>::value,
         "has_bulk_then_execute_member<executor>::value");
-    static_assert(has_post_member<executor>::value,
-        "check has_post_member<executor>::value");
+    static_assert(has_post_member<executor>::value, "check has_post_member<executor>::value");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -194,8 +188,8 @@ int main(int argc, char* argv[])
     pika::init_params init_args;
     init_args.cfg = cfg;
 
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(
+        pika::init(pika_main, argc, argv, init_args), 0, "pika main exited with non-zero status");
 
     return 0;
 }

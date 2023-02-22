@@ -85,28 +85,22 @@ namespace pika {
 
         // Report an early or late exception and locally abort execution. There
         // isn't anything more we could do.
-        [[noreturn]] PIKA_EXPORT void report_exception_and_terminate(
-            std::exception const&);
-        [[noreturn]] PIKA_EXPORT void report_exception_and_terminate(
-            std::exception_ptr const&);
-        [[noreturn]] PIKA_EXPORT void report_exception_and_terminate(
-            pika::exception const&);
+        [[noreturn]] PIKA_EXPORT void report_exception_and_terminate(std::exception const&);
+        [[noreturn]] PIKA_EXPORT void report_exception_and_terminate(std::exception_ptr const&);
+        [[noreturn]] PIKA_EXPORT void report_exception_and_terminate(pika::exception const&);
 
         // Report an early or late exception and locally exit execution. There
         // isn't anything more we could do. The exception will be re-thrown
         // from pika::init
         PIKA_EXPORT void report_exception_and_continue(std::exception const&);
-        PIKA_EXPORT void report_exception_and_continue(
-            std::exception_ptr const&);
+        PIKA_EXPORT void report_exception_and_continue(std::exception_ptr const&);
         PIKA_EXPORT void report_exception_and_continue(pika::exception const&);
 
-        PIKA_EXPORT pika::exception_info construct_exception_info(
-            std::string const& func, std::string const& file, long line,
-            std::string const& back_trace, std::uint32_t node,
+        PIKA_EXPORT pika::exception_info construct_exception_info(std::string const& func,
+            std::string const& file, long line, std::string const& back_trace, std::uint32_t node,
             std::string const& hostname, std::int64_t pid, std::size_t shepherd,
-            std::size_t thread_id, std::string const& thread_name,
-            std::string const& env, std::string const& config,
-            std::string const& state_name, std::string const& auxinfo);
+            std::size_t thread_id, std::string const& thread_name, std::string const& env,
+            std::string const& config, std::string const& state_name, std::string const& auxinfo);
 
         template <typename Exception>
         PIKA_EXPORT std::exception_ptr
@@ -114,17 +108,14 @@ namespace pika {
 
         PIKA_EXPORT void pre_exception_handler();
 
-        using get_full_build_string_type =
-            pika::util::detail::function<std::string()>;
-        PIKA_EXPORT void set_get_full_build_string(
-            get_full_build_string_type f);
+        using get_full_build_string_type = pika::util::detail::function<std::string()>;
+        PIKA_EXPORT void set_get_full_build_string(get_full_build_string_type f);
         PIKA_EXPORT std::string get_full_build_string();
     }    // namespace detail
 
     namespace detail {
-        PIKA_EXPORT pika::exception_info custom_exception_info(
-            std::string const& func, std::string const& file, long line,
-            std::string const& auxinfo);
+        PIKA_EXPORT pika::exception_info custom_exception_info(std::string const& func,
+            std::string const& file, long line, std::string const& auxinfo);
     }
     /// \endcond
 
@@ -208,16 +199,14 @@ namespace pika {
     ///             \a pika::get_error_what(), \a pika::get_error_config(),
     ///             \a pika::get_error_state()
     ///
-    PIKA_EXPORT std::uint32_t get_error_locality_id(
-        pika::exception_info const& xi);
+    PIKA_EXPORT std::uint32_t get_error_locality_id(pika::exception_info const& xi);
 
     /// \cond NOINTERNAL
     template <typename E>
     std::uint32_t get_error_locality_id(E const& e)
     {
         return invoke_with_exception_info(e, [](exception_info const* xi) {
-            return xi ? get_error_locality_id(*xi) :
-                        ~static_cast<std::uint32_t>(0);
+            return xi ? get_error_locality_id(*xi) : ~static_cast<std::uint32_t>(0);
         });
     }
     /// \endcond
@@ -257,9 +246,8 @@ namespace pika {
     template <typename E>
     std::string get_error_host_name(E const& e)
     {
-        return invoke_with_exception_info(e, [](exception_info const* xi) {
-            return xi ? get_error_host_name(*xi) : std::string();
-        });
+        return invoke_with_exception_info(e,
+            [](exception_info const* xi) { return xi ? get_error_host_name(*xi) : std::string(); });
     }
     /// \endcond
 
@@ -292,16 +280,14 @@ namespace pika {
     ///             \a pika::get_error_what(), \a pika::get_error_config(),
     ///             \a pika::get_error_state()
     ///
-    PIKA_EXPORT std::int64_t get_error_process_id(
-        pika::exception_info const& xi);
+    PIKA_EXPORT std::int64_t get_error_process_id(pika::exception_info const& xi);
 
     /// \cond NOINTERNAL
     template <typename E>
     std::int64_t get_error_process_id(E const& e)
     {
-        return invoke_with_exception_info(e, [](exception_info const* xi) {
-            return xi ? get_error_process_id(*xi) : -1;
-        });
+        return invoke_with_exception_info(
+            e, [](exception_info const* xi) { return xi ? get_error_process_id(*xi) : -1; });
     }
     /// \endcond
 
@@ -380,9 +366,8 @@ namespace pika {
     template <typename E>
     std::string get_error_backtrace(E const& e)
     {
-        return invoke_with_exception_info(e, [](exception_info const* xi) {
-            return xi ? get_error_backtrace(*xi) : std::string();
-        });
+        return invoke_with_exception_info(e,
+            [](exception_info const* xi) { return xi ? get_error_backtrace(*xi) : std::string(); });
     }
     /// \endcond
 
@@ -499,8 +484,7 @@ namespace pika {
     ///             \a pika::get_error(), \a pika::get_error_state(),
     ///             \a pika::get_error_what(), \a pika::get_error_config()
     ///
-    PIKA_EXPORT std::string get_error_thread_description(
-        pika::exception_info const& xi);
+    PIKA_EXPORT std::string get_error_thread_description(pika::exception_info const& xi);
 
     /// \cond NOINTERNAL
     template <typename E>
@@ -547,9 +531,8 @@ namespace pika {
     template <typename E>
     std::string get_error_config(E const& e)
     {
-        return invoke_with_exception_info(e, [](exception_info const* xi) {
-            return xi ? get_error_config(*xi) : std::string();
-        });
+        return invoke_with_exception_info(
+            e, [](exception_info const* xi) { return xi ? get_error_config(*xi) : std::string(); });
     }
     /// \endcond
 
@@ -588,9 +571,8 @@ namespace pika {
     template <typename E>
     std::string get_error_state(E const& e)
     {
-        return invoke_with_exception_info(e, [](exception_info const* xi) {
-            return xi ? get_error_state(*xi) : std::string();
-        });
+        return invoke_with_exception_info(
+            e, [](exception_info const* xi) { return xi ? get_error_state(*xi) : std::string(); });
     }
     /// \endcond
 

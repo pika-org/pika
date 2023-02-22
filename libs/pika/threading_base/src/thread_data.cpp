@@ -16,7 +16,7 @@
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_data.hpp>
 #if defined(PIKA_HAVE_APEX)
-#include <pika/threading_base/external_timer.hpp>
+# include <pika/threading_base/external_timer.hpp>
 #endif
 
 #include <fmt/format.h>
@@ -45,11 +45,10 @@ namespace pika::threads::detail {
         return ~static_cast<std::uint32_t>(0);
     }
 
-    thread_data::thread_data(thread_init_data& init_data, void* queue,
-        std::ptrdiff_t stacksize, bool is_stackless, thread_id_addref addref)
+    thread_data::thread_data(thread_init_data& init_data, void* queue, std::ptrdiff_t stacksize,
+        bool is_stackless, thread_id_addref addref)
       : thread_data_reference_counting(addref)
-      , current_state_(thread_state(
-            init_data.initial_state, thread_restart_state::signaled))
+      , current_state_(thread_state(init_data.initial_state, thread_restart_state::signaled))
 #ifdef PIKA_HAVE_THREAD_DESCRIPTION
       , description_(init_data.description)
       , lco_description_()
@@ -76,8 +75,8 @@ namespace pika::threads::detail {
       , stacksize_enum_(init_data.stacksize)
       , queue_(queue)
     {
-        LTM_(debug).format("thread::thread({}), description({})",
-            fmt::ptr(this), get_description());
+        LTM_(debug).format(
+            "thread::thread({}), description({})", fmt::ptr(this), get_description());
 
         PIKA_ASSERT(stacksize_enum_ != execution::thread_stacksize::current);
 
@@ -109,8 +108,7 @@ namespace pika::threads::detail {
 
     void thread_data::destroy_thread()
     {
-        LTM_(debug).format(
-            "thread_data::destroy_thread({}), description({}), phase({})",
+        LTM_(debug).format("thread_data::destroy_thread({}), description({}), phase({})",
             fmt::ptr(this), this->get_description(), this->get_thread_phase());
 
         get_scheduler_base()->destroy_thread(this);
@@ -118,15 +116,12 @@ namespace pika::threads::detail {
 
     void thread_data::run_thread_exit_callbacks()
     {
-        std::unique_lock<pika::detail::spinlock> l(
-            spinlock_pool::spinlock_for(this));
+        std::unique_lock<pika::detail::spinlock> l(spinlock_pool::spinlock_for(this));
 
         while (!exit_funcs_.empty())
         {
             {
-                pika::detail::unlock_guard<
-                    std::unique_lock<pika::detail::spinlock>>
-                    ul(l);
+                pika::detail::unlock_guard<std::unique_lock<pika::detail::spinlock>> ul(l);
                 if (!exit_funcs_.front().empty())
                     exit_funcs_.front()();
             }
@@ -135,14 +130,11 @@ namespace pika::threads::detail {
         ran_exit_funcs_ = true;
     }
 
-    bool thread_data::add_thread_exit_callback(
-        util::detail::function<void()> const& f)
+    bool thread_data::add_thread_exit_callback(util::detail::function<void()> const& f)
     {
-        std::lock_guard<pika::detail::spinlock> l(
-            spinlock_pool::spinlock_for(this));
+        std::lock_guard<pika::detail::spinlock> l(spinlock_pool::spinlock_for(this));
 
-        if (ran_exit_funcs_ ||
-            get_state().state() == thread_schedule_state::terminated)
+        if (ran_exit_funcs_ || get_state().state() == thread_schedule_state::terminated)
         {
             return false;
         }
@@ -154,8 +146,7 @@ namespace pika::threads::detail {
 
     void thread_data::free_thread_exit_callbacks()
     {
-        std::lock_guard<pika::detail::spinlock> l(
-            spinlock_pool::spinlock_for(this));
+        std::lock_guard<pika::detail::spinlock> l(spinlock_pool::spinlock_for(this));
 
         // Exit functions should have been executed.
         PIKA_ASSERT(exit_funcs_.empty() || ran_exit_funcs_);
@@ -191,14 +182,12 @@ namespace pika::threads::detail {
 
     void thread_data::rebind_base(thread_init_data& init_data)
     {
-        LTM_(debug).format(
-            "thread_data::rebind_base({}), description({}), phase({}), rebind",
+        LTM_(debug).format("thread_data::rebind_base({}), description({}), phase({}), rebind",
             fmt::ptr(this), get_description(), get_thread_phase());
 
         free_thread_exit_callbacks();
 
-        current_state_.store(thread_state(
-            init_data.initial_state, thread_restart_state::signaled));
+        current_state_.store(thread_state(init_data.initial_state, thread_restart_state::signaled));
 
 #ifdef PIKA_HAVE_THREAD_DESCRIPTION
         description_ = init_data.description;
@@ -230,8 +219,8 @@ namespace pika::threads::detail {
         PIKA_ASSERT(stacksize_ == get_stack_size());
         PIKA_ASSERT(stacksize_ != 0);
 
-        LTM_(debug).format("thread::thread({}), description({}), rebind",
-            fmt::ptr(this), get_description());
+        LTM_(debug).format(
+            "thread::thread({}), description({}), rebind", fmt::ptr(this), get_description());
 
 #ifdef PIKA_HAVE_THREAD_PARENT_REFERENCE
         // store the thread id of the parent thread, mainly for debugging
@@ -262,8 +251,7 @@ namespace pika::threads::detail {
         if (PIKA_UNLIKELY(p == nullptr))
         {
             PIKA_THROW_EXCEPTION(pika::error::null_thread_id, "get_self",
-                "null thread id encountered (is this executed on a "
-                "pika-thread?)");
+                "null thread id encountered (is this executed on a pika-thread?)");
         }
         return *p;
     }
@@ -292,10 +280,8 @@ namespace pika::threads::detail {
 
         if (PIKA_UNLIKELY(p == nullptr))
         {
-            PIKA_THROWS_IF(ec, pika::error::null_thread_id,
-                "get_self_ptr_checked",
-                "null thread id encountered (is this executed on a "
-                "pika-thread?)");
+            PIKA_THROWS_IF(ec, pika::error::null_thread_id, "get_self_ptr_checked",
+                "null thread id encountered (is this executed on a pika-thread?)");
             return nullptr;
         }
 
@@ -332,9 +318,8 @@ namespace pika::threads::detail {
     execution::thread_stacksize get_self_stacksize_enum()
     {
         thread_data* thrd_data = get_self_id_data();
-        execution::thread_stacksize stacksize = thrd_data ?
-            thrd_data->get_stack_size_enum() :
-            execution::thread_stacksize::default_;
+        execution::thread_stacksize stacksize =
+            thrd_data ? thrd_data->get_stack_size_enum() : execution::thread_stacksize::default_;
         PIKA_ASSERT(stacksize != execution::thread_stacksize::current);
         return stacksize;
     }
@@ -404,8 +389,7 @@ namespace pika::threads::detail {
     }
 
 #if defined(PIKA_HAVE_APEX)
-    std::shared_ptr<pika::detail::external_timer::task_wrapper>
-    get_self_timer_data()
+    std::shared_ptr<pika::detail::external_timer::task_wrapper> get_self_timer_data()
     {
         thread_data* thrd_data = get_self_id_data();
         if (PIKA_LIKELY(nullptr != thrd_data))
@@ -414,8 +398,7 @@ namespace pika::threads::detail {
         }
         return nullptr;
     }
-    void set_self_timer_data(
-        std::shared_ptr<pika::detail::external_timer::task_wrapper> data)
+    void set_self_timer_data(std::shared_ptr<pika::detail::external_timer::task_wrapper> data)
     {
         thread_data* thrd_data = get_self_id_data();
         if (PIKA_LIKELY(nullptr != thrd_data))

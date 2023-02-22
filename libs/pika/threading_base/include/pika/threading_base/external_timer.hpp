@@ -9,7 +9,7 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_APEX)
-#include <pika/threading_base/detail/external_timer/apex.hpp>
+# include <pika/threading_base/detail/external_timer/apex.hpp>
 #else
-#include <pika/threading_base/detail/external_timer/default.hpp>
+# include <pika/threading_base/detail/external_timer/default.hpp>
 #endif

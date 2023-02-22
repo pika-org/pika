@@ -8,20 +8,17 @@
 
 #include <typeinfo>
 
-namespace pika::util {
+namespace pika::detail {
     const char* bad_lexical_cast::what() const noexcept
     {
-        return "bad lexical cast: "
-               "source type value could not be interpreted as target";
+        return "bad lexical cast: source type value could not be interpreted as target";
     }
 
     bad_lexical_cast::~bad_lexical_cast() noexcept = default;
 
-    namespace detail {
-        void throw_bad_lexical_cast(std::type_info const& source_type,
-            std::type_info const& target_type)
-        {
-            throw bad_lexical_cast(source_type, target_type);
-        }
-    }    // namespace detail
-}    // namespace pika::util
+    void throw_bad_lexical_cast(
+        std::type_info const& source_type, std::type_info const& target_type)
+    {
+        throw bad_lexical_cast(source_type, target_type);
+    }
+}    // namespace pika::detail

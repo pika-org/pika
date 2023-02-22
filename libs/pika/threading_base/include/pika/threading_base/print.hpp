@@ -34,8 +34,7 @@ namespace pika::debug::detail {
 
         threads::detail::thread_data const* data;
 
-        PIKA_EXPORT friend std::ostream& operator<<(
-            std::ostream& os, threadinfo const& d);
+        PIKA_EXPORT friend std::ostream& operator<<(std::ostream& os, threadinfo const& d);
     };
 
     template <>
@@ -48,38 +47,33 @@ namespace pika::debug::detail {
 
         threads::detail::thread_id_type const* data;
 
-        PIKA_EXPORT friend std::ostream& operator<<(
-            std::ostream& os, threadinfo const& d);
+        PIKA_EXPORT friend std::ostream& operator<<(std::ostream& os, threadinfo const& d);
     };
 
     template <>
     struct threadinfo<threads::detail::thread_id_ref_type*>
     {
-        constexpr explicit threadinfo(
-            threads::detail::thread_id_ref_type const* v)
+        constexpr explicit threadinfo(threads::detail::thread_id_ref_type const* v)
           : data(v)
         {
         }
 
         threads::detail::thread_id_ref_type const* data;
 
-        PIKA_EXPORT friend std::ostream& operator<<(
-            std::ostream& os, threadinfo const& d);
+        PIKA_EXPORT friend std::ostream& operator<<(std::ostream& os, threadinfo const& d);
     };
 
     template <>
     struct threadinfo<pika::threads::detail::thread_init_data>
     {
-        constexpr explicit threadinfo(
-            pika::threads::detail::thread_init_data const& v)
+        constexpr explicit threadinfo(pika::threads::detail::thread_init_data const& v)
           : data(v)
         {
         }
 
         pika::threads::detail::thread_init_data const& data;
 
-        PIKA_EXPORT friend std::ostream& operator<<(
-            std::ostream& os, threadinfo const& d);
+        PIKA_EXPORT friend std::ostream& operator<<(std::ostream& os, threadinfo const& d);
     };
 }    // namespace pika::debug::detail
 /// \endcond

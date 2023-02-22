@@ -16,20 +16,20 @@
 #include <pika/type_support/unused.hpp>
 
 #if defined(PIKA_WINDOWS)
-#include <windows.h>
+# include <windows.h>
 #elif defined(__linux) || defined(linux) || defined(__linux__)
-#include <linux/limits.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <vector>
+# include <linux/limits.h>
+# include <sys/stat.h>
+# include <unistd.h>
+# include <vector>
 #elif __APPLE__
-#include <mach-o/dyld.h>
+# include <mach-o/dyld.h>
 #elif defined(__FreeBSD__)
-#include <algorithm>
-#include <iterator>
-#include <sys/sysctl.h>
-#include <sys/types.h>
-#include <vector>
+# include <algorithm>
+# include <iterator>
+# include <sys/sysctl.h>
+# include <sys/types.h>
+# include <vector>
 #endif
 
 #include <boost/tokenizer.hpp>
@@ -57,8 +57,7 @@ namespace pika::util {
         char exe_path[MAX_PATH + 1] = {'\0'};
         if (!GetModuleFileNameA(nullptr, exe_path, sizeof(exe_path)))
         {
-            PIKA_THROW_EXCEPTION(pika::error::dynamic_link_failure,
-                "get_executable_filename",
+            PIKA_THROW_EXCEPTION(pika::error::dynamic_link_failure, "get_executable_filename",
                 "unable to find executable filename");
         }
         r = exe_path;
@@ -105,9 +104,8 @@ namespace pika::util {
             {
                 std::vector<std::string> path_dirs;
 
-                pika::string_util::split(path_dirs, epath,
-                    pika::string_util::is_any_of(":"),
-                    pika::string_util::token_compress_mode::on);
+                pika::detail::split(path_dirs, epath, pika::detail::is_any_of(":"),
+                    pika::detail::token_compress_mode::on);
 
                 for (std::uint64_t i = 0; i < path_dirs.size(); ++i)
                 {
@@ -124,17 +122,16 @@ namespace pika::util {
                     // NOTE: If someone was using an pika application that was
                     // seteuid'd to root, this may fail.
                     if (0 == ::stat(r.c_str(), &s))
-                        if ((s.st_uid == ::geteuid()) &&
-                            (s.st_mode & S_IXUSR) &&
-                            (s.st_gid == ::getegid()) &&
-                            (s.st_mode & S_IXGRP) && (s.st_mode & S_IXOTH))
+                        if ((s.st_uid == ::geteuid()) && (s.st_mode & S_IXUSR) &&
+                            (s.st_gid == ::getegid()) && (s.st_mode & S_IXGRP) &&
+                            (s.st_mode & S_IXOTH))
                             return r;
                 }
             }
         }
 
-        PIKA_THROW_EXCEPTION(pika::error::dynamic_link_failure,
-            "get_executable_filename", "unable to find executable filename");
+        PIKA_THROW_EXCEPTION(pika::error::dynamic_link_failure, "get_executable_filename",
+            "unable to find executable filename");
 
 #elif defined(__APPLE__)
         PIKA_UNUSED(argv0);
@@ -144,8 +141,7 @@ namespace pika::util {
 
         if (0 != _NSGetExecutablePath(exe_path, &len))
         {
-            PIKA_THROW_EXCEPTION(pika::error::dynamic_link_failure,
-                "get_executable_filename",
+            PIKA_THROW_EXCEPTION(pika::error::dynamic_link_failure, "get_executable_filename",
                 "unable to find executable filename");
         }
         exe_path[len - 1] = '\0';
@@ -165,7 +161,7 @@ namespace pika::util {
         }
 
 #else
-#error Unsupported platform
+# error Unsupported platform
 #endif
 
         return r;

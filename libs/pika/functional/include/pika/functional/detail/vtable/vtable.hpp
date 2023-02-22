@@ -31,8 +31,7 @@ namespace pika::util::detail {
     template <typename VTable, typename T>
     constexpr VTable const* get_vtable() noexcept
     {
-        static_assert(
-            !std::is_reference_v<T>, "T shall have no ref-qualifiers");
+        static_assert(!std::is_reference_v<T>, "T shall have no ref-qualifiers");
 
         return &vtables<VTable, T>::instance;
     }
@@ -65,8 +64,7 @@ namespace pika::util::detail {
         }
 
         template <typename T>
-        static void
-        _deallocate(void* obj, std::size_t storage_size, bool destroy)
+        static void _deallocate(void* obj, std::size_t storage_size, bool destroy)
         {
             using storage_t = std::aligned_storage_t<sizeof(T), alignof(T)>;
 

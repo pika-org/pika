@@ -42,11 +42,9 @@ namespace pika::execution::experimental {
         auto captured_args_then_void(F&& f, Rng&& rng, Ts&&... ts)
         {
             return [f = PIKA_FORWARD(F, f), rng = PIKA_FORWARD(Rng, rng),
-                       ... ts = PIKA_FORWARD(Ts, ts)](
-                       auto i, auto&&... predecessor) mutable {
+                       ... ts = PIKA_FORWARD(Ts, ts)](auto i, auto&&... predecessor) mutable {
                 PIKA_INVOKE(PIKA_FORWARD(F, f), std::begin(rng)[i],
-                    PIKA_FORWARD(decltype(predecessor), predecessor)...,
-                    PIKA_FORWARD(Ts, ts)...);
+                    PIKA_FORWARD(decltype(predecessor), predecessor)..., PIKA_FORWARD(Ts, ts)...);
             };
         }
 
@@ -54,11 +52,9 @@ namespace pika::execution::experimental {
         auto captured_args_then(F&& f, Rng&& rng, Ts&&... ts)
         {
             return [f = PIKA_FORWARD(F, f), rng = PIKA_FORWARD(Rng, rng),
-                       ... ts = PIKA_FORWARD(Ts, ts)](
-                       auto i, auto&& predecessor, auto& v) mutable {
+                       ... ts = PIKA_FORWARD(Ts, ts)](auto i, auto&& predecessor, auto& v) mutable {
                 v[i] = PIKA_INVOKE(PIKA_FORWARD(F, f), std::begin(rng)[i],
-                    PIKA_FORWARD(decltype(predecessor), predecessor),
-                    PIKA_FORWARD(Ts, ts)...);
+                    PIKA_FORWARD(decltype(predecessor), predecessor), PIKA_FORWARD(Ts, ts)...);
             };
         }
 #else
@@ -69,8 +65,7 @@ namespace pika::execution::experimental {
                        t = std::make_tuple(PIKA_FORWARD(Ts, ts)...)](
                        auto i, auto&&... predecessor) mutable {
                 pika::util::detail::invoke_fused(
-                    pika::util::detail::bind_front(PIKA_FORWARD(F, f),
-                        std::begin(rng)[i],
+                    pika::util::detail::bind_front(PIKA_FORWARD(F, f), std::begin(rng)[i],
                         PIKA_FORWARD(decltype(predecessor), predecessor)...),
                     PIKA_MOVE(t));
             };
@@ -83,8 +78,7 @@ namespace pika::execution::experimental {
                        t = std::make_tuple(PIKA_FORWARD(Ts, ts)...)](
                        auto i, auto&& predecessor, auto& v) mutable {
                 v[i] = pika::util::detail::invoke_fused(
-                    pika::util::detail::bind_front(PIKA_FORWARD(F, f),
-                        std::begin(rng)[i],
+                    pika::util::detail::bind_front(PIKA_FORWARD(F, f), std::begin(rng)[i],
                         PIKA_FORWARD(decltype(predecessor), predecessor)),
                     PIKA_MOVE(t));
             };
@@ -98,15 +92,14 @@ namespace pika::execution::experimental {
     template <typename BaseScheduler>
     struct scheduler_executor
     {
-        static_assert(pika::execution::experimental::is_scheduler_v<
-                          std::decay_t<BaseScheduler>>,
+        static_assert(pika::execution::experimental::is_scheduler_v<std::decay_t<BaseScheduler>>,
             "scheduler_executor requires a scheduler");
 
         constexpr scheduler_executor() = default;
 
         template <typename Scheduler,
-            typename Enable = std::enable_if_t<pika::execution::experimental::
-                    is_scheduler_v<std::decay_t<Scheduler>>>>
+            typename Enable = std::enable_if_t<
+                pika::execution::experimental::is_scheduler_v<std::decay_t<Scheduler>>>>
         constexpr explicit scheduler_executor(Scheduler&& sched)
           : sched_(PIKA_FORWARD(Scheduler, sched))
         {
@@ -115,8 +108,7 @@ namespace pika::execution::experimental {
         constexpr scheduler_executor(scheduler_executor&&) = default;
         constexpr scheduler_executor& operator=(scheduler_executor&&) = default;
         constexpr scheduler_executor(scheduler_executor const&) = default;
-        constexpr scheduler_executor& operator=(
-            scheduler_executor const&) = default;
+        constexpr scheduler_executor& operator=(scheduler_executor const&) = default;
 
         /// \cond NOINTERNAL
         constexpr bool operator==(scheduler_executor const& rhs) const noexcept
@@ -134,89 +126,74 @@ namespace pika::execution::experimental {
             return *this;
         }
 
-        template <typename Enable =
-                      std::enable_if_t<std::is_invocable_v<with_priority_t,
-                          BaseScheduler, pika::execution::thread_priority>>>
-        friend scheduler_executor
-        tag_invoke(pika::execution::experimental::with_priority_t,
-            scheduler_executor const& exec,
-            pika::execution::thread_priority priority)
+        template <typename Enable = std::enable_if_t<std::is_invocable_v<with_priority_t,
+                      BaseScheduler, pika::execution::thread_priority>>>
+        friend scheduler_executor tag_invoke(pika::execution::experimental::with_priority_t,
+            scheduler_executor const& exec, pika::execution::thread_priority priority)
         {
             return scheduler_executor(with_priority(exec.sched_, priority));
         }
 
-        template <typename Enable = std::enable_if_t<
-                      std::is_invocable_v<get_priority_t, BaseScheduler>>>
+        template <
+            typename Enable = std::enable_if_t<std::is_invocable_v<get_priority_t, BaseScheduler>>>
         friend pika::execution::thread_priority
-        tag_invoke(pika::execution::experimental::get_priority_t,
-            scheduler_executor const& exec)
+        tag_invoke(pika::execution::experimental::get_priority_t, scheduler_executor const& exec)
         {
             return get_priority(exec.sched_);
         }
 
-        template <typename Enable =
-                      std::enable_if_t<std::is_invocable_v<with_stacksize_t,
-                          BaseScheduler, pika::execution::thread_stacksize>>>
-        friend scheduler_executor
-        tag_invoke(pika::execution::experimental::with_stacksize_t,
-            scheduler_executor const& exec,
-            pika::execution::thread_stacksize stacksize)
+        template <typename Enable = std::enable_if_t<std::is_invocable_v<with_stacksize_t,
+                      BaseScheduler, pika::execution::thread_stacksize>>>
+        friend scheduler_executor tag_invoke(pika::execution::experimental::with_stacksize_t,
+            scheduler_executor const& exec, pika::execution::thread_stacksize stacksize)
         {
             return scheduler_executor(with_stacksize(exec.sched_, stacksize));
         }
 
-        template <typename Enable = std::enable_if_t<
-                      std::is_invocable_v<get_stacksize_t, BaseScheduler>>>
+        template <
+            typename Enable = std::enable_if_t<std::is_invocable_v<get_stacksize_t, BaseScheduler>>>
         friend pika::execution::thread_stacksize
-        tag_invoke(pika::execution::experimental::get_stacksize_t,
-            scheduler_executor const& exec)
+        tag_invoke(pika::execution::experimental::get_stacksize_t, scheduler_executor const& exec)
         {
             return get_stacksize(exec.sched_);
         }
 
-        template <
-            typename Enable = std::enable_if_t<std::is_invocable_v<with_hint_t,
-                BaseScheduler, pika::execution::thread_schedule_hint>>>
-        friend scheduler_executor
-        tag_invoke(pika::execution::experimental::with_hint_t,
-            scheduler_executor const& exec,
-            pika::execution::thread_schedule_hint hint)
+        template <typename Enable = std::enable_if_t<std::is_invocable_v<with_hint_t, BaseScheduler,
+                      pika::execution::thread_schedule_hint>>>
+        friend scheduler_executor tag_invoke(pika::execution::experimental::with_hint_t,
+            scheduler_executor const& exec, pika::execution::thread_schedule_hint hint)
         {
             return scheduler_executor(with_hint(exec.sched_, hint));
         }
 
-        template <typename Enable = std::enable_if_t<
-                      std::is_invocable_v<get_hint_t, BaseScheduler>>>
+        template <
+            typename Enable = std::enable_if_t<std::is_invocable_v<get_hint_t, BaseScheduler>>>
         friend pika::execution::thread_schedule_hint
-        tag_invoke(pika::execution::experimental::get_hint_t,
-            scheduler_executor const& exec)
+        tag_invoke(pika::execution::experimental::get_hint_t, scheduler_executor const& exec)
         {
             return get_hint(exec.sched_);
         }
 
-        template <typename Enable = std::enable_if_t<std::is_invocable_v<
-                      with_annotation_t, BaseScheduler, char const*>>>
-        friend scheduler_executor
-        tag_invoke(pika::execution::experimental::with_annotation_t,
+        template <typename Enable = std::enable_if_t<
+                      std::is_invocable_v<with_annotation_t, BaseScheduler, char const*>>>
+        friend scheduler_executor tag_invoke(pika::execution::experimental::with_annotation_t,
             scheduler_executor const& exec, char const* annotation)
         {
             return scheduler_executor(with_annotation(exec.sched_, annotation));
         }
 
-        template <typename Enable = std::enable_if_t<std::is_invocable_v<
-                      with_annotation_t, BaseScheduler, std::string>>>
-        friend scheduler_executor
-        tag_invoke(pika::execution::experimental::with_annotation_t,
+        template <typename Enable = std::enable_if_t<
+                      std::is_invocable_v<with_annotation_t, BaseScheduler, std::string>>>
+        friend scheduler_executor tag_invoke(pika::execution::experimental::with_annotation_t,
             scheduler_executor const& exec, std::string annotation)
         {
             return scheduler_executor(with_annotation(exec.sched_, annotation));
         }
 
-        template <typename Enable = std::enable_if_t<
-                      std::is_invocable_v<get_annotation_t, BaseScheduler>>>
+        template <typename Enable =
+                      std::enable_if_t<std::is_invocable_v<get_annotation_t, BaseScheduler>>>
         friend char const*
-        tag_invoke(pika::execution::experimental::get_annotation_t,
-            scheduler_executor const& exec)
+        tag_invoke(pika::execution::experimental::get_annotation_t, scheduler_executor const& exec)
         {
             return get_annotation(exec.sched_);
         }
@@ -237,18 +214,15 @@ namespace pika::execution::experimental {
         void post(F&& f, Ts&&... ts)
         {
             start_detached(then(schedule(sched_),
-                pika::util::detail::deferred_call(
-                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)));
+                pika::util::detail::deferred_call(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)));
         }
 
         // OneWayExecutor interface
         template <typename F, typename... Ts>
         decltype(auto) sync_execute(F&& f, Ts&&... ts)
         {
-            return pika::this_thread::experimental::sync_wait(
-                then(schedule(sched_),
-                    pika::util::detail::deferred_call(
-                        PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)));
+            return pika::this_thread::experimental::sync_wait(then(schedule(sched_),
+                pika::util::detail::deferred_call(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)));
         }
 
         // TwoWayExecutor interface
@@ -256,37 +230,33 @@ namespace pika::execution::experimental {
         decltype(auto) async_execute(F&& f, Ts&&... ts)
         {
             return make_future(then(schedule(sched_),
-                pika::util::detail::deferred_call(
-                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)));
+                pika::util::detail::deferred_call(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)));
         }
 
         template <typename F, typename Future, typename... Ts>
         decltype(auto) then_execute(F&& f, Future&& predecessor, Ts&&... ts)
         {
-            auto&& predecessor_transfer_sched = transfer(
-                keep_future(PIKA_FORWARD(Future, predecessor)), sched_);
+            auto&& predecessor_transfer_sched =
+                transfer(keep_future(PIKA_FORWARD(Future, predecessor)), sched_);
 
             return make_future(then(PIKA_MOVE(predecessor_transfer_sched),
-                pika::util::detail::bind_back(
-                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)));
+                pika::util::detail::bind_back(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)));
         }
 
         // BulkTwoWayExecutor interface
         template <typename F, typename S, typename... Ts>
         decltype(auto) bulk_async_execute(F&& f, S const& shape, Ts&&... ts)
         {
-            using shape_element =
-                typename pika::traits::range_traits<S>::value_type;
-            using result_type = pika::util::detail::invoke_deferred_result_t<F,
-                shape_element, Ts...>;
+            using shape_element = typename pika::traits::range_traits<S>::value_type;
+            using result_type =
+                pika::util::detail::invoke_deferred_result_t<F, shape_element, Ts...>;
 
             if constexpr (std::is_void_v<result_type>)
             {
                 using size_type = decltype(pika::util::size(shape));
                 size_type const n = pika::util::size(shape);
 
-                auto f_helper = [](size_type const i, F& f, S const& shape,
-                                    Ts&... ts) {
+                auto f_helper = [](size_type const i, F& f, S const& shape, Ts&... ts) {
                     auto it = pika::util::begin(shape);
                     std::advance(it, i);
                     PIKA_INVOKE(f, *it, ts...);
@@ -295,19 +265,16 @@ namespace pika::execution::experimental {
 
                 std::vector<pika::future<void>> results;
                 results.reserve(1);
-                results.emplace_back(make_future(
-                    then(bulk(transfer_just(sched_, PIKA_FORWARD(F, f), shape,
-                                  PIKA_FORWARD(Ts, ts)...),
-                             n, f_helper),
-                        discard_args)));
+                results.emplace_back(make_future(then(
+                    bulk(transfer_just(sched_, PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Ts, ts)...),
+                        n, f_helper),
+                    discard_args)));
                 return results;
             }
             else
             {
-                using promise_vector_type =
-                    std::vector<pika::lcos::local::promise<result_type>>;
-                using result_vector_type =
-                    std::vector<pika::future<result_type>>;
+                using promise_vector_type = std::vector<pika::lcos::local::promise<result_type>>;
+                using result_vector_type = std::vector<pika::future<result_type>>;
 
                 using size_type = decltype(pika::util::size(shape));
                 size_type const n = pika::util::size(shape);
@@ -321,8 +288,7 @@ namespace pika::execution::experimental {
                     results.emplace_back(promises[i].get_future());
                 }
 
-                auto f_helper = [](size_type const i,
-                                    promise_vector_type& promises, F& f,
+                auto f_helper = [](size_type const i, promise_vector_type& promises, F& f,
                                     S const& shape, Ts&... ts) {
                     pika::detail::try_catch_exception_ptr(
                         [&]() mutable {
@@ -330,14 +296,11 @@ namespace pika::execution::experimental {
                             std::advance(it, i);
                             promises[i].set_value(PIKA_INVOKE(f, *it, ts...));
                         },
-                        [&](std::exception_ptr&& ep) {
-                            promises[i].set_exception(PIKA_MOVE(ep));
-                        });
+                        [&](std::exception_ptr&& ep) { promises[i].set_exception(PIKA_MOVE(ep)); });
                 };
 
-                start_detached(bulk(
-                    transfer_just(sched_, PIKA_MOVE(promises),
-                        PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Ts, ts)...),
+                start_detached(bulk(transfer_just(sched_, PIKA_MOVE(promises), PIKA_FORWARD(F, f),
+                                        shape, PIKA_FORWARD(Ts, ts)...),
                     n, PIKA_MOVE(f_helper)));
 
                 return results;
@@ -354,20 +317,17 @@ namespace pika::execution::experimental {
         }
 
         template <typename F, typename S, typename Future, typename... Ts>
-        decltype(auto) bulk_then_execute(
-            F&& f, S const& shape, Future&& predecessor, Ts&&... ts)
+        decltype(auto) bulk_then_execute(F&& f, S const& shape, Future&& predecessor, Ts&&... ts)
         {
             using result_type =
-                parallel::execution::detail::then_bulk_function_result_t<F, S,
-                    Future, Ts...>;
+                parallel::execution::detail::then_bulk_function_result_t<F, S, Future, Ts...>;
 
             if constexpr (std::is_void<result_type>::value)
             {
                 // the overall return value is future<void>
                 auto prereq = keep_future(PIKA_FORWARD(Future, predecessor));
 
-                auto loop = bulk(transfer(PIKA_MOVE(prereq), sched_),
-                    pika::util::size(shape),
+                auto loop = bulk(transfer(PIKA_MOVE(prereq), sched_), pika::util::size(shape),
                     detail::captured_args_then_void(
                         PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Ts, ts)...));
 
@@ -376,19 +336,14 @@ namespace pika::execution::experimental {
             else
             {
                 // the overall return value is future<std::vector<result_type>>
-                auto prereq = when_all(
-                    keep_future(PIKA_FORWARD(Future, predecessor)),
+                auto prereq = when_all(keep_future(PIKA_FORWARD(Future, predecessor)),
                     just(std::vector<result_type>(pika::util::size(shape))));
 
-                auto loop = bulk(transfer(PIKA_MOVE(prereq), sched_),
-                    pika::util::size(shape),
-                    detail::captured_args_then(
-                        PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Ts, ts)...));
+                auto loop = bulk(transfer(PIKA_MOVE(prereq), sched_), pika::util::size(shape),
+                    detail::captured_args_then(PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Ts, ts)...));
 
-                return make_future(then(
-                    PIKA_MOVE(loop), [](auto&&, std::vector<result_type>&& v) {
-                        return PIKA_MOVE(v);
-                    }));
+                return make_future(then(PIKA_MOVE(loop),
+                    [](auto&&, std::vector<result_type>&& v) { return PIKA_MOVE(v); }));
             }
         }
 
@@ -406,37 +361,32 @@ namespace pika::parallel::execution {
 
     /// \cond NOINTERNAL
     template <typename BaseScheduler>
-    struct is_one_way_executor<
-        pika::execution::experimental::scheduler_executor<BaseScheduler>>
+    struct is_one_way_executor<pika::execution::experimental::scheduler_executor<BaseScheduler>>
       : std::true_type
     {
     };
 
     template <typename BaseScheduler>
     struct is_never_blocking_one_way_executor<
-        pika::execution::experimental::scheduler_executor<BaseScheduler>>
-      : std::true_type
+        pika::execution::experimental::scheduler_executor<BaseScheduler>> : std::true_type
     {
     };
 
     template <typename BaseScheduler>
     struct is_bulk_one_way_executor<
-        pika::execution::experimental::scheduler_executor<BaseScheduler>>
-      : std::true_type
+        pika::execution::experimental::scheduler_executor<BaseScheduler>> : std::true_type
     {
     };
 
     template <typename BaseScheduler>
-    struct is_two_way_executor<
-        pika::execution::experimental::scheduler_executor<BaseScheduler>>
+    struct is_two_way_executor<pika::execution::experimental::scheduler_executor<BaseScheduler>>
       : std::true_type
     {
     };
 
     template <typename BaseScheduler>
     struct is_bulk_two_way_executor<
-        pika::execution::experimental::scheduler_executor<BaseScheduler>>
-      : std::true_type
+        pika::execution::experimental::scheduler_executor<BaseScheduler>> : std::true_type
     {
     };
     /// \endcond

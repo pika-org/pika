@@ -36,13 +36,12 @@ namespace pika::cuda::experimental {
         };
 
         static PIKA_EXPORT priorities get_available_priorities();
-        static PIKA_EXPORT whip::stream_t create_stream(int device,
-            pika::execution::thread_priority priority, unsigned int flags);
+        static PIKA_EXPORT whip::stream_t create_stream(
+            int device, pika::execution::thread_priority priority, unsigned int flags);
 
     public:
         PIKA_EXPORT explicit cuda_stream(int device = 0,
-            pika::execution::thread_priority priority =
-                pika::execution::thread_priority::default_,
+            pika::execution::thread_priority priority = pika::execution::thread_priority::default_,
             unsigned int flags = 0);
         PIKA_EXPORT ~cuda_stream();
         PIKA_EXPORT cuda_stream(cuda_stream&&) noexcept;
@@ -52,19 +51,16 @@ namespace pika::cuda::experimental {
 
         PIKA_EXPORT whip::stream_t get() const noexcept;
         PIKA_EXPORT int get_device() const noexcept;
-        PIKA_EXPORT pika::execution::thread_priority
-        get_priority() const noexcept;
+        PIKA_EXPORT pika::execution::thread_priority get_priority() const noexcept;
         PIKA_EXPORT unsigned int get_flags() const noexcept;
 
         /// \cond NOINTERNAL
-        friend bool operator==(
-            cuda_stream const& lhs, cuda_stream const& rhs) noexcept
+        friend bool operator==(cuda_stream const& lhs, cuda_stream const& rhs) noexcept
         {
             return lhs.stream == rhs.stream;
         }
 
-        friend bool operator!=(
-            cuda_stream const& lhs, cuda_stream const& rhs) noexcept
+        friend bool operator!=(cuda_stream const& lhs, cuda_stream const& rhs) noexcept
         {
             return !(lhs == rhs);
         }
@@ -73,12 +69,10 @@ namespace pika::cuda::experimental {
 }    // namespace pika::cuda::experimental
 
 template <>
-struct fmt::formatter<pika::cuda::experimental::cuda_stream>
-  : fmt::formatter<std::string>
+struct fmt::formatter<pika::cuda::experimental::cuda_stream> : fmt::formatter<std::string>
 {
     template <typename FormatContext>
-    auto format(
-        pika::cuda::experimental::cuda_stream const& stream, FormatContext& ctx)
+    auto format(pika::cuda::experimental::cuda_stream const& stream, FormatContext& ctx)
     {
         return fmt::formatter<std::string>::format(
             fmt::format("cuda_stream({})", fmt::ptr(stream.get())), ctx);

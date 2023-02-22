@@ -8,7 +8,7 @@
 
 #include <pika/config.hpp>
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <pika/execution_base/p2300_forward.hpp>
+# include <pika/execution_base/p2300_forward.hpp>
 #endif
 
 #include <pika/assert.hpp>
@@ -69,8 +69,7 @@ namespace pika::thread_pool_bulk_detail {
 
     public:
         template <typename Sender_, typename Shape_, typename F_>
-        thread_pool_bulk_sender(
-            pika::execution::experimental::thread_pool_scheduler&& scheduler,
+        thread_pool_bulk_sender(pika::execution::experimental::thread_pool_scheduler&& scheduler,
             Sender_&& sender, Shape_&& shape, F_&& f)
           : scheduler(PIKA_MOVE(scheduler))
           , sender(PIKA_FORWARD(Sender_, sender))
@@ -81,42 +80,33 @@ namespace pika::thread_pool_bulk_detail {
         thread_pool_bulk_sender(thread_pool_bulk_sender&&) = default;
         thread_pool_bulk_sender(thread_pool_bulk_sender const&) = default;
         thread_pool_bulk_sender& operator=(thread_pool_bulk_sender&&) = default;
-        thread_pool_bulk_sender& operator=(
-            thread_pool_bulk_sender const&) = default;
+        thread_pool_bulk_sender& operator=(thread_pool_bulk_sender const&) = default;
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-        template <template <typename...> class Tuple,
-            template <typename...> class Variant>
-        using value_types =
-            pika::execution::experimental::value_types_of_t<Sender,
-                pika::execution::experimental::detail::empty_env, Tuple,
-                Variant>;
+        template <template <typename...> class Tuple, template <typename...> class Variant>
+        using value_types = pika::execution::experimental::value_types_of_t<Sender,
+            pika::execution::experimental::detail::empty_env, Tuple, Variant>;
 
         template <template <typename...> class Variant>
-        using error_types =
-            pika::util::detail::unique_t<pika::util::detail::prepend_t<
-                pika::execution::experimental::error_types_of_t<Sender,
-                    pika::execution::experimental::detail::empty_env, Variant>,
-                std::exception_ptr>>;
+        using error_types = pika::util::detail::unique_t<pika::util::detail::prepend_t<
+            pika::execution::experimental::error_types_of_t<Sender,
+                pika::execution::experimental::detail::empty_env, Variant>,
+            std::exception_ptr>>;
 
         using completion_signatures =
             pika::execution::experimental::make_completion_signatures<Sender,
                 pika::execution::experimental::detail::empty_env,
                 pika::execution::experimental::completion_signatures<
-                    pika::execution::experimental::set_error_t(
-                        std::exception_ptr)>>;
+                    pika::execution::experimental::set_error_t(std::exception_ptr)>>;
 #else
-        template <template <typename...> class Tuple,
-            template <typename...> class Variant>
-        using value_types =
-            typename pika::execution::experimental::sender_traits<
-                Sender>::template value_types<Tuple, Variant>;
+        template <template <typename...> class Tuple, template <typename...> class Variant>
+        using value_types = typename pika::execution::experimental::sender_traits<
+            Sender>::template value_types<Tuple, Variant>;
 
         template <template <typename...> class Variant>
-        using error_types =
-            pika::util::detail::unique_t<pika::util::detail::prepend_t<
-                typename pika::execution::experimental::sender_traits<
-                    Sender>::template error_types<Variant>,
+        using error_types = pika::util::detail::unique_t<
+            pika::util::detail::prepend_t<typename pika::execution::experimental::sender_traits<
+                                              Sender>::template error_types<Variant>,
                 std::exception_ptr>>;
 
         static constexpr bool sends_done = false;
@@ -135,8 +125,8 @@ namespace pika::thread_pool_bulk_detail {
                                 std::decay_t<Sender>>))
             // clang-format on
             >
-        friend constexpr auto tag_invoke(
-            pika::execution::experimental::get_completion_scheduler_t<CPO>,
+        friend constexpr auto
+        tag_invoke(pika::execution::experimental::get_completion_scheduler_t<CPO>,
             thread_pool_bulk_sender const& s) noexcept
         {
             if constexpr (std::is_same_v<std::decay_t<CPO>,
@@ -146,8 +136,7 @@ namespace pika::thread_pool_bulk_detail {
             }
             else
             {
-                return pika::execution::experimental::get_completion_scheduler<
-                    CPO>(s);
+                return pika::execution::experimental::get_completion_scheduler<CPO>(s);
             }
 
             // nvc++ complains about a missing return without this
@@ -165,20 +154,17 @@ namespace pika::thread_pool_bulk_detail {
                 operation_state* op_state;
 
                 template <typename E>
-                friend void
-                tag_invoke(pika::execution::experimental::set_error_t,
-                    bulk_receiver&& r, E&& e) noexcept
+                friend void tag_invoke(
+                    pika::execution::experimental::set_error_t, bulk_receiver&& r, E&& e) noexcept
                 {
                     pika::execution::experimental::set_error(
                         PIKA_MOVE(r.op_state->receiver), PIKA_FORWARD(E, e));
                 }
 
                 friend void tag_invoke(
-                    pika::execution::experimental::set_stopped_t,
-                    bulk_receiver&& r) noexcept
+                    pika::execution::experimental::set_stopped_t, bulk_receiver&& r) noexcept
                 {
-                    pika::execution::experimental::set_stopped(
-                        PIKA_MOVE(r.op_state->receiver));
+                    pika::execution::experimental::set_stopped(PIKA_MOVE(r.op_state->receiver));
                 };
 
                 struct task_function;
@@ -199,20 +185,15 @@ namespace pika::thread_pool_bulk_detail {
                     template <typename Ts>
                     void do_work_chunk(Ts& ts, std::uint32_t const index) const
                     {
-                        auto const i_begin =
-                            static_cast<size_type>(index) * task_f->chunk_size;
-                        auto const i_end =
-                            (std::min)(static_cast<size_type>(index + 1) *
-                                    task_f->chunk_size,
-                                task_f->n);
+                        auto const i_begin = static_cast<size_type>(index) * task_f->chunk_size;
+                        auto const i_end = (std::min)(
+                            static_cast<size_type>(index + 1) * task_f->chunk_size, task_f->n);
                         auto it = pika::util::begin(op_state->shape);
                         std::advance(it, i_begin);
                         for (std::uint32_t i = i_begin; i < i_end; ++i)
                         {
                             pika::util::detail::invoke_fused(
-                                pika::util::detail::bind_front(
-                                    op_state->f, *it),
-                                ts);
+                                pika::util::detail::bind_front(op_state->f, *it), ts);
                             ++it;
                         }
                     }
@@ -222,12 +203,11 @@ namespace pika::thread_pool_bulk_detail {
                     // queue owned by worker_thread. It then tries to steal
                     // chunks from neighboring threads.
                     template <typename Ts,
-                        typename = std::enable_if_t<!std::is_same_v<
-                            std::decay_t<Ts>, pika::detail::monostate>>>
+                        typename = std::enable_if_t<
+                            !std::is_same_v<std::decay_t<Ts>, pika::detail::monostate>>>
                     void operator()(Ts& ts) const
                     {
-                        auto& local_queue =
-                            op_state->queues[task_f->worker_thread].data_;
+                        auto& local_queue = op_state->queues[task_f->worker_thread].data_;
 
                         // Handle local queue first
                         std::optional<std::uint32_t> index;
@@ -237,14 +217,12 @@ namespace pika::thread_pool_bulk_detail {
                         }
 
                         // Then steal from neighboring queues
-                        for (std::uint32_t offset = 1;
-                             offset < op_state->num_worker_threads; ++offset)
+                        for (std::uint32_t offset = 1; offset < op_state->num_worker_threads;
+                             ++offset)
                         {
                             std::size_t neighbor_worker_thread =
-                                (task_f->worker_thread + offset) %
-                                op_state->num_worker_threads;
-                            auto& neighbor_queue =
-                                op_state->queues[neighbor_worker_thread].data_;
+                                (task_f->worker_thread + offset) % op_state->num_worker_threads;
+                            auto& neighbor_queue = op_state->queues[neighbor_worker_thread].data_;
 
                             while ((index = neighbor_queue.pop_right()))
                             {
@@ -268,13 +246,12 @@ namespace pika::thread_pool_bulk_detail {
                     // processed their chunks and the connected receiver
                     // should be signalled.
                     template <typename Ts,
-                        typename = std::enable_if_t<!std::is_same_v<
-                            std::decay_t<Ts>, pika::detail::monostate>>>
+                        typename = std::enable_if_t<
+                            !std::is_same_v<std::decay_t<Ts>, pika::detail::monostate>>>
                     void operator()(Ts&& ts) const
                     {
                         pika::util::detail::invoke_fused(
-                            pika::util::detail::bind_front(
-                                pika::execution::experimental::set_value,
+                            pika::util::detail::bind_front(pika::execution::experimental::set_value,
                                 PIKA_MOVE(op_state->receiver)),
                             PIKA_FORWARD(Ts, ts));
                     }
@@ -291,9 +268,7 @@ namespace pika::thread_pool_bulk_detail {
                     // Visit the values sent by the predecessor sender.
                     void do_work() const
                     {
-                        pika::detail::visit(
-                            set_value_loop_visitor{op_state, this},
-                            op_state->ts);
+                        pika::detail::visit(set_value_loop_visitor{op_state, this}, op_state->ts);
                     }
 
                     // Store an exception and mark that an exception was
@@ -328,8 +303,7 @@ namespace pika::thread_pool_bulk_detail {
                             else
                             {
                                 pika::detail::visit(
-                                    set_value_end_loop_visitor{op_state},
-                                    PIKA_MOVE(op_state->ts));
+                                    set_value_end_loop_visitor{op_state}, PIKA_MOVE(op_state->ts));
                             }
                         }
                     }
@@ -375,27 +349,22 @@ namespace pika::thread_pool_bulk_detail {
                 }
 
                 // Initialize a queue for a worker thread.
-                void init_queue(std::uint32_t const worker_thread,
-                    std::uint32_t const num_chunks)
+                void init_queue(std::uint32_t const worker_thread, std::uint32_t const num_chunks)
                 {
                     auto& queue = op_state->queues[worker_thread].data_;
                     auto const part_begin = static_cast<std::uint32_t>(
-                        (worker_thread * num_chunks) /
-                        op_state->num_worker_threads);
+                        (worker_thread * num_chunks) / op_state->num_worker_threads);
                     auto const part_end = static_cast<std::uint32_t>(
-                        ((worker_thread + 1) * num_chunks) /
-                        op_state->num_worker_threads);
+                        ((worker_thread + 1) * num_chunks) / op_state->num_worker_threads);
                     queue.reset(part_begin, part_end);
                 }
 
                 // Spawn a task which will process a number of chunks. If
                 // the queue contains no chunks no task will be spawned.
-                void do_work_task(size_type const n,
-                    std::uint32_t const chunk_size,
+                void do_work_task(size_type const n, std::uint32_t const chunk_size,
                     std::uint32_t const worker_thread) const
                 {
-                    task_function task_f{
-                        this->op_state, n, chunk_size, worker_thread};
+                    task_function task_f{this->op_state, n, chunk_size, worker_thread};
 
                     auto& queue = op_state->queues[worker_thread].data_;
                     if (queue.empty())
@@ -407,13 +376,11 @@ namespace pika::thread_pool_bulk_detail {
                     }
 
                     // Only apply hint if none was given.
-                    auto hint = pika::execution::experimental::get_hint(
-                        op_state->scheduler);
+                    auto hint = pika::execution::experimental::get_hint(op_state->scheduler);
                     if (hint == pika::execution::thread_schedule_hint())
                     {
                         hint = pika::execution::thread_schedule_hint(
-                            pika::execution::thread_schedule_hint_mode::thread,
-                            worker_thread);
+                            pika::execution::thread_schedule_hint_mode::thread, worker_thread);
                     }
 
                     // Get the current thread description and apply it to
@@ -427,35 +394,27 @@ namespace pika::thread_pool_bulk_detail {
 
                     // Spawn the task.
                     threads::detail::thread_init_data data(
-                        threads::detail::make_thread_function_nullary(
-                            PIKA_MOVE(task_f)),
-                        desc,
-                        pika::execution::experimental::get_priority(
-                            op_state->scheduler),
-                        hint,
-                        pika::execution::experimental::get_stacksize(
-                            op_state->scheduler));
-                    threads::detail::register_work(
-                        data, op_state->scheduler.get_thread_pool());
+                        threads::detail::make_thread_function_nullary(PIKA_MOVE(task_f)), desc,
+                        pika::execution::experimental::get_priority(op_state->scheduler), hint,
+                        pika::execution::experimental::get_stacksize(op_state->scheduler));
+                    threads::detail::register_work(data, op_state->scheduler.get_thread_pool());
                 }
 
                 // Do the work on the worker thread that called set_value
                 // from the predecessor sender. This thread participates in
                 // the work and does not need a new task since it already
                 // runs on a task.
-                void do_work_local(size_type n, std::uint32_t chunk_size,
-                    std::uint32_t worker_thread) const
+                void do_work_local(
+                    size_type n, std::uint32_t chunk_size, std::uint32_t worker_thread) const
                 {
-                    task_function{
-                        this->op_state, n, chunk_size, worker_thread}();
+                    task_function{this->op_state, n, chunk_size, worker_thread}();
                 }
 
-                using range_value_type = pika::traits::iter_value_t<
-                    pika::traits::range_iterator_t<Shape>>;
+                using range_value_type =
+                    pika::traits::iter_value_t<pika::traits::range_iterator_t<Shape>>;
 
                 template <typename... Ts>
-                friend void
-                tag_invoke(pika::execution::experimental::set_value_t,
+                friend void tag_invoke(pika::execution::experimental::set_value_t,
                     bulk_receiver&& r, Ts&&... ts) noexcept
                 {
                     // Don't spawn tasks if there is no work to be done
@@ -463,36 +422,30 @@ namespace pika::thread_pool_bulk_detail {
                     if (n == 0)
                     {
                         pika::execution::experimental::set_value(
-                            PIKA_MOVE(r.op_state->receiver),
-                            PIKA_FORWARD(Ts, ts)...);
+                            PIKA_MOVE(r.op_state->receiver), PIKA_FORWARD(Ts, ts)...);
                         return;
                     }
 
                     // Calculate chunk size and number of chunks
-                    auto const chunk_size =
-                        get_chunk_size(r.op_state->num_worker_threads, n);
+                    auto const chunk_size = get_chunk_size(r.op_state->num_worker_threads, n);
                     auto const num_chunks = (n + chunk_size - 1) / chunk_size;
 
                     // Store sent values in the operation state
-                    r.op_state->ts.template emplace<std::tuple<Ts...>>(
-                        PIKA_FORWARD(Ts, ts)...);
+                    r.op_state->ts.template emplace<std::tuple<Ts...>>(PIKA_FORWARD(Ts, ts)...);
 
                     // Initialize the queues for all worker threads so that
                     // worker threads can start stealing immediately when
                     // they start.
                     for (std::size_t worker_thread = 0;
-                         worker_thread < r.op_state->num_worker_threads;
-                         ++worker_thread)
+                         worker_thread < r.op_state->num_worker_threads; ++worker_thread)
                     {
                         r.init_queue(worker_thread, num_chunks);
                     }
 
                     // Spawn the worker threads for all except the local queue.
-                    auto const local_worker_thread =
-                        pika::get_local_worker_thread_num();
+                    auto const local_worker_thread = pika::get_local_worker_thread_num();
                     for (std::size_t worker_thread = 0;
-                         worker_thread < r.op_state->num_worker_threads;
-                         ++worker_thread)
+                         worker_thread < r.op_state->num_worker_threads; ++worker_thread)
                     {
                         // The queue for the local thread is handled later
                         // inline.
@@ -508,42 +461,34 @@ namespace pika::thread_pool_bulk_detail {
                     r.do_work_local(n, chunk_size, local_worker_thread);
                 }
 
-                friend constexpr pika::execution::experimental::detail::
-                    empty_env
-                    tag_invoke(pika::execution::experimental::get_env_t,
-                        bulk_receiver const&) noexcept
+                friend constexpr pika::execution::experimental::detail::empty_env tag_invoke(
+                    pika::execution::experimental::get_env_t, bulk_receiver const&) noexcept
                 {
                     return {};
                 }
             };
 
             using operation_state_type =
-                pika::execution::experimental::connect_result_t<Sender,
-                    bulk_receiver>;
+                pika::execution::experimental::connect_result_t<Sender, bulk_receiver>;
 
             pika::execution::experimental::thread_pool_scheduler scheduler;
             operation_state_type op_state;
-            std::size_t num_worker_threads =
-                scheduler.get_thread_pool()->get_os_thread_count();
+            std::size_t num_worker_threads = scheduler.get_thread_pool()->get_os_thread_count();
             std::vector<pika::concurrency::detail::cache_aligned_data<
                 pika::concurrency::detail::contiguous_index_queue<>>>
                 queues{num_worker_threads};
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Shape> shape;
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
-            std::atomic<decltype(pika::util::size(shape))> tasks_remaining{
-                num_worker_threads};
-            pika::util::detail::prepend_t<
-                value_types<std::tuple, pika::detail::variant>,
+            std::atomic<decltype(pika::util::size(shape))> tasks_remaining{num_worker_threads};
+            pika::util::detail::prepend_t<value_types<std::tuple, pika::detail::variant>,
                 pika::detail::monostate>
                 ts;
             std::atomic<bool> exception_thrown{false};
             std::optional<std::exception_ptr> exception;
 
-            template <typename Sender_, typename Shape_, typename F_,
-                typename Receiver_>
-            operation_state(
-                pika::execution::experimental::thread_pool_scheduler scheduler,
+            template <typename Sender_, typename Shape_, typename F_, typename Receiver_>
+            operation_state(pika::execution::experimental::thread_pool_scheduler scheduler,
                 Sender_&& sender, Shape_&& shape, F_&& f, Receiver_&& receiver)
               : scheduler(PIKA_MOVE(scheduler))
               , op_state(pika::execution::experimental::connect(
@@ -554,8 +499,8 @@ namespace pika::thread_pool_bulk_detail {
             {
             }
 
-            friend void tag_invoke(pika::execution::experimental::start_t,
-                operation_state& os) noexcept
+            friend void tag_invoke(
+                pika::execution::experimental::start_t, operation_state& os) noexcept
             {
                 pika::execution::experimental::start(os.op_state);
             }
@@ -566,17 +511,17 @@ namespace pika::thread_pool_bulk_detail {
         friend auto tag_invoke(pika::execution::experimental::connect_t,
             thread_pool_bulk_sender&& s, Receiver&& receiver)
         {
-            return operation_state<std::decay_t<Receiver>>{
-                PIKA_MOVE(s.scheduler), PIKA_MOVE(s.sender), PIKA_MOVE(s.shape),
-                PIKA_MOVE(s.f), PIKA_FORWARD(Receiver, receiver)};
+            return operation_state<std::decay_t<Receiver>>{PIKA_MOVE(s.scheduler),
+                PIKA_MOVE(s.sender), PIKA_MOVE(s.shape), PIKA_MOVE(s.f),
+                PIKA_FORWARD(Receiver, receiver)};
         }
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t,
-            thread_pool_bulk_sender& s, Receiver&& receiver)
+        friend auto tag_invoke(pika::execution::experimental::connect_t, thread_pool_bulk_sender& s,
+            Receiver&& receiver)
         {
-            return operation_state<std::decay_t<Receiver>>{s.scheduler,
-                s.sender, s.shape, s.f, PIKA_FORWARD(Receiver, receiver)};
+            return operation_state<std::decay_t<Receiver>>{
+                s.scheduler, s.sender, s.shape, s.f, PIKA_FORWARD(Receiver, receiver)};
         }
     };
 }    // namespace pika::thread_pool_bulk_detail
@@ -584,24 +529,22 @@ namespace pika::thread_pool_bulk_detail {
 namespace pika::execution::experimental {
     template <typename Sender, typename Shape, typename F,
         PIKA_CONCEPT_REQUIRES_(std::is_integral_v<std::decay_t<Shape>>)>
-    constexpr auto tag_invoke(bulk_t, thread_pool_scheduler scheduler,
-        Sender&& sender, Shape&& shape, F&& f)
+    constexpr auto
+    tag_invoke(bulk_t, thread_pool_scheduler scheduler, Sender&& sender, Shape&& shape, F&& f)
     {
-        return thread_pool_bulk_detail::thread_pool_bulk_sender<
-            std::decay_t<Sender>,
-            pika::util::detail::counting_shape_type<std::decay_t<Shape>>,
-            std::decay_t<F>>{PIKA_MOVE(scheduler), PIKA_FORWARD(Sender, sender),
+        return thread_pool_bulk_detail::thread_pool_bulk_sender<std::decay_t<Sender>,
+            pika::util::detail::counting_shape_type<std::decay_t<Shape>>, std::decay_t<F>>{
+            PIKA_MOVE(scheduler), PIKA_FORWARD(Sender, sender),
             pika::util::detail::make_counting_shape(shape), PIKA_FORWARD(F, f)};
     }
 
     template <typename Sender, typename Shape, typename F,
         PIKA_CONCEPT_REQUIRES_(!std::is_integral_v<std::decay_t<Shape>>)>
-    constexpr auto tag_invoke(bulk_t, thread_pool_scheduler scheduler,
-        Sender&& sender, Shape&& shape, F&& f)
+    constexpr auto
+    tag_invoke(bulk_t, thread_pool_scheduler scheduler, Sender&& sender, Shape&& shape, F&& f)
     {
-        return thread_pool_bulk_detail::thread_pool_bulk_sender<
-            std::decay_t<Sender>, std::decay_t<Shape>, std::decay_t<F>>{
-            PIKA_MOVE(scheduler), PIKA_FORWARD(Sender, sender),
-            PIKA_FORWARD(Shape, shape), PIKA_FORWARD(F, f)};
+        return thread_pool_bulk_detail::thread_pool_bulk_sender<std::decay_t<Sender>,
+            std::decay_t<Shape>, std::decay_t<F>>{PIKA_MOVE(scheduler),
+            PIKA_FORWARD(Sender, sender), PIKA_FORWARD(Shape, shape), PIKA_FORWARD(F, f)};
     }
 }    // namespace pika::execution::experimental

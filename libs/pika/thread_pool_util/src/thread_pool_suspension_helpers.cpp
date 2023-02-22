@@ -17,23 +17,19 @@
 #include <utility>
 
 namespace pika::threads::detail {
-    pika::future<void> resume_processing_unit(
-        thread_pool_base& pool, std::size_t virt_core)
+    pika::future<void> resume_processing_unit(thread_pool_base& pool, std::size_t virt_core)
     {
         if (!threads::detail::get_self_ptr())
         {
-            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
-                "resume_processing_unit",
-                "cannot call resume_processing_unit from outside pika, use"
-                "resume_processing_unit_cb instead");
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "resume_processing_unit",
+                "cannot call resume_processing_unit from outside pika, "
+                "useresume_processing_unit_cb instead");
         }
-        else if (!pool.get_scheduler()->has_scheduler_mode(
-                     scheduler_mode::enable_elasticity))
+        else if (!pool.get_scheduler()->has_scheduler_mode(scheduler_mode::enable_elasticity))
         {
-            return pika::make_exceptional_future<void>(PIKA_GET_EXCEPTION(
-                pika::error::invalid_status, "resume_processing_unit",
-                "this thread pool does not support suspending "
-                "processing units"));
+            return pika::make_exceptional_future<void>(
+                PIKA_GET_EXCEPTION(pika::error::invalid_status, "resume_processing_unit",
+                    "this thread pool does not support suspending processing units"));
         }
 
         return pika::async([&pool, virt_core]() -> void {
@@ -42,21 +38,16 @@ namespace pika::threads::detail {
     }
 
     void resume_processing_unit_cb(thread_pool_base& pool,
-        util::detail::function<void(void)> callback, std::size_t virt_core,
-        error_code& ec)
+        util::detail::function<void(void)> callback, std::size_t virt_core, error_code& ec)
     {
-        if (!pool.get_scheduler()->has_scheduler_mode(
-                scheduler_mode::enable_elasticity))
+        if (!pool.get_scheduler()->has_scheduler_mode(scheduler_mode::enable_elasticity))
         {
-            PIKA_THROWS_IF(ec, pika::error::invalid_status,
-                "resume_processing_unit_cb",
-                "this thread pool does not support suspending "
-                "processing units");
+            PIKA_THROWS_IF(ec, pika::error::invalid_status, "resume_processing_unit_cb",
+                "this thread pool does not support suspending processing units");
             return;
         }
 
-        auto resume_direct_wrapper = [&pool, virt_core,
-                                         callback = PIKA_MOVE(callback)]() {
+        auto resume_direct_wrapper = [&pool, virt_core, callback = PIKA_MOVE(callback)]() {
             pool.resume_processing_unit_direct(virt_core, throws);
             callback();
         };
@@ -71,32 +62,27 @@ namespace pika::threads::detail {
         }
     }
 
-    pika::future<void> suspend_processing_unit(
-        thread_pool_base& pool, std::size_t virt_core)
+    pika::future<void> suspend_processing_unit(thread_pool_base& pool, std::size_t virt_core)
     {
         if (!threads::detail::get_self_ptr())
         {
-            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
-                "suspend_processing_unit",
-                "cannot call suspend_processing_unit from outside pika, use"
-                "suspend_processing_unit_cb instead");
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "suspend_processing_unit",
+                "cannot call suspend_processing_unit from outside pika, "
+                "usesuspend_processing_unit_cb instead");
         }
-        if (!pool.get_scheduler()->has_scheduler_mode(
-                scheduler_mode::enable_elasticity))
+        if (!pool.get_scheduler()->has_scheduler_mode(scheduler_mode::enable_elasticity))
         {
-            return pika::make_exceptional_future<void>(PIKA_GET_EXCEPTION(
-                pika::error::invalid_status, "suspend_processing_unit",
-                "this thread pool does not support suspending "
-                "processing units"));
+            return pika::make_exceptional_future<void>(
+                PIKA_GET_EXCEPTION(pika::error::invalid_status, "suspend_processing_unit",
+                    "this thread pool does not support suspending processing units"));
         }
-        if (!pool.get_scheduler()->has_scheduler_mode(
-                scheduler_mode::enable_stealing) &&
+        if (!pool.get_scheduler()->has_scheduler_mode(scheduler_mode::enable_stealing) &&
             pika::this_thread::get_pool() == &pool)
         {
-            return pika::make_exceptional_future<void>(PIKA_GET_EXCEPTION(
-                pika::error::invalid_status, "suspend_processing_unit",
-                "this thread pool does not support suspending "
-                "processing units from itself (no thread stealing)"));
+            return pika::make_exceptional_future<void>(
+                PIKA_GET_EXCEPTION(pika::error::invalid_status, "suspend_processing_unit",
+                    "this thread pool does not support suspending processing units from itself (no "
+                    "thread stealing)"));
         }
 
         return pika::async([&pool, virt_core]() -> void {
@@ -105,36 +91,28 @@ namespace pika::threads::detail {
     }
 
     void suspend_processing_unit_cb(thread_pool_base& pool,
-        util::detail::function<void(void)> callback, std::size_t virt_core,
-        error_code& ec)
+        util::detail::function<void(void)> callback, std::size_t virt_core, error_code& ec)
     {
-        if (!pool.get_scheduler()->has_scheduler_mode(
-                scheduler_mode::enable_elasticity))
+        if (!pool.get_scheduler()->has_scheduler_mode(scheduler_mode::enable_elasticity))
         {
-            PIKA_THROWS_IF(ec, pika::error::invalid_status,
-                "suspend_processing_unit_cb",
-                "this thread pool does not support suspending processing "
-                "units");
+            PIKA_THROWS_IF(ec, pika::error::invalid_status, "suspend_processing_unit_cb",
+                "this thread pool does not support suspending processing units");
             return;
         }
 
-        auto suspend_direct_wrapper = [&pool, virt_core,
-                                          callback = PIKA_MOVE(callback)]() {
+        auto suspend_direct_wrapper = [&pool, virt_core, callback = PIKA_MOVE(callback)]() {
             pool.suspend_processing_unit_direct(virt_core, throws);
             callback();
         };
 
         if (threads::detail::get_self_ptr())
         {
-            if (!pool.get_scheduler()->has_scheduler_mode(
-                    scheduler_mode::enable_stealing) &&
+            if (!pool.get_scheduler()->has_scheduler_mode(scheduler_mode::enable_stealing) &&
                 pika::this_thread::get_pool() == &pool)
             {
-                PIKA_THROW_EXCEPTION(pika::error::invalid_status,
-                    "suspend_processing_unit_"
-                    "cb",
-                    "this thread pool does not support suspending "
-                    "processing units from itself (no thread stealing)");
+                PIKA_THROW_EXCEPTION(pika::error::invalid_status, "suspend_processing_unit_cb",
+                    "this thread pool does not support suspending processing units from itself (no "
+                    "thread stealing)");
             }
 
             pika::apply(PIKA_MOVE(suspend_direct_wrapper));
@@ -150,20 +128,18 @@ namespace pika::threads::detail {
         if (!threads::detail::get_self_ptr())
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status, "resume_pool",
-                "cannot call resume_pool from outside pika, use resume_pool_cb "
-                "or the member function resume_direct instead");
+                "cannot call resume_pool from outside pika, use resume_pool_cb or the member "
+                "function resume_direct instead");
             return pika::make_ready_future();
         }
 
-        return pika::async(
-            [&pool]() -> void { return pool.resume_direct(throws); });
+        return pika::async([&pool]() -> void { return pool.resume_direct(throws); });
     }
 
-    void resume_pool_cb(thread_pool_base& pool,
-        util::detail::function<void(void)> callback, error_code& /* ec */)
+    void resume_pool_cb(
+        thread_pool_base& pool, util::detail::function<void(void)> callback, error_code& /* ec */)
     {
-        auto resume_direct_wrapper =
-            [&pool, callback = PIKA_MOVE(callback)]() -> void {
+        auto resume_direct_wrapper = [&pool, callback = PIKA_MOVE(callback)]() -> void {
             pool.resume_direct(throws);
             callback();
         };
@@ -183,36 +159,30 @@ namespace pika::threads::detail {
         if (!threads::detail::get_self_ptr())
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status, "suspend_pool",
-                "cannot call suspend_pool from outside pika, use "
-                "suspend_pool_cb or the member function suspend_direct "
-                "instead");
+                "cannot call suspend_pool from outside pika, use suspend_pool_cb or the member "
+                "function suspend_direct instead");
             return pika::make_ready_future();
         }
-        if (threads::detail::get_self_ptr() &&
-            pika::this_thread::get_pool() == &pool)
+        if (threads::detail::get_self_ptr() && pika::this_thread::get_pool() == &pool)
         {
-            return pika::make_exceptional_future<void>(
-                PIKA_GET_EXCEPTION(pika::error::bad_parameter, "suspend_pool",
-                    "cannot suspend a pool from itself"));
+            return pika::make_exceptional_future<void>(PIKA_GET_EXCEPTION(
+                pika::error::bad_parameter, "suspend_pool", "cannot suspend a pool from itself"));
         }
 
-        return pika::async(
-            [&pool]() -> void { return pool.suspend_direct(throws); });
+        return pika::async([&pool]() -> void { return pool.suspend_direct(throws); });
     }
 
-    void suspend_pool_cb(thread_pool_base& pool,
-        util::detail::function<void(void)> callback, error_code& ec)
+    void suspend_pool_cb(
+        thread_pool_base& pool, util::detail::function<void(void)> callback, error_code& ec)
     {
-        if (threads::detail::get_self_ptr() &&
-            pika::this_thread::get_pool() == &pool)
+        if (threads::detail::get_self_ptr() && pika::this_thread::get_pool() == &pool)
         {
             PIKA_THROWS_IF(ec, pika::error::bad_parameter, "suspend_pool_cb",
                 "cannot suspend a pool from itself");
             return;
         }
 
-        auto suspend_direct_wrapper = [&pool,
-                                          callback = PIKA_MOVE(callback)]() {
+        auto suspend_direct_wrapper = [&pool, callback = PIKA_MOVE(callback)]() {
             pool.suspend_direct(throws);
             callback();
         };

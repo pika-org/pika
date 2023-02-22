@@ -30,15 +30,11 @@ void stack_remaining(const char* txt, info_stack& stack)
     std::size_t stack_ptr = 0x00000000;
 #endif
     std::ptrdiff_t stacksize = pika::this_thread::get_stack_size();
-    std::ptrdiff_t remaining_stack =
-        pika::this_thread::get_available_stack_space();
+    std::ptrdiff_t remaining_stack = pika::this_thread::get_available_stack_space();
     //
-    std::cout << txt << " stacksize       : 0x" << std::hex << stacksize
-              << "\n";
-    std::cout << txt << " stack pointer   : 0x" << std::hex << stack_ptr
-              << "\n";
-    std::cout << txt << " stack remaining : 0x" << std::hex << remaining_stack
-              << "\n\n";
+    std::cout << txt << " stacksize       : 0x" << std::hex << stacksize << "\n";
+    std::cout << txt << " stack pointer   : 0x" << std::hex << stack_ptr << "\n";
+    std::cout << txt << " stack remaining : 0x" << std::hex << remaining_stack << "\n\n";
 
     stack.push(std::make_tuple(stack_ptr, stacksize, remaining_stack));
 }
@@ -78,12 +74,12 @@ int pika_main()
         std::ptrdiff_t stack_now = std::get<2>(i);
         std::cout << "stack remaining 0x" << std::hex << stack_now << "\n";
 #if defined(PIKA_HAVE_THREADS_GET_STACK_POINTER)
-#if defined(PIKA_DEBUG)
+# if defined(PIKA_DEBUG)
         PIKA_TEST_LT(current_stack, stack_now);
-#else
+# else
         // In release builds some stack variables may get optimized away.
         PIKA_TEST_LTE(current_stack, stack_now);
-#endif
+# endif
 #endif
         current_stack = stack_now;
         my_stack_info.pop();
@@ -96,8 +92,7 @@ int main(int argc, char* argv[])
     //
     // add command line option which controls the random number generator seed
     using namespace pika::program_options;
-    options_description desc_commandline(
-        "Usage: " PIKA_APPLICATION_STRING " [options]");
+    options_description desc_commandline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
     // By default this test should run on all available cores
     std::vector<std::string> const cfg = {"pika.os_threads=all"};
@@ -107,8 +102,8 @@ int main(int argc, char* argv[])
     init_args.desc_cmdline = desc_commandline;
     init_args.cfg = cfg;
 
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(
+        pika::init(pika_main, argc, argv, init_args), 0, "pika main exited with non-zero status");
 
     return 0;
 }

@@ -19,7 +19,6 @@ status = [
   "ci/circleci: check_module_cmakelists",
   "ci/circleci: clang_format",
   "ci/circleci: cmake_format",
-  "ci/circleci: inspect",
   "ci/circleci: inshpect",
   "ci/circleci: python_format",
   "ci/circleci: shell_format",
@@ -37,7 +36,7 @@ status = [
   "ci/circleci: arm64_build",
 
   # Jenkins
-  # "jenkins/cscs-ault/hipcc-release",
+  "jenkins/cscs-ault/hipcc-release",
   "jenkins/cscs-daint/cce-debug",
   "jenkins/cscs-daint/cce-release",
   "jenkins/cscs-daint/clang-11-debug",

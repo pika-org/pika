@@ -59,8 +59,7 @@ namespace pika {
     ///    is_execution_policy is undefined.
     ///
     template <typename T>
-    struct is_execution_policy
-      : pika::detail::is_execution_policy<std::decay_t<T>>
+    struct is_execution_policy : pika::detail::is_execution_policy<std::decay_t<T>>
     {
     };
 
@@ -87,8 +86,7 @@ namespace pika {
     };
 
     template <typename T>
-    inline constexpr bool is_parallel_execution_policy_v =
-        is_parallel_execution_policy<T>::value;
+    inline constexpr bool is_parallel_execution_policy_v = is_parallel_execution_policy<T>::value;
 
     ///////////////////////////////////////////////////////////////////////////
     /// Extension: Detect whether given execution policy does not enable
@@ -113,8 +111,7 @@ namespace pika {
     };
 
     template <typename T>
-    inline constexpr bool is_sequenced_execution_policy_v =
-        is_sequenced_execution_policy<T>::value;
+    inline constexpr bool is_sequenced_execution_policy_v = is_sequenced_execution_policy<T>::value;
 
     ///////////////////////////////////////////////////////////////////////////
     /// Extension: Detect whether given execution policy makes algorithms
@@ -133,25 +130,21 @@ namespace pika {
     ///
     // extension:
     template <typename T>
-    struct is_async_execution_policy
-      : pika::detail::is_async_execution_policy<std::decay_t<T>>
+    struct is_async_execution_policy : pika::detail::is_async_execution_policy<std::decay_t<T>>
     {
     };
 
     template <typename T>
-    inline constexpr bool is_async_execution_policy_v =
-        is_async_execution_policy<T>::value;
+    inline constexpr bool is_async_execution_policy_v = is_async_execution_policy<T>::value;
 
     /// \cond NOINTERNAL
     template <typename T>
-    struct is_rebound_execution_policy
-      : pika::detail::is_rebound_execution_policy<std::decay_t<T>>
+    struct is_rebound_execution_policy : pika::detail::is_rebound_execution_policy<std::decay_t<T>>
     {
     };
 
     template <typename T>
-    inline constexpr bool is_rebound_execution_policy_v =
-        is_rebound_execution_policy<T>::value;
+    inline constexpr bool is_rebound_execution_policy_v = is_rebound_execution_policy<T>::value;
 
     // extension:
     template <typename T>

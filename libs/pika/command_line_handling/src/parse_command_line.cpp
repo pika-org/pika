@@ -26,8 +26,8 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::detail {
-    commandline_error_mode operator&(commandline_error_mode const lhs,
-        commandline_error_mode const rhs) noexcept
+    commandline_error_mode operator&(
+        commandline_error_mode const lhs, commandline_error_mode const rhs) noexcept
     {
         return static_cast<commandline_error_mode>(
             static_cast<std::underlying_type_t<commandline_error_mode>>(lhs) &
@@ -115,8 +115,7 @@ namespace pika::detail {
         if (opt.size() > 2 && opt[1] != '-')
         {
             // short option with value: first two letters have to match
-            expand_to =
-                trim_whitespace(sec->get_entry(opt.substr(0, start_at), ""));
+            expand_to = trim_whitespace(sec->get_entry(opt.substr(0, start_at), ""));
         }
         else
         {
@@ -129,8 +128,7 @@ namespace pika::detail {
 
             if (start_at != std::string::npos)
             {
-                expand_to = trim_whitespace(
-                    sec->get_entry(opt.substr(0, start_at), ""));
+                expand_to = trim_whitespace(sec->get_entry(opt.substr(0, start_at), ""));
             }
             else
             {
@@ -153,8 +151,7 @@ namespace pika::detail {
         else if (start_at != std::string::npos && start_at < opt.size())
         {
             // extract value from original option
-            result = std::make_pair(
-                expand_to, opt.substr(start_at + (long_option ? 1 : 0)));
+            result = std::make_pair(expand_to, opt.substr(start_at + (long_option ? 1 : 0)));
         }
         else
         {
@@ -177,17 +174,14 @@ namespace pika::detail {
         {
         }
 
-        std::pair<std::string, std::string> operator()(
-            std::string const& s) const
+        std::pair<std::string, std::string> operator()(std::string const& s) const
         {
             // handle special syntax for configuration files @filename
             if ('@' == s[0])
-                return std::make_pair(
-                    std::string("pika:options-file"), s.substr(1));
+                return std::make_pair(std::string("pika:options-file"), s.substr(1));
 
             // handle aliasing, if enabled
-            if (ini_.get_entry("pika.commandline.aliasing", "0") == "0" ||
-                ignore_aliases_)
+            if (ini_.get_entry("pika.commandline.aliasing", "0") == "0" || ignore_aliases_)
             {
                 return std::make_pair(std::string(), std::string());
             }
@@ -199,10 +193,8 @@ namespace pika::detail {
     };
 
     ///////////////////////////////////////////////////////////////////////
-    pika::program_options::basic_command_line_parser<char>&
-    get_commandline_parser(
-        pika::program_options::basic_command_line_parser<char>& p,
-        commandline_error_mode mode)
+    pika::program_options::basic_command_line_parser<char>& get_commandline_parser(
+        pika::program_options::basic_command_line_parser<char>& p, commandline_error_mode mode)
     {
         if ((mode & ~commandline_error_mode::report_missing_config_file) ==
             commandline_error_mode::allow_unregistered)
@@ -221,12 +213,11 @@ namespace pika::detail {
         std::ifstream ifs(filename.c_str());
         if (!ifs.is_open())
         {
-            if (contains_error_mode(error_mode,
-                    commandline_error_mode::report_missing_config_file))
+            if (contains_error_mode(error_mode, commandline_error_mode::report_missing_config_file))
             {
-                std::cerr << "pika::init: command line warning: command line "
-                             "options file not found ("
-                          << filename << ")" << std::endl;
+                std::cerr
+                    << "pika::init: command line warning: command line options file not found ("
+                    << filename << ")" << std::endl;
             }
             return false;
         }
@@ -271,8 +262,8 @@ namespace pika::detail {
                           .options(desc)
                           .style(unix_style)
                           .extra_parser(detail::option_parser(rtcfg,
-                              contains_error_mode(error_mode,
-                                  commandline_error_mode::ignore_aliases))),
+                              contains_error_mode(
+                                  error_mode, commandline_error_mode::ignore_aliases))),
                       error_mode & ~commandline_error_mode::ignore_aliases)
                       .run(),
                 vm);
@@ -286,8 +277,8 @@ namespace pika::detail {
     // <app_name>.cfg file for all executables in a certain project.
     void handle_generic_config_options(std::string appname,
         pika::program_options::variables_map& vm,
-        pika::program_options::options_description const& desc_cfgfile,
-        util::section const& ini, commandline_error_mode error_mode)
+        pika::program_options::options_description const& desc_cfgfile, util::section const& ini,
+        commandline_error_mode error_mode)
     {
         if (appname.empty())
             return;
@@ -300,10 +291,8 @@ namespace pika::detail {
         while (!dir.empty())
         {
             std::filesystem::path filename = dir / (appname + ".cfg");
-            bool result = read_config_file_options(filename.string(),
-                desc_cfgfile, vm, ini,
-                error_mode &
-                    ~commandline_error_mode::report_missing_config_file);
+            bool result = read_config_file_options(filename.string(), desc_cfgfile, vm, ini,
+                error_mode & ~commandline_error_mode::report_missing_config_file);
             if (result)
                 break;    // break on the first options file found
 
@@ -316,8 +305,8 @@ namespace pika::detail {
 
     // handle all --options-config found on the command line
     void handle_config_options(pika::program_options::variables_map& vm,
-        pika::program_options::options_description const& desc_cfgfile,
-        util::section const& ini, commandline_error_mode error_mode)
+        pika::program_options::options_description const& desc_cfgfile, util::section const& ini,
+        commandline_error_mode error_mode)
     {
         using pika::program_options::options_description;
         if (vm.count("pika:options-file"))
@@ -328,8 +317,7 @@ namespace pika::detail {
             for (std::string const& cfg_file : cfg_files)
             {
                 // parse a single config file and store the results
-                read_config_file_options(
-                    cfg_file, desc_cfgfile, vm, ini, error_mode);
+                read_config_file_options(cfg_file, desc_cfgfile, vm, ini, error_mode);
             }
         }
     }
@@ -337,11 +325,9 @@ namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     // parse the command line
     bool parse_commandline(util::section const& rtcfg,
-        pika::program_options::options_description const& app_options,
-        std::string const& arg0, std::vector<std::string> const& args,
-        pika::program_options::variables_map& vm,
-        commandline_error_mode error_mode,
-        pika::program_options::options_description* visible,
+        pika::program_options::options_description const& app_options, std::string const& arg0,
+        std::vector<std::string> const& args, pika::program_options::variables_map& vm,
+        commandline_error_mode error_mode, pika::program_options::options_description* visible,
         std::vector<std::string>* unregistered_options)
     {
         using pika::program_options::basic_command_line_parser;

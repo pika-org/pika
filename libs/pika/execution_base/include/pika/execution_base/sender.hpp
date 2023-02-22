@@ -8,7 +8,7 @@
 
 #include <pika/config.hpp>
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <pika/execution_base/p2300_forward.hpp>
+# include <pika/execution_base/p2300_forward.hpp>
 
 namespace pika::execution::experimental {
     template <typename Scheduler>
@@ -39,21 +39,20 @@ namespace pika::execution::experimental {
     };
 }    // namespace pika::execution::experimental
 #else
-#include <pika/config/constexpr.hpp>
-#include <pika/execution_base/operation_state.hpp>
-#include <pika/execution_base/receiver.hpp>
-#include <pika/functional/invoke_result.hpp>
-#include <pika/functional/tag_invoke.hpp>
-#include <pika/type_support/equality.hpp>
+# include <pika/config/constexpr.hpp>
+# include <pika/execution_base/operation_state.hpp>
+# include <pika/execution_base/receiver.hpp>
+# include <pika/functional/tag_invoke.hpp>
+# include <pika/type_support/equality.hpp>
 
-#include <cstddef>
-#include <exception>
-#include <memory>
-#include <type_traits>
-#include <utility>
+# include <cstddef>
+# include <exception>
+# include <memory>
+# include <type_traits>
+# include <utility>
 
 namespace pika::execution::experimental {
-#if defined(DOXYGEN)
+# if defined(DOXYGEN)
     /// connect is a customization point object.
     /// For some subexpression `s` and `r`, let `S` be the type such that `decltype((s))`
     /// is `S` and let `R` be the type such that `decltype((r))` is `R`. The result of
@@ -71,7 +70,7 @@ namespace pika::execution::experimental {
     ///     * Otherwise, the expression is ill-formed.
     ///
     /// The customization is implemented in terms of
-    /// `pika::functional::tag_invoke`.
+    /// `pika::functional::detail::tag_invoke`.
     template <typename S, typename R>
     void connect(S&& s, R&& r);
 
@@ -92,9 +91,9 @@ namespace pika::execution::experimental {
     ///      * Otherwise, schedule(s) is ill-formed.
     ///
     /// The customization is implemented in terms of
-    /// `pika::functional::tag_invoke`.
+    /// `pika::functional::detail::tag_invoke`.
 
-#endif
+# endif
     // We define an empty dummy type for compatibility. Senders can define both
     // value/error_types for our non-conformant implementation, and
     // completion_signatures for the conformant implementation. Senders do not
@@ -191,15 +190,13 @@ namespace pika::execution::experimental {
                 std::is_destructible<std::decay_t<F>>::value &&
                 std::is_move_constructible<std::decay_t<F>>::value &&
                 std::is_copy_constructible<Executor>::value &&
-                pika::detail::is_equality_comparable_v<Executor>>>
-          : std::true_type
+                pika::detail::is_equality_comparable_v<Executor>>> : std::true_type
         {
         };
 
         template <typename Executor>
         struct is_executor_base
-          : is_executor_of_base_impl<std::decay_t<Executor>,
-                invocable_archetype>
+          : is_executor_of_base_impl<std::decay_t<Executor>, invocable_archetype>
         {
         };
     }    // namespace detail
@@ -212,14 +209,13 @@ namespace pika::execution::experimental {
 
         template <typename S, typename R>
         struct has_member_connect<S, R,
-            std::void_t<decltype(std::declval<S>().connect(std::declval<R>()))>>
-          : std::true_type
+            std::void_t<decltype(std::declval<S>().connect(std::declval<R>()))>> : std::true_type
         {
         };
     }    // namespace detail
 
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE
-    struct connect_t : pika::functional::tag<connect_t>
+    struct connect_t : pika::functional::detail::tag<connect_t>
     {
     } connect{};
 
@@ -236,7 +232,7 @@ namespace pika::execution::experimental {
         template <typename S, typename R>
         struct connect_result_helper<S, R,
             std::enable_if_t<std::is_invocable<connect_t, S, R>::value>>
-          : pika::util::detail::invoke_result<connect_t, S, R>
+          : std::invoke_result<connect_t, S, R>
         {
         };
     }    // namespace detail
@@ -269,15 +265,14 @@ namespace pika::execution::experimental {
         };
 
         template <typename S>
-        struct has_member_schedule<S,
-            std::void_t<decltype(std::declval<S>().schedule())>>
+        struct has_member_schedule<S, std::void_t<decltype(std::declval<S>().schedule())>>
           : std::true_type
         {
         };
     }    // namespace detail
 
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE
-    struct schedule_t : pika::functional::tag<schedule_t>
+    struct schedule_t : pika::functional::detail::tag<schedule_t>
     {
     } schedule{};
 
@@ -301,22 +296,19 @@ namespace pika::execution::experimental {
                     std::is_invocable_v<connect_t, Sender&, Receiver const&> ||
                     std::is_invocable_v<connect_t, Sender const&, Receiver&&> ||
                     std::is_invocable_v<connect_t, Sender const&, Receiver&> ||
-                    std::is_invocable_v<connect_t, Sender const&,
-                        Receiver const&>>
+                    std::is_invocable_v<connect_t, Sender const&, Receiver const&>>
         {
         };
     }    // namespace detail
 
     template <typename Sender, typename Receiver>
     struct is_sender_to
-      : detail::is_sender_to_impl<
-            is_sender_v<Sender> && is_receiver_v<Receiver>, Sender, Receiver>
+      : detail::is_sender_to_impl<is_sender_v<Sender> && is_receiver_v<Receiver>, Sender, Receiver>
     {
     };
 
     template <typename Sender, typename Receiver>
-    inline constexpr bool is_sender_to_v =
-        is_sender_to<Sender, Receiver>::value;
+    inline constexpr bool is_sender_to_v = is_sender_to<Sender, Receiver>::value;
 
     namespace detail {
         template <typename... As>
@@ -325,8 +317,8 @@ namespace pika::execution::experimental {
         struct variant_mock;
 
         template <typename Sender>
-        constexpr bool has_value_types(
-            typename Sender::template value_types<tuple_mock, variant_mock>*)
+        constexpr bool
+        has_value_types(typename Sender::template value_types<tuple_mock, variant_mock>*)
         {
             return true;
         }
@@ -338,8 +330,7 @@ namespace pika::execution::experimental {
         }
 
         template <typename Sender>
-        constexpr bool
-        has_error_types(typename Sender::template error_types<variant_mock>*)
+        constexpr bool has_error_types(typename Sender::template error_types<variant_mock>*)
         {
             return true;
         }
@@ -365,8 +356,7 @@ namespace pika::execution::experimental {
         template <typename Sender>
         struct has_sender_types
           : std::integral_constant<bool,
-                has_value_types<Sender>(nullptr) &&
-                    has_error_types<Sender>(nullptr) &&
+                has_value_types<Sender>(nullptr) && has_error_types<Sender>(nullptr) &&
                     has_sends_done<Sender>(nullptr)>
         {
         };
@@ -377,10 +367,8 @@ namespace pika::execution::experimental {
         template <typename Sender>
         struct sender_traits_base<true /* HasSenderTraits */, Sender>
         {
-            template <template <typename...> class Tuple,
-                template <typename...> class Variant>
-            using value_types =
-                typename Sender::template value_types<Tuple, Variant>;
+            template <template <typename...> class Tuple, template <typename...> class Variant>
+            using value_types = typename Sender::template value_types<Tuple, Variant>;
 
             template <template <typename...> class Variant>
             using error_types = typename Sender::template error_types<Variant>;
@@ -398,16 +386,14 @@ namespace pika::execution::experimental {
         template <typename Sender>
         struct is_typed_sender
           : std::integral_constant<bool,
-                is_sender<Sender>::value &&
-                    detail::has_sender_types<Sender>::value>
+                is_sender<Sender>::value && detail::has_sender_types<Sender>::value>
         {
         };
     }    // namespace detail
 
     template <typename Sender>
     struct sender_traits
-      : detail::sender_traits_base<detail::has_sender_types<Sender>::value,
-            Sender>
+      : detail::sender_traits_base<detail::has_sender_types<Sender>::value, Sender>
     {
     };
 
@@ -422,16 +408,14 @@ namespace pika::execution::experimental {
     };
 
     namespace detail {
-        template <template <typename...> class Tuple,
-            template <typename...> class Variant>
+        template <template <typename...> class Tuple, template <typename...> class Variant>
         struct value_types
         {
             template <typename Sender>
             struct apply
             {
-                using type =
-                    typename pika::execution::experimental::sender_traits<
-                        Sender>::template value_types<Tuple, Variant>;
+                using type = typename pika::execution::experimental::sender_traits<
+                    Sender>::template value_types<Tuple, Variant>;
             };
         };
 
@@ -441,9 +425,8 @@ namespace pika::execution::experimental {
             template <typename Sender>
             struct apply
             {
-                using type =
-                    typename pika::execution::experimental::sender_traits<
-                        Sender>::template error_types<Variant>;
+                using type = typename pika::execution::experimental::sender_traits<
+                    Sender>::template error_types<Variant>;
             };
         };
     }    // namespace detail
@@ -465,7 +448,13 @@ namespace pika::execution::experimental {
     inline constexpr bool is_scheduler_v = is_scheduler<Scheduler>::value;
 
     template <typename S, typename R>
-    using connect_result_t =
-        typename pika::util::detail::invoke_result<connect_t, S, R>::type;
+    using connect_result_t = std::invoke_result_t<connect_t, S, R>;
 }    // namespace pika::execution::experimental
 #endif
+
+namespace pika::execution::detail {
+    /// Helper type for storing set_stopped signals in variants.
+    struct stopped_type
+    {
+    };
+}    // namespace pika::execution::detail

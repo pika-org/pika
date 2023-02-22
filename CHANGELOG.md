@@ -4,6 +4,26 @@
 <!--- Distributed under the Boost Software License, Version 1.0. (See accompanying -->
 <!--- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 
+## 0.12.0 (2023-02-01)
+
+### New features
+
+- Make read-only access senders of `async_rw_mutex` connectable with l-value references. ([#548](https://github.com/pika-org/pika/pull/548))
+- Add `split_tuple` sender adaptor which allows transforming a sender of tuples into a tuple of senders. ([#549](https://github.com/pika-org/pika/pull/549))
+- Add `bool` conversion operator and `empty` member function to `unique_any_sender` and `any_sender`. ([#551](https://github.com/pika-org/pika/pull/551))
+
+### Breaking changes
+
+- Remove the conversion operators from wrapper types in `async_rw_mutex`. Wrappers must explicitly be unwrapped using `get`. ([#548](https://github.com/pika-org/pika/pull/548))
+- Require whip 0.1.0. ([#565](https://github.com/pika-org/pika/pull/565))
+
+### Bugfixes
+
+- Make the `ensure_started` sender noncopyable. ([#539](https://github.com/pika-org/pika/pull/539))
+- Fix compilation failure on macOS with C++20 enabled. ([#541](https://github.com/pika-org/pika/pull/541))
+- Fix deadlocks in certain use cases of `async_rw_mutex`. ([#548](https://github.com/pika-org/pika/pull/548))
+- Fix certain use cases of `any_sender` and `when_all`. ([#555](https://github.com/pika-org/pika/pull/555))
+
 ## 0.11.0 (2022-12-07)
 
 ### New features

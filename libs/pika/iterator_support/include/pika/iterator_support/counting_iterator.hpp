@@ -29,71 +29,63 @@ namespace pika::util {
 
     namespace detail {
 
-        template <typename Incrementable, typename CategoryOrTraversal,
-            typename Difference>
+        template <typename Incrementable, typename CategoryOrTraversal, typename Difference>
         struct counting_iterator_base
         {
             // calculate category of the resulting iterator
             template <typename Iterator>
             struct iterator_category
             {
-                using type =
-                    typename std::iterator_traits<Iterator>::iterator_category;
+                using type = typename std::iterator_traits<Iterator>::iterator_category;
             };
 
-            using base_traversal = ::pika::detail::lazy_conditional<
-                std::is_integral<Incrementable>::value,
-                ::pika::detail::type_identity<std::random_access_iterator_tag>,
-                iterator_category<Incrementable>>;
+            using base_traversal =
+                ::pika::detail::lazy_conditional<std::is_integral<Incrementable>::value,
+                    ::pika::detail::type_identity<std::random_access_iterator_tag>,
+                    iterator_category<Incrementable>>;
 
-            using traversal = ::pika::detail::lazy_conditional_t<
-                std::is_void<CategoryOrTraversal>::value, base_traversal,
-                ::pika::detail::type_identity<CategoryOrTraversal>>;
+            using traversal =
+                ::pika::detail::lazy_conditional_t<std::is_void<CategoryOrTraversal>::value,
+                    base_traversal, ::pika::detail::type_identity<CategoryOrTraversal>>;
 
             // calculate difference_type of the resulting iterator
             template <typename Integer>
             struct integer_difference_type
             {
-                using type = typename std::conditional<
-                    (sizeof(Integer) >= sizeof(std::intmax_t)),
+                using type = typename std::conditional<(sizeof(Integer) >= sizeof(std::intmax_t)),
 
-                    std::conditional<(std::is_signed<Integer>::value), Integer,
-                        std::intmax_t>,
+                    std::conditional<(std::is_signed<Integer>::value), Integer, std::intmax_t>,
 
-                    std::conditional<(sizeof(Integer) < sizeof(std::ptrdiff_t)),
-                        std::ptrdiff_t, std::intmax_t>>::type::type;
+                    std::conditional<(sizeof(Integer) < sizeof(std::ptrdiff_t)), std::ptrdiff_t,
+                        std::intmax_t>>::type::type;
             };
 
             template <typename Iterator>
             struct iterator_difference_type
             {
-                using type =
-                    typename std::iterator_traits<Iterator>::difference_type;
+                using type = typename std::iterator_traits<Iterator>::difference_type;
             };
 
-            using base_difference = ::pika::detail::lazy_conditional<
-                std::is_integral<Incrementable>::value,
-                integer_difference_type<Incrementable>,
-                iterator_difference_type<Incrementable>>;
+            using base_difference =
+                ::pika::detail::lazy_conditional<std::is_integral<Incrementable>::value,
+                    integer_difference_type<Incrementable>,
+                    iterator_difference_type<Incrementable>>;
 
-            using difference = ::pika::detail::lazy_conditional_t<
-                std::is_void<Difference>::value, base_difference,
-                ::pika::detail::type_identity<Difference>>;
+            using difference = ::pika::detail::lazy_conditional_t<std::is_void<Difference>::value,
+                base_difference, ::pika::detail::type_identity<Difference>>;
 
-            using type = iterator_adaptor<counting_iterator<Incrementable,
-                                              CategoryOrTraversal, Difference>,
-                Incrementable, Incrementable, traversal, Incrementable const&,
-                difference>;
+            using type =
+                iterator_adaptor<counting_iterator<Incrementable, CategoryOrTraversal, Difference>,
+                    Incrementable, Incrementable, traversal, Incrementable const&, difference>;
         };
     }    // namespace detail
 
     ////////////////////////////////////////////////////////////////////////////
     // specialization for Iterators (non-integral types)
-    template <typename Incrementable, typename CategoryOrTraversal,
-        typename Difference, typename Enable>
+    template <typename Incrementable, typename CategoryOrTraversal, typename Difference,
+        typename Enable>
     class counting_iterator
-      : public detail::counting_iterator_base<Incrementable,
-            CategoryOrTraversal, Difference>::type
+      : public detail::counting_iterator_base<Incrementable, CategoryOrTraversal, Difference>::type
     {
     private:
         using base_type = typename detail::counting_iterator_base<Incrementable,
@@ -120,12 +112,10 @@ namespace pika::util {
         }
     };
 
-    template <typename Incrementable, typename CategoryOrTraversal,
-        typename Difference>
+    template <typename Incrementable, typename CategoryOrTraversal, typename Difference>
     class counting_iterator<Incrementable, CategoryOrTraversal, Difference,
         std::enable_if_t<std::is_integral<Incrementable>::value>>
-      : public detail::counting_iterator_base<Incrementable,
-            CategoryOrTraversal, Difference>::type
+      : public detail::counting_iterator_base<Incrementable, CategoryOrTraversal, Difference>::type
     {
     private:
         using base_type = typename detail::counting_iterator_base<Incrementable,
@@ -165,8 +155,7 @@ namespace pika::util {
         template <typename Distance>
         PIKA_HOST_DEVICE void advance(Distance n)
         {
-            this->base_reference() +=
-                static_cast<typename base_type::base_type>(n);
+            this->base_reference() += static_cast<typename base_type::base_type>(n);
         }
 
         PIKA_HOST_DEVICE typename base_type::reference dereference() const
@@ -175,9 +164,8 @@ namespace pika::util {
         }
 
         template <typename OtherIncrementable>
-        PIKA_HOST_DEVICE typename base_type::difference_type
-        distance_to(counting_iterator<OtherIncrementable, CategoryOrTraversal,
-            Difference> const& y) const
+        PIKA_HOST_DEVICE typename base_type::difference_type distance_to(
+            counting_iterator<OtherIncrementable, CategoryOrTraversal, Difference> const& y) const
         {
             using difference_type = typename base_type::difference_type;
             return static_cast<difference_type>(y.base()) -
@@ -187,8 +175,7 @@ namespace pika::util {
 
     // Manufacture a counting iterator for an arbitrary incrementable type
     template <typename Incrementable>
-    PIKA_HOST_DEVICE inline counting_iterator<Incrementable>
-    make_counting_iterator(Incrementable x)
+    PIKA_HOST_DEVICE inline counting_iterator<Incrementable> make_counting_iterator(Incrementable x)
     {
         return counting_iterator<Incrementable>(x);
     }

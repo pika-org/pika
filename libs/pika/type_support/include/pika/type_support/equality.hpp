@@ -22,11 +22,9 @@ namespace pika::detail {
 
     template <typename T, typename U>
     struct equality_result<T, U,
-        std::void_t<decltype(std::declval<const T&>() ==
-            std::declval<const U&>())>>
+        std::void_t<decltype(std::declval<const T&>() == std::declval<const U&>())>>
     {
-        using type =
-            decltype(std::declval<const T&>() == std::declval<const U&>());
+        using type = decltype(std::declval<const T&>() == std::declval<const U&>());
     };
 
     template <typename T, typename U>
@@ -40,11 +38,9 @@ namespace pika::detail {
 
     template <typename T, typename U>
     struct inequality_result<T, U,
-        std::void_t<decltype(std::declval<const T&>() !=
-            std::declval<const U&>())>>
+        std::void_t<decltype(std::declval<const T&>() != std::declval<const U&>())>>
     {
-        using type =
-            decltype(std::declval<const T&>() != std::declval<const U&>());
+        using type = decltype(std::declval<const T&>() != std::declval<const U&>());
     };
 
     template <typename T, typename U>
@@ -58,16 +54,14 @@ namespace pika::detail {
 
     template <typename T, typename U>
     struct is_weakly_equality_comparable_with_impl<T, U,
-        std::void_t<equality_result_t<T, U>, equality_result_t<U, T>,
-            inequality_result_t<T, U>, inequality_result_t<U, T>>>
-      : std::true_type
+        std::void_t<equality_result_t<T, U>, equality_result_t<U, T>, inequality_result_t<T, U>,
+            inequality_result_t<U, T>>> : std::true_type
     {
     };
 
     template <typename T, typename U>
     struct is_weakly_equality_comparable_with
-      : is_weakly_equality_comparable_with_impl<std::decay_t<T>,
-            std::decay_t<U>>
+      : is_weakly_equality_comparable_with_impl<std::decay_t<T>, std::decay_t<U>>
     {
     };
 
@@ -78,23 +72,19 @@ namespace pika::detail {
     // for now is_equality_comparable is equivalent to its weak version
     template <typename T, typename U>
     struct is_equality_comparable_with
-      : is_weakly_equality_comparable_with_impl<std::decay_t<T>,
-            std::decay_t<U>>
+      : is_weakly_equality_comparable_with_impl<std::decay_t<T>, std::decay_t<U>>
     {
     };
 
     template <typename T, typename U>
-    inline constexpr bool is_equality_comparable_with_v =
-        is_equality_comparable_with<T, U>::value;
+    inline constexpr bool is_equality_comparable_with_v = is_equality_comparable_with<T, U>::value;
 
     template <typename T>
     struct is_equality_comparable
-      : is_weakly_equality_comparable_with_impl<std::decay_t<T>,
-            std::decay_t<T>>
+      : is_weakly_equality_comparable_with_impl<std::decay_t<T>, std::decay_t<T>>
     {
     };
 
     template <typename T>
-    inline constexpr bool is_equality_comparable_v =
-        is_equality_comparable<T>::value;
+    inline constexpr bool is_equality_comparable_v = is_equality_comparable<T>::value;
 }    // namespace pika::detail

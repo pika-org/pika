@@ -15,17 +15,17 @@
 // pika::util::detail::function<double()> in test_emptiness. Triggered in
 // pika/functional/function.hpp which is included latest by pika/include/util.hpp.
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdouble-promotion"
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wdouble-promotion"
 #elif defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdouble-promotion"
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdouble-promotion"
 #endif
 #include <pika/functional/function.hpp>
 #if defined(__clang__)
-#pragma clang diagnostic pop
+# pragma clang diagnostic pop
 #elif defined(__GNUC__)
-#pragma GCC diagnostic pop
+# pragma GCC diagnostic pop
 #endif
 
 #include <pika/testing.hpp>
@@ -155,12 +155,12 @@ static void test_zero_args()
     global_int = 0;
 
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wself-assign-overloaded"
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wself-assign-overloaded"
 #endif
     v1 = v1;
 #if defined(__clang__)
-#pragma clang diagnostic pop
+# pragma clang diagnostic pop
 #endif
 
     v1();
@@ -173,12 +173,12 @@ static void test_zero_args()
     global_int = 0;
 
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wself-assign-overloaded"
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wself-assign-overloaded"
 #endif
     v1 = (v1);
 #if defined(__clang__)
-#pragma clang diagnostic pop
+# pragma clang diagnostic pop
 #endif
 
     v1();
@@ -649,8 +649,7 @@ static void test_one_arg()
 
 static void test_two_args()
 {
-    pika::util::detail::function<string(const string&, const string&)> cat(
-        &string_cat);
+    pika::util::detail::function<string(const string&, const string&)> cat(&string_cat);
     PIKA_TEST_EQ(cat("str", "ing"), "string");
 
     pika::util::detail::function<int(short, short)> sum(&sum_ints);
@@ -755,8 +754,7 @@ static void test_empty_ref()
     try
     {
         f2();
-        PIKA_TEST_MSG(
-            false, "Exception didn't throw for reference to empty function.");
+        PIKA_TEST_MSG(false, "Exception didn't throw for reference to empty function.");
     }
     catch (std::runtime_error const& /*e*/)
     {

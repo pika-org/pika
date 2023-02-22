@@ -35,8 +35,7 @@ std::uint64_t fibonacci(std::uint64_t n)
     pika::future<std::uint64_t> n1 = pika::async(fibonacci, n - 1);
     pika::future<std::uint64_t> n2 = pika::async(fibonacci, n - 2);
 
-    return n1.get() +
-        n2.get();    // wait for the Futures to return their values
+    return n1.get() + n2.get();    // wait for the Futures to return their values
 }
 //fibonacci]
 
@@ -53,8 +52,7 @@ int pika_main(pika::program_options::variables_map& vm)
 
         std::uint64_t r = fibonacci(n);
 
-        constexpr char const* fmt =
-            "fibonacci({}) == {}\nelapsed time: {} [s]\n";
+        constexpr char const* fmt = "fibonacci({}) == {}\nelapsed time: {} [s]\n";
         fmt::print(std::cout, fmt, n, r, t.elapsed<std::chrono::seconds>());
     }
 

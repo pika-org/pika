@@ -36,8 +36,7 @@ namespace pika {
     ///////////////////////////////////////////////////////////////////////////
     using thread_termination_handler_type =
         util::detail::function<void(std::exception_ptr const& e)>;
-    PIKA_EXPORT void set_thread_termination_handler(
-        thread_termination_handler_type f);
+    PIKA_EXPORT void set_thread_termination_handler(thread_termination_handler_type f);
 
     class PIKA_EXPORT thread
     {
@@ -51,8 +50,8 @@ namespace pika {
         thread() noexcept;
 
         template <typename F,
-            typename Enable = typename std::enable_if<
-                !std::is_same<std::decay_t<F>, thread>::value>::type>
+            typename Enable =
+                typename std::enable_if<!std::is_same<std::decay_t<F>, thread>::value>::type>
         explicit thread(F&& f)
         {
             auto thrd_data = threads::detail::get_self_id_data();
@@ -67,8 +66,7 @@ namespace pika {
             auto thrd_data = threads::detail::get_self_id_data();
             PIKA_ASSERT(thrd_data);
             start_thread(thrd_data->get_scheduler_base()->get_parent_pool(),
-                util::detail::deferred_call(
-                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...));
+                util::detail::deferred_call(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...));
         }
 
         template <typename F>
@@ -80,9 +78,8 @@ namespace pika {
         template <typename F, typename... Ts>
         thread(threads::detail::thread_pool_base* pool, F&& f, Ts&&... vs)
         {
-            start_thread(pool,
-                util::detail::deferred_call(
-                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...));
+            start_thread(
+                pool, util::detail::deferred_call(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...));
         }
 
         ~thread();
@@ -135,8 +132,8 @@ namespace pika {
         {
             id_ = threads::detail::invalid_thread_id;
         }
-        void start_thread(threads::detail::thread_pool_base* pool,
-            util::detail::unique_function<void()>&& func);
+        void start_thread(
+            threads::detail::thread_pool_base* pool, util::detail::unique_function<void()>&& func);
         static threads::detail::thread_result_type thread_function_nullary(
             util::detail::unique_function<void()> const& func);
 
@@ -155,18 +152,12 @@ namespace pika {
     private:
         threads::detail::thread_id_type id_;
 
-        friend bool operator==(
-            thread::id const& x, thread::id const& y) noexcept;
-        friend bool operator!=(
-            thread::id const& x, thread::id const& y) noexcept;
-        friend bool operator<(
-            thread::id const& x, thread::id const& y) noexcept;
-        friend bool operator>(
-            thread::id const& x, thread::id const& y) noexcept;
-        friend bool operator<=(
-            thread::id const& x, thread::id const& y) noexcept;
-        friend bool operator>=(
-            thread::id const& x, thread::id const& y) noexcept;
+        friend bool operator==(thread::id const& x, thread::id const& y) noexcept;
+        friend bool operator!=(thread::id const& x, thread::id const& y) noexcept;
+        friend bool operator<(thread::id const& x, thread::id const& y) noexcept;
+        friend bool operator>(thread::id const& x, thread::id const& y) noexcept;
+        friend bool operator<=(thread::id const& x, thread::id const& y) noexcept;
+        friend bool operator>=(thread::id const& x, thread::id const& y) noexcept;
 
         template <typename Char, typename Traits>
         friend std::basic_ostream<Char, Traits>&
@@ -259,8 +250,7 @@ namespace pika {
 
         PIKA_EXPORT void interrupt();
 
-        PIKA_EXPORT void sleep_until(
-            pika::chrono::steady_time_point const& abs_time);
+        PIKA_EXPORT void sleep_until(pika::chrono::steady_time_point const& abs_time);
 
         inline void sleep_for(pika::chrono::steady_duration const& rel_time)
         {
@@ -300,14 +290,12 @@ namespace pika {
 }    // namespace pika
 
 template <>
-struct fmt::formatter<pika::thread::id>
-  : fmt::formatter<pika::threads::detail::thread_id>
+struct fmt::formatter<pika::thread::id> : fmt::formatter<pika::threads::detail::thread_id>
 {
     template <typename FormatContext>
     auto format(pika::thread::id const& id, FormatContext& ctx)
     {
-        return fmt::formatter<pika::threads::detail::thread_id>::format(
-            id.native_handle(), ctx);
+        return fmt::formatter<pika::threads::detail::thread_id>::format(id.native_handle(), ctx);
     }
 };
 

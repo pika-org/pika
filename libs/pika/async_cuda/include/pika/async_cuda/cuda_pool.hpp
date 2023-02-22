@@ -34,12 +34,10 @@ namespace pika::cuda::experimental {
             std::size_t const num_streams_per_thread;
             std::size_t const concurrency;
             std::vector<cuda_stream> streams;
-            std::vector<
-                pika::concurrency::detail::cache_aligned_data<std::size_t>>
+            std::vector<pika::concurrency::detail::cache_aligned_data<std::size_t>>
                 active_stream_indices;
 
-            PIKA_EXPORT streams_holder(int device,
-                std::size_t num_streams_per_thread,
+            PIKA_EXPORT streams_holder(int device, std::size_t num_streams_per_thread,
                 pika::execution::thread_priority, unsigned int flags);
             streams_holder(streams_holder&&) = delete;
             streams_holder(streams_holder const&) = delete;
@@ -55,10 +53,8 @@ namespace pika::cuda::experimental {
             streams_holder normal_priority_streams;
             streams_holder high_priority_streams;
 
-            PIKA_EXPORT pool_data(int device,
-                std::size_t num_normal_priority_streams_per_thread,
-                std::size_t num_high_priority_streams_per_thread,
-                unsigned int flags);
+            PIKA_EXPORT pool_data(int device, std::size_t num_normal_priority_streams_per_thread,
+                std::size_t num_high_priority_streams_per_thread, unsigned int flags);
             pool_data(pool_data&&) = delete;
             pool_data(pool_data const&) = delete;
             pool_data& operator=(pool_data&&) = delete;
@@ -70,8 +66,7 @@ namespace pika::cuda::experimental {
     public:
         PIKA_EXPORT explicit cuda_pool(int device = 0,
             std::size_t num_normal_priority_streams_per_thread = 3,
-            std::size_t num_high_priority_streams_per_thread = 3,
-            unsigned int flags = 0);
+            std::size_t num_high_priority_streams_per_thread = 3, unsigned int flags = 0);
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         cuda_pool(cuda_pool&&) = default;
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
@@ -84,18 +79,15 @@ namespace pika::cuda::experimental {
         PIKA_EXPORT bool valid() const noexcept;
         PIKA_EXPORT explicit operator bool() noexcept;
         PIKA_EXPORT cuda_stream const& get_next_stream(
-            pika::execution::thread_priority priority =
-                pika::execution::thread_priority::normal);
+            pika::execution::thread_priority priority = pika::execution::thread_priority::normal);
 
         /// \cond NOINTERNAL
-        friend bool operator==(
-            cuda_pool const& lhs, cuda_pool const& rhs) noexcept
+        friend bool operator==(cuda_pool const& lhs, cuda_pool const& rhs) noexcept
         {
             return lhs.data == rhs.data;
         }
 
-        friend bool operator!=(
-            cuda_pool const& lhs, cuda_pool const& rhs) noexcept
+        friend bool operator!=(cuda_pool const& lhs, cuda_pool const& rhs) noexcept
         {
             return !(lhs == rhs);
         }
@@ -106,25 +98,20 @@ namespace pika::cuda::experimental {
 }    // namespace pika::cuda::experimental
 
 template <>
-struct fmt::formatter<pika::cuda::experimental::cuda_pool>
-  : fmt::formatter<std::string>
+struct fmt::formatter<pika::cuda::experimental::cuda_pool> : fmt::formatter<std::string>
 {
     template <typename FormatContext>
-    auto
-    format(pika::cuda::experimental::cuda_pool const& pool, FormatContext& ctx)
+    auto format(pika::cuda::experimental::cuda_pool const& pool, FormatContext& ctx)
     {
         bool valid{pool.data};
         auto high_priority_streams =
             valid ? pool.data->high_priority_streams.num_streams_per_thread : 0;
-        auto normal_priority_streams = valid ?
-            pool.data->normal_priority_streams.num_streams_per_thread :
-            0;
+        auto normal_priority_streams =
+            valid ? pool.data->normal_priority_streams.num_streams_per_thread : 0;
         return fmt::formatter<std::string>::format(
-            fmt::format("cuda_pool({}, num_high_priority_streams_per_thread "
-                        "= {}, num_normal_priority_streams_per_thread = "
-                        "{})",
-                fmt::ptr(pool.data.get()), high_priority_streams,
-                normal_priority_streams),
+            fmt::format("cuda_pool({}, num_high_priority_streams_per_thread = {}, "
+                        "num_normal_priority_streams_per_thread = {})",
+                fmt::ptr(pool.data.get()), high_priority_streams, normal_priority_streams),
             ctx);
     }
 };

@@ -22,8 +22,7 @@ using pika::program_options::variables_map;
 ///////////////////////////////////////////////////////////////////////////////
 inline void set_description(char const* test_name)
 {
-    pika::threads::detail::set_thread_description(
-        pika::threads::detail::get_self_id(), test_name);
+    pika::threads::detail::set_thread_description(pika::threads::detail::get_self_id(), test_name);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -37,8 +36,8 @@ inline int time_cmp(std::chrono::time_point<Clock, Duration> const& xt1,
 }
 
 template <typename Clock, typename Duration, typename Rep, typename Period>
-inline bool in_range(std::chrono::time_point<Clock, Duration> const& xt,
-    std::chrono::duration<Rep, Period> const& d)
+inline bool in_range(
+    std::chrono::time_point<Clock, Duration> const& xt, std::chrono::duration<Rep, Period> const& d)
 {
     std::chrono::time_point<Clock, Duration> const now = Clock::now();
     std::chrono::time_point<Clock, Duration> const mint = now - d;
@@ -81,8 +80,7 @@ void test_sleep()
 {
     set_description("test_sleep");
 
-    std::chrono::system_clock::time_point const now =
-        std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point const now = std::chrono::system_clock::now();
     std::this_thread::sleep_for(std::chrono::seconds(3));
 
     // Ensure it's in a range instead of checking actual equality due to time
@@ -149,8 +147,7 @@ void test_thread_interrupts_at_interruption_point()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void disabled_interruption_point_thread(
-    pika::spinlock* m, pika::barrier<>* b, bool* failed)
+void disabled_interruption_point_thread(pika::spinlock* m, pika::barrier<>* b, bool* failed)
 {
     pika::this_thread::disable_interruption dc;
     b->arrive_and_wait();
@@ -202,9 +199,7 @@ void test_thread_no_interrupt_if_interrupts_disabled_at_interruption_point()
 {
     set_description("test_thread_no_interrupt_if_interrupts_disabled_at\
                     _interruption_point");
-    timed_test(
-        &do_test_thread_no_interrupt_if_interrupts_disabled_at_interruption_point,
-        1);
+    timed_test(&do_test_thread_no_interrupt_if_interrupts_disabled_at_interruption_point, 1);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

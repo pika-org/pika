@@ -16,8 +16,7 @@
 namespace pika::program_options {
 
     class environment_iterator
-      : public eof_iterator<environment_iterator,
-            std::pair<std::string, std::string>>
+      : public eof_iterator<environment_iterator, std::pair<std::string, std::string>>
     {
     public:
         explicit environment_iterator(char** environment)

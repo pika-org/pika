@@ -53,8 +53,7 @@ bool operator==(magic_number const& lhs, magic_number const& rhs)
    This has no practical meaning, meant only to show how
    regex can be used to validate values.
 */
-void validate(
-    std::any& v, const std::vector<std::string>& values, magic_number*, int)
+void validate(std::any& v, const std::vector<std::string>& values, magic_number*, int)
 {
     static std::regex r(R"(\d\d\d-(\d\d\d))");
 
@@ -70,7 +69,7 @@ void validate(
     std::smatch match;
     if (regex_match(s, match, r))
     {
-        v = std::any(magic_number(pika::util::from_string<int>(match[1])));
+        v = std::any(magic_number(pika::detail::from_string<int>(match[1])));
     }
     else
     {
@@ -108,8 +107,7 @@ int main(int ac, char* av[])
         }
         if (vm.count("magic"))
         {
-            std::cout << "The magic is \"" << vm["magic"].as<magic_number>().n
-                      << "\"\n";
+            std::cout << "The magic is \"" << vm["magic"].as<magic_number>().n << "\"\n";
         }
     }
     catch (std::exception const& e)

@@ -6,7 +6,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #if !defined(JACOBI_SMP_NO_pika)
-#include <pika/init.hpp>
+# include <pika/init.hpp>
 #endif
 
 #include <pika/modules/program_options.hpp>
@@ -28,16 +28,15 @@ namespace jacobi_smp {
     void jacobi_kernel(double* dst, const double* src, std::size_t n)
     {
 #ifdef PIKA_INTEL_VERSION
-#pragma vector always
-#pragma unroll(4)
+# pragma vector always
+# pragma unroll(4)
 #endif
         for (std::size_t x = 1; x < n - 1; ++x)
         {
             dst[x]
                 // x-n might underflow an unsigned type. Casting to a signed type has the
                 // wanted effect
-                = (src[std::ptrdiff_t(x - n)] + src[x + n] + src[x] +
-                      src[x - 1] + src[x + 1]) *
+                = (src[std::ptrdiff_t(x - n)] + src[x + n] + src[x] + src[x - 1] + src[x + 1]) *
                 0.2;
         }
     }
@@ -67,13 +66,12 @@ int pika_main(variables_map& vm)
 }
 
 #if !defined(PIKA_APPLICATION_STRING)
-#define PIKA_APPLICATION_STRING "jacobi"
+# define PIKA_APPLICATION_STRING "jacobi"
 #endif
 
 int main(int argc, char** argv)
 {
-    options_description desc_cmd(
-        "usage: " PIKA_APPLICATION_STRING " [options]");
+    options_description desc_cmd("usage: " PIKA_APPLICATION_STRING " [options]");
 
     // clang-format off
     desc_cmd.add_options()
@@ -90,11 +88,7 @@ int main(int argc, char** argv)
 #if defined(JACOBI_SMP_NO_pika)
     variables_map vm;
     desc_cmd.add_options()("help", "This help message");
-    store(command_line_parser(argc, argv)
-              .options(desc_cmd)
-              .allow_unregistered()
-              .run(),
-        vm);
+    store(command_line_parser(argc, argv).options(desc_cmd).allow_unregistered().run(), vm);
     if (vm.count("help"))
     {
         std::cout << desc_cmd;

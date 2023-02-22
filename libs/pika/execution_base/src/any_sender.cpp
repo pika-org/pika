@@ -18,8 +18,7 @@
 namespace pika::execution::experimental::detail {
     void empty_any_operation_state::start() & noexcept
     {
-        PIKA_THROW_EXCEPTION(pika::error::bad_function_call,
-            "any_operation_state::start",
+        PIKA_THROW_EXCEPTION(pika::error::bad_function_call, "any_operation_state::start",
             "attempted to call start on empty any_operation_state");
     }
 
@@ -28,8 +27,7 @@ namespace pika::execution::experimental::detail {
         return true;
     }
 
-    void tag_invoke(pika::execution::experimental::start_t,
-        any_operation_state& os) noexcept
+    void tag_invoke(pika::execution::experimental::start_t, any_operation_state& os) noexcept
     {
         os.storage.get().start();
     }
@@ -37,7 +35,7 @@ namespace pika::execution::experimental::detail {
     void throw_bad_any_call(char const* class_name, char const* function_name)
     {
         PIKA_THROW_EXCEPTION(pika::error::bad_function_call,
-            fmt::format("{}::{}", class_name, function_name),
-            "attempted to call {} on empty {}", function_name, class_name);
+            fmt::format("{}::{}", class_name, function_name), "attempted to call {} on empty {}",
+            function_name, class_name);
     }
 }    // namespace pika::execution::experimental::detail

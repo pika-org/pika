@@ -58,8 +58,8 @@ namespace pika::execution {
         //         }
 
         template <typename Executor, typename F>
-        constexpr std::size_t get_chunk_size(Executor&& /* exec */, F&&,
-            std::size_t cores, std::size_t num_tasks) const
+        constexpr std::size_t
+        get_chunk_size(Executor&& /* exec */, F&&, std::size_t cores, std::size_t num_tasks) const
         {
             return (std::max)(min_chunk_size_, (num_tasks + cores - 1) / cores);
         }
@@ -75,8 +75,7 @@ namespace pika::execution {
 namespace pika::parallel::execution {
     /// \cond NOINTERNAL
     template <>
-    struct is_executor_parameters<pika::execution::guided_chunk_size>
-      : std::true_type
+    struct is_executor_parameters<pika::execution::guided_chunk_size> : std::true_type
     {
     };
     /// \endcond

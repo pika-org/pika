@@ -64,7 +64,6 @@ struct fmt::formatter<pika::util::logging::level> : fmt::formatter<std::string>
     template <typename FormatContext>
     auto format(pika::util::logging::level const& value, FormatContext& ctx)
     {
-        return fmt::formatter<std::string>::format(
-            pika::util::logging::levelname(value), ctx);
+        return fmt::formatter<std::string>::format(pika::util::logging::levelname(value), ctx);
     }
 };

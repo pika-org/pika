@@ -95,8 +95,8 @@ void function_pointers(Executor& exec)
     int_f2_count.store(0);
 
     future<void> f1 = dataflow(exec, unwrapping(&void_f1), async(&int_f));
-    future<int> f2 = dataflow(exec, unwrapping(&int_f1),
-        dataflow(exec, unwrapping(&int_f1), make_ready_future(42)));
+    future<int> f2 = dataflow(
+        exec, unwrapping(&int_f1), dataflow(exec, unwrapping(&int_f1), make_ready_future(42)));
     future<int> f3 = dataflow(exec, unwrapping(&int_f2),
         dataflow(exec, unwrapping(&int_f1), make_ready_future(42)),
         dataflow(exec, unwrapping(&int_f1), make_ready_future(37)));
@@ -105,8 +105,7 @@ void function_pointers(Executor& exec)
     std::vector<future<int>> vf;
     for (std::size_t i = 0; i < 10; ++i)
     {
-        vf.push_back(
-            dataflow(exec, unwrapping(&int_f1), make_ready_future(42)));
+        vf.push_back(dataflow(exec, unwrapping(&int_f1), make_ready_future(42)));
     }
     future<int> f4 = dataflow(exec, unwrapping(&int_f_vector), std::move(vf));
 
@@ -190,8 +189,8 @@ void future_function_pointers(Executor& exec)
     future_int_f1_count.store(0);
     future_int_f2_count.store(0);
 
-    future<void> f1 = dataflow(exec, &future_void_f1,
-        async(&future_void_sf1, shared_future<void>(make_ready_future())));
+    future<void> f1 = dataflow(
+        exec, &future_void_f1, async(&future_void_sf1, shared_future<void>(make_ready_future())));
 
     f1.wait();
 
@@ -217,9 +216,9 @@ void future_function_pointers(Executor& exec)
     PIKA_TEST_EQ(future_int_f1_count, 1u);
     future_int_f1_count.store(0);
 
-    future<int> f4 = dataflow(exec, &future_int_f2,
-        dataflow(exec, &future_int_f1, make_ready_future()),
-        dataflow(exec, &future_int_f1, make_ready_future()));
+    future<int> f4 =
+        dataflow(exec, &future_int_f2, dataflow(exec, &future_int_f1, make_ready_future()),
+            dataflow(exec, &future_int_f1, make_ready_future()));
 
     PIKA_TEST_EQ(f4.get(), 2);
     PIKA_TEST_EQ(future_int_f1_count, 2u);
@@ -306,10 +305,8 @@ void plain_deferred_arguments(Executor& exec)
     int_f5_count.store(0);
 
     {
-        future<void> f1 =
-            dataflow(exec, &void_f5, 42, async(pika::launch::deferred, &int_f));
-        future<int> f2 =
-            dataflow(exec, &int_f5, 42, async(pika::launch::deferred, &int_f));
+        future<void> f1 = dataflow(exec, &void_f5, 42, async(pika::launch::deferred, &int_f));
+        future<int> f2 = dataflow(exec, &int_f5, 42, async(pika::launch::deferred, &int_f));
 
         f1.wait();
         PIKA_TEST_EQ(void_f5_count, 1u);
@@ -351,7 +348,7 @@ int main(int argc, char* argv[])
     pika::init_params init_args;
     init_args.cfg = cfg;
 
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(
+        pika::init(pika_main, argc, argv, init_args), 0, "pika main exited with non-zero status");
     return 0;
 }

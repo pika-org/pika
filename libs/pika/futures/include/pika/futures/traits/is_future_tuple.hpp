@@ -19,8 +19,7 @@ namespace pika::traits {
     };
 
     template <typename... Ts>
-    struct is_future_tuple<std::tuple<Ts...>>
-      : util::detail::all_of<is_future<Ts>...>
+    struct is_future_tuple<std::tuple<Ts...>> : util::detail::all_of<is_future<Ts>...>
     {
     };
 }    // namespace pika::traits

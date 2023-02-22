@@ -13,51 +13,55 @@
 
 /// Generates assembly that serves as a fence to the compiler CPU to disable
 /// optimization. Usually implemented in the form of a memory barrier.
-#define PIKA_COMPILER_FENCE
+# define PIKA_COMPILER_FENCE
 /// Generates assembly the executes a "pause" instruction. Useful in spinning
 /// loops.
-#define PIKA_SMT_PAUSE
+# define PIKA_SMT_PAUSE
 
 #else
-#if defined(__INTEL_COMPILER)
+# if defined(__INTEL_COMPILER)
 
-#include <immintrin.h>
-#define PIKA_SMT_PAUSE _mm_pause()
-#define PIKA_COMPILER_FENCE __memory_barrier()
+#  include <immintrin.h>
+#  define PIKA_SMT_PAUSE _mm_pause()
+#  define PIKA_COMPILER_FENCE __memory_barrier()
 
-#elif defined(_MSC_VER) && _MSC_VER >= 1310
+# elif defined(_MSC_VER) && _MSC_VER >= 1310
 
 extern "C" void _ReadWriteBarrier();
-#pragma intrinsic(_ReadWriteBarrier)
+#  pragma intrinsic(_ReadWriteBarrier)
 
-#define PIKA_COMPILER_FENCE _ReadWriteBarrier()
+#  define PIKA_COMPILER_FENCE _ReadWriteBarrier()
 
 extern "C" void _mm_pause();
-#define PIKA_SMT_PAUSE _mm_pause()
+#  define PIKA_SMT_PAUSE _mm_pause()
 
-#elif defined(__GNUC__)
+# elif defined(__GNUC__)
 
-#define PIKA_COMPILER_FENCE __asm__ __volatile__("" : : : "memory")
+#  define PIKA_COMPILER_FENCE __asm__ __volatile__("" : : : "memory")
 
-#if defined(__i386__) || defined(__x86_64__)
-#define PIKA_SMT_PAUSE __asm__ __volatile__("rep; nop" : : : "memory")
-#elif defined(__ppc__)
+#  if defined(__i386__) || defined(__x86_64__)
+#   define PIKA_SMT_PAUSE __asm__ __volatile__("rep; nop" : : : "memory")
+#  elif defined(__ppc__) || defined(__ppc64__)
 // According to: https://stackoverflow.com/questions/5425506/equivalent-of-x86-pause-instruction-for-ppc
-#define PIKA_SMT_PAUSE __asm__ __volatile__("or 27,27,27")
-#elif defined(__arm__)
-#define PIKA_SMT_PAUSE __asm__ __volatile__("yield")
-#else
-#define PIKA_SMT_PAUSE PIKA_COMPILER_FENCE
-#endif
+#   ifdef __APPLE__
+#    define PIKA_SMT_PAUSE __asm__ volatile("or r27,r27,r27")
+#   else
+#    define PIKA_SMT_PAUSE __asm__ __volatile__("or 27,27,27")
+#   endif
+#  elif defined(__arm__)
+#   define PIKA_SMT_PAUSE __asm__ __volatile__("yield")
+#  else
+#   define PIKA_SMT_PAUSE PIKA_COMPILER_FENCE
+#  endif
 
-#else
+# else
 
-#define PIKA_COMPILER_FENCE
+#  define PIKA_COMPILER_FENCE
 
-#endif
+# endif
 
-#if !defined(PIKA_SMT_PAUSE)
-#define PIKA_SMT_PAUSE
-#endif
+# if !defined(PIKA_SMT_PAUSE)
+#  define PIKA_SMT_PAUSE
+# endif
 
 #endif

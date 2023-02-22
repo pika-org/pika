@@ -6,24 +6,24 @@
 
 #include <pika/config.hpp>
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
-#include <pika/execution.hpp>
-#include <pika/init.hpp>
-#include <pika/modules/resource_partitioner.hpp>
-#include <pika/modules/schedulers.hpp>
-#include <pika/runtime.hpp>
-#include <pika/thread.hpp>
+# include <pika/execution.hpp>
+# include <pika/init.hpp>
+# include <pika/modules/resource_partitioner.hpp>
+# include <pika/modules/schedulers.hpp>
+# include <pika/runtime.hpp>
+# include <pika/thread.hpp>
 //
-#include <cmath>
-#include <cstddef>
-#include <cstdint>
-#include <iostream>
-#include <memory>
-#include <set>
-#include <string>
-#include <utility>
-#include <vector>
+# include <cmath>
+# include <cstddef>
+# include <cstdint>
+# include <iostream>
+# include <memory>
+# include <set>
+# include <string>
+# include <utility>
+# include <vector>
 //
-#include "system_characteristics.hpp"
+# include "system_characteristics.hpp"
 
 // NB
 // this test needs to be updated as it no longer does what it is supposed to do
@@ -54,8 +54,7 @@ void do_stuff(std::size_t n, bool printout)
         std::cout << "[do stuff] " << n << "\n";
     for (std::size_t i(0); i < n; ++i)
     {
-        double f = std::sin(
-            2 * M_PI * static_cast<double>(i) / static_cast<double>(n));
+        double f = std::sin(2 * M_PI * static_cast<double>(i) / static_cast<double>(n));
         if (printout)
             std::cout << "sin(" << i << ") = " << f << ", ";
     }
@@ -72,8 +71,8 @@ int pika_main(/*pika::program_options::variables_map& vm*/)
     if (num_threads == 1)
     {
         PIKA_THROW_EXCEPTION(pika::error::commandline_option_error, "pika_main",
-            "the oversubscribing_resource_partitioner example requires at "
-            "least 2 worker threads (1 given)");
+            "the oversubscribing_resource_partitioner example requires at least 2 worker threads "
+            "(1 given)");
     }
 
     std::size_t loop_count = num_threads * 1;
@@ -81,8 +80,7 @@ int pika_main(/*pika::program_options::variables_map& vm*/)
 
     // create an executor with high priority for important tasks
     pika::execution::parallel_executor high_priority_executor(
-        pika::this_thread::get_pool(),
-        pika::execution::thread_priority::critical);
+        pika::this_thread::get_pool(), pika::execution::thread_priority::critical);
     pika::execution::parallel_executor normal_priority_executor;
 
     pika::execution::parallel_executor pool_executor;
@@ -90,8 +88,8 @@ int pika_main(/*pika::program_options::variables_map& vm*/)
     if (use_pools)
     {
         // get executors
-        pool_executor = pika::execution::parallel_executor(
-            &pika::resource::get_thread_pool(pool_name));
+        pool_executor =
+            pika::execution::parallel_executor(&pika::resource::get_thread_pool(pool_name));
         std::cout << "\n[pika_main] got mpi executor " << std::endl;
     }
     else
@@ -113,27 +111,23 @@ int pika_main(/*pika::program_options::variables_map& vm*/)
     print_system_characteristics();
 
     // use executor to schedule work on custom pool
-    pika::future<void> future_1 =
-        pika::async(pool_executor, &do_stuff, 5, true);
+    pika::future<void> future_1 = pika::async(pool_executor, &do_stuff, 5, true);
 
-    pika::future<void> future_2 = future_1.then(
-        pool_executor, [](pika::future<void>&&) { do_stuff(5, true); });
+    pika::future<void> future_2 =
+        future_1.then(pool_executor, [](pika::future<void>&&) { do_stuff(5, true); });
 
     pika::future<void> future_3 = future_2.then(pool_executor,
-        [pool_executor, high_priority_executor, async_count](
-            pika::future<void>&&) mutable {
+        [pool_executor, high_priority_executor, async_count](pika::future<void>&&) mutable {
             pika::future<void> future_4, future_5;
             for (std::size_t i = 0; i < async_count; i++)
             {
                 if (i % 2 == 0)
                 {
-                    future_4 = pika::async(
-                        pool_executor, &do_stuff, async_count, false);
+                    future_4 = pika::async(pool_executor, &do_stuff, async_count, false);
                 }
                 else
                 {
-                    future_5 = pika::async(
-                        high_priority_executor, &do_stuff, async_count, false);
+                    future_5 = pika::async(high_priority_executor, &do_stuff, async_count, false);
                 }
             }
             // the last futures we made are stored in here
@@ -154,16 +148,14 @@ int pika_main(/*pika::program_options::variables_map& vm*/)
             std::lock_guard<pika::mutex> lock(m);
             if (thread_set.insert(std::this_thread::get_id()).second)
             {
-                std::cout << std::hex << pika::this_thread::get_id() << " "
-                          << std::hex << std::this_thread::get_id()
-                          << " high priority executor i " << std::dec << i
-                          << std::endl;
+                std::cout << std::hex << pika::this_thread::get_id() << " " << std::hex
+                          << std::this_thread::get_id() << " high priority executor i " << std::dec
+                          << i << std::endl;
             }
         }));
     }
     pika::wait_all(std::move(futures));
-    std::cout << "thread set contains " << std::dec << thread_set.size()
-              << std::endl;
+    std::cout << "thread set contains " << std::dec << thread_set.size() << std::endl;
     futures.clear();
     thread_set.clear();
 
@@ -174,16 +166,14 @@ int pika_main(/*pika::program_options::variables_map& vm*/)
             std::lock_guard<pika::mutex> lock(m);
             if (thread_set.insert(std::this_thread::get_id()).second)
             {
-                std::cout << std::hex << pika::this_thread::get_id() << " "
-                          << std::hex << std::this_thread::get_id()
-                          << " normal priority executor i " << std::dec << i
-                          << std::endl;
+                std::cout << std::hex << pika::this_thread::get_id() << " " << std::hex
+                          << std::this_thread::get_id() << " normal priority executor i "
+                          << std::dec << i << std::endl;
             }
         }));
     }
     pika::wait_all(std::move(futures));
-    std::cout << "thread set contains " << std::dec << thread_set.size()
-              << std::endl;
+    std::cout << "thread set contains " << std::dec << thread_set.size() << std::endl;
     futures.clear();
     thread_set.clear();
 
@@ -194,15 +184,14 @@ int pika_main(/*pika::program_options::variables_map& vm*/)
             std::lock_guard<pika::mutex> lock(m);
             if (thread_set.insert(std::this_thread::get_id()).second)
             {
-                std::cout << std::hex << pika::this_thread::get_id() << " "
-                          << std::hex << std::this_thread::get_id()
-                          << " pool executor i " << std::dec << i << std::endl;
+                std::cout << std::hex << pika::this_thread::get_id() << " " << std::hex
+                          << std::this_thread::get_id() << " pool executor i " << std::dec << i
+                          << std::endl;
             }
         }));
     }
     pika::wait_all(std::move(futures));
-    std::cout << "thread set contains " << std::dec << thread_set.size()
-              << std::endl;
+    std::cout << "thread set contains " << std::dec << thread_set.size() << std::endl;
     futures.clear();
     thread_set.clear();
 
@@ -210,8 +199,8 @@ int pika_main(/*pika::program_options::variables_map& vm*/)
 }
 
 // -------------------------------------------------------------------------
-void init_resource_partitioner_handler(pika::resource::partitioner& rp,
-    pika::program_options::variables_map const& vm)
+void init_resource_partitioner_handler(
+    pika::resource::partitioner& rp, pika::program_options::variables_map const& vm)
 {
     use_pools = vm.count("use-pools") != 0;
     pool_threads = vm["pool-threads"].as<int>();
@@ -225,8 +214,7 @@ void init_resource_partitioner_handler(pika::resource::partitioner& rp,
         // we use unspecified as the scheduler type and it will be set according to
         // the --pika:queuing=xxx option or default.
         auto deft = ::pika::threads::scheduler_mode::default_mode;
-        rp.create_thread_pool(pool_name,
-            pika::resource::scheduling_policy::shared_priority, deft);
+        rp.create_thread_pool(pool_name, pika::resource::scheduling_policy::shared_priority, deft);
         // add N pus to network pool
         int count = 0;
         for (pika::resource::numa_domain const& d : rp.numa_domains())
@@ -237,16 +225,14 @@ void init_resource_partitioner_handler(pika::resource::partitioner& rp,
                 {
                     if (count < pool_threads)
                     {
-                        std::cout << "Added pu " << count++ << " to pool \""
-                                  << pool_name << "\"\n";
+                        std::cout << "Added pu " << count++ << " to pool \"" << pool_name << "\"\n";
                         rp.add_resource(p, pool_name);
                     }
                 }
             }
         }
 
-        rp.create_thread_pool(
-            "default", pika::resource::scheduling_policy::unspecified, deft);
+        rp.create_thread_pool("default", pika::resource::scheduling_policy::unspecified, deft);
     }
 }
 

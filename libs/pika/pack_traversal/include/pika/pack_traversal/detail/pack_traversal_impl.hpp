@@ -9,7 +9,6 @@
 #include <pika/config.hpp>
 #include <pika/functional/detail/invoke.hpp>
 #include <pika/functional/invoke_fused.hpp>
-#include <pika/functional/invoke_result.hpp>
 #include <pika/pack_traversal/detail/container_category.hpp>
 #include <pika/pack_traversal/traits/pack_traversal_rebind_container.hpp>
 #include <pika/type_support/decay.hpp>
@@ -107,8 +106,7 @@ namespace pika::util::detail {
         /// underlying tuple. If the type is mapped to zero elements,
         /// the return type will be void.
         template <typename T>
-        constexpr auto unpack_or_void(T&& type)
-            -> decltype(unpack(PIKA_FORWARD(T, type)))
+        constexpr auto unpack_or_void(T&& type) -> decltype(unpack(PIKA_FORWARD(T, type)))
         {
             return unpack(PIKA_FORWARD(T, type));
         }
@@ -122,8 +120,7 @@ namespace pika::util::detail {
             return std::tuple<T>{PIKA_FORWARD(T, type)};
         }
         template <typename... T>
-        constexpr auto undecorate(spread_box<T...> type)
-            -> decltype(type.unbox())
+        constexpr auto undecorate(spread_box<T...> type) -> decltype(type.unbox())
         {
             return type.unbox();
         }
@@ -136,17 +133,14 @@ namespace pika::util::detail {
             // We overload with one argument here so Clang and GCC don't
             // have any issues with overloading against zero arguments.
             template <typename First, typename... T>
-            constexpr Type<First, T...>
-            operator()(First&& first, T&&... args) const
+            constexpr Type<First, T...> operator()(First&& first, T&&... args) const
             {
-                return Type<First, T...>{
-                    PIKA_FORWARD(First, first), PIKA_FORWARD(T, args)...};
+                return Type<First, T...>{PIKA_FORWARD(First, first), PIKA_FORWARD(T, args)...};
             }
 
             // Specifically return the empty object which can be different
             // from a tuple.
-            constexpr EmptyType operator()() const
-                noexcept(noexcept(EmptyType{}))
+            constexpr EmptyType operator()() const noexcept(noexcept(EmptyType{}))
             {
                 return EmptyType{};
             }
@@ -173,8 +167,7 @@ namespace pika::util::detail {
             /// Deduces to the array type when the array is instantiated
             /// with the given arguments.
             template <typename First, typename... Rest>
-            using array_type_of_t =
-                Type<std::decay_t<First>, 1 + sizeof...(Rest)>;
+            using array_type_of_t = Type<std::decay_t<First>, 1 + sizeof...(Rest)>;
 
             // We overload with one argument here so Clang and GCC don't
             // have any issues with overloading against zero arguments.
@@ -186,8 +179,7 @@ namespace pika::util::detail {
                     {PIKA_FORWARD(First, first), PIKA_FORWARD(T, args)...}};
             }
 
-            constexpr auto operator()() const noexcept
-                -> decltype(empty_spread())
+            constexpr auto operator()() const noexcept -> decltype(empty_spread())
             {
                 return empty_spread();
             }
@@ -196,22 +188,21 @@ namespace pika::util::detail {
         /// Use the recursive instantiation for a variadic pack which
         /// may contain spread types
         template <typename C, typename... T>
-        constexpr auto apply_spread_impl(std::true_type, C&& callable,
-            T&&... args) -> decltype(invoke_fused(PIKA_FORWARD(C, callable),
-            std::tuple_cat(undecorate(PIKA_FORWARD(T, args))...)))
+        constexpr auto apply_spread_impl(std::true_type, C&& callable, T&&... args)
+            -> decltype(invoke_fused(
+                PIKA_FORWARD(C, callable), std::tuple_cat(undecorate(PIKA_FORWARD(T, args))...)))
         {
-            return invoke_fused(PIKA_FORWARD(C, callable),
-                std::tuple_cat(undecorate(PIKA_FORWARD(T, args))...));
+            return invoke_fused(
+                PIKA_FORWARD(C, callable), std::tuple_cat(undecorate(PIKA_FORWARD(T, args))...));
         }
 
         /// Use the linear instantiation for variadic packs which don't
         /// contain spread types.
         template <typename C, typename... T>
-        constexpr auto apply_spread_impl(std::false_type, C&& callable,
-            T&&... args) -> typename invoke_result<C, T...>::type
+        constexpr auto apply_spread_impl(std::false_type, C&& callable, T&&... args)
+            -> std::invoke_result_t<C, T...>
         {
-            return PIKA_INVOKE(
-                PIKA_FORWARD(C, callable), PIKA_FORWARD(T, args)...);
+            return PIKA_INVOKE(PIKA_FORWARD(C, callable), PIKA_FORWARD(T, args)...);
         }
 
         /// Deduces to a true_type if any of the given types marks
@@ -220,22 +211,21 @@ namespace pika::util::detail {
         using is_any_spread_t = util::detail::any_of<is_spread<T>...>;
 
         template <typename C, typename... T>
-        constexpr auto map_spread(C&& callable, T&&... args)
-            -> decltype(apply_spread_impl(is_any_spread_t<T...>{},
-                PIKA_FORWARD(C, callable), PIKA_FORWARD(T, args)...))
+        constexpr auto map_spread(C&& callable, T&&... args) -> decltype(apply_spread_impl(
+            is_any_spread_t<T...>{}, PIKA_FORWARD(C, callable), PIKA_FORWARD(T, args)...))
         {
             // Check whether any of the args is a detail::flatted_tuple_t,
             // if not, use the linear called version for better
             // compilation speed.
-            return apply_spread_impl(is_any_spread_t<T...>{},
-                PIKA_FORWARD(C, callable), PIKA_FORWARD(T, args)...);
+            return apply_spread_impl(
+                is_any_spread_t<T...>{}, PIKA_FORWARD(C, callable), PIKA_FORWARD(T, args)...);
         }
 
         /// Converts the given variadic arguments into a tuple in a way
         /// that spread return values are inserted into the current pack.
         template <typename... T>
-        constexpr auto tupelize(T&&... args) -> decltype(map_spread(
-            tupelizer_of_t<>{}, PIKA_FORWARD(T, args)...))
+        constexpr auto tupelize(T&&... args)
+            -> decltype(map_spread(tupelizer_of_t<>{}, PIKA_FORWARD(T, args)...))
         {
             return map_spread(tupelizer_of_t<>{}, PIKA_FORWARD(T, args)...);
         }
@@ -245,11 +235,10 @@ namespace pika::util::detail {
         /// If the arguments were mapped to zero arguments, the empty
         /// mapping is propagated backwards to the caller.
         template <template <typename...> class Type, typename... T>
-        constexpr auto flat_tupelize_to(T&&... args) -> decltype(map_spread(
-            flat_tupelizer_of_t<Type>{}, PIKA_FORWARD(T, args)...))
+        constexpr auto flat_tupelize_to(T&&... args)
+            -> decltype(map_spread(flat_tupelizer_of_t<Type>{}, PIKA_FORWARD(T, args)...))
         {
-            return map_spread(
-                flat_tupelizer_of_t<Type>{}, PIKA_FORWARD(T, args)...);
+            return map_spread(flat_tupelizer_of_t<Type>{}, PIKA_FORWARD(T, args)...);
         }
 
         /// Converts the given variadic arguments into an array in a way
@@ -258,17 +247,15 @@ namespace pika::util::detail {
         /// If the arguments were mapped to zero arguments, the empty
         /// mapping is propagated backwards to the caller.
         template <template <typename, std::size_t> class Type, typename... T>
-        constexpr auto flat_arraylize_to(T&&... args) -> decltype(map_spread(
-            flat_arraylizer<Type>{}, PIKA_FORWARD(T, args)...))
+        constexpr auto flat_arraylize_to(T&&... args)
+            -> decltype(map_spread(flat_arraylizer<Type>{}, PIKA_FORWARD(T, args)...))
         {
-            return map_spread(
-                flat_arraylizer<Type>{}, PIKA_FORWARD(T, args)...);
+            return map_spread(flat_arraylizer<Type>{}, PIKA_FORWARD(T, args)...);
         }
 
         /// Converts an empty tuple to void
         template <typename First, typename... Rest>
-        constexpr std::tuple<First, Rest...>
-        voidify_empty_tuple(std::tuple<First, Rest...> val)
+        constexpr std::tuple<First, Rest...> voidify_empty_tuple(std::tuple<First, Rest...> val)
         {
             return val;
         }
@@ -299,8 +286,7 @@ namespace pika::util::detail {
     /// Deduces to a true type if the type leads to at least one effective
     /// call to the mapper.
     template <typename Mapper, typename T>
-    using is_effective_t =
-        std::is_invocable<typename Mapper::traversor_type, T>;
+    using is_effective_t = std::is_invocable<typename Mapper::traversor_type, T>;
 
     /// Deduces to a true type if any type leads to at least one effective
     /// call to the mapper.
@@ -329,19 +315,17 @@ namespace pika::util::detail {
         };
         template <typename T, typename E>
         struct has_push_back<T, E,
-            std::void_t<decltype(std::declval<T>().push_back(
-                std::declval<E>()))>> : std::true_type
+            std::void_t<decltype(std::declval<T>().push_back(std::declval<E>()))>> : std::true_type
         {
         };
 
         /// Specialization for a container with a single type T
         template <typename NewType, typename Container>
         auto rebind_container(Container const& container)
-            -> decltype(traits::pack_traversal_rebind_container<NewType,
-                Container>::call(std::declval<Container>()))
+            -> decltype(traits::pack_traversal_rebind_container<NewType, Container>::call(
+                std::declval<Container>()))
         {
-            return traits::pack_traversal_rebind_container<NewType,
-                Container>::call(container);
+            return traits::pack_traversal_rebind_container<NewType, Container>::call(container);
         }
 
         /// Returns the default iterators of the container in case
@@ -350,8 +334,8 @@ namespace pika::util::detail {
         template <typename C, typename = void>
         class container_accessor
         {
-            static_assert(std::is_lvalue_reference<C>::value,
-                "This should be a lvalue reference here!");
+            static_assert(
+                std::is_lvalue_reference<C>::value, "This should be a lvalue reference here!");
 
             C container_;
 
@@ -372,8 +356,7 @@ namespace pika::util::detail {
             }
         };
         template <typename C>
-        class container_accessor<C,
-            std::enable_if_t<std::is_rvalue_reference<C&&>::value>>
+        class container_accessor<C, std::enable_if_t<std::is_rvalue_reference<C&&>::value>>
         {
             C&& container_;
 
@@ -383,8 +366,7 @@ namespace pika::util::detail {
             {
             }
 
-            auto begin()
-                -> decltype(std::make_move_iterator(container_.begin()))
+            auto begin() -> decltype(std::make_move_iterator(container_.begin()))
             {
                 return std::make_move_iterator(container_.begin());
             }
@@ -415,8 +397,7 @@ namespace pika::util::detail {
         /// - If the container was passed as r-value its containing
         ///   values are referenced through r-values.
         template <typename Container>
-        using element_of_t = typename std::conditional<
-            std::is_rvalue_reference<Container&&>::value,
+        using element_of_t = typename std::conditional<std::is_rvalue_reference<Container&&>::value,
             decltype(PIKA_MOVE(*(std::declval<Container>().begin()))),
             decltype(*(std::declval<Container>().begin()))>::type;
 
@@ -424,8 +405,7 @@ namespace pika::util::detail {
         /// if the type is a l-value or r-value reference.
         template <typename T>
         using dereferenced_of_t =
-            typename std::conditional<std::is_reference<T>::value,
-                std::decay_t<T>, T>::type;
+            typename std::conditional<std::is_reference<T>::value, std::decay_t<T>, T>::type;
 
         /// Returns the type which is resulting if the mapping is applied to
         /// an element in the container.
@@ -434,13 +414,13 @@ namespace pika::util::detail {
         /// references we try to construct the container from a copied
         /// version.
         template <typename Container, typename Mapping>
-        using mapped_type_from_t = dereferenced_of_t<spreading::unpacked_of_t<
-            typename invoke_result<Mapping, element_of_t<Container>>::type>>;
+        using mapped_type_from_t = dereferenced_of_t<
+            spreading::unpacked_of_t<std::invoke_result_t<Mapping, element_of_t<Container>>>>;
 
         /// Deduces to a true_type if the mapping maps to zero elements.
         template <typename T, typename M>
-        using is_empty_mapped = spreading::is_empty_spread<
-            std::decay_t<typename invoke_result<M, element_of_t<T>>::type>>;
+        using is_empty_mapped =
+            spreading::is_empty_spread<std::decay_t<std::invoke_result_t<M, element_of_t<T>>>>;
 
         /// We are allowed to reuse the container if we map to the same
         /// type we are accepting and when we have
@@ -464,24 +444,19 @@ namespace pika::util::detail {
         /// Categorizes the given container through a container_mapping_tag
         template <typename T, typename M>
         using container_mapping_tag_of_t =
-            container_mapping_tag<is_empty_mapped<T, M>::value,
-                can_reuse<T, M>::value>;
+            container_mapping_tag<is_empty_mapped<T, M>::value, can_reuse<T, M>::value>;
 
         /// We create a new container, which may hold the resulting type
         template <typename M, typename T>
-        auto remap_container(
-            container_mapping_tag<false, false>, M&& mapper, T&& container)
+        auto remap_container(container_mapping_tag<false, false>, M&& mapper, T&& container)
             -> decltype(rebind_container<mapped_type_from_t<T, M>>(container))
         {
-            static_assert(
-                has_push_back<std::decay_t<T>, element_of_t<T>>::value,
-                "Can only remap containers that provide a push_back "
-                "method!");
+            static_assert(has_push_back<std::decay_t<T>, element_of_t<T>>::value,
+                "Can only remap containers that provide a push_back method!");
 
             // Create the new container, which is capable of holding
             // the re-mapped types.
-            auto remapped =
-                rebind_container<mapped_type_from_t<T, M>>(container);
+            auto remapped = rebind_container<mapped_type_from_t<T, M>>(container);
 
             // We try to reserve the original size from the source
             // container to the destination container.
@@ -493,8 +468,8 @@ namespace pika::util::detail {
             // I didn't want to pull a whole header for it in.
             for (auto&& val : container_accessor_of(PIKA_FORWARD(T, container)))
             {
-                remapped.push_back(spreading::unpack(
-                    PIKA_FORWARD(M, mapper)(PIKA_FORWARD(decltype(val), val))));
+                remapped.push_back(
+                    spreading::unpack(PIKA_FORWARD(M, mapper)(PIKA_FORWARD(decltype(val), val))));
             }
 
             return remapped;    // RVO
@@ -503,21 +478,20 @@ namespace pika::util::detail {
         /// The remapper optimized for the case that we map to the same
         /// type we accepted such as int -> int.
         template <typename M, typename T>
-        auto remap_container(container_mapping_tag<false, true>, M&& mapper,
-            T&& container) -> std::decay_t<T>
+        auto remap_container(container_mapping_tag<false, true>, M&& mapper, T&& container)
+            -> std::decay_t<T>
         {
             for (auto&& val : container_accessor_of(PIKA_FORWARD(T, container)))
             {
-                val = spreading::unpack(
-                    PIKA_FORWARD(M, mapper)(PIKA_FORWARD(decltype(val), val)));
+                val = spreading::unpack(PIKA_FORWARD(M, mapper)(PIKA_FORWARD(decltype(val), val)));
             }
             return PIKA_FORWARD(T, container);
         }
 
         /// Remap the container to zero arguments
         template <typename M, typename T>
-        auto remap_container(container_mapping_tag<true, false>, M&& mapper,
-            T&& container) -> decltype(spreading::empty_spread())
+        auto remap_container(container_mapping_tag<true, false>, M&& mapper, T&& container)
+            -> decltype(spreading::empty_spread())
         {
             for (auto&& val : container_accessor_of(PIKA_FORWARD(T, container)))
             {
@@ -534,20 +508,18 @@ namespace pika::util::detail {
         /// different types.
         template <typename T, typename M>
         auto remap(strategy_remap_tag, T&& container, M&& mapper,
-            typename std::enable_if<
-                is_effective_t<M, element_of_t<T>>::value>::type* = nullptr)
-            -> decltype(remap_container(container_mapping_tag_of_t<T, M>{},
-                PIKA_FORWARD(M, mapper), PIKA_FORWARD(T, container)))
+            typename std::enable_if<is_effective_t<M, element_of_t<T>>::value>::type* = nullptr)
+            -> decltype(remap_container(container_mapping_tag_of_t<T, M>{}, PIKA_FORWARD(M, mapper),
+                PIKA_FORWARD(T, container)))
         {
-            return remap_container(container_mapping_tag_of_t<T, M>{},
-                PIKA_FORWARD(M, mapper), PIKA_FORWARD(T, container));
+            return remap_container(container_mapping_tag_of_t<T, M>{}, PIKA_FORWARD(M, mapper),
+                PIKA_FORWARD(T, container));
         }
 
         /// Just call the visitor with the content of the container
         template <typename T, typename M>
         void remap(strategy_traverse_tag, T&& container, M&& mapper,
-            typename std::enable_if<
-                is_effective_t<M, element_of_t<T>>::value>::type* = nullptr)
+            typename std::enable_if<is_effective_t<M, element_of_t<T>>::value>::type* = nullptr)
         {
 #if defined(PIKA_CUDA_VERSION) || defined(PIKA_NVHPC_VERSION)
             for (auto&& element : std::forward<T>(container))
@@ -565,55 +537,46 @@ namespace pika::util::detail {
     /// Provides utilities for remapping the whole content of a
     /// tuple like type to the same type holding different types.
     namespace tuple_like_remapping {
-        template <typename Strategy, typename Mapper, typename T,
-            typename Enable = void>
+        template <typename Strategy, typename Mapper, typename T, typename Enable = void>
         struct tuple_like_remapper
         {
         };
 
         /// Specialization for std::tuple like types which contain
         /// an arbitrary amount of heterogeneous arguments.
-        template <typename M, template <typename...> class Base,
-            typename... OldArgs>
+        template <typename M, template <typename...> class Base, typename... OldArgs>
         struct tuple_like_remapper<strategy_remap_tag, M, Base<OldArgs...>,
             // Support for skipping completely untouched types
-            typename std::enable_if<
-                is_effective_any_of_t<M, OldArgs...>::value>::type>
+            typename std::enable_if<is_effective_any_of_t<M, OldArgs...>::value>::type>
         {
             M mapper_;
 
             template <typename... Args>
-            auto operator()(Args&&... args)
-                -> decltype(spreading::flat_tupelize_to<Base>(
-                    std::declval<M>()(PIKA_FORWARD(Args, args))...))
+            auto operator()(Args&&... args) -> decltype(spreading::flat_tupelize_to<Base>(
+                std::declval<M>()(PIKA_FORWARD(Args, args))...))
             {
-                return spreading::flat_tupelize_to<Base>(
-                    mapper_(PIKA_FORWARD(Args, args))...);
+                return spreading::flat_tupelize_to<Base>(mapper_(PIKA_FORWARD(Args, args))...);
             }
         };
-        template <typename M, template <typename...> class Base,
-            typename... OldArgs>
+        template <typename M, template <typename...> class Base, typename... OldArgs>
         struct tuple_like_remapper<strategy_traverse_tag, M, Base<OldArgs...>,
             // Support for skipping completely untouched types
-            typename std::enable_if<
-                is_effective_any_of_t<M, OldArgs...>::value>::type>
+            typename std::enable_if<is_effective_any_of_t<M, OldArgs...>::value>::type>
         {
             M mapper_;
 
             template <typename... Args>
-            auto operator()(Args&&... args)
-                -> std::void_t<typename invoke_result<M, OldArgs>::type...>
+            auto operator()(Args&&... args) -> std::void_t<std::invoke_result_t<M, OldArgs>...>
             {
-                int dummy[] = {
-                    0, ((void) mapper_(PIKA_FORWARD(Args, args)), 0)...};
+                int dummy[] = {0, ((void) mapper_(PIKA_FORWARD(Args, args)), 0)...};
                 (void) dummy;
             }
         };
 
         /// Specialization for std::array like types, which contains a
         /// compile-time known amount of homogeneous types.
-        template <typename M, template <typename, std::size_t> class Base,
-            typename OldArg, std::size_t Size>
+        template <typename M, template <typename, std::size_t> class Base, typename OldArg,
+            std::size_t Size>
         struct tuple_like_remapper<strategy_remap_tag, M, Base<OldArg, Size>,
             // Support for skipping completely untouched types
             std::enable_if_t<is_effective_t<M, OldArg>::value>>
@@ -621,16 +584,14 @@ namespace pika::util::detail {
             M mapper_;
 
             template <typename... Args>
-            auto operator()(Args&&... args)
-                -> decltype(spreading::flat_arraylize_to<Base>(
-                    mapper_(PIKA_FORWARD(Args, args))...))
+            auto operator()(Args&&... args) -> decltype(spreading::flat_arraylize_to<Base>(
+                mapper_(PIKA_FORWARD(Args, args))...))
             {
-                return spreading::flat_arraylize_to<Base>(
-                    mapper_(PIKA_FORWARD(Args, args))...);
+                return spreading::flat_arraylize_to<Base>(mapper_(PIKA_FORWARD(Args, args))...);
             }
         };
-        template <typename M, template <typename, std::size_t> class Base,
-            typename OldArg, std::size_t Size>
+        template <typename M, template <typename, std::size_t> class Base, typename OldArg,
+            std::size_t Size>
         struct tuple_like_remapper<strategy_traverse_tag, M, Base<OldArg, Size>,
             // Support for skipping completely untouched types
             std::enable_if_t<is_effective_t<M, OldArg>::value>>
@@ -638,11 +599,9 @@ namespace pika::util::detail {
             M mapper_;
 
             template <typename... Args>
-            auto operator()(Args&&... args) -> typename invoke_result<
-                typename invoke_result<M, OldArg>::type>::type
+            auto operator()(Args&&... args) -> std::invoke_result_t<std::invoke_result_t<M, OldArg>>
             {
-                int dummy[] = {
-                    0, ((void) mapper_(PIKA_FORWARD(Args, args)), 0)...};
+                int dummy[] = {0, ((void) mapper_(PIKA_FORWARD(Args, args)), 0)...};
                 (void) dummy;
             }
         };
@@ -651,10 +610,9 @@ namespace pika::util::detail {
         /// to a container of the same type which may contain
         /// different types.
         template <typename Strategy, typename T, typename M>
-        auto remap(Strategy, T&& container, M&& mapper)
-            -> decltype(invoke_fused(std::declval<tuple_like_remapper<Strategy,
-                                         std::decay_t<M>, std::decay_t<T>>>(),
-                PIKA_FORWARD(T, container)))
+        auto remap(Strategy, T&& container, M&& mapper) -> decltype(invoke_fused(
+            std::declval<tuple_like_remapper<Strategy, std::decay_t<M>, std::decay_t<T>>>(),
+            PIKA_FORWARD(T, container)))
         {
             return invoke_fused(
                 tuple_like_remapper<Strategy, std::decay_t<M>, std::decay_t<T>>{
@@ -737,13 +695,10 @@ namespace pika::util::detail {
 
             template <typename T>
             auto operator()(T&& element)
-                -> decltype(std::declval<try_traversor>()
-                                .get_helper()
-                                ->try_traverse(
-                                    Strategy{}, PIKA_FORWARD(T, element)))
+                -> decltype(std::declval<try_traversor>().get_helper()->try_traverse(
+                    Strategy{}, PIKA_FORWARD(T, element)))
             {
-                return this->get_helper()->try_traverse(
-                    Strategy{}, PIKA_FORWARD(T, element));
+                return this->get_helper()->try_traverse(Strategy{}, PIKA_FORWARD(T, element));
             }
 
             /// An alias to the traversor type
@@ -753,8 +708,7 @@ namespace pika::util::detail {
         /// Invokes the real mapper with the given element
         template <typename T>
         auto invoke_mapper(T&& element)
-            -> decltype(std::declval<mapping_helper>().mapper_(
-                PIKA_FORWARD(T, element)))
+            -> decltype(std::declval<mapping_helper>().mapper_(PIKA_FORWARD(T, element)))
         {
             return mapper_(PIKA_FORWARD(T, element));
         }
@@ -767,22 +721,21 @@ namespace pika::util::detail {
         /// before matching the tag, which leads to build failures.
         template <typename T>
         auto match(container_category_tag<false, false>, T&& element)
-            -> decltype(std::declval<mapping_helper>().invoke_mapper(
-                PIKA_FORWARD(T, element)));
+            -> decltype(std::declval<mapping_helper>().invoke_mapper(PIKA_FORWARD(T, element)));
 
         /// SFINAE helper for elements satisfying the container
         /// requirements, which are not tuple like.
         template <typename T>
         auto match(container_category_tag<true, false>, T&& container)
-            -> decltype(container_remapping::remap(Strategy{},
-                PIKA_FORWARD(T, container), std::declval<traversor>()));
+            -> decltype(container_remapping::remap(
+                Strategy{}, PIKA_FORWARD(T, container), std::declval<traversor>()));
 
         /// SFINAE helper for elements which are tuple like and
         /// that also may satisfy the container requirements
         template <bool IsContainer, typename T>
         auto match(container_category_tag<IsContainer, true>, T&& tuple_like)
-            -> decltype(tuple_like_remapping::remap(Strategy{},
-                PIKA_FORWARD(T, tuple_like), std::declval<traversor>()));
+            -> decltype(tuple_like_remapping::remap(
+                Strategy{}, PIKA_FORWARD(T, tuple_like), std::declval<traversor>()));
 
         /// This method implements the functionality for routing
         /// elements through, that aren't accepted by the mapper.
@@ -793,8 +746,7 @@ namespace pika::util::detail {
         /// with the minimal needed set of accepted arguments.
         template <typename MatcherTag, typename T>
         auto try_match(MatcherTag, T&& element)
-            -> decltype(std::declval<mapping_helper>().may_void(
-                PIKA_FORWARD(T, element)))
+            -> decltype(std::declval<mapping_helper>().may_void(PIKA_FORWARD(T, element)))
         {
             return this->may_void(PIKA_FORWARD(T, element));
         }
@@ -807,8 +759,7 @@ namespace pika::util::detail {
         /// before matching the tag, which leads to build failures.
         template <typename T>
         auto try_match(container_category_tag<false, false>, T&& element)
-            -> decltype(std::declval<mapping_helper>().invoke_mapper(
-                PIKA_FORWARD(T, element)))
+            -> decltype(std::declval<mapping_helper>().invoke_mapper(PIKA_FORWARD(T, element)))
         {
             // T could be any non container or non tuple like type here,
             // take int or pika::future<int> as an example.
@@ -819,8 +770,8 @@ namespace pika::util::detail {
         /// which are not tuple like.
         template <typename T>
         auto try_match(container_category_tag<true, false>, T&& container)
-            -> decltype(container_remapping::remap(Strategy{},
-                PIKA_FORWARD(T, container), std::declval<try_traversor>()))
+            -> decltype(container_remapping::remap(
+                Strategy{}, PIKA_FORWARD(T, container), std::declval<try_traversor>()))
         {
             return container_remapping::remap(
                 Strategy{}, PIKA_FORWARD(T, container), try_traversor{this});
@@ -830,9 +781,9 @@ namespace pika::util::detail {
         /// satisfy the container requirements
         /// -> We match tuple like types over container like ones
         template <bool IsContainer, typename T>
-        auto try_match(container_category_tag<IsContainer, true>,
-            T&& tuple_like) -> decltype(tuple_like_remapping::remap(Strategy{},
-            PIKA_FORWARD(T, tuple_like), std::declval<try_traversor>()))
+        auto try_match(container_category_tag<IsContainer, true>, T&& tuple_like)
+            -> decltype(tuple_like_remapping::remap(
+                Strategy{}, PIKA_FORWARD(T, tuple_like), std::declval<try_traversor>()))
         {
             return tuple_like_remapping::remap(
                 Strategy{}, PIKA_FORWARD(T, tuple_like), try_traversor{this});
@@ -843,26 +794,22 @@ namespace pika::util::detail {
         /// SFINAE helper: Doesn't allow routing through elements,
         /// that aren't accepted by the mapper
         template <typename T>
-        auto traverse(Strategy, T&& element)
-            -> decltype(std::declval<mapping_helper>().match(
-                std::declval<container_category_of_t<
-                    typename pika::detail::decay_unwrap<T>::type>>(),
-                std::declval<T>()));
+        auto traverse(Strategy, T&& element) -> decltype(std::declval<mapping_helper>().match(
+            std::declval<container_category_of_t<typename pika::detail::decay_unwrap<T>::type>>(),
+            std::declval<T>()));
 
         /// \copybrief traverse
         template <typename T>
-        auto try_traverse(Strategy, T&& element)
-            -> decltype(std::declval<mapping_helper>().try_match(
-                std::declval<container_category_of_t<
-                    typename pika::detail::decay_unwrap<T>::type>>(),
-                std::declval<T>()))
+        auto
+        try_traverse(Strategy, T&& element) -> decltype(std::declval<mapping_helper>().try_match(
+            std::declval<container_category_of_t<typename pika::detail::decay_unwrap<T>::type>>(),
+            std::declval<T>()))
         {
             // We use tag dispatching here, to categorize the type T whether
             // it satisfies the container or tuple like requirements.
             // Then we can choose the underlying implementation accordingly.
             return try_match(
-                container_category_of_t<
-                    typename pika::detail::decay_unwrap<T>::type>{},
+                container_category_of_t<typename pika::detail::decay_unwrap<T>::type>{},
                 PIKA_FORWARD(T, element));
         }
 
@@ -874,10 +821,8 @@ namespace pika::util::detail {
 
         /// \copybrief try_traverse
         template <typename T>
-        auto init_traverse(strategy_remap_tag, T&& element)
-            -> decltype(spreading::unpack_or_void(
-                std::declval<mapping_helper>().try_traverse(
-                    strategy_remap_tag{}, std::declval<T>())))
+        auto init_traverse(strategy_remap_tag, T&& element) -> decltype(spreading::unpack_or_void(
+            std::declval<mapping_helper>().try_traverse(strategy_remap_tag{}, std::declval<T>())))
         {
             return spreading::unpack_or_void(
                 try_traverse(strategy_remap_tag{}, PIKA_FORWARD(T, element)));
@@ -891,18 +836,13 @@ namespace pika::util::detail {
         /// Calls the traversal method for every element in the pack,
         /// and returns a tuple containing the remapped content.
         template <typename First, typename Second, typename... T>
-        auto init_traverse(strategy_remap_tag strategy, First&& first,
-            Second&& second, T&&... rest)
+        auto init_traverse(strategy_remap_tag strategy, First&& first, Second&& second, T&&... rest)
             -> decltype(spreading::tupelize_or_void(
-                std::declval<mapping_helper>().try_traverse(
-                    strategy, PIKA_FORWARD(First, first)),
-                std::declval<mapping_helper>().try_traverse(
-                    strategy, PIKA_FORWARD(Second, second)),
-                std::declval<mapping_helper>().try_traverse(
-                    strategy, PIKA_FORWARD(T, rest))...))
+                std::declval<mapping_helper>().try_traverse(strategy, PIKA_FORWARD(First, first)),
+                std::declval<mapping_helper>().try_traverse(strategy, PIKA_FORWARD(Second, second)),
+                std::declval<mapping_helper>().try_traverse(strategy, PIKA_FORWARD(T, rest))...))
         {
-            return spreading::tupelize_or_void(
-                try_traverse(strategy, PIKA_FORWARD(First, first)),
+            return spreading::tupelize_or_void(try_traverse(strategy, PIKA_FORWARD(First, first)),
                 try_traverse(strategy, PIKA_FORWARD(Second, second)),
                 try_traverse(strategy, PIKA_FORWARD(T, rest))...);
         }
@@ -910,13 +850,12 @@ namespace pika::util::detail {
         /// Calls the traversal method for every element in the pack,
         /// without preserving the return values of the mapper.
         template <typename First, typename Second, typename... T>
-        void init_traverse(strategy_traverse_tag strategy, First&& first,
-            Second&& second, T&&... rest)
+        void
+        init_traverse(strategy_traverse_tag strategy, First&& first, Second&& second, T&&... rest)
         {
             try_traverse(strategy, PIKA_FORWARD(First, first));
             try_traverse(strategy, PIKA_FORWARD(Second, second));
-            int dummy[] = {0,
-                ((void) try_traverse(strategy, PIKA_FORWARD(T, rest)), 0)...};
+            int dummy[] = {0, ((void) try_traverse(strategy, PIKA_FORWARD(T, rest)), 0)...};
             (void) dummy;
         }
     };
@@ -924,12 +863,10 @@ namespace pika::util::detail {
     /// Traverses the given pack with the given mapper and strategy
     template <typename Strategy, typename Mapper, typename... T>
     auto apply_pack_transform(Strategy strategy, Mapper&& mapper, T&&... pack)
-        -> decltype(std::declval<
-                    mapping_helper<Strategy, std::decay_t<Mapper>>>()
-                        .init_traverse(strategy, PIKA_FORWARD(T, pack)...))
+        -> decltype(std::declval<mapping_helper<Strategy, std::decay_t<Mapper>>>().init_traverse(
+            strategy, PIKA_FORWARD(T, pack)...))
     {
-        mapping_helper<Strategy, std::decay_t<Mapper>> helper(
-            PIKA_FORWARD(Mapper, mapper));
+        mapping_helper<Strategy, std::decay_t<Mapper>> helper(PIKA_FORWARD(Mapper, mapper));
         return helper.init_traverse(strategy, PIKA_FORWARD(T, pack)...);
     }
 }    // namespace pika::util::detail

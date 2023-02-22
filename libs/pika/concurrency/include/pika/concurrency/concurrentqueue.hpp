@@ -57,30 +57,30 @@
 // Disable -Wconversion warnings (spuriously triggered when Traits::size_t and
 // Traits::index_t are set to < 32 bits, causing integer promotion, causing warnings
 // upon assigning any computed values)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wconversion"
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wconversion"
 
-#ifdef MCDBGQ_USE_RELACY
-#pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
-#endif
+# ifdef MCDBGQ_USE_RELACY
+#  pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
+# endif
 #endif
 
 #if defined(__APPLE__)
-#include "TargetConditionals.h"
+# include "TargetConditionals.h"
 #endif
 
 #ifdef MCDBGQ_USE_RELACY
-#include "relacy/relacy_std.hpp"
-#include "relacy_shims.h"
+# include "relacy/relacy_std.hpp"
+# include "relacy_shims.h"
 // We only use malloc/free anyway, and the delete macro messes up `= delete` method declarations.
 // We'll override the default trait malloc ourselves without a macro.
-#undef new
-#undef delete
-#undef malloc
-#undef free
+# undef new
+# undef delete
+# undef malloc
+# undef free
 #else
-#include <atomic>    // Requires C++11. Sorry VS2010.
-#include <cassert>
+# include <atomic>    // Requires C++11. Sorry VS2010.
+# include <cassert>
 #endif
 #include <algorithm>
 #include <array>
@@ -119,8 +119,7 @@ namespace pika::concurrency::detail {
 #elif defined(_WIN32) || defined(__WINDOWS__) || defined(__WIN32__)
 // No sense pulling in windows.h in a header, we'll manually declare the function
 // we use and rely on backwards-compatibility for this not to break
-extern "C" __declspec(dllimport) unsigned long __stdcall GetCurrentThreadId(
-    void);
+extern "C" __declspec(dllimport) unsigned long __stdcall GetCurrentThreadId(void);
 namespace pika::concurrency::detail {
     static_assert(sizeof(unsigned long) == sizeof(std::uint32_t),
         "Expected size of unsigned long to be 32 bits on Windows");
@@ -134,15 +133,14 @@ namespace pika::concurrency::detail {
         return static_cast<thread_id_t>(::GetCurrentThreadId());
     }
 }    // namespace pika::concurrency::detail
-#elif defined(__arm__) || defined(_M_ARM) || defined(__aarch64__) ||           \
+#elif defined(__arm__) || defined(_M_ARM) || defined(__aarch64__) ||                               \
     (defined(__APPLE__) && TARGET_OS_IPHONE)
 namespace pika::concurrency::detail {
     static_assert(sizeof(std::thread::id) == 4 || sizeof(std::thread::id) == 8,
         "std::thread::id is expected to be either 4 or 8 bytes");
 
     using thread_id_t = std::thread::id;
-    static const thread_id_t
-        invalid_thread_id;    // Default ctor creates invalid ID
+    static const thread_id_t invalid_thread_id;    // Default ctor creates invalid ID
 
     // Note we don't define a invalid_thread_id2 since std::thread::id doesn't have one; it's
     // only used if MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED is defined anyway, which it won't
@@ -170,21 +168,20 @@ namespace pika::concurrency::detail {
     template <>
     struct thread_id_converter<thread_id_t>
     {
-        using thread_id_numeric_size_t =
-            thread_id_size<sizeof(thread_id_t)>::numeric_t;
-#if !defined(__APPLE__)
+        using thread_id_numeric_size_t = thread_id_size<sizeof(thread_id_t)>::numeric_t;
+# if !defined(__APPLE__)
         using thread_id_hash_t = std::size_t;
-#else
+# else
         using thread_id_hash_t = thread_id_numeric_size_t;
-#endif
+# endif
 
         static thread_id_hash_t prehash(thread_id_t const& x)
         {
-#if !defined(__APPLE__)
+# if !defined(__APPLE__)
             return std::hash<std::thread::id>()(x);
-#else
+# else
             return *reinterpret_cast<thread_id_hash_t const*>(&x);
-#endif
+# endif
         }
     };
 }    // namespace pika::concurrency::detail
@@ -192,18 +189,17 @@ namespace pika::concurrency::detail {
 // Use a nice trick from this answer: http://stackoverflow.com/a/8438730/21475
 // In order to get a numeric thread ID in a platform-independent way, we use a thread-local
 // static variable's address as a thread identifier :-)
-#if defined(__GNUC__) || defined(__INTEL_COMPILER)
-#define MOODYCAMEL_THREADLOCAL __thread
-#elif defined(_MSC_VER)
-#define MOODYCAMEL_THREADLOCAL __declspec(thread)
-#else
+# if defined(__GNUC__) || defined(__INTEL_COMPILER)
+#  define MOODYCAMEL_THREADLOCAL __thread
+# elif defined(_MSC_VER)
+#  define MOODYCAMEL_THREADLOCAL __declspec(thread)
+# else
 // Assume C++11 compliant compiler
-#define MOODYCAMEL_THREADLOCAL thread_local
-#endif
+#  define MOODYCAMEL_THREADLOCAL thread_local
+# endif
 namespace pika::concurrency::detail {
     using thread_id_t = std::uintptr_t;
-    static const thread_id_t invalid_thread_id =
-        0;    // Address can't be nullptr
+    static const thread_id_t invalid_thread_id = 0;    // Address can't be nullptr
     static const thread_id_t invalid_thread_id2 =
         1;    // Member accesses off a null pointer are also generally invalid. Plus it's not aligned.
     static inline thread_id_t thread_id()
@@ -216,98 +212,91 @@ namespace pika::concurrency::detail {
 
 // Exceptions
 #if !defined(MOODYCAMEL_EXCEPTIONS_ENABLED)
-#if (defined(_MSC_VER) && defined(_CPPUNWIND)) ||                              \
-    (defined(__GNUC__) && defined(__EXCEPTIONS)) ||                            \
-    (!defined(_MSC_VER) && !defined(__GNUC__))
-#define MOODYCAMEL_EXCEPTIONS_ENABLED
-#endif
+# if (defined(_MSC_VER) && defined(_CPPUNWIND)) || (defined(__GNUC__) && defined(__EXCEPTIONS)) || \
+     (!defined(_MSC_VER) && !defined(__GNUC__))
+#  define MOODYCAMEL_EXCEPTIONS_ENABLED
+# endif
 #endif
 #ifdef MOODYCAMEL_EXCEPTIONS_ENABLED
-#define MOODYCAMEL_TRY try
-#define MOODYCAMEL_CATCH(...) catch (__VA_ARGS__)
-#define MOODYCAMEL_RETHROW throw
-#define MOODYCAMEL_THROW(expr) throw(expr)
+# define MOODYCAMEL_TRY try
+# define MOODYCAMEL_CATCH(...) catch (__VA_ARGS__)
+# define MOODYCAMEL_RETHROW throw
+# define MOODYCAMEL_THROW(expr) throw(expr)
 #else
-#define MOODYCAMEL_TRY if (true)
-#define MOODYCAMEL_CATCH(...) else if (false)
-#define MOODYCAMEL_RETHROW
-#define MOODYCAMEL_THROW(expr)
+# define MOODYCAMEL_TRY if (true)
+# define MOODYCAMEL_CATCH(...) else if (false)
+# define MOODYCAMEL_RETHROW
+# define MOODYCAMEL_THROW(expr)
 #endif
 
 #if !defined(MOODYCAMEL_NOEXCEPT)
-#if !defined(MOODYCAMEL_EXCEPTIONS_ENABLED)
-#define MOODYCAMEL_NOEXCEPT
-#define MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr) true
-#define MOODYCAMEL_NOEXCEPT_ASSIGN(type, valueType, expr) true
-#elif defined(_MSC_VER) && defined(_NOEXCEPT) && _MSC_VER < 1800
+# if !defined(MOODYCAMEL_EXCEPTIONS_ENABLED)
+#  define MOODYCAMEL_NOEXCEPT
+#  define MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr) true
+#  define MOODYCAMEL_NOEXCEPT_ASSIGN(type, valueType, expr) true
+# elif defined(_MSC_VER) && defined(_NOEXCEPT) && _MSC_VER < 1800
 // VS2012's std::is_nothrow_[move_]constructible is broken and returns true when it shouldn't :-(
 // We have to assume *all* non-trivial constructors may throw on VS2012!
-#define MOODYCAMEL_NOEXCEPT _NOEXCEPT
-#define MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr)                        \
-    (std::is_rvalue_reference<valueType>::value &&                             \
-                std::is_move_constructible<type>::value ?                      \
-            std::is_trivially_move_constructible<type>::value :                \
-            std::is_trivially_copy_constructible<type>::value)
-#define MOODYCAMEL_NOEXCEPT_ASSIGN(type, valueType, expr)                      \
-    ((std::is_rvalue_reference<valueType>::value &&                            \
-                 std::is_move_assignable<type>::value ?                        \
-             std::is_trivially_move_assignable<type>::value ||                 \
-                 std::is_nothrow_move_assignable<type>::value :                \
-             std::is_trivially_copy_assignable<type>::value ||                 \
-                 std::is_nothrow_copy_assignable<type>::value) &&              \
-        MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr))
-#elif defined(_MSC_VER) && defined(_NOEXCEPT) && _MSC_VER < 1900
-#define MOODYCAMEL_NOEXCEPT _NOEXCEPT
-#define MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr)                        \
-    (std::is_rvalue_reference<valueType>::value &&                             \
-                std::is_move_constructible<type>::value ?                      \
-            std::is_trivially_move_constructible<type>::value ||               \
-                std::is_nothrow_move_constructible<type>::value :              \
-            std::is_trivially_copy_constructible<type>::value ||               \
-                std::is_nothrow_copy_constructible<type>::value)
-#define MOODYCAMEL_NOEXCEPT_ASSIGN(type, valueType, expr)                      \
-    ((std::is_rvalue_reference<valueType>::value &&                            \
-                 std::is_move_assignable<type>::value ?                        \
-             std::is_trivially_move_assignable<type>::value ||                 \
-                 std::is_nothrow_move_assignable<type>::value :                \
-             std::is_trivially_copy_assignable<type>::value ||                 \
-                 std::is_nothrow_copy_assignable<type>::value) &&              \
-        MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr))
-#else
-#define MOODYCAMEL_NOEXCEPT noexcept
-#define MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr) noexcept(expr)
-#define MOODYCAMEL_NOEXCEPT_ASSIGN(type, valueType, expr) noexcept(expr)
-#endif
+#  define MOODYCAMEL_NOEXCEPT _NOEXCEPT
+#  define MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr)                                          \
+   (std::is_rvalue_reference<valueType>::value && std::is_move_constructible<type>::value ?        \
+           std::is_trivially_move_constructible<type>::value :                                     \
+           std::is_trivially_copy_constructible<type>::value)
+#  define MOODYCAMEL_NOEXCEPT_ASSIGN(type, valueType, expr)                                        \
+   ((std::is_rvalue_reference<valueType>::value && std::is_move_assignable<type>::value ?          \
+            std::is_trivially_move_assignable<type>::value ||                                      \
+                std::is_nothrow_move_assignable<type>::value :                                     \
+            std::is_trivially_copy_assignable<type>::value ||                                      \
+                std::is_nothrow_copy_assignable<type>::value) &&                                   \
+       MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr))
+# elif defined(_MSC_VER) && defined(_NOEXCEPT) && _MSC_VER < 1900
+#  define MOODYCAMEL_NOEXCEPT _NOEXCEPT
+#  define MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr)                                          \
+   (std::is_rvalue_reference<valueType>::value && std::is_move_constructible<type>::value ?        \
+           std::is_trivially_move_constructible<type>::value ||                                    \
+               std::is_nothrow_move_constructible<type>::value :                                   \
+           std::is_trivially_copy_constructible<type>::value ||                                    \
+               std::is_nothrow_copy_constructible<type>::value)
+#  define MOODYCAMEL_NOEXCEPT_ASSIGN(type, valueType, expr)                                        \
+   ((std::is_rvalue_reference<valueType>::value && std::is_move_assignable<type>::value ?          \
+            std::is_trivially_move_assignable<type>::value ||                                      \
+                std::is_nothrow_move_assignable<type>::value :                                     \
+            std::is_trivially_copy_assignable<type>::value ||                                      \
+                std::is_nothrow_copy_assignable<type>::value) &&                                   \
+       MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr))
+# else
+#  define MOODYCAMEL_NOEXCEPT noexcept
+#  define MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr) noexcept(expr)
+#  define MOODYCAMEL_NOEXCEPT_ASSIGN(type, valueType, expr) noexcept(expr)
+# endif
 #endif
 
 #if !defined(MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED)
-#ifdef MCDBGQ_USE_RELACY
-#define MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED
-#else
+# ifdef MCDBGQ_USE_RELACY
+#  define MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED
+# else
 // VS2013 doesn't support `thread_local`, and MinGW-w64 w/ POSIX threading has a crippling bug: http://sourceforge.net/p/mingw-w64/bugs/445
 // g++ <=4.7 doesn't support thread_local either.
 // Finally, iOS/ARM doesn't have support for it either, and g++/ARM allows it to compile but it's unconfirmed to actually work
-#if (!defined(_MSC_VER) || _MSC_VER >= 1900) &&                                \
-    (!defined(__MINGW32__) && !defined(__MINGW64__) ||                         \
-        !defined(__WINPTHREADS_VERSION)) &&                                    \
-    (!defined(__GNUC__) || __GNUC__ > 4 ||                                     \
-        (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)) &&                             \
-    (!defined(__APPLE__) || !TARGET_OS_IPHONE) && !defined(__arm__) &&         \
-    !defined(_M_ARM) && !defined(__aarch64__)
+#  if (!defined(_MSC_VER) || _MSC_VER >= 1900) &&                                                  \
+      (!defined(__MINGW32__) && !defined(__MINGW64__) || !defined(__WINPTHREADS_VERSION)) &&       \
+      (!defined(__GNUC__) || __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)) &&            \
+      (!defined(__APPLE__) || !TARGET_OS_IPHONE) && !defined(__arm__) && !defined(_M_ARM) &&       \
+      !defined(__aarch64__)
 // Assume `thread_local` is fully supported in all other C++11 compilers/platforms
 //#define MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED    // always disabled for now since several users report having problems with it on
-#endif
-#endif
+#  endif
+# endif
 #endif
 
 // VS2012 doesn't support deleted functions.
 // In this case, we declare the function normally but don't define it. A link error will be generated if the function is called.
 #if !defined(MOODYCAMEL_DELETE_FUNCTION)
-#if defined(_MSC_VER) && _MSC_VER < 1800
-#define MOODYCAMEL_DELETE_FUNCTION
-#else
-#define MOODYCAMEL_DELETE_FUNCTION = delete
-#endif
+# if defined(_MSC_VER) && _MSC_VER < 1800
+#  define MOODYCAMEL_DELETE_FUNCTION
+# else
+#  define MOODYCAMEL_DELETE_FUNCTION = delete
+# endif
 #endif
 
 // Compiler-specific likely/unlikely hints
@@ -334,27 +323,25 @@ namespace pika::concurrency::detail {
 }    // namespace pika::concurrency::detail
 
 #ifdef MOODYCAMEL_QUEUE_INTERNAL_DEBUG
-#include "internal/concurrentqueue_internal_debug.h"
+# include "internal/concurrentqueue_internal_debug.h"
 #endif
 
 namespace pika::concurrency::detail {
     template <typename T>
     struct const_numeric_max
     {
-        static_assert(std::is_integral<T>::value,
-            "const_numeric_max can only be used with integers");
+        static_assert(
+            std::is_integral<T>::value, "const_numeric_max can only be used with integers");
         static const T value = std::numeric_limits<T>::is_signed ?
-            (static_cast<T>(1) << (sizeof(T) * CHAR_BIT - 1)) -
-                static_cast<T>(1) :
+            (static_cast<T>(1) << (sizeof(T) * CHAR_BIT - 1)) - static_cast<T>(1) :
             static_cast<T>(-1);
     };
 
 #if defined(__GLIBCXX__)
-    using std_max_align_t =
-        ::max_align_t;    // libstdc++ forgot to add it to std:: for a while
+    using std_max_align_t = ::max_align_t;    // libstdc++ forgot to add it to std:: for a while
 #else
-    using std_max_align_t = std::
-        max_align_t;    // Others (e.g. MSVC) insist it can *only* be accessed via std::
+    using std_max_align_t =
+        std::max_align_t;    // Others (e.g. MSVC) insist it can *only* be accessed via std::
 #endif
 
     // Some platforms have incorrectly set max_align_t to a type with <8 bytes alignment even while supporting
@@ -420,20 +407,18 @@ namespace pika::concurrency::detail {
         // Controls the number of items that an explicit consumer (i.e. one with a token)
         // must consume before it causes all consumers to rotate and move on to the next
         // internal queue.
-        static const std::uint32_t
-            EXPLICIT_CONSUMER_CONSUMPTION_QUOTA_BEFORE_ROTATE = 256;
+        static const std::uint32_t EXPLICIT_CONSUMER_CONSUMPTION_QUOTA_BEFORE_ROTATE = 256;
 
         // The maximum number of elements (inclusive) that can be enqueued to a sub-queue.
         // Enqueue operations that would cause this limit to be surpassed will fail. Note
         // that this limit is enforced at the block level (for performance reasons), i.e.
         // it's rounded up to the nearest block size.
-        static const size_t MAX_SUBQUEUE_SIZE =
-            detail::const_numeric_max<size_t>::value;
+        static const size_t MAX_SUBQUEUE_SIZE = detail::const_numeric_max<size_t>::value;
 
 #if !defined(MCDBGQ_USE_RELACY)
         // Memory allocation can be customized if needed.
         // malloc should return nullptr on failure, and handle alignment like std::malloc.
-#if defined(malloc) || defined(free)
+# if defined(malloc) || defined(free)
         // Gah, this is 2015, stop defining macros that break standard code already!
         // Work around malloc/free being special macros:
         static inline void* WORKAROUND_malloc(size_t size)
@@ -452,7 +437,7 @@ namespace pika::concurrency::detail {
         {
             return WORKAROUND_free(ptr);
         }
-#else
+# else
         static inline void* malloc(size_t size)
         {
             return std::malloc(size);
@@ -461,7 +446,7 @@ namespace pika::concurrency::detail {
         {
             return std::free(ptr);
         }
-#endif
+# endif
 #else
         // Debug versions when running under the Relacy race detector (ignore
         // these in user code)
@@ -542,30 +527,25 @@ namespace pika::concurrency::detail {
     static inline size_t hash_thread_id(thread_id_t id)
     {
         static_assert(sizeof(thread_id_t) <= 8,
-            "Expected a platform where thread IDs are at most 64-bit "
-            "values");
-        return static_cast<size_t>(hash_32_or_64<sizeof(
-                thread_id_converter<thread_id_t>::thread_id_hash_t)>::
-                hash(thread_id_converter<thread_id_t>::prehash(id)));
+            "Expected a platform where thread IDs are at most 64-bit values");
+        return static_cast<size_t>(
+            hash_32_or_64<sizeof(thread_id_converter<thread_id_t>::thread_id_hash_t)>::hash(
+                thread_id_converter<thread_id_t>::prehash(id)));
     }
 
     template <typename T>
     static inline bool circular_less_than(T a, T b)
     {
 #ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4554)
+# pragma warning(push)
+# pragma warning(disable : 4554)
 #endif
-        static_assert(
-            std::is_integral<T>::value && !std::numeric_limits<T>::is_signed,
-            "circular_less_than is intended to be used only with "
-            "unsigned "
-            "integer types");
+        static_assert(std::is_integral<T>::value && !std::numeric_limits<T>::is_signed,
+            "circular_less_than is intended to be used only with unsigned integer types");
         return static_cast<T>(a - b) >
-            static_cast<T>(
-                static_cast<T>(1) << static_cast<T>(sizeof(T) * CHAR_BIT - 1));
+            static_cast<T>(static_cast<T>(1) << static_cast<T>(sizeof(T) * CHAR_BIT - 1));
 #ifdef _MSC_VER
-#pragma warning(pop)
+# pragma warning(pop)
 #endif
     }
 
@@ -573,19 +553,14 @@ namespace pika::concurrency::detail {
     static inline char* align_for(char* ptr)
     {
         const std::size_t alignment = std::alignment_of<U>::value;
-        return ptr +
-            (alignment - (reinterpret_cast<std::uintptr_t>(ptr) % alignment)) %
-            alignment;
+        return ptr + (alignment - (reinterpret_cast<std::uintptr_t>(ptr) % alignment)) % alignment;
     }
 
     template <typename T>
     static inline T ceil_to_pow_2(T x)
     {
-        static_assert(
-            std::is_integral<T>::value && !std::numeric_limits<T>::is_signed,
-            "ceil_to_pow_2 is intended to be used only with unsigned "
-            "integer "
-            "types");
+        static_assert(std::is_integral<T>::value && !std::numeric_limits<T>::is_signed,
+            "ceil_to_pow_2 is intended to be used only with unsigned integer types");
 
         // Adapted from http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
         --x;
@@ -604,8 +579,7 @@ namespace pika::concurrency::detail {
     static inline void swap_relaxed(std::atomic<T>& left, std::atomic<T>& right)
     {
         T temp = PIKA_MOVE(left.load(std::memory_order_relaxed));
-        left.store(PIKA_MOVE(right.load(std::memory_order_relaxed)),
-            std::memory_order_relaxed);
+        left.store(PIKA_MOVE(right.load(std::memory_order_relaxed)), std::memory_order_relaxed);
         right.store(PIKA_MOVE(temp), std::memory_order_relaxed);
     }
 
@@ -641,7 +615,7 @@ namespace pika::concurrency::detail {
         return *it;
     }
 
-#if defined(__clang__) || !defined(__GNUC__) || __GNUC__ > 4 ||                \
+#if defined(__clang__) || !defined(__GNUC__) || __GNUC__ > 4 ||                                    \
     (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)
     template <typename T>
     struct is_trivially_destructible : std::is_trivially_destructible<T>
@@ -655,18 +629,17 @@ namespace pika::concurrency::detail {
 #endif
 
 #ifdef MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED
-#ifdef MCDBGQ_USE_RELACY
+# ifdef MCDBGQ_USE_RELACY
     using ThreadExitListener = RelacyThreadExitListener;
     using ThreadExitNotifier = RelacyThreadExitNotifier;
-#else
+# else
     struct ThreadExitListener
     {
         using callback_t = void (*)(void*);
         callback_t callback;
         void* userData;
 
-        ThreadExitListener*
-            next;    // reserved for use by the ThreadExitNotifier
+        ThreadExitListener* next;    // reserved for use by the ThreadExitNotifier
     };
 
     class ThreadExitNotifier
@@ -699,19 +672,15 @@ namespace pika::concurrency::detail {
           : tail(nullptr)
         {
         }
-        ThreadExitNotifier(
-            ThreadExitNotifier const&) MOODYCAMEL_DELETE_FUNCTION;
-        ThreadExitNotifier& operator=(
-            ThreadExitNotifier const&) MOODYCAMEL_DELETE_FUNCTION;
+        ThreadExitNotifier(ThreadExitNotifier const&) MOODYCAMEL_DELETE_FUNCTION;
+        ThreadExitNotifier& operator=(ThreadExitNotifier const&) MOODYCAMEL_DELETE_FUNCTION;
 
         ~ThreadExitNotifier()
         {
             // This thread is about to exit, let everyone know!
             assert(this == &instance() &&
-                "If this assert fails, you likely have a buggy "
-                "compiler! "
-                "Change the preprocessor conditions such that "
-                "MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED is no longer "
+                "If this assert fails, you likely have a buggy compiler! Change the preprocessor "
+                "conditions such that MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED is no longer "
                 "defined.");
             for (auto ptr = tail; ptr != nullptr; ptr = ptr->next)
             {
@@ -729,7 +698,7 @@ namespace pika::concurrency::detail {
     private:
         ThreadExitListener* tail;
     };
-#endif
+# endif
 #endif
 
     template <typename T>
@@ -781,8 +750,7 @@ namespace pika::concurrency::detail {
         };
     };
     template <typename T>
-    struct static_is_lock_free
-      : static_is_lock_free_num<typename std::make_signed<T>::type>
+    struct static_is_lock_free : static_is_lock_free_num<typename std::make_signed<T>::type>
     {
     };
     template <>
@@ -810,8 +778,7 @@ namespace pika::concurrency::detail {
         template <typename T, typename Traits>
         explicit ProducerToken(BlockingConcurrentQueue<T, Traits>& queue);
 
-        ProducerToken(ProducerToken&& other) MOODYCAMEL_NOEXCEPT
-          : producer(other.producer)
+        ProducerToken(ProducerToken&& other) MOODYCAMEL_NOEXCEPT : producer(other.producer)
         {
             other.producer = nullptr;
             if (producer != nullptr)
@@ -820,8 +787,7 @@ namespace pika::concurrency::detail {
             }
         }
 
-        inline ProducerToken& operator=(
-            ProducerToken&& other) MOODYCAMEL_NOEXCEPT
+        inline ProducerToken& operator=(ProducerToken&& other) MOODYCAMEL_NOEXCEPT
         {
             swap(other);
             return *this;
@@ -864,8 +830,7 @@ namespace pika::concurrency::detail {
 
         // Disable copying and assignment
         ProducerToken(ProducerToken const&) MOODYCAMEL_DELETE_FUNCTION;
-        ProducerToken& operator=(
-            ProducerToken const&) MOODYCAMEL_DELETE_FUNCTION;
+        ProducerToken& operator=(ProducerToken const&) MOODYCAMEL_DELETE_FUNCTION;
 
     private:
         template <typename T, typename Traits>
@@ -893,8 +858,7 @@ namespace pika::concurrency::detail {
         {
         }
 
-        inline ConsumerToken& operator=(
-            ConsumerToken&& other) MOODYCAMEL_NOEXCEPT
+        inline ConsumerToken& operator=(ConsumerToken&& other) MOODYCAMEL_NOEXCEPT
         {
             swap(other);
             return *this;
@@ -911,8 +875,7 @@ namespace pika::concurrency::detail {
 
         // Disable copying and assignment
         ConsumerToken(ConsumerToken const&) MOODYCAMEL_DELETE_FUNCTION;
-        ConsumerToken& operator=(
-            ConsumerToken const&) MOODYCAMEL_DELETE_FUNCTION;
+        ConsumerToken& operator=(ConsumerToken const&) MOODYCAMEL_DELETE_FUNCTION;
 
     private:
         template <typename T, typename Traits>
@@ -930,10 +893,8 @@ namespace pika::concurrency::detail {
     // Need to forward-declare this swap because it's in a namespace.
     // See http://stackoverflow.com/questions/4492062/why-does-a-c-friend-class-need-a-forward-declaration-only-in-other-namespaces
     template <typename T, typename Traits>
-    inline void
-    swap(typename ConcurrentQueue<T, Traits>::ImplicitProducerKVP& a,
-        typename ConcurrentQueue<T, Traits>::ImplicitProducerKVP& b)
-        MOODYCAMEL_NOEXCEPT;
+    inline void swap(typename ConcurrentQueue<T, Traits>::ImplicitProducerKVP& a,
+        typename ConcurrentQueue<T, Traits>::ImplicitProducerKVP& b) MOODYCAMEL_NOEXCEPT;
 
     template <typename T, typename Traits = ConcurrentQueueDefaultTraits>
     class ConcurrentQueue
@@ -945,8 +906,7 @@ namespace pika::concurrency::detail {
         using index_t = typename Traits::index_t;
         using size_t = typename Traits::size_t;
 
-        static const size_t BLOCK_SIZE =
-            static_cast<size_t>(Traits::BLOCK_SIZE);
+        static const size_t BLOCK_SIZE = static_cast<size_t>(Traits::BLOCK_SIZE);
         static const size_t EXPLICIT_BLOCK_EMPTY_COUNTER_THRESHOLD =
             static_cast<size_t>(Traits::EXPLICIT_BLOCK_EMPTY_COUNTER_THRESHOLD);
         static const size_t EXPLICIT_INITIAL_INDEX_SIZE =
@@ -955,67 +915,51 @@ namespace pika::concurrency::detail {
             static_cast<size_t>(Traits::IMPLICIT_INITIAL_INDEX_SIZE);
         static const size_t INITIAL_IMPLICIT_PRODUCER_HASH_SIZE =
             static_cast<size_t>(Traits::INITIAL_IMPLICIT_PRODUCER_HASH_SIZE);
-        static const std::uint32_t
-            EXPLICIT_CONSUMER_CONSUMPTION_QUOTA_BEFORE_ROTATE =
-                static_cast<std::uint32_t>(
-                    Traits::EXPLICIT_CONSUMER_CONSUMPTION_QUOTA_BEFORE_ROTATE);
+        static const std::uint32_t EXPLICIT_CONSUMER_CONSUMPTION_QUOTA_BEFORE_ROTATE =
+            static_cast<std::uint32_t>(Traits::EXPLICIT_CONSUMER_CONSUMPTION_QUOTA_BEFORE_ROTATE);
 #ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(                                                               \
-    disable : 4307)    // + integral constant overflow (that's what the ternary expression is for!)
-#pragma warning(disable : 4309)    // static_cast: Truncation of constant value
+# pragma warning(push)
+# pragma warning(                                                                                  \
+     disable : 4307)    // + integral constant overflow (that's what the ternary expression is for!)
+# pragma warning(disable : 4309)    // static_cast: Truncation of constant value
 #endif
         static const size_t MAX_SUBQUEUE_SIZE =
             (detail::const_numeric_max<size_t>::value -
                     static_cast<size_t>(Traits::MAX_SUBQUEUE_SIZE) <
                 BLOCK_SIZE) ?
             detail::const_numeric_max<size_t>::value :
-            ((static_cast<size_t>(Traits::MAX_SUBQUEUE_SIZE) +
-                 (BLOCK_SIZE - 1)) /
-                BLOCK_SIZE * BLOCK_SIZE);
+            ((static_cast<size_t>(Traits::MAX_SUBQUEUE_SIZE) + (BLOCK_SIZE - 1)) / BLOCK_SIZE *
+                BLOCK_SIZE);
 #ifdef _MSC_VER
-#pragma warning(pop)
+# pragma warning(pop)
 #endif
 
-        static_assert(!std::numeric_limits<size_t>::is_signed &&
-                std::is_integral<size_t>::value,
+        static_assert(!std::numeric_limits<size_t>::is_signed && std::is_integral<size_t>::value,
             "Traits::size_t must be an unsigned integral type");
-        static_assert(!std::numeric_limits<index_t>::is_signed &&
-                std::is_integral<index_t>::value,
+        static_assert(!std::numeric_limits<index_t>::is_signed && std::is_integral<index_t>::value,
             "Traits::index_t must be an unsigned integral type");
         static_assert(sizeof(index_t) >= sizeof(size_t),
-            "Traits::index_t must be at least as wide as "
-            "Traits::size_t");
+            "Traits::index_t must be at least as wide as Traits::size_t");
         static_assert((BLOCK_SIZE > 1) && !(BLOCK_SIZE & (BLOCK_SIZE - 1)),
             "Traits::BLOCK_SIZE must be a power of 2 (and at least 2)");
         static_assert((EXPLICIT_BLOCK_EMPTY_COUNTER_THRESHOLD > 1) &&
                 !(EXPLICIT_BLOCK_EMPTY_COUNTER_THRESHOLD &
                     (EXPLICIT_BLOCK_EMPTY_COUNTER_THRESHOLD - 1)),
-            "Traits::EXPLICIT_BLOCK_EMPTY_COUNTER_THRESHOLD must be a "
-            "power of "
-            "2 (and greater than 1)");
+            "Traits::EXPLICIT_BLOCK_EMPTY_COUNTER_THRESHOLD must be a power of 2 (and greater than "
+            "1)");
         static_assert((EXPLICIT_INITIAL_INDEX_SIZE > 1) &&
-                !(EXPLICIT_INITIAL_INDEX_SIZE &
-                    (EXPLICIT_INITIAL_INDEX_SIZE - 1)),
-            "Traits::EXPLICIT_INITIAL_INDEX_SIZE must be a power of 2 "
-            "(and "
-            "greater than 1)");
+                !(EXPLICIT_INITIAL_INDEX_SIZE & (EXPLICIT_INITIAL_INDEX_SIZE - 1)),
+            "Traits::EXPLICIT_INITIAL_INDEX_SIZE must be a power of 2 (and greater than 1)");
         static_assert((IMPLICIT_INITIAL_INDEX_SIZE > 1) &&
-                !(IMPLICIT_INITIAL_INDEX_SIZE &
-                    (IMPLICIT_INITIAL_INDEX_SIZE - 1)),
-            "Traits::IMPLICIT_INITIAL_INDEX_SIZE must be a power of 2 "
-            "(and "
-            "greater than 1)");
+                !(IMPLICIT_INITIAL_INDEX_SIZE & (IMPLICIT_INITIAL_INDEX_SIZE - 1)),
+            "Traits::IMPLICIT_INITIAL_INDEX_SIZE must be a power of 2 (and greater than 1)");
         static_assert((INITIAL_IMPLICIT_PRODUCER_HASH_SIZE == 0) ||
-                !(INITIAL_IMPLICIT_PRODUCER_HASH_SIZE &
-                    (INITIAL_IMPLICIT_PRODUCER_HASH_SIZE - 1)),
-            "Traits::INITIAL_IMPLICIT_PRODUCER_HASH_SIZE must be a "
-            "power of 2");
-        static_assert(INITIAL_IMPLICIT_PRODUCER_HASH_SIZE == 0 ||
-                INITIAL_IMPLICIT_PRODUCER_HASH_SIZE >= 1,
-            "Traits::INITIAL_IMPLICIT_PRODUCER_HASH_SIZE must be at "
-            "least 1 "
-            "(or 0 to disable implicit enqueueing)");
+                !(INITIAL_IMPLICIT_PRODUCER_HASH_SIZE & (INITIAL_IMPLICIT_PRODUCER_HASH_SIZE - 1)),
+            "Traits::INITIAL_IMPLICIT_PRODUCER_HASH_SIZE must be a power of 2");
+        static_assert(
+            INITIAL_IMPLICIT_PRODUCER_HASH_SIZE == 0 || INITIAL_IMPLICIT_PRODUCER_HASH_SIZE >= 1,
+            "Traits::INITIAL_IMPLICIT_PRODUCER_HASH_SIZE must be at least 1 (or 0 to disable "
+            "implicit enqueueing)");
 
     public:
         // Creates a queue with at least `capacity` element slots; note that the
@@ -1035,11 +979,10 @@ namespace pika::concurrency::detail {
           , nextExplicitConsumerId(0)
           , globalExplicitConsumerOffset(0)
         {
-            implicitProducerHashResizeInProgress.clear(
-                std::memory_order_relaxed);
+            implicitProducerHashResizeInProgress.clear(std::memory_order_relaxed);
             populate_initial_implicit_producer_hash();
-            populate_initial_block_list(capacity / BLOCK_SIZE +
-                ((capacity & (BLOCK_SIZE - 1)) == 0 ? 0 : 1));
+            populate_initial_block_list(
+                capacity / BLOCK_SIZE + ((capacity & (BLOCK_SIZE - 1)) == 0 ? 0 : 1));
 
 #ifdef MOODYCAMEL_QUEUE_INTERNAL_DEBUG
             // Track all the producers using a fully-resolved typed list for
@@ -1054,20 +997,18 @@ namespace pika::concurrency::detail {
         // Computes the correct amount of pre-allocated blocks for you based
         // on the minimum number of elements you want available at any given
         // time, and the maximum concurrent number of each type of producer.
-        ConcurrentQueue(size_t minCapacity, size_t maxExplicitProducers,
-            size_t maxImplicitProducers)
+        ConcurrentQueue(
+            size_t minCapacity, size_t maxExplicitProducers, size_t maxImplicitProducers)
           : producerListTail(nullptr)
           , producerCount(0)
           , initialBlockPoolIndex(0)
           , nextExplicitConsumerId(0)
           , globalExplicitConsumerOffset(0)
         {
-            implicitProducerHashResizeInProgress.clear(
-                std::memory_order_relaxed);
+            implicitProducerHashResizeInProgress.clear(std::memory_order_relaxed);
             populate_initial_implicit_producer_hash();
             size_t blocks =
-                (((minCapacity + BLOCK_SIZE - 1) / BLOCK_SIZE) - 1) *
-                    (maxExplicitProducers + 1) +
+                (((minCapacity + BLOCK_SIZE - 1) / BLOCK_SIZE) - 1) * (maxExplicitProducers + 1) +
                 2 * (maxExplicitProducers + maxImplicitProducers);
             populate_initial_block_list(blocks);
 
@@ -1098,8 +1039,7 @@ namespace pika::concurrency::detail {
             // Destroy implicit producer hash tables
             if (INITIAL_IMPLICIT_PRODUCER_HASH_SIZE != 0)
             {
-                auto hash =
-                    implicitProducerHash.load(std::memory_order_relaxed);
+                auto hash = implicitProducerHash.load(std::memory_order_relaxed);
                 while (hash != nullptr)
                 {
                     auto prev = hash->prev;
@@ -1134,8 +1074,7 @@ namespace pika::concurrency::detail {
 
         // Disable copying and copy assignment
         ConcurrentQueue(ConcurrentQueue const&) MOODYCAMEL_DELETE_FUNCTION;
-        ConcurrentQueue& operator=(
-            ConcurrentQueue const&) MOODYCAMEL_DELETE_FUNCTION;
+        ConcurrentQueue& operator=(ConcurrentQueue const&) MOODYCAMEL_DELETE_FUNCTION;
 
         // Moving is supported, but note that it is *not* a thread-safe operation.
         // Nobody can use the queue while it's being moved, and the memory effects
@@ -1144,40 +1083,32 @@ namespace pika::concurrency::detail {
         // used with the destination queue (i.e. semantically they are moved along
         // with the queue itself).
         ConcurrentQueue(ConcurrentQueue&& other) MOODYCAMEL_NOEXCEPT
-          : producerListTail(
-                other.producerListTail.load(std::memory_order_relaxed))
+          : producerListTail(other.producerListTail.load(std::memory_order_relaxed))
           , producerCount(other.producerCount.load(std::memory_order_relaxed))
-          , initialBlockPoolIndex(
-                other.initialBlockPoolIndex.load(std::memory_order_relaxed))
+          , initialBlockPoolIndex(other.initialBlockPoolIndex.load(std::memory_order_relaxed))
           , initialBlockPool(other.initialBlockPool)
           , initialBlockPoolSize(other.initialBlockPoolSize)
           , freeList(PIKA_MOVE(other.freeList))
-          , nextExplicitConsumerId(
-                other.nextExplicitConsumerId.load(std::memory_order_relaxed))
+          , nextExplicitConsumerId(other.nextExplicitConsumerId.load(std::memory_order_relaxed))
           , globalExplicitConsumerOffset(
-                other.globalExplicitConsumerOffset.load(
-                    std::memory_order_relaxed))
+                other.globalExplicitConsumerOffset.load(std::memory_order_relaxed))
         {
             // Move the other one into this, and leave the other one as an empty queue
-            implicitProducerHashResizeInProgress.clear(
-                std::memory_order_relaxed);
+            implicitProducerHashResizeInProgress.clear(std::memory_order_relaxed);
             populate_initial_implicit_producer_hash();
             swap_implicit_producer_hashes(other);
 
             other.producerListTail.store(nullptr, std::memory_order_relaxed);
             other.producerCount.store(0, std::memory_order_relaxed);
             other.nextExplicitConsumerId.store(0, std::memory_order_relaxed);
-            other.globalExplicitConsumerOffset.store(
-                0, std::memory_order_relaxed);
+            other.globalExplicitConsumerOffset.store(0, std::memory_order_relaxed);
 
 #ifdef MOODYCAMEL_QUEUE_INTERNAL_DEBUG
             explicitProducers.store(
-                other.explicitProducers.load(std::memory_order_relaxed),
-                std::memory_order_relaxed);
+                other.explicitProducers.load(std::memory_order_relaxed), std::memory_order_relaxed);
             other.explicitProducers.store(nullptr, std::memory_order_relaxed);
             implicitProducers.store(
-                other.implicitProducers.load(std::memory_order_relaxed),
-                std::memory_order_relaxed);
+                other.implicitProducers.load(std::memory_order_relaxed), std::memory_order_relaxed);
             other.implicitProducers.store(nullptr, std::memory_order_relaxed);
 #endif
 
@@ -1188,8 +1119,7 @@ namespace pika::concurrency::detail {
             reown_producers();
         }
 
-        inline ConcurrentQueue& operator=(
-            ConcurrentQueue&& other) MOODYCAMEL_NOEXCEPT
+        inline ConcurrentQueue& operator=(ConcurrentQueue&& other) MOODYCAMEL_NOEXCEPT
         {
             return swap_internal(other);
         }
@@ -1214,15 +1144,12 @@ namespace pika::concurrency::detail {
 
             detail::swap_relaxed(producerListTail, other.producerListTail);
             detail::swap_relaxed(producerCount, other.producerCount);
-            detail::swap_relaxed(
-                initialBlockPoolIndex, other.initialBlockPoolIndex);
+            detail::swap_relaxed(initialBlockPoolIndex, other.initialBlockPoolIndex);
             std::swap(initialBlockPool, other.initialBlockPool);
             std::swap(initialBlockPoolSize, other.initialBlockPoolSize);
             freeList.swap(other.freeList);
-            detail::swap_relaxed(
-                nextExplicitConsumerId, other.nextExplicitConsumerId);
-            detail::swap_relaxed(globalExplicitConsumerOffset,
-                other.globalExplicitConsumerOffset);
+            detail::swap_relaxed(nextExplicitConsumerId, other.nextExplicitConsumerId);
+            detail::swap_relaxed(globalExplicitConsumerOffset, other.globalExplicitConsumerOffset);
 
             swap_implicit_producer_hashes(other);
 
@@ -1301,8 +1228,7 @@ namespace pika::concurrency::detail {
         // instead of copied.
         // Thread-safe.
         template <typename It>
-        bool
-        enqueue_bulk(producer_token_t const& token, It itemFirst, size_t count)
+        bool enqueue_bulk(producer_token_t const& token, It itemFirst, size_t count)
         {
             return inner_enqueue_bulk<CanAlloc>(token, itemFirst, count);
         }
@@ -1368,8 +1294,7 @@ namespace pika::concurrency::detail {
         // instead of copied.
         // Thread-safe.
         template <typename It>
-        bool try_enqueue_bulk(
-            producer_token_t const& token, It itemFirst, size_t count)
+        bool try_enqueue_bulk(producer_token_t const& token, It itemFirst, size_t count)
         {
             return inner_enqueue_bulk<CannotAlloc>(token, itemFirst, count);
         }
@@ -1409,9 +1334,8 @@ namespace pika::concurrency::detail {
                 {
                     return true;
                 }
-                for (auto ptr =
-                         producerListTail.load(std::memory_order_acquire);
-                     ptr != nullptr; ptr = ptr->next_prod())
+                for (auto ptr = producerListTail.load(std::memory_order_acquire); ptr != nullptr;
+                     ptr = ptr->next_prod())
                 {
                     if (ptr != best && ptr->dequeue(item))
                     {
@@ -1434,8 +1358,8 @@ namespace pika::concurrency::detail {
         template <typename U>
         bool try_dequeue_non_interleaved(U& item)
         {
-            for (auto ptr = producerListTail.load(std::memory_order_acquire);
-                 ptr != nullptr; ptr = ptr->next_prod())
+            for (auto ptr = producerListTail.load(std::memory_order_acquire); ptr != nullptr;
+                 ptr = ptr->next_prod())
             {
                 if (ptr->dequeue(item))
                 {
@@ -1460,8 +1384,7 @@ namespace pika::concurrency::detail {
 
             if (token.desiredProducer == nullptr ||
                 token.lastKnownGlobalOffset !=
-                    globalExplicitConsumerOffset.load(
-                        std::memory_order_relaxed))
+                    globalExplicitConsumerOffset.load(std::memory_order_relaxed))
             {
                 if (!update_current_producer_after_rotation(token))
                 {
@@ -1471,21 +1394,18 @@ namespace pika::concurrency::detail {
 
             // If there was at least one non-empty queue but it appears empty at the time
             // we try to dequeue from it, we need to make sure every queue's been tried
-            if (static_cast<ProducerBase*>(token.currentProducer)
-                    ->dequeue(item))
+            if (static_cast<ProducerBase*>(token.currentProducer)->dequeue(item))
             {
                 if (++token.itemsConsumedFromCurrent ==
                     EXPLICIT_CONSUMER_CONSUMPTION_QUOTA_BEFORE_ROTATE)
                 {
-                    globalExplicitConsumerOffset.fetch_add(
-                        1, std::memory_order_relaxed);
+                    globalExplicitConsumerOffset.fetch_add(1, std::memory_order_relaxed);
                 }
                 return true;
             }
 
             auto tail = producerListTail.load(std::memory_order_acquire);
-            auto ptr =
-                static_cast<ProducerBase*>(token.currentProducer)->next_prod();
+            auto ptr = static_cast<ProducerBase*>(token.currentProducer)->next_prod();
             if (ptr == nullptr)
             {
                 ptr = tail;
@@ -1516,8 +1436,8 @@ namespace pika::concurrency::detail {
         size_t try_dequeue_bulk(It itemFirst, size_t max)
         {
             size_t count = 0;
-            for (auto ptr = producerListTail.load(std::memory_order_acquire);
-                 ptr != nullptr; ptr = ptr->next_prod())
+            for (auto ptr = producerListTail.load(std::memory_order_acquire); ptr != nullptr;
+                 ptr = ptr->next_prod())
             {
                 count += ptr->dequeue_bulk(itemFirst, max - count);
                 if (count == max)
@@ -1534,13 +1454,11 @@ namespace pika::concurrency::detail {
         // were checked (so, the queue is likely but not guaranteed to be empty).
         // Never allocates. Thread-safe.
         template <typename It>
-        size_t
-        try_dequeue_bulk(consumer_token_t& token, It itemFirst, size_t max)
+        size_t try_dequeue_bulk(consumer_token_t& token, It itemFirst, size_t max)
         {
             if (token.desiredProducer == nullptr ||
                 token.lastKnownGlobalOffset !=
-                    globalExplicitConsumerOffset.load(
-                        std::memory_order_relaxed))
+                    globalExplicitConsumerOffset.load(std::memory_order_relaxed))
             {
                 if (!update_current_producer_after_rotation(token))
                 {
@@ -1548,16 +1466,14 @@ namespace pika::concurrency::detail {
                 }
             }
 
-            size_t count = static_cast<ProducerBase*>(token.currentProducer)
-                               ->dequeue_bulk(itemFirst, max);
+            size_t count =
+                static_cast<ProducerBase*>(token.currentProducer)->dequeue_bulk(itemFirst, max);
             if (count == max)
             {
-                if ((token.itemsConsumedFromCurrent +=
-                        static_cast<std::uint32_t>(max)) >=
+                if ((token.itemsConsumedFromCurrent += static_cast<std::uint32_t>(max)) >=
                     EXPLICIT_CONSUMER_CONSUMPTION_QUOTA_BEFORE_ROTATE)
                 {
-                    globalExplicitConsumerOffset.fetch_add(
-                        1, std::memory_order_relaxed);
+                    globalExplicitConsumerOffset.fetch_add(1, std::memory_order_relaxed);
                 }
                 return max;
             }
@@ -1565,8 +1481,7 @@ namespace pika::concurrency::detail {
             max -= count;
 
             auto tail = producerListTail.load(std::memory_order_acquire);
-            auto ptr =
-                static_cast<ProducerBase*>(token.currentProducer)->next_prod();
+            auto ptr = static_cast<ProducerBase*>(token.currentProducer)->next_prod();
             if (ptr == nullptr)
             {
                 ptr = tail;
@@ -1578,8 +1493,7 @@ namespace pika::concurrency::detail {
                 if (dequeued != 0)
                 {
                     token.currentProducer = ptr;
-                    token.itemsConsumedFromCurrent =
-                        static_cast<std::uint32_t>(dequeued);
+                    token.itemsConsumedFromCurrent = static_cast<std::uint32_t>(dequeued);
                 }
                 if (dequeued == max)
                 {
@@ -1602,11 +1516,9 @@ namespace pika::concurrency::detail {
         // was checked (so, the queue is likely but not guaranteed to be empty).
         // Never allocates. Thread-safe.
         template <typename U>
-        inline bool
-        try_dequeue_from_producer(producer_token_t const& producer, U& item)
+        inline bool try_dequeue_from_producer(producer_token_t const& producer, U& item)
         {
-            return static_cast<ExplicitProducer*>(producer.producer)
-                ->dequeue(item);
+            return static_cast<ExplicitProducer*>(producer.producer)->dequeue(item);
         }
 
         // Attempts to dequeue several elements from a specific producer's inner queue.
@@ -1617,11 +1529,10 @@ namespace pika::concurrency::detail {
         // was checked (so, the queue is likely but not guaranteed to be empty).
         // Never allocates. Thread-safe.
         template <typename It>
-        inline size_t try_dequeue_bulk_from_producer(
-            producer_token_t const& producer, It itemFirst, size_t max)
+        inline size_t
+        try_dequeue_bulk_from_producer(producer_token_t const& producer, It itemFirst, size_t max)
         {
-            return static_cast<ExplicitProducer*>(producer.producer)
-                ->dequeue_bulk(itemFirst, max);
+            return static_cast<ExplicitProducer*>(producer.producer)->dequeue_bulk(itemFirst, max);
         }
 
         // Returns an estimate of the total number of elements currently in the queue. This
@@ -1633,8 +1544,8 @@ namespace pika::concurrency::detail {
         size_t size_approx() const
         {
             size_t size = 0;
-            for (auto ptr = producerListTail.load(std::memory_order_acquire);
-                 ptr != nullptr; ptr = ptr->next_prod())
+            for (auto ptr = producerListTail.load(std::memory_order_acquire); ptr != nullptr;
+                 ptr = ptr->next_prod())
             {
                 size += ptr->size_approx();
             }
@@ -1651,9 +1562,8 @@ namespace pika::concurrency::detail {
                 detail::static_is_lock_free<std::uint32_t>::value == 2 &&
                 detail::static_is_lock_free<index_t>::value == 2 &&
                 detail::static_is_lock_free<void*>::value == 2 &&
-                detail::static_is_lock_free<
-                    typename detail::thread_id_converter<detail::thread_id_t>::
-                        thread_id_numeric_size_t>::value == 2;
+                detail::static_is_lock_free<typename detail::thread_id_converter<
+                    detail::thread_id_t>::thread_id_numeric_size_t>::value == 2;
         }
 
     private:
@@ -1689,17 +1599,16 @@ namespace pika::concurrency::detail {
             auto producer = get_or_add_implicit_producer();
             return producer == nullptr ?
                 false :
-                producer->ConcurrentQueue::ImplicitProducer::template enqueue<
-                    canAlloc>(PIKA_FORWARD(U, element));
+                producer->ConcurrentQueue::ImplicitProducer::template enqueue<canAlloc>(
+                    PIKA_FORWARD(U, element));
         }
 
         template <AllocationMode canAlloc, typename It>
-        inline bool inner_enqueue_bulk(
-            producer_token_t const& token, It itemFirst, size_t count)
+        inline bool inner_enqueue_bulk(producer_token_t const& token, It itemFirst, size_t count)
         {
             return static_cast<ExplicitProducer*>(token.producer)
-                ->ConcurrentQueue::ExplicitProducer::template enqueue_bulk<
-                    canAlloc>(itemFirst, count);
+                ->ConcurrentQueue::ExplicitProducer::template enqueue_bulk<canAlloc>(
+                    itemFirst, count);
         }
 
         template <AllocationMode canAlloc, typename It>
@@ -1708,12 +1617,11 @@ namespace pika::concurrency::detail {
             auto producer = get_or_add_implicit_producer();
             return producer == nullptr ?
                 false :
-                producer->ConcurrentQueue::ImplicitProducer::
-                    template enqueue_bulk<canAlloc>(itemFirst, count);
+                producer->ConcurrentQueue::ImplicitProducer::template enqueue_bulk<canAlloc>(
+                    itemFirst, count);
         }
 
-        inline bool update_current_producer_after_rotation(
-            consumer_token_t& token)
+        inline bool update_current_producer_after_rotation(consumer_token_t& token)
         {
             // Ah, there's been a rotation, figure out where we should be!
             auto tail = producerListTail.load(std::memory_order_acquire);
@@ -1722,21 +1630,18 @@ namespace pika::concurrency::detail {
                 return false;
             }
             auto prodCount = producerCount.load(std::memory_order_relaxed);
-            auto globalOffset =
-                globalExplicitConsumerOffset.load(std::memory_order_relaxed);
+            auto globalOffset = globalExplicitConsumerOffset.load(std::memory_order_relaxed);
             if ((detail::unlikely)(token.desiredProducer == nullptr))
             {
                 // Aha, first time we're dequeueing anything.
                 // Figure out our local position
                 // Note: offset is from start, not end, but we're traversing from end -- subtract from count first
-                std::uint32_t offset =
-                    prodCount - 1 - (token.initialOffset % prodCount);
+                std::uint32_t offset = prodCount - 1 - (token.initialOffset % prodCount);
                 token.desiredProducer = tail;
                 for (std::uint32_t i = 0; i != offset; ++i)
                 {
                     token.desiredProducer =
-                        static_cast<ProducerBase*>(token.desiredProducer)
-                            ->next_prod();
+                        static_cast<ProducerBase*>(token.desiredProducer)->next_prod();
                     if (token.desiredProducer == nullptr)
                     {
                         token.desiredProducer = tail;
@@ -1752,8 +1657,7 @@ namespace pika::concurrency::detail {
             for (std::uint32_t i = 0; i != delta; ++i)
             {
                 token.desiredProducer =
-                    static_cast<ProducerBase*>(token.desiredProducer)
-                        ->next_prod();
+                    static_cast<ProducerBase*>(token.desiredProducer)->next_prod();
                 if (token.desiredProducer == nullptr)
                 {
                     token.desiredProducer = tail;
@@ -1832,12 +1736,10 @@ namespace pika::concurrency::detail {
                 while (head != nullptr)
                 {
                     auto prevHead = head;
-                    auto refs =
-                        head->freeListRefs.load(std::memory_order_relaxed);
+                    auto refs = head->freeListRefs.load(std::memory_order_relaxed);
                     if ((refs & REFS_MASK) == 0 ||
-                        !head->freeListRefs.compare_exchange_strong(refs,
-                            refs + 1, std::memory_order_acquire,
-                            std::memory_order_relaxed))
+                        !head->freeListRefs.compare_exchange_strong(
+                            refs, refs + 1, std::memory_order_acquire, std::memory_order_relaxed))
                     {
                         head = freeListHead.load(std::memory_order_acquire);
                         continue;
@@ -1845,29 +1747,24 @@ namespace pika::concurrency::detail {
 
                     // Good, reference count has been incremented (it wasn't at zero), which means we can read the
                     // next and not worry about it changing between now and the time we do the CAS
-                    auto next =
-                        head->freeListNext.load(std::memory_order_relaxed);
-                    if (freeListHead.compare_exchange_strong(head, next,
-                            std::memory_order_acquire,
-                            std::memory_order_relaxed))
+                    auto next = head->freeListNext.load(std::memory_order_relaxed);
+                    if (freeListHead.compare_exchange_strong(
+                            head, next, std::memory_order_acquire, std::memory_order_relaxed))
                     {
                         // Yay, got the node. This means it was on the list, which means shouldBeOnFreeList must be false no
                         // matter the refcount (because nobody else knows it's been taken off yet, it can't have been put back on).
-                        assert((head->freeListRefs.load(
-                                    std::memory_order_relaxed) &
+                        assert((head->freeListRefs.load(std::memory_order_relaxed) &
                                    SHOULD_BE_ON_FREELIST) == 0);
 
                         // Decrease refcount twice, once for our ref, and once for the list's ref
-                        head->freeListRefs.fetch_sub(
-                            2, std::memory_order_release);
+                        head->freeListRefs.fetch_sub(2, std::memory_order_release);
                         return head;
                     }
 
                     // OK, the head must have changed on us, but we still need to decrease the refcount we increased.
                     // Note that we don't need to release any memory effects, but we do need to ensure that the reference
                     // count decrement happens-after the CAS on the head.
-                    refs = prevHead->freeListRefs.fetch_sub(
-                        1, std::memory_order_acq_rel);
+                    refs = prevHead->freeListRefs.fetch_sub(1, std::memory_order_acq_rel);
                     if (refs == SHOULD_BE_ON_FREELIST + 1)
                     {
                         add_knowing_refcount_is_zero(prevHead);
@@ -1899,14 +1796,12 @@ namespace pika::concurrency::detail {
                 {
                     node->freeListNext.store(head, std::memory_order_relaxed);
                     node->freeListRefs.store(1, std::memory_order_release);
-                    if (!freeListHead.compare_exchange_strong(head, node,
-                            std::memory_order_release,
-                            std::memory_order_relaxed))
+                    if (!freeListHead.compare_exchange_strong(
+                            head, node, std::memory_order_release, std::memory_order_relaxed))
                     {
                         // Hmm, the add failed, but we can only try again when the refcount goes back to zero
                         if (node->freeListRefs.fetch_add(
-                                SHOULD_BE_ON_FREELIST - 1,
-                                std::memory_order_release) == 1)
+                                SHOULD_BE_ON_FREELIST - 1, std::memory_order_release) == 1)
                         {
                             continue;
                         }
@@ -1974,14 +1869,13 @@ namespace pika::concurrency::detail {
                 else
                 {
                     // Check counter
-                    if (elementsCompletelyDequeued.load(
-                            std::memory_order_relaxed) == BLOCK_SIZE)
+                    if (elementsCompletelyDequeued.load(std::memory_order_relaxed) == BLOCK_SIZE)
                     {
                         std::atomic_thread_fence(std::memory_order_acquire);
                         return true;
                     }
-                    assert(elementsCompletelyDequeued.load(
-                               std::memory_order_relaxed) <= BLOCK_SIZE);
+                    assert(
+                        elementsCompletelyDequeued.load(std::memory_order_relaxed) <= BLOCK_SIZE);
                     return false;
                 }
             }
@@ -1995,20 +1889,18 @@ namespace pika::concurrency::detail {
                 {
                     // Set flag
                     assert(!emptyFlags[BLOCK_SIZE - 1 -
-                        static_cast<size_t>(
-                            i & static_cast<index_t>(BLOCK_SIZE - 1))]
+                        static_cast<size_t>(i & static_cast<index_t>(BLOCK_SIZE - 1))]
                                 .load(std::memory_order_relaxed));
                     emptyFlags[BLOCK_SIZE - 1 -
-                        static_cast<size_t>(
-                            i & static_cast<index_t>(BLOCK_SIZE - 1))]
+                        static_cast<size_t>(i & static_cast<index_t>(BLOCK_SIZE - 1))]
                         .store(true, std::memory_order_release);
                     return false;
                 }
                 else
                 {
                     // Increment counter
-                    auto prevVal = elementsCompletelyDequeued.fetch_add(
-                        1, std::memory_order_release);
+                    auto prevVal =
+                        elementsCompletelyDequeued.fetch_add(1, std::memory_order_release);
                     assert(prevVal < BLOCK_SIZE);
                     return prevVal == BLOCK_SIZE - 1;
                 }
@@ -2025,23 +1917,19 @@ namespace pika::concurrency::detail {
                     // Set flags
                     std::atomic_thread_fence(std::memory_order_release);
                     i = BLOCK_SIZE - 1 -
-                        static_cast<size_t>(
-                            i & static_cast<index_t>(BLOCK_SIZE - 1)) -
-                        count + 1;
+                        static_cast<size_t>(i & static_cast<index_t>(BLOCK_SIZE - 1)) - count + 1;
                     for (size_t j = 0; j != count; ++j)
                     {
-                        assert(
-                            !emptyFlags[i + j].load(std::memory_order_relaxed));
-                        emptyFlags[i + j].store(
-                            true, std::memory_order_relaxed);
+                        assert(!emptyFlags[i + j].load(std::memory_order_relaxed));
+                        emptyFlags[i + j].store(true, std::memory_order_relaxed);
                     }
                     return false;
                 }
                 else
                 {
                     // Increment counter
-                    auto prevVal = elementsCompletelyDequeued.fetch_add(
-                        count, std::memory_order_release);
+                    auto prevVal =
+                        elementsCompletelyDequeued.fetch_add(count, std::memory_order_release);
                     assert(prevVal + count <= BLOCK_SIZE);
                     return prevVal + count == BLOCK_SIZE;
                 }
@@ -2062,8 +1950,7 @@ namespace pika::concurrency::detail {
                 else
                 {
                     // Reset counter
-                    elementsCompletelyDequeued.store(
-                        BLOCK_SIZE, std::memory_order_relaxed);
+                    elementsCompletelyDequeued.store(BLOCK_SIZE, std::memory_order_relaxed);
                 }
             }
 
@@ -2082,23 +1969,19 @@ namespace pika::concurrency::detail {
                 else
                 {
                     // Reset counter
-                    elementsCompletelyDequeued.store(
-                        0, std::memory_order_relaxed);
+                    elementsCompletelyDequeued.store(0, std::memory_order_relaxed);
                 }
             }
 
             inline T* operator[](index_t idx) MOODYCAMEL_NOEXCEPT
             {
                 return static_cast<T*>(static_cast<void*>(elements)) +
-                    static_cast<size_t>(
-                        idx & static_cast<index_t>(BLOCK_SIZE - 1));
+                    static_cast<size_t>(idx & static_cast<index_t>(BLOCK_SIZE - 1));
             }
             inline T const* operator[](index_t idx) const MOODYCAMEL_NOEXCEPT
             {
-                return static_cast<T const*>(
-                           static_cast<void const*>(elements)) +
-                    static_cast<size_t>(
-                        idx & static_cast<index_t>(BLOCK_SIZE - 1));
+                return static_cast<T const*>(static_cast<void const*>(elements)) +
+                    static_cast<size_t>(idx & static_cast<index_t>(BLOCK_SIZE - 1));
             }
 
         private:
@@ -2107,17 +1990,16 @@ namespace pika::concurrency::detail {
             // generates code that uses this assumption for AVX instructions in some cases. Ideally, we
             // should also align Block to the alignment of T in case it's higher than malloc's 16-byte
             // alignment, but this is hard to do in a cross-platform way. Assert for this case:
-            static_assert(std::alignment_of<T>::value <=
-                    std::alignment_of<detail::max_align_t>::value,
-                "The queue does not support super-aligned types at "
-                "this time");
+            static_assert(
+                std::alignment_of<T>::value <= std::alignment_of<detail::max_align_t>::value,
+                "The queue does not support super-aligned types at this time");
             // Additionally, we need the alignment of Block itself to be a multiple of max_align_t since
             // otherwise the appropriate padding will not be added at the end of Block in order to make
             // arrays of Blocks all be properly aligned (not just the first one). We use a union to force
             // this.
 #if defined(PIKA_GCC_VERSION) && !defined(PIKA_CLANG_VERSION)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsubobject-linkage"
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wsubobject-linkage"
 #endif
             union
             {
@@ -2126,16 +2008,14 @@ namespace pika::concurrency::detail {
                 detail::max_align_t dummy;
             };
 #if defined(PIKA_GCC_VERSION) && !defined(PIKA_CLANG_VERSION)
-#pragma GCC diagnostic pop
+# pragma GCC diagnostic pop
 #endif
 
         public:
             Block* next;
             std::atomic<size_t> elementsCompletelyDequeued;
-            std::atomic<bool> emptyFlags[BLOCK_SIZE <=
-                        EXPLICIT_BLOCK_EMPTY_COUNTER_THRESHOLD ?
-                    BLOCK_SIZE :
-                    1];
+            std::atomic<bool>
+                emptyFlags[BLOCK_SIZE <= EXPLICIT_BLOCK_EMPTY_COUNTER_THRESHOLD ? BLOCK_SIZE : 1];
 
         public:
             std::atomic<std::uint32_t> freeListRefs;
@@ -2148,11 +2028,9 @@ namespace pika::concurrency::detail {
             void* owner;
 #endif
         };
-        static_assert(std::alignment_of<Block>::value >=
-                std::alignment_of<detail::max_align_t>::value,
-            "Internal error: Blocks must be at least as aligned as the "
-            "type "
-            "they are wrapping");
+        static_assert(
+            std::alignment_of<Block>::value >= std::alignment_of<detail::max_align_t>::value,
+            "Internal error: Blocks must be at least as aligned as the type they are wrapping");
 
 #if MCDBGQ_TRACKMEM
     public:
@@ -2185,13 +2063,11 @@ namespace pika::concurrency::detail {
             {
                 if (isExplicit)
                 {
-                    return static_cast<ExplicitProducer*>(this)->dequeue(
-                        element);
+                    return static_cast<ExplicitProducer*>(this)->dequeue(element);
                 }
                 else
                 {
-                    return static_cast<ImplicitProducer*>(this)->dequeue(
-                        element);
+                    return static_cast<ImplicitProducer*>(this)->dequeue(element);
                 }
             }
 
@@ -2200,13 +2076,11 @@ namespace pika::concurrency::detail {
             {
                 if (isExplicit)
                 {
-                    return static_cast<ExplicitProducer*>(this)->dequeue_bulk(
-                        itemFirst, max);
+                    return static_cast<ExplicitProducer*>(this)->dequeue_bulk(itemFirst, max);
                 }
                 else
                 {
-                    return static_cast<ImplicitProducer*>(this)->dequeue_bulk(
-                        itemFirst, max);
+                    return static_cast<ImplicitProducer*>(this)->dequeue_bulk(itemFirst, max);
                 }
             }
 
@@ -2219,9 +2093,8 @@ namespace pika::concurrency::detail {
             {
                 auto tail = tailIndex.load(std::memory_order_relaxed);
                 auto head = headIndex.load(std::memory_order_relaxed);
-                return detail::circular_less_than(head, tail) ?
-                    static_cast<size_t>(tail - head) :
-                    0;
+                return detail::circular_less_than(head, tail) ? static_cast<size_t>(tail - head) :
+                                                                0;
             }
 
             inline index_t getTail() const
@@ -2289,16 +2162,14 @@ namespace pika::concurrency::detail {
                         // The head's not on a block boundary, meaning a block somewhere is partially dequeued
                         // (or the head block is the tail block and was fully dequeued, but the head/tail are still not on a boundary)
                         size_t i =
-                            (pr_blockIndexFront - pr_blockIndexSlotsUsed) &
-                            (pr_blockIndexSize - 1);
+                            (pr_blockIndexFront - pr_blockIndexSlotsUsed) & (pr_blockIndexSize - 1);
                         while (detail::circular_less_than<index_t>(
                             pr_blockIndexEntries[i].base + BLOCK_SIZE,
                             this->headIndex.load(std::memory_order_relaxed)))
                         {
                             i = (i + 1) & (pr_blockIndexSize - 1);
                         }
-                        assert(detail::circular_less_than<index_t>(
-                            pr_blockIndexEntries[i].base,
+                        assert(detail::circular_less_than<index_t>(pr_blockIndexEntries[i].base,
                             this->headIndex.load(std::memory_order_relaxed)));
                         halfDequeuedBlock = pr_blockIndexEntries[i].block;
                     }
@@ -2308,8 +2179,7 @@ namespace pika::concurrency::detail {
                     do
                     {
                         block = block->next;
-                        if (block->ConcurrentQueue::Block::template is_empty<
-                                explicit_context>())
+                        if (block->ConcurrentQueue::Block::template is_empty<explicit_context>())
                         {
                             continue;
                         }
@@ -2318,21 +2188,17 @@ namespace pika::concurrency::detail {
                         if (block == halfDequeuedBlock)
                         {
                             i = static_cast<size_t>(
-                                this->headIndex.load(
-                                    std::memory_order_relaxed) &
+                                this->headIndex.load(std::memory_order_relaxed) &
                                 static_cast<index_t>(BLOCK_SIZE - 1));
                         }
 
                         // Walk through all the items in the block; if this is the tail block, we need to stop when we reach the tail index
-                        auto lastValidIndex =
-                            (this->tailIndex.load(std::memory_order_relaxed) &
-                                static_cast<index_t>(BLOCK_SIZE - 1)) == 0 ?
+                        auto lastValidIndex = (this->tailIndex.load(std::memory_order_relaxed) &
+                                                  static_cast<index_t>(BLOCK_SIZE - 1)) == 0 ?
                             BLOCK_SIZE :
-                            static_cast<size_t>(this->tailIndex.load(
-                                                    std::memory_order_relaxed) &
+                            static_cast<size_t>(this->tailIndex.load(std::memory_order_relaxed) &
                                 static_cast<index_t>(BLOCK_SIZE - 1));
-                        while (i != BLOCK_SIZE &&
-                            (block != this->tailBlock || i != lastValidIndex))
+                        while (i != BLOCK_SIZE && (block != this->tailBlock || i != lastValidIndex))
                         {
                             (*block)[i++]->~T();
                         }
@@ -2372,23 +2238,21 @@ namespace pika::concurrency::detail {
             template <AllocationMode allocMode, typename U>
             inline bool enqueue(U&& element)
             {
-                index_t currentTailIndex =
-                    this->tailIndex.load(std::memory_order_relaxed);
+                index_t currentTailIndex = this->tailIndex.load(std::memory_order_relaxed);
                 index_t newTailIndex = 1 + currentTailIndex;
-                if ((currentTailIndex & static_cast<index_t>(BLOCK_SIZE - 1)) ==
-                    0)
+                if ((currentTailIndex & static_cast<index_t>(BLOCK_SIZE - 1)) == 0)
                 {
                     // We reached the end of a block, start a new one
                     auto startBlock = this->tailBlock;
                     auto originalBlockIndexSlotsUsed = pr_blockIndexSlotsUsed;
                     if (this->tailBlock != nullptr &&
-                        this->tailBlock->next->ConcurrentQueue::Block::
-                            template is_empty<explicit_context>())
+                        this->tailBlock->next
+                            ->ConcurrentQueue::Block::template is_empty<explicit_context>())
                     {
                         // We can re-use the block ahead of us, it's empty!
                         this->tailBlock = this->tailBlock->next;
-                        this->tailBlock->ConcurrentQueue::Block::
-                            template reset_empty<explicit_context>();
+                        this->tailBlock
+                            ->ConcurrentQueue::Block::template reset_empty<explicit_context>();
 
                         // We'll put the block on the block index (guaranteed to be room since we're conceptually removing the
                         // last block from it first -- except instead of removing then adding, we can just overwrite).
@@ -2401,17 +2265,13 @@ namespace pika::concurrency::detail {
                         // Whatever head value we see here is >= the last value we saw here (relatively),
                         // and <= its current value. Since we have the most recent tail, the head must be
                         // <= to it.
-                        auto head =
-                            this->headIndex.load(std::memory_order_relaxed);
-                        assert(!detail::circular_less_than<index_t>(
-                            currentTailIndex, head));
+                        auto head = this->headIndex.load(std::memory_order_relaxed);
+                        assert(!detail::circular_less_than<index_t>(currentTailIndex, head));
                         if (!detail::circular_less_than<index_t>(
                                 head, currentTailIndex + BLOCK_SIZE) ||
-                            (MAX_SUBQUEUE_SIZE !=
-                                    detail::const_numeric_max<size_t>::value &&
+                            (MAX_SUBQUEUE_SIZE != detail::const_numeric_max<size_t>::value &&
                                 (MAX_SUBQUEUE_SIZE == 0 ||
-                                    MAX_SUBQUEUE_SIZE - BLOCK_SIZE <
-                                        currentTailIndex - head)))
+                                    MAX_SUBQUEUE_SIZE - BLOCK_SIZE < currentTailIndex - head)))
                         {
                             // We can't enqueue in another block because there's not enough leeway -- the
                             // tail could surpass the head by the time the block fills up! (Or we'll exceed
@@ -2435,8 +2295,7 @@ namespace pika::concurrency::detail {
 
                         // Insert a new block in the circular linked list
                         auto newBlock =
-                            this->parent->ConcurrentQueue::
-                                template requisition_block<allocMode>();
+                            this->parent->ConcurrentQueue::template requisition_block<allocMode>();
                         if (newBlock == nullptr)
                         {
                             return false;
@@ -2444,8 +2303,7 @@ namespace pika::concurrency::detail {
 #if MCDBGQ_TRACKMEM
                         newBlock->owner = this;
 #endif
-                        newBlock->ConcurrentQueue::Block::template reset_empty<
-                            explicit_context>();
+                        newBlock->ConcurrentQueue::Block::template reset_empty<explicit_context>();
                         if (this->tailBlock == nullptr)
                         {
                             newBlock->next = newBlock;
@@ -2459,25 +2317,20 @@ namespace pika::concurrency::detail {
                         ++pr_blockIndexSlotsUsed;
                     }
 
-                    if (!MOODYCAMEL_NOEXCEPT_CTOR(
-                            T, U, new (nullptr) T(PIKA_FORWARD(U, element))))
+                    if (!MOODYCAMEL_NOEXCEPT_CTOR(T, U, new (nullptr) T(PIKA_FORWARD(U, element))))
                     {
                         // The constructor may throw. We want the element not to appear in the queue in
                         // that case (without corrupting the queue):
                         MOODYCAMEL_TRY
                         {
-                            new ((*this->tailBlock)[currentTailIndex])
-                                T(PIKA_FORWARD(U, element));
+                            new ((*this->tailBlock)[currentTailIndex]) T(PIKA_FORWARD(U, element));
                         }
                         MOODYCAMEL_CATCH(...)
                         {
                             // Revert change to the current block, but leave the new block available
                             // for next time
-                            pr_blockIndexSlotsUsed =
-                                originalBlockIndexSlotsUsed;
-                            this->tailBlock = startBlock == nullptr ?
-                                this->tailBlock :
-                                startBlock;
+                            pr_blockIndexSlotsUsed = originalBlockIndexSlotsUsed;
+                            this->tailBlock = startBlock == nullptr ? this->tailBlock : startBlock;
                             MOODYCAMEL_RETHROW;
                         }
                     }
@@ -2488,28 +2341,23 @@ namespace pika::concurrency::detail {
                     }
 
                     // Add block to block index
-                    auto& entry = blockIndex.load(std::memory_order_relaxed)
-                                      ->entries[pr_blockIndexFront];
+                    auto& entry =
+                        blockIndex.load(std::memory_order_relaxed)->entries[pr_blockIndexFront];
                     entry.base = currentTailIndex;
                     entry.block = this->tailBlock;
                     blockIndex.load(std::memory_order_relaxed)
-                        ->front.store(
-                            pr_blockIndexFront, std::memory_order_release);
-                    pr_blockIndexFront =
-                        (pr_blockIndexFront + 1) & (pr_blockIndexSize - 1);
+                        ->front.store(pr_blockIndexFront, std::memory_order_release);
+                    pr_blockIndexFront = (pr_blockIndexFront + 1) & (pr_blockIndexSize - 1);
 
-                    if (!MOODYCAMEL_NOEXCEPT_CTOR(
-                            T, U, new (nullptr) T(PIKA_FORWARD(U, element))))
+                    if (!MOODYCAMEL_NOEXCEPT_CTOR(T, U, new (nullptr) T(PIKA_FORWARD(U, element))))
                     {
-                        this->tailIndex.store(
-                            newTailIndex, std::memory_order_release);
+                        this->tailIndex.store(newTailIndex, std::memory_order_release);
                         return true;
                     }
                 }
 
                 // Enqueue
-                new ((*this->tailBlock)[currentTailIndex])
-                    T(PIKA_FORWARD(U, element));
+                new ((*this->tailBlock)[currentTailIndex]) T(PIKA_FORWARD(U, element));
 
                 this->tailIndex.store(newTailIndex, std::memory_order_release);
                 return true;
@@ -2519,12 +2367,9 @@ namespace pika::concurrency::detail {
             bool dequeue(U& element)
             {
                 auto tail = this->tailIndex.load(std::memory_order_relaxed);
-                auto overcommit =
-                    this->dequeueOvercommit.load(std::memory_order_relaxed);
+                auto overcommit = this->dequeueOvercommit.load(std::memory_order_relaxed);
                 if (detail::circular_less_than<index_t>(
-                        this->dequeueOptimisticCount.load(
-                            std::memory_order_relaxed) -
-                            overcommit,
+                        this->dequeueOptimisticCount.load(std::memory_order_relaxed) - overcommit,
                         tail))
                 {
                     // Might be something to dequeue, let's give it a try
@@ -2547,8 +2392,7 @@ namespace pika::concurrency::detail {
 
                     // Increment optimistic counter, then check if it went over the boundary
                     auto myDequeueCount =
-                        this->dequeueOptimisticCount.fetch_add(
-                            1, std::memory_order_relaxed);
+                        this->dequeueOptimisticCount.fetch_add(1, std::memory_order_relaxed);
 
                     // Note that since dequeueOvercommit must be <= dequeueOptimisticCount (because dequeueOvercommit is only ever
                     // incremented after dequeueOptimisticCount -- this is enforced in the `else` block below), and since we now
@@ -2561,8 +2405,8 @@ namespace pika::concurrency::detail {
                     // this load is sequenced after (happens after) the earlier load above. This is supported by read-read
                     // coherency (as defined in the standard), explained here: http://en.cppreference.com/w/cpp/atomic/memory_order
                     tail = this->tailIndex.load(std::memory_order_acquire);
-                    if ((detail::likely)(detail::circular_less_than<index_t>(
-                            myDequeueCount - overcommit, tail)))
+                    if ((detail::likely)(
+                            detail::circular_less_than<index_t>(myDequeueCount - overcommit, tail)))
                     {
                         // Guaranteed to be at least one element to dequeue!
 
@@ -2574,38 +2418,31 @@ namespace pika::concurrency::detail {
                         // in such a case is necessarily visible on the thread that incremented it in the first
                         // place with the more current condition (they must have acquired a tail that is at least
                         // as recent).
-                        auto index = this->headIndex.fetch_add(
-                            1, std::memory_order_acq_rel);
+                        auto index = this->headIndex.fetch_add(1, std::memory_order_acq_rel);
 
                         // Determine which block the element is in
 
-                        auto localBlockIndex =
-                            blockIndex.load(std::memory_order_acquire);
-                        auto localBlockIndexHead = localBlockIndex->front.load(
-                            std::memory_order_acquire);
+                        auto localBlockIndex = blockIndex.load(std::memory_order_acquire);
+                        auto localBlockIndexHead =
+                            localBlockIndex->front.load(std::memory_order_acquire);
 
                         // We need to be careful here about subtracting and dividing because of index wrap-around.
                         // When an index wraps, we need to preserve the sign of the offset when dividing it by the
                         // block size (in order to get a correct signed block count offset in all cases):
-                        auto headBase =
-                            localBlockIndex->entries[localBlockIndexHead].base;
-                        auto blockBaseIndex =
-                            index & ~static_cast<index_t>(BLOCK_SIZE - 1);
+                        auto headBase = localBlockIndex->entries[localBlockIndexHead].base;
+                        auto blockBaseIndex = index & ~static_cast<index_t>(BLOCK_SIZE - 1);
                         auto offset = static_cast<size_t>(
-                            static_cast<
-                                typename std::make_signed<index_t>::type>(
+                            static_cast<typename std::make_signed<index_t>::type>(
                                 blockBaseIndex - headBase) /
                             BLOCK_SIZE);
-                        auto block =
-                            localBlockIndex
-                                ->entries[(localBlockIndexHead + offset) &
-                                    (localBlockIndex->size - 1)]
-                                .block;
+                        auto block = localBlockIndex
+                                         ->entries[(localBlockIndexHead + offset) &
+                                             (localBlockIndex->size - 1)]
+                                         .block;
 
                         // Dequeue
                         auto& el = *((*block)[index]);
-                        if (!MOODYCAMEL_NOEXCEPT_ASSIGN(
-                                T, T&&, element = PIKA_MOVE(el)))
+                        if (!MOODYCAMEL_NOEXCEPT_ASSIGN(T, T&&, element = PIKA_MOVE(el)))
                         {
                             // Make sure the element is still fully dequeued and destroyed even if the assignment
                             // throws
@@ -2617,9 +2454,8 @@ namespace pika::concurrency::detail {
                                 ~Guard()
                                 {
                                     (*block)[index]->~T();
-                                    block->ConcurrentQueue::Block::
-                                        template set_empty<explicit_context>(
-                                            index);
+                                    block->ConcurrentQueue::Block::template set_empty<
+                                        explicit_context>(index);
                                 }
                             } guard = {block, index};
 
@@ -2629,8 +2465,8 @@ namespace pika::concurrency::detail {
                         {
                             element = PIKA_MOVE(el);    // NOLINT
                             el.~T();                    // NOLINT
-                            block->ConcurrentQueue::Block::template set_empty<
-                                explicit_context>(index);
+                            block->ConcurrentQueue::Block::template set_empty<explicit_context>(
+                                index);
                         }
 
                         return true;
@@ -2653,8 +2489,7 @@ namespace pika::concurrency::detail {
                 // First, we need to make sure we have enough room to enqueue all of the elements;
                 // this means pre-allocating blocks and putting them in the block index (but only if
                 // all the allocations succeeded).
-                index_t startTailIndex =
-                    this->tailIndex.load(std::memory_order_relaxed);
+                index_t startTailIndex = this->tailIndex.load(std::memory_order_relaxed);
                 auto startBlock = this->tailBlock;
                 auto originalBlockIndexFront = pr_blockIndexFront;
                 auto originalBlockIndexSlotsUsed = pr_blockIndexSlotsUsed;
@@ -2663,35 +2498,30 @@ namespace pika::concurrency::detail {
 
                 // Figure out how many blocks we'll need to allocate, and do so
                 size_t blockBaseDiff =
-                    ((startTailIndex + count - 1) &
-                        ~static_cast<index_t>(BLOCK_SIZE - 1)) -
-                    ((startTailIndex - 1) &
-                        ~static_cast<index_t>(BLOCK_SIZE - 1));
-                index_t currentTailIndex = (startTailIndex - 1) &
-                    ~static_cast<index_t>(BLOCK_SIZE - 1);
+                    ((startTailIndex + count - 1) & ~static_cast<index_t>(BLOCK_SIZE - 1)) -
+                    ((startTailIndex - 1) & ~static_cast<index_t>(BLOCK_SIZE - 1));
+                index_t currentTailIndex =
+                    (startTailIndex - 1) & ~static_cast<index_t>(BLOCK_SIZE - 1);
                 if (blockBaseDiff > 0)
                 {
                     // Allocate as many blocks as possible from ahead
                     while (blockBaseDiff > 0 && this->tailBlock != nullptr &&
                         this->tailBlock->next != firstAllocatedBlock &&
-                        this->tailBlock->next->ConcurrentQueue::Block::
-                            template is_empty<explicit_context>())
+                        this->tailBlock->next
+                            ->ConcurrentQueue::Block::template is_empty<explicit_context>())
                     {
                         blockBaseDiff -= static_cast<index_t>(BLOCK_SIZE);
                         currentTailIndex += static_cast<index_t>(BLOCK_SIZE);
 
                         this->tailBlock = this->tailBlock->next;
-                        firstAllocatedBlock = firstAllocatedBlock == nullptr ?
-                            this->tailBlock :
-                            firstAllocatedBlock;
+                        firstAllocatedBlock =
+                            firstAllocatedBlock == nullptr ? this->tailBlock : firstAllocatedBlock;
 
                         auto& entry =
-                            blockIndex.load(std::memory_order_relaxed)
-                                ->entries[pr_blockIndexFront];
+                            blockIndex.load(std::memory_order_relaxed)->entries[pr_blockIndexFront];
                         entry.base = currentTailIndex;
                         entry.block = this->tailBlock;
-                        pr_blockIndexFront =
-                            (pr_blockIndexFront + 1) & (pr_blockIndexSize - 1);
+                        pr_blockIndexFront = (pr_blockIndexFront + 1) & (pr_blockIndexSize - 1);
                     }
 
                     // Now allocate as many blocks as necessary from the block pool
@@ -2700,17 +2530,13 @@ namespace pika::concurrency::detail {
                         blockBaseDiff -= static_cast<index_t>(BLOCK_SIZE);
                         currentTailIndex += static_cast<index_t>(BLOCK_SIZE);
 
-                        auto head =
-                            this->headIndex.load(std::memory_order_relaxed);
-                        assert(!detail::circular_less_than<index_t>(
-                            currentTailIndex, head));
+                        auto head = this->headIndex.load(std::memory_order_relaxed);
+                        assert(!detail::circular_less_than<index_t>(currentTailIndex, head));
                         bool full = !detail::circular_less_than<index_t>(
                                         head, currentTailIndex + BLOCK_SIZE) ||
-                            (MAX_SUBQUEUE_SIZE !=
-                                    detail::const_numeric_max<size_t>::value &&
+                            (MAX_SUBQUEUE_SIZE != detail::const_numeric_max<size_t>::value &&
                                 (MAX_SUBQUEUE_SIZE == 0 ||
-                                    MAX_SUBQUEUE_SIZE - BLOCK_SIZE <
-                                        currentTailIndex - head));
+                                    MAX_SUBQUEUE_SIZE - BLOCK_SIZE < currentTailIndex - head));
                         if (pr_blockIndexRaw == nullptr ||
                             pr_blockIndexSlotsUsed == pr_blockIndexSize || full)
                         {
@@ -2719,41 +2545,35 @@ namespace pika::concurrency::detail {
                             {
                                 // Failed to allocate, undo changes (but keep injected blocks)
                                 pr_blockIndexFront = originalBlockIndexFront;
-                                pr_blockIndexSlotsUsed =
-                                    originalBlockIndexSlotsUsed;
-                                this->tailBlock = startBlock == nullptr ?
-                                    firstAllocatedBlock :
-                                    startBlock;
+                                pr_blockIndexSlotsUsed = originalBlockIndexSlotsUsed;
+                                this->tailBlock =
+                                    startBlock == nullptr ? firstAllocatedBlock : startBlock;
                                 return false;
                             }
 
                             // pr_blockIndexFront is updated inside new_block_index, so we need to
                             // update our fallback value too (since we keep the new index even if we
                             // later fail)
-                            originalBlockIndexFront =
-                                originalBlockIndexSlotsUsed;
+                            originalBlockIndexFront = originalBlockIndexSlotsUsed;
                         }
 
                         // Insert a new block in the circular linked list
                         auto newBlock =
-                            this->parent->ConcurrentQueue::
-                                template requisition_block<allocMode>();
+                            this->parent->ConcurrentQueue::template requisition_block<allocMode>();
                         if (newBlock == nullptr)
                         {
                             pr_blockIndexFront = originalBlockIndexFront;
-                            pr_blockIndexSlotsUsed =
-                                originalBlockIndexSlotsUsed;
-                            this->tailBlock = startBlock == nullptr ?
-                                firstAllocatedBlock :
-                                startBlock;
+                            pr_blockIndexSlotsUsed = originalBlockIndexSlotsUsed;
+                            this->tailBlock =
+                                startBlock == nullptr ? firstAllocatedBlock : startBlock;
                             return false;
                         }
 
 #if MCDBGQ_TRACKMEM
                         newBlock->owner = this;
 #endif
-                        newBlock->ConcurrentQueue::Block::
-                            template set_all_empty<explicit_context>();
+                        newBlock
+                            ->ConcurrentQueue::Block::template set_all_empty<explicit_context>();
                         if (this->tailBlock == nullptr)
                         {
                             newBlock->next = newBlock;
@@ -2764,19 +2584,16 @@ namespace pika::concurrency::detail {
                             this->tailBlock->next = newBlock;
                         }
                         this->tailBlock = newBlock;
-                        firstAllocatedBlock = firstAllocatedBlock == nullptr ?
-                            this->tailBlock :
-                            firstAllocatedBlock;
+                        firstAllocatedBlock =
+                            firstAllocatedBlock == nullptr ? this->tailBlock : firstAllocatedBlock;
 
                         ++pr_blockIndexSlotsUsed;
 
                         auto& entry =
-                            blockIndex.load(std::memory_order_relaxed)
-                                ->entries[pr_blockIndexFront];
+                            blockIndex.load(std::memory_order_relaxed)->entries[pr_blockIndexFront];
                         entry.base = currentTailIndex;
                         entry.block = this->tailBlock;
-                        pr_blockIndexFront =
-                            (pr_blockIndexFront + 1) & (pr_blockIndexSize - 1);
+                        pr_blockIndexFront = (pr_blockIndexFront + 1) & (pr_blockIndexSize - 1);
                     }
 
                     // Excellent, all allocations succeeded. Reset each block's emptiness before we fill them up, and
@@ -2784,8 +2601,7 @@ namespace pika::concurrency::detail {
                     auto block = firstAllocatedBlock;
                     while (true)
                     {
-                        block->ConcurrentQueue::Block::template reset_empty<
-                            explicit_context>();
+                        block->ConcurrentQueue::Block::template reset_empty<explicit_context>();
                         if (block == this->tailBlock)
                         {
                             break;
@@ -2797,35 +2613,28 @@ namespace pika::concurrency::detail {
                             new (nullptr) T(detail::deref_noexcept(itemFirst))))
                     {
                         blockIndex.load(std::memory_order_relaxed)
-                            ->front.store((pr_blockIndexFront - 1) &
-                                    (pr_blockIndexSize - 1),
+                            ->front.store((pr_blockIndexFront - 1) & (pr_blockIndexSize - 1),
                                 std::memory_order_release);
                     }
                 }
 
                 // Enqueue, one block at a time
-                index_t newTailIndex =
-                    startTailIndex + static_cast<index_t>(count);
+                index_t newTailIndex = startTailIndex + static_cast<index_t>(count);
                 currentTailIndex = startTailIndex;
                 auto endBlock = this->tailBlock;
                 this->tailBlock = startBlock;
-                assert((startTailIndex &
-                           static_cast<index_t>(BLOCK_SIZE - 1)) != 0 ||
+                assert((startTailIndex & static_cast<index_t>(BLOCK_SIZE - 1)) != 0 ||
                     firstAllocatedBlock != nullptr || count == 0);
-                if ((startTailIndex & static_cast<index_t>(BLOCK_SIZE - 1)) ==
-                        0 &&
+                if ((startTailIndex & static_cast<index_t>(BLOCK_SIZE - 1)) == 0 &&
                     firstAllocatedBlock != nullptr)
                 {
                     this->tailBlock = firstAllocatedBlock;
                 }
                 while (true)
                 {
-                    auto stopIndex =
-                        (currentTailIndex &
-                            ~static_cast<index_t>(BLOCK_SIZE - 1)) +
+                    auto stopIndex = (currentTailIndex & ~static_cast<index_t>(BLOCK_SIZE - 1)) +
                         static_cast<index_t>(BLOCK_SIZE);
-                    if (detail::circular_less_than<index_t>(
-                            newTailIndex, stopIndex))
+                    if (detail::circular_less_than<index_t>(newTailIndex, stopIndex))
                     {
                         stopIndex = newTailIndex;
                     }
@@ -2834,8 +2643,7 @@ namespace pika::concurrency::detail {
                     {
                         while (currentTailIndex != stopIndex)
                         {
-                            new ((*this->tailBlock)[currentTailIndex++])
-                                T(*itemFirst++);
+                            new ((*this->tailBlock)[currentTailIndex++]) T(*itemFirst++);
                         }
                     }
                     else
@@ -2851,12 +2659,10 @@ namespace pika::concurrency::detail {
                                 // may only define a (noexcept) move constructor, and so calls to the
                                 // cctor will not compile, even if they are in an if branch that will never
                                 // be executed
-                                new ((*this->tailBlock)[currentTailIndex]) T(
-                                    detail::nomove_if<(
-                                        bool) !MOODYCAMEL_NOEXCEPT_CTOR(T,
-                                        decltype(*itemFirst),
-                                        new (nullptr) T(detail::deref_noexcept(
-                                            itemFirst)))>::eval(*itemFirst));
+                                new ((*this->tailBlock)[currentTailIndex]) T(detail::nomove_if<(
+                                        bool) !MOODYCAMEL_NOEXCEPT_CTOR(T, decltype(*itemFirst),
+                                        new (nullptr) T(
+                                            detail::deref_noexcept(itemFirst)))>::eval(*itemFirst));
                                 ++currentTailIndex;
                                 ++itemFirst;
                             }
@@ -2870,27 +2676,22 @@ namespace pika::concurrency::detail {
                             auto lastBlockEnqueued = this->tailBlock;
 
                             pr_blockIndexFront = originalBlockIndexFront;
-                            pr_blockIndexSlotsUsed =
-                                originalBlockIndexSlotsUsed;
-                            this->tailBlock = startBlock == nullptr ?
-                                firstAllocatedBlock :
-                                startBlock;
+                            pr_blockIndexSlotsUsed = originalBlockIndexSlotsUsed;
+                            this->tailBlock =
+                                startBlock == nullptr ? firstAllocatedBlock : startBlock;
 
                             if (!detail::is_trivially_destructible<T>::value)
                             {
                                 auto block = startBlock;
-                                if ((startTailIndex &
-                                        static_cast<index_t>(BLOCK_SIZE - 1)) ==
-                                    0)
+                                if ((startTailIndex & static_cast<index_t>(BLOCK_SIZE - 1)) == 0)
                                 {
                                     block = firstAllocatedBlock;
                                 }
                                 currentTailIndex = startTailIndex;
                                 while (true)
                                 {
-                                    stopIndex = (currentTailIndex &
-                                                    ~static_cast<index_t>(
-                                                        BLOCK_SIZE - 1)) +
+                                    stopIndex =
+                                        (currentTailIndex & ~static_cast<index_t>(BLOCK_SIZE - 1)) +
                                         static_cast<index_t>(BLOCK_SIZE);
                                     if (detail::circular_less_than<index_t>(
                                             constructedStopIndex, stopIndex))
@@ -2925,8 +2726,7 @@ namespace pika::concurrency::detail {
                     firstAllocatedBlock != nullptr)
                 {
                     blockIndex.load(std::memory_order_relaxed)
-                        ->front.store(
-                            (pr_blockIndexFront - 1) & (pr_blockIndexSize - 1),
+                        ->front.store((pr_blockIndexFront - 1) & (pr_blockIndexSize - 1),
                             std::memory_order_release);
                 }
 
@@ -2938,77 +2738,62 @@ namespace pika::concurrency::detail {
             size_t dequeue_bulk(It& itemFirst, size_t max)
             {
                 auto tail = this->tailIndex.load(std::memory_order_relaxed);
-                auto overcommit =
-                    this->dequeueOvercommit.load(std::memory_order_relaxed);
+                auto overcommit = this->dequeueOvercommit.load(std::memory_order_relaxed);
                 auto desiredCount = static_cast<size_t>(tail -
-                    (this->dequeueOptimisticCount.load(
-                         std::memory_order_relaxed) -
-                        overcommit));
+                    (this->dequeueOptimisticCount.load(std::memory_order_relaxed) - overcommit));
                 if (detail::circular_less_than<size_t>(0, desiredCount))
                 {
                     desiredCount = desiredCount < max ? desiredCount : max;
                     std::atomic_thread_fence(std::memory_order_acquire);
 
-                    auto myDequeueCount =
-                        this->dequeueOptimisticCount.fetch_add(
-                            desiredCount, std::memory_order_relaxed);
+                    auto myDequeueCount = this->dequeueOptimisticCount.fetch_add(
+                        desiredCount, std::memory_order_relaxed);
                     ;
 
                     tail = this->tailIndex.load(std::memory_order_acquire);
-                    auto actualCount = static_cast<size_t>(
-                        tail - (myDequeueCount - overcommit));
+                    auto actualCount = static_cast<size_t>(tail - (myDequeueCount - overcommit));
                     if (detail::circular_less_than<size_t>(0, actualCount))
                     {
-                        actualCount = desiredCount < actualCount ?
-                            desiredCount :
-                            actualCount;
+                        actualCount = desiredCount < actualCount ? desiredCount : actualCount;
                         if (actualCount < desiredCount)
                         {
                             this->dequeueOvercommit.fetch_add(
-                                desiredCount - actualCount,
-                                std::memory_order_release);
+                                desiredCount - actualCount, std::memory_order_release);
                         }
 
                         // Get the first index. Note that since there's guaranteed to be at least actualCount elements, this
                         // will never exceed tail.
-                        auto firstIndex = this->headIndex.fetch_add(
-                            actualCount, std::memory_order_acq_rel);
+                        auto firstIndex =
+                            this->headIndex.fetch_add(actualCount, std::memory_order_acq_rel);
 
                         // Determine which block the first element is in
-                        auto localBlockIndex =
-                            blockIndex.load(std::memory_order_acquire);
-                        auto localBlockIndexHead = localBlockIndex->front.load(
-                            std::memory_order_acquire);
+                        auto localBlockIndex = blockIndex.load(std::memory_order_acquire);
+                        auto localBlockIndexHead =
+                            localBlockIndex->front.load(std::memory_order_acquire);
 
-                        auto headBase =
-                            localBlockIndex->entries[localBlockIndexHead].base;
+                        auto headBase = localBlockIndex->entries[localBlockIndexHead].base;
                         auto firstBlockBaseIndex =
                             firstIndex & ~static_cast<index_t>(BLOCK_SIZE - 1);
                         auto offset = static_cast<size_t>(
-                            static_cast<
-                                typename std::make_signed<index_t>::type>(
+                            static_cast<typename std::make_signed<index_t>::type>(
                                 firstBlockBaseIndex - headBase) /
                             BLOCK_SIZE);
-                        auto indexIndex = (localBlockIndexHead + offset) &
-                            (localBlockIndex->size - 1);
+                        auto indexIndex =
+                            (localBlockIndexHead + offset) & (localBlockIndex->size - 1);
 
                         // Iterate the blocks and dequeue
                         auto index = firstIndex;
                         do
                         {
                             auto firstIndexInBlock = index;
-                            auto endIndex =
-                                (index &
-                                    ~static_cast<index_t>(BLOCK_SIZE - 1)) +
+                            auto endIndex = (index & ~static_cast<index_t>(BLOCK_SIZE - 1)) +
                                 static_cast<index_t>(BLOCK_SIZE);
                             endIndex =
-                                detail::circular_less_than<index_t>(firstIndex +
-                                        static_cast<index_t>(actualCount),
-                                    endIndex) ?
+                                detail::circular_less_than<index_t>(
+                                    firstIndex + static_cast<index_t>(actualCount), endIndex) ?
                                 firstIndex + static_cast<index_t>(actualCount) :
                                 endIndex;
-                            auto block =
-                                localBlockIndex->entries[indexIndex].block;
+                            auto block = localBlockIndex->entries[indexIndex].block;
                             if (MOODYCAMEL_NOEXCEPT_ASSIGN(T, T&&,
                                     detail::deref_noexcept(itemFirst) =
                                         PIKA_MOVE((*(*block)[index]))))
@@ -3041,49 +2826,34 @@ namespace pika::concurrency::detail {
                                     // (and empty count) are properly updated before we propagate the exception
                                     do
                                     {
-                                        block =
-                                            localBlockIndex->entries[indexIndex]
-                                                .block;
+                                        block = localBlockIndex->entries[indexIndex].block;
                                         while (index != endIndex)
                                         {
                                             (*block)[index++]->~T();
                                         }
-                                        block->ConcurrentQueue::Block::
-                                            template set_many_empty<
-                                                explicit_context>(
-                                                firstIndexInBlock,
-                                                static_cast<size_t>(endIndex -
-                                                    firstIndexInBlock));
-                                        indexIndex = (indexIndex + 1) &
-                                            (localBlockIndex->size - 1);
+                                        block->ConcurrentQueue::Block::template set_many_empty<
+                                            explicit_context>(firstIndexInBlock,
+                                            static_cast<size_t>(endIndex - firstIndexInBlock));
+                                        indexIndex = (indexIndex + 1) & (localBlockIndex->size - 1);
 
                                         firstIndexInBlock = index;
-                                        endIndex = (index &
-                                                       ~static_cast<index_t>(
-                                                           BLOCK_SIZE - 1)) +
+                                        endIndex = (index & ~static_cast<index_t>(BLOCK_SIZE - 1)) +
                                             static_cast<index_t>(BLOCK_SIZE);
-                                        endIndex =
-                                            detail::circular_less_than<index_t>(
-                                                firstIndex +
-                                                    static_cast<index_t>(
-                                                        actualCount),
-                                                endIndex) ?
-                                            firstIndex +
-                                                static_cast<index_t>(
-                                                    actualCount) :
+                                        endIndex = detail::circular_less_than<index_t>(firstIndex +
+                                                           static_cast<index_t>(actualCount),
+                                                       endIndex) ?
+                                            firstIndex + static_cast<index_t>(actualCount) :
                                             endIndex;
                                     } while (index != firstIndex + actualCount);
 
                                     MOODYCAMEL_RETHROW;
                                 }
                             }
-                            block->ConcurrentQueue::Block::
-                                template set_many_empty<explicit_context>(
+                            block
+                                ->ConcurrentQueue::Block::template set_many_empty<explicit_context>(
                                     firstIndexInBlock,
-                                    static_cast<size_t>(
-                                        endIndex - firstIndexInBlock));
-                            indexIndex =
-                                (indexIndex + 1) & (localBlockIndex->size - 1);
+                                    static_cast<size_t>(endIndex - firstIndexInBlock));
+                            indexIndex = (indexIndex + 1) & (localBlockIndex->size - 1);
                         } while (index != firstIndex + actualCount);
 
                         return actualCount;
@@ -3091,8 +2861,7 @@ namespace pika::concurrency::detail {
                     else
                     {
                         // Wasn't anything to dequeue after all; make the effective dequeue count eventually consistent
-                        this->dequeueOvercommit.fetch_add(
-                            desiredCount, std::memory_order_release);
+                        this->dequeueOvercommit.fetch_add(desiredCount, std::memory_order_release);
                     }
                 }
 
@@ -3109,8 +2878,7 @@ namespace pika::concurrency::detail {
             struct BlockIndexHeader
             {
                 size_t size;
-                std::atomic<size_t>
-                    front;    // Current slot (not next, like pr_blockIndexFront)
+                std::atomic<size_t> front;    // Current slot (not next, like pr_blockIndexFront)
                 BlockIndexEntry* entries;
                 void* prev;
             };
@@ -3121,10 +2889,9 @@ namespace pika::concurrency::detail {
 
                 // Create the new block
                 pr_blockIndexSize <<= 1;
-                auto newRawPtr = static_cast<char*>(
-                    (Traits::malloc)(sizeof(BlockIndexHeader) +
-                        std::alignment_of<BlockIndexEntry>::value - 1 +
-                        sizeof(BlockIndexEntry) * pr_blockIndexSize));
+                auto newRawPtr = static_cast<char*>((Traits::malloc)(sizeof(BlockIndexHeader) +
+                    std::alignment_of<BlockIndexEntry>::value - 1 +
+                    sizeof(BlockIndexEntry) * pr_blockIndexSize));
                 if (newRawPtr == nullptr)
                 {
                     pr_blockIndexSize >>= 1;    // Reset to allow graceful retry
@@ -3132,15 +2899,13 @@ namespace pika::concurrency::detail {
                 }
 
                 auto newBlockIndexEntries = reinterpret_cast<BlockIndexEntry*>(
-                    detail::align_for<BlockIndexEntry>(
-                        newRawPtr + sizeof(BlockIndexHeader)));
+                    detail::align_for<BlockIndexEntry>(newRawPtr + sizeof(BlockIndexHeader)));
 
                 // Copy in all the old indices, if any
                 size_t j = 0;
                 if (pr_blockIndexSlotsUsed != 0)
                 {
-                    auto i = (pr_blockIndexFront - pr_blockIndexSlotsUsed) &
-                        prevBlockSizeMask;
+                    auto i = (pr_blockIndexFront - pr_blockIndexSlotsUsed) & prevBlockSizeMask;
                     do
                     {
                         newBlockIndexEntries[j++] = pr_blockIndexEntries[i];
@@ -3151,8 +2916,7 @@ namespace pika::concurrency::detail {
                 // Update everything
                 auto header = new (newRawPtr) BlockIndexHeader;
                 header->size = pr_blockIndexSize;
-                header->front.store(
-                    numberOfFilledSlotsToExpose - 1, std::memory_order_relaxed);
+                header->front.store(numberOfFilledSlotsToExpose - 1, std::memory_order_relaxed);
                 header->entries = newBlockIndexEntries;
                 header->prev =
                     pr_blockIndexRaw;    // we link the new block to the old one so we can free it later
@@ -3212,8 +2976,7 @@ namespace pika::concurrency::detail {
                 // Unregister ourselves for thread termination notification
                 if (!this->inactive.load(std::memory_order_relaxed))
                 {
-                    detail::ThreadExitNotifier::unsubscribe(
-                        &threadExitListener);
+                    detail::ThreadExitNotifier::unsubscribe(&threadExitListener);
                 }
 #endif
 
@@ -3221,14 +2984,12 @@ namespace pika::concurrency::detail {
                 auto tail = this->tailIndex.load(std::memory_order_relaxed);
                 auto index = this->headIndex.load(std::memory_order_relaxed);
                 Block* block = nullptr;
-                assert(
-                    index == tail || detail::circular_less_than(index, tail));
+                assert(index == tail || detail::circular_less_than(index, tail));
                 bool forceFreeLastBlock = index !=
                     tail;    // If we enter the loop, then the last (tail) block will not be freed
                 while (index != tail)
                 {
-                    if ((index & static_cast<index_t>(BLOCK_SIZE - 1)) == 0 ||
-                        block == nullptr)
+                    if ((index & static_cast<index_t>(BLOCK_SIZE - 1)) == 0 || block == nullptr)
                     {
                         if (block != nullptr)
                         {
@@ -3236,9 +2997,8 @@ namespace pika::concurrency::detail {
                             this->parent->add_block_to_free_list(block);
                         }
 
-                        block =
-                            get_block_index_entry_for_index(index)->value.load(
-                                std::memory_order_relaxed);
+                        block = get_block_index_entry_for_index(index)->value.load(
+                            std::memory_order_relaxed);
                     }
 
                     ((*block)[index])->~T();
@@ -3248,15 +3008,13 @@ namespace pika::concurrency::detail {
                 // (unless the head index reached the end of it, in which case the tail will be poised
                 // to create a new block).
                 if (this->tailBlock != nullptr &&
-                    (forceFreeLastBlock ||
-                        (tail & static_cast<index_t>(BLOCK_SIZE - 1)) != 0))
+                    (forceFreeLastBlock || (tail & static_cast<index_t>(BLOCK_SIZE - 1)) != 0))
                 {
                     this->parent->add_block_to_free_list(this->tailBlock);
                 }
 
                 // Destroy block index
-                auto localBlockIndex =
-                    blockIndex.load(std::memory_order_relaxed);
+                auto localBlockIndex = blockIndex.load(std::memory_order_relaxed);
                 if (localBlockIndex != nullptr)
                 {
                     for (size_t i = 0; i != localBlockIndex->capacity; ++i)
@@ -3276,23 +3034,17 @@ namespace pika::concurrency::detail {
             template <AllocationMode allocMode, typename U>
             inline bool enqueue(U&& element)
             {
-                index_t currentTailIndex =
-                    this->tailIndex.load(std::memory_order_relaxed);
+                index_t currentTailIndex = this->tailIndex.load(std::memory_order_relaxed);
                 index_t newTailIndex = 1 + currentTailIndex;
-                if ((currentTailIndex & static_cast<index_t>(BLOCK_SIZE - 1)) ==
-                    0)
+                if ((currentTailIndex & static_cast<index_t>(BLOCK_SIZE - 1)) == 0)
                 {
                     // We reached the end of a block, start a new one
                     auto head = this->headIndex.load(std::memory_order_relaxed);
-                    assert(!detail::circular_less_than<index_t>(
-                        currentTailIndex, head));
-                    if (!detail::circular_less_than<index_t>(
-                            head, currentTailIndex + BLOCK_SIZE) ||
-                        (MAX_SUBQUEUE_SIZE !=
-                                detail::const_numeric_max<size_t>::value &&
+                    assert(!detail::circular_less_than<index_t>(currentTailIndex, head));
+                    if (!detail::circular_less_than<index_t>(head, currentTailIndex + BLOCK_SIZE) ||
+                        (MAX_SUBQUEUE_SIZE != detail::const_numeric_max<size_t>::value &&
                             (MAX_SUBQUEUE_SIZE == 0 ||
-                                MAX_SUBQUEUE_SIZE - BLOCK_SIZE <
-                                    currentTailIndex - head)))
+                                MAX_SUBQUEUE_SIZE - BLOCK_SIZE < currentTailIndex - head)))
                     {
                         return false;
                     }
@@ -3301,42 +3053,36 @@ namespace pika::concurrency::detail {
 #endif
                     // Find out where we'll be inserting this block in the block index
                     BlockIndexEntry* idxEntry;
-                    if (!insert_block_index_entry<allocMode>(
-                            idxEntry, currentTailIndex))
+                    if (!insert_block_index_entry<allocMode>(idxEntry, currentTailIndex))
                     {
                         return false;
                     }
 
                     // Get ahold of a new block
-                    auto newBlock = this->parent->ConcurrentQueue::
-                                        template requisition_block<allocMode>();
+                    auto newBlock =
+                        this->parent->ConcurrentQueue::template requisition_block<allocMode>();
                     if (newBlock == nullptr)
                     {
                         rewind_block_index_tail();
-                        idxEntry->value.store(
-                            nullptr, std::memory_order_relaxed);
+                        idxEntry->value.store(nullptr, std::memory_order_relaxed);
                         return false;
                     }
 #if MCDBGQ_TRACKMEM
                     newBlock->owner = this;
 #endif
-                    newBlock->ConcurrentQueue::Block::template reset_empty<
-                        implicit_context>();
+                    newBlock->ConcurrentQueue::Block::template reset_empty<implicit_context>();
 
-                    if (!MOODYCAMEL_NOEXCEPT_CTOR(
-                            T, U, new (nullptr) T(PIKA_FORWARD(U, element))))
+                    if (!MOODYCAMEL_NOEXCEPT_CTOR(T, U, new (nullptr) T(PIKA_FORWARD(U, element))))
                     {
                         // May throw, try to insert now before we publish the fact that we have this new block
                         MOODYCAMEL_TRY
                         {
-                            new ((*newBlock)[currentTailIndex])
-                                T(PIKA_FORWARD(U, element));
+                            new ((*newBlock)[currentTailIndex]) T(PIKA_FORWARD(U, element));
                         }
                         MOODYCAMEL_CATCH(...)
                         {
                             rewind_block_index_tail();
-                            idxEntry->value.store(
-                                nullptr, std::memory_order_relaxed);
+                            idxEntry->value.store(nullptr, std::memory_order_relaxed);
                             this->parent->add_block_to_free_list(newBlock);
                             MOODYCAMEL_RETHROW;
                         }
@@ -3347,18 +3093,15 @@ namespace pika::concurrency::detail {
 
                     this->tailBlock = newBlock;
 
-                    if (!MOODYCAMEL_NOEXCEPT_CTOR(
-                            T, U, new (nullptr) T(PIKA_FORWARD(U, element))))
+                    if (!MOODYCAMEL_NOEXCEPT_CTOR(T, U, new (nullptr) T(PIKA_FORWARD(U, element))))
                     {
-                        this->tailIndex.store(
-                            newTailIndex, std::memory_order_release);
+                        this->tailIndex.store(newTailIndex, std::memory_order_release);
                         return true;
                     }
                 }
 
                 // Enqueue
-                new ((*this->tailBlock)[currentTailIndex])
-                    T(PIKA_FORWARD(U, element));
+                new ((*this->tailBlock)[currentTailIndex]) T(PIKA_FORWARD(U, element));
 
                 this->tailIndex.store(newTailIndex, std::memory_order_release);
                 return true;
@@ -3369,36 +3112,29 @@ namespace pika::concurrency::detail {
             {
                 // See ExplicitProducer::dequeue for rationale and explanation
                 index_t tail = this->tailIndex.load(std::memory_order_relaxed);
-                index_t overcommit =
-                    this->dequeueOvercommit.load(std::memory_order_relaxed);
+                index_t overcommit = this->dequeueOvercommit.load(std::memory_order_relaxed);
                 if (detail::circular_less_than<index_t>(
-                        this->dequeueOptimisticCount.load(
-                            std::memory_order_relaxed) -
-                            overcommit,
+                        this->dequeueOptimisticCount.load(std::memory_order_relaxed) - overcommit,
                         tail))
                 {
                     std::atomic_thread_fence(std::memory_order_acquire);
 
                     index_t myDequeueCount =
-                        this->dequeueOptimisticCount.fetch_add(
-                            1, std::memory_order_relaxed);
+                        this->dequeueOptimisticCount.fetch_add(1, std::memory_order_relaxed);
                     tail = this->tailIndex.load(std::memory_order_acquire);
-                    if ((detail::likely)(detail::circular_less_than<index_t>(
-                            myDequeueCount - overcommit, tail)))
+                    if ((detail::likely)(
+                            detail::circular_less_than<index_t>(myDequeueCount - overcommit, tail)))
                     {
-                        index_t index = this->headIndex.fetch_add(
-                            1, std::memory_order_acq_rel);
+                        index_t index = this->headIndex.fetch_add(1, std::memory_order_acq_rel);
 
                         // Determine which block the element is in
                         auto entry = get_block_index_entry_for_index(index);
 
                         // Dequeue
-                        auto block =
-                            entry->value.load(std::memory_order_relaxed);
+                        auto block = entry->value.load(std::memory_order_relaxed);
                         auto& el = *((*block)[index]);
 
-                        if (!MOODYCAMEL_NOEXCEPT_ASSIGN(
-                                T, T&&, element = PIKA_MOVE(el)))
+                        if (!MOODYCAMEL_NOEXCEPT_ASSIGN(T, T&&, element = PIKA_MOVE(el)))
                         {
 #if MCDBGQ_NOLOCKFREE_IMPLICITPRODBLOCKINDEX
                             // Note: Acquiring the mutex with every dequeue instead of only when a block
@@ -3415,12 +3151,10 @@ namespace pika::concurrency::detail {
                                 ~Guard()
                                 {
                                     (*block)[index]->~T();
-                                    if (block->ConcurrentQueue::Block::
-                                            template set_empty<
-                                                implicit_context>(index))
+                                    if (block->ConcurrentQueue::Block::template set_empty<
+                                            implicit_context>(index))
                                     {
-                                        entry->value.store(
-                                            nullptr, std::memory_order_relaxed);
+                                        entry->value.store(nullptr, std::memory_order_relaxed);
                                         parent->add_block_to_free_list(block);
                                     }
                                 }
@@ -3433,16 +3167,15 @@ namespace pika::concurrency::detail {
                             element = PIKA_MOVE(el);    // NOLINT
                             el.~T();                    // NOLINT
 
-                            if (block->ConcurrentQueue::Block::
-                                    template set_empty<implicit_context>(index))
+                            if (block->ConcurrentQueue::Block::template set_empty<implicit_context>(
+                                    index))
                             {
                                 {
 #if MCDBGQ_NOLOCKFREE_IMPLICITPRODBLOCKINDEX
                                     debug::DebugLock lock(mutex);
 #endif
                                     // Add the block back into the global free pool (and remove from block index)
-                                    entry->value.store(
-                                        nullptr, std::memory_order_relaxed);
+                                    entry->value.store(nullptr, std::memory_order_relaxed);
                                 }
                                 this->parent->add_block_to_free_list(
                                     block);    // releases the above store
@@ -3453,8 +3186,7 @@ namespace pika::concurrency::detail {
                     }
                     else
                     {
-                        this->dequeueOvercommit.fetch_add(
-                            1, std::memory_order_release);
+                        this->dequeueOvercommit.fetch_add(1, std::memory_order_release);
                     }
                 }
 
@@ -3473,20 +3205,17 @@ namespace pika::concurrency::detail {
                 // the first index of the next block which is not yet allocated), then dequeued
                 // completely (putting it on the free list) before we enqueue again.
 
-                index_t startTailIndex =
-                    this->tailIndex.load(std::memory_order_relaxed);
+                index_t startTailIndex = this->tailIndex.load(std::memory_order_relaxed);
                 auto startBlock = this->tailBlock;
                 Block* firstAllocatedBlock = nullptr;
                 auto endBlock = this->tailBlock;
 
                 // Figure out how many blocks we'll need to allocate, and do so
                 size_t blockBaseDiff =
-                    ((startTailIndex + count - 1) &
-                        ~static_cast<index_t>(BLOCK_SIZE - 1)) -
-                    ((startTailIndex - 1) &
-                        ~static_cast<index_t>(BLOCK_SIZE - 1));
-                index_t currentTailIndex = (startTailIndex - 1) &
-                    ~static_cast<index_t>(BLOCK_SIZE - 1);
+                    ((startTailIndex + count - 1) & ~static_cast<index_t>(BLOCK_SIZE - 1)) -
+                    ((startTailIndex - 1) & ~static_cast<index_t>(BLOCK_SIZE - 1));
+                index_t currentTailIndex =
+                    (startTailIndex - 1) & ~static_cast<index_t>(BLOCK_SIZE - 1);
                 if (blockBaseDiff > 0)
                 {
 #if MCDBGQ_NOLOCKFREE_IMPLICITPRODBLOCKINDEX
@@ -3502,48 +3231,37 @@ namespace pika::concurrency::detail {
                             nullptr;    // initialization here unnecessary but compiler can't always tell
                         Block* newBlock;
                         bool indexInserted = false;
-                        auto head =
-                            this->headIndex.load(std::memory_order_relaxed);
-                        assert(!detail::circular_less_than<index_t>(
-                            currentTailIndex, head));
+                        auto head = this->headIndex.load(std::memory_order_relaxed);
+                        assert(!detail::circular_less_than<index_t>(currentTailIndex, head));
                         bool full = !detail::circular_less_than<index_t>(
                                         head, currentTailIndex + BLOCK_SIZE) ||
-                            (MAX_SUBQUEUE_SIZE !=
-                                    detail::const_numeric_max<size_t>::value &&
+                            (MAX_SUBQUEUE_SIZE != detail::const_numeric_max<size_t>::value &&
                                 (MAX_SUBQUEUE_SIZE == 0 ||
-                                    MAX_SUBQUEUE_SIZE - BLOCK_SIZE <
-                                        currentTailIndex - head));
+                                    MAX_SUBQUEUE_SIZE - BLOCK_SIZE < currentTailIndex - head));
                         if (full ||
-                            !(indexInserted =
-                                    insert_block_index_entry<allocMode>(
-                                        idxEntry, currentTailIndex)) ||
-                            (newBlock = this->parent->ConcurrentQueue::
-                                            template requisition_block<
-                                                allocMode>()) == nullptr)
+                            !(indexInserted = insert_block_index_entry<allocMode>(
+                                  idxEntry, currentTailIndex)) ||
+                            (newBlock = this->parent->ConcurrentQueue::template requisition_block<
+                                        allocMode>()) == nullptr)
                         {
                             // Index allocation or block allocation failed; revert any other allocations
                             // and index insertions done so far for this operation
                             if (indexInserted)
                             {
                                 rewind_block_index_tail();
-                                idxEntry->value.store(
-                                    nullptr, std::memory_order_relaxed);
+                                idxEntry->value.store(nullptr, std::memory_order_relaxed);
                             }
-                            currentTailIndex = (startTailIndex - 1) &
-                                ~static_cast<index_t>(BLOCK_SIZE - 1);
-                            for (auto block = firstAllocatedBlock;
-                                 block != nullptr; block = block->next)
+                            currentTailIndex =
+                                (startTailIndex - 1) & ~static_cast<index_t>(BLOCK_SIZE - 1);
+                            for (auto block = firstAllocatedBlock; block != nullptr;
+                                 block = block->next)
                             {
-                                currentTailIndex +=
-                                    static_cast<index_t>(BLOCK_SIZE);
-                                idxEntry = get_block_index_entry_for_index(
-                                    currentTailIndex);
-                                idxEntry->value.store(
-                                    nullptr, std::memory_order_relaxed);
+                                currentTailIndex += static_cast<index_t>(BLOCK_SIZE);
+                                idxEntry = get_block_index_entry_for_index(currentTailIndex);
+                                idxEntry->value.store(nullptr, std::memory_order_relaxed);
                                 rewind_block_index_tail();
                             }
-                            this->parent->add_blocks_to_free_list(
-                                firstAllocatedBlock);
+                            this->parent->add_blocks_to_free_list(firstAllocatedBlock);
                             this->tailBlock = startBlock;
 
                             return false;
@@ -3552,18 +3270,15 @@ namespace pika::concurrency::detail {
 #if MCDBGQ_TRACKMEM
                         newBlock->owner = this;
 #endif
-                        newBlock->ConcurrentQueue::Block::template reset_empty<
-                            implicit_context>();
+                        newBlock->ConcurrentQueue::Block::template reset_empty<implicit_context>();
                         newBlock->next = nullptr;
 
                         // Insert the new block into the index
-                        idxEntry->value.store(
-                            newBlock, std::memory_order_relaxed);
+                        idxEntry->value.store(newBlock, std::memory_order_relaxed);
 
                         // Store the chain of blocks so that we can undo if later allocations fail,
                         // and so that we can find the blocks when we do the actual enqueueing
-                        if ((startTailIndex &
-                                static_cast<index_t>(BLOCK_SIZE - 1)) != 0 ||
+                        if ((startTailIndex & static_cast<index_t>(BLOCK_SIZE - 1)) != 0 ||
                             firstAllocatedBlock != nullptr)
                         {
                             assert(this->tailBlock != nullptr);
@@ -3571,34 +3286,27 @@ namespace pika::concurrency::detail {
                         }
                         this->tailBlock = newBlock;
                         endBlock = newBlock;
-                        firstAllocatedBlock = firstAllocatedBlock == nullptr ?
-                            newBlock :
-                            firstAllocatedBlock;
+                        firstAllocatedBlock =
+                            firstAllocatedBlock == nullptr ? newBlock : firstAllocatedBlock;
                     } while (blockBaseDiff > 0);
                 }
 
                 // Enqueue, one block at a time
-                index_t newTailIndex =
-                    startTailIndex + static_cast<index_t>(count);
+                index_t newTailIndex = startTailIndex + static_cast<index_t>(count);
                 currentTailIndex = startTailIndex;
                 this->tailBlock = startBlock;
-                assert((startTailIndex &
-                           static_cast<index_t>(BLOCK_SIZE - 1)) != 0 ||
+                assert((startTailIndex & static_cast<index_t>(BLOCK_SIZE - 1)) != 0 ||
                     firstAllocatedBlock != nullptr || count == 0);
-                if ((startTailIndex & static_cast<index_t>(BLOCK_SIZE - 1)) ==
-                        0 &&
+                if ((startTailIndex & static_cast<index_t>(BLOCK_SIZE - 1)) == 0 &&
                     firstAllocatedBlock != nullptr)
                 {
                     this->tailBlock = firstAllocatedBlock;
                 }
                 while (true)
                 {
-                    auto stopIndex =
-                        (currentTailIndex &
-                            ~static_cast<index_t>(BLOCK_SIZE - 1)) +
+                    auto stopIndex = (currentTailIndex & ~static_cast<index_t>(BLOCK_SIZE - 1)) +
                         static_cast<index_t>(BLOCK_SIZE);
-                    if (detail::circular_less_than<index_t>(
-                            newTailIndex, stopIndex))
+                    if (detail::circular_less_than<index_t>(newTailIndex, stopIndex))
                     {
                         stopIndex = newTailIndex;
                     }
@@ -3607,8 +3315,7 @@ namespace pika::concurrency::detail {
                     {
                         while (currentTailIndex != stopIndex)
                         {
-                            new ((*this->tailBlock)[currentTailIndex++])
-                                T(*itemFirst++);
+                            new ((*this->tailBlock)[currentTailIndex++]) T(*itemFirst++);
                         }
                     }
                     else
@@ -3617,12 +3324,10 @@ namespace pika::concurrency::detail {
                         {
                             while (currentTailIndex != stopIndex)
                             {
-                                new ((*this->tailBlock)[currentTailIndex]) T(
-                                    detail::nomove_if<(
-                                        bool) !MOODYCAMEL_NOEXCEPT_CTOR(T,
-                                        decltype(*itemFirst),
-                                        new (nullptr) T(detail::deref_noexcept(
-                                            itemFirst)))>::eval(*itemFirst));
+                                new ((*this->tailBlock)[currentTailIndex]) T(detail::nomove_if<(
+                                        bool) !MOODYCAMEL_NOEXCEPT_CTOR(T, decltype(*itemFirst),
+                                        new (nullptr) T(
+                                            detail::deref_noexcept(itemFirst)))>::eval(*itemFirst));
                                 ++currentTailIndex;
                                 ++itemFirst;
                             }
@@ -3635,18 +3340,15 @@ namespace pika::concurrency::detail {
                             if (!detail::is_trivially_destructible<T>::value)
                             {
                                 auto block = startBlock;
-                                if ((startTailIndex &
-                                        static_cast<index_t>(BLOCK_SIZE - 1)) ==
-                                    0)
+                                if ((startTailIndex & static_cast<index_t>(BLOCK_SIZE - 1)) == 0)
                                 {
                                     block = firstAllocatedBlock;
                                 }
                                 currentTailIndex = startTailIndex;
                                 while (true)
                                 {
-                                    stopIndex = (currentTailIndex &
-                                                    ~static_cast<index_t>(
-                                                        BLOCK_SIZE - 1)) +
+                                    stopIndex =
+                                        (currentTailIndex & ~static_cast<index_t>(BLOCK_SIZE - 1)) +
                                         static_cast<index_t>(BLOCK_SIZE);
                                     if (detail::circular_less_than<index_t>(
                                             constructedStopIndex, stopIndex))
@@ -3665,21 +3367,17 @@ namespace pika::concurrency::detail {
                                 }
                             }
 
-                            currentTailIndex = (startTailIndex - 1) &
-                                ~static_cast<index_t>(BLOCK_SIZE - 1);
-                            for (auto block = firstAllocatedBlock;
-                                 block != nullptr; block = block->next)
+                            currentTailIndex =
+                                (startTailIndex - 1) & ~static_cast<index_t>(BLOCK_SIZE - 1);
+                            for (auto block = firstAllocatedBlock; block != nullptr;
+                                 block = block->next)
                             {
-                                currentTailIndex +=
-                                    static_cast<index_t>(BLOCK_SIZE);
-                                auto idxEntry = get_block_index_entry_for_index(
-                                    currentTailIndex);
-                                idxEntry->value.store(
-                                    nullptr, std::memory_order_relaxed);
+                                currentTailIndex += static_cast<index_t>(BLOCK_SIZE);
+                                auto idxEntry = get_block_index_entry_for_index(currentTailIndex);
+                                idxEntry->value.store(nullptr, std::memory_order_relaxed);
                                 rewind_block_index_tail();
                             }
-                            this->parent->add_blocks_to_free_list(
-                                firstAllocatedBlock);
+                            this->parent->add_blocks_to_free_list(firstAllocatedBlock);
                             this->tailBlock = startBlock;
                             MOODYCAMEL_RETHROW;
                         }
@@ -3700,63 +3398,50 @@ namespace pika::concurrency::detail {
             size_t dequeue_bulk(It& itemFirst, size_t max)
             {
                 auto tail = this->tailIndex.load(std::memory_order_relaxed);
-                auto overcommit =
-                    this->dequeueOvercommit.load(std::memory_order_relaxed);
+                auto overcommit = this->dequeueOvercommit.load(std::memory_order_relaxed);
                 auto desiredCount = static_cast<size_t>(tail -
-                    (this->dequeueOptimisticCount.load(
-                         std::memory_order_relaxed) -
-                        overcommit));
+                    (this->dequeueOptimisticCount.load(std::memory_order_relaxed) - overcommit));
                 if (detail::circular_less_than<size_t>(0, desiredCount))
                 {
                     desiredCount = desiredCount < max ? desiredCount : max;
                     std::atomic_thread_fence(std::memory_order_acquire);
 
-                    auto myDequeueCount =
-                        this->dequeueOptimisticCount.fetch_add(
-                            desiredCount, std::memory_order_relaxed);
+                    auto myDequeueCount = this->dequeueOptimisticCount.fetch_add(
+                        desiredCount, std::memory_order_relaxed);
 
                     tail = this->tailIndex.load(std::memory_order_acquire);
-                    auto actualCount = static_cast<size_t>(
-                        tail - (myDequeueCount - overcommit));
+                    auto actualCount = static_cast<size_t>(tail - (myDequeueCount - overcommit));
                     if (detail::circular_less_than<size_t>(0, actualCount))
                     {
-                        actualCount = desiredCount < actualCount ?
-                            desiredCount :
-                            actualCount;
+                        actualCount = desiredCount < actualCount ? desiredCount : actualCount;
                         if (actualCount < desiredCount)
                         {
                             this->dequeueOvercommit.fetch_add(
-                                desiredCount - actualCount,
-                                std::memory_order_release);
+                                desiredCount - actualCount, std::memory_order_release);
                         }
 
                         // Get the first index. Note that since there's guaranteed to be at least actualCount elements, this
                         // will never exceed tail.
-                        auto firstIndex = this->headIndex.fetch_add(
-                            actualCount, std::memory_order_acq_rel);
+                        auto firstIndex =
+                            this->headIndex.fetch_add(actualCount, std::memory_order_acq_rel);
 
                         // Iterate the blocks and dequeue
                         auto index = firstIndex;
                         BlockIndexHeader* localBlockIndex;
-                        auto indexIndex = get_block_index_index_for_index(
-                            index, localBlockIndex);
+                        auto indexIndex = get_block_index_index_for_index(index, localBlockIndex);
                         do
                         {
                             auto blockStartIndex = index;
-                            auto endIndex =
-                                (index &
-                                    ~static_cast<index_t>(BLOCK_SIZE - 1)) +
+                            auto endIndex = (index & ~static_cast<index_t>(BLOCK_SIZE - 1)) +
                                 static_cast<index_t>(BLOCK_SIZE);
                             endIndex =
-                                detail::circular_less_than<index_t>(firstIndex +
-                                        static_cast<index_t>(actualCount),
-                                    endIndex) ?
+                                detail::circular_less_than<index_t>(
+                                    firstIndex + static_cast<index_t>(actualCount), endIndex) ?
                                 firstIndex + static_cast<index_t>(actualCount) :
                                 endIndex;
 
                             auto entry = localBlockIndex->index[indexIndex];
-                            auto block =
-                                entry->value.load(std::memory_order_relaxed);
+                            auto block = entry->value.load(std::memory_order_relaxed);
                             if (MOODYCAMEL_NOEXCEPT_ASSIGN(T, T&&,
                                     detail::deref_noexcept(itemFirst) =
                                         PIKA_MOVE((*(*block)[index]))))
@@ -3786,59 +3471,42 @@ namespace pika::concurrency::detail {
                                 {
                                     do
                                     {
-                                        entry =
-                                            localBlockIndex->index[indexIndex];
-                                        block = entry->value.load(
-                                            std::memory_order_relaxed);
+                                        entry = localBlockIndex->index[indexIndex];
+                                        block = entry->value.load(std::memory_order_relaxed);
                                         while (index != endIndex)
                                         {
                                             (*block)[index++]->~T();
                                         }
 
-                                        if (block->ConcurrentQueue::Block::
-                                                template set_many_empty<
-                                                    implicit_context>(
-                                                    blockStartIndex,
-                                                    static_cast<size_t>(
-                                                        endIndex -
-                                                        blockStartIndex)))
+                                        if (block->ConcurrentQueue::Block::template set_many_empty<
+                                                implicit_context>(blockStartIndex,
+                                                static_cast<size_t>(endIndex - blockStartIndex)))
                                         {
 #if MCDBGQ_NOLOCKFREE_IMPLICITPRODBLOCKINDEX
                                             debug::DebugLock lock(mutex);
 #endif
-                                            entry->value.store(nullptr,
-                                                std::memory_order_relaxed);
-                                            this->parent
-                                                ->add_block_to_free_list(block);
+                                            entry->value.store(nullptr, std::memory_order_relaxed);
+                                            this->parent->add_block_to_free_list(block);
                                         }
-                                        indexIndex = (indexIndex + 1) &
-                                            (localBlockIndex->capacity - 1);
+                                        indexIndex =
+                                            (indexIndex + 1) & (localBlockIndex->capacity - 1);
 
                                         blockStartIndex = index;
-                                        endIndex = (index &
-                                                       ~static_cast<index_t>(
-                                                           BLOCK_SIZE - 1)) +
+                                        endIndex = (index & ~static_cast<index_t>(BLOCK_SIZE - 1)) +
                                             static_cast<index_t>(BLOCK_SIZE);
-                                        endIndex =
-                                            detail::circular_less_than<index_t>(
-                                                firstIndex +
-                                                    static_cast<index_t>(
-                                                        actualCount),
-                                                endIndex) ?
-                                            firstIndex +
-                                                static_cast<index_t>(
-                                                    actualCount) :
+                                        endIndex = detail::circular_less_than<index_t>(firstIndex +
+                                                           static_cast<index_t>(actualCount),
+                                                       endIndex) ?
+                                            firstIndex + static_cast<index_t>(actualCount) :
                                             endIndex;
                                     } while (index != firstIndex + actualCount);
 
                                     MOODYCAMEL_RETHROW;
                                 }
                             }
-                            if (block->ConcurrentQueue::Block::
-                                    template set_many_empty<implicit_context>(
-                                        blockStartIndex,
-                                        static_cast<size_t>(
-                                            endIndex - blockStartIndex)))
+                            if (block->ConcurrentQueue::Block::template set_many_empty<
+                                    implicit_context>(blockStartIndex,
+                                    static_cast<size_t>(endIndex - blockStartIndex)))
                             {
                                 {
 #if MCDBGQ_NOLOCKFREE_IMPLICITPRODBLOCKINDEX
@@ -3846,22 +3514,19 @@ namespace pika::concurrency::detail {
 #endif
                                     // Note that the set_many_empty above did a release, meaning that anybody who acquires the block
                                     // we're about to free can use it safely since our writes (and reads!) will have happened-before then.
-                                    entry->value.store(
-                                        nullptr, std::memory_order_relaxed);
+                                    entry->value.store(nullptr, std::memory_order_relaxed);
                                 }
                                 this->parent->add_block_to_free_list(
                                     block);    // releases the above store
                             }
-                            indexIndex = (indexIndex + 1) &
-                                (localBlockIndex->capacity - 1);
+                            indexIndex = (indexIndex + 1) & (localBlockIndex->capacity - 1);
                         } while (index != firstIndex + actualCount);
 
                         return actualCount;
                     }
                     else
                     {
-                        this->dequeueOvercommit.fetch_add(
-                            desiredCount, std::memory_order_release);
+                        this->dequeueOvercommit.fetch_add(desiredCount, std::memory_order_release);
                     }
                 }
 
@@ -3888,28 +3553,23 @@ namespace pika::concurrency::detail {
             };
 
             template <AllocationMode allocMode>
-            inline bool insert_block_index_entry(
-                BlockIndexEntry*& idxEntry, index_t blockStartIndex)
+            inline bool
+            insert_block_index_entry(BlockIndexEntry*& idxEntry, index_t blockStartIndex)
             {
-                auto localBlockIndex = blockIndex.load(std::
-                        memory_order_relaxed);    // We're the only writer thread, relaxed is OK
+                auto localBlockIndex = blockIndex.load(
+                    std::memory_order_relaxed);    // We're the only writer thread, relaxed is OK
                 if (localBlockIndex == nullptr)
                 {
                     return false;    // this can happen if new_block_index failed in the constructor
                 }
-                auto newTail =
-                    (localBlockIndex->tail.load(std::memory_order_relaxed) +
-                        1) &
+                auto newTail = (localBlockIndex->tail.load(std::memory_order_relaxed) + 1) &
                     (localBlockIndex->capacity - 1);
                 idxEntry = localBlockIndex->index[newTail];
-                if (idxEntry->key.load(std::memory_order_relaxed) ==
-                        INVALID_BLOCK_BASE ||
+                if (idxEntry->key.load(std::memory_order_relaxed) == INVALID_BLOCK_BASE ||
                     idxEntry->value.load(std::memory_order_relaxed) == nullptr)
                 {
-                    idxEntry->key.store(
-                        blockStartIndex, std::memory_order_relaxed);
-                    localBlockIndex->tail.store(
-                        newTail, std::memory_order_release);
+                    idxEntry->key.store(blockStartIndex, std::memory_order_relaxed);
+                    localBlockIndex->tail.store(newTail, std::memory_order_release);
                     return true;
                 }
 
@@ -3919,13 +3579,10 @@ namespace pika::concurrency::detail {
                     return false;
                 }
                 localBlockIndex = blockIndex.load(std::memory_order_relaxed);
-                newTail =
-                    (localBlockIndex->tail.load(std::memory_order_relaxed) +
-                        1) &
+                newTail = (localBlockIndex->tail.load(std::memory_order_relaxed) + 1) &
                     (localBlockIndex->capacity - 1);
                 idxEntry = localBlockIndex->index[newTail];
-                assert(idxEntry->key.load(std::memory_order_relaxed) ==
-                    INVALID_BLOCK_BASE);
+                assert(idxEntry->key.load(std::memory_order_relaxed) == INVALID_BLOCK_BASE);
                 idxEntry->key.store(blockStartIndex, std::memory_order_relaxed);
                 localBlockIndex->tail.store(newTail, std::memory_order_release);
                 return true;
@@ -3933,21 +3590,17 @@ namespace pika::concurrency::detail {
 
             inline void rewind_block_index_tail()
             {
-                auto localBlockIndex =
-                    blockIndex.load(std::memory_order_relaxed);
+                auto localBlockIndex = blockIndex.load(std::memory_order_relaxed);
                 localBlockIndex->tail.store(
-                    (localBlockIndex->tail.load(std::memory_order_relaxed) -
-                        1) &
+                    (localBlockIndex->tail.load(std::memory_order_relaxed) - 1) &
                         (localBlockIndex->capacity - 1),
                     std::memory_order_relaxed);
             }
 
-            inline BlockIndexEntry* get_block_index_entry_for_index(
-                index_t index) const
+            inline BlockIndexEntry* get_block_index_entry_for_index(index_t index) const
             {
                 BlockIndexHeader* localBlockIndex;
-                auto idx =
-                    get_block_index_index_for_index(index, localBlockIndex);
+                auto idx = get_block_index_index_for_index(index, localBlockIndex);
                 return localBlockIndex->index[idx];
             }
 
@@ -3959,22 +3612,17 @@ namespace pika::concurrency::detail {
 #endif
                 index &= ~static_cast<index_t>(BLOCK_SIZE - 1);
                 localBlockIndex = blockIndex.load(std::memory_order_acquire);
-                auto tail =
-                    localBlockIndex->tail.load(std::memory_order_acquire);
-                auto tailBase = localBlockIndex->index[tail]->key.load(
-                    std::memory_order_relaxed);
+                auto tail = localBlockIndex->tail.load(std::memory_order_acquire);
+                auto tailBase = localBlockIndex->index[tail]->key.load(std::memory_order_relaxed);
                 assert(tailBase != INVALID_BLOCK_BASE);
                 // Note: Must use division instead of shift because the index may wrap around, causing a negative
                 // offset, whose negativity we want to preserve
                 auto offset = static_cast<size_t>(
-                    static_cast<typename std::make_signed<index_t>::type>(
-                        index - tailBase) /
+                    static_cast<typename std::make_signed<index_t>::type>(index - tailBase) /
                     BLOCK_SIZE);
                 size_t idx = (tail + offset) & (localBlockIndex->capacity - 1);
-                assert(localBlockIndex->index[idx]->key.load(
-                           std::memory_order_relaxed) == index &&
-                    localBlockIndex->index[idx]->value.load(
-                        std::memory_order_relaxed) != nullptr);
+                assert(localBlockIndex->index[idx]->key.load(std::memory_order_relaxed) == index &&
+                    localBlockIndex->index[idx]->value.load(std::memory_order_relaxed) != nullptr);
                 return idx;
             }
 
@@ -3982,15 +3630,13 @@ namespace pika::concurrency::detail {
             {
                 auto prev = blockIndex.load(std::memory_order_relaxed);
                 size_t prevCapacity = prev == nullptr ? 0 : prev->capacity;
-                auto entryCount =
-                    prev == nullptr ? nextBlockIndexCapacity : prevCapacity;
-                auto raw = static_cast<char*>(
-                    (Traits::malloc)(sizeof(BlockIndexHeader) +
-                        std::alignment_of<BlockIndexEntry>::value - 1 +
-                        sizeof(BlockIndexEntry) * entryCount +
-                        // NOLINTNEXTLINE(bugprone-sizeof-expression)
-                        std::alignment_of<BlockIndexEntry*>::value - 1 +
-                        sizeof(BlockIndexEntry*) * nextBlockIndexCapacity));
+                auto entryCount = prev == nullptr ? nextBlockIndexCapacity : prevCapacity;
+                auto raw = static_cast<char*>((Traits::malloc)(sizeof(BlockIndexHeader) +
+                    std::alignment_of<BlockIndexEntry>::value - 1 +
+                    sizeof(BlockIndexEntry) * entryCount +
+                    // NOLINTNEXTLINE(bugprone-sizeof-expression)
+                    std::alignment_of<BlockIndexEntry*>::value - 1 +
+                    sizeof(BlockIndexEntry*) * nextBlockIndexCapacity));
                 if (raw == nullptr)
                 {
                     return false;
@@ -3998,12 +3644,10 @@ namespace pika::concurrency::detail {
 
                 auto header = new (raw) BlockIndexHeader;
                 auto entries = reinterpret_cast<BlockIndexEntry*>(
-                    detail::align_for<BlockIndexEntry>(
-                        raw + sizeof(BlockIndexHeader)));
-                auto index = reinterpret_cast<BlockIndexEntry**>(
-                    detail::align_for<BlockIndexEntry*>(
-                        reinterpret_cast<char*>(entries) +
-                        sizeof(BlockIndexEntry) * entryCount));
+                    detail::align_for<BlockIndexEntry>(raw + sizeof(BlockIndexHeader)));
+                auto index =
+                    reinterpret_cast<BlockIndexEntry**>(detail::align_for<BlockIndexEntry*>(
+                        reinterpret_cast<char*>(entries) + sizeof(BlockIndexEntry) * entryCount));
                 if (prev != nullptr)
                 {
                     auto prevTail = prev->tail.load(std::memory_order_relaxed);
@@ -4019,8 +3663,7 @@ namespace pika::concurrency::detail {
                 for (size_t i = 0; i != entryCount; ++i)
                 {
                     new (entries + i) BlockIndexEntry;
-                    entries[i].key.store(
-                        INVALID_BLOCK_BASE, std::memory_order_relaxed);
+                    entries[i].key.store(INVALID_BLOCK_BASE, std::memory_order_relaxed);
                     index[prevCapacity + i] = entries + i;
                 }
                 header->prev = prev;
@@ -4028,8 +3671,7 @@ namespace pika::concurrency::detail {
                 header->index = index;
                 header->capacity = nextBlockIndexCapacity;
                 header->tail.store(
-                    (prevCapacity - 1) & (nextBlockIndexCapacity - 1),
-                    std::memory_order_relaxed);
+                    (prevCapacity - 1) & (nextBlockIndexCapacity - 1), std::memory_order_relaxed);
 
                 blockIndex.store(header, std::memory_order_release);
 
@@ -4090,17 +3732,14 @@ namespace pika::concurrency::detail {
 
         inline Block* try_get_block_from_initial_pool()
         {
-            if (initialBlockPoolIndex.load(std::memory_order_relaxed) >=
-                initialBlockPoolSize)
+            if (initialBlockPoolIndex.load(std::memory_order_relaxed) >= initialBlockPoolSize)
             {
                 return nullptr;
             }
 
-            auto index =
-                initialBlockPoolIndex.fetch_add(1, std::memory_order_relaxed);
+            auto index = initialBlockPoolIndex.fetch_add(1, std::memory_order_relaxed);
 
-            return index < initialBlockPoolSize ? (initialBlockPool + index) :
-                                                  nullptr;
+            return index < initialBlockPoolSize ? (initialBlockPool + index) : nullptr;
         }
 
         inline void add_block_to_free_list(Block* block)
@@ -4184,12 +3823,10 @@ namespace pika::concurrency::detail {
                     block = block->freeListNext.load(std::memory_order_relaxed);
                 }
 
-                for (auto ptr =
-                         q->producerListTail.load(std::memory_order_acquire);
-                     ptr != nullptr; ptr = ptr->next_prod())
+                for (auto ptr = q->producerListTail.load(std::memory_order_acquire); ptr != nullptr;
+                     ptr = ptr->next_prod())
                 {
-                    bool implicit =
-                        dynamic_cast<ImplicitProducer*>(ptr) != nullptr;
+                    bool implicit = dynamic_cast<ImplicitProducer*>(ptr) != nullptr;
                     stats.implicitProducers += implicit ? 1 : 0;
                     stats.explicitProducers += implicit ? 0 : 1;
 
@@ -4197,41 +3834,33 @@ namespace pika::concurrency::detail {
                     {
                         auto prod = static_cast<ImplicitProducer*>(ptr);
                         stats.queueClassBytes += sizeof(ImplicitProducer);
-                        auto head =
-                            prod->headIndex.load(std::memory_order_relaxed);
-                        auto tail =
-                            prod->tailIndex.load(std::memory_order_relaxed);
-                        auto hash =
-                            prod->blockIndex.load(std::memory_order_relaxed);
+                        auto head = prod->headIndex.load(std::memory_order_relaxed);
+                        auto tail = prod->tailIndex.load(std::memory_order_relaxed);
+                        auto hash = prod->blockIndex.load(std::memory_order_relaxed);
                         if (hash != nullptr)
                         {
                             for (size_t i = 0; i != hash->capacity; ++i)
                             {
-                                if (hash->index[i]->key.load(
-                                        std::memory_order_relaxed) !=
+                                if (hash->index[i]->key.load(std::memory_order_relaxed) !=
                                         ImplicitProducer::INVALID_BLOCK_BASE &&
-                                    hash->index[i]->value.load(
-                                        std::memory_order_relaxed) != nullptr)
+                                    hash->index[i]->value.load(std::memory_order_relaxed) !=
+                                        nullptr)
                                 {
                                     ++stats.allocatedBlocks;
                                     ++stats.ownedBlocksImplicit;
                                 }
                             }
-                            stats.implicitBlockIndexBytes += hash->capacity *
-                                sizeof(
-                                    typename ImplicitProducer::BlockIndexEntry);
+                            stats.implicitBlockIndexBytes +=
+                                hash->capacity * sizeof(typename ImplicitProducer::BlockIndexEntry);
                             for (; hash != nullptr; hash = hash->prev)
                             {
                                 stats.implicitBlockIndexBytes +=
-                                    sizeof(typename ImplicitProducer::
-                                            BlockIndexHeader) +
+                                    sizeof(typename ImplicitProducer::BlockIndexHeader) +
                                     hash->capacity *
-                                        sizeof(typename ImplicitProducer::
-                                                BlockIndexEntry*);
+                                        sizeof(typename ImplicitProducer::BlockIndexEntry*);
                             }
                         }
-                        for (; detail::circular_less_than<index_t>(head, tail);
-                             head += BLOCK_SIZE)
+                        for (; detail::circular_less_than<index_t>(head, tail); head += BLOCK_SIZE)
                         {
                             //auto block = prod->get_block_index_entry_for_index(head);
                             ++stats.usedBlocks;
@@ -4249,43 +3878,34 @@ namespace pika::concurrency::detail {
                             do
                             {
                                 ++stats.allocatedBlocks;
-                                if (!block->ConcurrentQueue::Block::
-                                         template is_empty<
-                                             explicit_context>() ||
+                                if (!block->ConcurrentQueue::Block::template is_empty<
+                                        explicit_context>() ||
                                     wasNonEmpty)
                                 {
                                     ++stats.usedBlocks;
-                                    wasNonEmpty =
-                                        wasNonEmpty || block != tailBlock;
+                                    wasNonEmpty = wasNonEmpty || block != tailBlock;
                                 }
                                 ++stats.ownedBlocksExplicit;
                                 block = block->next;
                             } while (block != tailBlock);
                         }
-                        auto index =
-                            prod->blockIndex.load(std::memory_order_relaxed);
+                        auto index = prod->blockIndex.load(std::memory_order_relaxed);
                         while (index != nullptr)
                         {
                             stats.explicitBlockIndexBytes +=
-                                sizeof(typename ExplicitProducer::
-                                        BlockIndexHeader) +
-                                index->size *
-                                    sizeof(typename ExplicitProducer::
-                                            BlockIndexEntry);
-                            index = static_cast<
-                                typename ExplicitProducer::BlockIndexHeader*>(
+                                sizeof(typename ExplicitProducer::BlockIndexHeader) +
+                                index->size * sizeof(typename ExplicitProducer::BlockIndexEntry);
+                            index = static_cast<typename ExplicitProducer::BlockIndexHeader*>(
                                 index->prev);
                         }
                     }
                 }
 
-                auto freeOnInitialPool =
-                    q->initialBlockPoolIndex.load(std::memory_order_relaxed) >=
+                auto freeOnInitialPool = q->initialBlockPoolIndex.load(std::memory_order_relaxed) >=
                         q->initialBlockPoolSize ?
                     0 :
                     q->initialBlockPoolSize -
-                        q->initialBlockPoolIndex.load(
-                            std::memory_order_relaxed);
+                        q->initialBlockPoolIndex.load(std::memory_order_relaxed);
                 stats.allocatedBlocks += freeOnInitialPool;
                 stats.freeBlocks += freeOnInitialPool;
 
@@ -4316,18 +3936,16 @@ namespace pika::concurrency::detail {
             return recycle_or_create_producer(isExplicit, recycled);
         }
 
-        ProducerBase* recycle_or_create_producer(
-            bool isExplicit, bool& recycled)
+        ProducerBase* recycle_or_create_producer(bool isExplicit, bool& recycled)
         {
 #if MCDBGQ_NOLOCKFREE_IMPLICITPRODHASH
             debug::DebugLock lock(implicitProdMutex);
 #endif
             // Try to re-use one first
-            for (auto ptr = producerListTail.load(std::memory_order_acquire);
-                 ptr != nullptr; ptr = ptr->next_prod())
+            for (auto ptr = producerListTail.load(std::memory_order_acquire); ptr != nullptr;
+                 ptr = ptr->next_prod())
             {
-                if (ptr->inactive.load(std::memory_order_relaxed) &&
-                    ptr->isExplicit == isExplicit)
+                if (ptr->inactive.load(std::memory_order_relaxed) && ptr->isExplicit == isExplicit)
                 {
                     bool expected = true;
                     if (ptr->inactive.compare_exchange_strong(expected,
@@ -4362,33 +3980,31 @@ namespace pika::concurrency::detail {
             do
             {
                 producer->next = prevTail;
-            } while (!producerListTail.compare_exchange_weak(prevTail, producer,
-                std::memory_order_release, std::memory_order_relaxed));
+            } while (!producerListTail.compare_exchange_weak(
+                prevTail, producer, std::memory_order_release, std::memory_order_relaxed));
 
 #ifdef MOODYCAMEL_QUEUE_INTERNAL_DEBUG
             if (producer->isExplicit)
             {
-                auto prevTailExplicit =
-                    explicitProducers.load(std::memory_order_relaxed);
+                auto prevTailExplicit = explicitProducers.load(std::memory_order_relaxed);
                 do
                 {
-                    static_cast<ExplicitProducer*>(producer)
-                        ->nextExplicitProducer = prevTailExplicit;
-                } while (!explicitProducers.compare_exchange_weak(
-                    prevTailExplicit, static_cast<ExplicitProducer*>(producer),
-                    std::memory_order_release, std::memory_order_relaxed));
+                    static_cast<ExplicitProducer*>(producer)->nextExplicitProducer =
+                        prevTailExplicit;
+                } while (!explicitProducers.compare_exchange_weak(prevTailExplicit,
+                    static_cast<ExplicitProducer*>(producer), std::memory_order_release,
+                    std::memory_order_relaxed));
             }
             else
             {
-                auto prevTailImplicit =
-                    implicitProducers.load(std::memory_order_relaxed);
+                auto prevTailImplicit = implicitProducers.load(std::memory_order_relaxed);
                 do
                 {
-                    static_cast<ImplicitProducer*>(producer)
-                        ->nextImplicitProducer = prevTailImplicit;
-                } while (!implicitProducers.compare_exchange_weak(
-                    prevTailImplicit, static_cast<ImplicitProducer*>(producer),
-                    std::memory_order_release, std::memory_order_relaxed));
+                    static_cast<ImplicitProducer*>(producer)->nextImplicitProducer =
+                        prevTailImplicit;
+                } while (!implicitProducers.compare_exchange_weak(prevTailImplicit,
+                    static_cast<ImplicitProducer*>(producer), std::memory_order_release,
+                    std::memory_order_relaxed));
             }
 #endif
 
@@ -4400,8 +4016,8 @@ namespace pika::concurrency::detail {
             // After another instance is moved-into/swapped-with this one, all the
             // producers we stole still think their parents are the other queue.
             // So fix them up!
-            for (auto ptr = producerListTail.load(std::memory_order_relaxed);
-                 ptr != nullptr; ptr = ptr->next_prod())
+            for (auto ptr = producerListTail.load(std::memory_order_relaxed); ptr != nullptr;
+                 ptr = ptr->next_prod())
             {
                 ptr->parent = this;
             }
@@ -4424,13 +4040,11 @@ namespace pika::concurrency::detail {
 
             ImplicitProducerKVP(ImplicitProducerKVP&& other) MOODYCAMEL_NOEXCEPT
             {
-                key.store(other.key.load(std::memory_order_relaxed),
-                    std::memory_order_relaxed);
+                key.store(other.key.load(std::memory_order_relaxed), std::memory_order_relaxed);
                 value = other.value;
             }
 
-            inline ImplicitProducerKVP& operator=(
-                ImplicitProducerKVP&& other) MOODYCAMEL_NOEXCEPT
+            inline ImplicitProducerKVP& operator=(ImplicitProducerKVP&& other) MOODYCAMEL_NOEXCEPT
             {
                 swap(other);
                 return *this;
@@ -4447,10 +4061,9 @@ namespace pika::concurrency::detail {
         };
 
         template <typename XT, typename XTraits>
-        friend void pika::concurrency::detail::swap(
-            typename ConcurrentQueue<XT, XTraits>::ImplicitProducerKVP&,
-            typename ConcurrentQueue<XT, XTraits>::ImplicitProducerKVP&)
-            MOODYCAMEL_NOEXCEPT;
+        friend void
+        pika::concurrency::detail::swap(typename ConcurrentQueue<XT, XTraits>::ImplicitProducerKVP&,
+            typename ConcurrentQueue<XT, XTraits>::ImplicitProducerKVP&) MOODYCAMEL_NOEXCEPT;
 
         struct ImplicitProducerHash
         {
@@ -4483,31 +4096,24 @@ namespace pika::concurrency::detail {
                 return;
 
             // Swap (assumes our implicit producer hash is initialized)
-            initialImplicitProducerHashEntries.swap(
-                other.initialImplicitProducerHashEntries);
-            initialImplicitProducerHash.entries =
-                &initialImplicitProducerHashEntries[0];
+            initialImplicitProducerHashEntries.swap(other.initialImplicitProducerHashEntries);
+            initialImplicitProducerHash.entries = &initialImplicitProducerHashEntries[0];
             other.initialImplicitProducerHash.entries =
                 &other.initialImplicitProducerHashEntries[0];
 
-            detail::swap_relaxed(
-                implicitProducerHashCount, other.implicitProducerHashCount);
+            detail::swap_relaxed(implicitProducerHashCount, other.implicitProducerHashCount);
 
-            detail::swap_relaxed(
-                implicitProducerHash, other.implicitProducerHash);
+            detail::swap_relaxed(implicitProducerHash, other.implicitProducerHash);
             if (implicitProducerHash.load(std::memory_order_relaxed) ==
                 &other.initialImplicitProducerHash)
             {
-                implicitProducerHash.store(
-                    &initialImplicitProducerHash, std::memory_order_relaxed);
+                implicitProducerHash.store(&initialImplicitProducerHash, std::memory_order_relaxed);
             }
             else
             {
                 ImplicitProducerHash* hash;
-                for (hash =
-                         implicitProducerHash.load(std::memory_order_relaxed);
-                     hash->prev != &other.initialImplicitProducerHash;
-                     hash = hash->prev)
+                for (hash = implicitProducerHash.load(std::memory_order_relaxed);
+                     hash->prev != &other.initialImplicitProducerHash; hash = hash->prev)
                 {
                     continue;
                 }
@@ -4517,16 +4123,13 @@ namespace pika::concurrency::detail {
                 &initialImplicitProducerHash)
             {
                 other.implicitProducerHash.store(
-                    &other.initialImplicitProducerHash,
-                    std::memory_order_relaxed);
+                    &other.initialImplicitProducerHash, std::memory_order_relaxed);
             }
             else
             {
                 ImplicitProducerHash* hash;
-                for (hash = other.implicitProducerHash.load(
-                         std::memory_order_relaxed);
-                     hash->prev != &initialImplicitProducerHash;
-                     hash = hash->prev)
+                for (hash = other.implicitProducerHash.load(std::memory_order_relaxed);
+                     hash->prev != &initialImplicitProducerHash; hash = hash->prev)
                 {
                     continue;
                 }
@@ -4554,8 +4157,7 @@ namespace pika::concurrency::detail {
             auto id = detail::thread_id();
             auto hashedId = detail::hash_thread_id(id);
 
-            auto mainHash =
-                implicitProducerHash.load(std::memory_order_acquire);
+            auto mainHash = implicitProducerHash.load(std::memory_order_acquire);
             for (auto hash = mainHash; hash != nullptr; hash = hash->prev)
             {
                 // Look for the id in this hash
@@ -4564,8 +4166,7 @@ namespace pika::concurrency::detail {
                 {    // Not an infinite loop because at least one slot is free in the hash table
                     index &= hash->capacity - 1;
 
-                    auto probedKey = hash->entries[index].key.load(
-                        std::memory_order_relaxed);
+                    auto probedKey = hash->entries[index].key.load(std::memory_order_relaxed);
                     if (probedKey == id)
                     {
                         // Found it! If we had to search several hashes deep, though, we should lazily add it
@@ -4580,29 +4181,25 @@ namespace pika::concurrency::detail {
                             while (true)
                             {
                                 index &= mainHash->capacity - 1;
-                                probedKey = mainHash->entries[index].key.load(
-                                    std::memory_order_relaxed);
+                                probedKey =
+                                    mainHash->entries[index].key.load(std::memory_order_relaxed);
                                 auto empty = detail::invalid_thread_id;
 #ifdef MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED
                                 auto reusable = detail::invalid_thread_id2;
                                 if ((probedKey == empty &&
-                                        mainHash->entries[index]
-                                            .key.compare_exchange_strong(empty,
-                                                id, std::memory_order_relaxed,
-                                                std::memory_order_relaxed)) ||
+                                        mainHash->entries[index].key.compare_exchange_strong(empty,
+                                            id, std::memory_order_relaxed,
+                                            std::memory_order_relaxed)) ||
                                     (probedKey == reusable &&
-                                        mainHash->entries[index]
-                                            .key.compare_exchange_strong(
-                                                reusable, id,
-                                                std::memory_order_acquire,
-                                                std::memory_order_acquire)))
+                                        mainHash->entries[index].key.compare_exchange_strong(
+                                            reusable, id, std::memory_order_acquire,
+                                            std::memory_order_acquire)))
                                 {
 #else
                                 if ((probedKey == empty &&
-                                        mainHash->entries[index]
-                                            .key.compare_exchange_strong(empty,
-                                                id, std::memory_order_relaxed,
-                                                std::memory_order_relaxed)))
+                                        mainHash->entries[index].key.compare_exchange_strong(empty,
+                                            id, std::memory_order_relaxed,
+                                            std::memory_order_relaxed)))
                                 {
 #endif
                                     mainHash->entries[index].value = value;
@@ -4623,21 +4220,17 @@ namespace pika::concurrency::detail {
             }
 
             // Insert!
-            auto newCount = 1 +
-                implicitProducerHashCount.fetch_add(
-                    1, std::memory_order_relaxed);
+            auto newCount = 1 + implicitProducerHashCount.fetch_add(1, std::memory_order_relaxed);
             while (true)
             {
                 if (newCount >= (mainHash->capacity >> 1) &&
-                    !implicitProducerHashResizeInProgress.test_and_set(
-                        std::memory_order_acquire))
+                    !implicitProducerHashResizeInProgress.test_and_set(std::memory_order_acquire))
                 {
                     // We've acquired the resize lock, try to allocate a bigger hash table.
                     // Note the acquire fence synchronizes with the release fence at the end of this block, and hence when
                     // we reload implicitProducerHash it must be the most recent version (it only gets changed within this
                     // locked block).
-                    mainHash =
-                        implicitProducerHash.load(std::memory_order_acquire);
+                    mainHash = implicitProducerHash.load(std::memory_order_acquire);
                     if (newCount >= (mainHash->capacity >> 1))
                     {
                         auto newCapacity = mainHash->capacity << 1;
@@ -4645,104 +4238,86 @@ namespace pika::concurrency::detail {
                         {
                             newCapacity <<= 1;
                         }
-                        auto raw = static_cast<char*>(
-                            (Traits::malloc)(sizeof(ImplicitProducerHash) +
-                                std::alignment_of<ImplicitProducerKVP>::value -
-                                1 + sizeof(ImplicitProducerKVP) * newCapacity));
+                        auto raw =
+                            static_cast<char*>((Traits::malloc)(sizeof(ImplicitProducerHash) +
+                                std::alignment_of<ImplicitProducerKVP>::value - 1 +
+                                sizeof(ImplicitProducerKVP) * newCapacity));
                         if (raw == nullptr)
                         {
                             // Allocation failed
-                            implicitProducerHashCount.fetch_sub(
-                                1, std::memory_order_relaxed);
-                            implicitProducerHashResizeInProgress.clear(
-                                std::memory_order_relaxed);
+                            implicitProducerHashCount.fetch_sub(1, std::memory_order_relaxed);
+                            implicitProducerHashResizeInProgress.clear(std::memory_order_relaxed);
                             return nullptr;
                         }
 
                         auto newHash = new (raw) ImplicitProducerHash;
                         newHash->capacity = newCapacity;
-                        newHash->entries =
-                            reinterpret_cast<ImplicitProducerKVP*>(
-                                detail::align_for<ImplicitProducerKVP>(
-                                    raw + sizeof(ImplicitProducerHash)));
+                        newHash->entries = reinterpret_cast<ImplicitProducerKVP*>(
+                            detail::align_for<ImplicitProducerKVP>(
+                                raw + sizeof(ImplicitProducerHash)));
                         for (size_t i = 0; i != newCapacity; ++i)
                         {
                             new (newHash->entries + i) ImplicitProducerKVP;
                             newHash->entries[i].key.store(
-                                detail::invalid_thread_id,
-                                std::memory_order_relaxed);
+                                detail::invalid_thread_id, std::memory_order_relaxed);
                         }
                         newHash->prev = mainHash;
-                        implicitProducerHash.store(
-                            newHash, std::memory_order_release);
-                        implicitProducerHashResizeInProgress.clear(
-                            std::memory_order_release);
+                        implicitProducerHash.store(newHash, std::memory_order_release);
+                        implicitProducerHashResizeInProgress.clear(std::memory_order_release);
                         mainHash = newHash;
                     }
                     else
                     {
-                        implicitProducerHashResizeInProgress.clear(
-                            std::memory_order_release);
+                        implicitProducerHashResizeInProgress.clear(std::memory_order_release);
                     }
                 }
 
                 // If it's < three-quarters full, add to the old one anyway so that we don't have to wait for the next table
                 // to finish being allocated by another thread (and if we just finished allocating above, the condition will
                 // always be true)
-                if (newCount <
-                    (mainHash->capacity >> 1) + (mainHash->capacity >> 2))
+                if (newCount < (mainHash->capacity >> 1) + (mainHash->capacity >> 2))
                 {
                     bool recycled;
-                    auto producer = static_cast<ImplicitProducer*>(
-                        recycle_or_create_producer(false, recycled));
+                    auto producer =
+                        static_cast<ImplicitProducer*>(recycle_or_create_producer(false, recycled));
                     if (producer == nullptr)
                     {
-                        implicitProducerHashCount.fetch_sub(
-                            1, std::memory_order_relaxed);
+                        implicitProducerHashCount.fetch_sub(1, std::memory_order_relaxed);
                         return nullptr;
                     }
                     if (recycled)
                     {
-                        implicitProducerHashCount.fetch_sub(
-                            1, std::memory_order_relaxed);
+                        implicitProducerHashCount.fetch_sub(1, std::memory_order_relaxed);
                     }
 
 #ifdef MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED
                     producer->threadExitListener.callback =
-                        &ConcurrentQueue::
-                            implicit_producer_thread_exited_callback;
+                        &ConcurrentQueue::implicit_producer_thread_exited_callback;
                     producer->threadExitListener.userData = producer;
-                    detail::ThreadExitNotifier::subscribe(
-                        &producer->threadExitListener);
+                    detail::ThreadExitNotifier::subscribe(&producer->threadExitListener);
 #endif
 
                     auto index = hashedId;
                     while (true)
                     {
                         index &= mainHash->capacity - 1;
-                        auto probedKey = mainHash->entries[index].key.load(
-                            std::memory_order_relaxed);
+                        auto probedKey =
+                            mainHash->entries[index].key.load(std::memory_order_relaxed);
 
                         auto empty = detail::invalid_thread_id;
 #ifdef MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED
                         auto reusable = detail::invalid_thread_id2;
                         if ((probedKey == empty &&
-                                mainHash->entries[index]
-                                    .key.compare_exchange_strong(empty, id,
-                                        std::memory_order_relaxed,
-                                        std::memory_order_relaxed)) ||
+                                mainHash->entries[index].key.compare_exchange_strong(empty, id,
+                                    std::memory_order_relaxed, std::memory_order_relaxed)) ||
                             (probedKey == reusable &&
-                                mainHash->entries[index]
-                                    .key.compare_exchange_strong(reusable, id,
-                                        std::memory_order_acquire,
-                                        std::memory_order_acquire)))
+                                mainHash->entries[index].key.compare_exchange_strong(reusable, id,
+                                    std::memory_order_acquire, std::memory_order_acquire)))
                         {
 #else
                         if ((probedKey == empty &&
-                                mainHash->entries[index]
-                                    .key.compare_exchange_strong(empty, id,
-                                        std::memory_order_relaxed,
-                                        std::memory_order_relaxed)))
+                                mainHash->entries[index].key.compare_exchange_strong(empty, id,
+                                    std::memory_order_relaxed, std::memory_order_relaxed)))
                         {
 #endif
                             mainHash->entries[index].value = producer;
@@ -4764,13 +4339,12 @@ namespace pika::concurrency::detail {
         void implicit_producer_thread_exited(ImplicitProducer* producer)
         {
             // Remove from thread exit listeners
-            detail::ThreadExitNotifier::unsubscribe(
-                &producer->threadExitListener);
+            detail::ThreadExitNotifier::unsubscribe(&producer->threadExitListener);
 
             // Remove from hash
-#if MCDBGQ_NOLOCKFREE_IMPLICITPRODHASH
+# if MCDBGQ_NOLOCKFREE_IMPLICITPRODHASH
             debug::DebugLock lock(implicitProdMutex);
-#endif
+# endif
             auto hash = implicitProducerHash.load(std::memory_order_acquire);
             assert(hash !=
                 nullptr);    // The thread exit listener is only registered if we were added to a hash in the first place
@@ -4786,13 +4360,11 @@ namespace pika::concurrency::detail {
                 do
                 {
                     index &= hash->capacity - 1;
-                    probedKey = hash->entries[index].key.load(
-                        std::memory_order_relaxed);
+                    probedKey = hash->entries[index].key.load(std::memory_order_relaxed);
                     if (probedKey == id)
                     {
                         hash->entries[index].key.store(
-                            detail::invalid_thread_id2,
-                            std::memory_order_release);
+                            detail::invalid_thread_id2, std::memory_order_release);
                         break;
                     }
                     ++index;
@@ -4887,8 +4459,7 @@ namespace pika::concurrency::detail {
 #endif
 
         std::atomic<ImplicitProducerHash*> implicitProducerHash;
-        std::atomic<size_t>
-            implicitProducerHashCount;    // Number of slots logically used
+        std::atomic<size_t> implicitProducerHashCount;    // Number of slots logically used
         ImplicitProducerHash initialImplicitProducerHash;
         std::array<ImplicitProducerKVP, INITIAL_IMPLICIT_PRODUCER_HASH_SIZE>
             initialImplicitProducerHashEntries;
@@ -4919,8 +4490,8 @@ namespace pika::concurrency::detail {
 
     template <typename T, typename Traits>
     ProducerToken::ProducerToken(BlockingConcurrentQueue<T, Traits>& queue)
-      : producer(reinterpret_cast<ConcurrentQueue<T, Traits>*>(&queue)
-                     ->recycle_or_create_producer(true))
+      : producer(
+            reinterpret_cast<ConcurrentQueue<T, Traits>*>(&queue)->recycle_or_create_producer(true))
     {
         if (producer != nullptr)
         {
@@ -4934,8 +4505,7 @@ namespace pika::concurrency::detail {
       , currentProducer(nullptr)
       , desiredProducer(nullptr)
     {
-        initialOffset = queue.nextExplicitConsumerId.fetch_add(
-            1, std::memory_order_release);
+        initialOffset = queue.nextExplicitConsumerId.fetch_add(1, std::memory_order_release);
         lastKnownGlobalOffset = static_cast<std::uint32_t>(-1);
     }
 
@@ -4945,15 +4515,15 @@ namespace pika::concurrency::detail {
       , currentProducer(nullptr)
       , desiredProducer(nullptr)
     {
-        initialOffset = reinterpret_cast<ConcurrentQueue<T, Traits>*>(&queue)
-                            ->nextExplicitConsumerId.fetch_add(
-                                1, std::memory_order_release);
+        initialOffset =
+            reinterpret_cast<ConcurrentQueue<T, Traits>*>(&queue)->nextExplicitConsumerId.fetch_add(
+                1, std::memory_order_release);
         lastKnownGlobalOffset = static_cast<std::uint32_t>(-1);
     }
 
     template <typename T, typename Traits>
-    inline void swap(ConcurrentQueue<T, Traits>& a,
-        ConcurrentQueue<T, Traits>& b) MOODYCAMEL_NOEXCEPT
+    inline void
+    swap(ConcurrentQueue<T, Traits>& a, ConcurrentQueue<T, Traits>& b) MOODYCAMEL_NOEXCEPT
     {
         a.swap(b);
     }
@@ -4969,15 +4539,13 @@ namespace pika::concurrency::detail {
     }
 
     template <typename T, typename Traits>
-    inline void
-    swap(typename ConcurrentQueue<T, Traits>::ImplicitProducerKVP& a,
-        typename ConcurrentQueue<T, Traits>::ImplicitProducerKVP& b)
-        MOODYCAMEL_NOEXCEPT
+    inline void swap(typename ConcurrentQueue<T, Traits>::ImplicitProducerKVP& a,
+        typename ConcurrentQueue<T, Traits>::ImplicitProducerKVP& b) MOODYCAMEL_NOEXCEPT
     {
         a.swap(b);
     }
 }    // namespace pika::concurrency::detail
 
 #if defined(__GNUC__)
-#pragma GCC diagnostic pop
+# pragma GCC diagnostic pop
 #endif

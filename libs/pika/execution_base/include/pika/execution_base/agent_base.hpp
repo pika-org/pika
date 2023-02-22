@@ -27,10 +27,8 @@ namespace pika::execution::detail {
         virtual void resume(char const* desc) = 0;
         virtual void abort(char const* desc) = 0;
         virtual void sleep_for(
-            pika::chrono::steady_duration const& sleep_duration,
-            char const* desc) = 0;
+            pika::chrono::steady_duration const& sleep_duration, char const* desc) = 0;
         virtual void sleep_until(
-            pika::chrono::steady_time_point const& sleep_time,
-            char const* desc) = 0;
+            pika::chrono::steady_time_point const& sleep_time, char const* desc) = 0;
     };
 }    // namespace pika::execution::detail

@@ -14,8 +14,7 @@
 #include <whip.hpp>
 
 namespace pika::cuda::experimental {
-    cusolverDnHandle_t cusolver_handle::create_handle(
-        int device, whip::stream_t stream)
+    cusolverDnHandle_t cusolver_handle::create_handle(int device, whip::stream_t stream)
     {
         cuda_device_scope d{device};
         cusolverDnHandle_t handle;
@@ -50,8 +49,7 @@ namespace pika::cuda::experimental {
         other.device = 0;
     }
 
-    cusolver_handle& cusolver_handle::operator=(
-        cusolver_handle&& other) noexcept
+    cusolver_handle& cusolver_handle::operator=(cusolver_handle&& other) noexcept
     {
         stream = other.stream;
         handle = other.handle;

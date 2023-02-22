@@ -12,18 +12,18 @@
 #if defined(DOXYGEN)
 
 /// Function attribute to tell compiler not to inline the function.
-#define PIKA_NOINLINE
+# define PIKA_NOINLINE
 
 /// Marks an entity as deprecated. The argument \c x specifies a custom message
 /// that is included in the compiler warning. For more details see
 /// `<https://en.cppreference.com/w/cpp/language/attributes/deprecated>`__.
-#define PIKA_DEPRECATED(x)
+# define PIKA_DEPRECATED(x)
 
 /// Indicates that this data member need not have an address distinct from all
 /// other non-static data members of its class.
 /// For more details see
 /// `https://en.cppreference.com/w/cpp/language/attributes/no_unique_address`__.
-#define PIKA_NO_UNIQUE_ADDRESS
+# define PIKA_NO_UNIQUE_ADDRESS
 #else
 
 ///////////////////////////////////////////////////////////////////////////////

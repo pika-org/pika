@@ -17,8 +17,7 @@
 
 int pika_main()
 {
-    pika::apply(
-        [] { pika::this_thread::sleep_for(std::chrono::milliseconds(500)); });
+    pika::apply([] { pika::this_thread::sleep_for(std::chrono::milliseconds(500)); });
 
     return pika::finalize();
 }

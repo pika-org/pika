@@ -44,11 +44,9 @@
 namespace pika::threads {
     ///////////////////////////////////////////////////////////////////////////
 #if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
-    using default_local_priority_queue_scheduler_terminated_queue =
-        lockfree_lifo;
+    using default_local_priority_queue_scheduler_terminated_queue = lockfree_lifo;
 #else
-    using default_local_priority_queue_scheduler_terminated_queue =
-        lockfree_fifo;
+    using default_local_priority_queue_scheduler_terminated_queue = lockfree_fifo;
 #endif
 
     ///////////////////////////////////////////////////////////////////////////
@@ -59,19 +57,16 @@ namespace pika::threads {
     /// High priority threads are executed by the first N OS threads before any
     /// other work is executed. Low priority threads are executed by the last
     /// OS thread whenever no other work is available.
-    template <typename Mutex = std::mutex,
-        typename PendingQueuing = lockfree_fifo,
+    template <typename Mutex = std::mutex, typename PendingQueuing = lockfree_fifo,
         typename StagedQueuing = lockfree_fifo,
-        typename TerminatedQueuing =
-            default_local_priority_queue_scheduler_terminated_queue>
-    class PIKA_EXPORT local_priority_queue_scheduler
-      : public detail::scheduler_base
+        typename TerminatedQueuing = default_local_priority_queue_scheduler_terminated_queue>
+    class PIKA_EXPORT local_priority_queue_scheduler : public detail::scheduler_base
     {
     public:
         using has_periodic_maintenance = std::false_type;
 
-        using thread_queue_type = thread_queue<Mutex, PendingQueuing,
-            StagedQueuing, TerminatedQueuing>;
+        using thread_queue_type =
+            thread_queue<Mutex, PendingQueuing, StagedQueuing, TerminatedQueuing>;
 
         // the scheduler type takes two initialization parameters:
         //    the number of queues
@@ -79,14 +74,12 @@ namespace pika::threads {
         //    the maxcount per queue
         struct init_parameter
         {
-            init_parameter(std::size_t num_queues,
-                pika::detail::affinity_data const& affinity_data,
+            init_parameter(std::size_t num_queues, pika::detail::affinity_data const& affinity_data,
                 std::size_t num_high_priority_queues = std::size_t(-1),
                 detail::thread_queue_init_parameters thread_queue_init = {},
                 char const* description = "local_priority_queue_scheduler")
               : num_queues_(num_queues)
-              , num_high_priority_queues_(
-                    num_high_priority_queues == std::size_t(-1) ?
+              , num_high_priority_queues_(num_high_priority_queues == std::size_t(-1) ?
                         num_queues :
                         num_high_priority_queues)
               , thread_queue_init_(thread_queue_init)
@@ -95,8 +88,7 @@ namespace pika::threads {
             {
             }
 
-            init_parameter(std::size_t num_queues,
-                pika::detail::affinity_data const& affinity_data,
+            init_parameter(std::size_t num_queues, pika::detail::affinity_data const& affinity_data,
                 char const* description)
               : num_queues_(num_queues)
               , num_high_priority_queues_(num_queues)
@@ -114,10 +106,9 @@ namespace pika::threads {
         };
         using init_parameter_type = init_parameter;
 
-        local_priority_queue_scheduler(init_parameter_type const& init,
-            bool deferred_initialization = true)
-          : detail::scheduler_base(
-                init.num_queues_, init.description_, init.thread_queue_init_)
+        local_priority_queue_scheduler(
+            init_parameter_type const& init, bool deferred_initialization = true)
+          : detail::scheduler_base(init.num_queues_, init.description_, init.thread_queue_init_)
           , curr_queue_(0)
           , affinity_data_(init.affinity_data_)
           , num_queues_(init.num_queues_)
@@ -132,19 +123,16 @@ namespace pika::threads {
                 PIKA_ASSERT(num_queues_ != 0);
                 for (std::size_t i = 0; i != num_queues_; ++i)
                 {
-                    queues_[i].data_ =
-                        new thread_queue_type(i, thread_queue_init_);
+                    queues_[i].data_ = new thread_queue_type(i, thread_queue_init_);
                 }
 
                 PIKA_ASSERT(num_high_priority_queues_ != 0);
                 PIKA_ASSERT(num_high_priority_queues_ <= num_queues_);
                 for (std::size_t i = 0; i != num_high_priority_queues_; ++i)
                 {
-                    high_priority_queues_[i].data_ =
-                        new thread_queue_type(i, thread_queue_init_);
+                    high_priority_queues_[i].data_ = new thread_queue_type(i, thread_queue_init_);
                 }
-                for (std::size_t i = num_high_priority_queues_;
-                     i != num_queues_; ++i)
+                for (std::size_t i = num_high_priority_queues_; i != num_queues_; ++i)
                 {
                     high_priority_queues_[i].data_ = nullptr;
                 }
@@ -176,8 +164,7 @@ namespace pika::threads {
 
             for (std::size_t i = 0; i != num_high_priority_queues_; ++i)
             {
-                time +=
-                    high_priority_queues_[i].data_->get_creation_time(reset);
+                time += high_priority_queues_[i].data_->get_creation_time(reset);
             }
 
             time += low_priority_queue_.get_creation_time(reset);
@@ -209,8 +196,7 @@ namespace pika::threads {
 #endif
 
 #ifdef PIKA_HAVE_THREAD_STEALING_COUNTS
-        std::int64_t get_num_pending_misses(
-            std::size_t num_thread, bool reset) override
+        std::int64_t get_num_pending_misses(std::size_t num_thread, bool reset) override
         {
             std::int64_t num_pending_misses = 0;
             if (num_thread == std::size_t(-1))
@@ -218,38 +204,32 @@ namespace pika::threads {
                 for (std::size_t i = 0; i != num_high_priority_queues_; ++i)
                 {
                     num_pending_misses +=
-                        high_priority_queues_[i].data_->get_num_pending_misses(
-                            reset);
+                        high_priority_queues_[i].data_->get_num_pending_misses(reset);
                 }
                 for (std::size_t i = 0; i != num_queues_; ++i)
                 {
-                    num_pending_misses +=
-                        queues_[i].data_->get_num_pending_misses(reset);
+                    num_pending_misses += queues_[i].data_->get_num_pending_misses(reset);
                 }
-                num_pending_misses +=
-                    low_priority_queue_.get_num_pending_misses(reset);
+                num_pending_misses += low_priority_queue_.get_num_pending_misses(reset);
 
                 return num_pending_misses;
             }
 
-            num_pending_misses +=
-                queues_[num_thread].data_->get_num_pending_misses(reset);
+            num_pending_misses += queues_[num_thread].data_->get_num_pending_misses(reset);
 
             if (num_thread < num_high_priority_queues_)
             {
-                num_pending_misses += high_priority_queues_[num_thread]
-                                          .data_->get_num_pending_misses(reset);
+                num_pending_misses +=
+                    high_priority_queues_[num_thread].data_->get_num_pending_misses(reset);
             }
             if (num_thread == num_queues_ - 1)
             {
-                num_pending_misses +=
-                    low_priority_queue_.get_num_pending_misses(reset);
+                num_pending_misses += low_priority_queue_.get_num_pending_misses(reset);
             }
             return num_pending_misses;
         }
 
-        std::int64_t get_num_pending_accesses(
-            std::size_t num_thread, bool reset) override
+        std::int64_t get_num_pending_accesses(std::size_t num_thread, bool reset) override
         {
             std::int64_t num_pending_accesses = 0;
             if (num_thread == std::size_t(-1))
@@ -257,39 +237,32 @@ namespace pika::threads {
                 for (std::size_t i = 0; i != num_high_priority_queues_; ++i)
                 {
                     num_pending_accesses +=
-                        high_priority_queues_[i]
-                            .data_->get_num_pending_accesses(reset);
+                        high_priority_queues_[i].data_->get_num_pending_accesses(reset);
                 }
                 for (std::size_t i = 0; i != num_queues_; ++i)
                 {
-                    num_pending_accesses +=
-                        queues_[i].data_->get_num_pending_accesses(reset);
+                    num_pending_accesses += queues_[i].data_->get_num_pending_accesses(reset);
                 }
-                num_pending_accesses +=
-                    low_priority_queue_.get_num_pending_accesses(reset);
+                num_pending_accesses += low_priority_queue_.get_num_pending_accesses(reset);
 
                 return num_pending_accesses;
             }
 
-            num_pending_accesses +=
-                queues_[num_thread].data_->get_num_pending_accesses(reset);
+            num_pending_accesses += queues_[num_thread].data_->get_num_pending_accesses(reset);
 
             if (num_thread < num_high_priority_queues_)
             {
                 num_pending_accesses +=
-                    high_priority_queues_[num_thread]
-                        .data_->get_num_pending_accesses(reset);
+                    high_priority_queues_[num_thread].data_->get_num_pending_accesses(reset);
             }
             if (num_thread == num_queues_ - 1)
             {
-                num_pending_accesses +=
-                    low_priority_queue_.get_num_pending_accesses(reset);
+                num_pending_accesses += low_priority_queue_.get_num_pending_accesses(reset);
             }
             return num_pending_accesses;
         }
 
-        std::int64_t get_num_stolen_from_pending(
-            std::size_t num_thread, bool reset) override
+        std::int64_t get_num_stolen_from_pending(std::size_t num_thread, bool reset) override
         {
             std::int64_t num_stolen_threads = 0;
             if (num_thread == std::size_t(-1))
@@ -297,39 +270,32 @@ namespace pika::threads {
                 for (std::size_t i = 0; i != num_high_priority_queues_; ++i)
                 {
                     num_stolen_threads +=
-                        high_priority_queues_[i]
-                            .data_->get_num_stolen_from_pending(reset);
+                        high_priority_queues_[i].data_->get_num_stolen_from_pending(reset);
                 }
                 for (std::size_t i = 0; i != num_queues_; ++i)
                 {
-                    num_stolen_threads +=
-                        queues_[i].data_->get_num_stolen_from_pending(reset);
+                    num_stolen_threads += queues_[i].data_->get_num_stolen_from_pending(reset);
                 }
-                num_stolen_threads +=
-                    low_priority_queue_.get_num_stolen_from_pending(reset);
+                num_stolen_threads += low_priority_queue_.get_num_stolen_from_pending(reset);
 
                 return num_stolen_threads;
             }
 
-            num_stolen_threads +=
-                queues_[num_thread].data_->get_num_stolen_from_pending(reset);
+            num_stolen_threads += queues_[num_thread].data_->get_num_stolen_from_pending(reset);
 
             if (num_thread < num_high_priority_queues_)
             {
                 num_stolen_threads +=
-                    high_priority_queues_[num_thread]
-                        .data_->get_num_stolen_from_pending(reset);
+                    high_priority_queues_[num_thread].data_->get_num_stolen_from_pending(reset);
             }
             if (num_thread == num_queues_ - 1)
             {
-                num_stolen_threads +=
-                    low_priority_queue_.get_num_stolen_from_pending(reset);
+                num_stolen_threads += low_priority_queue_.get_num_stolen_from_pending(reset);
             }
             return num_stolen_threads;
         }
 
-        std::int64_t get_num_stolen_to_pending(
-            std::size_t num_thread, bool reset) override
+        std::int64_t get_num_stolen_to_pending(std::size_t num_thread, bool reset) override
         {
             std::int64_t num_stolen_threads = 0;
             if (num_thread == std::size_t(-1))
@@ -337,39 +303,32 @@ namespace pika::threads {
                 for (std::size_t i = 0; i != num_high_priority_queues_; ++i)
                 {
                     num_stolen_threads +=
-                        high_priority_queues_[i]
-                            .data_->get_num_stolen_to_pending(reset);
+                        high_priority_queues_[i].data_->get_num_stolen_to_pending(reset);
                 }
                 for (std::size_t i = 0; i != num_queues_; ++i)
                 {
-                    num_stolen_threads +=
-                        queues_[i].data_->get_num_stolen_to_pending(reset);
+                    num_stolen_threads += queues_[i].data_->get_num_stolen_to_pending(reset);
                 }
-                num_stolen_threads +=
-                    low_priority_queue_.get_num_stolen_to_pending(reset);
+                num_stolen_threads += low_priority_queue_.get_num_stolen_to_pending(reset);
 
                 return num_stolen_threads;
             }
 
-            num_stolen_threads +=
-                queues_[num_thread].data_->get_num_stolen_to_pending(reset);
+            num_stolen_threads += queues_[num_thread].data_->get_num_stolen_to_pending(reset);
 
             if (num_thread < num_high_priority_queues_)
             {
                 num_stolen_threads +=
-                    high_priority_queues_[num_thread]
-                        .data_->get_num_stolen_to_pending(reset);
+                    high_priority_queues_[num_thread].data_->get_num_stolen_to_pending(reset);
             }
             if (num_thread == num_queues_ - 1)
             {
-                num_stolen_threads +=
-                    low_priority_queue_.get_num_stolen_to_pending(reset);
+                num_stolen_threads += low_priority_queue_.get_num_stolen_to_pending(reset);
             }
             return num_stolen_threads;
         }
 
-        std::int64_t get_num_stolen_from_staged(
-            std::size_t num_thread, bool reset) override
+        std::int64_t get_num_stolen_from_staged(std::size_t num_thread, bool reset) override
         {
             std::int64_t num_stolen_threads = 0;
             if (num_thread == std::size_t(-1))
@@ -377,40 +336,33 @@ namespace pika::threads {
                 for (std::size_t i = 0; i != num_high_priority_queues_; ++i)
                 {
                     num_stolen_threads +=
-                        high_priority_queues_[i]
-                            .data_->get_num_stolen_from_staged(reset);
+                        high_priority_queues_[i].data_->get_num_stolen_from_staged(reset);
                 }
 
                 for (std::size_t i = 0; i != num_queues_; ++i)
                 {
-                    num_stolen_threads +=
-                        queues_[i].data_->get_num_stolen_from_staged(reset);
+                    num_stolen_threads += queues_[i].data_->get_num_stolen_from_staged(reset);
                 }
-                num_stolen_threads +=
-                    low_priority_queue_.get_num_stolen_from_staged(reset);
+                num_stolen_threads += low_priority_queue_.get_num_stolen_from_staged(reset);
 
                 return num_stolen_threads;
             }
 
-            num_stolen_threads +=
-                queues_[num_thread].data_->get_num_stolen_from_staged(reset);
+            num_stolen_threads += queues_[num_thread].data_->get_num_stolen_from_staged(reset);
 
             if (num_thread < num_high_priority_queues_)
             {
                 num_stolen_threads +=
-                    high_priority_queues_[num_thread]
-                        .data_->get_num_stolen_from_staged(reset);
+                    high_priority_queues_[num_thread].data_->get_num_stolen_from_staged(reset);
             }
             if (num_thread == num_queues_ - 1)
             {
-                num_stolen_threads +=
-                    low_priority_queue_.get_num_stolen_from_staged(reset);
+                num_stolen_threads += low_priority_queue_.get_num_stolen_from_staged(reset);
             }
             return num_stolen_threads;
         }
 
-        std::int64_t get_num_stolen_to_staged(
-            std::size_t num_thread, bool reset) override
+        std::int64_t get_num_stolen_to_staged(std::size_t num_thread, bool reset) override
         {
             std::int64_t num_stolen_threads = 0;
             if (num_thread == std::size_t(-1))
@@ -418,33 +370,27 @@ namespace pika::threads {
                 for (std::size_t i = 0; i != num_high_priority_queues_; ++i)
                 {
                     num_stolen_threads +=
-                        high_priority_queues_[i]
-                            .data_->get_num_stolen_to_staged(reset);
+                        high_priority_queues_[i].data_->get_num_stolen_to_staged(reset);
                 }
                 for (std::size_t i = 0; i != num_queues_; ++i)
                 {
-                    num_stolen_threads +=
-                        queues_[i].data_->get_num_stolen_to_staged(reset);
+                    num_stolen_threads += queues_[i].data_->get_num_stolen_to_staged(reset);
                 }
-                num_stolen_threads +=
-                    low_priority_queue_.get_num_stolen_to_staged(reset);
+                num_stolen_threads += low_priority_queue_.get_num_stolen_to_staged(reset);
 
                 return num_stolen_threads;
             }
 
-            num_stolen_threads +=
-                queues_[num_thread].data_->get_num_stolen_to_staged(reset);
+            num_stolen_threads += queues_[num_thread].data_->get_num_stolen_to_staged(reset);
 
             if (num_thread < num_high_priority_queues_)
             {
                 num_stolen_threads +=
-                    high_priority_queues_[num_thread]
-                        .data_->get_num_stolen_to_staged(reset);
+                    high_priority_queues_[num_thread].data_->get_num_stolen_to_staged(reset);
             }
             if (num_thread == num_queues_ - 1)
             {
-                num_stolen_threads +=
-                    low_priority_queue_.get_num_stolen_to_staged(reset);
+                num_stolen_threads += low_priority_queue_.get_num_stolen_to_staged(reset);
             }
             return num_stolen_threads;
         }
@@ -470,36 +416,29 @@ namespace pika::threads {
 
             for (std::size_t i = 0; i != num_queues_; ++i)
             {
-                empty =
-                    queues_[i].data_->cleanup_terminated(delete_all) && empty;
+                empty = queues_[i].data_->cleanup_terminated(delete_all) && empty;
             }
             if (!delete_all)
                 return empty;
 
             for (std::size_t i = 0; i != num_high_priority_queues_; ++i)
             {
-                empty = high_priority_queues_[i].data_->cleanup_terminated(
-                            delete_all) &&
-                    empty;
+                empty = high_priority_queues_[i].data_->cleanup_terminated(delete_all) && empty;
             }
             empty = low_priority_queue_.cleanup_terminated(delete_all) && empty;
 
             return empty;
         }
 
-        bool cleanup_terminated(
-            std::size_t num_thread, bool delete_all) override
+        bool cleanup_terminated(std::size_t num_thread, bool delete_all) override
         {
-            bool empty =
-                queues_[num_thread].data_->cleanup_terminated(delete_all);
+            bool empty = queues_[num_thread].data_->cleanup_terminated(delete_all);
             if (!delete_all)
                 return empty;
 
             if (num_thread < num_high_priority_queues_)
             {
-                empty =
-                    high_priority_queues_[num_thread].data_->cleanup_terminated(
-                        delete_all) &&
+                empty = high_priority_queues_[num_thread].data_->cleanup_terminated(delete_all) &&
                     empty;
             }
             return empty;
@@ -512,8 +451,8 @@ namespace pika::threads {
             threads::detail::thread_id_ref_type* id, error_code& ec) override
         {
             // NOTE: This scheduler ignores NUMA hints.
-            std::size_t num_thread = data.schedulehint.mode ==
-                    execution::thread_schedule_hint_mode::thread ?
+            std::size_t num_thread =
+                data.schedulehint.mode == execution::thread_schedule_hint_mode::thread ?
                 data.schedulehint.hint :
                 std::size_t(-1);
 
@@ -529,8 +468,7 @@ namespace pika::threads {
             std::unique_lock<pu_mutex_type> l;
             num_thread = select_active_pu(l, num_thread);
 
-            data.schedulehint.mode =
-                execution::thread_schedule_hint_mode::thread;
+            data.schedulehint.mode = execution::thread_schedule_hint_mode::thread;
             data.schedulehint.hint = static_cast<std::int16_t>(num_thread);
 
             // now create the thread
@@ -547,13 +485,10 @@ namespace pika::threads {
                 high_priority_queues_[num].data_->create_thread(data, id, ec);
 
                 LTM_(debug)
-                    .format("local_priority_queue_scheduler::create_thread, "
-                            "high priority queue: "
-                            "pool({}), scheduler({}), worker_thread({}), "
-                            "thread({}), priority({})",
+                    .format("local_priority_queue_scheduler::create_thread, high priority queue: "
+                            "pool({}), scheduler({}), worker_thread({}), thread({}), priority({})",
                         *this->get_parent_pool(), *this, num,
-                        id ? *id : threads::detail::invalid_thread_id,
-                        data.priority)
+                        id ? *id : threads::detail::invalid_thread_id, data.priority)
 #ifdef PIKA_HAVE_THREAD_DESCRIPTION
                     .format(", description({})", data.description)
 #endif
@@ -567,12 +502,10 @@ namespace pika::threads {
                 low_priority_queue_.create_thread(data, id, ec);
 
                 LTM_(debug)
-                    .format("local_priority_queue_scheduler::create_thread, "
-                            "low priority queue: "
+                    .format("local_priority_queue_scheduler::create_thread, low priority queue: "
                             "pool({}), scheduler({}), thread({}), priority({})",
                         *this->get_parent_pool(), *this,
-                        id ? *id : threads::detail::invalid_thread_id,
-                        data.priority)
+                        id ? *id : threads::detail::invalid_thread_id, data.priority)
 #ifdef PIKA_HAVE_THREAD_DESCRIPTION
                     .format(", description({})", data.description)
 #endif
@@ -585,13 +518,10 @@ namespace pika::threads {
             queues_[num_thread].data_->create_thread(data, id, ec);
 
             LTM_(debug)
-                .format("local_priority_queue_scheduler::create_thread normal "
-                        "priority queue: pool({}), scheduler({}), "
-                        "worker_thread({}), "
-                        "thread({}), priority({})",
+                .format("local_priority_queue_scheduler::create_thread normal priority queue: "
+                        "pool({}), scheduler({}), worker_thread({}), thread({}), priority({})",
                     *this->get_parent_pool(), *this, num_thread,
-                    id ? *id : threads::detail::invalid_thread_id,
-                    data.priority)
+                    id ? *id : threads::detail::invalid_thread_id, data.priority)
 #ifdef PIKA_HAVE_THREAD_DESCRIPTION
                 .format(", description({})", data.description)
 #endif
@@ -601,8 +531,7 @@ namespace pika::threads {
         /// Return the next thread to be executed, return false if none is
         /// available
         bool get_next_thread(std::size_t num_thread, bool running,
-            threads::detail::thread_id_ref_type& thrd,
-            bool enable_stealing) override
+            threads::detail::thread_id_ref_type& thrd, bool enable_stealing) override
         {
             PIKA_ASSERT(num_thread < num_queues_);
             thread_queue_type* this_high_priority_queue = nullptr;
@@ -610,8 +539,7 @@ namespace pika::threads {
 
             if (num_thread < num_high_priority_queues_)
             {
-                this_high_priority_queue =
-                    high_priority_queues_[num_thread].data_;
+                this_high_priority_queue = high_priority_queues_[num_thread].data_;
                 bool result = this_high_priority_queue->get_next_thread(thrd);
 
                 this_high_priority_queue->increment_num_pending_accesses();
@@ -628,8 +556,8 @@ namespace pika::threads {
                     return true;
                 this_queue->increment_num_pending_misses();
 
-                bool have_staged = this_queue->get_staged_queue_length(
-                                       std::memory_order_relaxed) != 0;
+                bool have_staged =
+                    this_queue->get_staged_queue_length(std::memory_order_relaxed) != 0;
 
                 // Give up, we should have work to convert.
                 if (have_staged)
@@ -649,21 +577,18 @@ namespace pika::threads {
                 {
                     PIKA_ASSERT(idx != num_thread);
 
-                    if (idx < num_high_priority_queues_ &&
-                        num_thread < num_high_priority_queues_)
+                    if (idx < num_high_priority_queues_ && num_thread < num_high_priority_queues_)
                     {
                         thread_queue_type* q = high_priority_queues_[idx].data_;
                         if (q->get_next_thread(thrd, running, true))
                         {
                             q->increment_num_stolen_from_pending();
-                            this_high_priority_queue
-                                ->increment_num_stolen_to_pending();
+                            this_high_priority_queue->increment_num_stolen_to_pending();
                             return true;
                         }
                     }
 
-                    if (queues_[idx].data_->get_next_thread(
-                            thrd, running, true))
+                    if (queues_[idx].data_->get_next_thread(thrd, running, true))
                     {
                         queues_[idx].data_->increment_num_stolen_from_pending();
                         this_queue->increment_num_stolen_to_pending();
@@ -677,15 +602,12 @@ namespace pika::threads {
 
         /// Schedule the passed thread
         void schedule_thread(threads::detail::thread_id_ref_type thrd,
-            execution::thread_schedule_hint schedulehint,
-            bool allow_fallback = false,
-            execution::thread_priority priority =
-                execution::thread_priority::normal) override
+            execution::thread_schedule_hint schedulehint, bool allow_fallback = false,
+            execution::thread_priority priority = execution::thread_priority::normal) override
         {
             // NOTE: This scheduler ignores NUMA hints.
             std::size_t num_thread = std::size_t(-1);
-            if (schedulehint.mode ==
-                execution::thread_schedule_hint_mode::thread)
+            if (schedulehint.mode == execution::thread_schedule_hint_mode::thread)
             {
                 num_thread = schedulehint.hint;
             }
@@ -713,13 +635,10 @@ namespace pika::threads {
                 priority == execution::thread_priority::boost)
             {
                 std::size_t num = num_thread % num_high_priority_queues_;
-                LTM_(debug).format(
-                    "local_priority_queue_scheduler::schedule_thread, "
-                    "high priority queue: "
-                    "pool({}), scheduler({}), worker_thread({}), "
-                    "thread({}), priority({}), description({})",
-                    *this->get_parent_pool(), *this, num,
-                    thrdptr->get_thread_id(), priority,
+                LTM_(debug).format("local_priority_queue_scheduler::schedule_thread, high priority "
+                                   "queue: pool({}), scheduler({}), worker_thread({}), thread({}), "
+                                   "priority({}), description({})",
+                    *this->get_parent_pool(), *this, num, thrdptr->get_thread_id(), priority,
                     thrdptr->get_description());
 
                 high_priority_queues_[num].data_->schedule_thread(thrd);
@@ -727,12 +646,10 @@ namespace pika::threads {
             else if (priority == execution::thread_priority::low)
             {
                 LTM_(debug).format(
-                    "local_priority_queue_scheduler::schedule_thread, "
-                    "low priority queue: "
-                    "pool({}), scheduler({}), "
-                    "thread({}), priority({}), description({})",
-                    *this->get_parent_pool(), *this, thrdptr->get_thread_id(),
-                    priority, thrdptr->get_description());
+                    "local_priority_queue_scheduler::schedule_thread, low priority queue: "
+                    "pool({}), scheduler({}), thread({}), priority({}), description({})",
+                    *this->get_parent_pool(), *this, thrdptr->get_thread_id(), priority,
+                    thrdptr->get_description());
 
                 low_priority_queue_.schedule_thread(thrd);
             }
@@ -740,13 +657,10 @@ namespace pika::threads {
             {
                 PIKA_ASSERT(num_thread < num_queues_);
 
-                LTM_(debug).format(
-                    "local_priority_queue_scheduler::schedule_thread, "
-                    "normal priority queue: "
-                    "pool({}), scheduler({}), worker_thread({}), "
-                    "thread({}), priority({}), description({})",
-                    *this->get_parent_pool(), *this, num_thread,
-                    thrdptr->get_thread_id(), priority,
+                LTM_(debug).format("local_priority_queue_scheduler::schedule_thread, normal "
+                                   "priority queue: pool({}), scheduler({}), worker_thread({}), "
+                                   "thread({}), priority({}), description({})",
+                    *this->get_parent_pool(), *this, num_thread, thrdptr->get_thread_id(), priority,
                     thrdptr->get_description());
 
                 queues_[num_thread].data_->schedule_thread(thrd);
@@ -754,15 +668,12 @@ namespace pika::threads {
         }
 
         void schedule_thread_last(threads::detail::thread_id_ref_type thrd,
-            execution::thread_schedule_hint schedulehint,
-            bool allow_fallback = false,
-            execution::thread_priority priority =
-                execution::thread_priority::normal) override
+            execution::thread_schedule_hint schedulehint, bool allow_fallback = false,
+            execution::thread_priority priority = execution::thread_priority::normal) override
         {
             // NOTE: This scheduler ignores NUMA hints.
             std::size_t num_thread = std::size_t(-1);
-            if (schedulehint.mode ==
-                execution::thread_schedule_hint_mode::thread)
+            if (schedulehint.mode == execution::thread_schedule_hint_mode::thread)
             {
                 num_thread = schedulehint.hint;
             }
@@ -810,8 +721,7 @@ namespace pika::threads {
 
         ///////////////////////////////////////////////////////////////////////
         // This returns the current length of the queues (work items and new items)
-        std::int64_t get_queue_length(
-            std::size_t num_thread = std::size_t(-1)) const override
+        std::int64_t get_queue_length(std::size_t num_thread = std::size_t(-1)) const override
         {
             // Return queue length of one specific queue.
             std::int64_t count = 0;
@@ -821,8 +731,7 @@ namespace pika::threads {
 
                 if (num_thread < num_high_priority_queues_)
                 {
-                    count = high_priority_queues_[num_thread]
-                                .data_->get_queue_length();
+                    count = high_priority_queues_[num_thread].data_->get_queue_length();
                 }
                 if (num_thread == num_queues_ - 1)
                     count += low_priority_queue_.get_queue_length();
@@ -845,13 +754,10 @@ namespace pika::threads {
 
         ///////////////////////////////////////////////////////////////////////
         // Queries the current thread count of the queues.
-        std::int64_t get_thread_count(
-            threads::detail::thread_schedule_state state =
-                threads::detail::thread_schedule_state::unknown,
-            execution::thread_priority priority =
-                execution::thread_priority::default_,
-            std::size_t num_thread = std::size_t(-1),
-            bool /* reset */ = false) const override
+        std::int64_t get_thread_count(threads::detail::thread_schedule_state state =
+                                          threads::detail::thread_schedule_state::unknown,
+            execution::thread_priority priority = execution::thread_priority::default_,
+            std::size_t num_thread = std::size_t(-1), bool /* reset */ = false) const override
         {
             // Return thread count of one specific queue.
             std::int64_t count = 0;
@@ -865,14 +771,12 @@ namespace pika::threads {
                 {
                     if (num_thread < num_high_priority_queues_)
                     {
-                        count = high_priority_queues_[num_thread]
-                                    .data_->get_thread_count(state);
+                        count = high_priority_queues_[num_thread].data_->get_thread_count(state);
                     }
                     if (num_queues_ - 1 == num_thread)
                         count += low_priority_queue_.get_thread_count(state);
 
-                    return count +
-                        queues_[num_thread].data_->get_thread_count(state);
+                    return count + queues_[num_thread].data_->get_thread_count(state);
                 }
 
                 case execution::thread_priority::low:
@@ -891,8 +795,7 @@ namespace pika::threads {
                 {
                     if (num_thread < num_high_priority_queues_)
                     {
-                        return high_priority_queues_[num_thread]
-                            .data_->get_thread_count(state);
+                        return high_priority_queues_[num_thread].data_->get_thread_count(state);
                     }
                     break;
                 }
@@ -902,8 +805,7 @@ namespace pika::threads {
                 {
                     PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
                         "local_priority_queue_scheduler::get_thread_count",
-                        "unknown thread priority value "
-                        "(execution::thread_priority::unknown)");
+                        "unknown thread priority value (execution::thread_priority::unknown)");
                     return 0;
                 }
                 }
@@ -917,8 +819,7 @@ namespace pika::threads {
             {
                 for (std::size_t i = 0; i != num_high_priority_queues_; ++i)
                 {
-                    count +=
-                        high_priority_queues_[i].data_->get_thread_count(state);
+                    count += high_priority_queues_[i].data_->get_thread_count(state);
                 }
                 count += low_priority_queue_.get_thread_count(state);
 
@@ -947,8 +848,7 @@ namespace pika::threads {
             {
                 for (std::size_t i = 0; i != num_high_priority_queues_; ++i)
                 {
-                    count +=
-                        high_priority_queues_[i].data_->get_thread_count(state);
+                    count += high_priority_queues_[i].data_->get_thread_count(state);
                 }
                 break;
             }
@@ -958,8 +858,7 @@ namespace pika::threads {
             {
                 PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
                     "local_priority_queue_scheduler::get_thread_count",
-                    "unknown thread priority value "
-                    "(execution::thread_priority::unknown)");
+                    "unknown thread priority value (execution::thread_priority::unknown)");
                 return 0;
             }
             }
@@ -969,14 +868,12 @@ namespace pika::threads {
         // Queries whether a given core is idle
         bool is_core_idle(std::size_t num_thread) const override
         {
-            if (num_thread < num_queues_ &&
-                queues_[num_thread].data_->get_queue_length() != 0)
+            if (num_thread < num_queues_ && queues_[num_thread].data_->get_queue_length() != 0)
             {
                 return false;
             }
             if (num_thread < num_high_priority_queues_ &&
-                high_priority_queues_[num_thread].data_->get_queue_length() !=
-                    0)
+                high_priority_queues_[num_thread].data_->get_queue_length() != 0)
             {
                 return false;
             }
@@ -986,24 +883,21 @@ namespace pika::threads {
         ///////////////////////////////////////////////////////////////////////
         // Enumerate matching threads from all queues
         bool enumerate_threads(
-            util::detail::function<bool(threads::detail::thread_id_type)> const&
-                f,
+            util::detail::function<bool(threads::detail::thread_id_type)> const& f,
             threads::detail::thread_schedule_state state =
                 threads::detail::thread_schedule_state::unknown) const override
         {
             bool result = true;
             for (std::size_t i = 0; i != num_high_priority_queues_; ++i)
             {
-                result = result &&
-                    high_priority_queues_[i].data_->enumerate_threads(f, state);
+                result = result && high_priority_queues_[i].data_->enumerate_threads(f, state);
             }
 
             result = result && low_priority_queue_.enumerate_threads(f, state);
 
             for (std::size_t i = 0; i != num_queues_; ++i)
             {
-                result =
-                    result && queues_[i].data_->enumerate_threads(f, state);
+                result = result && queues_[i].data_->enumerate_threads(f, state);
             }
             return result;
         }
@@ -1023,28 +917,25 @@ namespace pika::threads {
 
                 if (num_thread < num_high_priority_queues_)
                 {
-                    wait_time = high_priority_queues_[num_thread]
-                                    .data_->get_average_thread_wait_time();
+                    wait_time =
+                        high_priority_queues_[num_thread].data_->get_average_thread_wait_time();
                     ++count;
                 }
 
                 if (num_queues_ - 1 == num_thread)
                 {
-                    wait_time +=
-                        low_priority_queue_.get_average_thread_wait_time();
+                    wait_time += low_priority_queue_.get_average_thread_wait_time();
                     ++count;
                 }
 
-                wait_time +=
-                    queues_[num_thread].data_->get_average_thread_wait_time();
+                wait_time += queues_[num_thread].data_->get_average_thread_wait_time();
                 return wait_time / (count + 1);
             }
 
             // Return the cumulative average thread wait time for all queues.
             for (std::size_t i = 0; i != num_high_priority_queues_; ++i)
             {
-                wait_time += high_priority_queues_[i]
-                                 .data_->get_average_thread_wait_time();
+                wait_time += high_priority_queues_[i].data_->get_average_thread_wait_time();
                 ++count;
             }
 
@@ -1073,28 +964,25 @@ namespace pika::threads {
 
                 if (num_thread < num_high_priority_queues_)
                 {
-                    wait_time = high_priority_queues_[num_thread]
-                                    .data_->get_average_task_wait_time();
+                    wait_time =
+                        high_priority_queues_[num_thread].data_->get_average_task_wait_time();
                     ++count;
                 }
 
                 if (num_queues_ - 1 == num_thread)
                 {
-                    wait_time +=
-                        low_priority_queue_.get_average_task_wait_time();
+                    wait_time += low_priority_queue_.get_average_task_wait_time();
                     ++count;
                 }
 
-                wait_time +=
-                    queues_[num_thread].data_->get_average_task_wait_time();
+                wait_time += queues_[num_thread].data_->get_average_task_wait_time();
                 return wait_time / (count + 1);
             }
 
             // Return the cumulative average task wait time for all queues.
             for (std::size_t i = 0; i != num_high_priority_queues_; ++i)
             {
-                wait_time += high_priority_queues_[i]
-                                 .data_->get_average_task_wait_time();
+                wait_time += high_priority_queues_[i].data_->get_average_task_wait_time();
                 ++count;
             }
 
@@ -1114,9 +1002,8 @@ namespace pika::threads {
         /// manager to allow for maintenance tasks to be executed in the
         /// scheduler. Returns true if the OS thread calling this function
         /// has to be terminated (i.e. no more work has to be done).
-        bool wait_or_add_new(std::size_t num_thread, bool running,
-            std::int64_t& idle_loop_count, bool enable_stealing,
-            std::size_t& added) override
+        bool wait_or_add_new(std::size_t num_thread, bool running, std::int64_t& idle_loop_count,
+            bool enable_stealing, std::size_t& added) override
         {
             bool result = true;
 
@@ -1127,11 +1014,8 @@ namespace pika::threads {
 
             if (num_thread < num_high_priority_queues_)
             {
-                this_high_priority_queue =
-                    high_priority_queues_[num_thread].data_;
-                result =
-                    this_high_priority_queue->wait_or_add_new(running, added) &&
-                    result;
+                this_high_priority_queue = high_priority_queues_[num_thread].data_;
+                result = this_high_priority_queue->wait_or_add_new(running, added) && result;
                 if (0 != added)
                     return result;
             }
@@ -1152,31 +1036,25 @@ namespace pika::threads {
                 {
                     PIKA_ASSERT(idx != num_thread);
 
-                    if (idx < num_high_priority_queues_ &&
-                        num_thread < num_high_priority_queues_)
+                    if (idx < num_high_priority_queues_ && num_thread < num_high_priority_queues_)
                     {
                         thread_queue_type* q = high_priority_queues_[idx].data_;
-                        result = this_high_priority_queue->wait_or_add_new(
-                                     true, added, q) &&
-                            result;
+                        result =
+                            this_high_priority_queue->wait_or_add_new(true, added, q) && result;
 
                         if (0 != added)
                         {
                             q->increment_num_stolen_from_staged(added);
-                            this_high_priority_queue
-                                ->increment_num_stolen_to_staged(added);
+                            this_high_priority_queue->increment_num_stolen_to_staged(added);
                             return result;
                         }
                     }
 
-                    result = this_queue->wait_or_add_new(
-                                 true, added, queues_[idx].data_) &&
-                        result;
+                    result = this_queue->wait_or_add_new(true, added, queues_[idx].data_) && result;
 
                     if (0 != added)
                     {
-                        queues_[idx].data_->increment_num_stolen_from_staged(
-                            added);
+                        queues_[idx].data_->increment_num_stolen_from_staged(added);
                         this_queue->increment_num_stolen_to_staged(added);
                         return result;
                     }
@@ -1185,33 +1063,29 @@ namespace pika::threads {
 
 #ifdef PIKA_HAVE_THREAD_MINIMAL_DEADLOCK_DETECTION
             // no new work is available, are we deadlocked?
-            if (PIKA_UNLIKELY(get_minimal_deadlock_detection_enabled() &&
-                    LPIKA_ENABLED(error)))
+            if (PIKA_UNLIKELY(get_minimal_deadlock_detection_enabled() && LPIKA_ENABLED(error)))
             {
                 bool suspended_only = true;
 
                 for (std::size_t i = 0; suspended_only && i != num_queues_; ++i)
                 {
-                    suspended_only = queues_[i].data_->dump_suspended_threads(
-                        i, idle_loop_count, running);
+                    suspended_only =
+                        queues_[i].data_->dump_suspended_threads(i, idle_loop_count, running);
                 }
 
                 if (PIKA_UNLIKELY(suspended_only))
                 {
                     if (running)
                     {
-                        LTM_(error).format("pool({}), scheduler({}), "
-                                           "worker_thread({}): no new work "
-                                           "available, are we deadlocked?",
+                        LTM_(error).format("pool({}), scheduler({}), worker_thread({}): no new "
+                                           "work available, are we deadlocked?",
                             *this->get_parent_pool(), *this, num_thread);
                     }
                     else
                     {
                         LPIKA_CONSOLE_(pika::util::logging::level::error)
-                            .format(
-                                "  [TM] pool({}), scheduler({}), "
-                                "worker_thread({}): "
-                                "no new work available, are we deadlocked?\n",
+                            .format("  [TM] pool({}), scheduler({}), worker_thread({}): no new "
+                                    "work available, are we deadlocked?\n",
                                 *this->get_parent_pool(), *this, num_thread);
                     }
                 }
@@ -1222,8 +1096,7 @@ namespace pika::threads {
 
             if (num_thread == num_queues_ - 1)
             {
-                result = low_priority_queue_.wait_or_add_new(running, added) &&
-                    result;
+                result = low_priority_queue_.wait_or_add_new(running, added) && result;
             }
 
             return result;
@@ -1233,13 +1106,11 @@ namespace pika::threads {
         void on_start_thread(std::size_t num_thread) override
         {
             pika::threads::detail::set_local_thread_num_tss(num_thread);
-            pika::threads::detail::set_thread_pool_num_tss(
-                parent_pool_->get_pool_id().index());
+            pika::threads::detail::set_thread_pool_num_tss(parent_pool_->get_pool_id().index());
 
             if (nullptr == queues_[num_thread].data_)
             {
-                queues_[num_thread].data_ =
-                    new thread_queue_type(num_thread, thread_queue_init_);
+                queues_[num_thread].data_ = new thread_queue_type(num_thread, thread_queue_init_);
 
                 if (num_thread < num_high_priority_queues_)
                 {
@@ -1251,8 +1122,7 @@ namespace pika::threads {
             // forward this call to all queues etc.
             if (num_thread < num_high_priority_queues_)
             {
-                high_priority_queues_[num_thread].data_->on_start_thread(
-                    num_thread);
+                high_priority_queues_[num_thread].data_->on_start_thread(num_thread);
             }
 
             if (num_thread == num_queues_ - 1)
@@ -1264,10 +1134,8 @@ namespace pika::threads {
             auto const& topo = ::pika::threads::detail::create_topology();
 
             // get NUMA domain masks of all queues...
-            std::vector<::pika::threads::detail::mask_type> numa_masks(
-                num_threads);
-            std::vector<::pika::threads::detail::mask_type> core_masks(
-                num_threads);
+            std::vector<::pika::threads::detail::mask_type> numa_masks(num_threads);
+            std::vector<::pika::threads::detail::mask_type> core_masks(num_threads);
             for (std::size_t i = 0; i != num_threads; ++i)
             {
                 std::size_t num_pu = affinity_data_.get_pu_num(i);
@@ -1277,21 +1145,16 @@ namespace pika::threads {
 
             // iterate over the number of threads again to determine where to
             // steal from
-            std::ptrdiff_t radius =
-                std::lround(static_cast<double>(num_threads) / 2.0);
+            std::ptrdiff_t radius = std::lround(static_cast<double>(num_threads) / 2.0);
             victim_threads_[num_thread].data_.reserve(num_threads);
 
             std::size_t num_pu = affinity_data_.get_pu_num(num_thread);
-            ::pika::threads::detail::mask_cref_type pu_mask =
-                topo.get_thread_affinity_mask(num_pu);
-            ::pika::threads::detail::mask_cref_type numa_mask =
-                numa_masks[num_thread];
-            ::pika::threads::detail::mask_cref_type core_mask =
-                core_masks[num_thread];
+            ::pika::threads::detail::mask_cref_type pu_mask = topo.get_thread_affinity_mask(num_pu);
+            ::pika::threads::detail::mask_cref_type numa_mask = numa_masks[num_thread];
+            ::pika::threads::detail::mask_cref_type core_mask = core_masks[num_thread];
 
             // we allow the thread on the boundary of the NUMA domain to steal
-            ::pika::threads::detail::mask_type first_mask =
-                ::pika::threads::detail::mask_type();
+            ::pika::threads::detail::mask_type first_mask = ::pika::threads::detail::mask_type();
             ::pika::threads::detail::resize(
                 first_mask, ::pika::threads::detail::mask_size(pu_mask));
 
@@ -1301,54 +1164,47 @@ namespace pika::threads {
             else
                 first_mask = pu_mask;
 
-            auto iterate =
-                [&](pika::util::detail::function<bool(std::size_t)> f) {
-                    // check our neighbors in a radial fashion (left and right
-                    // alternating, increasing distance each iteration)
-                    std::ptrdiff_t i = 1;
-                    for (/**/; i < radius; ++i)
-                    {
-                        std::ptrdiff_t left =
-                            (static_cast<std::ptrdiff_t>(num_thread) - i) %
-                            static_cast<std::ptrdiff_t>(num_threads);
-                        if (left < 0)
-                            left =
-                                static_cast<std::ptrdiff_t>(num_threads) + left;
+            auto iterate = [&](pika::util::detail::function<bool(std::size_t)> f) {
+                // check our neighbors in a radial fashion (left and right
+                // alternating, increasing distance each iteration)
+                std::ptrdiff_t i = 1;
+                for (/**/; i < radius; ++i)
+                {
+                    std::ptrdiff_t left = (static_cast<std::ptrdiff_t>(num_thread) - i) %
+                        static_cast<std::ptrdiff_t>(num_threads);
+                    if (left < 0)
+                        left = static_cast<std::ptrdiff_t>(num_threads) + left;
 
-                        if (f(std::size_t(left)))
-                        {
-                            victim_threads_[num_thread].data_.push_back(
-                                static_cast<std::size_t>(left));
-                        }
-
-                        std::size_t right = (num_thread + i) % num_threads;
-                        if (f(right))
-                        {
-                            victim_threads_[num_thread].data_.push_back(right);
-                        }
-                    }
-                    if ((num_threads % 2) == 0)
+                    if (f(std::size_t(left)))
                     {
-                        std::size_t right = (num_thread + i) % num_threads;
-                        if (f(right))
-                        {
-                            victim_threads_[num_thread].data_.push_back(right);
-                        }
+                        victim_threads_[num_thread].data_.push_back(static_cast<std::size_t>(left));
                     }
-                };
+
+                    std::size_t right = (num_thread + i) % num_threads;
+                    if (f(right))
+                    {
+                        victim_threads_[num_thread].data_.push_back(right);
+                    }
+                }
+                if ((num_threads % 2) == 0)
+                {
+                    std::size_t right = (num_thread + i) % num_threads;
+                    if (f(right))
+                    {
+                        victim_threads_[num_thread].data_.push_back(right);
+                    }
+                }
+            };
 
             // check for threads which share the same core...
             iterate([&](std::size_t other_num_thread) {
-                return ::pika::threads::detail::any(
-                    core_mask & core_masks[other_num_thread]);
+                return ::pika::threads::detail::any(core_mask & core_masks[other_num_thread]);
             });
 
             // check for threads which share the same NUMA domain...
             iterate([&](std::size_t other_num_thread) {
-                return !::pika::threads::detail::any(
-                           core_mask & core_masks[other_num_thread]) &&
-                    ::pika::threads::detail::any(
-                        numa_mask & numa_masks[other_num_thread]);
+                return !::pika::threads::detail::any(core_mask & core_masks[other_num_thread]) &&
+                    ::pika::threads::detail::any(numa_mask & numa_masks[other_num_thread]);
             });
 
             // check for the rest and if we are NUMA aware
@@ -1356,8 +1212,7 @@ namespace pika::threads {
                 ::pika::threads::detail::any(first_mask & pu_mask))
             {
                 iterate([&](std::size_t other_num_thread) {
-                    return !::pika::threads::detail::any(
-                        numa_mask & numa_masks[other_num_thread]);
+                    return !::pika::threads::detail::any(numa_mask & numa_masks[other_num_thread]);
                 });
             }
         }
@@ -1366,8 +1221,7 @@ namespace pika::threads {
         {
             if (num_thread < num_high_priority_queues_)
             {
-                high_priority_queues_[num_thread].data_->on_stop_thread(
-                    num_thread);
+                high_priority_queues_[num_thread].data_->on_stop_thread(num_thread);
             }
             if (num_thread == num_queues_ - 1)
                 low_priority_queue_.on_stop_thread(num_thread);
@@ -1375,13 +1229,11 @@ namespace pika::threads {
             queues_[num_thread].data_->on_stop_thread(num_thread);
         }
 
-        void on_error(
-            std::size_t num_thread, std::exception_ptr const& e) override
+        void on_error(std::size_t num_thread, std::exception_ptr const& e) override
         {
             if (num_thread < num_high_priority_queues_)
             {
-                high_priority_queues_[num_thread].data_->on_error(
-                    num_thread, e);
+                high_priority_queues_[num_thread].data_->on_error(num_thread, e);
             }
             if (num_thread == num_queues_ - 1)
                 low_priority_queue_.on_error(num_thread, e);
@@ -1404,30 +1256,23 @@ namespace pika::threads {
 
         thread_queue_type low_priority_queue_;
 
-        std::vector<
-            pika::concurrency::detail::cache_line_data<thread_queue_type*>>
-            queues_;
-        std::vector<
-            pika::concurrency::detail::cache_line_data<thread_queue_type*>>
+        std::vector<pika::concurrency::detail::cache_line_data<thread_queue_type*>> queues_;
+        std::vector<pika::concurrency::detail::cache_line_data<thread_queue_type*>>
             high_priority_queues_;
-        std::vector<pika::concurrency::detail::cache_line_data<
-            std::vector<std::size_t>>>
+        std::vector<pika::concurrency::detail::cache_line_data<std::vector<std::size_t>>>
             victim_threads_;
     };
 }    // namespace pika::threads
 
 template <typename Mutex, typename PendingQueuing, typename StagedQueuing,
     typename TerminatedQueuing>
-struct fmt::formatter<pika::threads::local_priority_queue_scheduler<Mutex,
-    PendingQueuing, StagedQueuing, TerminatedQueuing>>
-  : fmt::formatter<pika::threads::detail::scheduler_base>
+struct fmt::formatter<pika::threads::local_priority_queue_scheduler<Mutex, PendingQueuing,
+    StagedQueuing, TerminatedQueuing>> : fmt::formatter<pika::threads::detail::scheduler_base>
 {
     template <typename FormatContext>
-    auto format(pika::threads::detail::scheduler_base const& scheduler,
-        FormatContext& ctx)
+    auto format(pika::threads::detail::scheduler_base const& scheduler, FormatContext& ctx)
     {
-        return fmt::formatter<pika::threads::detail::scheduler_base>::format(
-            scheduler, ctx);
+        return fmt::formatter<pika::threads::detail::scheduler_base>::format(scheduler, ctx);
     }
 };
 

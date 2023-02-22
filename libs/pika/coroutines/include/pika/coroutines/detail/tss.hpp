@@ -98,8 +98,8 @@ namespace pika::threads::coroutines::detail {
 
         void cleanup(bool cleanup_existing = true);
 
-        void reinit(std::shared_ptr<tss_cleanup_function> const& f, void* data,
-            bool cleanup_existing)
+        void reinit(
+            std::shared_ptr<tss_cleanup_function> const& f, void* data, bool cleanup_existing)
         {
             cleanup(cleanup_existing);
             func_ = f;
@@ -155,8 +155,8 @@ namespace pika::threads::coroutines::detail {
             return nullptr;
         }
 
-        void insert(void const* key,
-            std::shared_ptr<tss_cleanup_function> const& func, void* tss_data)
+        void insert(
+            void const* key, std::shared_ptr<tss_cleanup_function> const& func, void* tss_data)
         {
             data_.insert(std::make_pair(key, tss_data_node(func, tss_data)));
         }
@@ -185,20 +185,18 @@ namespace pika::threads::coroutines::detail {
     //////////////////////////////////////////////////////////////////////////
     PIKA_EXPORT tss_data_node* find_tss_data(void const* key);
     PIKA_EXPORT void* get_tss_data(void const* key);
-    PIKA_EXPORT void add_new_tss_node(void const* key,
-        std::shared_ptr<tss_cleanup_function> const& func, void* tss_data);
-    PIKA_EXPORT void erase_tss_node(
-        void const* key, bool cleanup_existing = false);
+    PIKA_EXPORT void add_new_tss_node(
+        void const* key, std::shared_ptr<tss_cleanup_function> const& func, void* tss_data);
+    PIKA_EXPORT void erase_tss_node(void const* key, bool cleanup_existing = false);
     PIKA_EXPORT void set_tss_data(void const* key,
-        std::shared_ptr<tss_cleanup_function> const& func,
-        void* tss_data = nullptr, bool cleanup_existing = false);
+        std::shared_ptr<tss_cleanup_function> const& func, void* tss_data = nullptr,
+        bool cleanup_existing = false);
 
     //////////////////////////////////////////////////////////////////////////
     PIKA_EXPORT tss_storage* create_tss_storage();
     PIKA_EXPORT void delete_tss_storage(tss_storage*& storage);
 
     PIKA_EXPORT std::size_t get_tss_thread_data(tss_storage* storage);
-    PIKA_EXPORT std::size_t set_tss_thread_data(
-        tss_storage* storage, std::size_t);
+    PIKA_EXPORT std::size_t set_tss_thread_data(tss_storage* storage, std::size_t);
 #endif
 }    // namespace pika::threads::coroutines::detail

@@ -27,9 +27,10 @@ namespace pika::detail {
     struct apply_dispatch
     {
         template <typename F, typename... Ts>
-        PIKA_FORCEINLINE static typename std::enable_if<
-            pika::detail::is_deferred_invocable<F, Ts...>::value, bool>::type
-        call(F&& f, Ts&&... ts)
+        PIKA_FORCEINLINE static
+            typename std::enable_if<pika::detail::is_deferred_invocable<F, Ts...>::value,
+                bool>::type
+            call(F&& f, Ts&&... ts)
         {
             // nvc++ thinks that exec is unused
             [[maybe_unused]] execution::parallel_executor exec;
@@ -49,11 +50,10 @@ namespace pika::detail {
             traits::is_two_way_executor<Executor>::value>::type>
     {
         template <typename Executor_, typename F, typename... Ts>
-        PIKA_FORCEINLINE static decltype(auto)
-        call(Executor_&& exec, F&& f, Ts&&... ts)
+        PIKA_FORCEINLINE static decltype(auto) call(Executor_&& exec, F&& f, Ts&&... ts)
         {
-            parallel::execution::post(PIKA_FORWARD(Executor_, exec),
-                PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
+            parallel::execution::post(
+                PIKA_FORWARD(Executor_, exec), PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
             return false;
         }
     };

@@ -28,9 +28,8 @@ namespace pika::threads::detail {
 
         default:
         {
-            PIKA_THROWS_IF(ec, pika::error::bad_parameter,
-                "thread::detail::create_work", "invalid initial state: {}",
-                data.initial_state);
+            PIKA_THROWS_IF(ec, pika::error::bad_parameter, "thread::detail::create_work",
+                "invalid initial state: {}", data.initial_state);
             return invalid_thread_id;
         }
         }
@@ -38,15 +37,14 @@ namespace pika::threads::detail {
 #ifdef PIKA_HAVE_THREAD_DESCRIPTION
         if (!data.description)
         {
-            PIKA_THROWS_IF(ec, pika::error::bad_parameter,
-                "thread::detail::create_work", "description is nullptr");
+            PIKA_THROWS_IF(ec, pika::error::bad_parameter, "thread::detail::create_work",
+                "description is nullptr");
             return invalid_thread_id;
         }
 #endif
 
         LTM_(info)
-            .format("create_work: pool({}), scheduler({}), initial_state({}), "
-                    "thread_priority({})",
+            .format("create_work: pool({}), scheduler({}), initial_state({}), thread_priority({})",
                 *scheduler->get_parent_pool(), *scheduler,
                 get_thread_state_name(data.initial_state),
                 execution::detail::get_thread_priority_name(data.priority))

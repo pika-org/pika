@@ -5,10 +5,10 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #if defined(_MSC_VER)
-#include <intrin.h>
+# include <intrin.h>
 #endif
 #if defined(__GNUC__)
-#include <emmintrin.h>
+# include <emmintrin.h>
 #endif
 
 int main()

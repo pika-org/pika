@@ -60,11 +60,7 @@ int main(int ac, char* av[])
         // clang-format on
 
         variables_map vm;
-        store(command_line_parser(ac, av)
-                  .options(desc)
-                  .extra_parser(at_option_parser)
-                  .run(),
-            vm);
+        store(command_line_parser(ac, av).options(desc).extra_parser(at_option_parser).run(), vm);
 
         if (vm.count("help"))
         {
@@ -76,8 +72,8 @@ int main(int ac, char* av[])
             ifstream ifs(vm["response-file"].as<string>().c_str());
             if (!ifs)
             {
-                cout << "Could not open the response file: "
-                     << vm["response-file"].as<string>() << "\n";
+                cout << "Could not open the response file: " << vm["response-file"].as<string>()
+                     << "\n";
                 return 1;
             }
 

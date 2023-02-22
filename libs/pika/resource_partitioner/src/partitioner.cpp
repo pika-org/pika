@@ -109,10 +109,9 @@ namespace pika::resource {
         {
             // if the resource partitioner is not accessed for the first time
             // if the command-line parsing has not yet been done
-            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
-                "pika::resource::get_partitioner",
-                "can be called only after the resource partitioner has "
-                "been initialized and before it has been deleted.");
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::resource::get_partitioner",
+                "can be called only after the resource partitioner has been initialized and before "
+                "it has been deleted.");
         }
 
         return *rp;
@@ -124,12 +123,10 @@ namespace pika::resource {
     }
 
     namespace detail {
-        detail::partitioner& create_partitioner(
-            resource::partitioner_mode rpmode, pika::util::section rtcfg,
-            pika::detail::affinity_data affinity_data)
+        detail::partitioner& create_partitioner(resource::partitioner_mode rpmode,
+            pika::util::section rtcfg, pika::detail::affinity_data affinity_data)
         {
-            std::unique_ptr<detail::partitioner>& rp =
-                detail::get_partitioner();
+            std::unique_ptr<detail::partitioner>& rp = detail::get_partitioner();
 
             rp->init(rpmode, rtcfg, affinity_data);
 
@@ -138,8 +135,8 @@ namespace pika::resource {
     }    // namespace detail
 
     ///////////////////////////////////////////////////////////////////////////
-    partitioner::partitioner(resource::partitioner_mode rpmode,
-        pika::util::section rtcfg, pika::detail::affinity_data affinity_data)
+    partitioner::partitioner(resource::partitioner_mode rpmode, pika::util::section rtcfg,
+        pika::detail::affinity_data affinity_data)
       : partitioner_(detail::create_partitioner(rpmode, rtcfg, affinity_data))
     {
     }
@@ -167,14 +164,14 @@ namespace pika::resource {
         return partitioner_.get_default_pool_name();
     }
 
-    void partitioner::add_resource(pu const& p, std::string const& pool_name,
-        bool exclusive, std::size_t num_threads /*= 1*/)
+    void partitioner::add_resource(
+        pu const& p, std::string const& pool_name, bool exclusive, std::size_t num_threads /*= 1*/)
     {
         partitioner_.add_resource(p, pool_name, exclusive, num_threads);
     }
 
-    void partitioner::add_resource(std::vector<pu> const& pv,
-        std::string const& pool_name, bool exclusive /*= true*/)
+    void partitioner::add_resource(
+        std::vector<pu> const& pv, std::string const& pool_name, bool exclusive /*= true*/)
     {
         partitioner_.add_resource(pv, pool_name, exclusive);
     }
@@ -185,14 +182,14 @@ namespace pika::resource {
         partitioner_.add_resource(c, pool_name, exclusive);
     }
 
-    void partitioner::add_resource(std::vector<core>& cv,
-        std::string const& pool_name, bool exclusive /*= true*/)
+    void partitioner::add_resource(
+        std::vector<core>& cv, std::string const& pool_name, bool exclusive /*= true*/)
     {
         partitioner_.add_resource(cv, pool_name, exclusive);
     }
 
-    void partitioner::add_resource(numa_domain const& nd,
-        std::string const& pool_name, bool exclusive /*= true*/)
+    void partitioner::add_resource(
+        numa_domain const& nd, std::string const& pool_name, bool exclusive /*= true*/)
     {
         partitioner_.add_resource(nd, pool_name, exclusive);
     }
@@ -227,9 +224,8 @@ namespace pika::resource {
 
     namespace detail {
 
-        ::pika::resource::partitioner make_partitioner(
-            resource::partitioner_mode rpmode, pika::util::section rtcfg,
-            pika::detail::affinity_data affinity_data)
+        ::pika::resource::partitioner make_partitioner(resource::partitioner_mode rpmode,
+            pika::util::section rtcfg, pika::detail::affinity_data affinity_data)
         {
             return ::pika::resource::partitioner(rpmode, rtcfg, affinity_data);
         }

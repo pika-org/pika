@@ -9,7 +9,7 @@
 
 #include <pika/config.hpp>
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <pika/execution_base/p2300_forward.hpp>
+# include <pika/execution_base/p2300_forward.hpp>
 
 namespace pika::execution::experimental {
     template <typename Receiver>
@@ -37,16 +37,16 @@ namespace pika::execution::experimental {
     }    // namespace detail
 }    // namespace pika::execution::experimental
 #else
-#include <pika/config/constexpr.hpp>
-#include <pika/functional/tag_invoke.hpp>
+# include <pika/config/constexpr.hpp>
+# include <pika/functional/tag_invoke.hpp>
 
-#include <exception>
-#include <type_traits>
-#include <utility>
+# include <exception>
+# include <type_traits>
+# include <utility>
 
 namespace pika::execution::experimental {
 
-#if defined(DOXYGEN)
+# if defined(DOXYGEN)
     /// set_value is a customization point object. The expression
     /// `pika::execution::set_value(r, as...)` is equivalent to:
     ///     * `r.set_value(as...)`, if that expression is valid. If the function selected
@@ -57,7 +57,7 @@ namespace pika::execution::experimental {
     ///       `void set_value();`
     ///     * Otherwise, the expression is ill-formed.
     ///
-    /// The customization is implemented in terms of `pika::functional::tag_invoke`.
+    /// The customization is implemented in terms of `pika::functional::detail::tag_invoke`.
     template <typename R, typename... As>
     void set_value(R&& r, As&&... as);
 
@@ -71,7 +71,7 @@ namespace pika::execution::experimental {
     ///       `void set_stopped();`
     ///     * Otherwise, the expression is ill-formed.
     ///
-    /// The customization is implemented in terms of `pika::functional::tag_invoke`.
+    /// The customization is implemented in terms of `pika::functional::detail::tag_invoke`.
     template <typename R>
     void set_stopped(R&& r);
 
@@ -85,10 +85,10 @@ namespace pika::execution::experimental {
     ///       `void set_error();`
     ///     * Otherwise, the expression is ill-formed.
     ///
-    /// The customization is implemented in terms of `pika::functional::tag_invoke`.
+    /// The customization is implemented in terms of `pika::functional::detail::tag_invoke`.
     template <typename R, typename E>
     void set_error(R&& r, E&& e);
-#endif
+# endif
 
     /// Receiving values from asynchronous computations is handled by the `Receiver`
     /// concept. A `Receiver` needs to be able to receive an error or be marked as
@@ -131,17 +131,17 @@ namespace pika::execution::experimental {
     struct is_receiver_of;
 
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE
-    struct set_value_t : pika::functional::tag<set_value_t>
+    struct set_value_t : pika::functional::detail::tag<set_value_t>
     {
     } set_value{};
 
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE
-    struct set_error_t : pika::functional::tag_noexcept<set_error_t>
+    struct set_error_t : pika::functional::detail::tag_noexcept<set_error_t>
     {
     } set_error{};
 
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE
-    struct set_stopped_t : pika::functional::tag_noexcept<set_stopped_t>
+    struct set_stopped_t : pika::functional::detail::tag_noexcept<set_stopped_t>
     {
     } set_stopped{};
 
@@ -166,8 +166,7 @@ namespace pika::execution::experimental {
 
     template <typename T, typename E>
     struct is_receiver
-      : detail::is_receiver_impl<
-            std::is_move_constructible<std::decay_t<T>>::value &&
+      : detail::is_receiver_impl<std::is_move_constructible<std::decay_t<T>>::value &&
                 std::is_constructible<std::decay_t<T>, T>::value,
             T, E>
     {
@@ -188,15 +187,13 @@ namespace pika::execution::experimental {
 
         template <typename T, typename... As>
         struct is_receiver_of_impl<true, T, As...>
-          : std::integral_constant<bool,
-                std::is_invocable_v<set_value_t, std::decay_t<T>&&, As...>>
+          : std::integral_constant<bool, std::is_invocable_v<set_value_t, std::decay_t<T>&&, As...>>
         {
         };
     }    // namespace detail
 
     template <typename T, typename... As>
-    struct is_receiver_of
-      : detail::is_receiver_of_impl<is_receiver_v<T>, T, As...>
+    struct is_receiver_of : detail::is_receiver_of_impl<is_receiver_v<T>, T, As...>
     {
     };
 

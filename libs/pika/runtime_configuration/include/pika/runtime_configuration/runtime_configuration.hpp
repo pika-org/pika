@@ -50,8 +50,7 @@ namespace pika::util {
 
         // Load application specific configuration and merge it with the
         // default configuration loaded from pika.ini
-        bool load_application_configuration(
-            char const* filename, error_code& ec = throws);
+        bool load_application_configuration(char const* filename, error_code& ec = throws);
 
         // Can be set to true if we want to use the ITT notify tools API.
         bool get_itt_notify_mode() const;
@@ -68,8 +67,7 @@ namespace pika::util {
         std::size_t get_spinlock_deadlock_detection_limit() const;
         std::size_t get_spinlock_deadlock_warning_limit() const;
 
-#if defined(__linux) || defined(linux) || defined(__linux__) ||                \
-    defined(__FreeBSD__)
+#if defined(__linux) || defined(linux) || defined(__linux__) || defined(__FreeBSD__)
         bool use_stack_guard_pages() const;
 #endif
 
@@ -89,15 +87,14 @@ namespace pika::util {
         }
 
         // Will return the requested stack size to use for an pika-threads.
-        std::ptrdiff_t get_stack_size(
-            execution::thread_stacksize stacksize) const;
+        std::ptrdiff_t get_stack_size(execution::thread_stacksize stacksize) const;
 
         // Return the configured sizes of any of the know thread pools
         std::size_t get_thread_pool_size(char const* poolname) const;
 
     private:
-        std::ptrdiff_t init_stack_size(char const* entryname,
-            char const* defaultvaluestr, std::ptrdiff_t defaultvalue) const;
+        std::ptrdiff_t init_stack_size(
+            char const* entryname, char const* defaultvaluestr, std::ptrdiff_t defaultvalue) const;
 
         std::ptrdiff_t init_small_stack_size() const;
         std::ptrdiff_t init_medium_stack_size() const;
@@ -105,8 +102,8 @@ namespace pika::util {
         std::ptrdiff_t init_huge_stack_size() const;
 
         void pre_initialize_ini();
-        void post_initialize_ini(std::string& pika_ini_file,
-            std::vector<std::string> const& cmdline_ini_defs);
+        void post_initialize_ini(
+            std::string& pika_ini_file, std::vector<std::string> const& cmdline_ini_defs);
         void pre_initialize_logging_ini();
 
         void reconfigure();

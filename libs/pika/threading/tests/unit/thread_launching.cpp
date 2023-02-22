@@ -76,8 +76,7 @@ struct callable_noncopyable_no_args
     callable_noncopyable_no_args() {}
 
     callable_noncopyable_no_args(callable_noncopyable_no_args const&) = delete;
-    callable_noncopyable_no_args& operator=(
-        callable_noncopyable_no_args const&) = delete;
+    callable_noncopyable_no_args& operator=(callable_noncopyable_no_args const&) = delete;
 
     void operator()() const
     {
@@ -138,8 +137,7 @@ struct callable_multiple_arg
         called_two_arg1 = arg1;
         called_two_arg2 = arg2;
     }
-    void operator()(
-        std::string const& arg1, std::vector<int> const& arg2, int arg3) const
+    void operator()(std::string const& arg1, std::vector<int> const& arg2, int arg3) const
     {
         called_three = true;
         called_three_arg1 = arg1;

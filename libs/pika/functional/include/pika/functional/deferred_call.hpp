@@ -9,7 +9,6 @@
 #include <pika/config.hpp>
 #include <pika/datastructures/member_pack.hpp>
 #include <pika/functional/invoke_fused.hpp>
-#include <pika/functional/invoke_result.hpp>
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
 #include <pika/type_support/decay.hpp>
@@ -22,27 +21,23 @@
 namespace pika::detail {
     template <typename F, typename... Ts>
     struct is_deferred_invocable
-      : std::is_invocable<detail::decay_unwrap_t<F>,
-            detail::decay_unwrap_t<Ts>...>
+      : std::is_invocable<detail::decay_unwrap_t<F>, detail::decay_unwrap_t<Ts>...>
     {
     };
 
     template <typename F, typename... Ts>
-    inline constexpr bool is_deferred_invocable_v =
-        is_deferred_invocable<F, Ts...>::value;
+    inline constexpr bool is_deferred_invocable_v = is_deferred_invocable<F, Ts...>::value;
 }    // namespace pika::detail
 
 namespace pika::util::detail {
     template <typename F, typename... Ts>
     struct invoke_deferred_result
-      : util::detail::invoke_result<::pika::detail::decay_unwrap_t<F>,
-            ::pika::detail::decay_unwrap_t<Ts>...>
+      : std::invoke_result<::pika::detail::decay_unwrap_t<F>, ::pika::detail::decay_unwrap_t<Ts>...>
     {
     };
 
     template <typename F, typename... Ts>
-    using invoke_deferred_result_t =
-        typename invoke_deferred_result<F, Ts...>::type;
+    using invoke_deferred_result_t = typename invoke_deferred_result<F, Ts...>::type;
 
     ///////////////////////////////////////////////////////////////////////
     template <typename F, typename Is, typename... Ts>
@@ -75,10 +70,9 @@ namespace pika::util::detail {
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         PIKA_HOST_DEVICE
-        PIKA_FORCEINLINE util::detail::invoke_result_t<F, Ts...> operator()()
+        PIKA_FORCEINLINE std::invoke_result_t<F, Ts...> operator()()
         {
-            return PIKA_INVOKE(
-                PIKA_MOVE(_f), PIKA_MOVE(_args).template get<Is>()...);
+            return PIKA_INVOKE(PIKA_MOVE(_f), PIKA_MOVE(_args).template get<Is>()...);
         }
 
         constexpr std::size_t get_function_address() const
@@ -98,12 +92,12 @@ namespace pika::util::detail {
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
         util::itt::string_handle get_function_annotation_itt() const
         {
-#if defined(PIKA_HAVE_THREAD_DESCRIPTION)
+# if defined(PIKA_HAVE_THREAD_DESCRIPTION)
             return pika::detail::get_function_annotation_itt<F>::call(_f);
-#else
+# else
             static util::itt::string_handle sh("deferred");
             return sh;
-#endif
+# endif
         }
 #endif
 
@@ -121,8 +115,7 @@ namespace pika::util::detail {
             "F shall be Callable with decay_t<Ts> arguments");
 
         using result_type = deferred<std::decay_t<F>,
-            util::detail::make_index_pack_t<sizeof...(Ts)>,
-            ::pika::detail::decay_unwrap_t<Ts>...>;
+            util::detail::make_index_pack_t<sizeof...(Ts)>, ::pika::detail::decay_unwrap_t<Ts>...>;
 
         return result_type(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...);
     }
@@ -131,8 +124,8 @@ namespace pika::util::detail {
     template <typename F>
     inline std::decay_t<F> deferred_call(F&& f)
     {
-        static_assert(pika::detail::is_deferred_invocable_v<F>,
-            "F shall be Callable with no arguments");
+        static_assert(
+            pika::detail::is_deferred_invocable_v<F>, "F shall be Callable with no arguments");
 
         return PIKA_FORWARD(F, f);
     }
@@ -145,8 +138,7 @@ namespace pika::detail {
     template <typename F, typename... Ts>
     struct get_function_address<util::detail::deferred<F, Ts...>>
     {
-        static constexpr std::size_t call(
-            util::detail::deferred<F, Ts...> const& f) noexcept
+        static constexpr std::size_t call(util::detail::deferred<F, Ts...> const& f) noexcept
         {
             return f.get_function_address();
         }
@@ -156,23 +148,21 @@ namespace pika::detail {
     template <typename F, typename... Ts>
     struct get_function_annotation<util::detail::deferred<F, Ts...>>
     {
-        static constexpr char const* call(
-            util::detail::deferred<F, Ts...> const& f) noexcept
+        static constexpr char const* call(util::detail::deferred<F, Ts...> const& f) noexcept
         {
             return f.get_function_annotation();
         }
     };
 
-#if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
+# if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
     template <typename F, typename... Ts>
     struct get_function_annotation_itt<util::detail::deferred<F, Ts...>>
     {
-        static util::itt::string_handle call(
-            util::detail::deferred<F, Ts...> const& f) noexcept
+        static util::itt::string_handle call(util::detail::deferred<F, Ts...> const& f) noexcept
         {
             return f.get_function_annotation_itt();
         }
     };
-#endif
+# endif
 }    // namespace pika::detail
 #endif

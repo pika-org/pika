@@ -19,13 +19,12 @@
 namespace test {
     template <typename BaseIterator, typename IteratorTag>
     struct test_iterator
-      : pika::util::iterator_adaptor<test_iterator<BaseIterator, IteratorTag>,
-            BaseIterator, void, IteratorTag>
+      : pika::util::iterator_adaptor<test_iterator<BaseIterator, IteratorTag>, BaseIterator, void,
+            IteratorTag>
     {
     private:
-        using base_type = pika::util::iterator_adaptor<
-            test_iterator<BaseIterator, IteratorTag>, BaseIterator, void,
-            IteratorTag>;
+        using base_type = pika::util::iterator_adaptor<test_iterator<BaseIterator, IteratorTag>,
+            BaseIterator, void, IteratorTag>;
 
     public:
         test_iterator()
@@ -45,8 +44,7 @@ struct has_nested_type : std::integral_constant<bool, false>
 };
 
 template <typename T>
-struct has_nested_type<T, std::void_t<typename T::type>>
-  : std::integral_constant<bool, true>
+struct has_nested_type<T, std::void_t<typename T::type>> : std::integral_constant<bool, true>
 {
 };
 
@@ -194,8 +192,7 @@ struct random_access_traversal_iterator
         return copy -= n;
     }
 
-    difference_type operator-(
-        const random_access_traversal_iterator& that) const
+    difference_type operator-(const random_access_traversal_iterator& that) const
     {
         return this->state - that.state;
     }
@@ -250,12 +247,9 @@ void addition_result()
         }
     };
 
-    PIKA_TEST_MSG(
-        (std::is_same<B, typename addition_result<C, A>::type>::value),
-        "deduced type");
+    PIKA_TEST_MSG((std::is_same<B, typename addition_result<C, A>::type>::value), "deduced type");
 
-    PIKA_TEST_MSG(
-        (!has_nested_type<addition_result<B, A>>::value), "invalid operation");
+    PIKA_TEST_MSG((!has_nested_type<addition_result<B, A>>::value), "invalid operation");
 }
 
 void dereference_result()
@@ -274,12 +268,9 @@ void dereference_result()
         }
     };
 
-    PIKA_TEST_MSG(
-        (std::is_same<A, typename dereference_result<B>::type>::value),
-        "deduced type");
+    PIKA_TEST_MSG((std::is_same<A, typename dereference_result<B>::type>::value), "deduced type");
 
-    PIKA_TEST_MSG(
-        (!has_nested_type<dereference_result<A>>::value), "invalid operation");
+    PIKA_TEST_MSG((!has_nested_type<dereference_result<A>>::value), "invalid operation");
 }
 
 void equality_result()
@@ -304,8 +295,7 @@ void equality_result()
 
     PIKA_TEST_MSG((std::is_same_v<B, equality_result_t<C, A>>), "deduced type");
 
-    PIKA_TEST_MSG(
-        (!has_nested_type<equality_result<B, A>>::value), "invalid operation");
+    PIKA_TEST_MSG((!has_nested_type<equality_result<B, A>>::value), "invalid operation");
 }
 
 void inequality_result()
@@ -328,11 +318,9 @@ void inequality_result()
         }
     };
 
-    PIKA_TEST_MSG(
-        (std::is_same_v<B, inequality_result_t<C, A>>), "deduced type");
+    PIKA_TEST_MSG((std::is_same_v<B, inequality_result_t<C, A>>), "deduced type");
 
-    PIKA_TEST_MSG((!has_nested_type<inequality_result<B, A>>::value),
-        "invalid operation");
+    PIKA_TEST_MSG((!has_nested_type<inequality_result<B, A>>::value), "invalid operation");
 }
 
 void inplace_addition_result()
@@ -355,11 +343,9 @@ void inplace_addition_result()
     };
 
     PIKA_TEST_MSG(
-        (std::is_same<B, typename inplace_addition_result<C, A>::type>::value),
-        "deduced type");
+        (std::is_same<B, typename inplace_addition_result<C, A>::type>::value), "deduced type");
 
-    PIKA_TEST_MSG((!has_nested_type<inplace_addition_result<B, A>>::value),
-        "invalid operation");
+    PIKA_TEST_MSG((!has_nested_type<inplace_addition_result<B, A>>::value), "invalid operation");
 }
 
 void inplace_subtraction_result()
@@ -381,12 +367,10 @@ void inplace_subtraction_result()
         }
     };
 
-    PIKA_TEST_MSG((std::is_same<B,
-                      typename inplace_subtraction_result<C, A>::type>::value),
-        "deduced type");
+    PIKA_TEST_MSG(
+        (std::is_same<B, typename inplace_subtraction_result<C, A>::type>::value), "deduced type");
 
-    PIKA_TEST_MSG((!has_nested_type<inplace_subtraction_result<B, A>>::value),
-        "invalid operation");
+    PIKA_TEST_MSG((!has_nested_type<inplace_subtraction_result<B, A>>::value), "invalid operation");
 }
 
 void predecrement_result()
@@ -406,12 +390,9 @@ void predecrement_result()
         }
     };
 
-    PIKA_TEST_MSG(
-        (std::is_same<A&, typename predecrement_result<B>::type>::value),
-        "deduced type");
+    PIKA_TEST_MSG((std::is_same<A&, typename predecrement_result<B>::type>::value), "deduced type");
 
-    PIKA_TEST_MSG(
-        (!has_nested_type<predecrement_result<A>>::value), "invalid operation");
+    PIKA_TEST_MSG((!has_nested_type<predecrement_result<A>>::value), "invalid operation");
 }
 
 void preincrement_result()
@@ -431,12 +412,9 @@ void preincrement_result()
         }
     };
 
-    PIKA_TEST_MSG(
-        (std::is_same<A&, typename preincrement_result<B>::type>::value),
-        "deduced type");
+    PIKA_TEST_MSG((std::is_same<A&, typename preincrement_result<B>::type>::value), "deduced type");
 
-    PIKA_TEST_MSG(
-        (!has_nested_type<preincrement_result<A>>::value), "invalid operation");
+    PIKA_TEST_MSG((!has_nested_type<preincrement_result<A>>::value), "invalid operation");
 }
 
 void postdecrement_result()
@@ -455,12 +433,9 @@ void postdecrement_result()
         }
     };
 
-    PIKA_TEST_MSG(
-        (std::is_same<A, typename postdecrement_result<B>::type>::value),
-        "deduced type");
+    PIKA_TEST_MSG((std::is_same<A, typename postdecrement_result<B>::type>::value), "deduced type");
 
-    PIKA_TEST_MSG((!has_nested_type<postdecrement_result<A>>::value),
-        "invalid operation");
+    PIKA_TEST_MSG((!has_nested_type<postdecrement_result<A>>::value), "invalid operation");
 }
 
 void postincrement_result()
@@ -479,12 +454,9 @@ void postincrement_result()
         }
     };
 
-    PIKA_TEST_MSG(
-        (std::is_same<A, typename postincrement_result<B>::type>::value),
-        "deduced type");
+    PIKA_TEST_MSG((std::is_same<A, typename postincrement_result<B>::type>::value), "deduced type");
 
-    PIKA_TEST_MSG((!has_nested_type<postincrement_result<A>>::value),
-        "invalid operation");
+    PIKA_TEST_MSG((!has_nested_type<postincrement_result<A>>::value), "invalid operation");
 }
 
 void subscript_result()
@@ -506,12 +478,9 @@ void subscript_result()
         }
     };
 
-    PIKA_TEST_MSG(
-        (std::is_same<B, typename subscript_result<C, A>::type>::value),
-        "deduced type");
+    PIKA_TEST_MSG((std::is_same<B, typename subscript_result<C, A>::type>::value), "deduced type");
 
-    PIKA_TEST_MSG(
-        (!has_nested_type<subscript_result<B, A>>::value), "invalid operation");
+    PIKA_TEST_MSG((!has_nested_type<subscript_result<B, A>>::value), "invalid operation");
 }
 
 void subtraction_result()
@@ -534,11 +503,9 @@ void subtraction_result()
     };
 
     PIKA_TEST_MSG(
-        (std::is_same<B, typename subtraction_result<C, A>::type>::value),
-        "deduced type");
+        (std::is_same<B, typename subtraction_result<C, A>::type>::value), "deduced type");
 
-    PIKA_TEST_MSG((!has_nested_type<subtraction_result<B, A>>::value),
-        "invalid operation");
+    PIKA_TEST_MSG((!has_nested_type<subtraction_result<B, A>>::value), "invalid operation");
 }
 
 void bidirectional_concept()
@@ -547,38 +514,33 @@ void bidirectional_concept()
 
     {
         using iterator = std::ostream_iterator<int>;
-        PIKA_TEST_MSG(
-            (!bidirectional_concept<iterator>::value), "output iterator");
+        PIKA_TEST_MSG((!bidirectional_concept<iterator>::value), "output iterator");
     }
     {
         using iterator = std::istream_iterator<int>;
-        PIKA_TEST_MSG(
-            (!bidirectional_concept<iterator>::value), "input iterator");
+        PIKA_TEST_MSG((!bidirectional_concept<iterator>::value), "input iterator");
     }
     {
         using iterator = typename std::forward_list<int>::iterator;
-        PIKA_TEST_MSG(
-            (!bidirectional_concept<iterator>::value), "forward iterator");
+        PIKA_TEST_MSG((!bidirectional_concept<iterator>::value), "forward iterator");
     }
     {
         using iterator = typename std::list<int>::iterator;
-        PIKA_TEST_MSG(
-            (bidirectional_concept<iterator>::value), "bidirectional iterator");
+        PIKA_TEST_MSG((bidirectional_concept<iterator>::value), "bidirectional iterator");
     }
     {
         using iterator = typename std::vector<int>::iterator;
-        PIKA_TEST_MSG(
-            (bidirectional_concept<iterator>::value), "random access iterator");
+        PIKA_TEST_MSG((bidirectional_concept<iterator>::value), "random access iterator");
     }
     {
         using iterator = bidirectional_traversal_iterator;
-        PIKA_TEST_MSG((bidirectional_concept<iterator>::value),
-            "bidirectional traversal input iterator");
+        PIKA_TEST_MSG(
+            (bidirectional_concept<iterator>::value), "bidirectional traversal input iterator");
     }
     {
         using iterator = random_access_traversal_iterator;
-        PIKA_TEST_MSG((bidirectional_concept<iterator>::value),
-            "random access traversal input iterator");
+        PIKA_TEST_MSG(
+            (bidirectional_concept<iterator>::value), "random access traversal input iterator");
     }
 }
 
@@ -592,33 +554,28 @@ void random_access_concept()
 
     {
         using iterator = std::ostream_iterator<int>;
-        PIKA_TEST_MSG(
-            (!random_access_concept<iterator>::value), "output iterator");
+        PIKA_TEST_MSG((!random_access_concept<iterator>::value), "output iterator");
     }
     {
         using iterator = std::istream_iterator<int>;
-        PIKA_TEST_MSG(
-            (!random_access_concept<iterator>::value), "input iterator");
+        PIKA_TEST_MSG((!random_access_concept<iterator>::value), "input iterator");
     }
     {
         using iterator = typename std::forward_list<int>::iterator;
-        PIKA_TEST_MSG(
-            (!random_access_concept<iterator>::value), "forward iterator");
+        PIKA_TEST_MSG((!random_access_concept<iterator>::value), "forward iterator");
     }
     {
         using iterator = typename std::list<int>::iterator;
-        PIKA_TEST_MSG((!random_access_concept<iterator>::value),
-            "bidirectional iterator");
+        PIKA_TEST_MSG((!random_access_concept<iterator>::value), "bidirectional iterator");
     }
     {
         using iterator = typename std::vector<int>::iterator;
-        PIKA_TEST_MSG(
-            (random_access_concept<iterator>::value), "random access iterator");
+        PIKA_TEST_MSG((random_access_concept<iterator>::value), "random access iterator");
     }
     {
         using iterator = bidirectional_traversal_iterator;
-        PIKA_TEST_MSG((!random_access_concept<iterator>::value),
-            "bidirectional traversal input iterator");
+        PIKA_TEST_MSG(
+            (!random_access_concept<iterator>::value), "bidirectional traversal input iterator");
     }
     {
         using iterator = random_access_traversal_iterator;
@@ -627,35 +584,29 @@ void random_access_concept()
         static_assert(
             std::is_same<iterator,
                 typename addition_result<iterator,
-                    typename std::iterator_traits<iterator>::difference_type>::
-                    type>::value,
+                    typename std::iterator_traits<iterator>::difference_type>::type>::value,
             "");
         static_assert(
             std::is_same<typename std::add_lvalue_reference<iterator>::type,
                 typename inplace_addition_result<iterator,
-                    typename std::iterator_traits<iterator>::difference_type>::
-                    type>::value,
+                    typename std::iterator_traits<iterator>::difference_type>::type>::value,
             "");
         static_assert(
             std::is_same<iterator,
                 typename subtraction_result<iterator,
-                    typename std::iterator_traits<iterator>::difference_type>::
-                    type>::value,
+                    typename std::iterator_traits<iterator>::difference_type>::type>::value,
             "");
-        static_assert(
-            std::is_same<
-                typename std::iterator_traits<iterator>::difference_type,
-                typename subtraction_result<iterator, iterator>::type>::value,
+        static_assert(std::is_same<typename std::iterator_traits<iterator>::difference_type,
+                          typename subtraction_result<iterator, iterator>::type>::value,
             "");
         static_assert(
             std::is_same<typename std::add_lvalue_reference<iterator>::type,
                 typename inplace_subtraction_result<iterator,
-                    typename std::iterator_traits<iterator>::difference_type>::
-                    type>::value,
+                    typename std::iterator_traits<iterator>::difference_type>::type>::value,
             "");
 
-        PIKA_TEST_MSG((random_access_concept<iterator>::value),
-            "random access traversal input iterator");
+        PIKA_TEST_MSG(
+            (random_access_concept<iterator>::value), "random access traversal input iterator");
     }
 }
 
@@ -665,45 +616,38 @@ void satisfy_traversal_concept_forward()
 
     {
         using iterator = std::ostream_iterator<int>;
-        PIKA_TEST_MSG((!satisfy_traversal_concept<iterator,
-                          pika::forward_traversal_tag>::value),
+        PIKA_TEST_MSG((!satisfy_traversal_concept<iterator, pika::forward_traversal_tag>::value),
             "output iterator");
     }
     {
         using iterator = std::istream_iterator<int>;
-        PIKA_TEST_MSG((!satisfy_traversal_concept<iterator,
-                          pika::forward_traversal_tag>::value),
+        PIKA_TEST_MSG((!satisfy_traversal_concept<iterator, pika::forward_traversal_tag>::value),
             "input iterator");
     }
     {
         // see comment on definition for explanation
         using iterator = typename std::forward_list<int>::iterator;
-        PIKA_TEST_MSG((!satisfy_traversal_concept<iterator,
-                          pika::forward_traversal_tag>::value),
+        PIKA_TEST_MSG((!satisfy_traversal_concept<iterator, pika::forward_traversal_tag>::value),
             "forward iterator");
     }
     {
         using iterator = typename std::list<int>::iterator;
-        PIKA_TEST_MSG((satisfy_traversal_concept<iterator,
-                          pika::forward_traversal_tag>::value),
+        PIKA_TEST_MSG((satisfy_traversal_concept<iterator, pika::forward_traversal_tag>::value),
             "bidirectional iterator");
     }
     {
         using iterator = typename std::vector<int>::iterator;
-        PIKA_TEST_MSG((satisfy_traversal_concept<iterator,
-                          pika::forward_traversal_tag>::value),
+        PIKA_TEST_MSG((satisfy_traversal_concept<iterator, pika::forward_traversal_tag>::value),
             "random access iterator");
     }
     {
         using iterator = bidirectional_traversal_iterator;
-        PIKA_TEST_MSG((satisfy_traversal_concept<iterator,
-                          pika::forward_traversal_tag>::value),
+        PIKA_TEST_MSG((satisfy_traversal_concept<iterator, pika::forward_traversal_tag>::value),
             "bidirectional traversal input iterator");
     }
     {
         using iterator = random_access_traversal_iterator;
-        PIKA_TEST_MSG((satisfy_traversal_concept<iterator,
-                          pika::forward_traversal_tag>::value),
+        PIKA_TEST_MSG((satisfy_traversal_concept<iterator, pika::forward_traversal_tag>::value),
             "random access traversal input iterator");
     }
 }
@@ -714,44 +658,44 @@ void satisfy_traversal_concept_bidirectional()
 
     {
         using iterator = std::ostream_iterator<int>;
-        PIKA_TEST_MSG((!satisfy_traversal_concept<iterator,
-                          pika::bidirectional_traversal_tag>::value),
+        PIKA_TEST_MSG(
+            (!satisfy_traversal_concept<iterator, pika::bidirectional_traversal_tag>::value),
             "output iterator");
     }
     {
         using iterator = std::istream_iterator<int>;
-        PIKA_TEST_MSG((!satisfy_traversal_concept<iterator,
-                          pika::bidirectional_traversal_tag>::value),
+        PIKA_TEST_MSG(
+            (!satisfy_traversal_concept<iterator, pika::bidirectional_traversal_tag>::value),
             "input iterator");
     }
     {
         using iterator = typename std::forward_list<int>::iterator;
-        PIKA_TEST_MSG((!satisfy_traversal_concept<iterator,
-                          pika::bidirectional_traversal_tag>::value),
+        PIKA_TEST_MSG(
+            (!satisfy_traversal_concept<iterator, pika::bidirectional_traversal_tag>::value),
             "forward iterator");
     }
     {
         using iterator = typename std::list<int>::iterator;
-        PIKA_TEST_MSG((satisfy_traversal_concept<iterator,
-                          pika::bidirectional_traversal_tag>::value),
+        PIKA_TEST_MSG(
+            (satisfy_traversal_concept<iterator, pika::bidirectional_traversal_tag>::value),
             "bidirectional iterator");
     }
     {
         using iterator = typename std::vector<int>::iterator;
-        PIKA_TEST_MSG((satisfy_traversal_concept<iterator,
-                          pika::bidirectional_traversal_tag>::value),
+        PIKA_TEST_MSG(
+            (satisfy_traversal_concept<iterator, pika::bidirectional_traversal_tag>::value),
             "random access iterator");
     }
     {
         using iterator = bidirectional_traversal_iterator;
-        PIKA_TEST_MSG((satisfy_traversal_concept<iterator,
-                          pika::bidirectional_traversal_tag>::value),
+        PIKA_TEST_MSG(
+            (satisfy_traversal_concept<iterator, pika::bidirectional_traversal_tag>::value),
             "bidirectional traversal input iterator");
     }
     {
         using iterator = random_access_traversal_iterator;
-        PIKA_TEST_MSG((satisfy_traversal_concept<iterator,
-                          pika::bidirectional_traversal_tag>::value),
+        PIKA_TEST_MSG(
+            (satisfy_traversal_concept<iterator, pika::bidirectional_traversal_tag>::value),
             "random access traversal input iterator");
     }
 }
@@ -762,44 +706,44 @@ void satisfy_traversal_concept_random_access()
 
     {
         using iterator = std::ostream_iterator<int>;
-        PIKA_TEST_MSG((!satisfy_traversal_concept<iterator,
-                          pika::random_access_traversal_tag>::value),
+        PIKA_TEST_MSG(
+            (!satisfy_traversal_concept<iterator, pika::random_access_traversal_tag>::value),
             "output iterator");
     }
     {
         using iterator = std::istream_iterator<int>;
-        PIKA_TEST_MSG((!satisfy_traversal_concept<iterator,
-                          pika::random_access_traversal_tag>::value),
+        PIKA_TEST_MSG(
+            (!satisfy_traversal_concept<iterator, pika::random_access_traversal_tag>::value),
             "input iterator");
     }
     {
         using iterator = typename std::forward_list<int>::iterator;
-        PIKA_TEST_MSG((!satisfy_traversal_concept<iterator,
-                          pika::random_access_traversal_tag>::value),
+        PIKA_TEST_MSG(
+            (!satisfy_traversal_concept<iterator, pika::random_access_traversal_tag>::value),
             "forward iterator");
     }
     {
         using iterator = typename std::list<int>::iterator;
-        PIKA_TEST_MSG((!satisfy_traversal_concept<iterator,
-                          pika::random_access_traversal_tag>::value),
+        PIKA_TEST_MSG(
+            (!satisfy_traversal_concept<iterator, pika::random_access_traversal_tag>::value),
             "bidirectional iterator");
     }
     {
         using iterator = typename std::vector<int>::iterator;
-        PIKA_TEST_MSG((satisfy_traversal_concept<iterator,
-                          pika::random_access_traversal_tag>::value),
+        PIKA_TEST_MSG(
+            (satisfy_traversal_concept<iterator, pika::random_access_traversal_tag>::value),
             "random access iterator");
     }
     {
         using iterator = bidirectional_traversal_iterator;
-        PIKA_TEST_MSG((!satisfy_traversal_concept<iterator,
-                          pika::random_access_traversal_tag>::value),
+        PIKA_TEST_MSG(
+            (!satisfy_traversal_concept<iterator, pika::random_access_traversal_tag>::value),
             "bidirectional traversal input iterator");
     }
     {
         using iterator = random_access_traversal_iterator;
-        PIKA_TEST_MSG((satisfy_traversal_concept<iterator,
-                          pika::random_access_traversal_tag>::value),
+        PIKA_TEST_MSG(
+            (satisfy_traversal_concept<iterator, pika::random_access_traversal_tag>::value),
             "random access traversal input iterator");
     }
 }
@@ -830,13 +774,11 @@ void is_iterator()
     }
     {
         using iterator = bidirectional_traversal_iterator;
-        PIKA_TEST_MSG((is_iterator<iterator>::value),
-            "bidirectional traversal input iterator");
+        PIKA_TEST_MSG((is_iterator<iterator>::value), "bidirectional traversal input iterator");
     }
     {
         using iterator = random_access_traversal_iterator;
-        PIKA_TEST_MSG((is_iterator<iterator>::value),
-            "random access traversal input iterator");
+        PIKA_TEST_MSG((is_iterator<iterator>::value), "random access traversal input iterator");
     }
 }
 
@@ -854,28 +796,25 @@ void is_output_iterator()
     }
     {
         using iterator = typename std::forward_list<int>::iterator;
-        PIKA_TEST_MSG(
-            (is_output_iterator<iterator>::value), "forward iterator");
+        PIKA_TEST_MSG((is_output_iterator<iterator>::value), "forward iterator");
     }
     {
         using iterator = typename std::list<int>::iterator;
-        PIKA_TEST_MSG(
-            (is_output_iterator<iterator>::value), "bidirectional iterator");
+        PIKA_TEST_MSG((is_output_iterator<iterator>::value), "bidirectional iterator");
     }
     {
         using iterator = typename std::vector<int>::iterator;
-        PIKA_TEST_MSG(
-            (is_output_iterator<iterator>::value), "random access iterator");
+        PIKA_TEST_MSG((is_output_iterator<iterator>::value), "random access iterator");
     }
     {
         using iterator = bidirectional_traversal_iterator;
-        PIKA_TEST_MSG((is_output_iterator<iterator>::value),
-            "bidirectional traversal input iterator");
+        PIKA_TEST_MSG(
+            (is_output_iterator<iterator>::value), "bidirectional traversal input iterator");
     }
     {
         using iterator = random_access_traversal_iterator;
-        PIKA_TEST_MSG((is_output_iterator<iterator>::value),
-            "random access traversal input iterator");
+        PIKA_TEST_MSG(
+            (is_output_iterator<iterator>::value), "random access traversal input iterator");
     }
 }
 
@@ -897,55 +836,45 @@ void is_input_iterator()
     }
     {
         using iterator = typename std::list<int>::iterator;
-        PIKA_TEST_MSG(
-            (is_input_iterator<iterator>::value), "bidirectional iterator");
+        PIKA_TEST_MSG((is_input_iterator<iterator>::value), "bidirectional iterator");
     }
     {
         using iterator = typename std::vector<int>::iterator;
-        PIKA_TEST_MSG(
-            (is_input_iterator<iterator>::value), "random access iterator");
+        PIKA_TEST_MSG((is_input_iterator<iterator>::value), "random access iterator");
     }
     {
         using iterator = bidirectional_traversal_iterator;
-        PIKA_TEST_MSG((is_input_iterator<iterator>::value),
-            "bidirectional traversal input iterator");
+        PIKA_TEST_MSG(
+            (is_input_iterator<iterator>::value), "bidirectional traversal input iterator");
     }
     {
         using iterator = random_access_traversal_iterator;
-        PIKA_TEST_MSG((is_input_iterator<iterator>::value),
-            "random access traversal input iterator");
+        PIKA_TEST_MSG(
+            (is_input_iterator<iterator>::value), "random access traversal input iterator");
     }
     {
         using base_iterator = std::vector<std::size_t>::iterator;
-        using iterator =
-            test::test_iterator<base_iterator, std::random_access_iterator_tag>;
+        using iterator = test::test_iterator<base_iterator, std::random_access_iterator_tag>;
 
-        PIKA_TEST_MSG(
-            (is_input_iterator<iterator>::value), "pika test iterator");
+        PIKA_TEST_MSG((is_input_iterator<iterator>::value), "pika test iterator");
     }
     {
         using base_iterator = std::vector<std::size_t>::iterator;
-        using iterator =
-            test::test_iterator<base_iterator, std::bidirectional_iterator_tag>;
+        using iterator = test::test_iterator<base_iterator, std::bidirectional_iterator_tag>;
 
-        PIKA_TEST_MSG(
-            (is_input_iterator<iterator>::value), "pika test iterator");
+        PIKA_TEST_MSG((is_input_iterator<iterator>::value), "pika test iterator");
     }
     {
         using base_iterator = std::vector<std::size_t>::iterator;
-        using iterator =
-            test::test_iterator<base_iterator, std::forward_iterator_tag>;
+        using iterator = test::test_iterator<base_iterator, std::forward_iterator_tag>;
 
-        PIKA_TEST_MSG(
-            (is_input_iterator<iterator>::value), "pika test iterator");
+        PIKA_TEST_MSG((is_input_iterator<iterator>::value), "pika test iterator");
     }
     {
         using base_iterator = std::vector<std::size_t>::iterator;
-        using iterator =
-            test::test_iterator<base_iterator, std::input_iterator_tag>;
+        using iterator = test::test_iterator<base_iterator, std::input_iterator_tag>;
 
-        PIKA_TEST_MSG(
-            (is_input_iterator<iterator>::value), "pika test iterator");
+        PIKA_TEST_MSG((is_input_iterator<iterator>::value), "pika test iterator");
     }
 }
 
@@ -955,70 +884,57 @@ void is_forward_iterator()
 
     {
         using iterator = std::ostream_iterator<int>;
-        PIKA_TEST_MSG(
-            (!is_forward_iterator<iterator>::value), "output iterator");
+        PIKA_TEST_MSG((!is_forward_iterator<iterator>::value), "output iterator");
     }
     {
         using iterator = std::istream_iterator<int>;
-        PIKA_TEST_MSG(
-            (!is_forward_iterator<iterator>::value), "input iterator");
+        PIKA_TEST_MSG((!is_forward_iterator<iterator>::value), "input iterator");
     }
     {
         using iterator = typename std::forward_list<int>::iterator;
-        PIKA_TEST_MSG(
-            (is_forward_iterator<iterator>::value), "forward iterator");
+        PIKA_TEST_MSG((is_forward_iterator<iterator>::value), "forward iterator");
     }
     {
         using iterator = typename std::list<int>::iterator;
-        PIKA_TEST_MSG(
-            (is_forward_iterator<iterator>::value), "bidirectional iterator");
+        PIKA_TEST_MSG((is_forward_iterator<iterator>::value), "bidirectional iterator");
     }
     {
         using iterator = typename std::vector<int>::iterator;
-        PIKA_TEST_MSG(
-            (is_forward_iterator<iterator>::value), "random access iterator");
+        PIKA_TEST_MSG((is_forward_iterator<iterator>::value), "random access iterator");
     }
     {
         using iterator = bidirectional_traversal_iterator;
-        PIKA_TEST_MSG((is_forward_iterator<iterator>::value),
-            "bidirectional traversal input iterator");
+        PIKA_TEST_MSG(
+            (is_forward_iterator<iterator>::value), "bidirectional traversal input iterator");
     }
     {
         using iterator = random_access_traversal_iterator;
-        PIKA_TEST_MSG((is_forward_iterator<iterator>::value),
-            "random access traversal input iterator");
+        PIKA_TEST_MSG(
+            (is_forward_iterator<iterator>::value), "random access traversal input iterator");
     }
     {
         using base_iterator = std::vector<std::size_t>::iterator;
-        using iterator =
-            test::test_iterator<base_iterator, std::random_access_iterator_tag>;
+        using iterator = test::test_iterator<base_iterator, std::random_access_iterator_tag>;
 
-        PIKA_TEST_MSG(
-            (is_forward_iterator<iterator>::value), "pika test iterator");
+        PIKA_TEST_MSG((is_forward_iterator<iterator>::value), "pika test iterator");
     }
     {
         using base_iterator = std::vector<std::size_t>::iterator;
-        using iterator =
-            test::test_iterator<base_iterator, std::bidirectional_iterator_tag>;
+        using iterator = test::test_iterator<base_iterator, std::bidirectional_iterator_tag>;
 
-        PIKA_TEST_MSG(
-            (is_forward_iterator<iterator>::value), "pika test iterator");
+        PIKA_TEST_MSG((is_forward_iterator<iterator>::value), "pika test iterator");
     }
     {
         using base_iterator = std::vector<std::size_t>::iterator;
-        using iterator =
-            test::test_iterator<base_iterator, std::forward_iterator_tag>;
+        using iterator = test::test_iterator<base_iterator, std::forward_iterator_tag>;
 
-        PIKA_TEST_MSG(
-            (is_forward_iterator<iterator>::value), "pika test iterator");
+        PIKA_TEST_MSG((is_forward_iterator<iterator>::value), "pika test iterator");
     }
     {
         using base_iterator = std::vector<std::size_t>::iterator;
-        using iterator =
-            test::test_iterator<base_iterator, std::input_iterator_tag>;
+        using iterator = test::test_iterator<base_iterator, std::input_iterator_tag>;
 
-        PIKA_TEST_MSG(
-            (!is_forward_iterator<iterator>::value), "pika test iterator");
+        PIKA_TEST_MSG((!is_forward_iterator<iterator>::value), "pika test iterator");
     }
 }
 
@@ -1028,70 +944,57 @@ void is_bidirectional_iterator()
 
     {
         using iterator = std::ostream_iterator<int>;
-        PIKA_TEST_MSG(
-            (!is_bidirectional_iterator<iterator>::value), "output iterator");
+        PIKA_TEST_MSG((!is_bidirectional_iterator<iterator>::value), "output iterator");
     }
     {
         using iterator = std::istream_iterator<int>;
-        PIKA_TEST_MSG(
-            (!is_bidirectional_iterator<iterator>::value), "input iterator");
+        PIKA_TEST_MSG((!is_bidirectional_iterator<iterator>::value), "input iterator");
     }
     {
         using iterator = typename std::forward_list<int>::iterator;
-        PIKA_TEST_MSG(
-            (!is_bidirectional_iterator<iterator>::value), "forward iterator");
+        PIKA_TEST_MSG((!is_bidirectional_iterator<iterator>::value), "forward iterator");
     }
     {
         using iterator = typename std::list<int>::iterator;
-        PIKA_TEST_MSG((is_bidirectional_iterator<iterator>::value),
-            "bidirectional iterator");
+        PIKA_TEST_MSG((is_bidirectional_iterator<iterator>::value), "bidirectional iterator");
     }
     {
         using iterator = typename std::vector<int>::iterator;
-        PIKA_TEST_MSG((is_bidirectional_iterator<iterator>::value),
-            "random access iterator");
+        PIKA_TEST_MSG((is_bidirectional_iterator<iterator>::value), "random access iterator");
     }
     {
         using iterator = bidirectional_traversal_iterator;
-        PIKA_TEST_MSG((is_bidirectional_iterator<iterator>::value),
-            "bidirectional traversal input iterator");
+        PIKA_TEST_MSG(
+            (is_bidirectional_iterator<iterator>::value), "bidirectional traversal input iterator");
     }
     {
         using iterator = random_access_traversal_iterator;
-        PIKA_TEST_MSG((is_bidirectional_iterator<iterator>::value),
-            "random access traversal input iterator");
-    }
-    {
-        using base_iterator = std::vector<std::size_t>::iterator;
-        using iterator =
-            test::test_iterator<base_iterator, std::random_access_iterator_tag>;
-
         PIKA_TEST_MSG(
-            (is_bidirectional_iterator<iterator>::value), "pika test iterator");
+            (is_bidirectional_iterator<iterator>::value), "random access traversal input iterator");
     }
     {
         using base_iterator = std::vector<std::size_t>::iterator;
-        using iterator =
-            test::test_iterator<base_iterator, std::bidirectional_iterator_tag>;
+        using iterator = test::test_iterator<base_iterator, std::random_access_iterator_tag>;
 
-        PIKA_TEST_MSG(
-            (is_bidirectional_iterator<iterator>::value), "pika test iterator");
+        PIKA_TEST_MSG((is_bidirectional_iterator<iterator>::value), "pika test iterator");
     }
     {
         using base_iterator = std::vector<std::size_t>::iterator;
-        using iterator =
-            test::test_iterator<base_iterator, std::forward_iterator_tag>;
+        using iterator = test::test_iterator<base_iterator, std::bidirectional_iterator_tag>;
 
-        PIKA_TEST_MSG((!is_bidirectional_iterator<iterator>::value),
-            "pika test iterator");
+        PIKA_TEST_MSG((is_bidirectional_iterator<iterator>::value), "pika test iterator");
     }
     {
         using base_iterator = std::vector<std::size_t>::iterator;
-        using iterator =
-            test::test_iterator<base_iterator, std::input_iterator_tag>;
+        using iterator = test::test_iterator<base_iterator, std::forward_iterator_tag>;
 
-        PIKA_TEST_MSG((!is_bidirectional_iterator<iterator>::value),
-            "pika test iterator");
+        PIKA_TEST_MSG((!is_bidirectional_iterator<iterator>::value), "pika test iterator");
+    }
+    {
+        using base_iterator = std::vector<std::size_t>::iterator;
+        using iterator = test::test_iterator<base_iterator, std::input_iterator_tag>;
+
+        PIKA_TEST_MSG((!is_bidirectional_iterator<iterator>::value), "pika test iterator");
     }
 }
 
@@ -1101,28 +1004,23 @@ void is_random_access_iterator()
 
     {
         using iterator = std::ostream_iterator<int>;
-        PIKA_TEST_MSG(
-            (!is_random_access_iterator<iterator>::value), "output iterator");
+        PIKA_TEST_MSG((!is_random_access_iterator<iterator>::value), "output iterator");
     }
     {
         using iterator = std::istream_iterator<int>;
-        PIKA_TEST_MSG(
-            (!is_random_access_iterator<iterator>::value), "input iterator");
+        PIKA_TEST_MSG((!is_random_access_iterator<iterator>::value), "input iterator");
     }
     {
         using iterator = typename std::forward_list<int>::iterator;
-        PIKA_TEST_MSG(
-            (!is_random_access_iterator<iterator>::value), "forward iterator");
+        PIKA_TEST_MSG((!is_random_access_iterator<iterator>::value), "forward iterator");
     }
     {
         using iterator = typename std::list<int>::iterator;
-        PIKA_TEST_MSG((!is_random_access_iterator<iterator>::value),
-            "bidirectional iterator");
+        PIKA_TEST_MSG((!is_random_access_iterator<iterator>::value), "bidirectional iterator");
     }
     {
         using iterator = typename std::vector<int>::iterator;
-        PIKA_TEST_MSG((is_random_access_iterator<iterator>::value),
-            "random access iterator");
+        PIKA_TEST_MSG((is_random_access_iterator<iterator>::value), "random access iterator");
     }
     {
         using iterator = bidirectional_traversal_iterator;
@@ -1131,40 +1029,32 @@ void is_random_access_iterator()
     }
     {
         using iterator = random_access_traversal_iterator;
-        PIKA_TEST_MSG((is_random_access_iterator<iterator>::value),
-            "random access traversal input iterator");
-    }
-    {
-        using base_iterator = std::vector<std::size_t>::iterator;
-        using iterator =
-            test::test_iterator<base_iterator, std::random_access_iterator_tag>;
-
         PIKA_TEST_MSG(
-            (is_random_access_iterator<iterator>::value), "pika test iterator");
+            (is_random_access_iterator<iterator>::value), "random access traversal input iterator");
     }
     {
         using base_iterator = std::vector<std::size_t>::iterator;
-        using iterator =
-            test::test_iterator<base_iterator, std::bidirectional_iterator_tag>;
+        using iterator = test::test_iterator<base_iterator, std::random_access_iterator_tag>;
 
-        PIKA_TEST_MSG((!is_random_access_iterator<iterator>::value),
-            "pika test iterator");
+        PIKA_TEST_MSG((is_random_access_iterator<iterator>::value), "pika test iterator");
     }
     {
         using base_iterator = std::vector<std::size_t>::iterator;
-        using iterator =
-            test::test_iterator<base_iterator, std::forward_iterator_tag>;
+        using iterator = test::test_iterator<base_iterator, std::bidirectional_iterator_tag>;
 
-        PIKA_TEST_MSG((!is_random_access_iterator<iterator>::value),
-            "pika test iterator");
+        PIKA_TEST_MSG((!is_random_access_iterator<iterator>::value), "pika test iterator");
     }
     {
         using base_iterator = std::vector<std::size_t>::iterator;
-        using iterator =
-            test::test_iterator<base_iterator, std::input_iterator_tag>;
+        using iterator = test::test_iterator<base_iterator, std::forward_iterator_tag>;
 
-        PIKA_TEST_MSG((!is_random_access_iterator<iterator>::value),
-            "pika test iterator");
+        PIKA_TEST_MSG((!is_random_access_iterator<iterator>::value), "pika test iterator");
+    }
+    {
+        using base_iterator = std::vector<std::size_t>::iterator;
+        using iterator = test::test_iterator<base_iterator, std::input_iterator_tag>;
+
+        PIKA_TEST_MSG((!is_random_access_iterator<iterator>::value), "pika test iterator");
     }
 }
 

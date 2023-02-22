@@ -43,8 +43,7 @@ constexpr int debug_level = 0;
 
 // cppcheck-suppress ConfigurationNotChecked
 template <int Level>
-static pika::debug::detail::print_threshold<Level, debug_level>
-    nws_deb("STORAGE");
+static pika::debug::detail::print_threshold<Level, debug_level> nws_deb("STORAGE");
 
 //----------------------------------------------------------------------------
 //
@@ -97,8 +96,7 @@ void display(perf const& data, const test_options& options)
     if (data.rank == 0 && !options.warmup)
     {
         temp << "\n";
-        temp << "Rank                 : " << data.rank << " / " << data.nranks
-             << "\n";
+        temp << "Rank                 : " << data.rank << " / " << data.nranks << "\n";
         temp << "Total time           : " << data.time << "\n";
         temp << "Memory Transferred   : " << data.dataMB << " MB\n";
         temp << "Number of local IOPs : " << data.IOPs << "\n";
@@ -109,11 +107,10 @@ void display(perf const& data, const test_options& options)
         {
             // a complete set of results that our python matplotlib script will ingest
             constexpr char const* msg =
-                "CSVData, {}, network, {}, ranks, {}, threads, {}, Memory, {}, "
-                "IOPsize, {}, IOPS/s, {}, BW(MB/s), {}, in_flight, {}\n";
-            fmt::print(temp, msg, data.mode.c_str(), "pika-mpi", data.nranks,
-                options.threads, data.dataMB, options.transfer_size_B, IOPs_s,
-                BW, options.in_flight_limit);
+                "CSVData, {}, network, {}, ranks, {}, threads, {}, Memory, {}, IOPsize, {}, "
+                "IOPS/s, {}, BW(MB/s), {}, in_flight, {}\n";
+            fmt::print(temp, msg, data.mode.c_str(), "pika-mpi", data.nranks, options.threads,
+                data.dataMB, options.transfer_size_B, IOPs_s, BW, options.in_flight_limit);
         }
         std::cout << temp.str() << std::endl;
     }
@@ -132,8 +129,7 @@ static std::atomic<std::uint32_t> recvs_in_flight;
 // Test speed of write/put
 void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
     std::uniform_int_distribution<std::uint64_t>& random_offset,
-    std::uniform_int_distribution<std::uint64_t>& random_slot,
-    test_options& options)
+    std::uniform_int_distribution<std::uint64_t>& random_slot, test_options& options)
 {
     static deb::print_threshold<1, debug_level> write_arr(" WRITE ");
 
@@ -162,20 +158,16 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
     // generate an array of location offsets where we are going to send data
     constexpr size_t array_size = 1024;
     std::array<std::size_t, array_size> offsets, sends, recvs;
-    std::generate(
-        offsets.begin(), offsets.end(), [&]() { return random_offset(gen); });
+    std::generate(offsets.begin(), offsets.end(), [&]() { return random_offset(gen); });
     std::transform(offsets.begin(), offsets.end(), sends.begin(),
         [&](std::size_t& offset) { return (rank + offset) % nranks; });
     std::transform(offsets.begin(), offsets.end(), recvs.begin(),
         [&](std::size_t& offset) { return (rank - offset) % nranks; });
 
     std::string tempstr = "rank " + std::to_string(rank);
-    write_arr.array(
-        tempstr + " # offset  ", &offsets[0], (std::min)(array_size, 32ul));
-    write_arr.array(
-        tempstr + " # send    ", &sends[0], (std::min)(array_size, 32ul));
-    write_arr.array(
-        tempstr + " # recv    ", &recvs[0], (std::min)(array_size, 32ul));
+    write_arr.array(tempstr + " # offset  ", &offsets[0], (std::min)(array_size, 32ul));
+    write_arr.array(tempstr + " # send    ", &sends[0], (std::min)(array_size, 32ul));
+    write_arr.array(tempstr + " # recv    ", &recvs[0], (std::min)(array_size, 32ul));
 
     // ----------------------------------------------------------------
     nws_deb<2>.debug("Entering Barrier at start of write on rank", rank);
@@ -233,14 +225,13 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
                              "send in flight", deb::dec<4>(sends_in_flight));
             // clang-format on
             void* buffer_to_recv = &local_recv_storage[memory_offset_recv];
-            auto rsnd = ex::just(buffer_to_recv, options.transfer_size_B,
-                            MPI_UNSIGNED_CHAR, recv_rank, tag, MPI_COMM_WORLD) |
+            auto rsnd = ex::just(buffer_to_recv, options.transfer_size_B, MPI_UNSIGNED_CHAR,
+                            recv_rank, tag, MPI_COMM_WORLD) |
                 mpi::transform_mpi(MPI_Irecv, mpi::stream_type::receive) |
                 ex::then([&](int result) {
                     --recvs_in_flight;
-                    nws_deb<5>.debug(deb::str<>("recv complete"),
-                        "recv in flight", recvs_in_flight, "send in flight",
-                        sends_in_flight);
+                    nws_deb<5>.debug(deb::str<>("recv complete"), "recv in flight", recvs_in_flight,
+                        "send in flight", sends_in_flight);
                     return result;
                 });
             ex::start_detached(std::move(rsnd));
@@ -257,14 +248,12 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
                              "send in flight", deb::dec<4>(sends_in_flight));
             // clang-format on
             void* buffer_to_send = &local_send_storage[memory_offset_send];
-            auto ssnd = ex::just(buffer_to_send, options.transfer_size_B,
-                            MPI_UNSIGNED_CHAR, send_rank, tag, MPI_COMM_WORLD) |
-                mpi::transform_mpi(MPI_Isend, mpi::stream_type::send) |
-                ex::then([&](int result) {
+            auto ssnd = ex::just(buffer_to_send, options.transfer_size_B, MPI_UNSIGNED_CHAR,
+                            send_rank, tag, MPI_COMM_WORLD) |
+                mpi::transform_mpi(MPI_Isend, mpi::stream_type::send) | ex::then([&](int result) {
                     --sends_in_flight;
-                    nws_deb<5>.debug(deb::str<>("send complete"),
-                        "recv in flight", recvs_in_flight, "send in flight",
-                        sends_in_flight);
+                    nws_deb<5>.debug(deb::str<>("send complete"), "recv in flight", recvs_in_flight,
+                        "send in flight", sends_in_flight);
                     return result;
                 });
             ex::start_detached(std::move(ssnd));
@@ -285,10 +274,8 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
             {
                 if (i != rank)
                 {
-                    MPI_Irecv(&counts[i], 1, MPI_INT32_T, i, 0, MPI_COMM_WORLD,
-                        &recvsr[i]);
-                    MPI_Isend(&messages_sent, 1, MPI_INT32_T, i, 0,
-                        MPI_COMM_WORLD, &sendsr[i]);
+                    MPI_Irecv(&counts[i], 1, MPI_INT32_T, i, 0, MPI_COMM_WORLD, &recvsr[i]);
+                    MPI_Isend(&messages_sent, 1, MPI_INT32_T, i, 0, MPI_COMM_WORLD, &sendsr[i]);
                 }
             }
             for (std::uint32_t i = 0; i < nranks; ++i)
@@ -298,41 +285,34 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
             }
             // reduction step
             final_count = messages_sent;
-            std::for_each(counts.begin(), counts.end(), [&](std::uint64_t c) {
-                final_count = (std::max)(final_count, c);
-            });
-            nws_deb<2>.debug(
-                "Rank ", rank, "count max", deb::dec<8>(final_count));
+            std::for_each(counts.begin(), counts.end(),
+                [&](std::uint64_t c) { final_count = (std::max)(final_count, c); });
+            nws_deb<2>.debug("Rank ", rank, "count max", deb::dec<8>(final_count));
             //
             count_complete = true;
         }
 
     } while (messages_sent < final_count);
 
-    nws_deb<2>.debug(
-        "Time elapsed", "on rank", rank, "counter", deb::dec<8>(messages_sent));
+    nws_deb<2>.debug("Time elapsed", "on rank", rank, "counter", deb::dec<8>(messages_sent));
 
     // block until no messages are in flight
     nws_deb<2>.debug(deb::str<>("pre final"), "Rank ", rank, "recvs in flight",
-        deb::dec<>(recvs_in_flight), "sends in flight",
-        deb::dec<>(sends_in_flight));
+        deb::dec<>(recvs_in_flight), "sends in flight", deb::dec<>(sends_in_flight));
     //
     while ((sends_in_flight.load() + recvs_in_flight.load()) > 0)
     {
         mpi::detail::poll();
         if (debug_timer.trigger())
-            nws_deb<5>.debug(
-                "Rank ", rank, "counter", deb::dec<8>(messages_sent));
+            nws_deb<5>.debug("Rank ", rank, "counter", deb::dec<8>(messages_sent));
     }
     //
     nws_deb<2>.debug(deb::str<>("final"), "Rank ", rank, "recvs in flight",
-        deb::dec<>(recvs_in_flight), "sends in flight",
-        deb::dec<>(sends_in_flight));
+        deb::dec<>(recvs_in_flight), "sends in flight", deb::dec<>(sends_in_flight));
 
     // ----------------------------------------------------------------
-    double MB = nranks *
-        static_cast<double>(messages_sent * options.transfer_size_B) /
-        (1024 * 1024);
+    double MB =
+        nranks * static_cast<double>(messages_sent * options.transfer_size_B) / (1024 * 1024);
     double IOPs = static_cast<double>(messages_sent);
     double Time = exec_timer.elapsed();
 
@@ -340,14 +320,12 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
         std::cout << std::endl;
 
     // ----------------------------------------------------------------
-    nws_deb<2>.debug(
-        "Entering Barrier before update_performance on rank", rank);
+    nws_deb<2>.debug("Entering Barrier before update_performance on rank", rank);
     MPI_Barrier(MPI_COMM_WORLD);
     nws_deb<2>.debug("Passed Barrier before update_performance on rank", rank);
     // ----------------------------------------------------------------
 
-    perf p{
-        rank, nranks, MB, Time, IOPs, options.warmup ? "warmup" : "send/recv "};
+    perf p{rank, nranks, MB, Time, IOPs, options.warmup ? "warmup" : "send/recv "};
     display(p, options);
 }
 
@@ -358,8 +336,7 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
 int pika_main(pika::program_options::variables_map& vm)
 {
     // Disable idle backoff on the default pool
-    pika::threads::remove_scheduler_mode(
-        ::pika::threads::scheduler_mode::enable_idle_backoff);
+    pika::threads::remove_scheduler_mode(::pika::threads::scheduler_mode::enable_idle_backoff);
 
     pika::util::mpi_environment mpi_env;
     pika::runtime* rt = pika::get_runtime_ptr();
@@ -376,15 +353,13 @@ int pika_main(pika::program_options::variables_map& vm)
 
     if (rank == 0)
     {
-        constexpr char const* msg = "hello world from OS-thread {:02} on "
-                                    "locality {:04} rank {:04} hostname {}\n\n";
-        fmt::print(std::cout, msg, current, pika::get_locality_id(), rank,
-            name.c_str());
+        constexpr char const* msg =
+            "hello world from OS-thread {:02} on locality {:04} rank {:04} hostname {}\n\n";
+        fmt::print(std::cout, msg, current, pika::get_locality_id(), rank, name.c_str());
     }
 
     // extract command line argument
-    options.transfer_size_B =
-        static_cast<std::uint64_t>(vm["transferKB"].as<double>() * 1024);
+    options.transfer_size_B = static_cast<std::uint64_t>(vm["transferKB"].as<double>() * 1024);
     options.local_storage_MB = vm["localMB"].as<std::uint64_t>();
     options.num_seconds = vm["seconds"].as<std::uint32_t>();
     options.in_flight_limit = vm["in-flight-limit"].as<std::uint32_t>();
@@ -393,15 +368,13 @@ int pika_main(pika::program_options::variables_map& vm)
     options.final = false;
 
     mpi::set_max_requests_in_flight(options.in_flight_limit);
-    nws_deb<1>.debug("set_max_requests_in_flight", rank,
-        deb::dec<04>(options.in_flight_limit));
+    nws_deb<1>.debug("set_max_requests_in_flight", rank, deb::dec<04>(options.in_flight_limit));
 
-    nws_deb<1>.debug("Allocating local storage on rank", rank, "MB",
-        deb::dec<03>(options.local_storage_MB));
+    nws_deb<1>.debug(
+        "Allocating local storage on rank", rank, "MB", deb::dec<03>(options.local_storage_MB));
     local_send_storage.resize(options.local_storage_MB * 1024 * 1024);
     local_recv_storage.resize(options.local_storage_MB * 1024 * 1024);
-    for (std::uint64_t i = 0; i < local_send_storage.size();
-         i += sizeof(std::uint64_t))
+    for (std::uint64_t i = 0; i < local_send_storage.size(); i += sizeof(std::uint64_t))
     {
         // each block is filled with the rank and block number
         std::uint64_t temp = (rank << 32) + i / options.transfer_size_B;
@@ -409,11 +382,9 @@ int pika_main(pika::program_options::variables_map& vm)
         *reinterpret_cast<std::uint64_t*>(&local_recv_storage[i]) = temp;
     }
     //
-    std::uint64_t num_slots = static_cast<std::uint64_t>(1024) *
-        static_cast<std::uint64_t>(1024) * options.local_storage_MB /
-        options.transfer_size_B;
-    nws_deb<6>.debug(
-        "num ranks ", nranks, ", num_slots ", num_slots, " on rank", rank);
+    std::uint64_t num_slots = static_cast<std::uint64_t>(1024) * static_cast<std::uint64_t>(1024) *
+        options.local_storage_MB / options.transfer_size_B;
+    nws_deb<6>.debug("num ranks ", nranks, ", num_slots ", num_slots, " on rank", rank);
     //
     int64_t random_number = 0;
     if (rank == 0)
@@ -428,15 +399,12 @@ int pika_main(pika::program_options::variables_map& vm)
     }
     else
     {
-        MPI_Recv(&random_number, 1, MPI_INT64_T, 0, 0, MPI_COMM_WORLD,
-            MPI_STATUS_IGNORE);
+        MPI_Recv(&random_number, 1, MPI_INT64_T, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         nws_deb<1>.debug("Received Seed", deb::dec<8>(random_number));
     }
     std::mt19937 gen(random_number);
-    std::uniform_int_distribution<std::uint64_t> random_offset(
-        1, (int) nranks - 1);
-    std::uniform_int_distribution<std::uint64_t> random_slot(
-        0, (int) num_slots - 1);
+    std::uniform_int_distribution<std::uint64_t> random_offset(1, (int) nranks - 1);
+    std::uniform_int_distribution<std::uint64_t> random_slot(0, (int) num_slots - 1);
 
     // ----------------------------------------------------------------
     if (rank == 0)
@@ -478,8 +446,8 @@ int pika_main(pika::program_options::variables_map& vm)
 }
 
 //----------------------------------------------------------------------------
-void init_resource_partitioner_handler(pika::resource::partitioner& rp,
-    pika::program_options::variables_map const& vm)
+void init_resource_partitioner_handler(
+    pika::resource::partitioner& rp, pika::program_options::variables_map const& vm)
 {
     // Don't create the MPI pool if the user disabled it
     if (vm["no-mpi-pool"].as<bool>())
@@ -498,8 +466,7 @@ void init_resource_partitioner_handler(pika::resource::partitioner& rp,
 
     // Create a thread pool with a single core that we will use for all
     // communication related tasks
-    rp.create_thread_pool(
-        "mpi", pika::resource::scheduling_policy::local_priority_fifo, mode);
+    rp.create_thread_pool("mpi", pika::resource::scheduling_policy::local_priority_fifo, mode);
     rp.add_resource(rp.numa_domains()[0].cores()[0].pus()[0], "mpi");
 }
 
@@ -511,8 +478,7 @@ int main(int argc, char* argv[])
     MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
     if (provided != MPI_THREAD_MULTIPLE)
     {
-        std::cout << "Provided MPI is not : MPI_THREAD_MULTIPLE " << provided
-                  << std::endl;
+        std::cout << "Provided MPI is not : MPI_THREAD_MULTIPLE " << provided << std::endl;
     }
 
     // Configure application-specific options
@@ -520,8 +486,8 @@ int main(int argc, char* argv[])
     pika::program_options::options_description cmdline(
         "Usage: " PIKA_APPLICATION_STRING " [options]");
 
-    cmdline.add_options()("no-mpi-pool", pika::program_options::bool_switch(),
-        "Disable the MPI pool.");
+    cmdline.add_options()(
+        "no-mpi-pool", pika::program_options::bool_switch(), "Disable the MPI pool.");
 
     cmdline.add_options()("in-flight-limit",
         pika::program_options::value<std::uint32_t>()->default_value(
@@ -533,8 +499,7 @@ int main(int argc, char* argv[])
         "Sets the storage capacity (in MB) on each node.\n"
         "The total storage will be num_ranks * localMB");
 
-    cmdline.add_options()("transferKB",
-        pika::program_options::value<double>()->default_value(512),
+    cmdline.add_options()("transferKB", pika::program_options::value<double>()->default_value(512),
         "Sets the default block transfer size (in KB).\n"
         "Each put/get IOP will be this size");
 

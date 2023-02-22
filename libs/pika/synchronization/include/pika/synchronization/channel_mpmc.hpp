@@ -191,8 +191,7 @@ namespace pika::experimental {
         // keep the mutex, the head, and the tail pointer in separate cache
         // lines
         mutable pika::concurrency::detail::cache_aligned_data<mutex_type> mtx_;
-        mutable pika::concurrency::detail::cache_aligned_data<std::size_t>
-            head_;
+        mutable pika::concurrency::detail::cache_aligned_data<std::size_t> head_;
         pika::concurrency::detail::cache_aligned_data<std::size_t> tail_;
 
         // a channel of size n can buffer n-1 items

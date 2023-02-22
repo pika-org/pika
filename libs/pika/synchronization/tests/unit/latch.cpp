@@ -107,8 +107,7 @@ int pika_main()
 int main(int argc, char* argv[])
 {
     // Initialize and run pika
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0, "pika main exited with non-zero status");
 
     return 0;
 }

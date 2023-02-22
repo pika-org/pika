@@ -8,5 +8,4 @@
 
 #include <type_traits>
 
-#define PIKA_MOVE(...)                                                         \
-    static_cast<std::remove_reference_t<decltype(__VA_ARGS__)>&&>(__VA_ARGS__)
+#define PIKA_MOVE(...) static_cast<std::remove_reference_t<decltype(__VA_ARGS__)>&&>(__VA_ARGS__)

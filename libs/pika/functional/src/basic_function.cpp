@@ -25,20 +25,18 @@
 
 namespace pika::util::detail {
     ///////////////////////////////////////////////////////////////////////////
-    function_base::function_base(
-        function_base const& other, vtable const* /* empty_vtable */)
+    function_base::function_base(function_base const& other, vtable const* /* empty_vtable */)
       : vptr(other.vptr)
       , object(other.object)
     {
         if (other.object != nullptr)
         {
-            object = vptr->copy(storage, detail::function_storage_size,
-                other.object, /*destroy*/ false);
+            object =
+                vptr->copy(storage, detail::function_storage_size, other.object, /*destroy*/ false);
         }
     }
 
-    function_base::function_base(
-        function_base&& other, vtable const* empty_vptr) noexcept
+    function_base::function_base(function_base&& other, vtable const* empty_vptr) noexcept
       : vptr(other.vptr)
       , object(other.object)
     {
@@ -56,8 +54,7 @@ namespace pika::util::detail {
         destroy();
     }
 
-    void function_base::op_assign(
-        function_base const& other, vtable const* /* empty_vtable */)
+    void function_base::op_assign(function_base const& other, vtable const* /* empty_vtable */)
     {
         if (vptr == other.vptr)
         {
@@ -65,8 +62,7 @@ namespace pika::util::detail {
             {
                 PIKA_ASSERT(other.object != nullptr);
                 // reuse object storage
-                object = vptr->copy(
-                    object, std::size_t(-1), other.object, /*destroy*/ true);
+                object = vptr->copy(object, std::size_t(-1), other.object, /*destroy*/ true);
             }
         }
         else
@@ -75,8 +71,8 @@ namespace pika::util::detail {
             vptr = other.vptr;
             if (other.object != nullptr)
             {
-                object = vptr->copy(storage, detail::function_storage_size,
-                    other.object, /*destroy*/ false);
+                object = vptr->copy(
+                    storage, detail::function_storage_size, other.object, /*destroy*/ false);
             }
             else
             {
@@ -85,8 +81,7 @@ namespace pika::util::detail {
         }
     }
 
-    void function_base::op_assign(
-        function_base&& other, vtable const* empty_vtable) noexcept
+    void function_base::op_assign(function_base&& other, vtable const* empty_vtable) noexcept
     {
         if (this != &other)
         {

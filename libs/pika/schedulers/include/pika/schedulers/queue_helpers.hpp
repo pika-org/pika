@@ -29,12 +29,12 @@ namespace pika::threads::detail {
     // debug helper function, logs all suspended threads
     // this returns true if all threads in the map are currently suspended
     template <typename Map>
-    bool dump_suspended_threads(std::size_t num_thread, Map& tm,
-        std::int64_t& idle_loop_count, bool running) PIKA_COLD;
+    bool dump_suspended_threads(
+        std::size_t num_thread, Map& tm, std::int64_t& idle_loop_count, bool running) PIKA_COLD;
 
     template <typename Map>
-    bool dump_suspended_threads(std::size_t num_thread, Map& tm,
-        std::int64_t& idle_loop_count, bool running)
+    bool dump_suspended_threads(
+        std::size_t num_thread, Map& tm, std::int64_t& idle_loop_count, bool running)
     {
 #if !defined(PIKA_HAVE_THREAD_MINIMAL_DEADLOCK_DETECTION)
         PIKA_UNUSED(num_thread);
@@ -58,10 +58,8 @@ namespace pika::threads::detail {
         for (typename Map::const_iterator it = tm.begin(); it != end; ++it)
         {
             threads::detail::thread_data const* thrd = get_thread_id_data(*it);
-            threads::detail::thread_schedule_state state =
-                thrd->get_state().state();
-            threads::detail::thread_schedule_state marked_state =
-                thrd->get_marked_state();
+            threads::detail::thread_schedule_state state = thrd->get_state().state();
+            threads::detail::thread_schedule_state marked_state = thrd->get_marked_state();
 
             if (state != marked_state)
             {
@@ -70,15 +68,13 @@ namespace pika::threads::detail {
                 {
                     if (running)
                     {
-                        LTM_(warning).format("Listing suspended threads "
-                                             "while queue ({}) is empty:",
-                            num_thread);
+                        LTM_(warning).format(
+                            "Listing suspended threads while queue ({}) is empty:", num_thread);
                     }
                     else
                     {
                         LPIKA_CONSOLE_(pika::util::logging::level::warning)
-                            .format("  [TM] Listing suspended threads "
-                                    "while queue ({}) is empty:\n",
+                            .format("  [TM] Listing suspended threads while queue ({}) is empty:\n",
                                 num_thread);
                     }
                     logged_headline = true;
@@ -87,26 +83,24 @@ namespace pika::threads::detail {
                 if (running)
                 {
                     LTM_(warning)
-                        .format("queue({}): {}({:08x}.{:02x}/{:08x})",
-                            num_thread, get_thread_state_name(state), *it,
-                            thrd->get_thread_phase(), thrd->get_component_id())
-#ifdef PIKA_HAVE_THREAD_PARENT_REFERENCE
+                        .format("queue({}): {}({:08x}.{:02x}/{:08x})", num_thread,
+                            get_thread_state_name(state), *it, thrd->get_thread_phase(),
+                            thrd->get_component_id())
+# ifdef PIKA_HAVE_THREAD_PARENT_REFERENCE
                         .format(" P{:08x}", thrd->get_parent_thread_id())
-#endif
-                        .format(": {}: {}", thrd->get_description(),
-                            thrd->get_lco_description());
+# endif
+                        .format(": {}: {}", thrd->get_description(), thrd->get_lco_description());
                 }
                 else
                 {
                     LPIKA_CONSOLE_(pika::util::logging::level::warning)
-                        .format("queue({}): {}({:08x}.{:02x}/{:08x})",
-                            num_thread, get_thread_state_name(state), *it,
-                            thrd->get_thread_phase(), thrd->get_component_id())
-#ifdef PIKA_HAVE_THREAD_PARENT_REFERENCE
+                        .format("queue({}): {}({:08x}.{:02x}/{:08x})", num_thread,
+                            get_thread_state_name(state), *it, thrd->get_thread_phase(),
+                            thrd->get_component_id())
+# ifdef PIKA_HAVE_THREAD_PARENT_REFERENCE
                         .format(" P{:08x}", thrd->get_parent_thread_id())
-#endif
-                        .format(": {}: {}", thrd->get_description(),
-                            thrd->get_lco_description());
+# endif
+                        .format(": {}: {}", thrd->get_description(), thrd->get_lco_description());
                 }
                 thrd->set_marked_state(state);
 

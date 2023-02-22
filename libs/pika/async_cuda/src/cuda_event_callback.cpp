@@ -47,8 +47,7 @@ namespace pika::cuda::experimental::detail {
     class cuda_event_queue
     {
     public:
-        using event_callback_queue_type =
-            concurrency::detail::ConcurrentQueue<event_callback>;
+        using event_callback_queue_type = concurrency::detail::ConcurrentQueue<event_callback>;
         using mutex_type = pika::spinlock;
         using event_callback_vector_type = std::vector<event_callback>;
 
@@ -69,11 +68,10 @@ namespace pika::cuda::experimental::detail {
             {
                 if (cud_debug.is_enabled())
                 {
-                    static auto poll_deb = cud_debug.make_timer(
-                        1, debug::detail::str<>("Poll - lock failed"));
+                    static auto poll_deb =
+                        cud_debug.make_timer(1, debug::detail::str<>("Poll - lock failed"));
                     cud_debug.timed(poll_deb, "enqueued events",
-                        debug::detail::dec<3>(get_number_of_enqueued_events()),
-                        "active events",
+                        debug::detail::dec<3>(get_number_of_enqueued_events()), "active events",
                         debug::detail::dec<3>(get_number_of_active_events()));
                 }
                 return polling_status::idle;
@@ -81,11 +79,10 @@ namespace pika::cuda::experimental::detail {
 
             if (cud_debug.is_enabled())
             {
-                static auto poll_deb = cud_debug.make_timer(
-                    1, debug::detail::str<>("Poll - lock success"));
+                static auto poll_deb =
+                    cud_debug.make_timer(1, debug::detail::str<>("Poll - lock success"));
                 cud_debug.timed(poll_deb, "enqueued events",
-                    debug::detail::dec<3>(get_number_of_enqueued_events()),
-                    "active events",
+                    debug::detail::dec<3>(get_number_of_enqueued_events()), "active events",
                     debug::detail::dec<3>(get_number_of_active_events()));
             }
 
@@ -94,8 +91,7 @@ namespace pika::cuda::experimental::detail {
 
             // Iterate over our list of events and see if any have completed
             event_callback_vector.erase(
-                std::remove_if(event_callback_vector.begin(),
-                    event_callback_vector.end(),
+                std::remove_if(event_callback_vector.begin(), event_callback_vector.end(),
                     [&](event_callback& continuation) {
                         whip::error_t status = whip::success;
 
@@ -115,15 +111,10 @@ namespace pika::cuda::experimental::detail {
                         }
 
                         // Forward successes and other errors to the callback
-                        cud_debug.debug(
-                            debug::detail::str<>("set ready vector"), "event",
-                            debug::detail::hex<8>(continuation.event),
-                            "enqueued events",
-                            debug::detail::dec<3>(
-                                get_number_of_enqueued_events()),
-                            "active events",
-                            debug::detail::dec<3>(
-                                get_number_of_active_events()));
+                        cud_debug.debug(debug::detail::str<>("set ready vector"), "event",
+                            debug::detail::hex<8>(continuation.event), "enqueued events",
+                            debug::detail::dec<3>(get_number_of_enqueued_events()), "active events",
+                            debug::detail::dec<3>(get_number_of_active_events()));
                         continuation.f(status);
                         pool.push(PIKA_MOVE(continuation.event));
                         return true;
@@ -151,45 +142,39 @@ namespace pika::cuda::experimental::detail {
                     status = e.get_error();
                 }
 
-                cud_debug.debug(debug::detail::str<>("set ready queue"),
-                    "event", debug::detail::hex<8>(continuation.event),
-                    "enqueued events",
-                    debug::detail::dec<3>(get_number_of_enqueued_events()),
-                    "active events",
+                cud_debug.debug(debug::detail::str<>("set ready queue"), "event",
+                    debug::detail::hex<8>(continuation.event), "enqueued events",
+                    debug::detail::dec<3>(get_number_of_enqueued_events()), "active events",
                     debug::detail::dec<3>(get_number_of_active_events()));
                 continuation.f(status);
                 pool.push(PIKA_MOVE(continuation.event));
             }
 
             using pika::threads::detail::polling_status;
-            return event_callback_vector.empty() ? polling_status::idle :
-                                                   polling_status::busy;
+            return event_callback_vector.empty() ? polling_status::idle : polling_status::busy;
         }
 
-        void add_to_event_callback_queue(
-            event_callback_function_type&& f, whip::stream_t stream)
+        void add_to_event_callback_queue(event_callback_function_type&& f, whip::stream_t stream)
         {
             whip::event_t event;
             if (!cuda_event_pool::get_event_pool().pop(event))
             {
-                PIKA_THROW_EXCEPTION(pika::error::invalid_status,
-                    "add_to_event_callback_queue", "could not get an event");
+                PIKA_THROW_EXCEPTION(pika::error::invalid_status, "add_to_event_callback_queue",
+                    "could not get an event");
             }
             whip::event_record(event, stream);
 
             event_callback continuation{event, PIKA_MOVE(f)};
 
             PIKA_ASSERT_MSG(get_register_polling_count() != 0,
-                "CUDA event polling has not been enabled on any pool. Make "
-                "sure that CUDA event polling is enabled on at least one "
-                "thread pool.");
+                "CUDA event polling has not been enabled on any pool. Make sure that CUDA event "
+                "polling is enabled on at least one thread pool.");
 
             event_callback_queue.enqueue(PIKA_MOVE(continuation));
 
             cud_debug.debug(debug::detail::str<>("event queued"), "event",
                 debug::detail::hex<8>(continuation.event), "enqueued events",
-                debug::detail::dec<3>(get_number_of_enqueued_events()),
-                "active events",
+                debug::detail::dec<3>(get_number_of_enqueued_events()), "active events",
                 debug::detail::dec<3>(get_number_of_active_events()));
         }
 
@@ -217,12 +202,9 @@ namespace pika::cuda::experimental::detail {
             event_callback_vector.push_back(PIKA_MOVE(continuation));
             ++active_events_counter;
 
-            cud_debug.debug(debug::detail::str<>(
-                                "event callback moved from queue to vector"),
-                "event", debug::detail::hex<8>(continuation.event),
-                "enqueued events",
-                debug::detail::dec<3>(get_number_of_enqueued_events()),
-                "active events",
+            cud_debug.debug(debug::detail::str<>("event callback moved from queue to vector"),
+                "event", debug::detail::hex<8>(continuation.event), "enqueued events",
+                debug::detail::dec<3>(get_number_of_enqueued_events()), "active events",
                 debug::detail::dec<3>(get_number_of_active_events()));
         }
 
@@ -242,14 +224,13 @@ namespace pika::cuda::experimental::detail {
 
             using pika::threads::detail::polling_status;
 
-            return np_status == polling_status::busy ||
-                    hp_status == polling_status::busy ?
+            return np_status == polling_status::busy || hp_status == polling_status::busy ?
                 polling_status::busy :
                 polling_status::idle;
         }
 
-        void add_to_event_callback_queue(event_callback_function_type&& f,
-            whip::stream_t stream, pika::execution::thread_priority priority)
+        void add_to_event_callback_queue(event_callback_function_type&& f, whip::stream_t stream,
+            pika::execution::thread_priority priority)
         {
             auto* queue = &np_queue;
             if (priority >= pika::execution::thread_priority::high)
@@ -276,15 +257,13 @@ namespace pika::cuda::experimental::detail {
         return holder;
     }
 
-    void add_event_callback(event_callback_function_type&& f,
-        whip::stream_t stream, pika::execution::thread_priority priority)
+    void add_event_callback(event_callback_function_type&& f, whip::stream_t stream,
+        pika::execution::thread_priority priority)
     {
-        get_cuda_event_queue_holder().add_to_event_callback_queue(
-            std::move(f), stream, priority);
+        get_cuda_event_queue_holder().add_to_event_callback_queue(std::move(f), stream, priority);
     }
 
-    void add_event_callback(
-        event_callback_function_type&& f, cuda_stream const& stream)
+    void add_event_callback(event_callback_function_type&& f, cuda_stream const& stream)
     {
         add_event_callback(std::move(f), stream.get(), stream.get_priority());
     }
@@ -307,8 +286,7 @@ namespace pika::cuda::experimental::detail {
 #endif
         cud_debug.debug(debug::detail::str<>("enable polling"));
         auto* sched = pool.get_scheduler();
-        sched->set_cuda_polling_functions(
-            &pika::cuda::experimental::detail::poll, &get_work_count);
+        sched->set_cuda_polling_functions(&pika::cuda::experimental::detail::poll, &get_work_count);
     }
 
     // -------------------------------------------------------------
@@ -317,9 +295,8 @@ namespace pika::cuda::experimental::detail {
 #if defined(PIKA_DEBUG)
         {
             PIKA_ASSERT_MSG(get_work_count() == 0,
-                "CUDA event polling was disabled while there are unprocessed "
-                "CUDA events. Make sure CUDA event polling is not disabled too "
-                "early.");
+                "CUDA event polling was disabled while there are unprocessed CUDA events. Make "
+                "sure CUDA event polling is not disabled too early.");
         }
 #endif
         cud_debug.debug(debug::detail::str<>("disable polling"));

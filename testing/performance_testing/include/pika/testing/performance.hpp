@@ -30,8 +30,7 @@ namespace pika::util {
 
             map_t m_map;
 
-            friend std::ostream& operator<<(
-                std::ostream& strm, json_perf_times const& obj)
+            friend std::ostream& operator<<(std::ostream& strm, json_perf_times const& obj)
             {
                 strm << "{\n";
                 strm << "  \"outputs\" : [";
@@ -41,10 +40,8 @@ namespace pika::util {
                     if (outputs)
                         strm << ",";
                     strm << "\n    {\n";
-                    strm << "      \"name\" : \"" << std::get<0>(item.first)
-                         << "\",\n";
-                    strm << "      \"executor\" : \"" << std::get<1>(item.first)
-                         << "\",\n";
+                    strm << "      \"name\" : \"" << std::get<0>(item.first) << "\",\n";
+                    strm << "      \"executor\" : \"" << std::get<1>(item.first) << "\",\n";
                     strm << "      \"series\" : [";
                     int series = 0;
                     for (auto val : item.second)
@@ -66,8 +63,7 @@ namespace pika::util {
             }
 
         public:
-            void add(std::string const& name, std::string const& executor,
-                double time)
+            void add(std::string const& name, std::string const& executor, double time)
             {
                 m_map[key_t(name, executor)].push_back(time);
             }
@@ -76,13 +72,11 @@ namespace pika::util {
         json_perf_times& times();
 
         // Add time to the map for performance report
-        void add_time(std::string const& test_name, std::string const& executor,
-            double time);
+        void add_time(std::string const& test_name, std::string const& executor, double time);
     }    // namespace detail
 
-    PIKA_EXPORT void perftests_report(std::string const& name,
-        std::string const& exec, const std::size_t steps,
-        detail::function<void(void)>&& test);
+    PIKA_EXPORT void perftests_report(std::string const& name, std::string const& exec,
+        const std::size_t steps, detail::function<void(void)>&& test);
 
     PIKA_EXPORT void perftests_print_times();
 

@@ -31,16 +31,15 @@
 // guarded by whether the embedded storage can actually be used (i.e. if the
 // stored type is small enough) that path should never be taken.
 #if defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Warray-bounds"
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Warray-bounds"
 #endif
 
 namespace pika::detail {
     template <typename T>
     struct empty_vtable_type
     {
-        static_assert(
-            sizeof(T) == 0, "No empty vtable type defined for given type T");
+        static_assert(sizeof(T) == 0, "No empty vtable type defined for given type T");
     };
 
     template <typename T>
@@ -56,8 +55,8 @@ namespace pika::detail {
     // - https://github.com/llvm/llvm-project/issues/53780
     // - https://github.com/llvm/llvm-project/commit/73b22935a7a863679021598db6a45fcfb62cd321
     // - https://reviews.llvm.org/D119615
-#if defined(PIKA_HAVE_CXX20_TRIVIAL_VIRTUAL_DESTRUCTOR) &&                     \
-    !(defined(PIKA_COMPUTE_CODE) && defined(PIKA_CLANG_VERSION) &&             \
+#if defined(PIKA_HAVE_CXX20_TRIVIAL_VIRTUAL_DESTRUCTOR) &&                                         \
+    !(defined(PIKA_COMPUTE_CODE) && defined(PIKA_CLANG_VERSION) &&                                 \
         (PIKA_CLANG_VERSION >= 140000) && (PIKA_CLANG_VERSION < 150000))
     template <typename T>
     inline constexpr empty_vtable_t<T> empty_vtable{};
@@ -88,8 +87,7 @@ namespace pika::detail {
     {
     protected:
         using base_type = Base;
-        static constexpr std::size_t embedded_storage_size =
-            EmbeddedStorageSize;
+        static constexpr std::size_t embedded_storage_size = EmbeddedStorageSize;
         static constexpr std::size_t alignment_size = AlignmentSize;
 
         // The union has two members:
@@ -100,29 +98,24 @@ namespace pika::detail {
         //   don't fit in the embedded storage.
         union
         {
-            std::aligned_storage_t<embedded_storage_size, alignment_size>
-                embedded_storage;
+            std::aligned_storage_t<embedded_storage_size, alignment_size> embedded_storage;
             base_type* heap_storage = nullptr;
         };
-        base_type* object =
-            const_cast<base_type*>(get_empty_vtable<base_type>());
+        base_type* object = const_cast<base_type*>(get_empty_vtable<base_type>());
 
         // Returns true when it's safe to use the embedded storage, i.e.
         // when the size and alignment of Impl are small enough.
         template <typename Impl>
         static constexpr bool can_use_embedded_storage()
         {
-            constexpr bool fits_storage =
-                sizeof(std::decay_t<Impl>) <= embedded_storage_size;
-            constexpr bool sufficiently_aligned =
-                alignof(std::decay_t<Impl>) <= alignment_size;
+            constexpr bool fits_storage = sizeof(std::decay_t<Impl>) <= embedded_storage_size;
+            constexpr bool sufficiently_aligned = alignof(std::decay_t<Impl>) <= alignment_size;
             return fits_storage && sufficiently_aligned;
         }
 
         bool using_embedded_storage() const noexcept
         {
-            return object ==
-                reinterpret_cast<base_type const*>(&embedded_storage);
+            return object == reinterpret_cast<base_type const*>(&embedded_storage);
         }
 
         void reset_vtable()
@@ -247,8 +240,7 @@ namespace pika::detail {
     class copyable_sbo_storage
       : public movable_sbo_storage<Base, EmbeddedStorageSize, AlignmentSize>
     {
-        using storage_base_type =
-            movable_sbo_storage<Base, EmbeddedStorageSize, AlignmentSize>;
+        using storage_base_type = movable_sbo_storage<Base, EmbeddedStorageSize, AlignmentSize>;
 
         using typename storage_base_type::base_type;
 
@@ -267,8 +259,7 @@ namespace pika::detail {
             {
                 if (other.using_embedded_storage())
                 {
-                    base_type* p =
-                        reinterpret_cast<base_type*>(&embedded_storage);
+                    base_type* p = reinterpret_cast<base_type*>(&embedded_storage);
                     other.get().clone_into(p);
                     object = p;
                 }
@@ -321,8 +312,7 @@ namespace pika::execution::experimental::detail {
         virtual void start() & noexcept = 0;
     };
 
-    struct PIKA_EXPORT empty_any_operation_state final
-      : any_operation_state_base
+    struct PIKA_EXPORT empty_any_operation_state final : any_operation_state_base
     {
         bool empty() const noexcept override;
         void start() & noexcept override;
@@ -331,11 +321,9 @@ namespace pika::execution::experimental::detail {
 
 namespace pika::detail {
     template <>
-    struct empty_vtable_type<
-        pika::execution::experimental::detail::any_operation_state_base>
+    struct empty_vtable_type<pika::execution::experimental::detail::any_operation_state_base>
     {
-        using type =
-            pika::execution::experimental::detail::empty_any_operation_state;
+        using type = pika::execution::experimental::detail::empty_any_operation_state;
     };
 }    // namespace pika::detail
 
@@ -348,8 +336,7 @@ namespace pika::execution::experimental::detail {
         template <typename Sender_, typename Receiver_>
         any_operation_state_impl(Sender_&& sender, Receiver_&& receiver)
           : operation_state(pika::execution::experimental::connect(
-                PIKA_FORWARD(Sender_, sender),
-                PIKA_FORWARD(Receiver_, receiver)))
+                PIKA_FORWARD(Sender_, sender), PIKA_FORWARD(Receiver_, receiver)))
         {
         }
 
@@ -364,8 +351,7 @@ namespace pika::execution::experimental::detail {
         using base_type = detail::any_operation_state_base;
         template <typename Sender, typename Receiver>
         using impl_type = detail::any_operation_state_impl<Sender, Receiver>;
-        using storage_type =
-            pika::detail::movable_sbo_storage<base_type, 8 * sizeof(void*)>;
+        using storage_type = pika::detail::movable_sbo_storage<base_type, 8 * sizeof(void*)>;
 
         storage_type storage{};
 
@@ -384,8 +370,7 @@ namespace pika::execution::experimental::detail {
         any_operation_state& operator=(any_operation_state const&) = delete;
 
         PIKA_EXPORT friend void tag_invoke(
-            pika::execution::experimental::start_t,
-            any_operation_state& os) noexcept;
+            pika::execution::experimental::start_t, any_operation_state& os) noexcept;
     };
 
     template <typename... Ts>
@@ -437,11 +422,9 @@ namespace pika::execution::experimental::detail {
 
 namespace pika::detail {
     template <typename... Ts>
-    struct empty_vtable_type<
-        pika::execution::experimental::detail::any_receiver_base<Ts...>>
+    struct empty_vtable_type<pika::execution::experimental::detail::any_receiver_base<Ts...>>
     {
-        using type =
-            pika::execution::experimental::detail::empty_any_receiver<Ts...>;
+        using type = pika::execution::experimental::detail::empty_any_receiver<Ts...>;
     };
 }    // namespace pika::detail
 
@@ -452,8 +435,8 @@ namespace pika::execution::experimental::detail {
         std::decay_t<Receiver> receiver;
 
         template <typename Receiver_,
-            typename = std::enable_if_t<
-                !std::is_same_v<std::decay_t<Receiver_>, any_receiver_impl>>>
+            typename =
+                std::enable_if_t<!std::is_same_v<std::decay_t<Receiver_>, any_receiver_impl>>>
         explicit any_receiver_impl(Receiver_&& receiver)
           : receiver(PIKA_FORWARD(Receiver_, receiver))
         {
@@ -466,14 +449,12 @@ namespace pika::execution::experimental::detail {
 
         void set_value(Ts... ts) && override
         {
-            pika::execution::experimental::set_value(
-                PIKA_MOVE(receiver), PIKA_MOVE(ts)...);
+            pika::execution::experimental::set_value(PIKA_MOVE(receiver), PIKA_MOVE(ts)...);
         }
 
         void set_error(std::exception_ptr ep) && noexcept override
         {
-            pika::execution::experimental::set_error(
-                PIKA_MOVE(receiver), PIKA_MOVE(ep));
+            pika::execution::experimental::set_error(PIKA_MOVE(receiver), PIKA_MOVE(ep));
         }
 
         void set_stopped() && noexcept override
@@ -488,28 +469,23 @@ namespace pika::execution::experimental::detail {
         using base_type = detail::any_receiver_base<Ts...>;
         template <typename Receiver>
         using impl_type = detail::any_receiver_impl<Receiver, Ts...>;
-        using storage_type =
-            pika::detail::movable_sbo_storage<base_type, 4 * sizeof(void*)>;
+        using storage_type = pika::detail::movable_sbo_storage<base_type, 4 * sizeof(void*)>;
 
         storage_type storage{};
 
     public:
         template <typename Receiver,
-            typename = std::enable_if_t<
-                !std::is_same_v<std::decay_t<Receiver>, any_receiver>>>
+            typename = std::enable_if_t<!std::is_same_v<std::decay_t<Receiver>, any_receiver>>>
         explicit any_receiver(Receiver&& receiver)
         {
-            storage.template store<impl_type<Receiver>>(
-                PIKA_FORWARD(Receiver, receiver));
+            storage.template store<impl_type<Receiver>>(PIKA_FORWARD(Receiver, receiver));
         }
 
         template <typename Receiver,
-            typename = std::enable_if_t<
-                !std::is_same_v<std::decay_t<Receiver>, any_receiver>>>
+            typename = std::enable_if_t<!std::is_same_v<std::decay_t<Receiver>, any_receiver>>>
         any_receiver& operator=(Receiver&& receiver)
         {
-            storage.template store<impl_type<Receiver>>(
-                PIKA_FORWARD(Receiver, receiver));
+            storage.template store<impl_type<Receiver>>(PIKA_FORWARD(Receiver, receiver));
             return *this;
         }
 
@@ -519,8 +495,8 @@ namespace pika::execution::experimental::detail {
         any_receiver& operator=(any_receiver&&) = default;
         any_receiver& operator=(any_receiver const&) = delete;
 
-        friend void tag_invoke(pika::execution::experimental::set_value_t,
-            any_receiver&& r, Ts... ts) noexcept
+        friend void tag_invoke(
+            pika::execution::experimental::set_value_t, any_receiver&& r, Ts... ts) noexcept
         {
             // We first move the storage to a temporary variable so that
             // this any_receiver is empty after this set_value. Doing
@@ -530,8 +506,8 @@ namespace pika::execution::experimental::detail {
             PIKA_MOVE(moved_storage.get()).set_value(PIKA_MOVE(ts)...);
         }
 
-        friend void tag_invoke(pika::execution::experimental::set_error_t,
-            any_receiver&& r, std::exception_ptr ep) noexcept
+        friend void tag_invoke(pika::execution::experimental::set_error_t, any_receiver&& r,
+            std::exception_ptr ep) noexcept
         {
             // We first move the storage to a temporary variable so that
             // this any_receiver is empty after this set_error. Doing
@@ -541,8 +517,8 @@ namespace pika::execution::experimental::detail {
             PIKA_MOVE(moved_storage.get()).set_error(PIKA_MOVE(ep));
         }
 
-        friend void tag_invoke(pika::execution::experimental::set_stopped_t,
-            any_receiver&& r) noexcept
+        friend void tag_invoke(
+            pika::execution::experimental::set_stopped_t, any_receiver&& r) noexcept
         {
             // We first move the storage to a temporary variable so that
             // this any_receiver is empty after this set_stopped. Doing
@@ -552,9 +528,8 @@ namespace pika::execution::experimental::detail {
             PIKA_MOVE(moved_storage.get()).set_stopped();
         }
 
-        friend constexpr pika::execution::experimental::detail::empty_env
-        tag_invoke(pika::execution::experimental::get_env_t,
-            any_receiver const&) noexcept
+        friend constexpr pika::execution::experimental::detail::empty_env tag_invoke(
+            pika::execution::experimental::get_env_t, any_receiver const&) noexcept
         {
             return {};
         }
@@ -565,8 +540,7 @@ namespace pika::execution::experimental::detail {
     {
         virtual ~unique_any_sender_base() = default;
         virtual void move_into(void* p) = 0;
-        virtual any_operation_state connect(
-            any_receiver<Ts...>&& receiver) && = 0;
+        virtual any_operation_state connect(any_receiver<Ts...>&& receiver) && = 0;
         virtual bool empty() const noexcept
         {
             return false;
@@ -579,8 +553,7 @@ namespace pika::execution::experimental::detail {
         virtual any_sender_base* clone() const = 0;
         virtual void clone_into(void* p) const = 0;
         using unique_any_sender_base<Ts...>::connect;
-        virtual any_operation_state connect(
-            any_receiver<Ts...>&& receiver) & = 0;
+        virtual any_operation_state connect(any_receiver<Ts...>&& receiver) const& = 0;
     };
 
     template <typename... Ts>
@@ -596,8 +569,7 @@ namespace pika::execution::experimental::detail {
             return true;
         }
 
-        [[noreturn]] any_operation_state connect(any_receiver<Ts...>&&) &&
-            override
+        [[noreturn]] any_operation_state connect(any_receiver<Ts...>&&) && override
         {
             throw_bad_any_call("unique_any_sender", "connect");
         }
@@ -626,14 +598,12 @@ namespace pika::execution::experimental::detail {
             return true;
         }
 
-        [[noreturn]] any_operation_state connect(any_receiver<Ts...>&&) &
-            override
+        [[noreturn]] any_operation_state connect(any_receiver<Ts...>&&) const& override
         {
             throw_bad_any_call("any_sender", "connect");
         }
 
-        [[noreturn]] any_operation_state connect(any_receiver<Ts...>&&) &&
-            override
+        [[noreturn]] any_operation_state connect(any_receiver<Ts...>&&) && override
         {
             throw_bad_any_call("any_sender", "connect");
         }
@@ -645,8 +615,8 @@ namespace pika::execution::experimental::detail {
         std::decay_t<Sender> sender;
 
         template <typename Sender_,
-            typename = std::enable_if_t<
-                !std::is_same_v<std::decay_t<Sender_>, unique_any_sender_impl>>>
+            typename =
+                std::enable_if_t<!std::is_same_v<std::decay_t<Sender_>, unique_any_sender_impl>>>
         explicit unique_any_sender_impl(Sender_&& sender)
           : sender(PIKA_FORWARD(Sender_, sender))
         {
@@ -669,8 +639,7 @@ namespace pika::execution::experimental::detail {
         std::decay_t<Sender> sender;
 
         template <typename Sender_,
-            typename = std::enable_if_t<
-                !std::is_same_v<std::decay_t<Sender_>, any_sender_impl>>>
+            typename = std::enable_if_t<!std::is_same_v<std::decay_t<Sender_>, any_sender_impl>>>
         explicit any_sender_impl(Sender_&& sender)
           : sender(PIKA_FORWARD(Sender_, sender))
         {
@@ -691,7 +660,7 @@ namespace pika::execution::experimental::detail {
             new (p) any_sender_impl(sender);
         }
 
-        any_operation_state connect(any_receiver<Ts...>&& receiver) & override
+        any_operation_state connect(any_receiver<Ts...>&& receiver) const& override
         {
             return any_operation_state{sender, PIKA_MOVE(receiver)};
         }
@@ -738,8 +707,7 @@ namespace pika::execution::experimental {
         using base_type = detail::unique_any_sender_base<Ts...>;
         template <typename Sender>
         using impl_type = detail::unique_any_sender_impl<Sender, Ts...>;
-        using storage_type =
-            pika::detail::movable_sbo_storage<base_type, 4 * sizeof(void*)>;
+        using storage_type = pika::detail::movable_sbo_storage<base_type, 4 * sizeof(void*)>;
 
         storage_type storage{};
 
@@ -747,21 +715,17 @@ namespace pika::execution::experimental {
         unique_any_sender() = default;
 
         template <typename Sender,
-            typename = std::enable_if_t<
-                !std::is_same_v<std::decay_t<Sender>, unique_any_sender>>>
+            typename = std::enable_if_t<!std::is_same_v<std::decay_t<Sender>, unique_any_sender>>>
         unique_any_sender(Sender&& sender)
         {
-            storage.template store<impl_type<Sender>>(
-                PIKA_FORWARD(Sender, sender));
+            storage.template store<impl_type<Sender>>(PIKA_FORWARD(Sender, sender));
         }
 
         template <typename Sender,
-            typename = std::enable_if_t<
-                !std::is_same_v<std::decay_t<Sender>, unique_any_sender>>>
+            typename = std::enable_if_t<!std::is_same_v<std::decay_t<Sender>, unique_any_sender>>>
         unique_any_sender& operator=(Sender&& sender)
         {
-            storage.template store<impl_type<Sender>>(
-                PIKA_FORWARD(Sender, sender));
+            storage.template store<impl_type<Sender>>(PIKA_FORWARD(Sender, sender));
             return *this;
         }
 
@@ -771,8 +735,7 @@ namespace pika::execution::experimental {
         unique_any_sender& operator=(unique_any_sender&&) = default;
         unique_any_sender& operator=(unique_any_sender const&) = delete;
 
-        template <template <typename...> class Tuple,
-            template <typename...> class Variant>
+        template <template <typename...> class Tuple, template <typename...> class Variant>
         using value_types = Variant<Tuple<Ts...>>;
 
         template <template <typename...> class Variant>
@@ -780,16 +743,14 @@ namespace pika::execution::experimental {
 
         static constexpr bool sends_done = false;
 
-        using completion_signatures =
-            pika::execution::experimental::completion_signatures<
-                pika::execution::experimental::set_value_t(Ts...),
-                pika::execution::experimental::set_error_t(std::exception_ptr),
-                pika::execution::experimental::set_stopped_t()>;
+        using completion_signatures = pika::execution::experimental::completion_signatures<
+            pika::execution::experimental::set_value_t(Ts...),
+            pika::execution::experimental::set_error_t(std::exception_ptr),
+            pika::execution::experimental::set_stopped_t()>;
 
         template <typename R>
         friend detail::any_operation_state
-        tag_invoke(pika::execution::experimental::connect_t,
-            unique_any_sender&& s, R&& r)
+        tag_invoke(pika::execution::experimental::connect_t, unique_any_sender&& s, R&& r)
         {
             // We first move the storage to a temporary variable so that this
             // any_sender is empty after this connect. Doing
@@ -798,6 +759,16 @@ namespace pika::execution::experimental {
             auto moved_storage = PIKA_MOVE(s.storage);
             return PIKA_MOVE(moved_storage.get())
                 .connect(detail::any_receiver<Ts...>{PIKA_FORWARD(R, r)});
+        }
+
+        template <typename R>
+        friend detail::any_operation_state
+        tag_invoke(pika::execution::experimental::connect_t, unique_any_sender const&, R&&)
+        {
+            static_assert(sizeof(R) == 0,
+                "Are you missing a std::move? unique_any_sender is not copyable and thus not "
+                "l-value connectable. Make sure you are passing an r-value reference of the "
+                "sender.");
         }
 
         bool empty() const noexcept
@@ -820,8 +791,7 @@ namespace pika::execution::experimental {
         using base_type = detail::any_sender_base<Ts...>;
         template <typename Sender>
         using impl_type = detail::any_sender_impl<Sender, Ts...>;
-        using storage_type =
-            pika::detail::copyable_sbo_storage<base_type, 4 * sizeof(void*)>;
+        using storage_type = pika::detail::copyable_sbo_storage<base_type, 4 * sizeof(void*)>;
 
         storage_type storage{};
 
@@ -829,31 +799,25 @@ namespace pika::execution::experimental {
         any_sender() = default;
 
         template <typename Sender,
-            typename = std::enable_if_t<
-                !std::is_same_v<std::decay_t<Sender>, any_sender>>>
+            typename = std::enable_if_t<!std::is_same_v<std::decay_t<Sender>, any_sender>>>
         any_sender(Sender&& sender)
         {
             static_assert(std::is_copy_constructible_v<std::decay_t<Sender>>,
-                "any_sender requires the given sender to be copy "
-                "constructible. Ensure the used sender type is copy "
-                "constructible or use unique_any_sender if you do not require "
+                "any_sender requires the given sender to be copy constructible. Ensure the used "
+                "sender type is copy constructible or use unique_any_sender if you do not require "
                 "copyability.");
-            storage.template store<impl_type<Sender>>(
-                PIKA_FORWARD(Sender, sender));
+            storage.template store<impl_type<Sender>>(PIKA_FORWARD(Sender, sender));
         }
 
         template <typename Sender,
-            typename = std::enable_if_t<
-                !std::is_same_v<std::decay_t<Sender>, any_sender>>>
+            typename = std::enable_if_t<!std::is_same_v<std::decay_t<Sender>, any_sender>>>
         any_sender& operator=(Sender&& sender)
         {
             static_assert(std::is_copy_constructible_v<std::decay_t<Sender>>,
-                "any_sender requires the given sender to be copy "
-                "constructible. Ensure the used sender type is copy "
-                "constructible or use unique_any_sender if you do not require "
+                "any_sender requires the given sender to be copy constructible. Ensure the used "
+                "sender type is copy constructible or use unique_any_sender if you do not require "
                 "copyability.");
-            storage.template store<impl_type<Sender>>(
-                PIKA_FORWARD(Sender, sender));
+            storage.template store<impl_type<Sender>>(PIKA_FORWARD(Sender, sender));
             return *this;
         }
 
@@ -863,8 +827,7 @@ namespace pika::execution::experimental {
         any_sender& operator=(any_sender&&) = default;
         any_sender& operator=(any_sender const&) = default;
 
-        template <template <typename...> class Tuple,
-            template <typename...> class Variant>
+        template <template <typename...> class Tuple, template <typename...> class Variant>
         using value_types = Variant<Tuple<Ts...>>;
 
         template <template <typename...> class Variant>
@@ -872,23 +835,21 @@ namespace pika::execution::experimental {
 
         static constexpr bool sends_done = false;
 
-        using completion_signatures =
-            pika::execution::experimental::completion_signatures<
-                pika::execution::experimental::set_value_t(Ts...),
-                pika::execution::experimental::set_error_t(std::exception_ptr),
-                pika::execution::experimental::set_stopped_t()>;
+        using completion_signatures = pika::execution::experimental::completion_signatures<
+            pika::execution::experimental::set_value_t(Ts...),
+            pika::execution::experimental::set_error_t(std::exception_ptr),
+            pika::execution::experimental::set_stopped_t()>;
 
         template <typename R>
-        friend detail::any_operation_state tag_invoke(
-            pika::execution::experimental::connect_t, any_sender& s, R&& r)
+        friend detail::any_operation_state
+        tag_invoke(pika::execution::experimental::connect_t, any_sender const& s, R&& r)
         {
-            return s.storage.get().connect(
-                detail::any_receiver<Ts...>{PIKA_FORWARD(R, r)});
+            return s.storage.get().connect(detail::any_receiver<Ts...>{PIKA_FORWARD(R, r)});
         }
 
         template <typename R>
-        friend detail::any_operation_state tag_invoke(
-            pika::execution::experimental::connect_t, any_sender&& s, R&& r)
+        friend detail::any_operation_state
+        tag_invoke(pika::execution::experimental::connect_t, any_sender&& s, R&& r)
         {
             // We first move the storage to a temporary variable so that this
             // any_sender is empty after this connect. Doing
@@ -915,23 +876,21 @@ namespace pika::execution::experimental {
         auto make_any_sender_impl(Sender&& sender)
         {
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-            using value_types_pack =
-                pika::execution::experimental::value_types_of_t<Sender,
-                    pika::execution::experimental::detail::empty_env,
-                    pika::util::detail::pack, pika::util::detail::pack>;
+            using value_types_pack = pika::execution::experimental::value_types_of_t<Sender,
+                pika::execution::experimental::detail::empty_env, pika::util::detail::pack,
+                pika::util::detail::pack>;
 #else
-            using value_types_pack = typename pika::execution::experimental::
-                sender_traits<std::decay_t<Sender>>::template value_types<
-                    pika::util::detail::pack, pika::util::detail::pack>;
+            using value_types_pack =
+                typename pika::execution::experimental::sender_traits<std::decay_t<Sender>>::
+                    template value_types<pika::util::detail::pack, pika::util::detail::pack>;
 #endif
             static_assert(value_types_pack::size == 1,
-                "any_sender and unique_any_sender require the predecessor "
-                "sender to send exactly one variant");
+                "any_sender and unique_any_sender require the predecessor sender to send exactly "
+                "one variant");
             using single_value_type_variant =
-                typename pika::util::detail::at_index_impl<0,
-                    value_types_pack>::type;
-            using any_sender_type = pika::util::detail::change_pack_t<AnySender,
-                single_value_type_variant>;
+                typename pika::util::detail::at_index_impl<0, value_types_pack>::type;
+            using any_sender_type =
+                pika::util::detail::change_pack_t<AnySender, single_value_type_variant>;
 
             return any_sender_type(std::forward<Sender>(sender));
         }
@@ -940,39 +899,32 @@ namespace pika::execution::experimental {
     template <typename Sender, typename = std::enable_if_t<is_sender_v<Sender>>>
     auto make_unique_any_sender(Sender&& sender)
     {
-        return detail::make_any_sender_impl<unique_any_sender>(
-            std::forward<Sender>(sender));
+        return detail::make_any_sender_impl<unique_any_sender>(std::forward<Sender>(sender));
     }
 
     template <typename Sender, typename = std::enable_if_t<is_sender_v<Sender>>>
     auto make_any_sender(Sender&& sender)
     {
-        return detail::make_any_sender_impl<any_sender>(
-            std::forward<Sender>(sender));
+        return detail::make_any_sender_impl<any_sender>(std::forward<Sender>(sender));
     }
 }    // namespace pika::execution::experimental
 
 namespace pika::detail {
     template <typename... Ts>
-    struct empty_vtable_type<
-        pika::execution::experimental::detail::unique_any_sender_base<Ts...>>
+    struct empty_vtable_type<pika::execution::experimental::detail::unique_any_sender_base<Ts...>>
     {
-        using type =
-            pika::execution::experimental::detail::empty_unique_any_sender<
-                Ts...>;
+        using type = pika::execution::experimental::detail::empty_unique_any_sender<Ts...>;
     };
 
     template <typename... Ts>
-    struct empty_vtable_type<
-        pika::execution::experimental::detail::any_sender_base<Ts...>>
+    struct empty_vtable_type<pika::execution::experimental::detail::any_sender_base<Ts...>>
     {
-        using type =
-            pika::execution::experimental::detail::empty_any_sender<Ts...>;
+        using type = pika::execution::experimental::detail::empty_any_sender<Ts...>;
     };
 }    // namespace pika::detail
 
 #if defined(__GNUC__)
-#pragma GCC diagnostic pop
+# pragma GCC diagnostic pop
 #endif
 
 #include <pika/config/warnings_suffix.hpp>

@@ -23,8 +23,7 @@
 void test_jthread_without_token()
 {
     // test the basic jthread API (not taking stop_token arg)
-    PIKA_TEST(pika::jthread::hardware_concurrency() ==
-        pika::thread::hardware_concurrency());
+    PIKA_TEST(pika::jthread::hardware_concurrency() == pika::thread::hardware_concurrency());
 
     pika::stop_token stoken;
     PIKA_TEST(!stoken.stop_possible());
@@ -80,8 +79,7 @@ void test_jthread_with_token()
                 all_set.store(true);
 
                 // wait until interrupt is signaled
-                for ([[maybe_unused]] int i = 0; !stoptoken.stop_requested();
-                     ++i)
+                for ([[maybe_unused]] int i = 0; !stoptoken.stop_requested(); ++i)
                 {
                     pika::this_thread::yield();
                 }
@@ -175,8 +173,8 @@ void test_detach()
         pika::stop_token interrupt_token;
         std::atomic<bool> all_set{false};
 
-        pika::jthread t([&id, &is_interrupted, &interrupt_token, &all_set,
-                            &finally_interrupted](pika::stop_token stoken) {
+        pika::jthread t([&id, &is_interrupted, &interrupt_token, &all_set, &finally_interrupted](
+                            pika::stop_token stoken) {
             // check some values of the started thread
             id = pika::this_thread::get_id();
             interrupt_token = stoken;
@@ -226,8 +224,7 @@ void test_detach()
     auto t0 = std::chrono::high_resolution_clock::now();
     pika::util::yield_while([&]() {
         return !finally_interrupted.load() &&
-            (std::chrono::high_resolution_clock::now() - t0 <
-                std::chrono::seconds(1));
+            (std::chrono::high_resolution_clock::now() - t0 < std::chrono::seconds(1));
     });
 
     PIKA_TEST(finally_interrupted.load());
@@ -389,8 +386,7 @@ void test_temporarily_disable_token()
 ///////////////////////////////////////////////////////////////////////////////
 void test_jthread_api()
 {
-    PIKA_TEST(pika::jthread::hardware_concurrency() ==
-        pika::thread::hardware_concurrency());
+    PIKA_TEST(pika::jthread::hardware_concurrency() == pika::thread::hardware_concurrency());
 
     pika::stop_source ssource;
     PIKA_TEST(ssource.stop_possible());
@@ -402,8 +398,7 @@ void test_jthread_api()
     // thread with no callable and invalid source
     pika::jthread t0;
     pika::jthread::native_handle_type nh = t0.native_handle();
-    PIKA_TEST(
-        (std::is_same<decltype(nh), pika::thread::native_handle_type>::value));
+    PIKA_TEST((std::is_same<decltype(nh), pika::thread::native_handle_type>::value));
     PIKA_TEST(!t0.joinable());
 
     pika::stop_source ssourceStolen{std::move(ssource)};
@@ -416,21 +411,20 @@ void test_jthread_api()
         pika::jthread::id id{pika::this_thread::get_id()};
         pika::stop_token interrupt_token;
         std::atomic<bool> all_set{false};
-        pika::jthread t(
-            [&id, &interrupt_token, &all_set](pika::stop_token stoken) {
-                // check some values of the started thread
-                id = pika::this_thread::get_id();
-                interrupt_token = stoken;
-                PIKA_TEST(stoken.stop_possible());
-                PIKA_TEST(!stoken.stop_requested());
-                all_set.store(true);
+        pika::jthread t([&id, &interrupt_token, &all_set](pika::stop_token stoken) {
+            // check some values of the started thread
+            id = pika::this_thread::get_id();
+            interrupt_token = stoken;
+            PIKA_TEST(stoken.stop_possible());
+            PIKA_TEST(!stoken.stop_requested());
+            all_set.store(true);
 
-                // wait until interrupt is signaled (due to destructor of t)
-                for ([[maybe_unused]] int i = 0; !stoken.stop_requested(); ++i)
-                {
-                    pika::this_thread::yield();
-                }
-            });
+            // wait until interrupt is signaled (due to destructor of t)
+            for ([[maybe_unused]] int i = 0; !stoken.stop_requested(); ++i)
+            {
+                pika::this_thread::yield();
+            }
+        });
 
         // wait until t has set all initial values
         for ([[maybe_unused]] int i = 0; !all_set.load(); ++i)
@@ -490,8 +484,7 @@ int pika_main()
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0, "pika main exited with non-zero status");
 
     return 0;
 }

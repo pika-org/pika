@@ -9,20 +9,19 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-#include <pika/execution_base/p2300_forward.hpp>
+# include <pika/execution_base/p2300_forward.hpp>
 #else
-#include <pika/concepts/concepts.hpp>
-#include <pika/execution/algorithms/detail/partial_algorithm.hpp>
-#include <pika/execution_base/completion_scheduler.hpp>
-#include <pika/execution_base/receiver.hpp>
-#include <pika/execution_base/sender.hpp>
-#include <pika/functional/detail/tag_priority_invoke.hpp>
+# include <pika/concepts/concepts.hpp>
+# include <pika/execution/algorithms/detail/partial_algorithm.hpp>
+# include <pika/execution_base/completion_scheduler.hpp>
+# include <pika/execution_base/receiver.hpp>
+# include <pika/execution_base/sender.hpp>
+# include <pika/functional/detail/tag_priority_invoke.hpp>
 
-#include <utility>
+# include <utility>
 
 namespace pika::execution::experimental {
-    inline constexpr struct transfer_t final
-      : pika::functional::detail::tag_priority<transfer_t>
+    inline constexpr struct transfer_t final : pika::functional::detail::tag_priority<transfer_t>
     {
     private:
         // clang-format off
@@ -38,10 +37,9 @@ namespace pika::execution::experimental {
         friend constexpr PIKA_FORCEINLINE auto
         tag_override_invoke(transfer_t, Sender&& sender, Scheduler&& scheduler)
         {
-            auto completion_scheduler =
-                pika::execution::experimental::get_completion_scheduler<
-                    pika::execution::experimental::set_value_t>(sender);
-            return pika::functional::tag_invoke(transfer_t{},
+            auto completion_scheduler = pika::execution::experimental::get_completion_scheduler<
+                pika::execution::experimental::set_value_t>(sender);
+            return pika::functional::detail::tag_invoke(transfer_t{},
                 PIKA_MOVE(completion_scheduler), PIKA_FORWARD(Sender, sender),
                 PIKA_FORWARD(Scheduler, scheduler));
         }
@@ -53,11 +51,11 @@ namespace pika::execution::experimental {
                 is_scheduler_v<Scheduler>
             )>
         // clang-format on
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            transfer_t, Sender&& predecessor_sender, Scheduler&& scheduler)
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(transfer_t, Sender&& predecessor_sender, Scheduler&& scheduler)
         {
-            return schedule_from(PIKA_FORWARD(Scheduler, scheduler),
-                PIKA_FORWARD(Sender, predecessor_sender));
+            return schedule_from(
+                PIKA_FORWARD(Scheduler, scheduler), PIKA_FORWARD(Sender, predecessor_sender));
         }
 
         template <typename Scheduler>

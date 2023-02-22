@@ -63,8 +63,7 @@ namespace pika::parallel::execution {
                 has_has_pending_closures<Executor>::value
             )>
         // clang-format on
-        friend PIKA_FORCEINLINE decltype(auto)
-        tag_invoke(has_pending_closures_t, Executor&& exec)
+        friend PIKA_FORCEINLINE decltype(auto) tag_invoke(has_pending_closures_t, Executor&& exec)
         {
             return exec.has_pending_closures();
         }
@@ -95,9 +94,8 @@ namespace pika::parallel::execution {
                 pika::traits::is_executor_any<Executor>::value
             )>
         // clang-format on
-        friend PIKA_FORCEINLINE decltype(auto)
-        tag_fallback_invoke(get_pu_mask_t, Executor&& /*exec*/,
-            threads::detail::topology& topo, std::size_t thread_num)
+        friend PIKA_FORCEINLINE decltype(auto) tag_fallback_invoke(get_pu_mask_t,
+            Executor&& /*exec*/, threads::detail::topology& topo, std::size_t thread_num)
         {
             return detail::get_pu_mask(topo, thread_num);
         }
@@ -109,9 +107,8 @@ namespace pika::parallel::execution {
                 has_get_pu_mask<Executor>::value
             )>
         // clang-format on
-        friend PIKA_FORCEINLINE decltype(auto)
-        tag_invoke(get_pu_mask_t, Executor&& exec,
-            threads::detail::topology& topo, std::size_t thread_num)
+        friend PIKA_FORCEINLINE decltype(auto) tag_invoke(
+            get_pu_mask_t, Executor&& exec, threads::detail::topology& topo, std::size_t thread_num)
         {
             return exec.get_pu_mask(topo, thread_num);
         }
@@ -136,8 +133,8 @@ namespace pika::parallel::execution {
                 pika::traits::is_executor_any<Executor>::value
             )>
         // clang-format on
-        friend PIKA_FORCEINLINE void tag_fallback_invoke(
-            set_scheduler_mode_t, Executor&& /*exec*/, Mode const& /*mode*/)
+        friend PIKA_FORCEINLINE void
+        tag_fallback_invoke(set_scheduler_mode_t, Executor&& /*exec*/, Mode const& /*mode*/)
         {
         }
 

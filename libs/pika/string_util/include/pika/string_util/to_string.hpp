@@ -14,41 +14,37 @@
 #include <string>
 #include <type_traits>
 
-namespace pika::util {
+namespace pika::detail {
 
-    namespace detail {
-        template <typename T, typename Enable = void>
-        struct to_string
+    template <typename T, typename Enable = void>
+    struct to_string_impl
+    {
+        static std::string call(T const& value)
         {
-            static std::string call(T const& value)
-            {
-                return fmt::format("{}", value);
-            }
-        };
+            return fmt::format("{}", value);
+        }
+    };
 
-        template <typename T>
-        struct to_string<T,
-            typename std::enable_if<std::is_integral<T>::value ||
-                std::is_floating_point<T>::value>::type>
+    template <typename T>
+    struct to_string_impl<T, std::enable_if_t<std::is_integral_v<T> || std::is_floating_point_v<T>>>
+    {
+        static std::string call(T const& value)
         {
-            static std::string call(T const& value)
-            {
-                return std::to_string(value);
-            }
-        };
-    }    // namespace detail
+            return std::to_string(value);
+        }
+    };
 
     template <typename T>
     std::string to_string(T const& v)
     {
         try
         {
-            return detail::to_string<T>::call(v);
+            return to_string_impl<T>::call(v);
         }
         catch (...)
         {
-            return detail::throw_bad_lexical_cast<T, std::string>();
+            return throw_bad_lexical_cast<T, std::string>();
         }
     }
 
-}    // namespace pika::util
+}    // namespace pika::detail

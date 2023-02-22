@@ -8,7 +8,6 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/functional/invoke_result.hpp>
 #include <pika/futures/traits/future_traits.hpp>
 #include <pika/futures/traits/is_future.hpp>
 #include <pika/type_support/lazy_conditional.hpp>
@@ -35,8 +34,7 @@ namespace pika::traits {
                 f(PIKA_MOVE(future));
             }
 
-            using type =
-                decltype(error(std::declval<Future>(), std::declval<F&>()));
+            using type = decltype(error(std::declval<Future>(), std::declval<F&>()));
         };
 
         ///////////////////////////////////////////////////////////////////////
@@ -47,16 +45,14 @@ namespace pika::traits {
         };
 
         template <typename Future, typename F>
-        struct future_then_result<Future, F,
-            std::void_t<pika::util::detail::invoke_result_t<F&, Future>>>
+        struct future_then_result<Future, F, std::void_t<std::invoke_result_t<F&, Future>>>
         {
-            using cont_result = pika::util::detail::invoke_result_t<F&, Future>;
+            using cont_result = std::invoke_result_t<F&, Future>;
 
             // perform unwrapping of future<future<R>>
             using result_type = ::pika::detail::lazy_conditional_t<
                 pika::traits::detail::is_unique_future<cont_result>::value,
-                pika::traits::future_traits<cont_result>,
-                pika::detail::type_identity<cont_result>>;
+                pika::traits::future_traits<cont_result>, pika::detail::type_identity<cont_result>>;
 
             using type = pika::future<result_type>;
         };

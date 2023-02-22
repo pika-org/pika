@@ -46,8 +46,7 @@ using value_type = std::pair<thread_id_type, std::size_t>;
 using fifo_type = std::vector<value_type>;
 
 ///////////////////////////////////////////////////////////////////////////////
-void lock_and_wait(mutex& m, barrier& b0, barrier& b1, value_type& entry,
-    std::size_t /* wait */)
+void lock_and_wait(mutex& m, barrier& b0, barrier& b1, value_type& entry, std::size_t /* wait */)
 {
     // Wait for all threads in this iteration to be created.
     b0.wait();
@@ -67,12 +66,11 @@ void lock_and_wait(mutex& m, barrier& b0, barrier& b1, value_type& entry,
         }
 
         // Schedule a wakeup.
-        set_thread_state(this_.noref(), milliseconds(30),
-            pika::threads::detail::thread_schedule_state::pending);
+        set_thread_state(
+            this_.noref(), milliseconds(30), pika::threads::detail::thread_schedule_state::pending);
 
         // Suspend this pika thread.
-        pika::this_thread::suspend(
-            pika::threads::detail::thread_schedule_state::suspended);
+        pika::this_thread::suspend(pika::threads::detail::thread_schedule_state::suspended);
     }
 
     // Make pika_main wait for us to finish.
@@ -120,10 +118,9 @@ int pika_main(variables_map& vm)
             // Compute the mutex to be used for this thread.
             const std::size_t index = j % mutex_count;
 
-            thread_init_data data(
-                make_thread_function_nullary(pika::util::detail::bind(
-                    &lock_and_wait, std::ref(m[index]), std::ref(b0),
-                    std::ref(b1), std::ref(pikathreads[j]), wait)),
+            thread_init_data data(make_thread_function_nullary(pika::util::detail::bind(
+                                      &lock_and_wait, std::ref(m[index]), std::ref(b0),
+                                      std::ref(b1), std::ref(pikathreads[j]), wait)),
                 "lock_and_wait");
             ids.push_back(register_thread(data));
         }
@@ -151,8 +148,7 @@ int pika_main(variables_map& vm)
 int main(int argc, char* argv[])
 {
     // Configure application-specific options.
-    options_description desc_commandline(
-        "Usage: " PIKA_APPLICATION_STRING " [options]");
+    options_description desc_commandline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
     // clang-format off
     desc_commandline.add_options()

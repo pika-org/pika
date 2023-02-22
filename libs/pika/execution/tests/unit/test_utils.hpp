@@ -22,13 +22,12 @@ namespace test {
     ///////////////////////////////////////////////////////////////////////////
     template <typename BaseIterator, typename IteratorTag>
     struct test_iterator
-      : pika::util::iterator_adaptor<test_iterator<BaseIterator, IteratorTag>,
-            BaseIterator, void, IteratorTag>
+      : pika::util::iterator_adaptor<test_iterator<BaseIterator, IteratorTag>, BaseIterator, void,
+            IteratorTag>
     {
     private:
-        using base_type = pika::util::iterator_adaptor<
-            test_iterator<BaseIterator, IteratorTag>, BaseIterator, void,
-            IteratorTag>;
+        using base_type = pika::util::iterator_adaptor<test_iterator<BaseIterator, IteratorTag>,
+            BaseIterator, void, IteratorTag>;
 
     public:
         test_iterator()
@@ -44,14 +43,13 @@ namespace test {
     ///////////////////////////////////////////////////////////////////////////
     template <typename BaseIterator, typename IteratorTag>
     struct decorated_iterator
-      : pika::util::iterator_adaptor<
-            decorated_iterator<BaseIterator, IteratorTag>, BaseIterator, void,
-            IteratorTag>
+      : pika::util::iterator_adaptor<decorated_iterator<BaseIterator, IteratorTag>, BaseIterator,
+            void, IteratorTag>
     {
     private:
-        using base_type = pika::util::iterator_adaptor<
-            decorated_iterator<BaseIterator, IteratorTag>, BaseIterator, void,
-            IteratorTag>;
+        using base_type =
+            pika::util::iterator_adaptor<decorated_iterator<BaseIterator, IteratorTag>,
+                BaseIterator, void, IteratorTag>;
 
     public:
         decorated_iterator() {}
@@ -152,8 +150,7 @@ namespace test {
     template <typename IteratorTag>
     struct test_num_exceptions<pika::execution::sequenced_policy, IteratorTag>
     {
-        static void call(pika::execution::sequenced_policy const&,
-            pika::exception_list const& e)
+        static void call(pika::execution::sequenced_policy const&, pika::exception_list const& e)
         {
             PIKA_TEST_EQ(e.size(), 1u);
         }
@@ -169,11 +166,9 @@ namespace test {
     };
 
     template <>
-    struct test_num_exceptions<pika::execution::sequenced_policy,
-        std::input_iterator_tag>
+    struct test_num_exceptions<pika::execution::sequenced_policy, std::input_iterator_tag>
     {
-        static void call(pika::execution::sequenced_policy const&,
-            pika::exception_list const& e)
+        static void call(pika::execution::sequenced_policy const&, pika::exception_list const& e)
         {
             PIKA_TEST_EQ(e.size(), 1u);
         }
@@ -217,11 +212,9 @@ namespace test {
 
     ///////////////////////////////////////////////////////////////////////////
     inline void make_ready(
-        std::vector<pika::lcos::local::promise<std::size_t>>& p,
-        std::vector<std::size_t>& idx)
+        std::vector<pika::lcos::local::promise<std::size_t>>& p, std::vector<std::size_t>& idx)
     {
-        std::for_each(std::begin(idx), std::end(idx),
-            [&p](std::size_t i) { p[i].set_value(i); });
+        std::for_each(std::begin(idx), std::end(idx), [&p](std::size_t i) { p[i].set_value(i); });
     }
 
     inline std::vector<pika::future<std::size_t>> fill_with_futures(
@@ -229,16 +222,13 @@ namespace test {
     {
         std::vector<pika::future<std::size_t>> f;
         std::transform(std::begin(p), std::end(p), std::back_inserter(f),
-            [](pika::lcos::local::promise<std::size_t>& pr) {
-                return pr.get_future();
-            });
+            [](pika::lcos::local::promise<std::size_t>& pr) { return pr.get_future(); });
 
         return f;
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    inline std::vector<std::size_t> fill_all_any_none(
-        std::size_t size, std::size_t num_filled)
+    inline std::vector<std::size_t> fill_all_any_none(std::size_t size, std::size_t num_filled)
     {
         if (num_filled == 0)
             return std::vector<std::size_t>(size, 0);
@@ -261,8 +251,7 @@ namespace test {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename InputIter1, typename InputIter2>
-    bool equal(InputIter1 first1, InputIter1 last1, InputIter2 first2,
-        InputIter2 last2)
+    bool equal(InputIter1 first1, InputIter1 last1, InputIter2 first2, InputIter2 last2)
     {
         if (std::distance(first1, last1) != std::distance(first2, last2))
             return false;

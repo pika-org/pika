@@ -29,12 +29,10 @@ namespace pika::execution::experimental {
             pika::is_execution_policy_v<ExPolicy>
         )>
     // clang-format on
-    constexpr decltype(auto)
-    tag_invoke(pika::execution::experimental::with_annotation_t,
-        ExPolicy&& policy, char const* annotation)
+    constexpr decltype(auto) tag_invoke(
+        pika::execution::experimental::with_annotation_t, ExPolicy&& policy, char const* annotation)
     {
-        auto exec = pika::execution::experimental::with_annotation(
-            policy.executor(), annotation);
+        auto exec = pika::execution::experimental::with_annotation(policy.executor(), annotation);
 
         return pika::parallel::execution::create_rebound_policy(
             policy, PIKA_MOVE(exec), policy.parameters());
@@ -46,8 +44,8 @@ namespace pika::execution::experimental {
             pika::is_execution_policy_v<ExPolicy>
         )>
     // clang-format on
-    decltype(auto) tag_invoke(pika::execution::experimental::with_annotation_t,
-        ExPolicy&& policy, std::string annotation)
+    decltype(auto) tag_invoke(
+        pika::execution::experimental::with_annotation_t, ExPolicy&& policy, std::string annotation)
     {
         auto exec = pika::execution::experimental::with_annotation(
             policy.executor(), PIKA_MOVE(annotation));
@@ -62,13 +60,13 @@ namespace pika::execution::experimental {
     template <typename ExPolicy,
         PIKA_CONCEPT_REQUIRES_(
             pika::is_execution_policy_v<ExPolicy> &&
-            pika::functional::is_tag_invocable_v<
+            pika::functional::detail::is_tag_invocable_v<
                 pika::execution::experimental::get_annotation_t,
                 typename std::decay_t<ExPolicy>::executor_type>
         )>
     // clang-format on
-    constexpr decltype(auto) tag_invoke(
-        pika::execution::experimental::get_annotation_t, ExPolicy&& policy)
+    constexpr decltype(auto)
+    tag_invoke(pika::execution::experimental::get_annotation_t, ExPolicy&& policy)
     {
         return pika::execution::experimental::get_annotation(policy.executor());
     }

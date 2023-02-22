@@ -89,11 +89,9 @@ namespace pika::threads {
         // clang-format on
     };
 
-    PIKA_EXPORT scheduler_mode operator&(
-        scheduler_mode sched1, scheduler_mode sched2);
+    PIKA_EXPORT scheduler_mode operator&(scheduler_mode sched1, scheduler_mode sched2);
 
-    PIKA_EXPORT scheduler_mode operator|(
-        scheduler_mode sched1, scheduler_mode sched2);
+    PIKA_EXPORT scheduler_mode operator|(scheduler_mode sched1, scheduler_mode sched2);
 
     PIKA_EXPORT scheduler_mode operator~(scheduler_mode sched);
 

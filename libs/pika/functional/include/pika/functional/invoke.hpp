@@ -8,14 +8,13 @@
 
 #include <pika/config.hpp>
 #include <pika/functional/detail/invoke.hpp>
-#include <pika/functional/invoke_result.hpp>
 #include <pika/type_support/void_guard.hpp>
 
+#include <type_traits>
 #include <utility>
 
 namespace pika::util::detail {
-#define PIKA_INVOKE_R(R, F, ...)                                               \
-    (::pika::detail::void_guard<R>(), PIKA_INVOKE(F, __VA_ARGS__))
+#define PIKA_INVOKE_R(R, F, ...) (::pika::detail::void_guard<R>(), PIKA_INVOKE(F, __VA_ARGS__))
 
     /// Invokes the given callable object f with the content of
     /// the argument pack vs
@@ -34,8 +33,7 @@ namespace pika::util::detail {
     ///
     /// \note This function is similar to `std::invoke` (C++17)
     template <typename F, typename... Ts>
-    constexpr PIKA_HOST_DEVICE util::detail::invoke_result_t<F, Ts...>
-    invoke(F&& f, Ts&&... vs)
+    constexpr PIKA_HOST_DEVICE std::invoke_result_t<F, Ts...> invoke(F&& f, Ts&&... vs)
     {
         return PIKA_INVOKE(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...);
     }

@@ -19,8 +19,8 @@ int pika_main()
     return pika::finalize();
 }
 
-void init_resource_partitioner_handler(pika::resource::partitioner& rp,
-    pika::program_options::variables_map const& /*vm*/)
+void init_resource_partitioner_handler(
+    pika::resource::partitioner& rp, pika::program_options::variables_map const& /*vm*/)
 {
     rp.create_thread_pool("my-thread-pool");
 

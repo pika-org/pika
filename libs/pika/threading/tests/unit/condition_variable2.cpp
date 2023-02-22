@@ -25,9 +25,8 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // helper to call wait()
-void cv_wait(pika::stop_token stoken, int /* id */, bool& ready,
-    pika::mutex& ready_mtx, pika::condition_variable_any& ready_cv,
-    bool notify_called)
+void cv_wait(pika::stop_token stoken, int /* id */, bool& ready, pika::mutex& ready_mtx,
+    pika::condition_variable_any& ready_cv, bool notify_called)
 {
     try
     {
@@ -60,17 +59,16 @@ void test_cv(bool call_notify)
     pika::condition_variable_any ready_cv;
 
     {
-        pika::jthread t1(
-            [&ready, &ready_mtx, &ready_cv, call_notify](pika::stop_token it) {
+        pika::jthread t1([&ready, &ready_mtx, &ready_cv, call_notify](pika::stop_token it) {
+            {
+                std::unique_lock<pika::mutex> lg{ready_mtx};
+                while (!it.stop_requested() && !ready)
                 {
-                    std::unique_lock<pika::mutex> lg{ready_mtx};
-                    while (!it.stop_requested() && !ready)
-                    {
-                        ready_cv.wait_for(lg, std::chrono::milliseconds(100));
-                    }
+                    ready_cv.wait_for(lg, std::chrono::milliseconds(100));
                 }
-                PIKA_TEST(call_notify != it.stop_requested());
-            });
+            }
+            PIKA_TEST(call_notify != it.stop_requested());
+        });
 
         pika::this_thread::yield();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -95,33 +93,32 @@ void test_cv_pred(bool call_notify)
     pika::condition_variable_any ready_cv;
 
     {
-        pika::jthread t1(
-            [&ready, &ready_mtx, &ready_cv, call_notify](pika::stop_token st) {
-                try
+        pika::jthread t1([&ready, &ready_mtx, &ready_cv, call_notify](pika::stop_token st) {
+            try
+            {
+                std::unique_lock<pika::mutex> lg{ready_mtx};
+                ready_cv.wait(lg, st, [&ready] { return ready; });
+                if (st.stop_requested())
                 {
-                    std::unique_lock<pika::mutex> lg{ready_mtx};
-                    ready_cv.wait(lg, st, [&ready] { return ready; });
-                    if (st.stop_requested())
-                    {
-                        throw "interrupted";
-                    }
-                    PIKA_TEST(call_notify);
+                    throw "interrupted";
                 }
-                catch (std::exception const&)
-                {
-                    // should be no std::exception
-                    PIKA_TEST(false);
-                }
-                catch (const char*)
-                {
-                    PIKA_TEST(!call_notify);
-                }
-                catch (...)
-                {
-                    PIKA_TEST(false);
-                }
-                PIKA_TEST(call_notify != st.stop_requested());
-            });
+                PIKA_TEST(call_notify);
+            }
+            catch (std::exception const&)
+            {
+                // should be no std::exception
+                PIKA_TEST(false);
+            }
+            catch (const char*)
+            {
+                PIKA_TEST(!call_notify);
+            }
+            catch (...)
+            {
+                PIKA_TEST(false);
+            }
+            PIKA_TEST(call_notify != st.stop_requested());
+        });
 
         pika::this_thread::yield();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -147,8 +144,7 @@ void test_cv_thread_no_pred(bool call_notify)
 
     pika::stop_source is;
     {
-        pika::thread t1([&ready, &ready_mtx, &ready_cv, st = is.get_token(),
-                            call_notify] {
+        pika::thread t1([&ready, &ready_mtx, &ready_cv, st = is.get_token(), call_notify] {
             {
                 std::unique_lock<pika::mutex> lg{ready_mtx};
                 bool ret = ready_cv.wait(lg, st, [&ready] { return ready; });
@@ -196,23 +192,22 @@ void test_cv_thread_pred(bool call_notify)
 
     pika::stop_source is;
     {
-        pika::thread t1(
-            [&ready, &ready_mtx, &ready_cv, st = is.get_token(), call_notify] {
-                bool ret;
+        pika::thread t1([&ready, &ready_mtx, &ready_cv, st = is.get_token(), call_notify] {
+            bool ret;
+            {
+                std::unique_lock<pika::mutex> lg{ready_mtx};
+                ret = ready_cv.wait(lg, st, [&ready] { return ready; });
+                if (ret)
                 {
-                    std::unique_lock<pika::mutex> lg{ready_mtx};
-                    ret = ready_cv.wait(lg, st, [&ready] { return ready; });
-                    if (ret)
-                    {
-                        PIKA_TEST(!st.stop_requested());
-                    }
-                    else
-                    {
-                        PIKA_TEST(st.stop_requested());
-                    }
+                    PIKA_TEST(!st.stop_requested());
                 }
-                PIKA_TEST(call_notify != st.stop_requested());
-            });
+                else
+                {
+                    PIKA_TEST(st.stop_requested());
+                }
+            }
+            PIKA_TEST(call_notify != st.stop_requested());
+        });
 
         pika::this_thread::yield();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -250,23 +245,22 @@ void test_minimal_wait(int sec)
         pika::condition_variable_any ready_cv;
 
         {
-            pika::jthread t1(
-                [&ready, &ready_mtx, &ready_cv, dur](pika::stop_token st) {
-                    try
+            pika::jthread t1([&ready, &ready_mtx, &ready_cv, dur](pika::stop_token st) {
+                try
+                {
+                    auto t0 = std::chrono::steady_clock::now();
                     {
-                        auto t0 = std::chrono::steady_clock::now();
-                        {
-                            std::unique_lock<pika::mutex> lg{ready_mtx};
-                            ready_cv.wait(lg, st, [&ready] { return ready; });
-                        }
-                        PIKA_TEST(std::chrono::steady_clock::now() <
-                            t0 + dur + std::chrono::seconds(1));
+                        std::unique_lock<pika::mutex> lg{ready_mtx};
+                        ready_cv.wait(lg, st, [&ready] { return ready; });
                     }
-                    catch (...)
-                    {
-                        PIKA_TEST(false);
-                    }
-                });
+                    PIKA_TEST(
+                        std::chrono::steady_clock::now() < t0 + dur + std::chrono::seconds(1));
+                }
+                catch (...)
+                {
+                    PIKA_TEST(false);
+                }
+            });
 
             pika::this_thread::yield();
             std::this_thread::sleep_for(dur);
@@ -292,26 +286,25 @@ void test_minimal_wait_for(int sec1, int sec2)
         pika::condition_variable_any ready_cv;
 
         {
-            pika::jthread t1([&ready, &ready_mtx, &ready_cv, dur_int, dur_wait](
-                                 pika::stop_token st) {
-                try
-                {
-                    auto t0 = std::chrono::steady_clock::now();
+            pika::jthread t1(
+                [&ready, &ready_mtx, &ready_cv, dur_int, dur_wait](pika::stop_token st) {
+                    try
                     {
-                        std::unique_lock<pika::mutex> lg{ready_mtx};
-                        ready_cv.wait_for(
-                            lg, st, dur_wait, [&ready] { return ready; });
+                        auto t0 = std::chrono::steady_clock::now();
+                        {
+                            std::unique_lock<pika::mutex> lg{ready_mtx};
+                            ready_cv.wait_for(lg, st, dur_wait, [&ready] { return ready; });
+                        }
+                        PIKA_TEST(std::chrono::steady_clock::now() <
+                            t0 + dur_int + std::chrono::seconds(5));
+                        PIKA_TEST(std::chrono::steady_clock::now() <
+                            t0 + dur_wait + std::chrono::seconds(5));
                     }
-                    PIKA_TEST(std::chrono::steady_clock::now() <
-                        t0 + dur_int + std::chrono::seconds(5));
-                    PIKA_TEST(std::chrono::steady_clock::now() <
-                        t0 + dur_wait + std::chrono::seconds(5));
-                }
-                catch (...)
-                {
-                    PIKA_TEST(false);
-                }
-            });
+                    catch (...)
+                    {
+                        PIKA_TEST(false);
+                    }
+                });
 
             pika::this_thread::yield();
             std::this_thread::sleep_for(dur_int);
@@ -333,16 +326,14 @@ void test_timed_cv(bool call_notify, bool /* call_interrupt */, Dur dur)
     pika::condition_variable_any ready_cv;
 
     {
-        pika::jthread t1([&ready, &ready_mtx, &ready_cv, call_notify, dur](
-                             pika::stop_token st) {
+        pika::jthread t1([&ready, &ready_mtx, &ready_cv, call_notify, dur](pika::stop_token st) {
             auto t0 = std::chrono::steady_clock::now();
             int times_done{0};
             while (times_done < 3)
             {
                 {
                     std::unique_lock<pika::mutex> lg{ready_mtx};
-                    auto ret = ready_cv.wait_for(
-                        lg, st, dur, [&ready] { return ready; });
+                    auto ret = ready_cv.wait_for(lg, st, dur, [&ready] { return ready; });
                     if (dur > std::chrono::seconds(5))
                     {
                         PIKA_TEST(std::chrono::steady_clock::now() < t0 + dur);
@@ -409,52 +400,51 @@ void test_timed_wait(bool call_notify, bool call_interrupt, Dur dur)
 
     state t1_feedback{state::loop};
     {
-        pika::jthread t1([&ready_, &ready_mtx, &ready_cv, call_notify, dur,
-                             &t1_feedback](pika::stop_token st) {
-            auto t0 = std::chrono::steady_clock::now();
-            int times_done{0};
-            while (times_done < 3)
-            {
-                try
+        pika::jthread t1(
+            [&ready_, &ready_mtx, &ready_cv, call_notify, dur, &t1_feedback](pika::stop_token st) {
+                auto t0 = std::chrono::steady_clock::now();
+                int times_done{0};
+                while (times_done < 3)
                 {
-                    std::unique_lock<pika::mutex> lg{ready_mtx};
-                    auto ret = ready_cv.wait_for(
-                        lg, st, dur, [&ready_] { return ready_; });
-                    if (st.stop_requested())
+                    try
                     {
-                        throw "interrupted";
-                    }
-                    if (dur > std::chrono::seconds(5))
-                    {
-                        PIKA_TEST(std::chrono::steady_clock::now() < t0 + dur);
-                    }
+                        std::unique_lock<pika::mutex> lg{ready_mtx};
+                        auto ret = ready_cv.wait_for(lg, st, dur, [&ready_] { return ready_; });
+                        if (st.stop_requested())
+                        {
+                            throw "interrupted";
+                        }
+                        if (dur > std::chrono::seconds(5))
+                        {
+                            PIKA_TEST(std::chrono::steady_clock::now() < t0 + dur);
+                        }
 
-                    if (ret)
+                        if (ret)
+                        {
+                            t1_feedback = state::ready;
+                            PIKA_TEST(ready_);
+                            PIKA_TEST(!st.stop_requested());
+                            PIKA_TEST(call_notify);
+                            ++times_done;
+                        }
+                    }
+                    catch (const char*)
                     {
-                        t1_feedback = state::ready;
-                        PIKA_TEST(ready_);
-                        PIKA_TEST(!st.stop_requested());
-                        PIKA_TEST(call_notify);
+                        t1_feedback = state::interrupted;
+                        PIKA_TEST(!ready_);
+                        PIKA_TEST(!call_notify);
                         ++times_done;
+                        if (times_done >= 3)
+                        {
+                            return;
+                        }
                     }
-                }
-                catch (const char*)
-                {
-                    t1_feedback = state::interrupted;
-                    PIKA_TEST(!ready_);
-                    PIKA_TEST(!call_notify);
-                    ++times_done;
-                    if (times_done >= 3)
+                    catch (...)
                     {
-                        return;
+                        PIKA_TEST(false);
                     }
                 }
-                catch (...)
-                {
-                    PIKA_TEST(false);
-                }
-            }
-        });
+            });
 
         pika::this_thread::yield();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -476,8 +466,7 @@ void test_timed_wait(bool call_notify, bool call_interrupt, Dur dur)
                 pika::this_thread::yield();
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
             }
-            PIKA_TEST(std::chrono::steady_clock::now() <
-                t0 + std::chrono::seconds(5));
+            PIKA_TEST(std::chrono::steady_clock::now() < t0 + std::chrono::seconds(5));
         }
         else if (call_interrupt)
         {
@@ -488,8 +477,7 @@ void test_timed_wait(bool call_notify, bool call_interrupt, Dur dur)
                 pika::this_thread::yield();
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
             }
-            PIKA_TEST(std::chrono::steady_clock::now() <
-                t0 + std::chrono::seconds(5));
+            PIKA_TEST(std::chrono::steady_clock::now() < t0 + std::chrono::seconds(5));
         }
     }    // leave scope of t1 without join() or detach() (signals cancellation)
 
@@ -518,9 +506,8 @@ void test_many_cvs(bool call_notify, bool call_interrupt)
         std::array<pika::condition_variable_any, NumExtraCV> arr_ready_cv{};
         std::vector<pika::jthread> vthreads_deferred;
 
-        pika::jthread t0(
-            pika::util::detail::bind_back(cv_wait, 0, std::ref(ready),
-                std::ref(ready_mtx), std::ref(ready_cv), call_notify));
+        pika::jthread t0(pika::util::detail::bind_back(
+            cv_wait, 0, std::ref(ready), std::ref(ready_mtx), std::ref(ready_cv), call_notify));
         {
             auto t0ssource = t0.get_stop_source();
             pika::this_thread::yield();
@@ -533,13 +520,12 @@ void test_many_cvs(bool call_notify, bool call_interrupt)
             {
                 pika::this_thread::yield();
                 std::this_thread::sleep_for(std::chrono::microseconds(100));
-                pika::jthread t([idx, t0stoken = t0ssource.get_token(),
-                                    &arr_ready, &arr_ready_mtx, &arr_ready_cv,
-                                    call_notify] {
+                pika::jthread t([idx, t0stoken = t0ssource.get_token(), &arr_ready, &arr_ready_mtx,
+                                    &arr_ready_cv, call_notify] {
                     // use interrupt token of t0 instead
                     // NOTE: disables signaling interrupts directly to the thread
-                    cv_wait(t0stoken, idx + 1, arr_ready[idx],
-                        arr_ready_mtx[idx], arr_ready_cv[idx], call_notify);
+                    cv_wait(t0stoken, idx + 1, arr_ready[idx], arr_ready_mtx[idx],
+                        arr_ready_cv[idx], call_notify);
                 });
                 vthreads.push_back(std::move(t));
             }
@@ -581,7 +567,7 @@ void test_many_cvs(bool call_notify, bool call_interrupt)
             }
         }    // leave scope of additional threads (already notified/interrupted
              // or detached)
-    }    // leave scope of t0 without join() or detach() (signals cancellation)
+    }        // leave scope of t0 without join() or detach() (signals cancellation)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -652,8 +638,7 @@ int pika_main()
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0, "pika main exited with non-zero status");
 
     return 0;
 }

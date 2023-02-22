@@ -8,16 +8,16 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_LOGGING)
-#include <pika/detail/filesystem.hpp>
-#include <pika/modules/logging.hpp>
-#include <pika/string_util/from_string.hpp>
+# include <pika/detail/filesystem.hpp>
+# include <pika/modules/logging.hpp>
+# include <pika/string_util/from_string.hpp>
 
-#include <cstddef>
-#include <cstdint>
-#include <cstdlib>
-#include <string>
-#include <utility>
-#include <vector>
+# include <cstddef>
+# include <cstdint>
+# include <cstdlib>
+# include <string>
+# include <utility>
+# include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::util {
@@ -34,21 +34,19 @@ namespace pika::util {
     PIKA_DEFINE_LOG(timing_console, disable_all)
 
     namespace detail {
-        pika::util::logging::level get_log_level(
-            std::string const& env, bool allow_always)
+        pika::util::logging::level get_log_level(std::string const& env, bool allow_always)
         {
             try
             {
-                int env_val = pika::util::from_string<int>(env);
+                int env_val = pika::detail::from_string<int>(env);
                 if (env_val < 0)
                     return pika::util::logging::level::disable_all;
 
                 switch (env_val)
                 {
                 case 0:
-                    return allow_always ?
-                        pika::util::logging::level::always :
-                        pika::util::logging::level::disable_all;
+                    return allow_always ? pika::util::logging::level::always :
+                                          pika::util::logging::level::disable_all;
                 case 1:
                     return pika::util::logging::level::fatal;
                 case 2:
@@ -62,7 +60,7 @@ namespace pika::util {
                 }
                 return pika::util::logging::level::debug;
             }
-            catch (pika::util::bad_lexical_cast const&)
+            catch (pika::detail::bad_lexical_cast const&)
             {
                 return pika::util::logging::level::disable_all;
             }
@@ -71,7 +69,7 @@ namespace pika::util {
 }    // namespace pika::util
 
 ///////////////////////////////////////////////////////////////////////////////
-#include <pika/logging/detail/logger.hpp>
+# include <pika/logging/detail/logger.hpp>
 
 namespace pika::util::logging {
 

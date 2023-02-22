@@ -8,7 +8,6 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/execution_base/this_thread.hpp>
 #include <pika/functional/unique_function.hpp>
 #include <pika/hardware/timestamp.hpp>
 #include <pika/modules/itt_notify.hpp>
@@ -19,14 +18,9 @@
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/threading_base/thread_num_tss.hpp>
 
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
-    defined(PIKA_HAVE_THREAD_IDLE_RATES)
-#include <pika/thread_pools/detail/scoped_background_timer.hpp>
-#endif
-
 #if defined(PIKA_HAVE_TRACY)
-#include <pika/threading_base/detail/tracy.hpp>
-#include <common/TracyColor.hpp>
+# include <pika/threading_base/detail/tracy.hpp>
+# include <common/TracyColor.hpp>
 #endif
 
 #include <fmt/format.h>
@@ -42,29 +36,25 @@
 namespace pika::threads::detail {
 
     ///////////////////////////////////////////////////////////////////////
-    inline void write_state_log(scheduler_base const& scheduler,
-        std::size_t num_thread, thread_id_ref_type const& thrd,
-        thread_schedule_state const old_state,
+    inline void write_state_log(scheduler_base const& scheduler, std::size_t num_thread,
+        thread_id_ref_type const& thrd, thread_schedule_state const old_state,
         thread_schedule_state const new_state)
     {
-        LTM_(debug).format("scheduling_loop state change: pool({}), "
-                           "scheduler({}), worker_thread({}), thread({}), "
-                           "description({}), old state({}), new state({})",
+        LTM_(debug).format(
+            "scheduling_loop state change: pool({}), scheduler({}), worker_thread({}), thread({}), "
+            "description({}), old state({}), new state({})",
             *scheduler.get_parent_pool(), scheduler, num_thread, thrd,
-            get_thread_id_data(thrd)->get_description(),
-            get_thread_state_name(old_state), get_thread_state_name(new_state));
+            get_thread_id_data(thrd)->get_description(), get_thread_state_name(old_state),
+            get_thread_state_name(new_state));
     }
 
-    inline void write_state_log_warning(scheduler_base const& scheduler,
-        std::size_t num_thread, thread_id_ref_type const& thrd,
-        thread_schedule_state state, char const* info)
+    inline void write_state_log_warning(scheduler_base const& scheduler, std::size_t num_thread,
+        thread_id_ref_type const& thrd, thread_schedule_state state, char const* info)
     {
-        LTM_(warning).format("scheduling_loop state change failed: pool({}), "
-                             "scheduler({}), worker thread ({}), thread({}), "
-                             "description({}), state({}), {}",
+        LTM_(warning).format("scheduling_loop state change failed: pool({}), scheduler({}), worker "
+                             "thread ({}), thread({}), description({}), state({}), {}",
             *scheduler.get_parent_pool(), scheduler, num_thread, thrd,
-            get_thread_id_data(thrd)->get_description(),
-            get_thread_state_name(state), info);
+            get_thread_id_data(thrd)->get_description(), get_thread_state_name(state), info);
     }
 
     ///////////////////////////////////////////////////////////////////////
@@ -98,8 +88,8 @@ namespace pika::threads::detail {
         // execution
         thread_state operator=(thread_result_type&& new_state)
         {
-            prev_state_ = thread_state(
-                new_state.first, prev_state_.state_ex(), prev_state_.tag() + 1);
+            prev_state_ =
+                thread_state(new_state.first, prev_state_.state_ex(), prev_state_.tag() + 1);
             next_thread_id_ = PIKA_MOVE(new_state.second);
             return prev_state_;
         }
@@ -120,8 +110,7 @@ namespace pika::threads::detail {
         {
             disable_restore();
 
-            if (get_thread_id_data(thread_)->restore_state(
-                    prev_state_, orig_state_))
+            if (get_thread_id_data(thread_)->restore_state(prev_state_, orig_state_))
             {
                 newstate = prev_state_;
                 return true;
@@ -156,14 +145,12 @@ namespace pika::threads::detail {
     class switch_status_background
     {
     public:
-        switch_status_background(
-            thread_id_ref_type const& t, thread_state prev_state)
+        switch_status_background(thread_id_ref_type const& t, thread_state prev_state)
           : thread_(t)
           , prev_state_(prev_state)
           , next_thread_id_(nullptr)
           , need_restore_state_(get_thread_id_data(thread_)->set_state_tagged(
-                thread_schedule_state::active, prev_state_, orig_state_,
-                std::memory_order_relaxed))
+                thread_schedule_state::active, prev_state_, orig_state_, std::memory_order_relaxed))
         {
         }
 
@@ -184,8 +171,8 @@ namespace pika::threads::detail {
         // execution
         thread_state operator=(thread_result_type&& new_state)
         {
-            prev_state_ = thread_state(
-                new_state.first, prev_state_.state_ex(), prev_state_.tag() + 1);
+            prev_state_ =
+                thread_state(new_state.first, prev_state_.state_ex(), prev_state_.tag() + 1);
             next_thread_id_ = PIKA_MOVE(new_state.second);
             return prev_state_;
         }
@@ -205,9 +192,8 @@ namespace pika::threads::detail {
         bool store_state(thread_state& newstate)
         {
             disable_restore();
-            if (get_thread_id_data(thread_)->restore_state(prev_state_,
-                    orig_state_, std::memory_order_relaxed,
-                    std::memory_order_relaxed))
+            if (get_thread_id_data(thread_)->restore_state(
+                    prev_state_, orig_state_, std::memory_order_relaxed, std::memory_order_relaxed))
             {
                 newstate = prev_state_;
                 return true;
@@ -336,50 +322,11 @@ namespace pika::threads::detail {
     };
 
     ///////////////////////////////////////////////////////////////////////////
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
-    defined(PIKA_HAVE_THREAD_IDLE_RATES)
     struct scheduling_counters
     {
         // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-        scheduling_counters(std::int64_t& executed_threads,
-            std::int64_t& executed_thread_phases, std::int64_t& tfunc_time,
-            std::int64_t& exec_time, std::int64_t& idle_loop_count,
-            std::int64_t& busy_loop_count, bool& is_active,
-            std::int64_t& background_work_duration,
-            std::int64_t& background_send_duration,
-            std::int64_t& background_receive_duration)
-          // NOLINTEND(bugprone-easily-swappable-parameters)
-          : executed_threads_(executed_threads)
-          , executed_thread_phases_(executed_thread_phases)
-          , tfunc_time_(tfunc_time)
-          , exec_time_(exec_time)
-          , idle_loop_count_(idle_loop_count)
-          , busy_loop_count_(busy_loop_count)
-          , background_work_duration_(background_work_duration)
-          , background_send_duration_(background_send_duration)
-          , background_receive_duration_(background_receive_duration)
-          , is_active_(is_active)
-        {
-        }
-
-        std::int64_t& executed_threads_;
-        std::int64_t& executed_thread_phases_;
-        std::int64_t& tfunc_time_;
-        std::int64_t& exec_time_;
-        std::int64_t& idle_loop_count_;
-        std::int64_t& busy_loop_count_;
-        std::int64_t& background_work_duration_;
-        std::int64_t& background_send_duration_;
-        std::int64_t& background_receive_duration_;
-        bool& is_active_;
-    };
-#else
-    struct scheduling_counters
-    {
-        // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-        scheduling_counters(std::int64_t& executed_threads,
-            std::int64_t& executed_thread_phases, std::int64_t& tfunc_time,
-            std::int64_t& exec_time, std::int64_t& idle_loop_count,
+        scheduling_counters(std::int64_t& executed_threads, std::int64_t& executed_thread_phases,
+            std::int64_t& tfunc_time, std::int64_t& exec_time, std::int64_t& idle_loop_count,
             std::int64_t& busy_loop_count, bool& is_active)
           // NOLINTEND(bugprone-easily-swappable-parameters)
           : executed_threads_(executed_threads)
@@ -401,8 +348,6 @@ namespace pika::threads::detail {
         bool& is_active_;
     };
 
-#endif    // PIKA_HAVE_BACKGROUND_THREAD_COUNTERS
-
     struct scheduling_callbacks
     {
         using callback_type = util::detail::unique_function<void()>;
@@ -412,8 +357,7 @@ namespace pika::threads::detail {
         explicit scheduling_callbacks(callback_type&& outer,
             callback_type&& inner = callback_type(),
             background_callback_type&& background = background_callback_type(),
-            std::size_t max_background_threads =
-                (std::numeric_limits<std::size_t>::max)(),
+            std::size_t max_background_threads = (std::numeric_limits<std::size_t>::max)(),
             std::int64_t max_idle_loop_count = PIKA_IDLE_LOOP_COUNT_MAX,
             std::int64_t max_busy_loop_count = PIKA_BUSY_LOOP_COUNT_MAX)
           // NOLINTEND(bugprone-easily-swappable-parameters)
@@ -436,16 +380,13 @@ namespace pika::threads::detail {
 
     template <typename SchedulingPolicy>
     thread_id_ref_type create_background_thread(SchedulingPolicy& scheduler,
-        scheduling_callbacks& callbacks,
-        std::shared_ptr<bool>& background_running,
-        execution::thread_schedule_hint schedulehint,
-        std::int64_t& idle_loop_count)
+        scheduling_callbacks& callbacks, std::shared_ptr<bool>& background_running,
+        execution::thread_schedule_hint schedulehint, std::int64_t& idle_loop_count)
     {
         thread_id_ref_type background_thread;
         background_running.reset(new bool(true));
         thread_init_data background_init(
-            [&, background_running](
-                thread_restart_state) -> thread_result_type {
+            [&, background_running](thread_restart_state) -> thread_result_type {
                 while (*background_running)
                 {
                     if (callbacks.background_())
@@ -457,12 +398,10 @@ namespace pika::threads::detail {
                             idle_loop_count = 0;
                     }
                     // Force yield...
-                    pika::execution::this_thread::detail::yield(
-                        "background_work");
+                    pika::execution::this_thread::detail::yield("background_work");
                 }
 
-                return thread_result_type(
-                    thread_schedule_state::terminated, invalid_thread_id);
+                return thread_result_type(thread_schedule_state::terminated, invalid_thread_id);
             },
             pika::detail::thread_description("background_work"),
             execution::thread_priority::high_recursive, schedulehint,
@@ -476,8 +415,7 @@ namespace pika::threads::detail {
         PIKA_ASSERT(background_thread);
         scheduler.SchedulingPolicy::increment_background_thread_count();
         // We can now set the state to pending
-        get_thread_id_data(background_thread)
-            ->set_state(thread_schedule_state::pending);
+        get_thread_id_data(background_thread)->set_state(thread_schedule_state::pending);
         return background_thread;
     }
 
@@ -486,26 +424,15 @@ namespace pika::threads::detail {
     // and create a new one that is supposed to be executed inside the
     // scheduling_loop, true otherwise
     template <typename SchedulingPolicy>
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
-    defined(PIKA_HAVE_THREAD_IDLE_RATES)
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     bool call_background_thread(thread_id_ref_type& background_thread,
-        thread_id_ref_type& next_thrd, SchedulingPolicy& scheduler,
-        std::size_t num_thread, bool /* running */,
-        std::int64_t& background_work_exec_time_init,
-        pika::execution::this_thread::detail::agent_storage* context_storage)
-#else
-    bool call_background_thread(thread_id_ref_type& background_thread,
-        thread_id_ref_type& next_thrd, SchedulingPolicy& scheduler,
-        std::size_t num_thread, bool /* running */,
-        pika::execution::this_thread::detail::agent_storage* context_storage)
+        thread_id_ref_type& next_thrd, SchedulingPolicy& scheduler, std::size_t num_thread,
+        bool /* running */, pika::execution::this_thread::detail::agent_storage* context_storage)
     // NOLINTEND(bugprone-easily-swappable-parameters)
-#endif
     {
         if (PIKA_UNLIKELY(background_thread))
         {
-            thread_state state =
-                get_thread_id_data(background_thread)->get_state();
+            thread_state state = get_thread_id_data(background_thread)->get_state();
             thread_schedule_state state_val = state.state();
 
             if (PIKA_LIKELY(thread_schedule_state::pending == state_val))
@@ -513,25 +440,13 @@ namespace pika::threads::detail {
                 {
                     // tries to set state to active (only if state is still
                     // the same as 'state')
-                    switch_status_background thrd_stat(
-                        background_thread, state);
+                    switch_status_background thrd_stat(background_thread, state);
 
                     if (PIKA_LIKELY(thrd_stat.is_valid() &&
-                            thrd_stat.get_previous() ==
-                                thread_schedule_state::pending))
+                            thrd_stat.get_previous() == thread_schedule_state::pending))
                     {
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
-    defined(PIKA_HAVE_THREAD_IDLE_RATES)
-                        // measure background work duration
-                        background_work_duration_counter bg_work_duration(
-                            background_work_exec_time_init);
-                        background_exec_time_wrapper bg_exec_time(
-                            bg_work_duration);
-#endif    // PIKA_HAVE_BACKGROUND_THREAD_COUNTERS
-
                         // invoke background thread
-                        thrd_stat = (*get_thread_id_data(background_thread))(
-                            context_storage);
+                        thrd_stat = (*get_thread_id_data(background_thread))(context_storage);
 
                         thread_id_ref_type next = thrd_stat.move_next_thread();
                         if (next != nullptr && next != background_thread)
@@ -542,8 +457,7 @@ namespace pika::threads::detail {
                             }
                             else
                             {
-                                auto* scheduler = get_thread_id_data(next)
-                                                      ->get_scheduler_base();
+                                auto* scheduler = get_thread_id_data(next)->get_scheduler_base();
                                 scheduler->schedule_thread(PIKA_MOVE(next),
                                     execution::thread_schedule_hint(
                                         static_cast<std::int16_t>(num_thread)),
@@ -555,16 +469,14 @@ namespace pika::threads::detail {
                     thrd_stat.store_state(state);
                     state_val = state.state();
 
-                    if (PIKA_LIKELY(
-                            state_val == thread_schedule_state::pending_boost))
+                    if (PIKA_LIKELY(state_val == thread_schedule_state::pending_boost))
                     {
                         get_thread_id_data(background_thread)
                             ->set_state(thread_schedule_state::pending);
                     }
                     else if (thread_schedule_state::terminated == state_val)
                     {
-                        scheduler.SchedulingPolicy::
-                            decrement_background_thread_count();
+                        scheduler.SchedulingPolicy::decrement_background_thread_count();
                         background_thread = thread_id_type();
                     }
                     else if (thread_schedule_state::suspended == state_val)
@@ -585,8 +497,7 @@ namespace pika::threads::detail {
     void scheduling_loop(std::size_t num_thread, SchedulingPolicy& scheduler,
         scheduling_counters& counters, scheduling_callbacks& params)
     {
-        std::atomic<pika::runtime_state>& this_state =
-            scheduler.get_state(num_thread);
+        std::atomic<pika::runtime_state>& this_state = scheduler.get_state(num_thread);
 
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
         util::itt::stack_context ctx;    // helper for itt support
@@ -600,12 +511,6 @@ namespace pika::threads::detail {
         std::int64_t& idle_loop_count = counters.idle_loop_count_;
         std::int64_t& busy_loop_count = counters.busy_loop_count_;
 
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
-    defined(PIKA_HAVE_THREAD_IDLE_RATES)
-        std::int64_t& bg_work_exec_time_init =
-            counters.background_work_duration_;
-#endif    // PIKA_HAVE_BACKGROUND_THREAD_COUNTERS
-
         idle_collect_rate idle_rate(counters.tfunc_time_, counters.exec_time_);
         tfunc_time_wrapper tfunc_time_collector(idle_rate);
 
@@ -615,16 +520,12 @@ namespace pika::threads::detail {
         std::shared_ptr<bool> background_running = nullptr;
         thread_id_ref_type background_thread;
 
-        if (scheduler.SchedulingPolicy::has_scheduler_mode(
-                scheduler_mode::do_background_work) &&
-            num_thread < params.max_background_threads_ &&
-            !params.background_.empty())
+        if (scheduler.SchedulingPolicy::has_scheduler_mode(scheduler_mode::do_background_work) &&
+            num_thread < params.max_background_threads_ && !params.background_.empty())
         {
-            background_thread =
-                create_background_thread(scheduler, params, background_running,
-                    execution::thread_schedule_hint(
-                        static_cast<std::int16_t>(num_thread)),
-                    idle_loop_count);
+            background_thread = create_background_thread(scheduler, params, background_running,
+                execution::thread_schedule_hint(static_cast<std::int16_t>(num_thread)),
+                idle_loop_count);
         }
 
         pika::execution::this_thread::detail::agent_storage* context_storage =
@@ -637,24 +538,21 @@ namespace pika::threads::detail {
             thread_id_ref_type thrd = PIKA_MOVE(next_thrd);
 
             // Get the next pika thread from the queue
-            bool running = this_state.load(std::memory_order_relaxed) <
-                runtime_state::pre_sleep;
+            bool running = this_state.load(std::memory_order_relaxed) < runtime_state::pre_sleep;
 
             // extract the stealing mode once per loop iteration
-            bool enable_stealing =
-                scheduler.SchedulingPolicy::has_scheduler_mode(
-                    ::pika::threads::scheduler_mode::enable_stealing);
+            bool enable_stealing = scheduler.SchedulingPolicy::has_scheduler_mode(
+                ::pika::threads::scheduler_mode::enable_stealing);
 
             // stealing staged threads is enabled if:
             // - fast idle mode is on: same as normal stealing
             // - fast idle mode off: only after normal stealing has failed for
             //                       a while
             bool enable_stealing_staged = enable_stealing;
-            if (!scheduler.SchedulingPolicy::has_scheduler_mode(
-                    scheduler_mode::fast_idle_mode))
+            if (!scheduler.SchedulingPolicy::has_scheduler_mode(scheduler_mode::fast_idle_mode))
             {
-                enable_stealing_staged = enable_stealing_staged &&
-                    idle_loop_count > params.max_idle_loop_count_ / 2;
+                enable_stealing_staged =
+                    enable_stealing_staged && idle_loop_count > params.max_idle_loop_count_ / 2;
             }
 
             if (PIKA_LIKELY(thrd ||
@@ -662,8 +560,7 @@ namespace pika::threads::detail {
                         num_thread, running, thrd, enable_stealing)))
             {
                 tfunc_time_wrapper tfunc_time_collector(idle_rate);
-                PIKA_ASSERT(get_thread_id_data(thrd)->get_scheduler_base() ==
-                    &scheduler);
+                PIKA_ASSERT(get_thread_id_data(thrd)->get_scheduler_base() == &scheduler);
 
                 idle_loop_count = 0;
                 ++busy_loop_count;
@@ -686,11 +583,9 @@ namespace pika::threads::detail {
                         // the same as 'state')
                         switch_status thrd_stat(thrd, state);
                         if (PIKA_LIKELY(thrd_stat.is_valid() &&
-                                thrd_stat.get_previous() ==
-                                    thread_schedule_state::pending))
+                                thrd_stat.get_previous() == thread_schedule_state::pending))
                         {
-                            write_state_log(scheduler, num_thread, thrd,
-                                thrd_stat.get_previous(),
+                            write_state_log(scheduler, num_thread, thrd, thrd_stat.get_previous(),
                                 thread_schedule_state::active);
 
                             tfunc_time_wrapper tfunc_time_collector(idle_rate);
@@ -698,23 +593,19 @@ namespace pika::threads::detail {
                             // thread returns new required state
                             // store the returned state in the thread
                             {
-                                is_active_wrapper utilization(
-                                    counters.is_active_);
+                                is_active_wrapper utilization(counters.is_active_);
                                 auto* thrdptr = get_thread_id_data(thrd);
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
                                 util::itt::caller_context cctx(ctx);
                                 // util::itt::undo_frame_context undoframe(fctx);
                                 util::itt::task task =
-                                    thrdptr->get_description().get_task_itt(
-                                        thread_domain);
+                                    thrdptr->get_description().get_task_itt(thread_domain);
                                 task.add_metadata(task_id, thrdptr);
-                                task.add_metadata(
-                                    task_phase, thrdptr->get_thread_phase());
+                                task.add_metadata(task_phase, thrdptr->get_thread_phase());
 #endif
                                 // Record time elapsed in thread changing state
                                 // and add to aggregate execution time.
-                                exec_time_wrapper exec_time_collector(
-                                    idle_rate);
+                                exec_time_wrapper exec_time_collector(idle_rate);
 
 #if defined(PIKA_HAVE_APEX)
                                 // get the APEX data pointer, in case we are resuming the
@@ -723,13 +614,12 @@ namespace pika::threads::detail {
 
                                 // the address of tmp_data is getting stored
                                 // by APEX during this call
-                                pika::detail::external_timer::scoped_timer
-                                    profiler(thrdptr->get_timer_data());
+                                pika::detail::external_timer::scoped_timer profiler(
+                                    thrdptr->get_timer_data());
 
                                 thrd_stat = (*thrdptr)(context_storage);
 
-                                if (thrd_stat.get_previous() ==
-                                    thread_schedule_state::terminated)
+                                if (thrd_stat.get_previous() == thread_schedule_state::terminated)
                                 {
                                     profiler.stop();
                                     // just in case, clean up the now dead pointer.
@@ -740,33 +630,29 @@ namespace pika::threads::detail {
                                     profiler.yield();
                                 }
 #else
-#if defined(PIKA_HAVE_TRACY)
+# if defined(PIKA_HAVE_TRACY)
                                 auto const desc = thrdptr->get_description();
                                 std::ostringstream task_annotation;
                                 task_annotation
                                     << "pika/task:" << thrd << "/"
                                     << (desc.kind() ==
-                                                   pika::detail::thread_description::
-                                                       data_type::
-                                                           data_type_description ?
+                                                   pika::detail::thread_description::data_type::
+                                                       data_type_description ?
                                                desc.get_description() :
                                                "<unknown>");
-                                auto task_annotation_str =
-                                    PIKA_MOVE(task_annotation).str();
-                                ZoneTransientN(
-                                    task, task_annotation_str.c_str(), true);
-#if defined(TRACY_ENABLE)
+                                auto task_annotation_str = PIKA_MOVE(task_annotation).str();
+                                ZoneTransientN(task, task_annotation_str.c_str(), true);
+#  if defined(TRACY_ENABLE)
                                 task.Color(tracy::Color::DimGray);
-#endif
-#endif
+#  endif
+# endif
 
                                 thrd_stat = (*thrdptr)(context_storage);
 #endif
                             }
 
                             write_state_log(scheduler, num_thread, thrd,
-                                thread_schedule_state::active,
-                                thrd_stat.get_previous());
+                                thread_schedule_state::active, thrd_stat.get_previous());
 
 #ifdef PIKA_HAVE_THREAD_CUMULATIVE_COUNTS
                             ++counters.executed_thread_phases_;
@@ -778,8 +664,8 @@ namespace pika::threads::detail {
                             // executing this pika-thread, we just continue with
                             // the next one
                             thrd_stat.disable_restore();
-                            write_state_log_warning(scheduler, num_thread, thrd,
-                                state_val, "no execution");
+                            write_state_log_warning(
+                                scheduler, num_thread, thrd, state_val, "no execution");
                             continue;
                         }
 
@@ -789,8 +675,8 @@ namespace pika::threads::detail {
                             // some other worker-thread got in between and changed
                             // the state of this thread, we just continue with
                             // the next one
-                            write_state_log_warning(scheduler, num_thread, thrd,
-                                state_val, "no state change");
+                            write_state_log_warning(
+                                scheduler, num_thread, thrd, state_val, "no state change");
                             continue;
                         }
 
@@ -807,79 +693,65 @@ namespace pika::threads::detail {
                     // Re-add this work item to our list of work items if the pika
                     // thread should be re-scheduled. If the pika thread is suspended
                     // now we just keep it in the map of threads.
-                    if (PIKA_UNLIKELY(
-                            state_val == thread_schedule_state::pending))
+                    if (PIKA_UNLIKELY(state_val == thread_schedule_state::pending))
                     {
                         if (PIKA_LIKELY(next_thrd == nullptr))
                         {
                             // schedule other work
-                            scheduler.SchedulingPolicy::wait_or_add_new(
-                                num_thread, running, idle_loop_count,
-                                enable_stealing_staged, added);
+                            scheduler.SchedulingPolicy::wait_or_add_new(num_thread, running,
+                                idle_loop_count, enable_stealing_staged, added);
                         }
 
                         // schedule this thread again, make sure it ends up at
                         // the end of the queue
-                        scheduler.SchedulingPolicy::schedule_thread_last(
-                            PIKA_MOVE(thrd),
-                            execution::thread_schedule_hint(
-                                static_cast<std::int16_t>(num_thread)),
+                        scheduler.SchedulingPolicy::schedule_thread_last(PIKA_MOVE(thrd),
+                            execution::thread_schedule_hint(static_cast<std::int16_t>(num_thread)),
                             true);
                         scheduler.SchedulingPolicy::do_some_work(num_thread);
                     }
-                    else if (PIKA_UNLIKELY(state_val ==
-                                 thread_schedule_state::pending_boost))
+                    else if (PIKA_UNLIKELY(state_val == thread_schedule_state::pending_boost))
                     {
-                        get_thread_id_data(thrd)->set_state(
-                            thread_schedule_state::pending);
+                        get_thread_id_data(thrd)->set_state(thread_schedule_state::pending);
 
                         if (PIKA_LIKELY(next_thrd == nullptr))
                         {
                             // reschedule this thread right away if the
                             // background work will be triggered
-                            if (PIKA_UNLIKELY(busy_loop_count >
-                                    params.max_busy_loop_count_))
+                            if (PIKA_UNLIKELY(busy_loop_count > params.max_busy_loop_count_))
                             {
                                 next_thrd = PIKA_MOVE(thrd);
                             }
                             else
                             {
                                 // schedule other work
-                                scheduler.SchedulingPolicy::wait_or_add_new(
-                                    num_thread, running, idle_loop_count,
-                                    enable_stealing_staged, added);
+                                scheduler.SchedulingPolicy::wait_or_add_new(num_thread, running,
+                                    idle_loop_count, enable_stealing_staged, added);
 
                                 // schedule this thread again immediately with
                                 // boosted priority
-                                scheduler.SchedulingPolicy::schedule_thread(
-                                    PIKA_MOVE(thrd),
+                                scheduler.SchedulingPolicy::schedule_thread(PIKA_MOVE(thrd),
                                     execution::thread_schedule_hint(
                                         static_cast<std::int16_t>(num_thread)),
                                     true, execution::thread_priority::boost);
-                                scheduler.SchedulingPolicy::do_some_work(
-                                    num_thread);
+                                scheduler.SchedulingPolicy::do_some_work(num_thread);
                             }
                         }
                         else if (PIKA_LIKELY(next_thrd != thrd))
                         {
                             // schedule this thread again immediately with
                             // boosted priority
-                            scheduler.SchedulingPolicy::schedule_thread(
-                                PIKA_MOVE(thrd),
+                            scheduler.SchedulingPolicy::schedule_thread(PIKA_MOVE(thrd),
                                 execution::thread_schedule_hint(
                                     static_cast<std::int16_t>(num_thread)),
                                 true, execution::thread_priority::boost);
-                            scheduler.SchedulingPolicy::do_some_work(
-                                num_thread);
+                            scheduler.SchedulingPolicy::do_some_work(num_thread);
                         }
                     }
                 }
-                else if (PIKA_UNLIKELY(
-                             thread_schedule_state::active == state_val))
+                else if (PIKA_UNLIKELY(thread_schedule_state::active == state_val))
                 {
                     auto* thrdptr = get_thread_id_data(thrd);
-                    LTM_(warning).format("pool({}), scheduler({}), "
-                                         "worker_thread({}), thread({}), "
+                    LTM_(warning).format("pool({}), scheduler({}), worker_thread({}), thread({}), "
                                          "description({}), rescheduling",
                         *scheduler.get_parent_pool(), scheduler, num_thread,
                         thrdptr->get_thread_id(), thrdptr->get_description());
@@ -890,8 +762,7 @@ namespace pika::threads::detail {
                     // yet
                     auto priority = thrdptr->get_priority();
                     scheduler.SchedulingPolicy::schedule_thread(PIKA_MOVE(thrd),
-                        execution::thread_schedule_hint(
-                            static_cast<std::int16_t>(num_thread)),
+                        execution::thread_schedule_hint(static_cast<std::int16_t>(num_thread)),
                         true, priority);
                     scheduler.SchedulingPolicy::do_some_work(num_thread);
                 }
@@ -914,16 +785,13 @@ namespace pika::threads::detail {
             {
                 ++idle_loop_count;
 
-                if (scheduler.SchedulingPolicy::wait_or_add_new(num_thread,
-                        running, idle_loop_count, enable_stealing_staged,
-                        added))
+                if (scheduler.SchedulingPolicy::wait_or_add_new(
+                        num_thread, running, idle_loop_count, enable_stealing_staged, added))
                 {
                     // Clean up terminated threads before trying to exit
                     bool can_exit = !running &&
-                        scheduler.SchedulingPolicy::cleanup_terminated(
-                            num_thread, true) &&
-                        scheduler.SchedulingPolicy::get_queue_length(
-                            num_thread) == 0;
+                        scheduler.SchedulingPolicy::cleanup_terminated(num_thread, true) &&
+                        scheduler.SchedulingPolicy::get_queue_length(num_thread) == 0;
 
                     if (this_state.load() == runtime_state::pre_sleep)
                     {
@@ -937,8 +805,7 @@ namespace pika::threads::detail {
                         can_exit = can_exit &&
                             scheduler.SchedulingPolicy::get_thread_count(
                                 thread_schedule_state::suspended,
-                                execution::thread_priority::default_,
-                                num_thread) == 0;
+                                execution::thread_priority::default_, num_thread) == 0;
 
                         if (can_exit)
                         {
@@ -951,19 +818,15 @@ namespace pika::threads::detail {
                                     PIKA_ASSERT(background_running);
                                     *background_running = false;
                                     auto priority =
-                                        get_thread_id_data(background_thread)
-                                            ->get_priority();
+                                        get_thread_id_data(background_thread)->get_priority();
 
-                                    scheduler.SchedulingPolicy::
-                                        decrement_background_thread_count();
+                                    scheduler.SchedulingPolicy::decrement_background_thread_count();
                                     scheduler.SchedulingPolicy::schedule_thread(
                                         PIKA_MOVE(background_thread),
                                         execution::thread_schedule_hint(
-                                            static_cast<std::int16_t>(
-                                                num_thread)),
+                                            static_cast<std::int16_t>(num_thread)),
                                         true, priority);
-                                    scheduler.SchedulingPolicy::do_some_work(
-                                        num_thread);
+                                    scheduler.SchedulingPolicy::do_some_work(num_thread);
 
                                     background_thread = thread_id_type();
                                     background_running.reset();
@@ -993,16 +856,8 @@ namespace pika::threads::detail {
                     added = std::size_t(-1);
                 }
 
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
-    defined(PIKA_HAVE_THREAD_IDLE_RATES)
-                // do background work in parcel layer and in agas
-                if (!call_background_thread(background_thread, next_thrd,
-                        scheduler, num_thread, running, bg_work_exec_time_init,
-                        context_storage))
-#else
-                if (!call_background_thread(background_thread, next_thrd,
-                        scheduler, num_thread, running, context_storage))
-#endif    // PIKA_HAVE_BACKGROUND_THREAD_COUNTERS
+                if (!call_background_thread(background_thread, next_thrd, scheduler, num_thread,
+                        running, context_storage))
                 {
                     // Let the current background thread terminate as soon as
                     // possible. No need to reschedule, as another LCO will
@@ -1010,28 +865,24 @@ namespace pika::threads::detail {
                     PIKA_ASSERT(background_thread);
                     PIKA_ASSERT(background_running);
                     *background_running = false;
-                    scheduler
-                        .SchedulingPolicy::decrement_background_thread_count();
+                    scheduler.SchedulingPolicy::decrement_background_thread_count();
                     // Create a new one which will replace the current such we
                     // avoid deadlock situations, if all background threads are
                     // blocked.
-                    background_thread = create_background_thread(scheduler,
-                        params, background_running,
-                        execution::thread_schedule_hint(
-                            static_cast<std::int16_t>(num_thread)),
-                        idle_loop_count);
+                    background_thread =
+                        create_background_thread(scheduler, params, background_running,
+                            execution::thread_schedule_hint(static_cast<std::int16_t>(num_thread)),
+                            idle_loop_count);
                 }
                 // call back into invoking context
                 if (!params.inner_.empty())
                 {
                     params.inner_();
-                    context_storage = pika::execution::this_thread::detail::
-                        get_agent_storage();
+                    context_storage = pika::execution::this_thread::detail::get_agent_storage();
                 }
             }
 
-            if (scheduler.custom_polling_function() ==
-                pika::threads::detail::polling_status::busy)
+            if (scheduler.custom_polling_function() == pika::threads::detail::polling_status::busy)
             {
                 idle_loop_count = 0;
             }
@@ -1044,17 +895,9 @@ namespace pika::threads::detail {
             {
                 busy_loop_count = 0;
 
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
-    defined(PIKA_HAVE_THREAD_IDLE_RATES)
                 // do background work in parcel layer and in agas
-                if (!call_background_thread(background_thread, next_thrd,
-                        scheduler, num_thread, running, bg_work_exec_time_init,
-                        context_storage))
-#else
-                // do background work in parcel layer and in agas
-                if (!call_background_thread(background_thread, next_thrd,
-                        scheduler, num_thread, running, context_storage))
-#endif    // PIKA_HAVE_BACKGROUND_THREAD_COUNTERS
+                if (!call_background_thread(background_thread, next_thrd, scheduler, num_thread,
+                        running, context_storage))
                 {
                     // Let the current background thread terminate as soon
                     // as possible. No need to reschedule, as another LCO
@@ -1062,16 +905,14 @@ namespace pika::threads::detail {
                     PIKA_ASSERT(background_thread);
                     PIKA_ASSERT(background_running);
                     *background_running = false;
-                    scheduler
-                        .SchedulingPolicy::decrement_background_thread_count();
+                    scheduler.SchedulingPolicy::decrement_background_thread_count();
                     // Create a new one which will replace the current such
                     // we avoid deadlock situations, if all background
                     // threads are blocked.
-                    background_thread = create_background_thread(scheduler,
-                        params, background_running,
-                        execution::thread_schedule_hint(
-                            static_cast<std::int16_t>(num_thread)),
-                        idle_loop_count);
+                    background_thread =
+                        create_background_thread(scheduler, params, background_running,
+                            execution::thread_schedule_hint(static_cast<std::int16_t>(num_thread)),
+                            idle_loop_count);
                 }
             }
             else if (idle_loop_count > params.max_idle_loop_count_ || may_exit)
@@ -1083,8 +924,7 @@ namespace pika::threads::detail {
                 if (!params.outer_.empty())
                 {
                     params.outer_();
-                    context_storage = pika::execution::this_thread::detail::
-                        get_agent_storage();
+                    context_storage = pika::execution::this_thread::detail::get_agent_storage();
                 }
 
                 // break if we were idling after 'may_exit'
@@ -1096,15 +936,11 @@ namespace pika::threads::detail {
                     {
                         PIKA_ASSERT(background_running);
                         *background_running = false;
-                        auto priority = get_thread_id_data(background_thread)
-                                            ->get_priority();
+                        auto priority = get_thread_id_data(background_thread)->get_priority();
 
-                        scheduler.SchedulingPolicy::
-                            decrement_background_thread_count();
-                        scheduler.SchedulingPolicy::schedule_thread(
-                            PIKA_MOVE(background_thread),
-                            execution::thread_schedule_hint(
-                                static_cast<std::int16_t>(num_thread)),
+                        scheduler.SchedulingPolicy::decrement_background_thread_count();
+                        scheduler.SchedulingPolicy::schedule_thread(PIKA_MOVE(background_thread),
+                            execution::thread_schedule_hint(static_cast<std::int16_t>(num_thread)),
                             true, priority);
                         scheduler.SchedulingPolicy::do_some_work(num_thread);
 
@@ -1114,14 +950,11 @@ namespace pika::threads::detail {
                     else
                     {
                         bool can_exit = !running &&
-                            scheduler.SchedulingPolicy::cleanup_terminated(
-                                true) &&
+                            scheduler.SchedulingPolicy::cleanup_terminated(true) &&
                             scheduler.SchedulingPolicy::get_thread_count(
                                 thread_schedule_state::suspended,
-                                execution::thread_priority::default_,
-                                num_thread) == 0 &&
-                            scheduler.SchedulingPolicy::get_queue_length(
-                                num_thread) == 0;
+                                execution::thread_priority::default_, num_thread) == 0 &&
+                            scheduler.SchedulingPolicy::get_queue_length(num_thread) == 0;
 
                         if (can_exit)
                         {

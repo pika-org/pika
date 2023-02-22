@@ -27,8 +27,7 @@ namespace pika::util::debug {
         std::vector<pika::threads::detail::thread_id_type> thread_ids_vector;
         //
         pika::threads::enumerate_threads(
-            [&thread_ids_vector](
-                pika::threads::detail::thread_id_type id) -> bool {
+            [&thread_ids_vector](pika::threads::detail::thread_id_type id) -> bool {
                 thread_ids_vector.push_back(id);
                 return true;    // always continue enumeration
             },
@@ -44,10 +43,8 @@ namespace pika::util::debug {
         std::vector<pika::threads::detail::thread_data*> thread_data_vector;
         //
         pika::threads::enumerate_threads(
-            [&thread_data_vector](
-                pika::threads::detail::thread_id_type id) -> bool {
-                pika::threads::detail::thread_data* data =
-                    get_thread_id_data(id);
+            [&thread_data_vector](pika::threads::detail::thread_id_type id) -> bool {
+                pika::threads::detail::thread_data* data = get_thread_id_data(id);
                 thread_data_vector.push_back(data);
                 return true;    // always continue enumeration
             },
@@ -59,8 +56,8 @@ namespace pika::util::debug {
     // return string containing the stack backtrace for suspended tasks
     std::string suspended_task_backtraces()
     {
-        std::vector<pika::threads::detail::thread_data*> tlist = get_task_data(
-            pika::threads::detail::thread_schedule_state::suspended);
+        std::vector<pika::threads::detail::thread_data*> tlist =
+            get_task_data(pika::threads::detail::thread_schedule_state::suspended);
         //
         std::stringstream tmp;
         //

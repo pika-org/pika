@@ -27,7 +27,7 @@
 #include <utility>
 
 #if defined(__ANDROID__) || defined(ANDROID)
-#include <cpu-features.h>
+# include <cpu-features.h>
 #endif
 
 namespace pika {
@@ -60,8 +60,8 @@ namespace pika {
         {
             l2.unlock();
             l.unlock();
-            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
-                "thread::operator=", "destroying running thread");
+            PIKA_THROW_EXCEPTION(
+                pika::error::invalid_status, "thread::operator=", "destroying running thread");
         }
         id_ = rhs.id_;
         rhs.id_ = threads::detail::invalid_thread_id;
@@ -76,13 +76,12 @@ namespace pika {
             {
                 try
                 {
-                    PIKA_THROW_EXCEPTION(pika::error::invalid_status,
-                        "thread::~thread", "destroying running thread");
+                    PIKA_THROW_EXCEPTION(pika::error::invalid_status, "thread::~thread",
+                        "destroying running thread");
                 }
                 catch (...)
                 {
-                    detail::thread_termination_handler(
-                        std::current_exception());
+                    detail::thread_termination_handler(std::current_exception());
                 }
             }
             else
@@ -106,8 +105,8 @@ namespace pika {
         threads::detail::thread_id_type id = threads::detail::get_self_id();
         if (id == threads::detail::invalid_thread_id)
         {
-            PIKA_THROW_EXCEPTION(pika::error::null_thread_id,
-                "run_thread_exit_callbacks", "null thread id encountered");
+            PIKA_THROW_EXCEPTION(pika::error::null_thread_id, "run_thread_exit_callbacks",
+                "null thread id encountered");
         }
         threads::detail::run_thread_exit_callbacks(id);
         threads::detail::free_thread_exit_callbacks(id);
@@ -147,8 +146,7 @@ namespace pika {
         run_thread_exit_callbacks();
 
         return threads::detail::thread_result_type(
-            threads::detail::thread_schedule_state::terminated,
-            threads::detail::invalid_thread_id);
+            threads::detail::thread_schedule_state::terminated, threads::detail::invalid_thread_id);
     }
 
     thread::id thread::get_id() const noexcept
@@ -161,18 +159,16 @@ namespace pika {
         return pika::threads::detail::hardware_concurrency();
     }
 
-    void thread::start_thread(threads::detail::thread_pool_base* pool,
-        util::detail::unique_function<void()>&& func)
+    void thread::start_thread(
+        threads::detail::thread_pool_base* pool, util::detail::unique_function<void()>&& func)
     {
         PIKA_ASSERT(pool);
 
         threads::detail::thread_init_data data(
-            util::detail::one_shot(util::detail::bind(
-                &thread::thread_function_nullary, PIKA_MOVE(func))),
-            "thread::thread_function_nullary",
-            execution::thread_priority::default_,
-            execution::thread_schedule_hint(),
-            execution::thread_stacksize::default_,
+            util::detail::one_shot(
+                util::detail::bind(&thread::thread_function_nullary, PIKA_MOVE(func))),
+            "thread::thread_function_nullary", execution::thread_priority::default_,
+            execution::thread_schedule_hint(), execution::thread_stacksize::default_,
             threads::detail::thread_schedule_state::pending, true);
 
         // create the new thread, note that id_ is guaranteed to be valid
@@ -181,16 +177,15 @@ namespace pika {
         pool->create_thread(data, id_, ec);
         if (ec)
         {
-            PIKA_THROW_EXCEPTION(pika::error::thread_resource_error,
-                "thread::start_thread", "Could not create thread");
+            PIKA_THROW_EXCEPTION(pika::error::thread_resource_error, "thread::start_thread",
+                "Could not create thread");
             return;
         }
     }
 
     static void resume_thread(threads::detail::thread_id_type const& id)
     {
-        threads::detail::set_thread_state(
-            id, threads::detail::thread_schedule_state::pending);
+        threads::detail::set_thread_state(id, threads::detail::thread_schedule_state::pending);
     }
 
     void thread::join()
@@ -208,8 +203,8 @@ namespace pika {
         if (this_id == id_)
         {
             l.unlock();
-            PIKA_THROW_EXCEPTION(pika::error::thread_resource_error,
-                "thread::join", "pika::thread: trying joining itself");
+            PIKA_THROW_EXCEPTION(pika::error::thread_resource_error, "thread::join",
+                "pika::thread: trying joining itself");
             return;
         }
         this_thread::interruption_point();
@@ -220,9 +215,7 @@ namespace pika {
         {
             // wait for thread to be terminated
             detail::unlock_guard ul(l);
-            this_thread::suspend(
-                threads::detail::thread_schedule_state::suspended,
-                "thread::join");
+            this_thread::suspend(threads::detail::thread_schedule_state::suspended, "thread::join");
         }
 
         detach_locked();    // invalidate this object
@@ -236,8 +229,7 @@ namespace pika {
 
     bool thread::interruption_requested() const
     {
-        return threads::detail::get_thread_interruption_requested(
-            native_handle());
+        return threads::detail::get_thread_interruption_requested(native_handle());
     }
 
     void thread::interrupt(thread::id id, bool flag)
@@ -268,13 +260,11 @@ namespace pika {
             using base_type::mtx_;
 
         public:
-            explicit thread_task_base(
-                threads::detail::thread_id_ref_type const& id)
+            explicit thread_task_base(threads::detail::thread_id_ref_type const& id)
             {
                 if (threads::detail::add_thread_exit_callback(id.noref(),
                         util::detail::bind_front(
-                            &thread_task_base::thread_exit_function,
-                            future_base_type(this))))
+                            &thread_task_base::thread_exit_function, future_base_type(this))))
                 {
                     id_ = id;
                 }
@@ -297,8 +287,8 @@ namespace pika {
                 if (!this->is_ready())
                 {
                     threads::detail::interrupt_thread(id_.noref());
-                    this->set_error(pika::error::thread_cancelled,
-                        "thread_task_base::cancel", "future has been canceled");
+                    this->set_error(pika::error::thread_cancelled, "thread_task_base::cancel",
+                        "future has been canceled");
                     id_ = threads::detail::invalid_thread_id;
                 }
             }
@@ -322,8 +312,8 @@ namespace pika {
     {
         if (id_ == threads::detail::invalid_thread_id)
         {
-            PIKA_THROWS_IF(ec, pika::error::null_thread_id,
-                "thread::get_future", "null thread id encountered");
+            PIKA_THROWS_IF(ec, pika::error::null_thread_id, "thread::get_future",
+                "null thread id encountered");
             return pika::future<void>();
         }
 
@@ -331,8 +321,7 @@ namespace pika {
         pika::intrusive_ptr<lcos::detail::future_data<void>> base(p);
         if (!p->valid())
         {
-            PIKA_THROWS_IF(ec, pika::error::thread_resource_error,
-                "thread::get_future",
+            PIKA_THROWS_IF(ec, pika::error::thread_resource_error, "thread::get_future",
                 "Could not create future as thread has been terminated.");
             return pika::future<void>();
         }
@@ -346,16 +335,14 @@ namespace pika {
 
         void yield_to(thread::id id) noexcept
         {
-            this_thread::suspend(
-                threads::detail::thread_schedule_state::pending,
+            this_thread::suspend(threads::detail::thread_schedule_state::pending,
                 id.native_handle(), "this_thread::yield_to");
         }
 
         void yield() noexcept
         {
             this_thread::suspend(
-                threads::detail::thread_schedule_state::pending,
-                "this_thread::yield");
+                threads::detail::thread_schedule_state::pending, "this_thread::yield");
         }
 
         thread::id get_id() noexcept
@@ -366,14 +353,12 @@ namespace pika {
         // extensions
         execution::thread_priority get_priority()
         {
-            return threads::detail::get_thread_priority(
-                threads::detail::get_self_id());
+            return threads::detail::get_thread_priority(threads::detail::get_self_id());
         }
 
         std::ptrdiff_t get_stack_size()
         {
-            return threads::detail::get_stack_size(
-                threads::detail::get_self_id());
+            return threads::detail::get_stack_size(threads::detail::get_self_id());
         }
 
         void interruption_point()
@@ -383,8 +368,7 @@ namespace pika {
 
         bool interruption_enabled()
         {
-            return threads::detail::get_thread_interruption_enabled(
-                threads::detail::get_self_id());
+            return threads::detail::get_thread_interruption_enabled(threads::detail::get_self_id());
         }
 
         bool interruption_requested()
@@ -406,14 +390,12 @@ namespace pika {
 
         std::size_t get_thread_data()
         {
-            return threads::detail::get_thread_data(
-                threads::detail::get_self_id());
+            return threads::detail::get_thread_data(threads::detail::get_self_id());
         }
 
         std::size_t set_thread_data(std::size_t data)
         {
-            return threads::detail::set_thread_data(
-                threads::detail::get_self_id(), data);
+            return threads::detail::set_thread_data(threads::detail::get_self_id(), data);
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -422,9 +404,8 @@ namespace pika {
         {
             if (interruption_was_enabled_)
             {
-                interruption_was_enabled_ =
-                    threads::detail::set_thread_interruption_enabled(
-                        threads::detail::get_self_id(), false);
+                interruption_was_enabled_ = threads::detail::set_thread_interruption_enabled(
+                    threads::detail::get_self_id(), false);
             }
         }
 
@@ -444,9 +425,8 @@ namespace pika {
         {
             if (!interruption_was_enabled_)
             {
-                interruption_was_enabled_ =
-                    threads::detail::set_thread_interruption_enabled(
-                        threads::detail::get_self_id(), true);
+                interruption_was_enabled_ = threads::detail::set_thread_interruption_enabled(
+                    threads::detail::get_self_id(), true);
             }
         }
 

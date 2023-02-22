@@ -34,8 +34,7 @@ namespace pika {
     {
         std::ostringstream strm;
         strm << "{config}:\n"
-             << configuration_string() << "{version}: " << build_string()
-             << "\n"
+             << configuration_string() << "{version}: " << build_string() << "\n"
              << "{build-type}: " << build_type() << "\n"
              << "{date}: " << build_date_time() << "\n";
 

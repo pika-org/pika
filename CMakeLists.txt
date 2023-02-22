@@ -49,9 +49,9 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # Build all of pika
 # ##############################################################################
 set(PIKA_VERSION_MAJOR 0)
-set(PIKA_VERSION_MINOR 11)
+set(PIKA_VERSION_MINOR 12)
 set(PIKA_VERSION_PATCH 0)
-set(PIKA_VERSION_DATE 20221207)
+set(PIKA_VERSION_DATE 20230201)
 set(PIKA_VERSION_TAG "-trunk")
 
 set(PIKA_VERSION
@@ -615,19 +615,6 @@ pika_option(
   CATEGORY "Thread Manager"
   ADVANCED
 )
-
-if(PIKA_WITH_THREAD_IDLE_RATES)
-  pika_option(
-    PIKA_WITH_BACKGROUND_THREAD_COUNTERS
-    BOOL
-    "Enable performance counters related to adaptive parcel coalescing (default: OFF)."
-    OFF
-    ADVANCED
-  )
-  if(PIKA_WITH_BACKGROUND_THREAD_COUNTERS)
-    pika_add_config_define(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS)
-  endif()
-endif()
 
 pika_option(
   PIKA_WITH_THREAD_CREATION_AND_CLEANUP_RATES BOOL

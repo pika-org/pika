@@ -36,8 +36,8 @@ using pika::threads::detail::thread_id_type;
 ///////////////////////////////////////////////////////////////////////////////
 namespace detail {
     template <typename T1>
-    std::uint64_t wait(std::vector<future<T1>> const& lazy_values,
-        std::int32_t /*suspend_for*/ = 10)
+    std::uint64_t
+    wait(std::vector<future<T1>> const& lazy_values, std::int32_t /*suspend_for*/ = 10)
     {
         boost::dynamic_bitset<> handled(lazy_values.size());
         std::uint64_t handled_count = 0;
@@ -75,13 +75,11 @@ namespace detail {
 ///////////////////////////////////////////////////////////////////////////////
 void change_thread_state(thread_id_type thread)
 {
-    set_thread_state(
-        thread, pika::threads::detail::thread_schedule_state::suspended);
+    set_thread_state(thread, pika::threads::detail::thread_schedule_state::suspended);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void tree_boot(
-    std::uint64_t count, std::uint64_t grain_size, thread_id_type thread)
+void tree_boot(std::uint64_t count, std::uint64_t grain_size, thread_id_type thread)
 {
     PIKA_TEST(grain_size);
     PIKA_TEST(count);
@@ -151,23 +149,19 @@ int pika_main(variables_map& vm)
 
         // Flood the queues with suspension operations before the rescheduling
         // attempt.
-        future<void> before =
-            async(&tree_boot, futures, grain_size, thread_id.noref());
+        future<void> before = async(&tree_boot, futures, grain_size, thread_id.noref());
 
-        set_thread_state(thread_id.noref(),
-            pika::threads::detail::thread_schedule_state::pending,
+        set_thread_state(thread_id.noref(), pika::threads::detail::thread_schedule_state::pending,
             pika::threads::detail::thread_restart_state::signaled);
 
         // Flood the queues with suspension operations after the rescheduling
         // attempt.
-        future<void> after =
-            async(&tree_boot, futures, grain_size, thread_id.noref());
+        future<void> after = async(&tree_boot, futures, grain_size, thread_id.noref());
 
         before.get();
         after.get();
 
-        set_thread_state(thread_id.noref(),
-            pika::threads::detail::thread_schedule_state::pending,
+        set_thread_state(thread_id.noref(), pika::threads::detail::thread_schedule_state::pending,
             pika::threads::detail::thread_restart_state::terminate);
     }
 
@@ -185,8 +179,7 @@ int main(int argc, char* argv[])
     cmdline.add_options()("futures", value<std::uint64_t>()->default_value(64),
         "number of futures to invoke before and after the rescheduling")
 
-        ("grain-size", value<std::uint64_t>()->default_value(4),
-            "grain size of the future tree");
+        ("grain-size", value<std::uint64_t>()->default_value(4), "grain size of the future tree");
 
     // Initialize and run pika
     pika::init_params init_args;

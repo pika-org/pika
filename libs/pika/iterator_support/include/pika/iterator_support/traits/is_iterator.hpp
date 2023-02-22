@@ -32,8 +32,7 @@ namespace pika::traits {
             template <typename U>
             static void* test(U*);    // pointer
 #else
-            template <typename U,
-                typename = typename std::iterator_traits<U>::pointer>
+            template <typename U, typename = typename std::iterator_traits<U>::pointer>
             static void* test(U&&);
 #endif
 
@@ -52,8 +51,7 @@ namespace pika::traits {
         };
 
         template <typename T, typename U>
-        struct addition_result<T, U,
-            std::void_t<decltype(std::declval<T>() + std::declval<U>())>>
+        struct addition_result<T, U, std::void_t<decltype(std::declval<T>() + std::declval<U>())>>
         {
             using type = decltype(std::declval<T>() + std::declval<U>());
         };
@@ -64,8 +62,7 @@ namespace pika::traits {
         };
 
         template <typename T>
-        struct dereference_result<T,
-            std::void_t<decltype(*(std::declval<T&>()))>>
+        struct dereference_result<T, std::void_t<decltype(*(std::declval<T&>()))>>
         {
             using type = decltype(*(std::declval<T&>()));
         };
@@ -100,8 +97,7 @@ namespace pika::traits {
         };
 
         template <typename T>
-        struct predecrement_result<T,
-            std::void_t<decltype(--std::declval<T&>())>>
+        struct predecrement_result<T, std::void_t<decltype(--std::declval<T&>())>>
         {
             using type = decltype(--std::declval<T&>());
         };
@@ -112,8 +108,7 @@ namespace pika::traits {
         };
 
         template <typename T>
-        struct preincrement_result<T,
-            std::void_t<decltype(++std::declval<T&>())>>
+        struct preincrement_result<T, std::void_t<decltype(++std::declval<T&>())>>
         {
             using type = decltype(++std::declval<T&>());
         };
@@ -124,8 +119,7 @@ namespace pika::traits {
         };
 
         template <typename T>
-        struct postdecrement_result<T,
-            std::void_t<decltype(std::declval<T&>()--)>>
+        struct postdecrement_result<T, std::void_t<decltype(std::declval<T&>()--)>>
         {
             using type = decltype(std::declval<T&>()--);
         };
@@ -136,8 +130,7 @@ namespace pika::traits {
         };
 
         template <typename T>
-        struct postincrement_result<T,
-            std::void_t<decltype(std::declval<T&>()++)>>
+        struct postincrement_result<T, std::void_t<decltype(std::declval<T&>()++)>>
         {
             using type = decltype(std::declval<T&>()++);
         };
@@ -148,8 +141,7 @@ namespace pika::traits {
         };
 
         template <typename T, typename U>
-        struct subscript_result<T, U,
-            std::void_t<decltype(std::declval<T&>()[std::declval<U>()])>>
+        struct subscript_result<T, U, std::void_t<decltype(std::declval<T&>()[std::declval<U>()])>>
         {
             using type = decltype(std::declval<T&>()[std::declval<U>()]);
         };
@@ -177,24 +169,19 @@ namespace pika::traits {
             std::void_t<typename dereference_result<Iter>::type,
                 ::pika::detail::equality_result_t<Iter, Iter>,
                 ::pika::detail::inequality_result_t<Iter, Iter>,
-                typename predecrement_result<Iter>::type,
-                typename preincrement_result<Iter>::type,
+                typename predecrement_result<Iter>::type, typename preincrement_result<Iter>::type,
                 typename postdecrement_result<Iter>::type,
                 typename postincrement_result<Iter>::type>>
           : std::integral_constant<bool,
-                std::is_convertible<bool,
-                    ::pika::detail::equality_result_t<Iter, Iter>>::value &&
+                std::is_convertible<bool, ::pika::detail::equality_result_t<Iter, Iter>>::value &&
                     std::is_convertible<bool,
-                        ::pika::detail::inequality_result_t<Iter,
-                            Iter>>::value &&
+                        ::pika::detail::inequality_result_t<Iter, Iter>>::value &&
                     std::is_same<typename std::add_lvalue_reference<Iter>::type,
                         typename predecrement_result<Iter>::type>::value &&
                     std::is_same<typename std::add_lvalue_reference<Iter>::type,
                         typename preincrement_result<Iter>::type>::value &&
-                    std::is_same<Iter,
-                        typename postdecrement_result<Iter>::type>::value &&
-                    std::is_same<Iter,
-                        typename postincrement_result<Iter>::type>::value>
+                    std::is_same<Iter, typename postdecrement_result<Iter>::type>::value &&
+                    std::is_same<Iter, typename postincrement_result<Iter>::type>::value>
         {
         };
 
@@ -217,33 +204,26 @@ namespace pika::traits {
                     typename std::iterator_traits<Iter>::difference_type>::type,
                 typename subtraction_result<Iter, Iter>::type,
                 typename inplace_subtraction_result<Iter,
-                    typename std::iterator_traits<Iter>::difference_type>::
-                    type>>
+                    typename std::iterator_traits<Iter>::difference_type>::type>>
           : std::integral_constant<bool,
                 bidirectional_concept<Iter>::value &&
                     std::is_same<typename dereference_result<Iter>::type,
                         typename subscript_result<Iter,
-                            typename std::iterator_traits<
-                                Iter>::difference_type>::type>::value &&
+                            typename std::iterator_traits<Iter>::difference_type>::type>::value &&
                     std::is_same<Iter,
                         typename addition_result<Iter,
-                            typename std::iterator_traits<
-                                Iter>::difference_type>::type>::value &&
+                            typename std::iterator_traits<Iter>::difference_type>::type>::value &&
                     std::is_same<typename std::add_lvalue_reference<Iter>::type,
                         typename inplace_addition_result<Iter,
-                            typename std::iterator_traits<
-                                Iter>::difference_type>::type>::value &&
+                            typename std::iterator_traits<Iter>::difference_type>::type>::value &&
                     std::is_same<Iter,
                         typename subtraction_result<Iter,
-                            typename std::iterator_traits<
-                                Iter>::difference_type>::type>::value &&
-                    std::is_same<
-                        typename std::iterator_traits<Iter>::difference_type,
+                            typename std::iterator_traits<Iter>::difference_type>::type>::value &&
+                    std::is_same<typename std::iterator_traits<Iter>::difference_type,
                         typename subtraction_result<Iter, Iter>::type>::value &&
                     std::is_same<typename std::add_lvalue_reference<Iter>::type,
                         typename inplace_subtraction_result<Iter,
-                            typename std::iterator_traits<
-                                Iter>::difference_type>::type>::value>
+                            typename std::iterator_traits<Iter>::difference_type>::type>::value>
         {
         };
 
@@ -275,14 +255,14 @@ namespace pika::traits {
         };
 
         template <typename Iter>
-        struct satisfy_traversal_concept<Iter,
-            pika::bidirectional_traversal_tag> : bidirectional_concept<Iter>
+        struct satisfy_traversal_concept<Iter, pika::bidirectional_traversal_tag>
+          : bidirectional_concept<Iter>
         {
         };
 
         template <typename Iter>
-        struct satisfy_traversal_concept<Iter,
-            pika::random_access_traversal_tag> : random_access_concept<Iter>
+        struct satisfy_traversal_concept<Iter, pika::random_access_traversal_tag>
+          : random_access_concept<Iter>
         {
         };
     }    // namespace detail
@@ -307,10 +287,8 @@ namespace pika::traits {
         };
 
         template <typename Iter, typename Cat>
-        struct belongs_to_iterator_category<Iter, Cat,
-            std::enable_if_t<is_iterator<Iter>::value>>
-          : std::is_base_of<Cat,
-                typename std::iterator_traits<Iter>::iterator_category>
+        struct belongs_to_iterator_category<Iter, Cat, std::enable_if_t<is_iterator<Iter>::value>>
+          : std::is_base_of<Cat, typename std::iterator_traits<Iter>::iterator_category>
         {
         };
 
@@ -324,8 +302,7 @@ namespace pika::traits {
         struct belongs_to_iterator_traversal<Iter, Traversal,
             std::enable_if_t<is_iterator<Iter>::value>>
           : std::integral_constant<bool,
-                std::is_base_of<Traversal,
-                    pika::traits::iterator_traversal_t<Iter>>::value ||
+                std::is_base_of<Traversal, pika::traits::iterator_traversal_t<Iter>>::value ||
                     satisfy_traversal_concept<Iter, Traversal>::value>
         {
         };
@@ -337,10 +314,8 @@ namespace pika::traits {
         };
 
         template <typename Iter, typename Cat>
-        struct has_category<Iter, Cat,
-            std::enable_if_t<is_iterator<Iter>::value>>
-          : std::is_same<Cat,
-                typename std::iterator_traits<Iter>::iterator_category>
+        struct has_category<Iter, Cat, std::enable_if_t<is_iterator<Iter>::value>>
+          : std::is_same<Cat, typename std::iterator_traits<Iter>::iterator_category>
         {
         };
 
@@ -351,8 +326,7 @@ namespace pika::traits {
         };
 
         template <typename Iter, typename Traversal>
-        struct has_traversal<Iter, Traversal,
-            std::enable_if_t<is_iterator<Iter>::value>>
+        struct has_traversal<Iter, Traversal, std::enable_if_t<is_iterator<Iter>::value>>
           : std::is_same<Traversal, pika::traits::iterator_traversal_t<Iter>>
         {
         };
@@ -363,10 +337,8 @@ namespace pika::traits {
           : std::integral_constant<bool,
                 std::is_same<pika::bidirectional_traversal_tag,
                     pika::traits::iterator_traversal_t<Iter>>::value ||
-                    (satisfy_traversal_concept<Iter,
-                         pika::bidirectional_traversal_tag>::value &&
-                        !satisfy_traversal_concept<Iter,
-                            pika::random_access_traversal_tag>::value)>
+                    (satisfy_traversal_concept<Iter, pika::bidirectional_traversal_tag>::value &&
+                        !satisfy_traversal_concept<Iter, pika::random_access_traversal_tag>::value)>
         {
         };
 
@@ -376,8 +348,7 @@ namespace pika::traits {
           : std::integral_constant<bool,
                 std::is_same<pika::random_access_traversal_tag,
                     pika::traits::iterator_traversal_t<Iter>>::value ||
-                    satisfy_traversal_concept<Iter,
-                        pika::random_access_traversal_tag>::value>
+                    satisfy_traversal_concept<Iter, pika::random_access_traversal_tag>::value>
         {
         };
     }    // namespace detail
@@ -406,8 +377,7 @@ namespace pika::traits {
     using is_output_iterator_t = typename is_output_iterator<Iter>::type;
 
     template <typename Iter>
-    inline constexpr bool is_output_iterator_v =
-        is_output_iterator<Iter>::value;
+    inline constexpr bool is_output_iterator_v = is_output_iterator<Iter>::value;
 
     template <typename Iter, typename Enable = void>
     struct is_input_iterator
@@ -439,8 +409,7 @@ namespace pika::traits {
     using is_forward_iterator_t = typename is_forward_iterator<Iter>::type;
 
     template <typename Iter>
-    inline constexpr bool is_forward_iterator_v =
-        is_forward_iterator<Iter>::value;
+    inline constexpr bool is_forward_iterator_v = is_forward_iterator<Iter>::value;
 
     template <typename Iter, typename Enable = void>
     struct is_bidirectional_iterator
@@ -453,30 +422,24 @@ namespace pika::traits {
     };
 
     template <typename Iter>
-    using is_bidirectional_iterator_t =
-        typename is_bidirectional_iterator<Iter>::type;
+    using is_bidirectional_iterator_t = typename is_bidirectional_iterator<Iter>::type;
 
     template <typename Iter>
-    inline constexpr bool is_bidirectional_iterator_v =
-        is_bidirectional_iterator<Iter>::value;
+    inline constexpr bool is_bidirectional_iterator_v = is_bidirectional_iterator<Iter>::value;
 
     template <typename Iter, typename Enable = void>
     struct is_random_access_iterator
       : std::integral_constant<bool,
-            detail::has_category<std::decay_t<Iter>,
-                std::random_access_iterator_tag>::value ||
-                detail::has_traversal<std::decay_t<Iter>,
-                    pika::random_access_traversal_tag>::value>
+            detail::has_category<std::decay_t<Iter>, std::random_access_iterator_tag>::value ||
+                detail::has_traversal<std::decay_t<Iter>, pika::random_access_traversal_tag>::value>
     {
     };
 
     template <typename Iter>
-    using is_random_access_iterator_t =
-        typename is_random_access_iterator<Iter>::type;
+    using is_random_access_iterator_t = typename is_random_access_iterator<Iter>::type;
 
     template <typename Iter>
-    inline constexpr bool is_random_access_iterator_v =
-        is_random_access_iterator<Iter>::value;
+    inline constexpr bool is_random_access_iterator_v = is_random_access_iterator<Iter>::value;
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Iter, typename Enable = void>
@@ -497,15 +460,11 @@ namespace pika::traits {
     namespace detail {
 
         // Iterators returned from std::vector are contiguous (bydefinition)
-        template <typename Iter,
-            typename T = typename std::iterator_traits<Iter>::value_type>
+        template <typename Iter, typename T = typename std::iterator_traits<Iter>::value_type>
         struct is_vector_iterator
           : std::integral_constant<bool,
-                std::is_same<decltype(std::declval<std::vector<T>&>().begin()),
-                    Iter>::value ||
-                    std::is_same<
-                        decltype(std::declval<std::vector<T>&>().cbegin()),
-                        Iter>::value>
+                std::is_same<decltype(std::declval<std::vector<T>&>().begin()), Iter>::value ||
+                    std::is_same<decltype(std::declval<std::vector<T>&>().cbegin()), Iter>::value>
         {
         };
     }    // namespace detail
@@ -530,12 +489,10 @@ namespace pika::traits {
     };
 
     template <typename Iter>
-    using is_contiguous_iterator_t =
-        typename is_contiguous_iterator<Iter>::type;
+    using is_contiguous_iterator_t = typename is_contiguous_iterator<Iter>::type;
 
     template <typename Iter>
-    inline constexpr bool is_contiguous_iterator_v =
-        is_contiguous_iterator<Iter>::value;
+    inline constexpr bool is_contiguous_iterator_v = is_contiguous_iterator<Iter>::value;
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Iter>

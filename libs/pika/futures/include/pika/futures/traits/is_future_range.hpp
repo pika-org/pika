@@ -39,18 +39,15 @@ namespace pika::traits {
     };
 
     template <typename R>
-    struct is_ref_wrapped_future_range<::std::reference_wrapper<R>>
-      : is_future_range<R>
+    struct is_ref_wrapped_future_range<::std::reference_wrapper<R>> : is_future_range<R>
     {
     };
 
     template <typename R>
-    using is_ref_wrapped_future_range_t =
-        typename is_ref_wrapped_future_range<R>::type;
+    using is_ref_wrapped_future_range_t = typename is_ref_wrapped_future_range<R>::type;
 
     template <typename R>
-    inline constexpr bool is_ref_wrapped_future_range_v =
-        is_ref_wrapped_future_range<R>::value;
+    inline constexpr bool is_ref_wrapped_future_range_v = is_ref_wrapped_future_range<R>::value;
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename R, bool IsFutureRange = is_future_range<R>::value>
@@ -73,7 +70,6 @@ namespace pika::traits {
         };
 
         template <typename R>
-        inline constexpr bool is_future_or_future_range_v =
-            is_future_or_future_range<R>::value;
+        inline constexpr bool is_future_or_future_range_v = is_future_or_future_range<R>::value;
     }    // namespace detail
 }    // namespace pika::traits

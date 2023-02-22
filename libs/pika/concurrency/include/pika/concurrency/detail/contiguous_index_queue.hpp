@@ -27,10 +27,10 @@ namespace pika::concurrency::detail {
     class contiguous_index_queue
     {
         static_assert(sizeof(T) <= 4,
-            "contiguous_index_queue assumes at most 32 bit indices to fit two "
-            "indices in an at most 64 bit struct");
-        static_assert(std::is_integral_v<T>,
-            "contiguous_index_queue only works with integral indices");
+            "contiguous_index_queue assumes at most 32 bit indices to fit two indices in an at "
+            "most 64 bit struct");
+        static_assert(
+            std::is_integral_v<T>, "contiguous_index_queue only works with integral indices");
 
         struct range
         {
@@ -105,8 +105,7 @@ namespace pika::concurrency::detail {
           : initial_range{other.initial_range}
           , current_range{}
         {
-            current_range.data_ =
-                other.current_range.data_.load(std::memory_order_relaxed);
+            current_range.data_ = other.current_range.data_.load(std::memory_order_relaxed);
         }
 
         /// \brief Copy-assign a queue.
@@ -114,12 +113,10 @@ namespace pika::concurrency::detail {
         /// No additional synchronization is done to ensure that other threads
         /// are not accessing elements from the queue being copied. It is the
         /// callees responsibility to ensure that it is safe to copy the queue.
-        constexpr contiguous_index_queue& operator=(
-            contiguous_index_queue const& other)
+        constexpr contiguous_index_queue& operator=(contiguous_index_queue const& other)
         {
             initial_range = other.initial_range;
-            current_range =
-                other.current_range.data_.load(std::memory_order_relaxed);
+            current_range = other.current_range.data_.load(std::memory_order_relaxed);
             return *this;
         }
 
@@ -132,8 +129,7 @@ namespace pika::concurrency::detail {
             range desired_range{0, 0};
             T index = 0;
 
-            range expected_range =
-                current_range.data_.load(std::memory_order_relaxed);
+            range expected_range = current_range.data_.load(std::memory_order_relaxed);
 
             do
             {
@@ -144,8 +140,7 @@ namespace pika::concurrency::detail {
 
                 index = expected_range.first;
                 desired_range = expected_range.increment_first();
-            } while (!current_range.data_.compare_exchange_weak(
-                expected_range, desired_range));
+            } while (!current_range.data_.compare_exchange_weak(expected_range, desired_range));
 
             return std::make_optional<>(index);
         }
@@ -159,8 +154,7 @@ namespace pika::concurrency::detail {
             range desired_range{0, 0};
             T index = 0;
 
-            range expected_range =
-                current_range.data_.load(std::memory_order_relaxed);
+            range expected_range = current_range.data_.load(std::memory_order_relaxed);
 
             do
             {
@@ -171,8 +165,7 @@ namespace pika::concurrency::detail {
 
                 desired_range = expected_range.decrement_last();
                 index = desired_range.last;
-            } while (!current_range.data_.compare_exchange_weak(
-                expected_range, desired_range));
+            } while (!current_range.data_.compare_exchange_weak(expected_range, desired_range));
 
             return std::make_optional(index);
         }

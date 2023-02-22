@@ -31,15 +31,15 @@
 #include <vector>
 
 #if defined(PIKA_APPLICATION_NAME_DEFAULT) && !defined(PIKA_APPLICATION_NAME)
-#define PIKA_APPLICATION_NAME PIKA_APPLICATION_NAME_DEFAULT
+# define PIKA_APPLICATION_NAME PIKA_APPLICATION_NAME_DEFAULT
 #endif
 
 #if !defined(PIKA_APPLICATION_STRING)
-#if defined(PIKA_APPLICATION_NAME)
-#define PIKA_APPLICATION_STRING PIKA_PP_STRINGIZE(PIKA_APPLICATION_NAME)
-#else
-#define PIKA_APPLICATION_STRING "unknown pika application"
-#endif
+# if defined(PIKA_APPLICATION_NAME)
+#  define PIKA_APPLICATION_STRING PIKA_PP_STRINGIZE(PIKA_APPLICATION_NAME)
+# else
+#  define PIKA_APPLICATION_STRING "unknown pika application"
+# endif
 #endif
 
 #if defined(__FreeBSD__)
@@ -49,8 +49,8 @@ extern char** environ;
 
 namespace pika {
     namespace detail {
-        PIKA_EXPORT int init_helper(pika::program_options::variables_map&,
-            util::detail::function<int(int, char**)> const&);
+        PIKA_EXPORT int init_helper(
+            pika::program_options::variables_map&, util::detail::function<int(int, char**)> const&);
     }
 
     namespace detail {
@@ -79,41 +79,34 @@ namespace pika {
         PIKA_MAYBE_UNUSED static char** dummy_argv = default_argv;
         // PIKA_APPLICATION_STRING is specific to an application and therefore
         // cannot be in the source file
-        PIKA_MAYBE_UNUSED static const pika::program_options::
-            options_description default_desc =
-                pika::program_options::options_description(
-                    "Usage: " PIKA_APPLICATION_STRING " [options]");
+        PIKA_MAYBE_UNUSED static const pika::program_options::options_description default_desc =
+            pika::program_options::options_description(
+                "Usage: " PIKA_APPLICATION_STRING " [options]");
 
         // Utilities to init the thread_pools of the resource partitioner
-        using rp_callback_type =
-            pika::util::detail::function<void(pika::resource::partitioner&,
-                pika::program_options::variables_map const&)>;
+        using rp_callback_type = pika::util::detail::function<void(
+            pika::resource::partitioner&, pika::program_options::variables_map const&)>;
     }    // namespace detail
 
     struct init_params
     {
-        std::reference_wrapper<pika::program_options::options_description const>
-            desc_cmdline = detail::default_desc;
+        std::reference_wrapper<pika::program_options::options_description const> desc_cmdline =
+            detail::default_desc;
         std::vector<std::string> cfg;
         mutable startup_function_type startup;
         mutable shutdown_function_type shutdown;
-        pika::resource::partitioner_mode rp_mode =
-            ::pika::resource::mode_default;
+        pika::resource::partitioner_mode rp_mode = ::pika::resource::mode_default;
         pika::detail::rp_callback_type rp_callback;
     };
 
     namespace detail {
         PIKA_EXPORT int run_or_start(
-            util::detail::function<int(
-                pika::program_options::variables_map& vm)> const& f,
-            int argc, const char* const* argv, init_params const& params,
-            bool blocking);
+            util::detail::function<int(pika::program_options::variables_map& vm)> const& f,
+            int argc, const char* const* argv, init_params const& params, bool blocking);
 
         inline int init_start_impl(
-            util::detail::function<int(pika::program_options::variables_map&)>
-                f,
-            int argc, const char* const* argv, init_params const& params,
-            bool blocking)
+            util::detail::function<int(pika::program_options::variables_map&)> f, int argc,
+            const char* const* argv, init_params const& params, bool blocking)
         {
             if (argc == 0 || argv == nullptr)
             {
@@ -134,78 +127,62 @@ namespace pika {
         }
     }    // namespace detail
 
-    inline int init(std::function<int(pika::program_options::variables_map&)> f,
-        int argc, const char* const* argv,
-        init_params const& params = init_params())
+    inline int init(std::function<int(pika::program_options::variables_map&)> f, int argc,
+        const char* const* argv, init_params const& params = init_params())
     {
         return detail::init_start_impl(PIKA_MOVE(f), argc, argv, params, true);
     }
 
-    inline int init(std::function<int(int, char**)> f, int argc,
-        const char* const* argv, init_params const& params = init_params())
+    inline int init(std::function<int(int, char**)> f, int argc, const char* const* argv,
+        init_params const& params = init_params())
     {
-        util::detail::function<int(pika::program_options::variables_map&)>
-            main_f =
-                pika::util::detail::bind_back(pika::detail::init_helper, f);
-        return detail::init_start_impl(
-            PIKA_MOVE(main_f), argc, argv, params, true);
+        util::detail::function<int(pika::program_options::variables_map&)> main_f =
+            pika::util::detail::bind_back(pika::detail::init_helper, f);
+        return detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, true);
     }
 
     inline int init(std::function<int()> f, int argc, const char* const* argv,
         init_params const& params = init_params())
     {
-        util::detail::function<int(pika::program_options::variables_map&)>
-            main_f = pika::util::detail::bind(f);
-        return detail::init_start_impl(
-            PIKA_MOVE(main_f), argc, argv, params, true);
+        util::detail::function<int(pika::program_options::variables_map&)> main_f =
+            pika::util::detail::bind(f);
+        return detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, true);
     }
 
     inline int init(std::nullptr_t, int argc, const char* const* argv,
         init_params const& params = init_params())
     {
-        util::detail::function<int(pika::program_options::variables_map&)>
-            main_f;
-        return detail::init_start_impl(
-            PIKA_MOVE(main_f), argc, argv, params, true);
+        util::detail::function<int(pika::program_options::variables_map&)> main_f;
+        return detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, true);
     }
 
-    inline bool start(
-        std::function<int(pika::program_options::variables_map&)> f, int argc,
+    inline bool start(std::function<int(pika::program_options::variables_map&)> f, int argc,
         const char* const* argv, init_params const& params = init_params())
     {
-        return 0 ==
-            detail::init_start_impl(PIKA_MOVE(f), argc, argv, params, false);
+        return 0 == detail::init_start_impl(PIKA_MOVE(f), argc, argv, params, false);
     }
 
-    inline bool start(std::function<int(int, char**)> f, int argc,
-        const char* const* argv, init_params const& params = init_params())
+    inline bool start(std::function<int(int, char**)> f, int argc, const char* const* argv,
+        init_params const& params = init_params())
     {
-        util::detail::function<int(pika::program_options::variables_map&)>
-            main_f =
-                pika::util::detail::bind_back(pika::detail::init_helper, f);
-        return 0 ==
-            detail::init_start_impl(
-                PIKA_MOVE(main_f), argc, argv, params, false);
+        util::detail::function<int(pika::program_options::variables_map&)> main_f =
+            pika::util::detail::bind_back(pika::detail::init_helper, f);
+        return 0 == detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false);
     }
 
     inline bool start(std::function<int()> f, int argc, const char* const* argv,
         init_params const& params = init_params())
     {
-        util::detail::function<int(pika::program_options::variables_map&)>
-            main_f = pika::util::detail::bind(f);
-        return 0 ==
-            detail::init_start_impl(
-                PIKA_MOVE(main_f), argc, argv, params, false);
+        util::detail::function<int(pika::program_options::variables_map&)> main_f =
+            pika::util::detail::bind(f);
+        return 0 == detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false);
     }
 
     inline bool start(std::nullptr_t, int argc, const char* const* argv,
         init_params const& params = init_params())
     {
-        util::detail::function<int(pika::program_options::variables_map&)>
-            main_f;
-        return 0 ==
-            detail::init_start_impl(
-                PIKA_MOVE(main_f), argc, argv, params, false);
+        util::detail::function<int(pika::program_options::variables_map&)> main_f;
+        return 0 == detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false);
     }
 
     PIKA_EXPORT int finalize(error_code& ec = throws);

@@ -39,8 +39,7 @@ namespace pika {
             return lock("mutex::lock", ec);
         }
 
-        PIKA_EXPORT bool try_lock(
-            char const* description, error_code& ec = throws);
+        PIKA_EXPORT bool try_lock(char const* description, error_code& ec = throws);
 
         bool try_lock(error_code& ec = throws)
         {
@@ -70,24 +69,22 @@ namespace pika {
         using mutex::try_lock;
         using mutex::unlock;
 
-        PIKA_EXPORT bool try_lock_until(
-            pika::chrono::steady_time_point const& abs_time,
+        PIKA_EXPORT bool try_lock_until(pika::chrono::steady_time_point const& abs_time,
             char const* description, error_code& ec = throws);
 
-        bool try_lock_until(pika::chrono::steady_time_point const& abs_time,
-            error_code& ec = throws)
+        bool try_lock_until(
+            pika::chrono::steady_time_point const& abs_time, error_code& ec = throws)
         {
             return try_lock_until(abs_time, "mutex::try_lock_until", ec);
         }
 
-        bool try_lock_for(pika::chrono::steady_duration const& rel_time,
-            char const* description, error_code& ec = throws)
+        bool try_lock_for(pika::chrono::steady_duration const& rel_time, char const* description,
+            error_code& ec = throws)
         {
             return try_lock_until(rel_time.from_now(), description, ec);
         }
 
-        bool try_lock_for(pika::chrono::steady_duration const& rel_time,
-            error_code& ec = throws)
+        bool try_lock_for(pika::chrono::steady_duration const& rel_time, error_code& ec = throws)
         {
             return try_lock_for(rel_time, "mutex::try_lock_for", ec);
         }

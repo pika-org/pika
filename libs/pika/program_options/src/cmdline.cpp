@@ -35,28 +35,24 @@ namespace pika::program_options {
         switch (kind)
         {
         case empty_adjacent_parameter:
-            msg = "the argument for option '%canonical_option%' should follow "
-                  "immediately after the equal sign";
+            msg = "the argument for option '%canonical_option%' should follow immediately after "
+                  "the equal sign";
             break;
         case missing_parameter:
-            msg = "the required argument for option '%canonical_option%' is "
-                  "missing";
+            msg = "the required argument for option '%canonical_option%' is missing";
             break;
         case unrecognized_line:
-            msg = "the options configuration file contains an invalid line "
-                  "'%invalid_line%'";
+            msg = "the options configuration file contains an invalid line '%invalid_line%'";
             break;
         // none of the following are currently used:
         case long_not_allowed:
             msg = "the unabbreviated option '%canonical_option%' is not valid";
             break;
         case long_adjacent_not_allowed:
-            msg = "the unabbreviated option '%canonical_option%' does not take "
-                  "any arguments";
+            msg = "the unabbreviated option '%canonical_option%' does not take any arguments";
             break;
         case short_adjacent_not_allowed:
-            msg = "the abbreviated option '%canonical_option%' does not take "
-                  "any arguments";
+            msg = "the abbreviated option '%canonical_option%' does not take any arguments";
             break;
         case extra_parameter:
             msg = "option '%canonical_option%' does not take any arguments";
@@ -81,9 +77,8 @@ namespace pika::program_options::detail {
 
     cmdline::cmdline(int argc, const char* const* argv)
     {
-        init(vector<string>(argv + 1,
-            argv + static_cast<std::size_t>(argc) +
-                static_cast<std::size_t>(!argc)));
+        init(vector<string>(
+            argv + 1, argv + static_cast<std::size_t>(argc) + static_cast<std::size_t>(!argc)));
     }
 
     void cmdline::init(const vector<string>& args)
@@ -111,38 +106,27 @@ namespace pika::program_options::detail {
 
     void cmdline::check_style(int style) const
     {
-        bool allow_some_long =
-            (style & allow_long) || (style & allow_long_disguise);
+        bool allow_some_long = (style & allow_long) || (style & allow_long_disguise);
 
         const char* error = nullptr;
-        if (allow_some_long && !(style & long_allow_adjacent) &&
-            !(style & long_allow_next))
-            error =
-                "pika::program_options misconfiguration: "
-                "choose one or other of 'command_line_style::long_allow_next' "
-                "(whitespace separated arguments) or "
-                "'command_line_style::long_allow_adjacent' ('=' separated "
-                "arguments) for "
-                "long options.";
+        if (allow_some_long && !(style & long_allow_adjacent) && !(style & long_allow_next))
+            error = "pika::program_options misconfiguration: choose one or other of "
+                    "'command_line_style::long_allow_next' (whitespace separated arguments) or "
+                    "'command_line_style::long_allow_adjacent' ('=' separated arguments) for long "
+                    "options.";
 
-        if (!error && (style & allow_short) &&
-            !(style & short_allow_adjacent) && !(style & short_allow_next))
-            error =
-                "pika::program_options misconfiguration: "
-                "choose one or other of 'command_line_style::short_allow_next' "
-                "(whitespace separated arguments) or "
-                "'command_line_style::short_allow_adjacent' ('=' separated "
-                "arguments) for "
-                "short options.";
-
-        if (!error && (style & allow_short) &&
-            !(style & allow_dash_for_short) && !(style & allow_slash_for_short))
-            error = "pika::program_options misconfiguration: "
-                    "choose one or other of "
-                    "'command_line_style::allow_slash_for_short' "
-                    "(slashes) or 'command_line_style::allow_dash_for_short' "
-                    "(dashes) for "
+        if (!error && (style & allow_short) && !(style & short_allow_adjacent) &&
+            !(style & short_allow_next))
+            error = "pika::program_options misconfiguration: choose one or other of "
+                    "'command_line_style::short_allow_next' (whitespace separated arguments) or "
+                    "'command_line_style::short_allow_adjacent' ('=' separated arguments) for "
                     "short options.";
+
+        if (!error && (style & allow_short) && !(style & allow_dash_for_short) &&
+            !(style & allow_slash_for_short))
+            error = "pika::program_options misconfiguration: choose one or other of "
+                    "'command_line_style::allow_slash_for_short' (slashes) or "
+                    "'command_line_style::allow_dash_for_short' (dashes) for short options.";
 
         if (error)
             throw invalid_command_line_style(error);
@@ -161,8 +145,7 @@ namespace pika::program_options::detail {
         m_desc = &desc;
     }
 
-    void cmdline::set_positional_options(
-        const positional_options_description& positional)
+    void cmdline::set_positional_options(const positional_options_description& positional)
     {
         m_positional = &positional;
     }
@@ -207,25 +190,23 @@ namespace pika::program_options::detail {
 
         if (m_additional_parser)
             style_parsers.emplace_back(
-                std::bind(&cmdline::handle_additional_parser, this,
-                    std::placeholders::_1));
+                std::bind(&cmdline::handle_additional_parser, this, std::placeholders::_1));
 
         if (m_style & allow_long)
-            style_parsers.emplace_back(std::bind(
-                &cmdline::parse_long_option, this, std::placeholders::_1));
+            style_parsers.emplace_back(
+                std::bind(&cmdline::parse_long_option, this, std::placeholders::_1));
 
         if ((m_style & allow_long_disguise))
             style_parsers.emplace_back(
-                std::bind(&cmdline::parse_disguised_long_option, this,
-                    std::placeholders::_1));
+                std::bind(&cmdline::parse_disguised_long_option, this, std::placeholders::_1));
 
         if ((m_style & allow_short) && (m_style & allow_dash_for_short))
-            style_parsers.emplace_back(std::bind(
-                &cmdline::parse_short_option, this, std::placeholders::_1));
+            style_parsers.emplace_back(
+                std::bind(&cmdline::parse_short_option, this, std::placeholders::_1));
 
         if ((m_style & allow_short) && (m_style & allow_slash_for_short))
-            style_parsers.emplace_back(std::bind(
-                &cmdline::parse_dos_option, this, std::placeholders::_1));
+            style_parsers.emplace_back(
+                std::bind(&cmdline::parse_dos_option, this, std::placeholders::_1));
 
         style_parsers.emplace_back(
             std::bind(&cmdline::parse_terminator, this, std::placeholders::_1));
@@ -289,16 +270,15 @@ namespace pika::program_options::detail {
             const option_description* xd = nullptr;
             try
             {
-                xd = m_desc->find_nothrow(opt.string_key,
-                    is_style_active(allow_guessing),
+                xd = m_desc->find_nothrow(opt.string_key, is_style_active(allow_guessing),
                     is_style_active(long_case_insensitive),
                     is_style_active(short_case_insensitive));
             }
             catch (error_with_option_name& e)
             {
                 // add context and rethrow
-                e.add_context(opt.string_key, opt.original_tokens[0],
-                    get_canonical_option_prefix());
+                e.add_context(
+                    opt.string_key, opt.original_tokens[0], get_canonical_option_prefix());
                 throw;
             }
 
@@ -370,8 +350,7 @@ namespace pika::program_options::detail {
         // set case sensitive flag
         for (auto& i : result)
         {
-            if (i.string_key.size() > 2 ||
-                (i.string_key.size() > 1 && i.string_key[0] != '-'))
+            if (i.string_key.size() > 2 || (i.string_key.size() > 1 && i.string_key[0] != '-'))
             {
                 // it is a long option
                 i.case_insensitive = is_style_active(long_case_insensitive);
@@ -386,8 +365,8 @@ namespace pika::program_options::detail {
         return result;
     }
 
-    void cmdline::finish_option(option& opt, vector<string>& other_tokens,
-        const vector<style_parser>& style_parsers)
+    void cmdline::finish_option(
+        option& opt, vector<string>& other_tokens, const vector<style_parser>& style_parsers)
     {
         if (opt.string_key.empty())
             return;
@@ -403,8 +382,7 @@ namespace pika::program_options::detail {
         {
             // First check that the option is valid, and get its description.
             const option_description* xd = m_desc->find_nothrow(opt.string_key,
-                is_style_active(allow_guessing),
-                is_style_active(long_case_insensitive),
+                is_style_active(allow_guessing), is_style_active(long_case_insensitive),
                 is_style_active(short_case_insensitive));
 
             if (!xd)
@@ -438,8 +416,7 @@ namespace pika::program_options::detail {
             {
                 if (!opt.value.empty() && max_tokens == 0)
                 {
-                    throw invalid_command_line_syntax(
-                        invalid_command_line_syntax::extra_parameter);
+                    throw invalid_command_line_syntax(invalid_command_line_syntax::extra_parameter);
                 }
 
                 // Grab min_tokens values from other_tokens, but only if those tokens
@@ -461,8 +438,7 @@ namespace pika::program_options::detail {
                     // additionally we check if an option_description exists
                     vector<option> followed_option;
                     vector<std::string> next_token(1, other_tokens[0]);
-                    for (std::size_t i = 0;
-                         followed_option.empty() && i < style_parsers.size();
+                    for (std::size_t i = 0; followed_option.empty() && i < style_parsers.size();
                          ++i)
                     {
                         followed_option = style_parsers[i](next_token);
@@ -470,9 +446,8 @@ namespace pika::program_options::detail {
                     if (!followed_option.empty())
                     {
                         original_token_for_exceptions = other_tokens[0];
-                        const option_description* od = m_desc->find_nothrow(
-                            other_tokens[0], is_style_active(allow_guessing),
-                            is_style_active(long_case_insensitive),
+                        const option_description* od = m_desc->find_nothrow(other_tokens[0],
+                            is_style_active(allow_guessing), is_style_active(long_case_insensitive),
                             is_style_active(short_case_insensitive));
                         if (od)
                             throw invalid_command_line_syntax(
@@ -485,8 +460,7 @@ namespace pika::program_options::detail {
             }
             else
             {
-                throw invalid_command_line_syntax(
-                    invalid_command_line_syntax::missing_parameter);
+                throw invalid_command_line_syntax(invalid_command_line_syntax::missing_parameter);
             }
         }
         // use only original token for unknown_option / ambiguous_option since
@@ -495,8 +469,8 @@ namespace pika::program_options::detail {
         catch (error_with_option_name& e)
         {
             // add context and rethrow
-            e.add_context(opt.string_key, original_token_for_exceptions,
-                get_canonical_option_prefix());
+            e.add_context(
+                opt.string_key, original_token_for_exceptions, get_canonical_option_prefix());
             throw;
         }
     }
@@ -516,8 +490,8 @@ namespace pika::program_options::detail {
                 adjacent = tok.substr(p + 1);
                 if (adjacent.empty())
                     throw invalid_command_line_syntax(
-                        invalid_command_line_syntax::empty_adjacent_parameter,
-                        name, name, get_canonical_option_prefix());
+                        invalid_command_line_syntax::empty_adjacent_parameter, name, name,
+                        get_canonical_option_prefix());
             }
             else
             {
@@ -555,8 +529,8 @@ namespace pika::program_options::detail {
                 const option_description* d;
                 try
                 {
-                    d = m_desc->find_nothrow(name, false, false,
-                        is_style_active(short_case_insensitive));
+                    d = m_desc->find_nothrow(
+                        name, false, false, is_style_active(short_case_insensitive));
                 }
                 catch (error_with_option_name& e)
                 {
@@ -566,8 +540,8 @@ namespace pika::program_options::detail {
                 }
 
                 // FIXME: check for 'allow_sticky'.
-                if (d && (m_style & allow_sticky) &&
-                    d->semantic()->max_tokens() == 0 && !adjacent.empty())
+                if (d && (m_style & allow_sticky) && d->semantic()->max_tokens() == 0 &&
+                    !adjacent.empty())
                 {
                     // 'adjacent' is in fact further option.
                     option opt;
@@ -630,8 +604,7 @@ namespace pika::program_options::detail {
             try
             {
                 if (m_desc->find_nothrow(tok.substr(1, tok.find('=') - 1),
-                        is_style_active(allow_guessing),
-                        is_style_active(long_case_insensitive),
+                        is_style_active(allow_guessing), is_style_active(long_case_insensitive),
                         is_style_active(short_case_insensitive)))
                 {
                     args[0].insert(0, "-");

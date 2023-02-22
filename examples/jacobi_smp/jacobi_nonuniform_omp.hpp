@@ -19,8 +19,8 @@
 #include "jacobi_nonuniform.hpp"
 
 namespace jacobi_smp {
-    void jacobi(crs_matrix<double> const& A, std::vector<double> const& b,
-        std::size_t iterations, std::size_t block_size)
+    void jacobi(crs_matrix<double> const& A, std::vector<double> const& b, std::size_t iterations,
+        std::size_t block_size)
     {
         using vector_type = std::vector<double>;
 
@@ -40,8 +40,7 @@ namespace jacobi_smp {
         }
 
         double time_elapsed = t.elapsed<seconds>();
-        std::cout << dst->size() << " "
-                  << ((double(dst->size() * iterations) / 1e6) / time_elapsed)
+        std::cout << dst->size() << " " << ((double(dst->size() * iterations) / 1e6) / time_elapsed)
                   << " MLUPS/s\n"
                   << std::flush;
     }

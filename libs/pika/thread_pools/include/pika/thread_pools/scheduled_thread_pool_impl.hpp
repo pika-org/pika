@@ -32,7 +32,7 @@
 #include <algorithm>
 #include <atomic>
 #ifdef PIKA_HAVE_MAX_CPU_COUNT
-#include <bitset>
+# include <bitset>
 #endif
 #include <cstddef>
 #include <cstdint>
@@ -70,22 +70,22 @@ namespace pika::threads::detail {
     struct init_tss_helper
     {
         // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-        init_tss_helper(scheduled_thread_pool<Scheduler>& pool,
-            std::size_t local_thread_num, std::size_t global_thread_num)
+        init_tss_helper(scheduled_thread_pool<Scheduler>& pool, std::size_t local_thread_num,
+            std::size_t global_thread_num)
           // NOLINTEND(bugprone-easily-swappable-parameters)
           : pool_(pool)
           , local_thread_num_(local_thread_num)
           , global_thread_num_(global_thread_num)
         {
-            pool.notifier_.on_start_thread(local_thread_num_,
-                global_thread_num_, pool_.get_pool_id().name().c_str(), "");
+            pool.notifier_.on_start_thread(
+                local_thread_num_, global_thread_num_, pool_.get_pool_id().name().c_str(), "");
             pool.sched_->Scheduler::on_start_thread(local_thread_num_);
         }
         ~init_tss_helper()
         {
             pool_.sched_->Scheduler::on_stop_thread(local_thread_num_);
-            pool_.notifier_.on_stop_thread(local_thread_num_,
-                global_thread_num_, pool_.get_pool_id().name().c_str(), "");
+            pool_.notifier_.on_stop_thread(
+                local_thread_num_, global_thread_num_, pool_.get_pool_id().name().c_str(), "");
         }
 
         scheduled_thread_pool<Scheduler>& pool_;
@@ -96,8 +96,7 @@ namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
     template <typename Scheduler>
     scheduled_thread_pool<Scheduler>::scheduled_thread_pool(
-        std::unique_ptr<Scheduler> sched,
-        thread_pool_init_parameters const& init)
+        std::unique_ptr<Scheduler> sched, thread_pool_init_parameters const& init)
       : thread_pool_base(init)
       , sched_(PIKA_MOVE(sched))
       , thread_count_(0)
@@ -131,13 +130,11 @@ namespace pika::threads::detail {
     void scheduled_thread_pool<Scheduler>::print_pool(std::ostream& os)
     {
         os << "[pool \"" << id_.name() << "\", #" << id_.index()    //-V128
-           << "] with scheduler " << sched_->Scheduler::get_scheduler_name()
-           << "\n"
+           << "] with scheduler " << sched_->Scheduler::get_scheduler_name() << "\n"
            << "is running on PUs : \n";
         os << pika::threads::detail::to_string(get_used_processing_units())
 #ifdef PIKA_HAVE_MAX_CPU_COUNT
-           << " "
-           << std::bitset<PIKA_HAVE_MAX_CPU_COUNT>(get_used_processing_units())
+           << " " << std::bitset<PIKA_HAVE_MAX_CPU_COUNT>(get_used_processing_units())
 #endif
            << '\n';
         os << "on numa domains : \n" << get_numa_domain_bitmap() << '\n';
@@ -173,8 +170,7 @@ namespace pika::threads::detail {
     }
 
     template <typename Scheduler>
-    pika::runtime_state
-    scheduled_thread_pool<Scheduler>::get_state(std::size_t num_thread) const
+    pika::runtime_state scheduled_thread_pool<Scheduler>::get_state(std::size_t num_thread) const
     {
         PIKA_ASSERT(num_thread != std::size_t(-1));
         return sched_->Scheduler::get_state(num_thread).load();
@@ -186,16 +182,11 @@ namespace pika::threads::detail {
         // If we are currently on an pika thread, which runs on the current pool,
         // we ignore it for the purposes of checking if the pool is busy (i.e.
         // this returns true only if there is *other* work left on this pool).
-        std::int64_t pika_thread_offset = (threads::detail::get_self_ptr() &&
-                                              this_thread::get_pool() == this) ?
-            1 :
-            0;
-        bool have_pika_threads =
-            get_thread_count_unknown(std::size_t(-1), false) >
-            sched_->Scheduler::get_background_thread_count() +
-                pika_thread_offset;
-        bool have_polling_work =
-            sched_->Scheduler::get_polling_work_count() > 0;
+        std::int64_t pika_thread_offset =
+            (threads::detail::get_self_ptr() && this_thread::get_pool() == this) ? 1 : 0;
+        bool have_pika_threads = get_thread_count_unknown(std::size_t(-1), false) >
+            sched_->Scheduler::get_background_thread_count() + pika_thread_offset;
+        bool have_polling_work = sched_->Scheduler::get_polling_work_count() > 0;
 
         return have_pika_threads || have_polling_work;
     }
@@ -264,8 +255,7 @@ namespace pika::threads::detail {
     }
 
     template <typename Scheduler>
-    void scheduled_thread_pool<Scheduler>::stop(
-        std::unique_lock<std::mutex>& l, bool blocking)
+    void scheduled_thread_pool<Scheduler>::stop(std::unique_lock<std::mutex>& l, bool blocking)
     {
         PIKA_ASSERT(l.owns_lock());
         return stop_locked(l, blocking);
@@ -277,19 +267,16 @@ namespace pika::threads::detail {
     {
         PIKA_ASSERT(l.owns_lock());
 
-        LTM_(info).format("run: {} number of processing units available: {}",
-            id_.name(), threads::detail::hardware_concurrency());
-        LTM_(info).format(
-            "run: {} creating {} OS thread(s)", id_.name(), pool_threads);
+        LTM_(info).format("run: {} number of processing units available: {}", id_.name(),
+            threads::detail::hardware_concurrency());
+        LTM_(info).format("run: {} creating {} OS thread(s)", id_.name(), pool_threads);
 
         if (0 == pool_threads)
         {
-            PIKA_THROW_EXCEPTION(
-                pika::error::bad_parameter, "run", "number of threads is zero");
+            PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "run", "number of threads is zero");
         }
 
-        if (!threads_.empty() ||
-            sched_->Scheduler::has_reached_state(runtime_state::running))
+        if (!threads_.empty() || sched_->Scheduler::has_reached_state(runtime_state::running))
         {
             return true;    // do nothing if already running
         }
@@ -297,22 +284,19 @@ namespace pika::threads::detail {
         init_perf_counter_data(pool_threads);
         this->init_pool_time_scale();
 
-        LTM_(info).format(
-            "run: {} timestamp_scale: {}", id_.name(), timestamp_scale_);
+        LTM_(info).format("run: {} timestamp_scale: {}", id_.name(), timestamp_scale_);
 
         // run threads and wait for initialization to complete
         std::size_t thread_num = 0;
         std::shared_ptr<pika::concurrency::detail::barrier> startup =
-            std::make_shared<pika::concurrency::detail::barrier>(
-                pool_threads + 1);
+            std::make_shared<pika::concurrency::detail::barrier>(pool_threads + 1);
         try
         {
             topology const& topo = create_topology();
 
             for (/**/; thread_num != pool_threads; ++thread_num)
             {
-                std::size_t global_thread_num =
-                    this->thread_offset_ + thread_num;
+                std::size_t global_thread_num = this->thread_offset_ + thread_num;
                 threads::detail::mask_cref_type mask =
                     affinity_data_.get_pu_mask(topo, global_thread_num);
 
@@ -322,15 +306,12 @@ namespace pika::threads::detail {
                 // get_pu_mask expects index according to ordering of masks
                 // in affinity_data::affinity_masks_
                 // which is in order of occupied PU
-                LTM_(info).format(
-                    "run: {} create OS thread {}: will run on processing units "
-                    "within this mask: {}",
-                    id_.name(), global_thread_num,
-                    pika::threads::detail::to_string(mask));
+                LTM_(info).format("run: {} create OS thread {}: will run on processing units "
+                                  "within this mask: {}",
+                    id_.name(), global_thread_num, pika::threads::detail::to_string(mask));
 
                 // create a new thread
-                add_processing_unit_internal(
-                    thread_num, global_thread_num, startup);
+                add_processing_unit_internal(thread_num, global_thread_num, startup);
             }
 
             // wait for all threads to have started up
@@ -340,8 +321,7 @@ namespace pika::threads::detail {
         }
         catch (std::exception const& e)
         {
-            LTM_(always).format(
-                "run: {} failed with: {}", id_.name(), e.what());
+            LTM_(always).format("run: {} failed with: {}", id_.name(), e.what());
 
             // trigger the barrier
             pool_threads -= (thread_num + 1);
@@ -359,19 +339,16 @@ namespace pika::threads::detail {
     }
 
     template <typename Scheduler>
-    void scheduled_thread_pool<Scheduler>::resume_internal(
-        bool blocking, error_code& ec)
+    void scheduled_thread_pool<Scheduler>::resume_internal(bool blocking, error_code& ec)
     {
-        for (std::size_t virt_core = 0; virt_core != threads_.size();
-             ++virt_core)
+        for (std::size_t virt_core = 0; virt_core != threads_.size(); ++virt_core)
         {
             this->sched_->Scheduler::resume(virt_core);
         }
 
         if (blocking)
         {
-            for (std::size_t virt_core = 0; virt_core != threads_.size();
-                 ++virt_core)
+            for (std::size_t virt_core = 0; virt_core != threads_.size(); ++virt_core)
             {
                 if (threads_[virt_core].joinable())
                 {
@@ -413,8 +390,7 @@ namespace pika::threads::detail {
     template <typename Scheduler>
     void scheduled_thread_pool<Scheduler>::suspend_direct(error_code& ec)
     {
-        if (threads::detail::get_self_ptr() &&
-            pika::this_thread::get_pool() == this)
+        if (threads::detail::get_self_ptr() && pika::this_thread::get_pool() == this)
         {
             PIKA_THROWS_IF(ec, pika::error::bad_parameter,
                 "scheduled_thread_pool<Scheduler>::suspend_direct",
@@ -426,15 +402,14 @@ namespace pika::threads::detail {
     }
 
     template <typename Scheduler>
-    void pika::threads::detail::scheduled_thread_pool<Scheduler>::thread_func(
-        std::size_t thread_num, std::size_t global_thread_num,
-        std::shared_ptr<pika::concurrency::detail::barrier> startup)
+    void
+    pika::threads::detail::scheduled_thread_pool<Scheduler>::thread_func(std::size_t thread_num,
+        std::size_t global_thread_num, std::shared_ptr<pika::concurrency::detail::barrier> startup)
     {
         topology const& topo = create_topology();
 
         // Set the affinity for the current thread.
-        threads::detail::mask_cref_type mask =
-            affinity_data_.get_pu_mask(topo, global_thread_num);
+        threads::detail::mask_cref_type mask = affinity_data_.get_pu_mask(topo, global_thread_num);
 
         if (LPIKA_ENABLED(debug))
             topo.write_to_log();
@@ -445,15 +420,15 @@ namespace pika::threads::detail {
             topo.set_thread_affinity_mask(mask, ec);
             if (ec)
             {
-                LTM_(warning).format("thread_func: {} setting thread affinity "
-                                     "on OS thread {} failed with: {}",
+                LTM_(warning).format(
+                    "thread_func: {} setting thread affinity on OS thread {} failed with: {}",
                     id_.name(), global_thread_num, ec.get_message());
             }
         }
         else
         {
-            LTM_(debug).format("thread_func: {} setting thread affinity on OS "
-                               "thread {} was explicitly disabled.",
+            LTM_(debug).format(
+                "thread_func: {} setting thread affinity on OS thread {} was explicitly disabled.",
                 id_.name(), global_thread_num);
         }
 
@@ -461,27 +436,24 @@ namespace pika::threads::detail {
         // needs to
         // be done in order to give the parcel pool threads higher
         // priority
-        if (get_scheduler()->has_scheduler_mode(
-                scheduler_mode::reduce_thread_priority))
+        if (get_scheduler()->has_scheduler_mode(scheduler_mode::reduce_thread_priority))
         {
             topo.reduce_thread_priority(ec);
             if (ec)
             {
-                LTM_(warning).format("thread_func: {} reducing thread priority "
-                                     "on OS thread {} failed with: {}",
+                LTM_(warning).format(
+                    "thread_func: {} reducing thread priority on OS thread {} failed with: {}",
                     id_.name(), global_thread_num, ec.get_message());
             }
         }
 
         // manage the number of this thread in its TSS
-        init_tss_helper<Scheduler> tss_helper(
-            *this, thread_num, global_thread_num);
+        init_tss_helper<Scheduler> tss_helper(*this, thread_num, global_thread_num);
 
         ++thread_count_;
 
         // set state to running
-        std::atomic<pika::runtime_state>& state =
-            sched_->Scheduler::get_state(thread_num);
+        std::atomic<pika::runtime_state>& state = sched_->Scheduler::get_state(thread_num);
         pika::runtime_state oldstate = state.exchange(runtime_state::running);
         PIKA_ASSERT(oldstate <= runtime_state::running);
         PIKA_UNUSED(oldstate);
@@ -489,8 +461,7 @@ namespace pika::threads::detail {
         // wait for all threads to start up before before starting pika work
         startup->wait();
 
-        LTM_(info).format(
-            "thread_func: {} starting OS thread: {}", id_.name(), thread_num);
+        LTM_(info).format("thread_func: {} starting OS thread: {}", id_.name(), thread_num);
 
         try
         {
@@ -499,72 +470,43 @@ namespace pika::threads::detail {
                 manage_active_thread_count count(thread_count_);
 
                 // run the work queue
-                pika::threads::coroutines::detail::prepare_main_thread
-                    main_thread;
+                pika::threads::coroutines::detail::prepare_main_thread main_thread;
                 PIKA_UNUSED(main_thread);
 
                 // run main Scheduler loop until terminated
-                scheduling_counter_data& counter_data =
-                    counter_data_[thread_num];
+                scheduling_counter_data& counter_data = counter_data_[thread_num];
 
                 scheduling_counters counters(counter_data.executed_threads_,
-                    counter_data.executed_thread_phases_,
-                    counter_data.tfunc_times_, counter_data.exec_times_,
-                    counter_data.idle_loop_counts_,
-                    counter_data.busy_loop_counts_,
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
-    defined(PIKA_HAVE_THREAD_IDLE_RATES)
-                    counter_data.tasks_active_,
-                    counter_data.background_duration_,
-                    counter_data.background_send_duration_,
-                    counter_data.background_receive_duration_);
-#else
-                    counter_data.tasks_active_);
-#endif    // PIKA_HAVE_BACKGROUND_THREAD_COUNTERS
+                    counter_data.executed_thread_phases_, counter_data.tfunc_times_,
+                    counter_data.exec_times_, counter_data.idle_loop_counts_,
+                    counter_data.busy_loop_counts_, counter_data.tasks_active_);
 
                 scheduling_callbacks callbacks(
                     util::detail::deferred_call(    //-V107
-                        &scheduler_base::idle_callback, sched_.get(),
-                        thread_num),
-                    nullptr, nullptr, max_background_threads_,
-                    max_idle_loop_count_, max_busy_loop_count_);
+                        &scheduler_base::idle_callback, sched_.get(), thread_num),
+                    nullptr, nullptr, max_background_threads_, max_idle_loop_count_,
+                    max_busy_loop_count_);
 
-                if (get_scheduler()->has_scheduler_mode(
-                        scheduler_mode::do_background_work) &&
+                if (get_scheduler()->has_scheduler_mode(scheduler_mode::do_background_work) &&
                     network_background_callback_)
                 {
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
-    defined(PIKA_HAVE_THREAD_IDLE_RATES)
-                    callbacks.background_ =
-                        util::detail::deferred_call(    //-V107
-                            network_background_callback_, global_thread_num,
-                            std::ref(counter_data.background_send_duration_),
-                            std::ref(
-                                counter_data.background_receive_duration_));
-#else
-                    callbacks.background_ =
-                        util::detail::deferred_call(    //-V107
-                            network_background_callback_, global_thread_num);
-#endif
+                    callbacks.background_ = util::detail::deferred_call(    //-V107
+                        network_background_callback_, global_thread_num);
                 }
 
                 scheduling_loop(thread_num, *sched_, counters, callbacks);
 
                 // the OS thread is allowed to exit only if no more pika
                 // threads exist or if some other thread has terminated
-                PIKA_ASSERT(
-                    (sched_->Scheduler::get_thread_count(
-                         thread_schedule_state::suspended,
-                         execution::thread_priority::default_,
-                         thread_num) == 0 &&
-                        sched_->Scheduler::get_queue_length(thread_num) == 0) ||
-                    sched_->Scheduler::get_state(thread_num) >
-                        runtime_state::stopping);
+                PIKA_ASSERT((sched_->Scheduler::get_thread_count(thread_schedule_state::suspended,
+                                 execution::thread_priority::default_, thread_num) == 0 &&
+                                sched_->Scheduler::get_queue_length(thread_num) == 0) ||
+                    sched_->Scheduler::get_state(thread_num) > runtime_state::stopping);
             }
             catch (pika::exception const& e)
             {
-                LFATAL_.format("thread_func: {} thread_num:{} : caught "
-                               "pika::exception: {}, aborted thread execution",
+                LFATAL_.format("thread_func: {} thread_num:{} : caught pika::exception: {}, "
+                               "aborted thread execution",
                     id_.name(), global_thread_num, e.what());
 
                 report_error(global_thread_num, std::current_exception());
@@ -572,9 +514,8 @@ namespace pika::threads::detail {
             }
             catch (std::system_error const& e)
             {
-                LFATAL_.format(
-                    "thread_func: {} thread_num:{} : caught "
-                    "std::system_error: {}, aborted thread execution",
+                LFATAL_.format("thread_func: {} thread_num:{} : caught std::system_error: {}, "
+                               "aborted thread execution",
                     id_.name(), global_thread_num, e.what());
 
                 report_error(global_thread_num, std::current_exception());
@@ -583,24 +524,22 @@ namespace pika::threads::detail {
             catch (std::exception const& e)
             {
                 // Repackage exceptions to avoid slicing.
-                pika::throw_with_info(pika::exception(
-                    pika::error::unhandled_exception, e.what()));
+                pika::throw_with_info(pika::exception(pika::error::unhandled_exception, e.what()));
             }
         }
         catch (...)
         {
-            LFATAL_.format("thread_func: {} thread_num:{} : caught "
-                           "unexpected exception, aborted thread execution",
+            LFATAL_.format("thread_func: {} thread_num:{} : caught unexpected exception, aborted "
+                           "thread execution",
                 id_.name(), global_thread_num);
 
             report_error(global_thread_num, std::current_exception());
             return;
         }
 
-        LTM_(info).format("thread_func: {} thread_num: {}, ending OS thread, "
-                          "executed {} pika threads",
-            id_.name(), global_thread_num,
-            counter_data_[global_thread_num].executed_threads_);
+        LTM_(info).format(
+            "thread_func: {} thread_num: {}, ending OS thread, executed {} pika threads",
+            id_.name(), global_thread_num, counter_data_[global_thread_num].executed_threads_);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -609,12 +548,10 @@ namespace pika::threads::detail {
         thread_init_data& data, thread_id_ref_type& id, error_code& ec)
     {
         // verify state
-        if (thread_count_ == 0 &&
-            !sched_->Scheduler::is_state(runtime_state::running))
+        if (thread_count_ == 0 && !sched_->Scheduler::is_state(runtime_state::running))
         {
             // thread-manager is not currently running
-            PIKA_THROWS_IF(ec, pika::error::invalid_status,
-                "thread_pool<Scheduler>::create_thread",
+            PIKA_THROWS_IF(ec, pika::error::invalid_status, "thread_pool<Scheduler>::create_thread",
                 "invalid state: thread pool is not running");
             return;
         }
@@ -626,22 +563,19 @@ namespace pika::threads::detail {
     }
 
     template <typename Scheduler>
-    thread_id_ref_type scheduled_thread_pool<Scheduler>::create_work(
-        thread_init_data& data, error_code& ec)
+    thread_id_ref_type
+    scheduled_thread_pool<Scheduler>::create_work(thread_init_data& data, error_code& ec)
     {
         // verify state
-        if (thread_count_ == 0 &&
-            !sched_->Scheduler::is_state(runtime_state::running))
+        if (thread_count_ == 0 && !sched_->Scheduler::is_state(runtime_state::running))
         {
             // thread-manager is not currently running
-            PIKA_THROWS_IF(ec, pika::error::invalid_status,
-                "thread_pool<Scheduler>::create_work",
+            PIKA_THROWS_IF(ec, pika::error::invalid_status, "thread_pool<Scheduler>::create_work",
                 "invalid state: thread pool is not running");
             return invalid_thread_id;
         }
 
-        thread_id_ref_type id =
-            threads::detail::create_work(sched_.get(), data, ec);    //-V601
+        thread_id_ref_type id = threads::detail::create_work(sched_.get(), data, ec);    //-V601
 
         // update statistics
         ++tasks_scheduled_;
@@ -651,24 +585,21 @@ namespace pika::threads::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Scheduler>
-    thread_state
-    scheduled_thread_pool<Scheduler>::set_state(thread_id_type const& id,
+    thread_state scheduled_thread_pool<Scheduler>::set_state(thread_id_type const& id,
         thread_schedule_state new_state, thread_restart_state new_state_ex,
         execution::thread_priority priority, error_code& ec)
     {
         return set_thread_state(id, new_state,    //-V107
             new_state_ex, priority,
-            execution::thread_schedule_hint(
-                static_cast<std::int16_t>(get_local_thread_num_tss())),
+            execution::thread_schedule_hint(static_cast<std::int16_t>(get_local_thread_num_tss())),
             true, ec);
     }
 
     ///////////////////////////////////////////////////////////////////////////
     // performance counters
-    template <typename InIter, typename OutIter, typename ProjSrc,
-        typename ProjDest>
-    OutIter copy_projected(InIter first, InIter last, OutIter dest,
-        ProjSrc&& srcproj, ProjDest&& destproj)
+    template <typename InIter, typename OutIter, typename ProjSrc, typename ProjDest>
+    OutIter
+    copy_projected(InIter first, InIter last, OutIter dest, ProjSrc&& srcproj, ProjDest&& destproj)
     {
         while (first != last)
         {
@@ -689,8 +620,7 @@ namespace pika::threads::detail {
 
 #if defined(PIKA_HAVE_THREAD_CUMULATIVE_COUNTS)
     template <typename Scheduler>
-    std::int64_t scheduled_thread_pool<Scheduler>::get_executed_threads(
-        std::size_t num, bool reset)
+    std::int64_t scheduled_thread_pool<Scheduler>::get_executed_threads(std::size_t num, bool reset)
     {
         std::int64_t executed_threads = 0;
         std::int64_t reset_executed_threads = 0;
@@ -705,17 +635,15 @@ namespace pika::threads::detail {
         }
         else
         {
-            executed_threads = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::executed_threads_);
-            reset_executed_threads = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::reset_executed_threads_);
+            executed_threads = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::executed_threads_);
+            reset_executed_threads =
+                accumulate_projected(counter_data_.begin(), counter_data_.end(), std::int64_t(0),
+                    &scheduling_counter_data::reset_executed_threads_);
 
             if (reset)
             {
-                copy_projected(counter_data_.begin(), counter_data_.end(),
-                    counter_data_.begin(),
+                copy_projected(counter_data_.begin(), counter_data_.end(), counter_data_.begin(),
                     &scheduling_counter_data::executed_threads_,
                     &scheduling_counter_data::reset_executed_threads_);
             }
@@ -730,14 +658,13 @@ namespace pika::threads::detail {
     template <typename Scheduler>
     std::int64_t scheduled_thread_pool<Scheduler>::get_executed_threads() const
     {
-        std::int64_t executed_threads =
-            accumulate_projected(counter_data_.begin(), counter_data_.end(),
-                std::int64_t(0), &scheduling_counter_data::executed_threads_);
+        std::int64_t executed_threads = accumulate_projected(counter_data_.begin(),
+            counter_data_.end(), std::int64_t(0), &scheduling_counter_data::executed_threads_);
 
 #if defined(PIKA_HAVE_THREAD_CUMULATIVE_COUNTS)
-        std::int64_t reset_executed_threads = accumulate_projected(
-            counter_data_.begin(), counter_data_.end(), std::int64_t(0),
-            &scheduling_counter_data::reset_executed_threads_);
+        std::int64_t reset_executed_threads =
+            accumulate_projected(counter_data_.begin(), counter_data_.end(), std::int64_t(0),
+                &scheduling_counter_data::reset_executed_threads_);
 
         PIKA_ASSERT(executed_threads >= reset_executed_threads);
         return executed_threads - reset_executed_threads;
@@ -748,8 +675,8 @@ namespace pika::threads::detail {
 
 #if defined(PIKA_HAVE_THREAD_CUMULATIVE_COUNTS)
     template <typename Scheduler>
-    std::int64_t scheduled_thread_pool<Scheduler>::get_executed_thread_phases(
-        std::size_t num, bool reset)
+    std::int64_t
+    scheduled_thread_pool<Scheduler>::get_executed_thread_phases(std::size_t num, bool reset)
     {
         std::int64_t executed_phases = 0;
         std::int64_t reset_executed_phases = 0;
@@ -757,26 +684,21 @@ namespace pika::threads::detail {
         if (num != std::size_t(-1))
         {
             executed_phases = counter_data_[num].executed_thread_phases_;
-            reset_executed_phases =
-                counter_data_[num].reset_executed_thread_phases_;
+            reset_executed_phases = counter_data_[num].reset_executed_thread_phases_;
 
             if (reset)
-                counter_data_[num].reset_executed_thread_phases_ =
-                    executed_phases;
+                counter_data_[num].reset_executed_thread_phases_ = executed_phases;
         }
         else
         {
-            executed_phases = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::executed_thread_phases_);
-            reset_executed_phases = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::reset_executed_thread_phases_);
+            executed_phases = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::executed_thread_phases_);
+            reset_executed_phases = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::reset_executed_thread_phases_);
 
             if (reset)
             {
-                copy_projected(counter_data_.begin(), counter_data_.end(),
-                    counter_data_.begin(),
+                copy_projected(counter_data_.begin(), counter_data_.end(), counter_data_.begin(),
                     &scheduling_counter_data::executed_thread_phases_,
                     &scheduling_counter_data::reset_executed_thread_phases_);
             }
@@ -787,10 +709,10 @@ namespace pika::threads::detail {
         return executed_phases - reset_executed_phases;
     }
 
-#if defined(PIKA_HAVE_THREAD_IDLE_RATES)
+# if defined(PIKA_HAVE_THREAD_IDLE_RATES)
     template <typename Scheduler>
-    std::int64_t scheduled_thread_pool<Scheduler>::get_thread_phase_duration(
-        std::size_t num, bool reset)
+    std::int64_t
+    scheduled_thread_pool<Scheduler>::get_thread_phase_duration(std::size_t num, bool reset)
     {
         std::int64_t exec_total = 0;
         std::int64_t num_phases = 0;
@@ -802,42 +724,33 @@ namespace pika::threads::detail {
             exec_total = counter_data_[num].exec_times_;
             num_phases = counter_data_[num].executed_thread_phases_;
 
-            reset_exec_total =
-                counter_data_[num].reset_thread_phase_duration_times_;
+            reset_exec_total = counter_data_[num].reset_thread_phase_duration_times_;
             reset_num_phases = counter_data_[num].reset_thread_phase_duration_;
 
             if (reset)
             {
                 counter_data_[num].reset_thread_phase_duration_ = num_phases;
-                counter_data_[num].reset_thread_phase_duration_times_ =
-                    exec_total;
+                counter_data_[num].reset_thread_phase_duration_times_ = exec_total;
             }
         }
         else
         {
-            exec_total =
-                accumulate_projected(counter_data_.begin(), counter_data_.end(),
-                    std::int64_t(0), &scheduling_counter_data::exec_times_);
-            num_phases = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::executed_thread_phases_);
+            exec_total = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::exec_times_);
+            num_phases = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::executed_thread_phases_);
 
-            reset_exec_total = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::reset_thread_phase_duration_times_);
-            reset_num_phases = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::reset_thread_phase_duration_);
+            reset_exec_total = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::reset_thread_phase_duration_times_);
+            reset_num_phases = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::reset_thread_phase_duration_);
 
             if (reset)
             {
-                copy_projected(counter_data_.begin(), counter_data_.end(),
-                    counter_data_.begin(),
+                copy_projected(counter_data_.begin(), counter_data_.end(), counter_data_.begin(),
                     &scheduling_counter_data::exec_times_,
-                    &scheduling_counter_data::
-                        reset_thread_phase_duration_times_);
-                copy_projected(counter_data_.begin(), counter_data_.end(),
-                    counter_data_.begin(),
+                    &scheduling_counter_data::reset_thread_phase_duration_times_);
+                copy_projected(counter_data_.begin(), counter_data_.end(), counter_data_.begin(),
                     &scheduling_counter_data::executed_thread_phases_,
                     &scheduling_counter_data::reset_thread_phase_duration_);
             }
@@ -849,13 +762,11 @@ namespace pika::threads::detail {
         exec_total -= reset_exec_total;
         num_phases -= reset_num_phases;
 
-        return std::int64_t(
-            (double(exec_total) * timestamp_scale_) / double(num_phases));
+        return std::int64_t((double(exec_total) * timestamp_scale_) / double(num_phases));
     }
 
     template <typename Scheduler>
-    std::int64_t scheduled_thread_pool<Scheduler>::get_thread_duration(
-        std::size_t num, bool reset)
+    std::int64_t scheduled_thread_pool<Scheduler>::get_thread_duration(std::size_t num, bool reset)
     {
         std::int64_t exec_total = 0;
         std::int64_t num_threads = 0;
@@ -878,28 +789,22 @@ namespace pika::threads::detail {
         }
         else
         {
-            exec_total =
-                accumulate_projected(counter_data_.begin(), counter_data_.end(),
-                    std::int64_t(0), &scheduling_counter_data::exec_times_);
-            num_threads = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::executed_threads_);
+            exec_total = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::exec_times_);
+            num_threads = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::executed_threads_);
 
-            reset_exec_total = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::reset_thread_duration_times_);
-            reset_num_threads = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::reset_thread_duration_);
+            reset_exec_total = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::reset_thread_duration_times_);
+            reset_num_threads = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::reset_thread_duration_);
 
             if (reset)
             {
-                copy_projected(counter_data_.begin(), counter_data_.end(),
-                    counter_data_.begin(),
+                copy_projected(counter_data_.begin(), counter_data_.end(), counter_data_.begin(),
                     &scheduling_counter_data::exec_times_,
                     &scheduling_counter_data::reset_thread_duration_times_);
-                copy_projected(counter_data_.begin(), counter_data_.end(),
-                    counter_data_.begin(),
+                copy_projected(counter_data_.begin(), counter_data_.end(), counter_data_.begin(),
                     &scheduling_counter_data::executed_threads_,
                     &scheduling_counter_data::reset_thread_duration_);
             }
@@ -911,13 +816,12 @@ namespace pika::threads::detail {
         exec_total -= reset_exec_total;
         num_threads -= reset_num_threads;
 
-        return std::int64_t(
-            (double(exec_total) * timestamp_scale_) / double(num_threads));
+        return std::int64_t((double(exec_total) * timestamp_scale_) / double(num_threads));
     }
 
     template <typename Scheduler>
-    std::int64_t scheduled_thread_pool<Scheduler>::get_thread_phase_overhead(
-        std::size_t num, bool reset)
+    std::int64_t
+    scheduled_thread_pool<Scheduler>::get_thread_phase_overhead(std::size_t num, bool reset)
     {
         std::int64_t exec_total = 0;
         std::int64_t tfunc_total = 0;
@@ -933,58 +837,43 @@ namespace pika::threads::detail {
             tfunc_total = counter_data_[num].tfunc_times_;
             num_phases = counter_data_[num].executed_thread_phases_;
 
-            reset_exec_total =
-                counter_data_[num].reset_thread_phase_overhead_times_;
-            reset_tfunc_total =
-                counter_data_[num].reset_thread_phase_overhead_times_total_;
+            reset_exec_total = counter_data_[num].reset_thread_phase_overhead_times_;
+            reset_tfunc_total = counter_data_[num].reset_thread_phase_overhead_times_total_;
             reset_num_phases = counter_data_[num].reset_thread_phase_overhead_;
 
             if (reset)
             {
-                counter_data_[num].reset_thread_phase_overhead_times_ =
-                    exec_total;
-                counter_data_[num].reset_thread_phase_overhead_times_total_ =
-                    tfunc_total;
+                counter_data_[num].reset_thread_phase_overhead_times_ = exec_total;
+                counter_data_[num].reset_thread_phase_overhead_times_total_ = tfunc_total;
                 counter_data_[num].reset_thread_phase_overhead_ = num_phases;
             }
         }
         else
         {
-            exec_total =
-                accumulate_projected(counter_data_.begin(), counter_data_.end(),
-                    std::int64_t(0), &scheduling_counter_data::exec_times_);
-            tfunc_total =
-                accumulate_projected(counter_data_.begin(), counter_data_.end(),
-                    std::int64_t(0), &scheduling_counter_data::tfunc_times_);
-            num_phases = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::executed_thread_phases_);
+            exec_total = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::exec_times_);
+            tfunc_total = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::tfunc_times_);
+            num_phases = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::executed_thread_phases_);
 
-            reset_exec_total = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::reset_thread_phase_overhead_times_);
-            reset_tfunc_total = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::
-                    reset_thread_phase_overhead_times_total_);
-            reset_num_phases = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::reset_thread_phase_overhead_);
+            reset_exec_total = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::reset_thread_phase_overhead_times_);
+            reset_tfunc_total =
+                accumulate_projected(counter_data_.begin(), counter_data_.end(), std::int64_t(0),
+                    &scheduling_counter_data::reset_thread_phase_overhead_times_total_);
+            reset_num_phases = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::reset_thread_phase_overhead_);
 
             if (reset)
             {
-                copy_projected(counter_data_.begin(), counter_data_.end(),
-                    counter_data_.begin(),
+                copy_projected(counter_data_.begin(), counter_data_.end(), counter_data_.begin(),
                     &scheduling_counter_data::exec_times_,
-                    &scheduling_counter_data::
-                        reset_thread_phase_overhead_times_);
-                copy_projected(counter_data_.begin(), counter_data_.end(),
-                    counter_data_.begin(),
+                    &scheduling_counter_data::reset_thread_phase_overhead_times_);
+                copy_projected(counter_data_.begin(), counter_data_.end(), counter_data_.begin(),
                     &scheduling_counter_data::tfunc_times_,
-                    &scheduling_counter_data::
-                        reset_thread_phase_overhead_times_total_);
-                copy_projected(counter_data_.begin(), counter_data_.end(),
-                    counter_data_.begin(),
+                    &scheduling_counter_data::reset_thread_phase_overhead_times_total_);
+                copy_projected(counter_data_.begin(), counter_data_.end(), counter_data_.begin(),
                     &scheduling_counter_data::executed_thread_phases_,
                     &scheduling_counter_data::reset_thread_phase_overhead_);
             }
@@ -1004,13 +893,11 @@ namespace pika::threads::detail {
         PIKA_ASSERT(tfunc_total >= exec_total);
 
         return std::int64_t(
-            double((tfunc_total - exec_total) * timestamp_scale_) /
-            double(num_phases));
+            double((tfunc_total - exec_total) * timestamp_scale_) / double(num_phases));
     }
 
     template <typename Scheduler>
-    std::int64_t scheduled_thread_pool<Scheduler>::get_thread_overhead(
-        std::size_t num, bool reset)
+    std::int64_t scheduled_thread_pool<Scheduler>::get_thread_overhead(std::size_t num, bool reset)
     {
         std::int64_t exec_total = 0;
         std::int64_t tfunc_total = 0;
@@ -1027,53 +914,41 @@ namespace pika::threads::detail {
             num_threads = counter_data_[num].executed_threads_;
 
             reset_exec_total = counter_data_[num].reset_thread_overhead_times_;
-            reset_tfunc_total =
-                counter_data_[num].reset_thread_overhead_times_total_;
+            reset_tfunc_total = counter_data_[num].reset_thread_overhead_times_total_;
             reset_num_threads = counter_data_[num].reset_thread_overhead_;
 
             if (reset)
             {
                 counter_data_[num].reset_thread_overhead_times_ = exec_total;
-                counter_data_[num].reset_thread_overhead_times_total_ =
-                    tfunc_total;
+                counter_data_[num].reset_thread_overhead_times_total_ = tfunc_total;
                 counter_data_[num].reset_thread_overhead_ = num_threads;
             }
         }
         else
         {
-            exec_total =
-                accumulate_projected(counter_data_.begin(), counter_data_.end(),
-                    std::int64_t(0), &scheduling_counter_data::exec_times_);
-            tfunc_total =
-                accumulate_projected(counter_data_.begin(), counter_data_.end(),
-                    std::int64_t(0), &scheduling_counter_data::tfunc_times_);
-            num_threads = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::executed_threads_);
+            exec_total = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::exec_times_);
+            tfunc_total = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::tfunc_times_);
+            num_threads = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::executed_threads_);
 
-            reset_exec_total = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::reset_thread_overhead_times_);
-            reset_tfunc_total = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::reset_thread_overhead_times_total_);
-            reset_num_threads = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::reset_thread_overhead_);
+            reset_exec_total = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::reset_thread_overhead_times_);
+            reset_tfunc_total = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::reset_thread_overhead_times_total_);
+            reset_num_threads = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::reset_thread_overhead_);
 
             if (reset)
             {
-                copy_projected(counter_data_.begin(), counter_data_.end(),
-                    counter_data_.begin(),
+                copy_projected(counter_data_.begin(), counter_data_.end(), counter_data_.begin(),
                     &scheduling_counter_data::exec_times_,
                     &scheduling_counter_data::reset_thread_overhead_times_);
-                copy_projected(counter_data_.begin(), counter_data_.end(),
-                    counter_data_.begin(),
+                copy_projected(counter_data_.begin(), counter_data_.end(), counter_data_.begin(),
                     &scheduling_counter_data::tfunc_times_,
-                    &scheduling_counter_data::
-                        reset_thread_overhead_times_total_);
-                copy_projected(counter_data_.begin(), counter_data_.end(),
-                    counter_data_.begin(),
+                    &scheduling_counter_data::reset_thread_overhead_times_total_);
+                copy_projected(counter_data_.begin(), counter_data_.end(), counter_data_.begin(),
                     &scheduling_counter_data::executed_thread_phases_,
                     &scheduling_counter_data::reset_thread_overhead_);
             }
@@ -1093,14 +968,12 @@ namespace pika::threads::detail {
         PIKA_ASSERT(tfunc_total >= exec_total);
 
         return std::int64_t(
-            double((tfunc_total - exec_total) * timestamp_scale_) /
-            double(num_threads));
+            double((tfunc_total - exec_total) * timestamp_scale_) / double(num_threads));
     }
 
     template <typename Scheduler>
     std::int64_t
-    scheduled_thread_pool<Scheduler>::get_cumulative_thread_duration(
-        std::size_t num, bool reset)
+    scheduled_thread_pool<Scheduler>::get_cumulative_thread_duration(std::size_t num, bool reset)
     {
         std::int64_t exec_total = 0;
         std::int64_t reset_exec_total = 0;
@@ -1108,31 +981,25 @@ namespace pika::threads::detail {
         if (num != std::size_t(-1))
         {
             exec_total = counter_data_[num].exec_times_;
-            reset_exec_total =
-                counter_data_[num].reset_cumulative_thread_duration_;
+            reset_exec_total = counter_data_[num].reset_cumulative_thread_duration_;
 
             if (reset)
             {
-                counter_data_[num].reset_cumulative_thread_duration_ =
-                    exec_total;
+                counter_data_[num].reset_cumulative_thread_duration_ = exec_total;
             }
         }
         else
         {
-            exec_total =
-                accumulate_projected(counter_data_.begin(), counter_data_.end(),
-                    std::int64_t(0), &scheduling_counter_data::exec_times_);
-            reset_exec_total = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::reset_cumulative_thread_duration_);
+            exec_total = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::exec_times_);
+            reset_exec_total = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::reset_cumulative_thread_duration_);
 
             if (reset)
             {
-                copy_projected(counter_data_.begin(), counter_data_.end(),
-                    counter_data_.begin(),
+                copy_projected(counter_data_.begin(), counter_data_.end(), counter_data_.begin(),
                     &scheduling_counter_data::exec_times_,
-                    &scheduling_counter_data::
-                        reset_cumulative_thread_duration_);
+                    &scheduling_counter_data::reset_cumulative_thread_duration_);
             }
         }
 
@@ -1145,8 +1012,7 @@ namespace pika::threads::detail {
 
     template <typename Scheduler>
     std::int64_t
-    scheduled_thread_pool<Scheduler>::get_cumulative_thread_overhead(
-        std::size_t num, bool reset)
+    scheduled_thread_pool<Scheduler>::get_cumulative_thread_overhead(std::size_t num, bool reset)
     {
         std::int64_t exec_total = 0;
         std::int64_t reset_exec_total = 0;
@@ -1158,48 +1024,35 @@ namespace pika::threads::detail {
             exec_total = counter_data_[num].exec_times_;
             tfunc_total = counter_data_[num].tfunc_times_;
 
-            reset_exec_total =
-                counter_data_[num].reset_cumulative_thread_overhead_;
-            reset_tfunc_total =
-                counter_data_[num].reset_cumulative_thread_overhead_total_;
+            reset_exec_total = counter_data_[num].reset_cumulative_thread_overhead_;
+            reset_tfunc_total = counter_data_[num].reset_cumulative_thread_overhead_total_;
 
             if (reset)
             {
-                counter_data_[num].reset_cumulative_thread_overhead_ =
-                    exec_total;
-                counter_data_[num].reset_cumulative_thread_overhead_total_ =
-                    tfunc_total;
+                counter_data_[num].reset_cumulative_thread_overhead_ = exec_total;
+                counter_data_[num].reset_cumulative_thread_overhead_total_ = tfunc_total;
             }
         }
         else
         {
-            exec_total =
-                accumulate_projected(counter_data_.begin(), counter_data_.end(),
-                    std::int64_t(0), &scheduling_counter_data::exec_times_);
-            reset_exec_total = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::reset_cumulative_thread_overhead_);
+            exec_total = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::exec_times_);
+            reset_exec_total = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::reset_cumulative_thread_overhead_);
 
-            tfunc_total =
-                accumulate_projected(counter_data_.begin(), counter_data_.end(),
-                    std::int64_t(0), &scheduling_counter_data::tfunc_times_);
-            reset_tfunc_total = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::
-                    reset_cumulative_thread_overhead_total_);
+            tfunc_total = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::tfunc_times_);
+            reset_tfunc_total = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::reset_cumulative_thread_overhead_total_);
 
             if (reset)
             {
-                copy_projected(counter_data_.begin(), counter_data_.end(),
-                    counter_data_.begin(),
+                copy_projected(counter_data_.begin(), counter_data_.end(), counter_data_.begin(),
                     &scheduling_counter_data::exec_times_,
-                    &scheduling_counter_data::
-                        reset_cumulative_thread_overhead_);
-                copy_projected(counter_data_.begin(), counter_data_.end(),
-                    counter_data_.begin(),
+                    &scheduling_counter_data::reset_cumulative_thread_overhead_);
+                copy_projected(counter_data_.begin(), counter_data_.end(), counter_data_.begin(),
                     &scheduling_counter_data::tfunc_times_,
-                    &scheduling_counter_data::
-                        reset_cumulative_thread_overhead_total_);
+                    &scheduling_counter_data::reset_cumulative_thread_overhead_total_);
             }
         }
 
@@ -1209,353 +1062,15 @@ namespace pika::threads::detail {
         exec_total -= reset_exec_total;
         tfunc_total -= reset_tfunc_total;
 
-        return std::int64_t(
-            (double(tfunc_total) - double(exec_total)) * timestamp_scale_);
+        return std::int64_t((double(tfunc_total) - double(exec_total)) * timestamp_scale_);
     }
-#endif    // PIKA_HAVE_THREAD_IDLE_RATES
-#endif    // PIKA_HAVE_THREAD_CUMULATIVE_COUNTS
-
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
-    defined(PIKA_HAVE_THREAD_IDLE_RATES)
-    ////////////////////////////////////////////////////////////
-    template <typename Scheduler>
-    std::int64_t scheduled_thread_pool<Scheduler>::get_background_overhead(
-        std::size_t num, bool reset)
-    {
-        std::int64_t bg_total = 0;
-        std::int64_t reset_bg_total = 0;
-        std::int64_t tfunc_total = 0;
-        std::int64_t reset_tfunc_total = 0;
-
-        if (num != std::size_t(-1))
-        {
-            tfunc_total = counter_data_[num].tfunc_times_;
-            reset_tfunc_total =
-                counter_data_[num].reset_background_tfunc_times_;
-
-            bg_total = counter_data_[num].background_duration_;
-            reset_bg_total = counter_data_[num].reset_background_overhead_;
-
-            if (reset)
-            {
-                counter_data_[num].reset_background_overhead_ = bg_total;
-                counter_data_[num].reset_background_tfunc_times_ = tfunc_total;
-            }
-        }
-        else
-        {
-            tfunc_total =
-                accumulate_projected(counter_data_.begin(), counter_data_.end(),
-                    std::int64_t(0), &scheduling_counter_data::tfunc_times_);
-            reset_tfunc_total = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::reset_background_tfunc_times_);
-
-            bg_total = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::background_duration_);
-            reset_bg_total = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::reset_background_overhead_);
-
-            if (reset)
-            {
-                copy_projected(counter_data_.begin(), counter_data_.end(),
-                    counter_data_.begin(),
-                    &scheduling_counter_data::tfunc_times_,
-                    &scheduling_counter_data::reset_background_tfunc_times_);
-                copy_projected(counter_data_.begin(), counter_data_.end(),
-                    counter_data_.begin(),
-                    &scheduling_counter_data::background_duration_,
-                    &scheduling_counter_data::reset_background_overhead_);
-            }
-        }
-
-        PIKA_ASSERT(bg_total >= reset_bg_total);
-        PIKA_ASSERT(tfunc_total >= reset_tfunc_total);
-
-        if (tfunc_total == 0)    // avoid division by zero
-            return 1000LL;
-
-        tfunc_total -= reset_tfunc_total;
-        bg_total -= reset_bg_total;
-
-        // this is now a 0.1 %
-        return std::int64_t((double(bg_total) / tfunc_total) * 1000);
-    }
-
-    template <typename Scheduler>
-    std::int64_t scheduled_thread_pool<Scheduler>::get_background_work_duration(
-        std::size_t num, bool reset)
-    {
-        std::int64_t bg_total = 0;
-        std::int64_t reset_bg_total = 0;
-
-        if (num != std::size_t(-1))
-        {
-            bg_total = counter_data_[num].background_duration_;
-            reset_bg_total = counter_data_[num].reset_background_duration_;
-
-            if (reset)
-            {
-                counter_data_[num].reset_background_duration_ = bg_total;
-            }
-        }
-        else
-        {
-            bg_total = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::background_duration_);
-            reset_bg_total = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::reset_background_duration_);
-
-            if (reset)
-            {
-                copy_projected(counter_data_.begin(), counter_data_.end(),
-                    counter_data_.begin(),
-                    &scheduling_counter_data::background_duration_,
-                    &scheduling_counter_data::reset_background_duration_);
-            }
-        }
-
-        PIKA_ASSERT(bg_total >= reset_bg_total);
-        bg_total -= reset_bg_total;
-        return std::int64_t(double(bg_total) * timestamp_scale_);
-    }
-
-    ////////////////////////////////////////////////////////////
-    template <typename Scheduler>
-    std::int64_t scheduled_thread_pool<Scheduler>::get_background_send_overhead(
-        std::size_t num, bool reset)
-    {
-        std::int64_t bg_total = 0;
-        std::int64_t reset_bg_total = 0;
-        std::int64_t tfunc_total = 0;
-        std::int64_t reset_tfunc_total = 0;
-
-        if (num != std::size_t(-1))
-        {
-            tfunc_total = counter_data_[num].tfunc_times_;
-            reset_tfunc_total =
-                counter_data_[num].reset_background_send_tfunc_times_;
-
-            bg_total = counter_data_[num].background_send_duration_;
-            reset_bg_total = counter_data_[num].reset_background_send_overhead_;
-
-            if (reset)
-            {
-                counter_data_[num].reset_background_send_overhead_ = bg_total;
-                counter_data_[num].reset_background_send_tfunc_times_ =
-                    tfunc_total;
-            }
-        }
-        else
-        {
-            tfunc_total =
-                accumulate_projected(counter_data_.begin(), counter_data_.end(),
-                    std::int64_t(0), &scheduling_counter_data::tfunc_times_);
-            reset_tfunc_total = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::reset_background_send_tfunc_times_);
-
-            bg_total = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::background_send_duration_);
-            reset_bg_total = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::reset_background_send_overhead_);
-
-            if (reset)
-            {
-                copy_projected(counter_data_.begin(), counter_data_.end(),
-                    counter_data_.begin(),
-                    &scheduling_counter_data::tfunc_times_,
-                    &scheduling_counter_data::
-                        reset_background_send_tfunc_times_);
-                copy_projected(counter_data_.begin(), counter_data_.end(),
-                    counter_data_.begin(),
-                    &scheduling_counter_data::background_send_duration_,
-                    &scheduling_counter_data::reset_background_send_overhead_);
-            }
-        }
-
-        PIKA_ASSERT(bg_total >= reset_bg_total);
-        PIKA_ASSERT(tfunc_total >= reset_tfunc_total);
-
-        if (tfunc_total == 0)    // avoid division by zero
-            return 1000LL;
-
-        tfunc_total -= reset_tfunc_total;
-        bg_total -= reset_bg_total;
-
-        // this is now a 0.1 %
-        return std::int64_t((double(bg_total) / tfunc_total) * 1000);
-    }
-
-    template <typename Scheduler>
-    std::int64_t scheduled_thread_pool<Scheduler>::get_background_send_duration(
-        std::size_t num, bool reset)
-    {
-        std::int64_t bg_total = 0;
-        std::int64_t reset_bg_total = 0;
-
-        if (num != std::size_t(-1))
-        {
-            bg_total = counter_data_[num].background_send_duration_;
-            reset_bg_total = counter_data_[num].reset_background_send_duration_;
-
-            if (reset)
-            {
-                counter_data_[num].reset_background_send_duration_ = bg_total;
-            }
-        }
-        else
-        {
-            bg_total = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::background_send_duration_);
-            reset_bg_total = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::reset_background_send_duration_);
-
-            if (reset)
-            {
-                copy_projected(counter_data_.begin(), counter_data_.end(),
-                    counter_data_.begin(),
-                    &scheduling_counter_data::background_send_duration_,
-                    &scheduling_counter_data::reset_background_send_duration_);
-            }
-        }
-
-        PIKA_ASSERT(bg_total >= reset_bg_total);
-        bg_total -= reset_bg_total;
-        return std::int64_t(double(bg_total) * timestamp_scale_);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    template <typename Scheduler>
-    std::int64_t
-    scheduled_thread_pool<Scheduler>::get_background_receive_overhead(
-        std::size_t num, bool reset)
-    {
-        std::int64_t bg_total = 0;
-        std::int64_t reset_bg_total = 0;
-        std::int64_t tfunc_total = 0;
-        std::int64_t reset_tfunc_total = 0;
-
-        if (num != std::size_t(-1))
-        {
-            tfunc_total = counter_data_[num].tfunc_times_;
-            reset_tfunc_total =
-                counter_data_[num].reset_background_receive_tfunc_times_;
-
-            bg_total = counter_data_[num].background_receive_duration_;
-            reset_bg_total =
-                counter_data_[num].reset_background_receive_overhead_;
-
-            if (reset)
-            {
-                counter_data_[num].reset_background_receive_overhead_ =
-                    bg_total;
-                counter_data_[num].reset_background_receive_tfunc_times_ =
-                    tfunc_total;
-            }
-        }
-        else
-        {
-            tfunc_total =
-                accumulate_projected(counter_data_.begin(), counter_data_.end(),
-                    std::int64_t(0), &scheduling_counter_data::tfunc_times_);
-            reset_tfunc_total = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::
-                    reset_background_receive_tfunc_times_);
-
-            bg_total = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::background_receive_duration_);
-            reset_bg_total = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::reset_background_receive_overhead_);
-
-            if (reset)
-            {
-                copy_projected(counter_data_.begin(), counter_data_.end(),
-                    counter_data_.begin(),
-                    &scheduling_counter_data::tfunc_times_,
-                    &scheduling_counter_data::
-                        reset_background_receive_tfunc_times_);
-                copy_projected(counter_data_.begin(), counter_data_.end(),
-                    counter_data_.begin(),
-                    &scheduling_counter_data::background_receive_duration_,
-                    &scheduling_counter_data::
-                        reset_background_receive_overhead_);
-            }
-        }
-
-        PIKA_ASSERT(bg_total >= reset_bg_total);
-        PIKA_ASSERT(tfunc_total >= reset_tfunc_total);
-
-        if (tfunc_total == 0)    // avoid division by zero
-            return 1000LL;
-
-        tfunc_total -= reset_tfunc_total;
-        bg_total -= reset_bg_total;
-
-        // this is now a 0.1 %
-        return std::int64_t((double(bg_total) / tfunc_total) * 1000);
-    }
-
-    template <typename Scheduler>
-    std::int64_t
-    scheduled_thread_pool<Scheduler>::get_background_receive_duration(
-        std::size_t num, bool reset)
-    {
-        std::int64_t bg_total = 0;
-        std::int64_t reset_bg_total = 0;
-
-        if (num != std::size_t(-1))
-        {
-            bg_total = counter_data_[num].background_receive_duration_;
-            reset_bg_total =
-                counter_data_[num].reset_background_receive_duration_;
-
-            if (reset)
-            {
-                counter_data_[num].reset_background_receive_duration_ =
-                    bg_total;
-            }
-        }
-        else
-        {
-            bg_total = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::background_receive_duration_);
-            reset_bg_total = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::reset_background_receive_duration_);
-
-            if (reset)
-            {
-                copy_projected(counter_data_.begin(), counter_data_.end(),
-                    counter_data_.begin(),
-                    &scheduling_counter_data::background_receive_duration_,
-                    &scheduling_counter_data::
-                        reset_background_receive_duration_);
-            }
-        }
-
-        PIKA_ASSERT(bg_total >= reset_bg_total);
-        bg_total -= reset_bg_total;
-        return std::int64_t(double(bg_total) * timestamp_scale_);
-    }
-#endif    // PIKA_HAVE_BACKGROUND_THREAD_COUNTERS
+# endif    // PIKA_HAVE_THREAD_IDLE_RATES
+#endif     // PIKA_HAVE_THREAD_CUMULATIVE_COUNTS
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Scheduler>
-    std::int64_t scheduled_thread_pool<Scheduler>::get_cumulative_duration(
-        std::size_t num, bool reset)
+    std::int64_t
+    scheduled_thread_pool<Scheduler>::get_cumulative_duration(std::size_t num, bool reset)
     {
         std::int64_t tfunc_total = 0;
         std::int64_t reset_tfunc_total = 0;
@@ -1570,17 +1085,14 @@ namespace pika::threads::detail {
         }
         else
         {
-            tfunc_total =
-                accumulate_projected(counter_data_.begin(), counter_data_.end(),
-                    std::int64_t(0), &scheduling_counter_data::tfunc_times_);
-            reset_tfunc_total = accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
-                &scheduling_counter_data::reset_tfunc_times_);
+            tfunc_total = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::tfunc_times_);
+            reset_tfunc_total = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+                std::int64_t(0), &scheduling_counter_data::reset_tfunc_times_);
 
             if (reset)
             {
-                copy_projected(counter_data_.begin(), counter_data_.end(),
-                    counter_data_.begin(),
+                copy_projected(counter_data_.begin(), counter_data_.end(), counter_data_.begin(),
                     &scheduling_counter_data::tfunc_times_,
                     &scheduling_counter_data::reset_tfunc_times_);
             }
@@ -1594,35 +1106,32 @@ namespace pika::threads::detail {
     }
 
 #if defined(PIKA_HAVE_THREAD_IDLE_RATES)
-#if defined(PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES)
+# if defined(PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES)
     template <typename Scheduler>
-    std::int64_t scheduled_thread_pool<Scheduler>::avg_creation_idle_rate(
-        std::size_t, bool reset)
+    std::int64_t scheduled_thread_pool<Scheduler>::avg_creation_idle_rate(std::size_t, bool reset)
     {
         double const creation_total =
             static_cast<double>(sched_->Scheduler::get_creation_time(reset));
 
-        std::int64_t exec_total =
-            accumulate_projected(counter_data_.begin(), counter_data_.end(),
-                std::int64_t(0), &scheduling_counter_data::exec_times_);
-        std::int64_t tfunc_total =
-            accumulate_projected(counter_data_.begin(), counter_data_.end(),
-                std::int64_t(0), &scheduling_counter_data::tfunc_times_);
+        std::int64_t exec_total = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+            std::int64_t(0), &scheduling_counter_data::exec_times_);
+        std::int64_t tfunc_total = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+            std::int64_t(0), &scheduling_counter_data::tfunc_times_);
 
-        std::int64_t reset_exec_total = accumulate_projected(
-            counter_data_.begin(), counter_data_.end(), std::int64_t(0),
-            &scheduling_counter_data::reset_creation_idle_rate_time_);
-        std::int64_t reset_tfunc_total = accumulate_projected(
-            counter_data_.begin(), counter_data_.end(), std::int64_t(0),
-            &scheduling_counter_data::reset_creation_idle_rate_time_total_);
+        std::int64_t reset_exec_total =
+            accumulate_projected(counter_data_.begin(), counter_data_.end(), std::int64_t(0),
+                &scheduling_counter_data::reset_creation_idle_rate_time_);
+        std::int64_t reset_tfunc_total =
+            accumulate_projected(counter_data_.begin(), counter_data_.end(), std::int64_t(0),
+                &scheduling_counter_data::reset_creation_idle_rate_time_total_);
 
         if (reset)
         {
-            copy_projected(counter_data_.begin(), counter_data_.end(),
-                counter_data_.begin(), &scheduling_counter_data::exec_times_,
+            copy_projected(counter_data_.begin(), counter_data_.end(), counter_data_.begin(),
+                &scheduling_counter_data::exec_times_,
                 &scheduling_counter_data::reset_creation_idle_rate_time_);
-            copy_projected(counter_data_.begin(), counter_data_.end(),
-                counter_data_.begin(), &scheduling_counter_data::tfunc_times_,
+            copy_projected(counter_data_.begin(), counter_data_.end(), counter_data_.begin(),
+                &scheduling_counter_data::tfunc_times_,
                 &scheduling_counter_data::reset_creation_idle_rate_time_);
         }
 
@@ -1637,39 +1146,35 @@ namespace pika::threads::detail {
 
         PIKA_ASSERT(tfunc_total > exec_total);
 
-        double const percent =
-            (creation_total / double(tfunc_total - exec_total));
+        double const percent = (creation_total / double(tfunc_total - exec_total));
         return std::int64_t(10000. * percent);    // 0.01 percent
     }
 
     template <typename Scheduler>
-    std::int64_t scheduled_thread_pool<Scheduler>::avg_cleanup_idle_rate(
-        std::size_t, bool reset)
+    std::int64_t scheduled_thread_pool<Scheduler>::avg_cleanup_idle_rate(std::size_t, bool reset)
     {
         double const cleanup_total =
             static_cast<double>(sched_->Scheduler::get_cleanup_time(reset));
 
-        std::int64_t exec_total =
-            accumulate_projected(counter_data_.begin(), counter_data_.end(),
-                std::int64_t(0), &scheduling_counter_data::exec_times_);
-        std::int64_t tfunc_total =
-            accumulate_projected(counter_data_.begin(), counter_data_.end(),
-                std::int64_t(0), &scheduling_counter_data::tfunc_times_);
+        std::int64_t exec_total = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+            std::int64_t(0), &scheduling_counter_data::exec_times_);
+        std::int64_t tfunc_total = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+            std::int64_t(0), &scheduling_counter_data::tfunc_times_);
 
-        std::int64_t reset_exec_total = accumulate_projected(
-            counter_data_.begin(), counter_data_.end(), std::int64_t(0),
-            &scheduling_counter_data::reset_cleanup_idle_rate_time_);
-        std::int64_t reset_tfunc_total = accumulate_projected(
-            counter_data_.begin(), counter_data_.end(), std::int64_t(0),
-            &scheduling_counter_data::reset_cleanup_idle_rate_time_total_);
+        std::int64_t reset_exec_total =
+            accumulate_projected(counter_data_.begin(), counter_data_.end(), std::int64_t(0),
+                &scheduling_counter_data::reset_cleanup_idle_rate_time_);
+        std::int64_t reset_tfunc_total =
+            accumulate_projected(counter_data_.begin(), counter_data_.end(), std::int64_t(0),
+                &scheduling_counter_data::reset_cleanup_idle_rate_time_total_);
 
         if (reset)
         {
-            copy_projected(counter_data_.begin(), counter_data_.end(),
-                counter_data_.begin(), &scheduling_counter_data::exec_times_,
+            copy_projected(counter_data_.begin(), counter_data_.end(), counter_data_.begin(),
+                &scheduling_counter_data::exec_times_,
                 &scheduling_counter_data::reset_cleanup_idle_rate_time_);
-            copy_projected(counter_data_.begin(), counter_data_.end(),
-                counter_data_.begin(), &scheduling_counter_data::tfunc_times_,
+            copy_projected(counter_data_.begin(), counter_data_.end(), counter_data_.begin(),
+                &scheduling_counter_data::tfunc_times_,
                 &scheduling_counter_data::reset_cleanup_idle_rate_time_);
         }
 
@@ -1684,36 +1189,32 @@ namespace pika::threads::detail {
 
         PIKA_ASSERT(tfunc_total > exec_total);
 
-        double const percent =
-            (cleanup_total / double(tfunc_total - exec_total));
+        double const percent = (cleanup_total / double(tfunc_total - exec_total));
         return std::int64_t(10000. * percent);    // 0.01 percent
     }
-#endif    // PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES
+# endif    // PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES
 
     template <typename Scheduler>
     std::int64_t scheduled_thread_pool<Scheduler>::avg_idle_rate_all(bool reset)
     {
-        std::int64_t exec_total =
-            accumulate_projected(counter_data_.begin(), counter_data_.end(),
-                std::int64_t(0), &scheduling_counter_data::exec_times_);
-        std::int64_t tfunc_total =
-            accumulate_projected(counter_data_.begin(), counter_data_.end(),
-                std::int64_t(0), &scheduling_counter_data::tfunc_times_);
+        std::int64_t exec_total = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+            std::int64_t(0), &scheduling_counter_data::exec_times_);
+        std::int64_t tfunc_total = accumulate_projected(counter_data_.begin(), counter_data_.end(),
+            std::int64_t(0), &scheduling_counter_data::tfunc_times_);
 
-        std::int64_t reset_exec_total = accumulate_projected(
-            counter_data_.begin(), counter_data_.end(), std::int64_t(0),
-            &scheduling_counter_data::reset_idle_rate_time_);
-        std::int64_t reset_tfunc_total = accumulate_projected(
-            counter_data_.begin(), counter_data_.end(), std::int64_t(0),
-            &scheduling_counter_data::reset_idle_rate_time_total_);
+        std::int64_t reset_exec_total = accumulate_projected(counter_data_.begin(),
+            counter_data_.end(), std::int64_t(0), &scheduling_counter_data::reset_idle_rate_time_);
+        std::int64_t reset_tfunc_total =
+            accumulate_projected(counter_data_.begin(), counter_data_.end(), std::int64_t(0),
+                &scheduling_counter_data::reset_idle_rate_time_total_);
 
         if (reset)
         {
-            copy_projected(counter_data_.begin(), counter_data_.end(),
-                counter_data_.begin(), &scheduling_counter_data::exec_times_,
+            copy_projected(counter_data_.begin(), counter_data_.end(), counter_data_.begin(),
+                &scheduling_counter_data::exec_times_,
                 &scheduling_counter_data::reset_idle_rate_time_);
-            copy_projected(counter_data_.begin(), counter_data_.end(),
-                counter_data_.begin(), &scheduling_counter_data::tfunc_times_,
+            copy_projected(counter_data_.begin(), counter_data_.end(), counter_data_.begin(),
+                &scheduling_counter_data::tfunc_times_,
                 &scheduling_counter_data::reset_idle_rate_time_total_);
         }
 
@@ -1733,8 +1234,7 @@ namespace pika::threads::detail {
     }
 
     template <typename Scheduler>
-    std::int64_t
-    scheduled_thread_pool<Scheduler>::avg_idle_rate(std::size_t num, bool reset)
+    std::int64_t scheduled_thread_pool<Scheduler>::avg_idle_rate(std::size_t num, bool reset)
     {
         if (num == std::size_t(-1))
             return avg_idle_rate_all(reset);
@@ -1742,8 +1242,7 @@ namespace pika::threads::detail {
         std::int64_t exec_time = counter_data_[num].exec_times_;
         std::int64_t tfunc_time = counter_data_[num].tfunc_times_;
         std::int64_t reset_exec_time = counter_data_[num].reset_idle_rate_time_;
-        std::int64_t reset_tfunc_time =
-            counter_data_[num].reset_idle_rate_time_total_;
+        std::int64_t reset_tfunc_time = counter_data_[num].reset_idle_rate_time_total_;
 
         if (reset)
         {
@@ -1768,37 +1267,34 @@ namespace pika::threads::detail {
 #endif    // PIKA_HAVE_THREAD_IDLE_RATES
 
     template <typename Scheduler>
-    std::int64_t scheduled_thread_pool<Scheduler>::get_idle_loop_count(
-        std::size_t num, bool /* reset */)
+    std::int64_t
+    scheduled_thread_pool<Scheduler>::get_idle_loop_count(std::size_t num, bool /* reset */)
     {
         if (num == std::size_t(-1))
         {
-            return accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
+            return accumulate_projected(counter_data_.begin(), counter_data_.end(), std::int64_t(0),
                 &scheduling_counter_data::idle_loop_counts_);
         }
         return counter_data_[num].idle_loop_counts_;
     }
 
     template <typename Scheduler>
-    std::int64_t scheduled_thread_pool<Scheduler>::get_busy_loop_count(
-        std::size_t num, bool /* reset */)
+    std::int64_t
+    scheduled_thread_pool<Scheduler>::get_busy_loop_count(std::size_t num, bool /* reset */)
     {
         if (num == std::size_t(-1))
         {
-            return accumulate_projected(counter_data_.begin(),
-                counter_data_.end(), std::int64_t(0),
+            return accumulate_projected(counter_data_.begin(), counter_data_.end(), std::int64_t(0),
                 &scheduling_counter_data::busy_loop_counts_);
         }
         return counter_data_[num].busy_loop_counts_;
     }
 
     template <typename Scheduler>
-    std::int64_t
-    scheduled_thread_pool<Scheduler>::get_scheduler_utilization() const
+    std::int64_t scheduled_thread_pool<Scheduler>::get_scheduler_utilization() const
     {
-        return (accumulate_projected(counter_data_.begin(), counter_data_.end(),
-                    std::int64_t(0), &scheduling_counter_data::tasks_active_) *
+        return (accumulate_projected(counter_data_.begin(), counter_data_.end(), std::int64_t(0),
+                    &scheduling_counter_data::tasks_active_) *
                    100) /
             thread_count_.load();
     }
@@ -1820,8 +1316,7 @@ namespace pika::threads::detail {
     }
 
     template <typename Scheduler>
-    void
-    scheduled_thread_pool<Scheduler>::get_idle_core_mask(mask_type& mask) const
+    void scheduled_thread_pool<Scheduler>::get_idle_core_mask(mask_type& mask) const
     {
         std::size_t i = 0;
         for (auto const& data : counter_data_)
@@ -1836,17 +1331,15 @@ namespace pika::threads::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Scheduler>
-    void scheduled_thread_pool<Scheduler>::init_perf_counter_data(
-        std::size_t pool_threads)
+    void scheduled_thread_pool<Scheduler>::init_perf_counter_data(std::size_t pool_threads)
     {
         counter_data_.resize(pool_threads);
     }
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Scheduler>
-    void scheduled_thread_pool<Scheduler>::add_processing_unit_internal(
-        std::size_t virt_core, std::size_t thread_num,
-        std::shared_ptr<pika::concurrency::detail::barrier> startup,
+    void scheduled_thread_pool<Scheduler>::add_processing_unit_internal(std::size_t virt_core,
+        std::size_t thread_num, std::shared_ptr<pika::concurrency::detail::barrier> startup,
         error_code& ec)
     {
         std::unique_lock<typename Scheduler::pu_mutex_type> l(
@@ -1860,21 +1353,17 @@ namespace pika::threads::detail {
             l.unlock();
             PIKA_THROWS_IF(ec, pika::error::bad_parameter,
                 "scheduled_thread_pool<Scheduler>::add_processing_unit",
-                "the given virtual core has already been added to this "
-                "thread pool");
+                "the given virtual core has already been added to this thread pool");
             return;
         }
 
-        std::atomic<pika::runtime_state>& state =
-            sched_->Scheduler::get_state(virt_core);
-        pika::runtime_state oldstate =
-            state.exchange(runtime_state::initialized);
-        PIKA_ASSERT(oldstate == runtime_state::stopped ||
-            oldstate == runtime_state::initialized);
+        std::atomic<pika::runtime_state>& state = sched_->Scheduler::get_state(virt_core);
+        pika::runtime_state oldstate = state.exchange(runtime_state::initialized);
+        PIKA_ASSERT(oldstate == runtime_state::stopped || oldstate == runtime_state::initialized);
         PIKA_UNUSED(oldstate);
 
-        threads_[virt_core] = std::thread(&scheduled_thread_pool::thread_func,
-            this, virt_core, thread_num, PIKA_MOVE(startup));
+        threads_[virt_core] = std::thread(
+            &scheduled_thread_pool::thread_func, this, virt_core, thread_num, PIKA_MOVE(startup));
 
         if (&ec != &throws)
             ec = make_success_code();
@@ -1892,13 +1381,11 @@ namespace pika::threads::detail {
             l.unlock();
             PIKA_THROWS_IF(ec, pika::error::bad_parameter,
                 "scheduled_thread_pool<Scheduler>::remove_processing_unit",
-                "the given virtual core has already been stopped to run on "
-                "this thread pool");
+                "the given virtual core has already been stopped to run on this thread pool");
             return;
         }
 
-        std::atomic<pika::runtime_state>& state =
-            sched_->Scheduler::get_state(virt_core);
+        std::atomic<pika::runtime_state>& state = sched_->Scheduler::get_state(virt_core);
 
         // inform the scheduler to stop the virtual core
         pika::runtime_state oldstate = state.exchange(runtime_state::stopping);
@@ -1910,10 +1397,8 @@ namespace pika::threads::detail {
             state.store(oldstate);
         }
 
-        PIKA_ASSERT(oldstate == runtime_state::starting ||
-            oldstate == runtime_state::running ||
-            oldstate == runtime_state::stopping ||
-            oldstate == runtime_state::stopped ||
+        PIKA_ASSERT(oldstate == runtime_state::starting || oldstate == runtime_state::running ||
+            oldstate == runtime_state::stopping || oldstate == runtime_state::stopped ||
             oldstate == runtime_state::terminating);
 
         std::thread t;
@@ -1921,15 +1406,12 @@ namespace pika::threads::detail {
 
         l.unlock();
 
-        if (threads::detail::get_self_ptr() &&
-            this == pika::this_thread::get_pool())
+        if (threads::detail::get_self_ptr() && this == pika::this_thread::get_pool())
         {
             std::size_t thread_num = thread_offset_ + virt_core;
 
             util::yield_while(
-                [thread_num]() {
-                    return thread_num == pika::get_worker_thread_num();
-                },
+                [thread_num]() { return thread_num == pika::get_worker_thread_num(); },
                 "scheduled_thread_pool::remove_processing_unit_internal");
         }
 
@@ -1952,15 +1434,12 @@ namespace pika::threads::detail {
         {
             l.unlock();
             PIKA_THROWS_IF(ec, pika::error::bad_parameter,
-                "scheduled_thread_pool<Scheduler>::suspend_processing_unit_"
-                "direct",
-                "the given virtual core has already been stopped to run on "
-                "this thread pool");
+                "scheduled_thread_pool<Scheduler>::suspend_processing_unit_direct",
+                "the given virtual core has already been stopped to run on this thread pool");
             return;
         }
 
-        std::atomic<pika::runtime_state>& state =
-            sched_->Scheduler::get_state(virt_core);
+        std::atomic<pika::runtime_state>& state = sched_->Scheduler::get_state(virt_core);
 
         // Inform the scheduler to suspend the virtual core only if running
         pika::runtime_state expected = runtime_state::running;
@@ -1968,12 +1447,10 @@ namespace pika::threads::detail {
 
         l.unlock();
 
-        PIKA_ASSERT(expected == runtime_state::running ||
-            expected == runtime_state::pre_sleep ||
+        PIKA_ASSERT(expected == runtime_state::running || expected == runtime_state::pre_sleep ||
             expected == runtime_state::sleeping);
 
-        util::yield_while(
-            [&state]() { return state.load() == runtime_state::pre_sleep; },
+        util::yield_while([&state]() { return state.load() == runtime_state::pre_sleep; },
             "scheduled_thread_pool::suspend_processing_unit_direct");
     }
 
@@ -1993,15 +1470,13 @@ namespace pika::threads::detail {
             l.unlock();
             PIKA_THROWS_IF(ec, pika::error::bad_parameter,
                 "scheduled_thread_pool<Scheduler>::resume_processing_unit",
-                "the given virtual core has already been stopped to run on "
-                "this thread pool");
+                "the given virtual core has already been stopped to run on this thread pool");
             return;
         }
 
         l.unlock();
 
-        std::atomic<pika::runtime_state>& state =
-            sched_->Scheduler::get_state(virt_core);
+        std::atomic<pika::runtime_state>& state = sched_->Scheduler::get_state(virt_core);
 
         util::yield_while(
             [this, &state, virt_core]() {

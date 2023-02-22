@@ -12,9 +12,9 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
-#include <pika/concurrency/deque.hpp>
+# include <pika/concurrency/deque.hpp>
 #else
-#include <boost/lockfree/queue.hpp>
+# include <boost/lockfree/queue.hpp>
 #endif
 
 #include <pika/allocator_support/aligned_allocator.hpp>
@@ -37,11 +37,9 @@ namespace pika::threads {
     {
 #if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
         using container_type = pika::concurrency::detail::deque<T,
-            pika::concurrency::detail::caching_freelist_t,
-            pika::detail::aligned_allocator<T>>;
+            pika::concurrency::detail::caching_freelist_t, pika::detail::aligned_allocator<T>>;
 #else
-        using container_type =
-            boost::lockfree::queue<T, pika::detail::aligned_allocator<T>>;
+        using container_type = boost::lockfree::queue<T, pika::detail::aligned_allocator<T>>;
 #endif
 
         using value_type = T;
@@ -50,8 +48,8 @@ namespace pika::threads {
         using rvalue_reference = T&&;
         using size_type = std::uint64_t;
 
-        lockfree_fifo_backend(size_type initial_size = 0,
-            size_type /* num_thread */ = size_type(-1))
+        lockfree_fifo_backend(
+            size_type initial_size = 0, size_type /* num_thread */ = size_type(-1))
           : queue_(std::size_t(initial_size))
         {
         }
@@ -114,8 +112,8 @@ namespace pika::threads {
         using rvalue_reference = T&&;
         using size_type = std::uint64_t;
 
-        moodycamel_fifo_backend(size_type initial_size = 0,
-            size_type /* num_thread */ = size_type(-1))
+        moodycamel_fifo_backend(
+            size_type initial_size = 0, size_type /* num_thread */ = size_type(-1))
           : queue_(std::size_t(initial_size))
         {
         }
@@ -161,8 +159,7 @@ namespace pika::threads {
     struct lockfree_lifo_backend
     {
         using container_type = pika::concurrency::detail::deque<T,
-            pika::concurrency::detail::caching_freelist_t,
-            pika::detail::aligned_allocator<T>>;
+            pika::concurrency::detail::caching_freelist_t, pika::detail::aligned_allocator<T>>;
 
         using value_type = T;
         using reference = T&;
@@ -170,8 +167,8 @@ namespace pika::threads {
         using rvalue_reference = T&&;
         using size_type = std::uint64_t;
 
-        lockfree_lifo_backend(size_type initial_size = 0,
-            size_type /* num_thread */ = size_type(-1))
+        lockfree_lifo_backend(
+            size_type initial_size = 0, size_type /* num_thread */ = size_type(-1))
           : queue_(std::size_t(initial_size))
         {
         }
@@ -222,8 +219,7 @@ namespace pika::threads {
     struct lockfree_abp_fifo_backend
     {
         using container_type = pika::concurrency::detail::deque<T,
-            pika::concurrency::detail::caching_freelist_t,
-            pika::detail::aligned_allocator<T>>;
+            pika::concurrency::detail::caching_freelist_t, pika::detail::aligned_allocator<T>>;
 
         using value_type = T;
         using reference = T&;
@@ -231,8 +227,8 @@ namespace pika::threads {
         using rvalue_reference = T&&;
         using size_type = std::uint64_t;
 
-        lockfree_abp_fifo_backend(size_type initial_size = 0,
-            size_type /* num_thread */ = size_type(-1))
+        lockfree_abp_fifo_backend(
+            size_type initial_size = 0, size_type /* num_thread */ = size_type(-1))
           : queue_(std::size_t(initial_size))
         {
         }
@@ -280,8 +276,7 @@ namespace pika::threads {
     struct lockfree_abp_lifo_backend
     {
         using container_type = pika::concurrency::detail::deque<T,
-            pika::concurrency::detail::caching_freelist_t,
-            pika::detail::aligned_allocator<T>>;
+            pika::concurrency::detail::caching_freelist_t, pika::detail::aligned_allocator<T>>;
 
         using value_type = T;
         using reference = T&;
@@ -289,8 +284,8 @@ namespace pika::threads {
         using rvalue_reference = T&&;
         using size_type = std::uint64_t;
 
-        lockfree_abp_lifo_backend(size_type initial_size = 0,
-            size_type /* num_thread */ = size_type(-1))
+        lockfree_abp_lifo_backend(
+            size_type initial_size = 0, size_type /* num_thread */ = size_type(-1))
           : queue_(std::size_t(initial_size))
         {
         }

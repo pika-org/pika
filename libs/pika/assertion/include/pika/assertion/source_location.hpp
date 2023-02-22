@@ -19,6 +19,5 @@ namespace pika::detail {
         unsigned line_number;
         const char* function_name;
     };
-    PIKA_EXPORT std::ostream& operator<<(
-        std::ostream& os, source_location const& loc);
+    PIKA_EXPORT std::ostream& operator<<(std::ostream& os, source_location const& loc);
 }    // namespace pika::detail

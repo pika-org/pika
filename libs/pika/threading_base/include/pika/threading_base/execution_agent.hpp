@@ -34,8 +34,7 @@ namespace pika::threads::detail {
 
     struct PIKA_EXPORT execution_agent : pika::execution::detail::agent_base
     {
-        explicit execution_agent(
-            coroutines::detail::coroutine_impl* coroutine) noexcept;
+        explicit execution_agent(coroutines::detail::coroutine_impl* coroutine) noexcept;
 
         std::string description() const override;
 
@@ -49,16 +48,15 @@ namespace pika::threads::detail {
         void suspend(char const* desc) override;
         void resume(char const* desc) override;
         void abort(char const* desc) override;
-        void sleep_for(pika::chrono::steady_duration const& sleep_duration,
-            char const* desc) override;
-        void sleep_until(pika::chrono::steady_time_point const& sleep_time,
-            char const* desc) override;
+        void sleep_for(
+            pika::chrono::steady_duration const& sleep_duration, char const* desc) override;
+        void sleep_until(
+            pika::chrono::steady_time_point const& sleep_time, char const* desc) override;
 
     private:
         coroutines::detail::coroutine_stackful_self self_;
 
-        thread_restart_state do_yield(
-            char const* desc, thread_schedule_state state);
+        thread_restart_state do_yield(char const* desc, thread_schedule_state state);
 
         void do_resume(char const* desc, thread_restart_state statex);
 

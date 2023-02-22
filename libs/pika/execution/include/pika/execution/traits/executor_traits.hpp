@@ -65,20 +65,17 @@ namespace pika::parallel::execution {
     };
 
     template <typename T, typename Enable = void>
-    struct has_bulk_sync_execute_member
-      : detail::has_bulk_sync_execute<std::decay_t<T>>
+    struct has_bulk_sync_execute_member : detail::has_bulk_sync_execute<std::decay_t<T>>
     {
     };
 
     template <typename T, typename Enable = void>
-    struct has_bulk_async_execute_member
-      : detail::has_bulk_async_execute<std::decay_t<T>>
+    struct has_bulk_async_execute_member : detail::has_bulk_async_execute<std::decay_t<T>>
     {
     };
 
     template <typename T, typename Enable = void>
-    struct has_bulk_then_execute_member
-      : detail::has_bulk_then_execute<std::decay_t<T>>
+    struct has_bulk_then_execute_member : detail::has_bulk_then_execute<std::decay_t<T>>
     {
     };
 
@@ -86,8 +83,7 @@ namespace pika::parallel::execution {
     template <typename Executor>
     struct executor_context
     {
-        using type =
-            std::decay_t<decltype(std::declval<Executor const&>().context())>;
+        using type = std::decay_t<decltype(std::declval<Executor const&>().context())>;
     };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -105,9 +101,8 @@ namespace pika::parallel::execution {
         using execution_category = typename T::execution_category;
 
     public:
-        using type = pika::detail::detected_or_t<
-            pika::execution::unsequenced_execution_tag, execution_category,
-            Executor>;
+        using type = pika::detail::detected_or_t<pika::execution::unsequenced_execution_tag,
+            execution_category, Executor>;
     };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -119,8 +114,7 @@ namespace pika::parallel::execution {
         using shape_type = typename T::shape_type;
 
     public:
-        using type =
-            pika::detail::detected_or_t<std::size_t, shape_type, Executor>;
+        using type = pika::detail::detected_or_t<std::size_t, shape_type, Executor>;
     };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -133,9 +127,8 @@ namespace pika::parallel::execution {
         using index_type = typename T::index_type;
 
     public:
-        using type =
-            pika::detail::detected_or_t<typename executor_shape<Executor>::type,
-                index_type, Executor>;
+        using type = pika::detail::detected_or_t<typename executor_shape<Executor>::type,
+            index_type, Executor>;
     };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -147,15 +140,13 @@ namespace pika::parallel::execution {
         using parameters_type = typename T::parameters_type;
 
     public:
-        using type =
-            pika::detail::detected_or_t<pika::execution::static_chunk_size,
-                parameters_type, Executor>;
+        using type = pika::detail::detected_or_t<pika::execution::static_chunk_size,
+            parameters_type, Executor>;
     };
 
     ///////////////////////////////////////////////////////////////////////////
     namespace detail {
-        template <typename Executor, typename T, typename Ts,
-            typename Enable = void>
+        template <typename Executor, typename T, typename Ts, typename Enable = void>
         struct executor_future;
 
         template <typename Executor, typename T, typename Enable = void>
@@ -165,8 +156,7 @@ namespace pika::parallel::execution {
 
         template <typename Executor, typename T>
         struct exposes_future_type<Executor, T,
-            std::void_t<typename Executor::template future_type<T>>>
-          : std::true_type
+            std::void_t<typename Executor::template future_type<T>>> : std::true_type
         {
         };
 
@@ -203,34 +193,29 @@ namespace pika::parallel::execution {
     };
 
     template <typename Executor, typename T, typename... Ts>
-    using executor_future_t =
-        typename executor_future<Executor, T, Ts...>::type;
+    using executor_future_t = typename executor_future<Executor, T, Ts...>::type;
 
 }    // namespace pika::parallel::execution
 
 namespace pika::traits {
     ///////////////////////////////////////////////////////////////////////////
     template <typename T, typename Enable = void>
-    struct has_post_member
-      : parallel::execution::has_post_member<std::decay_t<T>>
+    struct has_post_member : parallel::execution::has_post_member<std::decay_t<T>>
     {
     };
 
     template <typename T, typename Enable = void>
-    struct has_sync_execute_member
-      : parallel::execution::has_sync_execute_member<std::decay_t<T>>
+    struct has_sync_execute_member : parallel::execution::has_sync_execute_member<std::decay_t<T>>
     {
     };
 
     template <typename T, typename Enable = void>
-    struct has_async_execute_member
-      : parallel::execution::has_async_execute_member<std::decay_t<T>>
+    struct has_async_execute_member : parallel::execution::has_async_execute_member<std::decay_t<T>>
     {
     };
 
     template <typename T, typename Enable = void>
-    struct has_then_execute_member
-      : parallel::execution::has_then_execute_member<std::decay_t<T>>
+    struct has_then_execute_member : parallel::execution::has_then_execute_member<std::decay_t<T>>
     {
     };
 
@@ -256,33 +241,26 @@ namespace pika::traits {
     inline constexpr bool has_post_member_v = has_post_member<T>::value;
 
     template <typename T>
-    inline constexpr bool has_sync_execute_member_v =
-        has_sync_execute_member<T>::value;
+    inline constexpr bool has_sync_execute_member_v = has_sync_execute_member<T>::value;
 
     template <typename T>
-    inline constexpr bool has_async_execute_member_v =
-        has_async_execute_member<T>::value;
+    inline constexpr bool has_async_execute_member_v = has_async_execute_member<T>::value;
 
     template <typename T>
-    inline constexpr bool has_then_execute_member_v =
-        has_then_execute_member<T>::value;
+    inline constexpr bool has_then_execute_member_v = has_then_execute_member<T>::value;
 
     template <typename T>
-    inline constexpr bool has_bulk_sync_execute_member_v =
-        has_bulk_sync_execute_member<T>::value;
+    inline constexpr bool has_bulk_sync_execute_member_v = has_bulk_sync_execute_member<T>::value;
 
     template <typename T>
-    inline constexpr bool has_bulk_async_execute_member_v =
-        has_bulk_async_execute_member<T>::value;
+    inline constexpr bool has_bulk_async_execute_member_v = has_bulk_async_execute_member<T>::value;
 
     template <typename T>
-    inline constexpr bool has_bulk_then_execute_member_v =
-        has_bulk_then_execute_member<T>::value;
+    inline constexpr bool has_bulk_then_execute_member_v = has_bulk_then_execute_member<T>::value;
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Executor, typename Enable = void>
-    struct executor_context
-      : parallel::execution::executor_context<std::decay_t<Executor>>
+    struct executor_context : parallel::execution::executor_context<std::decay_t<Executor>>
     {
     };
 
@@ -296,12 +274,10 @@ namespace pika::traits {
     };
 
     template <typename Executor>
-    using executor_execution_category_t =
-        typename executor_execution_category<Executor>::type;
+    using executor_execution_category_t = typename executor_execution_category<Executor>::type;
 
     template <typename Executor, typename Enable = void>
-    struct executor_shape
-      : parallel::execution::executor_shape<std::decay_t<Executor>>
+    struct executor_shape : parallel::execution::executor_shape<std::decay_t<Executor>>
     {
     };
 
@@ -309,8 +285,7 @@ namespace pika::traits {
     using executor_shape_t = typename executor_shape<Executor>::type;
 
     template <typename Executor, typename Enable = void>
-    struct executor_index
-      : parallel::execution::executor_index<std::decay_t<Executor>>
+    struct executor_index : parallel::execution::executor_index<std::decay_t<Executor>>
     {
     };
 
@@ -319,14 +294,12 @@ namespace pika::traits {
 
     template <typename Executor, typename T, typename... Ts>
     struct executor_future
-      : parallel::execution::executor_future<std::decay_t<Executor>, T,
-            std::decay_t<Ts>...>
+      : parallel::execution::executor_future<std::decay_t<Executor>, T, std::decay_t<Ts>...>
     {
     };
 
     template <typename Executor, typename T, typename... Ts>
-    using executor_future_t =
-        typename executor_future<Executor, T, Ts...>::type;
+    using executor_future_t = typename executor_future<Executor, T, Ts...>::type;
 
     ///////////////////////////////////////////////////////////////////////////
     // extension
@@ -337,7 +310,6 @@ namespace pika::traits {
     };
 
     template <typename Executor>
-    using executor_parameters_type_t =
-        typename executor_parameters_type<Executor>::type;
+    using executor_parameters_type_t = typename executor_parameters_type<Executor>::type;
 
 }    // namespace pika::traits

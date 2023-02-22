@@ -19,8 +19,7 @@
 namespace pika::util {
     ///////////////////////////////////////////////////////////////////////////
     bool handle_ini_file(section& ini, std::string const& loc);
-    bool handle_ini_file_env(
-        section& ini, char const* env_var, char const* file_suffix = nullptr);
+    bool handle_ini_file_env(section& ini, char const* env_var, char const* file_suffix = nullptr);
 
     ///////////////////////////////////////////////////////////////////////////
     // read system and user specified ini files

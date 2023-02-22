@@ -36,7 +36,7 @@
 // include unist.d conditionally to check for POSIX version. Not all OSs have the
 // unistd header...
 #if defined(PIKA_HAVE_UNISTD_H)
-#include <unistd.h>
+# include <unistd.h>
 #endif
 
 #if defined(_POSIX_VERSION)
@@ -44,28 +44,28 @@
  * Most of these utilities are really pure C++, but they are useful
  * only on posix systems.
  */
-#include <cerrno>
-#include <cstddef>
-#include <cstdlib>
-#include <stdexcept>
+# include <cerrno>
+# include <cstddef>
+# include <cstdlib>
+# include <stdexcept>
 
-#if defined(_POSIX_MAPPED_FILES) && _POSIX_MAPPED_FILES > 0
-#include <errno.h>
-#include <sys/mman.h>
-#include <sys/param.h>
+# if defined(_POSIX_MAPPED_FILES) && _POSIX_MAPPED_FILES > 0
+#  include <errno.h>
+#  include <sys/mman.h>
+#  include <sys/param.h>
 
-#include <stdexcept>
-#endif
+#  include <stdexcept>
+# endif
 
-#if defined(__FreeBSD__)
-#include <sys/param.h>
-#define EXEC_PAGESIZE PAGE_SIZE
-#endif
+# if defined(__FreeBSD__)
+#  include <sys/param.h>
+#  define EXEC_PAGESIZE PAGE_SIZE
+# endif
 
-#if defined(__APPLE__)
-#include <unistd.h>
-#define EXEC_PAGESIZE static_cast<std::size_t>(sysconf(_SC_PAGESIZE))
-#endif
+# if defined(__APPLE__)
+#  include <unistd.h>
+#  define EXEC_PAGESIZE static_cast<std::size_t>(sysconf(_SC_PAGESIZE))
+# endif
 
 /**
  * Stack allocation routines and trampolines for setcontext
@@ -73,51 +73,45 @@
 namespace pika::threads::coroutines::detail::posix {
     PIKA_EXPORT extern bool use_guard_pages;
 
-#if defined(PIKA_HAVE_THREAD_STACK_MMAP) && defined(_POSIX_MAPPED_FILES) &&    \
-    _POSIX_MAPPED_FILES > 0
+# if defined(PIKA_HAVE_THREAD_STACK_MMAP) && defined(_POSIX_MAPPED_FILES) && _POSIX_MAPPED_FILES > 0
 
     inline void* alloc_stack(std::size_t size)
     {
-        void* real_stack = ::mmap(nullptr, size + EXEC_PAGESIZE,
-            PROT_EXEC | PROT_READ | PROT_WRITE,
-#if defined(__APPLE__)
+        void* real_stack = ::mmap(nullptr, size + EXEC_PAGESIZE, PROT_EXEC | PROT_READ | PROT_WRITE,
+#  if defined(__APPLE__)
             MAP_PRIVATE | MAP_ANON | MAP_NORESERVE,
-#elif defined(__FreeBSD__)
+#  elif defined(__FreeBSD__)
             MAP_PRIVATE | MAP_ANON,
-#else
+#  else
             MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE,
-#endif
+#  endif
             -1, 0);
 
         if (real_stack == MAP_FAILED)
         {
-            char const* error_message =
-                "mmap() failed to allocate thread stack";
+            char const* error_message = "mmap() failed to allocate thread stack";
             if (ENOMEM == errno && use_guard_pages)
             {
-                error_message =
-                    "mmap() failed to allocate thread stack due to "
-                    "insufficient resources, increase "
-                    "/proc/sys/vm/max_map_count or add "
-                    "-Ipika.stacks.use_guard_pages=0 to the command line";
+                error_message = "mmap() failed to allocate thread stack due to insufficient "
+                                "resources, increase /proc/sys/vm/max_map_count or add "
+                                "-Ipika.stacks.use_guard_pages=0 to the command line";
             }
             throw std::runtime_error(error_message);
         }
 
-#if defined(PIKA_HAVE_THREAD_GUARD_PAGE)
+#  if defined(PIKA_HAVE_THREAD_GUARD_PAGE)
         if (use_guard_pages)
         {
             // Add a guard page.
             ::mprotect(real_stack, EXEC_PAGESIZE, PROT_NONE);
 
-            void** stack = static_cast<void**>(real_stack) +
-                (EXEC_PAGESIZE / sizeof(void*));
+            void** stack = static_cast<void**>(real_stack) + (EXEC_PAGESIZE / sizeof(void*));
             return static_cast<void*>(stack);
         }
         return real_stack;
-#else
+#  else
         return real_stack;
-#endif
+#  endif
     }
 
     inline void watermark_stack(void* stack, std::size_t size)
@@ -125,15 +119,13 @@ namespace pika::threads::coroutines::detail::posix {
         PIKA_ASSERT(size > EXEC_PAGESIZE);
 
         // Fill the bottom 8 bytes of the first page with 1s.
-        void** watermark = static_cast<void**>(stack) +
-            ((size - EXEC_PAGESIZE) / sizeof(void*));
+        void** watermark = static_cast<void**>(stack) + ((size - EXEC_PAGESIZE) / sizeof(void*));
         *watermark = reinterpret_cast<void*>(0xDEADBEEFDEADBEEFull);
     }
 
     inline bool reset_stack(void* stack, std::size_t size)
     {
-        void** watermark = static_cast<void**>(stack) +
-            ((size - EXEC_PAGESIZE) / sizeof(void*));
+        void** watermark = static_cast<void**>(stack) + ((size - EXEC_PAGESIZE) / sizeof(void*));
 
         // If the watermark has been overwritten, then we've gone past the first
         // page.
@@ -150,27 +142,25 @@ namespace pika::threads::coroutines::detail::posix {
 
     inline void free_stack(void* stack, std::size_t size)
     {
-#if defined(PIKA_HAVE_THREAD_GUARD_PAGE)
+#  if defined(PIKA_HAVE_THREAD_GUARD_PAGE)
         if (use_guard_pages)
         {
-            void** real_stack =
-                static_cast<void**>(stack) - (EXEC_PAGESIZE / sizeof(void*));
+            void** real_stack = static_cast<void**>(stack) - (EXEC_PAGESIZE / sizeof(void*));
             ::munmap(static_cast<void*>(real_stack), size + EXEC_PAGESIZE);
         }
         else
         {
             ::munmap(stack, size);
         }
-#else
+#  else
         ::munmap(stack, size);
-#endif
+#  endif
     }
 
-#else    // non-mmap()
+# else    // non-mmap()
 
     //this should be a fine default.
-    static const std::size_t
-        stack_alignment = sizeof(void*) > 16 ? sizeof(void*) : 16;
+    static const std::size_t stack_alignment = sizeof(void*) > 16 ? sizeof(void*) : 16;
 
     struct stack_aligner
     {
@@ -203,7 +193,7 @@ namespace pika::threads::coroutines::detail::posix {
         delete[] static_cast<stack_aligner*>(stack);
     }
 
-#endif    // non-mmap() implementation of alloc_stack()/free_stack()
+# endif    // non-mmap() implementation of alloc_stack()/free_stack()
 
     /**
      * The splitter is needed for 64 bit systems.
@@ -261,5 +251,5 @@ namespace pika::threads::coroutines::detail::posix {
 }    // namespace pika::threads::coroutines::detail::posix
 
 #else
-#error This header can only be included when compiling for posix systems.
+# error This header can only be included when compiling for posix systems.
 #endif

@@ -51,8 +51,7 @@ namespace pika::threads::detail {
             return this;
         }
 
-        static pika::detail::internal_allocator<thread_data_stackless>
-            thread_alloc_;
+        static pika::detail::internal_allocator<thread_data_stackless> thread_alloc_;
 
     public:
         stackless_coroutine_type::result_type call()
@@ -60,8 +59,7 @@ namespace pika::threads::detail {
             PIKA_ASSERT(get_state().state() == thread_schedule_state::active);
             PIKA_ASSERT(this == coroutine_.get_thread_id().get());
 
-            return coroutine_(this->thread_data::set_state_ex(
-                thread_restart_state::signaled));
+            return coroutine_(this->thread_data::set_state_ex(thread_restart_state::signaled));
         }
 
 #if defined(PIKA_DEBUG)
@@ -99,8 +97,8 @@ namespace pika::threads::detail {
             PIKA_ASSERT(coroutine_.is_ready());
         }
 
-        thread_data_stackless(thread_init_data& init_data, void* queue,
-            std::ptrdiff_t stacksize, thread_id_addref addref)
+        thread_data_stackless(thread_init_data& init_data, void* queue, std::ptrdiff_t stacksize,
+            thread_id_addref addref)
           : thread_data(init_data, queue, stacksize, true, addref)
           , coroutine_(PIKA_MOVE(init_data.func), thread_id_type(this_()))
         {
@@ -110,8 +108,7 @@ namespace pika::threads::detail {
         ~thread_data_stackless();
 
         inline static thread_data* create(thread_init_data& data, void* queue,
-            std::ptrdiff_t stacksize,
-            thread_id_addref addref = thread_id_addref::yes);
+            std::ptrdiff_t stacksize, thread_id_addref addref = thread_id_addref::yes);
 
         void destroy() override
         {
@@ -124,8 +121,8 @@ namespace pika::threads::detail {
     };
 
     ////////////////////////////////////////////////////////////////////////////
-    inline thread_data* thread_data_stackless::create(thread_init_data& data,
-        void* queue, std::ptrdiff_t stacksize, thread_id_addref addref)
+    inline thread_data* thread_data_stackless::create(
+        thread_init_data& data, void* queue, std::ptrdiff_t stacksize, thread_id_addref addref)
     {
         thread_data* p = thread_alloc_.allocate(1);
         new (p) thread_data_stackless(data, queue, stacksize, addref);

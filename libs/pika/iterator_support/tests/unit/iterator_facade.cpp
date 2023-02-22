@@ -23,8 +23,8 @@
 // iterators works properly.
 template <typename Ref>
 class counter_iterator
-  : public pika::util::iterator_facade<counter_iterator<Ref>, int const,
-        std::input_iterator_tag, Ref>
+  : public pika::util::iterator_facade<counter_iterator<Ref>, int const, std::input_iterator_tag,
+        Ref>
 {
 public:
     counter_iterator() {}
@@ -85,9 +85,7 @@ struct value
     void mutator() {}    // non-const member function
 };
 
-struct input_iter
-  : pika::util::iterator_facade<input_iter, value, std::forward_iterator_tag,
-        value>
+struct input_iter : pika::util::iterator_facade<input_iter, value, std::forward_iterator_tag, value>
 {
 public:
     input_iter() {}
@@ -111,16 +109,14 @@ struct wrapper
     T m_x;
 
     template <typename T_, typename TD = std::decay_t<T_>,
-        typename Enable =
-            std::enable_if_t<!std::is_same<TD, wrapper<T>>::value>>
+        typename Enable = std::enable_if_t<!std::is_same<TD, wrapper<T>>::value>>
     explicit wrapper(T_&& x)
       : m_x(std::forward<T_>(x))
     {
     }
 
     template <typename U>
-    wrapper(const wrapper<U>& other,
-        std::enable_if_t<std::is_convertible<U, T>::value>* = 0)
+    wrapper(const wrapper<U>& other, std::enable_if_t<std::is_convertible<U, T>::value>* = 0)
       : m_x(other.m_x)
     {
     }

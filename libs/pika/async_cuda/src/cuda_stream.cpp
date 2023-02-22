@@ -21,8 +21,8 @@ namespace pika::cuda::experimental {
         return p;
     }
 
-    whip::stream_t cuda_stream::create_stream(int device,
-        pika::execution::thread_priority priority, unsigned int flags)
+    whip::stream_t cuda_stream::create_stream(
+        int device, pika::execution::thread_priority priority, unsigned int flags)
     {
         cuda_device_scope d{device};
         auto p = get_available_priorities();
@@ -40,8 +40,8 @@ namespace pika::cuda::experimental {
         return stream;
     }
 
-    cuda_stream::cuda_stream(int device,
-        pika::execution::thread_priority priority, unsigned int flags)
+    cuda_stream::cuda_stream(
+        int device, pika::execution::thread_priority priority, unsigned int flags)
       : device(device)
       , priority(priority)
       , flags(flags)

@@ -44,9 +44,8 @@ void test_make_future()
     // test make_future<T>(future<U>) with given T conv(U)
     {
         pika::future<int> f1 = pika::make_ready_future(42);
-        pika::future<std::string> f2 =
-            pika::make_future<std::string>(std::move(f1),
-                [](int value) -> std::string { return std::to_string(value); });
+        pika::future<std::string> f2 = pika::make_future<std::string>(
+            std::move(f1), [](int value) -> std::string { return std::to_string(value); });
 
         PIKA_TEST_EQ(std::string("42"), f2.get());
     }

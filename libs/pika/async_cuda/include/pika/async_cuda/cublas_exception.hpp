@@ -20,8 +20,7 @@ namespace pika::cuda::experimental {
     struct cublas_exception : pika::exception
     {
         PIKA_EXPORT explicit cublas_exception(cublasStatus_t err);
-        PIKA_EXPORT cublas_exception(
-            const std::string& msg, cublasStatus_t err);
+        PIKA_EXPORT cublas_exception(const std::string& msg, cublasStatus_t err);
         PIKA_EXPORT cublasStatus_t get_cublas_errorcode() const noexcept;
 
     protected:

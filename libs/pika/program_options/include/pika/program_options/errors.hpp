@@ -49,8 +49,7 @@ namespace pika::program_options {
     {
     public:
         too_many_positional_options_error()
-          : error("too many positional options have been specified on the "
-                  "command line")
+          : error("too many positional options have been specified on the command line")
         {
         }
     };
@@ -121,8 +120,7 @@ namespace pika::program_options {
         /** template with placeholders */
         std::string m_error_template;
 
-        error_with_option_name(const std::string& template_,
-            const std::string& option_name = "",
+        error_with_option_name(const std::string& template_, const std::string& option_name = "",
             const std::string& original_token = "", int option_style = 0);
 
         /** gcc says that throw specification on dtor is loosened
@@ -133,24 +131,23 @@ namespace pika::program_options {
         /** Substitute
          *      parameter_name->value to create the error message from
          *      the error template */
-        void set_substitute(
-            const std::string& parameter_name, const std::string& value)
+        void set_substitute(const std::string& parameter_name, const std::string& value)
         {
             m_substitutions[parameter_name] = value;
         }
 
         /** If the parameter is missing, then make the
          *      from->to substitution instead */
-        void set_substitute_default(const std::string& parameter_name,
-            const std::string& from, const std::string& to)
+        void set_substitute_default(
+            const std::string& parameter_name, const std::string& from, const std::string& to)
         {
             m_substitution_defaults[parameter_name] = std::make_pair(from, to);
         }
 
         /** Add context to an exception */
         // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-        void add_context(const std::string& option_name,
-            const std::string& original_token, int option_style)
+        void add_context(
+            const std::string& option_name, const std::string& original_token, int option_style)
         // NOLINTEND(bugprone-easily-swappable-parameters)
         {
             set_option_name(option_name);
@@ -188,12 +185,10 @@ namespace pika::program_options {
         mutable std::string m_message;    // For on-demand formatting in 'what'
 
         /** Makes all substitutions using the template */
-        virtual void substitute_placeholders(
-            const std::string& error_template) const;
+        virtual void substitute_placeholders(const std::string& error_template) const;
 
         // helper function for substitute_placeholders
-        void replace_token(
-            const std::string& from, const std::string& to) const;
+        void replace_token(const std::string& from, const std::string& to) const;
 
         /** Construct option name in accordance with the appropriate
          *  prefix style: i.e. long dash or short slash etc */
@@ -207,8 +202,7 @@ namespace pika::program_options {
     {
     public:
         multiple_values()
-          : error_with_option_name(
-                "option '%canonical_option%' only takes a single argument")
+          : error_with_option_name("option '%canonical_option%' only takes a single argument")
         {
         }
 
@@ -218,13 +212,11 @@ namespace pika::program_options {
     /** Class thrown when there are several occurrences of an
         option, but user called a method which cannot return
         them all. */
-    class PIKA_ALWAYS_EXPORT multiple_occurrences
-      : public error_with_option_name
+    class PIKA_ALWAYS_EXPORT multiple_occurrences : public error_with_option_name
     {
     public:
         multiple_occurrences()
-          : error_with_option_name("option '%canonical_option%' cannot be "
-                                   "specified more than once")
+          : error_with_option_name("option '%canonical_option%' cannot be specified more than once")
         {
         }
 
@@ -238,8 +230,7 @@ namespace pika::program_options {
         // option name is constructed by the option_descriptor and never on the fly
         required_option(const std::string& option_name)
           : error_with_option_name(
-                "the option '%canonical_option%' is required but missing", "",
-                option_name)
+                "the option '%canonical_option%' is required but missing", "", option_name)
         {
         }
 
@@ -258,12 +249,11 @@ namespace pika::program_options {
      *      conceptual dissonance!
      *
      *   */
-    class PIKA_ALWAYS_EXPORT error_with_no_option_name
-      : public error_with_option_name
+    class PIKA_ALWAYS_EXPORT error_with_no_option_name : public error_with_option_name
     {
     public:
-        error_with_no_option_name(const std::string& template_,
-            const std::string& original_token = "")
+        error_with_no_option_name(
+            const std::string& template_, const std::string& original_token = "")
           : error_with_option_name(template_, "", original_token)
         {
         }
@@ -279,8 +269,7 @@ namespace pika::program_options {
     {
     public:
         unknown_option(const std::string& original_token = "")
-          : error_with_no_option_name(
-                "unrecognised option '%canonical_option%'", original_token)
+          : error_with_no_option_name("unrecognised option '%canonical_option%'", original_token)
         {
         }
 
@@ -292,8 +281,7 @@ namespace pika::program_options {
     {
     public:
         ambiguous_option(const std::vector<std::string>& xalternatives)
-          : error_with_no_option_name(
-                "option '%canonical_option%' is ambiguous")
+          : error_with_no_option_name("option '%canonical_option%' is ambiguous")
           , m_alternatives(xalternatives)
         {
         }
@@ -307,8 +295,7 @@ namespace pika::program_options {
 
     protected:
         /** Makes all substitutions using the template */
-        void substitute_placeholders(
-            const std::string& error_template) const override;
+        void substitute_placeholders(const std::string& error_template) const override;
 
     private:
         // TODO: copy ctor might throw
@@ -334,8 +321,7 @@ namespace pika::program_options {
 
         invalid_syntax(kind_t kind, const std::string& option_name = "",
             const std::string& original_token = "", int option_style = 0)
-          : error_with_option_name(
-                get_template(kind), option_name, original_token, option_style)
+          : error_with_option_name(get_template(kind), option_name, original_token, option_style)
           , m_kind(kind)
         {
         }
@@ -386,8 +372,7 @@ namespace pika::program_options {
     class PIKA_ALWAYS_EXPORT invalid_command_line_syntax : public invalid_syntax
     {
     public:
-        invalid_command_line_syntax(kind_t kind,
-            const std::string& option_name = "",
+        invalid_command_line_syntax(kind_t kind, const std::string& option_name = "",
             const std::string& original_token = "", int option_style = 0)
           : invalid_syntax(kind, option_name, original_token, option_style)
         {
@@ -411,8 +396,7 @@ namespace pika::program_options {
     public:
         validation_error(kind_t kind, const std::string& option_name = "",
             const std::string& original_token = "", int option_style = 0)
-          : error_with_option_name(
-                get_template(kind), option_name, original_token, option_style)
+          : error_with_option_name(get_template(kind), option_name, original_token, option_style)
           , m_kind(kind)
         {
         }

@@ -70,10 +70,8 @@ void test_async_with_executor(Executor& exec)
         pika::lcos::local::promise<std::int32_t> p;
         pika::shared_future<std::int32_t> f = p.get_future();
 
-        pika::future<std::int32_t> f1 =
-            pika::async(exec, &increment_with_future, f);
-        pika::future<std::int32_t> f2 =
-            pika::async(exec, &increment_with_future, f);
+        pika::future<std::int32_t> f1 = pika::async(exec, &increment_with_future, f);
+        pika::future<std::int32_t> f2 = pika::async(exec, &increment_with_future, f);
 
         p.set_value(42);
         PIKA_TEST_EQ(f1.get(), 43);
@@ -83,8 +81,7 @@ void test_async_with_executor(Executor& exec)
     {
         using std::placeholders::_1;
 
-        pika::future<std::int32_t> f1 =
-            pika::async(exec, pika::util::detail::bind(&increment, 42));
+        pika::future<std::int32_t> f1 = pika::async(exec, pika::util::detail::bind(&increment, 42));
         PIKA_TEST_EQ(f1.get(), 43);
 
         pika::future<std::int32_t> f2 =
@@ -110,32 +107,27 @@ void test_async_with_executor(Executor& exec)
     {
         mult2 mult;
 
-        pika::future<std::int32_t> f1 =
-            pika::async(exec, pika::util::detail::bind(mult, 42));
+        pika::future<std::int32_t> f1 = pika::async(exec, pika::util::detail::bind(mult, 42));
         PIKA_TEST_EQ(f1.get(), 84);
 
         using std::placeholders::_1;
 
-        pika::future<std::int32_t> f2 =
-            pika::async(exec, pika::util::detail::bind(mult, _1), 42);
+        pika::future<std::int32_t> f2 = pika::async(exec, pika::util::detail::bind(mult, _1), 42);
         PIKA_TEST_EQ(f2.get(), 84);
 
         do_nothing_obj do_nothing_f;
-        pika::future<void> f3 =
-            pika::async(exec, pika::util::detail::bind(do_nothing_f, _1), 42);
+        pika::future<void> f3 = pika::async(exec, pika::util::detail::bind(do_nothing_f, _1), 42);
         f3.get();
     }
 
     {
         decrement dec;
 
-        pika::future<std::int32_t> f1 =
-            pika::async(exec, &decrement::call, dec, 42);
+        pika::future<std::int32_t> f1 = pika::async(exec, &decrement::call, dec, 42);
         PIKA_TEST_EQ(f1.get(), 41);
 
         do_nothing_member dnm;
-        pika::future<void> f2 =
-            pika::async(exec, &do_nothing_member::call, dnm, 42);
+        pika::future<void> f2 = pika::async(exec, &do_nothing_member::call, dnm, 42);
         f2.get();
     }
 
@@ -144,17 +136,17 @@ void test_async_with_executor(Executor& exec)
 
         using std::placeholders::_1;
 
-        pika::future<std::int32_t> f1 = pika::async(
-            exec, pika::util::detail::bind(&decrement::call, dec, 42));
+        pika::future<std::int32_t> f1 =
+            pika::async(exec, pika::util::detail::bind(&decrement::call, dec, 42));
         PIKA_TEST_EQ(f1.get(), 41);
 
-        pika::future<std::int32_t> f2 = pika::async(
-            exec, pika::util::detail::bind(&decrement::call, dec, _1), 42);
+        pika::future<std::int32_t> f2 =
+            pika::async(exec, pika::util::detail::bind(&decrement::call, dec, _1), 42);
         PIKA_TEST_EQ(f2.get(), 41);
 
         do_nothing_member dnm;
-        pika::future<void> f3 = pika::async(exec,
-            pika::util::detail::bind(&do_nothing_member::call, dnm, _1), 42);
+        pika::future<void> f3 =
+            pika::async(exec, pika::util::detail::bind(&do_nothing_member::call, dnm, _1), 42);
         f3.get();
     }
 }
@@ -177,8 +169,7 @@ int pika_main()
 int main(int argc, char* argv[])
 {
     // Initialize and run pika
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
-        "pika main exited with non-zero status");
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0, "pika main exited with non-zero status");
 
     return 0;
 }

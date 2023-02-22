@@ -50,8 +50,7 @@ namespace pika::traits {
         template <typename T, typename Enable>
         struct acquire_future_impl
         {
-            static_assert(!is_future_or_future_range_v<T>,
-                "!is_future_or_future_range_v<T>");
+            static_assert(!is_future_or_future_range_v<T>, "!is_future_or_future_range_v<T>");
 
             using type = T;
 
@@ -68,14 +67,12 @@ namespace pika::traits {
         {
             using type = pika::future<R>;
 
-            PIKA_FORCEINLINE pika::future<R> operator()(
-                pika::future<R>& future) const noexcept
+            PIKA_FORCEINLINE pika::future<R> operator()(pika::future<R>& future) const noexcept
             {
                 return PIKA_MOVE(future);
             }
 
-            PIKA_FORCEINLINE pika::future<R> operator()(
-                pika::future<R>&& future) const noexcept
+            PIKA_FORCEINLINE pika::future<R> operator()(pika::future<R>&& future) const noexcept
             {
                 return PIKA_MOVE(future);
             }
@@ -104,11 +101,9 @@ namespace pika::traits {
 
         ///////////////////////////////////////////////////////////////////////
         template <typename Range>
-        struct acquire_future_impl<Range,
-            std::enable_if_t<pika::traits::is_future_range_v<Range>>>
+        struct acquire_future_impl<Range, std::enable_if_t<pika::traits::is_future_range_v<Range>>>
         {
-            using future_type =
-                typename traits::future_range_traits<Range>::future_type;
+            using future_type = typename traits::future_range_traits<Range>::future_type;
             using type = Range;
 
             template <typename Range_>
@@ -116,18 +111,17 @@ namespace pika::traits {
             transform_future_disp(Range_&& futures, Range& values) const
             {
                 detail::reserve_if_random_access_by_range(values, futures);
-                std::transform(util::begin(futures), util::end(futures),
-                    std::back_inserter(values), acquire_future_disp());
+                std::transform(util::begin(futures), util::end(futures), std::back_inserter(values),
+                    acquire_future_disp());
             }
 
             template <typename Range_>
-            typename std::enable_if<
-                !has_push_back<std::decay_t<Range_>>::value>::type
+            typename std::enable_if<!has_push_back<std::decay_t<Range_>>::value>::type
             transform_future_disp(Range_&& futures, Range& values) const
             {
                 detail::reserve_if_random_access_by_range(values, futures);
-                std::transform(util::begin(futures), util::end(futures),
-                    util::begin(values), acquire_future_disp());
+                std::transform(util::begin(futures), util::end(futures), util::begin(values),
+                    acquire_future_disp());
             }
 
             template <typename Range_>

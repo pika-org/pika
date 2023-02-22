@@ -19,33 +19,33 @@ int main()
     std::string str5("    ");
 
     // general string test
-    PIKA_TEST_EQ(pika::string_util::trim_copy(str1), "1x x x x1");
-    PIKA_TEST_EQ(pika::string_util::trim_copy(str3), "x");
-    PIKA_TEST_EQ(pika::string_util::trim_copy(str4), "x");
+    PIKA_TEST_EQ(pika::detail::trim_copy(str1), "1x x x x1");
+    PIKA_TEST_EQ(pika::detail::trim_copy(str3), "x");
+    PIKA_TEST_EQ(pika::detail::trim_copy(str4), "x");
 
     // spaces-only string test
-    PIKA_TEST_EQ(pika::string_util::trim_copy(str5), "");
+    PIKA_TEST_EQ(pika::detail::trim_copy(str5), "");
 
     // empty string check
-    PIKA_TEST_EQ(pika::string_util::trim_copy(std::string("")), "");
+    PIKA_TEST_EQ(pika::detail::trim_copy(std::string("")), "");
 
     // general string test
-    pika::string_util::trim(str2);
+    pika::detail::trim(str2);
     PIKA_TEST_EQ(str2, "2x x x x2");
 
-    pika::string_util::trim(str3);
+    pika::detail::trim(str3);
     PIKA_TEST_EQ(str3, "x");
 
-    pika::string_util::trim(str4);
+    pika::detail::trim(str4);
     PIKA_TEST_EQ(str4, "x");
 
     // spaces-only string test
-    pika::string_util::trim(str5);
+    pika::detail::trim(str5);
     PIKA_TEST_EQ(str5, "");
 
     // empty string check
     str5 = "";
-    pika::string_util::trim(str5);
+    pika::detail::trim(str5);
     PIKA_TEST_EQ(str5, "");
 
     return 0;

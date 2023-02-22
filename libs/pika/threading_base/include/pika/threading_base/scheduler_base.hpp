@@ -19,7 +19,7 @@
 #include <pika/threading_base/thread_queue_init_parameters.hpp>
 #include <pika/threading_base/threading_base_fwd.hpp>
 #if defined(PIKA_HAVE_SCHEDULER_LOCAL_STORAGE)
-#include <pika/coroutines/detail/tss.hpp>
+# include <pika/coroutines/detail/tss.hpp>
 #endif
 
 #include <fmt/format.h>
@@ -103,21 +103,19 @@ namespace pika::threads::detail {
         virtual void suspend(std::size_t num_thread);
         virtual void resume(std::size_t num_thread);
 
-        std::size_t select_active_pu(std::unique_lock<pu_mutex_type>& l,
-            std::size_t num_thread, bool allow_fallback = false);
+        std::size_t select_active_pu(std::unique_lock<pu_mutex_type>& l, std::size_t num_thread,
+            bool allow_fallback = false);
 
         // allow to access/manipulate states
         std::atomic<pika::runtime_state>& get_state(std::size_t num_thread);
-        std::atomic<pika::runtime_state> const& get_state(
-            std::size_t num_thread) const;
+        std::atomic<pika::runtime_state> const& get_state(std::size_t num_thread) const;
         void set_all_states(pika::runtime_state s);
         void set_all_states_at_least(pika::runtime_state s);
 
         // return whether all states are at least at the given one
         bool has_reached_state(pika::runtime_state s) const;
         bool is_state(pika::runtime_state s) const;
-        std::pair<pika::runtime_state, pika::runtime_state>
-        get_minmax_state() const;
+        std::pair<pika::runtime_state, pika::runtime_state> get_minmax_state() const;
 
         ///////////////////////////////////////////////////////////////////////
         // get/set scheduler mode
@@ -129,8 +127,7 @@ namespace pika::threads::detail {
         // get/set scheduler mode
         bool has_scheduler_mode(scheduler_mode mode) const
         {
-            return (mode_.data_.load(std::memory_order_relaxed) & mode) !=
-                scheduler_mode{};
+            return (mode_.data_.load(std::memory_order_relaxed) & mode) != scheduler_mode{};
         }
 
         // set mode flags that control scheduler behaviour
@@ -174,31 +171,21 @@ namespace pika::threads::detail {
 #endif
 
 #ifdef PIKA_HAVE_THREAD_STEALING_COUNTS
-        virtual std::int64_t get_num_pending_misses(
-            std::size_t num_thread, bool reset) = 0;
-        virtual std::int64_t get_num_pending_accesses(
-            std::size_t num_thread, bool reset) = 0;
+        virtual std::int64_t get_num_pending_misses(std::size_t num_thread, bool reset) = 0;
+        virtual std::int64_t get_num_pending_accesses(std::size_t num_thread, bool reset) = 0;
 
-        virtual std::int64_t get_num_stolen_from_pending(
-            std::size_t num_thread, bool reset) = 0;
-        virtual std::int64_t get_num_stolen_to_pending(
-            std::size_t num_thread, bool reset) = 0;
-        virtual std::int64_t get_num_stolen_from_staged(
-            std::size_t num_thread, bool reset) = 0;
-        virtual std::int64_t get_num_stolen_to_staged(
-            std::size_t num_thread, bool reset) = 0;
+        virtual std::int64_t get_num_stolen_from_pending(std::size_t num_thread, bool reset) = 0;
+        virtual std::int64_t get_num_stolen_to_pending(std::size_t num_thread, bool reset) = 0;
+        virtual std::int64_t get_num_stolen_from_staged(std::size_t num_thread, bool reset) = 0;
+        virtual std::int64_t get_num_stolen_to_staged(std::size_t num_thread, bool reset) = 0;
 #endif
 
-        virtual std::int64_t get_queue_length(
-            std::size_t num_thread = std::size_t(-1)) const = 0;
+        virtual std::int64_t get_queue_length(std::size_t num_thread = std::size_t(-1)) const = 0;
 
-        virtual std::int64_t get_thread_count(
-            threads::detail::thread_schedule_state state =
-                threads::detail::thread_schedule_state::unknown,
-            execution::thread_priority priority =
-                execution::thread_priority::default_,
-            std::size_t num_thread = std::size_t(-1),
-            bool reset = false) const = 0;
+        virtual std::int64_t get_thread_count(threads::detail::thread_schedule_state state =
+                                                  threads::detail::thread_schedule_state::unknown,
+            execution::thread_priority priority = execution::thread_priority::default_,
+            std::size_t num_thread = std::size_t(-1), bool reset = false) const = 0;
 
         // Queries whether a given core is idle
         virtual bool is_core_idle(std::size_t num_thread) const = 0;
@@ -210,47 +197,37 @@ namespace pika::threads::detail {
 
         // Enumerate all matching threads
         virtual bool enumerate_threads(
-            util::detail::function<bool(threads::detail::thread_id_type)> const&
-                f,
+            util::detail::function<bool(threads::detail::thread_id_type)> const& f,
             threads::detail::thread_schedule_state state =
                 threads::detail::thread_schedule_state::unknown) const = 0;
 
         virtual void abort_all_suspended_threads() = 0;
 
         virtual bool cleanup_terminated(bool delete_all) = 0;
-        virtual bool cleanup_terminated(
-            std::size_t num_thread, bool delete_all) = 0;
+        virtual bool cleanup_terminated(std::size_t num_thread, bool delete_all) = 0;
 
         virtual void create_thread(threads::detail::thread_init_data& data,
             threads::detail::thread_id_ref_type* id, error_code& ec) = 0;
 
         virtual bool get_next_thread(std::size_t num_thread, bool running,
-            threads::detail::thread_id_ref_type& thrd,
-            bool enable_stealing) = 0;
+            threads::detail::thread_id_ref_type& thrd, bool enable_stealing) = 0;
 
         virtual void schedule_thread(threads::detail::thread_id_ref_type thrd,
-            execution::thread_schedule_hint schedulehint,
-            bool allow_fallback = false,
-            execution::thread_priority priority =
-                execution::thread_priority::normal) = 0;
+            execution::thread_schedule_hint schedulehint, bool allow_fallback = false,
+            execution::thread_priority priority = execution::thread_priority::normal) = 0;
 
-        virtual void schedule_thread_last(
-            threads::detail::thread_id_ref_type thrd,
-            execution::thread_schedule_hint schedulehint,
-            bool allow_fallback = false,
-            execution::thread_priority priority =
-                execution::thread_priority::normal) = 0;
+        virtual void schedule_thread_last(threads::detail::thread_id_ref_type thrd,
+            execution::thread_schedule_hint schedulehint, bool allow_fallback = false,
+            execution::thread_priority priority = execution::thread_priority::normal) = 0;
 
         virtual void destroy_thread(threads::detail::thread_data* thrd) = 0;
 
         virtual bool wait_or_add_new(std::size_t num_thread, bool running,
-            std::int64_t& idle_loop_count, bool enable_stealing,
-            std::size_t& added) = 0;
+            std::int64_t& idle_loop_count, bool enable_stealing, std::size_t& added) = 0;
 
         virtual void on_start_thread(std::size_t num_thread) = 0;
         virtual void on_stop_thread(std::size_t num_thread) = 0;
-        virtual void on_error(
-            std::size_t num_thread, std::exception_ptr const& e) = 0;
+        virtual void on_error(std::size_t num_thread, std::exception_ptr const& e) = 0;
 
 #ifdef PIKA_HAVE_THREAD_QUEUE_WAITTIME
         virtual std::int64_t get_average_thread_wait_time(
@@ -261,8 +238,7 @@ namespace pika::threads::detail {
 
         virtual void reset_thread_distribution() {}
 
-        std::ptrdiff_t get_stack_size(
-            execution::thread_stacksize stacksize) const
+        std::ptrdiff_t get_stack_size(execution::thread_stacksize stacksize) const
         {
             if (stacksize == execution::thread_stacksize::current)
             {
@@ -289,8 +265,7 @@ namespace pika::threads::detail {
                 return (std::numeric_limits<std::ptrdiff_t>::max)();
 
             default:
-                PIKA_ASSERT_MSG(
-                    false, fmt::format("Invalid stack size {}", stacksize));
+                PIKA_ASSERT_MSG(false, fmt::format("Invalid stack size {}", stacksize));
                 break;
             }
 
@@ -310,24 +285,22 @@ namespace pika::threads::detail {
             return 0;
         }
 
-        void set_mpi_polling_functions(polling_function_ptr mpi_func,
-            polling_work_count_function_ptr mpi_work_count_func)
+        void set_mpi_polling_functions(
+            polling_function_ptr mpi_func, polling_work_count_function_ptr mpi_work_count_func)
         {
             polling_function_mpi_.store(mpi_func, std::memory_order_relaxed);
-            polling_work_count_function_mpi_.store(
-                mpi_work_count_func, std::memory_order_relaxed);
+            polling_work_count_function_mpi_.store(mpi_work_count_func, std::memory_order_relaxed);
         }
 
         void clear_mpi_polling_function()
         {
-            polling_function_mpi_.store(
-                &null_polling_function, std::memory_order_relaxed);
+            polling_function_mpi_.store(&null_polling_function, std::memory_order_relaxed);
             polling_work_count_function_mpi_.store(
                 &null_polling_work_count_function, std::memory_order_relaxed);
         }
 
-        void set_cuda_polling_functions(polling_function_ptr cuda_func,
-            polling_work_count_function_ptr cuda_work_count_func)
+        void set_cuda_polling_functions(
+            polling_function_ptr cuda_func, polling_work_count_function_ptr cuda_work_count_func)
         {
             polling_function_cuda_.store(cuda_func, std::memory_order_relaxed);
             polling_work_count_function_cuda_.store(
@@ -336,8 +309,7 @@ namespace pika::threads::detail {
 
         void clear_cuda_polling_function()
         {
-            polling_function_cuda_.store(
-                &null_polling_function, std::memory_order_relaxed);
+            polling_function_cuda_.store(&null_polling_function, std::memory_order_relaxed);
             polling_work_count_function_cuda_.store(
                 &null_polling_work_count_function, std::memory_order_relaxed);
         }
@@ -346,15 +318,13 @@ namespace pika::threads::detail {
         {
             polling_status status = polling_status::idle;
 #if defined(PIKA_HAVE_MODULE_ASYNC_MPI)
-            if ((*polling_function_mpi_.load(std::memory_order_relaxed))() ==
-                polling_status::busy)
+            if ((*polling_function_mpi_.load(std::memory_order_relaxed))() == polling_status::busy)
             {
                 status = polling_status::busy;
             }
 #endif
 #if defined(PIKA_HAVE_MODULE_ASYNC_CUDA)
-            if ((*polling_function_cuda_.load(std::memory_order_relaxed))() ==
-                polling_status::busy)
+            if ((*polling_function_cuda_.load(std::memory_order_relaxed))() == polling_status::busy)
             {
                 status = polling_status::busy;
             }
@@ -366,20 +336,17 @@ namespace pika::threads::detail {
         {
             std::size_t work_count = 0;
 #if defined(PIKA_HAVE_MODULE_ASYNC_MPI)
-            work_count += polling_work_count_function_mpi_.load(
-                std::memory_order_relaxed)();
+            work_count += polling_work_count_function_mpi_.load(std::memory_order_relaxed)();
 #endif
 #if defined(PIKA_HAVE_MODULE_ASYNC_CUDA)
-            work_count += polling_work_count_function_cuda_.load(
-                std::memory_order_relaxed)();
+            work_count += polling_work_count_function_cuda_.load(std::memory_order_relaxed)();
 #endif
             return work_count;
         }
 
     protected:
         // the scheduler mode, protected from false sharing
-        pika::concurrency::detail::cache_line_data<std::atomic<scheduler_mode>>
-            mode_;
+        pika::concurrency::detail::cache_line_data<std::atomic<scheduler_mode>> mode_;
 
 #if defined(PIKA_HAVE_THREAD_MANAGER_IDLE_BACKOFF)
         // support for suspension on idle queues
@@ -390,9 +357,7 @@ namespace pika::threads::detail {
             std::uint32_t wait_count_;
             double max_idle_backoff_time_;
         };
-        std::vector<
-            pika::concurrency::detail::cache_line_data<idle_backoff_data>>
-            wait_counts_;
+        std::vector<pika::concurrency::detail::cache_line_data<idle_backoff_data>> wait_counts_;
 #endif
 
         // support for suspension of pus
@@ -413,25 +378,20 @@ namespace pika::threads::detail {
 
         std::atomic<polling_function_ptr> polling_function_mpi_;
         std::atomic<polling_function_ptr> polling_function_cuda_;
-        std::atomic<polling_work_count_function_ptr>
-            polling_work_count_function_mpi_;
-        std::atomic<polling_work_count_function_ptr>
-            polling_work_count_function_cuda_;
+        std::atomic<polling_work_count_function_ptr> polling_work_count_function_mpi_;
+        std::atomic<polling_work_count_function_ptr> polling_work_count_function_cuda_;
 
 #if defined(PIKA_HAVE_SCHEDULER_LOCAL_STORAGE)
     public:
         // manage scheduler-local data
         coroutines::detail::tss_data_node* find_tss_data(void const* key);
         void add_new_tss_node(void const* key,
-            std::shared_ptr<coroutines::detail::tss_cleanup_function> const&
-                func,
-            void* tss_data);
+            std::shared_ptr<coroutines::detail::tss_cleanup_function> const& func, void* tss_data);
         void erase_tss_node(void const* key, bool cleanup_existing);
         void* get_tss_data(void const* key);
         void set_tss_data(void const* key,
-            std::shared_ptr<coroutines::detail::tss_cleanup_function> const&
-                func,
-            void* tss_data, bool cleanup_existing);
+            std::shared_ptr<coroutines::detail::tss_cleanup_function> const& func, void* tss_data,
+            bool cleanup_existing);
 
     protected:
         std::shared_ptr<coroutines::detail::tss_storage> thread_data_;
@@ -440,16 +400,14 @@ namespace pika::threads::detail {
 }    // namespace pika::threads::detail
 
 template <>
-struct fmt::formatter<pika::threads::detail::scheduler_base>
-  : fmt::formatter<std::string>
+struct fmt::formatter<pika::threads::detail::scheduler_base> : fmt::formatter<std::string>
 {
     template <typename FormatContext>
-    auto format(pika::threads::detail::scheduler_base const& scheduler,
-        FormatContext& ctx)
+    auto format(pika::threads::detail::scheduler_base const& scheduler, FormatContext& ctx)
     {
         return fmt::formatter<std::string>::format(
-            fmt::format("{}({})", scheduler.get_description(),
-                static_cast<const void*>(&scheduler)),
+            fmt::format(
+                "{}({})", scheduler.get_description(), static_cast<const void*>(&scheduler)),
             ctx);
     }
 };
