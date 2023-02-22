@@ -769,6 +769,7 @@ namespace pika::execution::experimental {
                 "Are you missing a std::move? unique_any_sender is not copyable and thus not "
                 "l-value connectable. Make sure you are passing an r-value reference of the "
                 "sender.");
+            PIKA_UNREACHABLE;
         }
 
         bool empty() const noexcept
