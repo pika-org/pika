@@ -595,8 +595,6 @@ namespace pika::threads {
                     return 0;
                 }
                 }
-
-                PIKA_UNREACHABLE;
             }
 
             // Return the cumulative count for all queues.

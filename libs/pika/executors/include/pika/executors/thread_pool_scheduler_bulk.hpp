@@ -150,7 +150,10 @@ namespace pika::thread_pool_bulk_detail {
                     CPO>(s);
             }
 
+            // nvc++ complains about a missing return without this
+#if defined(PIKA_NVHPC_VERSION)
             PIKA_UNREACHABLE;
+#endif
         }
 
     private:

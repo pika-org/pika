@@ -1352,8 +1352,6 @@ namespace pika {
         {
             return pika::make_exceptional_future<T>(std::current_exception());
         }
-
-        PIKA_UNREACHABLE;
     }
 
     ///////////////////////////////////////////////////////////////////////////
