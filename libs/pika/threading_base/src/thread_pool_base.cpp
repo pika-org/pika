@@ -7,12 +7,12 @@
 #include <pika/affinity/affinity_data.hpp>
 #include <pika/assert.hpp>
 #include <pika/functional/bind.hpp>
-#include <pika/hardware/timestamp.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/threading_base/callback_notifier.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/scheduler_state.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
+#include <pika/timing/detail/timestamp.hpp>
 #include <pika/topology/topology.hpp>
 
 #include <chrono>
@@ -82,16 +82,16 @@ namespace pika::threads::detail {
     void thread_pool_base::init_pool_time_scale()
     {
         // scale timestamps to nanoseconds
-        std::uint64_t base_timestamp = util::hardware::timestamp();
+        std::uint64_t base_timestamp = pika::chrono::detail::timestamp();
         std::uint64_t base_time = static_cast<std::uint64_t>(
             std::chrono::high_resolution_clock::now().time_since_epoch().count());
-        std::uint64_t curr_timestamp = util::hardware::timestamp();
+        std::uint64_t curr_timestamp = pika::chrono::detail::timestamp();
         std::uint64_t curr_time = static_cast<std::uint64_t>(
             std::chrono::high_resolution_clock::now().time_since_epoch().count());
 
         while ((curr_time - base_time) <= 100000)
         {
-            curr_timestamp = util::hardware::timestamp();
+            curr_timestamp = pika::chrono::detail::timestamp();
             curr_time = static_cast<std::uint64_t>(
                 std::chrono::high_resolution_clock::now().time_since_epoch().count());
         }

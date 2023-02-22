@@ -13,7 +13,6 @@
 #include <pika/async_combinators/wait_all.hpp>
 #include <pika/execution_base/this_thread.hpp>
 #include <pika/futures/future.hpp>
-#include <pika/hardware/timestamp.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/logging.hpp>
 #include <pika/modules/schedulers.hpp>
@@ -27,6 +26,7 @@
 #include <pika/threading_base/thread_helpers.hpp>
 #include <pika/threading_base/thread_init_data.hpp>
 #include <pika/threading_base/thread_queue_init_parameters.hpp>
+#include <pika/timing/detail/timestamp.hpp>
 #include <pika/topology/topology.hpp>
 #include <pika/type_support/unused.hpp>
 #include <pika/util/get_entry_as.hpp>

@@ -9,13 +9,6 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 # Default location is $PIKA_ROOT/libs/hardware/include
 set(hardware_headers
     pika/hardware/bit_manipulation.hpp
-    pika/hardware/timestamp.hpp
-    pika/hardware/timestamp/bgq.hpp
-    pika/hardware/timestamp/cuda.hpp
-    pika/hardware/timestamp/linux_generic.hpp
-    pika/hardware/timestamp/linux_x86_32.hpp
-    pika/hardware/timestamp/linux_x86_64.hpp
-    pika/hardware/timestamp/msvc.hpp
 )
 
 # Default location is $PIKA_ROOT/libs/hardware/src
@@ -25,13 +18,6 @@ include(pika_add_module)
 
 pika_add_module(
   pika hardware
-  EXCLUDE_FROM_GLOBAL_HEADER
-    "pika/hardware/timestamp/bgq.hpp"
-    "pika/hardware/timestamp/cuda.hpp"
-    "pika/hardware/timestamp/linux_generic.hpp"
-    "pika/hardware/timestamp/linux_x86_32.hpp"
-    "pika/hardware/timestamp/linux_x86_64.hpp"
-    "pika/hardware/timestamp/msvc.hpp"
   SOURCES ${hardware_sources}
   HEADERS ${hardware_headers}
   MODULE_DEPENDENCIES pika_config

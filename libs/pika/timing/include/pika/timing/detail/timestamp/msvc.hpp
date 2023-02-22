@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-//  Copyright (c) 2013 Thomas Heller
+//  Copyright (c) 2011 Bryce Lelbach
 //
 //  SPDX-License-Identifier: BSL-1.0
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -8,32 +8,30 @@
 
 #pragma once
 
-#if defined(__bgq__)
+#include <pika/config.hpp>
 
-// Hardware cycle-accurate timer on BGQ.
-// see https://wiki.alcf.anl.gov/parts/index.php/Blue_Gene/Q#High-Resolution_Timers
-
-# include <hwi/include/bqc/A2_inlines.h>
-
-# include <pika/config.hpp>
+#if defined(PIKA_WINDOWS)
 
 # include <cstdint>
 
+# include <intrin.h>
+# include <windows.h>
+
 # if defined(PIKA_HAVE_CUDA) && defined(PIKA_COMPUTE_CODE)
-#  include <pika/hardware/timestamp/cuda.hpp>
+#  include <pika/timing/detail/timestamp/cuda.hpp>
 # endif
 
-namespace pika { namespace util { namespace hardware {
-
+namespace pika::chrono::detail {
     PIKA_HOST_DEVICE inline std::uint64_t timestamp()
     {
 # if defined(PIKA_HAVE_CUDA) && defined(PIKA_COMPUTE_DEVICE_CODE)
         return timestamp_cuda();
 # else
-        return GetTimeBase();
+        LARGE_INTEGER now;
+        QueryPerformanceCounter(&now);
+        return static_cast<std::uint64_t>(now.QuadPart);
 # endif
     }
-
-}}}    // namespace pika::util::hardware
+}    // namespace pika::chrono::detail
 
 #endif
