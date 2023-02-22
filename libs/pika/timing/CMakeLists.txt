@@ -20,15 +20,9 @@ set(timing_headers
     pika/timing/tick_counter.hpp
 )
 
-# cmake will not create a separate VS project without any source files, thus
-# this adds a dummy (empty) source file to the target Default location is
-# $PIKA_ROOT/libs/timing/src
-set(timing_sources)
-
 include(pika_add_module)
 pika_add_module(
   pika timing
-  SOURCES ${timing_sources}
   HEADERS ${timing_headers}
   MODULE_DEPENDENCIES pika_config pika_type_support
   CMAKE_SUBDIRS examples tests
