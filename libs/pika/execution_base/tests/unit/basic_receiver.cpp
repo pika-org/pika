@@ -273,12 +273,14 @@ int main()
         "mylib::non_receiver_2 should not be a receiver");
     static_assert(!ex::is_receiver_v<mylib::non_receiver_3>,
         "mylib::non_receiver_3 should not be a receiver");
+#if !defined(PIKA_NVHPC_VERSION) || !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     static_assert(!receiver_of_helper_v<mylib::non_receiver_3, int>,
         "mylib::non_receiver_3 should not be a receiver of int");
-    static_assert(
-        ex::is_receiver_v<mylib::non_receiver_4>, "mylib::non_receiver_4 should be a receiver");
     static_assert(!receiver_of_helper_v<mylib::non_receiver_4, int>,
         "mylib::non_receiver_4 should not be a receiver of int");
+#endif
+    static_assert(
+        ex::is_receiver_v<mylib::non_receiver_4>, "mylib::non_receiver_4 should be a receiver");
     static_assert(!ex::is_receiver_v<mylib::non_receiver_5>,
         "mylib::non_receiver_5 should not be a receiver");
     static_assert(!ex::is_receiver_v<mylib::non_receiver_6>,
