@@ -72,8 +72,8 @@ if(PIKA_WITH_CUDA AND NOT TARGET Cuda::cuda)
     target_compile_definitions(
       Cuda::cuda
       INTERFACE
-        $<$<AND:$<BOOL:$<CUDA_COMPILER_ID:Clang>>,$<BOOL:$<COMPILE_LANGUAGE:CUDA>>>:FMT_USE_FLOAT128=0>
-        $<$<AND:$<BOOL:$<CUDA_COMPILER_ID:NVIDIA>>,$<BOOL:$<COMPILE_LANGUAGE:CUDA>>>:FMT_USE_NONTYPE_TEMPLATE_ARGS=0>
+        $<$<AND:$<CUDA_COMPILER_ID:Clang>,$<COMPILE_LANGUAGE:CUDA>>:FMT_USE_FLOAT128=0>
+        $<$<AND:$<CUDA_COMPILER_ID:NVIDIA>,$<COMPILE_LANGUAGE:CUDA>>:FMT_USE_NONTYPE_TEMPLATE_ARGS=0>
     )
 
     if(PIKA_WITH_CLANG_CUDA)
@@ -127,9 +127,9 @@ if(PIKA_WITH_CUDA AND NOT TARGET Cuda::cuda)
         if(PIKA_WITH_COMPILER_WARNINGS_AS_ERRORS)
           target_compile_options(
             pika_private_flags INTERFACE
-            $<$<AND:$<BOOL:$<COMPILE_LANGUAGE:CUDA>>:$<BOOL:$<CUDA_COMPILER_ID:NVIDIA>>>:--Werror all-warnings>
-            $<$<AND:$<BOOL:$<COMPILE_LANGUAGE:CXX>>:$<BOOL:$<CXX_COMPILER_ID:NVHPC>>>:-Werror>
-            $<$<AND:$<BOOL:$<COMPILE_LANGUAGE:CUDA>>:$<BOOL:$<CUDA_COMPILER_ID:NVHPC>>>:-Werror>
+            $<$<AND:$<COMPILE_LANGUAGE:CUDA>,$<CUDA_COMPILER_ID:NVIDIA>>:--Werror all-warnings>
+            $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CXX_COMPILER_ID:NVHPC>>:-Werror>
+            $<$<AND:$<COMPILE_LANGUAGE:CUDA>,$<CUDA_COMPILER_ID:NVHPC>>:-Werror>
           )
         endif()
 
