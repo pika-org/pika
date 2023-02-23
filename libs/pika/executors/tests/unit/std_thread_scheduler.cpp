@@ -977,7 +977,7 @@ void test_let_value()
 
         try
         {
-            tt::sync_wait(ex::transfer_just(sched, 43) | ex::then([](int x) -> int {
+            tt::sync_wait(ex::transfer_just(sched, 43) | ex::then([](int) -> int {
                 throw std::runtime_error("error");
             }) | ex::let_value([](int&) {
                 PIKA_TEST(false);

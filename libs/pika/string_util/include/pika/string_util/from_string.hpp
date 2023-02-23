@@ -35,7 +35,6 @@ namespace pika::detail {
     template <typename T, typename U>
     T check_out_of_range(U const& value)
     {
-        U const min = (std::numeric_limits<T>::min)();
         U const max = (std::numeric_limits<T>::max)();
         if constexpr (std::is_unsigned_v<U>)
         {
@@ -46,6 +45,7 @@ namespace pika::detail {
         }
         else
         {
+            U const min = (std::numeric_limits<T>::min)();
             if (value < min || value > max)
             {
                 throw std::out_of_range("from_string: out of range");
