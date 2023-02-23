@@ -83,7 +83,7 @@ struct check_context_receiver
         r.cond.notify_one();
     }
 
-    friend constexpr pika::execution::experimental::detail::empty_env tag_invoke(
+    friend constexpr pika::execution::experimental::empty_env tag_invoke(
         pika::execution::experimental::get_env_t, check_context_receiver const&) noexcept
     {
         return {};
@@ -241,7 +241,7 @@ struct callback_receiver
         r.cond.notify_one();
     }
 
-    friend constexpr pika::execution::experimental::detail::empty_env tag_invoke(
+    friend constexpr pika::execution::experimental::empty_env tag_invoke(
         pika::execution::experimental::get_env_t, callback_receiver const&) noexcept
     {
         return {};
@@ -1773,7 +1773,8 @@ void test_completion_scheduler()
 {
     {
         auto sender = ex::schedule(ex::thread_pool_scheduler{});
-        auto completion_scheduler = ex::get_completion_scheduler<ex::set_value_t>(sender);
+        auto completion_scheduler =
+            ex::get_completion_scheduler<ex::set_value_t>(ex::get_env(sender));
         static_assert(
             std::is_same_v<std::decay_t<decltype(completion_scheduler)>, ex::thread_pool_scheduler>,
             "the completion scheduler should be a thread_pool_scheduler");
@@ -1781,7 +1782,8 @@ void test_completion_scheduler()
 
     {
         auto sender = ex::then(ex::schedule(ex::thread_pool_scheduler{}), []() {});
-        auto completion_scheduler = ex::get_completion_scheduler<ex::set_value_t>(sender);
+        auto completion_scheduler =
+            ex::get_completion_scheduler<ex::set_value_t>(ex::get_env(sender));
         static_assert(
             std::is_same_v<std::decay_t<decltype(completion_scheduler)>, ex::thread_pool_scheduler>,
             "the completion scheduler should be a thread_pool_scheduler");
@@ -1789,7 +1791,8 @@ void test_completion_scheduler()
 
     {
         auto sender = ex::transfer_just(ex::thread_pool_scheduler{}, 42);
-        auto completion_scheduler = ex::get_completion_scheduler<ex::set_value_t>(sender);
+        auto completion_scheduler =
+            ex::get_completion_scheduler<ex::set_value_t>(ex::get_env(sender));
         static_assert(
             std::is_same_v<std::decay_t<decltype(completion_scheduler)>, ex::thread_pool_scheduler>,
             "the completion scheduler should be a thread_pool_scheduler");
@@ -1797,7 +1800,8 @@ void test_completion_scheduler()
 
     {
         auto sender = ex::bulk(ex::schedule(ex::thread_pool_scheduler{}), 10, [](int) {});
-        auto completion_scheduler = ex::get_completion_scheduler<ex::set_value_t>(sender);
+        auto completion_scheduler =
+            ex::get_completion_scheduler<ex::set_value_t>(ex::get_env(sender));
         static_assert(
             std::is_same_v<std::decay_t<decltype(completion_scheduler)>, ex::thread_pool_scheduler>,
             "the completion scheduler should be a thread_pool_scheduler");
@@ -1807,7 +1811,8 @@ void test_completion_scheduler()
         auto sender = ex::then(
             ex::bulk(ex::transfer_just(ex::thread_pool_scheduler{}, 42), 10, [](int, int) {}),
             [](int) {});
-        auto completion_scheduler = ex::get_completion_scheduler<ex::set_value_t>(sender);
+        auto completion_scheduler =
+            ex::get_completion_scheduler<ex::set_value_t>(ex::get_env(sender));
         static_assert(
             std::is_same_v<std::decay_t<decltype(completion_scheduler)>, ex::thread_pool_scheduler>,
             "the completion scheduler should be a thread_pool_scheduler");
@@ -1817,7 +1822,8 @@ void test_completion_scheduler()
         auto sender =
             ex::bulk(ex::then(ex::transfer_just(ex::thread_pool_scheduler{}, 42), [](int) {}), 10,
                 [](int, int) {});
-        auto completion_scheduler = ex::get_completion_scheduler<ex::set_value_t>(sender);
+        auto completion_scheduler =
+            ex::get_completion_scheduler<ex::set_value_t>(ex::get_env(sender));
         static_assert(
             std::is_same_v<std::decay_t<decltype(completion_scheduler)>, ex::thread_pool_scheduler>,
             "the completion scheduler should be a thread_pool_scheduler");

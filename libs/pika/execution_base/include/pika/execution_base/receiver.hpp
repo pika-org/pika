@@ -29,12 +29,6 @@ namespace pika::execution::experimental {
     {
         static constexpr bool value = is_receiver_of_v<Receiver, Completions>;
     };
-
-    namespace detail {
-        struct empty_env
-        {
-        };
-    }    // namespace detail
 }    // namespace pika::execution::experimental
 #else
 # include <pika/config/constexpr.hpp>
@@ -199,16 +193,6 @@ namespace pika::execution::experimental {
 
     template <typename T, typename... As>
     inline constexpr bool is_receiver_of_v = is_receiver_of<T, As...>::value;
-
-    namespace detail {
-        struct empty_env
-        {
-        };
-    }    // namespace detail
-
-    inline constexpr struct get_env_t
-    {
-    } get_env{};
 }    // namespace pika::execution::experimental
 #endif
 

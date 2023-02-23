@@ -136,12 +136,23 @@ namespace pika::cuda::experimental {
                 return {s.scheduler, PIKA_FORWARD(Receiver, receiver)};
             }
 
-            friend cuda_scheduler tag_invoke(
-                pika::execution::experimental::get_completion_scheduler_t<
-                    pika::execution::experimental::set_value_t>,
-                cuda_scheduler_sender const& s) noexcept
+            struct env
             {
-                return s.scheduler;
+                cuda_scheduler scheduler;
+
+                friend cuda_scheduler tag_invoke(
+                    pika::execution::experimental::get_completion_scheduler_t<
+                        pika::execution::experimental::set_value_t>,
+                    env const& e) noexcept
+                {
+                    return e.scheduler;
+                }
+            };
+
+            friend env tag_invoke(
+                pika::execution::experimental::get_env_t, cuda_scheduler_sender const& s)
+            {
+                return {s.scheduler};
             }
         };
     }    // namespace detail

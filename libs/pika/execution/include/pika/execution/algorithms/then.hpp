@@ -140,21 +140,6 @@ namespace pika::then_detail {
 
         static constexpr bool sends_done = false;
 
-        template <typename CPO,
-            // clang-format off
-                PIKA_CONCEPT_REQUIRES_(
-                    pika::execution::experimental::detail::is_receiver_cpo_v<CPO> &&
-                    pika::execution::experimental::detail::has_completion_scheduler_v<
-                        CPO, std::decay_t<Sender>>)
-            // clang-format on
-            >
-        friend constexpr auto
-        tag_invoke(pika::execution::experimental::get_completion_scheduler_t<CPO>,
-            then_sender_type const& sender)
-        {
-            return pika::execution::experimental::get_completion_scheduler<CPO>(sender.sender);
-        }
-
         template <typename Receiver>
         friend auto tag_invoke(
             pika::execution::experimental::connect_t, then_sender_type&& s, Receiver&& receiver)
@@ -169,6 +154,12 @@ namespace pika::then_detail {
         {
             return pika::execution::experimental::connect(
                 r.sender, then_receiver<Receiver, F>{PIKA_FORWARD(Receiver, receiver), r.f});
+        }
+
+        friend decltype(auto) tag_invoke(
+            pika::execution::experimental::get_env_t, then_sender_type const& s)
+        {
+            return pika::execution::experimental::get_env(s.sender);
         }
     };
 }    // namespace pika::then_detail

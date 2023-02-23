@@ -48,10 +48,10 @@ pika_add_module(
     pika_config
     pika_execution
     pika_futures
-    pika_hardware
     pika_itt_notify
     pika_properties
     pika_threading
+    pika_timing
     pika_errors
     pika_memory
   CMAKE_SUBDIRS examples tests

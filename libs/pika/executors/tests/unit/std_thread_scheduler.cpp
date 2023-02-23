@@ -75,7 +75,7 @@ struct check_context_receiver
         r.cond.notify_one();
     }
 
-    friend constexpr pika::execution::experimental::detail::empty_env tag_invoke(
+    friend constexpr pika::execution::experimental::empty_env tag_invoke(
         pika::execution::experimental::get_env_t, check_context_receiver const&) noexcept
     {
         return {};
@@ -233,7 +233,7 @@ struct callback_receiver
         r.cond.notify_one();
     }
 
-    friend constexpr pika::execution::experimental::detail::empty_env tag_invoke(
+    friend constexpr pika::execution::experimental::empty_env tag_invoke(
         pika::execution::experimental::get_env_t, callback_receiver const&) noexcept
     {
         return {};
@@ -1259,7 +1259,8 @@ void test_completion_scheduler()
 {
     {
         auto sender = ex::schedule(ex::std_thread_scheduler{});
-        auto completion_scheduler = ex::get_completion_scheduler<ex::set_value_t>(sender);
+        auto completion_scheduler =
+            ex::get_completion_scheduler<ex::set_value_t>(ex::get_env(sender));
         static_assert(
             std::is_same_v<std::decay_t<decltype(completion_scheduler)>, ex::std_thread_scheduler>,
             "the completion scheduler should be a std_thread_scheduler");
@@ -1267,7 +1268,8 @@ void test_completion_scheduler()
 
     {
         auto sender = ex::then(ex::schedule(ex::std_thread_scheduler{}), []() {});
-        auto completion_scheduler = ex::get_completion_scheduler<ex::set_value_t>(sender);
+        auto completion_scheduler =
+            ex::get_completion_scheduler<ex::set_value_t>(ex::get_env(sender));
         static_assert(
             std::is_same_v<std::decay_t<decltype(completion_scheduler)>, ex::std_thread_scheduler>,
             "the completion scheduler should be a std_thread_scheduler");
@@ -1275,7 +1277,8 @@ void test_completion_scheduler()
 
     {
         auto sender = ex::transfer_just(ex::std_thread_scheduler{}, 42);
-        auto completion_scheduler = ex::get_completion_scheduler<ex::set_value_t>(sender);
+        auto completion_scheduler =
+            ex::get_completion_scheduler<ex::set_value_t>(ex::get_env(sender));
         static_assert(
             std::is_same_v<std::decay_t<decltype(completion_scheduler)>, ex::std_thread_scheduler>,
             "the completion scheduler should be a std_thread_scheduler");
@@ -1284,7 +1287,8 @@ void test_completion_scheduler()
 #if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     {
         auto sender = ex::bulk(ex::schedule(ex::std_thread_scheduler{}), 10, [](int) {});
-        auto completion_scheduler = ex::get_completion_scheduler<ex::set_value_t>(sender);
+        auto completion_scheduler =
+            ex::get_completion_scheduler<ex::set_value_t>(ex::get_env(sender));
         static_assert(
             std::is_same_v<std::decay_t<decltype(completion_scheduler)>, ex::std_thread_scheduler>,
             "the completion scheduler should be a std_thread_scheduler");
@@ -1294,7 +1298,8 @@ void test_completion_scheduler()
         auto sender = ex::then(
             ex::bulk(ex::transfer_just(ex::std_thread_scheduler{}, 42), 10, [](int, int) {}),
             [](int) {});
-        auto completion_scheduler = ex::get_completion_scheduler<ex::set_value_t>(sender);
+        auto completion_scheduler =
+            ex::get_completion_scheduler<ex::set_value_t>(ex::get_env(sender));
         static_assert(
             std::is_same_v<std::decay_t<decltype(completion_scheduler)>, ex::std_thread_scheduler>,
             "the completion scheduler should be a std_thread_scheduler");
@@ -1304,7 +1309,8 @@ void test_completion_scheduler()
         auto sender =
             ex::bulk(ex::then(ex::transfer_just(ex::std_thread_scheduler{}, 42), [](int) {}), 10,
                 [](int, int) {});
-        auto completion_scheduler = ex::get_completion_scheduler<ex::set_value_t>(sender);
+        auto completion_scheduler =
+            ex::get_completion_scheduler<ex::set_value_t>(ex::get_env(sender));
         static_assert(
             std::is_same_v<std::decay_t<decltype(completion_scheduler)>, ex::std_thread_scheduler>,
             "the completion scheduler should be a std_thread_scheduler");

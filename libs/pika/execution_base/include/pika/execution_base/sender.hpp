@@ -42,6 +42,7 @@ namespace pika::execution::experimental {
 # include <pika/config/constexpr.hpp>
 # include <pika/execution_base/operation_state.hpp>
 # include <pika/execution_base/receiver.hpp>
+# include <pika/functional/detail/tag_fallback_invoke.hpp>
 # include <pika/functional/tag_invoke.hpp>
 # include <pika/type_support/equality.hpp>
 
@@ -449,6 +450,26 @@ namespace pika::execution::experimental {
 
     template <typename S, typename R>
     using connect_result_t = std::invoke_result_t<connect_t, S, R>;
+
+    struct empty_env
+    {
+    };
+
+    inline constexpr struct get_env_t final : pika::functional::detail::tag_fallback<get_env_t>
+    {
+        template <typename T>
+        friend constexpr auto tag_fallback_invoke(get_env_t const&, T const&) noexcept
+        {
+            if constexpr (is_sender_v<T>)
+            {
+                return empty_env{};
+            }
+            else
+            {
+                static_assert(sizeof(T) == 0, "No environment for type T");
+            }
+        }
+    } get_env{};
 }    // namespace pika::execution::experimental
 #endif
 

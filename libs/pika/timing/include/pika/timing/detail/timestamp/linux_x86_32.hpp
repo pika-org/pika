@@ -13,12 +13,10 @@
 #include <cstdint>
 
 #if defined(PIKA_HAVE_CUDA) && defined(PIKA_COMPUTE_CODE)
-# include <pika/hardware/timestamp/cuda.hpp>
+# include <pika/timing/detail/timestamp/cuda.hpp>
 #endif
 
-namespace pika { namespace util { namespace hardware {
-
-    // clang-format off
+namespace pika::chrono::detail {
     PIKA_HOST_DEVICE inline std::uint64_t timestamp()
     {
 #if defined(PIKA_HAVE_CUDA) && defined(PIKA_COMPUTE_DEVICE_CODE)
@@ -26,27 +24,19 @@ namespace pika { namespace util { namespace hardware {
 #else
         std::uint64_t r = 0;
 
-        #if defined(PIKA_HAVE_RDTSCP)
-            __asm__ __volatile__(
-                "rdtscp ;\n"
-                : "=A"(r)
-                :
-                : "%ecx");
-        #elif defined(PIKA_HAVE_RDTSC)
-            __asm__ __volatile__(
-                "movl %%ebx, %%edi ;\n"
-                "xorl %%eax, %%eax ;\n"
-                "cpuid ;\n"
-                "rdtsc ;\n"
-                "movl %%edi, %%ebx ;\n"
-                : "=A"(r)
-                :
-                : "%edi", "%ecx");
-        #endif
-
+# if defined(PIKA_HAVE_RDTSCP)
+        __asm__ __volatile__("rdtscp ;\n" : "=A"(r) : : "%ecx");
+# elif defined(PIKA_HAVE_RDTSC)
+        __asm__ __volatile__("movl %%ebx, %%edi ;\n"
+                             "xorl %%eax, %%eax ;\n"
+                             "cpuid ;\n"
+                             "rdtsc ;\n"
+                             "movl %%edi, %%ebx ;\n"
+                             : "=A"(r)
+                             :
+                             : "%edi", "%ecx");
+# endif
         return r;
 #endif
     }
-    // clang-format on
-
-}}}    // namespace pika::util::hardware
+}    // namespace pika::chrono::detail

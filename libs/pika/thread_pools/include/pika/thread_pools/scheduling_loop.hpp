@@ -9,7 +9,6 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/functional/unique_function.hpp>
-#include <pika/hardware/timestamp.hpp>
 #include <pika/modules/itt_notify.hpp>
 #include <pika/modules/logging.hpp>
 #include <pika/threading_base/external_timer.hpp>
@@ -17,6 +16,7 @@
 #include <pika/threading_base/scheduler_state.hpp>
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/threading_base/thread_num_tss.hpp>
+#include <pika/timing/detail/timestamp.hpp>
 
 #if defined(PIKA_HAVE_TRACY)
 # include <pika/threading_base/detail/tracy.hpp>
@@ -229,7 +229,7 @@ namespace pika::threads::detail {
     struct idle_collect_rate
     {
         idle_collect_rate(std::int64_t& tfunc_time, std::int64_t& exec_time)
-          : start_timestamp_(util::hardware::timestamp())
+          : start_timestamp_(pika::chrono::detail::timestamp())
           , tfunc_time_(tfunc_time)
           , exec_time_(exec_time)
         {
@@ -237,19 +237,19 @@ namespace pika::threads::detail {
 
         void collect_exec_time(std::int64_t timestamp)
         {
-            exec_time_ += util::hardware::timestamp() - timestamp;
+            exec_time_ += pika::chrono::detail::timestamp() - timestamp;
         }
         void take_snapshot()
         {
             if (tfunc_time_ == std::int64_t(-1))
             {
-                start_timestamp_ = util::hardware::timestamp();
+                start_timestamp_ = pika::chrono::detail::timestamp();
                 tfunc_time_ = 0;
                 exec_time_ = 0;
             }
             else
             {
-                tfunc_time_ = util::hardware::timestamp() - start_timestamp_;
+                tfunc_time_ = pika::chrono::detail::timestamp() - start_timestamp_;
             }
         }
 
@@ -262,7 +262,7 @@ namespace pika::threads::detail {
     struct exec_time_wrapper
     {
         exec_time_wrapper(idle_collect_rate& idle_rate)
-          : timestamp_(util::hardware::timestamp())
+          : timestamp_(pika::chrono::detail::timestamp())
           , idle_rate_(idle_rate)
         {
         }

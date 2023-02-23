@@ -37,6 +37,8 @@ namespace pika::cuda::experimental {
         template <typename Receiver, typename F>
         struct then_on_host_receiver_impl<Receiver, F>::then_on_host_receiver_type
         {
+            using is_receiver = void;
+
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
             cuda_scheduler sched;
@@ -104,7 +106,7 @@ namespace pika::cuda::experimental {
                     });
             }
 
-            friend constexpr pika::execution::experimental::detail::empty_env tag_invoke(
+            friend constexpr pika::execution::experimental::empty_env tag_invoke(
                 pika::execution::experimental::get_env_t,
                 then_on_host_receiver_type const&) noexcept
             {
@@ -125,6 +127,8 @@ namespace pika::cuda::experimental {
         template <typename Sender, typename F>
         struct then_on_host_sender_impl<Sender, F>::then_on_host_sender_type
         {
+            using is_sender = void;
+
             std::decay_t<Sender> sender;
             std::decay_t<F> f;
             cuda_scheduler sched;
@@ -151,7 +155,7 @@ namespace pika::cuda::experimental {
 
             using completion_signatures =
                 pika::execution::experimental::make_completion_signatures<Sender,
-                    pika::execution::experimental::detail::empty_env,
+                    pika::execution::experimental::empty_env,
                     pika::execution::experimental::completion_signatures<
                         pika::execution::experimental::set_error_t(std::exception_ptr)>,
                     invoke_result_helper>;
@@ -200,12 +204,10 @@ namespace pika::cuda::experimental {
                         PIKA_FORWARD(Receiver, receiver), s.f, s.sched});
             }
 
-            friend cuda_scheduler tag_invoke(
-                pika::execution::experimental::get_completion_scheduler_t<
-                    pika::execution::experimental::set_value_t>,
-                then_on_host_sender_type const& s) noexcept
+            friend auto tag_invoke(
+                pika::execution::experimental::get_env_t, then_on_host_sender_type const& s)
             {
-                return s.sched;
+                return pika::execution::experimental::get_env(s.sender);
             }
         };
     }    // namespace then_on_host_detail
@@ -227,7 +229,8 @@ namespace pika::cuda::experimental {
         friend PIKA_FORCEINLINE auto tag_fallback_invoke(then_on_host_t, Sender&& sender, F&& f)
         {
             auto completion_sched = pika::execution::experimental::get_completion_scheduler<
-                pika::execution::experimental::set_value_t>(sender);
+                pika::execution::experimental::set_value_t>(
+                pika::execution::experimental::get_env(sender));
             static_assert(std::is_same_v<std::decay_t<decltype(completion_sched)>, cuda_scheduler>,
                 "then_on_host can only be used with senders whose completion scheduler is "
                 "cuda_scheduler");

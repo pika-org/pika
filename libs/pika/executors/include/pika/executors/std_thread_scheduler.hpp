@@ -75,6 +75,8 @@ namespace pika::execution::experimental {
 
         struct sender
         {
+            using is_sender = void;
+
             template <template <typename...> class Tuple, template <typename...> class Variant>
             using value_types = Variant<Tuple<>>;
 
@@ -94,12 +96,18 @@ namespace pika::execution::experimental {
                 return {PIKA_FORWARD(Receiver, receiver)};
             }
 
-            template <typename CPO,
-                PIKA_CONCEPT_REQUIRES_(
-                    std::is_same_v<CPO, pika::execution::experimental::set_value_t>)>
-            friend constexpr std_thread_scheduler
-            tag_invoke(pika::execution::experimental::get_completion_scheduler_t<CPO>,
-                sender const&) noexcept
+            struct env
+            {
+                friend constexpr std_thread_scheduler tag_invoke(
+                    pika::execution::experimental::get_completion_scheduler_t<
+                        pika::execution::experimental::set_value_t>,
+                    env const&) noexcept
+                {
+                    return {};
+                }
+            };
+
+            friend constexpr env tag_invoke(pika::execution::experimental::get_env_t, sender const&)
             {
                 return {};
             }

@@ -12,13 +12,11 @@
 
 #include <cstdint>
 
-namespace pika { namespace util { namespace hardware {
-
+namespace pika::chrono::detail {
     PIKA_DEVICE inline std::uint64_t timestamp_cuda()
     {
         std::uint64_t cur;
         asm volatile("mov.u64 %0, %%globaltimer;" : "=l"(cur));
         return cur;
     }
-
-}}}    // namespace pika::util::hardware
+}    // namespace pika::chrono::detail

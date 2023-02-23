@@ -49,8 +49,8 @@ pika optionally requires:
 * `Boost.Context, Thread, and Chrono <https://boost.org>`_ on macOS
 * `stdexec <https://github.com/NVIDIA/stdexec>`_ when
   ``PIKA_WITH_P2300_REFERENCE_IMPLEMENTATION`` is enabled (currently tested with commit
-  `c0fe16f451137b00ceb85d912ec3a288990ce766
-  <https://github.com/NVIDIA/stdexec/commit/c0fe16f451137b00ceb85d912ec3a288990ce766>`).
+  `6510f5bd69cc03b24668f26eda3dd3cca7e81bb2
+  <https://github.com/NVIDIA/stdexec/commit/6510f5bd69cc03b24668f26eda3dd3cca7e81bb2>`).
   The integration is experimental.
 
 

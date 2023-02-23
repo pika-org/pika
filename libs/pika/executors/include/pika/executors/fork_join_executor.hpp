@@ -19,10 +19,10 @@
 #include <pika/execution_base/traits/is_executor.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/functional/invoke_fused.hpp>
-#include <pika/modules/hardware.hpp>
 #include <pika/modules/itt_notify.hpp>
 #include <pika/synchronization/spinlock.hpp>
 #include <pika/threading/thread.hpp>
+#include <pika/timing/detail/timestamp.hpp>
 
 #include <fmt/format.h>
 
@@ -151,7 +151,7 @@ namespace pika::execution::experimental {
                 auto current = tstate.load(std::memory_order_acquire);
                 if (op(current, state))
                 {
-                    std::uint64_t base_time = util::hardware::timestamp();
+                    std::uint64_t base_time = pika::chrono::detail::timestamp();
                     current = tstate.load(std::memory_order_acquire);
                     while (op(current, state))
                     {
@@ -166,7 +166,7 @@ namespace pika::execution::experimental {
                             }
                         }
 
-                        if ((util::hardware::timestamp() - base_time) > yield_delay)
+                        if ((pika::chrono::detail::timestamp() - base_time) > yield_delay)
                         {
                             pika::this_thread::yield();
                         }
