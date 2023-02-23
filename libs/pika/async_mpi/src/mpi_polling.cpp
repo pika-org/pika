@@ -803,11 +803,21 @@ namespace pika::mpi::experimental {
         // install polling loop on requested thread pool
         if (pool_name.empty() || !pika::resource::pool_exists(pool_name))
         {
-            set_pool_name(resource::get_pool_name(0));
-            detail::register_polling(pika::resource::get_thread_pool(0));
+            // does mpi pool exist with mpi pool name
+            std::string name = mpi::experimental::get_pool_name();
+            if (!pika::resource::pool_exists(name))
+            {
+                // drop back to default pika pool name
+                name = resource::get_pool_name(0);
+            }
+            // override mpi pool name with whatever we decided on
+            set_pool_name(name);
+            detail::register_polling(pika::resource::get_thread_pool(name));
         }
         else
         {
+            PIKA_ASSERT_MSG(pool_name == get_pool_name(), "MPI pool name mismatch");
+            // make sure the mpi pool name matches what the user passed in
             set_pool_name(pool_name);
             detail::register_polling(pika::resource::get_thread_pool(pool_name));
         }
