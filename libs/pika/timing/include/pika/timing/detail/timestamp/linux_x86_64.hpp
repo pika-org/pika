@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-//  Copyright (c) 2012 Thomas Heller
+//  Copyright (c) 2011 Bryce Lelbach
 //
 //  SPDX-License-Identifier: BSL-1.0
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -10,25 +10,29 @@
 
 #include <pika/config.hpp>
 
-#include <time.h>
-
 #include <cstdint>
 
 #if defined(PIKA_HAVE_CUDA) && defined(PIKA_COMPUTE_CODE)
-# include <pika/hardware/timestamp/cuda.hpp>
+# include <pika/timing/detail/timestamp/cuda.hpp>
 #endif
 
-namespace pika { namespace util { namespace hardware {
-
+namespace pika::chrono::detail {
     PIKA_HOST_DEVICE inline std::uint64_t timestamp()
     {
 #if defined(PIKA_HAVE_CUDA) && defined(PIKA_COMPUTE_DEVICE_CODE)
         return timestamp_cuda();
 #else
-        struct timespec res;
-        clock_gettime(CLOCK_MONOTONIC, &res);
-        return 1000 * res.tv_sec + res.tv_nsec / 1000000;
+        std::uint32_t lo = 0, hi = 0;
+# if defined(PIKA_HAVE_RDTSCP)
+        __asm__ __volatile__("rdtscp ;\n" : "=a"(lo), "=d"(hi) : : "rcx");
+# elif defined(PIKA_HAVE_RDTSC)
+        __asm__ __volatile__("cpuid ;\n"
+                             "rdtsc ;\n"
+                             : "=a"(lo), "=d"(hi)
+                             :
+                             : "rbx", "rcx");
+# endif
+        return ((static_cast<std::uint64_t>(hi)) << 32) | lo;
 #endif
     }
-
-}}}    // namespace pika::util::hardware
+}    // namespace pika::chrono::detail

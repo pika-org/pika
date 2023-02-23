@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/hardware/timestamp.hpp>
+#include <pika/timing/detail/timestamp.hpp>
 
 #include <cstdint>
 
@@ -34,7 +34,7 @@ namespace pika::chrono::detail {
     protected:
         static std::uint64_t take_time_stamp()
         {
-            return pika::util::hardware::timestamp();
+            return timestamp();
         }
 
     private:

@@ -87,7 +87,6 @@ pika_add_module(
     pika_debugging
     pika_errors
     pika_functional
-    pika_hardware
     pika_itt_notify
     pika_lock_registration
     pika_logging

@@ -33,7 +33,6 @@ set(_pika_modules
     filesystem
     functional
     futures
-    hardware
     hashing
     include
     ini
