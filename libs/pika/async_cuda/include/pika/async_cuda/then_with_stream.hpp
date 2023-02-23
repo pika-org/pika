@@ -136,6 +136,8 @@ namespace pika::cuda::experimental::then_with_stream_detail {
     template <typename Sender, typename F>
     struct then_with_cuda_stream_sender_impl<Sender, F>::then_with_cuda_stream_sender_type
     {
+        using is_sender = void;
+
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Sender> sender;
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
         cuda_scheduler sched;
@@ -165,7 +167,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
 
         using completion_signatures =
             pika::execution::experimental::make_completion_signatures<std::decay_t<Sender>,
-                pika::execution::experimental::detail::empty_env,
+                pika::execution::experimental::empty_env,
                 pika::execution::experimental::completion_signatures<
                     pika::execution::experimental::set_error_t(std::exception_ptr)>,
                 invoke_result_helper>;
@@ -223,6 +225,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
 
             struct then_with_cuda_stream_receiver
             {
+                using is_receiver = void;
                 using then_with_cuda_stream_receiver_tag = void;
 
                 operation_state& op_state;
@@ -411,7 +414,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                         });
                 }
 
-                friend constexpr pika::execution::experimental::detail::empty_env tag_invoke(
+                friend constexpr pika::execution::experimental::empty_env tag_invoke(
                     pika::execution::experimental::get_env_t,
                     then_with_cuda_stream_receiver const&) noexcept
                 {
@@ -446,7 +449,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
             using ts_type = pika::util::detail::prepend_t<
                 pika::util::detail::transform_t<
                     pika::execution::experimental::value_types_of_t<std::decay_t<Sender>,
-                        pika::execution::experimental::detail::empty_env, std::tuple,
+                        pika::execution::experimental::empty_env, std::tuple,
                         pika::detail::variant>,
                     value_types_helper>,
                 pika::detail::monostate>;
@@ -493,8 +496,8 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                     pika::util::detail::transform_t<
                         pika::execution::experimental::value_types_of_t<
                             then_with_cuda_stream_sender_type,
-                            pika::execution::experimental::detail::empty_env,
-                            pika::util::detail::pack, pika::util::detail::pack>,
+                            pika::execution::experimental::empty_env, pika::util::detail::pack,
+                            pika::util::detail::pack>,
                         result_types_helper>,
                     pika::detail::monostate>>>;
 #else
@@ -541,11 +544,10 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                 PIKA_FORWARD(Receiver, receiver), s.f, s.sched, s.sender);
         }
 
-        friend cuda_scheduler tag_invoke(pika::execution::experimental::get_completion_scheduler_t<
-                                             pika::execution::experimental::set_value_t>,
-            then_with_cuda_stream_sender_type const& s) noexcept
+        friend auto tag_invoke(
+            pika::execution::experimental::get_env_t, then_with_cuda_stream_sender_type const& s)
         {
-            return s.sched;
+            return pika::execution::experimental::get_env(s.sender);
         }
     };
 
@@ -555,7 +557,8 @@ namespace pika::cuda::experimental::then_with_stream_detail {
     auto then_with_cuda_stream(Sender&& sender, F&& f)
     {
         auto completion_sched = pika::execution::experimental::get_completion_scheduler<
-            pika::execution::experimental::set_value_t>(sender);
+            pika::execution::experimental::set_value_t>(
+            pika::execution::experimental::get_env(sender));
         static_assert(std::is_same_v<std::decay_t<decltype(completion_sched)>, cuda_scheduler>,
             "then_with_cuda_stream can only be used with senders whose completion scheduler is "
             "cuda_scheduler");

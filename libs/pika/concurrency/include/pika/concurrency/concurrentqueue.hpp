@@ -1,4 +1,4 @@
-//  Copyright (c) 2013-2016, Cameron Desrochers.
+//  Copyright (c) 2013-2020, Cameron Desrochers.
 //
 //  SPDX-License-Identifier: BSL-1.0
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -9,7 +9,7 @@
 
 // ---------------------------------------------------------------------------
 // This file has been taken from https://github.com/cameron314/concurrentqueue
-// commit dea078cf5b6e742cd67a0d725e36f872feca4de4
+// commit bf1fe24c8eb413494884dc151712a3ed526fc5a3
 // The boost copyright has been added to this file in accordance with the
 // dual license terms for the concurrentqueue and conformance with the pika policy
 // https://github.com/cameron314/concurrentqueue/blob/master/LICENSE.md
@@ -26,7 +26,7 @@
 //    http://moodycamel.com/blog/2014/detailed-design-of-a-lock-free-queue
 
 // Simplified BSD license:
-// Copyright (c) 2013-2016, Cameron Desrochers.
+// Copyright (c) 2013-2020, Cameron Desrochers.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
@@ -48,12 +48,14 @@
 // TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 // EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+// Also dual-licensed under the Boost Software License (see LICENSE.md)
+
 #pragma once
 
 #include <pika/config/forward.hpp>
 #include <pika/config/move.hpp>
 
-#if defined(__GNUC__)
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)
 // Disable -Wconversion warnings (spuriously triggered when Traits::size_t and
 // Traits::index_t are set to < 32 bits, causing integer promotion, causing warnings
 // upon assigning any computed values)
@@ -63,6 +65,13 @@
 # ifdef MCDBGQ_USE_RELACY
 #  pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
 # endif
+#endif
+
+#if defined(_MSC_VER) && (!defined(_HAS_CXX17) || !_HAS_CXX17)
+// VS2019 with /W4 warns about constant conditional expressions but unless /std=c++17 or higher
+// does not support `if constexpr`, so we have no choice but to simply disable the warning
+# pragma warning(push)
+# pragma warning(disable : 4127)    // conditional expression is constant
 #endif
 
 #if defined(__APPLE__)
@@ -89,6 +98,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <limits>
+#include <mutex>     // used for thread exit synchronization
 #include <thread>    // partly for __WINPTHREADS_VERSION if on MinGW-w64 w/ POSIX threading
 #include <type_traits>
 #include <utility>
@@ -134,7 +144,7 @@ namespace pika::concurrency::detail {
     }
 }    // namespace pika::concurrency::detail
 #elif defined(__arm__) || defined(_M_ARM) || defined(__aarch64__) ||                               \
-    (defined(__APPLE__) && TARGET_OS_IPHONE)
+    (defined(__APPLE__) && TARGET_OS_IPHONE) || defined(MOODYCAMEL_NO_THREAD_LOCAL)
 namespace pika::concurrency::detail {
     static_assert(sizeof(std::thread::id) == 4 || sizeof(std::thread::id) == 8,
         "std::thread::id is expected to be either 4 or 8 bytes");
@@ -169,7 +179,7 @@ namespace pika::concurrency::detail {
     struct thread_id_converter<thread_id_t>
     {
         using thread_id_numeric_size_t = thread_id_size<sizeof(thread_id_t)>::numeric_t;
-# if !defined(__APPLE__)
+# ifndef __APPLE__
         using thread_id_hash_t = std::size_t;
 # else
         using thread_id_hash_t = thread_id_numeric_size_t;
@@ -177,14 +187,14 @@ namespace pika::concurrency::detail {
 
         static thread_id_hash_t prehash(thread_id_t const& x)
         {
-# if !defined(__APPLE__)
+# ifndef __APPLE__
             return std::hash<std::thread::id>()(x);
 # else
             return *reinterpret_cast<thread_id_hash_t const*>(&x);
 # endif
         }
     };
-}    // namespace pika::concurrency::detail
+}
 #else
 // Use a nice trick from this answer: http://stackoverflow.com/a/8438730/21475
 // In order to get a numeric thread ID in a platform-independent way, we use a thread-local
@@ -202,16 +212,27 @@ namespace pika::concurrency::detail {
     static const thread_id_t invalid_thread_id = 0;    // Address can't be nullptr
     static const thread_id_t invalid_thread_id2 =
         1;    // Member accesses off a null pointer are also generally invalid. Plus it's not aligned.
-    static inline thread_id_t thread_id()
+    inline thread_id_t thread_id()
     {
         static MOODYCAMEL_THREADLOCAL int x;
         return reinterpret_cast<thread_id_t>(&x);
     }
-}    // namespace pika::concurrency::detail
+}
+#endif
+
+// Constexpr if
+#ifndef MOODYCAMEL_CONSTEXPR_IF
+# if (defined(_MSC_VER) && defined(_HAS_CXX17) && _HAS_CXX17) || __cplusplus > 201402L
+#  define MOODYCAMEL_CONSTEXPR_IF if constexpr
+#  define MOODYCAMEL_MAYBE_UNUSED [[maybe_unused]]
+# else
+#  define MOODYCAMEL_CONSTEXPR_IF if
+#  define MOODYCAMEL_MAYBE_UNUSED
+# endif
 #endif
 
 // Exceptions
-#if !defined(MOODYCAMEL_EXCEPTIONS_ENABLED)
+#ifndef MOODYCAMEL_EXCEPTIONS_ENABLED
 # if (defined(_MSC_VER) && defined(_CPPUNWIND)) || (defined(__GNUC__) && defined(__EXCEPTIONS)) || \
      (!defined(_MSC_VER) && !defined(__GNUC__))
 #  define MOODYCAMEL_EXCEPTIONS_ENABLED
@@ -223,13 +244,13 @@ namespace pika::concurrency::detail {
 # define MOODYCAMEL_RETHROW throw
 # define MOODYCAMEL_THROW(expr) throw(expr)
 #else
-# define MOODYCAMEL_TRY if (true)
-# define MOODYCAMEL_CATCH(...) else if (false)
+# define MOODYCAMEL_TRY MOODYCAMEL_CONSTEXPR_IF(true)
+# define MOODYCAMEL_CATCH(...) else MOODYCAMEL_CONSTEXPR_IF(false)
 # define MOODYCAMEL_RETHROW
 # define MOODYCAMEL_THROW(expr)
 #endif
 
-#if !defined(MOODYCAMEL_NOEXCEPT)
+#ifndef MOODYCAMEL_NOEXCEPT
 # if !defined(MOODYCAMEL_EXCEPTIONS_ENABLED)
 #  define MOODYCAMEL_NOEXCEPT
 #  define MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr) true
@@ -271,7 +292,7 @@ namespace pika::concurrency::detail {
 # endif
 #endif
 
-#if !defined(MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED)
+#ifndef MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED
 # ifdef MCDBGQ_USE_RELACY
 #  define MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED
 # else
@@ -284,20 +305,102 @@ namespace pika::concurrency::detail {
       (!defined(__APPLE__) || !TARGET_OS_IPHONE) && !defined(__arm__) && !defined(_M_ARM) &&       \
       !defined(__aarch64__)
 // Assume `thread_local` is fully supported in all other C++11 compilers/platforms
-//#define MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED    // always disabled for now since several users report having problems with it on
+#   define MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED    // tentatively enabled for now; years ago several users report having problems with it on
 #  endif
 # endif
 #endif
 
 // VS2012 doesn't support deleted functions.
 // In this case, we declare the function normally but don't define it. A link error will be generated if the function is called.
-#if !defined(MOODYCAMEL_DELETE_FUNCTION)
+#ifndef MOODYCAMEL_DELETE_FUNCTION
 # if defined(_MSC_VER) && _MSC_VER < 1800
 #  define MOODYCAMEL_DELETE_FUNCTION
 # else
 #  define MOODYCAMEL_DELETE_FUNCTION = delete
 # endif
 #endif
+
+namespace pika::concurrency::detail {
+#ifndef MOODYCAMEL_ALIGNAS
+// VS2013 doesn't support alignas or alignof, and align() requires a constant literal
+# if defined(_MSC_VER) && _MSC_VER <= 1800
+#  define MOODYCAMEL_ALIGNAS(alignment) __declspec(align(alignment))
+#  define MOODYCAMEL_ALIGNOF(obj) __alignof(obj)
+#  define MOODYCAMEL_ALIGNED_TYPE_LIKE(T, obj)                                                     \
+   typename detail::Vs2013Aligned<std::alignment_of<obj>::value, T>::type
+    template <int Align, typename T>
+    struct Vs2013Aligned
+    {
+    };    // default, unsupported alignment
+    template <typename T>
+    struct Vs2013Aligned<1, T>
+    {
+        using type = __declspec(align(1)) T;
+    };
+    template <typename T>
+    struct Vs2013Aligned<2, T>
+    {
+        using type = __declspec(align(2)) T;
+    };
+    template <typename T>
+    struct Vs2013Aligned<4, T>
+    {
+        using type = __declspec(align(4)) T;
+    };
+    template <typename T>
+    struct Vs2013Aligned<8, T>
+    {
+        using type = __declspec(align(8)) T;
+    };
+    template <typename T>
+    struct Vs2013Aligned<16, T>
+    {
+        using type = __declspec(align(16)) T;
+    };
+    template <typename T>
+    struct Vs2013Aligned<32, T>
+    {
+        using type = __declspec(align(32)) T;
+    };
+    template <typename T>
+    struct Vs2013Aligned<64, T>
+    {
+        using type = __declspec(align(64)) T;
+    };
+    template <typename T>
+    struct Vs2013Aligned<128, T>
+    {
+        using type = __declspec(align(128)) T;
+    };
+    template <typename T>
+    struct Vs2013Aligned<256, T>
+    {
+        using type = __declspec(align(256)) T;
+    };
+# else
+    template <typename T>
+    struct identity
+    {
+        using type = T;
+    };
+#  define MOODYCAMEL_ALIGNAS(alignment) alignas(alignment)
+#  define MOODYCAMEL_ALIGNOF(obj) alignof(obj)
+#  define MOODYCAMEL_ALIGNED_TYPE_LIKE(T, obj)                                                     \
+   alignas(alignof(obj)) typename detail::identity<T>::type
+# endif
+#endif
+}    // namespace pika::concurrency::detail
+
+// TSAN can false report races in lock-free code.  To enable TSAN to be used from projects that use this one,
+// we can apply per-function compile-time suppression.
+// See https://clang.llvm.org/docs/ThreadSanitizer.html#has-feature-thread-sanitizer
+#define MOODYCAMEL_NO_TSAN
+#if defined(__has_feature)
+# if __has_feature(thread_sanitizer)
+#  undef MOODYCAMEL_NO_TSAN
+#  define MOODYCAMEL_NO_TSAN __attribute__((no_sanitize("thread")))
+# endif    // TSAN
+#endif     // TSAN
 
 // Compiler-specific likely/unlikely hints
 namespace pika::concurrency::detail {
@@ -327,6 +430,7 @@ namespace pika::concurrency::detail {
 #endif
 
 namespace pika::concurrency::detail {
+
     template <typename T>
     struct const_numeric_max
     {
@@ -340,18 +444,18 @@ namespace pika::concurrency::detail {
 #if defined(__GLIBCXX__)
     using std_max_align_t = ::max_align_t;    // libstdc++ forgot to add it to std:: for a while
 #else
-    using std_max_align_t =
-        std::max_align_t;    // Others (e.g. MSVC) insist it can *only* be accessed via std::
+    typedef std::max_align_t
+        std_max_align_t;    // Others (e.g. MSVC) insist it can *only* be accessed via std::
 #endif
 
     // Some platforms have incorrectly set max_align_t to a type with <8 bytes alignment even while supporting
     // 8-byte aligned scalar values (*cough* 32-bit iOS). Work around this with our own union. See issue #64.
-    using max_align_t = union
+    typedef union
     {
         std_max_align_t x;
         long long y;
         void* z;
-    };
+    } max_align_t;
 
     // Default traits for the ConcurrentQueue. To change some of the
     // traits without re-implementing all of them, inherit from this
@@ -415,7 +519,20 @@ namespace pika::concurrency::detail {
         // it's rounded up to the nearest block size.
         static const size_t MAX_SUBQUEUE_SIZE = detail::const_numeric_max<size_t>::value;
 
-#if !defined(MCDBGQ_USE_RELACY)
+        // The number of times to spin before sleeping when waiting on a semaphore.
+        // Recommended values are on the order of 1000-10000 unless the number of
+        // consumer threads exceeds the number of idle cores (in which case try 0-100).
+        // Only affects instances of the BlockingConcurrentQueue.
+        static const int MAX_SEMA_SPINS = 10000;
+
+        // Whether to recycle dynamically-allocated blocks into an internal free list or
+        // not. If false, only pre-allocated blocks (controlled by the constructor
+        // arguments) will be recycled, and all others will be `free`d back to the heap.
+        // Note that blocks consumed by explicit producers are only freed on destruction
+        // of the queue (not following destruction of the token) regardless of this trait.
+        static const bool RECYCLE_ALLOCATED_BLOCKS = false;
+
+#ifndef MCDBGQ_USE_RELACY
         // Memory allocation can be customized if needed.
         // malloc should return nullptr on failure, and handle alignment like std::malloc.
 # if defined(malloc) || defined(free)
@@ -536,17 +653,12 @@ namespace pika::concurrency::detail {
     template <typename T>
     static inline bool circular_less_than(T a, T b)
     {
-#ifdef _MSC_VER
-# pragma warning(push)
-# pragma warning(disable : 4554)
-#endif
         static_assert(std::is_integral<T>::value && !std::numeric_limits<T>::is_signed,
             "circular_less_than is intended to be used only with unsigned integer types");
         return static_cast<T>(a - b) >
-            static_cast<T>(static_cast<T>(1) << static_cast<T>(sizeof(T) * CHAR_BIT - 1));
-#ifdef _MSC_VER
-# pragma warning(pop)
-#endif
+            static_cast<T>(static_cast<T>(1) << (static_cast<T>(sizeof(T) * CHAR_BIT - 1)));
+        // Note: extra parens around rhs of operator<< is MSVC bug: https://developercommunity2.visualstudio.com/t/C4554-triggers-when-both-lhs-and-rhs-is/10034931
+        //       silencing the bug requires #pragma warning(disable: 4554) around the calling code and has no effect when done here.
     }
 
     template <typename U>
@@ -633,13 +745,16 @@ namespace pika::concurrency::detail {
     using ThreadExitListener = RelacyThreadExitListener;
     using ThreadExitNotifier = RelacyThreadExitNotifier;
 # else
+    class ThreadExitNotifier;
+
     struct ThreadExitListener
     {
         using callback_t = void (*)(void*);
         callback_t callback;
         void* userData;
 
-        ThreadExitListener* next;    // reserved for use by the ThreadExitNotifier
+        ThreadExitListener* next;     // reserved for use by the ThreadExitNotifier
+        ThreadExitNotifier* chain;    // reserved for use by the ThreadExitNotifier
     };
 
     class ThreadExitNotifier
@@ -648,13 +763,21 @@ namespace pika::concurrency::detail {
         static void subscribe(ThreadExitListener* listener)
         {
             auto& tlsInst = instance();
+            std::lock_guard<std::mutex> guard(mutex());
             listener->next = tlsInst.tail;
+            listener->chain = &tlsInst;
             tlsInst.tail = listener;
         }
 
         static void unsubscribe(ThreadExitListener* listener)
         {
-            auto& tlsInst = instance();
+            std::lock_guard<std::mutex> guard(mutex());
+            if (!listener->chain)
+            {
+                return;    // race with ~ThreadExitNotifier
+            }
+            auto& tlsInst = *listener->chain;
+            listener->chain = nullptr;
             ThreadExitListener** prev = &tlsInst.tail;
             for (auto ptr = tlsInst.tail; ptr != nullptr; ptr = ptr->next)
             {
@@ -682,8 +805,10 @@ namespace pika::concurrency::detail {
                 "If this assert fails, you likely have a buggy compiler! Change the preprocessor "
                 "conditions such that MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED is no longer "
                 "defined.");
+            std::lock_guard<std::mutex> guard(mutex());
             for (auto ptr = tail; ptr != nullptr; ptr = ptr->next)
             {
+                ptr->chain = nullptr;
                 ptr->callback(ptr->userData);
             }
         }
@@ -693,6 +818,13 @@ namespace pika::concurrency::detail {
         {
             static thread_local ThreadExitNotifier notifier;
             return notifier;
+        }
+
+        static inline std::mutex& mutex()
+        {
+            // Must be static because the ThreadExitNotifier could be destroyed while unsubscribe is called
+            static std::mutex mutex;
+            return mutex;
         }
 
     private:
@@ -972,7 +1104,7 @@ namespace pika::concurrency::detail {
         // queue is fully constructed before it starts being used by other threads (this
         // includes making the memory effects of construction visible, possibly with a
         // memory barrier).
-        explicit ConcurrentQueue(size_t capacity = 6 * BLOCK_SIZE)
+        explicit ConcurrentQueue(size_t capacity = 32 * BLOCK_SIZE)
           : producerListTail(nullptr)
           , producerCount(0)
           , initialBlockPoolIndex(0)
@@ -1037,7 +1169,7 @@ namespace pika::concurrency::detail {
             }
 
             // Destroy implicit producer hash tables
-            if (INITIAL_IMPLICIT_PRODUCER_HASH_SIZE != 0)
+            MOODYCAMEL_CONSTEXPR_IF(INITIAL_IMPLICIT_PRODUCER_HASH_SIZE != 0)
             {
                 auto hash = implicitProducerHash.load(std::memory_order_relaxed);
                 while (hash != nullptr)
@@ -1172,9 +1304,8 @@ namespace pika::concurrency::detail {
         // Thread-safe.
         inline bool enqueue(T const& item)
         {
-            if (INITIAL_IMPLICIT_PRODUCER_HASH_SIZE == 0)
-                return false;
-            return inner_enqueue<CanAlloc>(item);
+            MOODYCAMEL_CONSTEXPR_IF(INITIAL_IMPLICIT_PRODUCER_HASH_SIZE == 0) return false;
+            else return inner_enqueue<CanAlloc>(item);
         }
 
         // Enqueues a single item (by moving it, if possible).
@@ -1184,9 +1315,8 @@ namespace pika::concurrency::detail {
         // Thread-safe.
         inline bool enqueue(T&& item)
         {
-            if (INITIAL_IMPLICIT_PRODUCER_HASH_SIZE == 0)
-                return false;
-            return inner_enqueue<CanAlloc>(PIKA_MOVE(item));
+            MOODYCAMEL_CONSTEXPR_IF(INITIAL_IMPLICIT_PRODUCER_HASH_SIZE == 0) return false;
+            else return inner_enqueue<CanAlloc>(PIKA_MOVE(item));
         }
 
         // Enqueues a single item (by copying it) using an explicit producer token.
@@ -1216,9 +1346,8 @@ namespace pika::concurrency::detail {
         template <typename It>
         bool enqueue_bulk(It itemFirst, size_t count)
         {
-            if (INITIAL_IMPLICIT_PRODUCER_HASH_SIZE == 0)
-                return false;
-            return inner_enqueue_bulk<CanAlloc>(itemFirst, count);
+            MOODYCAMEL_CONSTEXPR_IF(INITIAL_IMPLICIT_PRODUCER_HASH_SIZE == 0) return false;
+            else return inner_enqueue_bulk<CanAlloc>(itemFirst, count);
         }
 
         // Enqueues several items using an explicit producer token.
@@ -1240,9 +1369,8 @@ namespace pika::concurrency::detail {
         // Thread-safe.
         inline bool try_enqueue(T const& item)
         {
-            if (INITIAL_IMPLICIT_PRODUCER_HASH_SIZE == 0)
-                return false;
-            return inner_enqueue<CannotAlloc>(item);
+            MOODYCAMEL_CONSTEXPR_IF(INITIAL_IMPLICIT_PRODUCER_HASH_SIZE == 0) return false;
+            else return inner_enqueue<CannotAlloc>(item);
         }
 
         // Enqueues a single item (by moving it, if possible).
@@ -1252,9 +1380,8 @@ namespace pika::concurrency::detail {
         // Thread-safe.
         inline bool try_enqueue(T&& item)
         {
-            if (INITIAL_IMPLICIT_PRODUCER_HASH_SIZE == 0)
-                return false;
-            return inner_enqueue<CannotAlloc>(PIKA_MOVE(item));
+            MOODYCAMEL_CONSTEXPR_IF(INITIAL_IMPLICIT_PRODUCER_HASH_SIZE == 0) return false;
+            else return inner_enqueue<CannotAlloc>(PIKA_MOVE(item));
         }
 
         // Enqueues a single item (by copying it) using an explicit producer token.
@@ -1283,9 +1410,8 @@ namespace pika::concurrency::detail {
         template <typename It>
         bool try_enqueue_bulk(It itemFirst, size_t count)
         {
-            if (INITIAL_IMPLICIT_PRODUCER_HASH_SIZE == 0)
-                return false;
-            return inner_enqueue_bulk<CannotAlloc>(itemFirst, count);
+            MOODYCAMEL_CONSTEXPR_IF(INITIAL_IMPLICIT_PRODUCER_HASH_SIZE == 0) return false;
+            else return inner_enqueue_bulk<CannotAlloc>(itemFirst, count);
         }
 
         // Enqueues several items using an explicit producer token.
@@ -1555,7 +1681,7 @@ namespace pika::concurrency::detail {
         // Returns true if the underlying atomic variables used by
         // the queue are lock-free (they should be on most platforms).
         // Thread-safe.
-        static bool is_lock_free()
+        static constexpr bool is_lock_free()
         {
             return detail::static_is_lock_free<bool>::value == 2 &&
                 detail::static_is_lock_free<size_t>::value == 2 &&
@@ -1713,7 +1839,7 @@ namespace pika::concurrency::detail {
 
             inline void add(N* node)
             {
-#if MCDBGQ_NOLOCKFREE_FREELIST
+#ifdef MCDBGQ_NOLOCKFREE_FREELIST
                 debug::DebugLock lock(mutex);
 #endif
                 // We know that the should-be-on-freelist bit is 0 at this point, so it's safe to
@@ -1729,7 +1855,7 @@ namespace pika::concurrency::detail {
 
             inline N* try_get()
             {
-#if MCDBGQ_NOLOCKFREE_FREELIST
+#ifdef MCDBGQ_NOLOCKFREE_FREELIST
                 debug::DebugLock lock(mutex);
 #endif
                 auto head = freeListHead.load(std::memory_order_acquire);
@@ -1817,7 +1943,7 @@ namespace pika::concurrency::detail {
             static const std::uint32_t REFS_MASK = 0x7FFFFFFF;
             static const std::uint32_t SHOULD_BE_ON_FREELIST = 0x80000000;
 
-#if MCDBGQ_NOLOCKFREE_FREELIST
+#ifdef MCDBGQ_NOLOCKFREE_FREELIST
             debug::DebugMutex mutex;
 #endif
         };
@@ -1839,10 +1965,9 @@ namespace pika::concurrency::detail {
               , elementsCompletelyDequeued(0)
               , freeListRefs(0)
               , freeListNext(nullptr)
-              , shouldBeOnFreeList(false)
               , dynamicallyAllocated(true)
             {
-#if MCDBGQ_TRACKMEM
+#ifdef MCDBGQ_TRACKMEM
                 owner = nullptr;
 #endif
             }
@@ -1850,7 +1975,7 @@ namespace pika::concurrency::detail {
             template <InnerQueueContext context>
             inline bool is_empty() const
             {
-                if (context == explicit_context &&
+                MOODYCAMEL_CONSTEXPR_IF(context == explicit_context &&
                     BLOCK_SIZE <= EXPLICIT_BLOCK_EMPTY_COUNTER_THRESHOLD)
                 {
                     // Check flags
@@ -1882,9 +2007,9 @@ namespace pika::concurrency::detail {
 
             // Returns true if the block is now empty (does not apply in explicit context)
             template <InnerQueueContext context>
-            inline bool set_empty(index_t i)
+            inline bool set_empty(MOODYCAMEL_MAYBE_UNUSED index_t i)
             {
-                if (context == explicit_context &&
+                MOODYCAMEL_CONSTEXPR_IF(context == explicit_context &&
                     BLOCK_SIZE <= EXPLICIT_BLOCK_EMPTY_COUNTER_THRESHOLD)
                 {
                     // Set flag
@@ -1909,9 +2034,9 @@ namespace pika::concurrency::detail {
             // Sets multiple contiguous item statuses to 'empty' (assumes no wrapping and count > 0).
             // Returns true if the block is now empty (does not apply in explicit context).
             template <InnerQueueContext context>
-            inline bool set_many_empty(index_t i, size_t count)
+            inline bool set_many_empty(MOODYCAMEL_MAYBE_UNUSED index_t i, size_t count)
             {
-                if (context == explicit_context &&
+                MOODYCAMEL_CONSTEXPR_IF(context == explicit_context &&
                     BLOCK_SIZE <= EXPLICIT_BLOCK_EMPTY_COUNTER_THRESHOLD)
                 {
                     // Set flags
@@ -1938,7 +2063,7 @@ namespace pika::concurrency::detail {
             template <InnerQueueContext context>
             inline void set_all_empty()
             {
-                if (context == explicit_context &&
+                MOODYCAMEL_CONSTEXPR_IF(context == explicit_context &&
                     BLOCK_SIZE <= EXPLICIT_BLOCK_EMPTY_COUNTER_THRESHOLD)
                 {
                     // Set all flags
@@ -1957,7 +2082,7 @@ namespace pika::concurrency::detail {
             template <InnerQueueContext context>
             inline void reset_empty()
             {
-                if (context == explicit_context &&
+                MOODYCAMEL_CONSTEXPR_IF(context == explicit_context &&
                     BLOCK_SIZE <= EXPLICIT_BLOCK_EMPTY_COUNTER_THRESHOLD)
                 {
                     // Reset flags
@@ -1985,31 +2110,10 @@ namespace pika::concurrency::detail {
             }
 
         private:
-            // IMPORTANT: This must be the first member in Block, so that if T depends on the alignment of
-            // addresses returned by malloc, that alignment will be preserved. Apparently clang actually
-            // generates code that uses this assumption for AVX instructions in some cases. Ideally, we
-            // should also align Block to the alignment of T in case it's higher than malloc's 16-byte
-            // alignment, but this is hard to do in a cross-platform way. Assert for this case:
-            static_assert(
-                std::alignment_of<T>::value <= std::alignment_of<detail::max_align_t>::value,
-                "The queue does not support super-aligned types at this time");
-            // Additionally, we need the alignment of Block itself to be a multiple of max_align_t since
-            // otherwise the appropriate padding will not be added at the end of Block in order to make
-            // arrays of Blocks all be properly aligned (not just the first one). We use a union to force
-            // this.
-#if defined(PIKA_GCC_VERSION) && !defined(PIKA_CLANG_VERSION)
-# pragma GCC diagnostic push
-# pragma GCC diagnostic ignored "-Wsubobject-linkage"
-#endif
-            union
-            {
-                // NOLINTNEXTLINE(bugprone-sizeof-expression)
-                char elements[sizeof(T) * BLOCK_SIZE];
-                detail::max_align_t dummy;
-            };
-#if defined(PIKA_GCC_VERSION) && !defined(PIKA_CLANG_VERSION)
-# pragma GCC diagnostic pop
-#endif
+            static_assert(std::alignment_of<T>::value <= sizeof(T),
+                "The queue does not support types with an alignment greater than their size at "
+                "this time");
+            MOODYCAMEL_ALIGNED_TYPE_LIKE(char[sizeof(T) * BLOCK_SIZE], T) elements;
 
         public:
             Block* next;
@@ -2020,19 +2124,17 @@ namespace pika::concurrency::detail {
         public:
             std::atomic<std::uint32_t> freeListRefs;
             std::atomic<Block*> freeListNext;
-            std::atomic<bool> shouldBeOnFreeList;
             bool
                 dynamicallyAllocated;    // Perhaps a better name for this would be 'isNotPartOfInitialBlockPool'
 
-#if MCDBGQ_TRACKMEM
+#ifdef MCDBGQ_TRACKMEM
             void* owner;
 #endif
         };
-        static_assert(
-            std::alignment_of<Block>::value >= std::alignment_of<detail::max_align_t>::value,
+        static_assert(std::alignment_of<Block>::value >= std::alignment_of<T>::value,
             "Internal error: Blocks must be at least as aligned as the type they are wrapping");
 
-#if MCDBGQ_TRACKMEM
+#ifdef MCDBGQ_TRACKMEM
     public:
         struct MemStats;
 
@@ -2056,7 +2158,7 @@ namespace pika::concurrency::detail {
             {
             }
 
-            virtual ~ProducerBase(){};
+            virtual ~ProducerBase() {}
 
             template <typename U>
             inline bool dequeue(U& element)
@@ -2116,7 +2218,7 @@ namespace pika::concurrency::detail {
             ConcurrentQueue* parent;
 
         protected:
-#if MCDBGQ_TRACKMEM
+#ifdef MCDBGQ_TRACKMEM
             friend struct MemStats;
 #endif
         };
@@ -2127,8 +2229,8 @@ namespace pika::concurrency::detail {
 
         struct ExplicitProducer : public ProducerBase
         {
-            explicit ExplicitProducer(ConcurrentQueue* parent)
-              : ProducerBase(parent, true)
+            explicit ExplicitProducer(ConcurrentQueue* parent_)
+              : ProducerBase(parent_, true)
               , blockIndex(nullptr)
               , pr_blockIndexSlotsUsed(0)
               , pr_blockIndexSize(EXPLICIT_INITIAL_INDEX_SIZE >> 1)
@@ -2137,7 +2239,7 @@ namespace pika::concurrency::detail {
               , pr_blockIndexRaw(nullptr)
             {
                 size_t poolBasedIndexSize =
-                    detail::ceil_to_pow_2(parent->initialBlockPoolSize) >> 1;
+                    detail::ceil_to_pow_2(parent_->initialBlockPoolSize) >> 1;
                 if (poolBasedIndexSize > pr_blockIndexSize)
                 {
                     pr_blockIndexSize = poolBasedIndexSize;
@@ -2212,14 +2314,7 @@ namespace pika::concurrency::detail {
                     do
                     {
                         auto nextBlock = block->next;
-                        if (block->dynamicallyAllocated)
-                        {
-                            destroy(block);
-                        }
-                        else
-                        {
-                            this->parent->add_block_to_free_list(block);
-                        }
+                        this->parent->add_block_to_free_list(block);
                         block = nextBlock;
                     } while (block != this->tailBlock);
                 }
@@ -2286,8 +2381,11 @@ namespace pika::concurrency::detail {
                             // to allocate a new index. Note pr_blockIndexRaw can only be nullptr if
                             // the initial allocation failed in the constructor.
 
-                            if (allocMode == CannotAlloc ||
-                                !new_block_index(pr_blockIndexSlotsUsed))
+                            MOODYCAMEL_CONSTEXPR_IF(allocMode == CannotAlloc)
+                            {
+                                return false;
+                            }
+                            else if (!new_block_index(pr_blockIndexSlotsUsed))
                             {
                                 return false;
                             }
@@ -2300,7 +2398,7 @@ namespace pika::concurrency::detail {
                         {
                             return false;
                         }
-#if MCDBGQ_TRACKMEM
+#ifdef MCDBGQ_TRACKMEM
                         newBlock->owner = this;
 #endif
                         newBlock->ConcurrentQueue::Block::template reset_empty<explicit_context>();
@@ -2317,7 +2415,8 @@ namespace pika::concurrency::detail {
                         ++pr_blockIndexSlotsUsed;
                     }
 
-                    if (!MOODYCAMEL_NOEXCEPT_CTOR(T, U, new (nullptr) T(PIKA_FORWARD(U, element))))
+                    MOODYCAMEL_CONSTEXPR_IF(!MOODYCAMEL_NOEXCEPT_CTOR(
+                        T, U, new (static_cast<T*>(nullptr)) T(PIKA_FORWARD(U, element))))
                     {
                         // The constructor may throw. We want the element not to appear in the queue in
                         // that case (without corrupting the queue):
@@ -2349,7 +2448,8 @@ namespace pika::concurrency::detail {
                         ->front.store(pr_blockIndexFront, std::memory_order_release);
                     pr_blockIndexFront = (pr_blockIndexFront + 1) & (pr_blockIndexSize - 1);
 
-                    if (!MOODYCAMEL_NOEXCEPT_CTOR(T, U, new (nullptr) T(PIKA_FORWARD(U, element))))
+                    MOODYCAMEL_CONSTEXPR_IF(!MOODYCAMEL_NOEXCEPT_CTOR(
+                        T, U, new (static_cast<T*>(nullptr)) T(PIKA_FORWARD(U, element))))
                     {
                         this->tailIndex.store(newTailIndex, std::memory_order_release);
                         return true;
@@ -2434,7 +2534,7 @@ namespace pika::concurrency::detail {
                         auto offset = static_cast<size_t>(
                             static_cast<typename std::make_signed<index_t>::type>(
                                 blockBaseIndex - headBase) /
-                            BLOCK_SIZE);
+                            static_cast<typename std::make_signed<index_t>::type>(BLOCK_SIZE));
                         auto block = localBlockIndex
                                          ->entries[(localBlockIndexHead + offset) &
                                              (localBlockIndex->size - 1)]
@@ -2484,7 +2584,7 @@ namespace pika::concurrency::detail {
             }
 
             template <AllocationMode allocMode, typename It>
-            bool enqueue_bulk(It itemFirst, size_t count)
+            bool MOODYCAMEL_NO_TSAN enqueue_bulk(It itemFirst, size_t count)
             {
                 // First, we need to make sure we have enough room to enqueue all of the elements;
                 // this means pre-allocating blocks and putting them in the block index (but only if
@@ -2540,8 +2640,16 @@ namespace pika::concurrency::detail {
                         if (pr_blockIndexRaw == nullptr ||
                             pr_blockIndexSlotsUsed == pr_blockIndexSize || full)
                         {
-                            if (allocMode == CannotAlloc || full ||
-                                !new_block_index(originalBlockIndexSlotsUsed))
+                            MOODYCAMEL_CONSTEXPR_IF(allocMode == CannotAlloc)
+                            {
+                                // Failed to allocate, undo changes (but keep injected blocks)
+                                pr_blockIndexFront = originalBlockIndexFront;
+                                pr_blockIndexSlotsUsed = originalBlockIndexSlotsUsed;
+                                this->tailBlock =
+                                    startBlock == nullptr ? firstAllocatedBlock : startBlock;
+                                return false;
+                            }
+                            else if (full || !new_block_index(originalBlockIndexSlotsUsed))
                             {
                                 // Failed to allocate, undo changes (but keep injected blocks)
                                 pr_blockIndexFront = originalBlockIndexFront;
@@ -2569,7 +2677,7 @@ namespace pika::concurrency::detail {
                             return false;
                         }
 
-#if MCDBGQ_TRACKMEM
+#ifdef MCDBGQ_TRACKMEM
                         newBlock->owner = this;
 #endif
                         newBlock
@@ -2609,8 +2717,8 @@ namespace pika::concurrency::detail {
                         block = block->next;
                     }
 
-                    if (MOODYCAMEL_NOEXCEPT_CTOR(T, decltype(*itemFirst),
-                            new (nullptr) T(detail::deref_noexcept(itemFirst))))
+                    MOODYCAMEL_CONSTEXPR_IF(MOODYCAMEL_NOEXCEPT_CTOR(T, decltype(*itemFirst),
+                        new (static_cast<T*>(nullptr)) T(detail::deref_noexcept(itemFirst))))
                     {
                         blockIndex.load(std::memory_order_relaxed)
                             ->front.store((pr_blockIndexFront - 1) & (pr_blockIndexSize - 1),
@@ -2632,14 +2740,14 @@ namespace pika::concurrency::detail {
                 }
                 while (true)
                 {
-                    auto stopIndex = (currentTailIndex & ~static_cast<index_t>(BLOCK_SIZE - 1)) +
+                    index_t stopIndex = (currentTailIndex & ~static_cast<index_t>(BLOCK_SIZE - 1)) +
                         static_cast<index_t>(BLOCK_SIZE);
                     if (detail::circular_less_than<index_t>(newTailIndex, stopIndex))
                     {
                         stopIndex = newTailIndex;
                     }
-                    if (MOODYCAMEL_NOEXCEPT_CTOR(T, decltype(*itemFirst),
-                            new (nullptr) T(detail::deref_noexcept(itemFirst))))
+                    MOODYCAMEL_CONSTEXPR_IF(MOODYCAMEL_NOEXCEPT_CTOR(T, decltype(*itemFirst),
+                        new (static_cast<T*>(nullptr)) T(detail::deref_noexcept(itemFirst))))
                     {
                         while (currentTailIndex != stopIndex)
                         {
@@ -2659,9 +2767,10 @@ namespace pika::concurrency::detail {
                                 // may only define a (noexcept) move constructor, and so calls to the
                                 // cctor will not compile, even if they are in an if branch that will never
                                 // be executed
-                                new ((*this->tailBlock)[currentTailIndex]) T(detail::nomove_if<(
-                                        bool) !MOODYCAMEL_NOEXCEPT_CTOR(T, decltype(*itemFirst),
-                                        new (nullptr) T(
+                                new ((*this->tailBlock)[currentTailIndex]) T(
+                                    detail::nomove_if<!MOODYCAMEL_NOEXCEPT_CTOR(T,
+                                        decltype(*itemFirst),
+                                        new (static_cast<T*>(nullptr)) T(
                                             detail::deref_noexcept(itemFirst)))>::eval(*itemFirst));
                                 ++currentTailIndex;
                                 ++itemFirst;
@@ -2721,13 +2830,13 @@ namespace pika::concurrency::detail {
                     this->tailBlock = this->tailBlock->next;
                 }
 
-                if (!MOODYCAMEL_NOEXCEPT_CTOR(T, decltype(*itemFirst),
-                        new (nullptr) T(detail::deref_noexcept(itemFirst))) &&
-                    firstAllocatedBlock != nullptr)
+                MOODYCAMEL_CONSTEXPR_IF(!MOODYCAMEL_NOEXCEPT_CTOR(T, decltype(*itemFirst),
+                    new (static_cast<T*>(nullptr)) T(detail::deref_noexcept(itemFirst))))
                 {
-                    blockIndex.load(std::memory_order_relaxed)
-                        ->front.store((pr_blockIndexFront - 1) & (pr_blockIndexSize - 1),
-                            std::memory_order_release);
+                    if (firstAllocatedBlock != nullptr)
+                        blockIndex.load(std::memory_order_relaxed)
+                            ->front.store((pr_blockIndexFront - 1) & (pr_blockIndexSize - 1),
+                                std::memory_order_release);
                 }
 
                 this->tailIndex.store(newTailIndex, std::memory_order_release);
@@ -2748,7 +2857,6 @@ namespace pika::concurrency::detail {
 
                     auto myDequeueCount = this->dequeueOptimisticCount.fetch_add(
                         desiredCount, std::memory_order_relaxed);
-                    ;
 
                     tail = this->tailIndex.load(std::memory_order_acquire);
                     auto actualCount = static_cast<size_t>(tail - (myDequeueCount - overcommit));
@@ -2777,7 +2885,7 @@ namespace pika::concurrency::detail {
                         auto offset = static_cast<size_t>(
                             static_cast<typename std::make_signed<index_t>::type>(
                                 firstBlockBaseIndex - headBase) /
-                            BLOCK_SIZE);
+                            static_cast<typename std::make_signed<index_t>::type>(BLOCK_SIZE));
                         auto indexIndex =
                             (localBlockIndexHead + offset) & (localBlockIndex->size - 1);
 
@@ -2786,7 +2894,7 @@ namespace pika::concurrency::detail {
                         do
                         {
                             auto firstIndexInBlock = index;
-                            auto endIndex = (index & ~static_cast<index_t>(BLOCK_SIZE - 1)) +
+                            index_t endIndex = (index & ~static_cast<index_t>(BLOCK_SIZE - 1)) +
                                 static_cast<index_t>(BLOCK_SIZE);
                             endIndex =
                                 detail::circular_less_than<index_t>(
@@ -2946,7 +3054,7 @@ namespace pika::concurrency::detail {
         private:
 #endif
 
-#if MCDBGQ_TRACKMEM
+#ifdef MCDBGQ_TRACKMEM
             friend struct MemStats;
 #endif
         };
@@ -2957,8 +3065,8 @@ namespace pika::concurrency::detail {
 
         struct ImplicitProducer : public ProducerBase
         {
-            ImplicitProducer(ConcurrentQueue* parent)
-              : ProducerBase(parent, false)
+            ImplicitProducer(ConcurrentQueue* parent_)
+              : ProducerBase(parent_, false)
               , nextBlockIndexCapacity(IMPLICIT_INITIAL_INDEX_SIZE)
               , blockIndex(nullptr)
             {
@@ -3048,7 +3156,7 @@ namespace pika::concurrency::detail {
                     {
                         return false;
                     }
-#if MCDBGQ_NOLOCKFREE_IMPLICITPRODBLOCKINDEX
+#ifdef MCDBGQ_NOLOCKFREE_IMPLICITPRODBLOCKINDEX
                     debug::DebugLock lock(mutex);
 #endif
                     // Find out where we'll be inserting this block in the block index
@@ -3067,12 +3175,13 @@ namespace pika::concurrency::detail {
                         idxEntry->value.store(nullptr, std::memory_order_relaxed);
                         return false;
                     }
-#if MCDBGQ_TRACKMEM
+#ifdef MCDBGQ_TRACKMEM
                     newBlock->owner = this;
 #endif
                     newBlock->ConcurrentQueue::Block::template reset_empty<implicit_context>();
 
-                    if (!MOODYCAMEL_NOEXCEPT_CTOR(T, U, new (nullptr) T(PIKA_FORWARD(U, element))))
+                    MOODYCAMEL_CONSTEXPR_IF(!MOODYCAMEL_NOEXCEPT_CTOR(
+                        T, U, new (static_cast<T*>(nullptr)) T(PIKA_FORWARD(U, element))))
                     {
                         // May throw, try to insert now before we publish the fact that we have this new block
                         MOODYCAMEL_TRY
@@ -3093,7 +3202,8 @@ namespace pika::concurrency::detail {
 
                     this->tailBlock = newBlock;
 
-                    if (!MOODYCAMEL_NOEXCEPT_CTOR(T, U, new (nullptr) T(PIKA_FORWARD(U, element))))
+                    MOODYCAMEL_CONSTEXPR_IF(!MOODYCAMEL_NOEXCEPT_CTOR(
+                        T, U, new (static_cast<T*>(nullptr)) T(PIKA_FORWARD(U, element))))
                     {
                         this->tailIndex.store(newTailIndex, std::memory_order_release);
                         return true;
@@ -3136,7 +3246,7 @@ namespace pika::concurrency::detail {
 
                         if (!MOODYCAMEL_NOEXCEPT_ASSIGN(T, T&&, element = PIKA_MOVE(el)))
                         {
-#if MCDBGQ_NOLOCKFREE_IMPLICITPRODBLOCKINDEX
+#ifdef MCDBGQ_NOLOCKFREE_IMPLICITPRODBLOCKINDEX
                             // Note: Acquiring the mutex with every dequeue instead of only when a block
                             // is released is very sub-optimal, but it is, after all, purely debug code.
                             debug::DebugLock lock(producer->mutex);
@@ -3171,7 +3281,7 @@ namespace pika::concurrency::detail {
                                     index))
                             {
                                 {
-#if MCDBGQ_NOLOCKFREE_IMPLICITPRODBLOCKINDEX
+#ifdef MCDBGQ_NOLOCKFREE_IMPLICITPRODBLOCKINDEX
                                     debug::DebugLock lock(mutex);
 #endif
                                     // Add the block back into the global free pool (and remove from block index)
@@ -3193,6 +3303,10 @@ namespace pika::concurrency::detail {
                 return false;
             }
 
+#ifdef _MSC_VER
+# pragma warning(push)
+# pragma warning(disable : 4706)    // assignment within conditional expression
+#endif
             template <AllocationMode allocMode, typename It>
             bool enqueue_bulk(It itemFirst, size_t count)
             {
@@ -3218,7 +3332,7 @@ namespace pika::concurrency::detail {
                     (startTailIndex - 1) & ~static_cast<index_t>(BLOCK_SIZE - 1);
                 if (blockBaseDiff > 0)
                 {
-#if MCDBGQ_NOLOCKFREE_IMPLICITPRODBLOCKINDEX
+#ifdef MCDBGQ_NOLOCKFREE_IMPLICITPRODBLOCKINDEX
                     debug::DebugLock lock(mutex);
 #endif
                     do
@@ -3238,6 +3352,7 @@ namespace pika::concurrency::detail {
                             (MAX_SUBQUEUE_SIZE != detail::const_numeric_max<size_t>::value &&
                                 (MAX_SUBQUEUE_SIZE == 0 ||
                                     MAX_SUBQUEUE_SIZE - BLOCK_SIZE < currentTailIndex - head));
+
                         if (full ||
                             !(indexInserted = insert_block_index_entry<allocMode>(
                                   idxEntry, currentTailIndex)) ||
@@ -3267,7 +3382,7 @@ namespace pika::concurrency::detail {
                             return false;
                         }
 
-#if MCDBGQ_TRACKMEM
+#ifdef MCDBGQ_TRACKMEM
                         newBlock->owner = this;
 #endif
                         newBlock->ConcurrentQueue::Block::template reset_empty<implicit_context>();
@@ -3304,14 +3419,14 @@ namespace pika::concurrency::detail {
                 }
                 while (true)
                 {
-                    auto stopIndex = (currentTailIndex & ~static_cast<index_t>(BLOCK_SIZE - 1)) +
+                    index_t stopIndex = (currentTailIndex & ~static_cast<index_t>(BLOCK_SIZE - 1)) +
                         static_cast<index_t>(BLOCK_SIZE);
                     if (detail::circular_less_than<index_t>(newTailIndex, stopIndex))
                     {
                         stopIndex = newTailIndex;
                     }
-                    if (MOODYCAMEL_NOEXCEPT_CTOR(T, decltype(*itemFirst),
-                            new (nullptr) T(detail::deref_noexcept(itemFirst))))
+                    MOODYCAMEL_CONSTEXPR_IF(MOODYCAMEL_NOEXCEPT_CTOR(T, decltype(*itemFirst),
+                        new (static_cast<T*>(nullptr)) T(detail::deref_noexcept(itemFirst))))
                     {
                         while (currentTailIndex != stopIndex)
                         {
@@ -3324,9 +3439,10 @@ namespace pika::concurrency::detail {
                         {
                             while (currentTailIndex != stopIndex)
                             {
-                                new ((*this->tailBlock)[currentTailIndex]) T(detail::nomove_if<(
-                                        bool) !MOODYCAMEL_NOEXCEPT_CTOR(T, decltype(*itemFirst),
-                                        new (nullptr) T(
+                                new ((*this->tailBlock)[currentTailIndex]) T(
+                                    detail::nomove_if<!MOODYCAMEL_NOEXCEPT_CTOR(T,
+                                        decltype(*itemFirst),
+                                        new (static_cast<T*>(nullptr)) T(
                                             detail::deref_noexcept(itemFirst)))>::eval(*itemFirst));
                                 ++currentTailIndex;
                                 ++itemFirst;
@@ -3393,6 +3509,9 @@ namespace pika::concurrency::detail {
                 this->tailIndex.store(newTailIndex, std::memory_order_release);
                 return true;
             }
+#ifdef _MSC_VER
+# pragma warning(pop)
+#endif
 
             template <typename It>
             size_t dequeue_bulk(It& itemFirst, size_t max)
@@ -3432,7 +3551,7 @@ namespace pika::concurrency::detail {
                         do
                         {
                             auto blockStartIndex = index;
-                            auto endIndex = (index & ~static_cast<index_t>(BLOCK_SIZE - 1)) +
+                            index_t endIndex = (index & ~static_cast<index_t>(BLOCK_SIZE - 1)) +
                                 static_cast<index_t>(BLOCK_SIZE);
                             endIndex =
                                 detail::circular_less_than<index_t>(
@@ -3482,7 +3601,7 @@ namespace pika::concurrency::detail {
                                                 implicit_context>(blockStartIndex,
                                                 static_cast<size_t>(endIndex - blockStartIndex)))
                                         {
-#if MCDBGQ_NOLOCKFREE_IMPLICITPRODBLOCKINDEX
+#ifdef MCDBGQ_NOLOCKFREE_IMPLICITPRODBLOCKINDEX
                                             debug::DebugLock lock(mutex);
 #endif
                                             entry->value.store(nullptr, std::memory_order_relaxed);
@@ -3509,7 +3628,7 @@ namespace pika::concurrency::detail {
                                     static_cast<size_t>(endIndex - blockStartIndex)))
                             {
                                 {
-#if MCDBGQ_NOLOCKFREE_IMPLICITPRODBLOCKINDEX
+#ifdef MCDBGQ_NOLOCKFREE_IMPLICITPRODBLOCKINDEX
                                     debug::DebugLock lock(mutex);
 #endif
                                     // Note that the set_many_empty above did a release, meaning that anybody who acquires the block
@@ -3562,7 +3681,7 @@ namespace pika::concurrency::detail {
                 {
                     return false;    // this can happen if new_block_index failed in the constructor
                 }
-                auto newTail = (localBlockIndex->tail.load(std::memory_order_relaxed) + 1) &
+                size_t newTail = (localBlockIndex->tail.load(std::memory_order_relaxed) + 1) &
                     (localBlockIndex->capacity - 1);
                 idxEntry = localBlockIndex->index[newTail];
                 if (idxEntry->key.load(std::memory_order_relaxed) == INVALID_BLOCK_BASE ||
@@ -3574,18 +3693,25 @@ namespace pika::concurrency::detail {
                 }
 
                 // No room in the old block index, try to allocate another one!
-                if (allocMode == CannotAlloc || !new_block_index())
+                MOODYCAMEL_CONSTEXPR_IF(allocMode == CannotAlloc)
                 {
                     return false;
                 }
-                localBlockIndex = blockIndex.load(std::memory_order_relaxed);
-                newTail = (localBlockIndex->tail.load(std::memory_order_relaxed) + 1) &
-                    (localBlockIndex->capacity - 1);
-                idxEntry = localBlockIndex->index[newTail];
-                assert(idxEntry->key.load(std::memory_order_relaxed) == INVALID_BLOCK_BASE);
-                idxEntry->key.store(blockStartIndex, std::memory_order_relaxed);
-                localBlockIndex->tail.store(newTail, std::memory_order_release);
-                return true;
+                else if (!new_block_index())
+                {
+                    return false;
+                }
+                else
+                {
+                    localBlockIndex = blockIndex.load(std::memory_order_relaxed);
+                    newTail = (localBlockIndex->tail.load(std::memory_order_relaxed) + 1) &
+                        (localBlockIndex->capacity - 1);
+                    idxEntry = localBlockIndex->index[newTail];
+                    assert(idxEntry->key.load(std::memory_order_relaxed) == INVALID_BLOCK_BASE);
+                    idxEntry->key.store(blockStartIndex, std::memory_order_relaxed);
+                    localBlockIndex->tail.store(newTail, std::memory_order_release);
+                    return true;
+                }
             }
 
             inline void rewind_block_index_tail()
@@ -3607,7 +3733,7 @@ namespace pika::concurrency::detail {
             inline size_t get_block_index_index_for_index(
                 index_t index, BlockIndexHeader*& localBlockIndex) const
             {
-#if MCDBGQ_NOLOCKFREE_IMPLICITPRODBLOCKINDEX
+#ifdef MCDBGQ_NOLOCKFREE_IMPLICITPRODBLOCKINDEX
                 debug::DebugLock lock(mutex);
 #endif
                 index &= ~static_cast<index_t>(BLOCK_SIZE - 1);
@@ -3619,7 +3745,7 @@ namespace pika::concurrency::detail {
                 // offset, whose negativity we want to preserve
                 auto offset = static_cast<size_t>(
                     static_cast<typename std::make_signed<index_t>::type>(index - tailBase) /
-                    BLOCK_SIZE);
+                    static_cast<typename std::make_signed<index_t>::type>(BLOCK_SIZE));
                 size_t idx = (tail + offset) & (localBlockIndex->capacity - 1);
                 assert(localBlockIndex->index[idx]->key.load(std::memory_order_relaxed) == index &&
                     localBlockIndex->index[idx]->value.load(std::memory_order_relaxed) != nullptr);
@@ -3634,7 +3760,6 @@ namespace pika::concurrency::detail {
                 auto raw = static_cast<char*>((Traits::malloc)(sizeof(BlockIndexHeader) +
                     std::alignment_of<BlockIndexEntry>::value - 1 +
                     sizeof(BlockIndexEntry) * entryCount +
-                    // NOLINTNEXTLINE(bugprone-sizeof-expression)
                     std::alignment_of<BlockIndexEntry*>::value - 1 +
                     sizeof(BlockIndexEntry*) * nextBlockIndexCapacity));
                 if (raw == nullptr)
@@ -3698,10 +3823,10 @@ namespace pika::concurrency::detail {
         private:
 #endif
 
-#if MCDBGQ_NOLOCKFREE_IMPLICITPRODBLOCKINDEX
+#ifdef MCDBGQ_NOLOCKFREE_IMPLICITPRODBLOCKINDEX
             mutable debug::DebugMutex mutex;
 #endif
-#if MCDBGQ_TRACKMEM
+#ifdef MCDBGQ_TRACKMEM
             friend struct MemStats;
 #endif
         };
@@ -3744,10 +3869,17 @@ namespace pika::concurrency::detail {
 
         inline void add_block_to_free_list(Block* block)
         {
-#if MCDBGQ_TRACKMEM
+#ifdef MCDBGQ_TRACKMEM
             block->owner = nullptr;
 #endif
-            freeList.add(block);
+            if (!Traits::RECYCLE_ALLOCATED_BLOCKS && block->dynamicallyAllocated)
+            {
+                destroy(block);
+            }
+            else
+            {
+                freeList.add(block);
+            }
         }
 
         inline void add_blocks_to_free_list(Block* block)
@@ -3781,15 +3913,17 @@ namespace pika::concurrency::detail {
                 return block;
             }
 
-            if (canAlloc == CanAlloc)
+            MOODYCAMEL_CONSTEXPR_IF(canAlloc == CanAlloc)
             {
                 return create<Block>();
             }
-
-            return nullptr;
+            else
+            {
+                return nullptr;
+            }
         }
 
-#if MCDBGQ_TRACKMEM
+#ifdef MCDBGQ_TRACKMEM
     public:
         struct MemStats
         {
@@ -3932,13 +4066,7 @@ namespace pika::concurrency::detail {
 
         ProducerBase* recycle_or_create_producer(bool isExplicit)
         {
-            bool recycled;
-            return recycle_or_create_producer(isExplicit, recycled);
-        }
-
-        ProducerBase* recycle_or_create_producer(bool isExplicit, bool& recycled)
-        {
-#if MCDBGQ_NOLOCKFREE_IMPLICITPRODHASH
+#ifdef MCDBGQ_NOLOCKFREE_IMPLICITPRODHASH
             debug::DebugLock lock(implicitProdMutex);
 #endif
             // Try to re-use one first
@@ -3948,18 +4076,15 @@ namespace pika::concurrency::detail {
                 if (ptr->inactive.load(std::memory_order_relaxed) && ptr->isExplicit == isExplicit)
                 {
                     bool expected = true;
-                    if (ptr->inactive.compare_exchange_strong(expected,
-                            /* desired */ false, std::memory_order_acquire,
-                            std::memory_order_relaxed))
+                    if (ptr->inactive.compare_exchange_strong(expected, /* desired */ false,
+                            std::memory_order_acquire, std::memory_order_relaxed))
                     {
                         // We caught one! It's been marked as activated, the caller can have it
-                        recycled = true;
                         return ptr;
                     }
                 }
             }
 
-            recycled = false;
             return add_producer(isExplicit ?
                     static_cast<ProducerBase*>(create<ExplicitProducer>(this)) :
                     create<ImplicitProducer>(this));
@@ -4074,66 +4199,75 @@ namespace pika::concurrency::detail {
 
         inline void populate_initial_implicit_producer_hash()
         {
-            if (INITIAL_IMPLICIT_PRODUCER_HASH_SIZE == 0)
-                return;
-
-            implicitProducerHashCount.store(0, std::memory_order_relaxed);
-            auto hash = &initialImplicitProducerHash;
-            hash->capacity = INITIAL_IMPLICIT_PRODUCER_HASH_SIZE;
-            hash->entries = &initialImplicitProducerHashEntries[0];
-            for (size_t i = 0; i != INITIAL_IMPLICIT_PRODUCER_HASH_SIZE; ++i)
+            MOODYCAMEL_CONSTEXPR_IF(INITIAL_IMPLICIT_PRODUCER_HASH_SIZE == 0)
             {
-                initialImplicitProducerHashEntries[i].key.store(
-                    detail::invalid_thread_id, std::memory_order_relaxed);
+                return;
             }
-            hash->prev = nullptr;
-            implicitProducerHash.store(hash, std::memory_order_relaxed);
+            else
+            {
+                implicitProducerHashCount.store(0, std::memory_order_relaxed);
+                auto hash = &initialImplicitProducerHash;
+                hash->capacity = INITIAL_IMPLICIT_PRODUCER_HASH_SIZE;
+                hash->entries = &initialImplicitProducerHashEntries[0];
+                for (size_t i = 0; i != INITIAL_IMPLICIT_PRODUCER_HASH_SIZE; ++i)
+                {
+                    initialImplicitProducerHashEntries[i].key.store(
+                        detail::invalid_thread_id, std::memory_order_relaxed);
+                }
+                hash->prev = nullptr;
+                implicitProducerHash.store(hash, std::memory_order_relaxed);
+            }
         }
 
         void swap_implicit_producer_hashes(ConcurrentQueue& other)
         {
-            if (INITIAL_IMPLICIT_PRODUCER_HASH_SIZE == 0)
+            MOODYCAMEL_CONSTEXPR_IF(INITIAL_IMPLICIT_PRODUCER_HASH_SIZE == 0)
+            {
                 return;
-
-            // Swap (assumes our implicit producer hash is initialized)
-            initialImplicitProducerHashEntries.swap(other.initialImplicitProducerHashEntries);
-            initialImplicitProducerHash.entries = &initialImplicitProducerHashEntries[0];
-            other.initialImplicitProducerHash.entries =
-                &other.initialImplicitProducerHashEntries[0];
-
-            detail::swap_relaxed(implicitProducerHashCount, other.implicitProducerHashCount);
-
-            detail::swap_relaxed(implicitProducerHash, other.implicitProducerHash);
-            if (implicitProducerHash.load(std::memory_order_relaxed) ==
-                &other.initialImplicitProducerHash)
-            {
-                implicitProducerHash.store(&initialImplicitProducerHash, std::memory_order_relaxed);
             }
             else
             {
-                ImplicitProducerHash* hash;
-                for (hash = implicitProducerHash.load(std::memory_order_relaxed);
-                     hash->prev != &other.initialImplicitProducerHash; hash = hash->prev)
+                // Swap (assumes our implicit producer hash is initialized)
+                initialImplicitProducerHashEntries.swap(other.initialImplicitProducerHashEntries);
+                initialImplicitProducerHash.entries = &initialImplicitProducerHashEntries[0];
+                other.initialImplicitProducerHash.entries =
+                    &other.initialImplicitProducerHashEntries[0];
+
+                detail::swap_relaxed(implicitProducerHashCount, other.implicitProducerHashCount);
+
+                detail::swap_relaxed(implicitProducerHash, other.implicitProducerHash);
+                if (implicitProducerHash.load(std::memory_order_relaxed) ==
+                    &other.initialImplicitProducerHash)
                 {
-                    continue;
+                    implicitProducerHash.store(
+                        &initialImplicitProducerHash, std::memory_order_relaxed);
                 }
-                hash->prev = &initialImplicitProducerHash;
-            }
-            if (other.implicitProducerHash.load(std::memory_order_relaxed) ==
-                &initialImplicitProducerHash)
-            {
-                other.implicitProducerHash.store(
-                    &other.initialImplicitProducerHash, std::memory_order_relaxed);
-            }
-            else
-            {
-                ImplicitProducerHash* hash;
-                for (hash = other.implicitProducerHash.load(std::memory_order_relaxed);
-                     hash->prev != &initialImplicitProducerHash; hash = hash->prev)
+                else
                 {
-                    continue;
+                    ImplicitProducerHash* hash;
+                    for (hash = implicitProducerHash.load(std::memory_order_relaxed);
+                         hash->prev != &other.initialImplicitProducerHash; hash = hash->prev)
+                    {
+                        continue;
+                    }
+                    hash->prev = &initialImplicitProducerHash;
                 }
-                hash->prev = &other.initialImplicitProducerHash;
+                if (other.implicitProducerHash.load(std::memory_order_relaxed) ==
+                    &initialImplicitProducerHash)
+                {
+                    other.implicitProducerHash.store(
+                        &other.initialImplicitProducerHash, std::memory_order_relaxed);
+                }
+                else
+                {
+                    ImplicitProducerHash* hash;
+                    for (hash = other.implicitProducerHash.load(std::memory_order_relaxed);
+                         hash->prev != &initialImplicitProducerHash; hash = hash->prev)
+                    {
+                        continue;
+                    }
+                    hash->prev = &other.initialImplicitProducerHash;
+                }
             }
         }
 
@@ -4150,7 +4284,7 @@ namespace pika::concurrency::detail {
 
             // Code and algorithm adapted from http://preshing.com/20130605/the-worlds-simplest-lock-free-hash-table
 
-#if MCDBGQ_NOLOCKFREE_IMPLICITPRODHASH
+#ifdef MCDBGQ_NOLOCKFREE_IMPLICITPRODHASH
             debug::DebugLock lock(implicitProdMutex);
 #endif
 
@@ -4158,13 +4292,15 @@ namespace pika::concurrency::detail {
             auto hashedId = detail::hash_thread_id(id);
 
             auto mainHash = implicitProducerHash.load(std::memory_order_acquire);
+            assert(mainHash !=
+                nullptr);    // silence clang-tidy and MSVC warnings (hash cannot be null)
             for (auto hash = mainHash; hash != nullptr; hash = hash->prev)
             {
                 // Look for the id in this hash
                 auto index = hashedId;
                 while (true)
                 {    // Not an infinite loop because at least one slot is free in the hash table
-                    index &= hash->capacity - 1;
+                    index &= hash->capacity - 1u;
 
                     auto probedKey = hash->entries[index].key.load(std::memory_order_relaxed);
                     if (probedKey == id)
@@ -4180,26 +4316,18 @@ namespace pika::concurrency::detail {
                             index = hashedId;
                             while (true)
                             {
-                                index &= mainHash->capacity - 1;
-                                probedKey =
-                                    mainHash->entries[index].key.load(std::memory_order_relaxed);
+                                index &= mainHash->capacity - 1u;
                                 auto empty = detail::invalid_thread_id;
 #ifdef MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED
                                 auto reusable = detail::invalid_thread_id2;
-                                if ((probedKey == empty &&
-                                        mainHash->entries[index].key.compare_exchange_strong(empty,
-                                            id, std::memory_order_relaxed,
-                                            std::memory_order_relaxed)) ||
-                                    (probedKey == reusable &&
-                                        mainHash->entries[index].key.compare_exchange_strong(
-                                            reusable, id, std::memory_order_acquire,
-                                            std::memory_order_acquire)))
+                                if (mainHash->entries[index].key.compare_exchange_strong(empty, id,
+                                        std::memory_order_seq_cst, std::memory_order_relaxed) ||
+                                    mainHash->entries[index].key.compare_exchange_strong(reusable,
+                                        id, std::memory_order_seq_cst, std::memory_order_relaxed))
                                 {
 #else
-                                if ((probedKey == empty &&
-                                        mainHash->entries[index].key.compare_exchange_strong(empty,
-                                            id, std::memory_order_relaxed,
-                                            std::memory_order_relaxed)))
+                                if (mainHash->entries[index].key.compare_exchange_strong(empty, id,
+                                        std::memory_order_seq_cst, std::memory_order_relaxed))
                                 {
 #endif
                                     mainHash->entries[index].value = value;
@@ -4223,6 +4351,7 @@ namespace pika::concurrency::detail {
             auto newCount = 1 + implicitProducerHashCount.fetch_add(1, std::memory_order_relaxed);
             while (true)
             {
+                // NOLINTNEXTLINE(clang-analyzer-core.NullDereference)
                 if (newCount >= (mainHash->capacity >> 1) &&
                     !implicitProducerHashResizeInProgress.test_and_set(std::memory_order_acquire))
                 {
@@ -4233,7 +4362,7 @@ namespace pika::concurrency::detail {
                     mainHash = implicitProducerHash.load(std::memory_order_acquire);
                     if (newCount >= (mainHash->capacity >> 1))
                     {
-                        auto newCapacity = mainHash->capacity << 1;
+                        size_t newCapacity = mainHash->capacity << 1;
                         while (newCount >= (newCapacity >> 1))
                         {
                             newCapacity <<= 1;
@@ -4251,7 +4380,7 @@ namespace pika::concurrency::detail {
                         }
 
                         auto newHash = new (raw) ImplicitProducerHash;
-                        newHash->capacity = newCapacity;
+                        newHash->capacity = static_cast<size_t>(newCapacity);
                         newHash->entries = reinterpret_cast<ImplicitProducerKVP*>(
                             detail::align_for<ImplicitProducerKVP>(
                                 raw + sizeof(ImplicitProducerHash)));
@@ -4277,17 +4406,12 @@ namespace pika::concurrency::detail {
                 // always be true)
                 if (newCount < (mainHash->capacity >> 1) + (mainHash->capacity >> 2))
                 {
-                    bool recycled;
                     auto producer =
-                        static_cast<ImplicitProducer*>(recycle_or_create_producer(false, recycled));
+                        static_cast<ImplicitProducer*>(recycle_or_create_producer(false));
                     if (producer == nullptr)
                     {
                         implicitProducerHashCount.fetch_sub(1, std::memory_order_relaxed);
                         return nullptr;
-                    }
-                    if (recycled)
-                    {
-                        implicitProducerHashCount.fetch_sub(1, std::memory_order_relaxed);
                     }
 
 #ifdef MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED
@@ -4300,26 +4424,22 @@ namespace pika::concurrency::detail {
                     auto index = hashedId;
                     while (true)
                     {
-                        index &= mainHash->capacity - 1;
-                        auto probedKey =
-                            mainHash->entries[index].key.load(std::memory_order_relaxed);
-
+                        index &= mainHash->capacity - 1u;
                         auto empty = detail::invalid_thread_id;
 #ifdef MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED
                         auto reusable = detail::invalid_thread_id2;
-                        if ((probedKey == empty &&
-                                mainHash->entries[index].key.compare_exchange_strong(empty, id,
-                                    std::memory_order_relaxed, std::memory_order_relaxed)) ||
-                            (probedKey == reusable &&
-                                mainHash->entries[index].key.compare_exchange_strong(reusable, id,
-                                    std::memory_order_acquire, std::memory_order_acquire)))
+                        if (mainHash->entries[index].key.compare_exchange_strong(
+                                reusable, id, std::memory_order_seq_cst, std::memory_order_relaxed))
                         {
-#else
-                        if ((probedKey == empty &&
-                                mainHash->entries[index].key.compare_exchange_strong(empty, id,
-                                    std::memory_order_relaxed, std::memory_order_relaxed)))
-                        {
+                            implicitProducerHashCount.fetch_sub(
+                                1, std::memory_order_relaxed);    // already counted as a used slot
+                            mainHash->entries[index].value = producer;
+                            break;
+                        }
 #endif
+                        if (mainHash->entries[index].key.compare_exchange_strong(
+                                empty, id, std::memory_order_seq_cst, std::memory_order_relaxed))
+                        {
                             mainHash->entries[index].value = producer;
                             break;
                         }
@@ -4333,16 +4453,13 @@ namespace pika::concurrency::detail {
                 // we try to allocate ourselves).
                 mainHash = implicitProducerHash.load(std::memory_order_acquire);
             }
-        }    // namespace detail
+        }
 
 #ifdef MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED
         void implicit_producer_thread_exited(ImplicitProducer* producer)
         {
-            // Remove from thread exit listeners
-            detail::ThreadExitNotifier::unsubscribe(&producer->threadExitListener);
-
             // Remove from hash
-# if MCDBGQ_NOLOCKFREE_IMPLICITPRODHASH
+# ifdef MCDBGQ_NOLOCKFREE_IMPLICITPRODHASH
             debug::DebugLock lock(implicitProdMutex);
 # endif
             auto hash = implicitProducerHash.load(std::memory_order_acquire);
@@ -4359,12 +4476,12 @@ namespace pika::concurrency::detail {
                 auto index = hashedId;
                 do
                 {
-                    index &= hash->capacity - 1;
-                    probedKey = hash->entries[index].key.load(std::memory_order_relaxed);
-                    if (probedKey == id)
+                    index &= hash->capacity - 1u;
+                    probedKey = id;
+                    if (hash->entries[index].key.compare_exchange_strong(probedKey,
+                            detail::invalid_thread_id2, std::memory_order_seq_cst,
+                            std::memory_order_relaxed))
                     {
-                        hash->entries[index].key.store(
-                            detail::invalid_thread_id2, std::memory_order_release);
                         break;
                     }
                     ++index;
@@ -4389,20 +4506,43 @@ namespace pika::concurrency::detail {
         // Utility functions
         //////////////////////////////////
 
+        template <typename TAlign>
+        static inline void* aligned_malloc(size_t size)
+        {
+            MOODYCAMEL_CONSTEXPR_IF(
+                std::alignment_of<TAlign>::value <= std::alignment_of<detail::max_align_t>::value)
+            return (Traits::malloc)(size);
+            else
+            {
+                size_t alignment = std::alignment_of<TAlign>::value;
+                void* raw = (Traits::malloc)(size + alignment - 1 + sizeof(void*));
+                if (!raw)
+                    return nullptr;
+                char* ptr = detail::align_for<TAlign>(reinterpret_cast<char*>(raw) + sizeof(void*));
+                *(reinterpret_cast<void**>(ptr) - 1) = raw;
+                return ptr;
+            }
+        }
+
+        template <typename TAlign>
+        static inline void aligned_free(void* ptr)
+        {
+            MOODYCAMEL_CONSTEXPR_IF(
+                std::alignment_of<TAlign>::value <= std::alignment_of<detail::max_align_t>::value)
+            return (Traits::free)(ptr);
+            else(Traits::free)(ptr ? *(reinterpret_cast<void**>(ptr) - 1) : nullptr);
+        }
+
         template <typename U>
         static inline U* create_array(size_t count)
         {
             assert(count > 0);
-            auto p = static_cast<U*>((Traits::malloc)(sizeof(U) * count));
+            U* p = static_cast<U*>(aligned_malloc<U>(sizeof(U) * count));
             if (p == nullptr)
-            {
                 return nullptr;
-            }
 
             for (size_t i = 0; i != count; ++i)
-            {
                 new (p + i) U();
-            }
             return p;
         }
 
@@ -4413,24 +4553,22 @@ namespace pika::concurrency::detail {
             {
                 assert(count > 0);
                 for (size_t i = count; i != 0;)
-                {
                     (p + --i)->~U();
-                }
-                (Traits::free)(p);
             }
+            aligned_free<U>(p);
         }
 
         template <typename U>
         static inline U* create()
         {
-            auto p = (Traits::malloc)(sizeof(U));
+            void* p = aligned_malloc<U>(sizeof(U));
             return p != nullptr ? new (p) U : nullptr;
         }
 
         template <typename U, typename A1>
         static inline U* create(A1&& a1)
         {
-            auto p = (Traits::malloc)(sizeof(U));
+            void* p = aligned_malloc<U>(sizeof(U));
             return p != nullptr ? new (p) U(PIKA_FORWARD(A1, a1)) : nullptr;
         }
 
@@ -4438,10 +4576,8 @@ namespace pika::concurrency::detail {
         static inline void destroy(U* p)
         {
             if (p != nullptr)
-            {
                 p->~U();
-            }
-            (Traits::free)(p);
+            aligned_free<U>(p);
         }
 
     private:
@@ -4452,7 +4588,7 @@ namespace pika::concurrency::detail {
         Block* initialBlockPool;
         size_t initialBlockPoolSize;
 
-#if !MCDBGQ_USEDEBUGFREELIST
+#ifndef MCDBGQ_USEDEBUGFREELIST
         FreeList<Block> freeList;
 #else
         debug::DebugFreeList<Block> freeList;
@@ -4468,7 +4604,7 @@ namespace pika::concurrency::detail {
         std::atomic<std::uint32_t> nextExplicitConsumerId;
         std::atomic<std::uint32_t> globalExplicitConsumerOffset;
 
-#if MCDBGQ_NOLOCKFREE_IMPLICITPRODHASH
+#ifdef MCDBGQ_NOLOCKFREE_IMPLICITPRODHASH
         debug::DebugMutex implicitProdMutex;
 #endif
 
@@ -4476,7 +4612,7 @@ namespace pika::concurrency::detail {
         std::atomic<ExplicitProducer*> explicitProducers;
         std::atomic<ImplicitProducer*> implicitProducers;
 #endif
-    };    // namespace concurrency
+    };
 
     template <typename T, typename Traits>
     ProducerToken::ProducerToken(ConcurrentQueue<T, Traits>& queue)
@@ -4544,8 +4680,13 @@ namespace pika::concurrency::detail {
     {
         a.swap(b);
     }
+
 }    // namespace pika::concurrency::detail
 
-#if defined(__GNUC__)
+#if defined(_MSC_VER) && (!defined(_HAS_CXX17) || !_HAS_CXX17)
+# pragma warning(pop)
+#endif
+
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)
 # pragma GCC diagnostic pop
 #endif

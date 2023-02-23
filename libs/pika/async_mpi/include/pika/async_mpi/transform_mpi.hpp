@@ -91,6 +91,8 @@ namespace pika::mpi::experimental {
         template <typename Sender, typename F>
         struct transform_mpi_sender_impl<Sender, F>::transform_mpi_sender_type
         {
+            using is_sender = void;
+
             std::decay_t<Sender> sender;
             std::decay_t<F> f;
             stream_type stream;
@@ -104,7 +106,7 @@ namespace pika::mpi::experimental {
 
             using completion_signatures =
                 pika::execution::experimental::make_completion_signatures<std::decay_t<Sender>,
-                    pika::execution::experimental::detail::empty_env,
+                    pika::execution::experimental::empty_env,
                     pika::execution::experimental::completion_signatures<
                         pika::execution::experimental::set_error_t(std::exception_ptr)>,
                     invoke_result_helper>;
@@ -146,6 +148,8 @@ namespace pika::mpi::experimental {
 
                 struct transform_mpi_receiver
                 {
+                    using is_receiver = void;
+
                     operation_state& op_state;
 
                     template <typename Error>
@@ -227,7 +231,7 @@ namespace pika::mpi::experimental {
                             });
                     }
 
-                    friend constexpr pika::execution::experimental::detail::empty_env tag_invoke(
+                    friend constexpr pika::execution::experimental::empty_env tag_invoke(
                         pika::execution::experimental::get_env_t,
                         transform_mpi_receiver const&) noexcept
                     {
@@ -250,7 +254,7 @@ namespace pika::mpi::experimental {
                 using ts_type = pika::util::detail::prepend_t<
                     pika::util::detail::transform_t<
                         pika::execution::experimental::value_types_of_t<std::decay_t<Sender>,
-                            pika::execution::experimental::detail::empty_env, std::tuple,
+                            pika::execution::experimental::empty_env, std::tuple,
                             pika::detail::variant>,
                         value_types_helper>,
                     pika::detail::monostate>;
@@ -298,8 +302,7 @@ namespace pika::mpi::experimental {
                     pika::util::detail::unique_t<pika::util::detail::prepend_t<
                         pika::util::detail::transform_t<
                             pika::execution::experimental::value_types_of_t<
-                                transform_mpi_sender_type,
-                                pika::execution::experimental::detail::empty_env,
+                                transform_mpi_sender_type, pika::execution::experimental::empty_env,
                                 pika::util::detail::pack, pika::util::detail::pack>,
                             result_types_helper>,
                         pika::detail::monostate>>>;
@@ -354,7 +357,8 @@ namespace pika::mpi::experimental {
     {
     private:
         template <typename Sender, typename F,
-            PIKA_CONCEPT_REQUIRES_(pika::execution::experimental::is_sender_v<Sender>)>
+            PIKA_CONCEPT_REQUIRES_(
+                pika::execution::experimental::is_sender_v<std::decay_t<Sender>>)>
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(transform_mpi_t, Sender&& sender,
             F&& f, mpi::experimental::stream_type s = mpi::experimental::stream_type::automatic)
         {

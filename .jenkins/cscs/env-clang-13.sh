@@ -10,7 +10,7 @@ boost_version="1.79.0"
 hwloc_version="2.6.0"
 spack_compiler="clang@${clang_version}"
 spack_arch="cray-cnl7-broadwell"
-stdexec_version="c0fe16f451137b00ceb85d912ec3a288990ce766"
+stdexec_version="6510f5bd69cc03b24668f26eda3dd3cca7e81bb2"
 
 spack_spec="pika@main arch=${spack_arch} %${spack_compiler} cxxflags=-stdlib=libc++ malloc=system cxxstd=${cxx_std} +p2300 ^boost@${boost_version} ^hwloc@${hwloc_version} ^fmt cxxflags=-stdlib=libc++ ^stdexec@${stdexec_version}"
 

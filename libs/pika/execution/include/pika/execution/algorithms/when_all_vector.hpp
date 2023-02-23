@@ -47,6 +47,8 @@ namespace pika::when_all_vector_detail {
     template <typename Sender>
     struct when_all_vector_sender_impl<Sender>::when_all_vector_sender_type
     {
+        using is_sender = void;
+
         using senders_type = std::vector<Sender>;
         senders_type senders;
 
@@ -63,9 +65,9 @@ namespace pika::when_all_vector_detail {
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
         // We expect a single value type or nothing from the predecessor
         // sender type
-        using element_value_type = std::decay_t<
-            pika::execution::experimental::detail::single_result_t<pika::execution::experimental::
-                    value_types_of_t<Sender, pika::execution::experimental::detail::empty_env,
+        using element_value_type =
+            std::decay_t<pika::execution::experimental::detail::single_result_t<pika::execution::
+                    experimental::value_types_of_t<Sender, pika::execution::experimental::empty_env,
                         pika::util::detail::pack, pika::util::detail::pack>>>;
 
         static constexpr bool is_void_value_type = std::is_void_v<element_value_type>;
@@ -79,26 +81,28 @@ namespace pika::when_all_vector_detail {
         // This sender sends a single vector of the type sent by the
         // predecessor senders or nothing if the predecessor senders send
         // nothing
-        template <template <typename...> class Tuple, template <typename...> class Variant>
-        using value_types = Variant<std::conditional_t<is_void_value_type, Tuple<>,
-            Tuple<std::vector<element_value_type>>>>;
+        template <typename...>
+        using set_value_helper = pika::execution::experimental::completion_signatures<
+            std::conditional_t<is_void_value_type, pika::execution::experimental::set_value_t(),
+                pika::execution::experimental::set_value_t(std::vector<element_value_type>)>>;
 
         // This sender sends any error types sent by the predecessor senders
         // or std::exception_ptr
         template <template <typename...> class Variant>
         using error_types = pika::util::detail::unique_concat_t<
-            pika::util::detail::transform_t<
-                pika::execution::experimental::error_types_of_t<Sender,
-                    pika::execution::experimental::detail::empty_env, Variant>,
+            pika::util::detail::transform_t<pika::execution::experimental::error_types_of_t<Sender,
+                                                pika::execution::experimental::empty_env, Variant>,
                 std::decay>,
             Variant<std::exception_ptr>>;
 
         static constexpr bool sends_done = false;
 
-        using completion_signatures = pika::execution::experimental::completion_signatures<
-            std::conditional_t<is_void_value_type, pika::execution::experimental::set_value_t(),
-                pika::execution::experimental::set_value_t(std::vector<element_value_type>)>,
-            pika::execution::experimental::set_error_t(std::exception_ptr)>;
+        using completion_signatures =
+            pika::execution::experimental::make_completion_signatures<Sender,
+                pika::execution::experimental::empty_env,
+                pika::execution::experimental::completion_signatures<
+                    pika::execution::experimental::set_error_t(std::exception_ptr)>,
+                set_value_helper>;
 #else
         // We expect a single value type or nothing from the predecessor
         // sender type
@@ -139,6 +143,8 @@ namespace pika::when_all_vector_detail {
         {
             struct when_all_vector_receiver
             {
+                using is_receiver = void;
+
                 operation_state& op_state;
                 std::size_t const i;
 
@@ -199,7 +205,7 @@ namespace pika::when_all_vector_detail {
                     r.op_state.finish();
                 }
 
-                friend constexpr pika::execution::experimental::detail::empty_env tag_invoke(
+                friend constexpr pika::execution::experimental::empty_env tag_invoke(
                     pika::execution::experimental::get_env_t,
                     when_all_vector_receiver const&) noexcept
                 {
@@ -299,7 +305,19 @@ namespace pika::when_all_vector_detail {
                     }
                     else
                     {
-                        pika::execution::experimental::set_stopped(PIKA_MOVE(receiver));
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+                        if constexpr (pika::execution::experimental::sends_stopped<Sender>)
+#else
+                        if constexpr (pika::execution::experimental::sender_traits<
+                                          Sender>::sends_done)
+#endif
+                        {
+                            pika::execution::experimental::set_stopped(PIKA_MOVE(receiver));
+                        }
+                        else
+                        {
+                            PIKA_UNREACHABLE;
+                        }
                     }
                 }
             }

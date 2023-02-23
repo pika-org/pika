@@ -46,8 +46,16 @@ struct sender
         return {};
     }
 
-    friend Scheduler tag_invoke(
-        ex::get_completion_scheduler_t<ex::set_value_t>, sender const&) noexcept
+    struct env
+    {
+        friend Scheduler tag_invoke(
+            ex::get_completion_scheduler_t<ex::set_value_t>, env const&) noexcept
+        {
+            return {};
+        }
+    };
+
+    friend env tag_invoke(ex::get_env_t, sender const&) noexcept
     {
         return {};
     }

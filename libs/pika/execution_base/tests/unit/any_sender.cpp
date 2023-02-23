@@ -273,7 +273,7 @@ struct callback_receiver
         r.set_value_called = true;
     }
 
-    friend constexpr pika::execution::experimental::detail::empty_env tag_invoke(
+    friend constexpr pika::execution::experimental::empty_env tag_invoke(
         pika::execution::experimental::get_env_t, callback_receiver const&) noexcept
     {
         return {};
@@ -314,7 +314,7 @@ struct error_receiver
         PIKA_TEST(false);
     }
 
-    friend constexpr pika::execution::experimental::detail::empty_env tag_invoke(
+    friend constexpr pika::execution::experimental::empty_env tag_invoke(
         pika::execution::experimental::get_env_t, error_receiver const&) noexcept
     {
         return {};

@@ -75,11 +75,10 @@ namespace pika::split_tuple_detail {
 
         // nvcc does not like decay_t, so this uses decay<>::type instead.
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-        using value_type =
-            typename std::decay<pika::execution::experimental::detail::single_result_t<
-                typename pika::execution::experimental::value_types_of_t<Sender,
-                    pika::execution::experimental::detail::empty_env, pika::util::detail::pack,
-                    pika::util::detail::pack>>>::type;
+        using value_type = typename std::decay<
+            pika::execution::experimental::detail::single_result_t<typename pika::execution::
+                    experimental::value_types_of_t<Sender, pika::execution::experimental::empty_env,
+                        pika::util::detail::pack, pika::util::detail::pack>>>::type;
 #else
         using value_type =
             typename std::decay<pika::execution::experimental::detail::single_result_t<
@@ -91,7 +90,7 @@ namespace pika::split_tuple_detail {
         using error_type = pika::util::detail::unique_t<pika::util::detail::prepend_t<
             pika::util::detail::transform_t<
                 typename pika::execution::experimental::error_types_of_t<Sender,
-                    pika::execution::experimental::detail::empty_env, pika::detail::variant>,
+                    pika::execution::experimental::empty_env, pika::detail::variant>,
                 std::decay>,
             std::exception_ptr>>;
 #else
@@ -112,6 +111,8 @@ namespace pika::split_tuple_detail {
 
         struct split_tuple_receiver
         {
+            using is_receiver = void;
+
             shared_state& state;
 
             template <typename Error>
@@ -135,7 +136,7 @@ namespace pika::split_tuple_detail {
             using value_type =
                 typename std::decay<pika::execution::experimental::detail::single_result_t<
                     typename pika::execution::experimental::value_types_of_t<Sender,
-                        pika::execution::experimental::detail::empty_env, pika::util::detail::pack,
+                        pika::execution::experimental::empty_env, pika::util::detail::pack,
                         pika::util::detail::pack>>>::type;
 #else
             using value_type =
@@ -158,7 +159,7 @@ namespace pika::split_tuple_detail {
                 r.state.set_predecessor_done();
             }
 
-            friend constexpr pika::execution::experimental::detail::empty_env tag_invoke(
+            friend constexpr pika::execution::experimental::empty_env tag_invoke(
                 pika::execution::experimental::get_env_t, split_tuple_receiver const&) noexcept
             {
                 return {};
@@ -198,7 +199,7 @@ namespace pika::split_tuple_detail {
                 constexpr bool sends_stopped =
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
                     pika::execution::experimental::sends_stopped<Sender,
-                        pika::execution::experimental::detail::empty_env>
+                        pika::execution::experimental::empty_env>
 #else
                     pika::execution::experimental::sender_traits<Sender>::sends_done
 #endif
@@ -381,16 +382,17 @@ namespace pika::split_tuple_detail {
     template <typename Sender, typename Allocator, std::size_t Index>
     struct split_tuple_sender_impl<Sender, Allocator, Index>::split_tuple_sender_type
     {
+        using is_sender = void;
+
         using allocator_type = Allocator;
         using shared_state_type = shared_state<Sender, Allocator>;
 
         // nvcc does not like decay_t, so this uses decay<>::type instead.
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-        using value_type =
-            typename std::decay<pika::execution::experimental::detail::single_result_t<
-                typename pika::execution::experimental::value_types_of_t<Sender,
-                    pika::execution::experimental::detail::empty_env, pika::util::detail::pack,
-                    pika::util::detail::pack>>>::type;
+        using value_type = typename std::decay<
+            pika::execution::experimental::detail::single_result_t<typename pika::execution::
+                    experimental::value_types_of_t<Sender, pika::execution::experimental::empty_env,
+                        pika::util::detail::pack, pika::util::detail::pack>>>::type;
 #else
         using value_type =
             typename std::decay<pika::execution::experimental::detail::single_result_t<
@@ -419,7 +421,7 @@ namespace pika::split_tuple_detail {
 
         using completion_signatures =
             pika::execution::experimental::make_completion_signatures<Sender,
-                pika::execution::experimental::detail::empty_env,
+                pika::execution::experimental::empty_env,
                 pika::execution::experimental::completion_signatures<
                     pika::execution::experimental::set_error_t(std::exception_ptr)>,
                 set_value_helper, set_error_helper>;
@@ -522,11 +524,10 @@ namespace pika::split_tuple_detail {
 
         // nvcc does not like decay_t, so this uses decay<>::type instead.
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-        using value_type =
-            typename std::decay<pika::execution::experimental::detail::single_result_t<
-                typename pika::execution::experimental::value_types_of_t<Sender,
-                    pika::execution::experimental::detail::empty_env, pika::util::detail::pack,
-                    pika::util::detail::pack>>>::type;
+        using value_type = typename std::decay<
+            pika::execution::experimental::detail::single_result_t<typename pika::execution::
+                    experimental::value_types_of_t<Sender, pika::execution::experimental::empty_env,
+                        pika::util::detail::pack, pika::util::detail::pack>>>::type;
 #else
         using value_type =
             typename std::decay<pika::execution::experimental::detail::single_result_t<

@@ -48,10 +48,6 @@ auto tag_invoke(ex::bulk_t, S&& s, int num, custom_bulk_operation t)
 
 int main()
 {
-    // TODO: bulk does not have a fallback implementation in the reference
-    // implementation. With P2300 enabled bulk is tested in
-    // thread_pool_scheduler_test.
-#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     // Success path
     {
         std::atomic<bool> set_value_called{false};
@@ -254,10 +250,6 @@ int main()
     }
 
     test_adl_isolation(ex::bulk(ex::just(), 1, my_namespace::my_type{}));
-#else
-    // No tests with the P2300 reference implementation
-    PIKA_TEST(true);
-#endif
 
     return 0;
 }

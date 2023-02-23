@@ -55,6 +55,8 @@ namespace pika::make_future_detail {
     template <typename T, typename Allocator>
     struct make_future_receiver
     {
+        using is_receiver = void;
+
         pika::intrusive_ptr<resettable_operation_state_future_data<T, Allocator>> data;
 
         friend void tag_invoke(pika::execution::experimental::set_error_t, make_future_receiver&& r,
@@ -92,7 +94,7 @@ namespace pika::make_future_detail {
             r_local.data.reset();
         }
 
-        friend constexpr pika::execution::experimental::detail::empty_env tag_invoke(
+        friend constexpr pika::execution::experimental::empty_env tag_invoke(
             pika::execution::experimental::get_env_t, make_future_receiver const&) noexcept
         {
             return {};
@@ -138,7 +140,7 @@ namespace pika::make_future_detail {
             r_local.data.reset();
         }
 
-        friend constexpr pika::execution::experimental::detail::empty_env tag_invoke(
+        friend constexpr pika::execution::experimental::empty_env tag_invoke(
             pika::execution::experimental::get_env_t, make_future_receiver const&) noexcept
         {
             return {};
@@ -186,7 +188,7 @@ namespace pika::make_future_detail {
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
         using value_types =
             typename pika::execution::experimental::value_types_of_t<std::decay_t<Sender>,
-                pika::execution::experimental::detail::empty_env, pika::util::detail::pack,
+                pika::execution::experimental::empty_env, pika::util::detail::pack,
                 pika::util::detail::pack>;
 #else
         using value_types =

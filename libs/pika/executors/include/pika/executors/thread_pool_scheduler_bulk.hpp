@@ -83,19 +83,21 @@ namespace pika::thread_pool_bulk_detail {
         thread_pool_bulk_sender& operator=(thread_pool_bulk_sender const&) = default;
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+        using is_sender = void;
+
         template <template <typename...> class Tuple, template <typename...> class Variant>
         using value_types = pika::execution::experimental::value_types_of_t<Sender,
-            pika::execution::experimental::detail::empty_env, Tuple, Variant>;
+            pika::execution::experimental::empty_env, Tuple, Variant>;
 
         template <template <typename...> class Variant>
-        using error_types = pika::util::detail::unique_t<pika::util::detail::prepend_t<
-            pika::execution::experimental::error_types_of_t<Sender,
-                pika::execution::experimental::detail::empty_env, Variant>,
-            std::exception_ptr>>;
+        using error_types = pika::util::detail::unique_t<
+            pika::util::detail::prepend_t<pika::execution::experimental::error_types_of_t<Sender,
+                                              pika::execution::experimental::empty_env, Variant>,
+                std::exception_ptr>>;
 
         using completion_signatures =
             pika::execution::experimental::make_completion_signatures<Sender,
-                pika::execution::experimental::detail::empty_env,
+                pika::execution::experimental::empty_env,
                 pika::execution::experimental::completion_signatures<
                     pika::execution::experimental::set_error_t(std::exception_ptr)>>;
 #else
@@ -112,40 +114,14 @@ namespace pika::thread_pool_bulk_detail {
         static constexpr bool sends_done = false;
 #endif
 
-        template <typename CPO,
-            // clang-format off
-                PIKA_CONCEPT_REQUIRES_(
-                    pika::execution::experimental::detail::is_receiver_cpo_v<CPO> &&
-                    (std::is_same_v<CPO, pika::execution::experimental::set_value_t> ||
-                        pika::execution::experimental::detail::has_completion_scheduler_v<
-                                pika::execution::experimental::set_error_t,
-                                std::decay_t<Sender>> ||
-                        pika::execution::experimental::detail::has_completion_scheduler_v<
-                                pika::execution::experimental::set_stopped_t,
-                                std::decay_t<Sender>>))
-            // clang-format on
-            >
-        friend constexpr auto
-        tag_invoke(pika::execution::experimental::get_completion_scheduler_t<CPO>,
-            thread_pool_bulk_sender const& s) noexcept
-        {
-            if constexpr (std::is_same_v<std::decay_t<CPO>,
-                              pika::execution::experimental::set_value_t>)
-            {
-                return s.scheduler;
-            }
-            else
-            {
-                return pika::execution::experimental::get_completion_scheduler<CPO>(s);
-            }
-        }
-
     private:
         template <typename Receiver>
         struct operation_state
         {
             struct bulk_receiver
             {
+                using is_receiver = void;
+
                 operation_state* op_state;
 
                 template <typename E>
@@ -456,7 +432,7 @@ namespace pika::thread_pool_bulk_detail {
                     r.do_work_local(n, chunk_size, local_worker_thread);
                 }
 
-                friend constexpr pika::execution::experimental::detail::empty_env tag_invoke(
+                friend constexpr pika::execution::experimental::empty_env tag_invoke(
                     pika::execution::experimental::get_env_t, bulk_receiver const&) noexcept
                 {
                     return {};
@@ -517,6 +493,12 @@ namespace pika::thread_pool_bulk_detail {
         {
             return operation_state<std::decay_t<Receiver>>{
                 s.scheduler, s.sender, s.shape, s.f, PIKA_FORWARD(Receiver, receiver)};
+        }
+
+        friend constexpr auto tag_invoke(
+            pika::execution::experimental::get_env_t, thread_pool_bulk_sender const& s)
+        {
+            return pika::execution::experimental::get_env(s.sender);
         }
     };
 }    // namespace pika::thread_pool_bulk_detail
