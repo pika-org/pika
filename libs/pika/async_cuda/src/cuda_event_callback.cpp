@@ -74,7 +74,7 @@ namespace pika::cuda::experimental::detail {
             using pika::threads::detail::polling_status;
             using namespace pika::debug::detail;
 
-            // invoke ready event callbacks without locking
+            // invoke ready callbacks without being under lock
             detail::ready_callback ready_callback_;
             while (ready_events.try_dequeue(ready_callback_))
             {
@@ -174,6 +174,12 @@ namespace pika::cuda::experimental::detail {
                     pool.push(PIKA_MOVE(continuation.event));
                 }
             }    // end locked region
+
+            // invoke any new ready callbacks without being under lock
+            while (ready_events.try_dequeue(ready_callback_))
+            {
+                ready_callback_.f(ready_callback_.status);
+            }
 
             using pika::threads::detail::polling_status;
             return event_callback_vector.empty() ? polling_status::idle : polling_status::busy;
