@@ -782,8 +782,7 @@ namespace pika::threads {
             execution::thread_schedule_hint schedulehint, bool allow_fallback,
             execution::thread_priority priority = execution::thread_priority::normal) override
         {
-            schedule_work(thrd, schedulehint, allow_fallback, false,
-                priority = execution::thread_priority::normal);
+            schedule_work(thrd, schedulehint, allow_fallback, false, priority);
         }
 
         /// Put task on the back of the queue : not yet implemented
@@ -793,8 +792,7 @@ namespace pika::threads {
             execution::thread_priority priority = execution::thread_priority::normal) override
         {
             PIKA_DP(spq_deb<5>, debug(debug::detail::str<>("schedule_thread_last")));
-            schedule_work(thrd, schedulehint, allow_fallback, true,
-                priority = execution::thread_priority::normal);
+            schedule_work(thrd, schedulehint, allow_fallback, true, priority);
         }
 
         //---------------------------------------------------------------------
