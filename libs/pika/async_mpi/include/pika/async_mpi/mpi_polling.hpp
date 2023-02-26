@@ -135,6 +135,9 @@ namespace pika::mpi::experimental {
     PIKA_EXPORT const std::string& get_pool_name();
     PIKA_EXPORT void set_pool_name(const std::string&);
 
+    // returns false if no custom mpi pool has been created
+    PIKA_EXPORT bool pool_exists();
+
     // initialize the pika::mpi background request handler
     // All ranks should call this function,
     // but only one thread per rank needs to do so

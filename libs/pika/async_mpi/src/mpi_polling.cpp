@@ -190,7 +190,8 @@ namespace pika::mpi::experimental {
         // default transfer mode for mpi continuations
         static std::size_t task_completion_mode_ = get_completion_mode_default();
 
-        static std::string polling_pool_name = "pika:polling";
+        static std::string polling_pool_name_ = "pika:polling";
+        static bool pool_exists_ = false;
 
         inline mpi_stream& get_stream_ref(stream_type stream)
         {
@@ -741,13 +742,18 @@ namespace pika::mpi::experimental {
     // -----------------------------------------------------------------
     const std::string& get_pool_name()
     {
-        return detail::polling_pool_name;
+        return detail::polling_pool_name_;
     }
 
     // -----------------------------------------------------------------
     void set_pool_name(const std::string& name)
     {
-        detail::polling_pool_name = name;
+        detail::polling_pool_name_ = name;
+    }
+
+    // -----------------------------------------------------------------
+    bool pool_exists() {
+        return detail::pool_exists_;
     }
 
     // -------------------------------------------------------------
@@ -813,13 +819,16 @@ namespace pika::mpi::experimental {
             // override mpi pool name with whatever we decided on
             set_pool_name(name);
             detail::register_polling(pika::resource::get_thread_pool(name));
+            detail::pool_exists_ = (name!=resource::get_pool_name(0));
         }
         else
         {
             PIKA_ASSERT_MSG(pool_name == get_pool_name(), "MPI pool name mismatch");
             // make sure the mpi pool name matches what the user passed in
+            detail::pool_exists_ = true;
             set_pool_name(pool_name);
             detail::register_polling(pika::resource::get_thread_pool(pool_name));
+            detail::pool_exists_ = (pool_name!=resource::get_pool_name(0));
         }
     }
 
