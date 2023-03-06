@@ -134,7 +134,7 @@ function(pika_add_config_test variable)
     set(additional_cmake_flags)
     if(MSVC)
       set(additional_cmake_flags "-WX")
-    elseif(NOT CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC")
+    else()
       set(additional_cmake_flags "-Werror")
     endif()
 
