@@ -202,11 +202,7 @@ function(pika_add_library name)
     foreach(source ${${name}_SOURCES})
       get_filename_component(extension ${source} EXT)
       if(${extension} STREQUAL ".cu")
-        set_source_files_properties(${source} PROPERTIES LANGUAGE CXX)
-        set_source_files_properties(
-          ${source} PROPERTIES COMPILE_FLAGS
-                               "-x cu -nostdpar -nomp -noacc -gpu=cc80"
-        )
+        pika_add_nvhpc_cuda_flags(${source})
       endif()
     endforeach()
   endif()
