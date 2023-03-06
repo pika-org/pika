@@ -22,7 +22,7 @@ set(executors_headers
     pika/executors/execution_policy_fwd.hpp
     pika/executors/execution_policy.hpp
     pika/executors/fork_join_executor.hpp
-    pika/executors/limiting_executor.hpp
+    pika/executors/limiting_scheduler.hpp
     pika/executors/parallel_executor.hpp
     pika/executors/restricted_thread_pool_executor.hpp
     pika/executors/scheduler_executor.hpp

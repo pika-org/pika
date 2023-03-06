@@ -9,7 +9,7 @@ set(tests
     annotation_property
     created_executor
     fork_join_executor
-    limiting_executor
+    limiting_scheduler
     parallel_executor
     parallel_fork_executor
     parallel_policy_executor
