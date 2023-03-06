@@ -186,9 +186,12 @@ function(pika_add_executable name)
     foreach(source ${${name}_SOURCES})
       get_filename_component(extension ${source} EXT)
       if(${extension} STREQUAL ".cu")
-          set_source_files_properties(${source} PROPERTIES LANGUAGE CXX)
-          set_source_files_properties(${source} PROPERTIES COMPILE_FLAGS "-x cu -nostdpar -nomp -noacc -gpu=cc80")
-          set(target_has_gpu_sources TRUE)
+        set_source_files_properties(${source} PROPERTIES LANGUAGE CXX)
+        set_source_files_properties(
+          ${source} PROPERTIES COMPILE_FLAGS
+                               "-x cu -nostdpar -nomp -noacc -gpu=cc80"
+        )
+        set(target_has_gpu_sources TRUE)
       endif()
     endforeach()
   endif()

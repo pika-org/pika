@@ -169,7 +169,7 @@ function(pika_add_config_test variable)
         set(${variable}_RESULT FALSE)
       endif()
     else()
-        if(PIKA_WITH_CUDA AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC")
+      if(PIKA_WITH_CUDA AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC")
         set(cuda_parameters CUDA_STANDARD ${CMAKE_CUDA_STANDARD})
       endif()
       set(CMAKE_CXX_FLAGS

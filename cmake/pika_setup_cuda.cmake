@@ -9,20 +9,20 @@ if(PIKA_WITH_CUDA AND NOT TARGET Cuda::cuda)
     if(NOT PIKA_FIND_PACKAGE)
       # The cmake variables are supposed to be cached no need to redefine them
       pika_add_config_define(PIKA_HAVE_CUDA)
-  
+
       if(PIKA_WITH_COMPILER_WARNINGS_AS_ERRORS)
-          #        target_compile_options(
-          #          pika_private_flags INTERFACE
-          #          $<$<AND:$<COMPILE_LANGUAGE:CXX>:$<CXX_COMPILER_ID:NVHPC>>:-Werror>
-          #          $<$<AND:$<COMPILE_LANGUAGE:CUDA>:$<CUDA_COMPILER_ID:NVHPC>>:-Werror>
-          #        )
+        # target_compile_options( pika_private_flags INTERFACE
+        # $<$<AND:$<COMPILE_LANGUAGE:CXX>:$<CXX_COMPILER_ID:NVHPC>>:-Werror>
+        # $<$<AND:$<COMPILE_LANGUAGE:CUDA>:$<CUDA_COMPILER_ID:NVHPC>>:-Werror> )
       endif()
     endif()
 
     find_package(CUDAToolkit MODULE REQUIRED)
     if(NOT PIKA_FIND_PACKAGE)
       target_link_libraries(pika_base_libraries INTERFACE CUDA::cudart)
-      target_link_libraries(pika_base_libraries INTERFACE CUDA::cublas CUDA::cusolver)
+      target_link_libraries(
+        pika_base_libraries INTERFACE CUDA::cublas CUDA::cusolver
+      )
     endif()
     add_library(Cuda::cuda INTERFACE IMPORTED)
   else()
@@ -55,7 +55,8 @@ if(PIKA_WITH_CUDA AND NOT TARGET Cuda::cuda)
 
     # CUDA libraries used
     add_library(Cuda::cuda INTERFACE IMPORTED)
-    # Toolkit targets like CUDA::cudart, CUDA::cublas, CUDA::cufft, etc. available
+    # Toolkit targets like CUDA::cudart, CUDA::cublas, CUDA::cufft, etc.
+    # available
     find_package(CUDAToolkit MODULE REQUIRED)
     if(CUDAToolkit_FOUND)
       target_link_libraries(Cuda::cuda INTERFACE CUDA::cudart)
@@ -113,23 +114,25 @@ if(PIKA_WITH_CUDA AND NOT TARGET Cuda::cuda)
         )
         target_compile_options(
           Cuda::cuda
-          INTERFACE $<$<COMPILE_LANGUAGE:CUDA>:$<$<CONFIG:Release>: -DNDEBUG -O2
-                    -Xcompiler=-MD,-Ox -Xcompiler=-bigobj >>
+          INTERFACE $<$<COMPILE_LANGUAGE:CUDA>:$<$<CONFIG:Release>: -DNDEBUG
+                    -O2 -Xcompiler=-MD,-Ox -Xcompiler=-bigobj >>
         )
       endif()
       set(CUDA_SEPARABLE_COMPILATION ON)
       target_compile_options(
         Cuda::cuda
-        INTERFACE $<$<COMPILE_LANGUAGE:CUDA>: --extended-lambda --default-stream
-                  per-thread --expt-relaxed-constexpr >
+        INTERFACE $<$<COMPILE_LANGUAGE:CUDA>: --extended-lambda
+                  --default-stream per-thread --expt-relaxed-constexpr >
       )
       if(NOT PIKA_FIND_PACKAGE)
         if(PIKA_WITH_COMPILER_WARNINGS_AS_ERRORS)
           target_compile_options(
-            pika_private_flags INTERFACE
-            $<$<AND:$<COMPILE_LANGUAGE:CUDA>,$<CUDA_COMPILER_ID:NVIDIA>>:--Werror all-warnings>
-            $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CXX_COMPILER_ID:NVHPC>>:-Werror>
-            $<$<AND:$<COMPILE_LANGUAGE:CUDA>,$<CUDA_COMPILER_ID:NVHPC>>:-Werror>
+            pika_private_flags
+            INTERFACE
+              $<$<AND:$<COMPILE_LANGUAGE:CUDA>,$<CUDA_COMPILER_ID:NVIDIA>>:--Werror
+              all-warnings>
+              $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CXX_COMPILER_ID:NVHPC>>:-Werror>
+              $<$<AND:$<COMPILE_LANGUAGE:CUDA>,$<CUDA_COMPILER_ID:NVHPC>>:-Werror>
           )
         endif()
 
