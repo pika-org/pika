@@ -4,6 +4,23 @@
 <!--- Distributed under the Boost Software License, Version 1.0. (See accompanying -->
 <!--- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 
+## 0.13.0 (2023-03-08)
+
+### New features
+
+- Add better compile-time error messages to diagnose one-shot senders being used as multi-shot senders. ([#586](https://github.com/pika-org/pika/pull/586))
+
+### Breaking changes
+
+- Remove the `PIKA_WITH_BACKGROUND_THREAD_COUNTERS` CMake option. These counters are no longer available. ([#588](https://github.com/pika-org/pika/pull/588))
+- Update required stdexec commit. pika is now tested with `6510f5bd69cc03b24668f26eda3dd3cca7e81bb2` ([#597](https://github.com/pika-org/pika/pull/597))
+- Cleaned up modules and moved minor functionality into `detail` namespaces. ([#594](https://github.com/pika-org/pika/pull/594), [#595](https://github.com/pika-org/pika/pull/595), [#596](https://github.com/pika-org/pika/pull/596), [#599](https://github.com/pika-org/pika/pull/599), [#607](https://github.com/pika-org/pika/pull/607))
+
+### Bugfixes
+
+- Initialize HIP early to avoid concurrent initialization. ([#591](https://github.com/pika-org/pika/pull/591))
+
+
 ## 0.12.0 (2023-02-01)
 
 ### New features
