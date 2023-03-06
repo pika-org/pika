@@ -336,7 +336,7 @@ namespace pika::cuda::experimental::detail {
         sched->clear_cuda_polling_function();
     }
 
-    static std::string polling_pool_name = "pika:polling";
+    static std::string polling_pool_name = "default";
 
 }    // namespace pika::cuda::experimental::detail
 
