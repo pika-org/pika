@@ -253,7 +253,6 @@ void test_pika_thread()
             }
 
             throw "interrupted";
-
         }
         catch (std::exception&)
         {

@@ -209,12 +209,12 @@ namespace mylib {
 template <typename Receiver, typename... Ts>
 struct receiver_of_helper
 {
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+# if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     static constexpr bool value =
         ex::receiver_of<Receiver, ex::completion_signatures<ex::set_value_t(Ts...)>>;
-#else
+# else
     static constexpr bool value = ex::is_receiver_of_v<Receiver, Ts...>;
-#endif
+# endif
 };
 
 template <typename Receiver, typename... Ts>

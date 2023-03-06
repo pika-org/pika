@@ -108,10 +108,10 @@ namespace pika::detail {
                 std::lock_guard<mutex_type> l(mutex_);
                 fmt::print(
 #if !defined(PIKA_NVHPC_VERSION)
-                        stream_,
+                    stream_,
 #endif
-                    "{}({}): {} failed in function '{}': '{} != {}'\n",
-                    file, line, msg, function, make_fmt_ptr(t), make_fmt_ptr(u));
+                    "{}({}): {} failed in function '{}': '{} != {}'\n", file, line, msg, function,
+                    make_fmt_ptr(t), make_fmt_ptr(u));
                 increment_failures(c);
                 return false;
             }
@@ -131,9 +131,8 @@ namespace pika::detail {
 #if !defined(PIKA_NVHPC_VERSION)
                     stream_,
 #endif
-                    "{}({}): {} failed in function '{}': '{} == {}'\n",
-                    file, line, msg, function, make_fmt_ptr(t),
-                    make_fmt_ptr(u));
+                    "{}({}): {} failed in function '{}': '{} == {}'\n", file, line, msg, function,
+                    make_fmt_ptr(t), make_fmt_ptr(u));
                 increment_failures(c);
                 return false;
             }
@@ -153,9 +152,8 @@ namespace pika::detail {
 #if !defined(PIKA_NVHPC_VERSION)
                     stream_,
 #endif
-                    "{}({}): {} failed in function '{}': '{} >= {}'\n",
-                    file, line, msg, function, make_fmt_ptr(t),
-                    make_fmt_ptr(u));
+                    "{}({}): {} failed in function '{}': '{} >= {}'\n", file, line, msg, function,
+                    make_fmt_ptr(t), make_fmt_ptr(u));
                 increment_failures(c);
                 return false;
             }
@@ -176,9 +174,8 @@ namespace pika::detail {
 #if !defined(PIKA_NVHPC_VERSION)
                     stream_,
 #endif
-                    "{}({}): {} failed in function '{}': '{} > {}'\n",
-                    file, line, msg, function, make_fmt_ptr(t),
-                    make_fmt_ptr(u));
+                    "{}({}): {} failed in function '{}': '{} > {}'\n", file, line, msg, function,
+                    make_fmt_ptr(t), make_fmt_ptr(u));
                 increment_failures(c);
                 return false;
             }
@@ -199,10 +196,10 @@ namespace pika::detail {
                     std::lock_guard<mutex_type> l(mutex_);
                     fmt::print(
 #if !defined(PIKA_NVHPC_VERSION)
-                    stream_,
+                        stream_,
 #endif
-                    "{}({}): {} failed in function '{}': '{} > {}'\n", file,
-                    line, msg, function, make_fmt_ptr(t), make_fmt_ptr(u));
+                        "{}({}): {} failed in function '{}': '{} > {}'\n", file, line, msg,
+                        function, make_fmt_ptr(t), make_fmt_ptr(u));
                     increment_failures(c);
                     return false;
                 }
@@ -212,8 +209,8 @@ namespace pika::detail {
 #if !defined(PIKA_NVHPC_VERSION)
                         stream_,
 #endif
-                        "{}({}): {} failed in function '{}': '{} > {}'\n",
-                        file, line, msg, function, make_fmt_ptr(t), u);
+                        "{}({}): {} failed in function '{}': '{} > {}'\n", file, line, msg,
+                        function, make_fmt_ptr(t), u);
                 }
                 increment_failures(c);
                 return false;

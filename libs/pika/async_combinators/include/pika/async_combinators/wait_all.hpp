@@ -151,10 +151,11 @@ namespace pika {
 
     // forward declare wait_all()
     template <typename Future>
-#if !defined(PIKA_INTEL_VERSION)
+# if !defined(PIKA_INTEL_VERSION)
     PIKA_FORCEINLINE
-#endif
-    void wait_all(std::vector<Future>&& values);
+# endif
+        void
+        wait_all(std::vector<Future>&& values);
 
     namespace detail {
         ///////////////////////////////////////////////////////////////////////
@@ -421,8 +422,7 @@ namespace pika {
     }
 
     template <typename Future>
-        void
-        wait_all(std::vector<Future>&& values)
+    void wait_all(std::vector<Future>&& values)
     {
         pika::wait_all_nothrow(const_cast<std::vector<Future> const&>(values));
         pika::detail::throw_if_exceptional(values);

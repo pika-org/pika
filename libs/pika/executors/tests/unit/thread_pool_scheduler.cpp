@@ -1907,9 +1907,8 @@ void test_split_tuple()
     }
 
     {
-        auto [s1, s2, s3] = ex::split_tuple(ex::then(ex::schedule(sched), []() -> std::tuple<int, std::string, double> {
-            throw std::runtime_error("error");
-        }));
+        auto [s1, s2, s3] = ex::split_tuple(ex::then(ex::schedule(sched),
+            []() -> std::tuple<int, std::string, double> { throw std::runtime_error("error"); }));
 
         auto check_exception = [](auto&& s) {
             bool exception_thrown = false;
