@@ -6,27 +6,24 @@
 
 if(PIKA_WITH_CUDA AND NOT TARGET Cuda::cuda)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC")
+    # nvc++ is used for all source files and we don't enable CMake's CUDA
+    # language support as it's not yet supported
     if(NOT PIKA_FIND_PACKAGE)
-      # The cmake variables are supposed to be cached no need to redefine them
       pika_add_config_define(PIKA_HAVE_CUDA)
-
-      if(PIKA_WITH_COMPILER_WARNINGS_AS_ERRORS)
-        # target_compile_options( pika_private_flags INTERFACE
-        # $<$<AND:$<COMPILE_LANGUAGE:CXX>:$<CXX_COMPILER_ID:NVHPC>>:-Werror>
-        # $<$<AND:$<COMPILE_LANGUAGE:CUDA>:$<CUDA_COMPILER_ID:NVHPC>>:-Werror> )
-      endif()
     endif()
+
+    add_library(Cuda::cuda INTERFACE IMPORTED)
 
     find_package(CUDAToolkit MODULE REQUIRED)
+    target_link_libraries(Cuda::cuda INTERFACE CUDA::cudart)
+    target_link_libraries(Cuda::cuda INTERFACE CUDA::cublas CUDA::cusolver)
+
     if(NOT PIKA_FIND_PACKAGE)
-      target_link_libraries(pika_base_libraries INTERFACE CUDA::cudart)
-      target_link_libraries(
-        pika_base_libraries INTERFACE CUDA::cublas CUDA::cusolver
-      )
+      target_link_libraries(pika_base_libraries INTERFACE Cuda::cuda)
     endif()
-    add_library(Cuda::cuda INTERFACE IMPORTED)
   else()
-    # Check and set CUDA standard
+    # nvcc or clang are only used for cu files with CMake's CUDA language
+    # support
     if(NOT PIKA_FIND_PACKAGE)
       if(DEFINED CMAKE_CUDA_STANDARD AND NOT CMAKE_CUDA_STANDARD STREQUAL
                                          PIKA_WITH_CXX_STANDARD
@@ -49,7 +46,6 @@ if(PIKA_WITH_CUDA AND NOT TARGET Cuda::cuda)
     endif()
 
     if(NOT PIKA_FIND_PACKAGE)
-      # The cmake variables are supposed to be cached no need to redefine them
       pika_add_config_define(PIKA_HAVE_CUDA)
     endif()
 
@@ -131,8 +127,6 @@ if(PIKA_WITH_CUDA AND NOT TARGET Cuda::cuda)
             INTERFACE
               $<$<AND:$<COMPILE_LANGUAGE:CUDA>,$<CUDA_COMPILER_ID:NVIDIA>>:--Werror
               all-warnings>
-              $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CXX_COMPILER_ID:NVHPC>>:-Werror>
-              $<$<AND:$<COMPILE_LANGUAGE:CUDA>,$<CUDA_COMPILER_ID:NVHPC>>:-Werror>
           )
         endif()
 
@@ -150,19 +144,20 @@ if(PIKA_WITH_CUDA AND NOT TARGET Cuda::cuda)
 endif()
 
 function(pika_add_nvhpc_cuda_flags source)
-   set_source_files_properties(${source} PROPERTIES LANGUAGE CXX)
+  set_source_files_properties(${source} PROPERTIES LANGUAGE CXX)
 
-   get_source_file_property(source_compile_flags ${source} COMPILE_FLAGS)
-   if(source_compile_flags STREQUAL "NOTFOUND")
-     set(source_compile_flags)
-   endif()
+  get_source_file_property(source_compile_flags ${source} COMPILE_FLAGS)
+  if(source_compile_flags STREQUAL "NOTFOUND")
+    set(source_compile_flags)
+  endif()
 
-   set(source_gpu_cc_flags)
-   foreach(cuda_arch ${CMAKE_CUDA_ARCHITECTURES})
-     set(source_gpu_cc_flags "${source_gpu_cc_flags} -gpu=cc${cuda_arch}")
-   endforeach()
+  set(source_gpu_cc_flags)
+  foreach(cuda_arch ${CMAKE_CUDA_ARCHITECTURES})
+    set(source_gpu_cc_flags "${source_gpu_cc_flags} -gpu=cc${cuda_arch}")
+  endforeach()
 
-   set_source_files_properties(
-     ${source} PROPERTIES COMPILE_FLAGS "${source_compile_flags} -x cu ${source_gpu_cc_flags}"
-   )
+  set_source_files_properties(
+    ${source} PROPERTIES COMPILE_FLAGS
+                         "${source_compile_flags} -x cu ${source_gpu_cc_flags}"
+  )
 endfunction()
