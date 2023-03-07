@@ -50,6 +50,11 @@ namespace pika::detail {
             return num_threads_;
         }
 
+        bool using_process_mask() const noexcept
+        {
+            return use_process_mask_;
+        }
+
         threads::detail::mask_cref_type get_pu_mask(
             threads::detail::topology const& topo, std::size_t num_thread) const;
 
