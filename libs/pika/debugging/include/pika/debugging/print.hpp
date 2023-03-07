@@ -56,7 +56,7 @@
 // Used to wrap function call parameters to prevent evaluation
 // when debugging is disabled
 #define PIKA_DP_LAZY(printer, Expr) printer.eval([&] { return Expr; })
-#define PIKA_DP_ONLY(printer, Expr)                                                                \
+#define PIKA_DP(printer, Expr)                                                                     \
  if constexpr (printer.is_enabled())                                                               \
  {                                                                                                 \
   printer.Expr;                                                                                    \
@@ -69,13 +69,16 @@
 namespace PIKA_NS_DEBUG {
 
     // ------------------------------------------------------------------
-    // format as zero padded int
+    // helper for N>M true/false
     // ------------------------------------------------------------------
     template <int Level, int Threshold>
     struct check_level : std::integral_constant<bool, Level <= Threshold>
     {
     };
 
+    // ------------------------------------------------------------------
+    // format as zero padded int
+    // ------------------------------------------------------------------
     template <typename Int>
     PIKA_EXPORT void print_dec(std::ostream& os, Int const& v, int n);
 

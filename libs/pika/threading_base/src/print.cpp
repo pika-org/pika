@@ -11,6 +11,12 @@
 #include <cstdint>
 #include <thread>
 
+#if defined(__linux) || defined(linux) || defined(__linux__)
+# include <linux/unistd.h>
+# include <sys/mman.h>
+# define PIKA_DEBUGGING_PRINT_LINUX
+#endif
+
 // ------------------------------------------------------------
 /// \cond NODETAIL
 namespace pika::debug::detail {
@@ -79,7 +85,7 @@ namespace pika::debug::detail {
                 os << hex<12, std::uintptr_t>(reinterpret_cast<std::uintptr_t>(dummy)) << " ";
             }
             os << hex<12, std::thread::id>(std::this_thread::get_id())
-#ifdef DEBUGGING_PRINT_LINUX
+#ifdef PIKA_DEBUGGING_PRINT_LINUX
                << " cpu " << debug::detail::dec<3, int>(sched_getcpu()) << " ";
 #else
                << " cpu "
