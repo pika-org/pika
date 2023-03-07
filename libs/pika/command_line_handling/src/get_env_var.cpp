@@ -10,7 +10,9 @@
 #include <pika/config/export_definitions.hpp>
 #include <pika/modules/logging.hpp>
 
+#include <cstdint>
 #include <cstdlib>
+#include <iostream>
 #include <string>
 
 namespace pika::detail {
