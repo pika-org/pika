@@ -11,8 +11,8 @@
 #include <cstdlib>
 #include <string>
 
-namespace pika {
+namespace pika::detail {
 
     /// from env var name 's' get value if well-formed, otherwise return default
-    PIKA_EXPORT std::uint32_t get_env_value(const char* s, std::uint32_t def);
-}    // namespace pika
+    PIKA_EXPORT std::uint32_t get_env_var(const char* s, std::uint32_t def);
+}    // namespace pika::detail

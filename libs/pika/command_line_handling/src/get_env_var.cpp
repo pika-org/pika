@@ -13,9 +13,9 @@
 #include <cstdlib>
 #include <string>
 
-namespace pika {
+namespace pika::detail {
 
-    PIKA_EXPORT std::uint32_t get_env_value(const char* s, std::uint32_t def)
+    PIKA_EXPORT std::uint32_t get_env_var(const char* s, std::uint32_t def)
     {
         std::uint32_t val = def;
         char* env = std::getenv(s);
@@ -37,4 +37,4 @@ namespace pika {
         return val;
     }
 
-}    // namespace pika
+}    // namespace pika::detail
