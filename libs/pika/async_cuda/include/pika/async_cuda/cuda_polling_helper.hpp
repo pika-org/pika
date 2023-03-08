@@ -17,6 +17,10 @@
 #include <string>
 
 namespace pika::cuda::experimental {
+
+    PIKA_EXPORT const std::string& get_pool_name();
+    PIKA_EXPORT void set_pool_name(const std::string&);
+
     // -----------------------------------------------------------------
     // This RAII helper class enables polling for a scoped block
     struct [[nodiscard]] enable_user_polling
@@ -28,10 +32,12 @@ namespace pika::cuda::experimental {
             if (pool_name_.empty())
             {
                 detail::register_polling(pika::resource::get_thread_pool(0));
+                set_pool_name(pika::resource::get_pool_name(0));
             }
             else
             {
                 detail::register_polling(pika::resource::get_thread_pool(pool_name_));
+                set_pool_name(pool_name_);
             }
         }
 
