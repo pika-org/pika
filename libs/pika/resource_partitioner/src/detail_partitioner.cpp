@@ -391,10 +391,29 @@ namespace pika::resource::detail {
         if (get_pool_data(l, get_default_pool_name()).num_threads_ == 0)
         {
             l.unlock();
+
+            std::string process_mask_message = affinity_data_.using_process_mask() ?
+                fmt::format("pika is using a process mask: {}.",
+                    pika::threads::detail::to_string(get_topology().get_cpubind_mask())) :
+                "pika is not using a process mask.";
+            auto omp_proc_bind = std::getenv("OMP_PROC_BIND");
+            std::string omp_proc_bind_message = omp_proc_bind ?
+                fmt::format("OMP_PROC_BIND is currently set to \"{}\".", omp_proc_bind) :
+                "OMP_PROC_BIND is currently unset.";
             throw_runtime_error("partitioner::setup_pools",
-                "Default pool " + get_default_pool_name() +
-                    " has no threads assigned. Please rerun with --pika:threads=X and check the "
-                    "pool thread assignment");
+                fmt::format(
+                    "The default pool (\"{}\") has no threads assigned. Make sure that the pika "
+                    "runtime is started with enough threads for all thread pools. This can be "
+                    "caused by the pika runtime being configured to use additional thread pools "
+                    "(e.g. for MPI) but starting the runtime with too few threads, leaving no "
+                    "threads for the default pool. It can also be caused by OpenMP using thread "
+                    "pinning (through OMP_PROC_BIND) and OpenMP changing the process mask before "
+                    "pika can read the mask. pika is currently configured to use {} thread{} and "
+                    "{} thread pool{}. {} {}",
+                    get_default_pool_name(), get_num_threads(), get_num_threads() != 1 ? "s" : "",
+                    get_num_pools(), get_num_pools() != 1 ? "s" : "", process_mask_message,
+                    omp_proc_bind_message));
+            // TODO: Explain most common failure modes?
         }
 
         // Check whether any of the pools defined up to now are empty
