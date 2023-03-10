@@ -7,6 +7,7 @@
 name: Linux CI (Tracy)
 
 on:
+  merge_group:
   push:
     branches:
       # Development and release branches
