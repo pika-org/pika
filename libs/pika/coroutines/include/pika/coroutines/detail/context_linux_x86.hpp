@@ -12,7 +12,7 @@
 
 #pragma once
 
-#if defined(__linux) || defined(linux) || defined(__linux__)
+#if defined(__linux) || defined(linux) || defined(__linux__) || defined(__FreeBSD__)
 
 # include <pika/config.hpp>
 # include <pika/assert.hpp>
