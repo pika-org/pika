@@ -158,7 +158,15 @@ namespace pika::program_options {
 
     const std::string& option_description::long_name() const
     {
-        static std::string empty_string("");
+        // NOTE: Upstream this is empty_string(""). However, nvc++ 22.11 fails
+        // with:
+        //
+        // Internal error: read_memory_region: not all expected entries were
+        // read
+        //
+        // on empty_string("") and empty_string{""}. It accepts empty_string{}
+        // so we use that for all compilers.
+        static std::string empty_string{};
         return m_long_names.empty() ? empty_string : *m_long_names.begin();
     }
 
