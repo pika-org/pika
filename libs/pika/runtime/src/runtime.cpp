@@ -10,6 +10,7 @@
 #include <pika/command_line_handling/late_command_line_handling.hpp>
 #include <pika/command_line_handling/parse_command_line.hpp>
 #include <pika/coroutines/coroutine.hpp>
+#include <pika/debugging/attach_debugger.hpp>
 #include <pika/debugging/backtrace.hpp>
 #include <pika/execution_base/this_thread.hpp>
 #include <pika/functional/bind.hpp>
