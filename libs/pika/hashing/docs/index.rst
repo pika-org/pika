@@ -11,9 +11,9 @@
 hashing
 =======
 
-The hashing module provides two hashing implementations:
+The hashing module provides one hashing implementation:
 
-* :cpp:func:`pika::util::fibhash`
+* :cpp:func:`pika::detail::fibhash`
 
 See the :ref:`API reference <modules_hashing_api>` of the module for more
 details.

@@ -43,7 +43,7 @@ namespace pika::detail {
     public:
         static pika::spinlock& spinlock_for(void const* pv) noexcept
         {
-            std::size_t i = util::fibhash<N>(reinterpret_cast<std::size_t>(pv));
+            std::size_t i = pika::detail::fibhash<N>(reinterpret_cast<std::size_t>(pv));
             return pool_[i].data_;
         }
 
