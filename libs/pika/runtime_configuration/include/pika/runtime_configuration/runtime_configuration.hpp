@@ -29,7 +29,7 @@ namespace pika::util {
     // The runtime_configuration class is a wrapper for the runtime
     // configuration data allowing to extract configuration information in a
     // more convenient way
-    class runtime_configuration : public section
+    class runtime_configuration : public pika::detail::section
     {
         std::string pika_ini_file;
         std::vector<std::string> cmdline_ini_defs;

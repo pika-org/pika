@@ -124,7 +124,7 @@ namespace pika::resource {
 
     namespace detail {
         detail::partitioner& create_partitioner(resource::partitioner_mode rpmode,
-            pika::util::section rtcfg, pika::detail::affinity_data affinity_data)
+            pika::detail::section rtcfg, pika::detail::affinity_data affinity_data)
         {
             std::unique_ptr<detail::partitioner>& rp = detail::get_partitioner();
 
@@ -135,7 +135,7 @@ namespace pika::resource {
     }    // namespace detail
 
     ///////////////////////////////////////////////////////////////////////////
-    partitioner::partitioner(resource::partitioner_mode rpmode, pika::util::section rtcfg,
+    partitioner::partitioner(resource::partitioner_mode rpmode, pika::detail::section rtcfg,
         pika::detail::affinity_data affinity_data)
       : partitioner_(detail::create_partitioner(rpmode, rtcfg, affinity_data))
     {
@@ -225,7 +225,7 @@ namespace pika::resource {
     namespace detail {
 
         ::pika::resource::partitioner make_partitioner(resource::partitioner_mode rpmode,
-            pika::util::section rtcfg, pika::detail::affinity_data affinity_data)
+            pika::detail::section rtcfg, pika::detail::affinity_data affinity_data)
         {
             return ::pika::resource::partitioner(rpmode, rtcfg, affinity_data);
         }

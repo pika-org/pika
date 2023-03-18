@@ -18,17 +18,18 @@
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::util {
     ///////////////////////////////////////////////////////////////////////////
-    bool handle_ini_file(section& ini, std::string const& loc);
-    bool handle_ini_file_env(section& ini, char const* env_var, char const* file_suffix = nullptr);
+    bool handle_ini_file(pika::detail::section& ini, std::string const& loc);
+    bool handle_ini_file_env(
+        pika::detail::section& ini, char const* env_var, char const* file_suffix = nullptr);
 
     ///////////////////////////////////////////////////////////////////////////
     // read system and user specified ini files
     //
     // returns true if at least one alternative location has been read
     // successfully
-    bool init_ini_data_base(section& ini, std::string& pika_ini_file);
+    bool init_ini_data_base(pika::detail::section& ini, std::string& pika_ini_file);
 
     ///////////////////////////////////////////////////////////////////////////
     // global function to read component ini information
-    void merge_component_inis(section& ini);
+    void merge_component_inis(pika::detail::section& ini);
 }    // namespace pika::util

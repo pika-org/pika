@@ -124,17 +124,17 @@ namespace pika::resource {
     ///////////////////////////////////////////////////////////////////////////
     namespace detail {
         ::pika::resource::partitioner make_partitioner(resource::partitioner_mode rpmode,
-            pika::util::section rtcfg, pika::detail::affinity_data affinity_data);
+            pika::detail::section rtcfg, pika::detail::affinity_data affinity_data);
     }
 
     class partitioner
     {
     private:
         friend ::pika::resource::partitioner detail::make_partitioner(
-            resource::partitioner_mode rpmode, pika::util::section rtcfg,
+            resource::partitioner_mode rpmode, pika::detail::section rtcfg,
             pika::detail::affinity_data affinity_data);
 
-        partitioner(resource::partitioner_mode rpmode, pika::util::section rtcfg,
+        partitioner(resource::partitioner_mode rpmode, pika::detail::section rtcfg,
             pika::detail::affinity_data affinity_data);
 
     public:

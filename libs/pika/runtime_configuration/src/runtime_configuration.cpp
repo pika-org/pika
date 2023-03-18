@@ -415,7 +415,7 @@ namespace pika::util {
     bool runtime_configuration::get_itt_notify_mode() const
     {
 #if PIKA_HAVE_ITTNOTIFY != 0
-        if (util::section const* sec = get_section("pika"); nullptr != sec)
+        if (pika::detail::section const* sec = get_section("pika"); nullptr != sec)
         {
             return pika::detail::get_entry_as<int>(*sec, "use_itt_notify", 0) != 0;
         }
@@ -427,7 +427,7 @@ namespace pika::util {
     bool runtime_configuration::enable_lock_detection() const
     {
 #ifdef PIKA_HAVE_VERIFY_LOCKS
-        if (util::section const* sec = get_section("pika"); nullptr != sec)
+        if (pika::detail::section const* sec = get_section("pika"); nullptr != sec)
         {
             return pika::detail::get_entry_as<int>(*sec, "lock_detection", 0) != 0;
         }
@@ -439,7 +439,7 @@ namespace pika::util {
     bool runtime_configuration::enable_minimal_deadlock_detection() const
     {
 #ifdef PIKA_HAVE_THREAD_MINIMAL_DEADLOCK_DETECTION
-        if (util::section const* sec = get_section("pika"); nullptr != sec)
+        if (pika::detail::section const* sec = get_section("pika"); nullptr != sec)
         {
 # ifdef PIKA_DEBUG
             return pika::detail::get_entry_as<int>(*sec, "minimal_deadlock_detection", 1) != 0;
@@ -463,7 +463,7 @@ namespace pika::util {
     bool runtime_configuration::enable_spinlock_deadlock_detection() const
     {
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
-        if (util::section const* sec = get_section("pika"); nullptr != sec)
+        if (pika::detail::section const* sec = get_section("pika"); nullptr != sec)
         {
 # ifdef PIKA_DEBUG
             return pika::detail::get_entry_as<int>(*sec, "spinlock_deadlock_detection", 1) != 0;
@@ -487,7 +487,7 @@ namespace pika::util {
     std::size_t runtime_configuration::get_spinlock_deadlock_detection_limit() const
     {
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
-        if (util::section const* sec = get_section("pika"); nullptr != sec)
+        if (pika::detail::section const* sec = get_section("pika"); nullptr != sec)
         {
             return pika::detail::get_entry_as<std::size_t>(
                 *sec, "spinlock_deadlock_detection_limit", PIKA_SPINLOCK_DEADLOCK_DETECTION_LIMIT);
@@ -501,7 +501,7 @@ namespace pika::util {
     std::size_t runtime_configuration::get_spinlock_deadlock_warning_limit() const
     {
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
-        if (util::section const* sec = get_section("pika"); nullptr != sec)
+        if (pika::detail::section const* sec = get_section("pika"); nullptr != sec)
         {
             return pika::detail::get_entry_as<std::size_t>(
                 *sec, "spinlock_deadlock_warning_limit", PIKA_SPINLOCK_DEADLOCK_WARNING_LIMIT);
@@ -514,7 +514,7 @@ namespace pika::util {
 
     std::size_t runtime_configuration::trace_depth() const
     {
-        if (util::section const* sec = get_section("pika"); nullptr != sec)
+        if (pika::detail::section const* sec = get_section("pika"); nullptr != sec)
         {
             return pika::detail::get_entry_as<std::size_t>(
                 *sec, "trace_depth", PIKA_HAVE_THREAD_BACKTRACE_DEPTH);
@@ -527,7 +527,7 @@ namespace pika::util {
         if (num_os_threads == 0)
         {
             num_os_threads = 1;
-            if (util::section const* sec = get_section("pika"); nullptr != sec)
+            if (pika::detail::section const* sec = get_section("pika"); nullptr != sec)
             {
                 num_os_threads = pika::detail::get_entry_as<std::uint32_t>(*sec, "os_threads", 1);
             }
@@ -537,7 +537,7 @@ namespace pika::util {
 
     std::string runtime_configuration::get_cmd_line() const
     {
-        if (util::section const* sec = get_section("pika"); nullptr != sec)
+        if (pika::detail::section const* sec = get_section("pika"); nullptr != sec)
         {
             return sec->get_entry("cmd_line", "");
         }
@@ -547,7 +547,7 @@ namespace pika::util {
     // Return the configured sizes of any of the know thread pools
     std::size_t runtime_configuration::get_thread_pool_size(char const* poolname) const
     {
-        if (util::section const* sec = get_section("pika.threadpools"); nullptr != sec)
+        if (pika::detail::section const* sec = get_section("pika.threadpools"); nullptr != sec)
         {
             return pika::detail::get_entry_as<std::size_t>(
                 *sec, std::string(poolname) + "_size", 2);
@@ -559,7 +559,7 @@ namespace pika::util {
     std::ptrdiff_t runtime_configuration::init_stack_size(
         char const* entryname, char const* defaultvaluestr, std::ptrdiff_t defaultvalue) const
     {
-        if (util::section const* sec = get_section("pika.stacks"); nullptr != sec)
+        if (pika::detail::section const* sec = get_section("pika.stacks"); nullptr != sec)
         {
             std::string entry = sec->get_entry(entryname, defaultvaluestr);
             char* endptr = nullptr;
@@ -572,7 +572,7 @@ namespace pika::util {
 #if defined(__linux) || defined(linux) || defined(__linux__) || defined(__FreeBSD__)
     bool runtime_configuration::use_stack_guard_pages() const
     {
-        if (util::section const* sec = get_section("pika.stacks"); nullptr != sec)
+        if (pika::detail::section const* sec = get_section("pika.stacks"); nullptr != sec)
         {
             return pika::detail::get_entry_as<int>(*sec, "use_guard_pages", 1) != 0;
         }

@@ -838,7 +838,7 @@ namespace pika::resource::detail {
         return affinity_data_.get_pu_mask(topo_, global_thread_num);
     }
 
-    void partitioner::init(resource::partitioner_mode rpmode, pika::util::section rtcfg,
+    void partitioner::init(resource::partitioner_mode rpmode, pika::detail::section rtcfg,
         pika::detail::affinity_data affinity_data)
     {
         mode_ = rpmode;
