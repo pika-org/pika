@@ -6,7 +6,7 @@
 
 // #5488: pika::util::detail::bind doesn't bounds-check placeholders
 
-#include <pika/modules/functional.hpp>
+#include <pika/functional/bind.hpp>
 
 #include <type_traits>
 

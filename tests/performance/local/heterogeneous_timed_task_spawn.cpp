@@ -7,7 +7,7 @@
 
 #include <pika/config.hpp>
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
-# include <pika/functional.hpp>
+# include <pika/functional/bind.hpp>
 # include <pika/init.hpp>
 # include <pika/modules/thread_manager.hpp>
 # include <pika/modules/timing.hpp>

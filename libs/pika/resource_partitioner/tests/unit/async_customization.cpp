@@ -8,7 +8,8 @@
 
 #include <pika/debugging/demangle_helper.hpp>
 #include <pika/execution.hpp>
-#include <pika/functional.hpp>
+#include <pika/functional/deferred_call.hpp>
+#include <pika/functional/invoke_fused.hpp>
 #include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/resource_partitioner.hpp>

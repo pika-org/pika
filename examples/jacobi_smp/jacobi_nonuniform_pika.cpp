@@ -8,7 +8,7 @@
 #include "jacobi_nonuniform.hpp"
 
 #include <pika/chrono.hpp>
-#include <pika/functional.hpp>
+#include <pika/functional/bind.hpp>
 #include <pika/future.hpp>
 
 #include <cstddef>

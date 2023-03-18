@@ -9,14 +9,14 @@
 // http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3564.pdf). The
 // necessary transformations are performed by hand.
 
-#include <pika/chrono.hpp>
-#include <pika/functional.hpp>
+#include <pika/functional/bind.hpp>
 #include <pika/future.hpp>
 #include <pika/init.hpp>
 
 #include <fmt/ostream.h>
 #include <fmt/printf.h>
 
+#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <iostream>

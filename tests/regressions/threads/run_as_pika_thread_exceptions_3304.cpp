@@ -6,7 +6,8 @@
 
 #include <pika/condition_variable.hpp>
 #include <pika/exception.hpp>
-#include <pika/functional.hpp>
+#include <pika/functional/bind.hpp>
+#include <pika/functional/function.hpp>
 #include <pika/init.hpp>
 #include <pika/mutex.hpp>
 #include <pika/runtime/run_as_pika_thread.hpp>

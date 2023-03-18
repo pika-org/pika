@@ -7,8 +7,8 @@
 #pragma once
 
 #include <pika/config.hpp>
+#include <pika/functional/function.hpp>
 #include <pika/futures/future.hpp>
-#include <pika/modules/functional.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
 
 #include <cstddef>

@@ -9,7 +9,7 @@
 #include <pika/chrono.hpp>
 #include <pika/errors/try_catch_exception_ptr.hpp>
 #include <pika/execution.hpp>
-#include <pika/functional.hpp>
+#include <pika/functional/invoke.hpp>
 #include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/memory/intrusive_ptr.hpp>
@@ -41,7 +41,7 @@ struct external_future_executor
     decltype(auto) async_execute_helper(std::true_type, F&& f, Ts&&... ts)
     {
         // The completion of f is signalled out-of-band.
-        pika::invoke(std::forward<F>(f), std::forward<Ts>(ts)...);
+        pika::util::detail::invoke(std::forward<F>(f), std::forward<Ts>(ts)...);
         return pika::async([]() { pika::util::yield_while([]() { return !done; }); });
     }
 
@@ -49,7 +49,7 @@ struct external_future_executor
     decltype(auto) async_execute_helper(std::false_type, F&& f, Ts&&... ts)
     {
         // The completion of f is signalled out-of-band.
-        auto&& r = pika::invoke(std::forward<F>(f), std::forward<Ts>(ts)...);
+        auto&& r = pika::util::detail::invoke(std::forward<F>(f), std::forward<Ts>(ts)...);
         return pika::async([r = std::move(r)]() {
             pika::util::yield_while([]() { return !done; });
             return r;
@@ -123,7 +123,8 @@ struct external_future_additional_argument_executor
     decltype(auto) async_execute_helper(std::true_type, F&& f, Ts&&... ts)
     {
         // The completion of f is signalled out-of-band.
-        pika::invoke(std::forward<F>(f), additional_argument{}, std::forward<Ts>(ts)...);
+        pika::util::detail::invoke(
+            std::forward<F>(f), additional_argument{}, std::forward<Ts>(ts)...);
         return pika::async([]() { pika::util::yield_while([]() { return !done; }); });
     }
 
@@ -131,7 +132,8 @@ struct external_future_additional_argument_executor
     decltype(auto) async_execute_helper(std::false_type, F&& f, Ts&&... ts)
     {
         // The completion of f is signalled out-of-band.
-        auto&& r = pika::invoke(std::forward<F>(f), additional_argument{}, std::forward<Ts>(ts)...);
+        auto&& r = pika::util::detail::invoke(
+            std::forward<F>(f), additional_argument{}, std::forward<Ts>(ts)...);
         return pika::async([r = std::move(r)]() {
             pika::util::yield_while([]() { return !done; });
             return r;
