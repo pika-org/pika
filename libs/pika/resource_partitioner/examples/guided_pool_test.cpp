@@ -27,7 +27,7 @@ static int pool_threads = 0;
 #define CUSTOM_POOL_NAME "Custom"
 
 // this is our custom scheduler type
-using high_priority_sched = pika::threads::shared_priority_queue_scheduler<>;
+using high_priority_sched = pika::threads::detail::shared_priority_queue_scheduler<>;
 using pika::threads::scheduler_mode;
 
 // Force an instantiation of the pool type templated on our custom scheduler

@@ -43,7 +43,7 @@ static int pool_threads = 1;
 static std::string const pool_name = "mpi";
 
 // this is our custom scheduler type
-using high_priority_sched = pika::threads::shared_priority_queue_scheduler<>;
+using high_priority_sched = pika::threads::detail::shared_priority_queue_scheduler<>;
 using namespace pika::threads;
 using pika::threads::scheduler_mode;
 

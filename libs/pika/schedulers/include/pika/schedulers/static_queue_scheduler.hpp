@@ -32,7 +32,7 @@
 // TODO: add branch prediction and function heat
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika::threads {
+namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
 #if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
     using default_static_queue_scheduler_terminated_queue = lockfree_lifo;
@@ -70,7 +70,7 @@ namespace pika::threads {
             // this scheduler does not support stealing or numa stealing
             mode = scheduler_mode(mode & ~scheduler_mode::enable_stealing);
             mode = scheduler_mode(mode & ~scheduler_mode::enable_stealing_numa);
-            detail::scheduler_base::set_scheduler_mode(mode);
+            scheduler_base::set_scheduler_mode(mode);
         }
 
         /// Return the next thread to be executed, return false if none is
@@ -143,13 +143,12 @@ namespace pika::threads {
             return result;
         }
     };
-}    // namespace pika::threads
+}    // namespace pika::threads::detail
 
 template <typename Mutex, typename PendingQueuing, typename StagedQueuing,
     typename TerminatedQueuing>
-struct fmt::formatter<
-    pika::threads::static_queue_scheduler<Mutex, PendingQueuing, StagedQueuing, TerminatedQueuing>>
-  : fmt::formatter<pika::threads::detail::scheduler_base>
+struct fmt::formatter<pika::threads::detail::static_queue_scheduler<Mutex, PendingQueuing,
+    StagedQueuing, TerminatedQueuing>> : fmt::formatter<pika::threads::detail::scheduler_base>
 {
     template <typename FormatContext>
     auto format(pika::threads::detail::scheduler_base const& scheduler, FormatContext& ctx)

@@ -158,7 +158,7 @@ int main()
 {
     {
         // Choose a scheduler.
-        using sched_type = pika::threads::local_priority_queue_scheduler<>;
+        using sched_type = pika::threads::detail::local_priority_queue_scheduler<>;
 
         // Choose all the parameters for the thread pool and scheduler.
         std::size_t const num_threads =

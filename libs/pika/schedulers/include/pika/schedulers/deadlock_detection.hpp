@@ -9,9 +9,9 @@
 
 #include <pika/config.hpp>
 
-namespace pika::threads {
+namespace pika::threads::detail {
 #ifdef PIKA_HAVE_THREAD_MINIMAL_DEADLOCK_DETECTION
     PIKA_EXPORT void set_minimal_deadlock_detection_enabled(bool enabled);
     PIKA_EXPORT bool get_minimal_deadlock_detection_enabled();
 #endif
-}    // namespace pika::threads
+}    // namespace pika::threads::detail

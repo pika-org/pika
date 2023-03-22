@@ -42,12 +42,12 @@
 #include <utility>
 #include <vector>
 
-namespace pika {
+namespace pika::detail {
     static pika::debug::detail::enable_print<false> tqmc_deb("_TQ_MC_");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika::threads {
+namespace pika::threads::detail {
 
     class thread_queue_mc
     {
@@ -77,8 +77,8 @@ namespace pika::threads {
         // call this function
         std::size_t add_new(std::int64_t add_count, thread_queue_type* addfrom, bool stealing)
         {
-            [[maybe_unused]] auto scp = tqmc_deb.scope(debug::detail::ptr(this), __func__, "from",
-                debug::detail::ptr(addfrom), "std::thread::id",
+            [[maybe_unused]] auto scp = ::pika::detail::tqmc_deb.scope(debug::detail::ptr(this),
+                __func__, "from", debug::detail::ptr(addfrom), "std::thread::id",
                 debug::detail::hex<6>(holder_->owner_id_), stealing);
             PIKA_ASSERT(holder_->owner_id_ == std::this_thread::get_id());
 
@@ -101,7 +101,8 @@ namespace pika::threads {
                 // Decrement only after thread_map_count_ has been incremented
                 --addfrom->new_tasks_count_.data_;
 
-                tqmc_deb.debug(debug::detail::str<>("add_new"), "stealing", stealing,
+                ::pika::detail::tqmc_deb.debug(debug::detail::str<>("add_new"), "stealing",
+                    stealing,
                     debug::detail::threadinfo<threads::detail::thread_id_ref_type*>(&tid));
 
                 // insert the thread into work-items queue assuming it is in
@@ -118,8 +119,8 @@ namespace pika::threads {
         }
 
     public:
-        explicit thread_queue_mc(const detail::thread_queue_init_parameters& parameters,
-            std::size_t queue_num = std::size_t(-1))
+        explicit thread_queue_mc(
+            const thread_queue_init_parameters& parameters, std::size_t queue_num = std::size_t(-1))
           : parameters_(parameters)
           , queue_index_(static_cast<int>(queue_num))
           , holder_(nullptr)
@@ -134,7 +135,7 @@ namespace pika::threads {
         void set_holder(queue_holder_thread<thread_queue_type>* holder)
         {
             holder_ = holder;
-            tqmc_deb.debug(debug::detail::str<>("set_holder"), "D",
+            ::pika::detail::tqmc_deb.debug(debug::detail::str<>("set_holder"), "D",
                 debug::detail::dec<2>(holder_->domain_index_), "Q",
                 debug::detail::dec<3>(queue_index_));
         }
@@ -245,7 +246,8 @@ namespace pika::threads {
         bool get_next_thread(threads::detail::thread_id_ref_type& thrd, bool other_end,
             bool check_new = false) PIKA_HOT
         {
-            [[maybe_unused]] auto scp = tqmc_deb.scope(debug::detail::ptr(this), __func__);
+            [[maybe_unused]] auto scp =
+                ::pika::detail::tqmc_deb.scope(debug::detail::ptr(this), __func__);
             std::int64_t work_items_count_count =
                 work_items_count_.data_.load(std::memory_order_relaxed);
 
@@ -253,8 +255,8 @@ namespace pika::threads {
             if (0 != work_items_count_count && work_items_.pop(thrd, other_end))
             {
                 --work_items_count_.data_;
-                tqmc_deb.debug(debug::detail::str<>("get_next_thread"), "stealing", other_end, "D",
-                    debug::detail::dec<2>(holder_->domain_index_), "Q",
+                ::pika::detail::tqmc_deb.debug(debug::detail::str<>("get_next_thread"), "stealing",
+                    other_end, "D", debug::detail::dec<2>(holder_->domain_index_), "Q",
                     debug::detail::dec<3>(queue_index_), "n",
                     debug::detail::dec<4>(new_tasks_count_.data_), "w",
                     debug::detail::dec<4>(work_items_count_.data_),
@@ -278,8 +280,8 @@ namespace pika::threads {
         void schedule_work(threads::detail::thread_id_ref_type thrd, bool other_end)
         {
             ++work_items_count_.data_;
-            tqmc_deb.debug(debug::detail::str<>("schedule_work"), "stealing", other_end, "D",
-                debug::detail::dec<2>(holder_->domain_index_), "Q",
+            ::pika::detail::tqmc_deb.debug(debug::detail::str<>("schedule_work"), "stealing",
+                other_end, "D", debug::detail::dec<2>(holder_->domain_index_), "Q",
                 debug::detail::dec<3>(queue_index_), "n",
                 debug::detail::dec<4>(new_tasks_count_.data_), "w",
                 debug::detail::dec<4>(work_items_count_.data_),
@@ -306,26 +308,26 @@ namespace pika::threads {
             work_items_type work_items_copy_;
             int x = 0;
             thread_description* thrd;
-            tqmc_deb.debug(debug::detail::str<>("debug_queue"), "Pop work items");
+            ::pika::detail::tqmc_deb.debug(debug::detail::str<>("debug_queue"), "Pop work items");
             while (q.pop(thrd))
             {
-                tqmc_deb.debug(debug::detail::str<>("debug_queue"), x++,
+                ::pika::detail::tqmc_deb.debug(debug::detail::str<>("debug_queue"), x++,
                     debug::detail::threadinfo<threads::detail::thread_data*>(thrd));
                 work_items_copy_.push(thrd);
             }
-            tqmc_deb.debug(debug::detail::str<>("debug_queue"), "Push work items");
+            ::pika::detail::tqmc_deb.debug(debug::detail::str<>("debug_queue"), "Push work items");
             while (work_items_copy_.pop(thrd))
             {
                 q.push(thrd);
-                tqmc_deb.debug(debug::detail::str<>("debug_queue"), --x,
+                ::pika::detail::tqmc_deb.debug(debug::detail::str<>("debug_queue"), --x,
                     debug::detail::threadinfo<threads::detail::thread_data*>(thrd));
             }
-            tqmc_deb.debug(debug::detail::str<>("debug_queue"), "Finished");
+            ::pika::detail::tqmc_deb.debug(debug::detail::str<>("debug_queue"), "Finished");
         }
 #endif
 
     public:
-        detail::thread_queue_init_parameters parameters_;
+        thread_queue_init_parameters parameters_;
 
         int const queue_index_;
 
@@ -345,4 +347,4 @@ namespace pika::threads {
 #endif
     };
 
-}    // namespace pika::threads
+}    // namespace pika::threads::detail

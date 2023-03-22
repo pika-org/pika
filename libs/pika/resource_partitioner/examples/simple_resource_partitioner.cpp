@@ -33,7 +33,7 @@ static std::string const pool_name = "mpi";
 
 // ------------------------------------------------------------------------
 // this is our custom scheduler type
-using numa_scheduler = pika::threads::shared_priority_queue_scheduler<>;
+using numa_scheduler = pika::threads::detail::shared_priority_queue_scheduler<>;
 using namespace pika::threads;
 
 // ------------------------------------------------------------------------

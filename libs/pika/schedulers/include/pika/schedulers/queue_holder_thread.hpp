@@ -45,12 +45,12 @@
 # endif
 #endif
 
-namespace pika {
+namespace pika::detail {
     static pika::debug::detail::enable_print<QUEUE_HOLDER_THREAD_DEBUG> tq_deb("QH_THRD");
 }
 
 // ------------------------------------------------------------
-namespace pika::threads {
+namespace pika::threads::detail {
 
     // apply the modulo operator only when needed
     // (i.e. when the input is greater than the ceiling)
@@ -146,7 +146,7 @@ namespace pika::threads {
         mutable pika::concurrency::detail::cache_line_data<std::atomic<std::int32_t>>
             terminated_items_count_;
 
-        detail::thread_queue_init_parameters parameters_;
+        thread_queue_init_parameters parameters_;
         std::thread::id owner_id_;
 
         // ------------------------------------------------------------
@@ -194,8 +194,7 @@ namespace pika::threads {
         // NOLINTBEGIN(bugprone-easily-swappable-parameters)
         queue_holder_thread(QueueType* bp_queue, QueueType* hp_queue, QueueType* np_queue,
             QueueType* lp_queue, std::size_t domain, std::size_t queue, std::size_t thread_num,
-            std::size_t owner, const detail::thread_queue_init_parameters& init,
-            std::thread::id owner_id)
+            std::size_t owner, const thread_queue_init_parameters& init, std::thread::id owner_id)
           // NOLINTEND(bugprone-easily-swappable-parameters)
           : bp_queue_(bp_queue)
           , hp_queue_(hp_queue)
@@ -210,7 +209,7 @@ namespace pika::threads {
           , owner_id_(owner_id)
         {
             rollover_counters_.data_ = std::make_tuple(queue_index_, round_robin_rollover);
-            tq_deb.debug(debug::detail::str<>("construct"), "D",
+            ::pika::detail::tq_deb.debug(debug::detail::str<>("construct"), "D",
                 debug::detail::dec<2>(domain_index_), "Q", debug::detail::dec<3>(queue_index_),
                 "Rollover counter", debug::detail::dec<>(std::get<0>(rollover_counters_.data_)),
                 debug::detail::dec<>(std::get<1>(rollover_counters_.data_)));
@@ -283,7 +282,7 @@ namespace pika::threads {
         // using a batching of N per worker before incrementing
         inline std::size_t worker_next(std::size_t const workers) const
         {
-            tq_deb.debug(debug::detail::str<>("worker_next"), "Rollover counter ",
+            ::pika::detail::tq_deb.debug(debug::detail::str<>("worker_next"), "Rollover counter ",
                 debug::detail::dec<4>(std::get<0>(rollover_counters_.data_)),
                 debug::detail::dec<4>(std::get<1>(rollover_counters_.data_)), "workers",
                 debug::detail::dec<4>(workers));
@@ -302,7 +301,8 @@ namespace pika::threads {
         {
             if (bp_queue_ && (priority == execution::thread_priority::bound))
             {
-                tq_deb.debug(debug::detail::str<>("schedule_thread"), queue_data_print(this),
+                ::pika::detail::tq_deb.debug(debug::detail::str<>("schedule_thread"),
+                    queue_data_print(this),
                     debug::detail::threadinfo<threads::detail::thread_id_ref_type*>(&thrd),
                     "queueing execution::thread_priority::bound");
                 bp_queue_->schedule_work(PIKA_MOVE(thrd), other_end);
@@ -312,21 +312,24 @@ namespace pika::threads {
                     priority == execution::thread_priority::high_recursive ||
                     priority == execution::thread_priority::boost))
             {
-                tq_deb.debug(debug::detail::str<>("schedule_thread"), queue_data_print(this),
+                ::pika::detail::tq_deb.debug(debug::detail::str<>("schedule_thread"),
+                    queue_data_print(this),
                     debug::detail::threadinfo<threads::detail::thread_id_ref_type*>(&thrd),
                     "queueing execution::thread_priority::high");
                 hp_queue_->schedule_work(PIKA_MOVE(thrd), other_end);
             }
             else if (lp_queue_ && (priority == execution::thread_priority::low))
             {
-                tq_deb.debug(debug::detail::str<>("schedule_thread"), queue_data_print(this),
+                ::pika::detail::tq_deb.debug(debug::detail::str<>("schedule_thread"),
+                    queue_data_print(this),
                     debug::detail::threadinfo<threads::detail::thread_id_ref_type*>(&thrd),
                     "queueing execution::thread_priority::low");
                 lp_queue_->schedule_work(PIKA_MOVE(thrd), other_end);
             }
             else
             {
-                tq_deb.debug(debug::detail::str<>("schedule_thread"), queue_data_print(this),
+                ::pika::detail::tq_deb.debug(debug::detail::str<>("schedule_thread"),
+                    queue_data_print(this),
                     debug::detail::threadinfo<threads::detail::thread_id_ref_type*>(&thrd),
                     "queueing execution::thread_priority::normal");
                 np_queue_->schedule_work(PIKA_MOVE(thrd), other_end);
@@ -338,7 +341,7 @@ namespace pika::threads {
         {
             // clang-format off
             if (thread_num!=thread_num_) {
-                tq_deb.error(debug::detail::str<>("assertion fail")
+                ::pika::detail::tq_deb.error(debug::detail::str<>("assertion fail")
                              , "thread_num", thread_num
                              , "thread_num_", thread_num_
                              , "queue_index_", queue_index_
@@ -360,7 +363,8 @@ namespace pika::threads {
                 while (terminated_items_.pop(todelete))
                 {
                     --terminated_items_count_.data_;
-                    tq_deb.debug(debug::detail::str<>("cleanup"), "delete", queue_data_print(this),
+                    ::pika::detail::tq_deb.debug(debug::detail::str<>("cleanup"), "delete",
+                        queue_data_print(this),
                         debug::detail::threadinfo<threads::detail::thread_data*>(todelete));
                     threads::detail::thread_id_type tid(todelete);
                     remove_from_thread_map(tid, true);
@@ -372,8 +376,8 @@ namespace pika::threads {
                 std::int64_t delete_count = static_cast<std::int64_t>(
                     terminated_items_count_.data_.load(std::memory_order_relaxed) / 2);
 
-                tq_deb.debug(debug::detail::str<>("cleanup"), "recycle", "delete_count",
-                    debug::detail::dec<3>(delete_count));
+                ::pika::detail::tq_deb.debug(debug::detail::str<>("cleanup"), "recycle",
+                    "delete_count", debug::detail::dec<3>(delete_count));
 
                 threads::detail::thread_data* todelete;
                 while (delete_count && terminated_items_.pop(todelete))
@@ -381,7 +385,8 @@ namespace pika::threads {
                     threads::detail::thread_id_type tid(todelete);
                     --terminated_items_count_.data_;
                     remove_from_thread_map(tid, false);
-                    tq_deb.debug(debug::detail::str<>("cleanup"), "recycle", queue_data_print(this),
+                    ::pika::detail::tq_deb.debug(debug::detail::str<>("cleanup"), "recycle",
+                        queue_data_print(this),
                         debug::detail::threadinfo<threads::detail::thread_id_type*>(&tid));
                     recycle_thread(tid);
                     --delete_count;
@@ -403,14 +408,16 @@ namespace pika::threads {
             // create the thread using priority to select queue
             if (data.priority == execution::thread_priority::normal)
             {
-                tq_deb.debug(debug::detail::str<>("create_thread "), queue_data_print(this),
-                    "execution::thread_priority::normal", "run_now ", data.run_now);
+                ::pika::detail::tq_deb.debug(debug::detail::str<>("create_thread "),
+                    queue_data_print(this), "execution::thread_priority::normal", "run_now ",
+                    data.run_now);
                 return np_queue_->create_thread(data, tid, ec);
             }
             else if (bp_queue_ && (data.priority == execution::thread_priority::bound))
             {
-                tq_deb.debug(debug::detail::str<>("create_thread "), queue_data_print(this),
-                    "execution::thread_priority::bound", "run_now ", data.run_now);
+                ::pika::detail::tq_deb.debug(debug::detail::str<>("create_thread "),
+                    queue_data_print(this), "execution::thread_priority::bound", "run_now ",
+                    data.run_now);
                 return bp_queue_->create_thread(data, tid, ec);
             }
             else if (hp_queue_ &&
@@ -423,18 +430,20 @@ namespace pika::threads {
                 {
                     data.priority = execution::thread_priority::normal;
                 }
-                tq_deb.debug(debug::detail::str<>("create_thread "), queue_data_print(this),
-                    "execution::thread_priority::high", "run_now ", data.run_now);
+                ::pika::detail::tq_deb.debug(debug::detail::str<>("create_thread "),
+                    queue_data_print(this), "execution::thread_priority::high", "run_now ",
+                    data.run_now);
                 return hp_queue_->create_thread(data, tid, ec);
             }
             else if (lp_queue_ && (data.priority == execution::thread_priority::low))
             {
-                tq_deb.debug(debug::detail::str<>("create_thread "), queue_data_print(this),
-                    "execution::thread_priority::low", "run_now ", data.run_now);
+                ::pika::detail::tq_deb.debug(debug::detail::str<>("create_thread "),
+                    queue_data_print(this), "execution::thread_priority::low", "run_now ",
+                    data.run_now);
                 return lp_queue_->create_thread(data, tid, ec);
             }
 
-            tq_deb.error(debug::detail::str<>("create_thread "), "priority?");
+            ::pika::detail::tq_deb.error(debug::detail::str<>("create_thread "), "priority?");
             std::terminate();
         }
 
@@ -494,7 +503,7 @@ namespace pika::threads {
                 tid = heap->front();
                 heap->pop_front();
                 threads::detail::get_thread_id_data(tid)->rebind(data);
-                tq_deb.debug(debug::detail::str<>("create_thread_object"), "rebind",
+                ::pika::detail::tq_deb.debug(debug::detail::str<>("create_thread_object"), "rebind",
                     queue_data_print(this),
                     debug::detail::threadinfo<threads::detail::thread_id_ref_type*>(&tid));
             }
@@ -513,7 +522,7 @@ namespace pika::threads {
                 }
                 tid = threads::detail::thread_id_ref_type(p, threads::detail::thread_id_addref::no);
 
-                tq_deb.debug(debug::detail::str<>("create_thread_object"), "new",
+                ::pika::detail::tq_deb.debug(debug::detail::str<>("create_thread_object"), "new",
                     queue_data_print(this),
                     debug::detail::threadinfo<threads::detail::thread_data*>(p));
             }
@@ -574,7 +583,7 @@ namespace pika::threads {
                 //     threads::detail::get_thread_id_data(tid2);
                 // std::string prev = fmt::format("{}", td);
 
-                tq_deb.error(debug::detail::str<>("map add"),
+                ::pika::detail::tq_deb.error(debug::detail::str<>("map add"),
                     "Couldn't add new thread to the thread map", queue_data_print(this),
                     debug::detail::threadinfo<threads::detail::thread_id_type*>(&tid));
 
@@ -586,7 +595,7 @@ namespace pika::threads {
 
             ++thread_map_count_.data_;
 
-            tq_deb.debug(debug::detail::str<>("map add"), queue_data_print(this),
+            ::pika::detail::tq_deb.debug(debug::detail::str<>("map add"), queue_data_print(this),
                 debug::detail::threadinfo<threads::detail::thread_id_type*>(&tid));
 
             // this thread has to be in the map now
@@ -605,7 +614,7 @@ namespace pika::threads {
             PIKA_ASSERT(deleted);
             (void) deleted;
 
-            tq_deb.debug(debug::detail::str<>("map remove"), queue_data_print(this),
+            ::pika::detail::tq_deb.debug(debug::detail::str<>("map remove"), queue_data_print(this),
                 debug::detail::threadinfo<threads::detail::thread_id_type*>(&tid));
 
             if (dealloc)
@@ -622,7 +631,8 @@ namespace pika::threads {
             // only take from BP queue if we are not stealing
             if (!stealing && bp_queue_ && bp_queue_->get_next_thread(thrd, stealing, check_new))
             {
-                tq_deb.debug(debug::detail::str<>("next_thread_BP"), queue_data_print(this),
+                ::pika::detail::tq_deb.debug(debug::detail::str<>("next_thread_BP"),
+                    queue_data_print(this),
                     debug::detail::threadinfo<threads::detail::thread_id_ref_type*>(&thrd),
                     "execution::thread_priority::bound");
                 return true;
@@ -630,7 +640,8 @@ namespace pika::threads {
 
             if (hp_queue_ && hp_queue_->get_next_thread(thrd, stealing, check_new))
             {
-                tq_deb.debug(debug::detail::str<>("get_next_thread_HP"), queue_data_print(this),
+                ::pika::detail::tq_deb.debug(debug::detail::str<>("get_next_thread_HP"),
+                    queue_data_print(this),
                     debug::detail::threadinfo<threads::detail::thread_id_ref_type*>(&thrd),
                     "execution::thread_priority::high");
                 return true;
@@ -645,7 +656,8 @@ namespace pika::threads {
         {
             if (np_queue_->get_next_thread(thrd, stealing))
             {
-                tq_deb.debug(debug::detail::str<>("next_thread_NP"), queue_data_print(this),
+                ::pika::detail::tq_deb.debug(debug::detail::str<>("next_thread_NP"),
+                    queue_data_print(this),
                     debug::detail::threadinfo<threads::detail::thread_id_ref_type*>(&thrd),
                     "execution::thread_priority::normal");
                 return true;
@@ -653,7 +665,8 @@ namespace pika::threads {
 
             if (lp_queue_ && lp_queue_->get_next_thread(thrd, stealing))
             {
-                tq_deb.debug(debug::detail::str<>("next_thread_LP"), queue_data_print(this),
+                ::pika::detail::tq_deb.debug(debug::detail::str<>("next_thread_LP"),
+                    queue_data_print(this),
                     debug::detail::threadinfo<threads::detail::thread_id_ref_type*>(&thrd),
                     "execution::thread_priority::low");
                 return true;
@@ -701,10 +714,11 @@ namespace pika::threads {
                     return added;
             }
             //
-            static auto an_timed = tq_deb.make_timer(1, debug::detail::str<>("add_new"));
-            tq_deb.timed(an_timed, "add", debug::detail::dec<3>(add_count), "owns bp, hp, np, lp",
-                owns_bp_queue(), owns_hp_queue(), owns_np_queue(), owns_lp_queue(), "this",
-                queue_data_print(this), "from", queue_data_print(addfrom));
+            static auto an_timed =
+                ::pika::detail::tq_deb.make_timer(1, debug::detail::str<>("add_new"));
+            ::pika::detail::tq_deb.timed(an_timed, "add", debug::detail::dec<3>(add_count),
+                "owns bp, hp, np, lp", owns_bp_queue(), owns_hp_queue(), owns_np_queue(),
+                owns_lp_queue(), "this", queue_data_print(this), "from", queue_data_print(addfrom));
             //
             return 0;
         }
@@ -848,8 +862,8 @@ namespace pika::threads {
             // the thread must be destroyed by the same queue holder that created it
             PIKA_ASSERT(&thrd->get_queue<queue_holder_thread>() == this);
             //
-            tq_deb.debug(debug::detail::str<>("destroy"), "terminated_items push", "xthread",
-                xthread, queue_data_print(this),
+            ::pika::detail::tq_deb.debug(debug::detail::str<>("destroy"), "terminated_items push",
+                "xthread", xthread, queue_data_print(this),
                 debug::detail::threadinfo<threads::detail::thread_data*>(thrd));
             terminated_items_.push(thrd);
             std::int64_t count = ++terminated_items_count_.data_;
@@ -935,33 +949,34 @@ namespace pika::threads {
         // ------------------------------------------------------------
         void debug_info()
         {
-            tq_deb.debug(debug::detail::str<>("details"), "owner_mask_",
+            ::pika::detail::tq_deb.debug(debug::detail::str<>("details"), "owner_mask_",
                 debug::detail::bin<8>(owner_mask_), "D", debug::detail::dec<2>(domain_index_), "Q",
                 debug::detail::dec<3>(queue_index_));
-            tq_deb.debug(debug::detail::str<>("bp_queue"), debug::detail::hex<12, void*>(bp_queue_),
-                "holder",
+            ::pika::detail::tq_deb.debug(debug::detail::str<>("bp_queue"),
+                debug::detail::hex<12, void*>(bp_queue_), "holder",
                 debug::detail::hex<12, void*>(bp_queue_->holder_ ? bp_queue_->holder_ : nullptr));
-            tq_deb.debug(debug::detail::str<>("hp_queue"), debug::detail::hex<12, void*>(hp_queue_),
-                "holder",
+            ::pika::detail::tq_deb.debug(debug::detail::str<>("hp_queue"),
+                debug::detail::hex<12, void*>(hp_queue_), "holder",
                 debug::detail::hex<12, void*>(hp_queue_->holder_ ? hp_queue_->holder_ : nullptr));
-            tq_deb.debug(debug::detail::str<>("np_queue"), debug::detail::hex<12, void*>(np_queue_),
-                "holder",
+            ::pika::detail::tq_deb.debug(debug::detail::str<>("np_queue"),
+                debug::detail::hex<12, void*>(np_queue_), "holder",
                 debug::detail::hex<12, void*>(np_queue_->holder_ ? np_queue_->holder_ : nullptr));
-            tq_deb.debug(debug::detail::str<>("lp_queue"), debug::detail::hex<12, void*>(lp_queue_),
-                "holder",
+            ::pika::detail::tq_deb.debug(debug::detail::str<>("lp_queue"),
+                debug::detail::hex<12, void*>(lp_queue_), "holder",
                 debug::detail::hex<12, void*>(lp_queue_->holder_ ? lp_queue_->holder_ : nullptr));
         }
 
         // ------------------------------------------------------------
         void debug_queues(const char* prefix)
         {
-            static auto deb_queues = tq_deb.make_timer(1, debug::detail::str<>("debug_queues"));
+            static auto deb_queues =
+                ::pika::detail::tq_deb.make_timer(1, debug::detail::str<>("debug_queues"));
             //
-            tq_deb.timed(deb_queues, prefix, queue_data_print(this));
+            ::pika::detail::tq_deb.timed(deb_queues, prefix, queue_data_print(this));
         }
     };
 
     template <typename QueueType>
     pika::detail::internal_allocator<threads::detail::thread_data>
         queue_holder_thread<QueueType>::thread_alloc_;
-}    // namespace pika::threads
+}    // namespace pika::threads::detail
