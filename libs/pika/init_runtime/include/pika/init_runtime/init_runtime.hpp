@@ -51,9 +51,7 @@ namespace pika {
     namespace detail {
         PIKA_EXPORT int init_helper(
             pika::program_options::variables_map&, util::detail::function<int(int, char**)> const&);
-    }
 
-    namespace detail {
         struct dump_config
         {
             dump_config(pika::runtime const& rt)
@@ -127,64 +125,22 @@ namespace pika {
         }
     }    // namespace detail
 
-    inline int init(std::function<int(pika::program_options::variables_map&)> f, int argc,
-        const char* const* argv, init_params const& params = init_params())
-    {
-        return detail::init_start_impl(PIKA_MOVE(f), argc, argv, params, true);
-    }
-
-    inline int init(std::function<int(int, char**)> f, int argc, const char* const* argv,
-        init_params const& params = init_params())
-    {
-        util::detail::function<int(pika::program_options::variables_map&)> main_f =
-            pika::util::detail::bind_back(pika::detail::init_helper, f);
-        return detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, true);
-    }
-
-    inline int init(std::function<int()> f, int argc, const char* const* argv,
-        init_params const& params = init_params())
-    {
-        util::detail::function<int(pika::program_options::variables_map&)> main_f =
-            pika::util::detail::bind(f);
-        return detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, true);
-    }
-
-    inline int init(std::nullptr_t, int argc, const char* const* argv,
-        init_params const& params = init_params())
-    {
-        util::detail::function<int(pika::program_options::variables_map&)> main_f;
-        return detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, true);
-    }
-
-    inline bool start(std::function<int(pika::program_options::variables_map&)> f, int argc,
-        const char* const* argv, init_params const& params = init_params())
-    {
-        return 0 == detail::init_start_impl(PIKA_MOVE(f), argc, argv, params, false);
-    }
-
-    inline bool start(std::function<int(int, char**)> f, int argc, const char* const* argv,
-        init_params const& params = init_params())
-    {
-        util::detail::function<int(pika::program_options::variables_map&)> main_f =
-            pika::util::detail::bind_back(pika::detail::init_helper, f);
-        return 0 == detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false);
-    }
-
-    inline bool start(std::function<int()> f, int argc, const char* const* argv,
-        init_params const& params = init_params())
-    {
-        util::detail::function<int(pika::program_options::variables_map&)> main_f =
-            pika::util::detail::bind(f);
-        return 0 == detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false);
-    }
-
-    inline bool start(std::nullptr_t, int argc, const char* const* argv,
-        init_params const& params = init_params())
-    {
-        util::detail::function<int(pika::program_options::variables_map&)> main_f;
-        return 0 == detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false);
-    }
-
+    PIKA_EXPORT int init(std::function<int(pika::program_options::variables_map&)> f, int argc,
+        const char* const* argv, init_params const& params = init_params());
+    PIKA_EXPORT int init(std::function<int(int, char**)> f, int argc, const char* const* argv,
+        init_params const& params = init_params());
+    PIKA_EXPORT int init(std::function<int()> f, int argc, const char* const* argv,
+        init_params const& params = init_params());
+    PIKA_EXPORT int init(std::nullptr_t, int argc, const char* const* argv,
+        init_params const& params = init_params());
+    PIKA_EXPORT bool start(std::function<int(pika::program_options::variables_map&)> f, int argc,
+        const char* const* argv, init_params const& params = init_params());
+    PIKA_EXPORT bool start(std::function<int(int, char**)> f, int argc, const char* const* argv,
+        init_params const& params = init_params());
+    PIKA_EXPORT bool start(std::function<int()> f, int argc, const char* const* argv,
+        init_params const& params = init_params());
+    PIKA_EXPORT bool start(std::nullptr_t, int argc, const char* const* argv,
+        init_params const& params = init_params());
     PIKA_EXPORT int finalize(error_code& ec = throws);
     PIKA_EXPORT int stop(error_code& ec = throws);
     PIKA_EXPORT int suspend(error_code& ec = throws);
