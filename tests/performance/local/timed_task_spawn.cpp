@@ -18,8 +18,6 @@
 #include <pika/string_util/split.hpp>
 #include <pika/testing.hpp>
 
-#include <boost/integer/common_factor.hpp>
-
 #include <fmt/ostream.h>
 #include <fmt/printf.h>
 
@@ -31,6 +29,7 @@
 #include <iostream>
 #include <memory>
 #include <mutex>
+#include <numeric>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -388,7 +387,7 @@ int pika_main(variables_map& vm)
         ///////////////////////////////////////////////////////////////////////
         if (suspended_tasks != 0)
         {
-            std::uint64_t gcd = boost::integer::gcd(tasks_per_feeder, suspended_tasks_per_feeder);
+            std::uint64_t gcd = std::gcd(tasks_per_feeder, suspended_tasks_per_feeder);
 
             suspend_step = suspended_tasks_per_feeder / gcd;
             // We check earlier to make sure that there are never more
