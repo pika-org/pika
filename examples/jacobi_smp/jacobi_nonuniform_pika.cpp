@@ -11,6 +11,7 @@
 #include <pika/functional/bind.hpp>
 #include <pika/future.hpp>
 
+#include <chrono>
 #include <cstddef>
 #include <functional>
 #include <iostream>

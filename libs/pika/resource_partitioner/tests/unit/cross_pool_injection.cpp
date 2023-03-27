@@ -23,6 +23,7 @@
 #include <pika/thread.hpp>
 
 #include <atomic>
+#include <chrono>
 #include <cstddef>
 #include <iostream>
 #include <random>

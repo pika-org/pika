@@ -12,6 +12,7 @@
 #include <pika/synchronization/channel_mpsc.hpp>
 #include <pika/thread.hpp>
 
+#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <functional>

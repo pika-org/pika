@@ -9,6 +9,7 @@
 #include <fmt/ostream.h>
 #include <fmt/printf.h>
 
+#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <iostream>

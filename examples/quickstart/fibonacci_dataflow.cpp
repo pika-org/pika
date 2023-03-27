@@ -17,6 +17,7 @@
 #include <fmt/ostream.h>
 #include <fmt/printf.h>
 
+#include <chrono>
 #include <cstdint>
 #include <iostream>
 #include <string>

@@ -11,6 +11,7 @@
 
 #include <pika/modules/timing.hpp>
 
+#include <chrono>
 #include <cstdint>
 
 PIKA_FORCEINLINE void worker_timed(std::uint64_t delay_ns) noexcept

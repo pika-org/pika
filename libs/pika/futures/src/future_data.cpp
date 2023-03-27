@@ -20,6 +20,7 @@
 #include <pika/threading_base/annotated_function.hpp>
 
 #include <atomic>
+#include <chrono>
 #include <cstddef>
 #include <exception>
 #include <functional>

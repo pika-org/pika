@@ -16,6 +16,7 @@
 #include <pika/execution_base/execution.hpp>
 
 #include <algorithm>
+#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <type_traits>

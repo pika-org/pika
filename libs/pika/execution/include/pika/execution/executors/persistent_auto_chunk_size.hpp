@@ -13,6 +13,7 @@
 #include <pika/modules/timing.hpp>
 
 #include <algorithm>
+#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <type_traits>

@@ -17,6 +17,7 @@
 #include <pika/testing.hpp>
 
 #include <atomic>
+#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <exception>
