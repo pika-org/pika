@@ -66,9 +66,8 @@ int main()
     {
         auto s_enabled =
             p_enabled.scope("scoped block", PIKA_DP_LAZY(p_enabled, increment(enabled_counter)));
-        auto s_disabled =
+        [[maybe_unused]] auto s_disabled =
             p_disabled.scope("scoped block", PIKA_DP_LAZY(p_disabled, increment(disabled_counter)));
-        (void) s_disabled;    // silence warning about unused var
     }
     PIKA_TEST_EQ(enabled_counter, 3);
     PIKA_TEST_EQ(disabled_counter, 0);

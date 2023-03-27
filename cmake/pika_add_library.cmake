@@ -198,6 +198,15 @@ function(pika_add_library name)
     endforeach()
   endif()
 
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC")
+    foreach(source ${${name}_SOURCES})
+      get_filename_component(extension ${source} EXT)
+      if(${extension} STREQUAL ".cu")
+        pika_add_nvhpc_cuda_flags(${source})
+      endif()
+    endforeach()
+  endif()
+
   add_library(
     ${name} ${${name}_linktype} ${exclude_from_all} ${${name}_SOURCES}
             ${${name}_HEADERS} ${${name}_AUXILIARY}

@@ -31,8 +31,8 @@ using pika::chrono::detail::high_resolution_timer;
 
 // global vars we stick here to make printouts easy for plotting
 static std::string queuing = "default";
-static std::size_t numa_sensitive = 0;
-static std::uint64_t num_threads = 1;
+[[maybe_unused]] static std::size_t numa_sensitive = 0;
+[[maybe_unused]] static std::uint64_t num_threads = 1;
 static std::string info_string = "";
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -1272,8 +1272,6 @@ namespace pika {
         {
             return pika::make_exceptional_future<T>(std::current_exception());
         }
-
-        return future<T>();
     }
 
     ///////////////////////////////////////////////////////////////////////////

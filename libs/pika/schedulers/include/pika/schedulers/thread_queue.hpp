@@ -224,9 +224,8 @@ namespace pika::threads::detail {
                 // create the new thread
                 threads::detail::thread_init_data& data = task->data;
 
-                bool schedule_now =
+                [[maybe_unused]] bool schedule_now =
                     data.initial_state == threads::detail::thread_schedule_state::pending;
-                (void) schedule_now;
 
                 threads::detail::thread_id_ref_type thrd;
                 create_thread_object(thrd, data, lk);
@@ -430,7 +429,6 @@ namespace pika::threads::detail {
                         return true;
                     }
                 }
-                return false;
             }
 
             std::lock_guard<mutex_type> lk(mtx_);

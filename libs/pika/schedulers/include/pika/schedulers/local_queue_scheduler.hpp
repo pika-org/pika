@@ -553,7 +553,6 @@ namespace pika::threads::detail {
                     return 0;
                 }
                 }
-                return 0;
             }
 
             // Return the cumulative count for all queues.

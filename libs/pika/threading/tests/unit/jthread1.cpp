@@ -247,15 +247,12 @@ void test_pika_thread()
         bool caught_exception = false;
         try
         {
-            for ([[maybe_unused]] int i = 0;; ++i)
+            while (!shall_die.stop_requested())
             {
-                if (shall_die.stop_requested())
-                {
-                    throw "interrupted";
-                }
                 pika::this_thread::yield();
             }
-            PIKA_TEST(false);
+
+            throw "interrupted";
         }
         catch (std::exception&)
         {

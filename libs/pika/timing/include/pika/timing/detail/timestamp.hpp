@@ -14,7 +14,7 @@
 # include <pika/timing/detail/timestamp/msvc.hpp>
 #elif defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64) ||        \
     defined(_M_X64)
-# if defined(PIKA_HAVE_RDTSC) || defined(PIKA_HAVE_RDTSCP)
+# if (defined(PIKA_HAVE_RDTSC) || defined(PIKA_HAVE_RDTSCP)) && !defined(PIKA_NVHPC_VERSION)
 #  include <pika/timing/detail/timestamp/linux_x86_64.hpp>
 # else
 #  include <pika/timing/detail/timestamp/linux_generic.hpp>
@@ -22,7 +22,7 @@
 #elif defined(i386) || defined(__i386__) || defined(__i486__) || defined(__i586__) ||              \
     defined(__i686__) || defined(__i386) || defined(_M_IX86) || defined(__X86__) ||                \
     defined(_X86_) || defined(__THW_INTEL__) || defined(__I86__) || defined(__INTEL__)
-# if defined(PIKA_HAVE_RDTSC) || defined(PIKA_HAVE_RDTSCP)
+# if (defined(PIKA_HAVE_RDTSC) || defined(PIKA_HAVE_RDTSCP)) && !defined(PIKA_NVHPC_VERSION)
 #  include <pika/timing/detail/timestamp/linux_x86_32.hpp>
 # else
 #  include <pika/timing/detail/timestamp/linux_generic.hpp>

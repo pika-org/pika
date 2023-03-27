@@ -90,7 +90,14 @@
 #endif
 
 // Detecting CUDA compilation mode
-// Detecting NVCC
+// Detecting nvhpc
+// The CUDA version will also be defined so we end this block with with #endif,
+// not #elif
+#if defined(__NVCOMPILER)
+#  define PIKA_NVHPC_VERSION (__NVCOMPILER_MAJOR__ * 10000 + __NVCOMPILER_MINOR__ * 100 + __NVCOMPILER_PATCHLEVEL__)
+#endif
+
+// Detecting NVCC/CUDA
 #if defined(__NVCC__) || defined(__CUDACC__)
 // NVCC build version numbers can be high (without limit?) so we leave it out
 // from the version definition

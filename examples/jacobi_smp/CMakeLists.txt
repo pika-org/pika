@@ -4,8 +4,11 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(jacobi_smp_applications jacobi_pika jacobi_nonuniform_pika)
+set(jacobi_smp_applications jacobi_pika)
 
+if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC")
+  list(APPEND jacobi_smp_applications jacobi_nonuniform_pika)
+endif()
 set(jacobi_pika_PARAMETERS THREADS 4)
 set(jacobi_nonuniform_pika_PARAMETERS THREADS 4)
 

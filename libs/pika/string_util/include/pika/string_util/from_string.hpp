@@ -35,29 +35,22 @@ namespace pika::detail {
     template <typename T, typename U>
     T check_out_of_range(U const& value)
     {
-        U const min = (std::numeric_limits<T>::min)();
         U const max = (std::numeric_limits<T>::max)();
-#if defined(PIKA_INTEL_VERSION)
-# pragma warning(push)
-# pragma warning(disable : 186)
-#elif defined(PIKA_CUDA_VERSION)
-# if PIKA_CUDA_VERSION >= 1105
-#  pragma nv_diag_suppress 186
-# else
-#  pragma diag_suppress 186
-# endif
-#endif
-        if (value < min || value > max)
-            throw std::out_of_range("from_string: out of range");
-#if defined(PIKA_INTEL_VERSION)
-# pragma warning(pop)
-#elif defined(PIKA_CUDA_VERSION)
-# if PIKA_CUDA_VERSION >= 1105
-#  pragma nv_diag_suppress 186
-# else
-#  pragma diag_default 186
-# endif
-#endif
+        if constexpr (std::is_unsigned_v<U>)
+        {
+            if (value > max)
+            {
+                throw std::out_of_range("from_string: out of range");
+            }
+        }
+        else
+        {
+            U const min = (std::numeric_limits<T>::min)();
+            if (value < min || value > max)
+            {
+                throw std::out_of_range("from_string: out of range");
+            }
+        }
         return static_cast<T>(value);
     }
 

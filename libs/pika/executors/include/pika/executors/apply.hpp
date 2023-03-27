@@ -32,7 +32,8 @@ namespace pika::detail {
                 bool>::type
             call(F&& f, Ts&&... ts)
         {
-            execution::parallel_executor exec;
+            // nvc++ thinks that exec is unused
+            [[maybe_unused]] execution::parallel_executor exec;
             exec.post(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
             return false;
         }

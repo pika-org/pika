@@ -181,6 +181,17 @@ function(pika_add_executable name)
     endforeach()
   endif()
 
+  set(target_has_gpu_sources FALSE)
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC")
+    foreach(source ${${name}_SOURCES})
+      get_filename_component(extension ${source} EXT)
+      if(${extension} STREQUAL ".cu")
+        pika_add_nvhpc_cuda_flags(${source})
+        set(target_has_gpu_sources TRUE)
+      endif()
+    endforeach()
+  endif()
+
   add_executable(
     ${name} ${${name}_SOURCES} ${${name}_HEADERS} ${${name}_AUXILIARY}
   )
@@ -208,9 +219,15 @@ function(pika_add_executable name)
     endif()
   endif()
 
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC" AND target_has_gpu_sources)
+    set_target_properties(${name} PROPERTIES LINK_FLAGS "-cuda")
+  endif()
+
   if(${name}_GPU)
     if(PIKA_WITH_HIP)
       set_target_properties(${name} PROPERTIES LANGUAGE HIP)
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC")
+      set_target_properties(${name} PROPERTIES LINK_FLAGS "-cuda")
     else()
       set_target_properties(${name} PROPERTIES LANGUAGE CUDA)
     endif()

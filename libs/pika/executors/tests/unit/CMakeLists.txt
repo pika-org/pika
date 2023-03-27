@@ -13,7 +13,6 @@ set(tests
     parallel_executor
     parallel_fork_executor
     parallel_policy_executor
-    scheduler_executor
     sequenced_executor
     shared_parallel_executor
     standalone_thread_pool_executor
@@ -21,8 +20,14 @@ set(tests
     thread_pool_scheduler
 )
 
+# nvc++ causes test failures in release mode. This is assumed to be a code
+# generation bug.
+if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC")
+  list(APPEND tests scheduler_executor)
+endif()
+
 if(PIKA_WITH_CXX17_STD_EXECUTION_POLICIES)
-  set(tests ${tests} std_execution_policies)
+  list(APPEND tests std_execution_policies)
 endif()
 
 foreach(test ${tests})

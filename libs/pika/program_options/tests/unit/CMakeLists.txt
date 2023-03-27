@@ -13,11 +13,16 @@ set(tests
     positional_options
     required
     split
-    unicode
     unrecognized
     variable_map
     winmain
 )
+
+# nvc++ causes test failures in release mode. This is assumed to be a code
+# generation bug.
+if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC")
+  list(APPEND tests unicode)
+endif()
 
 foreach(test ${tests})
   set(sources ${test}.cpp)

@@ -151,7 +151,6 @@ namespace pika::threads::detail {
 
                 return previous_state;    // done
             }
-            break;
             case thread_schedule_state::terminated:
             {
                 // NOLINTNEXTLINE(bugprone-branch-clone)
@@ -167,7 +166,6 @@ namespace pika::threads::detail {
                 // pending nothing has to be done anymore.
                 return previous_state;
             }
-            break;
             case thread_schedule_state::pending:
                 [[fallthrough]];
             case thread_schedule_state::pending_boost:

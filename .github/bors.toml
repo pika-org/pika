@@ -59,6 +59,8 @@ status = [
   "jenkins/cscs-daint/gcc-12-release",
   "jenkins/cscs-daint/gcc-cuda-debug",
   "jenkins/cscs-daint/gcc-cuda-release",
+  "jenkins/cscs-daint/nvhpc-debug",
+  "jenkins/cscs-daint/nvhpc-release",
 ]
 required_approvals = 0
 delete_merged_branches = true
