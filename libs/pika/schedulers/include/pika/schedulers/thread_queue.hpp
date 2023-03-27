@@ -46,7 +46,7 @@
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika::threads {
+namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
     // // Queue back-end interface:
     //
@@ -437,8 +437,8 @@ namespace pika::threads {
             return cleanup_terminated_locked(false);
         }
 
-        thread_queue(std::size_t queue_num = std::size_t(-1),
-            detail::thread_queue_init_parameters parameters = {})
+        thread_queue(
+            std::size_t queue_num = std::size_t(-1), thread_queue_init_parameters parameters = {})
           : parameters_(parameters)
           , thread_map_count_(0)
           , work_items_(128, queue_num)
@@ -1118,7 +1118,7 @@ namespace pika::threads {
         void on_error(std::size_t /* num_thread */, std::exception_ptr const& /* e */) {}
 
     private:
-        detail::thread_queue_init_parameters parameters_;
+        thread_queue_init_parameters parameters_;
 
         mutable mutex_type mtx_;    // mutex protecting the members
 
@@ -1191,4 +1191,4 @@ namespace pika::threads {
         TerminatedQueuing>::task_description>
         thread_queue<Mutex, PendingQueuing, StagedQueuing,
             TerminatedQueuing>::task_description_alloc_;
-}    // namespace pika::threads
+}    // namespace pika::threads::detail

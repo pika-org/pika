@@ -9,9 +9,9 @@
 
 #include <pika/config.hpp>
 
-namespace pika::threads {
+namespace pika::threads::detail {
 #ifdef PIKA_HAVE_THREAD_QUEUE_WAITTIME
     PIKA_EXPORT void set_maintain_queue_wait_times_enabled(bool enabled);
     PIKA_EXPORT bool get_maintain_queue_wait_times_enabled();
 #endif
-}    // namespace pika::threads
+}    // namespace pika::threads::detail

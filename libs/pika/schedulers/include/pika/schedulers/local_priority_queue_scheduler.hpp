@@ -41,7 +41,7 @@
 // TODO: add branch prediction and function heat
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika::threads {
+namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
 #if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
     using default_local_priority_queue_scheduler_terminated_queue = lockfree_lifo;
@@ -60,7 +60,7 @@ namespace pika::threads {
     template <typename Mutex = std::mutex, typename PendingQueuing = lockfree_fifo,
         typename StagedQueuing = lockfree_fifo,
         typename TerminatedQueuing = default_local_priority_queue_scheduler_terminated_queue>
-    class PIKA_EXPORT local_priority_queue_scheduler : public detail::scheduler_base
+    class PIKA_EXPORT local_priority_queue_scheduler : public scheduler_base
     {
     public:
         using has_periodic_maintenance = std::false_type;
@@ -76,7 +76,7 @@ namespace pika::threads {
         {
             init_parameter(std::size_t num_queues, pika::detail::affinity_data const& affinity_data,
                 std::size_t num_high_priority_queues = std::size_t(-1),
-                detail::thread_queue_init_parameters thread_queue_init = {},
+                thread_queue_init_parameters thread_queue_init = {},
                 char const* description = "local_priority_queue_scheduler")
               : num_queues_(num_queues)
               , num_high_priority_queues_(num_high_priority_queues == std::size_t(-1) ?
@@ -100,7 +100,7 @@ namespace pika::threads {
 
             std::size_t num_queues_;
             std::size_t num_high_priority_queues_;
-            detail::thread_queue_init_parameters thread_queue_init_;
+            thread_queue_init_parameters thread_queue_init_;
             pika::detail::affinity_data const& affinity_data_;
             char const* description_;
         };
@@ -108,7 +108,7 @@ namespace pika::threads {
 
         local_priority_queue_scheduler(
             init_parameter_type const& init, bool deferred_initialization = true)
-          : detail::scheduler_base(init.num_queues_, init.description_, init.thread_queue_init_)
+          : scheduler_base(init.num_queues_, init.description_, init.thread_queue_init_)
           , curr_queue_(0)
           , affinity_data_(init.affinity_data_)
           , num_queues_(init.num_queues_)
@@ -1262,11 +1262,11 @@ namespace pika::threads {
         std::vector<pika::concurrency::detail::cache_line_data<std::vector<std::size_t>>>
             victim_threads_;
     };
-}    // namespace pika::threads
+}    // namespace pika::threads::detail
 
 template <typename Mutex, typename PendingQueuing, typename StagedQueuing,
     typename TerminatedQueuing>
-struct fmt::formatter<pika::threads::local_priority_queue_scheduler<Mutex, PendingQueuing,
+struct fmt::formatter<pika::threads::detail::local_priority_queue_scheduler<Mutex, PendingQueuing,
     StagedQueuing, TerminatedQueuing>> : fmt::formatter<pika::threads::detail::scheduler_base>
 {
     template <typename FormatContext>

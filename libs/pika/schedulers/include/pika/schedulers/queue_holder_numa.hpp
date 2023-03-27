@@ -42,12 +42,12 @@
 # endif
 #endif
 
-namespace pika {
+namespace pika::detail {
     static pika::debug::detail::enable_print<QUEUE_HOLDER_NUMA_DEBUG> nq_deb("QH_NUMA");
 }
 
 // ------------------------------------------------------------////////
-namespace pika::threads {
+namespace pika::threads::detail {
     // ----------------------------------------------------------------
     // Helper class to hold a set of thread queue holders.
     // ----------------------------------------------------------------
@@ -105,7 +105,7 @@ namespace pika::threads {
                 if (queues_[q]->get_next_thread_HP(thrd, (stealing || (i > 0)), i == 0))
                 {
                     // clang-format off
-                    nq_deb.debug(debug::detail::str<>("HP/BP get_next")
+                    pika::detail::nq_deb.debug(debug::detail::str<>("HP/BP get_next")
                          , "D", debug::detail::dec<2>(domain_)
                          , "Q",  debug::detail::dec<3>(q)
                          , "Qidx",  debug::detail::dec<3>(qidx)
@@ -135,7 +135,7 @@ namespace pika::threads {
                 // if we got a thread, return it, only allow stealing if i>0
                 if (queues_[q]->get_next_thread(thrd, (stealing || (i > 0))))
                 {
-                    nq_deb.debug(debug::detail::str<>("get_next"), "D",
+                    pika::detail::nq_deb.debug(debug::detail::str<>("get_next"), "D",
                         debug::detail::dec<2>(domain_), "Q", debug::detail::dec<3>(q), "Qidx",
                         debug::detail::dec<3>(qidx),
                         ((i == 0 && !stealing) ? "taken" : "stolen from"),
@@ -162,7 +162,7 @@ namespace pika::threads {
                 if (added > 0)
                 {
                     // clang-format off
-                    nq_deb.debug(debug::detail::str<>("HP/BP add_new")
+                    pika::detail::nq_deb.debug(debug::detail::str<>("HP/BP add_new")
                         , "added", debug::detail::dec<>(added)
                         , "D", debug::detail::dec<2>(domain_)
                         , "Q",  debug::detail::dec<3>(q)
@@ -191,7 +191,7 @@ namespace pika::threads {
                 if (added > 0)
                 {
                     // clang-format off
-                    nq_deb.debug(debug::detail::str<>("add_new")
+                    pika::detail::nq_deb.debug(debug::detail::str<>("add_new")
                          , "added", debug::detail::dec<>(added)
                          , "D", debug::detail::dec<2>(domain_)
                          , "Q",  debug::detail::dec<3>(q)
@@ -294,4 +294,4 @@ namespace pika::threads {
         void on_stop_thread(std::size_t /* num_thread */) {}
         void on_error(std::size_t /* num_thread */, std::exception_ptr const& /* e */) {}
     };
-}    // namespace pika::threads
+}    // namespace pika::threads::detail

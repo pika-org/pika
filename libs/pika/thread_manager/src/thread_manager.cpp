@@ -171,7 +171,7 @@ namespace pika::threads::detail {
             case resource::local:
             {
                 // instantiate the scheduler
-                using local_sched_type = pika::threads::local_queue_scheduler<>;
+                using local_sched_type = pika::threads::detail::local_queue_scheduler<>;
 
                 local_sched_type::init_parameter_type init(thread_pool_init.num_threads_,
                     thread_pool_init.affinity_data_, thread_queue_init,
@@ -203,8 +203,9 @@ namespace pika::threads::detail {
                     thread_pool_init.num_threads_, num_high_priority_queues);
 
                 // instantiate the scheduler
-                using local_sched_type = pika::threads::local_priority_queue_scheduler<std::mutex,
-                    pika::threads::lockfree_fifo>;
+                using local_sched_type =
+                    pika::threads::detail::local_priority_queue_scheduler<std::mutex,
+                        pika::threads::detail::lockfree_fifo>;
 
                 local_sched_type::init_parameter_type init(thread_pool_init.num_threads_,
                     thread_pool_init.affinity_data_, num_high_priority_queues, thread_queue_init,
@@ -238,8 +239,9 @@ namespace pika::threads::detail {
                     thread_pool_init.num_threads_, num_high_priority_queues);
 
                 // instantiate the scheduler
-                using local_sched_type = pika::threads::local_priority_queue_scheduler<std::mutex,
-                    pika::threads::lockfree_lifo>;
+                using local_sched_type =
+                    pika::threads::detail::local_priority_queue_scheduler<std::mutex,
+                        pika::threads::detail::lockfree_lifo>;
 
                 local_sched_type::init_parameter_type init(thread_pool_init.num_threads_,
                     thread_pool_init.affinity_data_, num_high_priority_queues, thread_queue_init,
@@ -268,7 +270,7 @@ namespace pika::threads::detail {
             case resource::static_:
             {
                 // instantiate the scheduler
-                using local_sched_type = pika::threads::static_queue_scheduler<>;
+                using local_sched_type = pika::threads::detail::static_queue_scheduler<>;
 
                 local_sched_type::init_parameter_type init(thread_pool_init.num_threads_,
                     thread_pool_init.affinity_data_, thread_queue_init,
@@ -300,7 +302,7 @@ namespace pika::threads::detail {
                     thread_pool_init.num_threads_, num_high_priority_queues);
 
                 // instantiate the scheduler
-                using local_sched_type = pika::threads::static_priority_queue_scheduler<>;
+                using local_sched_type = pika::threads::detail::static_priority_queue_scheduler<>;
 
                 local_sched_type::init_parameter_type init(thread_pool_init.num_threads_,
                     thread_pool_init.affinity_data_, num_high_priority_queues, thread_queue_init,
@@ -333,8 +335,9 @@ namespace pika::threads::detail {
                     thread_pool_init.num_threads_, num_high_priority_queues);
 
                 // instantiate the scheduler
-                using local_sched_type = pika::threads::local_priority_queue_scheduler<std::mutex,
-                    pika::threads::lockfree_fifo>;
+                using local_sched_type =
+                    pika::threads::detail::local_priority_queue_scheduler<std::mutex,
+                        pika::threads::detail::lockfree_fifo>;
 
                 local_sched_type::init_parameter_type init(thread_pool_init.num_threads_,
                     thread_pool_init.affinity_data_, num_high_priority_queues, thread_queue_init,
@@ -372,8 +375,9 @@ namespace pika::threads::detail {
                     thread_pool_init.num_threads_, num_high_priority_queues);
 
                 // instantiate the scheduler
-                using local_sched_type = pika::threads::local_priority_queue_scheduler<std::mutex,
-                    pika::threads::lockfree_lifo>;
+                using local_sched_type =
+                    pika::threads::detail::local_priority_queue_scheduler<std::mutex,
+                        pika::threads::detail::lockfree_lifo>;
 
                 local_sched_type::init_parameter_type init(thread_pool_init.num_threads_,
                     thread_pool_init.affinity_data_, num_high_priority_queues, thread_queue_init,
@@ -402,7 +406,7 @@ namespace pika::threads::detail {
             case resource::shared_priority:
             {
                 // instantiate the scheduler
-                using local_sched_type = pika::threads::shared_priority_queue_scheduler<>;
+                using local_sched_type = pika::threads::detail::shared_priority_queue_scheduler<>;
                 local_sched_type::init_parameter_type init(thread_pool_init.num_threads_, {1, 1, 1},
                     thread_pool_init.affinity_data_, thread_queue_init,
                     "core-shared_priority_queue_scheduler");

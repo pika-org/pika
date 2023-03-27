@@ -24,7 +24,7 @@
 #include <pika/config/warnings_prefix.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika::threads {
+namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
 #if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
     using default_static_priority_queue_scheduler_terminated_queue = lockfree_lifo;
@@ -68,7 +68,7 @@ namespace pika::threads {
             // this scheduler does not support stealing or numa stealing
             mode = scheduler_mode(mode & ~scheduler_mode::enable_stealing);
             mode = scheduler_mode(mode & ~scheduler_mode::enable_stealing_numa);
-            detail::scheduler_base::set_scheduler_mode(mode);
+            scheduler_base::set_scheduler_mode(mode);
         }
 
         static std::string get_scheduler_name()
@@ -76,11 +76,11 @@ namespace pika::threads {
             return "static_priority_queue_scheduler";
         }
     };
-}    // namespace pika::threads
+}    // namespace pika::threads::detail
 
 template <typename Mutex, typename PendingQueuing, typename StagedQueuing,
     typename TerminatedQueuing>
-struct fmt::formatter<pika::threads::static_priority_queue_scheduler<Mutex, PendingQueuing,
+struct fmt::formatter<pika::threads::detail::static_priority_queue_scheduler<Mutex, PendingQueuing,
     StagedQueuing, TerminatedQueuing>> : fmt::formatter<pika::threads::detail::scheduler_base>
 {
     template <typename FormatContext>

@@ -71,28 +71,28 @@ int main(int argc, char* argv[])
 {
 #if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
     {
-        using scheduler_type =
-            pika::threads::local_priority_queue_scheduler<std::mutex, pika::threads::lockfree_lifo>;
+        using scheduler_type = pika::threads::detail::local_priority_queue_scheduler<std::mutex,
+            pika::threads::detail::lockfree_lifo>;
         test_scheduler<scheduler_type>(argc, argv);
     }
 #endif
 
     {
-        using scheduler_type =
-            pika::threads::local_priority_queue_scheduler<std::mutex, pika::threads::lockfree_fifo>;
+        using scheduler_type = pika::threads::detail::local_priority_queue_scheduler<std::mutex,
+            pika::threads::detail::lockfree_fifo>;
         test_scheduler<scheduler_type>(argc, argv);
     }
 
 #if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
     {
-        using scheduler_type = pika::threads::local_priority_queue_scheduler<std::mutex,
-            pika::threads::lockfree_abp_lifo>;
+        using scheduler_type = pika::threads::detail::local_priority_queue_scheduler<std::mutex,
+            pika::threads::detail::lockfree_abp_lifo>;
         test_scheduler<scheduler_type>(argc, argv);
     }
 
     {
-        using scheduler_type = pika::threads::local_priority_queue_scheduler<std::mutex,
-            pika::threads::lockfree_abp_fifo>;
+        using scheduler_type = pika::threads::detail::local_priority_queue_scheduler<std::mutex,
+            pika::threads::detail::lockfree_abp_fifo>;
         test_scheduler<scheduler_type>(argc, argv);
     }
 #endif
