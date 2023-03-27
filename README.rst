@@ -107,6 +107,10 @@ public API. Any other headers are internal implementation details.
 - ``pika/shared_mutex.hpp``
 - ``pika/thread.hpp``
 
+All functionality in a namespace containing ``detail`` and all macros prefixed
+with ``PIKA_DETAIL`` are implementation details and may change without warning
+at any time.
+
 Acknowledgements
 ================
 

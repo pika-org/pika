@@ -130,7 +130,7 @@ namespace pika::cuda::experimental::detail {
                             }
 
                             // Forward successes and other errors to the callback
-                            PIKA_DP(cud_debug<5>,
+                            PIKA_DETAIL_DP(cud_debug<5>,
                                 debug(str<>("set ready vector"), "event",
                                     hex<8>(continuation.event), "enqueued events",
                                     dec<3>(get_number_of_enqueued_events()), "active events",
@@ -163,7 +163,7 @@ namespace pika::cuda::experimental::detail {
                         status = e.get_error();
                     }
 
-                    PIKA_DP(cud_debug<5>,
+                    PIKA_DETAIL_DP(cud_debug<5>,
                         debug(debug::detail::str<>("set ready queue"), "event",
                             debug::detail::hex<8>(continuation.event), "enqueued events",
                             debug::detail::dec<3>(get_number_of_enqueued_events()), "active events",
@@ -200,7 +200,7 @@ namespace pika::cuda::experimental::detail {
                 "CUDA event polling has not been enabled on any pool. Make sure that CUDA event "
                 "polling is enabled on at least one thread pool.");
 
-            PIKA_DP(cud_debug<5>,
+            PIKA_DETAIL_DP(cud_debug<5>,
                 debug(str<>("event queued"), "event", hex<8>(event), "enqueued events",
                     dec<3>(get_number_of_enqueued_events()), "active events",
                     dec<3>(get_number_of_active_events())));
@@ -232,7 +232,7 @@ namespace pika::cuda::experimental::detail {
             event_callback_vector.push_back(PIKA_MOVE(continuation));
             ++active_events_counter;
 
-            PIKA_DP(cud_debug<5>,
+            PIKA_DETAIL_DP(cud_debug<5>,
                 debug(str<>("event callback moved from queue to vector"), "event",
                     hex<8>(continuation.event), "enqueued events",
                     dec<3>(get_number_of_enqueued_events()), "active events",
@@ -316,7 +316,7 @@ namespace pika::cuda::experimental::detail {
 #if defined(PIKA_DEBUG)
         ++get_register_polling_count();
 #endif
-        PIKA_DP(cud_debug<2>, debug(str<>("enable polling"), pool.get_pool_name()));
+        PIKA_DETAIL_DP(cud_debug<2>, debug(str<>("enable polling"), pool.get_pool_name()));
         auto* sched = pool.get_scheduler();
         sched->set_cuda_polling_functions(&pika::cuda::experimental::detail::poll, &get_work_count);
     }
@@ -331,7 +331,7 @@ namespace pika::cuda::experimental::detail {
                 "sure CUDA event polling is not disabled too early.");
         }
 #endif
-        PIKA_DP(cud_debug<2>, debug(str<>("disable polling"), pool.get_pool_name()));
+        PIKA_DETAIL_DP(cud_debug<2>, debug(str<>("disable polling"), pool.get_pool_name()));
         auto* sched = pool.get_scheduler();
         sched->clear_cuda_polling_function();
     }
@@ -353,7 +353,7 @@ namespace pika::cuda::experimental {
 
     PIKA_EXPORT void set_pool_name(const std::string& name)
     {
-        PIKA_DP(detail::cud_debug<2>, debug(debug::detail::str<>("set pool name"), name));
+        PIKA_DETAIL_DP(detail::cud_debug<2>, debug(debug::detail::str<>("set pool name"), name));
         detail::polling_pool_name = name;
     }
 }    // namespace pika::cuda::experimental

@@ -55,18 +55,18 @@
 
 // Used to wrap function call parameters to prevent evaluation
 // when debugging is disabled
-#define PIKA_DP_LAZY(printer, Expr) printer.eval([&] { return Expr; })
-#define PIKA_DP(printer, Expr)                                                                     \
+#define PIKA_DETAIL_DP_LAZY(printer, Expr) printer.eval([&] { return Expr; })
+#define PIKA_DETAIL_DP(printer, Expr)                                                              \
  if constexpr (printer.is_enabled())                                                               \
  {                                                                                                 \
   printer.Expr;                                                                                    \
  };
 
-#define PIKA_NS_DEBUG pika::debug::detail
+#define PIKA_DETAIL_NS_DEBUG pika::debug::detail
 
 // ------------------------------------------------------------
 /// \cond NODETAIL
-namespace PIKA_NS_DEBUG {
+namespace PIKA_DETAIL_NS_DEBUG {
 
     // ------------------------------------------------------------------
     // helper for N>M true/false
@@ -626,5 +626,5 @@ namespace PIKA_NS_DEBUG {
         // inherit constructor
         using base_type::base_type;
     };
-}    // namespace PIKA_NS_DEBUG
+}    // namespace PIKA_DETAIL_NS_DEBUG
 /// \endcond
