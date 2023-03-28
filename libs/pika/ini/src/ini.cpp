@@ -37,40 +37,22 @@
 extern char** environ;
 #endif
 
-///////////////////////////////////////////////////////////////////////////////
-namespace pika::util {
-
-    ///////////////////////////////////////////////////////////////////////////////
+namespace pika::detail {
     // example ini line: line # comment
     const char pattern_comment[] = "^([^#]*)(#.*)$";
-    ///////////////////////////////////////////////////////////////////////////////
-    void section::set_root(section* r, bool recursive)
+
+    inline std::string trim_whitespace(std::string const& s)
     {
-        root_ = r;
-        if (recursive)
-        {
-            section_map::iterator send = sections_.end();
-            for (section_map::iterator si = sections_.begin(); si != send; ++si)
-                si->second.set_root(r, true);
-        }
+        using size_type = std::string::size_type;
+
+        size_type first = s.find_first_not_of(" \t\r\n");
+        if (std::string::npos == first)
+            return (std::string());
+
+        size_type last = s.find_last_not_of(" \t\r\n");
+        return s.substr(first, last - first + 1);
     }
 
-    namespace detail {
-        ///////////////////////////////////////////////////////////////////////////
-        inline std::string trim_whitespace(std::string const& s)
-        {
-            using size_type = std::string::size_type;
-
-            size_type first = s.find_first_not_of(" \t\r\n");
-            if (std::string::npos == first)
-                return (std::string());
-
-            size_type last = s.find_last_not_of(" \t\r\n");
-            return s.substr(first, last - first + 1);
-        }
-    }    // namespace detail
-
-    ///////////////////////////////////////////////////////////////////////////////
     section::section()
       : root_(this_())
     {
@@ -199,7 +181,7 @@ namespace pika::util {
             ++linenum;
 
             // remove trailing new lines and white spaces
-            std::string line(detail::trim_whitespace(*it));
+            std::string line(trim_whitespace(*it));
 
             // skip if empty line
             if (line.empty())
@@ -213,7 +195,7 @@ namespace pika::util {
                 {
                     PIKA_ASSERT(3 == what_comment.size());
 
-                    line = detail::trim_whitespace(what_comment[1]);
+                    line = trim_whitespace(what_comment[1]);
                     if (line.empty())
                         continue;
                 }
@@ -245,9 +227,9 @@ namespace pika::util {
             std::string::size_type assign_pos = line.find('=');
             if (assign_pos != std::string::npos)
             {
-                std::string sec_key = detail::trim_whitespace(line.substr(0, assign_pos));
-                std::string value = detail::trim_whitespace(
-                    line.substr(assign_pos + 1, line.size() - assign_pos - 1));
+                std::string sec_key = trim_whitespace(line.substr(0, assign_pos));
+                std::string value =
+                    trim_whitespace(line.substr(assign_pos + 1, line.size() - assign_pos - 1));
 
                 section* s = current;    // save the section we're in
                 current = this;          // start adding sections at the root
@@ -292,6 +274,96 @@ namespace pika::util {
                 line_msg("Cannot parse line at: ", sourcename, linenum, line);
             }
         }
+    }
+
+    void section::parse(std::string const& sourcename, std::string const& line,
+        bool verify_existing, bool weed_out_comments, bool replace_existing)
+    {
+        std::vector<std::string> lines;
+        lines.push_back(line);
+        parse(sourcename, lines, verify_existing, weed_out_comments, replace_existing);
+    }
+
+    void section::add_section(std::string const& sec_name, section& sec, section* root)
+    {
+        std::unique_lock<mutex_type> l(mtx_);
+        add_section(l, sec_name, sec, root);
+    }
+
+    section* section::add_section_if_new(std::string const& sec_name)
+    {
+        std::unique_lock<mutex_type> l(mtx_);
+        return add_section_if_new(l, sec_name);
+    }
+
+    bool section::has_section(std::string const& sec_name) const
+    {
+        std::unique_lock<mutex_type> l(mtx_);
+        return has_section(l, sec_name);
+    }
+
+    section* section::get_section(std::string const& sec_name)
+    {
+        std::unique_lock<mutex_type> l(mtx_);
+        return get_section(l, sec_name);
+    }
+
+    section const* section::get_section(std::string const& sec_name) const
+    {
+        std::unique_lock<mutex_type> l(mtx_);
+        return get_section(l, sec_name);
+    }
+
+    section::section_map& section::get_sections() noexcept
+    {
+        return sections_;
+    }
+
+    section::section_map const& section::get_sections() const noexcept
+    {
+        return sections_;
+    }
+
+    void section::add_entry(std::string const& key, entry_type const& val)
+    {
+        std::unique_lock<mutex_type> l(mtx_);
+        add_entry(l, key, key, val);
+    }
+
+    void section::add_entry(std::string const& key, std::string const& val)
+    {
+        std::unique_lock<mutex_type> l(mtx_);
+        add_entry(l, key, key, val);
+    }
+
+    bool section::has_entry(std::string const& key) const
+    {
+        std::unique_lock<mutex_type> l(mtx_);
+        return has_entry(l, key);
+    }
+
+    std::string section::get_entry(std::string const& key) const
+    {
+        std::unique_lock<mutex_type> l(mtx_);
+        return get_entry(l, key);
+    }
+
+    std::string section::get_entry(std::string const& key, std::string const& dflt) const
+    {
+        std::unique_lock<mutex_type> l(mtx_);
+        return get_entry(l, key, dflt);
+    }
+
+    void section::add_notification_callback(
+        std::string const& key, entry_changed_func const& callback)
+    {
+        std::unique_lock<mutex_type> l(mtx_);
+        add_notification_callback(l, key, callback);
+    }
+
+    section::entry_map const& section::get_entries() const noexcept
+    {
+        return entries_;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -951,4 +1023,53 @@ namespace pika::util {
         return value;
     }
 
-}    // namespace pika::util
+    std::string section::expand(std::string const& str) const
+    {
+        std::unique_lock<mutex_type> l(mtx_);
+        return expand(l, str);
+    }
+
+    void section::expand(std::string& str, std::string::size_type len) const
+    {
+        std::unique_lock<mutex_type> l(mtx_);
+        expand(l, str, len);
+    }
+
+    void section::set_root(section* r, bool recursive)
+    {
+        root_ = r;
+        if (recursive)
+        {
+            section_map::iterator send = sections_.end();
+            for (section_map::iterator si = sections_.begin(); si != send; ++si)
+                si->second.set_root(r, true);
+        }
+    }
+
+    section* section::get_root() const noexcept
+    {
+        return root_;
+    }
+
+    std::string section::get_name() const
+    {
+        return name_;
+    }
+
+    std::string section::get_parent_name() const
+    {
+        return parent_name_;
+    }
+
+    std::string section::get_full_name() const
+    {
+        if (!parent_name_.empty())
+            return parent_name_ + "." + name_;
+        return name_;
+    }
+
+    void section::set_name(std::string const& name)
+    {
+        name_ = name;
+    }
+}    // namespace pika::detail

@@ -54,7 +54,7 @@ namespace pika::util {
 
         PIKA_EXPORT void define_formatters_local(logging::writer::named_write& writer);
 
-        PIKA_EXPORT log_settings get_log_settings(util::section const&, char const*);
+        PIKA_EXPORT log_settings get_log_settings(pika::detail::section const&, char const*);
 
         PIKA_EXPORT void init_logging(runtime_configuration& ini, bool isconsole,
             void (*set_console_dest)(

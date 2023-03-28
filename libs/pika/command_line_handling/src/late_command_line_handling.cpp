@@ -69,7 +69,7 @@ namespace pika::detail {
 
                 if (!still_unknown_commandline.empty())
                 {
-                    util::section* s = ini.get_section("pika");
+                    pika::detail::section* s = ini.get_section("pika");
                     PIKA_ASSERT(s != nullptr);
                     s->add_entry("unknown_cmd_line_option", still_unknown_commandline);
                 }

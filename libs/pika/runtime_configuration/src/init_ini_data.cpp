@@ -30,7 +30,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::util {
     ///////////////////////////////////////////////////////////////////////////
-    bool handle_ini_file(section& ini, std::string const& loc)
+    bool handle_ini_file(pika::detail::section& ini, std::string const& loc)
     {
         try
         {
@@ -48,7 +48,8 @@ namespace pika::util {
 
     ///////////////////////////////////////////////////////////////////////////
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-    bool handle_ini_file_env(section& ini, char const* env_var, char const* file_suffix)
+    bool handle_ini_file_env(
+        pika::detail::section& ini, char const* env_var, char const* file_suffix)
     // NOLINTEND(bugprone-easily-swappable-parameters)
     {
         char const* env = getenv(env_var);
@@ -72,7 +73,7 @@ namespace pika::util {
     //
     // returns true if at least one alternative location has been read
     // successfully
-    bool init_ini_data_base(section& ini, std::string& pika_ini_file)
+    bool init_ini_data_base(pika::detail::section& ini, std::string& pika_ini_file)
     {
         // fall back: use compile time prefix
         std::string ini_paths(ini.get_entry("pika.master_ini_path"));
@@ -158,7 +159,7 @@ namespace pika::util {
 
     ///////////////////////////////////////////////////////////////////////////
     // global function to read component ini information
-    void merge_component_inis(section& ini)
+    void merge_component_inis(pika::detail::section& ini)
     {
         // now merge all information into one global structure
         std::string ini_path(ini.get_entry("pika.ini_path"));

@@ -148,7 +148,7 @@ namespace pika::resource::detail {
         std::size_t get_pu_num(std::size_t global_thread_num);
         threads::detail::mask_cref_type get_pu_mask(std::size_t global_thread_num) const;
 
-        void init(resource::partitioner_mode rpmode, pika::util::section cfg,
+        void init(resource::partitioner_mode rpmode, pika::detail::section cfg,
             pika::detail::affinity_data affinity_data);
 
         scheduler_function get_pool_creator(size_t index) const;
@@ -210,7 +210,7 @@ namespace pika::resource::detail {
         static std::atomic<int> instance_number_counter_;
 
         // holds all of the command line switches
-        util::section rtcfg_;
+        pika::detail::section rtcfg_;
         std::size_t first_core_;
 
         // contains the basic characteristics of the thread pool partitioning ...

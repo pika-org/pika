@@ -300,12 +300,12 @@ namespace pika::util {
         ///////////////////////////////////////////////////////////////////////
         static std::string empty_string;
 
-        log_settings get_log_settings(util::section const& ini, char const* sec)
+        log_settings get_log_settings(pika::detail::section const& ini, char const* sec)
         {
             log_settings result;
             if (ini.has_section(sec))
             {
-                util::section const* logini = ini.get_section(sec);
+                pika::detail::section const* logini = ini.get_section(sec);
                 PIKA_ASSERT(nullptr != logini);
 
                 result.level_ = logini->get_entry("level", empty_string);
@@ -573,7 +573,7 @@ namespace pika::util {
             timing_console_logger()->set_enabled(lvl);
         }
 
-        void init_timing_console_log(util::section const& ini)
+        void init_timing_console_log(pika::detail::section const& ini)
         {
             auto settings = detail::get_log_settings(ini, "pika.logging.console.timing");
 
@@ -609,7 +609,7 @@ namespace pika::util {
             pika_console_logger()->set_enabled(lvl);
         }
 
-        void init_pika_console_log(util::section const& ini)
+        void init_pika_console_log(pika::detail::section const& ini)
         {
             auto settings = detail::get_log_settings(ini, "pika.logging.console");
 
@@ -645,7 +645,7 @@ namespace pika::util {
             app_console_logger()->set_enabled(lvl);
         }
 
-        void init_app_console_log(util::section const& ini)
+        void init_app_console_log(pika::detail::section const& ini)
         {
             auto settings = detail::get_log_settings(ini, "pika.logging.console.application");
 
@@ -682,7 +682,7 @@ namespace pika::util {
             debuglog_console_logger()->set_enabled(lvl);
         }
 
-        void init_debuglog_console_log(util::section const& ini)
+        void init_debuglog_console_log(pika::detail::section const& ini)
         {
             auto settings = detail::get_log_settings(ini, "pika.logging.console.debuglog");
 

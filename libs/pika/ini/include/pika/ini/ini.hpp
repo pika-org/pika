@@ -26,9 +26,7 @@
 # pragma warning(disable : 4091 4251 4231 4275 4660)
 #endif
 
-///////////////////////////////////////////////////////////////////////////////
-namespace pika::util {
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::detail {
     class PIKA_EXPORT section
     {
     public:
@@ -96,17 +94,11 @@ namespace pika::util {
         void parse(std::string const& sourcename, std::vector<std::string> const& lines,
             bool verify_existing = true, bool weed_out_comments = true,
             bool replace_existing = true);
-
         // NOLINTBEGIN(bugprone-easily-swappable-parameters)
         void parse(std::string const& sourcename, std::string const& line,
             bool verify_existing = true, bool weed_out_comments = true,
-            bool replace_existing = true)
+            bool replace_existing = true);
         // NOLINTEND(bugprone-easily-swappable-parameters)
-        {
-            std::vector<std::string> lines;
-            lines.push_back(line);
-            parse(sourcename, lines, verify_existing, weed_out_comments, replace_existing);
-        }
 
         void read(std::string const& filename);
         void merge(std::string const& second);
@@ -114,91 +106,26 @@ namespace pika::util {
         void dump(int ind = 0) const;
         void dump(int ind, std::ostream& strm) const;
 
-        void add_section(std::string const& sec_name, section& sec, section* root = nullptr)
-        {
-            std::unique_lock<mutex_type> l(mtx_);
-            add_section(l, sec_name, sec, root);
-        }
-
-        section* add_section_if_new(std::string const& sec_name)
-        {
-            std::unique_lock<mutex_type> l(mtx_);
-            return add_section_if_new(l, sec_name);
-        }
-
-        bool has_section(std::string const& sec_name) const
-        {
-            std::unique_lock<mutex_type> l(mtx_);
-            return has_section(l, sec_name);
-        }
-
-        section* get_section(std::string const& sec_name)
-        {
-            std::unique_lock<mutex_type> l(mtx_);
-            return get_section(l, sec_name);
-        }
-
-        section const* get_section(std::string const& sec_name) const
-        {
-            std::unique_lock<mutex_type> l(mtx_);
-            return get_section(l, sec_name);
-        }
-
-        section_map& get_sections()
-        {
-            return sections_;
-        }
-        section_map const& get_sections() const
-        {
-            return sections_;
-        }
-
-        void add_entry(std::string const& key, entry_type const& val)
-        {
-            std::unique_lock<mutex_type> l(mtx_);
-            add_entry(l, key, key, val);
-        }
-
-        void add_entry(std::string const& key, std::string const& val)
-        {
-            std::unique_lock<mutex_type> l(mtx_);
-            add_entry(l, key, key, val);
-        }
-
-        bool has_entry(std::string const& key) const
-        {
-            std::unique_lock<mutex_type> l(mtx_);
-            return has_entry(l, key);
-        }
-
-        std::string get_entry(std::string const& key) const
-        {
-            std::unique_lock<mutex_type> l(mtx_);
-            return get_entry(l, key);
-        }
-
-        std::string get_entry(std::string const& key, std::string const& dflt) const
-        {
-            std::unique_lock<mutex_type> l(mtx_);
-            return get_entry(l, key, dflt);
-        }
+        void add_section(std::string const& sec_name, section& sec, section* root = nullptr);
+        section* add_section_if_new(std::string const& sec_name);
+        bool has_section(std::string const& sec_name) const;
+        section* get_section(std::string const& sec_name);
+        section const* get_section(std::string const& sec_name) const;
+        section_map& get_sections() noexcept;
+        section_map const& get_sections() const noexcept;
+        void add_entry(std::string const& key, entry_type const& val);
+        void add_entry(std::string const& key, std::string const& val);
+        bool has_entry(std::string const& key) const;
+        std::string get_entry(std::string const& key) const;
+        std::string get_entry(std::string const& key, std::string const& dflt) const;
+        void add_notification_callback(std::string const& key, entry_changed_func const& callback);
+        entry_map const& get_entries() const noexcept;
 
         template <typename T>
         std::string get_entry(std::string const& key, T dflt) const
         {
             std::unique_lock<mutex_type> l(mtx_);
             return get_entry(l, key, pika::detail::to_string(dflt));
-        }
-
-        void add_notification_callback(std::string const& key, entry_changed_func const& callback)
-        {
-            std::unique_lock<mutex_type> l(mtx_);
-            add_notification_callback(l, key, callback);
-        }
-
-        entry_map const& get_entries() const
-        {
-            return entries_;
         }
 
     private:
@@ -221,43 +148,14 @@ namespace pika::util {
             std::string::size_type, std::string const& expand_this) const;
 
     public:
-        std::string expand(std::string const& str) const
-        {
-            std::unique_lock<mutex_type> l(mtx_);
-            return expand(l, str);
-        }
-
-        void expand(std::string& str, std::string::size_type len) const
-        {
-            std::unique_lock<mutex_type> l(mtx_);
-            expand(l, str, len);
-        }
-
+        std::string expand(std::string const& str) const;
+        void expand(std::string& str, std::string::size_type len) const;
         void set_root(section* r, bool recursive = false);
-
-        section* get_root() const
-        {
-            return root_;
-        }
-        std::string get_name() const
-        {
-            return name_;
-        }
-        std::string get_parent_name() const
-        {
-            return parent_name_;
-        }
-        std::string get_full_name() const
-        {
-            if (!parent_name_.empty())
-                return parent_name_ + "." + name_;
-            return name_;
-        }
-
-        void set_name(std::string const& name)
-        {
-            name_ = name;
-        }
+        section* get_root() const noexcept;
+        std::string get_name() const;
+        std::string get_parent_name() const;
+        std::string get_full_name() const;
+        void set_name(std::string const& name);
     };
 
-}    // namespace pika::util
+}    // namespace pika::detail

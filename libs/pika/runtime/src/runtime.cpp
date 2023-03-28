@@ -798,7 +798,7 @@ namespace pika {
             //
             std::string cmdline;
 
-            pika::util::section& cfg = pika::get_runtime().get_config();
+            pika::detail::section& cfg = pika::get_runtime().get_config();
             if (cfg.has_entry("pika.cmd_line"))
                 cmdline = cfg.get_entry("pika.cmd_line");
 

@@ -96,7 +96,7 @@ namespace pika::detail {
     // Handle aliasing of command line options based on information stored
     // in the ini-configuration
     std::pair<std::string, std::string> handle_aliasing(
-        util::section const& ini, std::string const& option)
+        pika::detail::section const& ini, std::string const& option)
     {
         std::pair<std::string, std::string> result;
 
@@ -104,7 +104,7 @@ namespace pika::detail {
         if (opt.size() < 2 || opt[0] != '-')
             return result;
 
-        util::section const* sec = ini.get_section("pika.commandline.aliases");
+        pika::detail::section const* sec = ini.get_section("pika.commandline.aliases");
         if (nullptr == sec)
             return result;    // no alias mappings are defined
 
@@ -168,7 +168,7 @@ namespace pika::detail {
     // resolve defined command line option aliases.
     struct option_parser
     {
-        option_parser(util::section const& ini, bool ignore_aliases)
+        option_parser(pika::detail::section const& ini, bool ignore_aliases)
           : ini_(ini)
           , ignore_aliases_(ignore_aliases)
         {
@@ -188,7 +188,7 @@ namespace pika::detail {
             return handle_aliasing(ini_, s);
         }
 
-        util::section const& ini_;
+        pika::detail::section const& ini_;
         bool ignore_aliases_;
     };
 
@@ -207,7 +207,7 @@ namespace pika::detail {
     // given variables_map
     bool read_config_file_options(std::string const& filename,
         pika::program_options::options_description const& desc,
-        pika::program_options::variables_map& vm, util::section const& rtcfg,
+        pika::program_options::variables_map& vm, pika::detail::section const& rtcfg,
         commandline_error_mode error_mode)
     {
         std::ifstream ifs(filename.c_str());
@@ -277,8 +277,8 @@ namespace pika::detail {
     // <app_name>.cfg file for all executables in a certain project.
     void handle_generic_config_options(std::string appname,
         pika::program_options::variables_map& vm,
-        pika::program_options::options_description const& desc_cfgfile, util::section const& ini,
-        commandline_error_mode error_mode)
+        pika::program_options::options_description const& desc_cfgfile,
+        pika::detail::section const& ini, commandline_error_mode error_mode)
     {
         if (appname.empty())
             return;
@@ -305,8 +305,8 @@ namespace pika::detail {
 
     // handle all --options-config found on the command line
     void handle_config_options(pika::program_options::variables_map& vm,
-        pika::program_options::options_description const& desc_cfgfile, util::section const& ini,
-        commandline_error_mode error_mode)
+        pika::program_options::options_description const& desc_cfgfile,
+        pika::detail::section const& ini, commandline_error_mode error_mode)
     {
         using pika::program_options::options_description;
         if (vm.count("pika:options-file"))
@@ -324,7 +324,7 @@ namespace pika::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     // parse the command line
-    bool parse_commandline(util::section const& rtcfg,
+    bool parse_commandline(pika::detail::section const& rtcfg,
         pika::program_options::options_description const& app_options, std::string const& arg0,
         std::vector<std::string> const& args, pika::program_options::variables_map& vm,
         commandline_error_mode error_mode, pika::program_options::options_description* visible,
@@ -580,7 +580,7 @@ namespace pika::detail {
     }
 
     bool parse_commandline(
-        util::section const& rtcfg,
+        pika::detail::section const& rtcfg,
         pika::program_options::options_description const& app_options,
         std::string const& cmdline, pika::program_options::variables_map& vm,
         commandline_error_mode error_mode,
