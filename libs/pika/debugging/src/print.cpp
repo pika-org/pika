@@ -37,7 +37,7 @@ PIKA_EXPORT char** freebsd_environ = nullptr;
 
 // ------------------------------------------------------------
 /// \cond NODETAIL
-namespace PIKA_NS_DEBUG {
+namespace PIKA_DETAIL_NS_DEBUG {
 
     // ------------------------------------------------------------------
     // format as zero padded int
@@ -292,5 +292,5 @@ namespace PIKA_NS_DEBUG {
     }
 
     template PIKA_EXPORT void print_array(std::string const&, std::size_t const*, std::size_t);
-}    // namespace PIKA_NS_DEBUG
+}    // namespace PIKA_DETAIL_NS_DEBUG
 /// \endcond

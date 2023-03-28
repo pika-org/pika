@@ -41,13 +41,13 @@ int main()
 
     // ---------------------------------------------------------
     // Test if normal debug messages trigger argument evaluation
-    // use the PIKA_DP_LAZY macro to prevent evaluation when disabled
+    // use the PIKA_DETAIL_DP_LAZY macro to prevent evaluation when disabled
     // we expect the counter to increment
     p_enabled.debug("Increment", increment(enabled_counter));
     PIKA_TEST_EQ(enabled_counter, 1);
 
     // we expect the counter to increment as LAZY will be evaluated
-    p_enabled.debug("Increment", PIKA_DP_LAZY(p_enabled, increment(enabled_counter)));
+    p_enabled.debug("Increment", PIKA_DETAIL_DP_LAZY(p_enabled, increment(enabled_counter)));
     PIKA_TEST_EQ(enabled_counter, 2);
 
     // we do not expect the counter to increment
@@ -57,17 +57,17 @@ int main()
     }
     PIKA_TEST_EQ(disabled_counter, 0);
 
-    // we do not expect the counter to increment: PIKA_DP_LAZY will not be evaluated
-    p_disabled.debug("Increment", PIKA_DP_LAZY(p_disabled, increment(disabled_counter)));
+    // we do not expect the counter to increment: PIKA_DETAIL_DP_LAZY will not be evaluated
+    p_disabled.debug("Increment", PIKA_DETAIL_DP_LAZY(p_disabled, increment(disabled_counter)));
     PIKA_TEST_EQ(disabled_counter, 0);
 
     // ---------------------------------------------------------
     // Test that scoped log messages behave as expected
     {
-        auto s_enabled =
-            p_enabled.scope("scoped block", PIKA_DP_LAZY(p_enabled, increment(enabled_counter)));
-        [[maybe_unused]] auto s_disabled =
-            p_disabled.scope("scoped block", PIKA_DP_LAZY(p_disabled, increment(disabled_counter)));
+        auto s_enabled = p_enabled.scope(
+            "scoped block", PIKA_DETAIL_DP_LAZY(p_enabled, increment(enabled_counter)));
+        [[maybe_unused]] auto s_disabled = p_disabled.scope(
+            "scoped block", PIKA_DETAIL_DP_LAZY(p_disabled, increment(disabled_counter)));
     }
     PIKA_TEST_EQ(enabled_counter, 3);
     PIKA_TEST_EQ(disabled_counter, 0);
@@ -75,16 +75,18 @@ int main()
     // ---------------------------------------------------------
     // Test that debug only variables behave as expected
     // create high resolution timers to see if they count
-    auto var1 = p_enabled.declare_variable<int>(PIKA_DP_LAZY(p_enabled, enabled_counter + 4));
+    auto var1 =
+        p_enabled.declare_variable<int>(PIKA_DETAIL_DP_LAZY(p_enabled, enabled_counter + 4));
     (void) var1;    // silenced unused var when optimized out
 
-    auto var2 = p_disabled.declare_variable<int>(PIKA_DP_LAZY(p_disabled, disabled_counter + 10));
+    auto var2 =
+        p_disabled.declare_variable<int>(PIKA_DETAIL_DP_LAZY(p_disabled, disabled_counter + 10));
     (void) var2;    // silenced unused var when optimized out
 
-    p_enabled.debug(
-        "var 1", pika::debug::detail::dec<>(PIKA_DP_LAZY(p_enabled, enabled_counter += var1)));
-    p_disabled.debug(
-        "var 2", pika::debug::detail::dec<>(PIKA_DP_LAZY(p_disabled, disabled_counter += var2)));
+    p_enabled.debug("var 1",
+        pika::debug::detail::dec<>(PIKA_DETAIL_DP_LAZY(p_enabled, enabled_counter += var1)));
+    p_disabled.debug("var 2",
+        pika::debug::detail::dec<>(PIKA_DETAIL_DP_LAZY(p_disabled, disabled_counter += var2)));
 
     PIKA_TEST_EQ(enabled_counter, 10);
     PIKA_TEST_EQ(disabled_counter, 0);
@@ -92,10 +94,10 @@ int main()
     p_enabled.set(var1, 5);
     p_disabled.set(var2, 5);
 
-    p_enabled.debug(
-        "var 1", pika::debug::detail::dec<>(PIKA_DP_LAZY(p_enabled, enabled_counter += var1)));
-    p_disabled.debug(
-        "var 2", pika::debug::detail::dec<>(PIKA_DP_LAZY(p_disabled, disabled_counter += var2)));
+    p_enabled.debug("var 1",
+        pika::debug::detail::dec<>(PIKA_DETAIL_DP_LAZY(p_enabled, enabled_counter += var1)));
+    p_disabled.debug("var 2",
+        pika::debug::detail::dec<>(PIKA_DETAIL_DP_LAZY(p_disabled, disabled_counter += var2)));
 
     PIKA_TEST_EQ(enabled_counter, 15);
     PIKA_TEST_EQ(disabled_counter, 0);
@@ -111,10 +113,10 @@ int main()
     while (std::chrono::duration_cast<std::chrono::seconds>(end - start).count() < 2)
     {
         p_enabled.timed(t_enabled, "enabled",
-            debug::detail::dec<3>(PIKA_DP_LAZY(p_enabled, ++enabled_counter)));
+            debug::detail::dec<3>(PIKA_DETAIL_DP_LAZY(p_enabled, ++enabled_counter)));
 
         p_disabled.timed(t_disabled, "disabled",
-            debug::detail::dec<3>(PIKA_DP_LAZY(p_disabled, ++disabled_counter)));
+            debug::detail::dec<3>(PIKA_DETAIL_DP_LAZY(p_disabled, ++disabled_counter)));
         end = std::chrono::system_clock::now();
     }
     PIKA_TEST_EQ(enabled_counter > 10, true);
