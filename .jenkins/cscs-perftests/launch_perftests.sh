@@ -40,8 +40,11 @@ for executable in "${pika_targets[@]}"; do
 
     # TODO: make schedulers and other options vary
 
-    # Run performance tests
-    ${perftests_dir}/driver.py -v -l "$logfile_tmp" perftest run --local True \
+    # Run performance tests. This is run through srun so that the CPU frequency
+    # can be controlled. Low significantly slows down the CPU but should reduce
+    # variations due to frequency scaling.  For more details see
+    # https://slurm.schedmd.com/srun.html#OPT_cpu-freq.
+    srun --cpu-freq=Low ${perftests_dir}/driver.py -v -l "$logfile_tmp" perftest run --local True \
         --run_output "$result" --targets-and-opts "${run_command[@]}" ||
         {
             echo 'Running failed'
