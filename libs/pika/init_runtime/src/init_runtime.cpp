@@ -69,7 +69,6 @@
 # include <signal.h>
 #endif
 
-///////////////////////////////////////////////////////////////////////////////
 namespace pika {
     namespace detail {
 
@@ -114,11 +113,59 @@ namespace pika {
     }    // namespace detail
 
     // Print stack trace and exit.
-#if defined(PIKA_WINDOWS)
-    extern BOOL WINAPI termination_handler(DWORD ctrl_type);
-#else
-    extern void termination_handler(int signum);
-#endif
+    int init(std::function<int(pika::program_options::variables_map&)> f, int argc,
+        const char* const* argv, init_params const& params)
+    {
+        return detail::init_start_impl(PIKA_MOVE(f), argc, argv, params, true);
+    }
+
+    int init(std::function<int(int, char**)> f, int argc, const char* const* argv,
+        init_params const& params)
+    {
+        util::detail::function<int(pika::program_options::variables_map&)> main_f =
+            pika::util::detail::bind_back(pika::detail::init_helper, f);
+        return detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, true);
+    }
+
+    int init(std::function<int()> f, int argc, const char* const* argv, init_params const& params)
+    {
+        util::detail::function<int(pika::program_options::variables_map&)> main_f =
+            pika::util::detail::bind(f);
+        return detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, true);
+    }
+
+    int init(std::nullptr_t, int argc, const char* const* argv, init_params const& params)
+    {
+        util::detail::function<int(pika::program_options::variables_map&)> main_f;
+        return detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, true);
+    }
+
+    bool start(std::function<int(pika::program_options::variables_map&)> f, int argc,
+        const char* const* argv, init_params const& params)
+    {
+        return 0 == detail::init_start_impl(PIKA_MOVE(f), argc, argv, params, false);
+    }
+
+    bool start(std::function<int(int, char**)> f, int argc, const char* const* argv,
+        init_params const& params)
+    {
+        util::detail::function<int(pika::program_options::variables_map&)> main_f =
+            pika::util::detail::bind_back(pika::detail::init_helper, f);
+        return 0 == detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false);
+    }
+
+    bool start(std::function<int()> f, int argc, const char* const* argv, init_params const& params)
+    {
+        util::detail::function<int(pika::program_options::variables_map&)> main_f =
+            pika::util::detail::bind(f);
+        return 0 == detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false);
+    }
+
+    bool start(std::nullptr_t, int argc, const char* const* argv, init_params const& params)
+    {
+        util::detail::function<int(pika::program_options::variables_map&)> main_f;
+        return 0 == detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false);
+    }
 
     int finalize(error_code& ec)
     {
@@ -170,7 +217,6 @@ namespace pika {
         return result;
     }
 
-    ///////////////////////////////////////////////////////////////////////////
     int suspend(error_code& ec)
     {
         if (threads::detail::get_self_ptr())
@@ -191,7 +237,6 @@ namespace pika {
         return rt->suspend();
     }
 
-    ///////////////////////////////////////////////////////////////////////////
     int resume(error_code& ec)
     {
         if (threads::detail::get_self_ptr())
@@ -212,10 +257,7 @@ namespace pika {
         return rt->resume();
     }
 
-    ///////////////////////////////////////////////////////////////////////////
     namespace detail {
-
-        ///////////////////////////////////////////////////////////////////////
         void activate_global_options(detail::command_line_handling& cmdline)
         {
 #if defined(__linux) || defined(linux) || defined(__linux__) || defined(__FreeBSD__)
@@ -246,9 +288,9 @@ namespace pika {
                 cmdline.rtcfg_.get_spinlock_deadlock_warning_limit());
 #endif
 #if defined(PIKA_HAVE_LOGGING)
-            util::detail::init_logging_local(cmdline.rtcfg_);
+            init_logging_local(cmdline.rtcfg_);
 #else
-            util::detail::warn_if_logging_requested(cmdline.rtcfg_);
+            warn_if_logging_requested(cmdline.rtcfg_);
 #endif
         }
 
