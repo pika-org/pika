@@ -860,10 +860,8 @@ pika_option(
   ADVANCED
 )
 pika_option(
-  PIKA_WITH_THREAD_DEBUG_INFO
-  BOOL
-  "Enable thread debugging information (default: OFF, implicitly enabled in debug builds)"
-  OFF
+  PIKA_WITH_THREAD_DEBUG_INFO BOOL
+  "Enable thread debugging information (default: OFF)" OFF
   CATEGORY "Debugging"
   ADVANCED
 )
