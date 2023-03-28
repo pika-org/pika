@@ -18,6 +18,7 @@
 #include <pika/future.hpp>
 #include <pika/init.hpp>
 
+#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <iostream>

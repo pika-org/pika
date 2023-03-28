@@ -21,6 +21,7 @@
 #include <pika/future.hpp>
 #include <pika/init.hpp>
 
+#include <chrono>
 #include <cstdint>
 #include <iostream>
 #include <vector>

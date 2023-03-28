@@ -19,6 +19,7 @@
 #include <pika/thread.hpp>
 
 #include <atomic>
+#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <iostream>

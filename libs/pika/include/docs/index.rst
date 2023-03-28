@@ -12,8 +12,7 @@ include
 =============
 
 This module provides no functionality in itself. Instead it provides headers
-that group together other headers that often appear together. This module
-provides local-only headers.
+that group together other headers that often appear together.
 
 See the :ref:`API reference <modules_include_api>` of this module for
 more details.

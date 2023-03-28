@@ -14,6 +14,7 @@
 #include <pika/thread.hpp>
 
 #include <array>
+#include <chrono>
 #include <string>
 #include <thread>
 #include <utility>

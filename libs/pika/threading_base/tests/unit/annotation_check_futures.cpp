@@ -18,6 +18,7 @@
 #include <apex_options.hpp>
 
 #include <atomic>
+#include <chrono>
 #include <cstddef>
 #include <iostream>
 #include <string>

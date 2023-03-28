@@ -14,7 +14,7 @@
 // problems such as lockups.
 
 #include <pika/execution.hpp>
-#include <pika/functional.hpp>
+#include <pika/functional/bind_back.hpp>
 #include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/resource_partitioner.hpp>
@@ -23,6 +23,7 @@
 #include <pika/thread.hpp>
 
 #include <atomic>
+#include <chrono>
 #include <cstddef>
 #include <iostream>
 #include <random>

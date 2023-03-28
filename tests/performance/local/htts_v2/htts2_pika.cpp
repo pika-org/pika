@@ -8,7 +8,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/barrier.hpp>
-#include <pika/functional.hpp>
+#include <pika/functional/bind.hpp>
 #include <pika/init.hpp>
 #include <pika/thread.hpp>
 

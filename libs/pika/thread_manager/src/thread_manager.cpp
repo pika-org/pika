@@ -12,6 +12,7 @@
 #include <pika/assert.hpp>
 #include <pika/async_combinators/wait_all.hpp>
 #include <pika/execution_base/this_thread.hpp>
+#include <pika/functional/bind.hpp>
 #include <pika/futures/future.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/logging.hpp>

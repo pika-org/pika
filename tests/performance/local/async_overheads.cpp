@@ -12,6 +12,7 @@
 #include "worker_timed.hpp"
 
 #include <algorithm>
+#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <iostream>

@@ -8,5 +8,3 @@
 
 #include <pika/config.hpp>
 #include <pika/synchronization/stop_token.hpp>
-
-// C++20 stop_token

@@ -337,6 +337,7 @@ patterns = [
     { pattern = '\bstd::any(|_cast)\b', include = 'any' },
     { pattern = '\bstd::error_(code|condition|category)\b', include = 'system_error' },
     { pattern = '\bstd::system_error\b', include = 'system_error' },
+    { pattern = '\bstd::chrono\b', include = 'chrono' },
     { pattern = '\bpika::intrusive_ptr\b', include = 'pika/memory/intrusive_ptr.hpp' },
     { pattern = '\bpika::detail::from_string\b', include = 'pika/string_util/from_string.hpp' },
     { pattern = '\bpika::detail::to_string\b', include = 'pika/string_util/to_string.hpp' },

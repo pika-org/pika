@@ -18,6 +18,7 @@
 #include <pika/threading_base/annotated_function.hpp>
 
 #include <atomic>
+#include <chrono>
 #include <cstddef>
 #include <iostream>
 #include <string>

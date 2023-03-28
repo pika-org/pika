@@ -29,13 +29,14 @@
 #include <pika/chrono.hpp>
 #include <pika/cuda.hpp>
 #include <pika/execution.hpp>
-#include <pika/functional.hpp>
+#include <pika/functional/bind_front.hpp>
 #include <pika/init.hpp>
 #include <pika/testing.hpp>
 
 #include <whip.hpp>
 
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <cstddef>
 #include <iostream>

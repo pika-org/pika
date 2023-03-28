@@ -6,21 +6,5 @@
 
 #pragma once
 
-#include <pika/functional/bind.hpp>
-#include <pika/functional/bind_back.hpp>
-#include <pika/functional/bind_front.hpp>
-#include <pika/functional/function.hpp>
-#include <pika/functional/invoke.hpp>
-#include <pika/functional/invoke_fused.hpp>
-#include <pika/functional/traits/is_bind_expression.hpp>
-#include <pika/functional/unique_function.hpp>
 #include <pika/threading_base/annotated_function.hpp>
 #include <pika/threading_base/scoped_annotation.hpp>
-
-namespace pika {
-    using pika::detail::is_bind_expression;
-    using pika::util::detail::function;
-    using pika::util::detail::invoke;
-    using pika::util::detail::invoke_fused;
-    using pika::util::detail::unique_function;
-}    // namespace pika
