@@ -1061,7 +1061,7 @@ namespace pika::threads::detail {
                 }
             }
 
-#ifdef PIKA_HAVE_THREAD_MINIMAL_DEADLOCK_DETECTION
+#ifdef PIKA_HAVE_THREAD_DEADLOCK_DETECTION
             // no new work is available, are we deadlocked?
             if (PIKA_UNLIKELY(get_minimal_deadlock_detection_enabled() && LPIKA_ENABLED(error)))
             {

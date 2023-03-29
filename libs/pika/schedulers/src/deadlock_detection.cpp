@@ -9,7 +9,7 @@
 #include <pika/schedulers/deadlock_detection.hpp>
 
 namespace pika::threads {
-#ifdef PIKA_HAVE_THREAD_MINIMAL_DEADLOCK_DETECTION
+#ifdef PIKA_HAVE_THREAD_DEADLOCK_DETECTION
     static bool minimal_deadlock_detection_enabled = false;
 
     void set_minimal_deadlock_detection_enabled(bool enabled)

@@ -1059,7 +1059,7 @@ namespace pika::threads::detail {
         bool dump_suspended_threads(
             std::size_t num_thread, std::int64_t& idle_loop_count, bool running)
         {
-#if !defined(PIKA_HAVE_THREAD_MINIMAL_DEADLOCK_DETECTION)
+#if !defined(PIKA_HAVE_THREAD_DEADLOCK_DETECTION)
             PIKA_UNUSED(num_thread);
             PIKA_UNUSED(idle_loop_count);
             PIKA_UNUSED(running);

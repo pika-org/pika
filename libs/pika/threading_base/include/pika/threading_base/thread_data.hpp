@@ -327,7 +327,7 @@ namespace pika::threads::detail {
         }
 #endif
 
-#ifdef PIKA_HAVE_THREAD_MINIMAL_DEADLOCK_DETECTION
+#ifdef PIKA_HAVE_THREAD_DEADLOCK_DETECTION
         void set_marked_state(thread_schedule_state mark) const noexcept
         {
             marked_state_ = mark;
@@ -563,7 +563,7 @@ namespace pika::threads::detail {
         std::size_t parent_thread_phase_;
 #endif
 
-#ifdef PIKA_HAVE_THREAD_MINIMAL_DEADLOCK_DETECTION
+#ifdef PIKA_HAVE_THREAD_DEADLOCK_DETECTION
         mutable thread_schedule_state marked_state_;
 #endif
 

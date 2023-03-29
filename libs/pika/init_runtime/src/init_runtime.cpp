@@ -275,7 +275,7 @@ namespace pika {
                 util::disable_lock_detection();
             }
 #endif
-#ifdef PIKA_HAVE_THREAD_MINIMAL_DEADLOCK_DETECTION
+#ifdef PIKA_HAVE_THREAD_DEADLOCK_DETECTION
             threads::detail::set_minimal_deadlock_detection_enabled(
                 cmdline.rtcfg_.enable_minimal_deadlock_detection());
 #endif

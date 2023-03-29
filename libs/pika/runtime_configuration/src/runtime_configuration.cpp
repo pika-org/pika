@@ -99,7 +99,7 @@ namespace pika::util {
 #endif
             "throw_on_held_lock = ${PIKA_THROW_ON_HELD_LOCK:1}",
 #endif
-#ifdef PIKA_HAVE_THREAD_MINIMAL_DEADLOCK_DETECTION
+#ifdef PIKA_HAVE_THREAD_DEADLOCK_DETECTION
 #ifdef PIKA_DEBUG
             "minimal_deadlock_detection = ${PIKA_MINIMAL_DEADLOCK_DETECTION:1}",
 #else
@@ -438,7 +438,7 @@ namespace pika::util {
     // Enable minimal deadlock detection for pika threads
     bool runtime_configuration::enable_minimal_deadlock_detection() const
     {
-#ifdef PIKA_HAVE_THREAD_MINIMAL_DEADLOCK_DETECTION
+#ifdef PIKA_HAVE_THREAD_DEADLOCK_DETECTION
         if (pika::detail::section const* sec = get_section("pika"); nullptr != sec)
         {
 # ifdef PIKA_DEBUG
