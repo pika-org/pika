@@ -44,7 +44,7 @@ for executable in "${pika_targets[@]}"; do
     # can be controlled. Low significantly slows down the CPU but should reduce
     # variations due to frequency scaling.  For more details see
     # https://slurm.schedmd.com/srun.html#OPT_cpu-freq.
-    srun --cpu-freq=Low ${perftests_dir}/driver.py -v -l "$logfile_tmp" perftest run --local True \
+    srun --cpu-freq=Low "${perftests_dir}/driver.py" -v -l "$logfile_tmp" perftest run --local True \
         --run_output "$result" --targets-and-opts "${run_command[@]}" ||
         {
             echo 'Running failed'
