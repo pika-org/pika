@@ -194,7 +194,7 @@ int main()
     {
         int x = 42;
         auto s = ex::when_all(const_reference_sender<int>{x});
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
         // The reference implementation does not remove_cvref the types sent.
         PIKA_UNUSED(s);
 #else

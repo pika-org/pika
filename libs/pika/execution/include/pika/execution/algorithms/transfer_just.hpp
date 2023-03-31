@@ -8,8 +8,8 @@
 
 #include <pika/config.hpp>
 
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-# include <pika/execution_base/p2300_forward.hpp>
+#if defined(PIKA_HAVE_STDEXEC)
+# include <pika/execution_base/stdexec_forward.hpp>
 #else
 # include <pika/execution/algorithms/just.hpp>
 # include <pika/execution/algorithms/transfer.hpp>

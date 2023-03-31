@@ -876,7 +876,7 @@ namespace pika::execution::experimental {
         template <template <typename...> class AnySender, typename Sender>
         auto make_any_sender_impl(Sender&& sender)
         {
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
             using value_types_pack = pika::execution::experimental::value_types_of_t<Sender,
                 pika::execution::experimental::empty_env, pika::util::detail::pack,
                 pika::util::detail::pack>;

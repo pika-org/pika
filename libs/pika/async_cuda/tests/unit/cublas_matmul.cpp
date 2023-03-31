@@ -188,9 +188,9 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched, sMatri
 
     // See https://github.com/brycelelbach/wg21_p2300_std_execution/issues/466
     // for details.
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-    std::cout << "skipping remainder of test because the P2300 reference implementation of split "
-                 "does not yet support move-only senders"
+#if defined(PIKA_HAVE_STDEXEC)
+    std::cout << "skipping remainder of test because the stdexec implementation of split does not "
+                 "yet support move-only senders"
               << std::endl;
 #else
     pika::chrono::detail::high_resolution_timer t2;
@@ -353,7 +353,7 @@ int main(int argc, char** argv)
     pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
 
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
     PIKA_TEST(true);
 #endif
 

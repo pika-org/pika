@@ -78,7 +78,7 @@ int main()
     }
 
     // Piping into start_detached is not allowed according to the specification.
-#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if !defined(PIKA_HAVE_STDEXEC)
     // operator| overload
     {
         std::atomic<bool> start_called{false};

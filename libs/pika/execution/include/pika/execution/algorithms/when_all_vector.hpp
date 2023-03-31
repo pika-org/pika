@@ -8,8 +8,8 @@
 
 #include <pika/config.hpp>
 
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-# include <pika/execution_base/p2300_forward.hpp>
+#if defined(PIKA_HAVE_STDEXEC)
+# include <pika/execution_base/stdexec_forward.hpp>
 #endif
 
 #include <pika/assert.hpp>
@@ -62,7 +62,7 @@ namespace pika::when_all_vector_detail {
         {
         }
 
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
         // We expect a single value type or nothing from the predecessor
         // sender type
         using element_value_type =
@@ -305,7 +305,7 @@ namespace pika::when_all_vector_detail {
                     }
                     else
                     {
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
                         if constexpr (pika::execution::experimental::sends_stopped<Sender>)
 #else
                         if constexpr (pika::execution::experimental::sender_traits<

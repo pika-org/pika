@@ -264,9 +264,9 @@ namespace pika::execution::experimental {
         // construct a sender from the default schedule_from implementation.
         //
         // TODO: Can we simply dispatch to the default implementation? This is
-        // disabled with the P2300 reference implementation because we don't
-        // want to use implementation details of it.
-#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+        // disabled with stdexec because we don't want to use implementation
+        // details of it.
+#if !defined(PIKA_HAVE_STDEXEC)
         template <typename Sender, PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender>)>
         friend auto
         tag_invoke(schedule_from_t, thread_pool_scheduler&& scheduler, Sender&& predecessor_sender)

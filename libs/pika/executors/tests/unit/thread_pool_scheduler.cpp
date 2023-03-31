@@ -654,14 +654,14 @@ void test_when_all_vector()
 
         auto when1 = ex::when_all_vector(std::move(senders));
 
-#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if !defined(PIKA_HAVE_STDEXEC)
         bool executed{false};
 #endif
         tt::sync_wait(std::move(when1)
         // TODO: ADL issues? Uncommenting instantiates set_value with the
         // sync_wait_receiver from when_all_vector_receiver, i.e. then is
         // "skipped".
-#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if !defined(PIKA_HAVE_STDEXEC)
             | ex::then([parent_id, &executed](std::vector<double> v) {
                   PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id());
                   PIKA_TEST_EQ(v.size(), std::size_t(3));
@@ -672,7 +672,7 @@ void test_when_all_vector()
               })
 #endif
         );
-#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if !defined(PIKA_HAVE_STDEXEC)
         PIKA_TEST(executed);
 #endif
     }
@@ -703,7 +703,7 @@ void test_when_all_vector()
             // TODO: ADL issues? Uncommenting instantiates set_value with the
             // sync_wait_receiver from when_all_vector_receiver, i.e. then is
             // "skipped".
-#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if !defined(PIKA_HAVE_STDEXEC)
                 | ex::then([](std::vector<int>) { PIKA_TEST(false); })
 #endif
             );
@@ -744,7 +744,7 @@ void test_when_all_vector()
             // TODO: ADL issues? Uncommenting instantiates set_value with the
             // sync_wait_receiver from when_all_vector_receiver, i.e. then is
             // "skipped".
-#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if !defined(PIKA_HAVE_STDEXEC)
                 | ex::then([](std::vector<int>) { PIKA_TEST(false); })
 #endif
             );
@@ -971,9 +971,8 @@ void test_ensure_started()
         PIKA_TEST_EQ(tt::sync_wait(std::move(s)), 42);
     }
 
-    // TODO: The split sender in the P2300 reference implementation is not
-    // copyable.
-#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+    // TODO: The split sender in the stdexec is not copyable.
+#if !defined(PIKA_HAVE_STDEXEC)
     {
         auto s = ex::transfer_just(sched, 42) | ex::ensure_started() | ex::split();
         PIKA_TEST_EQ(tt::sync_wait(s), 42);
@@ -991,9 +990,8 @@ void test_ensure_started()
 
 void test_ensure_started_when_all()
 {
-    // TODO: The split sender in the P2300 reference implementation is not
-    // copyable.
-#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+    // TODO: The split sender in the stdexec is not copyable.
+#if !defined(PIKA_HAVE_STDEXEC)
     ex::thread_pool_scheduler sched{};
 
     {
@@ -1099,8 +1097,8 @@ void test_ensure_started_when_all()
 
 void test_split()
 {
-    // TODO: No default implementation in P2300 reference implementation.
-#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+    // TODO: No default implementation in stdexec.
+#if !defined(PIKA_HAVE_STDEXEC)
     ex::thread_pool_scheduler sched{};
 
     {
@@ -1129,8 +1127,8 @@ void test_split()
 
 void test_split_when_all()
 {
-    // TODO: No default implementation in P2300 reference implementation.
-#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+    // TODO: No default implementation in stdexec.
+#if !defined(PIKA_HAVE_STDEXEC)
     ex::thread_pool_scheduler sched{};
 
     {
@@ -1701,7 +1699,7 @@ void test_bulk()
     }
 
     // The specification only allows integral shapes
-#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if !defined(PIKA_HAVE_STDEXEC)
     {
         std::unordered_set<std::string> string_map;
         std::vector<std::string> v = {"hello", "brave", "new", "world"};

@@ -467,7 +467,7 @@ int main()
         // implementation puts in more effort call set_error on the scheduler's
         // context, but it can't be guaranteed in all cases which is why
         // transfer doesn't provide a completion scheduler for set_error.
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
         PIKA_TEST(scheduler_schedule_called);
 #else
         PIKA_TEST(!scheduler_schedule_called);
@@ -495,7 +495,7 @@ int main()
         // implementation puts in more effort call set_error on the scheduler's
         // context, but it can't be guaranteed in all cases which is why
         // transfer doesn't provide a completion scheduler for set_error.
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
         PIKA_TEST(scheduler_schedule_called);
 #else
         PIKA_TEST(!scheduler_schedule_called);

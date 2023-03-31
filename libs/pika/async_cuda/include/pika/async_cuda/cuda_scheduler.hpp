@@ -109,7 +109,7 @@ namespace pika::cuda::experimental {
             cuda_scheduler_sender(cuda_scheduler_sender const&) = delete;
             cuda_scheduler_sender& operator=(cuda_scheduler_sender const&) = delete;
 
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
             using completion_signatures = pika::execution::experimental::completion_signatures<
                 pika::execution::experimental::set_value_t()>;
 #else

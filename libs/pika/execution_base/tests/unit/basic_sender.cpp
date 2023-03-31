@@ -162,7 +162,7 @@ struct void_receiver
     }
 };
 
-#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if !defined(PIKA_HAVE_STDEXEC)
 template <typename Sender>
 constexpr bool unspecialized(...)
 {
@@ -178,7 +178,7 @@ constexpr bool unspecialized(typename ex::sender_traits<Sender>::__unspecialized
 
 int main()
 {
-#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if !defined(PIKA_HAVE_STDEXEC)
     static_assert(unspecialized<void>(nullptr), "void should not have sender_traits");
     static_assert(
         unspecialized<std::nullptr_t>(nullptr), "std::nullptr_t should not have sender_traits");

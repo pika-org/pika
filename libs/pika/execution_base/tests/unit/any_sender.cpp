@@ -585,11 +585,10 @@ void test_unique_any_sender_set_error()
 }
 
 // (unique_)any_sender instantiates a set_stopped call, and should also
-// advertise that it can complete with set_stopped. transfer from the P2300
-// reference implementation is one algorithm that requires that the advertised
-// signatures match what is actuallly instantiated so we use that as a test
-// here. This will fail to compile if (unique_)any_sender doesn't have
-// set_stopped_t in its completion signatures.
+// advertise that it can complete with set_stopped. transfer from stdexec is one
+// algorithm that requires that the advertised signatures match what is actually
+// instantiated so we use that as a test here. This will fail to compile if
+// (unique_)any_sender doesn't have set_stopped_t in its completion signatures.
 void test_any_sender_set_stopped()
 {
     ex::any_sender<> as{ex::just()};
@@ -627,7 +626,7 @@ struct wait_globals
 void test_globals()
 {
     // TODO: No ensure_started implementation in reference implementation.
-#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if !defined(PIKA_HAVE_STDEXEC)
     global_unique_any_sender = std::move(global_unique_any_sender) | ex::ensure_started();
     global_any_sender = std::move(global_any_sender) | ex::ensure_started() | ex::split();
 #endif

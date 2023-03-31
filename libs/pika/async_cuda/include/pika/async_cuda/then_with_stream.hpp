@@ -162,7 +162,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
         then_with_cuda_stream_sender_type& operator=(
             then_with_cuda_stream_sender_type const&) = default;
 
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
         template <typename... Ts>
         requires std::is_invocable_v<F, cuda_stream const&,
             std::add_lvalue_reference_t<std::decay_t<Ts>>...>
@@ -457,7 +457,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                 using type = pika::util::detail::transform_t<Tuple, std::decay>;
             };
 
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
             using ts_type = pika::util::detail::prepend_t<
                 pika::util::detail::transform_t<
                     pika::execution::experimental::value_types_of_t<std::decay_t<Sender>,
@@ -502,7 +502,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
             {
                 using type = pika::detail::monostate;
             };
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
             using result_type = pika::util::detail::change_pack_t<pika::detail::variant,
                 pika::util::detail::unique_t<pika::util::detail::prepend_t<
                     pika::util::detail::transform_t<

@@ -145,7 +145,7 @@ int main()
     // Chained split calls do not create new shared states. This is an
     // implementation detail of our own implementation. We can't test this for
     // the reference implementation.
-#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if !defined(PIKA_HAVE_STDEXEC)
     {
         std::atomic<bool> receiver_set_value_called{false};
         auto s1 = ex::just() | ex::split();

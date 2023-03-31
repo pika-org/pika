@@ -120,7 +120,7 @@ int main()
     }
 
     // TODO: The reference implementation does not ADL-isolate the just-sender.
-#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if !defined(PIKA_HAVE_STDEXEC)
     test_adl_isolation(ex::just(my_namespace::my_type{}));
 #endif
 
