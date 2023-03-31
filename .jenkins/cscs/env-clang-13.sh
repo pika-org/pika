@@ -12,10 +12,10 @@ spack_compiler="clang@${clang_version}"
 spack_arch="cray-cnl7-broadwell"
 stdexec_version="6510f5bd69cc03b24668f26eda3dd3cca7e81bb2"
 
-spack_spec="pika@main arch=${spack_arch} %${spack_compiler} cxxflags=-stdlib=libc++ malloc=system cxxstd=${cxx_std} +p2300 ^boost@${boost_version} ^hwloc@${hwloc_version} ^fmt cxxflags=-stdlib=libc++ ^stdexec@${stdexec_version}"
+spack_spec="pika@main arch=${spack_arch} %${spack_compiler} cxxflags=-stdlib=libc++ malloc=system cxxstd=${cxx_std} +stdexec ^boost@${boost_version} ^hwloc@${hwloc_version} ^fmt cxxflags=-stdlib=libc++ ^stdexec@${stdexec_version}"
 
 configure_extra_options+=" -DCMAKE_CXX_FLAGS=-stdlib=libc++"
 configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${cxx_std}"
 configure_extra_options+=" -DPIKA_WITH_MALLOC=system"
 configure_extra_options+=" -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
-configure_extra_options+=" -DPIKA_WITH_P2300_REFERENCE_IMPLEMENTATION=ON"
+configure_extra_options+=" -DPIKA_WITH_STDEXEC=ON"

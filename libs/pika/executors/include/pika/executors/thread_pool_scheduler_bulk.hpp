@@ -7,8 +7,8 @@
 #pragma once
 
 #include <pika/config.hpp>
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-# include <pika/execution_base/p2300_forward.hpp>
+#if defined(PIKA_HAVE_STDEXEC)
+# include <pika/execution_base/stdexec_forward.hpp>
 #endif
 
 #include <pika/assert.hpp>
@@ -82,7 +82,7 @@ namespace pika::thread_pool_bulk_detail {
         thread_pool_bulk_sender& operator=(thread_pool_bulk_sender&&) = default;
         thread_pool_bulk_sender& operator=(thread_pool_bulk_sender const&) = default;
 
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
         using is_sender = void;
 
         template <template <typename...> class Tuple, template <typename...> class Variant>

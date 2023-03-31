@@ -82,7 +82,7 @@ namespace pika::drop_value_detail {
 
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Sender> sender;
 
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
         template <class...>
         using empty_set_value = pika::execution::experimental::completion_signatures<
             pika::execution::experimental::set_value_t()>;

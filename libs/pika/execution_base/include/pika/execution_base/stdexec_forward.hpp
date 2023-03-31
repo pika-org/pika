@@ -7,7 +7,7 @@
 #pragma once
 
 #include <pika/config.hpp>
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
 # include <stdexec/execution.hpp>
 
 namespace pika::execution::experimental {

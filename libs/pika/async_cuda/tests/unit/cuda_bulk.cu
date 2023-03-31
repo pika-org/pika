@@ -77,7 +77,7 @@ int pika_main()
     }
 
     // The reference implementation does not support ranges as the shape
-#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if !defined(PIKA_HAVE_STDEXEC)
     // Range
     for (element_type n : {1, 42, 10007})
     {

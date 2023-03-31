@@ -74,7 +74,7 @@ namespace pika::split_tuple_detail {
         std::optional<operation_state_type> os;
 
         // nvcc does not like decay_t, so this uses decay<>::type instead.
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
         using value_type = typename std::decay<
             pika::execution::experimental::detail::single_result_t<typename pika::execution::
                     experimental::value_types_of_t<Sender, pika::execution::experimental::empty_env,
@@ -86,7 +86,7 @@ namespace pika::split_tuple_detail {
                     pika::util::detail::pack, pika::util::detail::pack>>>::type;
 #endif
 
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
         using error_type = pika::util::detail::unique_t<pika::util::detail::prepend_t<
             pika::util::detail::transform_t<
                 typename pika::execution::experimental::error_types_of_t<Sender,
@@ -132,7 +132,7 @@ namespace pika::split_tuple_detail {
                 // This typedef is duplicated from the parent struct. The
                 // parent typedef is not instantiated early enough for use
                 // here.
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
             using value_type =
                 typename std::decay<pika::execution::experimental::detail::single_result_t<
                     typename pika::execution::experimental::value_types_of_t<Sender,
@@ -197,7 +197,7 @@ namespace pika::split_tuple_detail {
             void operator()(pika::execution::detail::stopped_type)
             {
                 constexpr bool sends_stopped =
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
                     pika::execution::experimental::sends_stopped<Sender,
                         pika::execution::experimental::empty_env>
 #else
@@ -388,7 +388,7 @@ namespace pika::split_tuple_detail {
         using shared_state_type = shared_state<Sender, Allocator>;
 
         // nvcc does not like decay_t, so this uses decay<>::type instead.
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
         using value_type = typename std::decay<
             pika::execution::experimental::detail::single_result_t<typename pika::execution::
                     experimental::value_types_of_t<Sender, pika::execution::experimental::empty_env,
@@ -409,7 +409,7 @@ namespace pika::split_tuple_detail {
             using type = std::add_lvalue_reference_t<std::add_const_t<T>>;
         };
 
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
         template <typename...>
         using set_value_helper = pika::execution::experimental::completion_signatures<
             pika::execution::experimental::set_value_t(split_tuple_sender_value_type)>;
@@ -523,7 +523,7 @@ namespace pika::split_tuple_detail {
         pika::intrusive_ptr<shared_state_type> state = p.release();
 
         // nvcc does not like decay_t, so this uses decay<>::type instead.
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
         using value_type = typename std::decay<
             pika::execution::experimental::detail::single_result_t<typename pika::execution::
                     experimental::value_types_of_t<Sender, pika::execution::experimental::empty_env,

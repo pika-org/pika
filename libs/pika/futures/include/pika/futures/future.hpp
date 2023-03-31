@@ -297,7 +297,7 @@ namespace pika::lcos::detail {
     };
 
     ///////////////////////////////////////////////////////////////////////////
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
     template <typename T>
     struct set_value_signature_helper
     {
@@ -321,7 +321,7 @@ namespace pika::lcos::detail {
         using shared_state_type = future_data_base<traits::detail::shared_state_ptr_result_t<R>>;
 
         // Sender compatibility
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
         using completion_signatures = pika::execution::experimental::completion_signatures<
             typename set_value_signature_helper<result_type>::type,
             pika::execution::experimental::set_error_t(std::exception_ptr)>;
@@ -594,7 +594,7 @@ namespace pika {
         using shared_state_type = typename base_type::shared_state_type;
 
         // Sender compatibility
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
         using typename base_type::completion_signatures;
 #else
         using base_type::error_types;
@@ -888,7 +888,7 @@ namespace pika {
         using shared_state_type = typename base_type::shared_state_type;
 
         // Sender compatibility
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
         using typename base_type::completion_signatures;
 #else
         using base_type::error_types;

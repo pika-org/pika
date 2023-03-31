@@ -146,7 +146,7 @@ namespace pika::cuda::experimental {
             then_on_host_sender_type(then_on_host_sender_type const&) = default;
             then_on_host_sender_type& operator=(then_on_host_sender_type const&) = default;
 
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
             template <typename... Ts>
             requires std::is_invocable_v<F, Ts...>
             using invoke_result_helper =

@@ -97,7 +97,7 @@ namespace pika::mpi::experimental {
             std::decay_t<F> f;
             stream_type stream;
 
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
             template <typename... Ts>
             requires is_mpi_request_invocable_v<F, Ts...>
             using invoke_result_helper = pika::execution::experimental::completion_signatures<
@@ -250,7 +250,7 @@ namespace pika::mpi::experimental {
                     using type = pika::util::detail::transform_t<Tuple, std::decay>;
                 };
 
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
                 using ts_type = pika::util::detail::prepend_t<
                     pika::util::detail::transform_t<
                         pika::execution::experimental::value_types_of_t<std::decay_t<Sender>,
@@ -297,7 +297,7 @@ namespace pika::mpi::experimental {
                 {
                     using type = pika::detail::monostate;
                 };
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
                 using result_type = pika::util::detail::change_pack_t<pika::detail::variant,
                     pika::util::detail::unique_t<pika::util::detail::prepend_t<
                         pika::util::detail::transform_t<

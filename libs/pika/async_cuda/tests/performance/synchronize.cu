@@ -122,7 +122,7 @@ int pika_main(pika::program_options::variables_map& vm)
 
 // The compilation of this loop unrolling with llvm-amdgpu's
 // Clang 5.3.3 is hanging.
-#if !(defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION) || defined(PIKA_HAVE_HIP))
+#if !(defined(PIKA_HAVE_STDEXEC) || defined(PIKA_HAVE_HIP))
     {
         cu::enable_user_polling poll("default");
 

@@ -991,12 +991,11 @@ if(PIKA_WITH_THREAD_DEBUG_INFO)
 endif()
 
 pika_option(
-  PIKA_WITH_P2300_REFERENCE_IMPLEMENTATION BOOL
-  "Use the P2300 reference implementation for sender/receiver functionality."
-  OFF CATEGORY "Advanced"
+  PIKA_WITH_STDEXEC BOOL "Use stdexec for sender/receiver functionality." OFF
+  CATEGORY "Advanced"
 )
-if(PIKA_WITH_P2300_REFERENCE_IMPLEMENTATION)
-  pika_add_config_define(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+if(PIKA_WITH_STDEXEC)
+  pika_add_config_define(PIKA_HAVE_STDEXEC)
 endif()
 
 # Developer tools
@@ -1310,8 +1309,8 @@ if(PIKA_WITH_COMPILER_WARNINGS)
   endif()
 endif()
 
-# GCC gives a bogus warning in the P2300 reference implementation
-if(PIKA_WITH_P2300_REFERENCE_IMPLEMENTATION AND CMAKE_COMPILER_IS_GNUCXX)
+# GCC gives a bogus warning in stdexec
+if(PIKA_WITH_STDEXEC AND CMAKE_COMPILER_IS_GNUCXX)
   pika_add_compile_flag_if_available(-Wno-non-template-friend)
 endif()
 

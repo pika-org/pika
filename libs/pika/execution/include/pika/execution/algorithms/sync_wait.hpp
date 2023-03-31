@@ -8,8 +8,8 @@
 
 #include <pika/config.hpp>
 
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-# include <pika/execution_base/p2300_forward.hpp>
+#if defined(PIKA_HAVE_STDEXEC)
+# include <pika/execution_base/stdexec_forward.hpp>
 #endif
 
 #include <pika/concepts/concepts.hpp>
@@ -56,7 +56,7 @@ namespace pika::sync_wait_detail {
     template <typename Sender>
     struct sync_wait_receiver_impl<Sender>::sync_wait_receiver_type
     {
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
         // value and error_types of the predecessor sender
         template <template <typename...> class Tuple, template <typename...> class Variant>
         using predecessor_value_types = pika::execution::experimental::value_types_of_t<Sender,

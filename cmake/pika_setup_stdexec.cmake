@@ -4,12 +4,12 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-if(PIKA_WITH_P2300_REFERENCE_IMPLEMENTATION)
+if(PIKA_WITH_STDEXEC)
 
   if(PIKA_WITH_CXX_STANDARD LESS 20)
 
     pika_error(
-      "PIKA_WITH_P2300_REFERENCE_IMPLEMENTATION requires at least C++20 (PIKA_WITH_CXX_STANDARD is currently ${PIKA_WITH_CXX_STANDARD})"
+      "PIKA_WITH_STDEXEC requires at least C++20 (PIKA_WITH_CXX_STANDARD is currently ${PIKA_WITH_CXX_STANDARD})"
     )
 
   endif()

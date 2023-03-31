@@ -8,8 +8,8 @@
 
 #include <pika/config.hpp>
 
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-# include <pika/execution_base/p2300_forward.hpp>
+#if defined(PIKA_HAVE_STDEXEC)
+# include <pika/execution_base/stdexec_forward.hpp>
 #endif
 
 #include <pika/allocator_support/allocator_deleter.hpp>
@@ -185,7 +185,7 @@ namespace pika::make_future_detail {
     {
         using allocator_type = Allocator;
 
-#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#if defined(PIKA_HAVE_STDEXEC)
         using value_types =
             typename pika::execution::experimental::value_types_of_t<std::decay_t<Sender>,
                 pika::execution::experimental::empty_env, pika::util::detail::pack,
