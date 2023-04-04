@@ -19,7 +19,11 @@ pika follows `Semantic Versioning <https://semver.org>`_.
    release. For patch releases: check out the corresponding
    ``release-major.minor.X`` branch.
 
-#. Write release notes in ``CHANGELOG.md``.
+#. Write release notes in ``CHANGELOG.md``. Check for issues and pull requests
+   for the release on the [pika planning
+   board](https://github.com/orgs/pika-org/projects/1). Check for items that do
+   not have a release associated to them on the `Done` view. Assign them to a
+   release if needed.
 
 #. Make sure ``PIKA_VERSION_MAJOR/MINOR/PATCH`` in ``CMakeLists.txt`` contain
    the correct values. Change them if needed.
@@ -63,8 +67,10 @@ pika follows `Semantic Versioning <https://semver.org>`_.
 
 #. Update spack (``https://github.com/spack/spack``).
 
-#. Close the milestone for this release and rename the tabs of the pika-planning
-   board.
+#. Clean up the [pika planning board](https://github.com/orgs/pika-org/projects/1):
+   - Move the version-specific views one release forward (e.g. change the name
+     and filter of `pika 0.X.0` to `pika 0.<X+1>.0`).
+   - Change the status of `Done` items to `Archive` in the `Done` view.
 
 #. Check if pika-algorithms also needs a release.
 
