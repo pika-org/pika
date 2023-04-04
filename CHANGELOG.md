@@ -4,6 +4,21 @@
 <!--- Distributed under the Boost Software License, Version 1.0. (See accompanying -->
 <!--- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 
+## 0.14.0 (2023-04-05)
+
+### New features
+
+- pika can now be compiled with NVHPC. The support is experimental. ([#606](https://github.com/pika-org/pika/pull/606))
+- CUDA polling was improved. Among other changes polling continuations are no longer called under a lock. ([#609](https://github.com/pika-org/pika/pull/609))
+- Improved the error message when pika is configured with multiple thread pools but there are not enough resources for all thread pools. ([#619](https://github.com/pika-org/pika/pull/619))
+
+### Breaking changes
+
+- Cleaned up modules and moved internal functionality into `detail` namespaces. ([#625](https://github.com/pika-org/pika/pull/625), [#631](https://github.com/pika-org/pika/pull/631), [#632](https://github.com/pika-org/pika/pull/632), [#633](https://github.com/pika-org/pika/pull/633), [#634](https://github.com/pika-org/pika/pull/634))
+- Renamed the CMake option `PIKA_WITH_P2300_REFERENCE_IMPLEMENTATION` to `PIKA_WITH_STDEXEC` to better reflect what it does. ([#641](https://github.com/pika-org/pika/pull/641))
+
+### Bugfixes
+
 ## 0.13.0 (2023-03-08)
 
 ### New features
