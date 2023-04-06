@@ -70,7 +70,7 @@ namespace pika::mpi::experimental {
             detail::add_request_callback(
                 [&op_state](int status) mutable {
                     using namespace pika::debug::detail;
-                    PIKA_DP(mpi_tran,
+                    PIKA_DETAIL_DP(mpi_tran,
                         debug(str<>("callback_void"), "stream",
                             detail::stream_name(op_state.stream)));
                     op_state.ts = {};
@@ -85,7 +85,7 @@ namespace pika::mpi::experimental {
             detail::add_request_callback(
                 [&op_state](int status) mutable {
                     using namespace pika::debug::detail;
-                    PIKA_DP(mpi_tran,
+                    PIKA_DETAIL_DP(mpi_tran,
                         debug(str<>("callback_nonvoid"), "stream",
                             detail::stream_name(op_state.stream)));
                     op_state.ts = {};
@@ -103,7 +103,7 @@ namespace pika::mpi::experimental {
             detail::add_request_callback(
                 [&op_state](int status) mutable {
                     using namespace pika::debug::detail;
-                    PIKA_DP(mpi_tran,
+                    PIKA_DETAIL_DP(mpi_tran,
                         debug(str<>("callback_void_suspend_resume"), "stream",
                             detail::stream_name(op_state.stream)));
                     op_state.ts = {};
@@ -263,7 +263,7 @@ namespace pika::mpi::experimental {
                                 {
                                     pika::util::detail::invoke_fused(
                                         [&](auto&... ts) mutable {
-                                            PIKA_DP(mpi_tran,
+                                            PIKA_DETAIL_DP(mpi_tran,
                                                 debug(str<>("mpi invoke"), dec<2>(mode),
                                                     print_type<invoke_result_type>()));
                                             // execute the mpi function call, passing in the request object
@@ -327,12 +327,12 @@ namespace pika::mpi::experimental {
                                 // modes 3,4,5,6,7,8 ....
                                 else
                                 {
-                                    PIKA_DP(mpi_tran,
+                                    PIKA_DETAIL_DP(mpi_tran,
                                         debug(str<>("throttle?"), "stream",
                                             detail::stream_name(r.op_state.stream)));
                                     // throttle if too many "in flight"
                                     detail::wait_for_throttling(r.op_state.stream);
-                                    PIKA_DP(mpi_tran,
+                                    PIKA_DETAIL_DP(mpi_tran,
                                         debug(str<>("mpi invoke"), dec<2>(mode),
                                             print_type<invoke_result_type>()));
                                     if constexpr (std::is_void_v<invoke_result_type>)
@@ -471,7 +471,7 @@ namespace pika::mpi::experimental {
                   , op_state(pika::execution::experimental::connect(
                         PIKA_FORWARD(Sender_, sender), transform_mpi_receiver{*this}))
                 {
-                    PIKA_DP(mpi_tran,
+                    PIKA_DETAIL_DP(mpi_tran,
                         debug(debug::detail::str<>("operation_state"), "stream",
                             detail::stream_name(s)));
                 }
@@ -531,11 +531,11 @@ namespace pika::mpi::experimental {
         template <typename Sender, typename F,
             PIKA_CONCEPT_REQUIRES_(
                 pika::execution::experimental::is_sender_v<std::decay_t<Sender>>)>
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(transform_mpi_t, Sender&& sender,
-            F&& f, stream_type s = stream_type::automatic)
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
+            transform_mpi_t, Sender&& sender, F&& f, stream_type s = stream_type::automatic)
         {
             using namespace transform_mpi_detail;
-            PIKA_DP(mpi_tran,
+            PIKA_DETAIL_DP(mpi_tran,
                 debug(
                     debug::detail::str<>("tag_fallback_invoke"), "stream", detail::stream_name(s)));
 
