@@ -21,7 +21,8 @@
 # include <unistd.h>
 #endif
 
-#if defined(_POSIX_VERSION)
+#if defined(_POSIX_VERSION) &&                                                                     \
+    !(defined(__APPLE__) && (defined(arm64) || defined(__arm64) || defined(__arm64__)))
 # include <pika/coroutines/detail/posix_utility.hpp>
 #endif
 
@@ -107,7 +108,8 @@ namespace pika::threads::coroutines {
             {
                 PIKA_ASSERT(vp);
                 void* limit = static_cast<char*>(vp) - size;
-# if defined(_POSIX_VERSION)
+# if defined(_POSIX_VERSION) &&                                                                    \
+     !(defined(__APPLE__) && (defined(arm64) || defined(__arm64) || defined(__arm64__)))
                 posix::free_stack(limit, size);
 # else
                 std::free(limit);
@@ -239,7 +241,8 @@ namespace pika::threads::coroutines {
             {
                 if (ctx_)
                 {
-#if defined(_POSIX_VERSION)
+#if defined(_POSIX_VERSION) &&                                                                     \
+    !(defined(__APPLE__) && (defined(arm64) || defined(__arm64) || defined(__arm64__)))
                     void* limit = static_cast<char*>(stack_pointer_) - stack_size_;
                     if (posix::reset_stack(limit, stack_size_))
                     {
