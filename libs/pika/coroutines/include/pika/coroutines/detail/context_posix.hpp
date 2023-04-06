@@ -202,8 +202,7 @@ namespace pika::threads::coroutines {
             friend void swap_context(ucontext_context_impl_base& from,
                 const ucontext_context_impl_base& to, default_hint)
             {
-                int error = PIKA_COROUTINE_SWAP_CONTEXT(&from.m_ctx, &to.m_ctx);
-                PIKA_UNUSED(error);
+                [[maybe_unused]] int error = PIKA_COROUTINE_SWAP_CONTEXT(&from.m_ctx, &to.m_ctx);
                 PIKA_ASSERT(error == 0);
             }
 
@@ -242,10 +241,9 @@ namespace pika::threads::coroutines {
                     throw std::runtime_error("could not allocate memory for stack");
                 }
 
-                int error = PIKA_COROUTINE_MAKE_CONTEXT(
+                [[maybe_unused]] int error = PIKA_COROUTINE_MAKE_CONTEXT(
                     &m_ctx, m_stack, m_stack_size, funp_, this, nullptr);
 
-                PIKA_UNUSED(error);
                 PIKA_ASSERT(error == 0);
 
 # if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION)
@@ -353,9 +351,8 @@ namespace pika::threads::coroutines {
 # if defined(PIKA_HAVE_COROUTINE_COUNTERS)
                     increment_stack_recycle_count();
 # endif
-                    int error = PIKA_COROUTINE_MAKE_CONTEXT(
+                    [[maybe_unused]] int error = PIKA_COROUTINE_MAKE_CONTEXT(
                         &m_ctx, m_stack, m_stack_size, funp_, this, nullptr);
-                    PIKA_UNUSED(error);
                     PIKA_ASSERT(error == 0);
                 }
             }

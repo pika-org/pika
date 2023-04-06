@@ -40,18 +40,17 @@ namespace pika::detail {
         }
     }
 
-    bool condition_variable::empty(std::unique_lock<mutex_type> const& lock) const
+    bool condition_variable::empty([[maybe_unused]] std::unique_lock<mutex_type> const& lock) const
     {
         PIKA_ASSERT(lock.owns_lock());
-        PIKA_UNUSED(lock);
 
         return queue_.empty();
     }
 
-    std::size_t condition_variable::size(std::unique_lock<mutex_type> const& lock) const
+    std::size_t condition_variable::size(
+        [[maybe_unused]] std::unique_lock<mutex_type> const& lock) const
     {
         PIKA_ASSERT(lock.owns_lock());
-        PIKA_UNUSED(lock);
 
         return queue_.size();
     }
@@ -127,8 +126,7 @@ namespace pika::detail {
                     return;
                 }
 
-                util::ignore_while_checking il(&lock);
-                PIKA_UNUSED(il);
+                [[maybe_unused]] util::ignore_while_checking il(&lock);
 
                 ctx.resume();
 
@@ -230,10 +228,10 @@ namespace pika::detail {
     }
 
     // re-add the remaining items to the original queue
-    void condition_variable::prepend_entries(std::unique_lock<mutex_type>& lock, queue_type& queue)
+    void condition_variable::prepend_entries(
+        [[maybe_unused]] std::unique_lock<mutex_type>& lock, queue_type& queue)
     {
         PIKA_ASSERT(lock.owns_lock());
-        PIKA_UNUSED(lock);
 
         // splice is constant time only if it == end
         queue.splice(queue.end(), queue_);

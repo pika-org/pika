@@ -125,14 +125,12 @@ int main()
     static_assert(ex::is_scheduler_v<scheduler_2>, "scheduler_2 is a scheduler");
 
     scheduler_1 s1;
-    auto snd1 = ex::schedule(s1);
-    PIKA_UNUSED(snd1);
+    [[maybe_unused]] auto snd1 = ex::schedule(s1);
     PIKA_TEST_EQ(friend_tag_invoke_schedule_calls, std::size_t(1));
     PIKA_TEST_EQ(tag_invoke_schedule_calls, std::size_t(0));
 
     scheduler_2 s2;
-    auto snd2 = ex::schedule(s2);
-    PIKA_UNUSED(snd2);
+    [[maybe_unused]] auto snd2 = ex::schedule(s2);
     PIKA_TEST_EQ(friend_tag_invoke_schedule_calls, std::size_t(1));
     PIKA_TEST_EQ(tag_invoke_schedule_calls, std::size_t(1));
 

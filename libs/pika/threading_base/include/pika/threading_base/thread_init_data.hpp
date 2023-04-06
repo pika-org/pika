@@ -134,8 +134,9 @@ namespace pika::threads::detail {
           , run_now(run_now_)
           , scheduler_base(scheduler_base_)
         {
+#ifndef PIKA_HAVE_THREAD_DESCRIPTION
             PIKA_UNUSED(desc);
-
+#endif
             if (initial_state == thread_schedule_state::staged)
             {
                 PIKA_THROW_EXCEPTION(pika::error::bad_parameter,

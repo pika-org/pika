@@ -114,8 +114,7 @@ namespace pika {
 
             auto data = data_;    // keep data alive
 
-            util::ignore_all_while_checking ignore_lock;
-            PIKA_UNUSED(ignore_lock);
+            [[maybe_unused]] util::ignore_all_while_checking ignore_lock;
 
             std::unique_lock<mutex_type> l(data->mtx_);
             ::pika::detail::unlock_guard<std::unique_lock<Mutex>> unlock(lock);
@@ -220,8 +219,7 @@ namespace pika {
 
             auto data = data_;    // keep data alive
 
-            util::ignore_all_while_checking ignore_lock;
-            PIKA_UNUSED(ignore_lock);
+            [[maybe_unused]] util::ignore_all_while_checking ignore_lock;
 
             std::unique_lock<mutex_type> l(data->mtx_);
             ::pika::detail::unlock_guard<Lock> unlock(lock);
@@ -252,8 +250,7 @@ namespace pika {
 
             auto data = data_;    // keep data alive
 
-            util::ignore_all_while_checking ignore_lock;
-            PIKA_UNUSED(ignore_lock);
+            [[maybe_unused]] util::ignore_all_while_checking ignore_lock;
 
             std::unique_lock<mutex_type> l(data->mtx_);
             ::pika::detail::unlock_guard<Lock> unlock(lock);
@@ -321,8 +318,7 @@ namespace pika {
 
             while (!pred())
             {
-                util::ignore_all_while_checking ignore_lock;
-                PIKA_UNUSED(ignore_lock);
+                [[maybe_unused]] util::ignore_all_while_checking ignore_lock;
 
                 std::unique_lock<mutex_type> l(data->mtx_);
                 if (stoken.stop_requested())
@@ -366,8 +362,7 @@ namespace pika {
             {
                 bool should_stop;
                 {
-                    util::ignore_all_while_checking ignore_lock;
-                    PIKA_UNUSED(ignore_lock);
+                    [[maybe_unused]] util::ignore_all_while_checking ignore_lock;
 
                     std::unique_lock<mutex_type> l(data->mtx_);
                     if (stoken.stop_requested())

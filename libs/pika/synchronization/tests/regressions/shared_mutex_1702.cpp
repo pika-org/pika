@@ -28,8 +28,7 @@ int pika_main()
 
     {
         std::shared_lock<shared_mutex_type> l(mtx);
-        int i = data;
-        PIKA_UNUSED(i);
+        [[maybe_unused]] int i = data;
     }
 
     return pika::finalize();

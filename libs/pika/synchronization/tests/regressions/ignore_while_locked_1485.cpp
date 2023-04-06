@@ -84,8 +84,7 @@ void test_condition_with_mutex()
 
     {
         std::lock_guard<pika::spinlock> lock(data.mutex);
-        pika::util::ignore_all_while_checking il;
-        PIKA_UNUSED(il);
+        [[maybe_unused]] pika::util::ignore_all_while_checking il;
 
         data.cond_var.notify_one();
     }

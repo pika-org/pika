@@ -109,8 +109,7 @@ namespace pika {
         owner_id_ = threads::detail::invalid_thread_id;
 
         {
-            util::ignore_while_checking il(&l);
-            PIKA_UNUSED(il);
+            [[maybe_unused]] util::ignore_while_checking il(&l);
 
             cond_.notify_one(PIKA_MOVE(l), execution::thread_priority::boost, ec);
         }
