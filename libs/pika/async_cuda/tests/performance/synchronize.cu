@@ -127,6 +127,7 @@ int pika_main(pika::program_options::variables_map& vm)
         cu::enable_user_polling poll("default");
 
         auto const f = [](whip::stream_t cuda_stream) { dummy<<<1, 1, 0, cuda_stream>>>(); };
+        auto const f_empty = [] {};
 
         pika::chrono::detail::high_resolution_timer timer;
         for (std::size_t i = 0; i < batch_iterations; ++i)
@@ -138,20 +139,24 @@ int pika_main(pika::program_options::variables_map& vm)
             // then_with_stream calls to force synchronization between the
             // kernel launches.
             tt::sync_wait(ex::schedule(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) | ex::transfer(sched) |
-                cu::then_with_stream(f) | ex::transfer(ex::thread_pool_scheduler{}) |
-                ex::then([] {}) | ex::transfer(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) | ex::transfer(sched) |
-                cu::then_with_stream(f) | ex::transfer(ex::thread_pool_scheduler{}) |
-                ex::then([] {}) | ex::transfer(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) | ex::transfer(sched) |
-                cu::then_with_stream(f) | ex::transfer(ex::thread_pool_scheduler{}) |
-                ex::then([] {}) | ex::transfer(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) | ex::transfer(sched) |
-                cu::then_with_stream(f) | ex::transfer(ex::thread_pool_scheduler{}) |
-                ex::then([] {}) | ex::transfer(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) | ex::transfer(sched) |
-                cu::then_with_stream(f));
+                ex::transfer(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
+                ex::transfer(sched) | cu::then_with_stream(f) |
+                ex::transfer(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
+                ex::transfer(sched) | cu::then_with_stream(f) |
+                ex::transfer(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
+                ex::transfer(sched) | cu::then_with_stream(f) |
+                ex::transfer(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
+                ex::transfer(sched) | cu::then_with_stream(f) |
+                ex::transfer(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
+                ex::transfer(sched) | cu::then_with_stream(f) |
+                ex::transfer(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
+                ex::transfer(sched) | cu::then_with_stream(f) |
+                ex::transfer(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
+                ex::transfer(sched) | cu::then_with_stream(f) |
+                ex::transfer(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
+                ex::transfer(sched) | cu::then_with_stream(f) |
+                ex::transfer(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
+                ex::transfer(sched) | cu::then_with_stream(f));
         }
         // Do the remainder one-by-one
         for (std::size_t i = 0; i < non_batch_iterations; ++i)
