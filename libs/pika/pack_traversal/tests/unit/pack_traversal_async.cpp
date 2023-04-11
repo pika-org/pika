@@ -140,20 +140,15 @@ struct async_increasing_int_sync_visitor
     }
 
     template <typename N>
-    void operator()(async_traverse_detach_tag, std::size_t i, N&& next)
+    void operator()(async_traverse_detach_tag, std::size_t /*i*/, N&& /*next*/)
     {
-        PIKA_UNUSED(i);
-        PIKA_UNUSED(next);
-
         // Should never be called!
         PIKA_TEST(false);
     }
 
     template <typename T>
-    void operator()(async_traverse_complete_tag, T&& pack)
+    void operator()(async_traverse_complete_tag, T&& /*pack*/)
     {
-        PIKA_UNUSED(pack);
-
         PIKA_TEST_EQ(this->counter(), ArgCount);
         ++this->counter();
     }
@@ -171,19 +166,15 @@ struct async_increasing_int_visitor : async_counter_base<async_increasing_int_vi
     }
 
     template <typename N>
-    void operator()(async_traverse_detach_tag, std::size_t i, N&& next)
+    void operator()(async_traverse_detach_tag, std::size_t /*i*/, N&& next)
     {
-        PIKA_UNUSED(i);
-
         ++this->counter();
         std::forward<N>(next)();
     }
 
     template <typename T>
-    void operator()(async_traverse_complete_tag, T&& pack)
+    void operator()(async_traverse_complete_tag, T&& /*pack*/)
     {
-        PIKA_UNUSED(pack);
-
         PIKA_TEST_EQ(this->counter(), ArgCount);
         ++this->counter();
     }
@@ -316,20 +307,15 @@ struct async_unique_sync_visitor : async_counter_base<async_unique_sync_visitor<
     }
 
     template <typename N>
-    void operator()(async_traverse_detach_tag, std::unique_ptr<std::size_t>& i, N&& next)
+    void operator()(async_traverse_detach_tag, std::unique_ptr<std::size_t>& /*i*/, N&& /*next*/)
     {
-        PIKA_UNUSED(i);
-        PIKA_UNUSED(next);
-
         // Should never be called!
         PIKA_TEST(false);
     }
 
     template <typename T>
-    void operator()(async_traverse_complete_tag, T&& pack)
+    void operator()(async_traverse_complete_tag, T&& /*pack*/)
     {
-        PIKA_UNUSED(pack);
-
         PIKA_TEST_EQ(this->counter(), ArgCount);
         ++this->counter();
     }
@@ -347,19 +333,15 @@ struct async_unique_visitor : async_counter_base<async_unique_visitor<ArgCount>>
     }
 
     template <typename N>
-    void operator()(async_traverse_detach_tag, std::unique_ptr<std::size_t>& i, N&& next)
+    void operator()(async_traverse_detach_tag, std::unique_ptr<std::size_t>& /*i*/, N&& next)
     {
-        PIKA_UNUSED(i);
-
         ++this->counter();
         std::forward<N>(next)();
     }
 
     template <typename T>
-    void operator()(async_traverse_complete_tag, T&& pack)
+    void operator()(async_traverse_complete_tag, T&& /*pack*/)
     {
-        PIKA_UNUSED(pack);
-
         PIKA_TEST_EQ(this->counter(), ArgCount);
         ++this->counter();
     }
@@ -395,10 +377,8 @@ struct invalidate_visitor : async_counter_base<invalidate_visitor>
     }
 
     template <typename N>
-    void operator()(async_traverse_detach_tag, std::shared_ptr<int>& i, N&& next)
+    void operator()(async_traverse_detach_tag, std::shared_ptr<int>& /*i*/, N&& next)
     {
-        PIKA_UNUSED(i);
-
         std::forward<N>(next)();
     }
 
@@ -406,9 +386,7 @@ struct invalidate_visitor : async_counter_base<invalidate_visitor>
     void operator()(async_traverse_complete_tag, tuple<std::shared_ptr<int>>&& pack) const
     {
         // Invalidate the moved object
-        tuple<std::shared_ptr<int>> moved = std::move(pack);
-
-        PIKA_UNUSED(moved);
+        [[maybe_unused]] tuple<std::shared_ptr<int>> moved = std::move(pack);
     }
 };
 

@@ -350,11 +350,10 @@ namespace pika::detail {
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     void decode_numabalanced_distribution(threads::detail::topology& t,
         std::vector<threads::detail::mask_type>& affinities, std::size_t used_cores,
-        std::size_t max_cores, std::vector<std::size_t>& num_pus, bool use_process_mask,
+        std::size_t /*max_cores*/, std::vector<std::size_t>& num_pus, bool use_process_mask,
         error_code& ec)
     // NOLINTEND(bugprone-easily-swappable-parameters)
     {
-        PIKA_UNUSED(max_cores);
         std::size_t num_threads = affinities.size();
 
         check_num_threads(use_process_mask, t, num_threads, ec);

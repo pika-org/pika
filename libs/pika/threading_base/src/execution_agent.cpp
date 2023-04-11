@@ -176,8 +176,7 @@ namespace pika::threads::detail {
 #ifdef PIKA_HAVE_THREAD_BACKTRACE_ON_SUSPENSION
             reset_backtrace bt(id);
 #endif
-            on_exit_reset_held_lock_data held_locks;
-            PIKA_UNUSED(held_locks);
+            [[maybe_unused]] on_exit_reset_held_lock_data held_locks;
 
             PIKA_ASSERT(thrd_data->get_state().state() == thread_schedule_state::active);
             PIKA_ASSERT(state != thread_schedule_state::active);

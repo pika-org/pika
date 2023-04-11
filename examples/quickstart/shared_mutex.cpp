@@ -62,9 +62,7 @@ int pika_main()
 
     for (int i = 0; i < readers; ++i)
     {
-        int k = writers + i;
-        threads.emplace_back([&ready, &stm, k, i] {
-            PIKA_UNUSED(k);
+        threads.emplace_back([&ready, &stm, i] {
             std::mt19937 urng(static_cast<std::uint32_t>(std::time(nullptr)));
             std::uniform_int_distribution<int> dist(1, 1000);
 

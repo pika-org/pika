@@ -121,8 +121,7 @@ void test_id_comparison()
 void interruption_point_thread(pika::spinlock* m, bool* failed)
 {
     std::unique_lock<pika::spinlock> lk(*m);
-    pika::util::ignore_while_checking il(&lk);
-    PIKA_UNUSED(il);
+    [[maybe_unused]] pika::util::ignore_while_checking il(&lk);
 
     pika::this_thread::interruption_point();
     *failed = true;
@@ -177,8 +176,7 @@ void do_test_thread_no_interrupt_if_interrupts_disabled_at_interruption_point()
     try
     {
         std::unique_lock<pika::spinlock> lk(m);
-        pika::util::ignore_while_checking il(&lk);
-        PIKA_UNUSED(il);
+        [[maybe_unused]] pika::util::ignore_while_checking il(&lk);
 
         thrd.interrupt();
     }

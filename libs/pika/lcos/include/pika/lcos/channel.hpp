@@ -311,8 +311,7 @@ namespace pika::lcos::local {
                 if (pop_active_)
                 {
                     // avoid lock-being-held errors
-                    util::ignore_while_checking<Lock> il(&l);
-                    PIKA_UNUSED(il);
+                    [[maybe_unused]] util::ignore_while_checking<Lock> il(&l);
 
                     pop_();    // trigger waiting pop
                 }
@@ -356,8 +355,7 @@ namespace pika::lcos::local {
                 if (push_active_)
                 {
                     // avoid lock-being-held errors
-                    util::ignore_while_checking<Lock> il(&l);
-                    PIKA_UNUSED(il);
+                    [[maybe_unused]] util::ignore_while_checking<Lock> il(&l);
 
                     push_();    // trigger waiting push
                 }

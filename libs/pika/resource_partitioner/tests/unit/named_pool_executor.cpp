@@ -56,8 +56,7 @@ int pika_main()
     }
 
     // Make sure default construction works
-    pika::execution::parallel_executor exec_default;
-    PIKA_UNUSED(exec_default);
+    [[maybe_unused]] pika::execution::parallel_executor exec_default;
 
     // setup executors for different task priorities on the pools
     // segfaults or exceptions in any of the following will cause

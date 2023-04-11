@@ -239,9 +239,7 @@ namespace pika::threads::coroutines::detail {
             reset_self_on_exit on_self_exit(&self, nullptr);
 
             {
-                reset_on_exit on_exit{*this};
-
-                PIKA_UNUSED(on_exit);
+                [[maybe_unused]] reset_on_exit on_exit{*this};
 
                 result = f_(arg);    // invoke wrapped function
 

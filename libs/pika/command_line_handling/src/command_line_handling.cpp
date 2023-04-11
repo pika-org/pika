@@ -605,7 +605,6 @@ namespace pika::detail {
                 "pika using the option -DPIKA_WITH_LOGGING=On.");
             // clang-format on
         }
-
         PIKA_UNUSED(ini_config);
 #endif
     }

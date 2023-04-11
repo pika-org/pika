@@ -61,16 +61,14 @@ namespace pika::threads::coroutines {
         {
             prepare_main_thread() noexcept
             {
-                LPVOID result = ConvertThreadToFiber(nullptr);
+                [[maybe_unused]] LPVOID result = ConvertThreadToFiber(nullptr);
                 PIKA_ASSERT(nullptr != result);
-                PIKA_UNUSED(result);
             }
 
             ~prepare_main_thread() noexcept
             {
-                BOOL result = ConvertFiberToThread();
+                [[maybe_unused]] BOOL result = ConvertFiberToThread();
                 PIKA_ASSERT(FALSE != result);
-                PIKA_UNUSED(result);
             }
         };
     }    // namespace detail
@@ -154,9 +152,8 @@ namespace pika::threads::coroutines {
 #else
                     SwitchToFiber(to.m_ctx);
 #endif
-                    BOOL result = ConvertFiberToThread();
+                    [[maybe_unused]] BOOL result = ConvertFiberToThread();
                     PIKA_ASSERT(result);
-                    PIKA_UNUSED(result);
                     from.m_ctx = nullptr;
                 }
                 else

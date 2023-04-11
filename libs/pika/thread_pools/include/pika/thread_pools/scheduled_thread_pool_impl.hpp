@@ -454,9 +454,8 @@ namespace pika::threads::detail {
 
         // set state to running
         std::atomic<pika::runtime_state>& state = sched_->Scheduler::get_state(thread_num);
-        pika::runtime_state oldstate = state.exchange(runtime_state::running);
+        [[maybe_unused]] pika::runtime_state oldstate = state.exchange(runtime_state::running);
         PIKA_ASSERT(oldstate <= runtime_state::running);
-        PIKA_UNUSED(oldstate);
 
         // wait for all threads to start up before before starting pika work
         startup->wait();
@@ -470,8 +469,7 @@ namespace pika::threads::detail {
                 manage_active_thread_count count(thread_count_);
 
                 // run the work queue
-                pika::threads::coroutines::detail::prepare_main_thread main_thread;
-                PIKA_UNUSED(main_thread);
+                [[maybe_unused]] pika::threads::coroutines::detail::prepare_main_thread main_thread;
 
                 // run main Scheduler loop until terminated
                 scheduling_counter_data& counter_data = counter_data_[thread_num];
@@ -1358,9 +1356,8 @@ namespace pika::threads::detail {
         }
 
         std::atomic<pika::runtime_state>& state = sched_->Scheduler::get_state(virt_core);
-        pika::runtime_state oldstate = state.exchange(runtime_state::initialized);
+        [[maybe_unused]] pika::runtime_state oldstate = state.exchange(runtime_state::initialized);
         PIKA_ASSERT(oldstate == runtime_state::stopped || oldstate == runtime_state::initialized);
-        PIKA_UNUSED(oldstate);
 
         threads_[virt_core] = std::thread(
             &scheduled_thread_pool::thread_func, this, virt_core, thread_num, PIKA_MOVE(startup));
