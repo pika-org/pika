@@ -14,7 +14,7 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-if(PIKA_WITH_VALGRIND AND NOT TARGET Valgrind::valgrind)
+if(PIKA_WITH_VALGRIND AND NOT TARGET pika_internal::valgrind)
   find_package(Valgrind)
   if(NOT VALGRIND_FOUND)
     pika_error(
@@ -23,9 +23,9 @@ if(PIKA_WITH_VALGRIND AND NOT TARGET Valgrind::valgrind)
     )
   endif()
 
-  add_library(Valgrind::valgrind INTERFACE IMPORTED)
+  add_library(pika_internal::valgrind INTERFACE IMPORTED)
   target_include_directories(
-    Valgrind::valgrind SYSTEM INTERFACE ${VALGRIND_INCLUDE_DIR}
+    pika_internal::valgrind SYSTEM INTERFACE ${VALGRIND_INCLUDE_DIR}
   )
 
   pika_add_config_define(PIKA_HAVE_VALGRIND)

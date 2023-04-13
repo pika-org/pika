@@ -95,7 +95,7 @@ pika_add_module(
   SOURCES ${coroutines_sources}
   HEADERS ${coroutines_headers}
   OBJECTS "${switch_to_fiber_object}"
-  DEPENDENCIES $<TARGET_NAME_IF_EXISTS:Valgrind::valgrind>
+  DEPENDENCIES $<TARGET_NAME_IF_EXISTS:pika_internal::valgrind>
   MODULE_DEPENDENCIES
     pika_assertion
     pika_config

@@ -7,7 +7,7 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-if(NOT TARGET Hwloc::hwloc)
+if(NOT TARGET pika_internal::hwloc)
   find_package(PkgConfig QUIET)
   pkg_check_modules(PC_HWLOC QUIET hwloc)
 
@@ -68,9 +68,11 @@ if(NOT TARGET Hwloc::hwloc)
     endif()
   endif()
 
-  add_library(Hwloc::hwloc INTERFACE IMPORTED)
-  target_include_directories(Hwloc::hwloc SYSTEM INTERFACE ${HWLOC_INCLUDE_DIR})
-  target_link_libraries(Hwloc::hwloc INTERFACE ${HWLOC_LIBRARIES})
+  add_library(pika_internal::hwloc INTERFACE IMPORTED)
+  target_include_directories(
+    pika_internal::hwloc SYSTEM INTERFACE ${HWLOC_INCLUDE_DIR}
+  )
+  target_link_libraries(pika_internal::hwloc INTERFACE ${HWLOC_LIBRARIES})
 
   mark_as_advanced(HWLOC_ROOT HWLOC_LIBRARY HWLOC_INCLUDE_DIR)
 endif()

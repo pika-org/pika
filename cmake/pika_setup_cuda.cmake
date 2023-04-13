@@ -4,7 +4,7 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-if(PIKA_WITH_CUDA AND NOT TARGET Cuda::cuda)
+if(PIKA_WITH_CUDA AND NOT TARGET pika_internal::cuda)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC")
     # nvc++ is used for all source files and we don't enable CMake's CUDA
     # language support as it's not yet supported
@@ -12,14 +12,16 @@ if(PIKA_WITH_CUDA AND NOT TARGET Cuda::cuda)
       pika_add_config_define(PIKA_HAVE_CUDA)
     endif()
 
-    add_library(Cuda::cuda INTERFACE IMPORTED)
+    add_library(pika_internal::cuda INTERFACE IMPORTED)
 
     find_package(CUDAToolkit MODULE REQUIRED)
-    target_link_libraries(Cuda::cuda INTERFACE CUDA::cudart)
-    target_link_libraries(Cuda::cuda INTERFACE CUDA::cublas CUDA::cusolver)
+    target_link_libraries(pika_internal::cuda INTERFACE CUDA::cudart)
+    target_link_libraries(
+      pika_internal::cuda INTERFACE CUDA::cublas CUDA::cusolver
+    )
 
     if(NOT PIKA_FIND_PACKAGE)
-      target_link_libraries(pika_base_libraries INTERFACE Cuda::cuda)
+      target_link_libraries(pika_base_libraries INTERFACE pika_internal::cuda)
     endif()
   else()
     # nvcc or clang are only used for cu files with CMake's CUDA language
@@ -50,24 +52,26 @@ if(PIKA_WITH_CUDA AND NOT TARGET Cuda::cuda)
     endif()
 
     # CUDA libraries used
-    add_library(Cuda::cuda INTERFACE IMPORTED)
+    add_library(pika_internal::cuda INTERFACE IMPORTED)
     # Toolkit targets like CUDA::cudart, CUDA::cublas, CUDA::cufft, etc.
     # available
     find_package(CUDAToolkit MODULE REQUIRED)
     if(CUDAToolkit_FOUND)
-      target_link_libraries(Cuda::cuda INTERFACE CUDA::cudart)
-      target_link_libraries(Cuda::cuda INTERFACE CUDA::cublas CUDA::cusolver)
+      target_link_libraries(pika_internal::cuda INTERFACE CUDA::cudart)
+      target_link_libraries(
+        pika_internal::cuda INTERFACE CUDA::cublas CUDA::cusolver
+      )
     endif()
     # Flag not working for CLANG CUDA
     target_compile_features(
-      Cuda::cuda INTERFACE cuda_std_${PIKA_WITH_CXX_STANDARD}
+      pika_internal::cuda INTERFACE cuda_std_${PIKA_WITH_CXX_STANDARD}
     )
     set_target_properties(
-      Cuda::cuda PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON
+      pika_internal::cuda PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON
     )
 
     target_compile_definitions(
-      Cuda::cuda
+      pika_internal::cuda
       INTERFACE
         $<$<AND:$<CUDA_COMPILER_ID:Clang>,$<COMPILE_LANGUAGE:CUDA>>:FMT_USE_FLOAT128=0>
         $<$<AND:$<CUDA_COMPILER_ID:NVIDIA>,$<COMPILE_LANGUAGE:CUDA>>:FMT_USE_NONTYPE_TEMPLATE_ARGS=0>
@@ -81,7 +85,7 @@ if(PIKA_WITH_CUDA AND NOT TARGET Cuda::cuda)
       if(MSVC)
         set(CUDA_PROPAGATE_HOST_FLAGS OFF)
         target_compile_options(
-          Cuda::cuda
+          pika_internal::cuda
           INTERFACE $<$<COMPILE_LANGUAGE:CUDA>:$<$<CONFIG:Debug>:
                     -D_DEBUG
                     -O0
@@ -94,7 +98,7 @@ if(PIKA_WITH_CUDA AND NOT TARGET Cuda::cuda)
                     >>
         )
         target_compile_options(
-          Cuda::cuda
+          pika_internal::cuda
           INTERFACE $<$<COMPILE_LANGUAGE:CUDA>:$<$<CONFIG:RelWithDebInfo>:
                     -DNDEBUG
                     -O2
@@ -104,19 +108,19 @@ if(PIKA_WITH_CUDA AND NOT TARGET Cuda::cuda)
                     >>
         )
         target_compile_options(
-          Cuda::cuda
+          pika_internal::cuda
           INTERFACE $<$<COMPILE_LANGUAGE:CUDA>:$<$<CONFIG:MinSizeRel>: -DNDEBUG
                     -O1 -Xcompiler=-MD,-O1 -Xcompiler=-bigobj >>
         )
         target_compile_options(
-          Cuda::cuda
+          pika_internal::cuda
           INTERFACE $<$<COMPILE_LANGUAGE:CUDA>:$<$<CONFIG:Release>: -DNDEBUG
                     -O2 -Xcompiler=-MD,-Ox -Xcompiler=-bigobj >>
         )
       endif()
       set(CUDA_SEPARABLE_COMPILATION ON)
       target_compile_options(
-        Cuda::cuda
+        pika_internal::cuda
         INTERFACE $<$<COMPILE_LANGUAGE:CUDA>: --extended-lambda
                   --default-stream per-thread --expt-relaxed-constexpr >
       )
@@ -138,7 +142,7 @@ if(PIKA_WITH_CUDA AND NOT TARGET Cuda::cuda)
     endif()
 
     if(NOT PIKA_FIND_PACKAGE)
-      target_link_libraries(pika_base_libraries INTERFACE Cuda::cuda)
+      target_link_libraries(pika_base_libraries INTERFACE pika_internal::cuda)
     endif()
   endif()
 endif()

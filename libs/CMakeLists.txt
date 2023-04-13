@@ -106,5 +106,5 @@ if(MSVC AND PIKA_WITH_SWAP_CONTEXT_EMULATION)
 endif()
 
 if(PIKA_WITH_ITTNOTIFY)
-  target_link_libraries(pika PUBLIC Amplifier::amplifier)
+  target_link_libraries(pika PUBLIC pika_internal::amplifier)
 endif()
