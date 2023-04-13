@@ -777,7 +777,7 @@ namespace pika::execution::experimental {
             return storage.empty();
         }
 
-        operator bool() const noexcept
+        explicit operator bool() const noexcept
         {
             return !empty();
         }
@@ -866,7 +866,7 @@ namespace pika::execution::experimental {
             return storage.empty();
         }
 
-        operator bool() const noexcept
+        explicit operator bool() const noexcept
         {
             return !empty();
         }
