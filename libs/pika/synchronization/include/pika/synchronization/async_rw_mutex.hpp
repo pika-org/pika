@@ -344,7 +344,7 @@ namespace pika::execution::experimental {
         async_rw_mutex(async_rw_mutex const&) = delete;
         async_rw_mutex& operator=(async_rw_mutex const&) = delete;
 
-        sender<detail::async_rw_mutex_access_type::read> read()
+        PIKA_FORCEINLINE sender<detail::async_rw_mutex_access_type::read> read()
         {
             if (prev_access == detail::async_rw_mutex_access_type::readwrite)
             {
@@ -366,7 +366,7 @@ namespace pika::execution::experimental {
             return {prev_state, state};
         }
 
-        sender<detail::async_rw_mutex_access_type::readwrite> readwrite()
+        PIKA_FORCEINLINE sender<detail::async_rw_mutex_access_type::readwrite> readwrite()
         {
             auto shared_prev_state = PIKA_MOVE(state);
             state = std::allocate_shared<shared_state_type, allocator_type>(alloc);
@@ -426,7 +426,7 @@ namespace pika::execution::experimental {
                 operation_state(operation_state const&) = delete;
                 operation_state& operator=(operation_state const&) = delete;
 
-                friend void tag_invoke(
+                PIKA_FORCEINLINE friend void tag_invoke(
                     pika::execution::experimental::start_t, operation_state& os) noexcept
                 {
                     PIKA_ASSERT_MSG(os.state,
@@ -465,7 +465,8 @@ namespace pika::execution::experimental {
             };
 
             template <typename R>
-            friend auto tag_invoke(pika::execution::experimental::connect_t, sender&& s, R&& r)
+            PIKA_FORCEINLINE friend auto
+            tag_invoke(pika::execution::experimental::connect_t, sender&& s, R&& r)
             {
                 return operation_state<R>{
                     PIKA_FORWARD(R, r), PIKA_MOVE(s.prev_state), PIKA_MOVE(s.state)};
@@ -520,7 +521,7 @@ namespace pika::execution::experimental {
         async_rw_mutex(async_rw_mutex const&) = delete;
         async_rw_mutex& operator=(async_rw_mutex const&) = delete;
 
-        sender<detail::async_rw_mutex_access_type::read> read()
+        PIKA_FORCEINLINE sender<detail::async_rw_mutex_access_type::read> read()
         {
             if (prev_access == detail::async_rw_mutex_access_type::readwrite)
             {
@@ -547,7 +548,7 @@ namespace pika::execution::experimental {
             return {prev_state, state};
         }
 
-        sender<detail::async_rw_mutex_access_type::readwrite> readwrite()
+        PIKA_FORCEINLINE sender<detail::async_rw_mutex_access_type::readwrite> readwrite()
         {
             auto shared_prev_state = PIKA_MOVE(state);
             state = std::allocate_shared<shared_state_type, allocator_type>(alloc);
@@ -622,7 +623,7 @@ namespace pika::execution::experimental {
                 operation_state(operation_state const&) = delete;
                 operation_state& operator=(operation_state const&) = delete;
 
-                friend void tag_invoke(
+                PIKA_FORCEINLINE friend void tag_invoke(
                     pika::execution::experimental::start_t, operation_state& os) noexcept
                 {
                     PIKA_ASSERT_MSG(os.state,
@@ -661,14 +662,16 @@ namespace pika::execution::experimental {
             };
 
             template <typename R>
-            friend auto tag_invoke(pika::execution::experimental::connect_t, sender&& s, R&& r)
+            PIKA_FORCEINLINE friend auto
+            tag_invoke(pika::execution::experimental::connect_t, sender&& s, R&& r)
             {
                 return operation_state<R>{
                     PIKA_FORWARD(R, r), PIKA_MOVE(s.prev_state), PIKA_MOVE(s.state)};
             }
 
             template <typename R>
-            friend auto tag_invoke(pika::execution::experimental::connect_t, sender const& s, R&& r)
+            PIKA_FORCEINLINE friend auto
+            tag_invoke(pika::execution::experimental::connect_t, sender const& s, R&& r)
             {
                 if constexpr (AccessType == detail::async_rw_mutex_access_type::readwrite)
                 {
