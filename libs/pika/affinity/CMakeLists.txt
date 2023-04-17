@@ -20,6 +20,6 @@ pika_add_module(
   HEADERS ${affinity_headers}
   MODULE_DEPENDENCIES pika_assertion pika_config pika_datastructures pika_errors
                       pika_topology pika_util
-  DEPENDENCIES Hwloc::hwloc
+  DEPENDENCIES pika_internal::hwloc
   CMAKE_SUBDIRS tests
 )

@@ -5,7 +5,7 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-if(NOT TARGET Amplifier::amplifier)
+if(NOT TARGET pika_internal::amplifier)
   find_package(PkgConfig QUIET)
   pkg_check_modules(PC_AMPLIFIER QUIET amplifier)
 
@@ -56,9 +56,11 @@ if(NOT TARGET Amplifier::amplifier)
 
   mark_as_advanced(AMPLIFIER_ROOT AMPLIFIER_LIBRARY AMPLIFIER_INCLUDE_DIR)
 
-  add_library(Amplifier::amplifier INTERFACE IMPORTED)
+  add_library(pika_internal::amplifier INTERFACE IMPORTED)
   target_include_directories(
-    Amplifier::amplifier SYSTEM INTERFACE ${AMPLIFIER_INCLUDE_DIR}
+    pika_internal::amplifier SYSTEM INTERFACE ${AMPLIFIER_INCLUDE_DIR}
   )
-  target_link_libraries(Amplifier::amplifier INTERFACE ${AMPLIFIER_LIBRARIES})
+  target_link_libraries(
+    pika_internal::amplifier INTERFACE ${AMPLIFIER_LIBRARIES}
+  )
 endif()

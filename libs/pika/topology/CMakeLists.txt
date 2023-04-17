@@ -26,6 +26,6 @@ pika_add_module(
     pika_logging
     pika_type_support
     pika_util
-  DEPENDENCIES Hwloc::hwloc
+  DEPENDENCIES pika_internal::hwloc
   CMAKE_SUBDIRS examples tests
 )

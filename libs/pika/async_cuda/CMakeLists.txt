@@ -47,7 +47,7 @@ set(async_cuda_sources
 if(PIKA_WITH_HIP)
   set(async_cuda_extra_deps roc::rocblas roc::rocsolver)
 elseif(PIKA_WITH_CUDA)
-  set(async_cuda_extra_deps Cuda::cuda ${CUDA_CUBLAS_LIBRARIES}
+  set(async_cuda_extra_deps pika_internal::cuda ${CUDA_CUBLAS_LIBRARIES}
                             ${CUDA_CUSOLVER_LIBRARIES}
   )
 endif()

@@ -13,8 +13,8 @@ set(itt_notify_headers pika/modules/itt_notify.hpp
 
 set(itt_notify_sources itt_notify.cpp thread_name.cpp)
 
-if(TARGET Amplifier::amplifier)
-  set(itt_notify_optional_dependencies Amplifier::amplifier)
+if(TARGET pika_internal::amplifier)
+  set(itt_notify_optional_dependencies pika_internal::amplifier)
 endif()
 
 include(pika_add_module)
