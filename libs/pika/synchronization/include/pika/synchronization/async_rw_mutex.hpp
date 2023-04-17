@@ -348,8 +348,8 @@ namespace pika::execution::experimental {
         {
             if (prev_access == detail::async_rw_mutex_access_type::readwrite)
             {
-                auto shared_prev_state = PIKA_MOVE(state);
-                state = std::allocate_shared<shared_state_type, allocator_type>(alloc);
+                auto shared_prev_state = std::exchange(
+                    state, std::allocate_shared<shared_state_type, allocator_type>(alloc));
                 prev_access = detail::async_rw_mutex_access_type::read;
 
                 // Only the first access has no previous shared state. When
@@ -368,8 +368,8 @@ namespace pika::execution::experimental {
 
         PIKA_FORCEINLINE sender<detail::async_rw_mutex_access_type::readwrite> readwrite()
         {
-            auto shared_prev_state = PIKA_MOVE(state);
-            state = std::allocate_shared<shared_state_type, allocator_type>(alloc);
+            auto shared_prev_state = std::exchange(
+                state, std::allocate_shared<shared_state_type, allocator_type>(alloc));
             prev_access = detail::async_rw_mutex_access_type::readwrite;
 
             // Only the first access has no previous shared state. When there is
@@ -525,8 +525,8 @@ namespace pika::execution::experimental {
         {
             if (prev_access == detail::async_rw_mutex_access_type::readwrite)
             {
-                auto shared_prev_state = PIKA_MOVE(state);
-                state = std::allocate_shared<shared_state_type, allocator_type>(alloc);
+                auto shared_prev_state = std::exchange(
+                    state, std::allocate_shared<shared_state_type, allocator_type>(alloc));
                 prev_access = detail::async_rw_mutex_access_type::read;
 
                 // Only the first access has no previous shared state. When
@@ -550,8 +550,8 @@ namespace pika::execution::experimental {
 
         PIKA_FORCEINLINE sender<detail::async_rw_mutex_access_type::readwrite> readwrite()
         {
-            auto shared_prev_state = PIKA_MOVE(state);
-            state = std::allocate_shared<shared_state_type, allocator_type>(alloc);
+            auto shared_prev_state = std::exchange(
+                state, std::allocate_shared<shared_state_type, allocator_type>(alloc));
             prev_access = detail::async_rw_mutex_access_type::readwrite;
 
             // Only the first access has no previous shared state. When there is
