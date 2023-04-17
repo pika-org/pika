@@ -369,8 +369,11 @@ namespace pika::execution::experimental::detail {
         any_operation_state& operator=(any_operation_state&&) = delete;
         any_operation_state& operator=(any_operation_state const&) = delete;
 
-        PIKA_EXPORT friend void tag_invoke(
-            pika::execution::experimental::start_t, any_operation_state& os) noexcept;
+        PIKA_FORCEINLINE friend void tag_invoke(
+            pika::execution::experimental::start_t, any_operation_state& os) noexcept
+        {
+            os.storage.get().start();
+        }
     };
 
     template <typename... Ts>

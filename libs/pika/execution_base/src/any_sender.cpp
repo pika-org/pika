@@ -27,11 +27,6 @@ namespace pika::execution::experimental::detail {
         return true;
     }
 
-    void tag_invoke(pika::execution::experimental::start_t, any_operation_state& os) noexcept
-    {
-        os.storage.get().start();
-    }
-
     void throw_bad_any_call(char const* class_name, char const* function_name)
     {
         PIKA_THROW_EXCEPTION(pika::error::bad_function_call,
