@@ -94,6 +94,7 @@ Documentation
 Documentation is a work in progress. The following headers are part of the
 public API. Any other headers are internal implementation details.
 
+- ``pika/async_rw_mutex.hpp``
 - ``pika/barrier.hpp``
 - ``pika/channel.hpp``
 - ``pika/condition_variable.hpp``

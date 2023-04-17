@@ -5,6 +5,7 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 set(include_headers
+    pika/async_rw_mutex.hpp
     pika/barrier.hpp
     pika/channel.hpp
     pika/chrono.hpp
@@ -51,6 +52,7 @@ pika_add_module(
     pika_futures
     pika_lcos
     pika_runtime
+    pika_synchronization
     ${include_additional_module_dependencies}
   CMAKE_SUBDIRS examples tests
 )
