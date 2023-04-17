@@ -57,7 +57,7 @@ namespace pika::when_all_impl {
         }
 
         template <typename Error>
-        friend void tag_invoke(pika::execution::experimental::set_error_t,
+        PIKA_FORCEINLINE friend void tag_invoke(pika::execution::experimental::set_error_t,
             when_all_receiver_type&& r, Error&& error) noexcept
         {
             if (!r.op_state.set_stopped_error_called.exchange(true))
@@ -76,7 +76,7 @@ namespace pika::when_all_impl {
             r.op_state.finish();
         }
 
-        friend void tag_invoke(
+        PIKA_FORCEINLINE friend void tag_invoke(
             pika::execution::experimental::set_stopped_t, when_all_receiver_type&& r) noexcept
         {
             r.op_state.set_stopped_error_called = true;
@@ -84,7 +84,7 @@ namespace pika::when_all_impl {
         };
 
         template <typename... Ts, std::size_t... Is>
-        auto set_value_helper(pika::util::detail::index_pack<Is...>, Ts&&... ts)
+        PIKA_FORCEINLINE auto set_value_helper(pika::util::detail::index_pack<Is...>, Ts&&... ts)
             -> decltype((std::declval<typename OperationState::value_types_storage_type>()
                                 .template get<OperationState::i_storage_offset + Is>()
                                 .emplace(PIKA_FORWARD(Ts, ts)),
@@ -103,7 +103,7 @@ namespace pika::when_all_impl {
             typename pika::util::detail::make_index_pack<OperationState::sender_pack_size>::type;
 
         template <typename... Ts>
-        auto set_value(Ts&&... ts) noexcept
+        PIKA_FORCEINLINE auto set_value(Ts&&... ts) noexcept
             -> decltype(set_value_helper(index_pack_type{}, PIKA_FORWARD(Ts, ts)...), void())
         {
             if constexpr (OperationState::sender_pack_size > 0)
@@ -139,8 +139,8 @@ namespace pika::when_all_impl {
     // unique namespace nothing but when_all_receiver should ever find this
     // overload.
     template <typename Receiver, typename... Ts>
-    auto tag_invoke(pika::execution::experimental::set_value_t, Receiver&& r, Ts&&... ts) noexcept
-        -> decltype(r.set_value(PIKA_FORWARD(Ts, ts)...), void())
+    PIKA_FORCEINLINE auto tag_invoke(pika::execution::experimental::set_value_t, Receiver&& r,
+        Ts&&... ts) noexcept -> decltype(r.set_value(PIKA_FORWARD(Ts, ts)...), void())
     {
         r.set_value(PIKA_FORWARD(Ts, ts)...);
     }
@@ -274,20 +274,20 @@ namespace pika::when_all_impl {
             operation_state(operation_state const&) = delete;
             operation_state& operator=(operation_state const&) = delete;
 
-            void start() & noexcept
+            PIKA_FORCEINLINE void start() & noexcept
             {
                 pika::execution::experimental::start(op_state);
             }
 
             template <std::size_t... Is, typename... Ts>
-            void set_value_helper(
+            PIKA_FORCEINLINE void set_value_helper(
                 pika::util::detail::member_pack<pika::util::detail::index_pack<Is...>, Ts...>& ts)
             {
                 pika::execution::experimental::set_value(
                     PIKA_MOVE(receiver), PIKA_MOVE(*(ts.template get<Is>()))...);
             }
 
-            void finish() noexcept
+            PIKA_FORCEINLINE void finish() noexcept
             {
                 if (--predecessors_remaining == 0)
                 {
@@ -359,14 +359,14 @@ namespace pika::when_all_impl {
         };
 
         template <typename Receiver, typename SendersPack>
-        friend void tag_invoke(pika::execution::experimental::start_t,
+        PIKA_FORCEINLINE friend void tag_invoke(pika::execution::experimental::start_t,
             operation_state<Receiver, SendersPack, num_predecessors - 1>& os) noexcept
         {
             os.start();
         }
 
         template <typename Receiver>
-        friend auto tag_invoke(
+        PIKA_FORCEINLINE friend auto tag_invoke(
             pika::execution::experimental::connect_t, when_all_sender_type&& s, Receiver&& receiver)
         {
             return operation_state<Receiver, senders_type&&, num_predecessors - 1>(
@@ -374,7 +374,7 @@ namespace pika::when_all_impl {
         }
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t,
+        PIKA_FORCEINLINE friend auto tag_invoke(pika::execution::experimental::connect_t,
             when_all_sender_type const& s, Receiver&& receiver)
         {
             return operation_state<Receiver, senders_type&, num_predecessors - 1>(

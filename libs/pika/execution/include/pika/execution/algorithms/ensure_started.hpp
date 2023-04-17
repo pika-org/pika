@@ -49,7 +49,7 @@ namespace pika::ensure_started_detail {
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
         template <typename Error>
-        void operator()(Error&& error)
+        PIKA_FORCEINLINE void operator()(Error&& error)
         {
             pika::execution::experimental::set_error(
                 PIKA_MOVE(receiver), PIKA_FORWARD(Error, error));
@@ -61,13 +61,13 @@ namespace pika::ensure_started_detail {
     {
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
-        void operator()(std::monostate)
+        PIKA_FORCEINLINE void operator()(std::monostate)
         {
             PIKA_UNREACHABLE;
         }
 
         template <typename Ts>
-        void operator()(Ts&& ts)
+        PIKA_FORCEINLINE void operator()(Ts&& ts)
         {
             pika::util::detail::invoke_fused(
                 pika::util::detail::bind_front(
@@ -162,14 +162,15 @@ namespace pika::ensure_started_detail {
                 pika::intrusive_ptr<shared_state> state;
 
                 template <typename Error>
-                friend void tag_invoke(pika::execution::experimental::set_error_t,
+                PIKA_FORCEINLINE friend void tag_invoke(pika::execution::experimental::set_error_t,
                     ensure_started_receiver&& r, Error&& error) noexcept
                 {
                     r.state->v.template emplace<error_type>(error_type(PIKA_FORWARD(Error, error)));
                     r.state->set_predecessor_done();
                 }
 
-                friend void tag_invoke(pika::execution::experimental::set_stopped_t,
+                PIKA_FORCEINLINE friend void tag_invoke(
+                    pika::execution::experimental::set_stopped_t,
                     ensure_started_receiver&& r) noexcept
                 {
                     r.state->set_predecessor_done();
@@ -192,7 +193,7 @@ namespace pika::ensure_started_detail {
                     pika::detail::monostate>;
 
                 template <typename... Ts>
-                friend auto tag_invoke(pika::execution::experimental::set_value_t,
+                PIKA_FORCEINLINE friend auto tag_invoke(pika::execution::experimental::set_value_t,
                     ensure_started_receiver&& r, Ts&&... ts) noexcept
                     -> decltype(std::declval<
                                     pika::detail::variant<pika::detail::monostate, value_type>>()
@@ -254,7 +255,7 @@ namespace pika::ensure_started_detail {
                 }
             };
 
-            void set_predecessor_done()
+            PIKA_FORCEINLINE void set_predecessor_done()
             {
                 // We reset the operation state as soon as the predecessor
                 // is done to release any resources held by it. Any values
@@ -360,7 +361,7 @@ namespace pika::ensure_started_detail {
                 }
             }
 
-            void start() & noexcept
+            PIKA_FORCEINLINE void start() & noexcept
             {
                 if (!start_called.exchange(true))
                 {
@@ -369,12 +370,12 @@ namespace pika::ensure_started_detail {
                 }
             }
 
-            friend void intrusive_ptr_add_ref(shared_state* p)
+            PIKA_FORCEINLINE friend void intrusive_ptr_add_ref(shared_state* p)
             {
                 ++p->reference_count;
             }
 
-            friend void intrusive_ptr_release(shared_state* p)
+            PIKA_FORCEINLINE friend void intrusive_ptr_release(shared_state* p)
             {
                 if (--p->reference_count == 0)
                 {
@@ -430,7 +431,7 @@ namespace pika::ensure_started_detail {
             operation_state(operation_state const&) = delete;
             operation_state& operator=(operation_state const&) = delete;
 
-            friend void tag_invoke(
+            PIKA_FORCEINLINE friend void tag_invoke(
                 pika::execution::experimental::start_t, operation_state& os) noexcept
             {
                 os.state->add_continuation(PIKA_MOVE(os.receiver));
@@ -438,14 +439,15 @@ namespace pika::ensure_started_detail {
         };
 
         template <typename Receiver>
-        friend operation_state<Receiver> tag_invoke(pika::execution::experimental::connect_t,
-            ensure_started_sender_type&& s, Receiver&& receiver)
+        PIKA_FORCEINLINE friend operation_state<Receiver>
+        tag_invoke(pika::execution::experimental::connect_t, ensure_started_sender_type&& s,
+            Receiver&& receiver)
         {
             return {PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.state)};
         }
 
         template <typename Receiver>
-        friend operation_state<Receiver> tag_invoke(
+        PIKA_FORCEINLINE friend operation_state<Receiver> tag_invoke(
             pika::execution::experimental::connect_t, ensure_started_sender_type const&, Receiver&&)
         {
             static_assert(sizeof(Receiver) == 0,

@@ -45,7 +45,7 @@ namespace pika::split_tuple_detail {
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
         template <typename Error>
-        void operator()(Error const& error)
+        PIKA_FORCEINLINE void operator()(Error const& error)
         {
             pika::execution::experimental::set_error(PIKA_MOVE(receiver), error);
         }
@@ -116,14 +116,14 @@ namespace pika::split_tuple_detail {
             shared_state& state;
 
             template <typename Error>
-            friend void tag_invoke(pika::execution::experimental::set_error_t,
+            PIKA_FORCEINLINE friend void tag_invoke(pika::execution::experimental::set_error_t,
                 split_tuple_receiver&& r, Error&& error) noexcept
             {
                 r.state.v.template emplace<error_type>(error_type(PIKA_FORWARD(Error, error)));
                 r.state.set_predecessor_done();
             }
 
-            friend void tag_invoke(
+            PIKA_FORCEINLINE friend void tag_invoke(
                 pika::execution::experimental::set_stopped_t, split_tuple_receiver&& r) noexcept
             {
                 r.state.set_predecessor_done();
@@ -147,7 +147,7 @@ namespace pika::split_tuple_detail {
 #endif
 
             template <typename T>
-            friend auto tag_invoke(pika::execution::experimental::set_value_t,
+            PIKA_FORCEINLINE friend auto tag_invoke(pika::execution::experimental::set_value_t,
                 split_tuple_receiver&& r, T&& t) noexcept
                 -> decltype(std::declval<
                                 pika::detail::variant<pika::detail::monostate, value_type>>()
@@ -159,7 +159,7 @@ namespace pika::split_tuple_detail {
                 r.state.set_predecessor_done();
             }
 
-            friend constexpr pika::execution::experimental::empty_env tag_invoke(
+            PIKA_FORCEINLINE friend constexpr pika::execution::experimental::empty_env tag_invoke(
                 pika::execution::experimental::get_env_t, split_tuple_receiver const&) noexcept
             {
                 return {};
@@ -189,12 +189,12 @@ namespace pika::split_tuple_detail {
         {
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
-            [[noreturn]] void operator()(pika::detail::monostate) const
+            PIKA_FORCEINLINE [[noreturn]] void operator()(pika::detail::monostate) const
             {
                 PIKA_UNREACHABLE;
             }
 
-            void operator()(pika::execution::detail::stopped_type)
+            PIKA_FORCEINLINE void operator()(pika::execution::detail::stopped_type)
             {
                 constexpr bool sends_stopped =
 #if defined(PIKA_HAVE_STDEXEC)
@@ -214,20 +214,20 @@ namespace pika::split_tuple_detail {
                 }
             }
 
-            void operator()(error_type const& error)
+            PIKA_FORCEINLINE void operator()(error_type const& error)
             {
                 pika::detail::visit(
                     error_visitor<Receiver>{PIKA_FORWARD(Receiver, receiver)}, error);
             }
 
-            void operator()(value_type& t)
+            PIKA_FORCEINLINE void operator()(value_type& t)
             {
                 pika::execution::experimental::set_value(
                     PIKA_MOVE(receiver), std::move(std::get<Index>(t)));
             }
         };
 
-        void set_predecessor_done()
+        PIKA_FORCEINLINE void set_predecessor_done()
         {
             // We reset the operation state as soon as the predecessor
             // is done to release any resources held by it. Any values
@@ -344,7 +344,7 @@ namespace pika::split_tuple_detail {
             }
         }
 
-        void start() & noexcept
+        PIKA_FORCEINLINE void start() & noexcept
         {
             if (!start_called.exchange(true))
             {
@@ -353,12 +353,12 @@ namespace pika::split_tuple_detail {
             }
         }
 
-        friend void intrusive_ptr_add_ref(shared_state* p)
+        PIKA_FORCEINLINE friend void intrusive_ptr_add_ref(shared_state* p)
         {
             ++p->reference_count;
         }
 
-        friend void intrusive_ptr_release(shared_state* p)
+        PIKA_FORCEINLINE friend void intrusive_ptr_release(shared_state* p)
         {
             if (--p->reference_count == 0)
             {
@@ -479,14 +479,15 @@ namespace pika::split_tuple_detail {
         };
 
         template <typename Receiver>
-        friend operation_state<Receiver> tag_invoke(pika::execution::experimental::connect_t,
-            split_tuple_sender_type&& s, Receiver&& receiver)
+        PIKA_FORCEINLINE friend operation_state<Receiver>
+        tag_invoke(pika::execution::experimental::connect_t, split_tuple_sender_type&& s,
+            Receiver&& receiver)
         {
             return {PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.state)};
         }
 
         template <typename Receiver>
-        friend operation_state<Receiver> tag_invoke(
+        PIKA_FORCEINLINE friend operation_state<Receiver> tag_invoke(
             pika::execution::experimental::connect_t, split_tuple_sender_type const&, Receiver&&)
         {
             static_assert(sizeof(Receiver) == 0,
@@ -497,7 +498,8 @@ namespace pika::split_tuple_detail {
     };
 
     template <typename Sender, typename Allocator, std::size_t... Is>
-    auto make_split_tuple_senders(pika::intrusive_ptr<shared_state<Sender, Allocator>> state,
+    PIKA_FORCEINLINE auto
+    make_split_tuple_senders(pika::intrusive_ptr<shared_state<Sender, Allocator>> state,
         pika::util::detail::index_pack<Is...>)
     {
         return std::tuple(split_tuple_sender<Sender, Allocator, Is>(state)...);

@@ -42,14 +42,14 @@ namespace pika::then_detail {
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
 
         template <typename Error>
-        friend void tag_invoke(pika::execution::experimental::set_error_t, then_receiver_type&& r,
-            Error&& error) noexcept
+        PIKA_FORCEINLINE friend void tag_invoke(pika::execution::experimental::set_error_t,
+            then_receiver_type&& r, Error&& error) noexcept
         {
             pika::execution::experimental::set_error(
                 PIKA_MOVE(r.receiver), PIKA_FORWARD(Error, error));
         }
 
-        friend void tag_invoke(
+        PIKA_FORCEINLINE friend void tag_invoke(
             pika::execution::experimental::set_stopped_t, then_receiver_type&& r) noexcept
         {
             pika::execution::experimental::set_stopped(PIKA_MOVE(r.receiver));
@@ -57,7 +57,7 @@ namespace pika::then_detail {
 
     private:
         template <typename... Ts>
-        void set_value_helper(Ts&&... ts) noexcept
+        PIKA_FORCEINLINE void set_value_helper(Ts&&... ts) noexcept
         {
             pika::detail::try_catch_exception_ptr(
                 [&]() {
@@ -91,7 +91,7 @@ namespace pika::then_detail {
         }
 
         template <typename... Ts>
-        friend void tag_invoke(
+        PIKA_FORCEINLINE friend void tag_invoke(
             pika::execution::experimental::set_value_t, then_receiver_type&& r, Ts&&... ts) noexcept
         {
             // GCC 7 fails with an internal compiler error unless the actual
@@ -141,7 +141,7 @@ namespace pika::then_detail {
         static constexpr bool sends_done = false;
 
         template <typename Receiver>
-        friend auto tag_invoke(
+        PIKA_FORCEINLINE friend auto tag_invoke(
             pika::execution::experimental::connect_t, then_sender_type&& s, Receiver&& receiver)
         {
             return pika::execution::experimental::connect(PIKA_MOVE(s.sender),
@@ -149,14 +149,14 @@ namespace pika::then_detail {
         }
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t, then_sender_type const& r,
-            Receiver&& receiver)
+        PIKA_FORCEINLINE friend auto tag_invoke(pika::execution::experimental::connect_t,
+            then_sender_type const& r, Receiver&& receiver)
         {
             return pika::execution::experimental::connect(
                 r.sender, then_receiver<Receiver, F>{PIKA_FORWARD(Receiver, receiver), r.f});
         }
 
-        friend decltype(auto) tag_invoke(
+        PIKA_FORCEINLINE friend decltype(auto) tag_invoke(
             pika::execution::experimental::get_env_t, then_sender_type const& s)
         {
             return pika::execution::experimental::get_env(s.sender);

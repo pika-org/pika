@@ -42,7 +42,7 @@ namespace pika::start_detached_detail {
 # if !defined(__NVCC__)
             [[noreturn]]
 # endif
-            friend void
+            PIKA_FORCEINLINE friend void
             tag_invoke(pika::execution::experimental::set_error_t, start_detached_receiver&&,
                 Error&& error) noexcept
             {
@@ -58,14 +58,14 @@ namespace pika::start_detached_detail {
                 std::terminate();
             }
 
-            friend void tag_invoke(
+            PIKA_FORCEINLINE friend void tag_invoke(
                 pika::execution::experimental::set_stopped_t, start_detached_receiver&& r) noexcept
             {
                 r.op_state.reset();
             };
 
             template <typename... Ts>
-            friend void tag_invoke(pika::execution::experimental::set_value_t,
+            PIKA_FORCEINLINE friend void tag_invoke(pika::execution::experimental::set_value_t,
                 start_detached_receiver&& r, Ts&&...) noexcept
             {
                 r.op_state.reset();
@@ -95,12 +95,12 @@ namespace pika::start_detached_detail {
         }
 
     private:
-        friend void intrusive_ptr_add_ref(operation_state_holder* p)
+        PIKA_FORCEINLINE friend void intrusive_ptr_add_ref(operation_state_holder* p)
         {
             ++p->count;
         }
 
-        friend void intrusive_ptr_release(operation_state_holder* p)
+        PIKA_FORCEINLINE friend void intrusive_ptr_release(operation_state_holder* p)
         {
             if (--p->count == 0)
             {

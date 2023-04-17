@@ -277,7 +277,7 @@ namespace pika::functional::detail {
             // is nothrow tag-fallback dispatchable
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args>
-            PIKA_HOST_DEVICE constexpr auto
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
             tag_fallback_invoke_impl(std::false_type, Args&&... /*args*/) const noexcept
                 -> not_tag_fallback_noexcept_dispatchable<Tag, Args...>
             {

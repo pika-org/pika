@@ -81,7 +81,7 @@ namespace pika::just_detail {
                 operation_state(operation_state const&) = delete;
                 operation_state& operator=(operation_state const&) = delete;
 
-                friend void tag_invoke(
+                PIKA_FORCEINLINE friend void tag_invoke(
                     pika::execution::experimental::start_t, operation_state& os) noexcept
                 {
                     pika::detail::try_catch_exception_ptr(
@@ -97,14 +97,14 @@ namespace pika::just_detail {
             };
 
             template <typename Receiver>
-            friend auto tag_invoke(
+            PIKA_FORCEINLINE friend auto tag_invoke(
                 pika::execution::experimental::connect_t, just_sender_type&& s, Receiver&& receiver)
             {
                 return operation_state<Receiver>{PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.ts)};
             }
 
             template <typename Receiver>
-            friend auto tag_invoke(pika::execution::experimental::connect_t,
+            PIKA_FORCEINLINE friend auto tag_invoke(pika::execution::experimental::connect_t,
                 just_sender_type const& s, Receiver&& receiver)
             {
                 return operation_state<Receiver>{PIKA_FORWARD(Receiver, receiver), s.ts};

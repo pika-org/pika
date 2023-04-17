@@ -75,7 +75,7 @@ namespace pika::schedule_from_detail {
             PIKA_NO_UNIQUE_ADDRESS Env e;
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Scheduler> scheduler;
 
-            friend std::decay_t<Scheduler> tag_invoke(
+            PIKA_FORCEINLINE friend std::decay_t<Scheduler> tag_invoke(
                 pika::execution::experimental::get_completion_scheduler_t<
                     pika::execution::experimental::set_value_t>,
                 env const& e) noexcept
@@ -84,13 +84,13 @@ namespace pika::schedule_from_detail {
             }
 
             template <typename Tag, PIKA_CONCEPT_REQUIRES_(std::is_invocable_v<Tag, env const&>)>
-            friend decltype(auto) tag_invoke(Tag, env const& e)
+            PIKA_FORCEINLINE friend decltype(auto) tag_invoke(Tag, env const& e)
             {
                 return Tag{}(e.e);
             }
         };
 
-        friend auto tag_invoke(
+        PIKA_FORCEINLINE friend auto tag_invoke(
             pika::execution::experimental::get_env_t, schedule_from_sender_type const& s)
         {
             auto e = pika::execution::experimental::get_env(s.predecessor_sender);
@@ -150,13 +150,13 @@ namespace pika::schedule_from_detail {
                 operation_state& op_state;
 
                 template <typename Error>
-                friend void tag_invoke(pika::execution::experimental::set_error_t,
+                PIKA_FORCEINLINE friend void tag_invoke(pika::execution::experimental::set_error_t,
                     predecessor_sender_receiver&& r, Error&& error) noexcept
                 {
                     r.op_state.set_error_predecessor_sender(PIKA_FORWARD(Error, error));
                 }
 
-                friend void tag_invoke(pika::execution::experimental::set_stopped_t,
+                PIKA_FORCEINLINE friend void tag_invoke(pika::execution::experimental::set_stopped_t,
                     predecessor_sender_receiver&& r) noexcept
                 {
                     r.op_state.set_stopped_predecessor_sender();
@@ -179,7 +179,7 @@ namespace pika::schedule_from_detail {
                     pika::detail::monostate>;
 
                 template <typename... Ts>
-                friend auto tag_invoke(pika::execution::experimental::set_value_t,
+                PIKA_FORCEINLINE friend auto tag_invoke(pika::execution::experimental::set_value_t,
                     predecessor_sender_receiver&& r, Ts&&... ts) noexcept
                     -> decltype(std::declval<value_type>()
                                     .template emplace<std::tuple<std::decay_t<Ts>...>>(
@@ -191,19 +191,19 @@ namespace pika::schedule_from_detail {
             };
 
             template <typename Error>
-            void set_error_predecessor_sender(Error&& error) noexcept
+            PIKA_FORCEINLINE void set_error_predecessor_sender(Error&& error) noexcept
             {
                 pika::execution::experimental::set_error(
                     PIKA_MOVE(receiver), PIKA_FORWARD(Error, error));
             }
 
-            void set_stopped_predecessor_sender() noexcept
+            PIKA_FORCEINLINE void set_stopped_predecessor_sender() noexcept
             {
                 pika::execution::experimental::set_stopped(PIKA_MOVE(receiver));
             }
 
             template <typename... Us>
-            void set_value_predecessor_sender(Us&&... us) noexcept
+            PIKA_FORCEINLINE void set_value_predecessor_sender(Us&&... us) noexcept
             {
                 ts.template emplace<std::tuple<std::decay_t<Us>...>>(PIKA_FORWARD(Us, us)...);
 # if defined(PIKA_HAVE_CXX17_COPY_ELISION)
@@ -231,19 +231,19 @@ namespace pika::schedule_from_detail {
                 operation_state& op_state;
 
                 template <typename Error>
-                friend void tag_invoke(pika::execution::experimental::set_error_t,
+                PIKA_FORCEINLINE friend void tag_invoke(pika::execution::experimental::set_error_t,
                     scheduler_sender_receiver&& r, Error&& error) noexcept
                 {
                     r.op_state.set_error_scheduler_sender(PIKA_FORWARD(Error, error));
                 }
 
-                friend void tag_invoke(pika::execution::experimental::set_stopped_t,
+                PIKA_FORCEINLINE friend void tag_invoke(pika::execution::experimental::set_stopped_t,
                     scheduler_sender_receiver&& r) noexcept
                 {
                     r.op_state.set_stopped_scheduler_sender();
                 }
 
-                friend void tag_invoke(pika::execution::experimental::set_value_t,
+                PIKA_FORCEINLINE friend void tag_invoke(pika::execution::experimental::set_value_t,
                     scheduler_sender_receiver&& r) noexcept
                 {
                     r.op_state.set_value_scheduler_sender();
@@ -262,7 +262,7 @@ namespace pika::schedule_from_detail {
                 template <typename Ts,
                     typename = std::enable_if_t<
                         !std::is_same_v<std::decay_t<Ts>, pika::detail::monostate>>>
-                void operator()(Ts&& ts)
+                PIKA_FORCEINLINE void operator()(Ts&& ts)
                 {
                     pika::util::detail::invoke_fused(
                         pika::util::detail::bind_front(
@@ -272,27 +272,27 @@ namespace pika::schedule_from_detail {
             };
 
             template <typename Error>
-            void set_error_scheduler_sender(Error&& error) noexcept
+            PIKA_FORCEINLINE void set_error_scheduler_sender(Error&& error) noexcept
             {
                 scheduler_op_state.reset();
                 pika::execution::experimental::set_error(
                     PIKA_MOVE(receiver), PIKA_FORWARD(Error, error));
             }
 
-            void set_stopped_scheduler_sender() noexcept
+            PIKA_FORCEINLINE void set_stopped_scheduler_sender() noexcept
             {
                 scheduler_op_state.reset();
                 pika::execution::experimental::set_stopped(PIKA_MOVE(receiver));
             }
 
-            void set_value_scheduler_sender() noexcept
+            PIKA_FORCEINLINE void set_value_scheduler_sender() noexcept
             {
                 scheduler_op_state.reset();
                 pika::detail::visit(
                     scheduler_sender_value_visitor{PIKA_MOVE(receiver)}, PIKA_MOVE(ts));
             }
 
-            friend void tag_invoke(
+            PIKA_FORCEINLINE friend void tag_invoke(
                 pika::execution::experimental::start_t, operation_state& os) noexcept
             {
                 pika::execution::experimental::start(os.sender_os);

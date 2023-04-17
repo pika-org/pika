@@ -50,7 +50,7 @@ namespace pika::split_detail {
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
         template <typename Error>
-        void operator()(Error const& error)
+        PIKA_FORCEINLINE void operator()(Error const& error)
         {
             pika::execution::experimental::set_error(PIKA_MOVE(receiver), error);
         }
@@ -62,7 +62,7 @@ namespace pika::split_detail {
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
         template <typename Ts>
-        void operator()(Ts const& ts)
+        PIKA_FORCEINLINE void operator()(Ts const& ts)
         {
             pika::util::detail::invoke_fused(
                 pika::util::detail::bind_front(
@@ -165,14 +165,14 @@ namespace pika::split_detail {
                 shared_state& state;
 
                 template <typename Error>
-                friend void tag_invoke(pika::execution::experimental::set_error_t,
+                PIKA_FORCEINLINE friend void tag_invoke(pika::execution::experimental::set_error_t,
                     split_receiver&& r, Error&& error) noexcept
                 {
                     r.state.v.template emplace<error_type>(error_type(PIKA_FORWARD(Error, error)));
                     r.state.set_predecessor_done();
                 }
 
-                friend void tag_invoke(
+                PIKA_FORCEINLINE friend void tag_invoke(
                     pika::execution::experimental::set_stopped_t, split_receiver&& r) noexcept
                 {
                     r.state.set_predecessor_done();
@@ -192,7 +192,7 @@ namespace pika::split_detail {
                     value_type_helper>;
 
                 template <typename... Ts>
-                friend auto tag_invoke(pika::execution::experimental::set_value_t,
+                PIKA_FORCEINLINE friend auto tag_invoke(pika::execution::experimental::set_value_t,
                     split_receiver&& r, Ts&&... ts) noexcept
                     -> decltype(std::declval<
                                     pika::detail::variant<pika::detail::monostate, value_type>>()
@@ -254,7 +254,7 @@ namespace pika::split_detail {
                 }
             };
 
-            void set_predecessor_done()
+            PIKA_FORCEINLINE void set_predecessor_done()
             {
                 // We reset the operation state as soon as the predecessor
                 // is done to release any resources held by it. Any values
@@ -368,7 +368,7 @@ namespace pika::split_detail {
                 }
             }
 
-            void start() & noexcept
+            PIKA_FORCEINLINE void start() & noexcept
             {
                 if (!start_called.exchange(true))
                 {
@@ -377,12 +377,12 @@ namespace pika::split_detail {
                 }
             }
 
-            friend void intrusive_ptr_add_ref(shared_state* p)
+            PIKA_FORCEINLINE friend void intrusive_ptr_add_ref(shared_state* p)
             {
                 ++p->reference_count;
             }
 
-            friend void intrusive_ptr_release(shared_state* p)
+            PIKA_FORCEINLINE friend void intrusive_ptr_release(shared_state* p)
             {
                 if (--p->reference_count == 0)
                 {
@@ -436,7 +436,7 @@ namespace pika::split_detail {
             operation_state(operation_state const&) = delete;
             operation_state& operator=(operation_state const&) = delete;
 
-            friend void tag_invoke(
+            PIKA_FORCEINLINE friend void tag_invoke(
                 pika::execution::experimental::start_t, operation_state& os) noexcept
             {
                 os.state->start();
@@ -445,15 +445,16 @@ namespace pika::split_detail {
         };
 
         template <typename Receiver>
-        friend operation_state<Receiver> tag_invoke(
+        PIKA_FORCEINLINE friend operation_state<Receiver> tag_invoke(
             pika::execution::experimental::connect_t, split_sender_type&& s, Receiver&& receiver)
         {
             return {PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.state)};
         }
 
         template <typename Receiver>
-        friend operation_state<Receiver> tag_invoke(pika::execution::experimental::connect_t,
-            split_sender_type const& s, Receiver&& receiver)
+        PIKA_FORCEINLINE friend operation_state<Receiver>
+        tag_invoke(pika::execution::experimental::connect_t, split_sender_type const& s,
+            Receiver&& receiver)
         {
             return {PIKA_FORWARD(Receiver, receiver), s.state};
         }
