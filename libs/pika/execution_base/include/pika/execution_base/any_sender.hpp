@@ -495,7 +495,7 @@ namespace pika::execution::experimental::detail {
         any_receiver& operator=(any_receiver&&) = default;
         any_receiver& operator=(any_receiver const&) = delete;
 
-        friend void tag_invoke(
+        PIKA_FORCEINLINE friend void tag_invoke(
             pika::execution::experimental::set_value_t, any_receiver&& r, Ts... ts) noexcept
         {
             // We first move the storage to a temporary variable so that
@@ -506,8 +506,8 @@ namespace pika::execution::experimental::detail {
             PIKA_MOVE(moved_storage.get()).set_value(PIKA_MOVE(ts)...);
         }
 
-        friend void tag_invoke(pika::execution::experimental::set_error_t, any_receiver&& r,
-            std::exception_ptr ep) noexcept
+        PIKA_FORCEINLINE friend void tag_invoke(pika::execution::experimental::set_error_t,
+            any_receiver&& r, std::exception_ptr ep) noexcept
         {
             // We first move the storage to a temporary variable so that
             // this any_receiver is empty after this set_error. Doing
@@ -517,7 +517,7 @@ namespace pika::execution::experimental::detail {
             PIKA_MOVE(moved_storage.get()).set_error(PIKA_MOVE(ep));
         }
 
-        friend void tag_invoke(
+        PIKA_FORCEINLINE friend void tag_invoke(
             pika::execution::experimental::set_stopped_t, any_receiver&& r) noexcept
         {
             // We first move the storage to a temporary variable so that
@@ -528,7 +528,7 @@ namespace pika::execution::experimental::detail {
             PIKA_MOVE(moved_storage.get()).set_stopped();
         }
 
-        friend constexpr pika::execution::experimental::empty_env tag_invoke(
+        PIKA_FORCEINLINE friend constexpr pika::execution::experimental::empty_env tag_invoke(
             pika::execution::experimental::get_env_t, any_receiver const&) noexcept
         {
             return {};
@@ -749,7 +749,7 @@ namespace pika::execution::experimental {
             pika::execution::experimental::set_stopped_t()>;
 
         template <typename R>
-        friend detail::any_operation_state
+        PIKA_FORCEINLINE friend detail::any_operation_state
         tag_invoke(pika::execution::experimental::connect_t, unique_any_sender&& s, R&& r)
         {
             // We first move the storage to a temporary variable so that this
@@ -762,7 +762,7 @@ namespace pika::execution::experimental {
         }
 
         template <typename R>
-        friend detail::any_operation_state
+        PIKA_FORCEINLINE friend detail::any_operation_state
         tag_invoke(pika::execution::experimental::connect_t, unique_any_sender const&, R&&)
         {
             static_assert(sizeof(R) == 0,
@@ -842,14 +842,14 @@ namespace pika::execution::experimental {
             pika::execution::experimental::set_stopped_t()>;
 
         template <typename R>
-        friend detail::any_operation_state
+        PIKA_FORCEINLINE friend detail::any_operation_state
         tag_invoke(pika::execution::experimental::connect_t, any_sender const& s, R&& r)
         {
             return s.storage.get().connect(detail::any_receiver<Ts...>{PIKA_FORWARD(R, r)});
         }
 
         template <typename R>
-        friend detail::any_operation_state
+        PIKA_FORCEINLINE friend detail::any_operation_state
         tag_invoke(pika::execution::experimental::connect_t, any_sender&& s, R&& r)
         {
             // We first move the storage to a temporary variable so that this
