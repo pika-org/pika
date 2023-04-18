@@ -99,11 +99,11 @@ namespace pika::util {
 #endif
             "throw_on_held_lock = ${PIKA_THROW_ON_HELD_LOCK:1}",
 #endif
-#ifdef PIKA_HAVE_THREAD_MINIMAL_DEADLOCK_DETECTION
+#ifdef PIKA_HAVE_THREAD_DEADLOCK_DETECTION
 #ifdef PIKA_DEBUG
-            "minimal_deadlock_detection = ${PIKA_MINIMAL_DEADLOCK_DETECTION:1}",
+            "deadlock_detection = ${PIKA_DEADLOCK_DETECTION:1}",
 #else
-            "minimal_deadlock_detection = ${PIKA_MINIMAL_DEADLOCK_DETECTION:0}",
+            "deadlock_detection = ${PIKA_DEADLOCK_DETECTION:0}",
 #endif
 #endif
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
@@ -436,15 +436,15 @@ namespace pika::util {
     }
 
     // Enable minimal deadlock detection for pika threads
-    bool runtime_configuration::enable_minimal_deadlock_detection() const
+    bool runtime_configuration::enable_deadlock_detection() const
     {
-#ifdef PIKA_HAVE_THREAD_MINIMAL_DEADLOCK_DETECTION
+#ifdef PIKA_HAVE_THREAD_DEADLOCK_DETECTION
         if (pika::detail::section const* sec = get_section("pika"); nullptr != sec)
         {
 # ifdef PIKA_DEBUG
-            return pika::detail::get_entry_as<int>(*sec, "minimal_deadlock_detection", 1) != 0;
+            return pika::detail::get_entry_as<int>(*sec, "deadlock_detection", 1) != 0;
 # else
-            return pika::detail::get_entry_as<int>(*sec, "minimal_deadlock_detection", 0) != 0;
+            return pika::detail::get_entry_as<int>(*sec, "deadlock_detection", 0) != 0;
 # endif
         }
 
