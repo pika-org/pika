@@ -62,7 +62,7 @@ namespace pika::util {
         bool enable_global_lock_detection() const;
 
         // Enable minimal deadlock detection for pika threads
-        bool enable_minimal_deadlock_detection() const;
+        bool enable_deadlock_detection() const;
         bool enable_spinlock_deadlock_detection() const;
         std::size_t get_spinlock_deadlock_detection_limit() const;
         std::size_t get_spinlock_deadlock_warning_limit() const;

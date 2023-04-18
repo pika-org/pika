@@ -58,7 +58,7 @@ namespace pika::threads::detail {
       , parent_thread_id_(init_data.parent_id)
       , parent_thread_phase_(init_data.parent_phase)
 #endif
-#ifdef PIKA_HAVE_THREAD_MINIMAL_DEADLOCK_DETECTION
+#ifdef PIKA_HAVE_THREAD_DEADLOCK_DETECTION
       , marked_state_(thread_schedule_state::unknown)
 #endif
 #ifdef PIKA_HAVE_THREAD_BACKTRACE_ON_SUSPENSION
@@ -198,7 +198,7 @@ namespace pika::threads::detail {
         parent_thread_id_ = init_data.parent_id;
         parent_thread_phase_ = init_data.parent_phase;
 #endif
-#ifdef PIKA_HAVE_THREAD_MINIMAL_DEADLOCK_DETECTION
+#ifdef PIKA_HAVE_THREAD_DEADLOCK_DETECTION
         set_marked_state(thread_schedule_state::unknown);
 #endif
 #ifdef PIKA_HAVE_THREAD_BACKTRACE_ON_SUSPENSION
