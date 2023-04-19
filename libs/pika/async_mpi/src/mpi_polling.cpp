@@ -841,7 +841,14 @@ namespace pika::mpi::experimental {
             }
             // override mpi pool name with whatever we decided on
             set_pool_name(name);
-            detail::register_polling(pika::resource::get_thread_pool(name));
+            auto mode = mpi::experimental::get_completion_mode();
+            if (mode > 0 && mode < 100)
+            {
+                PIKA_DETAIL_DP(detail::mpi_debug<0>,
+                    debug(str<>("register_polling"), name, "mode",
+                        mpi::experimental::get_completion_mode()));
+                detail::register_polling(pika::resource::get_thread_pool(name));
+            }
             detail::pool_exists_ = (name != resource::get_pool_name(0));
         }
         else
@@ -850,7 +857,14 @@ namespace pika::mpi::experimental {
             // make sure the mpi pool name matches what the user passed in
             detail::pool_exists_ = true;
             set_pool_name(pool_name);
-            detail::register_polling(pika::resource::get_thread_pool(pool_name));
+            auto mode = mpi::experimental::get_completion_mode();
+            if (mode > 0 && mode < 100)
+            {
+                PIKA_DETAIL_DP(detail::mpi_debug<0>,
+                    debug(str<>("register_polling"), pool_name, "mode",
+                        mpi::experimental::get_completion_mode()));
+                detail::register_polling(pika::resource::get_thread_pool(pool_name));
+            }
             detail::pool_exists_ = (pool_name != resource::get_pool_name(0));
         }
     }
