@@ -511,10 +511,10 @@ namespace pika {
                     return -1;
                 }
 
-#if defined(PIKA_HAVE_HIP)
-                LPROGRESS_ << "run_local: initialize HIP";
-                whip::check_error(hipInit(0));
-#endif
+// #if defined(PIKA_HAVE_HIP)
+//                 LPROGRESS_ << "run_local: initialize HIP";
+//                 whip::check_error(hipInit(0));
+// #endif
 
                 // Initialize and start the pika runtime.
                 LPROGRESS_ << "run_local: create runtime";
