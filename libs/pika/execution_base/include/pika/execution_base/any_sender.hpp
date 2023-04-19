@@ -35,6 +35,22 @@
 # pragma GCC diagnostic ignored "-Warray-bounds"
 #endif
 
+#if !defined(PIKA_ANY_OPERATION_STATE_SBO_SIZE)
+#define PIKA_ANY_OPERATION_STATE_SBO_SIZE 8
+#endif
+
+#if !defined(PIKA_ANY_RECEIVER_SBO_SIZE)
+#define PIKA_ANY_RECEIVER_SBO_SIZE 4
+#endif
+
+#if !defined(PIKA_UNIQUE_ANY_SENDER_SBO_SIZE)
+#define PIKA_UNIQUE_ANY_SENDER_SBO_SIZE 4
+#endif
+
+#if !defined(PIKA_ANY_SENDER_SBO_SIZE)
+#define PIKA_ANY_SENDER_SBO_SIZE 4
+#endif
+
 namespace pika::detail {
     template <typename T>
     struct empty_vtable_type
@@ -351,7 +367,8 @@ namespace pika::execution::experimental::detail {
         using base_type = detail::any_operation_state_base;
         template <typename Sender, typename Receiver>
         using impl_type = detail::any_operation_state_impl<Sender, Receiver>;
-        using storage_type = pika::detail::movable_sbo_storage<base_type, 8 * sizeof(void*)>;
+        using storage_type = pika::detail::movable_sbo_storage<base_type,
+            PIKA_ANY_OPERATION_STATE_SBO_SIZE * sizeof(void*)>;
 
         storage_type storage{};
 
@@ -469,7 +486,8 @@ namespace pika::execution::experimental::detail {
         using base_type = detail::any_receiver_base<Ts...>;
         template <typename Receiver>
         using impl_type = detail::any_receiver_impl<Receiver, Ts...>;
-        using storage_type = pika::detail::movable_sbo_storage<base_type, 4 * sizeof(void*)>;
+        using storage_type = pika::detail::movable_sbo_storage<base_type,
+            PIKA_ANY_RECEIVER_SBO_SIZE * sizeof(void*)>;
 
         storage_type storage{};
 
@@ -707,7 +725,8 @@ namespace pika::execution::experimental {
         using base_type = detail::unique_any_sender_base<Ts...>;
         template <typename Sender>
         using impl_type = detail::unique_any_sender_impl<Sender, Ts...>;
-        using storage_type = pika::detail::movable_sbo_storage<base_type, 4 * sizeof(void*)>;
+        using storage_type = pika::detail::movable_sbo_storage<base_type,
+            PIKA_UNIQUE_ANY_SENDER_SBO_SIZE * sizeof(void*)>;
 
         storage_type storage{};
 
@@ -792,7 +811,8 @@ namespace pika::execution::experimental {
         using base_type = detail::any_sender_base<Ts...>;
         template <typename Sender>
         using impl_type = detail::any_sender_impl<Sender, Ts...>;
-        using storage_type = pika::detail::copyable_sbo_storage<base_type, 4 * sizeof(void*)>;
+        using storage_type =
+            pika::detail::copyable_sbo_storage<base_type, PIKA_ANY_SENDER_SBO_SIZE * sizeof(void*)>;
 
         storage_type storage{};
 
