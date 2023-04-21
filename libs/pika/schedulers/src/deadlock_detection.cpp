@@ -8,7 +8,7 @@
 #include <pika/config.hpp>
 #include <pika/schedulers/deadlock_detection.hpp>
 
-namespace pika::threads {
+namespace pika::threads::detail {
 #ifdef PIKA_HAVE_THREAD_DEADLOCK_DETECTION
     static bool deadlock_detection_enabled = false;
 
@@ -22,4 +22,4 @@ namespace pika::threads {
         return deadlock_detection_enabled;
     }
 #endif
-}    // namespace pika::threads
+}    // namespace pika::threads::detail
