@@ -486,7 +486,7 @@ pika_option(
 pika_option(
   PIKA_WITH_THREAD_MANAGER_IDLE_BACKOFF BOOL
   "pika scheduler threads do exponential backoff on idle queues (default: ON)"
-  ON
+  OFF
   CATEGORY "Thread Manager"
   ADVANCED
 )
