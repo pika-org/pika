@@ -167,7 +167,7 @@ namespace pika::util {
                 PIKA_PP_EXPAND(PIKA_HUGE_STACK_SIZE)) "}",
 #if defined(__linux) || defined(linux) || defined(__linux__) ||                \
     defined(__FreeBSD__)
-            "use_guard_pages = ${PIKA_USE_GUARD_PAGES:1}",
+            "use_guard_pages = ${PIKA_USE_GUARD_PAGES:0}",
 #endif
 
             "[pika.thread_queue]",
