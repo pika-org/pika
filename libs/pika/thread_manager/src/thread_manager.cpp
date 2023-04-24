@@ -57,12 +57,10 @@ namespace pika::threads::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    thread_manager::thread_manager(pika::util::runtime_configuration& rtcfg,
-        notification_policy_type& notifier,
-        network_background_callback_type network_background_callback)
+    thread_manager::thread_manager(
+        pika::util::runtime_configuration& rtcfg, notification_policy_type& notifier)
       : rtcfg_(rtcfg)
       , notifier_(notifier)
-      , network_background_callback_(network_background_callback)
     {
         using std::placeholders::_1;
         using std::placeholders::_3;
@@ -145,7 +143,7 @@ namespace pika::threads::detail {
 
             thread_pool_init_parameters thread_pool_init(name, i, scheduler_mode,
                 num_threads_in_pool, thread_offset, notifier_, rp.get_affinity_data(),
-                network_background_callback_, max_idle_loop_count, max_busy_loop_count);
+                max_idle_loop_count, max_busy_loop_count);
 
             std::size_t numa_sensitive =
                 pika::detail::get_entry_as<std::size_t>(rtcfg_, "pika.numa_sensitive", 0);
