@@ -633,8 +633,8 @@ endif()
 pika_option(
   PIKA_WITH_THREAD_CUMULATIVE_COUNTS
   BOOL
-  "Enable keeping track of cumulative thread counts in the schedulers (default: ON)"
-  ON
+  "Enable keeping track of cumulative thread counts in the schedulers (default: OFF)"
+  OFF
   CATEGORY "Thread Manager"
   ADVANCED
 )
