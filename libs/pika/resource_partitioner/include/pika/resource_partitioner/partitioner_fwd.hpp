@@ -8,7 +8,6 @@
 
 #include <pika/config.hpp>
 #include <pika/functional/function.hpp>
-#include <pika/threading_base/network_background_callback.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
 #include <pika/threading_base/thread_queue_init_parameters.hpp>
 

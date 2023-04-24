@@ -19,7 +19,6 @@ set(threading_base_headers
     pika/threading_base/detail/tracy.hpp
     pika/threading_base/execution_agent.hpp
     pika/threading_base/external_timer.hpp
-    pika/threading_base/network_background_callback.hpp
     pika/threading_base/print.hpp
     pika/threading_base/register_thread.hpp
     pika/threading_base/scheduler_base.hpp

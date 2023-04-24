@@ -15,7 +15,6 @@
 #include <pika/modules/errors.hpp>
 #include <pika/thread_pools/scheduling_loop.hpp>
 #include <pika/threading_base/callback_notifier.hpp>
-#include <pika/threading_base/network_background_callback.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
 #include <pika/topology/cpu_mask.hpp>
@@ -326,7 +325,6 @@ namespace pika::threads::detail {
         // support detail::manage_executor interface
         std::atomic<long> thread_count_;
         std::atomic<std::int64_t> tasks_scheduled_;
-        network_background_callback_type network_background_callback_;
 
         std::size_t max_idle_loop_count_;
         std::size_t max_busy_loop_count_;

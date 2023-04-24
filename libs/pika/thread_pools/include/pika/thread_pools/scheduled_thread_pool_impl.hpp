@@ -101,7 +101,6 @@ namespace pika::threads::detail {
       , sched_(PIKA_MOVE(sched))
       , thread_count_(0)
       , tasks_scheduled_(0)
-      , network_background_callback_(init.network_background_callback_)
       , max_idle_loop_count_(init.max_idle_loop_count_)
       , max_busy_loop_count_(init.max_busy_loop_count_)
       , shutdown_check_count_(init.shutdown_check_count_)

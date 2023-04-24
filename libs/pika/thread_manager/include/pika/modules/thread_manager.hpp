@@ -56,10 +56,8 @@ namespace pika::threads::detail {
         using scheduler_type = threads::detail::scheduler_base;
         using pool_vector = std::vector<pool_type>;
 
-        thread_manager(pika::util::runtime_configuration& rtcfg_,
-            notification_policy_type& notifier,
-            network_background_callback_type network_background_callback =
-                network_background_callback_type());
+        thread_manager(
+            pika::util::runtime_configuration& rtcfg_, notification_policy_type& notifier);
         ~thread_manager();
 
         void init();
@@ -367,7 +365,6 @@ namespace pika::threads::detail {
         pool_vector pools_;
 
         notification_policy_type& notifier_;
-        network_background_callback_type network_background_callback_;
     };
 }    // namespace pika::threads::detail
 
