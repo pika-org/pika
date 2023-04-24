@@ -61,9 +61,9 @@ int pika_main(variables_map& vm)
             scheduler_mode::enable_stealing_numa | scheduler_mode::assign_work_round_robin |
             scheduler_mode::steal_high_priority_first);
         sched->remove_scheduler_mode(scheduler_mode::assign_work_thread_parent |
-            scheduler_mode::steal_after_local | scheduler_mode::do_background_work |
-            scheduler_mode::reduce_thread_priority | scheduler_mode::delay_exit |
-            scheduler_mode::fast_idle_mode | scheduler_mode::enable_elasticity);
+            scheduler_mode::steal_after_local | scheduler_mode::reduce_thread_priority |
+            scheduler_mode::delay_exit | scheduler_mode::fast_idle_mode |
+            scheduler_mode::enable_elasticity);
     }
 
     // setup executors for different task priorities on the pools

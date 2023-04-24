@@ -120,7 +120,6 @@ namespace pika::threads::detail {
         pika::threads::callback_notifier& notifier_;
         pika::detail::affinity_data const& affinity_data_;
         pika::threads::detail::network_background_callback_type const& network_background_callback_;
-        std::size_t max_background_threads_;
         std::size_t max_idle_loop_count_;
         std::size_t max_busy_loop_count_;
         std::size_t shutdown_check_count_;
@@ -133,7 +132,6 @@ namespace pika::threads::detail {
             pika::threads::detail::network_background_callback_type const&
                 network_background_callback =
                     pika::threads::detail::network_background_callback_type(),
-            std::size_t max_background_threads = std::size_t(-1),
             std::size_t max_idle_loop_count = PIKA_IDLE_LOOP_COUNT_MAX,
             std::size_t max_busy_loop_count = PIKA_BUSY_LOOP_COUNT_MAX,
             std::size_t shutdown_check_count = 10)
@@ -146,7 +144,6 @@ namespace pika::threads::detail {
           , notifier_(notifier)
           , affinity_data_(affinity_data)
           , network_background_callback_(network_background_callback)
-          , max_background_threads_(max_background_threads)
           , max_idle_loop_count_(max_idle_loop_count)
           , max_busy_loop_count_(max_busy_loop_count)
           , shutdown_check_count_(shutdown_check_count)
@@ -384,11 +381,6 @@ namespace pika::threads::detail {
         }
 
         virtual void get_idle_core_mask(mask_type&) const {}
-
-        virtual std::int64_t get_background_thread_count()
-        {
-            return 0;
-        }
 
         std::int64_t get_thread_count_unknown(std::size_t num_thread, bool reset)
         {
