@@ -10,8 +10,8 @@
 
 #include <pika/assert.hpp>
 #include <pika/concurrency/cache_line_data.hpp>
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/synchronization/detail/condition_variable.hpp>
-#include <pika/synchronization/spinlock.hpp>
 #include <pika/type_support/unused.hpp>
 
 #include <atomic>
@@ -33,7 +33,7 @@ namespace pika {
         PIKA_NON_COPYABLE(latch);
 
     protected:
-        using mutex_type = pika::spinlock;
+        using mutex_type = pika::detail::spinlock;
 
     public:
         /// Initialize the latch

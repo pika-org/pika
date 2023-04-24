@@ -9,10 +9,10 @@
 
 #include <pika/config.hpp>
 #include <pika/concurrency/cache_line_data.hpp>
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/execution_base/agent_ref.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/synchronization/spinlock.hpp>
 #include <pika/thread_support/atomic_count.hpp>
 #include <pika/timing/steady_clock.hpp>
 
@@ -30,7 +30,7 @@ namespace pika::detail {
         PIKA_NON_COPYABLE(condition_variable);
 
     private:
-        using mutex_type = pika::spinlock;
+        using mutex_type = pika::detail::spinlock;
 
     private:
         // define data structures needed for intrusive slist container used for
@@ -158,7 +158,7 @@ namespace pika::detail {
 
     struct condition_variable_data
     {
-        using mutex_type = pika::spinlock;
+        using mutex_type = pika::detail::spinlock;
 
         condition_variable_data()
           : count_(1)

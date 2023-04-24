@@ -9,6 +9,7 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/async_base/launch_policy.hpp>
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/coroutines/detail/get_stack_pointer.hpp>
 #include <pika/datastructures/detail/small_vector.hpp>
 #include <pika/errors/try_catch_exception_ptr.hpp>
@@ -18,7 +19,6 @@
 #include <pika/memory/intrusive_ptr.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/synchronization/condition_variable.hpp>
-#include <pika/synchronization/spinlock.hpp>
 #include <pika/thread_support/assert_owns_lock.hpp>
 #include <pika/thread_support/atomic_count.hpp>
 #include <pika/threading_base/annotated_function.hpp>
@@ -205,7 +205,7 @@ namespace pika::lcos::detail {
     template <>
     struct PIKA_EXPORT future_data_base<traits::detail::future_data_void> : future_data_refcnt_base
     {
-        using mutex_type = pika::spinlock;
+        using mutex_type = pika::detail::spinlock;
 
         future_data_base() noexcept
           : state_(empty)

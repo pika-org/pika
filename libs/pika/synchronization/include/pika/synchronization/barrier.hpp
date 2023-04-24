@@ -11,8 +11,9 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+#include <pika/concurrency/spinlock.hpp>
+#include <pika/execution_base/this_thread.hpp>
 #include <pika/synchronization/detail/condition_variable.hpp>
-#include <pika/synchronization/spinlock.hpp>
 #include <pika/thread_support/assert_owns_lock.hpp>
 
 #include <climits>
@@ -95,7 +96,7 @@ namespace pika {
         PIKA_NON_COPYABLE(barrier);
 
     private:
-        using mutex_type = pika::spinlock;
+        using mutex_type = pika::detail::spinlock;
 
     public:
         using arrival_token = bool;
