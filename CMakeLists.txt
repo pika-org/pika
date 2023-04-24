@@ -201,7 +201,7 @@ endif()
 
 # Logging configuration
 pika_option(
-  PIKA_WITH_LOGGING BOOL "Build pika with logging enabled (default: ON)." ON
+  PIKA_WITH_LOGGING BOOL "Build pika with logging enabled (default: OFF)." OFF
   ADVANCED
 )
 if(PIKA_WITH_LOGGING)

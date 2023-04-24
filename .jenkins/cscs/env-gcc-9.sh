@@ -18,5 +18,6 @@ configure_extra_options+=" -DPIKA_WITH_MAX_CPU_COUNT=128"
 configure_extra_options+=" -DPIKA_WITH_MALLOC=system"
 configure_extra_options+=" -DPIKA_WITH_GENERIC_CONTEXT_COROUTINES=ON"
 configure_extra_options+=" -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
+configure_extra_options+=" -DPIKA_WITH_LOGGING=ON"
 
 build_extra_options+=" -j10"
