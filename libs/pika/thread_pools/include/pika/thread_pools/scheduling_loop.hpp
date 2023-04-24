@@ -511,8 +511,10 @@ namespace pika::threads::detail {
         std::int64_t& idle_loop_count = counters.idle_loop_count_;
         std::int64_t& busy_loop_count = counters.busy_loop_count_;
 
+#if 0
         idle_collect_rate idle_rate(counters.tfunc_time_, counters.exec_time_);
         tfunc_time_wrapper tfunc_time_collector(idle_rate);
+#endif
 
         // spin for some time after queues have become empty
         bool may_exit = false;
@@ -559,7 +561,9 @@ namespace pika::threads::detail {
                     scheduler.SchedulingPolicy::get_next_thread(
                         num_thread, running, thrd, enable_stealing)))
             {
+#if 0
                 tfunc_time_wrapper tfunc_time_collector(idle_rate);
+#endif
                 PIKA_ASSERT(get_thread_id_data(thrd)->get_scheduler_base() == &scheduler);
 
                 idle_loop_count = 0;
@@ -588,7 +592,9 @@ namespace pika::threads::detail {
                             write_state_log(scheduler, num_thread, thrd, thrd_stat.get_previous(),
                                 thread_schedule_state::active);
 
+#if 0
                             tfunc_time_wrapper tfunc_time_collector(idle_rate);
+#endif
 
                             // thread returns new required state
                             // store the returned state in the thread
@@ -603,9 +609,11 @@ namespace pika::threads::detail {
                                 task.add_metadata(task_id, thrdptr);
                                 task.add_metadata(task_phase, thrdptr->get_thread_phase());
 #endif
+#if 0
                                 // Record time elapsed in thread changing state
                                 // and add to aggregate execution time.
                                 exec_time_wrapper exec_time_collector(idle_rate);
+#endif
 
 #if defined(PIKA_HAVE_APEX)
                                 // get the APEX data pointer, in case we are resuming the
