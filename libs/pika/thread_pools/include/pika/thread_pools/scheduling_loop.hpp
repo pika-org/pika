@@ -585,8 +585,10 @@ namespace pika::threads::detail {
                         if (PIKA_LIKELY(thrd_stat.is_valid() &&
                                 thrd_stat.get_previous() == thread_schedule_state::pending))
                         {
+#if 0
                             write_state_log(scheduler, num_thread, thrd, thrd_stat.get_previous(),
                                 thread_schedule_state::active);
+#endif
 
                             tfunc_time_wrapper tfunc_time_collector(idle_rate);
 
@@ -651,8 +653,10 @@ namespace pika::threads::detail {
 #endif
                             }
 
+#if 0
                             write_state_log(scheduler, num_thread, thrd,
                                 thread_schedule_state::active, thrd_stat.get_previous());
+#endif
 
 #ifdef PIKA_HAVE_THREAD_CUMULATIVE_COUNTS
                             ++counters.executed_thread_phases_;
@@ -664,19 +668,23 @@ namespace pika::threads::detail {
                             // executing this pika-thread, we just continue with
                             // the next one
                             thrd_stat.disable_restore();
+#if 0
                             write_state_log_warning(
                                 scheduler, num_thread, thrd, state_val, "no execution");
+#endif
                             continue;
                         }
 
                         // store and retrieve the new state in the thread
                         if (PIKA_UNLIKELY(!thrd_stat.store_state(state)))
                         {
-                            // some other worker-thread got in between and changed
-                            // the state of this thread, we just continue with
-                            // the next one
+// some other worker-thread got in between and changed
+// the state of this thread, we just continue with
+// the next one
+#if 0
                             write_state_log_warning(
                                 scheduler, num_thread, thrd, state_val, "no state change");
+#endif
                             continue;
                         }
 
@@ -751,10 +759,12 @@ namespace pika::threads::detail {
                 else if (PIKA_UNLIKELY(thread_schedule_state::active == state_val))
                 {
                     auto* thrdptr = get_thread_id_data(thrd);
+#if 0
                     LTM_(warning).format("pool({}), scheduler({}), worker_thread({}), thread({}), "
                                          "description({}), rescheduling",
                         *scheduler.get_parent_pool(), scheduler, num_thread,
                         thrdptr->get_thread_id(), thrdptr->get_description());
+#endif
 
                     // re-schedule thread, if it is still marked as active
                     // this might happen, if some thread has been added to the
