@@ -62,7 +62,6 @@ int pika_main(variables_map& vm)
             scheduler_mode::steal_high_priority_first);
         sched->remove_scheduler_mode(scheduler_mode::assign_work_thread_parent |
             scheduler_mode::steal_after_local | scheduler_mode::reduce_thread_priority |
-            scheduler_mode::delay_exit | scheduler_mode::fast_idle_mode |
             scheduler_mode::enable_elasticity);
     }
 
