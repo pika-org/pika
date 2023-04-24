@@ -85,8 +85,6 @@ namespace pika::threads::detail {
         size_t num_pools = rp.get_num_pools();
         std::size_t thread_offset = 0;
 
-        std::size_t max_background_threads = pika::detail::get_entry_as<std::size_t>(
-            rtcfg_, "pika.max_background_threads", (std::numeric_limits<std::size_t>::max)());
         std::size_t const max_idle_loop_count = pika::detail::get_entry_as<std::int64_t>(
             rtcfg_, "pika.max_idle_loop_count", PIKA_IDLE_LOOP_COUNT_MAX);
         std::size_t const max_busy_loop_count = pika::detail::get_entry_as<std::int64_t>(
@@ -147,8 +145,7 @@ namespace pika::threads::detail {
 
             thread_pool_init_parameters thread_pool_init(name, i, scheduler_mode,
                 num_threads_in_pool, thread_offset, notifier_, rp.get_affinity_data(),
-                network_background_callback_, max_background_threads, max_idle_loop_count,
-                max_busy_loop_count);
+                network_background_callback_, max_idle_loop_count, max_busy_loop_count);
 
             std::size_t numa_sensitive =
                 pika::detail::get_entry_as<std::size_t>(rtcfg_, "pika.numa_sensitive", 0);
@@ -582,19 +579,6 @@ namespace pika::threads::detail {
         }
 
         return mask;
-    }
-
-    std::int64_t thread_manager::get_background_thread_count()
-    {
-        std::int64_t total_count = 0;
-        std::lock_guard<mutex_type> lk(mtx_);
-
-        for (auto& pool_iter : pools_)
-        {
-            total_count += pool_iter->get_background_thread_count();
-        }
-
-        return total_count;
     }
 
     ///////////////////////////////////////////////////////////////////////////

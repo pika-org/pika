@@ -190,11 +190,6 @@ namespace pika::threads::detail {
         // Queries whether a given core is idle
         virtual bool is_core_idle(std::size_t num_thread) const = 0;
 
-        // count active background threads
-        std::int64_t get_background_thread_count();
-        void increment_background_thread_count();
-        void decrement_background_thread_count();
-
         // Enumerate all matching threads
         virtual bool enumerate_threads(
             util::detail::function<bool(threads::detail::thread_id_type)> const& f,
@@ -373,8 +368,6 @@ namespace pika::threads::detail {
 
         // the pool that owns this scheduler
         threads::detail::thread_pool_base* parent_pool_;
-
-        std::atomic<std::int64_t> background_thread_count_;
 
         std::atomic<polling_function_ptr> polling_function_mpi_;
         std::atomic<polling_function_ptr> polling_function_cuda_;

@@ -44,7 +44,6 @@ namespace pika::threads::detail {
       , description_(description)
       , thread_queue_init_(thread_queue_init)
       , parent_pool_(nullptr)
-      , background_thread_count_(0)
       , polling_function_mpi_(&null_polling_function)
       , polling_function_cuda_(&null_polling_function)
       , polling_work_count_function_mpi_(&null_polling_work_count_function)
@@ -333,22 +332,6 @@ namespace pika::threads::detail {
         {
             remove_scheduler_mode(mode);
         }
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    std::int64_t scheduler_base::get_background_thread_count()
-    {
-        return background_thread_count_;
-    }
-
-    void scheduler_base::increment_background_thread_count()
-    {
-        ++background_thread_count_;
-    }
-
-    void scheduler_base::decrement_background_thread_count()
-    {
-        --background_thread_count_;
     }
 
 #if defined(PIKA_HAVE_SCHEDULER_LOCAL_STORAGE)

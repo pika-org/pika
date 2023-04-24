@@ -136,8 +136,6 @@ namespace pika::util {
             "pu_step = 1",
             "pu_offset = 0",
             "numa_sensitive = 0",
-            "max_background_threads = "
-            "${PIKA_MAX_BACKGROUND_THREADS:$[pika.os_threads]}",
             "max_idle_loop_count = ${PIKA_MAX_IDLE_LOOP_COUNT:" PIKA_PP_STRINGIZE(
                 PIKA_PP_EXPAND(PIKA_IDLE_LOOP_COUNT_MAX)) "}",
             "max_busy_loop_count = ${PIKA_MAX_BUSY_LOOP_COUNT:" PIKA_PP_STRINGIZE(

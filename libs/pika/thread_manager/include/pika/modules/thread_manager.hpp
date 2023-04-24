@@ -169,8 +169,6 @@ namespace pika::threads::detail {
 
         mask_type get_idle_core_mask();
 
-        std::int64_t get_background_thread_count();
-
         // Enumerate all matching threads
         bool enumerate_threads(util::detail::function<bool(thread_id_type)> const& f,
             thread_schedule_state state = thread_schedule_state::unknown) const;

@@ -101,11 +101,6 @@ namespace pika::threads::detail {
 
         void get_idle_core_mask(mask_type&) const override;
 
-        std::int64_t get_background_thread_count() override
-        {
-            return sched_->Scheduler::get_background_thread_count();
-        }
-
         bool enumerate_threads(util::detail::function<bool(thread_id_type)> const& f,
             thread_schedule_state state) const override
         {
@@ -333,7 +328,6 @@ namespace pika::threads::detail {
         std::atomic<std::int64_t> tasks_scheduled_;
         network_background_callback_type network_background_callback_;
 
-        std::size_t max_background_threads_;
         std::size_t max_idle_loop_count_;
         std::size_t max_busy_loop_count_;
         std::size_t shutdown_check_count_;

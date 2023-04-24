@@ -102,7 +102,6 @@ namespace pika::threads::detail {
       , thread_count_(0)
       , tasks_scheduled_(0)
       , network_background_callback_(init.network_background_callback_)
-      , max_background_threads_(init.max_background_threads_)
       , max_idle_loop_count_(init.max_idle_loop_count_)
       , max_busy_loop_count_(init.max_busy_loop_count_)
       , shutdown_check_count_(init.shutdown_check_count_)
@@ -184,8 +183,8 @@ namespace pika::threads::detail {
         // this returns true only if there is *other* work left on this pool).
         std::int64_t pika_thread_offset =
             (threads::detail::get_self_ptr() && this_thread::get_pool() == this) ? 1 : 0;
-        bool have_pika_threads = get_thread_count_unknown(std::size_t(-1), false) >
-            sched_->Scheduler::get_background_thread_count() + pika_thread_offset;
+        bool have_pika_threads =
+            get_thread_count_unknown(std::size_t(-1), false) > pika_thread_offset;
         bool have_polling_work = sched_->Scheduler::get_polling_work_count() > 0;
 
         return have_pika_threads || have_polling_work;
@@ -367,11 +366,7 @@ namespace pika::threads::detail {
     template <typename Scheduler>
     void scheduled_thread_pool<Scheduler>::suspend_internal(error_code& ec)
     {
-        util::yield_while(
-            [this]() {
-                return this->sched_->Scheduler::get_thread_count() >
-                    this->get_background_thread_count();
-            },
+        util::yield_while([this]() { return this->sched_->Scheduler::get_thread_count() > 0; },
             "scheduled_thread_pool::suspend_internal");
 
         for (std::size_t i = 0; i != threads_.size(); ++i)
@@ -484,15 +479,7 @@ namespace pika::threads::detail {
                 scheduling_callbacks callbacks(
                     util::detail::deferred_call(    //-V107
                         &scheduler_base::idle_callback, sched_.get(), thread_num),
-                    nullptr, nullptr, max_background_threads_, max_idle_loop_count_,
-                    max_busy_loop_count_);
-
-                if (get_scheduler()->has_scheduler_mode(scheduler_mode::do_background_work) &&
-                    network_background_callback_)
-                {
-                    callbacks.background_ = util::detail::deferred_call(    //-V107
-                        network_background_callback_, global_thread_num);
-                }
+                    nullptr, max_idle_loop_count_, max_busy_loop_count_);
 
                 scheduling_loop(thread_num, *sched_, counters, callbacks);
 

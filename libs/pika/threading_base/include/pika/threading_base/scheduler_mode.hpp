@@ -17,10 +17,6 @@ namespace pika::threads {
         /// As the name suggests, this option can be used to disable all other
         /// options.
         nothing_special = 0x000,
-        /// The scheduler will periodically call a provided callback function
-        /// from a special pika thread to enable performing background-work, for
-        /// instance driving networking progress or garbage-collect AGAS.
-        do_background_work = 0x001,
         /// The kernel priority of the os-thread driving the scheduler will be
         /// reduced below normal.
         reduce_thread_priority = 0x002,
@@ -64,7 +60,6 @@ namespace pika::threads {
         // clang-format off
         /// This option represents the default mode.
         default_mode =
-            do_background_work |
             reduce_thread_priority |
             delay_exit |
             enable_stealing |
@@ -74,7 +69,6 @@ namespace pika::threads {
             enable_idle_backoff,
         /// This enables all available options.
         all_flags =
-            do_background_work |
             reduce_thread_priority |
             delay_exit |
             fast_idle_mode |
