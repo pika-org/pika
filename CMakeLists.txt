@@ -866,7 +866,7 @@ pika_option(
   ADVANCED
 )
 pika_option(
-  PIKA_WITH_THREAD_GUARD_PAGE BOOL "Enable thread guard page (default: ON)" ON
+  PIKA_WITH_THREAD_GUARD_PAGE BOOL "Enable thread guard page (default: OFF)" OFF
   CATEGORY "Debugging"
   ADVANCED
 )
