@@ -1068,7 +1068,7 @@ namespace pika::threads::detail {
             if (get_deadlock_detection_enabled())
             {
                 std::lock_guard<mutex_type> lk(mtx_);
-                return detail::dump_suspended_threads(
+                return pika::threads::detail::dump_suspended_threads(
                     num_thread, thread_map_, idle_loop_count, running);
             }
             return false;
