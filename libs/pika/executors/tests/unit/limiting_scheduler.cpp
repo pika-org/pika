@@ -19,6 +19,7 @@
 #include <iostream>
 #include <random>
 #include <string>
+#include <utility>
 #include <vector>
 
 // this test launches many tasks continuously using a limiting scheduler
@@ -55,13 +56,12 @@ void update_maximum(std::atomic<T>& maximum, T const& value) noexcept
 // random work
 void work_fn()
 {
-    static volatile double x;
-    //
     std::default_random_engine eng;
     std::uniform_int_distribution<std::size_t> idist(10, 50);
     std::size_t loop = idist(eng);
     for (std::size_t i = 0; i < loop * 1000; ++i)
     {
+        volatile double x;
         x = std::log10(i);
     }
 }
@@ -142,10 +142,10 @@ void test_limit_simple()
         test_lambda();
         ok = (std::chrono::steady_clock::now() - start < std::chrono::milliseconds(500));
     }
-
-    ex::lsc_debug<0>.debug(str<>("End of task loop :1"), "active", task_active_1, "total",
+    const debug_out = 5;
+    ex::lsc_debug<debug_out>.debug(str<>("End of task loop :1"), "active", task_active_1, "total",
         task_total_1, "max", task_max_1);
-    ex::lsc_debug<0>.debug(str<>("End of task loop :2"), "active", task_active_2, "total",
+    ex::lsc_debug<debug_out>.debug(str<>("End of task loop :2"), "active", task_active_2, "total",
         task_total_2, "max", task_max_2);
 
     // some tasks are still in flight, now yield until all are complete
@@ -154,9 +154,9 @@ void test_limit_simple()
     {
         pika::this_thread::yield();
     }
-    ex::lsc_debug<0>.debug(str<>("End of wait loop :1"), "active", task_active_1, "total",
+    ex::lsc_debug<debug_out>.debug(str<>("End of wait loop :1"), "active", task_active_1, "total",
         task_total_1, "max", task_max_1);
-    ex::lsc_debug<0>.debug(str<>("End of wait loop :2"), "active", task_active_2, "total",
+    ex::lsc_debug<debug_out>.debug(str<>("End of wait loop :2"), "active", task_active_2, "total",
         task_total_2, "max", task_max_2);
 
     PIKA_TEST_LTE(task_max_1, max_simultaneous_tasks_1);
