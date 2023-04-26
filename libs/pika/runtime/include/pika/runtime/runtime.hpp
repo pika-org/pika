@@ -76,8 +76,7 @@ namespace pika {
     protected:
         explicit runtime(pika::util::runtime_configuration& rtcfg);
 
-        void set_notification_policies(notification_policy_type&& notifier,
-            threads::detail::network_background_callback_type network_background_callback);
+        void set_notification_policies(notification_policy_type&& notifier);
 
         /// Common initialization for different constructors
         void init();

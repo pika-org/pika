@@ -15,7 +15,6 @@
 #include <pika/modules/errors.hpp>
 #include <pika/thread_pools/scheduling_loop.hpp>
 #include <pika/threading_base/callback_notifier.hpp>
-#include <pika/threading_base/network_background_callback.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
 #include <pika/topology/cpu_mask.hpp>
@@ -100,11 +99,6 @@ namespace pika::threads::detail {
         std::int64_t get_idle_core_count() const override;
 
         void get_idle_core_mask(mask_type&) const override;
-
-        std::int64_t get_background_thread_count() override
-        {
-            return sched_->Scheduler::get_background_thread_count();
-        }
 
         bool enumerate_threads(util::detail::function<bool(thread_id_type)> const& f,
             thread_schedule_state state) const override
@@ -331,9 +325,7 @@ namespace pika::threads::detail {
         // support detail::manage_executor interface
         std::atomic<long> thread_count_;
         std::atomic<std::int64_t> tasks_scheduled_;
-        network_background_callback_type network_background_callback_;
 
-        std::size_t max_background_threads_;
         std::size_t max_idle_loop_count_;
         std::size_t max_busy_loop_count_;
         std::size_t shutdown_check_count_;

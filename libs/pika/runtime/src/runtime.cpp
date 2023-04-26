@@ -281,8 +281,7 @@ namespace pika {
         // set notification policies only after the object was completely
         // initialized
         runtime::set_notification_policies(
-            runtime::get_notification_policy("worker-thread", os_thread_type::worker_thread),
-            threads::detail::network_background_callback_type{});
+            runtime::get_notification_policy("worker-thread", os_thread_type::worker_thread));
 
         init_global_data();
 
@@ -313,13 +312,11 @@ namespace pika {
         LPROGRESS_;
     }
 
-    void runtime::set_notification_policies(notification_policy_type&& notifier,
-        threads::detail::network_background_callback_type network_background_callback)
+    void runtime::set_notification_policies(notification_policy_type&& notifier)
     {
         notifier_ = PIKA_MOVE(notifier);
 
-        thread_manager_.reset(new pika::threads::detail::thread_manager(
-            rtcfg_, notifier_, network_background_callback));
+        thread_manager_.reset(new pika::threads::detail::thread_manager(rtcfg_, notifier_));
     }
 
     void runtime::init()

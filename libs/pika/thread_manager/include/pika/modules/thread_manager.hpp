@@ -56,10 +56,8 @@ namespace pika::threads::detail {
         using scheduler_type = threads::detail::scheduler_base;
         using pool_vector = std::vector<pool_type>;
 
-        thread_manager(pika::util::runtime_configuration& rtcfg_,
-            notification_policy_type& notifier,
-            network_background_callback_type network_background_callback =
-                network_background_callback_type());
+        thread_manager(
+            pika::util::runtime_configuration& rtcfg_, notification_policy_type& notifier);
         ~thread_manager();
 
         void init();
@@ -168,8 +166,6 @@ namespace pika::threads::detail {
         std::int64_t get_idle_core_count();
 
         mask_type get_idle_core_mask();
-
-        std::int64_t get_background_thread_count();
 
         // Enumerate all matching threads
         bool enumerate_threads(util::detail::function<bool(thread_id_type)> const& f,
@@ -369,7 +365,6 @@ namespace pika::threads::detail {
         pool_vector pools_;
 
         notification_policy_type& notifier_;
-        network_background_callback_type network_background_callback_;
     };
 }    // namespace pika::threads::detail
 

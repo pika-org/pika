@@ -52,7 +52,6 @@ void test_scheduler(int argc, char* argv[])
                 std::unique_ptr<Scheduler> scheduler(new Scheduler(init));
 
                 thread_pool_init.mode_ = pika::threads::scheduler_mode(
-                    pika::threads::scheduler_mode::do_background_work |
                     pika::threads::scheduler_mode::reduce_thread_priority |
                     pika::threads::scheduler_mode::delay_exit);
 
