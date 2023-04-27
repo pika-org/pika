@@ -35,15 +35,15 @@ namespace pika::execution::experimental {
     // a debug level of N shows messages with level 1..N
     using namespace pika::debug::detail;
     template <int Level>
-    static print_threshold<Level, 0> lsc_debug("SCLIMIT");
+    static print_threshold<Level, 1> lsc_debug("SCLIMIT");
 
-    template <typename OnScheduler>
+    template <typename WrappedScheduler>
     struct limiting_scheduler
     {
         using semaphore_type = pika::counting_semaphore<>;
         //
         constexpr limiting_scheduler() = delete;
-        explicit limiting_scheduler(int max_n, OnScheduler on_scheduler)
+        explicit limiting_scheduler(int max_n, WrappedScheduler on_scheduler)
           : internal_scheduler_(on_scheduler)
         {
             semaphore_ = std::make_shared<semaphore_type>(max_n);
@@ -61,7 +61,7 @@ namespace pika::execution::experimental {
             return !(*this == rhs);
         }
 
-        OnScheduler& get_internal_scheduler()
+        WrappedScheduler& get_internal_scheduler()
         {
             return internal_scheduler_;
         }
@@ -77,13 +77,14 @@ namespace pika::execution::experimental {
                 PIKA_DETAIL_DP(lsc_debug<5>, debug(str<>("release")));
                 sem->release();
             };
-            internal_scheduler_.execute(PIKA_MOVE(semaphore_lambda), nullptr);
+            pika::execution::experimental::execute(
+                internal_scheduler_, PIKA_MOVE(semaphore_lambda));
         }
 
         template <typename F>
         friend void tag_invoke(execute_t, limiting_scheduler const& sched, F&& f)
         {
-            pika::execution::experimental::execute(sched, PIKA_FORWARD(F, f));
+            execute(sched, PIKA_FORWARD(F, f));
         }
 
         template <typename Scheduler, typename Receiver>
@@ -182,7 +183,8 @@ namespace pika::execution::experimental {
         }
 
     private:
-        OnScheduler internal_scheduler_;
+        WrappedScheduler internal_scheduler_;
         std::shared_ptr<semaphore_type> semaphore_;
+        /// \endcond
     };
 }    // namespace pika::execution::experimental

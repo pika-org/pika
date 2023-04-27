@@ -142,7 +142,7 @@ void test_limit_simple()
         test_lambda();
         ok = (std::chrono::steady_clock::now() - start < std::chrono::milliseconds(500));
     }
-    const debug_out = 5;
+    const int debug_out = 1;
     ex::lsc_debug<debug_out>.debug(str<>("End of task loop :1"), "active", task_active_1, "total",
         task_total_1, "max", task_max_1);
     ex::lsc_debug<debug_out>.debug(str<>("End of task loop :2"), "active", task_active_2, "total",
