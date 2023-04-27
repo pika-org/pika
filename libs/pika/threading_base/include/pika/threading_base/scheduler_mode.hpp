@@ -54,8 +54,7 @@ namespace pika::threads {
             enable_stealing |
             enable_stealing_numa |
             assign_work_round_robin |
-            steal_after_local |
-            enable_idle_backoff,
+            steal_after_local,
         /// This enables all available options.
         all_flags =
             reduce_thread_priority |
