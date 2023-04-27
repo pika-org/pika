@@ -229,7 +229,7 @@ void init_resource_partitioner_handler(
                 init.affinity_data_, thread_queue_init, "shared-priority-scheduler");
             std::unique_ptr<high_priority_sched> scheduler(new high_priority_sched(scheduler_init));
 
-            init.mode_ = scheduler_mode(scheduler_mode::delay_exit);
+            init.mode_ = scheduler_mode();
 
             std::unique_ptr<pika::threads::detail::thread_pool_base> pool(
                 new pika::threads::detail::scheduled_thread_pool<high_priority_sched>(

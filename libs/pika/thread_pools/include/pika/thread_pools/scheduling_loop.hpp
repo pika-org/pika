@@ -414,16 +414,10 @@ namespace pika::threads::detail {
             bool enable_stealing = scheduler.SchedulingPolicy::has_scheduler_mode(
                 ::pika::threads::scheduler_mode::enable_stealing);
 
-            // stealing staged threads is enabled if:
-            // - fast idle mode is on: same as normal stealing
-            // - fast idle mode off: only after normal stealing has failed for
-            //                       a while
-            bool enable_stealing_staged = enable_stealing;
-            if (!scheduler.SchedulingPolicy::has_scheduler_mode(scheduler_mode::fast_idle_mode))
-            {
-                enable_stealing_staged =
-                    enable_stealing_staged && idle_loop_count > params.max_idle_loop_count_ / 2;
-            }
+            // stealing staged threads is enabled only after normal stealing has
+            // failed for a while
+            bool enable_stealing_staged =
+                enable_stealing && idle_loop_count > params.max_idle_loop_count_ / 2;
 
             if (PIKA_LIKELY(thrd ||
                     scheduler.SchedulingPolicy::get_next_thread(
@@ -679,29 +673,11 @@ namespace pika::threads::detail {
 
                         if (can_exit)
                         {
-                            if (!scheduler.SchedulingPolicy::has_scheduler_mode(
-                                    scheduler_mode::delay_exit))
-                            {
-                                this_state.store(runtime_state::stopped);
-                                break;
-                            }
-                            else
-                            {
-                                // Otherwise, keep idling for some time
-                                if (!may_exit)
-                                    idle_loop_count = 0;
-                                may_exit = true;
-                            }
+                            if (!may_exit)
+                                idle_loop_count = 0;
+                            may_exit = true;
                         }
                     }
-                }
-                else if (!may_exit && added == 0 &&
-                    (scheduler.SchedulingPolicy::has_scheduler_mode(
-                        scheduler_mode::fast_idle_mode)))
-                {
-                    // speed up idle suspend if no work was stolen
-                    idle_loop_count += params.max_idle_loop_count_ / 1024;
-                    added = std::size_t(-1);
                 }
 
                 // call back into invoking context
