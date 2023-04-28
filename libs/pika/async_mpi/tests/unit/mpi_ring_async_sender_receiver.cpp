@@ -325,7 +325,7 @@ int pika_main(pika::program_options::variables_map& vm)
     // main scope with polling enabled
     // --------------------------
     {
-        // enable polling on mpi pool (regardelss of name)
+        // enable polling on mpi pool (regardless of name)
         mpi::enable_user_polling enable_polling("");
 
         // To prevent the application exiting the main scope of mpi polling

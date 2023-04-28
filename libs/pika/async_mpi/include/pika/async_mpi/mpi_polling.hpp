@@ -69,7 +69,7 @@ namespace pika::mpi::experimental {
         // -----------------------------------------------------------------
         /// Called by the mpi senders/executors to initiate throttling
         /// when necessary
-        PIKA_EXPORT void wait_for_throttling(stream_type);
+        //        PIKA_EXPORT void wait_for_throttling(stream_type);
 
         // -----------------------------------------------------------------
         // set an error handler for communicators that will be called
@@ -84,7 +84,7 @@ namespace pika::mpi::experimental {
         // utility function to avoid duplication in eager check locations
         PIKA_EXPORT bool poll_request(MPI_Request& /*req*/);
 
-        inline constexpr bool throttling_enabled = false;
+        //        inline constexpr bool throttling_enabled = false;
     }    // namespace detail
 
     // -----------------------------------------------------------------

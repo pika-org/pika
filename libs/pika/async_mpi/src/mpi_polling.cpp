@@ -285,15 +285,15 @@ namespace pika::mpi::experimental {
             //            }
         }
 
-        // -----------------------------------------------------------------
-        void wait_for_throttling(stream_type stream)
-        {
-            // if throttling is disabled, then do nothing
-            if constexpr (detail::throttling_enabled)
-            {
-                wait_for_throttling_impl(get_stream_ref(stream));
-            }
-        }
+        //        // -----------------------------------------------------------------
+        //        void wait_for_throttling(stream_type stream)
+        //        {
+        //            // if throttling is disabled, then do nothing
+        //            if constexpr (detail::throttling_enabled)
+        //            {
+        //                wait_for_throttling_impl(get_stream_ref(stream));
+        //            }
+        //        }
 
         // -----------------------------------------------------------------
         std::uint32_t get_throttling_default()
@@ -589,14 +589,14 @@ namespace pika::mpi::experimental {
                                 --mpi_data_.all_in_flight_;
                                 --mpi_data_.active_request_vector_size_;
 
-                                // wake any thread that is waiting for throttling
-                                if constexpr (detail::throttling_enabled)
-                                {
-                                    mpi_stream& stream =
-                                        *detail::mpi_data_.callback_vector_[index].stream_;
-                                    --stream.active_requests_;
-                                    stream.semaphore_.release();
-                                }
+                                //                                // wake any thread that is waiting for throttling
+                                //                                if constexpr (detail::throttling_enabled)
+                                //                                {
+                                //                                    mpi_stream& stream =
+                                //                                        *detail::mpi_data_.callback_vector_[index].stream_;
+                                //                                    --stream.active_requests_;
+                                //                                    stream.semaphore_.release();
+                                //                                }
                             }
                         }
                     }
