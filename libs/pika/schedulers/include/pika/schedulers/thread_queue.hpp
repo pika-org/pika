@@ -128,9 +128,11 @@ namespace pika::threads::detail {
     protected:
         template <typename Lock>
         void create_thread_object(threads::detail::thread_id_ref_type& thrd,
-            threads::detail::thread_init_data& data, Lock& lk)
+            threads::detail::thread_init_data& data, [[maybe_unused]] Lock& lk)
         {
+#if 0
             PIKA_ASSERT(lk.owns_lock());
+#endif
 
             std::ptrdiff_t const stacksize = data.scheduler_base->get_stack_size(data.stacksize);
 
@@ -156,7 +158,11 @@ namespace pika::threads::detail {
             {
                 heap = &thread_heap_nostack_;
             }
-            PIKA_ASSERT(heap);
+            else
+            {
+                PIKA_ASSERT_MSG(false, fmt::format("Invalid stack size {}", stacksize));
+                PIKA_UNREACHABLE;
+            }
 
             if (data.initial_state ==
                     threads::detail::thread_schedule_state::pending_do_not_schedule ||
@@ -168,20 +174,32 @@ namespace pika::threads::detail {
             // ASAN gets confused by reusing threads/stacks
 #if !defined(PIKA_HAVE_ADDRESS_SANITIZER)
 
+            std::unique_lock<mutex_type> l(mtx_);
+
             // Check for an unused thread object.
             if (!heap->empty())
             {
                 // Take ownership of the thread object and rebind it.
                 thrd = heap->back();
                 heap->pop_back();
+                l.unlock();
+                LTM_(debug).format(
+                    "create_thread_object: used recycled thread_data with stacksize {}",
+                    data.stacksize);
                 threads::detail::get_thread_id_data(thrd)->rebind(data);
             }
             else
 #endif
             {
+                l.unlock();
+#if 0
                 pika::detail::unlock_guard<Lock> ull(lk);
+#endif
 
                 // Allocate a new thread object.
+                LTM_(debug).format(
+                    "create_thread_object: allocated new thread_data with stacksize {}",
+                    data.stacksize);
                 threads::detail::thread_data* p = nullptr;
                 if (stacksize == parameters_.nostack_stacksize_)
                 {
@@ -203,7 +221,9 @@ namespace pika::threads::detail {
         std::size_t add_new(std::int64_t add_count, thread_queue* addfrom,
             std::unique_lock<mutex_type>& lk, bool steal = false)
         {
+#if 0
             PIKA_ASSERT(lk.owns_lock());
+#endif
 
             if (PIKA_UNLIKELY(0 == add_count))
                 return 0;
@@ -275,7 +295,9 @@ namespace pika::threads::detail {
         bool add_new_always(std::size_t& added, thread_queue* addfrom,
             std::unique_lock<mutex_type>& lk, bool steal = false)
         {
+#if 0
             PIKA_ASSERT(lk.owns_lock());
+#endif
 
 #ifdef PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES
             chrono::detail::tick_counter tc(add_new_time_);
@@ -326,29 +348,37 @@ namespace pika::threads::detail {
         {
             std::ptrdiff_t stacksize = threads::detail::get_thread_id_data(thrd)->get_stack_size();
 
+            thread_heap_type* heap = nullptr;
+
             if (stacksize == parameters_.small_stacksize_)
             {
-                thread_heap_small_.push_back(thrd);
+                heap = &thread_heap_small_;
             }
             else if (stacksize == parameters_.medium_stacksize_)
             {
-                thread_heap_medium_.push_back(thrd);
+                heap = &thread_heap_medium_;
             }
             else if (stacksize == parameters_.large_stacksize_)
             {
-                thread_heap_large_.push_back(thrd);
+                heap = &thread_heap_large_;
             }
             else if (stacksize == parameters_.huge_stacksize_)
             {
-                thread_heap_huge_.push_back(thrd);
+                heap = &thread_heap_huge_;
             }
             else if (stacksize == parameters_.nostack_stacksize_)
             {
-                thread_heap_nostack_.push_back(thrd);
+                heap = &thread_heap_nostack_;
             }
             else
             {
                 PIKA_ASSERT_MSG(false, fmt::format("Invalid stack size {}", stacksize));
+                PIKA_UNREACHABLE;
+            }
+
+            {
+                std::lock_guard<mutex_type> lk(mtx_);
+                heap->push_back(thrd);
             }
         }
 
@@ -435,15 +465,19 @@ namespace pika::threads::detail {
                 // do not lock mutex while deleting all threads, do it piece-wise
                 while (true)
                 {
+#if 0
                     std::lock_guard<mutex_type> lk(mtx_);
-                    if (cleanup_terminated_locked(false))
+#endif
+                    if (cleanup_terminated_locked(true))
                     {
                         return true;
                     }
                 }
             }
 
+#if 0
             std::lock_guard<mutex_type> lk(mtx_);
+#endif
             return cleanup_terminated_locked(false);
         }
 
@@ -653,7 +687,11 @@ namespace pika::threads::detail {
                 // created, as it might have that the current pika thread gets
                 // suspended.
                 {
+#if 0
                     std::unique_lock<mutex_type> lk(mtx_);
+#else
+                    std::unique_lock<mutex_type> lk;
+#endif
 
                     bool schedule_now =
                         data.initial_state == threads::detail::thread_schedule_state::pending;
@@ -996,9 +1034,14 @@ namespace pika::threads::detail {
             // just falls through to the cleanup work below (no work is available)
             // in which case the current thread (which failed to acquire
             // the lock) will just retry to enter this loop.
+
+#if 0
             std::unique_lock<mutex_type> lk(mtx_, std::try_to_lock);
             if (!lk.owns_lock())
                 return false;    // avoid long wait on lock
+#else
+            std::unique_lock<mutex_type> lk;
+#endif
 
             // stop running after all pika threads have been terminated
             return !add_new_always(added, this, lk, steal);
@@ -1042,9 +1085,14 @@ namespace pika::threads::detail {
                 // just falls through to the cleanup work below (no work is available)
                 // in which case the current thread (which failed to acquire
                 // the lock) will just retry to enter this loop.
+
+#if 0
                 std::unique_lock<mutex_type> lk(mtx_, std::try_to_lock);
                 if (!lk.owns_lock())
                     return false;    // avoid long wait on lock
+#else
+                std::unique_lock<mutex_type> lk;
+#endif
 
                 // stop running after all pika threads have been terminated
                 bool added_new = add_new_always(added, addfrom, lk, steal);
