@@ -87,11 +87,13 @@ namespace pika::threads::detail {
         // we use a simple mutex to protect the data members for now
         using mutex_type = Mutex;
 
+#if 0
         // this is the type of a map holding all threads (except depleted ones)
         using thread_map_type = std::unordered_set<threads::detail::thread_id_type,
             std::hash<threads::detail::thread_id_type>,
             std::equal_to<threads::detail::thread_id_type>,
             pika::detail::internal_allocator<threads::detail::thread_id_type>>;
+#endif
 
         using thread_heap_type = std::vector<threads::detail::thread_id_type,
             pika::detail::internal_allocator<threads::detail::thread_id_type>>;
@@ -233,6 +235,7 @@ namespace pika::threads::detail {
                 task->~task_description();
                 task_description_alloc_.deallocate(task, 1);
 
+#if 0
                 // add the new entry to the map of all threads
                 std::pair<thread_map_type::iterator, bool> p = thread_map_.insert(thrd.noref());
 
@@ -244,6 +247,7 @@ namespace pika::threads::detail {
                         "Couldn't add new thread to the thread map");
                     return 0;
                 }
+#endif
 
                 ++thread_map_count_;
 
@@ -284,7 +288,11 @@ namespace pika::threads::detail {
             // map holds more than max_thread_count
             if (PIKA_LIKELY(parameters_.max_thread_count_))
             {
+#if 0
                 std::int64_t count = static_cast<std::int64_t>(thread_map_.size());
+#else
+                std::int64_t count = static_cast<std::int64_t>(thread_map_count_);
+#endif
                 if (parameters_.max_thread_count_ >= count + parameters_.min_add_new_count_)
                 {    //-V104
                     PIKA_ASSERT(parameters_.max_thread_count_ - count <
@@ -368,10 +376,12 @@ namespace pika::threads::detail {
                     threads::detail::thread_id_type tid(todelete);
                     --terminated_items_count_;
 
+#if 0
                     // this thread has to be in this map
                     PIKA_ASSERT(thread_map_.find(tid) != thread_map_.end());
 
                     if (thread_map_.erase(tid) != 0)
+#endif
                     {
                         recycle_thread(tid);
                         --thread_map_count_;
@@ -396,11 +406,13 @@ namespace pika::threads::detail {
                     threads::detail::thread_id_type tid(todelete);
                     --terminated_items_count_;
 
+#if 0
                     // this thread has to be in this map, except if it has changed
                     // its priority, then it could be elsewhere
                     PIKA_ASSERT(thread_map_.find(tid) != thread_map_.end());
 
                     if (thread_map_.erase(tid) != 0)
+#endif
                     {
                         recycle_thread(tid);
                         --thread_map_count_;
@@ -648,6 +660,7 @@ namespace pika::threads::detail {
 
                     create_thread_object(thrd, data, lk);
 
+#if 0
                     // add a new entry in the map for this thread
                     std::pair<thread_map_type::iterator, bool> p = thread_map_.insert(thrd.noref());
 
@@ -659,10 +672,13 @@ namespace pika::threads::detail {
                             "Couldn't add new thread to the map of threads");
                         return;
                     }
+#endif
                     ++thread_map_count_;
 
+#if 0
                     // this thread has to be in the map now
                     PIKA_ASSERT(thread_map_.find(thrd.noref()) != thread_map_.end());
+#endif
                     PIKA_ASSERT(
                         &threads::detail::get_thread_id_data(thrd)->get_queue<thread_queue>() ==
                         this);
@@ -864,11 +880,14 @@ namespace pika::threads::detail {
             if (threads::detail::thread_schedule_state::staged == state)
                 return new_tasks_count_.data_;
 
+#if 0
             if (threads::detail::thread_schedule_state::unknown == state)
+#endif
             {
                 return thread_map_count_ + new_tasks_count_.data_ - terminated_items_count_;
             }
 
+#if 0
             // acquire lock only if absolutely necessary
             std::lock_guard<mutex_type> lk(mtx_);
 
@@ -880,11 +899,13 @@ namespace pika::threads::detail {
                     ++num_threads;
             }
             return num_threads;
+#endif
         }
 
         ///////////////////////////////////////////////////////////////////////
         void abort_all_suspended_threads()
         {
+#if 0
             std::lock_guard<mutex_type> lk(mtx_);
             thread_map_type::iterator end = thread_map_.end();
             for (thread_map_type::iterator it = thread_map_.begin(); it != end; ++it)
@@ -900,13 +921,15 @@ namespace pika::threads::detail {
                     schedule_thread(threads::detail::thread_id_ref_type(thrd));
                 }
             }
+#endif
         }
 
         bool enumerate_threads(
-            util::detail::function<bool(threads::detail::thread_id_type)> const& f,
-            threads::detail::thread_schedule_state state =
+            [[maybe_unused]] util::detail::function<bool(threads::detail::thread_id_type)> const& f,
+            [[maybe_unused]] threads::detail::thread_schedule_state state =
                 threads::detail::thread_schedule_state::unknown) const
         {
+#if 0
             std::uint64_t count = thread_map_count_;
             if (state == threads::detail::thread_schedule_state::terminated)
             {
@@ -948,6 +971,7 @@ namespace pika::threads::detail {
                 if (!f(id))
                     return false;    // stop iteration
             }
+#endif
 
             return true;
         }
@@ -1120,7 +1144,9 @@ namespace pika::threads::detail {
 
         mutable mutex_type mtx_;    // mutex protecting the members
 
+#if 0
         thread_map_type thread_map_;    // mapping of thread id's to pika-threads
+#endif
 
         // overall count of work items
         std::atomic<std::int64_t> thread_map_count_;
