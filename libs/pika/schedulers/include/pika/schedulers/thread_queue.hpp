@@ -431,7 +431,12 @@ namespace pika::threads::detail {
                 }
             }
 
-            std::lock_guard<mutex_type> lk(mtx_);
+            std::lock_guard<mutex_type> lk(mtx_, std::try_to_lock);
+            if (!lk.owns_lock())
+            {
+                return false;    // avoid long wait on lock
+            }
+
             return cleanup_terminated_locked(false);
         }
 
