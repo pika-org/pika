@@ -396,8 +396,6 @@ namespace pika::threads::detail {
         // spin for some time after queues have become empty
         bool may_exit = false;
 
-        std::shared_ptr<bool> background_running = nullptr;
-
         pika::execution::this_thread::detail::agent_storage* context_storage =
             pika::execution::this_thread::detail::get_agent_storage();
 
