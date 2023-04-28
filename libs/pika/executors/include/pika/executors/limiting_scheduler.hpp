@@ -84,7 +84,7 @@ namespace pika::execution::experimental {
         template <typename F>
         friend void tag_invoke(execute_t, limiting_scheduler const& sched, F&& f)
         {
-            execute(sched, PIKA_FORWARD(F, f));
+            sched.execute(PIKA_FORWARD(F, f));
         }
 
         template <typename Scheduler, typename Receiver>
