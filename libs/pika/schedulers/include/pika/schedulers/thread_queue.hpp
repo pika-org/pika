@@ -1096,6 +1096,7 @@ namespace pika::threads::detail {
 
                 // stop running after all pika threads have been terminated
                 bool added_new = add_new_always(added, addfrom, lk, steal);
+#if 0
                 if (!added_new)
                 {
                     // Before exiting each of the OS threads deletes the
@@ -1115,14 +1116,19 @@ namespace pika::threads::detail {
                     cleanup_terminated_locked();
                     return false;
                 }
+#else
+                return !added_new;
+#endif
             }
 
+#if 0
             bool canexit = cleanup_terminated(true);
             if (!running && canexit)
             {
                 // we don't have any registered work items anymore
                 return true;    // terminate scheduling loop
             }
+#endif
 
             return false;
         }
