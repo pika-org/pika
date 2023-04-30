@@ -45,8 +45,8 @@ namespace pika::execution::experimental {
         constexpr limiting_scheduler() = delete;
         explicit limiting_scheduler(int max_n, WrappedScheduler on_scheduler)
           : internal_scheduler_(on_scheduler)
+          , semaphore_(std::make_shared<semaphore_type>(max_n))
         {
-            semaphore_ = std::make_shared<semaphore_type>(max_n);
             PIKA_DETAIL_DP(lsc_debug<5>, debug(str<>("construct"), max_n));
         }
 
