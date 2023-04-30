@@ -60,31 +60,21 @@ namespace pika::execution::experimental {
         {
             return !(*this == rhs);
         }
+        /// \endcond
+
+        void acquire()
+        {
+            semaphore_->acquire();
+        }
+
+        void release()
+        {
+            semaphore_->release();
+        }
 
         WrappedScheduler& get_internal_scheduler()
         {
             return internal_scheduler_;
-        }
-
-        template <typename F>
-        void execute(F&& f) const
-        {
-            using namespace pika::debug::detail;
-            PIKA_DETAIL_DP(lsc_debug<5>, debug(str<>("acquire")));
-            semaphore_->acquire();
-            auto semaphore_lambda = [f = std::forward<F>(f), sem = this->semaphore_]() mutable {
-                PIKA_INVOKE(f, );
-                PIKA_DETAIL_DP(lsc_debug<5>, debug(str<>("release")));
-                sem->release();
-            };
-            pika::execution::experimental::execute(
-                internal_scheduler_, PIKA_MOVE(semaphore_lambda));
-        }
-
-        template <typename F>
-        friend void tag_invoke(execute_t, limiting_scheduler const& sched, F&& f)
-        {
-            sched.execute(PIKA_FORWARD(F, f));
         }
 
         template <typename Scheduler, typename Receiver>
@@ -109,9 +99,19 @@ namespace pika::execution::experimental {
             {
                 pika::detail::try_catch_exception_ptr(
                     [&]() {
-                        os.scheduler.execute([receiver = PIKA_MOVE(os.receiver)]() mutable {
-                            pika::execution::experimental::set_value(PIKA_MOVE(receiver));
-                        });
+                        using namespace pika::debug::detail;
+                        PIKA_DETAIL_DP(lsc_debug<5>, debug(str<>("acquire")));
+                        os.scheduler.acquire();
+                        auto semaphore_lambda = [&os]() mutable {
+                            pika::execution::experimental::set_value(PIKA_MOVE(os.receiver));
+                            PIKA_DETAIL_DP(lsc_debug<5>, debug(str<>("release")));
+                            os.scheduler.release();
+                        };
+                        //                        pika::execution::experimental::start_detached(
+                        //                                        pika::execution::experimental::then(os.scheduler.get_internal_scheduler(), PIKA_MOVE(semaphore_lambda)));
+
+                        pika::execution::experimental::execute(
+                            os.scheduler.get_internal_scheduler(), PIKA_MOVE(semaphore_lambda));
                     },
                     [&](std::exception_ptr ep) {
                         pika::execution::experimental::set_error(
@@ -185,6 +185,5 @@ namespace pika::execution::experimental {
     private:
         WrappedScheduler internal_scheduler_;
         std::shared_ptr<semaphore_type> semaphore_;
-        /// \endcond
     };
 }    // namespace pika::execution::experimental
