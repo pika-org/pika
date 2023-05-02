@@ -4,6 +4,27 @@
 <!--- Distributed under the Boost Software License, Version 1.0. (See accompanying -->
 <!--- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 
+## 0.15.0 (2023-05-03)
+
+### New features
+
+- `async_rw_mutex` has been moved to a public header: `pika/async_rw_mutex.hpp`. The functionality is still experimental in the `pika::execution::experimental` namespace. `async_rw_mutex_access_type` and `async_rw_mutex_access_wrapper` have also been moved out of the `detail` namespace. ([#655](https://github.com/pika-org/pika/pull/655))
+
+### Breaking changes
+
+- The `any_sender` and `unique_any_sender` `operator bool()`, which can be used to check whether the sender contains a valid sender, is now `explicit` to avoid accidental conversions. ([#653](https://github.com/pika-org/pika/pull/653))
+- Scheduler idling was disabled by default. This typically improves performance. If performance is less important than resource usage idling may be beneficial to enable explicitly. ([#661](https://github.com/pika-org/pika/pull/661))
+- The CMake option `PIKA_WITH_THREAD_CUMULATIVE_COUNTS` was disabled by default. This often improves performance. ([#662](https://github.com/pika-org/pika/pull/662))
+- Thread guard pages were disabled by default. This often improves performance. They can still be enabled at runtime with the configuration option  `pika.stacks.use_guard_pages=1` to debug e.g. stack overflows. ([#663](https://github.com/pika-org/pika/pull/663))
+- The `fast_idle` and `delay_exit` scheduler modes were completely removed as they added overhead and were not used in any meaningful way in the scheduler. ([#664](https://github.com/pika-org/pika/pull/664))
+- The ability to run background threads in the scheduler was completely removed. ([#665](https://github.com/pika-org/pika/pull/665), [#668](https://github.com/pika-org/pika/pull/668))
+
+### Bugfixes
+
+- Fixed an inconsistent preprocessor guard that affected Apple M1 and M2 systems. ([#657](https://github.com/pika-org/pika/pull/657))
+- Fixed preprocessor guards to enable deadlock detection in debug builds. The deadlock detection was never enabled previously. ([#658](https://github.com/pika-org/pika/pull/658))
+- Thread deadlock detection will now correctly print potentially deadlocked threads. ([#659](https://github.com/pika-org/pika/pull/659))
+
 ## 0.14.0 (2023-04-05)
 
 ### New features
