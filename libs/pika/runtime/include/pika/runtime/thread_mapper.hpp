@@ -8,10 +8,10 @@
 #pragma once
 
 #include <pika/config.hpp>
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/functional/function.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/runtime/os_thread_type.hpp>
-#include <pika/synchronization/spinlock.hpp>
 
 #include <cstddef>
 #include <cstdint>
@@ -139,7 +139,7 @@ namespace pika::util {
         os_thread_data get_os_thread_data(std::string const& label) const;
 
     private:
-        using mutex_type = pika::spinlock;
+        using mutex_type = pika::concurrency::detail::spinlock;
 
         using thread_map_type = std::vector<detail::os_thread_data>;
         using label_map_type = std::map<std::string, std::size_t>;

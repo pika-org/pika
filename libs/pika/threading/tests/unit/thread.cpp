@@ -118,9 +118,9 @@ void test_id_comparison()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void interruption_point_thread(pika::spinlock* m, bool* failed)
+void interruption_point_thread(pika::concurrency::detail::spinlock* m, bool* failed)
 {
-    std::unique_lock<pika::spinlock> lk(*m);
+    std::unique_lock<pika::concurrency::detail::spinlock> lk(*m);
     [[maybe_unused]] pika::util::ignore_while_checking il(&lk);
 
     pika::this_thread::interruption_point();
@@ -129,9 +129,9 @@ void interruption_point_thread(pika::spinlock* m, bool* failed)
 
 void do_test_thread_interrupts_at_interruption_point()
 {
-    pika::spinlock m;
+    pika::concurrency::detail::spinlock m;
     bool failed = false;
-    std::unique_lock<pika::spinlock> lk(m);
+    std::unique_lock<pika::concurrency::detail::spinlock> lk(m);
     pika::thread thrd(&interruption_point_thread, &m, &failed);
     thrd.interrupt();
     lk.unlock();
@@ -146,13 +146,14 @@ void test_thread_interrupts_at_interruption_point()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void disabled_interruption_point_thread(pika::spinlock* m, pika::barrier<>* b, bool* failed)
+void disabled_interruption_point_thread(
+    pika::concurrency::detail::spinlock* m, pika::barrier<>* b, bool* failed)
 {
     pika::this_thread::disable_interruption dc;
     b->arrive_and_wait();
     try
     {
-        std::lock_guard<pika::spinlock> lk(*m);
+        std::lock_guard<pika::concurrency::detail::spinlock> lk(*m);
         pika::this_thread::interruption_point();
         *failed = false;
     }
@@ -166,7 +167,7 @@ void disabled_interruption_point_thread(pika::spinlock* m, pika::barrier<>* b, b
 
 void do_test_thread_no_interrupt_if_interrupts_disabled_at_interruption_point()
 {
-    pika::spinlock m;
+    pika::concurrency::detail::spinlock m;
     pika::barrier<> b(2);
     bool caught = false;
     bool failed = true;
@@ -175,7 +176,7 @@ void do_test_thread_no_interrupt_if_interrupts_disabled_at_interruption_point()
                             // marked itself to disable interrupts.
     try
     {
-        std::unique_lock<pika::spinlock> lk(m);
+        std::unique_lock<pika::concurrency::detail::spinlock> lk(m);
         [[maybe_unused]] pika::util::ignore_while_checking il(&lk);
 
         thrd.interrupt();

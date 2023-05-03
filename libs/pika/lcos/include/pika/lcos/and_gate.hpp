@@ -8,11 +8,11 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/functional/bind.hpp>
 #include <pika/lcos/conditional_trigger.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/synchronization/no_mutex.hpp>
-#include <pika/synchronization/spinlock.hpp>
 #include <pika/thread_support/assert_owns_lock.hpp>
 #include <pika/thread_support/unlock_guard.hpp>
 
@@ -25,7 +25,7 @@
 
 namespace pika::lcos::local {
     ///////////////////////////////////////////////////////////////////////////
-    template <typename Mutex = pika::spinlock>
+    template <typename Mutex = pika::concurrency::detail::spinlock>
     struct base_and_gate
     {
     protected:

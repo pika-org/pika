@@ -12,9 +12,9 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/execution_base/agent_ref.hpp>
 #include <pika/execution_base/this_thread.hpp>
-#include <pika/synchronization/spinlock.hpp>
 
 #include <atomic>
 #include <cstddef>
@@ -24,7 +24,7 @@
 namespace pika::detail {
     /// An exclusive-ownership recursive mutex which implements Boost.Thread's
     /// TimedLockable concept.
-    template <typename Mutex = pika::spinlock>
+    template <typename Mutex = pika::concurrency::detail::spinlock>
     struct recursive_mutex_impl
     {
     public:

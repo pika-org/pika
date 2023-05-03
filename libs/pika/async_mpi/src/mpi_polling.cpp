@@ -8,11 +8,11 @@
 #include <pika/assert.hpp>
 #include <pika/async_mpi/mpi_exception.hpp>
 #include <pika/async_mpi/mpi_polling.hpp>
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/threading_base.hpp>
 #include <pika/mpi_base/mpi_environment.hpp>
 #include <pika/synchronization/condition_variable.hpp>
-#include <pika/synchronization/mutex.hpp>
 
 #include <array>
 #include <atomic>
@@ -53,7 +53,7 @@ namespace pika::mpi::experimental {
 
         // -----------------------------------------------------------------
         /// Spinlock is used as it can be called by OS threads or pika tasks
-        using mutex_type = pika::spinlock;
+        using mutex_type = pika::concurrency::detail::spinlock;
 
         // -----------------------------------------------------------------
         /// Queries an environment variable to get/override a default value for

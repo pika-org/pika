@@ -10,10 +10,10 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/modules/concurrency.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/thread_support.hpp>
-#include <pika/synchronization/spinlock.hpp>
 
 #include <atomic>
 #include <cstddef>
@@ -209,6 +209,6 @@ namespace pika::experimental {
     // Using pika::concurrency::detail::spinlock as the means of synchronization
     // enables the use of this channel with non-pika threads.
     template <typename T>
-    using channel_mpsc = base_channel_mpsc<T, pika::spinlock>;
+    using channel_mpsc = base_channel_mpsc<T, pika::concurrency::detail::spinlock>;
 
 }    // namespace pika::experimental

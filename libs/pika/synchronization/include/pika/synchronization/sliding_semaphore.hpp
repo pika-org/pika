@@ -7,8 +7,8 @@
 #pragma once
 
 #include <pika/config.hpp>
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/synchronization/detail/sliding_semaphore.hpp>
-#include <pika/synchronization/spinlock.hpp>
 
 #include <cstdint>
 #include <mutex>
@@ -41,7 +41,7 @@ namespace pika {
     /// allowed to proceed, but will make sure that the difference between
     /// the (arbitrary) number passed to set and wait does not exceed a given
     /// threshold.
-    template <typename Mutex = pika::spinlock>
+    template <typename Mutex = pika::concurrency::detail::spinlock>
     class sliding_semaphore_var
     {
     private:

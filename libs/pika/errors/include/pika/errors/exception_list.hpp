@@ -34,10 +34,6 @@ namespace pika {
     {
     private:
         /// \cond NOINTERNAL
-
-        // TODO: Does this need to be pika::spinlock?
-        // using mutex_type = pika::spinlock;
-        // TODO: Add correct initialization of pika::util::detail spinlock.
         using mutex_type = pika::detail::spinlock;
 
         using exception_list_type = std::list<std::exception_ptr>;

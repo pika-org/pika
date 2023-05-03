@@ -9,10 +9,10 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/futures.hpp>
 #include <pika/synchronization/no_mutex.hpp>
-#include <pika/synchronization/spinlock.hpp>
 
 #include <cstddef>
 #include <exception>
@@ -23,7 +23,7 @@
 
 namespace pika::lcos::local {
     ///////////////////////////////////////////////////////////////////////////
-    template <typename T, typename Mutex = pika::spinlock>
+    template <typename T, typename Mutex = pika::concurrency::detail::spinlock>
     struct receive_buffer
     {
     protected:

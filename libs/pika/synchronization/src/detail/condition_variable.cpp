@@ -12,7 +12,6 @@
 #include <pika/modules/memory.hpp>
 #include <pika/synchronization/detail/condition_variable.hpp>
 #include <pika/synchronization/no_mutex.hpp>
-#include <pika/synchronization/spinlock.hpp>
 #include <pika/thread_support/unlock_guard.hpp>
 #include <pika/threading_base/thread_helpers.hpp>
 #include <pika/timing/steady_clock.hpp>

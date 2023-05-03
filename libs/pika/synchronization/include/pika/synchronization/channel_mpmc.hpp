@@ -10,10 +10,10 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/modules/concurrency.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/thread_support.hpp>
-#include <pika/synchronization/spinlock.hpp>
 
 #include <cstddef>
 #include <memory>
@@ -204,14 +204,7 @@ namespace pika::experimental {
         bool closed_;
     };
 
-    ////////////////////////////////////////////////////////////////////////////
-    // For use with pika threads, the channel_mpmc defined here is the fastest
-    // (even faster than the channel_spsc). Using
-    // pika::concurrency::detail::spinlock as the means of synchronization
-    // enables the use of this channel with non-pika threads, however the
-    // performance degrades by a factor of ten compared to using
-    // pika::spinlock.
     template <typename T>
-    using channel_mpmc = bounded_channel<T, pika::spinlock>;
+    using channel_mpmc = bounded_channel<T, pika::concurrency::detail::spinlock>;
 
 }    // namespace pika::experimental

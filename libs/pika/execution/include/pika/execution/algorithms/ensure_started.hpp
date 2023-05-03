@@ -16,6 +16,7 @@
 # include <pika/allocator_support/traits/is_allocator.hpp>
 # include <pika/assert.hpp>
 # include <pika/concepts/concepts.hpp>
+# include <pika/concurrency/spinlock.hpp>
 # include <pika/datastructures/variant.hpp>
 # include <pika/execution/algorithms/detail/helpers.hpp>
 # include <pika/execution/algorithms/detail/partial_algorithm.hpp>
@@ -27,7 +28,6 @@
 # include <pika/functional/invoke_fused.hpp>
 # include <pika/functional/unique_function.hpp>
 # include <pika/memory/intrusive_ptr.hpp>
-# include <pika/synchronization/spinlock.hpp>
 # include <pika/thread_support/atomic_count.hpp>
 # include <pika/type_support/detail/with_result_of.hpp>
 # include <pika/type_support/pack.hpp>
@@ -123,7 +123,7 @@ namespace pika::ensure_started_detail {
             using allocator_type =
                 typename std::allocator_traits<Allocator>::template rebind_alloc<shared_state>;
             PIKA_NO_UNIQUE_ADDRESS allocator_type alloc;
-            using mutex_type = pika::spinlock;
+            using mutex_type = pika::concurrency::detail::spinlock;
             mutex_type mtx;
             pika::detail::atomic_count reference_count{0};
             std::atomic<bool> start_called{false};

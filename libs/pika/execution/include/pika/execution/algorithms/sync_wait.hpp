@@ -13,6 +13,7 @@
 #endif
 
 #include <pika/concepts/concepts.hpp>
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/execution/algorithms/detail/helpers.hpp>
 #include <pika/execution_base/operation_state.hpp>
@@ -20,7 +21,6 @@
 #include <pika/execution_base/sender.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/synchronization/condition_variable.hpp>
-#include <pika/synchronization/spinlock.hpp>
 #include <pika/type_support/pack.hpp>
 #include <pika/type_support/unused.hpp>
 
@@ -129,7 +129,7 @@ namespace pika::sync_wait_detail {
 #endif
 
         // We use a spinlock here to allow taking the lock on non-pika threads.
-        using mutex_type = pika::spinlock;
+        using mutex_type = pika::concurrency::detail::spinlock;
 
         struct shared_state
         {

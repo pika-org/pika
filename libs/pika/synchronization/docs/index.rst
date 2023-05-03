@@ -25,7 +25,6 @@ the C++ standard ones in |pika| threads:
 * :cpp:class:`pika::recursive_mutex`
 * :cpp:class:`pika::shared_mutex`
 * :cpp:class:`pika::sliding_semaphore`
-* :cpp:class:`pika::spinlock` (`std::mutex` compatible spinlock)
 * :cpp:class:`pika::detail::spinlock_pool`
 
 See :ref:`modules_lcos`, :ref:`modules_async_combinators`, and :ref:`modules_async`

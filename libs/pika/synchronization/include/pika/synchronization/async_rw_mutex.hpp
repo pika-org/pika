@@ -8,13 +8,13 @@
 
 #include <pika/allocator_support/internal_allocator.hpp>
 #include <pika/assert.hpp>
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/datastructures/detail/small_vector.hpp>
 #include <pika/execution_base/operation_state.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
 #include <pika/execution_base/this_thread.hpp>
 #include <pika/functional/unique_function.hpp>
-#include <pika/synchronization/spinlock.hpp>
 
 #include <atomic>
 #include <exception>
@@ -36,7 +36,7 @@ namespace pika::execution::experimental {
         template <typename T>
         struct async_rw_mutex_shared_state
         {
-            using mutex_type = pika::spinlock;
+            using mutex_type = pika::concurrency::detail::spinlock;
             using shared_state_ptr_type = std::shared_ptr<async_rw_mutex_shared_state>;
             std::atomic<bool> value_set{false};
             std::optional<T> value{std::nullopt};
@@ -110,7 +110,7 @@ namespace pika::execution::experimental {
         template <>
         struct async_rw_mutex_shared_state<void>
         {
-            using mutex_type = pika::spinlock;
+            using mutex_type = pika::concurrency::detail::spinlock;
             using shared_state_ptr_type = std::shared_ptr<async_rw_mutex_shared_state>;
             shared_state_ptr_type next_state{nullptr};
             mutex_type mtx{};

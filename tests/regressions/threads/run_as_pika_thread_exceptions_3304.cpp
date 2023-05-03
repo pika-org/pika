@@ -23,7 +23,7 @@ std::condition_variable startup_cond;
 bool running = false;
 bool stop_running = false;
 
-int start_func(pika::spinlock& mtx, pika::condition_variable_any& cond)
+int start_func(pika::concurrency::detail::spinlock& mtx, pika::condition_variable_any& cond)
 {
     // Signal to constructor that thread has started running.
     {
@@ -32,7 +32,7 @@ int start_func(pika::spinlock& mtx, pika::condition_variable_any& cond)
     }
 
     {
-        std::unique_lock<pika::spinlock> lk(mtx);
+        std::unique_lock<pika::concurrency::detail::spinlock> lk(mtx);
         startup_cond.notify_one();
         while (!stop_running)
             cond.wait(lk);
@@ -48,7 +48,7 @@ void pika_thread_func()
 
 int main(int argc, char** argv)
 {
-    pika::spinlock mtx;
+    pika::concurrency::detail::spinlock mtx;
     pika::condition_variable_any cond;
 
     pika::util::detail::function<int(int, char**)> start_function =
@@ -76,7 +76,7 @@ int main(int argc, char** argv)
     PIKA_TEST(exception_caught);
 
     {
-        std::lock_guard<pika::spinlock> lk(mtx);
+        std::lock_guard<pika::concurrency::detail::spinlock> lk(mtx);
         stop_running = true;
     }
 

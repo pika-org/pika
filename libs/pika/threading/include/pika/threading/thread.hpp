@@ -8,12 +8,12 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/functional/deferred_call.hpp>
 #include <pika/functional/function.hpp>
 #include <pika/functional/unique_function.hpp>
 #include <pika/futures/future_fwd.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/synchronization/spinlock.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
@@ -40,7 +40,7 @@ namespace pika {
 
     class PIKA_EXPORT thread
     {
-        using mutex_type = pika::spinlock;
+        using mutex_type = pika::concurrency::detail::spinlock;
         void terminate(const char* function, const char* reason) const;
 
     public:

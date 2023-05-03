@@ -8,8 +8,8 @@
 #pragma once
 
 #include <pika/config.hpp>
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/synchronization/detail/condition_variable.hpp>
-#include <pika/synchronization/spinlock.hpp>
 
 #include <cstddef>
 #include <cstdint>
@@ -26,7 +26,7 @@ namespace pika::detail {
     class counting_semaphore
     {
     private:
-        using mutex_type = pika::spinlock;
+        using mutex_type = pika::concurrency::detail::spinlock;
 
     public:
         PIKA_EXPORT counting_semaphore(std::ptrdiff_t value = 0);
