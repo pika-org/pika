@@ -406,16 +406,12 @@ namespace pika::threads::detail {
             thread_id_ref_type thrd = PIKA_MOVE(next_thrd);
 
             // Get the next pika thread from the queue
-            bool running = this_state.load(std::memory_order_relaxed) < runtime_state::pre_sleep;
+            bool const running =
+                this_state.load(std::memory_order_relaxed) < runtime_state::pre_sleep;
 
             // extract the stealing mode once per loop iteration
-            bool enable_stealing = scheduler.SchedulingPolicy::has_scheduler_mode(
+            bool const enable_stealing = scheduler.SchedulingPolicy::has_scheduler_mode(
                 ::pika::threads::scheduler_mode::enable_stealing);
-
-            // stealing staged threads is enabled only after normal stealing has
-            // failed for a while
-            bool enable_stealing_staged =
-                enable_stealing && idle_loop_count > params.max_idle_loop_count_ / 2;
 
             if (PIKA_LIKELY(thrd ||
                     scheduler.SchedulingPolicy::get_next_thread(
@@ -560,8 +556,8 @@ namespace pika::threads::detail {
                         if (PIKA_LIKELY(next_thrd == nullptr))
                         {
                             // schedule other work
-                            scheduler.SchedulingPolicy::wait_or_add_new(num_thread, running,
-                                idle_loop_count, enable_stealing_staged, added);
+                            scheduler.SchedulingPolicy::wait_or_add_new(
+                                num_thread, running, idle_loop_count, enable_stealing, added);
                         }
 
                         // schedule this thread again, make sure it ends up at
@@ -586,8 +582,8 @@ namespace pika::threads::detail {
                             else
                             {
                                 // schedule other work
-                                scheduler.SchedulingPolicy::wait_or_add_new(num_thread, running,
-                                    idle_loop_count, enable_stealing_staged, added);
+                                scheduler.SchedulingPolicy::wait_or_add_new(
+                                    num_thread, running, idle_loop_count, enable_stealing, added);
 
                                 // schedule this thread again immediately with
                                 // boosted priority
@@ -648,7 +644,7 @@ namespace pika::threads::detail {
                 ++idle_loop_count;
 
                 if (scheduler.SchedulingPolicy::wait_or_add_new(
-                        num_thread, running, idle_loop_count, enable_stealing_staged, added))
+                        num_thread, running, idle_loop_count, enable_stealing, added))
                 {
                     // Clean up terminated threads before trying to exit
                     bool can_exit = !running &&
