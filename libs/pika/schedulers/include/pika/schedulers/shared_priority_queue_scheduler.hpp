@@ -52,15 +52,15 @@
 
 // #define SHARED_PRIORITY_SCHEDULER_DEBUG_NUMA
 
-namespace pika::detail {
+namespace pika::debug::detail {
     // a debug level of zero disables messages with a level>0
     // a debug level of N shows messages with level 1..N
     constexpr int debug_level = 0;
 
     template <int Level>
-    static debug::detail::print_threshold<Level, debug_level> spq_deb("SPQUEUE");
-    static debug::detail::print_threshold<1, 1> spq_arr("SPQUEUE");
-}    // namespace pika::detail
+    static print_threshold<Level, debug_level> spq_deb("SPQUEUE");
+    static print_threshold<1, 1> spq_arr("SPQUEUE");
+}    // namespace pika::debug::detail
 
 // ------------------------------------------------------------
 namespace pika::threads::detail {
@@ -172,7 +172,8 @@ namespace pika::threads::detail {
             core_stealing_ = has_scheduler_mode(scheduler_mode::enable_stealing);
             numa_stealing_ = has_scheduler_mode(scheduler_mode::enable_stealing_numa);
             // clang-format off
-            PIKA_DETAIL_DP(::pika::detail::spq_deb<5>, debug(debug::detail::str<>("scheduler_mode")
+            using namespace pika::debug::detail;
+            PIKA_DETAIL_DP(spq_deb<5>, debug(str<>("scheduler_mode")
                 , round_robin_ ? "round_robin" : "thread parent"
                 , ','
                 , steal_hp_first_ ? "steal_hp_first" : "steal after local"
@@ -216,9 +217,9 @@ namespace pika::threads::detail {
         /// Only cleans up terminated tasks belonging to this thread
         bool cleanup_terminated(bool delete_all) override
         {
-            static auto cleanup = ::pika::detail::spq_deb<5>.make_timer(
-                1, debug::detail::str<>("Cleanup"), "Global version");
-            PIKA_DETAIL_DP(::pika::detail::spq_deb<5>, timed(cleanup));
+            using namespace pika::debug::detail;
+            static auto cleanup = spq_deb<3>.make_timer(1, str<>("Cleanup"), "Global version");
+            PIKA_DETAIL_DP(spq_deb<3>, timed(cleanup));
 
             // check calling thread number has queues to clean
             std::size_t local_num = local_thread_number();
@@ -227,7 +228,7 @@ namespace pika::threads::detail {
             {
                 // clang-format off
                 using namespace pika::threads::detail;
-                PIKA_DETAIL_DP(::pika::detail::spq_deb<5>, debug(debug::detail::str<>("cleanup_terminated")
+                PIKA_DETAIL_DP(spq_deb<7>, debug(str<>("cleanup_terminated")
                     , "v1 aborted"
                     , "num_workers_", num_workers_
                     , "thread_number"
@@ -244,10 +245,9 @@ namespace pika::threads::detail {
             std::size_t domain_num = d_lookup_[local_num];
             std::size_t q_index = q_lookup_[local_num];
 
-            PIKA_DETAIL_DP(::pika::detail::spq_deb<5>,
-                debug(debug::detail::str<>("cleanup_terminated"), "v1", "D",
-                    debug::detail::dec<2>(domain_num), "Q", debug::detail::dec<3>(q_index),
-                    "thread_num", debug::detail::dec<3>(local_num)));
+            PIKA_DETAIL_DP(spq_deb<7>,
+                debug(str<>("cleanup_terminated"), "v1", "D", dec<2>(domain_num), "Q",
+                    dec<3>(q_index), "thread_num", dec<3>(local_num)));
 
             return numa_holder_[domain_num]
                 .thread_queue(static_cast<std::size_t>(q_index))
@@ -283,17 +283,18 @@ namespace pika::threads::detail {
             std::unique_lock<pu_mutex_type> l;
 
             using execution::thread_schedule_hint_mode;
+            using namespace pika::debug::detail;
             switch (data.schedulehint.mode)
             {
             case execution::thread_schedule_hint_mode::none:
             {
-                PIKA_DETAIL_DP(::pika::detail::spq_deb<7>, set(msg, "HINT_NONE  "));
+                PIKA_DETAIL_DP(spq_deb<7>, set(msg, "HINT_NONE  "));
                 // Create thread on this worker thread if possible
                 if (PIKA_UNLIKELY(local_num == std::size_t(-1)))
                 {
                     // clang-format off
                     using namespace pika::threads::detail;
-                    PIKA_DETAIL_DP(::pika::detail::spq_deb<7>, debug(debug::detail::str<>("create_thread")
+                    PIKA_DETAIL_DP(spq_deb<7>, debug(str<>("create_thread")
                         , "x-pool", "num_workers_", num_workers_
                         , "thread_number"
                         , "global", get_global_thread_num_tss()
@@ -309,24 +310,22 @@ namespace pika::threads::detail {
                 }
                 else if (!round_robin_) /* thread parent */
                 {
-                    if (::pika::detail::spq_deb<2>.is_enabled())
+                    if (spq_deb<2>.is_enabled())
                     {
                         domain_num = d_lookup_[thread_num];
                         q_index = q_lookup_[thread_num];
                     }
-                    PIKA_DETAIL_DP(::pika::detail::spq_deb<7>,
-                        debug(debug::detail::str<>("create_thread"),
-                            "scheduler_mode::assign_work_thread_parent", "thread_num", thread_num,
-                            "pool", parent_pool_->get_pool_name()));
+                    PIKA_DETAIL_DP(spq_deb<7>,
+                        debug(str<>("create_thread"), "scheduler_mode::assign_work_thread_parent",
+                            "thread_num", thread_num, "pool", parent_pool_->get_pool_name()));
                 }
                 else /*(round_robin)*/
                 {
                     domain_num = d_lookup_[thread_num];
                     q_index = q_lookup_[thread_num];
-                    PIKA_DETAIL_DP(::pika::detail::spq_deb<7>,
-                        debug(debug::detail::str<>("create_thread"),
-                            "scheduler_mode::assign_work_round_robin", "thread_num", thread_num,
-                            "pool", parent_pool_->get_pool_name(),
+                    PIKA_DETAIL_DP(spq_deb<7>,
+                        debug(str<>("create_thread"), "scheduler_mode::assign_work_round_robin",
+                            "thread_num", thread_num, "pool", parent_pool_->get_pool_name(),
                             typename thread_holder_type::queue_data_print(
                                 numa_holder_[domain_num].thread_queue(
                                     static_cast<std::size_t>(q_index)))));
@@ -343,7 +342,7 @@ namespace pika::threads::detail {
             }
             case execution::thread_schedule_hint_mode::thread:
             {
-                PIKA_DETAIL_DP(::pika::detail::spq_deb<7>, set(msg, "HINT_THREAD"));
+                PIKA_DETAIL_DP(spq_deb<7>, set(msg, "HINT_THREAD"));
                 // @TODO. We should check that the thread num is valid
                 // Create thread on requested worker thread
                 thread_num = select_active_pu(l, data.schedulehint.hint);
@@ -354,7 +353,7 @@ namespace pika::threads::detail {
             case execution::thread_schedule_hint_mode::numa:
             {
                 // Create thread on requested NUMA domain
-                PIKA_DETAIL_DP(::pika::detail::spq_deb<7>, set(msg, "HINT_NUMA  "));
+                PIKA_DETAIL_DP(spq_deb<7>, set(msg, "HINT_NUMA  "));
                 // TODO: This case does not handle suspended PUs.
                 domain_num = fast_mod(data.schedulehint.hint, num_domains_);
                 // if the thread creating the new task is on the domain
@@ -386,21 +385,20 @@ namespace pika::threads::detail {
             if (local_num != thread_num)
             {
                 data.run_now = false;
-                PIKA_DETAIL_DP(::pika::detail::spq_deb<6>,
-                    debug(debug::detail::str<>("create_thread"), "run_now OVERRIDE "));
+                PIKA_DETAIL_DP(spq_deb<6>, debug(str<>("create_thread"), "run_now OVERRIDE "));
             }
             // clang-format off
-            PIKA_DETAIL_DP(::pika::detail::spq_deb<5>, debug(debug::detail::str<>("create_thread")
+            PIKA_DETAIL_DP(spq_deb<5>, debug(str<>("create_thread")
                 , "pool", parent_pool_->get_pool_name()
                 , "hint", msg
                 , "dest"
-                , "D", debug::detail::dec<2>(domain_num)
-                , "Q", debug::detail::dec<3>(q_index)
+                , "D", dec<2>(domain_num)
+                , "Q", dec<3>(q_index)
                 , "this"
-                , "D", debug::detail::dec<2>(d_lookup_[thread_num])
-                , "Q", debug::detail::dec<3>(thread_num)
+                , "D", dec<2>(d_lookup_[thread_num])
+                , "Q", dec<3>(thread_num)
                 , "run_now ", data.run_now
-                , debug::detail::threadinfo<threads::detail::thread_init_data>(data)));
+                , threadinfo<threads::detail::thread_init_data>(data)));
             // clang-format on
             numa_holder_[domain_num]
                 .thread_queue(static_cast<std::size_t>(q_index))
@@ -409,7 +407,7 @@ namespace pika::threads::detail {
 
         // ------------------------------------------------------------
         /// This function, steals tasks from queues on other threads
-        /// using two passed in function objects thhat allow the behaviour
+        /// using two passed in function objects that allow the behaviour
         /// to be tweaked according to needs.
         /// One is called for high priority tasks, the other for normal/low
         /// since high priority tasks on other queues take precedence to
@@ -426,6 +424,7 @@ namespace pika::threads::detail {
                 operation)
         // NOLINTEND(bugprone-easily-swappable-parameters)
         {
+            using namespace pika::debug::detail;
             bool result;
 
             // All stealing disabled
@@ -436,9 +435,9 @@ namespace pika::threads::detail {
                 result = result || operation(domain, q_index, origin, var, false, false);
                 if (result)
                 {
-                    PIKA_DETAIL_DP(::pika::detail::spq_deb<7>,
-                        debug(debug::detail::str<>(prefix), "local no stealing", "D",
-                            debug::detail::dec<2>(domain), "Q", debug::detail::dec<3>(q_index)));
+                    PIKA_DETAIL_DP(spq_deb<7>,
+                        debug(str<>(prefix), "local no stealing", "D", dec<2>(domain), "Q",
+                            dec<3>(q_index)));
                     return result;
                 }
             }
@@ -452,11 +451,10 @@ namespace pika::threads::detail {
                     result = operation_HP(dom, q_index, origin, var, (d > 0), true);
                     if (result)
                     {
-                        PIKA_DETAIL_DP(::pika::detail::spq_deb<5>,
-                            debug(debug::detail::str<>(prefix),
-                                "scheduler_mode::steal_high_priority_first BP/HP",
-                                (d == 0 ? "taken" : "stolen"), "D", debug::detail::dec<2>(domain),
-                                "Q", debug::detail::dec<3>(q_index)));
+                        PIKA_DETAIL_DP(spq_deb<5>,
+                            debug(str<>(prefix), "scheduler_mode::steal_high_priority_first BP/HP",
+                                (d == 0 ? "taken" : "stolen"), "D", dec<2>(domain), "Q",
+                                dec<3>(q_index)));
                         return result;
                     }
                     // if no numa stealing, skip other domains
@@ -470,11 +468,10 @@ namespace pika::threads::detail {
                     result = operation(dom, q_index, origin, var, (d > 0), true);
                     if (result)
                     {
-                        PIKA_DETAIL_DP(::pika::detail::spq_deb<5>,
-                            debug(debug::detail::str<>(prefix),
-                                "scheduler_mode::steal_high_priority_first NP/LP",
-                                (d == 0 ? "taken" : "stolen"), "D", debug::detail::dec<2>(domain),
-                                "Q", debug::detail::dec<3>(q_index)));
+                        PIKA_DETAIL_DP(spq_deb<5>,
+                            debug(str<>(prefix), "scheduler_mode::steal_high_priority_first NP/LP",
+                                (d == 0 ? "taken" : "stolen"), "D", dec<2>(domain), "Q",
+                                dec<3>(q_index)));
                         return result;
                     }
                     // if no numa stealing, skip other domains
@@ -489,10 +486,9 @@ namespace pika::threads::detail {
                 result = result || operation(domain, q_index, origin, var, false, false);
                 if (result)
                 {
-                    PIKA_DETAIL_DP(::pika::detail::spq_deb<5>,
-                        debug(debug::detail::str<>(prefix),
-                            "scheduler_mode::steal_after_local local taken", "D",
-                            debug::detail::dec<2>(domain), "Q", debug::detail::dec<3>(q_index)));
+                    PIKA_DETAIL_DP(spq_deb<5>,
+                        debug(str<>(prefix), "scheduler_mode::steal_after_local local taken", "D",
+                            dec<2>(domain), "Q", dec<3>(q_index)));
                     return result;
                 }
 
@@ -507,11 +503,9 @@ namespace pika::threads::detail {
                         result = result || operation(domain, q_index, origin, var, true, true);
                         if (result)
                         {
-                            PIKA_DETAIL_DP(::pika::detail::spq_deb<5>,
-                                debug(debug::detail::str<>(prefix),
-                                    "scheduler_mode::steal_after_local this numa", "stolen", "D",
-                                    debug::detail::dec<2>(domain), "Q",
-                                    debug::detail::dec<3>(q_index)));
+                            PIKA_DETAIL_DP(spq_deb<5>,
+                                debug(str<>(prefix), "scheduler_mode::steal_after_local this numa",
+                                    "stolen", "D", dec<2>(domain), "Q", dec<3>(q_index)));
                             return result;
                         }
                     }
@@ -527,12 +521,11 @@ namespace pika::threads::detail {
                         result = operation_HP(dom, q_index, origin, var, true, true);
                         if (result)
                         {
-                            PIKA_DETAIL_DP(::pika::detail::spq_deb<5>,
-                                debug(debug::detail::str<>(prefix),
+                            PIKA_DETAIL_DP(spq_deb<5>,
+                                debug(str<>(prefix),
                                     "scheduler_mode::steal_after_local other numa BP/HP",
-                                    (d == 0 ? "taken" : "stolen"), "D",
-                                    debug::detail::dec<2>(domain), "Q",
-                                    debug::detail::dec<3>(q_index)));
+                                    (d == 0 ? "taken" : "stolen"), "D", dec<2>(domain), "Q",
+                                    dec<3>(q_index)));
                             return result;
                         }
                     }
@@ -544,12 +537,11 @@ namespace pika::threads::detail {
                         result = operation(dom, q_index, origin, var, true, true);
                         if (result)
                         {
-                            PIKA_DETAIL_DP(::pika::detail::spq_deb<5>,
-                                debug(debug::detail::str<>(prefix),
+                            PIKA_DETAIL_DP(spq_deb<5>,
+                                debug(str<>(prefix),
                                     "scheduler_mode::steal_after_local other numa NP/LP",
-                                    (d == 0 ? "taken" : "stolen"), "D",
-                                    debug::detail::dec<2>(domain), "Q",
-                                    debug::detail::dec<3>(q_index)));
+                                    (d == 0 ? "taken" : "stolen"), "D", dec<2>(domain), "Q",
+                                    dec<3>(q_index)));
                             return result;
                         }
                     }
@@ -563,15 +555,21 @@ namespace pika::threads::detail {
         virtual bool get_next_thread(std::size_t /*thread_num*/, bool /*running*/,
             threads::detail::thread_id_ref_type& thrd, bool enable_stealing) override
         {
+            using namespace pika::debug::detail;
             std::size_t this_thread = local_thread_number();
             PIKA_ASSERT(this_thread < num_workers_);
 
+            static auto gnt = spq_deb<3>.make_timer(1, str<>("get_next_thread"));
+
+            auto c = get_thread_count(threads::detail::thread_schedule_state::unknown,
+                execution::thread_priority::default_, this_thread);
+
+            PIKA_DETAIL_DP(spq_deb<3>, timed(gnt, c));
+
             // just cleanup the thread we were called by rather than all threads
-            static auto getnext =
-                ::pika::detail::spq_deb<5>.make_timer(1, debug::detail::str<>("get_next_thread"));
+            static auto getnext = spq_deb<5>.make_timer(1, str<>("get_next_thread"));
             //
-            PIKA_DETAIL_DP(
-                ::pika::detail::spq_deb<5>, timed(getnext, debug::detail::dec<>(this_thread)));
+            PIKA_DETAIL_DP(spq_deb<5>, timed(getnext, dec<>(this_thread)));
 
             auto get_next_thread_function_HP =
                 [&](std::size_t domain, std::size_t q_index, thread_holder_type* /* receiver */,
@@ -621,11 +619,11 @@ namespace pika::threads::detail {
         /// Return the next thread to be executed, return false if none available
         bool just_add_new(std::size_t& added)
         {
+            using namespace pika::debug::detail;
             std::size_t this_thread = local_thread_number();
             PIKA_ASSERT(this_thread < num_workers_);
 
-            static auto w_or_add_n =
-                ::pika::detail::spq_deb<5>.make_timer(1, debug::detail::str<>("just_add_new"));
+            static auto w_or_add_n = spq_deb<5>.make_timer(1, str<>("just_add_new"));
 
             added = 0;
 
@@ -647,7 +645,7 @@ namespace pika::threads::detail {
             std::size_t q_index = q_lookup_[this_thread];
             //
             thread_holder_type* receiver = numa_holder_[domain].queues_[q_index];
-            PIKA_DETAIL_DP(::pika::detail::spq_deb<5>,
+            PIKA_DETAIL_DP(spq_deb<5>,
                 timed(w_or_add_n, "thread_num", this_thread, "q_index", q_index, "numa_stealing ",
                     numa_stealing_, "core_stealing ", core_stealing_));
 
@@ -668,6 +666,7 @@ namespace pika::threads::detail {
             execution::thread_schedule_hint schedulehint, bool /*allow_fallback*/, bool other_end,
             execution::thread_priority priority = execution::thread_priority::normal)
         {
+            using namespace pika::debug::detail;
             PIKA_ASSERT(get_thread_id_data(thrd)->get_scheduler_base() == this);
 
             std::size_t local_num = local_thread_number();
@@ -685,7 +684,7 @@ namespace pika::threads::detail {
             case execution::thread_schedule_hint_mode::none:
             {
                 // Create thread on this worker thread if possible
-                PIKA_DETAIL_DP(::pika::detail::spq_deb<5>, set(msg, "HINT_NONE  "));
+                PIKA_DETAIL_DP(spq_deb<5>, set(msg, "HINT_NONE  "));
                 if (local_num == std::size_t(-1))
                 {
                     // This is a task being injected from a thread on another
@@ -694,7 +693,7 @@ namespace pika::threads::detail {
                     q_index = 0;
                     // clang-format off
                     using namespace pika::threads::detail;
-                    PIKA_DETAIL_DP(::pika::detail::spq_deb<5>, debug(debug::detail::str<>("schedule_thread")
+                    PIKA_DETAIL_DP(spq_deb<5>, debug(str<>("schedule_thread")
                         , "x-pool thread schedule"
                         , "num_workers_", num_workers_
                         , "thread_number"
@@ -703,7 +702,7 @@ namespace pika::threads::detail {
                         , "pool", get_thread_pool_num_tss()
                         , "parent offset", parent_pool_->get_thread_offset()
                         , parent_pool_->get_pool_name()
-                        , debug::detail::threadinfo<threads::detail::thread_id_ref_type*>(
+                        , threadinfo<threads::detail::thread_id_ref_type*>(
                             &thrd)));
                     // clang-format on
                 }
@@ -711,11 +710,10 @@ namespace pika::threads::detail {
                 {
                     domain_num = d_lookup_[thread_num];
                     q_index = q_lookup_[thread_num];
-                    PIKA_DETAIL_DP(::pika::detail::spq_deb<5>,
-                        debug(debug::detail::str<>("schedule_thread"),
-                            "scheduler_mode::assign_work_thread_parent", "thread_num", thread_num,
-                            debug::detail::threadinfo<threads::detail::thread_id_ref_type*>(
-                                &thrd)));
+                    PIKA_DETAIL_DP(spq_deb<5>,
+                        debug(str<>("schedule_thread"), "scheduler_mode::assign_work_thread_parent",
+                            "thread_num", thread_num,
+                            threadinfo<threads::detail::thread_id_ref_type*>(&thrd)));
                 }
                 else /*(round_robin_)*/
                 {
@@ -723,11 +721,10 @@ namespace pika::threads::detail {
                     q_index = q_lookup_[thread_num];
                     thread_num =
                         numa_holder_[domain_num].thread_queue(q_index)->worker_next(num_workers_);
-                    PIKA_DETAIL_DP(::pika::detail::spq_deb<5>,
-                        debug(debug::detail::str<>("schedule_thread"),
-                            "scheduler_mode::assign_work_round_robin", "thread_num", thread_num,
-                            debug::detail::threadinfo<threads::detail::thread_id_ref_type*>(
-                                &thrd)));
+                    PIKA_DETAIL_DP(spq_deb<5>,
+                        debug(str<>("schedule_thread"), "scheduler_mode::assign_work_round_robin",
+                            "thread_num", thread_num,
+                            threadinfo<threads::detail::thread_id_ref_type*>(&thrd)));
                 }
                 thread_num = select_active_pu(l, thread_num, true /*allow_fallback*/);
                 break;
@@ -736,11 +733,11 @@ namespace pika::threads::detail {
             {
                 // @TODO. We should check that the thread num is valid
                 // Create thread on requested worker thread
-                PIKA_DETAIL_DP(::pika::detail::spq_deb<5>, set(msg, "HINT_THREAD"));
-                PIKA_DETAIL_DP(::pika::detail::spq_deb<5>,
-                    debug(debug::detail::str<>("schedule_thread"), "received HINT_THREAD",
-                        debug::detail::dec<3>(schedulehint.hint),
-                        debug::detail::threadinfo<threads::detail::thread_id_ref_type*>(&thrd)));
+                PIKA_DETAIL_DP(spq_deb<5>, set(msg, "HINT_THREAD"));
+                PIKA_DETAIL_DP(spq_deb<5>,
+                    debug(str<>("schedule_thread"), "received HINT_THREAD",
+                        dec<3>(schedulehint.hint),
+                        threadinfo<threads::detail::thread_id_ref_type*>(&thrd)));
                 thread_num = select_active_pu(l, schedulehint.hint, true /*allow_fallback*/);
                 domain_num = d_lookup_[thread_num];
                 q_index = q_lookup_[thread_num];
@@ -749,7 +746,7 @@ namespace pika::threads::detail {
             case execution::thread_schedule_hint_mode::numa:
             {
                 // Create thread on requested NUMA domain
-                PIKA_DETAIL_DP(::pika::detail::spq_deb<5>, set(msg, "HINT_NUMA  "));
+                PIKA_DETAIL_DP(spq_deb<5>, set(msg, "HINT_NUMA  "));
                 // TODO: This case does not handle suspended PUs.
                 domain_num = fast_mod(schedulehint.hint, num_domains_);
                 // if the thread creating the new task is on the domain
@@ -771,10 +768,9 @@ namespace pika::threads::detail {
                     "Invalid schedule hint mode: {}", static_cast<std::size_t>(schedulehint.mode));
             }
 
-            PIKA_DETAIL_DP(::pika::detail::spq_deb<5>,
-                debug(debug::detail::str<>("thread scheduled"), msg, "Thread",
-                    debug::detail::dec<3>(thread_num), "D", debug::detail::dec<2>(domain_num), "Q",
-                    debug::detail::dec<3>(q_index)));
+            PIKA_DETAIL_DP(spq_deb<5>,
+                debug(str<>("thread scheduled"), msg, "Thread", dec<3>(thread_num), "D",
+                    dec<2>(domain_num), "Q", dec<3>(q_index)));
 
             numa_holder_[domain_num].thread_queue(q_index)->schedule_thread(
                 thrd, priority, other_end);
@@ -793,8 +789,8 @@ namespace pika::threads::detail {
             execution::thread_schedule_hint schedulehint, bool allow_fallback,
             execution::thread_priority priority = execution::thread_priority::normal) override
         {
-            PIKA_DETAIL_DP(
-                ::pika::detail::spq_deb<5>, debug(debug::detail::str<>("schedule_thread_last")));
+            using namespace pika::debug::detail;
+            PIKA_DETAIL_DP(spq_deb<5>, debug(str<>("schedule_thread_last")));
             schedule_work(thrd, schedulehint, allow_fallback, true, priority);
         }
 
@@ -803,6 +799,7 @@ namespace pika::threads::detail {
         //---------------------------------------------------------------------
         void destroy_thread(threads::detail::thread_data* thrd) override
         {
+            using namespace pika::debug::detail;
             PIKA_ASSERT(thrd->get_scheduler_base() == this);
 
             auto d1 = thrd->get_queue<queue_holder_thread<thread_queue_type>>().domain_index_;
@@ -812,18 +809,17 @@ namespace pika::threads::detail {
             if (this_thread == std::size_t(-1))
             {
                 this_thread = thrd->get_last_worker_thread_num();
-                ::pika::detail::spq_arr.debug(debug::detail::str<>("Alert"), this_thread);
+                spq_arr.debug(str<>("Alert"), this_thread);
             }
             PIKA_ASSERT(this_thread < num_workers_);
 
             auto d2 = d_lookup_[this_thread];
             auto q2 = q_lookup_[this_thread];
             bool xthread = ((q1 != q2) || (d1 != d2));
-            PIKA_DETAIL_DP(::pika::detail::spq_deb<7>,
-                debug(debug::detail::str<>("destroy_thread"), "xthread", xthread, "task owned by",
-                    "D", debug::detail::dec<2>(d1), "Q", debug::detail::dec<3>(q1), "this thread",
-                    "D", debug::detail::dec<2>(d2), "Q", debug::detail::dec<3>(q2),
-                    debug::detail::threadinfo<threads::detail::thread_data*>(thrd)));
+            PIKA_DETAIL_DP(spq_deb<7>,
+                debug(str<>("destroy_thread"), "xthread", xthread, "task owned by", "D", dec<2>(d1),
+                    "Q", dec<3>(q1), "this thread", "D", dec<2>(d2), "Q", dec<3>(q2),
+                    threadinfo<threads::detail::thread_data*>(thrd)));
             // the cleanup of a task should be done by the original owner
             // of the task, so return it to the queue it came from before it
             // was stolen
@@ -837,9 +833,9 @@ namespace pika::threads::detail {
         //---------------------------------------------------------------------
         std::int64_t get_queue_length(std::size_t thread_num = std::size_t(-1)) const override
         {
-            PIKA_DETAIL_DP(::pika::detail::spq_deb<5>,
-                debug(debug::detail::str<>("get_queue_length"), "thread_num ",
-                    debug::detail::dec<>(thread_num)));
+            using namespace pika::debug::detail;
+            PIKA_DETAIL_DP(
+                spq_deb<3>, debug(str<>("get_queue_length"), "thread_num ", dec<>(thread_num)));
 
             PIKA_ASSERT(thread_num != std::size_t(-1));
 
@@ -854,6 +850,8 @@ namespace pika::threads::detail {
             {
                 throw std::runtime_error("unhandled get_queue_length with -1");
             }
+            PIKA_DETAIL_DP(spq_deb<3>,
+                debug(str<>("get_queue_length"), "thread_num ", dec<>(thread_num), dec<>(count)));
             return count;
         }
 
@@ -865,6 +863,7 @@ namespace pika::threads::detail {
             execution::thread_priority priority = execution::thread_priority::default_,
             std::size_t thread_num = std::size_t(-1), bool /* reset */ = false) const override
         {
+            using namespace pika::debug::detail;
             if (thread_num != std::size_t(-1))
             {
                 std::size_t domain_num = d_lookup_[thread_num];
@@ -872,9 +871,9 @@ namespace pika::threads::detail {
                 std::int64_t count =
                     numa_holder_[domain_num].thread_queue(q_index)->get_thread_count(
                         state, priority);
-                PIKA_DETAIL_DP(::pika::detail::spq_deb<6>,
-                    debug(debug::detail::str<>("get_thread_count"), "thread_num ",
-                        debug::detail::dec<3>(thread_num), "count ", debug::detail::dec<4>(count)));
+                PIKA_DETAIL_DP(spq_deb<6>,
+                    debug(str<>("get_thread_count"), "thread_num ", dec<3>(thread_num), "count ",
+                        dec<4>(count)));
                 return count;
             }
             else
@@ -884,9 +883,9 @@ namespace pika::threads::detail {
                 {
                     count += numa_holder_[d].get_thread_count(state, priority);
                 }
-                PIKA_DETAIL_DP(::pika::detail::spq_deb<6>,
-                    debug(debug::detail::str<>("get_thread_count"), "thread_num ",
-                        debug::detail::dec<3>(thread_num), "count ", debug::detail::dec<4>(count)));
+                PIKA_DETAIL_DP(spq_deb<6>,
+                    debug(str<>("get_thread_count"), "thread_num ", dec<3>(thread_num), "count ",
+                        dec<4>(count)));
                 return count;
             }
         }
@@ -908,8 +907,8 @@ namespace pika::threads::detail {
         {
             bool result = true;
 
-            PIKA_DETAIL_DP(
-                ::pika::detail::spq_deb<5>, debug(debug::detail::str<>("enumerate_threads")));
+            using namespace pika::debug::detail;
+            PIKA_DETAIL_DP(spq_deb<5>, debug(str<>("enumerate_threads")));
 
             for (std::size_t d = 0; d < num_domains_; ++d)
             {
@@ -921,8 +920,8 @@ namespace pika::threads::detail {
         ///////////////////////////////////////////////////////////////////////
         void on_start_thread(std::size_t local_thread) override
         {
-            PIKA_DETAIL_DP(::pika::detail::spq_deb<5>,
-                debug(debug::detail::str<>("start_thread"), "local_thread", local_thread));
+            using namespace pika::debug::detail;
+            PIKA_DETAIL_DP(spq_deb<5>, debug(str<>("start_thread"), "local_thread", local_thread));
 
             auto const& topo = ::pika::threads::detail::create_topology();
             // the main initialization can be done by any one thread
@@ -1122,9 +1121,9 @@ namespace pika::threads::detail {
                         }
                     }
 
-                    PIKA_DETAIL_DP(::pika::detail::spq_deb<5>,
-                        debug(debug::detail::str<>("thread holder"), "local_thread", local_thread,
-                            "domain", domain, "index", index, "local_id", local_id, "owner_mask",
+                    PIKA_DETAIL_DP(spq_deb<5>,
+                        debug(str<>("thread holder"), "local_thread", local_thread, "domain",
+                            domain, "index", index, "local_id", local_id, "owner_mask",
                             owner_mask));
 
                     thread_holder = new queue_holder_thread<thread_queue_type>(bp_queue, hp_queue,
@@ -1160,12 +1159,12 @@ namespace pika::threads::detail {
             if (!debug_init_)
             {
                 debug_init_ = true;
-                ::pika::detail::spq_arr.array("# d_lookup_  ", &d_lookup_[0], num_workers_);
-                ::pika::detail::spq_arr.array("# q_lookup_  ", &q_lookup_[0], num_workers_);
-                ::pika::detail::spq_arr.array("# q_counts_  ", &q_counts_[0], num_domains_);
-                ::pika::detail::spq_arr.array("# q_offset_  ", &q_offset_[0], num_domains_);
+                spq_arr.array("# d_lookup_  ", &d_lookup_[0], num_workers_);
+                spq_arr.array("# q_lookup_  ", &q_lookup_[0], num_workers_);
+                spq_arr.array("# q_counts_  ", &q_counts_[0], num_domains_);
+                spq_arr.array("# q_offset_  ", &q_offset_[0], num_domains_);
 #ifdef PIKA_DETAIL_SHARED_PRIORITY_SCHEDULER_LINUX
-                ::pika::detail::spq_arr.array("# schedcpu_  ", &schedcpu_[0], num_workers_);
+                spq_arr.array("# schedcpu_  ", &schedcpu_[0], num_workers_);
 #endif
                 for (std::size_t d = 0; d < num_domains_; ++d)
                 {
