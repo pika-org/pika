@@ -58,7 +58,7 @@ namespace deb = pika::debug;
 static bool output = false;
 static uint32_t mpi_task_transfer = mpi::get_completion_mode();
 static std::uint32_t mpi_poll_size = 16;
-std::atomic<std::uint64_t> counter;
+std::atomic<std::uint32_t> counter;
 
 // ------------------------------------------------------------
 // a debug level of zero disables messages with a priority>0
@@ -83,7 +83,7 @@ struct message_buffer
 {
     header header_;
     //
-    std::uint64_t size()
+    std::uint32_t size()
     {
         return header_.size_;
     }
@@ -112,7 +112,7 @@ inline std::uint32_t prev_rank(std::uint32_t rank, std::uint32_t size)
 // we don't reuse tags immediately and instead offset them by
 // a multiple to ensure we don't have two with the same id in flight
 // at the same time
-inline std::uint32_t make_tag(std::uint64_t rank, std::uint64_t iteration, std::uint32_t ranks)
+inline std::uint32_t make_tag(std::uint32_t rank, std::uint32_t iteration, std::uint32_t ranks)
 {
     std::int64_t tag = (rank + (iteration * ranks)) & 0xffffffff;
     msr_deb<7>.debug(
@@ -158,7 +158,7 @@ void msg_info(std::uint32_t rank, std::uint32_t size, msg_type mtype, std::uint3
 // ------------------------------------------------------------
 // message buffers get reused from a stack
 boost::lockfree::stack<message_buffer*, boost::lockfree::fixed_sized<false>> message_buffers(1024);
-std::atomic<std::uint64_t> message_buffers_size_{0};
+std::atomic<std::uint32_t> message_buffers_size_{0};
 
 message_buffer* get_msg_buffer(header h)
 {
@@ -172,7 +172,7 @@ message_buffer* get_msg_buffer(header h)
     }
     // set initial token to some easy to spot default
     message_buffers_size_++;
-    msr_deb<6>.debug(str<>("message_buffers"), std::uint64_t(message_buffers_size_.load()));
+    msr_deb<6>.debug(str<>("message_buffers"), std::uint32_t(message_buffers_size_.load()));
     return buffer;
 }
 
@@ -180,7 +180,7 @@ void release_msg_buffer(message_buffer* buffer)
 {
     --message_buffers_size_;
     message_buffers.push(buffer);
-    msr_deb<6>.debug(str<>("message_buffers"), std::uint64_t(message_buffers_size_.load()));
+    msr_deb<6>.debug(str<>("message_buffers"), std::uint32_t(message_buffers_size_.load()));
 }
 
 auto get_default_scheduler()
@@ -190,11 +190,11 @@ auto get_default_scheduler()
 
 struct message_receiver
 {
-    std::uint64_t rank, orank, size, tag, num_rounds, message_size;
+    std::uint32_t rank, orank, size, tag, num_rounds, message_size;
     message_buffer* buf;
 
-    message_receiver(int rank, int orank, int size, int tag, int num_rounds, int message_size,
-        message_buffer* buf)
+    message_receiver(std::uint32_t rank, std::uint32_t orank, std::uint32_t size, std::uint32_t tag,
+        std::uint32_t num_rounds, std::uint32_t message_size, message_buffer* buf)
       : rank(rank)
       , orank(orank)
       , size(size)
@@ -207,16 +207,13 @@ struct message_receiver
 
     void operator()(int /*res*/)
     {
-        // global counter for sanity checking of the test itself
-        counter--;
-
         // increment the token we received
-        /*auto old_token = */ buf->header_.token_val_++;
+        buf->header_.token_val_++;
 
         // each message travels around the ring num_rounds times,
         // which round is the message currently on?
-        std::uint64_t round = buf->header_.token_val_ / size;
-        std::uint64_t step = buf->header_.token_val_ % size;
+        std::uint32_t round = buf->header_.token_val_ / size;
+        std::uint32_t step = buf->header_.token_val_ % size;
 
         // if the message has arrived back at the starting rank
         // and has completed all rounds, it is finished
@@ -226,22 +223,26 @@ struct message_receiver
                 buf->header_.origin_rank, "complete");
             release_msg_buffer(buf);
         }
+
+        // if the message is on it's final round
+
         // if the message (not originating from this rank) needs to be forwarded,
-        // but is on its final round, do not post a receive as it won't come back to us
+        // but is not on its final round, send, but do not post a receive (as it won't come back)
         else if (step != 0 && (round == num_rounds - 1))
         {
             msg_info(rank, size, msg_type::recv, buf->header_.token_val_, tag, round, step,
                 buf->header_.origin_rank, "forward(no rx)");
+
             // forward the message with the (already) incremented token
             auto tx_snd2 = ex::just(&*buf, message_size, MPI_UNSIGNED_CHAR, next_rank(rank, size),
                                tag, MPI_COMM_WORLD) |
                 mpi::transform_mpi(MPI_Isend, mpi::stream_type::user_2) |
                 ex::then(
                     [round, step, buf = buf, tag = tag, rank = rank, size = size](int /*result*/) {
-                        counter--;
                         msg_info(rank, size, msg_type::send, buf->header_.token_val_, tag, round,
                             step, buf->header_.origin_rank, "forwardsent");
                         release_msg_buffer(buf);
+                        counter--;
                     });
 
             // launch the receive for the next msg and launch the sending forward
@@ -271,10 +272,10 @@ struct message_receiver
                 mpi::transform_mpi(MPI_Isend, mpi::stream_type::user_2) |
                 ex::then(
                     [round, step, buf = buf, tag = tag, rank = rank, size = size](int /*result*/) {
-                        counter--;
                         msg_info(rank, size, msg_type::send, buf->header_.token_val_, tag, round,
                             step, buf->header_.origin_rank, "forwardsent");
                         //                release_msg_buffer(buf);
+                        counter--;
                     });
 
             // launch the receive for the next msg and launch the sending forward
@@ -283,6 +284,8 @@ struct message_receiver
             msr_deb<6>.debug(str<>("start_detached"), "tx_snd2", step, round);
             ex::start_detached(std::move(tx_snd2));
         }
+        // global counter for sanity checking of the test itself
+        counter--;
     }
 };
 
@@ -319,8 +322,8 @@ int pika_main(pika::program_options::variables_map& vm)
     // --------------------------
     // Get user options/flags
     // --------------------------
-    const std::uint64_t iterations = vm["iterations"].as<std::uint64_t>();
-    const std::uint64_t num_rounds = vm["rounds"].as<std::uint64_t>();
+    const std::uint32_t iterations = vm["iterations"].as<std::uint32_t>();
+    const std::uint32_t num_rounds = vm["rounds"].as<std::uint32_t>();
     output = vm.count("output") != 0;
     //
     auto in_flight = mpi::get_max_requests_in_flight();
@@ -333,7 +336,7 @@ int pika_main(pika::program_options::variables_map& vm)
     mpi_poll_size = vm["mpi-polling-size"].as<std::uint32_t>();
     mpi::set_max_polling_size(mpi_poll_size);
 
-    std::uint64_t message_size = vm["message-bytes"].as<std::uint64_t>();
+    std::uint32_t message_size = vm["message-bytes"].as<std::uint32_t>();
 
     // --------------------------
     // main scope with polling enabled
@@ -354,17 +357,17 @@ int pika_main(pika::program_options::variables_map& vm)
         pika::chrono::detail::high_resolution_timer t;
 
         // for each iteration (number of times we loop over the ranks)
-        for (std::uint64_t i = 0; i < iterations; ++i)
+        for (std::uint32_t i = 0; i < iterations; ++i)
         {
             // every rank will start a ring, and forward messages from
             // other ranks (prev) in the ring
-            for (std::int32_t orank = 0; orank < size; orank++)
+            for (std::uint32_t orank = 0; orank < std::uint32_t(size); orank++)
             {
                 // post a ring receive for each rank at this iteration
                 // the message is always received from the previous rank
                 auto buf = get_msg_buffer(header{0, i, -1, orank, message_size});
-                std::uint64_t tag =
-                    make_tag(std::uint64_t(orank), std::uint64_t(i), std::uint32_t(size));
+                std::uint32_t tag =
+                    make_tag(std::uint32_t(orank), std::uint32_t(i), std::uint32_t(size));
                 msg_info(rank, size, msg_type::recv, buf->header_.token_val_, tag, 0, 0,
                     buf->header_.origin_rank, "ringrecv");
 
@@ -380,18 +383,18 @@ int pika_main(pika::program_options::variables_map& vm)
             }
 
             // start the ring (first message) message for this iteration/rank
-            auto buf = get_msg_buffer(header{0, i, 0, rank, message_size});
+            auto buf = get_msg_buffer(header{0, i, 0, std::uint32_t(rank), message_size});
             buf->header_.token_val_ = 0;
-            std::uint64_t tag =
-                make_tag(std::uint64_t(rank), std::uint64_t(i), std::uint32_t(size));
+            std::uint32_t tag =
+                make_tag(std::uint32_t(rank), std::uint32_t(i), std::uint32_t(size));
             auto send_snd = ex::just(&*buf, message_size, MPI_UNSIGNED_CHAR, next_rank(rank, size),
                                 tag, MPI_COMM_WORLD) |
                 mpi::transform_mpi(MPI_Isend, mpi::stream_type::user_1) |
                 ex::then([rank, size, buf, tag](int /*result*/) {
-                    counter--;
                     msg_info(rank, size, msg_type::send, buf->header_.token_val_, tag, 0, 0,
                         buf->header_.origin_rank, "initsent");
                     release_msg_buffer(buf);
+                    counter--;
                 });
             msg_info(rank, size, msg_type::send, buf->header_.token_val_, tag, 0, 0,
                 buf->header_.origin_rank, "init");
@@ -410,7 +413,7 @@ int pika_main(pika::program_options::variables_map& vm)
             // clang-format off
             msr_deb<0>.debug(str<>("User Messages")
                 , "Rank", dec<3>(rank), "of", dec<3>(size)
-                , "Counter", hex<8>(std::uint64_t(counter.load()))
+                , "Counter", hex<8>(std::uint32_t(counter.load()))
                 , "in-flight", dec<3>(mpi::get_work_count()));
             // clang-format on
         }
@@ -495,11 +498,11 @@ int main(int argc, char* argv[])
 
     // clang-format off
     cmdline.add_options()("iterations",
-        value<std::uint64_t>()->default_value(5000),
+        value<std::uint32_t>()->default_value(5000),
         "number of iterations to test");
 
     cmdline.add_options()("rounds",
-        value<std::uint64_t>()->default_value(5),
+        value<std::uint32_t>()->default_value(5),
         "number of times around the ring each message should flow");
 
     cmdline.add_options()("in-flight-limit",
@@ -514,7 +517,7 @@ int main(int argc, char* argv[])
         "The maximum number of mpi request completions to handle per poll.");
 
     cmdline.add_options()("message-bytes",
-        pika::program_options::value<std::uint64_t>()->default_value(64),
+        pika::program_options::value<std::uint32_t>()->default_value(64),
         "Specify the buffer size to use for messages (min 16).");
 
     cmdline.add_options()("output",
