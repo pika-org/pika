@@ -18,6 +18,7 @@
 #include <pika/type_support/type_identity.hpp>
 
 #include <cstddef>
+#include <cstdint>
 #include <iterator>
 #include <type_traits>
 
