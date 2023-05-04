@@ -1,4 +1,4 @@
-//  Copyright (c) 2019 John Biddiscombe
+//  Copyright (c) 2023 ETH Zurich
 //
 //  SPDX-License-Identifier: BSL-1.0
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -16,11 +16,13 @@
 #include <pika/modules/threading_base.hpp>
 #include <pika/mpi_base/mpi.hpp>
 #include <pika/runtime/thread_pool_helpers.hpp>
+#include <pika/synchronization/counting_semaphore.hpp>
 
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <iosfwd>
+#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
@@ -54,7 +56,7 @@ namespace pika::mpi::experimental {
         const char* stream_name(stream_type s);
 
         PIKA_EXPORT bool add_request_callback(
-            request_callback_function_type&&, MPI_Request, check_request_eager, stream_type);
+            request_callback_function_type&&, MPI_Request, check_request_eager);
         PIKA_EXPORT void register_polling(pika::threads::detail::thread_pool_base&);
         PIKA_EXPORT void unregister_polling(pika::threads::detail::thread_pool_base&);
 
@@ -65,11 +67,6 @@ namespace pika::mpi::experimental {
 
         // function that converts an MPI error into an exception
         PIKA_EXPORT void pika_MPI_Handler(MPI_Comm*, int* errorcode, ...);
-
-        // -----------------------------------------------------------------
-        /// Called by the mpi senders/executors to initiate throttling
-        /// when necessary
-        //        PIKA_EXPORT void wait_for_throttling(stream_type);
 
         // -----------------------------------------------------------------
         // set an error handler for communicators that will be called
@@ -84,23 +81,28 @@ namespace pika::mpi::experimental {
         // utility function to avoid duplication in eager check locations
         PIKA_EXPORT bool poll_request(MPI_Request& /*req*/);
 
-        //        inline constexpr bool throttling_enabled = false;
+        // -----------------------------------------------------------------
+        using semaphore_type = pika::counting_semaphore<>;
+        //
+        PIKA_EXPORT std::shared_ptr<semaphore_type> get_semaphore(stream_type s);
+
+        inline constexpr bool throttling_enabled = false;
     }    // namespace detail
 
     // -----------------------------------------------------------------
     /// Set the number of messages above which throttling will be applied
-    /// when invoking an MPI function. If the number of messages in flight
-    /// exceeds the amount specified, then any thread attempting to invoke
-    /// and MPI function that generates an MPI_Request will be suspended.
+    /// when invoking an MPI function on a given stream.
+    /// If the number of messages in flight exceeds the amount specified,
+    /// then any thread attempting to invoke an MPI function on that stream
+    /// that generates an MPI_Request will be suspended.
     /// This should be used with great caution as setting it too low can
     /// cause deadlocks. The default value is size_t(-1) - i.e. unlimited
     /// The value can be set using an environment variable as follows
     /// PIKA_MPI_MSG_THROTTLE=64
     /// but user code setting it will override any default or env value
-    /// This function returns the previous throttling threshold value
     /// If the optional stream param is not specified, then all streams
     /// are set with the same limit
-    PIKA_EXPORT std::uint32_t set_max_requests_in_flight(
+    PIKA_EXPORT void set_max_requests_in_flight(
         std::uint32_t, std::optional<stream_type> = std::nullopt);
 
     /// Query the current value of the throttling threshold for the stream
@@ -108,9 +110,10 @@ namespace pika::mpi::experimental {
     /// automatic/default stream value is returned
     PIKA_EXPORT std::uint32_t get_max_requests_in_flight(std::optional<stream_type> = std::nullopt);
 
-    // -----------------------------------------------------------------
-    /// returns the number of mpi requests currently outstanding
-    PIKA_EXPORT std::uint32_t get_num_requests_in_flight(stream_type s);
+    /// return the total number of mpi requests currently in queues
+    /// This number is an estimate as new work might be created/added during the call
+    /// and so the returned value should be considered approximate (racy)
+    PIKA_EXPORT size_t get_work_count();
 
     // -----------------------------------------------------------------
     /// set the maximume number of MPI_Request completions to
