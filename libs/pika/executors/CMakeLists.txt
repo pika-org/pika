@@ -12,7 +12,6 @@ set(executors_headers
     pika/executors/current_executor.hpp
     pika/executors/datapar/execution_policy_fwd.hpp
     pika/executors/datapar/execution_policy.hpp
-    pika/executors/guided_pool_executor.hpp
     pika/executors/apply.hpp
     pika/executors/async.hpp
     pika/executors/dataflow.hpp
