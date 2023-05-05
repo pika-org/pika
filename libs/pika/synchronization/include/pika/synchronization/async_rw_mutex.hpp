@@ -458,6 +458,7 @@ namespace pika::execution::experimental {
                         // add a continuation to be triggered when the previous
                         // state is released.
                         p->add_continuation(PIKA_MOVE(continuation));
+                        os.state.reset();
                         os.prev_state.reset();
                     }
                     else
@@ -653,6 +654,7 @@ namespace pika::execution::experimental {
                         // add a continuation to be triggered when the previous
                         // state is released.
                         p->add_continuation(PIKA_MOVE(continuation));
+                        os.state.reset();
                         os.prev_state.reset();
                     }
                     else

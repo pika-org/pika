@@ -24,6 +24,7 @@ using pika::execution::experimental::start_detached;
 using pika::execution::experimental::then;
 using pika::execution::experimental::thread_pool_scheduler;
 using pika::execution::experimental::transfer;
+using pika::execution::experimental::when_all;
 using pika::this_thread::experimental::sync_wait;
 
 unsigned int seed = std::random_device{}();
@@ -259,6 +260,31 @@ void test_read_sender_copyable(async_rw_mutex<ReadWriteT, ReadT> rwm)
     PIKA_TEST_EQ(read_accesses, std::size_t(4));
 }
 
+template <typename ReadWriteT, typename ReadT = ReadWriteT>
+void test_multiple_when_all(async_rw_mutex<ReadWriteT, ReadT> rwm)
+{
+    {
+        auto s1 = rwm.readwrite() | then([](auto) {});
+        auto s2 = rwm.readwrite() | then([](auto) {});
+        auto s3 = rwm.readwrite() | then([](auto) {});
+        sync_wait(when_all(std::move(s1), std::move(s2), std::move(s3)));
+    }
+
+    {
+        auto s1 = rwm.readwrite() | then([](auto) {});
+        auto s2 = rwm.readwrite() | then([](auto) {});
+        auto s3 = rwm.readwrite() | then([](auto) {});
+        sync_wait(when_all(std::move(s3), std::move(s2), std::move(s1)));
+    }
+
+    {
+        auto s1 = rwm.readwrite() | then([](auto) {});
+        auto s2 = rwm.readwrite() | then([](auto) {});
+        auto s3 = rwm.readwrite() | then([](auto) {});
+        sync_wait(when_all(std::move(s3), std::move(s1), std::move(s2)));
+    }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main(pika::program_options::variables_map& vm)
 {
@@ -291,6 +317,14 @@ int pika_main(pika::program_options::variables_map& vm)
     test_read_sender_copyable(async_rw_mutex<void>{});
     test_read_sender_copyable(async_rw_mutex<std::size_t>{0});
     test_read_sender_copyable(async_rw_mutex<mytype, mytype_base>{mytype{}});
+
+    // These tests are disabled with stdexec and nvhpc because of bad codegen.
+    // This is fixed in newer versions of stdexec.
+#if !(defined(PIKA_NVHPC_VERSION) && defined(PIKA_HAVE_STDEXEC))
+    test_multiple_when_all(async_rw_mutex<void>{});
+    test_multiple_when_all(async_rw_mutex<std::size_t>{0});
+    test_multiple_when_all(async_rw_mutex<mytype, mytype_base>{mytype{}});
+#endif
 
     return pika::finalize();
 }
