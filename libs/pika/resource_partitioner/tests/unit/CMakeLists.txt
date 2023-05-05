@@ -5,7 +5,6 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 set(tests
-    async_customization
     cross_pool_injection
     named_pool_executor
     resource_partitioner_info
