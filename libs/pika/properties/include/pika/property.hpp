@@ -6,4 +6,40 @@
 
 #pragma once
 
-#include <pika/properties/property.hpp>
+#include <pika/config.hpp>
+#include <pika/functional/detail/tag_fallback_invoke.hpp>
+
+#include <type_traits>
+#include <utility>
+
+namespace pika::experimental {
+
+    inline constexpr struct prefer_t : pika::functional::detail::tag_fallback<prefer_t>
+    {
+        // clang-format off
+        template <typename Tag, typename... Tn>
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
+                prefer_t, Tag const& tag, Tn&&... tn)
+            noexcept(noexcept(tag(PIKA_FORWARD(Tn, tn)...)))
+            -> decltype(tag(PIKA_FORWARD(Tn, tn)...))
+        // clang-format on
+        {
+            return tag(PIKA_FORWARD(Tn, tn)...);
+        }
+
+        // clang-format off
+        template <typename Tag, typename T0, typename... Tn>
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
+                prefer_t, Tag, T0&& t0, Tn&&...)
+            noexcept(noexcept(PIKA_FORWARD(T0, t0)))
+            -> std::enable_if_t<
+                    !pika::functional::detail::is_tag_invocable_v<
+                        prefer_t, Tag, T0, Tn...> &&
+                    !std::is_invocable_v<Tag, T0, Tn...>,
+                    decltype(PIKA_FORWARD(T0, t0))>
+        // clang-format on
+        {
+            return PIKA_FORWARD(T0, t0);
+        }
+    } prefer{};
+}    // namespace pika::experimental

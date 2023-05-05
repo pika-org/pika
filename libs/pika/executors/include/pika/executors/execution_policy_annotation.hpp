@@ -13,7 +13,7 @@
 #include <pika/execution/executors/rebind_executor.hpp>
 #include <pika/execution/traits/is_execution_policy.hpp>
 #include <pika/executors/annotating_executor.hpp>
-#include <pika/properties/property.hpp>
+#include <pika/property.hpp>
 
 #include <string>
 #include <type_traits>

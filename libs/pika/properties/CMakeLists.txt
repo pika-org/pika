@@ -6,7 +6,7 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(properties_headers pika/property.hpp pika/properties/property.hpp)
+set(properties_headers pika/property.hpp)
 
 include(pika_add_module)
 pika_add_module(
