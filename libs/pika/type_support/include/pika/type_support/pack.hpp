@@ -39,6 +39,9 @@ namespace pika::util::detail {
     {
     };
 
+    template <typename... Ts>
+    using decayed_pack = pack<std::decay_t<Ts>...>;
+
 #define PIKA_MAKE_INDEX_PACK_INTEGER_PACK                                                          \
  template <std::size_t N>                                                                          \
  struct make_index_pack : index_pack<__integer_pack(N)...>                                         \
