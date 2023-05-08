@@ -82,12 +82,20 @@ namespace pika::thread_pool_bulk_detail {
         thread_pool_bulk_sender& operator=(thread_pool_bulk_sender&&) = default;
         thread_pool_bulk_sender& operator=(thread_pool_bulk_sender const&) = default;
 
+        template <typename Tuple>
+        struct value_types_helper
+        {
+            using type = pika::util::detail::transform_t<Tuple, std::decay>;
+        };
+
 #if defined(PIKA_HAVE_STDEXEC)
         using is_sender = void;
 
         template <template <typename...> class Tuple, template <typename...> class Variant>
-        using value_types = pika::execution::experimental::value_types_of_t<Sender,
-            pika::execution::experimental::empty_env, Tuple, Variant>;
+        using value_types = pika::util::detail::transform_t<
+            pika::execution::experimental::value_types_of_t<Sender,
+                pika::execution::experimental::empty_env, Tuple, Variant>,
+            value_types_helper>;
 
         template <template <typename...> class Variant>
         using error_types = pika::util::detail::unique_t<
@@ -102,8 +110,10 @@ namespace pika::thread_pool_bulk_detail {
                     pika::execution::experimental::set_error_t(std::exception_ptr)>>;
 #else
         template <template <typename...> class Tuple, template <typename...> class Variant>
-        using value_types = typename pika::execution::experimental::sender_traits<
-            Sender>::template value_types<Tuple, Variant>;
+        using value_types =
+            pika::util::detail::transform_t<typename pika::execution::experimental::sender_traits<
+                                                Sender>::template value_types<Tuple, Variant>,
+                value_types_helper>;
 
         template <template <typename...> class Variant>
         using error_types = pika::util::detail::unique_t<
@@ -402,7 +412,8 @@ namespace pika::thread_pool_bulk_detail {
                     auto const num_chunks = (n + chunk_size - 1) / chunk_size;
 
                     // Store sent values in the operation state
-                    r.op_state->ts.template emplace<std::tuple<Ts...>>(PIKA_FORWARD(Ts, ts)...);
+                    r.op_state->ts.template emplace<std::tuple<std::decay_t<Ts>...>>(
+                        PIKA_FORWARD(Ts, ts)...);
 
                     // Initialize the queues for all worker threads so that
                     // worker threads can start stealing immediately when
