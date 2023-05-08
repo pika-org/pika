@@ -70,7 +70,11 @@ struct customized_scheduler : uncustomized_scheduler
 inline constexpr struct custom_scheduler_query_t
 {
     friend constexpr bool tag_invoke(
+#if defined(PIKA_HAVE_STDEXEC)
+        ex::forwarding_query_t, custom_scheduler_query_t const&) noexcept
+#else
         ex::forwarding_scheduler_query_t, custom_scheduler_query_t const&) noexcept
+#endif
     {
         return true;
     }
@@ -92,11 +96,19 @@ int main()
 
     // get_forward_progress_guarantee is not a forwarding query
     {
+#if defined(PIKA_HAVE_STDEXEC)
+        static_assert(!ex::forwarding_query(ex::get_forward_progress_guarantee));
+#else
         static_assert(!ex::forwarding_scheduler_query(ex::get_forward_progress_guarantee));
+#endif
     }
 
     // The custom query is a forwarding query
     {
+#if defined(PIKA_HAVE_STDEXEC)
+        static_assert(ex::forwarding_query(custom_scheduler_query));
+#else
         static_assert(ex::forwarding_scheduler_query(custom_scheduler_query));
+#endif
     }
 }
