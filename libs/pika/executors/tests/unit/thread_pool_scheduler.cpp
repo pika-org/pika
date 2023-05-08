@@ -654,27 +654,16 @@ void test_when_all_vector()
 
         auto when1 = ex::when_all_vector(std::move(senders));
 
-#if !defined(PIKA_HAVE_STDEXEC)
         bool executed{false};
-#endif
-        tt::sync_wait(std::move(when1)
-        // TODO: ADL issues? Uncommenting instantiates set_value with the
-        // sync_wait_receiver from when_all_vector_receiver, i.e. then is
-        // "skipped".
-#if !defined(PIKA_HAVE_STDEXEC)
-            | ex::then([parent_id, &executed](std::vector<double> v) {
-                  PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id());
-                  PIKA_TEST_EQ(v.size(), std::size_t(3));
-                  PIKA_TEST_EQ(v[0], 42.0);
-                  PIKA_TEST_EQ(v[1], 43.0);
-                  PIKA_TEST_EQ(v[2], 3.14);
-                  executed = true;
-              })
-#endif
-        );
-#if !defined(PIKA_HAVE_STDEXEC)
+        tt::sync_wait(std::move(when1) | ex::then([parent_id, &executed](std::vector<double> v) {
+            PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id());
+            PIKA_TEST_EQ(v.size(), std::size_t(3));
+            PIKA_TEST_EQ(v[0], 42.0);
+            PIKA_TEST_EQ(v[1], 43.0);
+            PIKA_TEST_EQ(v[2], 3.14);
+            executed = true;
+        }));
         PIKA_TEST(executed);
-#endif
     }
 
     {
@@ -699,14 +688,8 @@ void test_when_all_vector()
 
         try
         {
-            tt::sync_wait(ex::when_all_vector(std::move(senders))
-            // TODO: ADL issues? Uncommenting instantiates set_value with the
-            // sync_wait_receiver from when_all_vector_receiver, i.e. then is
-            // "skipped".
-#if !defined(PIKA_HAVE_STDEXEC)
-                | ex::then([](std::vector<int>) { PIKA_TEST(false); })
-#endif
-            );
+            tt::sync_wait(ex::when_all_vector(std::move(senders)) |
+                ex::then([](std::vector<int>) { PIKA_TEST(false); }));
             PIKA_TEST(false);
         }
         catch (std::runtime_error const& e)
@@ -740,14 +723,8 @@ void test_when_all_vector()
 
         try
         {
-            tt::sync_wait(ex::when_all_vector(std::move(senders))
-            // TODO: ADL issues? Uncommenting instantiates set_value with the
-            // sync_wait_receiver from when_all_vector_receiver, i.e. then is
-            // "skipped".
-#if !defined(PIKA_HAVE_STDEXEC)
-                | ex::then([](std::vector<int>) { PIKA_TEST(false); })
-#endif
-            );
+            tt::sync_wait(ex::when_all_vector(std::move(senders)) |
+                ex::then([](std::vector<int>) { PIKA_TEST(false); }));
             PIKA_TEST(false);
         }
         catch (std::runtime_error const& e)
@@ -971,8 +948,6 @@ void test_ensure_started()
         PIKA_TEST_EQ(tt::sync_wait(std::move(s)), 42);
     }
 
-    // TODO: The split sender in the stdexec is not copyable.
-#if !defined(PIKA_HAVE_STDEXEC)
     {
         auto s = ex::transfer_just(sched, 42) | ex::ensure_started() | ex::split();
         PIKA_TEST_EQ(tt::sync_wait(s), 42);
@@ -980,7 +955,6 @@ void test_ensure_started()
         PIKA_TEST_EQ(tt::sync_wait(s), 42);
         PIKA_TEST_EQ(tt::sync_wait(std::move(s)), 42);
     }
-#endif
 
     // It's allowed to discard the sender from ensure_started
     {
@@ -990,8 +964,6 @@ void test_ensure_started()
 
 void test_ensure_started_when_all()
 {
-    // TODO: The split sender in the stdexec is not copyable.
-#if !defined(PIKA_HAVE_STDEXEC)
     ex::thread_pool_scheduler sched{};
 
     {
@@ -1092,13 +1064,10 @@ void test_ensure_started_when_all()
         PIKA_TEST_EQ(first_task_calls, std::size_t(1));
         PIKA_TEST_EQ(successor_task_calls, std::size_t(2));
     }
-#endif
 }
 
 void test_split()
 {
-    // TODO: No default implementation in stdexec.
-#if !defined(PIKA_HAVE_STDEXEC)
     ex::thread_pool_scheduler sched{};
 
     {
@@ -1122,13 +1091,10 @@ void test_split()
         PIKA_TEST_EQ(tt::sync_wait(s), 42);
         PIKA_TEST_EQ(tt::sync_wait(std::move(s)), 42);
     }
-#endif
 }
 
 void test_split_when_all()
 {
-    // TODO: No default implementation in stdexec.
-#if !defined(PIKA_HAVE_STDEXEC)
     ex::thread_pool_scheduler sched{};
 
     {
@@ -1193,7 +1159,6 @@ void test_split_when_all()
         PIKA_TEST_EQ(first_task_calls, std::size_t(1));
         PIKA_TEST_EQ(successor_task_calls, std::size_t(2));
     }
-#endif
 }
 
 void test_let_value()
