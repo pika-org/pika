@@ -158,7 +158,14 @@ namespace pika {
             void async_continue(T&& value, Hierarchy&& hierarchy)
             {
                 // Create a self reference
+#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 130000
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wstringop-overflow"
+#endif
                 pika::intrusive_ptr<async_traversal_frame> self(this);
+#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 130000
+# pragma GCC diagnostic pop
+#endif
 
                 // Create a callable object which resumes the current
                 // traversal when it's called.

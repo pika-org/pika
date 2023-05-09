@@ -33,7 +33,14 @@ int main()
 
     pair_type pair(10, 20);
 
+#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 130000
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdangling-reference"
+#endif
     int const& x = pika::util::detail::bind(&pair_type::first, placeholders::_1)(pair);
+#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 130000
+# pragma GCC diagnostic pop
+#endif
 
     PIKA_TEST_EQ(&pair.first, &x);
 
