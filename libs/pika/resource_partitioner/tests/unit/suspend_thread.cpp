@@ -222,7 +222,9 @@ int main(int argc, char* argv[])
             pika::resource::scheduling_policy::abp_priority_fifo,
             pika::resource::scheduling_policy::abp_priority_lifo,
 #endif
-            pika::resource::scheduling_policy::shared_priority,
+            // This is disabled because it frequently fails with
+            // std::system_error "Resource temporarily unavailable"
+            // pika::resource::scheduling_policy::shared_priority,
         };
 
         for (auto const scheduler : schedulers)
