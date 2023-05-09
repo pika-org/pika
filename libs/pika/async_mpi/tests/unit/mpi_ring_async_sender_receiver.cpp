@@ -10,6 +10,7 @@
 #include <pika/init.hpp>
 #include <pika/mpi.hpp>
 #include <pika/program_options.hpp>
+#include <pika/synchronization/counting_semaphore.hpp>
 #include <pika/testing.hpp>
 //
 #include <boost/lockfree/stack.hpp>
@@ -59,6 +60,7 @@ static bool output = false;
 static uint32_t mpi_task_transfer = mpi::get_completion_mode();
 static std::uint32_t mpi_poll_size = 16;
 std::atomic<std::uint32_t> counter;
+std::unique_ptr<pika::counting_semaphore<>> limiter;
 
 // ------------------------------------------------------------
 // a debug level of zero disables messages with a priority>0
@@ -235,7 +237,9 @@ struct message_receiver
                 throw std::runtime_error("Ring should have terminated before now");
             }
             msg_info(rank, size, msg_type::recv, buf->header_, "complete");
+            // msr_deb<0>.debug(str<>("release"), buf->header_.iteration);
             release_msg_buffer(buf);
+            limiter->release();
         }
         else
         {
@@ -329,6 +333,7 @@ int pika_main(pika::program_options::variables_map& vm)
         in_flight = vm["in-flight-limit"].as<std::uint32_t>();
         mpi::set_max_requests_in_flight(in_flight, mpi::stream_type::user_1);
     }
+    limiter = std::make_unique<pika::counting_semaphore<>>(in_flight);
 
     mpi_poll_size = vm["mpi-polling-size"].as<std::uint32_t>();
     mpi::set_max_polling_size(mpi_poll_size);
@@ -356,6 +361,10 @@ int pika_main(pika::program_options::variables_map& vm)
         // for each iteration (number of times we loop over the ranks)
         for (std::uint32_t i = 0; i < iterations; ++i)
         {
+            //            msr_deb<0>.debug(str<>("acquire"), i);
+            limiter->acquire();
+            //            msr_deb<0>.debug(str<>("acquired"), i);
+
             // every rank starts a ring send,
             // on first round - every rank receives a message from all other ranks
             for (std::uint32_t orank = 0; orank < std::uint32_t(size); orank++)
@@ -428,8 +437,8 @@ int pika_main(pika::program_options::variables_map& vm)
             // a complete set of results formatted for plotting
             std::stringstream temp;
             constexpr char const* msg =
-                "CSVData, {}, in_flight, {}, ranks, {}, threads, {}, iterations, {}, "
-                "task_transfer, {}, message-size, {}, polling-size, {}, time";
+                "CSVData-2, in_flight, {}, ranks, {}, threads, {}, iterations, {}, "
+                "task_transfer, {}, message-size, {}, polling-size, {}, time, {}";
             fmt::print(temp, msg, in_flight, size, pika::get_num_worker_threads(), iterations,
                 mpi::get_completion_mode(), message_size, mpi_poll_size, elapsed);
             std::cout << temp.str() << std::endl;
