@@ -625,11 +625,8 @@ struct wait_globals
 
 void test_globals()
 {
-    // TODO: No ensure_started implementation in reference implementation.
-#if !defined(PIKA_HAVE_STDEXEC)
     global_unique_any_sender = std::move(global_unique_any_sender) | ex::ensure_started();
     global_any_sender = std::move(global_any_sender) | ex::ensure_started() | ex::split();
-#endif
 }
 
 void test_empty_any_sender()
