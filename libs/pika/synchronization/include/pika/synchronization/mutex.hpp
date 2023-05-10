@@ -8,12 +8,12 @@
 #pragma once
 
 #include <pika/config.hpp>
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/coroutines/coroutine_fwd.hpp>
 #include <pika/coroutines/thread_id_type.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/threading_base.hpp>
 #include <pika/synchronization/detail/condition_variable.hpp>
-#include <pika/synchronization/spinlock.hpp>
 #include <pika/threading_base/threading_base_fwd.hpp>
 #include <pika/timing/steady_clock.hpp>
 
@@ -25,7 +25,7 @@ namespace pika {
         PIKA_NON_COPYABLE(mutex);
 
     protected:
-        using mutex_type = pika::spinlock;
+        using mutex_type = pika::concurrency::detail::spinlock;
 
     public:
         PIKA_EXPORT mutex(char const* const description = "");

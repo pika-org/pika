@@ -9,9 +9,9 @@
 #include <pika/config.hpp>
 #include <pika/affinity/affinity_data.hpp>
 #include <pika/assert.hpp>
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/ini/ini.hpp>
 #include <pika/resource_partitioner/partitioner.hpp>
-#include <pika/synchronization/spinlock.hpp>
 #include <pika/threading_base/scheduler_mode.hpp>
 #include <pika/topology/cpu_mask.hpp>
 #include <pika/topology/topology.hpp>
@@ -20,6 +20,7 @@
 #include <cstddef>
 #include <iosfwd>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -74,7 +75,7 @@ namespace pika::resource::detail {
     ///////////////////////////////////////////////////////////////////////
     class partitioner
     {
-        using mutex_type = pika::spinlock;
+        using mutex_type = pika::concurrency::detail::spinlock;
 
     public:
         partitioner();

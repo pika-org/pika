@@ -133,7 +133,7 @@ namespace pika::threads::detail {
                 else
                 {
                     pika::execution::this_thread::detail::yield_k(
-                        k, "pika::threads::detail::set_thread_state");
+                        k % 16, "pika::threads::detail::set_thread_state");
                     ++k;
 
                     // NOLINTNEXTLINE(bugprone-branch-clone)

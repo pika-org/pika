@@ -27,8 +27,6 @@ set(synchronization_headers
     pika/synchronization/recursive_mutex.hpp
     pika/synchronization/shared_mutex.hpp
     pika/synchronization/sliding_semaphore.hpp
-    pika/synchronization/spinlock.hpp
-    pika/synchronization/spinlock_pool.hpp
     pika/synchronization/stop_token.hpp
 )
 

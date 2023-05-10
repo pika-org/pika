@@ -9,8 +9,8 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/synchronization/condition_variable.hpp>
-#include <pika/synchronization/spinlock.hpp>
 
 #include <atomic>
 #include <mutex>
@@ -24,7 +24,7 @@ namespace pika::experimental {
     class event
     {
     private:
-        using mutex_type = pika::spinlock;
+        using mutex_type = pika::concurrency::detail::spinlock;
 
     public:
         /// \brief Construct a new event semaphore

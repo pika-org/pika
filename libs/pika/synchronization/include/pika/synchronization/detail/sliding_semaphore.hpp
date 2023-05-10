@@ -7,8 +7,8 @@
 #pragma once
 
 #include <pika/config.hpp>
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/synchronization/detail/condition_variable.hpp>
-#include <pika/synchronization/spinlock.hpp>
 
 #include <cstdint>
 #include <mutex>
@@ -25,7 +25,7 @@ namespace pika::detail {
     class sliding_semaphore
     {
     private:
-        using mutex_type = pika::spinlock;
+        using mutex_type = pika::concurrency::detail::spinlock;
 
     public:
         PIKA_EXPORT sliding_semaphore(std::int64_t max_difference, std::int64_t lower_limit);

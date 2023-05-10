@@ -9,7 +9,6 @@
 #include <pika/assert.hpp>
 #include <pika/synchronization/detail/condition_variable.hpp>
 #include <pika/synchronization/detail/counting_semaphore.hpp>
-#include <pika/synchronization/spinlock.hpp>
 #include <pika/thread_support/assert_owns_lock.hpp>
 
 #include <cstddef>

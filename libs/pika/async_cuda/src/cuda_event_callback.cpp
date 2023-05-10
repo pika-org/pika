@@ -13,10 +13,10 @@
 #include <pika/async_cuda/detail/cuda_debug.hpp>
 #include <pika/async_cuda/detail/cuda_event_callback.hpp>
 #include <pika/concurrency/concurrentqueue.hpp>
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/datastructures/detail/small_vector.hpp>
 #include <pika/resource_partitioner/detail/partitioner.hpp>
 #include <pika/runtime/thread_pool_helpers.hpp>
-#include <pika/synchronization/spinlock.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
 
@@ -59,7 +59,7 @@ namespace pika::cuda::experimental::detail {
     public:
         using event_callback_queue_type = concurrency::detail::ConcurrentQueue<event_callback>;
         using event_ready_queue_type = concurrency::detail::ConcurrentQueue<ready_callback>;
-        using mutex_type = pika::spinlock;
+        using mutex_type = pika::concurrency::detail::spinlock;
         using event_callback_vector_type = std::vector<event_callback>;
 
         // Background progress function for async CUDA operations. Checks for

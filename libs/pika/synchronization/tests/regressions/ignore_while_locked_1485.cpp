@@ -20,7 +20,7 @@
 
 struct wait_for_flag
 {
-    pika::spinlock mutex;
+    pika::concurrency::detail::spinlock mutex;
     pika::condition_variable_any cond_var;
 
     wait_for_flag()
@@ -29,8 +29,8 @@ struct wait_for_flag
     {
     }
 
-    void wait(
-        pika::spinlock& local_mutex, pika::condition_variable_any& local_cond_var, bool& running)
+    void wait(pika::concurrency::detail::spinlock& local_mutex,
+        pika::condition_variable_any& local_cond_var, bool& running)
     {
         bool first = true;
         while (!flag)
@@ -39,7 +39,7 @@ struct wait_for_flag
             if (first)
             {
                 {
-                    std::lock_guard<pika::spinlock> lk(local_mutex);
+                    std::lock_guard<pika::concurrency::detail::spinlock> lk(local_mutex);
                     running = true;
                 }
 
@@ -47,7 +47,7 @@ struct wait_for_flag
                 local_cond_var.notify_all();
             }
 
-            std::unique_lock<pika::spinlock> lk(mutex);
+            std::unique_lock<pika::concurrency::detail::spinlock> lk(mutex);
             if (!flag)
             {
                 cond_var.wait(mutex);
@@ -65,7 +65,7 @@ void test_condition_with_mutex()
     wait_for_flag data;
 
     bool running = false;
-    pika::spinlock local_mutex;
+    pika::concurrency::detail::spinlock local_mutex;
     pika::condition_variable_any local_cond_var;
 
     pika::thread thread(&wait_for_flag::wait, std::ref(data), std::ref(local_mutex),
@@ -73,7 +73,7 @@ void test_condition_with_mutex()
 
     // wait for the thread to run
     {
-        std::unique_lock<pika::spinlock> lk(local_mutex);
+        std::unique_lock<pika::concurrency::detail::spinlock> lk(local_mutex);
         // NOLINTNEXTLINE(bugprone-infinite-loop)
         while (!running)
             local_cond_var.wait(lk);
@@ -83,7 +83,7 @@ void test_condition_with_mutex()
     data.flag.store(true);
 
     {
-        std::lock_guard<pika::spinlock> lock(data.mutex);
+        std::lock_guard<pika::concurrency::detail::spinlock> lock(data.mutex);
         [[maybe_unused]] pika::util::ignore_all_while_checking il;
 
         data.cond_var.notify_one();

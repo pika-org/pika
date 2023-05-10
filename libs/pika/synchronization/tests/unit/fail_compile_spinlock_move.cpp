@@ -6,14 +6,14 @@
 
 // This must fail compiling
 
-#include <pika/synchronization/spinlock.hpp>
+#include <pika/concurrency/spinlock.hpp>
 
 #include <utility>
 
 ///////////////////////////////////////////////////////////////////////////////
 int main()
 {
-    using pika::spinlock;
+    using pika::concurrency::detail::spinlock;
     spinlock m1, m2(std::move(m1));
     return 0;
 }

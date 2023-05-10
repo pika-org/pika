@@ -14,7 +14,6 @@
 #include <pika/modules/memory.hpp>
 #include <pika/synchronization/detail/condition_variable.hpp>
 #include <pika/synchronization/mutex.hpp>
-#include <pika/synchronization/spinlock.hpp>
 #include <pika/synchronization/stop_token.hpp>
 #include <pika/thread_support/assert_owns_lock.hpp>
 #include <pika/thread_support/unlock_guard.hpp>

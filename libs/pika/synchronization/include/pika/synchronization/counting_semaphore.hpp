@@ -8,8 +8,8 @@
 #pragma once
 
 #include <pika/config.hpp>
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/synchronization/detail/counting_semaphore.hpp>
-#include <pika/synchronization/spinlock.hpp>
 #include <pika/timing/steady_clock.hpp>
 
 #include <cstddef>
@@ -40,7 +40,8 @@ namespace pika {
     // well: one thread waiting for several other threads to touch (signal)
     // the semaphore, or several threads waiting for one other thread to touch
     // this semaphore.
-    template <std::ptrdiff_t LeastMaxValue = PTRDIFF_MAX, typename Mutex = pika::spinlock>
+    template <std::ptrdiff_t LeastMaxValue = PTRDIFF_MAX,
+        typename Mutex = pika::concurrency::detail::spinlock>
     class counting_semaphore
     {
     public:
@@ -159,7 +160,7 @@ namespace pika {
     };
 
     ///////////////////////////////////////////////////////////////////////////
-    template <typename Mutex = pika::spinlock>
+    template <typename Mutex = pika::concurrency::detail::spinlock>
     class binary_semaphore : public counting_semaphore<1, Mutex>
     {
     public:

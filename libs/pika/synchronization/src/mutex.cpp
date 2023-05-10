@@ -8,12 +8,12 @@
 #include <pika/synchronization/mutex.hpp>
 
 #include <pika/assert.hpp>
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/lock_registration/detail/register_locks.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/itt_notify.hpp>
 #include <pika/synchronization/condition_variable.hpp>
-#include <pika/synchronization/spinlock.hpp>
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/timing/steady_clock.hpp>
 #include <pika/type_support/unused.hpp>

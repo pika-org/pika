@@ -10,9 +10,9 @@
 
 #if defined(PIKA_HAVE_MODULE_MPI_BASE)
 
+# include <pika/concurrency/spinlock.hpp>
 # include <pika/modules/runtime_configuration.hpp>
 # include <pika/mpi_base/mpi.hpp>
-# include <pika/synchronization/spinlock.hpp>
 
 # include <cstdlib>
 # include <string>
@@ -59,7 +59,7 @@ namespace pika { namespace util {
             bool locked;
         };
 
-        using mutex_type = pika::spinlock;
+        using mutex_type = pika::concurrency::detail::spinlock;
 
     private:
         static mutex_type mtx_;

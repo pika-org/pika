@@ -11,6 +11,7 @@
 #include <pika/async_base/launch_policy.hpp>
 #include <pika/concurrency/cache_line_data.hpp>
 #include <pika/concurrency/detail/contiguous_index_queue.hpp>
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/execution/detail/async_launch_policy_dispatch.hpp>
 #include <pika/execution/executors/execution.hpp>
@@ -20,7 +21,6 @@
 #include <pika/functional/invoke.hpp>
 #include <pika/functional/invoke_fused.hpp>
 #include <pika/modules/itt_notify.hpp>
-#include <pika/synchronization/spinlock.hpp>
 #include <pika/threading/thread.hpp>
 #include <pika/timing/detail/timestamp.hpp>
 
@@ -96,7 +96,7 @@ namespace pika::execution::experimental {
 
             struct region_data_type;
             using thread_function_helper_type = void(region_data_type&, std::size_t, std::size_t,
-                queues_type&, pika::spinlock&, std::exception_ptr&) noexcept;
+                queues_type&, pika::concurrency::detail::spinlock&, std::exception_ptr&) noexcept;
 
             // Members that change for each parallel region.
             struct region_data
@@ -134,7 +134,7 @@ namespace pika::execution::experimental {
 
             std::size_t main_thread_;
             std::size_t num_threads_;
-            pika::spinlock exception_mutex_;
+            pika::concurrency::detail::spinlock exception_mutex_;
             std::exception_ptr exception_;
 
             // Data for each parallel region.
@@ -185,7 +185,7 @@ namespace pika::execution::experimental {
                 std::size_t const num_threads_;
                 std::size_t const thread_index_;
                 loop_schedule const schedule_;
-                pika::spinlock& exception_mutex_;
+                pika::concurrency::detail::spinlock& exception_mutex_;
                 std::exception_ptr& exception_;
                 std::uint64_t yield_delay_;
 
@@ -366,7 +366,8 @@ namespace pika::execution::experimental {
                 /// Main entry point for a single parallel region (static
                 /// scheduling).
                 static void call_static(region_data_type& rdata, std::size_t thread_index,
-                    std::size_t num_threads, queues_type&, pika::spinlock& exception_mutex,
+                    std::size_t num_threads, queues_type&,
+                    pika::concurrency::detail::spinlock& exception_mutex,
                     std::exception_ptr& exception) noexcept
                 {
                     region_data& data = rdata[thread_index].data_;
@@ -410,7 +411,8 @@ namespace pika::execution::experimental {
                 /// Main entry point for a single parallel region (dynamic
                 /// scheduling).
                 static void call_dynamic(region_data_type& rdata, std::size_t thread_index,
-                    std::size_t num_threads, queues_type& queues, pika::spinlock& exception_mutex,
+                    std::size_t num_threads, queues_type& queues,
+                    pika::concurrency::detail::spinlock& exception_mutex,
                     std::exception_ptr& exception) noexcept
                 {
                     region_data& data = rdata[thread_index].data_;

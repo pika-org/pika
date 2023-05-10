@@ -9,6 +9,7 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/async_base/launch_policy.hpp>
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/futures/future.hpp>
 #include <pika/futures/packaged_task.hpp>
 #include <pika/iterator_support/iterator_facade.hpp>
@@ -17,7 +18,6 @@
 #include <pika/memory/intrusive_ptr.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/synchronization/no_mutex.hpp>
-#include <pika/synchronization/spinlock.hpp>
 #include <pika/thread_support/assert_owns_lock.hpp>
 #include <pika/thread_support/atomic_count.hpp>
 #include <pika/thread_support/unlock_guard.hpp>
@@ -95,7 +95,7 @@ namespace pika::lcos::local {
         template <typename T>
         class unlimited_channel : public channel_impl_base<T>
         {
-            using mutex_type = pika::spinlock;
+            using mutex_type = pika::concurrency::detail::spinlock;
 
         public:
             PIKA_NON_COPYABLE(unlimited_channel);
@@ -389,7 +389,7 @@ namespace pika::lcos::local {
         template <typename T>
         class one_element_channel : public channel_impl_base<T>
         {
-            using mutex_type = pika::spinlock;
+            using mutex_type = pika::concurrency::detail::spinlock;
 
         public:
             PIKA_NON_COPYABLE(one_element_channel);

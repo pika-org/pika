@@ -178,6 +178,7 @@ namespace pika {
 
 # include <pika/config.hpp>
 # include <pika/assert.hpp>
+# include <pika/concurrency/spinlock.hpp>
 # include <pika/functional/deferred_call.hpp>
 # include <pika/futures/future.hpp>
 # include <pika/futures/futures_factory.hpp>
@@ -319,7 +320,7 @@ namespace pika {
         template <typename Sequence>
         struct when_some : std::enable_shared_from_this<when_some<Sequence>>    //-V690
         {
-            using mutex_type = pika::spinlock;
+            using mutex_type = pika::concurrency::detail::spinlock;
 
         public:
             void on_future_ready(std::size_t idx, pika::execution::detail::agent_ref ctx)
