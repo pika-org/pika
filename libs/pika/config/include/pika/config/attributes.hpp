@@ -63,7 +63,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // handle [[no_unique_address]]
-#if defined(PIKA_HAVE_CXX20_NO_UNIQUE_ADDRESS_ATTRIBUTE)
+#if defined(PIKA_HAVE_CXX20_NO_UNIQUE_ADDRESS_ATTRIBUTE) && !defined(PIKA_HAVE_CUDA)
 #   define PIKA_NO_UNIQUE_ADDRESS [[no_unique_address]]
 #else
 #   define PIKA_NO_UNIQUE_ADDRESS

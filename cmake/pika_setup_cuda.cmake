@@ -76,6 +76,13 @@ if(PIKA_WITH_CUDA AND NOT TARGET pika_internal::cuda)
         $<$<AND:$<CUDA_COMPILER_ID:Clang>,$<COMPILE_LANGUAGE:CUDA>>:FMT_USE_FLOAT128=0>
         $<$<AND:$<CUDA_COMPILER_ID:NVIDIA>,$<COMPILE_LANGUAGE:CUDA>>:FMT_USE_NONTYPE_TEMPLATE_ARGS=0>
     )
+    if(PIKA_WITH_CXX_STANDARD GREATER_EQUAL 20)
+      target_compile_definitions(
+        pika_internal::cuda
+        INTERFACE
+          $<$<AND:$<CUDA_COMPILER_ID:NVIDIA>,$<COMPILE_LANGUAGE:CUDA>>:FMT_USE_CONSTEXPR=1>
+      )
+    endif()
 
     if(PIKA_WITH_CLANG_CUDA)
       if(NOT PIKA_FIND_PACKAGE)

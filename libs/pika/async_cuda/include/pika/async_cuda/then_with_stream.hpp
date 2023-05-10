@@ -138,14 +138,8 @@ namespace pika::cuda::experimental::then_with_stream_detail {
     {
         using is_sender = void;
 
-        // nvcc 12.0 is not able to compile this with no_unique_address
-#if defined(PIKA_CUDA_VERSION) && PIKA_CUDA_VERSION >= 1200
-        std::decay_t<Sender> sender;
-        std::decay_t<F> f;
-#else
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Sender> sender;
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
-#endif
         cuda_scheduler sched;
 
         template <typename Sender_, typename F_>
@@ -208,14 +202,8 @@ namespace pika::cuda::experimental::then_with_stream_detail {
         template <typename Receiver>
         struct operation_state
         {
-            // nvcc 12.0 is not able to compile this with no_unique_address
-#if defined(PIKA_CUDA_VERSION) && PIKA_CUDA_VERSION >= 1200
-            std::decay_t<Receiver> receiver;
-            std::decay_t<F> f;
-#else
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
-#endif
             cuda_scheduler sched;
             std::optional<std::reference_wrapper<const cuda_stream>> stream;
 
