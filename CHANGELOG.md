@@ -4,6 +4,13 @@
 <!--- Distributed under the Boost Software License, Version 1.0. (See accompanying -->
 <!--- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 
+## 0.15.1 (2023-05-12)
+
+### Bugfixes
+
+- Eagerly reset shared state in `async_rw_mutex`. This prevents deadlocks in certain use cases of `async_rw_mutex`. ([#677](https://github.com/pika-org/pika/pull/677))
+- Use `pika::spinlock` instead of `pika::mutex` in `async_rw_mutex`. This allows use of `async_rw_mutex` from non-pika threads. ([#679](https://github.com/pika-org/pika/pull/679))
+
 ## 0.15.0 (2023-05-03)
 
 ### New features
