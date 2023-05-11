@@ -18,3 +18,7 @@ configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${cxx_std}"
 configure_extra_options+=" -DPIKA_WITH_MALLOC=system"
 configure_extra_options+=" -DPIKA_WITH_CUDA=ON"
 configure_extra_options+=" -DCMAKE_CUDA_ARCH=60=ON"
+
+# All async_cuda tests are disabled from running because the driver on Piz Daint
+# is too old for CUDA 12.
+test_extra_options+=" EXCLUDE async_cuda"

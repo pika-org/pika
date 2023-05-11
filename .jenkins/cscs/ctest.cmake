@@ -73,15 +73,21 @@ set(CTEST_CONFIGURE_COMMAND
 )
 
 ctest_start(Experimental TRACK "${CTEST_TRACK}")
+
 ctest_update()
 ctest_submit(PARTS Update)
+
 ctest_configure()
 ctest_submit(PARTS Configure)
+
 ctest_build(TARGET install FLAGS "-k0 ${CTEST_BUILD_EXTRA_OPTIONS}")
 ctest_build(TARGET tests FLAGS "-k0 ${CTEST_BUILD_EXTRA_OPTIONS}")
 ctest_submit(PARTS Build)
-ctest_test(${test_args})
+
+separate_arguments(CTEST_TEST_EXTRA_OPTIONS)
+ctest_test(${test_args} ${CTEST_TEST_EXTRA_OPTIONS})
 ctest_submit(PARTS Test BUILD_ID CTEST_BUILD_ID)
+
 file(WRITE "jenkins-pika-${CTEST_BUILD_CONFIGURATION_NAME}-cdash-build-id.txt"
      "${CTEST_BUILD_ID}"
 )
