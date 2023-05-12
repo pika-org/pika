@@ -59,8 +59,9 @@ namespace pika::sync_wait_detail {
 #if defined(PIKA_HAVE_STDEXEC)
         // value and error_types of the predecessor sender
         template <template <typename...> class Tuple, template <typename...> class Variant>
-        using predecessor_value_types = pika::execution::experimental::value_types_of_t<Sender,
-            pika::execution::experimental::empty_env, Tuple, Variant>;
+        using predecessor_value_types =
+            pika::util::detail::unique_t<pika::execution::experimental::value_types_of_t<Sender,
+                pika::execution::experimental::empty_env, Tuple, Variant>>;
 
         template <template <typename...> class Variant>
         using predecessor_error_types = pika::execution::experimental::error_types_of_t<Sender,
@@ -70,7 +71,7 @@ namespace pika::sync_wait_detail {
         // there are multiple variants or multiple values sync_wait will
         // fail to compile.
         using result_type = std::decay_t<pika::execution::experimental::detail::single_result_t<
-            predecessor_value_types<pika::util::detail::pack, pika::util::detail::pack>>>;
+            predecessor_value_types<pika::util::detail::decayed_pack, pika::util::detail::pack>>>;
 
         // Constant to indicate if the type of the result from the
         // predecessor sender is void or not

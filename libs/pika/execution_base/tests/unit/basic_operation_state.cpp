@@ -52,12 +52,22 @@ int main()
 {
     static_assert(!pika::execution::experimental::is_operation_state_v<mylib::state_1>,
         "mylib::state_1 is not an operation state");
+#if defined(PIKA_HAVE_STDEXEC)
+    static_assert(pika::execution::experimental::is_operation_state_v<mylib::state_2>,
+        "mylib::state_2 is an operation state");
+#else
     static_assert(!pika::execution::experimental::is_operation_state_v<mylib::state_2>,
         "mylib::state_2 is not an operation state");
+#endif
     static_assert(pika::execution::experimental::is_operation_state_v<mylib::state_3>,
         "mylib::state_3 is an operation state");
+#if defined(PIKA_HAVE_STDEXEC)
+    static_assert(pika::execution::experimental::is_operation_state_v<mylib::state_4>,
+        "mylib::state_4 is an operation state");
+#else
     static_assert(!pika::execution::experimental::is_operation_state_v<mylib::state_4>,
         "mylib::state_4 is not an operation state");
+#endif
     static_assert(pika::execution::experimental::is_operation_state_v<mylib::state_5>,
         "mylib::state_5 is an operation state");
 

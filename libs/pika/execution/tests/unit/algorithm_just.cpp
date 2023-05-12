@@ -119,10 +119,7 @@ int main()
         PIKA_TEST(set_value_called);
     }
 
-    // TODO: The reference implementation does not ADL-isolate the just-sender.
-#if !defined(PIKA_HAVE_STDEXEC)
     test_adl_isolation(ex::just(my_namespace::my_type{}));
-#endif
 
     return 0;
 }

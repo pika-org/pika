@@ -712,6 +712,7 @@ namespace pika::execution::experimental {
         storage_type storage{};
 
     public:
+        using is_sender = void;
         unique_any_sender() = default;
 
         template <typename Sender,
@@ -797,6 +798,7 @@ namespace pika::execution::experimental {
         storage_type storage{};
 
     public:
+        using is_sender = void;
         any_sender() = default;
 
         template <typename Sender,
