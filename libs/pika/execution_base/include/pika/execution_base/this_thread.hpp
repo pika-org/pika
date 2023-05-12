@@ -199,5 +199,61 @@ namespace pika::util {
                 }
             }
         }
+
+        // yield_while_timeout is similar to yield_while, with the
+        // addition of a timeout parameter. If the timeout is exceeded, waiting
+        // is stopped and the function returns false. If the predicate is
+        // successfully waited for the function returns true.
+        template <typename Predicate>
+        [[nodiscard]] bool
+        yield_while_timeout(Predicate&& predicate, std::chrono::duration<double> timeout,
+            const char* thread_name = nullptr, bool allow_timed_suspension = true)
+        {
+            // Seconds represented using a double
+            using duration_type = std::chrono::duration<double>;
+
+            bool use_timeout = timeout >= duration_type(0.0);
+
+            pika::chrono::detail::high_resolution_timer t;
+
+            if (allow_timed_suspension)
+            {
+                for (std::size_t k = 0;; ++k)
+                {
+                    if (use_timeout && duration_type(t.elapsed()) > timeout)
+                    {
+                        return false;
+                    }
+
+                    if (!predicate())
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        pika::execution::this_thread::detail::yield_k(k, thread_name);
+                    }
+                }
+            }
+            else
+            {
+                for (std::size_t k = 0;; ++k)
+                {
+                    if (use_timeout && duration_type(t.elapsed()) > timeout)
+                    {
+                        return false;
+                    }
+
+                    if (!predicate())
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        pika::execution::this_thread::detail::yield_k(k % 16, thread_name);
+                    }
+                }
+            }
+        }
     }    // namespace detail
 }    // namespace pika::util

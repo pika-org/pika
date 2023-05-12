@@ -15,6 +15,7 @@
 #include <pika/synchronization/detail/condition_variable.hpp>
 #include <pika/thread_support/assert_owns_lock.hpp>
 
+#include <chrono>
 #include <climits>
 #include <cstddef>
 #include <cstdint>
@@ -181,20 +182,35 @@ namespace pika {
         //                 ([thread.req.exception]).
         // Error conditions: Any of the error conditions allowed for mutex
         //                 types ([thread.mutex.requirements.mutex]).
-        void wait(arrival_token&& old_phase) const
+        void wait(arrival_token&& old_phase,
+            std::chrono::duration<double> busy_wait_timeout = std::chrono::duration<double>(
+                0.0)) const
         {
+            bool const do_busy_wait = busy_wait_timeout > std::chrono::duration<double>(0.0);
+            if (do_busy_wait &&
+                pika::util::detail::yield_while_timeout(
+                    [&]() {
+                        std::unique_lock<mutex_type> l(mtx_);
+                        return phase_ == old_phase;
+                    },
+                    busy_wait_timeout, "barrier::wait", false))
+            {
+                return;
+            }
+
             std::unique_lock<mutex_type> l(mtx_);
             if (phase_ == old_phase)
             {
                 cond_.wait(l, "barrier::wait");
-                PIKA_ASSERT(phase_ != old_phase);
             }
+            PIKA_ASSERT(phase_ != old_phase);
         }
 
         /// Effects:        Equivalent to: wait(arrive()).
-        void arrive_and_wait()
+        void arrive_and_wait(
+            std::chrono::duration<double> busy_wait_timeout = std::chrono::duration<double>(0.0))
         {
-            wait(arrive());
+            wait(arrive(), busy_wait_timeout);
         }
 
         // Preconditions:  The expected count for the current barrier phase is
