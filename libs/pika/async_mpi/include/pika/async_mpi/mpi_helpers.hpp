@@ -142,9 +142,8 @@ namespace pika::mpi::experimental::detail {
             [&op_state](int status) mutable {
                 using namespace pika::debug::detail;
                 PIKA_DETAIL_DP(mpi_tran,
-                    debug(
-                        str<>("callback_nonvoid"), "stream", detail::stream_name(op_state.stream)));
-                op_state.ts = {};
+                    debug(str<>(
+                        "callback_nonvoid") /*, "stream", detail::stream_name(op_state.stream)*/));
                 PIKA_ASSERT(std::holds_alternative<Result>(op_state.result));
                 set_value_error_helper(status, PIKA_MOVE(op_state.receiver),
                     PIKA_MOVE(std::get<Result>(op_state.result)));
@@ -175,6 +174,30 @@ namespace pika::mpi::experimental::detail {
                 op_state.cond_var_.notify_one();
             },
             // we do not need to eagerly check, because it was done earlier
+            request, detail::check_request_eager::no);
+    }
+
+    // -----------------------------------------------------------------
+    // adds a request callback to the mpi polling code which will call
+    // notify_one to wake up a suspended task
+    template <typename OperationState>
+    void schedule_task_callback(MPI_Request request, OperationState& op_state)
+    {
+        detail::add_request_callback(
+            [&op_state](int status) mutable {
+                op_state.result = status;
+                using namespace pika::debug::detail;
+                PIKA_DETAIL_DP(mpi_tran,
+                    debug(str<>("schedule_task_callback")/*, "stream",
+                        detail::stream_name(op_state.stream)*/));
+                // pass the result onto a new task and invoke the continuation
+                auto snd0 = exp::just(std::get<int>(op_state.result)) |
+                    exp::transfer(default_pool_scheduler(execution::thread_priority::high)) |
+                    exp::then([&op_state](int status) {
+                        set_value_error_helper(status, PIKA_MOVE(op_state.receiver), status);
+                    });
+                exp::start_detached(snd0);
+            },
             request, detail::check_request_eager::no);
     }
 

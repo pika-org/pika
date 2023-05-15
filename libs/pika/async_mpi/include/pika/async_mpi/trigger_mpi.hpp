@@ -77,9 +77,6 @@ namespace pika::mpi::experimental::detail {
         struct operation_state
         {
             std::decay_t<Receiver> receiver;
-            pika::spinlock mutex_;
-            pika::condition_variable cond_var_;
-            bool completed;
             int status;
 
             // -----------------------------------------------------------------
@@ -89,7 +86,6 @@ namespace pika::mpi::experimental::detail {
             {
                 using is_receiver = void;
                 operation_state& op_state;
-                int result;
 
                 template <typename Error>
                 friend constexpr void
@@ -122,32 +118,20 @@ namespace pika::mpi::experimental::detail {
                                 {
                                     pika::util::yield_while(
                                         [&request]() { return !detail::poll_request(request); });
+                                    set_value_error_helper(r.op_state.status,
+                                        PIKA_MOVE(r.op_state.receiver), r.op_state.status);
                                 }
                                 else
                                 {
-                                    // don't suspend if request completed already
-                                    if (!detail::poll_request(request))
-                                    {
-                                        resume_request_callback(request, r.op_state);
-                                        PIKA_ASSERT(pika::threads::detail::get_self_id());
-                                        // RAII priority boost
-                                        threads::detail::thread_data::scoped_thread_priority
-                                            set_restore(execution::thread_priority::high);
-                                        // suspend task until callback notifies
-                                        std::unique_lock l{r.op_state.mutex_};
-                                        r.op_state.cond_var_.wait(
-                                            l, [&]() { return r.op_state.completed; });
-                                    }
+                                    r.op_state.status = MPI_SUCCESS;
+                                    detail::schedule_task_callback(request, r.op_state);
                                 }
-                                r.op_state.status = MPI_SUCCESS;
-                                set_value_error_helper(r.op_state.status,
-                                    PIKA_MOVE(r.op_state.receiver), r.op_state.status);
                             }
                             // modes 3,4,5,6,7,8 ....
                             else
                             {
                                 // forward value to receiver
-                                r.op_state.result = MPI_SUCCESS;
+                                r.op_state.status = MPI_SUCCESS;
                                 detail::set_value_request_callback_non_void<int>(
                                     request, r.op_state);
                             }
@@ -191,12 +175,10 @@ namespace pika::mpi::experimental::detail {
 
             using result_type = pika::detail::variant<int>;
             result_type result;
-            int ts;
 
             template <typename Receiver_, typename Sender_>
             operation_state(Receiver_&& receiver, Sender_&& sender)
               : receiver(PIKA_FORWARD(Receiver_, receiver))
-              , completed{false}
               , op_state(exp::connect(PIKA_FORWARD(Sender_, sender), trigger_mpi_receiver{*this}))
             {
             }

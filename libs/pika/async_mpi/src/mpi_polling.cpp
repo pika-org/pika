@@ -414,7 +414,7 @@ namespace pika::mpi::experimental {
             MPI_Comm_set_errhandler(MPI_COMM_WORLD, detail::pika_mpi_errhandler);
         }
 
-        bool poll_request(MPI_Request& req)
+        bool poll_request(MPI_Request req)
         {
             int flag;
             MPI_Test(&req, &flag, MPI_STATUS_IGNORE);

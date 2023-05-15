@@ -198,11 +198,12 @@ namespace pika::mpi::experimental::detail {
                                     // don't suspend if request completed already
                                     if (!detail::poll_request(request))
                                     {
-                                        resume_request_callback(request, r.op_state);
+                                        // suspend is invalid except on a pika thread
                                         PIKA_ASSERT(pika::threads::detail::get_self_id());
                                         threads::detail::thread_data::scoped_thread_priority
                                             set_restore(execution::thread_priority::high);
                                         std::unique_lock l{r.op_state.mutex_};
+                                        resume_request_callback(request, r.op_state);
                                         r.op_state.cond_var_.wait(
                                             l, [&]() { return r.op_state.completed; });
                                     }
@@ -440,53 +441,31 @@ namespace pika::mpi::experimental {
             // suspend resume : run mpi inline - transfer completion if necessary
             else if (mode == 1)
             {
-                //                auto snd0 =
-                //                    dispatch_mpi<Sender, F>{PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), s} |
-                //                    exp::then([](MPI_Request r) {
-                //                        if (r != MPI_REQUEST_NULL)
-                //                        {
-                //                            auto snd0 = exp::just(r) |
-                //                                transfer(default_pool_scheduler(thread_priority::high));
-                //                            auto snd1 = trigger_mpi<decltype(snd0)>{PIKA_MOVE(snd0)};
-                //                            return this_thread::experimental::sync_wait(snd1);
-                //                        }
-                //                        return MPI_SUCCESS;
-                //                    });
-                //                result = make_unique_any_sender(std::move(snd0));
-
                 auto snd0 = dispatch_mpi_sender<Sender, F>{PIKA_FORWARD(Sender, sender),
                                 PIKA_FORWARD(F, f), s} |
-                    exp::let_value([](MPI_Request r) -> exp::unique_any_sender<int> {
-                        return (r == MPI_REQUEST_NULL) ?
-                            exp::just(MPI_SUCCESS) :
-                            exp::just(r) | transfer(default_pool_scheduler(thread_priority::high)) |
-                                trigger_mpi();
+                    exp::let_value([](MPI_Request request) -> exp::unique_any_sender<int> {
+                        if (request == MPI_REQUEST_NULL)
+                            return exp::just(MPI_SUCCESS);
+                        else
+                        {
+                            return exp::just(request) | trigger_mpi();
+                        }
                     });
-                result = make_unique_any_sender(std::move(snd0));
-
-                /*
-                auto snd0 = transform_mpi_sender<Sender, F>{
-                    PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), s};
-                if (p == progress_mode::can_block)
-                {
-                    result = make_unique_any_sender(std::move(snd0));
-                }
-                else
-                {
-                    auto snd1 =
-                        std::move(snd0) | transfer(default_pool_scheduler(thread_priority::high));
-                    result = make_unique_any_sender(std::move(snd1));
-                }
-*/
+                result = snd0;
             }
             // ----------------------------------------------------------
             // suspend resume : transfer to mpi - run completion on mpi pool
             else if (mode == 2)
             {
-                auto snd0 = PIKA_FORWARD(Sender, sender) | transfer(mpi_pool_scheduler(false));
-                auto snd1 =
-                    transform_mpi_sender<decltype(snd0), F>{std::move(snd0), PIKA_FORWARD(F, f), s};
-                result = make_unique_any_sender(std::move(snd1));
+                auto snd0 = dispatch_mpi_sender<Sender, F>{PIKA_FORWARD(Sender, sender),
+                                PIKA_FORWARD(F, f), s} |
+                    exp::let_value([](MPI_Request r) -> exp::unique_any_sender<int> {
+                        return (r == MPI_REQUEST_NULL) ?
+                            exp::just(MPI_SUCCESS) :
+
+                            exp::just(r) | transfer(default_pool_scheduler()) | trigger_mpi();
+                    });
+                result = snd0;
             }
             // ----------------------------------------------------------
             // suspend resume : transfer to mpi - transfer completion back
@@ -500,7 +479,7 @@ namespace pika::mpi::experimental {
             }
             // ----------------------------------------------------------
             // polling mode : run mpi inline - HP transfer completion if necessary
-            else if (mode == 3)
+            else if (mode == 4)
             {
                 auto snd0 = transform_mpi_sender<Sender, F>{
                     PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), s};
@@ -517,7 +496,7 @@ namespace pika::mpi::experimental {
             }
             // ----------------------------------------------------------
             // polling mode : run mpi inline - NP transfer completion if necessary
-            else if (mode == 4)
+            else if (mode == 5)
             {
                 auto snd0 = transform_mpi_sender<Sender, F>{
                     PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), s};
@@ -533,7 +512,7 @@ namespace pika::mpi::experimental {
             }
             // ----------------------------------------------------------
             // polling mode : transfer mpi - HP transfer completion
-            else if (mode == 5)
+            else if (mode == 6)
             {
                 auto snd0 = PIKA_FORWARD(Sender, sender) | transfer(mpi_pool_scheduler(false));
                 auto snd1 = transform_mpi_sender<decltype(snd0), F>{std::move(snd0),
@@ -541,7 +520,7 @@ namespace pika::mpi::experimental {
                     transfer(default_pool_scheduler(thread_priority::high));
                 result = make_unique_any_sender(std::move(snd1));
             }
-            else if (mode == 6)
+            else if (mode == 7)
             {
                 // transfer mpi to mpi pool,
                 // run completion explicitly on default pool without priority
@@ -555,7 +534,7 @@ namespace pika::mpi::experimental {
             // ----------------------------
             // Modes need checking before use
             // ----------------------------
-            else if (mode == 7)
+            else if (mode == 8)
             {
                 // transfer mpi to mpi pool,
                 // run completion on polling thread (mpi or default pool)
@@ -564,7 +543,7 @@ namespace pika::mpi::experimental {
                     transform_mpi_sender<decltype(snd0), F>{std::move(snd0), PIKA_FORWARD(F, f), s};
                 result = make_unique_any_sender(std::move(snd1));
             }
-            else if (mode == 8)
+            else if (mode == 9)
             {
                 // transfer mpi to mpi pool
                 // run completion explicitly on mpi pool as high priority
@@ -574,7 +553,7 @@ namespace pika::mpi::experimental {
                     transfer(with_priority(mpi_pool_scheduler(true), thread_priority::high));
                 result = make_unique_any_sender(std::move(snd1));
             }
-            else if (mode == 9)
+            else if (mode == 10)
             {
                 // transfer mpi to mpi pool
                 // run completion explicitly on default pool using high priority
@@ -584,7 +563,7 @@ namespace pika::mpi::experimental {
                     transfer(default_pool_scheduler(thread_priority::high));
                 result = make_unique_any_sender(std::move(snd1));
             }
-            else if (mode == 10)
+            else if (mode == 11)
             {
                 // transfer mpi to mpi pool
                 // run completion explicitly on default pool using default priority

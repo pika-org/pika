@@ -85,7 +85,7 @@ namespace pika::mpi::experimental {
         PIKA_EXPORT pika::threads::detail::polling_status poll();
 
         // utility function to avoid duplication in eager check locations
-        PIKA_EXPORT bool poll_request(MPI_Request& /*req*/);
+        PIKA_EXPORT bool poll_request(MPI_Request /*req*/);
 
         // -----------------------------------------------------------------
         using semaphore_type = pika::counting_semaphore<>;

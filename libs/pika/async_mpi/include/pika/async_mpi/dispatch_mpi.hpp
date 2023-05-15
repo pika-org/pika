@@ -150,10 +150,20 @@ namespace pika::mpi::experimental::detail {
                                     }
                                 },
                                 t);
+
                             // function called, Ts... can now be released (if refs hold lifetime)
                             r.op_state.ts = {};
-                            // calls set_value(request), or set_error(mpi_exception(status))
-                            set_value_error_helper(status, PIKA_MOVE(r.op_state.receiver), request);
+                            if (poll_request(request))
+                            {
+                                // calls set_value(request), or set_error(mpi_exception(status))
+                                set_value_error_helper(
+                                    status, PIKA_MOVE(r.op_state.receiver), MPI_REQUEST_NULL);
+                            }
+                            else
+                            {
+                                set_value_error_helper(
+                                    status, PIKA_MOVE(r.op_state.receiver), request);
+                            }
                         },
                         [&](std::exception_ptr ep) {
                             exp::set_error(PIKA_MOVE(r.op_state.receiver), PIKA_MOVE(ep));
