@@ -30,6 +30,12 @@
 
 namespace pika::mpi::experimental {
 
+    enum progress_mode
+    {
+        can_block,
+        cannot_block
+    };
+
     enum class stream_type : std::uint32_t
     {
         automatic = 0,

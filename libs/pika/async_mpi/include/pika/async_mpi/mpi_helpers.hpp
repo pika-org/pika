@@ -34,7 +34,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika::mpi::experimental::transform_mpi_detail {
+namespace pika::mpi::experimental::detail {
 
     // -----------------------------------------------------------------
     // by convention the title is 7 chars (for alignment)
@@ -178,4 +178,4 @@ namespace pika::mpi::experimental::transform_mpi_detail {
             request, detail::check_request_eager::no);
     }
 
-}    // namespace pika::mpi::experimental::transform_mpi_detail
+}    // namespace pika::mpi::experimental::detail

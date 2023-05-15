@@ -35,23 +35,27 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika::mpi::experimental::transform_mpi_detail {
+namespace pika::mpi::experimental::detail {
+
+    namespace pud = pika::util::detail;
+    namespace exp = execution::experimental;
 
     // -----------------------------------------------------------------
     // route calls through an impl layer for ADL resolution
     template <typename Sender, typename F>
-    struct dispatch_mpi_impl
+    struct dispatch_mpi_sender_impl
     {
-        struct dispatch_mpi_type;
+        struct dispatch_mpi_sender_type;
     };
 
     template <typename Sender, typename F>
-    using dispatch_mpi = typename dispatch_mpi_impl<Sender, F>::dispatch_mpi_type;
+    using dispatch_mpi_sender =
+        typename dispatch_mpi_sender_impl<Sender, F>::dispatch_mpi_sender_type;
 
     // -----------------------------------------------------------------
     // transform MPI adapter - sender type
     template <typename Sender, typename F>
-    struct dispatch_mpi_impl<Sender, F>::dispatch_mpi_type
+    struct dispatch_mpi_sender_impl<Sender, F>::dispatch_mpi_sender_type
     {
         using is_sender = void;
 
@@ -213,18 +217,51 @@ namespace pika::mpi::experimental::transform_mpi_detail {
 
         template <typename Receiver>
         friend constexpr auto
-        tag_invoke(exp::connect_t, dispatch_mpi_type const& s, Receiver&& receiver)
+        tag_invoke(exp::connect_t, dispatch_mpi_sender_type const& s, Receiver&& receiver)
         {
             return operation_state<Receiver>(
                 PIKA_FORWARD(Receiver, receiver), s.f, s.sender, s.stream);
         }
 
         template <typename Receiver>
-        friend constexpr auto tag_invoke(exp::connect_t, dispatch_mpi_type&& s, Receiver&& receiver)
+        friend constexpr auto
+        tag_invoke(exp::connect_t, dispatch_mpi_sender_type&& s, Receiver&& receiver)
         {
             return operation_state<Receiver>(
                 PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.f), PIKA_MOVE(s.sender), s.stream);
         }
     };
 
-}    // namespace pika::mpi::experimental::transform_mpi_detail
+}    // namespace pika::mpi::experimental::detail
+
+namespace pika::mpi::experimental {
+
+    namespace exp = pika::execution::experimental;
+
+    inline constexpr struct dispatch_mpi_t final
+      : pika::functional::detail::tag_fallback<dispatch_mpi_t>
+    {
+    private:
+        template <typename Sender, typename F,
+            PIKA_CONCEPT_REQUIRES_(exp::is_sender_v<std::decay_t<Sender>>)>
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(dispatch_mpi_t, Sender&& sender, F&& f, stream_type s)
+        {
+            auto snd1 = detail::dispatch_mpi_sender<Sender, F>{
+                PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), s};
+            return exp::make_unique_any_sender(std::move(snd1));
+        }
+
+        //
+        // tag invoke overload for mpi_dispatch
+        //
+        template <typename F>
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(dispatch_mpi_t, F&& f, stream_type s)
+        {
+            return exp::detail::partial_algorithm<dispatch_mpi_t, F>{PIKA_FORWARD(F, f), s};
+        }
+
+    } dispatch_mpi{};
+
+}    // namespace pika::mpi::experimental

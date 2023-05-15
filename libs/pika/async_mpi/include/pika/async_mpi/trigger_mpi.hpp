@@ -35,23 +35,26 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika::mpi::experimental::transform_mpi_detail {
+namespace pika::mpi::experimental::detail {
+
+    namespace pud = pika::util::detail;
+    namespace exp = execution::experimental;
 
     // -----------------------------------------------------------------
     // route calls through an impl layer for ADL resolution
     template <typename Sender>
-    struct trigger_mpi_impl
+    struct trigger_mpi_sender_impl
     {
-        struct trigger_mpi_type;
+        struct trigger_mpi_sender_type;
     };
 
     template <typename Sender>
-    using trigger_mpi = typename trigger_mpi_impl<Sender>::trigger_mpi_type;
+    using trigger_mpi_sender = typename trigger_mpi_sender_impl<Sender>::trigger_mpi_sender_type;
 
     // -----------------------------------------------------------------
     // transform MPI adapter - sender type
     template <typename Sender>
-    struct trigger_mpi_impl<Sender>::trigger_mpi_type
+    struct trigger_mpi_sender_impl<Sender>::trigger_mpi_sender_type
     {
         using is_sender = void;
         std::decay_t<Sender> sender;
@@ -145,7 +148,8 @@ namespace pika::mpi::experimental::transform_mpi_detail {
                             {
                                 // forward value to receiver
                                 r.op_state.result = MPI_SUCCESS;
-                                set_value_request_callback_non_void<int>(request, r.op_state);
+                                detail::set_value_request_callback_non_void<int>(
+                                    request, r.op_state);
                             }
                         },
                         [&](std::exception_ptr ep) {
@@ -205,16 +209,44 @@ namespace pika::mpi::experimental::transform_mpi_detail {
 
         template <typename Receiver>
         friend constexpr auto
-        tag_invoke(exp::connect_t, trigger_mpi_type const& s, Receiver&& receiver)
+        tag_invoke(exp::connect_t, trigger_mpi_sender_type const& s, Receiver&& receiver)
         {
             return operation_state<Receiver>(PIKA_FORWARD(Receiver, receiver), s.sender);
         }
 
         template <typename Receiver>
-        friend constexpr auto tag_invoke(exp::connect_t, trigger_mpi_type&& s, Receiver&& receiver)
+        friend constexpr auto
+        tag_invoke(exp::connect_t, trigger_mpi_sender_type&& s, Receiver&& receiver)
         {
             return operation_state<Receiver>(PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.sender));
         }
     };
 
-}    // namespace pika::mpi::experimental::transform_mpi_detail
+}    // namespace pika::mpi::experimental::detail
+
+namespace pika::mpi::experimental {
+
+    namespace exp = pika::execution::experimental;
+
+    inline constexpr struct trigger_mpi_t final
+      : pika::functional::detail::tag_fallback<trigger_mpi_t>
+    {
+    private:
+        template <typename Sender, PIKA_CONCEPT_REQUIRES_(exp::is_sender_v<std::decay_t<Sender>>)>
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(trigger_mpi_t, Sender&& sender)
+        {
+            auto snd1 = detail::trigger_mpi_sender<Sender>{PIKA_FORWARD(Sender, sender)};
+            return exp::make_unique_any_sender(std::move(snd1));
+        }
+
+        //
+        // tag invoke overload for mpi_trigger
+        //
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(trigger_mpi_t)
+        {
+            return exp::detail::partial_algorithm<trigger_mpi_t>{};
+        }
+
+    } trigger_mpi{};
+
+}    // namespace pika::mpi::experimental
