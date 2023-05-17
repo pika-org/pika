@@ -100,6 +100,7 @@ namespace pika::detail {
         // swap the list
         queue_type queue;
         queue.swap(queue_);
+        lock.unlock();
 
         if (!queue.empty())
         {
@@ -117,6 +118,7 @@ namespace pika::detail {
 
                 if (PIKA_UNLIKELY(!ctx))
                 {
+                    lock.lock();
                     prepend_entries(lock, queue);
                     lock.unlock();
 
@@ -124,8 +126,6 @@ namespace pika::detail {
                         "condition_variable::notify_all", "null thread id encountered");
                     return;
                 }
-
-                [[maybe_unused]] util::ignore_while_checking il(&lock);
 
                 ctx.resume();
 
