@@ -368,24 +368,11 @@ namespace pika::mpi::experimental {
 #endif
 
         // -------------------------------------------------------------
-        bool add_request_callback(request_callback_function_type&& callback, MPI_Request request,
-            check_request_eager eager)
+        bool add_request_callback(request_callback_function_type&& callback, MPI_Request request)
         {
             PIKA_ASSERT_MSG(get_register_polling_count() != 0,
                 "MPI event polling has not been enabled on any pool. Make sure that MPI event "
                 "polling is enabled on at least one thread pool.");
-
-            // if already complete, skip callback
-#ifndef DISALLOW_EAGER_POLLING_CHECK
-            if (eager == check_request_eager::yes && detail::poll_request(request))
-            {
-                PIKA_DETAIL_DP(mpi_debug<5>, debug(str<>("eager poll"), request));
-                // invoke the callback now since request has completed eagerly
-                PIKA_INVOKE(PIKA_MOVE(callback), MPI_SUCCESS);
-                // didn't increment 'in flight' counter, don't notify condition
-                return false;
-            }
-#endif
             add_to_request_callback_queue(request_callback{request, PIKA_MOVE(callback)});
             return true;
         }

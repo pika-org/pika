@@ -38,8 +38,9 @@ namespace pika::mpi::experimental::detail {
 
     // -----------------------------------------------------------------
     // by convention the title is 7 chars (for alignment)
-    using print_on = pika::debug::detail::enable_print<false>;
-    inline constexpr print_on mpi_tran("MPITRAN");
+    using namespace pika::debug::detail;
+    template <int Level>
+    inline print_threshold<Level, 0> mpi_tran("MPITRAN");
 
     namespace pud = pika::util::detail;
     namespace exp = execution::experimental;
@@ -124,12 +125,12 @@ namespace pika::mpi::experimental::detail {
         detail::add_request_callback(
             [&op_state](int status) mutable {
                 using namespace pika::debug::detail;
-                PIKA_DETAIL_DP(mpi_tran,
+                PIKA_DETAIL_DP(mpi_tran<5>,
                     debug(str<>("callback_void"), "stream", detail::stream_name(op_state.stream)));
                 op_state.ts = {};
                 set_value_error_helper(status, PIKA_MOVE(op_state.receiver));
             },
-            request, detail::check_request_eager::yes);
+            request);
     }
 
     // -----------------------------------------------------------------
@@ -141,14 +142,12 @@ namespace pika::mpi::experimental::detail {
         detail::add_request_callback(
             [&op_state](int status) mutable {
                 using namespace pika::debug::detail;
-                PIKA_DETAIL_DP(mpi_tran,
-                    debug(str<>(
-                        "callback_nonvoid") /*, "stream", detail::stream_name(op_state.stream)*/));
+                PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("callback_nonvoid")));
                 PIKA_ASSERT(std::holds_alternative<Result>(op_state.result));
                 set_value_error_helper(status, PIKA_MOVE(op_state.receiver),
                     PIKA_MOVE(std::get<Result>(op_state.result)));
             },
-            request, detail::check_request_eager::yes);
+            request);
     }
 
     // -----------------------------------------------------------------
@@ -160,7 +159,7 @@ namespace pika::mpi::experimental::detail {
         detail::add_request_callback(
             [&op_state](int status) mutable {
                 using namespace pika::debug::detail;
-                PIKA_DETAIL_DP(mpi_tran,
+                PIKA_DETAIL_DP(mpi_tran<5>,
                     debug(str<>("callback_void_suspend_resume"), "stream",
                         detail::stream_name(op_state.stream)));
                 op_state.ts = {};
@@ -173,32 +172,29 @@ namespace pika::mpi::experimental::detail {
                 }
                 op_state.cond_var_.notify_one();
             },
-            // we do not need to eagerly check, because it was done earlier
-            request, detail::check_request_eager::no);
+            request);
     }
 
     // -----------------------------------------------------------------
     // adds a request callback to the mpi polling code which will call
-    // notify_one to wake up a suspended task
-    template <typename OperationState>
-    void schedule_task_callback(MPI_Request request, OperationState& op_state)
+    // set_value/error on the receiver
+    template <typename Receiver>
+    void schedule_task_callback(MPI_Request request, Receiver&& receiver)
     {
         detail::add_request_callback(
-            [&op_state](int status) mutable {
-                op_state.result = status;
+            [r = PIKA_MOVE(receiver)](int status) mutable {
                 using namespace pika::debug::detail;
-                PIKA_DETAIL_DP(mpi_tran,
-                    debug(str<>("schedule_task_callback")/*, "stream",
-                        detail::stream_name(op_state.stream)*/));
+                PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("schedule_task_callback")));
                 // pass the result onto a new task and invoke the continuation
-                auto snd0 = exp::just(std::get<int>(op_state.result)) |
+                auto snd0 = exp::just(status) |
                     exp::transfer(default_pool_scheduler(execution::thread_priority::high)) |
-                    exp::then([&op_state](int status) {
-                        set_value_error_helper(status, PIKA_MOVE(op_state.receiver), status);
+                    exp::then([r = PIKA_MOVE(r)](int status) mutable {
+                        PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("set_value_error_helper"), status));
+                        set_value_error_helper(status, PIKA_MOVE(r), status);
                     });
-                exp::start_detached(snd0);
+                exp::start_detached(PIKA_MOVE(snd0));
             },
-            request, detail::check_request_eager::no);
+            request);
     }
 
 }    // namespace pika::mpi::experimental::detail

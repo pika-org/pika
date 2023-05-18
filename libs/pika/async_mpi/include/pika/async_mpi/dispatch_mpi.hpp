@@ -120,6 +120,10 @@ namespace pika::mpi::experimental::detail {
                             using namespace pika::debug::detail;
                             using ts_element_type = std::tuple<std::decay_t<Ts>...>;
                             using invoke_result_type = mpi_request_invoke_result_t<F, Ts...>;
+                            using namespace pika::debug::detail;
+                            PIKA_DETAIL_DP(mpi_tran<5>,
+                                debug(str<>("dispatch_mpi_recv"), "set_value_t", "stream",
+                                    detail::stream_name(r.op_state.stream_)));
 
                             // move/copy the received params into our local opstate
                             r.op_state.ts.template emplace<ts_element_type>(
@@ -127,7 +131,7 @@ namespace pika::mpi::experimental::detail {
                             // and get a reference to the tuple of local params
                             auto& t = std::get<ts_element_type>(r.op_state.ts);
                             // init a request
-                            MPI_Request request{MPI_REQUEST_NULL};
+                            MPI_Request request;
                             int status = MPI_SUCCESS;
                             // invoke the function, with the contents of the param tuple as args
                             pud::invoke_fused(
@@ -136,25 +140,27 @@ namespace pika::mpi::experimental::detail {
                                     if constexpr (std::is_void_v<invoke_result_type>)
                                     {
                                         PIKA_INVOKE(PIKA_MOVE(r.op_state.f), ts..., &request);
-                                        PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
-                                            "MPI_REQUEST_NULL returned from mpi "
-                                            "invocation");
                                     }
                                     else
                                     {
                                         status =
                                             PIKA_INVOKE(PIKA_MOVE(r.op_state.f), ts..., &request);
-                                        PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
-                                            "MPI_REQUEST_NULL returned from mpi "
-                                            "invocation");
                                     }
+                                    PIKA_DETAIL_DP(mpi_tran<7>,
+                                        debug(str<>("dispatch_mpi_recv"), "invoke mpi",
+                                            detail::stream_name(r.op_state.stream_), request));
+
+                                    PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
+                                        "MPI_REQUEST_NULL returned from mpi invocation");
                                 },
                                 t);
-
                             // function called, Ts... can now be released (if refs hold lifetime)
                             r.op_state.ts = {};
                             if (poll_request(request))
                             {
+                                PIKA_DETAIL_DP(mpi_tran<7>,
+                                    debug(str<>("dispatch_mpi_recv"), "eager poll ok",
+                                        detail::stream_name(r.op_state.stream_), request));
                                 // calls set_value(request), or set_error(mpi_exception(status))
                                 set_value_error_helper(
                                     status, PIKA_MOVE(r.op_state.receiver), MPI_REQUEST_NULL);
@@ -204,8 +210,8 @@ namespace pika::mpi::experimental::detail {
 #endif
             ts_type ts;
 
+            // we don't bother storing the result, but the correct type is ...
             using result_type = pika::detail::variant<std::tuple<MPI_Request>>;
-            result_type result;
 
             template <typename Receiver_, typename F_, typename Sender_>
             operation_state(Receiver_&& receiver, F_&& f, Sender_&& sender, stream_type s)
@@ -214,9 +220,9 @@ namespace pika::mpi::experimental::detail {
               , stream_{s}
               , op_state(exp::connect(PIKA_FORWARD(Sender_, sender), dispatch_mpi_receiver{*this}))
             {
-                PIKA_DETAIL_DP(mpi_tran,
-                    debug(
-                        debug::detail::str<>("operation_state"), "stream", detail::stream_name(s)));
+                using namespace pika::debug::detail;
+                PIKA_DETAIL_DP(
+                    mpi_tran<5>, debug(str<>("operation_state"), "stream", detail::stream_name(s)));
             }
 
             friend constexpr auto tag_invoke(exp::start_t, operation_state& os) noexcept

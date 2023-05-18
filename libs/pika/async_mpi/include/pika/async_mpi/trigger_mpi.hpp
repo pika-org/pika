@@ -77,7 +77,6 @@ namespace pika::mpi::experimental::detail {
         struct operation_state
         {
             std::decay_t<Receiver> receiver;
-            int status;
 
             // -----------------------------------------------------------------
             // The mpi_receiver receives inputs from the previous sender,
@@ -105,33 +104,40 @@ namespace pika::mpi::experimental::detail {
                 friend constexpr void tag_invoke(
                     exp::set_value_t, trigger_mpi_receiver&& r, MPI_Request request) noexcept
                 {
-                    PIKA_ASSERT_MSG(
-                        request != MPI_REQUEST_NULL, "MPI_REQUEST_NULL passed to mpi trigger");
+                    PIKA_DETAIL_DP(
+                        mpi_tran<4>, debug(str<>("trigger_mpi_recv"), "set_value_t", request));
+
+                    // early exit check
+                    if (request == MPI_REQUEST_NULL)
+                    {
+                        set_value_error_helper(
+                            MPI_SUCCESS, PIKA_MOVE(r.op_state.receiver), MPI_SUCCESS);
+                        return;
+                    }
+
                     pika::detail::try_catch_exception_ptr(
                         [&]() mutable {
                             // modes 0 uses the task yield_while method of callback
                             // modes 1,2 use the task resume method of callback
                             auto mode = get_completion_mode();
-                            if (mode < 3)
+                            if (mode == 0)
                             {
-                                if (mode == 0)
-                                {
-                                    pika::util::yield_while(
-                                        [&request]() { return !detail::poll_request(request); });
-                                    set_value_error_helper(r.op_state.status,
-                                        PIKA_MOVE(r.op_state.receiver), r.op_state.status);
-                                }
-                                else
-                                {
-                                    r.op_state.status = MPI_SUCCESS;
-                                    detail::schedule_task_callback(request, r.op_state);
-                                }
+                                // we just assume the status is always MPI_SUCCESS
+                                pika::util::yield_while(
+                                    [request]() { return !detail::poll_request(request); });
+                                set_value_error_helper(
+                                    MPI_SUCCESS, PIKA_MOVE(r.op_state.receiver), MPI_SUCCESS);
                             }
-                            // modes 3,4,5,6,7,8 ....
+                            else if (mode < 3)
+                            {
+                                r.op_state.result = MPI_SUCCESS;
+                                detail::schedule_task_callback(
+                                    request, PIKA_MOVE(r.op_state.receiver));
+                            }
                             else
                             {
                                 // forward value to receiver
-                                r.op_state.status = MPI_SUCCESS;
+                                r.op_state.result = MPI_SUCCESS;
                                 detail::set_value_request_callback_non_void<int>(
                                     request, r.op_state);
                             }
@@ -218,7 +224,7 @@ namespace pika::mpi::experimental {
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(trigger_mpi_t, Sender&& sender)
         {
             auto snd1 = detail::trigger_mpi_sender<Sender>{PIKA_FORWARD(Sender, sender)};
-            return exp::make_unique_any_sender(std::move(snd1));
+            return exp::make_unique_any_sender(PIKA_MOVE(snd1));
         }
 
         //
