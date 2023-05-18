@@ -190,7 +190,9 @@ namespace PIKA_DETAIL_NS_DEBUG {
 
     void generate_prefix(std::ostream& os)
     {
+#ifdef PIKA_DEBUG_PRINT_S ? HOW_TIME
         os << detail::current_time_print_helper();
+#endif
         if (print_info)
         {
             print_info(os);
