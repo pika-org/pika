@@ -691,7 +691,7 @@ endif()
 
 pika_option(
   PIKA_WITH_SPINLOCK_POOL_NUM STRING
-  "Number of elements a spinlock pool manages (default: 128)" 128
+  "Number of elements a spinlock pool manages (default: 1024)" 1024
   CATEGORY "Thread Manager"
   ADVANCED
 )
