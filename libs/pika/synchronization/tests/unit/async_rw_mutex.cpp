@@ -305,7 +305,11 @@ int pika_main(pika::program_options::variables_map& vm)
     test_moved(async_rw_mutex<std::size_t>{0});
     test_moved(async_rw_mutex<mytype, mytype_base>{mytype{}});
 
+#if defined(PIKA_HAVE_VERIFY_LOCKS)
+    constexpr std::size_t iterations = 50;
+#else
     constexpr std::size_t iterations = 1000;
+#endif
     test_multiple_accesses(async_rw_mutex<void>{}, iterations);
     test_multiple_accesses(async_rw_mutex<std::size_t>{0}, iterations);
     test_multiple_accesses(async_rw_mutex<mytype, mytype_base>{mytype{}}, iterations);
