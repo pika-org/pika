@@ -72,7 +72,7 @@ namespace pika::threads::coroutines::detail {
         using result_type = std::pair<threads::detail::thread_schedule_state, thread_id_type>;
         using arg_type = threads::detail::thread_restart_state;
 
-        using yield_decorator_type = util::detail::function<arg_type(result_type)>;
+        // using yield_decorator_type = util::detail::function<arg_type(result_type)>;
 
         explicit coroutine_self(coroutine_self* next_self)
           : next_self_(next_self)
@@ -81,37 +81,37 @@ namespace pika::threads::coroutines::detail {
 
         arg_type yield(result_type arg = result_type())
         {
-            return !yield_decorator_.empty() ? yield_decorator_(PIKA_MOVE(arg)) :
-                                               yield_impl(PIKA_MOVE(arg));
+            return    //!yield_decorator_.empty() ? yield_decorator_(PIKA_MOVE(arg)) :
+                yield_impl(PIKA_MOVE(arg));
         }
 
-        template <typename F>
-        yield_decorator_type decorate_yield(F&& f)
-        {
-            yield_decorator_type tmp(PIKA_FORWARD(F, f));
-            std::swap(tmp, yield_decorator_);
-            return tmp;
-        }
+        // template <typename F>
+        // yield_decorator_type decorate_yield(F&& f)
+        // {
+        //     yield_decorator_type tmp(PIKA_FORWARD(F, f));
+        //     std::swap(tmp, yield_decorator_);
+        //     return tmp;
+        // }
 
-        yield_decorator_type decorate_yield(yield_decorator_type const& f)
-        {
-            yield_decorator_type tmp(f);
-            std::swap(tmp, yield_decorator_);
-            return tmp;
-        }
+        // yield_decorator_type decorate_yield(yield_decorator_type const& f)
+        // {
+        //     yield_decorator_type tmp(f);
+        //     std::swap(tmp, yield_decorator_);
+        //     return tmp;
+        // }
 
-        yield_decorator_type decorate_yield(yield_decorator_type&& f)
-        {
-            std::swap(f, yield_decorator_);
-            return PIKA_MOVE(f);
-        }
+        // yield_decorator_type decorate_yield(yield_decorator_type&& f)
+        // {
+        //     std::swap(f, yield_decorator_);
+        //     return PIKA_MOVE(f);
+        // }
 
-        yield_decorator_type undecorate_yield()
-        {
-            yield_decorator_type tmp;
-            std::swap(tmp, yield_decorator_);
-            return tmp;
-        }
+        // yield_decorator_type undecorate_yield()
+        // {
+        //     yield_decorator_type tmp;
+        //     std::swap(tmp, yield_decorator_);
+        //     return tmp;
+        // }
 
         virtual ~coroutine_self() = default;
 
@@ -155,7 +155,7 @@ namespace pika::threads::coroutines::detail {
         }
 
     private:
-        yield_decorator_type yield_decorator_;
+        // yield_decorator_type yield_decorator_;
         coroutine_self* next_self_;
     };
 
