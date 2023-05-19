@@ -109,7 +109,6 @@ namespace pika::threads::detail {
         local_priority_queue_scheduler(
             init_parameter_type const& init, bool deferred_initialization = true)
           : scheduler_base(init.num_queues_, init.description_, init.thread_queue_init_)
-          , curr_queue_(0)
           , affinity_data_(init.affinity_data_)
           , num_queues_(init.num_queues_)
           , num_high_priority_queues_(init.num_high_priority_queues_)
@@ -1241,13 +1240,10 @@ namespace pika::threads::detail {
             queues_[num_thread].data_->on_error(num_thread, e);
         }
 
-        void reset_thread_distribution() override
-        {
-            curr_queue_.store(0, std::memory_order_release);
-        }
+        void reset_thread_distribution() noexcept override {}
 
     protected:
-        std::atomic<std::size_t> curr_queue_;
+        inline static thread_local std::size_t curr_queue_{0};
 
         pika::detail::affinity_data const& affinity_data_;
 
