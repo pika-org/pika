@@ -387,8 +387,12 @@ namespace pika::threads::detail {
         // util::itt::frame_context fctx(thread_domain);
 #endif
 
-        std::int64_t& idle_loop_count = counters.idle_loop_count_;
-        std::int64_t& busy_loop_count = counters.busy_loop_count_;
+        // std::int64_t& idle_loop_count = counters.idle_loop_count_;
+        // std::int64_t& busy_loop_count = counters.busy_loop_count_;
+        // bool& is_active = counters.is_active_;
+        std::int64_t idle_loop_count = 0;
+        std::int64_t busy_loop_count = 0;
+        bool is_active = false;
 
         idle_collect_rate idle_rate(counters.tfunc_time_, counters.exec_time_);
         tfunc_time_wrapper tfunc_time_collector(idle_rate);
@@ -455,7 +459,7 @@ namespace pika::threads::detail {
                             // thread returns new required state
                             // store the returned state in the thread
                             {
-                                is_active_wrapper utilization(counters.is_active_);
+                                is_active_wrapper utilization(is_active);
                                 auto* thrdptr = get_thread_id_data(thrd);
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
                                 util::itt::caller_context cctx(ctx);
