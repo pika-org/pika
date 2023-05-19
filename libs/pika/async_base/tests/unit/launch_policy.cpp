@@ -18,7 +18,7 @@ void test_policy(Launch policy)
     PIKA_TEST(policy.priority() == pika::execution::thread_priority::default_);
     PIKA_TEST(policy.stacksize() == pika::execution::thread_stacksize::default_);
     PIKA_TEST(policy.hint().mode == pika::execution::thread_schedule_hint_mode::none);
-    PIKA_TEST_EQ(policy.hint().hint, std::int16_t(-1));
+    PIKA_TEST_EQ(policy.hint().hint, std::uint16_t(-1));
 
     policy.set_priority(pika::execution::thread_priority::normal);
     PIKA_TEST(policy.priority() == pika::execution::thread_priority::normal);

@@ -203,8 +203,7 @@ namespace pika::threads::detail {
         auto thrd = self_.get_thread_id();
         set_thread_state(PIKA_MOVE(thrd), thread_schedule_state::pending, statex,
             execution::thread_priority::normal,
-            execution::thread_schedule_hint{
-                static_cast<std::int16_t>(get_thread_id_data(thrd)->get_last_worker_thread_num())},
+            execution::thread_schedule_hint{get_thread_id_data(thrd)->get_last_worker_thread_num()},
             false);
     }
 }    // namespace pika::threads::detail

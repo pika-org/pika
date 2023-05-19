@@ -576,7 +576,7 @@ namespace pika::threads::detail {
     {
         return set_thread_state(id, new_state,    //-V107
             new_state_ex, priority,
-            execution::thread_schedule_hint(static_cast<std::int16_t>(get_local_thread_num_tss())),
+            execution::thread_schedule_hint(static_cast<std::uint16_t>(get_local_thread_num_tss())),
             true, ec);
     }
 

@@ -40,7 +40,7 @@ namespace pika::parallel::execution::detail {
                     pika::util::detail::deferred_call(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)),
                 desc, policy.priority(),
                 pika::execution::thread_schedule_hint(
-                    static_cast<std::int16_t>(get_worker_thread_num())),
+                    static_cast<std::uint16_t>(get_worker_thread_num())),
                 policy.stacksize(), threads::detail::thread_schedule_state::pending_do_not_schedule,
                 true);
 

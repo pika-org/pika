@@ -213,7 +213,7 @@ namespace pika::execution {
 
         /// Construct a hint with mode thread_schedule_hint_mode::thread and the
         /// given hint as the local thread number.
-        constexpr explicit thread_schedule_hint(std::int16_t thread_hint) noexcept
+        constexpr explicit thread_schedule_hint(std::uint16_t thread_hint) noexcept
           : hint(thread_hint)
           , mode(thread_schedule_hint_mode::thread)
         {
@@ -221,7 +221,7 @@ namespace pika::execution {
 
         /// Construct a hint with the given mode and hint. The numerical hint is
         /// unused when the mode is thread_schedule_hint_mode::none.
-        constexpr thread_schedule_hint(thread_schedule_hint_mode mode, std::int16_t hint) noexcept
+        constexpr thread_schedule_hint(thread_schedule_hint_mode mode, std::uint16_t hint) noexcept
           : hint(hint)
           , mode(mode)
         {
@@ -241,7 +241,7 @@ namespace pika::execution {
 
         /// The hint associated with the mode. The interpretation of this hint
         /// depends on the given mode.
-        std::int16_t hint;
+        std::uint16_t hint;
 
         /// The mode of the scheduling hint.
         thread_schedule_hint_mode mode;

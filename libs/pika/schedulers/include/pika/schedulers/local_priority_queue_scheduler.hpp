@@ -468,7 +468,7 @@ namespace pika::threads::detail {
             num_thread = select_active_pu(l, num_thread);
 
             data.schedulehint.mode = execution::thread_schedule_hint_mode::thread;
-            data.schedulehint.hint = static_cast<std::int16_t>(num_thread);
+            data.schedulehint.hint = static_cast<std::uint16_t>(num_thread);
 
             // now create the thread
             if (data.priority == execution::thread_priority::high_recursive ||

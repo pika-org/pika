@@ -270,7 +270,7 @@ void function_futures_create_thread_hierarchical_placement(std::uint64_t count, 
     high_resolution_timer walltime;
     for (std::size_t t = 0; t < num_threads; ++t)
     {
-        auto const hint = pika::execution::thread_schedule_hint(static_cast<std::int16_t>(t));
+        auto const hint = pika::execution::thread_schedule_hint(static_cast<std::uint16_t>(t));
         auto spawn_func = [&thread_func, sched, hint, t, count, num_threads, desc, prio]() {
             std::uint64_t const count_start = t * count / num_threads;
             std::uint64_t const count_end = (t + 1) * count / num_threads;
@@ -313,7 +313,7 @@ void function_futures_apply_hierarchical_placement(std::uint64_t count, bool csv
     high_resolution_timer walltime;
     for (std::size_t t = 0; t < num_threads; ++t)
     {
-        auto const hint = pika::execution::thread_schedule_hint(static_cast<std::int16_t>(t));
+        auto const hint = pika::execution::thread_schedule_hint(static_cast<std::uint16_t>(t));
         auto spawn_func = [&func, hint, t, count, num_threads]() {
             auto exec = pika::execution::parallel_executor(hint);
             std::uint64_t const count_start = t * count / num_threads;

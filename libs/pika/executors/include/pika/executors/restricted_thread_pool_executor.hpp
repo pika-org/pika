@@ -85,9 +85,9 @@ namespace pika::parallel::execution {
         }
 
     private:
-        std::int16_t get_next_thread_num()
+        std::uint16_t get_next_thread_num()
         {
-            return static_cast<std::int16_t>(first_thread_ + (os_thread_++ % num_threads_));
+            return static_cast<std::uint16_t>(first_thread_ + (os_thread_++ % num_threads_));
         }
 
     public:

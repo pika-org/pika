@@ -276,7 +276,7 @@ namespace pika::execution::experimental {
                         thread_state::starting, std::memory_order_relaxed);
 
                     auto policy = launch::async_policy(priority_, stacksize_,
-                        execution::thread_schedule_hint{static_cast<std::int16_t>(t)});
+                        execution::thread_schedule_hint{static_cast<std::uint16_t>(t)});
 
                     pika::detail::async_launch_policy_dispatch<launch::async_policy>::call(policy,
                         desc, pool_,

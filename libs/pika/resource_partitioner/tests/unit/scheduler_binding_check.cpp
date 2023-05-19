@@ -68,7 +68,7 @@ void threadLoop()
     {
         auto exec = pika::execution::parallel_executor(pika::execution::thread_priority::bound,
             pika::execution::thread_stacksize::default_,
-            pika::execution::thread_schedule_hint(std::int16_t(i % threads)));
+            pika::execution::thread_schedule_hint(std::uint16_t(i % threads)));
         pika::async(exec, f, i, (i % threads)).get();
     }
 

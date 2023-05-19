@@ -471,12 +471,12 @@ namespace pika::threads::detail {
             return scheduler_base_;
         }
 
-        std::size_t get_last_worker_thread_num() const noexcept
+        std::uint16_t get_last_worker_thread_num() const noexcept
         {
             return last_worker_thread_num_;
         }
 
-        void set_last_worker_thread_num(std::size_t last_worker_thread_num) noexcept
+        void set_last_worker_thread_num(std::uint16_t last_worker_thread_num) noexcept
         {
             last_worker_thread_num_ = last_worker_thread_num;
         }
@@ -574,23 +574,21 @@ namespace pika::threads::detail {
         debug::detail::backtrace const* backtrace_;
 # endif
 #endif
-        ///////////////////////////////////////////////////////////////////////
+        std::ptrdiff_t stacksize_;
+        execution::thread_stacksize stacksize_enum_;
         execution::thread_priority priority_;
 
         bool requested_interrupt_;
         bool enabled_interrupt_;
         bool ran_exit_funcs_;
         bool const is_stackless_;
+        std::uint16_t last_worker_thread_num_;
 
         // Singly linked list (heap-allocated)
         std::forward_list<util::detail::function<void()>> exit_funcs_;
 
         // reference to scheduler which created/manages this thread
         scheduler_base* scheduler_base_;
-        std::size_t last_worker_thread_num_;
-
-        std::ptrdiff_t stacksize_;
-        execution::thread_stacksize stacksize_enum_;
 
         void* queue_;
 

@@ -66,7 +66,7 @@ namespace pika::parallel::execution::detail {
 
             auto async_policy = policy;
             async_policy.set_hint(
-                pika::execution::thread_schedule_hint{static_cast<std::int16_t>(first_thread + t)});
+                pika::execution::thread_schedule_hint{static_cast<std::uint16_t>(first_thread + t)});
 
             if (part_size > hierarchical_threshold)
             {

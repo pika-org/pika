@@ -99,7 +99,7 @@ void measure_function_futures_create_thread_hierarchical_placement(
             for (std::size_t t = 0; t < num_threads; ++t)
             {
                 auto const hint =
-                    pika::execution::thread_schedule_hint(static_cast<std::int16_t>(t));
+                    pika::execution::thread_schedule_hint(static_cast<std::uint16_t>(t));
                 auto spawn_func = [&thread_func, sched, hint, t, count, num_threads, desc, prio]() {
                     std::uint64_t const count_start = t * count / num_threads;
                     std::uint64_t const count_end = (t + 1) * count / num_threads;

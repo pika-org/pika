@@ -100,7 +100,7 @@ namespace pika::lcos::local::detail {
                         util::detail::deferred_call(&base_type::run_impl, PIKA_MOVE(this_))),
                     ::pika::detail::thread_description(f_, annotation), policy.priority(),
                     execution::thread_schedule_hint(
-                        static_cast<std::int16_t>(get_worker_thread_num())),
+                        static_cast<std::uint16_t>(get_worker_thread_num())),
                     policy.stacksize(),
                     threads::detail::thread_schedule_state::pending_do_not_schedule, true);
 

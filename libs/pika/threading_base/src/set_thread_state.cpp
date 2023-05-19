@@ -52,7 +52,7 @@ namespace pika::threads::detail {
         }
 
         execution::thread_schedule_hint schedulehint{
-            static_cast<std::int16_t>(get_thread_id_data(thrd)->get_last_worker_thread_num())};
+            get_thread_id_data(thrd)->get_last_worker_thread_num()};
 
         // just retry, set_state will create new thread if target is still active
         error_code ec(throwmode::lightweight);    // do not throw

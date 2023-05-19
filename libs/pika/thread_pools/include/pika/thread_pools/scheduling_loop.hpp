@@ -571,7 +571,7 @@ namespace pika::threads::detail {
                         // schedule this thread again, make sure it ends up at
                         // the end of the queue
                         scheduler.SchedulingPolicy::schedule_thread_last(PIKA_MOVE(thrd),
-                            execution::thread_schedule_hint(static_cast<std::int16_t>(num_thread)),
+                            execution::thread_schedule_hint(static_cast<std::uint16_t>(num_thread)),
                             true);
                         scheduler.SchedulingPolicy::do_some_work(num_thread);
                     }
@@ -597,7 +597,7 @@ namespace pika::threads::detail {
                                 // boosted priority
                                 scheduler.SchedulingPolicy::schedule_thread(PIKA_MOVE(thrd),
                                     execution::thread_schedule_hint(
-                                        static_cast<std::int16_t>(num_thread)),
+                                        static_cast<std::uint16_t>(num_thread)),
                                     true, execution::thread_priority::boost);
                                 scheduler.SchedulingPolicy::do_some_work(num_thread);
                             }
@@ -608,7 +608,7 @@ namespace pika::threads::detail {
                             // boosted priority
                             scheduler.SchedulingPolicy::schedule_thread(PIKA_MOVE(thrd),
                                 execution::thread_schedule_hint(
-                                    static_cast<std::int16_t>(num_thread)),
+                                    static_cast<std::uint16_t>(num_thread)),
                                 true, execution::thread_priority::boost);
                             scheduler.SchedulingPolicy::do_some_work(num_thread);
                         }
@@ -628,7 +628,7 @@ namespace pika::threads::detail {
                     // yet
                     auto priority = thrdptr->get_priority();
                     scheduler.SchedulingPolicy::schedule_thread(PIKA_MOVE(thrd),
-                        execution::thread_schedule_hint(static_cast<std::int16_t>(num_thread)),
+                        execution::thread_schedule_hint(static_cast<std::uint16_t>(num_thread)),
                         true, priority);
                     scheduler.SchedulingPolicy::do_some_work(num_thread);
                 }

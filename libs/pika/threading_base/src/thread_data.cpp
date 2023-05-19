@@ -64,15 +64,15 @@ namespace pika::threads::detail {
 #ifdef PIKA_HAVE_THREAD_BACKTRACE_ON_SUSPENSION
       , backtrace_(nullptr)
 #endif
+      , stacksize_(stacksize)
+      , stacksize_enum_(init_data.stacksize)
       , priority_(init_data.priority)
       , requested_interrupt_(false)
       , enabled_interrupt_(true)
       , ran_exit_funcs_(false)
       , is_stackless_(is_stackless)
+      , last_worker_thread_num_(std::uint16_t(-1))
       , scheduler_base_(init_data.scheduler_base)
-      , last_worker_thread_num_(std::size_t(-1))
-      , stacksize_(stacksize)
-      , stacksize_enum_(init_data.stacksize)
       , queue_(queue)
     {
         LTM_(debug).format(
@@ -210,7 +210,7 @@ namespace pika::threads::detail {
         ran_exit_funcs_ = false;
         exit_funcs_.clear();
         scheduler_base_ = init_data.scheduler_base;
-        last_worker_thread_num_ = std::size_t(-1);
+        last_worker_thread_num_ = std::uint16_t(-1);
 
         // We explicitly set the logical stack size again as it can be different
         // from what the previous use required. However, the physical stack size
