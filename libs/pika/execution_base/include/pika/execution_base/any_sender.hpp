@@ -40,15 +40,15 @@
 #endif
 
 #if !defined(PIKA_ANY_RECEIVER_SBO_SIZE)
-#define PIKA_ANY_RECEIVER_SBO_SIZE 16
+#define PIKA_ANY_RECEIVER_SBO_SIZE 8
 #endif
 
 #if !defined(PIKA_UNIQUE_ANY_SENDER_SBO_SIZE)
-#define PIKA_UNIQUE_ANY_SENDER_SBO_SIZE 16
+#define PIKA_UNIQUE_ANY_SENDER_SBO_SIZE 8
 #endif
 
 #if !defined(PIKA_ANY_SENDER_SBO_SIZE)
-#define PIKA_ANY_SENDER_SBO_SIZE 16
+#define PIKA_ANY_SENDER_SBO_SIZE 8
 #endif
 
 namespace pika::detail {
