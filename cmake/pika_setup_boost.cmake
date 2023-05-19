@@ -80,6 +80,15 @@ if(NOT TARGET pika_dependencies_boost)
     )
   endif()
 
+  if(PIKA_WITH_CUDA
+     AND "${CMAKE_CUDA_COMPILER_ID}" STREQUAL "NVIDIA"
+     AND PIKA_WITH_CXX_STANDARD GREATER_EQUAL 20
+  )
+    target_compile_definitions(
+      pika_dependencies_boost INTERFACE BOOST_DISABLE_CURRENT_LOCATION
+    )
+  endif()
+
   include(pika_add_definitions)
 
   # Boost preprocessor definitions

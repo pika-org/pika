@@ -318,13 +318,9 @@ int pika_main(pika::program_options::variables_map& vm)
     test_read_sender_copyable(async_rw_mutex<std::size_t>{0});
     test_read_sender_copyable(async_rw_mutex<mytype, mytype_base>{mytype{}});
 
-    // These tests are disabled with stdexec and nvhpc because of bad codegen.
-    // This is fixed in newer versions of stdexec.
-#if !(defined(PIKA_NVHPC_VERSION) && defined(PIKA_HAVE_STDEXEC))
     test_multiple_when_all(async_rw_mutex<void>{});
     test_multiple_when_all(async_rw_mutex<std::size_t>{0});
     test_multiple_when_all(async_rw_mutex<mytype, mytype_base>{mytype{}});
-#endif
 
     return pika::finalize();
 }
