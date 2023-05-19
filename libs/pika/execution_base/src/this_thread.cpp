@@ -67,10 +67,10 @@ namespace pika::execution {
                 return fmt::format("{}", id_);
             }
 
-            default_context const& context() const override
-            {
-                return context_;
-            }
+            // default_context const& context() const override
+            // {
+            //     return context_;
+            // }
 
             void yield(char const* desc) override;
             void yield_k(std::size_t k, char const* desc) override;

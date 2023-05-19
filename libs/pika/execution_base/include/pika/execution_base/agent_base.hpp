@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/execution_base/context_base.hpp>
+// #include <pika/execution_base/context_base.hpp>
 #include <pika/timing/steady_clock.hpp>
 
 #include <cstddef>
@@ -19,7 +19,7 @@ namespace pika::execution::detail {
 
         virtual std::string description() const = 0;
 
-        virtual context_base const& context() const = 0;
+        // virtual context_base const& context() const = 0;
 
         virtual void yield(char const* desc) = 0;
         virtual void yield_k(std::size_t k, char const* desc) = 0;
