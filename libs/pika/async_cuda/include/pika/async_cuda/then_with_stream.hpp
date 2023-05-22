@@ -78,7 +78,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                 std::make_exception_ptr(pika::exception(pika::error::unknown_error,
                     fmt::format(
                         "Getting event after CUDA stream transform failed with status {} ({})",
-                        status, whip::get_error_string(status)))));
+                        static_cast<int>(status), whip::get_error_string(status)))));
         }
     }
 
