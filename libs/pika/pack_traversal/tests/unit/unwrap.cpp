@@ -444,7 +444,7 @@ namespace legacy_tests {
                 PIKA_TEST_EQ(64U, result_counter.load());
 
                 for (std::size_t i = 0; i < 64; ++i)
-                    PIKA_TEST_EQ(true, values[i]);
+                    PIKA_TEST_EQ(true, bool(values[i]));
 
                 result_counter.store(0);
             }
@@ -461,7 +461,7 @@ namespace legacy_tests {
                 PIKA_TEST_EQ(64U, result_counter.load());
 
                 for (std::size_t i = 0; i < 64; ++i)
-                    PIKA_TEST_EQ(true, values[i]);
+                    PIKA_TEST_EQ(true, bool(values[i]));
 
                 result_counter.store(0);
             }

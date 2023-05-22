@@ -81,7 +81,7 @@ void threadLoop()
 
     pika::deb_schbin.debug(
         pika::debug::detail::str<15>("complete"), pika::debug::detail::dec<4>(count_down));
-    PIKA_TEST_EQ(count_down, 0);
+    PIKA_TEST_EQ(count_down.load(), 0);
 }
 
 int pika_main()

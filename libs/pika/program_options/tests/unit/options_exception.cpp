@@ -243,7 +243,9 @@ void test_missing_value()
     }
     catch (invalid_command_line_syntax& e)
     {
-        PIKA_TEST_EQ(e.kind(), invalid_syntax::missing_parameter);
+        PIKA_TEST_EQ(static_cast<std::underlying_type_t<invalid_syntax::kind_t>>(e.kind()),
+            static_cast<std::underlying_type_t<invalid_syntax::kind_t>>(
+                invalid_syntax::missing_parameter));
         PIKA_TEST_EQ(e.tokens(), "--cfgfile");
     }
 }

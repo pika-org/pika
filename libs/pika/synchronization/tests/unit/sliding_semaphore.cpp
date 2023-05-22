@@ -43,7 +43,7 @@ int pika_main()
 
     sem.wait(initial_count + num_tasks);
 
-    PIKA_TEST_EQ(count, num_tasks);
+    PIKA_TEST_EQ(count.load(), num_tasks);
 
     // Since sem.signal(++count) (in worker) is not an atomic operation we wait
     // for the tasks to finish here. The task which signals the count that

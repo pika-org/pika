@@ -90,7 +90,7 @@ void test_condition_with_mutex()
     }
 
     thread.join();
-    PIKA_TEST_EQ(data.woken, 1u);
+    PIKA_TEST_EQ(data.woken.load(), 1u);
 }
 
 int pika_main()

@@ -51,11 +51,11 @@ void test_barrier_empty_oncomplete()
         }
 
         b.arrive_and_wait();    // wait for all threads to enter the barrier
-        PIKA_TEST_EQ(threads, c1);
+        PIKA_TEST_EQ(threads, c1.load());
 
         pika::wait_all(results);
 
-        PIKA_TEST_EQ(threads, c2);
+        PIKA_TEST_EQ(threads, c2.load());
     }
 }
 
@@ -102,12 +102,12 @@ void test_barrier_oncomplete()
         }
 
         b.arrive_and_wait();    // wait for all threads to enter the barrier
-        PIKA_TEST_EQ(threads, c1);
+        PIKA_TEST_EQ(threads, c1.load());
 
         pika::wait_all(results);
 
-        PIKA_TEST_EQ(threads, c2);
-        PIKA_TEST_EQ(complete, std::size_t(1));
+        PIKA_TEST_EQ(threads, c2.load());
+        PIKA_TEST_EQ(complete.load(), std::size_t(1));
     }
 }
 
@@ -146,11 +146,11 @@ void test_barrier_empty_oncomplete_split()
         }
 
         b.arrive_and_wait();    // wait for all threads to enter the barrier
-        PIKA_TEST_EQ(threads, c1);
+        PIKA_TEST_EQ(threads, c1.load());
 
         pika::wait_all(results);
 
-        PIKA_TEST_EQ(threads, c2);
+        PIKA_TEST_EQ(threads, c2.load());
     }
 }
 
@@ -189,12 +189,12 @@ void test_barrier_oncomplete_split()
         }
 
         b.arrive_and_wait();    // wait for all threads to enter the barrier
-        PIKA_TEST_EQ(threads, c1);
+        PIKA_TEST_EQ(threads, c1.load());
 
         pika::wait_all(results);
 
-        PIKA_TEST_EQ(threads, c2);
-        PIKA_TEST_EQ(complete, std::size_t(1));
+        PIKA_TEST_EQ(threads, c2.load());
+        PIKA_TEST_EQ(complete.load(), std::size_t(1));
     }
 }
 

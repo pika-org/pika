@@ -28,7 +28,7 @@ struct custom_bulk_operation
 
     void operator()(int n) const
     {
-        PIKA_TEST_EQ(n, call_operator_count);
+        PIKA_TEST_EQ(n, call_operator_count.load());
 
         call_operator_called = true;
         if (n == 3 && throws)
@@ -53,7 +53,7 @@ int main()
         std::atomic<bool> set_value_called{false};
         std::atomic<int> set_value_count{0};
         auto s = ex::bulk(ex::just(), 10, [&](int n) {
-            PIKA_TEST_EQ(n, set_value_count);
+            PIKA_TEST_EQ(n, set_value_count.load());
             ++set_value_count;
         });
         auto f = [] {};
@@ -61,14 +61,14 @@ int main()
         auto os = ex::connect(std::move(s), std::move(r));
         ex::start(os);
         PIKA_TEST(set_value_called);
-        PIKA_TEST_EQ(set_value_count, 10);
+        PIKA_TEST_EQ(set_value_count.load(), 10);
     }
 
     {
         std::atomic<bool> set_value_called{false};
         std::atomic<int> set_value_count{0};
         auto s = ex::bulk(ex::just(42), 10, [&](int n, int x) {
-            PIKA_TEST_EQ(n, set_value_count);
+            PIKA_TEST_EQ(n, set_value_count.load());
             ++set_value_count;
             return ++x;
         });
@@ -77,7 +77,7 @@ int main()
         auto os = ex::connect(std::move(s), std::move(r));
         ex::start(os);
         PIKA_TEST(set_value_called);
-        PIKA_TEST_EQ(set_value_count, 10);
+        PIKA_TEST_EQ(set_value_count.load(), 10);
     }
 
     {
@@ -85,7 +85,7 @@ int main()
         std::atomic<int> set_value_count{0};
         auto s =
             ex::bulk(ex::just(custom_type_non_default_constructible{42}), 10, [&](int n, auto x) {
-                PIKA_TEST_EQ(n, set_value_count);
+                PIKA_TEST_EQ(n, set_value_count.load());
                 ++set_value_count;
                 ++(x.x);
                 return x;
@@ -95,7 +95,7 @@ int main()
         auto os = ex::connect(std::move(s), std::move(r));
         ex::start(os);
         PIKA_TEST(set_value_called);
-        PIKA_TEST_EQ(set_value_count, 10);
+        PIKA_TEST_EQ(set_value_count.load(), 10);
     }
 
     {
@@ -103,7 +103,7 @@ int main()
         std::atomic<int> set_value_count{0};
         auto s = ex::bulk(ex::just(custom_type_non_default_constructible_non_copyable{42}), 10,
             [&](int n, auto&&) {
-                PIKA_TEST_EQ(n, set_value_count);
+                PIKA_TEST_EQ(n, set_value_count.load());
                 ++set_value_count;
             });
         auto f = [](auto x) { PIKA_TEST_EQ(x.x, 42); };
@@ -111,7 +111,7 @@ int main()
         auto os = ex::connect(std::move(s), std::move(r));
         ex::start(os);
         PIKA_TEST(set_value_called);
-        PIKA_TEST_EQ(set_value_count, 10);
+        PIKA_TEST_EQ(set_value_count.load(), 10);
     }
 
     {
@@ -127,7 +127,7 @@ int main()
         auto os = ex::connect(std::move(s4), std::move(r));
         ex::start(os);
         PIKA_TEST(set_value_called);
-        PIKA_TEST_EQ(set_value_count, 30);
+        PIKA_TEST_EQ(set_value_count.load(), 30);
     }
 
     {
@@ -135,15 +135,15 @@ int main()
         std::atomic<int> set_value_count{0};
         int x = 42;
         auto s = ex::bulk(ex::just(const_reference_sender<decltype(x)>{x}), 10, [&](int n, auto&&) {
-            PIKA_TEST_EQ(n, set_value_count);
+            PIKA_TEST_EQ(n, set_value_count.load());
             ++set_value_count;
         });
-        auto f = [](auto x) { PIKA_TEST_EQ(x.x, 42); };
+        auto f = [](auto x) { PIKA_TEST_EQ(x.x.get(), 42); };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));
         ex::start(os);
         PIKA_TEST(set_value_called);
-        PIKA_TEST_EQ(set_value_count, 10);
+        PIKA_TEST_EQ(set_value_count.load(), 10);
     }
 
     // operator| overload
@@ -158,7 +158,7 @@ int main()
         auto os = ex::connect(std::move(s), r);
         ex::start(os);
         PIKA_TEST(set_value_called);
-        PIKA_TEST_EQ(set_value_count, 40);
+        PIKA_TEST_EQ(set_value_count.load(), 40);
     }
 
     // tag_invoke overload
@@ -177,7 +177,7 @@ int main()
         PIKA_TEST(receiver_set_value_called);
         PIKA_TEST(tag_invoke_overload_called);
         PIKA_TEST(custom_bulk_call_operator_called);
-        PIKA_TEST_EQ(custom_bulk_call_count, 10);
+        PIKA_TEST_EQ(custom_bulk_call_count.load(), 10);
     }
 
     // Failure path
@@ -236,7 +236,7 @@ int main()
         PIKA_TEST(receiver_set_error_called);
         PIKA_TEST(tag_invoke_overload_called);
         PIKA_TEST(custom_bulk_call_operator_called);
-        PIKA_TEST_EQ(custom_bulk_call_count, 3);
+        PIKA_TEST_EQ(custom_bulk_call_count.load(), 3);
     }
 
     {
