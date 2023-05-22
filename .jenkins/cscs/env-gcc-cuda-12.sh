@@ -9,10 +9,11 @@ gcc_version="12.1.0"
 boost_version="1.82.0"
 hwloc_version="2.9.1"
 cuda_version="12.0.0"
+fmt_version="10.0.0"
 spack_compiler="gcc@${gcc_version}"
 spack_arch="cray-cnl7-haswell"
 
-spack_spec="pika@main arch=${spack_arch} %${spack_compiler} +cuda malloc=system cxxstd=${cxx_std} ^boost@${boost_version} ^hwloc@${hwloc_version} ^cuda@${cuda_version}"
+spack_spec="pika@main arch=${spack_arch} %${spack_compiler} +cuda malloc=system cxxstd=${cxx_std} ^boost@${boost_version} ^hwloc@${hwloc_version} ^cuda@${cuda_version} ^fmt@${fmt_version}"
 
 configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${cxx_std}"
 configure_extra_options+=" -DPIKA_WITH_MALLOC=system"
