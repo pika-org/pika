@@ -55,7 +55,7 @@ int pika_main()
 
     {
         int x = 42;
-        PIKA_TEST_EQ(tt::sync_wait(ex::just(const_reference_sender<int>{x})).x, 42);
+        PIKA_TEST_EQ(tt::sync_wait(ex::just(const_reference_sender<int>{x})).x.get(), 42);
     }
 
     // operator| overload

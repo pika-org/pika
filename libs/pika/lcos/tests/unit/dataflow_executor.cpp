@@ -118,11 +118,11 @@ void function_pointers(Executor& exec)
     PIKA_TEST_EQ(f3.get(), 163);
     PIKA_TEST_EQ(f4.get(), 10 * 84);
     PIKA_TEST_EQ(f5.get(), 126);
-    PIKA_TEST_EQ(void_f_count, 1u);
-    PIKA_TEST_EQ(int_f_count, 1u);
-    PIKA_TEST_EQ(void_f1_count, 1u);
-    PIKA_TEST_EQ(int_f1_count, 16u);
-    PIKA_TEST_EQ(int_f2_count, 1u);
+    PIKA_TEST_EQ(void_f_count.load(), 1u);
+    PIKA_TEST_EQ(int_f_count.load(), 1u);
+    PIKA_TEST_EQ(void_f1_count.load(), 1u);
+    PIKA_TEST_EQ(int_f1_count.load(), 16u);
+    PIKA_TEST_EQ(int_f2_count.load(), 1u);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -194,7 +194,7 @@ void future_function_pointers(Executor& exec)
 
     f1.wait();
 
-    PIKA_TEST_EQ(future_void_f1_count, 2u);
+    PIKA_TEST_EQ(future_void_f1_count.load(), 2u);
     future_void_f1_count.store(0);
 
     future<void> f2 = dataflow(exec, &future_void_f2,
@@ -202,8 +202,8 @@ void future_function_pointers(Executor& exec)
         async(&future_void_sf1, shared_future<void>(make_ready_future())));
 
     f2.wait();
-    PIKA_TEST_EQ(future_void_f1_count, 2u);
-    PIKA_TEST_EQ(future_void_f2_count, 1u);
+    PIKA_TEST_EQ(future_void_f1_count.load(), 2u);
+    PIKA_TEST_EQ(future_void_f2_count.load(), 1u);
 
     future_void_f1_count.store(0);
     future_void_f2_count.store(0);
@@ -213,7 +213,7 @@ void future_function_pointers(Executor& exec)
     future<int> f3 = dataflow(exec, &future_int_f1, make_ready_future());
 
     PIKA_TEST_EQ(f3.get(), 1);
-    PIKA_TEST_EQ(future_int_f1_count, 1u);
+    PIKA_TEST_EQ(future_int_f1_count.load(), 1u);
     future_int_f1_count.store(0);
 
     future<int> f4 =
@@ -221,8 +221,8 @@ void future_function_pointers(Executor& exec)
             dataflow(exec, &future_int_f1, make_ready_future()));
 
     PIKA_TEST_EQ(f4.get(), 2);
-    PIKA_TEST_EQ(future_int_f1_count, 2u);
-    PIKA_TEST_EQ(future_int_f2_count, 1u);
+    PIKA_TEST_EQ(future_int_f1_count.load(), 2u);
+    PIKA_TEST_EQ(future_int_f2_count.load(), 1u);
     future_int_f1_count.store(0);
     future_int_f2_count.store(0);
 
@@ -235,8 +235,8 @@ void future_function_pointers(Executor& exec)
     future<int> f5 = dataflow(exec, &future_int_f_vector, std::ref(vf));
 
     PIKA_TEST_EQ(f5.get(), 10);
-    PIKA_TEST_EQ(future_int_f1_count, 10u);
-    PIKA_TEST_EQ(future_int_f_vector_count, 1u);
+    PIKA_TEST_EQ(future_int_f1_count.load(), 10u);
+    PIKA_TEST_EQ(future_int_f_vector_count.load(), 1u);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -277,10 +277,10 @@ void plain_arguments(Executor& exec)
         future<int> f2 = dataflow(exec, &int_f4, 42);
 
         f1.wait();
-        PIKA_TEST_EQ(void_f4_count, 1u);
+        PIKA_TEST_EQ(void_f4_count.load(), 1u);
 
         PIKA_TEST_EQ(f2.get(), 84);
-        PIKA_TEST_EQ(int_f4_count, 1u);
+        PIKA_TEST_EQ(int_f4_count.load(), 1u);
     }
 
     void_f5_count.store(0);
@@ -291,10 +291,10 @@ void plain_arguments(Executor& exec)
         future<int> f2 = dataflow(exec, &int_f5, 42, async(&int_f));
 
         f1.wait();
-        PIKA_TEST_EQ(void_f5_count, 1u);
+        PIKA_TEST_EQ(void_f5_count.load(), 1u);
 
         PIKA_TEST_EQ(f2.get(), 126);
-        PIKA_TEST_EQ(int_f5_count, 1u);
+        PIKA_TEST_EQ(int_f5_count.load(), 1u);
     }
 }
 
@@ -309,10 +309,10 @@ void plain_deferred_arguments(Executor& exec)
         future<int> f2 = dataflow(exec, &int_f5, 42, async(pika::launch::deferred, &int_f));
 
         f1.wait();
-        PIKA_TEST_EQ(void_f5_count, 1u);
+        PIKA_TEST_EQ(void_f5_count.load(), 1u);
 
         PIKA_TEST_EQ(f2.get(), 126);
-        PIKA_TEST_EQ(int_f5_count, 1u);
+        PIKA_TEST_EQ(int_f5_count.load(), 1u);
     }
 }
 

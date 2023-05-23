@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
     }
 
     PIKA_TEST(caught_exception);
-    PIKA_TEST_EQ(count_error_handler, std::size_t(1));
+    PIKA_TEST_EQ(count_error_handler.load(), std::size_t(1));
 
     return 0;
 }

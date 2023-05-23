@@ -126,11 +126,11 @@ void function_pointers(std::uint32_t num)
     PIKA_TEST_EQ(f3.get(), 163);
     PIKA_TEST_EQ(f4.get(), int(num * 84));
     PIKA_TEST_EQ(f5.get(), 126);
-    PIKA_TEST_EQ(void_f_count, 1u);
-    PIKA_TEST_EQ(int_f_count, 1u);
-    PIKA_TEST_EQ(void_f1_count, 1u);
-    PIKA_TEST_EQ(int_f1_count, 6u + num);
-    PIKA_TEST_EQ(int_f2_count, 1u);
+    PIKA_TEST_EQ(void_f_count.load(), 1u);
+    PIKA_TEST_EQ(int_f_count.load(), 1u);
+    PIKA_TEST_EQ(void_f1_count.load(), 1u);
+    PIKA_TEST_EQ(int_f1_count.load(), 6u + num);
+    PIKA_TEST_EQ(int_f2_count.load(), 1u);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -193,8 +193,8 @@ void future_function_pointers(std::uint32_t num)
     pika::future<int> f5 = pika::dataflow(&future_int_f_vector, std::ref(vf));
 
     PIKA_TEST_EQ(f5.get(), int(num));
-    PIKA_TEST_EQ(future_int_f1_count, num);
-    PIKA_TEST_EQ(future_int_f_vector_count, 1u);
+    PIKA_TEST_EQ(future_int_f1_count.load(), num);
+    PIKA_TEST_EQ(future_int_f_vector_count.load(), 1u);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

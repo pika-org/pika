@@ -72,7 +72,7 @@ int pika_main(variables_map& vm)
         // Wait for all the our threads to finish executing.
         pika::wait_all(futs);
 
-        PIKA_TEST_EQ(pxthreads, c);
+        PIKA_TEST_EQ(pxthreads, c.load());
 
         // Make sure that waiting on a set event works.
         e.wait();

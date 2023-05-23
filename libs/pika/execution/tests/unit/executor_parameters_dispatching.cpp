@@ -79,8 +79,8 @@ void test_get_chunk_size()
             test_chunk_size{}, pika::execution::par.executor(), [](std::size_t) { return 0; }, 1,
             1);
 
-        PIKA_TEST_EQ(params_count, std::size_t(1));
-        PIKA_TEST_EQ(exec_count, std::size_t(0));
+        PIKA_TEST_EQ(params_count.load(), std::size_t(1));
+        PIKA_TEST_EQ(exec_count.load(), std::size_t(0));
     }
 
     {
@@ -90,8 +90,8 @@ void test_get_chunk_size()
         pika::parallel::execution::get_chunk_size(
             test_chunk_size{}, test_executor_get_chunk_size{}, [](std::size_t) { return 0; }, 1, 1);
 
-        PIKA_TEST_EQ(params_count, std::size_t(0));
-        PIKA_TEST_EQ(exec_count, std::size_t(1));
+        PIKA_TEST_EQ(params_count.load(), std::size_t(0));
+        PIKA_TEST_EQ(exec_count.load(), std::size_t(1));
     }
 }
 
@@ -147,8 +147,8 @@ void test_maximal_number_of_chunks()
         pika::parallel::execution::maximal_number_of_chunks(
             test_number_of_chunks{}, pika::execution::par.executor(), 1, 1);
 
-        PIKA_TEST_EQ(params_count, std::size_t(1));
-        PIKA_TEST_EQ(exec_count, std::size_t(0));
+        PIKA_TEST_EQ(params_count.load(), std::size_t(1));
+        PIKA_TEST_EQ(exec_count.load(), std::size_t(0));
     }
 
     {
@@ -158,8 +158,8 @@ void test_maximal_number_of_chunks()
         pika::parallel::execution::maximal_number_of_chunks(
             test_number_of_chunks{}, test_executor_maximal_number_of_chunks{}, 1, 1);
 
-        PIKA_TEST_EQ(params_count, std::size_t(0));
-        PIKA_TEST_EQ(exec_count, std::size_t(1));
+        PIKA_TEST_EQ(params_count.load(), std::size_t(0));
+        PIKA_TEST_EQ(exec_count.load(), std::size_t(1));
     }
 }
 
@@ -213,8 +213,8 @@ void test_reset_thread_distribution()
         pika::parallel::execution::reset_thread_distribution(
             test_thread_distribution{}, pika::execution::par.executor());
 
-        PIKA_TEST_EQ(params_count, std::size_t(1));
-        PIKA_TEST_EQ(exec_count, std::size_t(0));
+        PIKA_TEST_EQ(params_count.load(), std::size_t(1));
+        PIKA_TEST_EQ(exec_count.load(), std::size_t(0));
     }
 
     {
@@ -224,8 +224,8 @@ void test_reset_thread_distribution()
         pika::parallel::execution::reset_thread_distribution(
             test_thread_distribution{}, test_executor_reset_thread_distribution{});
 
-        PIKA_TEST_EQ(params_count, std::size_t(0));
-        PIKA_TEST_EQ(exec_count, std::size_t(1));
+        PIKA_TEST_EQ(params_count.load(), std::size_t(0));
+        PIKA_TEST_EQ(exec_count.load(), std::size_t(1));
     }
 }
 
@@ -281,8 +281,8 @@ void test_processing_units_count()
         pika::parallel::execution::processing_units_count(
             test_processing_units{}, pika::execution::par.executor());
 
-        PIKA_TEST_EQ(params_count, std::size_t(1));
-        PIKA_TEST_EQ(exec_count, std::size_t(0));
+        PIKA_TEST_EQ(params_count.load(), std::size_t(1));
+        PIKA_TEST_EQ(exec_count.load(), std::size_t(0));
     }
 
     {
@@ -292,8 +292,8 @@ void test_processing_units_count()
         pika::parallel::execution::processing_units_count(
             test_processing_units{}, test_executor_processing_units_count{});
 
-        PIKA_TEST_EQ(params_count, std::size_t(0));
-        PIKA_TEST_EQ(exec_count, std::size_t(1));
+        PIKA_TEST_EQ(params_count.load(), std::size_t(0));
+        PIKA_TEST_EQ(exec_count.load(), std::size_t(1));
     }
 }
 
@@ -371,8 +371,8 @@ void test_mark_begin_execution()
         pika::parallel::execution::mark_begin_execution(
             test_begin_end{}, pika::execution::par.executor());
 
-        PIKA_TEST_EQ(params_count, std::size_t(1));
-        PIKA_TEST_EQ(exec_count, std::size_t(0));
+        PIKA_TEST_EQ(params_count.load(), std::size_t(1));
+        PIKA_TEST_EQ(exec_count.load(), std::size_t(0));
     }
 
     {
@@ -382,8 +382,8 @@ void test_mark_begin_execution()
         pika::parallel::execution::mark_begin_execution(
             test_begin_end{}, test_executor_begin_end{});
 
-        PIKA_TEST_EQ(params_count, std::size_t(0));
-        PIKA_TEST_EQ(exec_count, std::size_t(1));
+        PIKA_TEST_EQ(params_count.load(), std::size_t(0));
+        PIKA_TEST_EQ(exec_count.load(), std::size_t(1));
     }
 }
 
@@ -396,8 +396,8 @@ void test_mark_end_of_scheduling()
         pika::parallel::execution::mark_end_of_scheduling(
             test_begin_end{}, pika::execution::par.executor());
 
-        PIKA_TEST_EQ(params_count, std::size_t(1));
-        PIKA_TEST_EQ(exec_count, std::size_t(0));
+        PIKA_TEST_EQ(params_count.load(), std::size_t(1));
+        PIKA_TEST_EQ(exec_count.load(), std::size_t(0));
     }
 
     {
@@ -407,8 +407,8 @@ void test_mark_end_of_scheduling()
         pika::parallel::execution::mark_end_of_scheduling(
             test_begin_end{}, test_executor_begin_end{});
 
-        PIKA_TEST_EQ(params_count, std::size_t(0));
-        PIKA_TEST_EQ(exec_count, std::size_t(1));
+        PIKA_TEST_EQ(params_count.load(), std::size_t(0));
+        PIKA_TEST_EQ(exec_count.load(), std::size_t(1));
     }
 }
 
@@ -421,8 +421,8 @@ void test_mark_end_execution()
         pika::parallel::execution::mark_end_execution(
             test_begin_end{}, pika::execution::par.executor());
 
-        PIKA_TEST_EQ(params_count, std::size_t(1));
-        PIKA_TEST_EQ(exec_count, std::size_t(0));
+        PIKA_TEST_EQ(params_count.load(), std::size_t(1));
+        PIKA_TEST_EQ(exec_count.load(), std::size_t(0));
     }
 
     {
@@ -431,8 +431,8 @@ void test_mark_end_execution()
 
         pika::parallel::execution::mark_end_execution(test_begin_end{}, test_executor_begin_end{});
 
-        PIKA_TEST_EQ(params_count, std::size_t(0));
-        PIKA_TEST_EQ(exec_count, std::size_t(1));
+        PIKA_TEST_EQ(params_count.load(), std::size_t(0));
+        PIKA_TEST_EQ(exec_count.load(), std::size_t(1));
     }
 }
 

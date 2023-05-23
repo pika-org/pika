@@ -137,7 +137,8 @@ int main()
         }
         catch (cu::cublas_exception const& e)
         {
-            PIKA_TEST_EQ(e.get_cublas_errorcode(), CUBLAS_STATUS_NOT_INITIALIZED);
+            PIKA_TEST_EQ(static_cast<int>(e.get_cublas_errorcode()),
+                static_cast<int>(CUBLAS_STATUS_NOT_INITIALIZED));
         }
         catch (...)
         {

@@ -158,7 +158,7 @@ void test_sender_receiver_then_wait()
     });
     tt::sync_wait(std::move(work2));
 
-    PIKA_TEST_EQ(then_count, std::size_t(2));
+    PIKA_TEST_EQ(then_count.load(), std::size_t(2));
     PIKA_TEST(executed);
 }
 
@@ -176,7 +176,7 @@ void test_sender_receiver_then_sync_wait()
         return 42;
     });
     auto result = tt::sync_wait(std::move(work));
-    PIKA_TEST_EQ(then_count, std::size_t(1));
+    PIKA_TEST_EQ(then_count.load(), std::size_t(1));
     static_assert(
         std::is_same<int, std::decay_t<decltype(result)>>::value, "result should be an int");
     PIKA_TEST_EQ(result, 42);
@@ -206,7 +206,7 @@ void test_sender_receiver_then_arguments()
         return 2 * s.size();
     });
     auto result = tt::sync_wait(std::move(work3));
-    PIKA_TEST_EQ(then_count, std::size_t(3));
+    PIKA_TEST_EQ(then_count.load(), std::size_t(3));
     static_assert(std::is_same<std::size_t, std::decay_t<decltype(result)>>::value,
         "result should be a std::size_t");
     PIKA_TEST_EQ(result, std::size_t(12));
@@ -816,7 +816,7 @@ void test_future_sender()
         tt::sync_wait(sf);
         tt::sync_wait(sf);
         tt::sync_wait(std::move(sf));
-        PIKA_TEST_EQ(calls, std::size_t(1));
+        PIKA_TEST_EQ(calls.load(), std::size_t(1));
 
         bool exception_thrown = false;
         try
@@ -844,7 +844,7 @@ void test_future_sender()
         PIKA_TEST_EQ(tt::sync_wait(sf), 42);
         PIKA_TEST_EQ(tt::sync_wait(sf), 42);
         PIKA_TEST_EQ(tt::sync_wait(std::move(sf)), 42);
-        PIKA_TEST_EQ(calls, std::size_t(1));
+        PIKA_TEST_EQ(calls.load(), std::size_t(1));
 
         bool exception_thrown = false;
         try
@@ -994,8 +994,8 @@ void test_ensure_started_when_all()
         PIKA_TEST_EQ(tt::sync_wait(ex::when_all(succ1, succ2) |
                          ex::then([](int const& x, int const& y) { return x + y; })),
             3);
-        PIKA_TEST_EQ(first_task_calls, std::size_t(1));
-        PIKA_TEST_EQ(successor_task_calls, std::size_t(2));
+        PIKA_TEST_EQ(first_task_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(successor_task_calls.load(), std::size_t(2));
     }
 
     {
@@ -1016,7 +1016,7 @@ void test_ensure_started_when_all()
             std::unique_lock l{mtx};
             cond.wait(l, [&]() { return started; });
         }
-        PIKA_TEST_EQ(first_task_calls, std::size_t(1));
+        PIKA_TEST_EQ(first_task_calls.load(), std::size_t(1));
         auto succ1 = s | ex::then([&](int const& x) {
             ++successor_task_calls;
             return x + 1;
@@ -1028,8 +1028,8 @@ void test_ensure_started_when_all()
         PIKA_TEST_EQ(tt::sync_wait(ex::when_all(succ1, succ2) |
                          ex::then([](int const& x, int const& y) { return x + y; })),
             9);
-        PIKA_TEST_EQ(first_task_calls, std::size_t(1));
-        PIKA_TEST_EQ(successor_task_calls, std::size_t(2));
+        PIKA_TEST_EQ(first_task_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(successor_task_calls.load(), std::size_t(2));
     }
 
     {
@@ -1061,8 +1061,8 @@ void test_ensure_started_when_all()
         PIKA_TEST_EQ(tt::sync_wait(ex::when_all(succ1, succ2) |
                          ex::then([](int const& x, int const& y) { return x + y; })),
             9);
-        PIKA_TEST_EQ(first_task_calls, std::size_t(1));
-        PIKA_TEST_EQ(successor_task_calls, std::size_t(2));
+        PIKA_TEST_EQ(first_task_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(successor_task_calls.load(), std::size_t(2));
     }
 }
 
@@ -1112,8 +1112,8 @@ void test_split_when_all()
         PIKA_TEST_EQ(tt::sync_wait(ex::when_all(succ1, succ2) |
                          ex::then([](int const& x, int const& y) { return x + y; })),
             3);
-        PIKA_TEST_EQ(first_task_calls, std::size_t(1));
-        PIKA_TEST_EQ(successor_task_calls, std::size_t(2));
+        PIKA_TEST_EQ(first_task_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(successor_task_calls.load(), std::size_t(2));
     }
 
     {
@@ -1134,8 +1134,8 @@ void test_split_when_all()
         PIKA_TEST_EQ(tt::sync_wait(ex::when_all(succ1, succ2) |
                          ex::then([](int const& x, int const& y) { return x + y; })),
             9);
-        PIKA_TEST_EQ(first_task_calls, std::size_t(1));
-        PIKA_TEST_EQ(successor_task_calls, std::size_t(2));
+        PIKA_TEST_EQ(first_task_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(successor_task_calls.load(), std::size_t(2));
     }
 
     {
@@ -1156,8 +1156,8 @@ void test_split_when_all()
         PIKA_TEST_EQ(tt::sync_wait(ex::when_all(succ1, succ2) |
                          ex::then([](int const& x, int const& y) { return x + y; })),
             9);
-        PIKA_TEST_EQ(first_task_calls, std::size_t(1));
-        PIKA_TEST_EQ(successor_task_calls, std::size_t(2));
+        PIKA_TEST_EQ(first_task_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(successor_task_calls.load(), std::size_t(2));
     }
 }
 
@@ -1509,7 +1509,7 @@ void test_keep_future_sender()
         tt::sync_wait(sf | ex::keep_future());
         tt::sync_wait(sf | ex::keep_future());
         tt::sync_wait(std::move(sf) | ex::keep_future());
-        PIKA_TEST_EQ(calls, std::size_t(1));
+        PIKA_TEST_EQ(calls.load(), std::size_t(1));
 
         bool exception_thrown = false;
         try
@@ -1534,7 +1534,7 @@ void test_keep_future_sender()
         PIKA_TEST_EQ(tt::sync_wait(sf | ex::keep_future()).get(), 42);
         PIKA_TEST_EQ(tt::sync_wait(sf | ex::keep_future()).get(), 42);
         PIKA_TEST_EQ(tt::sync_wait(std::move(sf) | ex::keep_future()).get(), 42);
-        PIKA_TEST_EQ(calls, std::size_t(1));
+        PIKA_TEST_EQ(calls.load(), std::size_t(1));
 
         bool exception_thrown = false;
         try

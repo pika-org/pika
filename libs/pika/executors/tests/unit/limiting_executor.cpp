@@ -107,7 +107,7 @@ void test_limit()
     // to be exceeded by the number of threads in the worst case.
     std::cout << "Exec 1 had max " << task_1_max << " (allowed = " << max1 << ") from a total of "
               << task_1_total << std::endl;
-    PIKA_TEST_LTE(task_1_max, max1);
+    PIKA_TEST_LTE(task_1_max.load(), max1);
     // if the test fails by a small number, then this would fix it
     // PIKA_TEST_LTE(task_1_max, max1 + pika::get_num_worker_threads());
 }
