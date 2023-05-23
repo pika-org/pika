@@ -107,7 +107,8 @@ namespace pika::execution::experimental {
                 }
             };
 
-            friend constexpr env tag_invoke(pika::execution::experimental::get_env_t, sender const&)
+            friend constexpr env tag_invoke(
+                pika::execution::experimental::get_env_t, sender const&) noexcept
             {
                 return {};
             }

@@ -544,8 +544,8 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                 PIKA_FORWARD(Receiver, receiver), s.f, s.sched, s.sender);
         }
 
-        friend auto tag_invoke(
-            pika::execution::experimental::get_env_t, then_with_cuda_stream_sender_type const& s)
+        friend auto tag_invoke(pika::execution::experimental::get_env_t,
+            then_with_cuda_stream_sender_type const& s) noexcept
         {
             return pika::execution::experimental::get_env(s.sender);
         }
