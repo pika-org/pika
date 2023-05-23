@@ -11,7 +11,7 @@ hwloc_version="2.7.0"
 cuda_version="11.5.0"
 spack_compiler="clang@${clang_version}"
 spack_arch="cray-cnl7-haswell"
-stdexec_version="7a47a4aa411c1ca9adfcb152c28cc3dd7b156b4d"
+stdexec_version="e81dd21338da3b497d0b6c206502b1d3dda394b1"
 
 spack_spec="pika@main arch=${spack_arch} %${spack_compiler} +cuda malloc=system cxxstd=${cxx_std} +stdexec ^boost@${boost_version} ^cuda@${cuda_version} +allow-unsupported-compilers ^hwloc@${hwloc_version} ^stdexec@${stdexec_version}"
 
