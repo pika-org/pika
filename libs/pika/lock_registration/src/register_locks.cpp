@@ -7,6 +7,7 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+#include <pika/debugging/backtrace/backtrace.hpp>
 #include <pika/lock_registration/detail/register_locks.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/type_support/unused.hpp>
@@ -39,7 +40,7 @@ namespace pika::util {
           : ignore_(false)
           , user_data_(data)
 # ifdef PIKA_HAVE_VERIFY_LOCKS_BACKTRACE
-          , backtrace_(pika::detail::trace(trace_depth))
+          , backtrace_(pika::debug::detail::trace(trace_depth))
 # endif
         {
 # ifndef PIKA_HAVE_VERIFY_LOCKS_BACKTRACE

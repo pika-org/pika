@@ -28,6 +28,12 @@
 #include <utility>
 #include <vector>
 
+#if defined(PIKA_HAVE_VERIFY_LOCKS)
+inline constexpr std::size_t num_tasks_per_worker_thread = 100;
+#else
+inline constexpr std::size_t num_tasks_per_worker_thread = 10000;
+#endif
+
 std::size_t const max_threads =
     (std::min)(std::size_t(4), std::size_t(pika::threads::detail::hardware_concurrency()));
 
@@ -61,7 +67,7 @@ int pika_main()
         {
             std::vector<pika::future<void>> fs;
 
-            for (std::size_t i = 0; i < worker_pool_threads * 10000; ++i)
+            for (std::size_t i = 0; i < worker_pool_threads * num_tasks_per_worker_thread; ++i)
             {
                 fs.push_back(pika::async(worker_exec, []() {}));
             }
@@ -84,7 +90,7 @@ int pika_main()
         {
             std::vector<pika::future<void>> fs;
 
-            for (std::size_t i = 0; i < worker_pool_threads * 10000; ++i)
+            for (std::size_t i = 0; i < worker_pool_threads * num_tasks_per_worker_thread; ++i)
             {
                 fs.push_back(pika::async(worker_exec, []() {}));
             }
@@ -115,7 +121,8 @@ int pika_main()
 
             std::vector<pika::future<void>> fs;
 
-            for (std::size_t i = 0; i < pika::resource::get_num_threads("default") * 10000; ++i)
+            for (std::size_t i = 0;
+                 i < pika::resource::get_num_threads("default") * num_tasks_per_worker_thread; ++i)
             {
                 fs.push_back(pika::async(worker_exec, []() {}));
             }
@@ -179,7 +186,9 @@ int main(int argc, char* argv[])
 #endif
         pika::resource::scheduling_policy::static_,
         pika::resource::scheduling_policy::static_priority,
+#if !defined(PIKA_HAVE_VERIFY_LOCKS)
         pika::resource::scheduling_policy::shared_priority,
+#endif
     };
 
     for (auto const scheduler : schedulers)

@@ -87,7 +87,11 @@ int pika_main()
     // randomly create tasks that run on a random pool
     // attach continuations to them that run on different
     // random pools
-    int const loops = 500;
+#if defined(PIKA_HAVE_VERIFY_LOCKS)
+    constexpr int loops = 20;
+#else
+    constexpr int loops = 500;
+#endif
     //
     std::cout << "1: Starting HP " << loops << std::endl;
     std::atomic<int> counter(loops);

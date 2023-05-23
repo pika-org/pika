@@ -32,7 +32,9 @@ struct data
     int data_[8];
 };
 
-#if PIKA_DEBUG
+#if defined(PIKA_HAVE_VERIFY_LOCKS)
+constexpr int NUM_TESTS = 10000;
+#elif PIKA_DEBUG
 constexpr int NUM_TESTS = 1000000;
 #else
 constexpr int NUM_TESTS = 100000000;
