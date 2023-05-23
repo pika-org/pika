@@ -40,6 +40,14 @@ namespace pika::mpi::experimental::detail {
     namespace pud = pika::util::detail;
     namespace exp = execution::experimental;
 
+    enum handler_mode
+    {
+        yield_while = 0,
+        suspend_resume,
+        new_task,
+        continuation,
+    };
+
     // -----------------------------------------------------------------
     // route calls through an impl layer for ADL resolution
     template <typename Sender>
@@ -58,6 +66,7 @@ namespace pika::mpi::experimental::detail {
     {
         using is_sender = void;
         std::decay_t<Sender> sender;
+        handler_mode mode_;
 
         // -----------------------------------------------------------------
         // completion signatures
@@ -77,6 +86,7 @@ namespace pika::mpi::experimental::detail {
         struct operation_state
         {
             std::decay_t<Receiver> receiver;
+            handler_mode handler_mode_;
 
             // -----------------------------------------------------------------
             // The mpi_receiver receives inputs from the previous sender,
@@ -104,8 +114,9 @@ namespace pika::mpi::experimental::detail {
                 friend constexpr void tag_invoke(
                     exp::set_value_t, trigger_mpi_receiver&& r, MPI_Request request) noexcept
                 {
-                    PIKA_DETAIL_DP(
-                        mpi_tran<4>, debug(str<>("trigger_mpi_recv"), "set_value_t", request));
+                    PIKA_DETAIL_DP(mpi_tran<5>,
+                        debug(str<>("trigger_mpi_recv"), "set_value_t", request,
+                            r.op_state.handler_mode_));
 
                     // early exit check
                     if (request == MPI_REQUEST_NULL)
@@ -119,27 +130,41 @@ namespace pika::mpi::experimental::detail {
                         [&]() mutable {
                             // modes 0 uses the task yield_while method of callback
                             // modes 1,2 use the task resume method of callback
-                            auto mode = get_completion_mode();
-                            if (mode == 0)
+                            switch (r.op_state.handler_mode_)
+                            {
+                            case handler_mode::yield_while:
                             {
                                 // we just assume the status is always MPI_SUCCESS
                                 pika::util::yield_while(
                                     [request]() { return !detail::poll_request(request); });
                                 set_value_error_helper(
                                     MPI_SUCCESS, PIKA_MOVE(r.op_state.receiver), MPI_SUCCESS);
+                                break;
                             }
-                            else if (mode < 3)
+                            case handler_mode::new_task:
                             {
                                 r.op_state.result = MPI_SUCCESS;
                                 detail::schedule_task_callback(
                                     request, PIKA_MOVE(r.op_state.receiver));
+                                break;
                             }
-                            else
+                            case handler_mode::continuation:
                             {
                                 // forward value to receiver
                                 r.op_state.result = MPI_SUCCESS;
                                 detail::set_value_request_callback_non_void<int>(
                                     request, r.op_state);
+                                break;
+                            }
+                            case handler_mode::suspend_resume:
+                            {
+                                throw std::runtime_error("eek!");
+                            }
+                            default:
+                            {
+                                throw std::runtime_error("eek more!");
+                                break;
+                            }
                             }
                         },
                         [&](std::exception_ptr ep) {
@@ -183,8 +208,9 @@ namespace pika::mpi::experimental::detail {
             result_type result;
 
             template <typename Receiver_, typename Sender_>
-            operation_state(Receiver_&& receiver, Sender_&& sender)
+            operation_state(Receiver_&& receiver, Sender_&& sender, handler_mode mode)
               : receiver(PIKA_FORWARD(Receiver_, receiver))
+              , handler_mode_{mode}
               , op_state(exp::connect(PIKA_FORWARD(Sender_, sender), trigger_mpi_receiver{*this}))
             {
             }
@@ -206,7 +232,8 @@ namespace pika::mpi::experimental::detail {
         friend constexpr auto
         tag_invoke(exp::connect_t, trigger_mpi_sender_type&& s, Receiver&& receiver)
         {
-            return operation_state<Receiver>(PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.sender));
+            return operation_state<Receiver>(
+                PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.sender), s.mode_);
         }
     };
 
@@ -221,18 +248,19 @@ namespace pika::mpi::experimental {
     {
     private:
         template <typename Sender, PIKA_CONCEPT_REQUIRES_(exp::is_sender_v<std::decay_t<Sender>>)>
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(trigger_mpi_t, Sender&& sender)
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(trigger_mpi_t, Sender&& sender, detail::handler_mode mode)
         {
-            auto snd1 = detail::trigger_mpi_sender<Sender>{PIKA_FORWARD(Sender, sender)};
-            return exp::make_unique_any_sender(PIKA_MOVE(snd1));
+            return detail::trigger_mpi_sender<Sender>{PIKA_FORWARD(Sender, sender), mode};
         }
 
         //
         // tag invoke overload for mpi_trigger
         //
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(trigger_mpi_t)
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
+            trigger_mpi_t, detail::handler_mode mode)
         {
-            return exp::detail::partial_algorithm<trigger_mpi_t>{};
+            return exp::detail::partial_algorithm<trigger_mpi_t, detail::handler_mode>{mode};
         }
 
     } trigger_mpi{};
