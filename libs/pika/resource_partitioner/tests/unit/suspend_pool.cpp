@@ -186,7 +186,9 @@ int main(int argc, char* argv[])
 #endif
         pika::resource::scheduling_policy::static_,
         pika::resource::scheduling_policy::static_priority,
+#if !defined(PIKA_HAVE_VERIFY_LOCKS)
         pika::resource::scheduling_policy::shared_priority,
+#endif
     };
 
     for (auto const scheduler : schedulers)
