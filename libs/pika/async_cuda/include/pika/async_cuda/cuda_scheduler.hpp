@@ -150,7 +150,7 @@ namespace pika::cuda::experimental {
             };
 
             friend env tag_invoke(
-                pika::execution::experimental::get_env_t, cuda_scheduler_sender const& s)
+                pika::execution::experimental::get_env_t, cuda_scheduler_sender const& s) noexcept
             {
                 return {s.scheduler};
             }

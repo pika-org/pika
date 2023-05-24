@@ -91,7 +91,7 @@ namespace pika::schedule_from_detail {
         };
 
         friend auto tag_invoke(
-            pika::execution::experimental::get_env_t, schedule_from_sender_type const& s)
+            pika::execution::experimental::get_env_t, schedule_from_sender_type const& s) noexcept
         {
             auto e = pika::execution::experimental::get_env(s.predecessor_sender);
             return env<std::decay_t<decltype(e)>>{std::move(e), s.scheduler};

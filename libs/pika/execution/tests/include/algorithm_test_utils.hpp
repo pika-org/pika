@@ -479,7 +479,7 @@ struct scheduler
             }
         };
 
-        friend env tag_invoke(pika::execution::experimental::get_env_t, sender const& s)
+        friend env tag_invoke(pika::execution::experimental::get_env_t, sender const& s) noexcept
         {
             return {s.schedule_called, s.execute_called, s.tag_invoke_overload_called};
         }
@@ -564,7 +564,7 @@ struct scheduler2
             }
         };
 
-        friend env tag_invoke(pika::execution::experimental::get_env_t, sender const& s)
+        friend env tag_invoke(pika::execution::experimental::get_env_t, sender const& s) noexcept
         {
             return {s.schedule_called, s.execute_called, s.tag_invoke_overload_called};
         }
@@ -673,7 +673,7 @@ namespace my_namespace {
                 }
             };
 
-            friend env tag_invoke(pika::execution::experimental::get_env_t, sender const&)
+            friend env tag_invoke(pika::execution::experimental::get_env_t, sender const&) noexcept
             {
                 return {};
             }

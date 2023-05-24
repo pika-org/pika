@@ -206,7 +206,7 @@ struct sender_with_completion_scheduler : void_sender
         }
     };
 
-    friend env tag_invoke(ex::get_env_t, sender_with_completion_scheduler const& s)
+    friend env tag_invoke(ex::get_env_t, sender_with_completion_scheduler const& s) noexcept
     {
         return {s.sched};
     }
