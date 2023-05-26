@@ -21,7 +21,6 @@ namespace pika {
         unknown = -1,
         main_thread = 0,    ///< kernel thread represents main thread
         worker_thread,      ///< kernel thread is used to schedule pika threads
-        io_thread,          ///< kernel thread can be used for IO operations
         timer_thread,       ///< kernel is used by timer operations
         custom_thread       ///< kernel is registered by the application
     };
