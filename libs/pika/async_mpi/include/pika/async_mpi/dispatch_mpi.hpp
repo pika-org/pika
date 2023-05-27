@@ -22,8 +22,6 @@
 #include <pika/execution_base/any_sender.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
-#include <pika/executors/inline_scheduler.hpp>
-#include <pika/executors/limiting_scheduler.hpp>
 #include <pika/executors/thread_pool_scheduler.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/functional/invoke.hpp>

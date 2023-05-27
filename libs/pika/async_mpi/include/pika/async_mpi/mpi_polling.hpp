@@ -13,6 +13,7 @@
 #include <pika/modules/concurrency.hpp>
 #include <pika/modules/execution_base.hpp>
 #include <pika/modules/memory.hpp>
+#include <pika/modules/resource_partitioner.hpp>
 #include <pika/modules/threading_base.hpp>
 #include <pika/mpi_base/mpi.hpp>
 #include <pika/runtime/thread_pool_helpers.hpp>
@@ -30,10 +31,17 @@
 
 namespace pika::mpi::experimental {
 
-    enum progress_mode
+    //    enum progress_mode
+    //    {
+    //        can_block,
+    //        cannot_block
+    //    };
+
+    enum pool_create_mode
     {
-        can_block,
-        cannot_block
+        pika_decides = 0,
+        force_create,
+        force_no_create,
     };
 
     enum class stream_type : std::uint32_t
@@ -58,6 +66,8 @@ namespace pika::mpi::experimental {
         PIKA_EXPORT bool add_request_callback(request_callback_function_type&&, MPI_Request);
         PIKA_EXPORT void register_polling(pika::threads::detail::thread_pool_base&);
         PIKA_EXPORT void unregister_polling(pika::threads::detail::thread_pool_base&);
+
+        PIKA_EXPORT std::size_t get_completion_mode_default();
 
         // -----------------------------------------------------------------
         // an MPI error handling type that we can use to intercept
@@ -133,6 +143,9 @@ namespace pika::mpi::experimental {
     /// mode 3 - the continuation is wrapped into a task but run inline on
     /// whichever pool is doing the polling, bypassing queues altogether
     PIKA_EXPORT std::size_t get_completion_mode();
+
+    PIKA_EXPORT bool setup_pool(
+        pika::resource::partitioner&, pool_create_mode mode = pool_create_mode::pika_decides);
 
     PIKA_EXPORT const std::string& get_pool_name();
     PIKA_EXPORT void set_pool_name(const std::string&);

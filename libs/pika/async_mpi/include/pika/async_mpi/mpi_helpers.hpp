@@ -17,12 +17,14 @@
 #include <pika/debugging/print.hpp>
 #include <pika/execution/algorithms/detail/helpers.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
+#include <pika/execution/algorithms/drop_value.hpp>
+#include <pika/execution/algorithms/just.hpp>
+#include <pika/execution/algorithms/schedule_from.hpp>
+#include <pika/execution/algorithms/then.hpp>
 #include <pika/execution/algorithms/transfer.hpp>
 #include <pika/execution_base/any_sender.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
-#include <pika/executors/inline_scheduler.hpp>
-#include <pika/executors/limiting_scheduler.hpp>
 #include <pika/executors/thread_pool_scheduler.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/functional/invoke.hpp>
@@ -88,8 +90,7 @@ namespace pika::mpi::experimental::detail {
 
     // -----------------------------------------------------------------
     // return a scheduler on the default pool with added priority if requested
-    inline auto default_pool_scheduler(
-        execution::thread_priority p = execution::thread_priority::normal)
+    inline auto default_pool_scheduler(execution::thread_priority p)
     {
         if (p == execution::thread_priority::normal)
         {
@@ -156,15 +157,13 @@ namespace pika::mpi::experimental::detail {
     template <typename OperationState>
     void resume_request_callback(MPI_Request request, OperationState& op_state)
     {
+        op_state.completed = false;
         detail::add_request_callback(
             [&op_state](int status) mutable {
                 using namespace pika::debug::detail;
                 PIKA_DETAIL_DP(mpi_tran<5>,
                     debug(str<>("callback_void_suspend_resume"), "stream",
                         detail::stream_name(op_state.stream)));
-                op_state.ts = {};
-                op_state.status = status;
-
                 // wake up the suspended thread
                 {
                     std::lock_guard lk(op_state.mutex_);

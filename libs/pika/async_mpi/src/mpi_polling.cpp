@@ -12,7 +12,6 @@
 #include <pika/concurrency/spinlock.hpp>
 #include <pika/datastructures/detail/small_vector.hpp>
 #include <pika/debugging/print.hpp>
-#include <pika/executors/limiting_scheduler.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/threading_base.hpp>
 #include <pika/mpi_base/mpi_environment.hpp>
@@ -59,7 +58,7 @@ namespace pika::mpi::experimental {
         /// thread trying to send more data
         void init_throttling_default();
         std::size_t get_polling_default();
-        std::size_t get_completion_mode_default();
+        //std::size_t get_completion_mode_default();
 
         // -----------------------------------------------------------------
         /// Holds an MPI_Request and a callback. The callback is intended to be
@@ -319,7 +318,8 @@ namespace pika::mpi::experimental {
         std::size_t get_completion_mode_default()
         {
             // inline continuations are default
-            return pika::get_env_value("PIKA_MPI_COMPLETION_MODE", 1);
+            task_completion_mode_ = pika::get_env_value("PIKA_MPI_COMPLETION_MODE", 1);
+            return task_completion_mode_;
         }
 
         // -----------------------------------------------------------------
@@ -696,6 +696,48 @@ namespace pika::mpi::experimental {
     std::size_t get_completion_mode()
     {
         return detail::task_completion_mode_;
+    }
+
+    // -----------------------------------------------------------------
+    bool setup_pool(pika::resource::partitioner& rp, pool_create_mode mode)
+    {
+        int mode_flags = detail::get_completion_mode_default();
+        if (mode == pool_create_mode::force_create)
+            mode_flags |= 1;
+        else if (mode == pool_create_mode::force_no_create)
+            mode_flags &= ~1;
+        else if (mode == pool_create_mode::pika_decides)
+        {
+            // if we have a single rank - disable pool
+            MPI_Comm_size(MPI_COMM_WORLD, &detail::mpi_data_.size_);
+            if (detail::mpi_data_.size_ == 1)
+            {
+                mode_flags &= ~1;
+            }
+        }
+        using namespace pika::debug::detail;
+        PIKA_DETAIL_DP(detail::mpi_debug<6>, debug(str<>("completion mode"), bin<8>(mode_flags)));
+        // override the variable used to control completion mode and pool flags
+        setenv("PIKA_MPI_COMPLETION_MODE", std::to_string(mode_flags).c_str(), true);
+        // and override the main flag
+        detail::task_completion_mode_ = mode_flags;
+
+        // if pool is now disabled, just exit
+        if ((mode_flags & 1) == 0)
+            return false;
+
+        // Disable idle backoff on the MPI pool
+        using pika::threads::scheduler_mode;
+        auto smode = scheduler_mode::default_mode;
+        smode = scheduler_mode(smode & ~scheduler_mode::enable_idle_backoff);
+
+        // Create a thread pool with a single core that we will use for all
+        // communication related tasks
+        rp.create_thread_pool(
+            get_pool_name(), pika::resource::scheduling_policy::local_priority_fifo, smode);
+        rp.add_resource(rp.numa_domains()[0].cores()[0].pus()[0], get_pool_name());
+        PIKA_DETAIL_DP(detail::mpi_debug<6>, debug(str<>("pool created"), bin<8>(mode_flags)));
+        return true;
     }
 
     // -----------------------------------------------------------------

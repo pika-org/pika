@@ -35,6 +35,7 @@ pika_add_module(
     pika_execution_base
     pika_executors
     pika_memory
+    pika_resource_partitioner
     pika_threading_base
     pika_mpi_base
     pika_runtime

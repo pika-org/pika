@@ -5,6 +5,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/assert.hpp>
+#include <pika/command_line_handling/get_env_var.hpp>
 #include <pika/debugging/print.hpp>
 #include <pika/execution.hpp>
 #include <pika/future.hpp>
@@ -232,7 +233,7 @@ struct message_receiver
     {
     }
 
-    void operator()(int /*res*/)
+    void operator()(/*int res*/)
     {
         PIKA_ASSERT(tag == buf->header_.tag);
 
@@ -282,8 +283,8 @@ struct message_receiver
                 // the recursive lambda will handle it
                 auto rx_snd2 = ex::just(&*buf, message_size, MPI_UNSIGNED_CHAR,
                                    prev_rank(rank, size), tag, MPI_COMM_WORLD) |
-                    mpi::transform_mpi(
-                        MPI_Irecv, mpi::progress_mode::cannot_block, mpi::stream_type::receive_2) |
+                    mpi::transform_mpi(MPI_Irecv,
+                        /*mpi::progress_mode::cannot_block, */ mpi::stream_type::receive_2) |
                     ex::then(std::move(reclambda));
                 // launch the receive for the msg on the next round
                 msr_deb<6>.debug(
@@ -301,8 +302,8 @@ struct message_receiver
             auto tx_snd2 = ex::just(&*buf2, message_size, MPI_UNSIGNED_CHAR, next_rank(rank, size),
                                tag, MPI_COMM_WORLD) |
                 mpi::transform_mpi(
-                    MPI_Isend, mpi::progress_mode::cannot_block, mpi::stream_type::send_2) |
-                ex::then([buf2 = buf2, rank = rank, size = size](int /*result*/) {
+                    MPI_Isend, /*mpi::progress_mode::cannot_block, */ mpi::stream_type::send_2) |
+                ex::then([buf2 = buf2, rank = rank, size = size](/*int result*/) {
                     counter--;
                     msg_info(rank, size, msg_type::send, buf2->header_, "forwarded");
                     release_msg_buffer(buf2);
@@ -405,8 +406,8 @@ int pika_main(pika::program_options::variables_map& vm)
                 // create chain of senders to make the mpi recv and handle it
                 auto rx_snd1 = ex::just(&*rbuf, message_size, MPI_UNSIGNED_CHAR,
                                    prev_rank(rank, size), tag, MPI_COMM_WORLD) |
-                    mpi::transform_mpi(
-                        MPI_Irecv, mpi::progress_mode::cannot_block, mpi::stream_type::receive_1) |
+                    mpi::transform_mpi(MPI_Irecv,
+                        /*mpi::progress_mode::cannot_block, */ mpi::stream_type::receive_1) |
                     ex::then(std::move(reclambda));
                 msr_deb<6>.debug(str<>("start_detached"), "rx_snd1", i, orank);
                 ex::start_detached(std::move(rx_snd1));
@@ -419,8 +420,8 @@ int pika_main(pika::program_options::variables_map& vm)
             auto send_snd = ex::just(&*sbuf, message_size, MPI_UNSIGNED_CHAR, next_rank(rank, size),
                                 tag, MPI_COMM_WORLD) |
                 mpi::transform_mpi(
-                    MPI_Isend, mpi::progress_mode::cannot_block, mpi::stream_type::send_1) |
-                ex::then([rank, size, sbuf](int /*res*/) {
+                    MPI_Isend, /*mpi::progress_mode::cannot_block, */ mpi::stream_type::send_1) |
+                ex::then([rank, size, sbuf](/*int res*/) {
                     counter--;
                     msg_info(rank, size, msg_type::send, sbuf->header_, "sent");
                     release_msg_buffer(sbuf);
@@ -478,15 +479,22 @@ void init_resource_partitioner_handler(
     pika::resource::partitioner& rp, pika::program_options::variables_map const& vm)
 {
     // Don't create the MPI pool if the user disabled it
-    if (vm["no-mpi-pool"].as<bool>())
-    {
-        return;
-    }
-
     // Don't create the MPI pool if there is a single process
     int ntasks;
     MPI_Comm_size(MPI_COMM_WORLD, &ntasks);
-    if (ntasks == 1)
+    if (vm["no-mpi-pool"].as<bool>() || ntasks == 1)
+    {
+        // turn off pool creation
+        int mode = pika::get_env_value("PIKA_MPI_COMPLETION_MODE", 1);
+        mode = mode & ~(0b01 << 2);
+        setenv("PIKA_MPI_COMPLETION_MODE", std::to_string(mode).c_str(), true);
+        pika::mpi::experimental::detail::get_completion_mode_default();
+        return;
+    }
+
+    static uint32_t mpi_completion_mode = mpi::get_completion_mode();
+    bool create_pool = pika::mpi::experimental::detail::use_pool(mpi_completion_mode);
+    if (!create_pool)
     {
         return;
     }
