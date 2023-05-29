@@ -383,7 +383,7 @@ namespace pika::mpi::experimental {
     private:
         template <typename Sender, typename F,
             PIKA_CONCEPT_REQUIRES_(exp::is_sender_v<std::decay_t<Sender>>)>
-        friend constexpr PIKA_FORCEINLINE exp::unique_any_sender<>
+        friend constexpr PIKA_FORCEINLINE /*exp::unique_any_sender<>*/ auto
         tag_fallback_invoke(transform_mpi_t, Sender&& sender, F&& f,
             /*progress_mode p, */ stream_type s = stream_type::automatic)
         {
@@ -471,7 +471,8 @@ namespace pika::mpi::experimental {
                                             trigger_mpi(mode) | drop_value();
                                 }
                             });
-                    return snd1;
+                    return make_unique_any_sender(std::move(snd1));
+                    //return snd1;
                 }
                 else
                 {
@@ -497,7 +498,8 @@ namespace pika::mpi::experimental {
                                         drop_value();
                             }
                         });
-                    return snd1;
+                    return make_unique_any_sender(std::move(snd1));
+                    //return snd1;
                 }
             }
         }
