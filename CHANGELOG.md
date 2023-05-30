@@ -4,6 +4,22 @@
 <!--- Distributed under the Boost Software License, Version 1.0. (See accompanying -->
 <!--- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 
+## 0.16.0 (2023-05-31)
+
+### New features
+
+- pika can now be compiled with CUDA 12 and C++20 when `PIKA_WITH_STDEXEC` is disabled. ([#684](https://github.com/pika-org/pika/pull/684))
+- `pika::barrier` can now optionally do a timed blocking wait. The default behaviour is unchanged. ([#685](https://github.com/pika-org/pika/pull/685))
+
+### Breaking changes
+
+- `pika::spinlock` has been removed and replaced with a private implementation. ([#672](https://github.com/pika-org/pika/pull/672))
+
+### Bugfixes
+
+- Compilation with the CMake option `PIKA_WITH_VERIFY_LOCKS_BACKTRACE` has been fixed. ([#680](https://github.com/pika-org/pika/pull/680))
+- Compilation with fmt 10 and CUDA/HIP has been fixed. ([#691](https://github.com/pika-org/pika/pull/691))
+
 ## 0.15.1 (2023-05-12)
 
 ### Bugfixes
