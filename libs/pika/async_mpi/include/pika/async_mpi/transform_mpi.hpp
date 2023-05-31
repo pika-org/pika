@@ -360,9 +360,18 @@ namespace pika::mpi::experimental {
 
             bool inline_com = use_inline_com(mode);
             bool inline_req = use_inline_req(mode);
+
             // ----------------------------------------------------------
             // the pool should exist if the completion mode needs it
-            PIKA_ASSERT(pool_exists() == use_pool(mode));
+            int cwsize = detail::comm_world_size();
+            bool need_pool = (cwsize > 1 && use_pool(mode));
+
+            if (pool_exists() != need_pool)
+            {
+                std::cerr << "mode " << mode << " pool_exists() " << pool_exists() << " need_pool "
+                          << need_pool << std::endl;
+            }
+            PIKA_ASSERT(pool_exists() == need_pool);
 
             // ----------------------------------------------------------
             // DLAF default : use yield_while

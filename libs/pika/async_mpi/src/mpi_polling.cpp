@@ -613,7 +613,12 @@ namespace pika::mpi::experimental {
 #if defined(PIKA_DEBUG)
             ++get_register_polling_count();
 #endif
-            PIKA_DETAIL_DP(mpi_debug<5>, debug(str<>("enable polling")));
+            if (detail::mpi_data_.rank_ == 0)
+            {
+                PIKA_DETAIL_DP(detail::mpi_debug<0>,
+                    debug(str<>("register_polling"), pool.get_pool_name(), "mode",
+                        mpi::experimental::get_completion_mode()));
+            }
             auto* sched = pool.get_scheduler();
             sched->set_mpi_polling_functions(
                 &pika::mpi::experimental::detail::poll, &get_work_count);
@@ -642,6 +647,12 @@ namespace pika::mpi::experimental {
             auto* sched = pool.get_scheduler();
             sched->clear_mpi_polling_function();
         }
+
+        int comm_world_size()
+        {
+            return detail::mpi_data_.size_;
+        }
+
     }    // namespace detail
 
     // -------------------------------------------------------------
@@ -736,7 +747,10 @@ namespace pika::mpi::experimental {
         rp.create_thread_pool(
             get_pool_name(), pika::resource::scheduling_policy::local_priority_fifo, smode);
         rp.add_resource(rp.numa_domains()[0].cores()[0].pus()[0], get_pool_name());
-        PIKA_DETAIL_DP(detail::mpi_debug<6>, debug(str<>("pool created"), bin<8>(mode_flags)));
+        if (detail::mpi_data_.rank_ == 0)
+        {
+            PIKA_DETAIL_DP(detail::mpi_debug<0>, debug(str<>("pool created"), bin<8>(mode_flags)));
+        }
         return true;
     }
 
@@ -823,9 +837,6 @@ namespace pika::mpi::experimental {
             if (pika::mpi::experimental::detail::get_handler_mode(mode) !=
                 detail::handler_mode::yield_while)
             {
-                PIKA_DETAIL_DP(detail::mpi_debug<0>,
-                    debug(str<>("register_polling"), name, "mode",
-                        mpi::experimental::get_completion_mode()));
                 detail::register_polling(pika::resource::get_thread_pool(name));
             }
             detail::pool_exists_ = (name != resource::get_pool_name(0));
@@ -839,9 +850,6 @@ namespace pika::mpi::experimental {
             auto mode = mpi::experimental::get_completion_mode();
             if (detail::get_handler_mode(mode) != detail::handler_mode::yield_while)
             {
-                PIKA_DETAIL_DP(detail::mpi_debug<0>,
-                    debug(str<>("register_polling"), pool_name, "mode",
-                        mpi::experimental::get_completion_mode()));
                 detail::register_polling(pika::resource::get_thread_pool(pool_name));
             }
             detail::pool_exists_ = (pool_name != resource::get_pool_name(0));

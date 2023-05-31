@@ -111,6 +111,9 @@ namespace pika::mpi::experimental {
             return static_cast<handler_mode>((mode & 0b11 << 4) >> 4);
         }
 
+        // needed by static checks when debugging
+        PIKA_EXPORT int comm_world_size();
+
     }    // namespace detail
 
     // -----------------------------------------------------------------
