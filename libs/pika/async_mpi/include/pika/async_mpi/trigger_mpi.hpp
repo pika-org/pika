@@ -38,19 +38,6 @@ namespace pika::mpi::experimental::detail {
     namespace pud = pika::util::detail;
     namespace exp = execution::experimental;
 
-    enum handler_mode
-    {
-        yield_while = 0,
-        suspend_resume = 1,
-        new_task = 2,
-        continuation = 3,
-    };
-
-    // 0x30 : 2 bits define continuation mode
-    inline handler_mode get_handler_mode(int mode)
-    {
-        return static_cast<handler_mode>((mode & 0b11 << 4) >> 4);
-    }
     // 0x08: 1 bit defines pool or no pool
     inline bool use_HP_com(int mode)
     {

@@ -820,7 +820,8 @@ namespace pika::mpi::experimental {
             // override mpi pool name with whatever we decided on
             set_pool_name(name);
             auto mode = mpi::experimental::get_completion_mode();
-            if (mode > 0 && mode < 100)
+            if (pika::mpi::experimental::detail::get_handler_mode(mode) !=
+                detail::handler_mode::yield_while)
             {
                 PIKA_DETAIL_DP(detail::mpi_debug<0>,
                     debug(str<>("register_polling"), name, "mode",
@@ -836,7 +837,7 @@ namespace pika::mpi::experimental {
             detail::pool_exists_ = true;
             set_pool_name(pool_name);
             auto mode = mpi::experimental::get_completion_mode();
-            if (mode > 0 && mode < 100)
+            if (detail::get_handler_mode(mode) != detail::handler_mode::yield_while)
             {
                 PIKA_DETAIL_DP(detail::mpi_debug<0>,
                     debug(str<>("register_polling"), pool_name, "mode",

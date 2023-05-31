@@ -96,6 +96,21 @@ namespace pika::mpi::experimental {
         PIKA_EXPORT std::shared_ptr<semaphore_type> get_semaphore(stream_type s);
 
         inline constexpr bool throttling_enabled = false;
+
+        enum handler_mode
+        {
+            yield_while = 0,
+            suspend_resume = 1,
+            new_task = 2,
+            continuation = 3,
+        };
+
+        // 0x30 : 2 bits define continuation mode
+        inline handler_mode get_handler_mode(int mode)
+        {
+            return static_cast<handler_mode>((mode & 0b11 << 4) >> 4);
+        }
+
     }    // namespace detail
 
     // -----------------------------------------------------------------

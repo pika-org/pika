@@ -160,7 +160,7 @@ namespace pika::mpi::experimental::detail {
                             // modes 0 uses the task yield_while method of callback
                             // modes 1,2 use the task resume method of callback
                             auto mode = get_completion_mode();
-                            if (mode == 100 || mode < 3)
+                            if (detail::get_handler_mode(mode) == detail::handler_mode::yield_while)
                             {
                                 pud::invoke_fused(
                                     [&](auto&... ts) mutable {
@@ -183,26 +183,9 @@ namespace pika::mpi::experimental::detail {
                                     },
                                     t);
                                 //
-                                if (mode == 100 || mode == 0)
-                                {
-                                    pika::util::yield_while(
-                                        [&request]() { return !detail::poll_request(request); });
-                                }
-                                else
-                                {
-                                    // don't suspend if request completed already
-                                    if (!detail::poll_request(request))
-                                    {
-                                        // suspend is invalid except on a pika thread
-                                        PIKA_ASSERT(pika::threads::detail::get_self_id());
-                                        threads::detail::thread_data::scoped_thread_priority
-                                            set_restore(execution::thread_priority::high);
-                                        std::unique_lock l{r.op_state.mutex_};
-                                        resume_request_callback(request, r.op_state);
-                                        r.op_state.cond_var_.wait(
-                                            l, [&]() { return r.op_state.completed; });
-                                    }
-                                }
+                                pika::util::yield_while(
+                                    [&request]() { return !detail::poll_request(request); });
+
                                 r.op_state.ts = {};
                                 r.op_state.status = MPI_SUCCESS;
                                 if constexpr (!std::is_void_v<invoke_result_type>)
@@ -217,41 +200,9 @@ namespace pika::mpi::experimental::detail {
                                         r.op_state.status, PIKA_MOVE(r.op_state.receiver));
                                 }
                             }
-                            // modes 3,4,5,6,7,8 ....
                             else
                             {
-                                PIKA_DETAIL_DP(mpi_tran<5>,
-                                    debug(str<>("mpi invoke"), dec<2>(mode),
-                                        print_type<invoke_result_type>()));
-                                if constexpr (std::is_void_v<invoke_result_type>)
-                                {
-                                    pud::invoke_fused(
-                                        [&](auto&... ts) mutable {
-                                            PIKA_INVOKE(PIKA_MOVE(r.op_state.f), ts..., &request);
-                                            PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
-                                                "MPI_REQUEST_NULL returned from mpi "
-                                                "invocation");
-                                            // return type void, no value to forward to receiver
-                                            set_value_request_callback_void(request, r.op_state);
-                                        },
-                                        t);
-                                }
-                                else
-                                {
-                                    pud::invoke_fused(
-                                        [&](auto&... ts) mutable {
-                                            r.op_state.result.template emplace<invoke_result_type>(
-                                                PIKA_INVOKE(
-                                                    PIKA_MOVE(r.op_state.f), ts..., &request));
-                                            PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
-                                                "MPI_REQUEST_NULL returned from mpi "
-                                                "invocation");
-                                            // forward value to receiver
-                                            detail::set_value_request_callback_non_void<
-                                                invoke_result_type>(request, r.op_state);
-                                        },
-                                        t);
-                                }
+                                throw std::runtime_error("Wrong sender used in mpi invocation");
                             }
                         },
                         [&](std::exception_ptr ep) {
@@ -404,41 +355,24 @@ namespace pika::mpi::experimental {
             using exp::with_stacksize;
             exp::unique_any_sender<> result;
 
-            // does a custom mpi pool exist?
-            auto mpi_exist = pool_exists();
-
             // get the mpi completion mode
             auto mode = get_completion_mode();
 
-            bool HP_com = use_HP_com(mode);
             bool inline_com = use_inline_com(mode);
             bool inline_req = use_inline_req(mode);
-            bool mpi_pool = use_pool(mode);
-
             // ----------------------------------------------------------
             // the pool should exist if the completion mode needs it
-            std::cout << "mpi_exist " << mpi_exist << " mpi_pool " << mpi_pool << std::endl;
-            PIKA_ASSERT(mpi_exist == mpi_pool);
+            PIKA_ASSERT(pool_exists() == use_pool(mode));
 
             // ----------------------------------------------------------
-            // DLAF default : use yield_while (transfer to mpi pool if cannot_block)
-            if (mode == 100)
+            // DLAF default : use yield_while
+            if (mode >= 64)
             {
-                //
-                //                if (p == progress_mode::can_block)
-                //                {
-                //                    auto snd1 = transform_mpi_sender<Sender, F>{
-                //                        PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), s};
-                //                    result = make_unique_any_sender(std::move(snd1));
-                //                }
-                //                else
-                {
-                    auto snd0 = PIKA_FORWARD(Sender, sender) | transfer(mpi_pool_scheduler());
-                    auto snd1 = transform_mpi_sender<decltype(snd0), F>{PIKA_MOVE(snd0),
-                                    PIKA_FORWARD(F, f), s} |
-                        drop_value();
-                    return make_unique_any_sender(std::move(snd1));
-                }
+                auto snd0 = PIKA_FORWARD(Sender, sender) | transfer(mpi_pool_scheduler());
+                auto snd1 = transform_mpi_sender<decltype(snd0), F>{PIKA_MOVE(snd0),
+                                PIKA_FORWARD(F, f), s} |
+                    drop_value();
+                return make_unique_any_sender(std::move(snd1));
             }
             // ----------------------------------------------------------
             else
