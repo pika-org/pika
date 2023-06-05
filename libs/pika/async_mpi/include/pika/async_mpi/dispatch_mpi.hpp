@@ -146,7 +146,7 @@ namespace pika::mpi::experimental::detail {
                                     }
                                     PIKA_DETAIL_DP(mpi_tran<7>,
                                         debug(str<>("dispatch_mpi_recv"), "invoke mpi",
-                                            detail::stream_name(r.op_state.stream_), request));
+                                            detail::stream_name(r.op_state.stream_), ptr(request)));
 
                                     PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
                                         "MPI_REQUEST_NULL returned from mpi invocation");
@@ -158,7 +158,7 @@ namespace pika::mpi::experimental::detail {
                             {
                                 PIKA_DETAIL_DP(mpi_tran<7>,
                                     debug(str<>("dispatch_mpi_recv"), "eager poll ok",
-                                        detail::stream_name(r.op_state.stream_), request));
+                                        detail::stream_name(r.op_state.stream_), ptr(request)));
                                 // calls set_value(request), or set_error(mpi_exception(status))
                                 set_value_error_helper(
                                     status, PIKA_MOVE(r.op_state.receiver), MPI_REQUEST_NULL);

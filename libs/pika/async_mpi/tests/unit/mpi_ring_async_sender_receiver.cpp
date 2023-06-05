@@ -331,7 +331,7 @@ int call_mpi_irecv(void* buf, int count, MPI_Datatype datatype, int source, int 
 int pika_main(pika::program_options::variables_map& vm)
 {
     // setup polling on default pool, enable exceptions and init mpi internals
-    mpi::init(false, mpi::get_pool_name(), true);
+    mpi::init(false, true);
     //
     std::int32_t rank, size;
     //
@@ -491,25 +491,8 @@ void init_resource_partitioner_handler(
         pika::mpi::experimental::detail::get_completion_mode_default();
         return;
     }
-
-    static uint32_t mpi_completion_mode = mpi::get_completion_mode();
-    bool create_pool = pika::mpi::experimental::detail::use_pool(mpi_completion_mode);
-    if (!create_pool)
-    {
-        return;
-    }
-
-    // Disable idle backoff on the MPI pool
-    using pika::threads::scheduler_mode;
-    auto mode = scheduler_mode::default_mode;
-    mode = scheduler_mode(mode & ~scheduler_mode::enable_idle_backoff);
-
-    // Create a thread pool with a single core that we will use for all
-    // communication related tasks
-    rp.create_thread_pool(
-        mpi::get_pool_name(), pika::resource::scheduling_policy::unspecified, mode);
-
-    rp.add_resource(rp.numa_domains()[0].cores()[0].pus()[0], mpi::get_pool_name());
+    //
+    mpi::create_pool(rp, "", mpi::pool_create_mode::pika_decides);
 }
 
 //----------------------------------------------------------------------------

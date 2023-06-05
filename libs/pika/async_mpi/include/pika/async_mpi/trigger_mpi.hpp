@@ -128,10 +128,6 @@ namespace pika::mpi::experimental::detail {
                 friend constexpr void tag_invoke(
                     exp::set_value_t, trigger_mpi_receiver&& r, MPI_Request request) noexcept
                 {
-                    PIKA_DETAIL_DP(mpi_tran<5>,
-                        debug(str<>("trigger_mpi_recv"), "set_value_t", request,
-                            r.op_state.handler_mode_));
-
                     // early exit check
                     if (request == MPI_REQUEST_NULL)
                     {
@@ -141,6 +137,11 @@ namespace pika::mpi::experimental::detail {
                     }
 
                     handler_mode mode = get_handler_mode(r.op_state.mode_flags_);
+
+                    PIKA_DETAIL_DP(mpi_tran<5>,
+                        debug(str<>("trigger_mpi_recv"), "set_value_t", "req", request, "flags",
+                            bin<8>(r.op_state.mode_flags_), mode_string(r.op_state.mode_flags_)));
+
                     pika::detail::try_catch_exception_ptr(
                         [&]() mutable {
                             // modes 0 uses the task yield_while method of callback
@@ -150,7 +151,7 @@ namespace pika::mpi::experimental::detail {
                             case handler_mode::yield_while:
                             {
                                 pika::util::yield_while(
-                                    [request]() { return !detail::poll_request(request); });
+                                    [&request]() { return !detail::poll_request(request); });
                                 // we just assume the status is always MPI_SUCCESS
                                 set_value_error_helper(
                                     MPI_SUCCESS, PIKA_MOVE(r.op_state.receiver), MPI_SUCCESS);

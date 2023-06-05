@@ -334,7 +334,7 @@ namespace pika::mpi::experimental {
     private:
         template <typename Sender, typename F,
             PIKA_CONCEPT_REQUIRES_(exp::is_sender_v<std::decay_t<Sender>>)>
-        friend constexpr PIKA_FORCEINLINE /*exp::unique_any_sender<>*/ auto
+        friend constexpr PIKA_FORCEINLINE exp::unique_any_sender<>
         tag_fallback_invoke(transform_mpi_t, Sender&& sender, F&& f,
             /*progress_mode p, */ stream_type s = stream_type::automatic)
         {
@@ -381,7 +381,7 @@ namespace pika::mpi::experimental {
                 auto snd1 = transform_mpi_sender<decltype(snd0), F>{PIKA_MOVE(snd0),
                                 PIKA_FORWARD(F, f), s} |
                     drop_value();
-                return make_unique_any_sender(std::move(snd1));
+                return make_unique_any_sender<>(std::move(snd1));
             }
             // ----------------------------------------------------------
             else
@@ -398,7 +398,7 @@ namespace pika::mpi::experimental {
                                 if (inline_com)
                                 {
                                     if (request == MPI_REQUEST_NULL)
-                                        return {};    //exp::just(/*MPI_SUCCESS*/);
+                                        return exp::just(/*MPI_SUCCESS*/);
                                     else
                                         return exp::just(request) | trigger_mpi(mode) |
                                             drop_value();
@@ -414,8 +414,7 @@ namespace pika::mpi::experimental {
                                             trigger_mpi(mode) | drop_value();
                                 }
                             });
-                    return make_unique_any_sender(std::move(snd1));
-                    //return snd1;
+                    return make_unique_any_sender<>(std::move(snd1));
                 }
                 else
                 {
@@ -441,8 +440,7 @@ namespace pika::mpi::experimental {
                                         drop_value();
                             }
                         });
-                    return make_unique_any_sender(std::move(snd1));
-                    //return snd1;
+                    return make_unique_any_sender<>(std::move(snd1));
                 }
             }
         }

@@ -97,7 +97,7 @@ namespace pika::mpi::experimental {
 
         inline constexpr bool throttling_enabled = false;
 
-        enum handler_mode
+        enum class handler_mode : std::uint32_t
         {
             yield_while = 0,
             suspend_resume = 1,
@@ -106,9 +106,30 @@ namespace pika::mpi::experimental {
         };
 
         // 0x30 : 2 bits define continuation mode
-        inline handler_mode get_handler_mode(int mode)
+        inline handler_mode get_handler_mode(int flags)
         {
-            return static_cast<handler_mode>((mode & 0b11 << 4) >> 4);
+            return static_cast<handler_mode>((flags & (0b11 << 4)) >> 4);
+        }
+
+        inline const char* mode_string(int flags)
+        {
+            switch (get_handler_mode(flags))
+            {
+            case handler_mode::yield_while:
+                return "yield_while";
+                break;
+            case handler_mode::new_task:
+                return "new_task";
+                break;
+            case handler_mode::continuation:
+                return "continuation";
+                break;
+            case handler_mode::suspend_resume:
+                return "suspend_resume";
+                break;
+            default:
+                return "default";
+            }
         }
 
         // needed by static checks when debugging
@@ -162,8 +183,8 @@ namespace pika::mpi::experimental {
     /// whichever pool is doing the polling, bypassing queues altogether
     PIKA_EXPORT std::size_t get_completion_mode();
 
-    PIKA_EXPORT bool setup_pool(
-        pika::resource::partitioner&, pool_create_mode mode = pool_create_mode::pika_decides);
+    PIKA_EXPORT bool create_pool(pika::resource::partitioner&, std::string const& = "",
+        pool_create_mode = pool_create_mode::pika_decides);
 
     PIKA_EXPORT const std::string& get_pool_name();
     PIKA_EXPORT void set_pool_name(const std::string&);
@@ -174,8 +195,7 @@ namespace pika::mpi::experimental {
     // initialize the pika::mpi background request handler
     // All ranks should call this function,
     // but only one thread per rank needs to do so
-    PIKA_EXPORT void init(
-        bool init_mpi = false, std::string const& pool_name = "", bool init_errorhandler = false);
+    PIKA_EXPORT void init(bool init_mpi = false, bool init_errorhandler = false);
 
     // -----------------------------------------------------------------
     PIKA_EXPORT void finalize(std::string const& pool_name = "");
@@ -188,7 +208,7 @@ namespace pika::mpi::experimental {
         enable_user_polling(std::string const& pool_name = "", bool init_errorhandler = false)
           : pool_name_(pool_name)
         {
-            mpi::experimental::init(false, pool_name, init_errorhandler);
+            mpi::experimental::init(false, init_errorhandler);
         }
 
         ~enable_user_polling()

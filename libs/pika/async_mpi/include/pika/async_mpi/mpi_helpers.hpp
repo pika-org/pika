@@ -162,8 +162,8 @@ namespace pika::mpi::experimental::detail {
             [&op_state](int status) mutable {
                 using namespace pika::debug::detail;
                 PIKA_DETAIL_DP(mpi_tran<5>,
-                    debug(str<>("callback_void_suspend_resume"), "stream",
-                        detail::stream_name(op_state.stream)));
+                    debug(str<>("callback_void_suspend_resume")/*, "stream",
+                        detail::stream_name(op_state.stream)*/));
                 // wake up the suspended thread
                 {
                     std::lock_guard lk(op_state.mutex_);
