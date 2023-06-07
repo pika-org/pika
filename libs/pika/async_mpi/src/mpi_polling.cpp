@@ -520,13 +520,12 @@ namespace pika::mpi::experimental {
                         while (vsize > 0)
                         {
                             int req_size = std::min(vsize, 32);
-                            /* @TODO: use MPI_STATUSES_IGNORE ? */
+                            /* @TODO: investigate MPI_STATUSES_IGNORE ? */
                             int result = MPI_Testsome(req_size, &mpi_data_.requests_[req_init],
                                 &outcount, indices_vector_.data(), status_vector_.data());
 
-                            /* @TODO: this should be passed into the test returns */
-                            if (result != MPI_SUCCESS)
-                                throw mpi_exception(result, "MPI_Testsome error");
+                            // status field holds a valid error
+                            bool status_valid = (result == MPI_ERR_IN_STATUS);
 
                             if (outcount != MPI_UNDEFINED && outcount != 0)
                             {
@@ -542,7 +541,8 @@ namespace pika::mpi::experimental {
                                     mpi_data_.ready_requests_.enqueue(
                                         {PIKA_MOVE(mpi_data_.callbacks_[req_init + index].cb_),
                                             mpi_data_.callbacks_[req_init + index].request_,
-                                            status_vector_[i].MPI_ERROR});
+                                            status_valid ? status_vector_[i].MPI_ERROR :
+                                                           MPI_SUCCESS});
                                     // Remove the request from our vector to prevent retesting
                                     mpi_data_.requests_[req_init + index] = MPI_REQUEST_NULL;
 
@@ -615,7 +615,7 @@ namespace pika::mpi::experimental {
 #endif
             if (detail::mpi_data_.rank_ == 0)
             {
-                PIKA_DETAIL_DP(detail::mpi_debug<0>,
+                PIKA_DETAIL_DP(detail::mpi_debug<2>,
                     debug(str<>("register_polling"), pool.get_pool_name(), "mode",
                         mpi::experimental::get_completion_mode()));
             }
