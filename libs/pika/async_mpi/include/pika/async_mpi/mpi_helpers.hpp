@@ -32,7 +32,6 @@
 #include <pika/mpi_base/mpi.hpp>
 
 #include <exception>
-#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -127,8 +126,8 @@ namespace pika::mpi::experimental::detail {
             [&op_state](int status) mutable {
                 using namespace pika::debug::detail;
                 PIKA_DETAIL_DP(mpi_tran<5>,
-                    debug(str<>("callback_void"), "stream", detail::stream_name(op_state.stream)));
-                op_state.ts = {};
+                    debug(str<>(
+                        "callback_void") /*, "stream", detail::stream_name(op_state.stream)*/));
                 set_value_error_helper(status, PIKA_MOVE(op_state.receiver));
             },
             request);
@@ -162,11 +161,12 @@ namespace pika::mpi::experimental::detail {
             [&op_state](int status) mutable {
                 using namespace pika::debug::detail;
                 PIKA_DETAIL_DP(mpi_tran<5>,
-                    debug(str<>("callback_void_suspend_resume")/*, "stream",
-                        detail::stream_name(op_state.stream)*/));
+                    debug(str<>("callback_void_suspend_resume"), "status", status
+                        /*, "stream", detail::stream_name(op_state.stream)*/));
                 // wake up the suspended thread
                 {
                     std::lock_guard lk(op_state.mutex_);
+                    op_state.status = status;
                     op_state.completed = true;
                 }
                 op_state.cond_var_.notify_one();
@@ -181,17 +181,26 @@ namespace pika::mpi::experimental::detail {
     void schedule_task_callback(MPI_Request request, Receiver&& receiver)
     {
         detail::add_request_callback(
-            [r = PIKA_MOVE(receiver)](int status) mutable {
+            [receiver = PIKA_MOVE(receiver)](int status) mutable {
                 using namespace pika::debug::detail;
                 PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("schedule_task_callback")));
-                // pass the result onto a new task and invoke the continuation
-                auto snd0 = exp::just(status) |
-                    exp::transfer(default_pool_scheduler(execution::thread_priority::high)) |
-                    exp::then([r = PIKA_MOVE(r)](int status) mutable {
-                        PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("set_value_error_helper"), status));
-                        set_value_error_helper(status, PIKA_MOVE(r), status);
-                    });
-                exp::start_detached(PIKA_MOVE(snd0));
+                if (status != MPI_SUCCESS)
+                {
+                    exp::set_error(PIKA_FORWARD(Receiver, receiver),
+                        std::make_exception_ptr(mpi_exception(status)));
+                }
+                else
+                {
+                    // pass the result onto a new task and invoke the continuation
+                    auto snd0 = exp::just(status) |
+                        exp::transfer(default_pool_scheduler(execution::thread_priority::high)) |
+                        exp::then([receiver = PIKA_MOVE(receiver)](int status) mutable {
+                            PIKA_DETAIL_DP(
+                                mpi_tran<5>, debug(str<>("set_value_error_helper"), status));
+                            set_value_error_helper(status, PIKA_MOVE(receiver));
+                        });
+                    exp::start_detached(PIKA_MOVE(snd0));
+                }
             },
             request);
     }

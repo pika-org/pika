@@ -84,8 +84,9 @@ namespace pika::mpi::experimental::detail {
             static_assert(is_mpi_request_invocable_v<F, Ts...>,
                 "F not invocable with the value_types specified.");
             using result_type = mpi_request_invoke_result_t<F, Ts...>;
-            using type =
-                std::conditional_t<std::is_void<result_type>::value, Tuple<>, Tuple<result_type>>;
+            //            using type =
+            //                std::conditional_t<std::is_void<result_type>::value, Tuple<>, Tuple<result_type>>;
+            using type = Tuple<>;
         };
 
         // -----------------------------------------------------------------
@@ -150,7 +151,8 @@ namespace pika::mpi::experimental::detail {
                         [&]() mutable {
                             using namespace pika::debug::detail;
                             using ts_element_type = std::tuple<std::decay_t<Ts>...>;
-                            using invoke_result_type = mpi_request_invoke_result_t<F, Ts...>;
+                            //                        using invoke_result_type = mpi_request_invoke_result_t<F, Ts...>;
+                            using invoke_result_type = void;
                             //
                             r.op_state.ts.template emplace<ts_element_type>(
                                 PIKA_FORWARD(Ts, ts)...);
@@ -176,7 +178,7 @@ namespace pika::mpi::experimental::detail {
                                                     PIKA_MOVE(r.op_state.f), ts..., &request));
                                         }
                                         PIKA_DETAIL_DP(
-                                            mpi_tran<5>, debug(str<>("mpi invoke"), request));
+                                            mpi_tran<5>, debug(str<>("mpi invoke"), ptr(request)));
                                         PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
                                             "MPI_REQUEST_NULL returned from mpi "
                                             "invocation");
@@ -279,13 +281,14 @@ namespace pika::mpi::experimental::detail {
                                        result_types_helper>,
                         pika::detail::monostate>>>;
 #else
-            using result_type = pud::change_pack_t<pika::detail::variant,
-                pud::unique_t<pud::prepend_t<
-                    pud::transform_t<transform_mpi_sender_type::value_types<pud::pack, pud::pack>,
-                        result_types_helper>,
-                    pika::detail::monostate>>>;
+//            using result_type = pud::change_pack_t<pika::detail::variant,
+//                pud::unique_t<pud::prepend_t<
+//                    pud::transform_t<transform_mpi_sender_type::value_types<pud::pack, pud::pack>,
+//                        result_types_helper>,
+//                    pika::detail::monostate>>>;
+//            using result_type = pika::detail::monostate;
 #endif
-            result_type result;
+            //            result_type result;
 
             template <typename Receiver_, typename F_, typename Sender_>
             operation_state(Receiver_&& receiver, F_&& f, Sender_&& sender, stream_type s)
@@ -391,8 +394,8 @@ namespace pika::mpi::experimental {
                     use_HP_com(mode) ? thread_priority::high : thread_priority::normal;
                 if (inline_req)
                 {
-                    auto snd1 =
-                        dispatch_mpi_sender<Sender, F>{PIKA_MOVE(sender), PIKA_FORWARD(F, f), s} |
+                    return dispatch_mpi_sender<Sender, F>{
+                               PIKA_MOVE(sender), PIKA_FORWARD(F, f), s} |
                         pika::execution::experimental::let_value(
                             [=](MPI_Request request) -> exp::unique_any_sender</*int*/> {
                                 if (inline_com)
@@ -400,47 +403,48 @@ namespace pika::mpi::experimental {
                                     if (request == MPI_REQUEST_NULL)
                                         return exp::just(/*MPI_SUCCESS*/);
                                     else
-                                        return exp::just(request) | trigger_mpi(mode) |
-                                            drop_value();
+                                        return exp::just(request) | trigger_mpi(mode) /*|
+                                            drop_value()*/
+                                            ;
                                 }
                                 else
                                 {
                                     if (request == MPI_REQUEST_NULL)
-                                        return exp::just(MPI_SUCCESS) |
-                                            transfer(default_pool_scheduler(p)) | drop_value();
+                                        return exp::just(/*MPI_SUCCESS*/) |
+                                            transfer(default_pool_scheduler(p)) /*| drop_value()*/;
                                     else
                                         return exp::just(request) |
                                             transfer(default_pool_scheduler(p)) |
-                                            trigger_mpi(mode) | drop_value();
+                                            trigger_mpi(mode) /*| drop_value()*/;
                                 }
                             });
-                    return make_unique_any_sender<>(std::move(snd1));
                 }
                 else
                 {
                     auto snd0 = PIKA_FORWARD(Sender, sender) | transfer(mpi_pool_scheduler());
-                    auto snd1 = dispatch_mpi_sender<decltype(snd0), F>{PIKA_MOVE(snd0),
-                                    PIKA_FORWARD(F, f), s} |
+                    return dispatch_mpi_sender<decltype(snd0), F>{
+                               PIKA_MOVE(snd0), PIKA_FORWARD(F, f), s} |
                         exp::let_value([=](MPI_Request request) -> exp::unique_any_sender</*int*/> {
                             if (inline_com)
                             {
                                 if (request == MPI_REQUEST_NULL)
                                     return exp::just(/*MPI_SUCCESS*/);
                                 else
-                                    return exp::just(request) | trigger_mpi(mode) | drop_value();
+                                    return exp::just(request) |
+                                        trigger_mpi(mode) /* | drop_value()*/;
                             }
                             else
                             {
                                 if (request == MPI_REQUEST_NULL)
-                                    return exp::just(MPI_SUCCESS) |
-                                        transfer(default_pool_scheduler(p)) | drop_value();
+                                    return exp::just(/*MPI_SUCCESS*/) |
+                                        transfer(default_pool_scheduler(p)) /* | drop_value()*/;
                                 else
                                     return exp::just(request) |
-                                        transfer(default_pool_scheduler(p)) | trigger_mpi(mode) |
-                                        drop_value();
+                                        transfer(default_pool_scheduler(p)) |
+                                        trigger_mpi(mode) /* | drop_value()*/;
                             }
                         });
-                    return make_unique_any_sender<>(std::move(snd1));
+                    //                    return make_unique_any_sender<>(std::move(snd1));
                 }
             }
         }

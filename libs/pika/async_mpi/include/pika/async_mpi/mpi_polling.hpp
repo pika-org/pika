@@ -111,6 +111,27 @@ namespace pika::mpi::experimental {
             return static_cast<handler_mode>((flags & (0b11 << 4)) >> 4);
         }
 
+        // 0x08: 1 bit defines pool or no pool
+        inline bool use_HP_com(int mode)
+        {
+            return static_cast<bool>((mode & (0b01 << 3)) >> 3);
+        }
+        // 0x04: 1 bit defines inline or transfer completion
+        inline bool use_inline_com(int mode)
+        {
+            return static_cast<bool>((mode & (0b01 << 2)) >> 2);
+        }
+        // 0x02: 1 bit defines inline or transfer mpi invocation
+        inline bool use_inline_req(int mode)
+        {
+            return static_cast<bool>((mode & (0b01 << 1)) >> 1);
+        }
+        // 0x01 : 1 bit defines whether we use a pool or not
+        inline bool use_pool(int mode)
+        {
+            return static_cast<bool>(mode & 0b01);
+        }
+
         inline const char* mode_string(int flags)
         {
             switch (get_handler_mode(flags))

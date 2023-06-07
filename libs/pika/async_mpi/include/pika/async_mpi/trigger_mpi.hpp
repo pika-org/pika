@@ -11,6 +11,7 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/async_mpi/dispatch_mpi.hpp>
+#include <pika/async_mpi/mpi_exception.hpp>
 #include <pika/async_mpi/mpi_polling.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/datastructures/variant.hpp>
@@ -38,27 +39,6 @@ namespace pika::mpi::experimental::detail {
     namespace pud = pika::util::detail;
     namespace exp = execution::experimental;
 
-    // 0x08: 1 bit defines pool or no pool
-    inline bool use_HP_com(int mode)
-    {
-        return static_cast<bool>((mode & (0b01 << 3)) >> 3);
-    }
-    // 0x04: 1 bit defines inline or transfer completion
-    inline bool use_inline_com(int mode)
-    {
-        return static_cast<bool>((mode & (0b01 << 2)) >> 2);
-    }
-    // 0x02: 1 bit defines inline or transfer mpi invocation
-    inline bool use_inline_req(int mode)
-    {
-        return static_cast<bool>((mode & (0b01 << 1)) >> 1);
-    }
-    // 0x01 : 1 bit defines whether we use a pool or not
-    inline bool use_pool(int mode)
-    {
-        return static_cast<bool>(mode & 0b01);
-    }
-
     // -----------------------------------------------------------------
     // route calls through an impl layer for ADL resolution
     template <typename Sender>
@@ -82,7 +62,7 @@ namespace pika::mpi::experimental::detail {
         // -----------------------------------------------------------------
         // completion signatures
         template <template <typename...> class Tuple, template <typename...> class Variant>
-        using value_types = Variant<Tuple<int>>;
+        using value_types = Variant<Tuple<>>;
 
         template <template <typename...> class Variant>
         using error_types = pud::unique_t<
@@ -98,9 +78,11 @@ namespace pika::mpi::experimental::detail {
         {
             std::decay_t<Receiver> receiver;
             int mode_flags_;
+            int status;
+            // these vars are needed by suspend/resume mode
+            bool completed;
             pika::spinlock mutex_;
             pika::condition_variable cond_var_;
-            bool completed;
 
             // -----------------------------------------------------------------
             // The mpi_receiver receives inputs from the previous sender,
@@ -131,55 +113,50 @@ namespace pika::mpi::experimental::detail {
                     // early exit check
                     if (request == MPI_REQUEST_NULL)
                     {
-                        set_value_error_helper(
-                            MPI_SUCCESS, PIKA_MOVE(r.op_state.receiver), MPI_SUCCESS);
+                        exp::set_value(PIKA_MOVE(r.op_state.receiver));
                         return;
                     }
 
+                    // which polling/testing mode are we using
                     handler_mode mode = get_handler_mode(r.op_state.mode_flags_);
 
                     PIKA_DETAIL_DP(mpi_tran<5>,
-                        debug(str<>("trigger_mpi_recv"), "set_value_t", "req", request, "flags",
-                            bin<8>(r.op_state.mode_flags_), mode_string(r.op_state.mode_flags_)));
+                        debug(str<>("trigger_mpi_recv"), "set_value_t", "req", ptr(request),
+                            "flags", bin<8>(r.op_state.mode_flags_),
+                            mode_string(r.op_state.mode_flags_)));
 
                     pika::detail::try_catch_exception_ptr(
                         [&]() mutable {
-                            // modes 0 uses the task yield_while method of callback
-                            // modes 1,2 use the task resume method of callback
                             switch (mode)
                             {
                             case handler_mode::yield_while:
                             {
                                 pika::util::yield_while(
                                     [&request]() { return !detail::poll_request(request); });
-                                // we just assume the status is always MPI_SUCCESS
-                                set_value_error_helper(
-                                    MPI_SUCCESS, PIKA_MOVE(r.op_state.receiver), MPI_SUCCESS);
+                                // we just assume the return from mpi_test is always MPI_SUCCESS
+                                exp::set_value(PIKA_MOVE(r.op_state.receiver));
                                 break;
                             }
                             case handler_mode::new_task:
                             {
-                                // the callback will call set_value inside a new task
+                                // The callback will call set_value/set_error inside a new task
                                 // and execution will continue on that thread
-                                r.op_state.result = MPI_SUCCESS;
                                 detail::schedule_task_callback(
                                     request, PIKA_MOVE(r.op_state.receiver));
                                 break;
                             }
                             case handler_mode::continuation:
                             {
-                                // The callback will trigger set_value and
-                                // execution will continue on that thread
-                                r.op_state.result = MPI_SUCCESS;
-                                detail::set_value_request_callback_non_void<int>(
-                                    request, r.op_state);
+                                // The callback will call set_value/set_error
+                                // execution will continue on the callback thread
+                                detail::set_value_request_callback_void<>(request, r.op_state);
                                 break;
                             }
                             case handler_mode::suspend_resume:
                             {
                                 // suspend is invalid except on a pika thread
                                 PIKA_ASSERT(pika::threads::detail::get_self_id());
-                                // the callback will resume this thread
+                                // the callback will resume _this_ thread
                                 std::unique_lock l{r.op_state.mutex_};
                                 resume_request_callback(request, r.op_state);
                                 if (use_HP_com(r.op_state.mode_flags_))
@@ -194,14 +171,15 @@ namespace pika::mpi::experimental::detail {
                                     r.op_state.cond_var_.wait(
                                         l, [&]() { return r.op_state.completed; });
                                 }
-                                // we just assume the status is always MPI_SUCCESS
+                                // call set_value/set_error depending on mpi return status
                                 set_value_error_helper(
-                                    MPI_SUCCESS, PIKA_MOVE(r.op_state.receiver), MPI_SUCCESS);
+                                    r.op_state.status, PIKA_MOVE(r.op_state.receiver));
                                 break;
                             }
                             default:
                             {
-                                throw std::runtime_error("eek more!");
+                                // I bet the "review" police don't like this exception
+                                throw mpi_exception(MPI_ERR_UNKNOWN, "eek!");
                                 break;
                             }
                             }
@@ -221,30 +199,6 @@ namespace pika::mpi::experimental::detail {
             using operation_state_type =
                 exp::connect_result_t<std::decay_t<Sender>, trigger_mpi_receiver>;
             operation_state_type op_state;
-
-            template <typename Tuple>
-            struct value_types_helper
-            {
-                using type = pud::transform_t<Tuple, std::decay>;
-            };
-
-            template <typename Tuple>
-            struct result_types_helper;
-
-            template <template <typename...> class Tuple, typename T>
-            struct result_types_helper<Tuple<T>>
-            {
-                using type = std::decay_t<T>;
-            };
-
-            template <template <typename...> class Tuple>
-            struct result_types_helper<Tuple<>>
-            {
-                using type = pika::detail::monostate;
-            };
-
-            using result_type = pika::detail::variant<int>;
-            result_type result;
 
             template <typename Receiver_, typename Sender_>
             operation_state(Receiver_&& receiver, Sender_&& sender, int flags)
