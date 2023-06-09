@@ -17,7 +17,15 @@
 #include <pika/mpi_base/mpi_environment.hpp>
 #include <pika/synchronization/condition_variable.hpp>
 #include <pika/synchronization/mutex.hpp>
-
+//
+// If we can use ranges/v3 then these can be used for zip vector compacting
+/*
+#include <range/v3/algorithm/copy.hpp>
+#include <range/v3/algorithm/remove_if.hpp>
+#include <range/v3/view/transform.hpp>
+#include <range/v3/view/zip.hpp>
+*/
+//
 #include <array>
 #include <atomic>
 #include <cstddef>
@@ -35,7 +43,6 @@
 #include <vector>
 
 namespace pika::mpi::experimental {
-
     template <typename E>
     constexpr typename std::underlying_type<E>::type to_underlying(E e) noexcept
     {
@@ -51,6 +58,7 @@ namespace pika::mpi::experimental {
         static print_threshold<Level, 0> mpi_debug("MPIPOLL");
 
         constexpr std::uint32_t max_mpi_streams = to_underlying(stream_type::max_stream);
+        constexpr std::uint32_t max_poll_requests = 32;
 
         // -----------------------------------------------------------------
         /// Queries an environment variable to get/override a default value for
@@ -310,6 +318,7 @@ namespace pika::mpi::experimental {
         std::size_t get_polling_default()
         {
             std::uint32_t val = pika::get_env_value("PIKA_MPI_POLLING_SIZE", 8);
+            PIKA_DETAIL_DP(mpi_debug<5>, debug(str<>("Poll size"), dec<3>(val)));
             mpi_data_.max_polling_requests = val;
             return val;
         }
@@ -414,12 +423,22 @@ namespace pika::mpi::experimental {
         /// Ideally, would use a zip iterator to do both using remove_if
         void compact_vectors()
         {
-            size_t const size = detail::mpi_data_.requests_.size();
+            using detail::mpi_data_;
+            /*
+            auto z = ranges::views::zip(mpi_data_.requests_, mpi_data_.callbacks_);
+            auto e = ranges::remove_if(z, [](auto&& r) { return r.first == MPI_REQUEST_NULL; });
+            mpi_data_.requests_.erase(
+                mpi_data_.requests_.begin() + (e - z.begin()), mpi_data_.requests_.end());
+            mpi_data_.callbacks_.erase(
+                mpi_data_.callbacks_.begin() + (e - z.begin()), mpi_data_.callbacks_.end());
+            */
+
+            size_t const size = mpi_data_.requests_.size();
             size_t pos = size;
             // find index of first NULL request
             for (size_t i = 0; i < size; ++i)
             {
-                if (detail::mpi_data_.requests_[i] == MPI_REQUEST_NULL)
+                if (mpi_data_.requests_[i] == MPI_REQUEST_NULL)
                 {
                     pos = i;
                     break;
@@ -428,16 +447,16 @@ namespace pika::mpi::experimental {
             // move all non NULL requests/callbacks towards beginning of vector.
             for (size_t i = pos + 1; i < size; ++i)
             {
-                if (detail::mpi_data_.requests_[i] != MPI_REQUEST_NULL)
+                if (mpi_data_.requests_[i] != MPI_REQUEST_NULL)
                 {
-                    detail::mpi_data_.requests_[pos] = detail::mpi_data_.requests_[i];
-                    detail::mpi_data_.callbacks_[pos] = PIKA_MOVE(detail::mpi_data_.callbacks_[i]);
+                    mpi_data_.requests_[pos] = mpi_data_.requests_[i];
+                    mpi_data_.callbacks_[pos] = PIKA_MOVE(mpi_data_.callbacks_[i]);
                     pos++;
                 }
             }
             // and trim off the space we didn't need
-            detail::mpi_data_.requests_.resize(pos);
-            detail::mpi_data_.callbacks_.resize(pos);
+            mpi_data_.requests_.resize(pos);
+            mpi_data_.callbacks_.resize(pos);
         }
 
         // -------------------------------------------------------------
@@ -505,37 +524,37 @@ namespace pika::mpi::experimental {
                         --mpi_data_.request_queue_size_;
                     }
 
-                    int vsize = mpi_data_.requests_.size();
+                    std::uint32_t vsize = mpi_data_.requests_.size();
 
-                    int outcount = 0;
+                    int num_completed = 0;
                     // do we poll for N requests at a time, or just 1
                     if (mpi_data_.max_polling_requests > 1)
                     {
                         // it seems some MPI implementations choke when the request list is
-                        // large, so we will use a max of 32 per test.
-                        std::array<MPI_Status, 32> status_vector_;
-                        std::array<int, 32> indices_vector_;
+                        // large, so we will use a max of max_poll_requests per test.
+                        std::array<MPI_Status, max_poll_requests> status_vector_;
+                        std::array<int, max_poll_requests> indices_vector_;
 
                         int req_init = 0;
                         while (vsize > 0)
                         {
-                            int req_size = std::min(vsize, 32);
-                            /* @TODO: investigate MPI_STATUSES_IGNORE ? */
-                            int result = MPI_Testsome(req_size, &mpi_data_.requests_[req_init],
-                                &outcount, indices_vector_.data(), status_vector_.data());
+                            int req_size = std::min(vsize, max_poll_requests);
+                            /* @TODO: if we use MPI_STATUSES_IGNORE - how do we report failures? */
+                            int status = MPI_Testsome(req_size, &mpi_data_.requests_[req_init],
+                                &num_completed, indices_vector_.data(),
+                                /*MPI_STATUSES_IGNORE*/ status_vector_.data());
 
                             // status field holds a valid error
-                            bool status_valid = (result == MPI_ERR_IN_STATUS);
-
-                            if (outcount != MPI_UNDEFINED && outcount != 0)
+                            bool status_valid = (status == MPI_ERR_IN_STATUS);
+                            if (num_completed != MPI_UNDEFINED && num_completed > 0)
                             {
                                 event_handled = true;
                                 PIKA_DETAIL_DP(mpi_debug<4>,
-                                    debug(str<>("MPI_Testsome"), mpi_data_, "outcount",
-                                        dec<3>(outcount)));
+                                    debug(str<>("MPI_Testsome"), mpi_data_, "num_completed",
+                                        dec<3>(num_completed)));
 
                                 // for each completed request
-                                for (int i = 0; i < outcount; ++i)
+                                for (int i = 0; i < num_completed; ++i)
                                 {
                                     size_t index = indices_vector_[i];
                                     mpi_data_.ready_requests_.enqueue(
@@ -559,17 +578,15 @@ namespace pika::mpi::experimental {
                     else
                     {
                         int rindex, flag;
-                        int result = MPI_Testany(mpi_data_.requests_.size(),
+                        int status = MPI_Testany(mpi_data_.requests_.size(),
                             mpi_data_.requests_.data(), &rindex, &flag, MPI_STATUS_IGNORE);
-                        if (result != MPI_SUCCESS)
-                            throw mpi_exception(result, "MPI_Testany error");
                         if (rindex != MPI_UNDEFINED)
                         {
                             size_t index = static_cast<size_t>(rindex);
                             event_handled = true;
                             mpi_data_.ready_requests_.enqueue(
                                 {PIKA_MOVE(mpi_data_.callbacks_[index].cb_),
-                                    mpi_data_.callbacks_[index].request_, MPI_SUCCESS});
+                                    mpi_data_.callbacks_[index].request_, status});
                             // Remove the request from our vector to prevent retesting
                             mpi_data_.requests_[index] = MPI_REQUEST_NULL;
 

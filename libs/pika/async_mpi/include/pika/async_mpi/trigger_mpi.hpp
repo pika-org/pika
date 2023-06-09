@@ -37,7 +37,6 @@
 namespace pika::mpi::experimental::detail {
 
     namespace pud = pika::util::detail;
-    namespace exp = execution::experimental;
 
     // -----------------------------------------------------------------
     // route calls through an impl layer for ADL resolution

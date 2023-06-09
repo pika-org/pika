@@ -479,19 +479,18 @@ void init_resource_partitioner_handler(
     pika::resource::partitioner& rp, pika::program_options::variables_map const& vm)
 {
     // Don't create the MPI pool if the user disabled it
-    // Don't create the MPI pool if there is a single process
     int ntasks;
     MPI_Comm_size(MPI_COMM_WORLD, &ntasks);
     if (vm["no-mpi-pool"].as<bool>() || ntasks == 1)
     {
         // turn off pool creation
         int mode = pika::get_env_value("PIKA_MPI_COMPLETION_MODE", 1);
-        mode = mode & ~(0b01 << 2);
+        mode = mode & ~(0b01);
         setenv("PIKA_MPI_COMPLETION_MODE", std::to_string(mode).c_str(), true);
         pika::mpi::experimental::detail::get_completion_mode_default();
-        return;
     }
     //
+    msr_deb<2>.debug(str<>("init RP"), "create_pool");
     mpi::create_pool(rp, "", mpi::pool_create_mode::pika_decides);
 }
 

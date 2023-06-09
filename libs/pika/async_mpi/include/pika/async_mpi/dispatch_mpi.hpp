@@ -152,6 +152,15 @@ namespace pika::mpi::experimental::detail {
                                         "MPI_REQUEST_NULL returned from mpi invocation");
                                 },
                                 t);
+                            if (status != MPI_SUCCESS)
+                            {
+                                PIKA_DETAIL_DP(mpi_tran<5>,
+                                    debug(str<>("set_error"), "status != MPI_SUCCESS",
+                                        detail::error_message(status)));
+                                exp::set_error(PIKA_MOVE(r.op_state.receiver),
+                                    std::make_exception_ptr(mpi_exception(status)));
+                                return;
+                            }
                             // function called, Ts... can now be released (if refs hold lifetime)
                             r.op_state.ts = {};
                             if (poll_request(request))
