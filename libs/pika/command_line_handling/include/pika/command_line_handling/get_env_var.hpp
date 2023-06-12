@@ -14,5 +14,6 @@
 namespace pika::detail {
 
     /// from env var name 's' get value if well-formed, otherwise return default
-    PIKA_EXPORT std::uint32_t get_env_var(const char* s, std::uint32_t def);
+    template <typename T>
+    PIKA_EXPORT T get_env_var_as(const char* s, T def);
 }    // namespace pika::detail

@@ -15,26 +15,33 @@
 
 namespace pika::detail {
 
-    PIKA_EXPORT std::uint32_t get_env_var(const char* s, std::uint32_t def)
+    template <typename T>
+    PIKA_EXPORT T get_env_var_as(const char* s, T def)
     {
-        std::uint32_t val = def;
+        T val = def;
         char* env = std::getenv(s);
         if (env)
         {
             try
             {
-                val = std::stoi(env);
+                std::istringstream temp(env);
+                temp >> val;
             }
             catch (...)
             {
                 val = def;
-                std::cerr << "get_env_value - invalid"
+                std::cerr << "get_env_var_as - invalid"
                           << " " << s << " " << def << std::endl;
-                LERR_(error) << "get_env_value - invalid" << s << val;
+                LERR_(error) << "get_env_var_as - invalid" << s << val;
             }
-            LBT_(debug) << "get_env_value " << s << val;
+            LBT_(debug) << "get_env_var_as " << s << val;
         }
         return val;
     }
+
+    template PIKA_EXPORT std::uint32_t get_env_var_as(const char* s, std::uint32_t def);
+    template PIKA_EXPORT std::uint64_t get_env_var_as(const char* s, std::uint64_t def);
+    template PIKA_EXPORT std::int32_t get_env_var_as(const char* s, std::int32_t def);
+    template PIKA_EXPORT std::int64_t get_env_var_as(const char* s, std::int64_t def);
 
 }    // namespace pika::detail
