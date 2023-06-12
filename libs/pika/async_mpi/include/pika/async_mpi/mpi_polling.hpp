@@ -37,6 +37,12 @@ namespace pika::mpi::experimental {
     //        cannot_block
     //    };
 
+    template <typename E>
+    constexpr typename std::underlying_type<E>::type to_underlying(E e) noexcept
+    {
+        return static_cast<typename std::underlying_type<E>::type>(e);
+    }
+
     enum pool_create_mode
     {
         pika_decides = 0,
@@ -97,39 +103,71 @@ namespace pika::mpi::experimental {
 
         inline constexpr bool throttling_enabled = false;
 
+        /// flags that control how mpi continuations are handled
         enum class handler_mode : std::uint32_t
         {
-            yield_while = 0,
-            suspend_resume = 1,
-            new_task = 2,
-            continuation = 3,
+            /// enable the use of a dedicated pool for polling mpi messages.
+            use_pool = 0x01,
+
+            /// this bit enables the inline invocation of the mpi request, when set
+            /// the calling thread performs the mpi operation, when unset, a transfer
+            /// is made so that the invocation happens on a new task that
+            /// would normally be on a dedicated pool if/when it exists
+            request_inline = 0x02,
+
+            /// this bit enables the inline execution of the completion handler for the
+            /// request, when unset a transfer is made to move the completion handler
+            /// from the polling thread onto a new one
+            completion_inline = 0x04,
+
+            /// this bit enables the use of a high priority task flag when a
+            /// completion is handled so that the continuation is executed quickly
+            /// if transfered to a new task, or resumed from sleep.
+            high_priority = 0x08,
+
+            /// 3 bits control the handler method,
+            method_mask = 0x70,
+
+            /// the individual methods that are supported for dispatching continuations
+            yield_while = 0x00,
+            suspend_resume = 0x10,
+            new_task = 0x20,
+            continuation = 0x30,
+            original = 0x40,
+
+            /// Default flags are to invoke inline, but transfer completion using a dedicated pool
+            default_mode = use_pool | request_inline | high_priority | new_task,
         };
 
-        // 0x30 : 2 bits define continuation mode
+        // 2 bits define continuation mode
         inline handler_mode get_handler_mode(int flags)
         {
-            return static_cast<handler_mode>((flags & (0b11 << 4)) >> 4);
+            return static_cast<handler_mode>(flags & to_underlying(handler_mode::method_mask));
         }
 
-        // 0x08: 1 bit defines pool or no pool
+        // 1 bit defines pool or no pool
         inline bool use_HP_com(int mode)
         {
-            return static_cast<bool>((mode & (0b01 << 3)) >> 3);
+            return static_cast<bool>((mode & to_underlying(handler_mode::high_priority)) ==
+                to_underlying(handler_mode::high_priority));
         }
-        // 0x04: 1 bit defines inline or transfer completion
+        // 1 bit defines inline or transfer completion
         inline bool use_inline_com(int mode)
         {
-            return static_cast<bool>((mode & (0b01 << 2)) >> 2);
+            return static_cast<bool>((mode & to_underlying(handler_mode::completion_inline)) ==
+                to_underlying(handler_mode::completion_inline));
         }
-        // 0x02: 1 bit defines inline or transfer mpi invocation
+        // 1 bit defines inline or transfer mpi invocation
         inline bool use_inline_req(int mode)
         {
-            return static_cast<bool>((mode & (0b01 << 1)) >> 1);
+            return static_cast<bool>((mode & to_underlying(handler_mode::request_inline)) ==
+                to_underlying(handler_mode::request_inline));
         }
-        // 0x01 : 1 bit defines whether we use a pool or not
+        // 1 bit defines whether we use a pool or not
         inline bool use_pool(int mode)
         {
-            return static_cast<bool>(mode & 0b01);
+            return static_cast<bool>((mode & to_underlying(handler_mode::use_pool)) ==
+                to_underlying(handler_mode::use_pool));
         }
 
         inline const char* mode_string(int flags)
