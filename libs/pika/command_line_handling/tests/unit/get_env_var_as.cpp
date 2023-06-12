@@ -9,6 +9,7 @@
 #include <pika/init.hpp>
 #include <pika/testing.hpp>
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
