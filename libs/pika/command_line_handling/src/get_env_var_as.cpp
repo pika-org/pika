@@ -1,10 +1,10 @@
-//  Copyright (c) 2021 ETH Zurich
+//  Copyright (c) 2023 ETH Zurich
 //
 //  SPDX-License-Identifier: BSL-1.0
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/command_line_handling/get_env_var.hpp>
+#include <pika/command_line_handling/get_env_var_as.hpp>
 #include <pika/config/export_definitions.hpp>
 #include <pika/modules/logging.hpp>
 
@@ -43,5 +43,8 @@ namespace pika::detail {
     template PIKA_EXPORT std::uint64_t get_env_var_as(const char* s, std::uint64_t def);
     template PIKA_EXPORT std::int32_t get_env_var_as(const char* s, std::int32_t def);
     template PIKA_EXPORT std::int64_t get_env_var_as(const char* s, std::int64_t def);
+    template PIKA_EXPORT float get_env_var_as(const char* s, float def);
+    template PIKA_EXPORT double get_env_var_as(const char* s, double def);
+    template PIKA_EXPORT std::string get_env_var_as(const char* s, std::string def);
 
 }    // namespace pika::detail
