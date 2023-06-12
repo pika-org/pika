@@ -15,25 +15,25 @@
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main(int /*argc*/, char* /*argv*/[])
 {
-    float f = pika::get_env_var_as<float>("float", 0.0);
+    float f = pika::detail::get_env_var_as<float>("float", 0.0);
     PIKA_TEST_EQ(f, 3.1415f);
 
-    double d = pika::get_env_var_as<double>("double", 0.0);
+    double d = pika::detail::get_env_var_as<double>("double", 0.0);
     PIKA_TEST_EQ(d, 6.28);
 
-    std::int32_t i32 = pika::get_env_var_as<std::int32_t>("int32", 0);
+    std::int32_t i32 = pika::detail::get_env_var_as<std::int32_t>("int32", 0);
     PIKA_TEST_EQ(i32, -65536);
 
-    std::int64_t i64 = pika::get_env_var_as<std::int64_t>("int64", 0);
+    std::int64_t i64 = pika::detail::get_env_var_as<std::int64_t>("int64", 0);
     PIKA_TEST_EQ(i64, -123465536);
 
-    std::uint32_t u32 = pika::get_env_var_as<std::uint32_t>("uint32", 0);
+    std::uint32_t u32 = pika::detail::get_env_var_as<std::uint32_t>("uint32", 0);
     PIKA_TEST_EQ(u32, 65536u);
 
-    std::uint64_t u64 = pika::get_env_var_as<std::uint64_t>("uint64", 0);
+    std::uint64_t u64 = pika::detail::get_env_var_as<std::uint64_t>("uint64", 0);
     PIKA_TEST_EQ(u64, 123465536u);
 
-    std::string s = pika::get_env_var_as<std::string>("string", "wrong");
+    std::string s = pika::detail::get_env_var_as<std::string>("string", "wrong");
     PIKA_TEST_EQ(s, std::string("hello-world"));
 
     return pika::finalize();
