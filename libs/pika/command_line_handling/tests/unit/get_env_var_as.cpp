@@ -14,7 +14,7 @@
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-int pika_main(int /*argc*/, char* /*argv*/[])
+int pika_main()
 {
     float f = pika::detail::get_env_var_as<float>("float", 0.0);
     PIKA_TEST_EQ(f, 3.1415f);
@@ -50,7 +50,6 @@ int main(int argc, char* argv[])
     putenv(const_cast<char*>("uint64=123465536"));
     putenv(const_cast<char*>("string=hello-world"));
 
-    pika::init_params init_args;
-    PIKA_TEST_EQ(pika::init(pika_main, argc, argv, init_args), 0);
+    PIKA_TEST_EQ(pika::init(pika_main, argc, argv), 0);
     return 0;
 }

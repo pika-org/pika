@@ -7,6 +7,7 @@
 #pragma once
 
 #include <pika/config/export_definitions.hpp>
+#include <pika/modules/logging.hpp>
 
 #include <cstdlib>
 #include <string>
@@ -15,5 +16,25 @@ namespace pika::detail {
 
     /// from env var name 's' get value if well-formed, otherwise return default
     template <typename T>
-    PIKA_EXPORT T get_env_var_as(const char* s, T def);
+    T get_env_var_as(const char* s, T def) noexcept
+    {
+        T val = def;
+        char* env = std::getenv(s);
+        if (env)
+        {
+            try
+            {
+                std::istringstream temp(env);
+                temp >> val;
+            }
+            catch (...)
+            {
+                val = def;
+                LERR_(error) << "get_env_var_as - invalid" << s << val;
+            }
+            LDEB_ << "get_env_var_as " << s << val;
+        }
+        return val;
+    }
+
 }    // namespace pika::detail

@@ -16,7 +16,7 @@ set(command_line_handling_headers
 )
 
 set(command_line_handling_sources
-    command_line_handling.cpp get_env_var_as.cpp late_command_line_handling.cpp
+    command_line_handling.cpp late_command_line_handling.cpp
     parse_command_line.cpp
 )
 
