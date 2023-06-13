@@ -8,7 +8,7 @@
 #include <pika/assert.hpp>
 #include <pika/async_mpi/mpi_exception.hpp>
 #include <pika/async_mpi/mpi_polling.hpp>
-#include <pika/command_line_handling/get_env_var.hpp>
+#include <pika/command_line_handling/get_env_var_as.hpp>
 #include <pika/concurrency/spinlock.hpp>
 #include <pika/datastructures/detail/small_vector.hpp>
 #include <pika/debugging/print.hpp>
@@ -110,7 +110,7 @@ namespace pika::mpi::experimental {
 
         // -----------------------------------------------------------------
         /// Spinlock is used as it can be called by OS threads or pika tasks
-        using mutex_type = pika::spinlock;
+        using mutex_type = pika::detail::spinlock;
 
         PIKA_EXPORT const char* stream_name(stream_type s)
         {
@@ -287,7 +287,8 @@ namespace pika::mpi::experimental {
         {
             // if the global throttling var is set, set all streams
             std::uint32_t def = std::uint32_t(-1);    // unlimited
-            std::uint32_t val = pika::get_env_value("PIKA_MPI_MSG_THROTTLE", def);
+            std::uint32_t val =
+                pika::detail::get_env_var_as<std::uint32_t>("PIKA_MPI_MSG_THROTTLE", def);
             for (size_t i = 0; i < mpi_data_.default_queues_.size(); ++i)
             {
                 detail::init_stream(stream_type(i), val);
@@ -299,7 +300,7 @@ namespace pika::mpi::experimental {
                     "PIKA_MPI_MSG_THROTTLE_" + std::string(stream_name(stream_type(i)));
                 std::transform(str.begin(), str.end(), str.begin(),
                     [](unsigned char c) { return std::toupper(c); });
-                val = pika::get_env_value(str.c_str(), def);
+                val = pika::detail::get_env_var_as<std::uint32_t>(str.c_str(), def);
                 if (val != def)
                 {
                     detail::init_stream(stream_type(i), val);
@@ -312,7 +313,8 @@ namespace pika::mpi::experimental {
         // -----------------------------------------------------------------
         std::size_t get_polling_default()
         {
-            std::uint32_t val = pika::get_env_value("PIKA_MPI_POLLING_SIZE", 8);
+            std::uint32_t val =
+                pika::detail::get_env_var_as<std::uint32_t>("PIKA_MPI_POLLING_SIZE", 8);
             PIKA_DETAIL_DP(mpi_debug<5>, debug(str<>("Poll size"), dec<3>(val)));
             mpi_data_.max_polling_requests = val;
             return val;
@@ -322,7 +324,8 @@ namespace pika::mpi::experimental {
         std::size_t get_completion_mode_default()
         {
             // inline continuations are default
-            task_completion_flags_ = pika::get_env_value("PIKA_MPI_COMPLETION_MODE", 1);
+            task_completion_flags_ =
+                pika::detail::get_env_var_as<std::size_t>("PIKA_MPI_COMPLETION_MODE", 1);
             return task_completion_flags_;
         }
 

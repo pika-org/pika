@@ -112,7 +112,7 @@ namespace pika::mpi::experimental::detail {
             std::decay_t<Receiver> receiver;
             std::decay_t<F> f;
             stream_type stream;
-            pika::spinlock mutex_;
+            pika::detail::spinlock mutex_;
             pika::condition_variable cond_var_;
             bool completed;
             int status;

@@ -80,7 +80,7 @@ namespace pika::mpi::experimental::detail {
             int status;
             // these vars are needed by suspend/resume mode
             bool completed;
-            pika::spinlock mutex_;
+            pika::detail::spinlock mutex_;
             pika::condition_variable cond_var_;
 
             // -----------------------------------------------------------------

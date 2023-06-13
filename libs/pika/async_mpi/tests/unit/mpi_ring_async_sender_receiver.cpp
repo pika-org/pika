@@ -5,7 +5,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/assert.hpp>
-#include <pika/command_line_handling/get_env_var.hpp>
+#include <pika/command_line_handling/get_env_var_as.hpp>
 #include <pika/debugging/print.hpp>
 #include <pika/execution.hpp>
 #include <pika/future.hpp>
@@ -484,7 +484,7 @@ void init_resource_partitioner_handler(
     if (vm["no-mpi-pool"].as<bool>() || ntasks == 1)
     {
         // turn off pool creation
-        int mode = pika::get_env_value("PIKA_MPI_COMPLETION_MODE", 1);
+        int mode = pika::detail::get_env_var_as<int>("PIKA_MPI_COMPLETION_MODE", 1);
         mode = mode & ~(0b01);
         setenv("PIKA_MPI_COMPLETION_MODE", std::to_string(mode).c_str(), true);
         pika::mpi::experimental::detail::get_completion_mode_default();
