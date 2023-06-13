@@ -10,6 +10,7 @@
 #include <pika/modules/logging.hpp>
 
 #include <cstdlib>
+#include <sstream>
 #include <string>
 
 namespace pika::detail {
