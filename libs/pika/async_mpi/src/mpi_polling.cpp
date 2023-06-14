@@ -552,8 +552,8 @@ namespace pika::mpi::experimental {
                                     --mpi_data_.active_requests_size_;
                                 }
                             }
-                            vsize -= 32;
-                            req_init += 32;
+                            vsize -= req_size;
+                            req_init += req_size;
                         }
                     }
                     else
