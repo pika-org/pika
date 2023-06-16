@@ -6,6 +6,7 @@
 
 #include <pika/config.hpp>
 #include <pika/threading_base/print.hpp>
+#include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_data.hpp>
 
 #include <cstdint>
@@ -84,7 +85,16 @@ namespace pika::debug::detail {
                     pika::threads::detail::get_self_id_data();
                 os << hex<12, std::uintptr_t>(reinterpret_cast<std::uintptr_t>(dummy)) << " ";
             }
-            os << hex<12, std::thread::id>(std::this_thread::get_id())
+            const char* pool = "--------";
+            auto tid = threads::detail::get_self_id();
+            if (tid != threads::detail::invalid_thread_id)
+            {
+                auto* p = get_thread_id_data(tid)->get_scheduler_base()->get_parent_pool();
+                pool = p->get_pool_name().c_str();
+            }
+            os << hex<12, std::thread::id>(std::this_thread::get_id()) << " "
+               << debug::detail::str<8>(pool)
+
 #ifdef PIKA_DEBUGGING_PRINT_LINUX
                << " cpu " << debug::detail::dec<3, int>(sched_getcpu()) << " ";
 #else

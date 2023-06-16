@@ -126,7 +126,10 @@ namespace PIKA_DETAIL_NS_DEBUG {
         }
     }
 
-    template PIKA_EXPORT void print_bin(std::ostream&, unsigned char, int);
+    template PIKA_EXPORT void print_bin(std::ostream&, std::int8_t, int);
+    template PIKA_EXPORT void print_bin(std::ostream&, std::int32_t, int);
+    template PIKA_EXPORT void print_bin(std::ostream&, std::int64_t, int);
+    template PIKA_EXPORT void print_bin(std::ostream&, std::uint8_t, int);
     template PIKA_EXPORT void print_bin(std::ostream&, std::uint32_t, int);
     template PIKA_EXPORT void print_bin(std::ostream&, std::uint64_t, int);
 
@@ -190,7 +193,9 @@ namespace PIKA_DETAIL_NS_DEBUG {
 
     void generate_prefix(std::ostream& os)
     {
+#ifdef PIKA_DEBUG_PRINT_SHOW_TIME
         os << detail::current_time_print_helper();
+#endif
         if (print_info)
         {
             print_info(os);
