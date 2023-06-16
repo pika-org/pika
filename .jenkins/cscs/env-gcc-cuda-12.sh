@@ -18,7 +18,7 @@ spack_spec="pika@main arch=${spack_arch} %${spack_compiler} +cuda malloc=system 
 configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${cxx_std}"
 configure_extra_options+=" -DPIKA_WITH_MALLOC=system"
 configure_extra_options+=" -DPIKA_WITH_CUDA=ON"
-configure_extra_options+=" -DCMAKE_CUDA_ARCH=60=ON"
+configure_extra_options+=" -DCMAKE_CUDA_ARCHITECTURES=60"
 
 # All async_cuda tests are disabled from running because the driver on Piz Daint
 # is too old for CUDA 12.
