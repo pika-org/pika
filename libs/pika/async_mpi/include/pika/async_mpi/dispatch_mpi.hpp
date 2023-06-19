@@ -61,6 +61,12 @@ namespace pika::mpi::experimental::detail {
         std::decay_t<F> f;
         stream_type stream;
 
+#if defined(PIKA_HAVE_STDEXEC)
+
+        using completion_signatures = pika::execution::experimental::completion_signatures<
+            pika::execution::experimental::set_value_t(MPI_Request)>;
+
+#else
         // -----------------------------------------------------------------
         // completion signatures
         template <template <typename...> class Tuple, template <typename...> class Variant>
@@ -70,6 +76,8 @@ namespace pika::mpi::experimental::detail {
         using error_types = pud::unique_t<
             pud::prepend_t<typename exp::sender_traits<Sender>::template error_types<Variant>,
                 std::exception_ptr>>;
+
+#endif
 
         static constexpr bool sends_done = false;
 

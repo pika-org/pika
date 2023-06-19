@@ -14,8 +14,6 @@
 #include <pika/async_mpi/mpi_polling.hpp>
 #include <pika/async_mpi/trigger_mpi.hpp>
 #include <pika/concepts/concepts.hpp>
-#include <pika/datastructures/variant.hpp>
-#include <pika/debugging/demangle_helper.hpp>
 #include <pika/debugging/print.hpp>
 #include <pika/execution/algorithms/detail/helpers.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
@@ -24,7 +22,6 @@
 #include <pika/execution_base/any_sender.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
-#include <pika/executors/thread_pool_scheduler.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/functional/invoke_fused.hpp>
@@ -34,297 +31,6 @@
 #include <tuple>
 #include <type_traits>
 #include <utility>
-
-namespace pika::mpi::experimental::detail {
-
-    namespace pud = pika::util::detail;
-    namespace exp = execution::experimental;
-
-    // -----------------------------------------------------------------
-    // route calls through an impl layer for ADL resolution
-    template <typename Sender, typename F>
-    struct transform_mpi_sender_impl
-    {
-        struct transform_mpi_sender_type;
-    };
-
-    template <typename Sender, typename F>
-    using transform_mpi_sender =
-        typename transform_mpi_sender_impl<Sender, F>::transform_mpi_sender_type;
-
-    // -----------------------------------------------------------------
-    // transform MPI adapter - sender type
-    template <typename Sender, typename F>
-    struct transform_mpi_sender_impl<Sender, F>::transform_mpi_sender_type
-    {
-        using is_sender = void;
-
-        std::decay_t<Sender> sender;
-        std::decay_t<F> f;
-        stream_type stream;
-
-#if defined(PIKA_HAVE_STDEXEC)
-        template <typename... Ts>
-        requires is_mpi_request_invocable_v<F, Ts...>
-        using invoke_result_helper = exp::completion_signatures<
-            exp::detail::result_type_signature_helper_t<mpi_request_invoke_result_t<F, Ts...>>>;
-
-        using completion_signatures = exp::make_completion_signatures<std::decay_t<Sender>,
-            exp::empty_env, exp::completion_signatures<exp::set_error_t(std::exception_ptr)>,
-            invoke_result_helper>;
-#else
-        // -----------------------------------------------------------------
-        // get the return tuple<type> of func (tuple<args> + MPI_Request)
-        template <typename Tuple>
-        struct invoke_result_helper;
-
-        template <template <typename...> class Tuple, typename... Ts>
-        struct invoke_result_helper<Tuple<Ts...>>
-        {
-            static_assert(is_mpi_request_invocable_v<F, Ts...>,
-                "F not invocable with the value_types specified.");
-            using result_type = mpi_request_invoke_result_t<F, Ts...>;
-            //            using type =
-            //                std::conditional_t<std::is_void<result_type>::value, Tuple<>, Tuple<result_type>>;
-            using type = Tuple<>;
-        };
-
-        // -----------------------------------------------------------------
-        // get pack of unique types from combined tuple and variant
-        template <template <typename...> class Tuple, template <typename...> class Variant>
-        using value_types = pud::unique_t<pud::transform_t<
-            typename exp::sender_traits<Sender>::template value_types<Tuple, Variant>,
-            invoke_result_helper>>;
-
-        template <template <typename...> class Variant>
-        using error_types = pud::unique_t<
-            pud::prepend_t<typename exp::sender_traits<Sender>::template error_types<Variant>,
-                std::exception_ptr>>;
-
-        static constexpr bool sends_done = false;
-#endif
-
-        // -----------------------------------------------------------------
-        // operation state for a given receiver
-        template <typename Receiver>
-        struct operation_state
-        {
-            std::decay_t<Receiver> receiver;
-            std::decay_t<F> f;
-            stream_type stream;
-            pika::detail::spinlock mutex_;
-            pika::condition_variable cond_var_;
-            bool completed;
-            int status;
-
-            // -----------------------------------------------------------------
-            // The mpi_receiver receives inputs from the previous sender,
-            // invokes the mpi call, and sets a callback on the polling handler
-            struct transform_mpi_receiver
-            {
-                using is_receiver = void;
-
-                operation_state& op_state;
-
-                template <typename Error>
-                friend constexpr void
-                tag_invoke(exp::set_error_t, transform_mpi_receiver&& r, Error&& error) noexcept
-                {
-                    exp::set_error(PIKA_MOVE(r.op_state.receiver), PIKA_FORWARD(Error, error));
-                }
-
-                friend constexpr void tag_invoke(
-                    exp::set_stopped_t, transform_mpi_receiver&& r) noexcept
-                {
-                    exp::set_stopped(PIKA_MOVE(r.op_state.receiver));
-                }
-
-                // receive the MPI function and arguments and add a request,
-                // then invoke the mpi function and set a callback to be
-                // triggered when the mpi request completes
-                template <typename... Ts,
-                    typename = std::enable_if_t<is_mpi_request_invocable_v<F, Ts...>>>
-                friend constexpr void
-                tag_invoke(exp::set_value_t, transform_mpi_receiver&& r, Ts&&... ts) noexcept
-                {
-                    pika::detail::try_catch_exception_ptr(
-                        [&]() mutable {
-                            using namespace pika::debug::detail;
-                            using ts_element_type = std::tuple<std::decay_t<Ts>...>;
-                            //                        using invoke_result_type = mpi_request_invoke_result_t<F, Ts...>;
-                            using invoke_result_type = void;
-                            //
-                            r.op_state.ts.template emplace<ts_element_type>(
-                                PIKA_FORWARD(Ts, ts)...);
-                            auto& t = std::get<ts_element_type>(r.op_state.ts);
-                            //
-                            MPI_Request request;
-                            // modes 0 uses the task yield_while method of callback
-                            // modes 1,2 use the task resume method of callback
-                            auto mode = get_completion_mode();
-                            if (detail::get_handler_mode(mode) == detail::handler_mode::yield_while)
-                            {
-                                pud::invoke_fused(
-                                    [&](auto&... ts) mutable {
-                                        // execute the mpi function call, passing in the request object
-                                        if constexpr (std::is_void_v<invoke_result_type>)
-                                        {
-                                            PIKA_INVOKE(PIKA_MOVE(r.op_state.f), ts..., &request);
-                                        }
-                                        else
-                                        {
-                                            r.op_state.result.template emplace<invoke_result_type>(
-                                                PIKA_INVOKE(
-                                                    PIKA_MOVE(r.op_state.f), ts..., &request));
-                                        }
-                                        PIKA_DETAIL_DP(
-                                            mpi_tran<5>, debug(str<>("mpi invoke"), ptr(request)));
-                                        PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
-                                            "MPI_REQUEST_NULL returned from mpi "
-                                            "invocation");
-                                    },
-                                    t);
-                                //
-                                pika::util::yield_while(
-                                    [&request]() { return !detail::poll_request(request); });
-
-                                r.op_state.ts = {};
-                                r.op_state.status = MPI_SUCCESS;
-                                if constexpr (!std::is_void_v<invoke_result_type>)
-                                {
-                                    set_value_error_helper(r.op_state.status,
-                                        PIKA_MOVE(r.op_state.receiver),
-                                        PIKA_MOVE(std::get<invoke_result_type>(r.op_state.result)));
-                                }
-                                else
-                                {
-                                    set_value_error_helper(
-                                        r.op_state.status, PIKA_MOVE(r.op_state.receiver));
-                                }
-                            }
-                            else
-                            {
-                                throw std::runtime_error("Wrong sender used in mpi invocation");
-                            }
-                        },
-                        [&](std::exception_ptr ep) {
-                            exp::set_error(PIKA_MOVE(r.op_state.receiver), PIKA_MOVE(ep));
-                        });
-                }
-
-                friend constexpr exp::empty_env tag_invoke(
-                    exp::get_env_t, transform_mpi_receiver const&) noexcept
-                {
-                    return {};
-                }
-            };
-
-            using operation_state_type =
-                exp::connect_result_t<std::decay_t<Sender>, transform_mpi_receiver>;
-            operation_state_type op_state;
-
-            template <typename Tuple>
-            struct value_types_helper
-            {
-                using type = pud::transform_t<Tuple, std::decay>;
-            };
-
-#if defined(PIKA_HAVE_STDEXEC)
-            using ts_type = pud::prepend_t<
-                pud::transform_t<exp::value_types_of_t<std::decay_t<Sender>, exp::empty_env,
-                                     std::tuple, pika::detail::variant>,
-                    value_types_helper>,
-                pika::detail::monostate>;
-#else
-            using ts_type = pud::prepend_t<
-                pud::transform_t<typename exp::sender_traits<std::decay_t<Sender>>::
-                                     template value_types<std::tuple, pika::detail::variant>,
-                    value_types_helper>,
-                pika::detail::monostate>;
-#endif
-            ts_type ts;
-
-            // We store the return value of f in a variant. We know that
-            // value_types of the transform_mpi_sender contains packs of at
-            // most one element (the return value of f), so we only
-            // specialize result_types_helper for zero or one value. For
-            // empty packs we use pika::detail::monostate since we don't
-            // need to store anything in that case.
-            //
-            // All in all, we:
-            // - transform one-element packs to the single element, and
-            //   empty packs to pika::detail::monostate
-            // - add pika::detail::monostate to the pack in case it wasn't
-            //   there already
-            // - remove duplicates in case pika::detail::monostate has been
-            //   added twice
-            // - change the outer pack to a pika::detail::variant
-            template <typename Tuple>
-            struct result_types_helper;
-
-            template <template <typename...> class Tuple, typename T>
-            struct result_types_helper<Tuple<T>>
-            {
-                using type = std::decay_t<T>;
-            };
-
-            template <template <typename...> class Tuple>
-            struct result_types_helper<Tuple<>>
-            {
-                using type = pika::detail::monostate;
-            };
-#if defined(PIKA_HAVE_STDEXEC)
-            using result_type = pud::change_pack_t<pika::detail::variant,
-                pud::unique_t<
-                    pud::prepend_t<pud::transform_t<exp::value_types_of_t<transform_mpi_sender_type,
-                                                        exp::empty_env, pud::pack, pud::pack>,
-                                       result_types_helper>,
-                        pika::detail::monostate>>>;
-#else
-//            using result_type = pud::change_pack_t<pika::detail::variant,
-//                pud::unique_t<pud::prepend_t<
-//                    pud::transform_t<transform_mpi_sender_type::value_types<pud::pack, pud::pack>,
-//                        result_types_helper>,
-//                    pika::detail::monostate>>>;
-//            using result_type = pika::detail::monostate;
-#endif
-            //            result_type result;
-
-            template <typename Receiver_, typename F_, typename Sender_>
-            operation_state(Receiver_&& receiver, F_&& f, Sender_&& sender, stream_type s)
-              : receiver(PIKA_FORWARD(Receiver_, receiver))
-              , f(PIKA_FORWARD(F_, f))
-              , stream{s}
-              , completed{false}
-              , status{MPI_SUCCESS}
-              , op_state(exp::connect(PIKA_FORWARD(Sender_, sender), transform_mpi_receiver{*this}))
-            {
-            }
-
-            friend constexpr auto tag_invoke(exp::start_t, operation_state& os) noexcept
-            {
-                return exp::start(os.op_state);
-            }
-        };
-
-        template <typename Receiver>
-        friend constexpr auto
-        tag_invoke(exp::connect_t, transform_mpi_sender_type const& s, Receiver&& receiver)
-        {
-            return operation_state<Receiver>(
-                PIKA_FORWARD(Receiver, receiver), s.f, s.sender, s.stream);
-        }
-
-        template <typename Receiver>
-        friend constexpr auto
-        tag_invoke(exp::connect_t, transform_mpi_sender_type&& s, Receiver&& receiver)
-        {
-            return operation_state<Receiver>(
-                PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.f), PIKA_MOVE(s.sender), s.stream);
-        }
-    };
-
-}    // namespace pika::mpi::experimental::detail
 
 namespace pika::mpi::experimental {
 
@@ -348,15 +54,9 @@ namespace pika::mpi::experimental {
                     detail::stream_name(s)));
 
             using execution::thread_priority;
-            using exp::drop_value;
             using exp::make_unique_any_sender;
-            using exp::schedule;
             using exp::then;
-            using exp::thread_pool_scheduler;
             using exp::transfer;
-            using exp::with_priority;
-            using exp::with_stacksize;
-            exp::unique_any_sender<> result;
 
             // get the mpi completion mode
             auto mode = get_completion_mode();
@@ -364,6 +64,7 @@ namespace pika::mpi::experimental {
             bool inline_com = use_inline_com(mode);
             bool inline_req = use_inline_req(mode);
 
+#ifdef PIKA_DEBUG
             // ----------------------------------------------------------
             // the pool should exist if the completion mode needs it
             int cwsize = detail::comm_world_size();
@@ -375,77 +76,54 @@ namespace pika::mpi::experimental {
                           << need_pool << std::endl;
             }
             PIKA_ASSERT(pool_exists() == need_pool);
+#endif
 
-            // ----------------------------------------------------------
-            // DLAF default : use yield_while
-            if (mode >= 64)
+            using execution::thread_priority;
+            thread_priority p = use_HP_com(mode) ? thread_priority::high : thread_priority::normal;
+            if (inline_req)
             {
-                auto snd0 = PIKA_FORWARD(Sender, sender) | transfer(mpi_pool_scheduler());
-                auto snd1 = transform_mpi_sender<decltype(snd0), F>{PIKA_MOVE(snd0),
-                                PIKA_FORWARD(F, f), s} |
-                    drop_value();
-                return make_unique_any_sender<>(std::move(snd1));
-            }
-            // ----------------------------------------------------------
-            else
-            {
-                using execution::thread_priority;
-                thread_priority p =
-                    use_HP_com(mode) ? thread_priority::high : thread_priority::normal;
-                if (inline_req)
-                {
-                    return dispatch_mpi_sender<Sender, F>{
-                               PIKA_MOVE(sender), PIKA_FORWARD(F, f), s} |
-                        pika::execution::experimental::let_value(
-                            [=](MPI_Request request) -> exp::unique_any_sender</*int*/> {
-                                if (inline_com)
-                                {
-                                    if (request == MPI_REQUEST_NULL)
-                                        return exp::just(/*MPI_SUCCESS*/);
-                                    else
-                                        return exp::just(request) | trigger_mpi(mode) /*|
-                                            drop_value()*/
-                                            ;
-                                }
-                                else
-                                {
-                                    if (request == MPI_REQUEST_NULL)
-                                        return exp::just(/*MPI_SUCCESS*/) |
-                                            transfer(default_pool_scheduler(p)) /*| drop_value()*/;
-                                    else
-                                        return exp::just(request) |
-                                            transfer(default_pool_scheduler(p)) |
-                                            trigger_mpi(mode) /*| drop_value()*/;
-                                }
-                            });
-                }
-                else
-                {
-                    auto snd0 = PIKA_FORWARD(Sender, sender) | transfer(mpi_pool_scheduler());
-                    return dispatch_mpi_sender<decltype(snd0), F>{
-                               PIKA_MOVE(snd0), PIKA_FORWARD(F, f), s} |
-                        exp::let_value([=](MPI_Request request) -> exp::unique_any_sender</*int*/> {
+                return dispatch_mpi_sender<Sender, F>{PIKA_MOVE(sender), PIKA_FORWARD(F, f), s} |
+                    pika::execution::experimental::let_value(
+                        [=](MPI_Request request) -> exp::unique_any_sender<> {
                             if (inline_com)
                             {
                                 if (request == MPI_REQUEST_NULL)
-                                    return exp::just(/*MPI_SUCCESS*/);
+                                    return exp::just();
                                 else
-                                    return exp::just(request) |
-                                        trigger_mpi(mode) /* | drop_value()*/;
+                                    return exp::just(request) | trigger_mpi(mode);
                             }
                             else
                             {
                                 if (request == MPI_REQUEST_NULL)
-                                    return exp::just(/*MPI_SUCCESS*/) |
-                                        transfer(default_pool_scheduler(p)) /* | drop_value()*/;
+                                    return exp::just() | transfer(default_pool_scheduler(p));
                                 else
                                     return exp::just(request) |
-                                        transfer(default_pool_scheduler(p)) |
-                                        trigger_mpi(mode) /* | drop_value()*/;
+                                        transfer(default_pool_scheduler(p)) | trigger_mpi(mode);
                             }
                         });
-                    //                    return make_unique_any_sender<>(std::move(snd1));
-                }
+            }
+            else
+            {
+                auto snd0 = PIKA_FORWARD(Sender, sender) | transfer(mpi_pool_scheduler());
+                return dispatch_mpi_sender<decltype(snd0), F>{
+                           PIKA_MOVE(snd0), PIKA_FORWARD(F, f), s} |
+                    exp::let_value([=](MPI_Request request) -> exp::unique_any_sender<> {
+                        if (inline_com)
+                        {
+                            if (request == MPI_REQUEST_NULL)
+                                return exp::just();
+                            else
+                                return exp::just(request) | trigger_mpi(mode);
+                        }
+                        else
+                        {
+                            if (request == MPI_REQUEST_NULL)
+                                return exp::just() | transfer(default_pool_scheduler(p));
+                            else
+                                return exp::just(request) | transfer(default_pool_scheduler(p)) |
+                                    trigger_mpi(mode);
+                        }
+                    });
             }
         }
 
