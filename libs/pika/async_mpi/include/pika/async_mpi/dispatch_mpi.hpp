@@ -131,35 +131,25 @@ namespace pika::mpi::experimental::detail {
                                 debug(str<>("dispatch_mpi_recv"), "set_value_t", "stream",
                                     detail::stream_name(r.op_state.stream_)));
 
-                            // move/copy the received params into our local opstate
-                            r.op_state.ts.template emplace<ts_element_type>(
-                                PIKA_FORWARD(Ts, ts)...);
-                            // and get a reference to the tuple of local params
-                            auto& t = std::get<ts_element_type>(r.op_state.ts);
                             // init a request
                             MPI_Request request;
                             int status = MPI_SUCCESS;
-                            // invoke the function, with the contents of the param tuple as args
-                            pud::invoke_fused(
-                                [&](auto&... ts) mutable {
-                                    // execute the mpi function call, passing in the request object
-                                    if constexpr (std::is_void_v<invoke_result_type>)
-                                    {
-                                        PIKA_INVOKE(PIKA_MOVE(r.op_state.f), ts..., &request);
-                                    }
-                                    else
-                                    {
-                                        status =
-                                            PIKA_INVOKE(PIKA_MOVE(r.op_state.f), ts..., &request);
-                                    }
-                                    PIKA_DETAIL_DP(mpi_tran<7>,
-                                        debug(str<>("dispatch_mpi_recv"), "invoke mpi",
-                                            detail::stream_name(r.op_state.stream_), ptr(request)));
+                            // execute the mpi function call, passing in the request object
+                            if constexpr (std::is_void_v<invoke_result_type>)
+                            {
+                                PIKA_INVOKE(PIKA_MOVE(r.op_state.f), ts..., &request);
+                            }
+                            else
+                            {
+                                status = PIKA_INVOKE(PIKA_MOVE(r.op_state.f), ts..., &request);
+                            }
+                            PIKA_DETAIL_DP(mpi_tran<7>,
+                                debug(str<>("dispatch_mpi_recv"), "invoke mpi",
+                                    detail::stream_name(r.op_state.stream_), ptr(request)));
 
-                                    PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
-                                        "MPI_REQUEST_NULL returned from mpi invocation");
-                                },
-                                t);
+                            PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
+                                "MPI_REQUEST_NULL returned from mpi invocation");
+
                             if (status != MPI_SUCCESS)
                             {
                                 PIKA_DETAIL_DP(mpi_tran<5>,
@@ -169,8 +159,7 @@ namespace pika::mpi::experimental::detail {
                                     std::make_exception_ptr(mpi_exception(status)));
                                 return;
                             }
-                            // function called, Ts... can now be released (if refs hold lifetime)
-                            r.op_state.ts = {};
+
                             if (poll_request(request))
                             {
                                 PIKA_DETAIL_DP(mpi_tran<7>,
@@ -207,23 +196,6 @@ namespace pika::mpi::experimental::detail {
             {
                 using type = pud::transform_t<Tuple, std::decay>;
             };
-
-#if defined(PIKA_HAVE_STDEXEC)
-            using ts_type = pika::util::detail::prepend_t<
-                pika::util::detail::transform_t<
-                    execution::experimental::value_types_of_t<std::decay_t<Sender>,
-                        execution::experimental::empty_env, std::tuple, pika::detail::variant>,
-                    value_types_helper>,
-                pika::detail::monostate>;
-#else
-            using ts_type = pika::util::detail::prepend_t<
-                pika::util::detail::transform_t<
-                    typename execution::experimental::sender_traits<std::decay_t<Sender>>::
-                        template value_types<std::tuple, pika::detail::variant>,
-                    value_types_helper>,
-                pika::detail::monostate>;
-#endif
-            ts_type ts;
 
             // we don't bother storing the result, but the correct type is ...
             using result_type = pika::detail::variant<std::tuple<MPI_Request>>;
