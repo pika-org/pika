@@ -4,10 +4,9 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(tests
-    #algorithm_transform_mpi
+set(tests # algorithm_transform_mpi
     mpi_ring_async_sender_receiver
-    #mpi_async_storage
+    # mpi_async_storage
 )
 
 # cmake-format: off

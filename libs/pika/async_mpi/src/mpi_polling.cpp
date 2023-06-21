@@ -18,14 +18,6 @@
 #include <pika/synchronization/condition_variable.hpp>
 #include <pika/synchronization/mutex.hpp>
 //
-// If we can use ranges/v3 then these can be used for zip vector compacting
-/*
-#include <range/v3/algorithm/copy.hpp>
-#include <range/v3/algorithm/remove_if.hpp>
-#include <range/v3/view/transform.hpp>
-#include <range/v3/view/zip.hpp>
-*/
-//
 #include <array>
 #include <atomic>
 #include <cstddef>
@@ -81,7 +73,6 @@ namespace pika::mpi::experimental {
             std::int32_t limit_;
             const char* name_;
             std::shared_ptr<semaphore_type> semaphore_;
-            semaphore_type* another_ptr_;
         };
 
         struct mpi_callback_info
@@ -207,11 +198,7 @@ namespace pika::mpi::experimental {
         void init_stream(stream_type s, std::int32_t limit)
         {
             mpi_stream& stream = mpi_data_.default_queues_[to_underlying(s)];
-            auto* sp = new semaphore_type(limit);
-            stream.semaphore_ = std::shared_ptr<semaphore_type>(sp, [](semaphore_type* p) {
-                // std::cout << "deleting shared pointer\n\n\n";
-                delete p;
-            });
+            stream.semaphore_ = std::make_shared<semaphore_type>(limit);
             stream.name_ = stream_name(s);
             stream.limit_ = limit;
             PIKA_DETAIL_DP(mpi_debug<3>, debug(str<>("init stream"), stream.name_, dec<5>(limit)));
@@ -422,14 +409,6 @@ namespace pika::mpi::experimental {
         void compact_vectors()
         {
             using detail::mpi_data_;
-            /*
-            auto z = ranges::views::zip(mpi_data_.requests_, mpi_data_.callbacks_);
-            auto e = ranges::remove_if(z, [](auto&& r) { return r.first == MPI_REQUEST_NULL; });
-            mpi_data_.requests_.erase(
-                mpi_data_.requests_.begin() + (e - z.begin()), mpi_data_.requests_.end());
-            mpi_data_.callbacks_.erase(
-                mpi_data_.callbacks_.begin() + (e - z.begin()), mpi_data_.callbacks_.end());
-            */
 
             size_t const size = mpi_data_.requests_.size();
             size_t pos = size;
@@ -737,7 +716,7 @@ namespace pika::mpi::experimental {
         }
         else
         {
-            throw std::runtime_error("MPI must be intialized prior to pool creation");
+            throw std::runtime_error("MPI must be initialized prior to pool creation");
         }
         //
         int flags = detail::get_completion_mode_default();
@@ -767,8 +746,7 @@ namespace pika::mpi::experimental {
 
         // Disable idle backoff on the MPI pool
         using pika::threads::scheduler_mode;
-        auto smode = scheduler_mode::default_mode;
-        smode = scheduler_mode(smode & ~scheduler_mode::enable_idle_backoff);
+        auto smode = scheduler_mode::default_mode & ~scheduler_mode::enable_idle_backoff;
 
         // Create a thread pool with a single core that we will use for all
         // communication related tasks

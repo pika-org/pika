@@ -36,10 +36,11 @@
 
 namespace pika::mpi::experimental::detail {
 
-    namespace pud = pika::util::detail;
-
+    namespace {
+        namespace ex = pika::execution::experimental;
+    }
     // -----------------------------------------------------------------
-    // route calls through an impl layer for ADL resolution
+    // route calls through an impl layer for ADL isolation
     template <typename Sender>
     struct trigger_mpi_sender_impl
     {
@@ -68,15 +69,14 @@ namespace pika::mpi::experimental::detail {
         using value_types = Variant<Tuple<>>;
 
         template <template <typename...> class Variant>
-        using error_types = pud::unique_t<
-            pud::prepend_t<typename exp::sender_traits<Sender>::template error_types<Variant>,
-                std::exception_ptr>>;
+        using error_types = util::detail::unique_t<util::detail::prepend_t<
+            typename ex::sender_traits<Sender>::template error_types<Variant>, std::exception_ptr>>;
 #endif
 
         static constexpr bool sends_done = false;
 
         // -----------------------------------------------------------------
-        // operation state for a given receiver
+        // operation state for an internal receiver
         template <typename Receiver>
         struct operation_state
         {
@@ -98,26 +98,25 @@ namespace pika::mpi::experimental::detail {
 
                 template <typename Error>
                 friend constexpr void
-                tag_invoke(exp::set_error_t, trigger_mpi_receiver&& r, Error&& error) noexcept
+                tag_invoke(ex::set_error_t, trigger_mpi_receiver r, Error&& error) noexcept
                 {
-                    exp::set_error(PIKA_MOVE(r.op_state.receiver), PIKA_FORWARD(Error, error));
+                    ex::set_error(PIKA_MOVE(r.op_state.receiver), PIKA_FORWARD(Error, error));
                 }
 
-                friend constexpr void tag_invoke(
-                    exp::set_stopped_t, trigger_mpi_receiver&& r) noexcept
+                friend constexpr void tag_invoke(ex::set_stopped_t, trigger_mpi_receiver r) noexcept
                 {
-                    exp::set_stopped(PIKA_MOVE(r.op_state.receiver));
+                    ex::set_stopped(PIKA_MOVE(r.op_state.receiver));
                 }
 
                 // receive the MPI Request and set a callback to be
                 // triggered when the mpi request completes
                 friend constexpr void tag_invoke(
-                    exp::set_value_t, trigger_mpi_receiver&& r, MPI_Request request) noexcept
+                    ex::set_value_t, trigger_mpi_receiver r, MPI_Request request) noexcept
                 {
                     // early exit check
                     if (request == MPI_REQUEST_NULL)
                     {
-                        exp::set_value(PIKA_MOVE(r.op_state.receiver));
+                        ex::set_value(PIKA_MOVE(r.op_state.receiver));
                         return;
                     }
 
@@ -138,7 +137,7 @@ namespace pika::mpi::experimental::detail {
                                 pika::util::yield_while(
                                     [&request]() { return !detail::poll_request(request); });
                                 // we just assume the return from mpi_test is always MPI_SUCCESS
-                                exp::set_value(PIKA_MOVE(r.op_state.receiver));
+                                ex::set_value(PIKA_MOVE(r.op_state.receiver));
                                 break;
                             }
                             case handler_mode::new_task:
@@ -163,7 +162,7 @@ namespace pika::mpi::experimental::detail {
                                 // the callback will resume _this_ thread
                                 std::unique_lock l{r.op_state.mutex_};
                                 resume_request_callback(request, r.op_state);
-                                if (use_HP_com(r.op_state.mode_flags_))
+                                if (use_HP_completion(r.op_state.mode_flags_))
                                 {
                                     threads::detail::thread_data::scoped_thread_priority
                                         set_restore(execution::thread_priority::high);
@@ -181,53 +180,50 @@ namespace pika::mpi::experimental::detail {
                                 break;
                             }
                             default:
-                            {
-                                // I bet the "review" police don't like this exception
-                                throw mpi_exception(MPI_ERR_UNKNOWN, "eek!");
-                                break;
-                            }
+                                PIKA_UNREACHABLE;
                             }
                         },
                         [&](std::exception_ptr ep) {
-                            exp::set_error(PIKA_MOVE(r.op_state.receiver), PIKA_MOVE(ep));
+                            ex::set_error(PIKA_MOVE(r.op_state.receiver), PIKA_MOVE(ep));
                         });
                 }
 
-                friend constexpr exp::empty_env tag_invoke(
-                    exp::get_env_t, trigger_mpi_receiver const&) noexcept
+                friend constexpr ex::empty_env tag_invoke(
+                    ex::get_env_t, trigger_mpi_receiver const&) noexcept
                 {
                     return {};
                 }
             };
 
             using operation_state_type =
-                exp::connect_result_t<std::decay_t<Sender>, trigger_mpi_receiver>;
+                ex::connect_result_t<std::decay_t<Sender>, trigger_mpi_receiver>;
             operation_state_type op_state;
 
             template <typename Receiver_, typename Sender_>
             operation_state(Receiver_&& receiver, Sender_&& sender, int flags)
               : receiver(PIKA_FORWARD(Receiver_, receiver))
               , mode_flags_{flags}
-              , op_state(exp::connect(PIKA_FORWARD(Sender_, sender), trigger_mpi_receiver{*this}))
+              , status{MPI_SUCCESS}
+              , op_state(ex::connect(PIKA_FORWARD(Sender_, sender), trigger_mpi_receiver{*this}))
             {
             }
 
-            friend constexpr auto tag_invoke(exp::start_t, operation_state& os) noexcept
+            friend constexpr auto tag_invoke(ex::start_t, operation_state& os) noexcept
             {
-                return exp::start(os.op_state);
+                return ex::start(os.op_state);
             }
         };
 
         template <typename Receiver>
         friend constexpr auto
-        tag_invoke(exp::connect_t, trigger_mpi_sender_type const& s, Receiver&& receiver)
+        tag_invoke(ex::connect_t, trigger_mpi_sender_type const& s, Receiver&& receiver)
         {
             return operation_state<Receiver>(PIKA_FORWARD(Receiver, receiver), s.sender);
         }
 
         template <typename Receiver>
         friend constexpr auto
-        tag_invoke(exp::connect_t, trigger_mpi_sender_type&& s, Receiver&& receiver)
+        tag_invoke(ex::connect_t, trigger_mpi_sender_type&& s, Receiver&& receiver)
         {
             return operation_state<Receiver>(
                 PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.sender), s.completion_mode_flags_);
@@ -244,7 +240,7 @@ namespace pika::mpi::experimental {
       : pika::functional::detail::tag_fallback<trigger_mpi_t>
     {
     private:
-        template <typename Sender, PIKA_CONCEPT_REQUIRES_(exp::is_sender_v<std::decay_t<Sender>>)>
+        template <typename Sender, PIKA_CONCEPT_REQUIRES_(ex::is_sender_v<std::decay_t<Sender>>)>
         friend constexpr PIKA_FORCEINLINE auto
         tag_fallback_invoke(trigger_mpi_t, Sender&& sender, int flags)
         {
@@ -256,7 +252,7 @@ namespace pika::mpi::experimental {
         //
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(trigger_mpi_t, int flags)
         {
-            return exp::detail::partial_algorithm<trigger_mpi_t, int>{flags};
+            return ex::detail::partial_algorithm<trigger_mpi_t, int>{flags};
         }
 
     } trigger_mpi{};

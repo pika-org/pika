@@ -31,16 +31,10 @@
 
 namespace pika::mpi::experimental {
 
-    //    enum progress_mode
-    //    {
-    //        can_block,
-    //        cannot_block
-    //    };
-
     template <typename E>
-    constexpr typename std::underlying_type<E>::type to_underlying(E e) noexcept
+    constexpr std::underlying_type_t<E> to_underlying(E e) noexcept
     {
-        return static_cast<typename std::underlying_type<E>::type>(e);
+        return static_cast<std::underlying_type_t<E>>(e);
     }
 
     enum pool_create_mode
@@ -122,7 +116,7 @@ namespace pika::mpi::experimental {
 
             /// this bit enables the use of a high priority task flag when a
             /// completion is handled so that the continuation is executed quickly
-            /// if transfered to a new task, or resumed from sleep.
+            /// if transferred to a new task, or resumed from sleep.
             high_priority = 0x08,
 
             /// 3 bits control the handler method,
@@ -145,20 +139,20 @@ namespace pika::mpi::experimental {
             return static_cast<handler_mode>(flags & to_underlying(handler_mode::method_mask));
         }
 
-        // 1 bit defines pool or no pool
-        inline bool use_HP_com(int mode)
+        // 1 bit defines high priority mode for completion
+        inline bool use_HP_completion(int mode)
         {
             return static_cast<bool>((mode & to_underlying(handler_mode::high_priority)) ==
                 to_underlying(handler_mode::high_priority));
         }
         // 1 bit defines inline or transfer completion
-        inline bool use_inline_com(int mode)
+        inline bool use_inline_completion(int mode)
         {
             return static_cast<bool>((mode & to_underlying(handler_mode::completion_inline)) ==
                 to_underlying(handler_mode::completion_inline));
         }
         // 1 bit defines inline or transfer mpi invocation
-        inline bool use_inline_req(int mode)
+        inline bool use_inline_request(int mode)
         {
             return static_cast<bool>((mode & to_underlying(handler_mode::request_inline)) ==
                 to_underlying(handler_mode::request_inline));

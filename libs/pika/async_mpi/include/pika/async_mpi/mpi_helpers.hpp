@@ -4,8 +4,6 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-/// \file parallel/algorithms/transform_xxx.hpp
-
 #pragma once
 
 #include <pika/config.hpp>
@@ -17,9 +15,7 @@
 #include <pika/debugging/print.hpp>
 #include <pika/execution/algorithms/detail/helpers.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
-#include <pika/execution/algorithms/drop_value.hpp>
 #include <pika/execution/algorithms/just.hpp>
-#include <pika/execution/algorithms/schedule_from.hpp>
 #include <pika/execution/algorithms/then.hpp>
 #include <pika/execution/algorithms/transfer.hpp>
 #include <pika/execution_base/any_sender.hpp>
@@ -43,24 +39,25 @@ namespace pika::mpi::experimental::detail {
     template <int Level>
     inline print_threshold<Level, 0> mpi_tran("MPITRAN");
 
-    namespace pud = pika::util::detail;
-    namespace exp = execution::experimental;
+    namespace {
+        namespace ex = pika::execution::experimental;
+    }
 
     // -----------------------------------------------------------------
     template <typename T>
     struct any_sender_helper
     {
-        using type = exp::unique_any_sender<T>;
+        using type = ex::unique_any_sender<T>;
     };
 
     template <>
     struct any_sender_helper<void>
     {
-        using type = exp::unique_any_sender<>;
+        using type = ex::unique_any_sender<>;
     };
 
     // -----------------------------------------------------------------
-    // is func(Ts..., MPI_Request) invokable
+    // is func(Ts..., MPI_Request) invocable
     template <typename F, typename... Ts>
     inline constexpr bool is_mpi_request_invocable_v =
         std::is_invocable_v<F, std::add_lvalue_reference_t<std::decay_t<Ts>>..., MPI_Request*>;
@@ -77,12 +74,12 @@ namespace pika::mpi::experimental::detail {
     {
         if (stack)
         {
-            return exp::thread_pool_scheduler{&resource::get_thread_pool(get_pool_name())};
+            return ex::thread_pool_scheduler{&resource::get_thread_pool(get_pool_name())};
         }
         else
         {
-            return exp::with_stacksize(
-                exp::thread_pool_scheduler{&resource::get_thread_pool(get_pool_name())},
+            return ex::with_stacksize(
+                ex::thread_pool_scheduler{&resource::get_thread_pool(get_pool_name())},
                 execution::thread_stacksize::nostack);
         }
     }
@@ -93,10 +90,10 @@ namespace pika::mpi::experimental::detail {
     {
         if (p == execution::thread_priority::normal)
         {
-            return exp::thread_pool_scheduler{&resource::get_thread_pool("default")};
+            return ex::thread_pool_scheduler{&resource::get_thread_pool("default")};
         }
-        return exp::with_priority(
-            exp::thread_pool_scheduler{&resource::get_thread_pool("default")}, p);
+        return ex::with_priority(
+            ex::thread_pool_scheduler{&resource::get_thread_pool("default")}, p);
     }
 
     // -----------------------------------------------------------------
@@ -107,11 +104,11 @@ namespace pika::mpi::experimental::detail {
         static_assert(sizeof...(Ts) <= 1, "Expecting at most one value");
         if (mpi_status == MPI_SUCCESS)
         {
-            exp::set_value(PIKA_FORWARD(Receiver, receiver), PIKA_FORWARD(Ts, ts)...);
+            ex::set_value(PIKA_FORWARD(Receiver, receiver), PIKA_FORWARD(Ts, ts)...);
         }
         else
         {
-            exp::set_error(PIKA_FORWARD(Receiver, receiver),
+            ex::set_error(PIKA_FORWARD(Receiver, receiver),
                 std::make_exception_ptr(mpi_exception(mpi_status)));
         }
     }
@@ -186,20 +183,20 @@ namespace pika::mpi::experimental::detail {
                 PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("schedule_task_callback")));
                 if (status != MPI_SUCCESS)
                 {
-                    exp::set_error(PIKA_FORWARD(Receiver, receiver),
+                    ex::set_error(PIKA_FORWARD(Receiver, receiver),
                         std::make_exception_ptr(mpi_exception(status)));
                 }
                 else
                 {
                     // pass the result onto a new task and invoke the continuation
-                    auto snd0 = exp::just(status) |
-                        exp::transfer(default_pool_scheduler(execution::thread_priority::high)) |
-                        exp::then([receiver = PIKA_MOVE(receiver)](int status) mutable {
+                    auto snd0 = ex::just(status) |
+                        ex::transfer(default_pool_scheduler(execution::thread_priority::high)) |
+                        ex::then([receiver = PIKA_MOVE(receiver)](int status) mutable {
                             PIKA_DETAIL_DP(
                                 mpi_tran<5>, debug(str<>("set_value_error_helper"), status));
                             set_value_error_helper(status, PIKA_MOVE(receiver));
                         });
-                    exp::start_detached(PIKA_MOVE(snd0));
+                    ex::start_detached(PIKA_MOVE(snd0));
                 }
             },
             request);
