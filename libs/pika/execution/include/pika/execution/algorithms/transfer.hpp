@@ -13,6 +13,7 @@
 #else
 # include <pika/concepts/concepts.hpp>
 # include <pika/execution/algorithms/detail/partial_algorithm.hpp>
+# include <pika/execution/algorithms/schedule_from.hpp>
 # include <pika/execution_base/completion_scheduler.hpp>
 # include <pika/execution_base/receiver.hpp>
 # include <pika/execution_base/sender.hpp>
