@@ -19,6 +19,7 @@
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 #include <pika/execution/algorithms/let_value.hpp>
 #include <pika/execution/algorithms/transfer.hpp>
+#include <pika/execution/algorithms/transfer_just.hpp>
 #include <pika/execution_base/any_sender.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
@@ -54,9 +55,10 @@ namespace pika::mpi::experimental {
                 debug(str<>("transform_mpi_t"), "tag_fallback_invoke", "stream",
                     detail::stream_name(s)));
 
-            using ex::make_unique_any_sender;
+            using ex::just;
             using ex::then;
             using ex::transfer;
+            using ex::transfer_just;
             using execution::thread_priority;
 
             // get the mpi completion mode
@@ -91,16 +93,16 @@ namespace pika::mpi::experimental {
                             if (inline_com)
                             {
                                 if (request == MPI_REQUEST_NULL)
-                                    return ex::just();
+                                    return just();
                                 else
-                                    return ex::just(request) | trigger_mpi(mode);
+                                    return just(request) | trigger_mpi(mode);
                             }
                             else
                             {
                                 if (request == MPI_REQUEST_NULL)
-                                    return ex::just() | transfer(default_pool_scheduler(p));
+                                    return transfer_just(default_pool_scheduler(p));
                                 else
-                                    return ex::just(request) | transfer(default_pool_scheduler(p)) |
+                                    return transfer_just(default_pool_scheduler(p), request) |
                                         trigger_mpi(mode);
                             }
                         });
@@ -114,16 +116,16 @@ namespace pika::mpi::experimental {
                         if (inline_com)
                         {
                             if (request == MPI_REQUEST_NULL)
-                                return ex::just();
+                                return just();
                             else
-                                return ex::just(request) | trigger_mpi(mode);
+                                return just(request) | trigger_mpi(mode);
                         }
                         else
                         {
                             if (request == MPI_REQUEST_NULL)
-                                return ex::just() | transfer(default_pool_scheduler(p));
+                                return transfer_just(default_pool_scheduler(p));
                             else
-                                return ex::just(request) | transfer(default_pool_scheduler(p)) |
+                                return transfer_just(default_pool_scheduler(p), request) |
                                     trigger_mpi(mode);
                         }
                     });
