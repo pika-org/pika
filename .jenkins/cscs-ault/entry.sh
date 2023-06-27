@@ -13,6 +13,8 @@ export configuration_name_with_build_type="${configuration_name}-${build_type,,}
 
 source ".jenkins/cscs-ault/slurm-constraint-${configuration_name}.sh"
 
+scancel  203593 203596 203597 203708 204191 204192 204193 204194 204195 204196 204199
+
 if [[ -z "${ghprbPullId:-}" ]]; then
     # Set name of branch if not building a pull request
     export git_local_branch=$(echo "${GIT_BRANCH}" | cut -f2 -d'/')
