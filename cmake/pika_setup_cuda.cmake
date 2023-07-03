@@ -63,10 +63,12 @@ if(PIKA_WITH_CUDA AND NOT TARGET pika_internal::cuda)
         pika_internal::cuda INTERFACE CUDA::cublas CUDA::cusolver
       )
     endif()
-    # Flag not working for CLANG CUDA
-    target_compile_features(
-      pika_internal::cuda INTERFACE cuda_std_${CMAKE_CUDA_STANDARD}
-    )
+    if(DEFINED CMAKE_CUDA_STANDARD)
+      # Flag not working for CLANG CUDA
+      target_compile_features(
+        pika_internal::cuda INTERFACE cuda_std_${CMAKE_CUDA_STANDARD}
+      )
+    endif()
     set_target_properties(
       pika_internal::cuda PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON
     )
