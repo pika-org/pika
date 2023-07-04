@@ -199,8 +199,6 @@ namespace pika::mpi::experimental::detail {
                 using type = util::detail::transform_t<Tuple, std::decay>;
             };
 
-            // note that result_type = pika::detail::variant<std::tuple<MPI_Request>>;
-
             template <typename Receiver_, typename F_, typename Sender_>
             operation_state(Receiver_&& receiver, F_&& f, Sender_&& sender, stream_type s)
               : receiver(PIKA_FORWARD(Receiver_, receiver))
