@@ -357,7 +357,7 @@ struct const_reference_sender
     static constexpr bool sends_done = false;
 
     using completion_signatures = pika::execution::experimental::completion_signatures<
-        pika::execution::experimental::set_value_t(std::decay_t<T>&),
+        pika::execution::experimental::set_value_t(std::decay_t<T> const&),
         pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
     template <typename R>
