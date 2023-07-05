@@ -451,6 +451,9 @@ namespace pika::mpi::experimental {
             ready_callback ready_callback_;
             while (mpi_data_.ready_requests_.try_dequeue(ready_callback_))
             {
+#ifdef PIKA_HAVE_APEX
+                apex::scoped_timer apex_invoke("pika::mpi::trigger");
+#endif
                 PIKA_DETAIL_DP(mpi_debug<4>,
                     debug(str<>("Ready CB invoke"), ptr(ready_callback_.request_),
                         ready_callback_.err_));
@@ -465,6 +468,9 @@ namespace pika::mpi::experimental {
 
             // start a scoped block where the polling lock is held
             {
+#ifdef PIKA_HAVE_APEX
+                apex::scoped_timer apex_poll("pika::mpi::poll");
+#endif
                 std::unique_lock<mutex_type> lk(mpi_data_.polling_vector_mtx_, std::try_to_lock);
                 if (!lk.owns_lock())
                 {
@@ -589,6 +595,9 @@ namespace pika::mpi::experimental {
             // invoke (new) ready callbacks without being under lock
             while (mpi_data_.ready_requests_.try_dequeue(ready_callback_))
             {
+#ifdef PIKA_HAVE_APEX
+                apex::scoped_timer apex_invoke("pika::mpi::trigger");
+#endif
                 PIKA_DETAIL_DP(mpi_debug<5>,
                     debug(str<>("CB invoke"), ptr(ready_callback_.request_), ready_callback_.err_));
 

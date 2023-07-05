@@ -127,11 +127,12 @@ namespace pika::mpi::experimental::detail {
                             using ts_element_type = std::tuple<std::decay_t<Ts>...>;
                             using invoke_result_type = mpi_request_invoke_result_t<F, Ts...>;
 
-                            using namespace pika::debug::detail;
                             PIKA_DETAIL_DP(mpi_tran<5>,
                                 debug(str<>("dispatch_mpi_recv"), "set_value_t", "stream",
                                     detail::stream_name(r.op_state.stream_)));
-
+#ifdef PIKA_HAVE_APEX
+                            apex::scoped_timer apex_post("pika::mpi::post");
+#endif
                             // init a request
                             MPI_Request request;
                             int status = MPI_SUCCESS;
@@ -164,6 +165,9 @@ namespace pika::mpi::experimental::detail {
 
                             if (poll_request(request))
                             {
+#ifdef PIKA_HAVE_APEX
+                                apex::scoped_timer apex_invoke("pika::mpi::trigger");
+#endif
                                 PIKA_DETAIL_DP(mpi_tran<7>,
                                     debug(str<>("dispatch_mpi_recv"), "eager poll ok",
                                         detail::stream_name(r.op_state.stream_), ptr(request)));
