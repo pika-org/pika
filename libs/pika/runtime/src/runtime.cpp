@@ -1147,13 +1147,21 @@ namespace pika {
                     std::thread& blob = tm.get_os_thread_handle(i);
                     threads::detail::mask_type boundcpu = top.get_cpubind_mask(blob, ec);
 
+                    // Empty masks are equivalent to full masks, so we first
+                    // transform possible empty masks to full masks.
+                    threads::detail::mask_type boundcpu_never_empty =
+                        !threads::detail::any(boundcpu) ? ~boundcpu : boundcpu;
+                    threads::detail::mask_type pu_mask_never_empty =
+                        !threads::detail::any(pu_mask) ? ~pu_mask : pu_mask;
+
                     // The masks reported by pika must be the same as the ones
                     // reported from HWLOC.
-                    if (!ec && threads::detail::any(boundcpu) &&
-                        !threads::detail::equal(boundcpu, pu_mask, num_threads))
+                    if (!ec &&
+                        !threads::detail::equal(
+                            boundcpu_never_empty, pu_mask_never_empty, num_threads))
                     {
-                        std::string boundcpu_str = threads::detail::to_string(boundcpu);
-                        std::string pu_mask_str = threads::detail::to_string(pu_mask);
+                        std::string boundcpu_str = threads::detail::to_string(boundcpu_never_empty);
+                        std::string pu_mask_str = threads::detail::to_string(pu_mask_never_empty);
                         PIKA_THROW_EXCEPTION(pika::error::invalid_status, "handle_print_bind",
                             "unexpected mismatch between locality {}: binding reported from "
                             "HWLOC({}) and pika({}) on thread {}",
