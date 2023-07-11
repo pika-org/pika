@@ -14,6 +14,7 @@ set(threading_base_headers
     pika/threading_base/detail/external_timer/apex.hpp
     pika/threading_base/detail/external_timer/default.hpp
     pika/threading_base/detail/get_default_pool.hpp
+    pika/threading_base/detail/global_activity_count.hpp
     pika/threading_base/detail/reset_backtrace.hpp
     pika/threading_base/detail/reset_lco_description.hpp
     pika/threading_base/detail/tracy.hpp
@@ -47,6 +48,7 @@ set(threading_base_sources
     execution_agent.cpp
     external_timer_apex.cpp
     get_default_pool.cpp
+    global_activity_count.cpp
     print.cpp
     reset_backtrace.cpp
     reset_lco_description.cpp

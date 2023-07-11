@@ -22,6 +22,7 @@
 #include <pika/runtime_configuration/runtime_configuration.hpp>
 #include <pika/thread_pool_util/thread_pool_suspension_helpers.hpp>
 #include <pika/thread_pools/scheduled_thread_pool.hpp>
+#include <pika/threading_base/detail/global_activity_count.hpp>
 #include <pika/threading_base/set_thread_state.hpp>
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/threading_base/thread_helpers.hpp>
@@ -867,9 +868,10 @@ namespace pika::threads::detail {
 
     void thread_manager::wait()
     {
-        std::size_t shutdown_check_count =
-            ::pika::detail::get_entry_as<std::size_t>(rtcfg_, "pika.shutdown_check_count", 10);
-        pika::util::detail::yield_while_count([this]() { return is_busy(); }, shutdown_check_count);
+        pika::util::yield_while([]() {
+            return pika::threads::detail::get_global_activity_count() >
+                (threads::detail::get_self_ptr() != nullptr ? 1 : 0);
+        });
     }
 
     void thread_manager::suspend()

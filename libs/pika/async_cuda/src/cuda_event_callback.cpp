@@ -17,6 +17,7 @@
 #include <pika/datastructures/detail/small_vector.hpp>
 #include <pika/resource_partitioner/detail/partitioner.hpp>
 #include <pika/runtime/thread_pool_helpers.hpp>
+#include <pika/threading_base/detail/global_activity_count.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
 
@@ -79,6 +80,7 @@ namespace pika::cuda::experimental::detail {
             while (ready_events.try_dequeue(ready_callback_))
             {
                 ready_callback_.f(ready_callback_.status);
+                pika::threads::detail::decrement_global_activity_count();
             }
 
             // locked section to access std::vector etc
@@ -179,6 +181,7 @@ namespace pika::cuda::experimental::detail {
             while (ready_events.try_dequeue(ready_callback_))
             {
                 ready_callback_.f(ready_callback_.status);
+                pika::threads::detail::decrement_global_activity_count();
             }
 
             using pika::threads::detail::polling_status;
@@ -204,6 +207,8 @@ namespace pika::cuda::experimental::detail {
                 debug(str<>("event queued"), "event", hex<8>(event), "enqueued events",
                     dec<3>(get_number_of_enqueued_events()), "active events",
                     dec<3>(get_number_of_active_events())));
+
+            pika::threads::detail::increment_global_activity_count();
 
             event_callback_queue.enqueue({event, PIKA_MOVE(f)});
         }

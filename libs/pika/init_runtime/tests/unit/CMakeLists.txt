@@ -5,7 +5,8 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 set(tests
-    config_entry const_args_init finalize_non_pika_thread scoped_finalize
+    config_entry const_args_init finalize_non_pika_thread pika_wait
+    scoped_finalize
     # shutdown_suspended_thread # Disabled due to unavailable timed suspension
 )
 

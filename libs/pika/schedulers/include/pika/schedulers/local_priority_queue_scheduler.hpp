@@ -17,6 +17,7 @@
 #include <pika/schedulers/deadlock_detection.hpp>
 #include <pika/schedulers/lockfree_queue_backends.hpp>
 #include <pika/schedulers/thread_queue.hpp>
+#include <pika/threading_base/detail/global_activity_count.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/threading_base/thread_num_tss.hpp>
@@ -442,6 +443,8 @@ namespace pika::threads::detail {
         void create_thread(threads::detail::thread_init_data& data,
             threads::detail::thread_id_ref_type* id, error_code& ec) override
         {
+            pika::threads::detail::increment_global_activity_count();
+
             // NOTE: This scheduler ignores NUMA hints.
             std::size_t num_thread =
                 data.schedulehint.mode == execution::thread_schedule_hint_mode::thread ?
@@ -677,6 +680,8 @@ namespace pika::threads::detail {
         {
             PIKA_ASSERT(thrd->get_scheduler_base() == this);
             thrd->get_queue<thread_queue_type>().destroy_thread(thrd);
+
+            pika::threads::detail::decrement_global_activity_count();
         }
 
         ///////////////////////////////////////////////////////////////////////
