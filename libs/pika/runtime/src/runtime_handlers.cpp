@@ -56,8 +56,6 @@ namespace pika::detail {
 
         handling_assertion = true;
 
-        pika::util::may_attach_debugger("exception");
-
         std::ostringstream strm;
         strm << "Assertion '" << expr << "' failed";
         if (!msg.empty())
@@ -69,6 +67,9 @@ namespace pika::detail {
         std::cerr << pika::diagnostic_information(pika::detail::get_exception(
                          e, loc.function_name, loc.file_name, loc.line_number))
                   << std::endl;
+
+        pika::util::may_attach_debugger("exception");
+
         std::abort();
     }
 
