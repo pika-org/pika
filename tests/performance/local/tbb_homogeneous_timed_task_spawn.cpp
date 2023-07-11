@@ -115,8 +115,7 @@ struct spawner : tbb::task
 int tbb_main(variables_map& vm)
 {
     // Validate command line.
-    if (0 == tasks)
-        throw std::invalid_argument("count of 0 tasks specified\n");
+    if (0 == tasks) throw std::invalid_argument("count of 0 tasks specified\n");
 
     // Start the clock.
     high_resolution_timer t;
@@ -162,8 +161,7 @@ int main(int argc, char** argv)
         return 0;
     }
 
-    if (vm.count("no-header"))
-        header = false;
+    if (vm.count("no-header")) header = false;
 
     // Setup the TBB environment.
     tbb::task_scheduler_init init(vm["threads"].as<std::uint64_t>());

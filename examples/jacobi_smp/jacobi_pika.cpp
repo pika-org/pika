@@ -56,10 +56,8 @@ namespace jacobi_smp {
                 std::vector<pika::shared_future<void>> trigger;
                 trigger.reserve(3);
                 trigger.push_back((*deps_old)[j]);
-                if (j > 0)
-                    trigger.push_back((*deps_old)[j - 1]);
-                if (j + 1 < n_block)
-                    trigger.push_back((*deps_old)[j + 1]);
+                if (j > 0) trigger.push_back((*deps_old)[j - 1]);
+                if (j + 1 < n_block) trigger.push_back((*deps_old)[j + 1]);
 
                 /*
                  * FIXME: dataflow seems to have some raceconditions

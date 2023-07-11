@@ -64,10 +64,7 @@ std::atomic<std::size_t> complete(0);
 
 struct oncomplete
 {
-    void operator()() const
-    {
-        ++complete;
-    }
+    void operator()() const { ++complete; }
 };
 
 void local_barrier_test(pika::barrier<oncomplete>& b)
@@ -210,7 +207,4 @@ int pika_main()
     return pika::finalize();
 }
 
-int main(int argc, char* argv[])
-{
-    return pika::init(pika_main, argc, argv);
-}
+int main(int argc, char* argv[]) { return pika::init(pika_main, argc, argv); }

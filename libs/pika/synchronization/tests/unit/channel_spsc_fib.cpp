@@ -19,8 +19,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 int verify_fibonacci(int n)
 {
-    if (n < 2)
-        return n;
+    if (n < 2) return n;
     return verify_fibonacci(n - 1) + verify_fibonacci(n - 2);
 }
 
@@ -29,10 +28,7 @@ template <typename T>
 inline T channel_get(pika::experimental::channel_spsc<T> const& c)
 {
     T result;
-    while (!c.get(&result))
-    {
-        pika::this_thread::yield();
-    }
+    while (!c.get(&result)) { pika::this_thread::yield(); }
     return result;
 }
 
@@ -103,7 +99,4 @@ int pika_main()
     return 0;
 }
 
-int main(int argc, char* argv[])
-{
-    return pika::init(pika_main, argc, argv);
-}
+int main(int argc, char* argv[]) { return pika::init(pika_main, argc, argv); }

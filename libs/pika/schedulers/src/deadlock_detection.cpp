@@ -12,14 +12,8 @@ namespace pika::threads::detail {
 #ifdef PIKA_HAVE_THREAD_DEADLOCK_DETECTION
     static bool deadlock_detection_enabled = false;
 
-    void set_deadlock_detection_enabled(bool enabled)
-    {
-        deadlock_detection_enabled = enabled;
-    }
+    void set_deadlock_detection_enabled(bool enabled) { deadlock_detection_enabled = enabled; }
 
-    bool get_deadlock_detection_enabled()
-    {
-        return deadlock_detection_enabled;
-    }
+    bool get_deadlock_detection_enabled() { return deadlock_detection_enabled; }
 #endif
 }    // namespace pika::threads::detail

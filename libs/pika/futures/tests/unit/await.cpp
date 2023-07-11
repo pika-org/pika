@@ -28,10 +28,7 @@ int just_wait(int result)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-pika::future<int> test1()
-{
-    co_return co_await pika::make_ready_future(42);
-}
+pika::future<int> test1() { co_return co_await pika::make_ready_future(42); }
 
 pika::future<int> test2()
 {
@@ -48,10 +45,7 @@ pika::future<int> test3()
     co_return result;
 }
 
-pika::future<int> async_test1()
-{
-    co_return co_await pika::async(just_wait, 42);
-}
+pika::future<int> async_test1() { co_return co_await pika::async(just_wait, 42); }
 
 pika::future<int> async_test2()
 {
@@ -82,16 +76,14 @@ void simple_await_tests()
 ///////////////////////////////////////////////////////////////////////////////
 pika::future<int> fib1(int n)
 {
-    if (n >= 2)
-        n = co_await fib1(n - 1) + co_await fib1(n - 2);
+    if (n >= 2) n = co_await fib1(n - 1) + co_await fib1(n - 2);
     (void) n;
     co_return n;
 }
 
 pika::future<int> fib2(int n)
 {
-    if (n >= 2)
-        n = co_await pika::async(&fib2, n - 1) + co_await fib2(n - 2);
+    if (n >= 2) n = co_await pika::async(&fib2, n - 1) + co_await fib2(n - 2);
     (void) n;
     co_return n;
 }
@@ -103,10 +95,7 @@ void simple_recursive_await_tests()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-pika::shared_future<int> shared_test1()
-{
-    co_return co_await pika::make_ready_future(42);
-}
+pika::shared_future<int> shared_test1() { co_return co_await pika::make_ready_future(42); }
 
 pika::shared_future<int> shared_test2()
 {
@@ -123,10 +112,7 @@ pika::shared_future<int> shared_test3()
     co_return result;
 }
 
-pika::shared_future<int> async_shared_test1()
-{
-    co_return co_await pika::async(just_wait, 42);
-}
+pika::shared_future<int> async_shared_test1() { co_return co_await pika::async(just_wait, 42); }
 
 pika::shared_future<int> async_shared_test2()
 {
@@ -157,16 +143,14 @@ void simple_await_shared_tests()
 ///////////////////////////////////////////////////////////////////////////////
 pika::shared_future<int> shared_fib1(int n)
 {
-    if (n >= 2)
-        n = co_await shared_fib1(n - 1) + co_await shared_fib1(n - 2);
+    if (n >= 2) n = co_await shared_fib1(n - 1) + co_await shared_fib1(n - 2);
     (void) n;
     co_return n;
 }
 
 pika::shared_future<int> shared_fib2(int n)
 {
-    if (n >= 2)
-        n = co_await pika::async(&fib2, n - 1) + co_await shared_fib2(n - 2);
+    if (n >= 2) n = co_await pika::async(&fib2, n - 1) + co_await shared_fib2(n - 2);
     (void) n;
     co_return n;
 }

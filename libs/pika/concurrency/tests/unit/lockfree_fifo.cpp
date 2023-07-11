@@ -32,13 +32,11 @@ bool get_next_thread(std::uint64_t num_thread)
 {
     std::uint64_t r = 0;
 
-    if ((*queues[num_thread]).pop(r))
-        return true;
+    if ((*queues[num_thread]).pop(r)) return true;
 
     for (std::uint64_t i = 0; i < threads; ++i)
     {
-        if (i == num_thread)
-            continue;
+        if (i == num_thread) continue;
 
         if ((*queues[i]).pop(r))
         {
@@ -95,8 +93,7 @@ int main(int argc, char** argv)
         return 0;
     }
 
-    if (vm.count("threads"))
-        threads = vm["threads"].as<std::uint64_t>();
+    if (vm.count("threads")) threads = vm["threads"].as<std::uint64_t>();
 
     stolen.resize(threads);
 
@@ -104,8 +101,7 @@ int main(int argc, char** argv)
     {
         queues.push_back(new queue(items));
 
-        for (std::uint64_t j = 0; j < items; ++j)
-            (*queues[i]).push(j);
+        for (std::uint64_t j = 0; j < items; ++j) (*queues[i]).push(j);
 
         PIKA_TEST(!(*queues[i]).empty());
     }
@@ -118,16 +114,13 @@ int main(int argc, char** argv)
 
         for (std::thread& t : tg)
         {
-            if (t.joinable())
-                t.join();
+            if (t.joinable()) t.join();
         }
     }
 
-    for (std::uint64_t i = 0; i < threads; ++i)
-        PIKA_TEST_EQ(stolen[i], std::uint64_t(0));
+    for (std::uint64_t i = 0; i < threads; ++i) PIKA_TEST_EQ(stolen[i], std::uint64_t(0));
 
-    for (std::uint64_t i = 0; i < threads; ++i)
-        delete queues[i];
+    for (std::uint64_t i = 0; i < threads; ++i) delete queues[i];
 
     return 0;
 }

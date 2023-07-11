@@ -199,8 +199,7 @@ namespace pika::threads::coroutines {
 
             void init()
             {
-                if (m_stack != nullptr)
-                    return;
+                if (m_stack != nullptr) return;
 
                 if (0 != (m_stack_size % EXEC_PAGESIZE))
                 {
@@ -311,10 +310,7 @@ namespace pika::threads::coroutines {
 # endif
 
             // Return the size of the reserved stack address space.
-            std::ptrdiff_t get_stacksize() const
-            {
-                return m_stack_size;
-            }
+            std::ptrdiff_t get_stacksize() const { return m_stack_size; }
 
             void reset_stack()
             {

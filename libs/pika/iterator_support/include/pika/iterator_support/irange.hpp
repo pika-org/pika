@@ -50,10 +50,7 @@ namespace pika::detail {
             using pointer = T*;
             using iterator_category = std::random_access_iterator_tag;
 
-            constexpr reference operator*() noexcept
-            {
-                return value;
-            }
+            constexpr reference operator*() noexcept { return value; }
 
             constexpr iterator& operator++() noexcept
             {
@@ -154,15 +151,9 @@ namespace pika::detail {
             T value = 0;
         };
 
-        constexpr iterator begin() const noexcept
-        {
-            return iterator{b};
-        }
+        constexpr iterator begin() const noexcept { return iterator{b}; }
 
-        constexpr iterator end() const noexcept
-        {
-            return iterator{e};
-        }
+        constexpr iterator end() const noexcept { return iterator{e}; }
 
     private:
         T b;
@@ -208,10 +199,7 @@ namespace pika::detail {
             using pointer = T*;
             using iterator_category = std::random_access_iterator_tag;
 
-            constexpr reference operator*() noexcept
-            {
-                return value;
-            }
+            constexpr reference operator*() noexcept { return value; }
 
             constexpr iterator& operator++() noexcept
             {
@@ -315,25 +303,13 @@ namespace pika::detail {
             U step = 0;
         };
 
-        constexpr iterator begin() const noexcept
-        {
-            return iterator{b, step};
-        }
+        constexpr iterator begin() const noexcept { return iterator{b, step}; }
 
         constexpr iterator end() const noexcept
         {
-            if (b < e)
-            {
-                return iterator{b + ((e - b - 1) / step + 1) * step, step};
-            }
-            else if (b > e)
-            {
-                return iterator{b + ((e - b + 1) / step + 1) * step, step};
-            }
-            else
-            {
-                return iterator{b, step};
-            }
+            if (b < e) { return iterator{b + ((e - b - 1) / step + 1) * step, step}; }
+            else if (b > e) { return iterator{b + ((e - b + 1) / step + 1) * step, step}; }
+            else { return iterator{b, step}; }
         }
 
     private:

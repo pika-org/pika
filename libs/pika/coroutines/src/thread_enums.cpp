@@ -34,8 +34,7 @@ namespace pika::threads::detail {
 
     char const* get_thread_state_name(thread_schedule_state state)
     {
-        if (state > thread_schedule_state::pending_boost)
-            return "unknown";
+        if (state > thread_schedule_state::pending_boost) return "unknown";
         return strings::thread_state_names[static_cast<std::size_t>(state)];
     }
 
@@ -65,8 +64,7 @@ namespace pika::threads::detail {
 
     char const* get_thread_state_ex_name(thread_restart_state state_ex)
     {
-        if (state_ex > thread_restart_state::abort)
-            return "wait_unknown";
+        if (state_ex > thread_restart_state::abort) return "wait_unknown";
         return strings::thread_state_ex_names[static_cast<std::size_t>(state_ex)];
     }
 
@@ -115,8 +113,7 @@ namespace pika::execution {
 
         char const* get_stack_size_enum_name(thread_stacksize size)
         {
-            if (size == thread_stacksize::unknown)
-                return "unknown";
+            if (size == thread_stacksize::unknown) return "unknown";
 
             if (size < thread_stacksize::small_ || size > thread_stacksize::nostack)
                 return "custom";

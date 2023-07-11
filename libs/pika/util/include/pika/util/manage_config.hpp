@@ -28,8 +28,7 @@ namespace pika::detail {
         T get_value(std::string const& key, T dflt = T()) const
         {
             map_type::const_iterator it = config_.find(key);
-            if (it != config_.end())
-                return pika::detail::from_string<T>((*it).second, dflt);
+            if (it != config_.end()) return pika::detail::from_string<T>((*it).second, dflt);
             return dflt;
         }
 

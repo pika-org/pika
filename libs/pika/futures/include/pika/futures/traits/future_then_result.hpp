@@ -29,10 +29,7 @@ namespace pika::traits {
         template <typename Future, typename F>
         struct continuation_not_callable
         {
-            static auto error(Future future, F& f)
-            {
-                f(PIKA_MOVE(future));
-            }
+            static auto error(Future future, F& f) { f(PIKA_MOVE(future)); }
 
             using type = decltype(error(std::declval<Future>(), std::declval<F&>()));
         };

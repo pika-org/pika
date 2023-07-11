@@ -42,35 +42,17 @@ public:
     ~X() {}
 #endif
 
-    int state() const
-    {
-        return state_;
-    }
+    int state() const { return state_; }
 
-    int operator()()
-    {
-        return state_ += 17041;
-    }
+    int operator()() { return state_ += 17041; }
 
-    int operator()(int x1)
-    {
-        return state_ += x1;
-    }
+    int operator()(int x1) { return state_ += x1; }
 
-    int operator()(int x1, int x2)
-    {
-        return state_ += x1 + x2;
-    }
+    int operator()(int x1, int x2) { return state_ += x1 + x2; }
 
-    int operator()(int x1, int x2, int x3)
-    {
-        return state_ += x1 + x2 + x3;
-    }
+    int operator()(int x1, int x2, int x3) { return state_ += x1 + x2 + x3; }
 
-    int operator()(int x1, int x2, int x3, int x4)
-    {
-        return state_ += x1 + x2 + x3 + x4;
-    }
+    int operator()(int x1, int x2, int x3, int x4) { return state_ += x1 + x2 + x3 + x4; }
 
     int operator()(int x1, int x2, int x3, int x4, int x5)
     {
@@ -98,30 +80,15 @@ public:
     }
 };
 
-int f0(int& state_)
-{
-    return state_ += 17041;
-}
+int f0(int& state_) { return state_ += 17041; }
 
-int f1(int& state_, int x1)
-{
-    return state_ += x1;
-}
+int f1(int& state_, int x1) { return state_ += x1; }
 
-int f2(int& state_, int x1, int x2)
-{
-    return state_ += x1 + x2;
-}
+int f2(int& state_, int x1, int x2) { return state_ += x1 + x2; }
 
-int f3(int& state_, int x1, int x2, int x3)
-{
-    return state_ += x1 + x2 + x3;
-}
+int f3(int& state_, int x1, int x2, int x3) { return state_ += x1 + x2 + x3; }
 
-int f4(int& state_, int x1, int x2, int x3, int x4)
-{
-    return state_ += x1 + x2 + x3 + x4;
-}
+int f4(int& state_, int x1, int x2, int x3, int x4) { return state_ += x1 + x2 + x3 + x4; }
 
 int f5(int& state_, int x1, int x2, int x3, int x4, int x5)
 {

@@ -44,10 +44,7 @@ using pika::unwrapping;
 std::atomic<std::uint32_t> void_f_count;
 std::atomic<std::uint32_t> int_f_count;
 
-void void_f()
-{
-    ++void_f_count;
-}
+void void_f() { ++void_f_count; }
 int int_f()
 {
     ++int_f_count;
@@ -57,10 +54,7 @@ int int_f()
 std::atomic<std::uint32_t> void_f1_count;
 std::atomic<std::uint32_t> int_f1_count;
 
-void void_f1(int)
-{
-    ++void_f1_count;
-}
+void void_f1(int) { ++void_f1_count; }
 int int_f1(int i)
 {
     ++int_f1_count;
@@ -79,10 +73,7 @@ std::atomic<std::uint32_t> int_f_vector_count;
 int int_f_vector(std::array<int, 10> const& vf)
 {
     int sum = 0;
-    for (int f : vf)
-    {
-        sum += f;
-    }
+    for (int f : vf) { sum += f; }
     return sum;
 }
 
@@ -178,10 +169,7 @@ void future_function_pointers()
 
     future_int_f_vector_count.store(0);
     std::array<future<int>, 10> vf;
-    for (std::size_t i = 0; i < 10; ++i)
-    {
-        vf[i] = dataflow(&future_int_f1, make_ready_future());
-    }
+    for (std::size_t i = 0; i < 10; ++i) { vf[i] = dataflow(&future_int_f1, make_ready_future()); }
     future<int> f5 = dataflow(&future_int_f_vector, std::ref(vf));
 
     PIKA_TEST_EQ(f5.get(), 10);

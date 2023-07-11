@@ -26,10 +26,7 @@ namespace pika::chrono::detail {
         {
         }
 
-        void restart() noexcept
-        {
-            start_time_ = take_time_stamp();
-        }
+        void restart() noexcept { start_time_ = take_time_stamp(); }
 
         // return elapsed time in seconds (double different from
         // std::chrono::seconds which returns an unsigned long)

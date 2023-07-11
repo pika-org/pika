@@ -86,13 +86,9 @@ int pika_main()
     }
 
     ready = true;
-    for (auto& t : threads)
-        t.join();
+    for (auto& t : threads) t.join();
 
     return pika::finalize();
 }
 
-int main(int argc, char* argv[])
-{
-    return pika::init(pika_main, argc, argv);
-}
+int main(int argc, char* argv[]) { return pika::init(pika_main, argc, argv); }

@@ -40,8 +40,7 @@ namespace test {
 
         ~thread_group()
         {
-            for (pika::thread* t : threads)
-                delete t;
+            for (pika::thread* t : threads) delete t;
         }
 
     private:
@@ -51,23 +50,20 @@ namespace test {
             std::shared_lock<mutex_type> guard(mtx_);
             for (pika::thread* t : threads)
             {
-                if (t->get_id() == id)
-                    return true;
+                if (t->get_id() == id) return true;
             }
             return false;
         }
 
         bool is_thread_in(pika::thread* thrd)
         {
-            if (!thrd)
-                return false;
+            if (!thrd) return false;
 
             pika::thread::id id = thrd->get_id();
             std::shared_lock<mutex_type> guard(mtx_);
             for (pika::thread* t : threads)
             {
-                if (t->get_id() == id)
-                    return true;
+                if (t->get_id() == id) return true;
             }
             return false;
         }
@@ -105,8 +101,7 @@ namespace test {
             std::list<pika::thread*>::iterator const it =
                 std::find(threads.begin(), threads.end(), thrd);
 
-            if (it != threads.end())
-                threads.erase(it);
+            if (it != threads.end()) threads.erase(it);
         }
 
         void join_all()
@@ -121,18 +116,14 @@ namespace test {
             std::shared_lock<mutex_type> guard(mtx_);
             for (pika::thread* t : threads)
             {
-                if (t->joinable())
-                    t->join();
+                if (t->joinable()) t->join();
             }
         }
 
         void interrupt_all()
         {
             std::shared_lock<mutex_type> guard(mtx_);
-            for (pika::thread* t : threads)
-            {
-                t->interrupt();
-            }
+            for (pika::thread* t : threads) { t->interrupt(); }
         }
 
         size_t size() const

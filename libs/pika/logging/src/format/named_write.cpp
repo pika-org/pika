@@ -91,8 +91,7 @@ namespace pika::util::logging::detail {
                     std::string name = remaining.substr(0, idx);
                     remaining.erase(0, idx + 1);
                     auto iter = find_named(formatters, name);
-                    if (iter != formatters.end())
-                        fmt = iter->value.get();
+                    if (iter != formatters.end()) fmt = iter->value.get();
                 }
                 // note: fmt could be null, in case
                 write_steps.push_back(write_step(spacer, fmt));
@@ -124,8 +123,7 @@ namespace pika::util::logging::detail {
                 continue;
 
             auto iter = find_named(destinations, word);
-            if (iter != destinations.cend())
-                write_steps.push_back(iter->value.get());
+            if (iter != destinations.cend()) write_steps.push_back(iter->value.get());
         }
     }
 
@@ -135,11 +133,9 @@ namespace pika::util::logging::detail {
             // formatter starts and ends with %
             bool has_manipulator_name() const
             {
-                if (m_manipulator.empty())
-                    return false;
+                if (m_manipulator.empty()) return false;
                 if (m_manipulator.size() > 1)
-                    if (m_manipulator[0] == '%' && (*m_manipulator.rbegin() == '%'))
-                        return true;
+                    if (m_manipulator[0] == '%' && (*m_manipulator.rbegin() == '%')) return true;
 
                 return false;
             }
@@ -151,10 +147,7 @@ namespace pika::util::logging::detail {
                 return m_manipulator.substr(1, m_manipulator.size() - 2);
             }
 
-            void clear()
-            {
-                m_manipulator.clear();
-            }
+            void clear() { m_manipulator.clear(); }
 
             void add(char c)
             {
@@ -174,10 +167,7 @@ namespace pika::util::logging::detail {
                 {
                     ;    // ignore this char - not from a manipulator
                 }
-                else if (m_manipulator[0] == '%')
-                {
-                    m_manipulator += c;
-                }
+                else if (m_manipulator[0] == '%') { m_manipulator += c; }
                 else
                 {
                     // manipulator should always start with %
@@ -191,10 +181,7 @@ namespace pika::util::logging::detail {
 
         struct parse_destination
         {
-            bool has_manipulator_name() const
-            {
-                return !m_manipulator.empty();
-            }
+            bool has_manipulator_name() const { return !m_manipulator.empty(); }
 
             std::string get_manipulator_name() const
             {
@@ -206,10 +193,7 @@ namespace pika::util::logging::detail {
                     return m_manipulator;
             }
 
-            void clear()
-            {
-                m_manipulator.clear();
-            }
+            void clear() { m_manipulator.clear(); }
 
             void add(char c)
             {

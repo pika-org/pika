@@ -27,10 +27,7 @@ namespace pika::threads::coroutines::detail {
     void tss_data_node::cleanup(bool cleanup_existing)
     {
 # ifdef PIKA_HAVE_THREAD_LOCAL_STORAGE
-        if (cleanup_existing && func_ && (value_ != nullptr))
-        {
-            (*func_)(value_);
-        }
+        if (cleanup_existing && func_ && (value_ != nullptr)) { (*func_)(value_); }
         func_.reset();
         value_ = nullptr;
 # else
@@ -73,12 +70,10 @@ namespace pika::threads::coroutines::detail {
         }
 
         tss_storage* tss_map = self->get_thread_tss_data();
-        if (nullptr == tss_map)
-            return 0;
+        if (nullptr == tss_map) return 0;
 
         tss_data_node* node = tss_map->find(nullptr);
-        if (nullptr == node)
-            return 0;
+        if (nullptr == node) return 0;
 
         return node->get_data<std::size_t>();
 # else
@@ -139,8 +134,7 @@ namespace pika::threads::coroutines::detail {
         }
 
         tss_storage* tss_map = self->get_thread_tss_data();
-        if (nullptr == tss_map)
-            return nullptr;
+        if (nullptr == tss_map) return nullptr;
 
         return tss_map->find(key);
 # else
@@ -202,8 +196,7 @@ namespace pika::threads::coroutines::detail {
         }
 
         tss_storage* tss_map = self->get_thread_tss_data();
-        if (nullptr != tss_map)
-            tss_map->erase(key, cleanup_existing);
+        if (nullptr != tss_map) tss_map->erase(key, cleanup_existing);
 # else
         PIKA_UNUSED(key);
         PIKA_UNUSED(cleanup_existing);
@@ -221,10 +214,7 @@ namespace pika::threads::coroutines::detail {
             else
                 erase_tss_node(key, cleanup_existing);
         }
-        else if (func || (tss_data != nullptr))
-        {
-            add_new_tss_node(key, func, tss_data);
-        }
+        else if (func || (tss_data != nullptr)) { add_new_tss_node(key, func, tss_data); }
 # else
         PIKA_UNUSED(key);
         PIKA_UNUSED(func);

@@ -309,10 +309,7 @@ namespace pika { namespace util { namespace itt {
             return *this;
         }
 
-        explicit constexpr operator bool() const noexcept
-        {
-            return handle_ != nullptr;
-        }
+        explicit constexpr operator bool() const noexcept { return handle_ != nullptr; }
 
         ___itt_string_handle* handle_ = nullptr;
     };
@@ -441,15 +438,9 @@ namespace pika { namespace util { namespace itt {
         {
         }
 
-        void start() const noexcept
-        {
-            itt_event_start(event_);
-        }
+        void start() const noexcept { itt_event_start(event_); }
 
-        void end() const noexcept
-        {
-            itt_event_end(event_);
-        }
+        void end() const noexcept { itt_event_end(event_); }
 
     private:
         int event_ = 0;
@@ -462,19 +453,13 @@ namespace pika { namespace util { namespace itt {
         {
             e_.start();
         }
-        ~mark_event()
-        {
-            e_.end();
-        }
+        ~mark_event() { e_.end(); }
 
     private:
         event e_;
     };
 
-    inline void event_tick(event const& e) noexcept
-    {
-        e.start();
-    }
+    inline void event_tick(event const& e) noexcept { e.start(); }
 }}}    // namespace pika::util::itt
 
 #else
@@ -488,10 +473,7 @@ inline constexpr void itt_sync_releasing(void*) noexcept {}
 inline constexpr void itt_sync_released(void*) noexcept {}
 inline constexpr void itt_sync_destroy(void*) noexcept {}
 
-inline constexpr ___itt_caller* itt_stack_create() noexcept
-{
-    return nullptr;
-}
+inline constexpr ___itt_caller* itt_stack_create() noexcept { return nullptr; }
 inline constexpr void itt_stack_enter(___itt_caller*) noexcept {}
 inline constexpr void itt_stack_leave(___itt_caller*) noexcept {}
 inline constexpr void itt_stack_destroy(___itt_caller*) noexcept {}
@@ -499,10 +481,7 @@ inline constexpr void itt_stack_destroy(___itt_caller*) noexcept {}
 inline constexpr void itt_frame_begin(___itt_domain const*, ___itt_id*) noexcept {}
 inline constexpr void itt_frame_end(___itt_domain const*, ___itt_id*) noexcept {}
 
-inline constexpr int itt_mark_create(char const*) noexcept
-{
-    return 0;
-}
+inline constexpr int itt_mark_create(char const*) noexcept { return 0; }
 inline constexpr void itt_mark_off(int) noexcept {}
 inline constexpr void itt_mark(int, char const*) noexcept {}
 
@@ -516,19 +495,13 @@ inline constexpr void itt_task_begin(
 }
 inline constexpr void itt_task_end(___itt_domain const*) noexcept {}
 
-inline constexpr ___itt_domain* itt_domain_create(char const*) noexcept
-{
-    return nullptr;
-}
+inline constexpr ___itt_domain* itt_domain_create(char const*) noexcept { return nullptr; }
 inline constexpr ___itt_string_handle* itt_string_handle_create(char const*) noexcept
 {
     return nullptr;
 }
 
-inline constexpr ___itt_id* itt_make_id(void*, unsigned long)
-{
-    return nullptr;
-}
+inline constexpr ___itt_id* itt_make_id(void*, unsigned long) { return nullptr; }
 inline constexpr void itt_id_create(___itt_domain const*, ___itt_id*) noexcept {}
 inline constexpr void itt_id_destroy(___itt_id*) noexcept {}
 
@@ -564,18 +537,9 @@ inline constexpr ___itt_counter* itt_counter_create_typed(char const*, char cons
 inline constexpr void itt_counter_destroy(___itt_counter*) noexcept {}
 inline constexpr void itt_counter_set_value(___itt_counter*, void*) noexcept {}
 
-inline constexpr int itt_event_create(char const*, int) noexcept
-{
-    return 0;
-}
-inline constexpr int itt_event_start(int) noexcept
-{
-    return 0;
-}
-inline constexpr int itt_event_end(int) noexcept
-{
-    return 0;
-}
+inline constexpr int itt_event_create(char const*, int) noexcept { return 0; }
+inline constexpr int itt_event_start(int) noexcept { return 0; }
+inline constexpr int itt_event_end(int) noexcept { return 0; }
 
 inline constexpr void itt_metadata_add(
     ___itt_domain*, ___itt_id*, ___itt_string_handle*, std::uint64_t const&) noexcept

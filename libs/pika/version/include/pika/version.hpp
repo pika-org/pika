@@ -21,37 +21,22 @@
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {
     // Returns the major pika version.
-    constexpr std::uint8_t major_version()
-    {
-        return PIKA_VERSION_MAJOR;
-    }
+    constexpr std::uint8_t major_version() { return PIKA_VERSION_MAJOR; }
 
     // Returns the minor pika version.
-    constexpr std::uint8_t minor_version()
-    {
-        return PIKA_VERSION_MINOR;
-    }
+    constexpr std::uint8_t minor_version() { return PIKA_VERSION_MINOR; }
 
     // Returns the sub-minor/patch-level pika version.
-    constexpr std::uint8_t patch_version()
-    {
-        return PIKA_VERSION_PATCH;
-    }
+    constexpr std::uint8_t patch_version() { return PIKA_VERSION_PATCH; }
 
     // Returns the full pika version.
-    constexpr std::uint32_t full_version()
-    {
-        return PIKA_VERSION_FULL;
-    }
+    constexpr std::uint32_t full_version() { return PIKA_VERSION_FULL; }
 
     // Returns the full pika version.
     PIKA_EXPORT std::string full_version_as_string();
 
     // Returns the tag.
-    constexpr std::string_view tag()
-    {
-        return PIKA_VERSION_TAG;
-    }
+    constexpr std::string_view tag() { return PIKA_VERSION_TAG; }
 
     // Return the pika configuration information.
     PIKA_EXPORT std::string configuration_string();
@@ -60,10 +45,7 @@ namespace pika {
     PIKA_EXPORT std::string build_string();
 
     // Returns the pika build type ('Debug', 'Release', etc.)
-    constexpr std::string_view build_type()
-    {
-        return PIKA_PP_STRINGIZE(PIKA_BUILD_TYPE);
-    }
+    constexpr std::string_view build_type() { return PIKA_PP_STRINGIZE(PIKA_BUILD_TYPE); }
 
     // Returns the pika build date and time
     PIKA_EXPORT std::string build_date_time();

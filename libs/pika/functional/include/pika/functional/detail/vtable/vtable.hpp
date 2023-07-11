@@ -56,10 +56,7 @@ namespace pika::util::detail {
         {
             using storage_t = std::aligned_storage_t<sizeof(T), alignof(T)>;
 
-            if (sizeof(T) > storage_size)
-            {
-                return new storage_t;
-            }
+            if (sizeof(T) > storage_size) { return new storage_t; }
             return storage;
         }
 
@@ -68,15 +65,9 @@ namespace pika::util::detail {
         {
             using storage_t = std::aligned_storage_t<sizeof(T), alignof(T)>;
 
-            if (destroy)
-            {
-                get<T>(obj).~T();
-            }
+            if (destroy) { get<T>(obj).~T(); }
 
-            if (sizeof(T) > storage_size)
-            {
-                delete static_cast<storage_t*>(obj);
-            }
+            if (sizeof(T) > storage_size) { delete static_cast<storage_t*>(obj); }
         }
         void (*deallocate)(void*, std::size_t storage_size, bool);
 

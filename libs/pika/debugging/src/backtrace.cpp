@@ -83,8 +83,7 @@ namespace pika::debug::detail::stack_trace {
     _Unwind_Reason_Code trace_callback(_Unwind_Context* ctx, void* ptr);
     _Unwind_Reason_Code trace_callback(_Unwind_Context* ctx, void* ptr)
     {
-        if (!ptr)
-            return _URC_NO_REASON;
+        if (!ptr) return _URC_NO_REASON;
 
         trace_data& d = *(reinterpret_cast<trace_data*>(ptr));
 
@@ -106,8 +105,7 @@ namespace pika::debug::detail::stack_trace {
             d.cfa_ = cfa;
         }
 
-        if (++d.count_ == d.size_)
-            return _URC_END_OF_STACK;
+        if (++d.count_ == d.size_) return _URC_END_OF_STACK;
 
         return _URC_NO_REASON;
     }
@@ -116,11 +114,9 @@ namespace pika::debug::detail::stack_trace {
     {
         trace_data d(array, n);
 
-        if (1 <= n)
-            _Unwind_Backtrace(trace_callback, reinterpret_cast<void*>(&d));
+        if (1 <= n) _Unwind_Backtrace(trace_callback, reinterpret_cast<void*>(&d));
 
-        if ((1 < d.count_) && d.array_[d.count_ - 1])
-            --d.count_;
+        if ((1 < d.count_) && d.array_[d.count_ - 1]) --d.count_;
 
         return (std::size_t(-1) != d.count_) ? d.count_ : 0;
     }
@@ -138,18 +134,14 @@ namespace pika::debug::detail::stack_trace {
     {
 #  if _WIN32_WINNT < 0x0600
         // for Windows XP/Windows Server 2003
-        if (n >= 63)
-            n = 62;
+        if (n >= 63) n = 62;
 #  endif
         return RtlCaptureStackBackTrace(ULONG(0), ULONG(n), array, nullptr);
     }
 
 # else
 
-    std::size_t trace(void** /*array*/, std::size_t /*n*/)
-    {
-        return 0;
-    }
+    std::size_t trace(void** /*array*/, std::size_t /*n*/) { return 0; }
 
 # endif
 
@@ -159,8 +151,7 @@ namespace pika::debug::detail::stack_trace {
         char** ptr = backtrace_symbols(&address, 1);
         try
         {
-            if (ptr == nullptr)
-                return std::string("???");
+            if (ptr == nullptr) return std::string("???");
             std::string res = ptr[0];
             free(ptr);
             ptr = nullptr;
@@ -177,8 +168,7 @@ namespace pika::debug::detail::stack_trace {
 # if defined(PIKA_HAVE_DLFCN) && defined(PIKA_HAVE_ABI_CXA_DEMANGLE)
     std::string get_symbol(void* ptr)
     {
-        if (!ptr)
-            return std::string();
+        if (!ptr) return std::string();
 
         bool need_offset = true;
         std::ostringstream res;
@@ -206,10 +196,7 @@ namespace pika::debug::detail::stack_trace {
                     res << demangled;
                     free(demangled);
                 }
-                else
-                {
-                    res << info.dli_sname;
-                }
+                else { res << info.dli_sname; }
 #  else
                 res << info.dli_sname;
 #  endif
@@ -226,15 +213,9 @@ namespace pika::debug::detail::stack_trace {
 
             std::ptrdiff_t offset =
                 reinterpret_cast<char*>(ptr) - reinterpret_cast<char*>(info.dli_saddr);
-            if (need_offset)
-            {
-                res << std::hex << " [0x" << offset << "]";
-            }
+            if (need_offset) { res << std::hex << " [0x" << offset << "]"; }
 
-            if (info.dli_fname)
-            {
-                res << " in " << info.dli_fname;
-            }
+            if (info.dli_fname) { res << " in " << info.dli_fname; }
         }
         return res.str();
     }
@@ -266,20 +247,14 @@ namespace pika::debug::detail::stack_trace {
         for (std::size_t i = 0; i < size; i++)
         {
             std::string tmp = get_symbol(addresses[i]);
-            if (!tmp.empty())
-            {
-                out << '\n' << tmp;
-            }
+            if (!tmp.empty()) { out << '\n' << tmp; }
         }
         out << std::flush;
     }
 
 # elif defined(PIKA_HAVE_EXECINFO)
 
-    std::string get_symbol(void* address)
-    {
-        return get_symbol_exec_info(address);
-    }
+    std::string get_symbol(void* address) { return get_symbol_exec_info(address); }
 
     std::string get_symbols(void* const* address, std::size_t size)
     {
@@ -293,8 +268,7 @@ namespace pika::debug::detail::stack_trace {
         char** ptr = backtrace_symbols(address, size);
         try
         {
-            if (ptr == nullptr)
-                return std::string();
+            if (ptr == nullptr) return std::string();
             std::string res = std::to_string(size) + ((1 == size) ? " frame:" : " frames:");
             for (std::size_t i = 0; i < size; i++)
             {
@@ -318,10 +292,8 @@ namespace pika::debug::detail::stack_trace {
         out << size << ((1 == size) ? " frame:" : " frames:");
         try
         {
-            if (ptr == nullptr)
-                return;
-            for (std::size_t i = 0; i < size; i++)
-                out << '\n' << ptr[i];
+            if (ptr == nullptr) return;
+            for (std::size_t i = 0; i < size; i++) out << '\n' << ptr[i];
             free(ptr);
             ptr = nullptr;
             out << std::flush;
@@ -346,18 +318,14 @@ namespace pika::debug::detail::stack_trace {
                 hProcess = GetCurrentProcess();
                 SymSetOptions(SYMOPT_DEFERRED_LOADS);
 
-                if (SymInitialize(hProcess, nullptr, TRUE))
-                {
-                    syms_ready = true;
-                }
+                if (SymInitialize(hProcess, nullptr, TRUE)) { syms_ready = true; }
             }
         }
     }    // namespace
 
     std::string get_symbol(void* ptr)
     {
-        if (ptr == nullptr)
-            return std::string();
+        if (ptr == nullptr) return std::string();
         init();
         std::ostringstream ss;
         ss << std::left << std::setw(sizeof(void*) * 2) << std::setfill(' ') << ptr;
@@ -376,10 +344,7 @@ namespace pika::debug::detail::stack_trace {
             {
                 ss << ": " << pSymbol->Name << std::hex << " +0x" << dwDisplacement;
             }
-            else
-            {
-                ss << ": ???";
-            }
+            else { ss << ": ???"; }
         }
         return ss.str();
     }
@@ -412,10 +377,7 @@ namespace pika::debug::detail::stack_trace {
         for (std::size_t i = 0; i < size; i++)
         {
             std::string tmp = get_symbol(addresses[i]);
-            if (!tmp.empty())
-            {
-                out << '\n' << tmp;
-            }
+            if (!tmp.empty()) { out << '\n' << tmp; }
         }
         out << std::flush;
     }
@@ -424,8 +386,7 @@ namespace pika::debug::detail::stack_trace {
 
     std::string get_symbol(void* ptr)
     {
-        if (!ptr)
-            return std::string();
+        if (!ptr) return std::string();
         std::ostringstream res;
         res.imbue(std::locale::classic());
         res << std::left << std::setw(sizeof(void*) * 2) << std::setfill(' ') << ptr;
@@ -434,8 +395,7 @@ namespace pika::debug::detail::stack_trace {
 
     std::string get_symbols(void* const* ptrs, std::size_t size)
     {
-        if (!ptrs)
-            return std::string();
+        if (!ptrs) return std::string();
 
         // the first two stack frames are from the back tracing facility itself
         if (size > 2)

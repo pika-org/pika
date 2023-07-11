@@ -121,15 +121,9 @@ namespace pika::functional::detail {
                 return tag_invoke(tag, PIKA_FORWARD(Ts, ts)...);
             }
 
-            friend constexpr bool operator==(tag_invoke_t, tag_invoke_t)
-            {
-                return true;
-            }
+            friend constexpr bool operator==(tag_invoke_t, tag_invoke_t) { return true; }
 
-            friend constexpr bool operator!=(tag_invoke_t, tag_invoke_t)
-            {
-                return false;
-            }
+            friend constexpr bool operator!=(tag_invoke_t, tag_invoke_t) { return false; }
         };
     }    // namespace tag_invoke_t_ns
 

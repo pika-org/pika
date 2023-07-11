@@ -35,8 +35,5 @@ namespace pika::detail {
 namespace pika {
 
     ///////////////////////////////////////////////////////////////////////////
-    std::string get_locality_name()
-    {
-        return detail::get_locality_name();
-    }
+    std::string get_locality_name() { return detail::get_locality_name(); }
 }    // namespace pika

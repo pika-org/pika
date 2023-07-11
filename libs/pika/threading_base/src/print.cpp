@@ -32,28 +32,16 @@ namespace pika::debug::detail {
     std::ostream& operator<<(
         std::ostream& os, threadinfo<threads::detail::thread_id_type*> const& d)
     {
-        if (d.data == nullptr)
-        {
-            os << "nullptr";
-        }
-        else
-        {
-            os << threadinfo<threads::detail::thread_data*>(get_thread_id_data(*d.data));
-        }
+        if (d.data == nullptr) { os << "nullptr"; }
+        else { os << threadinfo<threads::detail::thread_data*>(get_thread_id_data(*d.data)); }
         return os;
     }
 
     std::ostream& operator<<(
         std::ostream& os, threadinfo<threads::detail::thread_id_ref_type*> const& d)
     {
-        if (d.data == nullptr)
-        {
-            os << "nullptr";
-        }
-        else
-        {
-            os << threadinfo<threads::detail::thread_data*>(get_thread_id_data(*d.data));
-        }
+        if (d.data == nullptr) { os << "nullptr"; }
+        else { os << threadinfo<threads::detail::thread_data*>(get_thread_id_data(*d.data)); }
         return os;
     }
 

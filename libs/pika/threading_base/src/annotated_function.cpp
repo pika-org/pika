@@ -27,10 +27,7 @@ namespace pika::detail {
 # include <string>
 
 namespace pika::detail {
-    char const* store_function_annotation(std::string)
-    {
-        return "<unknown>";
-    }
+    char const* store_function_annotation(std::string) { return "<unknown>"; }
 }    // namespace pika::detail
 
 #endif

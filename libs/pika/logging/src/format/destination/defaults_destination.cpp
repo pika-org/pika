@@ -32,31 +32,19 @@ namespace pika::util::logging::destination {
 
     struct cout_impl : cout
     {
-        void operator()(const message& msg) override
-        {
-            std::cout << msg.full_string();
-        }
+        void operator()(const message& msg) override { std::cout << msg.full_string(); }
     };
 
-    std::unique_ptr<cout> cout::make()
-    {
-        return std::unique_ptr<cout>(new cout_impl());
-    }
+    std::unique_ptr<cout> cout::make() { return std::unique_ptr<cout>(new cout_impl()); }
 
     cerr::~cerr() = default;
 
     struct cerr_impl : cerr
     {
-        void operator()(const message& msg) override
-        {
-            std::cerr << msg.full_string();
-        }
+        void operator()(const message& msg) override { std::cerr << msg.full_string(); }
     };
 
-    std::unique_ptr<cerr> cerr::make()
-    {
-        return std::unique_ptr<cerr>(new cerr_impl());
-    }
+    std::unique_ptr<cerr> cerr::make() { return std::unique_ptr<cerr>(new cerr_impl()); }
 
     stream::~stream() = default;
 
@@ -69,8 +57,7 @@ namespace pika::util::logging::destination {
 
         void operator()(const message& msg) override
         {
-            if (ptr)
-                *ptr << msg.full_string();
+            if (ptr) *ptr << msg.full_string();
         }
     };
 

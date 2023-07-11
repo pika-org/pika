@@ -23,15 +23,9 @@ namespace pika::execution::experimental {
         constexpr std_thread_scheduler() = default;
 
         /// \cond NOINTERNAL
-        bool operator==(std_thread_scheduler const&) const noexcept
-        {
-            return true;
-        }
+        bool operator==(std_thread_scheduler const&) const noexcept { return true; }
 
-        bool operator!=(std_thread_scheduler const&) const noexcept
-        {
-            return false;
-        }
+        bool operator!=(std_thread_scheduler const&) const noexcept { return false; }
 
         template <typename F>
         friend void tag_invoke(execute_t, std_thread_scheduler const&, F&& f)
@@ -114,10 +108,7 @@ namespace pika::execution::experimental {
             }
         };
 
-        friend sender tag_invoke(schedule_t, std_thread_scheduler const&)
-        {
-            return {};
-        }
+        friend sender tag_invoke(schedule_t, std_thread_scheduler const&) { return {}; }
         /// \endcond
     };
 }    // namespace pika::execution::experimental

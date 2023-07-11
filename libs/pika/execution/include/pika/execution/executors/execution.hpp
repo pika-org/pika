@@ -661,10 +661,7 @@ namespace pika::parallel::execution::detail {
         {
             try
             {
-                for (auto const& elem : shape)
-                {
-                    execution::sync_execute(exec, f, elem, ts...);
-                }
+                for (auto const& elem : shape) { execution::sync_execute(exec, f, elem, ts...); }
             }
             catch (std::bad_alloc const& ba)
             {
@@ -777,16 +774,10 @@ namespace pika::parallel::execution::detail {
             pika::exception_list exceptions;
             for (auto& f : results)
             {
-                if (f.has_exception())
-                {
-                    exceptions.add(f.get_exception_ptr());
-                }
+                if (f.has_exception()) { exceptions.add(f.get_exception_ptr()); }
             }
 
-            if (exceptions.size() != 0)
-            {
-                throw exceptions;
-            }
+            if (exceptions.size() != 0) { throw exceptions; }
         }
 
         template <typename BulkExecutor, typename F, typename Shape, typename... Ts>

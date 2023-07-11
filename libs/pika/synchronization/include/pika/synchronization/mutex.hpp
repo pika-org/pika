@@ -34,17 +34,11 @@ namespace pika {
 
         PIKA_EXPORT void lock(char const* description, error_code& ec = throws);
 
-        void lock(error_code& ec = throws)
-        {
-            return lock("mutex::lock", ec);
-        }
+        void lock(error_code& ec = throws) { return lock("mutex::lock", ec); }
 
         PIKA_EXPORT bool try_lock(char const* description, error_code& ec = throws);
 
-        bool try_lock(error_code& ec = throws)
-        {
-            return try_lock("mutex::try_lock", ec);
-        }
+        bool try_lock(error_code& ec = throws) { return try_lock("mutex::try_lock", ec); }
 
         PIKA_EXPORT void unlock(error_code& ec = throws);
 

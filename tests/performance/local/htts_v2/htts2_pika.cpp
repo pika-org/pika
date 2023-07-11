@@ -157,8 +157,7 @@ private:
         // Warmup Phase
         for (std::uint64_t i = 0; i < this->osthreads_; ++i)
         {
-            if (this_osthread == i)
-                continue;
+            if (this_osthread == i) continue;
 
             pika::threads::detail::thread_init_data data(
                 pika::threads::detail::make_thread_function_nullary(

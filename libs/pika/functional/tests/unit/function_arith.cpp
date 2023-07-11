@@ -14,17 +14,11 @@
 #include <pika/functional/function.hpp>
 #include <pika/testing.hpp>
 
-double mul_ints(int x, int y)
-{
-    return ((double) x) * y;
-}
+double mul_ints(int x, int y) { return ((double) x) * y; }
 
 struct int_div
 {
-    double operator()(int x, int y) const
-    {
-        return ((double) x) / y;
-    };
+    double operator()(int x, int y) const { return ((double) x) / y; };
 };
 
 int main()

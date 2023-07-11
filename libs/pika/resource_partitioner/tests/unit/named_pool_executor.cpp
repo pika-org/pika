@@ -27,10 +27,7 @@ std::size_t const max_threads =
 // dummy function we will call using async
 void dummy_task(std::size_t n, std::string const& text)
 {
-    for (std::size_t i(0); i < n; ++i)
-    {
-        std::cout << text << " iteration " << i << "\n";
-    }
+    for (std::size_t i(0); i < n; ++i) { std::cout << text << " iteration " << i << "\n"; }
 }
 
 int pika_main()

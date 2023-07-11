@@ -79,14 +79,8 @@ int main(int ac, char* av[])
         if (vm.count("help-module"))
         {
             const auto& s = vm["help-module"].as<string>();
-            if (s == "gui")
-            {
-                cout << gui;
-            }
-            else if (s == "backend")
-            {
-                cout << backend;
-            }
+            if (s == "gui") { cout << gui; }
+            else if (s == "backend") { cout << backend; }
             else
             {
                 cout << "Unknown module '" << s << "' in the --help-module option\n";

@@ -190,10 +190,7 @@ namespace pika::threads::detail {
         {
             std::lock_guard<mutex_type> lk(mtx_);
             std::size_t total = 0;
-            for (auto& pool_iter : pools_)
-            {
-                total += pool_iter->get_os_thread_count();
-            }
+            for (auto& pool_iter : pools_) { total += pool_iter->get_os_thread_count(); }
             return total;
         }
 
@@ -216,10 +213,7 @@ namespace pika::threads::detail {
         {
             // propagate the error reporting to all pools, which in turn
             // will propagate to schedulers
-            for (auto& pool_iter : pools_)
-            {
-                pool_iter->report_error(num_thread, e);
-            }
+            for (auto& pool_iter : pools_) { pool_iter->report_error(num_thread, e); }
         }
 
     public:
@@ -245,18 +239,12 @@ namespace pika::threads::detail {
 
         void set_scheduler_mode(threads::scheduler_mode mode)
         {
-            for (auto& pool_iter : pools_)
-            {
-                pool_iter->get_scheduler()->set_scheduler_mode(mode);
-            }
+            for (auto& pool_iter : pools_) { pool_iter->get_scheduler()->set_scheduler_mode(mode); }
         }
 
         void add_scheduler_mode(threads::scheduler_mode mode)
         {
-            for (auto& pool_iter : pools_)
-            {
-                pool_iter->get_scheduler()->add_scheduler_mode(mode);
-            }
+            for (auto& pool_iter : pools_) { pool_iter->get_scheduler()->add_scheduler_mode(mode); }
         }
 
         void remove_scheduler_mode(threads::scheduler_mode mode)
@@ -269,10 +257,7 @@ namespace pika::threads::detail {
 
         void reset_thread_distribution()
         {
-            for (auto& pool_iter : pools_)
-            {
-                pool_iter->reset_thread_distribution();
-            }
+            for (auto& pool_iter : pools_) { pool_iter->reset_thread_distribution(); }
         }
 
         void init_tss(std::size_t global_thread_num)
@@ -280,10 +265,7 @@ namespace pika::threads::detail {
             set_global_thread_num_tss(global_thread_num);
         }
 
-        void deinit_tss()
-        {
-            set_global_thread_num_tss(std::size_t(-1));
-        }
+        void deinit_tss() { set_global_thread_num_tss(std::size_t(-1)); }
 
     public:
         // performance counters

@@ -58,10 +58,7 @@ struct bidirectional_traversal_iterator
 
     int state;
 
-    int operator*() const
-    {
-        return this->state;
-    }
+    int operator*() const { return this->state; }
     int operator->() const = delete;
 
     bidirectional_traversal_iterator& operator++()
@@ -131,10 +128,7 @@ struct random_access_traversal_iterator
 
     int state;
 
-    int operator*() const
-    {
-        return this->state;
-    }
+    int operator*() const { return this->state; }
     int operator->() const = delete;
 
     random_access_traversal_iterator& operator++()
@@ -163,10 +157,7 @@ struct random_access_traversal_iterator
         return copy;
     }
 
-    int operator[](difference_type n) const
-    {
-        return this->state + n;
-    }
+    int operator[](difference_type n) const { return this->state + n; }
 
     random_access_traversal_iterator& operator+=(difference_type n)
     {
@@ -241,10 +232,7 @@ void addition_result()
 
     struct C
     {
-        B operator+(const A&) const
-        {
-            return B{};
-        }
+        B operator+(const A&) const { return B{}; }
     };
 
     PIKA_TEST_MSG((std::is_same<B, typename addition_result<C, A>::type>::value), "deduced type");
@@ -262,10 +250,7 @@ void dereference_result()
 
     struct B
     {
-        A operator*() const
-        {
-            return A{};
-        }
+        A operator*() const { return A{}; }
     };
 
     PIKA_TEST_MSG((std::is_same<A, typename dereference_result<B>::type>::value), "deduced type");
@@ -287,10 +272,7 @@ void equality_result()
 
     struct C
     {
-        B operator==(const A&) const
-        {
-            return B{};
-        }
+        B operator==(const A&) const { return B{}; }
     };
 
     PIKA_TEST_MSG((std::is_same_v<B, equality_result_t<C, A>>), "deduced type");
@@ -312,10 +294,7 @@ void inequality_result()
 
     struct C
     {
-        B operator!=(const A&) const
-        {
-            return B{};
-        }
+        B operator!=(const A&) const { return B{}; }
     };
 
     PIKA_TEST_MSG((std::is_same_v<B, inequality_result_t<C, A>>), "deduced type");
@@ -336,10 +315,7 @@ void inplace_addition_result()
 
     struct C
     {
-        B operator+=(const A&) const
-        {
-            return B{};
-        }
+        B operator+=(const A&) const { return B{}; }
     };
 
     PIKA_TEST_MSG(
@@ -361,10 +337,7 @@ void inplace_subtraction_result()
 
     struct C
     {
-        B operator-=(const A&) const
-        {
-            return B{};
-        }
+        B operator-=(const A&) const { return B{}; }
     };
 
     PIKA_TEST_MSG(
@@ -427,10 +400,7 @@ void postdecrement_result()
 
     struct B
     {
-        A operator--(int) const
-        {
-            return A{};
-        }
+        A operator--(int) const { return A{}; }
     };
 
     PIKA_TEST_MSG((std::is_same<A, typename postdecrement_result<B>::type>::value), "deduced type");
@@ -448,10 +418,7 @@ void postincrement_result()
 
     struct B
     {
-        A operator++(int) const
-        {
-            return A{};
-        }
+        A operator++(int) const { return A{}; }
     };
 
     PIKA_TEST_MSG((std::is_same<A, typename postincrement_result<B>::type>::value), "deduced type");
@@ -472,10 +439,7 @@ void subscript_result()
 
     struct C
     {
-        B operator[](const A&) const
-        {
-            return B{};
-        }
+        B operator[](const A&) const { return B{}; }
     };
 
     PIKA_TEST_MSG((std::is_same<B, typename subscript_result<C, A>::type>::value), "deduced type");
@@ -496,10 +460,7 @@ void subtraction_result()
 
     struct C
     {
-        B operator-(const A&) const
-        {
-            return B{};
-        }
+        B operator-(const A&) const { return B{}; }
     };
 
     PIKA_TEST_MSG(

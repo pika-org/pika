@@ -17,10 +17,7 @@ namespace pika::detail {
     template <typename F, typename Enable = void>
     struct get_function_annotation
     {
-        static constexpr char const* call(F const& /*f*/) noexcept
-        {
-            return nullptr;
-        }
+        static constexpr char const* call(F const& /*f*/) noexcept { return nullptr; }
     };
 
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)

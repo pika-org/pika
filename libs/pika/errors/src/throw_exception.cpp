@@ -51,10 +51,7 @@ namespace pika::detail {
     void throws_if(pika::error_code& ec, error errcode, std::string const& msg,
         std::string const& func, std::string const& file, long line)
     {
-        if (&ec == &pika::throws)
-        {
-            pika::detail::throw_exception(errcode, msg, func, file, line);
-        }
+        if (&ec == &pika::throws) { pika::detail::throw_exception(errcode, msg, func, file, line); }
         else
         {
             ec = make_error_code(static_cast<pika::error>(errcode), msg, func.c_str(), file.c_str(),
@@ -66,10 +63,7 @@ namespace pika::detail {
 
     void rethrows_if(pika::error_code& ec, exception const& e, std::string const& func)
     {
-        if (&ec == &pika::throws)
-        {
-            pika::detail::rethrow_exception(e, func);
-        }
+        if (&ec == &pika::throws) { pika::detail::rethrow_exception(e, func); }
         else
         {
             ec = make_error_code(e.get_error(), e.what(), func.c_str(),
@@ -80,8 +74,5 @@ namespace pika::detail {
         }
     }
 
-    [[noreturn]] void throw_thread_interrupted_exception()
-    {
-        throw pika::thread_interrupted();
-    }
+    [[noreturn]] void throw_thread_interrupted_exception() { throw pika::thread_interrupted(); }
 }    // namespace pika::detail

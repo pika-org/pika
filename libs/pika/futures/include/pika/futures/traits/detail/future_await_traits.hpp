@@ -40,10 +40,7 @@ namespace pika::lcos::detail {
         {
         }
 
-        [[nodiscard]] constexpr bool await_ready() const noexcept
-        {
-            return is_ready_;
-        }
+        [[nodiscard]] constexpr bool await_ready() const noexcept { return is_ready_; }
         constexpr void await_suspend(coroutine_handle<>) const noexcept {}
         constexpr void await_resume() const noexcept {}
     };
@@ -63,10 +60,7 @@ namespace pika::lcos::detail {
         // f.then([=](future<T> result) {});
         auto st = traits::detail::get_shared_state(f);
         st->set_on_completed([st, rh]() mutable {
-            if (st->has_exception())
-            {
-                rh.promise().set_exception(st->get_exception_ptr());
-            }
+            if (st->has_exception()) { rh.promise().set_exception(st->get_exception_ptr()); }
             rh();
         });
     }
@@ -104,10 +98,7 @@ namespace pika::lcos::detail {
         // f.then([=](shared_future<T> result) {})
         auto st = traits::detail::get_shared_state(f);
         st->set_on_completed([st, rh]() mutable {
-            if (st->has_exception())
-            {
-                rh.promise().set_exception(st->get_exception_ptr());
-            }
+            if (st->has_exception()) { rh.promise().set_exception(st->get_exception_ptr()); }
             rh();
         });
     }
@@ -141,10 +132,7 @@ namespace pika::lcos::detail {
             return pika::traits::future_access<pika::future<T>>::create(PIKA_MOVE(shared_state));
         }
 
-        constexpr suspend_never initial_suspend() const noexcept
-        {
-            return suspend_never{};
-        }
+        constexpr suspend_never initial_suspend() const noexcept { return suspend_never{}; }
 
         suspend_if final_suspend() noexcept
         {
@@ -235,10 +223,7 @@ namespace std {
 
             promise_type() = default;
 
-            void return_void()
-            {
-                this->base_type::set_value();
-            }
+            void return_void() { this->base_type::set_value(); }
 
             void unhandled_exception() noexcept
             {
@@ -304,10 +289,7 @@ namespace std {
 
             promise_type() = default;
 
-            void return_void()
-            {
-                this->base_type::set_value();
-            }
+            void return_void() { this->base_type::set_value(); }
 
             void unhandled_exception() noexcept
             {

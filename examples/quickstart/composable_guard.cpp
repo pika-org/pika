@@ -63,20 +63,13 @@ int increments = 3000;
 
 void check_()
 {
-    if (2 * increments == i1 && 2 * increments == i2)
-    {
-        std::cout << "Test passed" << std::endl;
-    }
-    else
-    {
-        std::cout << "Test failed: i1=" << i1 << " i2=" << i2 << std::endl;
-    }
+    if (2 * increments == i1 && 2 * increments == i2) { std::cout << "Test passed" << std::endl; }
+    else { std::cout << "Test failed: i1=" << i1 << " i2=" << i2 << std::endl; }
 }
 
 int pika_main(pika::program_options::variables_map& vm)
 {
-    if (vm.count("increments"))
-        increments = vm["increments"].as<int>();
+    if (vm.count("increments")) increments = vm["increments"].as<int>();
 
     // create the guard set
     guards.add(l1);

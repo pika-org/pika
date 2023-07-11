@@ -84,10 +84,7 @@ namespace pika {
                     detail::thread_termination_handler(std::current_exception());
                 }
             }
-            else
-            {
-                std::terminate();
-            }
+            else { std::terminate(); }
         }
 
         PIKA_ASSERT(id_ == threads::detail::invalid_thread_id);
@@ -149,10 +146,7 @@ namespace pika {
             threads::detail::thread_schedule_state::terminated, threads::detail::invalid_thread_id);
     }
 
-    thread::id thread::get_id() const noexcept
-    {
-        return id(native_handle());
-    }
+    thread::id thread::get_id() const noexcept { return id(native_handle()); }
 
     unsigned int thread::hardware_concurrency() noexcept
     {
@@ -222,10 +216,7 @@ namespace pika {
     }
 
     // extensions
-    void thread::interrupt(bool flag)
-    {
-        threads::detail::interrupt_thread(native_handle(), flag);
-    }
+    void thread::interrupt(bool flag) { threads::detail::interrupt_thread(native_handle(), flag); }
 
     bool thread::interruption_requested() const
     {
@@ -270,16 +261,10 @@ namespace pika {
                 }
             }
 
-            bool valid() const noexcept
-            {
-                return id_ != threads::detail::invalid_thread_id;
-            }
+            bool valid() const noexcept { return id_ != threads::detail::invalid_thread_id; }
 
             // cancellation support
-            bool cancelable() const noexcept override
-            {
-                return true;
-            }
+            bool cancelable() const noexcept override { return true; }
 
             void cancel() override
             {
@@ -298,8 +283,7 @@ namespace pika {
             {
                 // might have been finished or canceled
                 std::lock_guard l(mtx_);
-                if (!this->is_ready())
-                    this->set_data(result_type());
+                if (!this->is_ready()) this->set_data(result_type());
                 id_ = threads::detail::invalid_thread_id;
             }
 
@@ -345,10 +329,7 @@ namespace pika {
                 threads::detail::thread_schedule_state::pending, "this_thread::yield");
         }
 
-        thread::id get_id() noexcept
-        {
-            return thread::id(threads::detail::get_self_id());
-        }
+        thread::id get_id() noexcept { return thread::id(threads::detail::get_self_id()); }
 
         // extensions
         execution::thread_priority get_priority()

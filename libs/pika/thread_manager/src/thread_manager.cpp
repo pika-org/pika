@@ -459,10 +459,7 @@ namespace pika::threads::detail {
         os << "The thread-manager owns " << pools_.size()    //  -V128
            << " pool(s) : \n";
 
-        for (auto&& pool_iter : pools_)
-        {
-            pool_iter->print_pool(os);
-        }
+        for (auto&& pool_iter : pools_) { pool_iter->print_pool(os); }
     }
 
     thread_pool_base& thread_manager::default_pool() const
@@ -487,10 +484,7 @@ namespace pika::threads::detail {
                 return (itp->get_pool_name() == pool_name);
             });
 
-        if (pool != pools_.end())
-        {
-            return **pool;
-        }
+        if (pool != pools_.end()) { return **pool; }
 
         //! FIXME Add names of available pools?
         PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "thread_manager::get_pool",
@@ -523,10 +517,7 @@ namespace pika::threads::detail {
                 return (itp->get_pool_name() == pool_name);
             });
 
-        if (pool != pools_.end())
-        {
-            return true;
-        }
+        if (pool != pools_.end()) { return true; }
 
         return false;
     }
@@ -556,10 +547,7 @@ namespace pika::threads::detail {
         std::int64_t total_count = 0;
         std::lock_guard<mutex_type> lk(mtx_);
 
-        for (auto& pool_iter : pools_)
-        {
-            total_count += pool_iter->get_idle_core_count();
-        }
+        for (auto& pool_iter : pools_) { total_count += pool_iter->get_idle_core_count(); }
 
         return total_count;
     }
@@ -571,10 +559,7 @@ namespace pika::threads::detail {
 
         std::lock_guard<mutex_type> lk(mtx_);
 
-        for (auto& pool_iter : pools_)
-        {
-            pool_iter->get_idle_core_mask(mask);
-        }
+        for (auto& pool_iter : pools_) { pool_iter->get_idle_core_mask(mask); }
 
         return mask;
     }
@@ -602,10 +587,7 @@ namespace pika::threads::detail {
     void thread_manager::abort_all_suspended_threads()
     {
         std::lock_guard<mutex_type> lk(mtx_);
-        for (auto& pool_iter : pools_)
-        {
-            pool_iter->abort_all_suspended_threads();
-        }
+        for (auto& pool_iter : pools_) { pool_iter->abort_all_suspended_threads(); }
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -632,14 +614,8 @@ namespace pika::threads::detail {
     {
         thread_pool_base* pool = nullptr;
         auto thrd_data = get_self_id_data();
-        if (thrd_data)
-        {
-            pool = thrd_data->get_scheduler_base()->get_parent_pool();
-        }
-        else
-        {
-            pool = &default_pool();
-        }
+        if (thrd_data) { pool = thrd_data->get_scheduler_base()->get_parent_pool(); }
+        else { pool = &default_pool(); }
         pool->create_thread(data, id, ec);
     }
 
@@ -648,14 +624,8 @@ namespace pika::threads::detail {
     {
         thread_pool_base* pool = nullptr;
         auto thrd_data = get_self_id_data();
-        if (thrd_data)
-        {
-            pool = thrd_data->get_scheduler_base()->get_parent_pool();
-        }
-        else
-        {
-            pool = &default_pool();
-        }
+        if (thrd_data) { pool = thrd_data->get_scheduler_base()->get_parent_pool(); }
+        else { pool = &default_pool(); }
         return pool->create_work(data, ec);
     }
 
@@ -700,8 +670,7 @@ namespace pika::threads::detail {
     std::int64_t thread_manager::avg_idle_rate(bool reset)
     {
         std::int64_t result = 0;
-        for (auto const& pool_iter : pools_)
-            result += pool_iter->avg_idle_rate(all_threads, reset);
+        for (auto const& pool_iter : pools_) result += pool_iter->avg_idle_rate(all_threads, reset);
         return result;
     }
 
@@ -862,15 +831,11 @@ namespace pika::threads::detail {
                 return true;    // do nothing if already running
             }
 
-            if (!pool_iter->run(lk, num_threads_in_pool))
-            {
-                return false;
-            }
+            if (!pool_iter->run(lk, num_threads_in_pool)) { return false; }
 
             // set all states of all schedulers to "running"
             scheduler_base* sched = pool_iter->get_scheduler();
-            if (sched)
-                sched->set_all_states(runtime_state::running);
+            if (sched) sched->set_all_states(runtime_state::running);
         }
 
         LTM_(info).format("run: running");
@@ -882,30 +847,21 @@ namespace pika::threads::detail {
         LTM_(info).format("stop: blocking({})", blocking ? "true" : "false");
 
         std::unique_lock<mutex_type> lk(mtx_);
-        for (auto& pool_iter : pools_)
-        {
-            pool_iter->stop(lk, blocking);
-        }
+        for (auto& pool_iter : pools_) { pool_iter->stop(lk, blocking); }
         deinit_tss();
     }
 
     bool thread_manager::is_busy()
     {
         bool busy = false;
-        for (auto& pool_iter : pools_)
-        {
-            busy = busy || pool_iter->is_busy();
-        }
+        for (auto& pool_iter : pools_) { busy = busy || pool_iter->is_busy(); }
         return busy;
     }
 
     bool thread_manager::is_idle()
     {
         bool idle = true;
-        for (auto& pool_iter : pools_)
-        {
-            idle = idle && pool_iter->is_idle();
-        }
+        for (auto& pool_iter : pools_) { idle = idle && pool_iter->is_idle(); }
         return idle;
     }
 
@@ -924,19 +880,13 @@ namespace pika::threads::detail {
         {
             std::vector<pika::future<void>> fs;
 
-            for (auto& pool_iter : pools_)
-            {
-                fs.push_back(suspend_pool(*pool_iter));
-            }
+            for (auto& pool_iter : pools_) { fs.push_back(suspend_pool(*pool_iter)); }
 
             pika::wait_all(fs);
         }
         else
         {
-            for (auto& pool_iter : pools_)
-            {
-                pool_iter->suspend_direct();
-            }
+            for (auto& pool_iter : pools_) { pool_iter->suspend_direct(); }
         }
     }
 
@@ -946,18 +896,12 @@ namespace pika::threads::detail {
         {
             std::vector<pika::future<void>> fs;
 
-            for (auto& pool_iter : pools_)
-            {
-                fs.push_back(resume_pool(*pool_iter));
-            }
+            for (auto& pool_iter : pools_) { fs.push_back(resume_pool(*pool_iter)); }
             pika::wait_all(fs);
         }
         else
         {
-            for (auto& pool_iter : pools_)
-            {
-                pool_iter->resume_direct();
-            }
+            for (auto& pool_iter : pools_) { pool_iter->resume_direct(); }
         }
     }
 }    // namespace pika::threads::detail

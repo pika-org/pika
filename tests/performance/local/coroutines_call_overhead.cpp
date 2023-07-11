@@ -95,10 +95,7 @@ struct kernel
             pika::threads::detail::invalid_thread_id);
     }
 
-    bool operator!() const
-    {
-        return true;
-    }
+    bool operator!() const { return true; }
 };
 
 double perform_2n_iterations()
@@ -120,29 +117,19 @@ double perform_2n_iterations()
         coroutines.push_back(c);
     }
 
-    for (std::uint64_t i = 0; i < iterations; ++i)
-        indices.push_back(dist(prng));
+    for (std::uint64_t i = 0; i < iterations; ++i) indices.push_back(dist(prng));
 
     ///////////////////////////////////////////////////////////////////////
     // Warmup
-    for (std::uint64_t i = 0; i < iterations; ++i)
-    {
-        (*coroutines[indices[i]])(wait_signaled);
-    }
+    for (std::uint64_t i = 0; i < iterations; ++i) { (*coroutines[indices[i]])(wait_signaled); }
 
     pika::chrono::detail::high_resolution_timer t;
 
-    for (std::uint64_t i = 0; i < iterations; ++i)
-    {
-        (*coroutines[indices[i]])(wait_signaled);
-    }
+    for (std::uint64_t i = 0; i < iterations; ++i) { (*coroutines[indices[i]])(wait_signaled); }
 
     double elapsed = t.elapsed();
 
-    for (std::uint64_t i = 0; i < contexts; ++i)
-    {
-        delete coroutines[i];
-    }
+    for (std::uint64_t i = 0; i < contexts; ++i) { delete coroutines[i]; }
 
     coroutines.clear();
 
@@ -152,11 +139,9 @@ double perform_2n_iterations()
 int pika_main(variables_map& vm)
 {
     {
-        if (vm.count("no-header"))
-            header = false;
+        if (vm.count("no-header")) header = false;
 
-        if (!seed)
-            seed = std::uint64_t(std::time(nullptr));
+        if (!seed) seed = std::uint64_t(std::time(nullptr));
 
         std::uint64_t const os_thread_count = pika::get_os_thread_count();
 
@@ -166,16 +151,14 @@ int pika_main(variables_map& vm)
 
         for (std::uint64_t i = 0; i < os_thread_count; ++i)
         {
-            if (num_thread == i)
-                continue;
+            if (num_thread == i) continue;
 
             futures.push_back(pika::async(&perform_2n_iterations));
         }
 
         double total_elapsed = perform_2n_iterations();
 
-        for (std::uint64_t i = 0; i < futures.size(); ++i)
-            total_elapsed += futures[i].get();
+        for (std::uint64_t i = 0; i < futures.size(); ++i) total_elapsed += futures[i].get();
 
         print_results(total_elapsed);
     }

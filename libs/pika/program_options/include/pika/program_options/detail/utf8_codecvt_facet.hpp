@@ -134,10 +134,7 @@ namespace pika::program_options::detail {
         // ==   total octets - 1.
         int get_cont_octet_out_count(wchar_t word) const;
 
-        bool do_always_noconv() const noexcept override
-        {
-            return false;
-        }
+        bool do_always_noconv() const noexcept override { return false; }
 
         // UTF-8 isn't really stateful since we rewind on partial conversions
         std::codecvt_base::result do_unshift(

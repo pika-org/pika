@@ -71,10 +71,7 @@ int main(int argc, char* argv[])
         pika::resource::scheduling_policy::shared_priority,
     };
 
-    for (auto const scheduler : schedulers)
-    {
-        test_scheduler(argc, argv, scheduler);
-    }
+    for (auto const scheduler : schedulers) { test_scheduler(argc, argv, scheduler); }
 
     return 0;
 }

@@ -8,13 +8,7 @@
 
 struct S
 {
-    void f()
-    {
-        (void) [=, this]{};
-    };
+    void f() { (void) [=, this]{}; };
 };
 
-int main()
-{
-    return 0;
-}
+int main() { return 0; }

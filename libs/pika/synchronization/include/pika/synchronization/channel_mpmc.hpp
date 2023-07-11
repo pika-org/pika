@@ -36,17 +36,11 @@ namespace pika::experimental {
         bool is_full(std::size_t tail) const noexcept
         {
             std::size_t numitems = size_ + tail - head_.data_;
-            if (numitems < size_)
-            {
-                return numitems == size_ - 1;
-            }
+            if (numitems < size_) { return numitems == size_ - 1; }
             return numitems - size_ == size_ - 1;
         }
 
-        bool is_empty(std::size_t head) const noexcept
-        {
-            return head == tail_.data_;
-        }
+        bool is_empty(std::size_t head) const noexcept { return head == tail_.data_; }
 
     public:
         explicit bounded_channel(std::size_t size)
@@ -57,10 +51,7 @@ namespace pika::experimental {
             PIKA_ASSERT(size != 0);
 
             // invoke constructors for allocated buffer
-            for (std::size_t i = 0; i != size_; ++i)
-            {
-                new (&buffer_[i]) T();
-            }
+            for (std::size_t i = 0; i != size_; ++i) { new (&buffer_[i]) T(); }
 
             head_.data_ = 0;
             tail_.data_ = 0;
@@ -93,42 +84,24 @@ namespace pika::experimental {
             std::unique_lock<mutex_type> l(mtx_.data_);
 
             // invoke destructors for allocated buffer
-            for (std::size_t i = 0; i != size_; ++i)
-            {
-                (&buffer_[i])->~T();
-            }
+            for (std::size_t i = 0; i != size_; ++i) { (&buffer_[i])->~T(); }
 
-            if (!closed_)
-            {
-                close(l);
-            }
+            if (!closed_) { close(l); }
         }
 
         bool get(T* val = nullptr) const noexcept
         {
             std::unique_lock<mutex_type> l(mtx_.data_);
-            if (closed_)
-            {
-                return false;
-            }
+            if (closed_) { return false; }
 
             std::size_t head = head_.data_;
 
-            if (is_empty(head))
-            {
-                return false;
-            }
+            if (is_empty(head)) { return false; }
 
-            if (val == nullptr)
-            {
-                return true;
-            }
+            if (val == nullptr) { return true; }
 
             *val = PIKA_MOVE(buffer_[head]);
-            if (++head >= size_)
-            {
-                head = 0;
-            }
+            if (++head >= size_) { head = 0; }
             head_.data_ = head;
 
             return true;
@@ -137,23 +110,14 @@ namespace pika::experimental {
         bool set(T&& t) noexcept
         {
             std::unique_lock<mutex_type> l(mtx_.data_);
-            if (closed_)
-            {
-                return false;
-            }
+            if (closed_) { return false; }
 
             std::size_t tail = tail_.data_;
 
-            if (is_full(tail))
-            {
-                return false;
-            }
+            if (is_full(tail)) { return false; }
 
             buffer_[tail] = PIKA_MOVE(t);
-            if (++tail >= size_)
-            {
-                tail = 0;
-            }
+            if (++tail >= size_) { tail = 0; }
             tail_.data_ = tail;
 
             return true;
@@ -165,10 +129,7 @@ namespace pika::experimental {
             return close(l);
         }
 
-        std::size_t capacity() const
-        {
-            return size_ - 1;
-        }
+        std::size_t capacity() const { return size_ - 1; }
 
     protected:
         std::size_t close(std::unique_lock<mutex_type>& l)

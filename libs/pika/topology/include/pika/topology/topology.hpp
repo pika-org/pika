@@ -41,27 +41,17 @@ namespace pika::threads::detail {
         {
         }
         // frees the hwloc allocated bitmap
-        ~pika_hwloc_bitmap_wrapper()
-        {
-            hwloc_bitmap_free(bmp_);
-        }
+        ~pika_hwloc_bitmap_wrapper() { hwloc_bitmap_free(bmp_); }
 
         void reset(hwloc_bitmap_t bmp)
         {
-            if (bmp_)
-                hwloc_bitmap_free(bmp_);
+            if (bmp_) hwloc_bitmap_free(bmp_);
             bmp_ = bmp;
         }
 
-        explicit operator bool() const noexcept
-        {
-            return bmp_ != nullptr;
-        }
+        explicit operator bool() const noexcept { return bmp_ != nullptr; }
 
-        hwloc_bitmap_t get_bmp() const noexcept
-        {
-            return bmp_;
-        }
+        hwloc_bitmap_t get_bmp() const noexcept { return bmp_; }
 
         // stringify the bitmp using hwloc
         friend PIKA_EXPORT std::ostream& operator<<(

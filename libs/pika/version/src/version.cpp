@@ -49,8 +49,7 @@ namespace pika {
         strm << "pika:\n";
 
         char const* const* p = pika::config_strings;
-        while (*p)
-            strm << "  " << *p++ << "\n";
+        while (*p) strm << "  " << *p++ << "\n";
         strm << "\n";
 
         return strm.str();
@@ -75,8 +74,5 @@ namespace pika {
         return version;
     }
 
-    std::string build_date_time()
-    {
-        return std::string(__DATE__) + " " + __TIME__;
-    }
+    std::string build_date_time() { return std::string(__DATE__) + " " + __TIME__; }
 }    // namespace pika

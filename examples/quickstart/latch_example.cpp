@@ -18,10 +18,7 @@
 std::ptrdiff_t num_threads = 16;
 
 ///////////////////////////////////////////////////////////////////////////////
-void wait_for_latch(pika::latch& l)
-{
-    l.arrive_and_wait();
-}
+void wait_for_latch(pika::latch& l) { l.arrive_and_wait(); }
 
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main(pika::program_options::variables_map& vm)

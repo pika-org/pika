@@ -36,8 +36,5 @@ namespace pika::mpi::experimental {
     {
     }
 
-    int mpi_exception::get_mpi_errorcode() const noexcept
-    {
-        return err_code_;
-    }
+    int mpi_exception::get_mpi_errorcode() const noexcept { return err_code_; }
 }    // namespace pika::mpi::experimental

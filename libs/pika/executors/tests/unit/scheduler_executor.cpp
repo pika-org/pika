@@ -101,20 +101,14 @@ void bulk_test_void(int seq, int passed_through)    //-V813
 {
     PIKA_TEST_EQ(passed_through, 42);
 
-    if (seq == 0)
-    {
-        executed = true;
-    }
+    if (seq == 0) { executed = true; }
 }
 
 int bulk_test(int seq, int passed_through)    //-V813
 {
     PIKA_TEST_EQ(passed_through, 42);
 
-    if (seq == 0)
-    {
-        executed = true;
-    }
+    if (seq == 0) { executed = true; }
 
     return seq;
 }
@@ -173,10 +167,7 @@ void test_bulk_async(Executor&& exec)
         exec, pika::util::detail::bind(&bulk_test, _1, _2), n, 42);
     auto result = pika::when_all(std::move(fut_result)).get();
 
-    for (int i = 0; i < n; ++i)
-    {
-        PIKA_TEST_EQ(i, result[i].get());
-    }
+    for (int i = 0; i < n; ++i) { PIKA_TEST_EQ(i, result[i].get()); }
 
     PIKA_TEST(executed);
 
@@ -197,10 +188,7 @@ int bulk_test_f(int seq, pika::shared_future<void> f,
 
     PIKA_TEST_EQ(passed_through, 42);
 
-    if (seq == 0)
-    {
-        executed = true;
-    }
+    if (seq == 0) { executed = true; }
 
     return seq;
 }
@@ -260,10 +248,7 @@ void bulk_test_f_void(int seq, pika::shared_future<void> f,
 
     PIKA_TEST_EQ(passed_through, 42);
 
-    if (seq == 0)
-    {
-        executed = true;
-    }
+    if (seq == 0) { executed = true; }
 }
 
 template <typename Executor>

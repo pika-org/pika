@@ -70,10 +70,7 @@ int pika_main()
             ex::bulk(n, f) | cu::then_with_stream(memcpy) | cu::then_with_stream(free);
         tt::sync_wait(std::move(s));
 
-        for (element_type i = 0; i < n; ++i)
-        {
-            PIKA_TEST_EQ(host_vector[i], i);
-        }
+        for (element_type i = 0; i < n; ++i) { PIKA_TEST_EQ(host_vector[i], i); }
     }
 
     // The reference implementation does not support ranges as the shape
@@ -100,17 +97,11 @@ int pika_main()
             cu::then_with_stream(free);
         tt::sync_wait(std::move(s));
 
-        for (element_type i = 0; i < n; ++i)
-        {
-            PIKA_TEST_EQ(host_vector[i], i);
-        }
+        for (element_type i = 0; i < n; ++i) { PIKA_TEST_EQ(host_vector[i], i); }
     }
 #endif
 
     return pika::finalize();
 }
 
-int main(int argc, char* argv[])
-{
-    return pika::init(pika_main, argc, argv);
-}
+int main(int argc, char* argv[]) { return pika::init(pika_main, argc, argv); }

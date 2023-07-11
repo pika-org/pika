@@ -45,20 +45,11 @@ namespace pika::concurrency::detail {
             {
             }
 
-            constexpr range increment_first() noexcept
-            {
-                return range{first + 1, last};
-            }
+            constexpr range increment_first() noexcept { return range{first + 1, last}; }
 
-            constexpr range decrement_last() noexcept
-            {
-                return range{first, last - 1};
-            }
+            constexpr range decrement_last() noexcept { return range{first, last - 1}; }
 
-            constexpr bool empty() noexcept
-            {
-                return first >= last;
-            }
+            constexpr bool empty() noexcept { return first >= last; }
         };
 
     public:
@@ -131,12 +122,8 @@ namespace pika::concurrency::detail {
 
             range expected_range = current_range.data_.load(std::memory_order_relaxed);
 
-            do
-            {
-                if (expected_range.empty())
-                {
-                    return std::nullopt;
-                }
+            do {
+                if (expected_range.empty()) { return std::nullopt; }
 
                 index = expected_range.first;
                 desired_range = expected_range.increment_first();
@@ -156,12 +143,8 @@ namespace pika::concurrency::detail {
 
             range expected_range = current_range.data_.load(std::memory_order_relaxed);
 
-            do
-            {
-                if (expected_range.empty())
-                {
-                    return std::nullopt;
-                }
+            do {
+                if (expected_range.empty()) { return std::nullopt; }
 
                 desired_range = expected_range.decrement_last();
                 index = desired_range.last;

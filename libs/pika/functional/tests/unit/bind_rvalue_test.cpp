@@ -28,10 +28,7 @@ namespace placeholders = std::placeholders;
 
 //
 
-int f(int x)
-{
-    return x;
-}
+int f(int x) { return x; }
 
 int main()
 {

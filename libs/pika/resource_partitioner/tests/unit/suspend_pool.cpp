@@ -191,10 +191,7 @@ int main(int argc, char* argv[])
 #endif
     };
 
-    for (auto const scheduler : schedulers)
-    {
-        test_scheduler(argc, argv, scheduler);
-    }
+    for (auto const scheduler : schedulers) { test_scheduler(argc, argv, scheduler); }
 
     return 0;
 }

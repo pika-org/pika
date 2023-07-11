@@ -36,10 +36,7 @@ namespace pika::threads {
         {
             for (auto& callback : on_start_thread_callbacks_)
             {
-                if (callback)
-                {
-                    callback(local_thread_num, global_thread_num, pool_name, postfix);
-                }
+                if (callback) { callback(local_thread_num, global_thread_num, pool_name, postfix); }
             }
         }
 
@@ -48,19 +45,13 @@ namespace pika::threads {
         {
             for (auto& callback : on_stop_thread_callbacks_)
             {
-                if (callback)
-                {
-                    callback(local_thread_num, global_thread_num, pool_name, postfix);
-                }
+                if (callback) { callback(local_thread_num, global_thread_num, pool_name, postfix); }
             }
         }
 
         bool on_error(std::size_t global_thread_num, std::exception_ptr const& e) const
         {
-            if (on_error_)
-            {
-                return on_error_(global_thread_num, e);
-            }
+            if (on_error_) { return on_error_(global_thread_num, e); }
             return true;
         }
 
@@ -74,10 +65,7 @@ namespace pika::threads {
             on_stop_thread_callbacks_.push_front(callback);
         }
 
-        void set_on_error_callback(on_error_type const& callback)
-        {
-            on_error_ = callback;
-        }
+        void set_on_error_callback(on_error_type const& callback) { on_error_ = callback; }
 
         // functions to call for each created thread
         std::deque<on_startstop_type> on_start_thread_callbacks_;

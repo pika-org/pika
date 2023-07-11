@@ -36,8 +36,7 @@ namespace pika {
     {
         for (std::size_t i = 0; static_cast<runtime_mode>(i) < runtime_mode::last; ++i)
         {
-            if (mode == strings::runtime_mode_names[i])
-                return static_cast<runtime_mode>(i - 1);
+            if (mode == strings::runtime_mode_names[i]) return static_cast<runtime_mode>(i - 1);
         }
         return runtime_mode::invalid;
     }

@@ -20,14 +20,8 @@ namespace pika::detail {
         // Experiments on Windows and Fedora 32 show that a single pause,
         // followed by an immediate sleep, is best.
 
-        if (k == 0)
-        {
-            PIKA_SMT_PAUSE;
-        }
-        else
-        {
-            std::this_thread::sleep_for(std::chrono::microseconds(1));
-        }
+        if (k == 0) { PIKA_SMT_PAUSE; }
+        else { std::this_thread::sleep_for(std::chrono::microseconds(1)); }
     }
 
 }    // namespace pika::detail

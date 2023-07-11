@@ -85,8 +85,7 @@ void test_native_to_unicode()
 vector<wstring> sv(const wchar_t* array[], unsigned size)
 {
     vector<wstring> r;
-    for (unsigned i = 0; i < size; ++i)
-        r.emplace_back(array[i]);
+    for (unsigned i = 0; i < size; ++i) r.emplace_back(array[i]);
     return r;
 }
 

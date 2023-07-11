@@ -43,10 +43,7 @@ void p3(pika::future<int> f)
     return;
 }
 
-pika::future<int> p4(pika::future<int> f)
-{
-    return pika::async(p2, std::move(f));
-}
+pika::future<int> p4(pika::future<int> f) { return pika::async(p2, std::move(f)); }
 
 ///////////////////////////////////////////////////////////////////////////////
 void test_return_int()
@@ -195,8 +192,7 @@ void test_complex_then_chain_one_launch()
 {
     std::atomic<int> count(0);
     auto policy = pika::launch::select([&count]() -> pika::launch {
-        if (count++ == 0)
-            return pika::launch::async;
+        if (count++ == 0) return pika::launch::async;
         return pika::launch::sync;
     });
 

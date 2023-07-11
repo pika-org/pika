@@ -40,10 +40,8 @@ double dx = 1.;        // grid spacing
 
 inline std::size_t idx(std::size_t i, int dir, std::size_t size)
 {
-    if (i == 0 && dir == -1)
-        return size - 1;
-    if (i == size - 1 && dir == +1)
-        return 0;
+    if (i == 0 && dir == -1) return size - 1;
+    if (i == size - 1 && dir == +1) return 0;
 
     PIKA_ASSERT((i + dir) < size);
 
@@ -74,12 +72,10 @@ struct stepper
 
         // U[t][i] is the state of position i at time t.
         std::vector<space> U(2);
-        for (space& s : U)
-            s.resize(nx);
+        for (space& s : U) s.resize(nx);
 
         // Initial conditions: f(0, i) = i
-        for (std::size_t i = 0; i != nx; ++i)
-            U[0][i] = pika::make_ready_future(double(i));
+        for (std::size_t i = 0; i != nx; ++i) U[0][i] = pika::make_ready_future(double(i));
 
         auto Op = unwrapping(&stepper::heat);
 
@@ -114,8 +110,7 @@ int pika_main(pika::program_options::variables_map& vm)
     std::uint64_t nx = vm["nx"].as<std::uint64_t>();    // Number of grid points.
     std::uint64_t nt = vm["nt"].as<std::uint64_t>();    // Number of steps.
 
-    if (vm.count("no-header"))
-        header = false;
+    if (vm.count("no-header")) header = false;
 
     // Create the stepper object
     stepper step;

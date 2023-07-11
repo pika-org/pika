@@ -47,28 +47,18 @@ namespace N {
             ++instances;
         }
 
-        virtual ~base()
-        {
-            --instances;
-        }
+        virtual ~base() { --instances; }
 
     public:
         static long instances;
 
-        long use_count() const
-        {
-            return use_count_;
-        }
+        long use_count() const { return use_count_; }
 
-        inline friend void intrusive_ptr_add_ref(base const* p)
-        {
-            ++p->use_count_;
-        }
+        inline friend void intrusive_ptr_add_ref(base const* p) { ++p->use_count_; }
 
         inline friend void intrusive_ptr_release(base const* p)
         {
-            if (--p->use_count_ == 0)
-                delete p;
+            if (--p->use_count_ == 0) delete p;
         }
     };
 

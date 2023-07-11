@@ -40,16 +40,13 @@ using namespace pika::threads;
 // dummy function we will call using async
 void do_stuff(std::size_t n, bool printout)
 {
-    if (printout)
-        std::cout << "[do stuff] " << n << "\n";
+    if (printout) std::cout << "[do stuff] " << n << "\n";
     for (std::size_t i(0); i < n; ++i)
     {
         double f = std::sin(2 * M_PI * static_cast<double>(i) / static_cast<double>(n));
-        if (printout)
-            std::cout << "sin(" << i << ") = " << f << ", ";
+        if (printout) std::cout << "sin(" << i << ") = " << f << ", ";
     }
-    if (printout)
-        std::cout << "\n";
+    if (printout) std::cout << "\n";
 }
 
 // ------------------------------------------------------------------------
@@ -76,10 +73,7 @@ int pika_main(pika::program_options::variables_map&)
         pool_executor = mpi_exec;
         std::cout << "\n[pika_main] got mpi executor " << std::endl;
     }
-    else
-    {
-        pool_executor = high_priority_executor;
-    }
+    else { pool_executor = high_priority_executor; }
 
     // print partition characteristics
     std::cout << "\n\n[pika_main] print resource_partitioner characteristics : "
@@ -115,10 +109,8 @@ int pika_main(pika::program_options::variables_map&)
                 }
             }
             // the last futures we made are stored in here
-            if (future_4.valid())
-                future_4.get();
-            if (future_5.valid())
-                future_5.get();
+            if (future_4.valid()) future_4.get();
+            if (future_5.valid()) future_5.get();
         });
 
     future_3.get();

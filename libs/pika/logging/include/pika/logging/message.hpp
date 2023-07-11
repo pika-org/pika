@@ -116,10 +116,7 @@ namespace pika::util::logging {
             return m_full_msg;
         }
 
-        bool empty() const
-        {
-            return full_string().empty();
-        }
+        bool empty() const { return full_string().empty(); }
 
         friend std::ostream& operator<<(std::ostream& os, message const& value)
         {

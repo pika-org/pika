@@ -94,10 +94,7 @@ namespace pika::execution {
         ///
         /// \returns The new sequenced_task_policy
         ///
-        constexpr sequenced_task_policy operator()(task_policy_tag /*tag*/) const
-        {
-            return *this;
-        }
+        constexpr sequenced_task_policy operator()(task_policy_tag /*tag*/) const { return *this; }
 
         /// Create a corresponding non task policy for this task policy
         ///
@@ -155,28 +152,16 @@ namespace pika::execution {
 
     public:
         /// Return the associated executor object.
-        executor_type& executor()
-        {
-            return exec_;
-        }
+        executor_type& executor() { return exec_; }
 
         /// Return the associated executor object.
-        constexpr executor_type const& executor() const
-        {
-            return exec_;
-        }
+        constexpr executor_type const& executor() const { return exec_; }
 
         /// Return the associated executor parameters object.
-        executor_parameters_type& parameters()
-        {
-            return params_;
-        }
+        executor_parameters_type& parameters() { return params_; }
 
         /// Return the associated executor parameters object.
-        constexpr executor_parameters_type const& parameters() const
-        {
-            return params_;
-        }
+        constexpr executor_parameters_type const& parameters() const { return params_; }
 
     private:
         friend struct pika::parallel::execution::create_rebound_policy_t;
@@ -287,28 +272,16 @@ namespace pika::execution {
         }
 
         /// Return the associated executor object.
-        executor_type& executor()
-        {
-            return exec_;
-        }
+        executor_type& executor() { return exec_; }
 
         /// Return the associated executor object.
-        constexpr executor_type const& executor() const
-        {
-            return exec_;
-        }
+        constexpr executor_type const& executor() const { return exec_; }
 
         /// Return the associated executor parameters object.
-        executor_parameters_type& parameters()
-        {
-            return params_;
-        }
+        executor_parameters_type& parameters() { return params_; }
 
         /// Return the associated executor parameters object.
-        constexpr executor_parameters_type const& parameters() const
-        {
-            return params_;
-        }
+        constexpr executor_parameters_type const& parameters() const { return params_; }
 
         /// \cond NOINTERNAL
         template <typename Dependent = void,
@@ -381,10 +354,7 @@ namespace pika::execution {
         ///
         /// \returns The new sequenced_policy
         ///
-        constexpr decltype(auto) operator()(non_task_policy_tag /*tag*/) const
-        {
-            return *this;
-        }
+        constexpr decltype(auto) operator()(non_task_policy_tag /*tag*/) const { return *this; }
 
         /// Create a new sequenced_policy from the given
         /// executor
@@ -436,28 +406,16 @@ namespace pika::execution {
 
     public:
         /// Return the associated executor object.
-        executor_type& executor()
-        {
-            return exec_;
-        }
+        executor_type& executor() { return exec_; }
 
         /// Return the associated executor object.
-        constexpr executor_type const& executor() const
-        {
-            return exec_;
-        }
+        constexpr executor_type const& executor() const { return exec_; }
 
         /// Return the associated executor parameters object.
-        executor_parameters_type& parameters()
-        {
-            return params_;
-        }
+        executor_parameters_type& parameters() { return params_; }
 
         /// Return the associated executor parameters object.
-        constexpr executor_parameters_type const& parameters() const
-        {
-            return params_;
-        }
+        constexpr executor_parameters_type const& parameters() const { return params_; }
 
     private:
         friend struct pika::parallel::execution::create_rebound_policy_t;
@@ -513,10 +471,7 @@ namespace pika::execution {
         ///
         /// \returns The new sequenced_policy_shim
         ///
-        constexpr decltype(auto) operator()(non_task_policy_tag /*tag*/) const
-        {
-            return *this;
-        }
+        constexpr decltype(auto) operator()(non_task_policy_tag /*tag*/) const { return *this; }
 
         /// Create a new sequenced_policy from the given
         /// executor
@@ -569,28 +524,16 @@ namespace pika::execution {
 
     public:
         /// Return the associated executor object.
-        executor_type& executor()
-        {
-            return exec_;
-        }
+        executor_type& executor() { return exec_; }
 
         /// Return the associated executor object.
-        constexpr executor_type const& executor() const
-        {
-            return exec_;
-        }
+        constexpr executor_type const& executor() const { return exec_; }
 
         /// Return the associated executor parameters object.
-        executor_parameters_type& parameters()
-        {
-            return params_;
-        }
+        executor_parameters_type& parameters() { return params_; }
 
         /// Return the associated executor parameters object.
-        constexpr executor_parameters_type const& parameters() const
-        {
-            return params_;
-        }
+        constexpr executor_parameters_type const& parameters() const { return params_; }
 
         /// \cond NOINTERNAL
         template <typename Dependent = void,
@@ -658,10 +601,7 @@ namespace pika::execution {
         ///
         /// \returns The new parallel_task_policy
         ///
-        constexpr parallel_task_policy operator()(task_policy_tag /*tag*/) const
-        {
-            return *this;
-        }
+        constexpr parallel_task_policy operator()(task_policy_tag /*tag*/) const { return *this; }
 
         /// Create a new non task parallel policy from itself
         ///
@@ -721,28 +661,16 @@ namespace pika::execution {
 
     public:
         /// Return the associated executor object.
-        executor_type& executor()
-        {
-            return exec_;
-        }
+        executor_type& executor() { return exec_; }
 
         /// Return the associated executor object.
-        constexpr executor_type const& executor() const
-        {
-            return exec_;
-        }
+        constexpr executor_type const& executor() const { return exec_; }
 
         /// Return the associated executor parameters object.
-        executor_parameters_type& parameters()
-        {
-            return params_;
-        }
+        executor_parameters_type& parameters() { return params_; }
 
         /// Return the associated executor parameters object.
-        constexpr executor_parameters_type const& parameters() const
-        {
-            return params_;
-        }
+        constexpr executor_parameters_type const& parameters() const { return params_; }
 
     private:
         friend struct pika::parallel::execution::create_rebound_policy_t;
@@ -852,28 +780,16 @@ namespace pika::execution {
 
     public:
         /// Return the associated executor object.
-        executor_type& executor()
-        {
-            return exec_;
-        }
+        executor_type& executor() { return exec_; }
 
         /// Return the associated executor object.
-        constexpr executor_type const& executor() const
-        {
-            return exec_;
-        }
+        constexpr executor_type const& executor() const { return exec_; }
 
         /// Return the associated executor parameters object.
-        executor_parameters_type& parameters()
-        {
-            return params_;
-        }
+        executor_parameters_type& parameters() { return params_; }
 
         /// Return the associated executor parameters object.
-        constexpr executor_parameters_type const& parameters() const
-        {
-            return params_;
-        }
+        constexpr executor_parameters_type const& parameters() const { return params_; }
 
         /// \cond NOINTERNAL
         template <typename Dependent = void,
@@ -949,10 +865,7 @@ namespace pika::execution {
         ///
         /// \returns The new parallel_policy
         ///
-        constexpr decltype(auto) operator()(non_task_policy_tag /*tag*/) const
-        {
-            return *this;
-        }
+        constexpr decltype(auto) operator()(non_task_policy_tag /*tag*/) const { return *this; }
 
         /// Create a new parallel_policy referencing an executor and
         /// a chunk size.
@@ -998,28 +911,16 @@ namespace pika::execution {
 
     public:
         /// Return the associated executor object.
-        executor_type& executor()
-        {
-            return exec_;
-        }
+        executor_type& executor() { return exec_; }
 
         /// Return the associated executor object.
-        constexpr executor_type const& executor() const
-        {
-            return exec_;
-        }
+        constexpr executor_type const& executor() const { return exec_; }
 
         /// Return the associated executor parameters object.
-        executor_parameters_type& parameters()
-        {
-            return params_;
-        }
+        executor_parameters_type& parameters() { return params_; }
 
         /// Return the associated executor parameters object.
-        constexpr executor_parameters_type const& parameters() const
-        {
-            return params_;
-        }
+        constexpr executor_parameters_type const& parameters() const { return params_; }
 
     private:
         friend struct pika::parallel::execution::create_rebound_policy_t;
@@ -1078,10 +979,7 @@ namespace pika::execution {
         ///
         /// \returns The new parallel_policy
         ///
-        constexpr decltype(auto) operator()(non_task_policy_tag /*tag*/) const
-        {
-            return *this;
-        }
+        constexpr decltype(auto) operator()(non_task_policy_tag /*tag*/) const { return *this; }
 
         /// Create a new parallel_policy from the given
         /// executor
@@ -1133,28 +1031,16 @@ namespace pika::execution {
 
     public:
         /// Return the associated executor object.
-        executor_type& executor()
-        {
-            return exec_;
-        }
+        executor_type& executor() { return exec_; }
 
         /// Return the associated executor object.
-        constexpr executor_type const& executor() const
-        {
-            return exec_;
-        }
+        constexpr executor_type const& executor() const { return exec_; }
 
         /// Return the associated executor parameters object.
-        executor_parameters_type& parameters()
-        {
-            return params_;
-        }
+        executor_parameters_type& parameters() { return params_; }
 
         /// Return the associated executor parameters object.
-        constexpr executor_parameters_type const& parameters() const
-        {
-            return params_;
-        }
+        constexpr executor_parameters_type const& parameters() const { return params_; }
 
         /// \cond NOINTERNAL
         template <typename Dependent = void,
@@ -1206,33 +1092,18 @@ namespace pika::execution {
         ///
         /// \returns The non task parallel unsequenced policy
         ///
-        constexpr decltype(auto) operator()(non_task_policy_tag /*tag*/) const
-        {
-            return *this;
-        }
+        constexpr decltype(auto) operator()(non_task_policy_tag /*tag*/) const { return *this; }
 
     public:
         /// Return the associated executor object.
-        executor_type& executor()
-        {
-            return exec_;
-        }
+        executor_type& executor() { return exec_; }
         /// Return the associated executor object.
-        constexpr executor_type const& executor() const
-        {
-            return exec_;
-        }
+        constexpr executor_type const& executor() const { return exec_; }
 
         /// Return the associated executor parameters object.
-        executor_parameters_type& parameters()
-        {
-            return params_;
-        }
+        executor_parameters_type& parameters() { return params_; }
         /// Return the associated executor parameters object.
-        constexpr executor_parameters_type const& parameters() const
-        {
-            return params_;
-        }
+        constexpr executor_parameters_type const& parameters() const { return params_; }
 
     private:
         friend struct pika::parallel::execution::create_rebound_policy_t;
@@ -1269,33 +1140,18 @@ namespace pika::execution {
         ///
         /// \returns The non task unsequenced policy
         ///
-        constexpr decltype(auto) operator()(non_task_policy_tag /*tag*/) const
-        {
-            return *this;
-        }
+        constexpr decltype(auto) operator()(non_task_policy_tag /*tag*/) const { return *this; }
 
     public:
         /// Return the associated executor object.
-        executor_type& executor()
-        {
-            return exec_;
-        }
+        executor_type& executor() { return exec_; }
         /// Return the associated executor object.
-        constexpr executor_type const& executor() const
-        {
-            return exec_;
-        }
+        constexpr executor_type const& executor() const { return exec_; }
 
         /// Return the associated executor parameters object.
-        executor_parameters_type& parameters()
-        {
-            return params_;
-        }
+        executor_parameters_type& parameters() { return params_; }
         /// Return the associated executor parameters object.
-        constexpr executor_parameters_type const& parameters() const
-        {
-            return params_;
-        }
+        constexpr executor_parameters_type const& parameters() const { return params_; }
 
     private:
         friend struct pika::parallel::execution::create_rebound_policy_t;

@@ -109,38 +109,17 @@ namespace pika::mpi::experimental {
             using namespace pika::mpi::experimental;
             switch (s)
             {
-            case stream_type::automatic:
-                return "auto";
-                break;
-            case stream_type::send_1:
-                return "send_1";
-                break;
-            case stream_type::send_2:
-                return "send_2";
-                break;
-            case stream_type::receive_1:
-                return "recv_1";
-                break;
-            case stream_type::receive_2:
-                return "recv_2";
-                break;
-            case stream_type::collective_1:
-                return "coll_1";
-                break;
-            case stream_type::collective_2:
-                return "coll_2";
-                break;
-            case stream_type::user_1:
-                return "user_1";
-                break;
-            case stream_type::user_2:
-                return "user_2";
-                break;
-            case stream_type::max_stream:
-                return "smax";
-                break;
-            default:
-                return "error";
+            case stream_type::automatic: return "auto"; break;
+            case stream_type::send_1: return "send_1"; break;
+            case stream_type::send_2: return "send_2"; break;
+            case stream_type::receive_1: return "recv_1"; break;
+            case stream_type::receive_2: return "recv_2"; break;
+            case stream_type::collective_1: return "coll_1"; break;
+            case stream_type::collective_2: return "coll_2"; break;
+            case stream_type::user_1: return "user_1"; break;
+            case stream_type::user_2: return "user_2"; break;
+            case stream_type::max_stream: return "smax"; break;
+            default: return "error";
             }
         }
 
@@ -187,10 +166,7 @@ namespace pika::mpi::experimental {
 
         struct initializer
         {
-            initializer()
-            {
-                init_throttling_default();
-            }
+            initializer() { init_throttling_default(); }
         };
 
         /// a single instance of all the mpi variables initialized once at startup
@@ -288,10 +264,7 @@ namespace pika::mpi::experimental {
                     "PIKA_MPI_MSG_THROTTLE_" + std::string(stream_name(stream_type(i)));
                 pika::detail::to_upper(str);
                 val = pika::detail::get_env_var_as<std::uint32_t>(str.c_str(), def);
-                if (val != def)
-                {
-                    detail::init_stream(stream_type(i), val);
-                }
+                if (val != def) { detail::init_stream(stream_type(i), val); }
             }
         }
 
@@ -394,10 +367,7 @@ namespace pika::mpi::experimental {
         {
             int flag;
             MPI_Test(&req, &flag, MPI_STATUS_IGNORE);
-            if (flag)
-            {
-                PIKA_DETAIL_DP(mpi_debug<5>, debug(str<>("poll MPI_Test ok"), ptr(req)));
-            }
+            if (flag) { PIKA_DETAIL_DP(mpi_debug<5>, debug(str<>("poll MPI_Test ok"), ptr(req))); }
             return flag;
         }
 
@@ -490,8 +460,7 @@ namespace pika::mpi::experimental {
                 }
 
                 bool event_handled;
-                do
-                {
+                do {
                     event_handled = false;
 
                     // Move requests in the queue (that have not yet been polled for)
@@ -649,10 +618,7 @@ namespace pika::mpi::experimental {
             sched->clear_mpi_polling_function();
         }
 
-        int comm_world_size()
-        {
-            return detail::mpi_data_.size_;
-        }
+        int comm_world_size() { return detail::mpi_data_.size_; }
 
     }    // namespace detail
 
@@ -685,31 +651,19 @@ namespace pika::mpi::experimental {
     // -------------------------------------------------------------
     std::uint32_t get_max_requests_in_flight(std::optional<stream_type> s)
     {
-        if (!s)
-        {
-            return detail::mpi_data_.default_queues_[0].limit_;
-        }
+        if (!s) { return detail::mpi_data_.default_queues_[0].limit_; }
         PIKA_ASSERT(detail::to_underlying(s.value()) <= detail::mpi_data_.default_queues_.size());
         return detail::get_stream_ref(s.value()).limit_;
     }
 
     // -------------------------------------------------------------
-    void set_max_polling_size(std::size_t p)
-    {
-        detail::mpi_data_.max_polling_requests = p;
-    }
+    void set_max_polling_size(std::size_t p) { detail::mpi_data_.max_polling_requests = p; }
 
     // -------------------------------------------------------------
-    std::size_t get_max_polling_size()
-    {
-        return detail::mpi_data_.max_polling_requests;
-    }
+    std::size_t get_max_polling_size() { return detail::mpi_data_.max_polling_requests; }
 
     // -----------------------------------------------------------------
-    std::size_t get_completion_mode()
-    {
-        return detail::task_completion_flags_;
-    }
+    std::size_t get_completion_mode() { return detail::task_completion_flags_; }
 
     // -----------------------------------------------------------------
     bool create_pool(
@@ -736,10 +690,7 @@ namespace pika::mpi::experimental {
         else if (mode == pool_create_mode::pika_decides)
         {
             // if we have a single rank - disable pool
-            if (detail::mpi_data_.size_ == 1)
-            {
-                flags &= ~1;
-            }
+            if (detail::mpi_data_.size_ == 1) { flags &= ~1; }
         }
         using namespace pika::debug::detail;
         PIKA_DETAIL_DP(detail::mpi_debug<6>,
@@ -750,8 +701,7 @@ namespace pika::mpi::experimental {
         detail::task_completion_flags_ = flags;
 
         // if pool is now disabled, just exit
-        if ((flags & 1) == 0)
-            return false;
+        if ((flags & 1) == 0) return false;
 
         // Disable idle backoff on the MPI pool
         using pika::threads::scheduler_mode;
@@ -760,10 +710,7 @@ namespace pika::mpi::experimental {
         // Create a thread pool with a single core that we will use for all
         // communication related tasks
         std::string name = pool_name;
-        if (name.empty())
-        {
-            name = mpi::experimental::get_pool_name();
-        }
+        if (name.empty()) { name = mpi::experimental::get_pool_name(); }
         else
         {
             // override mpi pool name with whatever we decided on
@@ -780,22 +727,13 @@ namespace pika::mpi::experimental {
     }
 
     // -----------------------------------------------------------------
-    const std::string& get_pool_name()
-    {
-        return detail::polling_pool_name_;
-    }
+    const std::string& get_pool_name() { return detail::polling_pool_name_; }
 
     // -----------------------------------------------------------------
-    void set_pool_name(const std::string& name)
-    {
-        detail::polling_pool_name_ = name;
-    }
+    void set_pool_name(const std::string& name) { detail::polling_pool_name_ = name; }
 
     // -----------------------------------------------------------------
-    bool pool_exists()
-    {
-        return detail::pool_exists_;
-    }
+    bool pool_exists() { return detail::pool_exists_; }
 
     // -------------------------------------------------------------
     // initialize the pika::mpi background request handler
@@ -890,13 +828,7 @@ namespace pika::mpi::experimental {
         PIKA_DETAIL_DP(detail::mpi_debug<5>,
             debug(str<>("Clearing mode"), detail::mpi_data_, "disable_user_polling"));
 
-        if (pool_name.empty())
-        {
-            detail::unregister_polling(pika::resource::get_thread_pool(0));
-        }
-        else
-        {
-            detail::unregister_polling(pika::resource::get_thread_pool(pool_name));
-        }
+        if (pool_name.empty()) { detail::unregister_polling(pika::resource::get_thread_pool(0)); }
+        else { detail::unregister_polling(pika::resource::get_thread_pool(pool_name)); }
     }
 }    // namespace pika::mpi::experimental

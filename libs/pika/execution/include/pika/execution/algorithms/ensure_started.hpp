@@ -60,10 +60,7 @@ namespace pika::ensure_started_detail {
     {
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
-        void operator()(std::monostate)
-        {
-            PIKA_UNREACHABLE;
-        }
+        void operator()(std::monostate) { PIKA_UNREACHABLE; }
 
         template <typename Ts>
         void operator()(Ts&& ts)
@@ -367,10 +364,7 @@ namespace pika::ensure_started_detail {
                 }
             }
 
-            friend void intrusive_ptr_add_ref(shared_state* p)
-            {
-                ++p->reference_count;
-            }
+            friend void intrusive_ptr_add_ref(shared_state* p) { ++p->reference_count; }
 
             friend void intrusive_ptr_release(shared_state* p)
             {

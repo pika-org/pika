@@ -50,16 +50,13 @@ using pika::threads::scheduler_mode;
 // dummy function we will call using async
 void do_stuff(std::size_t n, bool printout)
 {
-    if (printout)
-        std::cout << "[do stuff] " << n << "\n";
+    if (printout) std::cout << "[do stuff] " << n << "\n";
     for (std::size_t i(0); i < n; ++i)
     {
         double f = std::sin(2 * M_PI * static_cast<double>(i) / static_cast<double>(n));
-        if (printout)
-            std::cout << "sin(" << i << ") = " << f << ", ";
+        if (printout) std::cout << "sin(" << i << ") = " << f << ", ";
     }
-    if (printout)
-        std::cout << "\n";
+    if (printout) std::cout << "\n";
 }
 
 // this is called on an pika thread after the runtime starts up
@@ -92,10 +89,7 @@ int pika_main(/*pika::program_options::variables_map& vm*/)
             pika::execution::parallel_executor(&pika::resource::get_thread_pool(pool_name));
         std::cout << "\n[pika_main] got mpi executor " << std::endl;
     }
-    else
-    {
-        pool_executor = high_priority_executor;
-    }
+    else { pool_executor = high_priority_executor; }
 
     // print partition characteristics
     std::cout << "\n\n[pika_main] print resource_partitioner characteristics : "

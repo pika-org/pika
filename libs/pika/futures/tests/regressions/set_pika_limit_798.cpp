@@ -13,10 +13,7 @@
 # include <pika/unwrap.hpp>
 
 // define large action
-double func(double x1, double, double, double, double, double, double)
-{
-    return x1;
-}
+double func(double x1, double, double, double, double, double, double) { return x1; }
 
 int main(int argc, char* argv[])
 {

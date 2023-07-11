@@ -32,15 +32,9 @@ namespace pika {
                 {    // skip leading newline
                     result += msg.substr(pos1, pos - pos1 + 1);
                     pos = msg.find_first_of('\n', pos1 = pos + 1);
-                    if (std::string::npos != pos)
-                    {
-                        result += "  ";
-                    }
+                    if (std::string::npos != pos) { result += "  "; }
                 }
-                else
-                {
-                    pos = msg.find_first_of('\n', pos1 = pos + 1);
-                }
+                else { pos = msg.find_first_of('\n', pos1 = pos + 1); }
             }
 
             result += msg.substr(pos1);
@@ -112,19 +106,16 @@ namespace pika {
     std::error_code exception_list::get_error() const
     {
         std::lock_guard<mutex_type> l(mtx_);
-        if (exceptions_.empty())
-            return pika::error::no_success;
+        if (exceptions_.empty()) return pika::error::no_success;
         return pika::get_error(exceptions_.front());
     }
 
     std::string exception_list::get_message() const
     {
         std::lock_guard<mutex_type> l(mtx_);
-        if (exceptions_.empty())
-            return "";
+        if (exceptions_.empty()) return "";
 
-        if (1 == exceptions_.size())
-            return pika::get_error_what(exceptions_.front());
+        if (1 == exceptions_.size()) return pika::get_error_what(exceptions_.front());
 
         std::string result("\n");
 
@@ -134,8 +125,7 @@ namespace pika {
         {
             result += "  ";
             result += detail::indent_message(pika::get_error_what(*it));
-            if (result.find_last_of('\n') < result.size() - 1)
-                result += "\n";
+            if (result.find_last_of('\n') < result.size() - 1) result += "\n";
         }
         return result;
     }

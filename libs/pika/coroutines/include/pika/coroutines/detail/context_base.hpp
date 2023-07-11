@@ -110,39 +110,21 @@ namespace pika::threads::coroutines::detail {
         }
 
 #if defined(PIKA_HAVE_THREAD_PHASE_INFORMATION)
-        std::size_t phase() const
-        {
-            return m_phase;
-        }
+        std::size_t phase() const { return m_phase; }
 #endif
 
-        thread_id_type get_thread_id() const
-        {
-            return m_thread_id;
-        }
+        thread_id_type get_thread_id() const { return m_thread_id; }
 
         /*
          * Returns true if the context is runnable.
          */
-        bool is_ready() const
-        {
-            return m_state == ctx_ready;
-        }
+        bool is_ready() const { return m_state == ctx_ready; }
 
-        bool running() const
-        {
-            return m_state == ctx_running;
-        }
+        bool running() const { return m_state == ctx_running; }
 
-        bool exited() const
-        {
-            return m_state == ctx_exited;
-        }
+        bool exited() const { return m_state == ctx_exited; }
 
-        void init()
-        {
-            base_type::init();
-        }
+        void init() { base_type::init(); }
 
         // Resume coroutine.
         // Pre:  The coroutine must be ready.
@@ -160,8 +142,7 @@ namespace pika::threads::coroutines::detail {
 
             if (m_exit_status != ctx_not_exited)
             {
-                if (m_exit_status == ctx_exited_return)
-                    return;
+                if (m_exit_status == ctx_exited_return) return;
                 if (m_exit_status == ctx_exited_abnormally)
                 {
                     PIKA_ASSERT(m_type_info);
@@ -228,8 +209,7 @@ namespace pika::threads::coroutines::detail {
         std::size_t get_thread_data() const
         {
 #if defined(PIKA_HAVE_THREAD_LOCAL_STORAGE)
-            if (!m_thread_data)
-                return 0;
+            if (!m_thread_data) return 0;
             return get_tss_thread_data(m_thread_data);
 #else
             return m_thread_data;
@@ -250,16 +230,12 @@ namespace pika::threads::coroutines::detail {
 #if defined(PIKA_HAVE_THREAD_LOCAL_STORAGE)
         tss_storage* get_thread_tss_data(bool create_if_needed) const
         {
-            if (!m_thread_data && create_if_needed)
-                m_thread_data = create_tss_storage();
+            if (!m_thread_data && create_if_needed) m_thread_data = create_tss_storage();
             return m_thread_data;
         }
 #endif
 
-        std::size_t& get_continuation_recursion_count()
-        {
-            return continuation_recursion_count_;
-        }
+        std::size_t& get_continuation_recursion_count() { return continuation_recursion_count_; }
 
     public:
         // global coroutine state
@@ -324,10 +300,7 @@ namespace pika::threads::coroutines::detail {
 
     protected:
         // Nothrow.
-        void do_yield() noexcept
-        {
-            swap_context(*this, m_caller, detail::yield_hint());
-        }
+        void do_yield() noexcept { swap_context(*this, m_caller, detail::yield_hint()); }
 
         // Nothrow.
         void do_invoke() noexcept

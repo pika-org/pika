@@ -26,10 +26,7 @@ namespace pika::resource {
 
         for (pu const& p : core_->pus_)
         {
-            if (p.id_ != id_)
-            {
-                result.push_back(p);
-            }
+            if (p.id_ != id_) { result.push_back(p); }
         }
         return result;
     }
@@ -43,10 +40,7 @@ namespace pika::resource {
         {
             for (pu const& p : c.pus_)
             {
-                if (p.id_ != id_)
-                {
-                    result.push_back(p);
-                }
+                if (p.id_ != id_) { result.push_back(p); }
             }
         }
         return result;
@@ -59,10 +53,7 @@ namespace pika::resource {
 
         for (core const& c : domain_->cores_)
         {
-            if (c.id_ != id_)
-            {
-                result.push_back(c);
-            }
+            if (c.id_ != id_) { result.push_back(c); }
         }
         return result;
     }
@@ -85,8 +76,7 @@ namespace pika::resource {
         {
             std::lock_guard<std::recursive_mutex> l(partitioner_mtx());
             std::unique_ptr<detail::partitioner>& part = partitioner_ref();
-            if (!part)
-                part.reset(new detail::partitioner);
+            if (!part) part.reset(new detail::partitioner);
             return part;
         }
 
@@ -95,8 +85,7 @@ namespace pika::resource {
             // don't lock the mutex as otherwise will be still locked while
             // being destroyed (leading to problems on some platforms)
             std::unique_ptr<detail::partitioner>& part = partitioner_ref();
-            if (part)
-                part.reset();
+            if (part) part.reset();
         }
     }    // namespace detail
 
@@ -117,10 +106,7 @@ namespace pika::resource {
         return *rp;
     }
 
-    bool is_partitioner_valid()
-    {
-        return detail::partitioner_ref() != nullptr;
-    }
+    bool is_partitioner_valid() { return detail::partitioner_ref() != nullptr; }
 
     namespace detail {
         detail::partitioner& create_partitioner(resource::partitioner_mode rpmode,
@@ -217,10 +203,7 @@ namespace pika::resource {
 
     // Does initialization of all resources and internal data of the
     // resource partitioner called in pika_init
-    void partitioner::configure_pools()
-    {
-        partitioner_.configure_pools();
-    }
+    void partitioner::configure_pools() { partitioner_.configure_pools(); }
 
     namespace detail {
 

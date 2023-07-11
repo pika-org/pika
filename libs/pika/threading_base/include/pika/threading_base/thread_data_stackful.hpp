@@ -46,10 +46,7 @@ namespace pika::threads::detail {
     {
     private:
         // Avoid warning about using 'this' in initializer list
-        thread_data* this_()
-        {
-            return this;
-        }
+        thread_data* this_() { return this; }
 
         static pika::detail::internal_allocator<thread_data_stackful> thread_alloc_;
 
@@ -78,20 +75,14 @@ namespace pika::threads::detail {
         }
 #endif
 
-        std::size_t get_thread_data() const override
-        {
-            return coroutine_.get_thread_data();
-        }
+        std::size_t get_thread_data() const override { return coroutine_.get_thread_data(); }
 
         std::size_t set_thread_data(std::size_t data) override
         {
             return coroutine_.set_thread_data(data);
         }
 
-        void init() override
-        {
-            coroutine_.init();
-        }
+        void init() override { coroutine_.init(); }
 
         void rebind(thread_init_data& init_data) override
         {

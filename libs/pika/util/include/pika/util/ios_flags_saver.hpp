@@ -29,18 +29,12 @@ namespace pika::detail {
         {
         }
 
-        ~ios_flags_saver()
-        {
-            restore();
-        }
+        ~ios_flags_saver() { restore(); }
 
         ios_flags_saver(ios_flags_saver const&) = delete;
         ios_flags_saver& operator=(ios_flags_saver const&) = delete;
 
-        void restore()
-        {
-            s_save_.flags(a_save_);
-        }
+        void restore() { s_save_.flags(a_save_); }
 
     private:
         state_type& s_save_;

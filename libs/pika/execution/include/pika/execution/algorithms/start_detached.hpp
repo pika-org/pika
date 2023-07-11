@@ -95,10 +95,7 @@ namespace pika::start_detached_detail {
         }
 
     private:
-        friend void intrusive_ptr_add_ref(operation_state_holder* p)
-        {
-            ++p->count;
-        }
+        friend void intrusive_ptr_add_ref(operation_state_holder* p) { ++p->count; }
 
         friend void intrusive_ptr_release(operation_state_holder* p)
         {

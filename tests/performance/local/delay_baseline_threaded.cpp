@@ -81,23 +81,14 @@ void print_results(variables_map& vm, double sum_, double mean_)
 void invoke_n_workers_nowait(double& elapsed, std::uint64_t workers)
 {
     // Warmup.
-    for (std::uint64_t i = 0; i < tasks; ++i)
-    {
-        worker_timed(delay * 1000);
-    }
+    for (std::uint64_t i = 0; i < tasks; ++i) { worker_timed(delay * 1000); }
 
-    for (std::uint64_t i = 0; i < tasks; ++i)
-    {
-        worker_timed(delay * 1000);
-    }
+    for (std::uint64_t i = 0; i < tasks; ++i) { worker_timed(delay * 1000); }
 
     // Start the clock.
     high_resolution_timer t;
 
-    for (std::uint64_t i = 0; i < tasks; ++i)
-    {
-        worker_timed(delay * 1000);
-    }
+    for (std::uint64_t i = 0; i < tasks; ++i) { worker_timed(delay * 1000); }
 
     elapsed = t.elapsed();
 }
@@ -112,8 +103,7 @@ void invoke_n_workers(pika::concurrency::detail::barrier& b, double& elapsed, st
 ///////////////////////////////////////////////////////////////////////////////
 int app_main(variables_map& vm)
 {
-    if (0 == tasks)
-        throw std::invalid_argument("error: count of 0 tasks specified\n");
+    if (0 == tasks) throw std::invalid_argument("error: count of 0 tasks specified\n");
 
     std::vector<double> elapsed(threads - 1);
     std::vector<std::thread> workers;
@@ -130,8 +120,7 @@ int app_main(variables_map& vm)
 
     for (std::thread& thread : workers)
     {
-        if (thread.joinable())
-            thread.join();
+        if (thread.joinable()) thread.join();
     }
 
     for (std::uint64_t i = 0; i < elapsed.size(); ++i)
@@ -179,8 +168,7 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    if (vm.count("no-header"))
-        header = false;
+    if (vm.count("no-header")) header = false;
 
     return app_main(vm);
 }

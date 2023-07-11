@@ -76,8 +76,7 @@ namespace pika::threads {
             cond->wait(lk, [&]() -> bool { return stopping; });
 
             // rethrow exceptions
-            if (exception)
-                std::rethrow_exception(exception);
+            if (exception) std::rethrow_exception(exception);
 
             return PIKA_MOVE(*result);
         }
@@ -125,8 +124,7 @@ namespace pika::threads {
             cond->wait(lk, [&]() -> bool { return stopping; });
 
             // rethrow exceptions
-            if (exception)
-                std::rethrow_exception(exception);
+            if (exception) std::rethrow_exception(exception);
         }
     }    // namespace detail
 

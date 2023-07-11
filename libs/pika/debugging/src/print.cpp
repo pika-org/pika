@@ -120,10 +120,7 @@ namespace PIKA_DETAIL_NS_DEBUG {
         char const* end = beg + sizeof(v);
 
         N = (N + CHAR_BIT - 1) / CHAR_BIT;
-        while (beg != end && N-- > 0)
-        {
-            os << std::bitset<CHAR_BIT>(*beg++);
-        }
+        while (beg != end && N-- > 0) { os << std::bitset<CHAR_BIT>(*beg++); }
     }
 
     template PIKA_EXPORT void print_bin(std::ostream&, std::int8_t, int);
@@ -186,20 +183,14 @@ namespace PIKA_DETAIL_NS_DEBUG {
     ///////////////////////////////////////////////////////////////////////////
     std::function<void(std::ostream&)> print_info;
 
-    void register_print_info(void (*printer)(std::ostream&))
-    {
-        print_info = printer;
-    }
+    void register_print_info(void (*printer)(std::ostream&)) { print_info = printer; }
 
     void generate_prefix(std::ostream& os)
     {
 #ifdef PIKA_DEBUG_PRINT_SHOW_TIME
         os << detail::current_time_print_helper();
 #endif
-        if (print_info)
-        {
-            print_info(os);
-        }
+        if (print_info) { print_info(os); }
         os << detail::hostname_print_helper();
     }
 

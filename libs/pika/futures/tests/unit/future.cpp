@@ -38,20 +38,11 @@ struct X
     ~X() {}
 };
 
-int make_int()
-{
-    return 42;
-}
+int make_int() { return 42; }
 
-int throw_runtime_error()
-{
-    throw std::runtime_error("42");
-}
+int throw_runtime_error() { throw std::runtime_error("42"); }
 
-void set_promise_thread(pika::lcos::local::promise<int>* p)
-{
-    p->set_value(42);
-}
+void set_promise_thread(pika::lcos::local::promise<int>* p) { p->set_value(42); }
 
 struct my_exception
 {
@@ -344,10 +335,7 @@ void test_task_returning_void()
 
 int global_ref_target = 0;
 
-int& return_ref()
-{
-    return global_ref_target;
-}
+int& return_ref() { return global_ref_target; }
 
 void test_task_returning_reference()
 {

@@ -57,8 +57,7 @@ namespace pika::program_options {
         case extra_parameter:
             msg = "option '%canonical_option%' does not take any arguments";
             break;
-        default:
-            msg = "unknown command line syntax error for '%s'";
+        default: msg = "unknown command line syntax error for '%s'";
         }
         return msg;
     }
@@ -70,10 +69,7 @@ namespace pika::program_options::detail {
     using namespace std;
     using namespace program_options;
 
-    cmdline::cmdline(const vector<string>& args)
-    {
-        init(args);
-    }
+    cmdline::cmdline(const vector<string>& args) { init(args); }
 
     cmdline::cmdline(int argc, const char* const* argv)
     {
@@ -92,17 +88,13 @@ namespace pika::program_options::detail {
 
     void cmdline::style(int style)
     {
-        if (style == 0)
-            style = default_style;
+        if (style == 0) style = default_style;
 
         check_style(style);
         this->m_style = style_t(style);
     }
 
-    void cmdline::allow_unregistered()
-    {
-        this->m_allow_unregistered = true;
-    }
+    void cmdline::allow_unregistered() { this->m_allow_unregistered = true; }
 
     void cmdline::check_style(int style) const
     {
@@ -128,8 +120,7 @@ namespace pika::program_options::detail {
                     "'command_line_style::allow_slash_for_short' (slashes) or "
                     "'command_line_style::allow_dash_for_short' (dashes) for short options.";
 
-        if (error)
-            throw invalid_command_line_style(error);
+        if (error) throw invalid_command_line_style(error);
 
         // Need to check that if guessing and long disguise are enabled
         // -f will mean the same as -foo
@@ -140,10 +131,7 @@ namespace pika::program_options::detail {
         return ((m_style & style) ? true : false);
     }
 
-    void cmdline::set_options_description(const options_description& desc)
-    {
-        m_desc = &desc;
-    }
+    void cmdline::set_options_description(const options_description& desc) { m_desc = &desc; }
 
     void cmdline::set_positional_options(const positional_options_description& positional)
     {
@@ -152,11 +140,9 @@ namespace pika::program_options::detail {
 
     int cmdline::get_canonical_option_prefix()
     {
-        if (m_style & allow_long)
-            return allow_long;
+        if (m_style & allow_long) return allow_long;
 
-        if (m_style & allow_long_disguise)
-            return allow_long_disguise;
+        if (m_style & allow_long_disguise) return allow_long_disguise;
 
         if ((m_style & allow_short) && (m_style & allow_dash_for_short))
             return allow_dash_for_short;
@@ -185,8 +171,7 @@ namespace pika::program_options::detail {
 
         vector<style_parser> style_parsers;
 
-        if (m_style_parser)
-            style_parsers.push_back(m_style_parser);
+        if (m_style_parser) style_parsers.push_back(m_style_parser);
 
         if (m_additional_parser)
             style_parsers.emplace_back(
@@ -234,8 +219,7 @@ namespace pika::program_options::detail {
                     // so that they can be added to next.back()'s values
                     // if appropriate.
                     finish_option(next.back(), args, style_parsers);
-                    for (const auto& j : next)
-                        result.push_back(j);
+                    for (const auto& j : next) result.push_back(j);
                 }
 
                 if (args.size() != current_size)
@@ -264,8 +248,7 @@ namespace pika::program_options::detail {
             result2.push_back(result[i]);
             option& opt = result2.back();
 
-            if (opt.string_key.empty())
-                continue;
+            if (opt.string_key.empty()) continue;
 
             const option_description* xd = nullptr;
             try
@@ -282,8 +265,7 @@ namespace pika::program_options::detail {
                 throw;
             }
 
-            if (!xd)
-                continue;
+            if (!xd) continue;
 
             std::size_t min_tokens = xd->semantic()->min_tokens();
             std::size_t max_tokens = xd->semantic()->max_tokens();
@@ -298,8 +280,7 @@ namespace pika::program_options::detail {
                 for (; can_take_more && j < result.size(); --can_take_more, ++j)
                 {
                     option& opt2 = result[j];
-                    if (!opt2.string_key.empty())
-                        break;
+                    if (!opt2.string_key.empty()) break;
 
                     if (opt2.position_key == INT_MAX)
                     {
@@ -326,8 +307,7 @@ namespace pika::program_options::detail {
         int position_key = 0;
         for (auto& i : result)
         {
-            if (i.string_key.empty())
-                i.position_key = position_key++;
+            if (i.string_key.empty()) i.position_key = position_key++;
         }
 
         if (m_positional)
@@ -368,15 +348,13 @@ namespace pika::program_options::detail {
     void cmdline::finish_option(
         option& opt, vector<string>& other_tokens, const vector<style_parser>& style_parsers)
     {
-        if (opt.string_key.empty())
-            return;
+        if (opt.string_key.empty()) return;
 
         //
         // Be defensive:
         // will have no original token if option created by handle_additional_parser()
         std::string original_token_for_exceptions = opt.string_key;
-        if (!opt.original_tokens.empty())
-            original_token_for_exceptions = opt.original_tokens[0];
+        if (!opt.original_tokens.empty()) original_token_for_exceptions = opt.original_tokens[0];
 
         try
         {
@@ -392,10 +370,7 @@ namespace pika::program_options::detail {
                     opt.unregistered = true;
                     return;
                 }
-                else
-                {
-                    throw unknown_option();
-                }
+                else { throw unknown_option(); }
             }
             const option_description& d = *xd;
 
@@ -425,10 +400,7 @@ namespace pika::program_options::detail {
                 {
                     min_tokens -= static_cast<unsigned>(opt.value.size());
                 }
-                else
-                {
-                    min_tokens = 0;
-                }
+                else { min_tokens = 0; }
 
                 // Everything is OK, move the values to the result.
                 for (; !other_tokens.empty() && min_tokens--;)
@@ -493,14 +465,10 @@ namespace pika::program_options::detail {
                         invalid_command_line_syntax::empty_adjacent_parameter, name, name,
                         get_canonical_option_prefix());
             }
-            else
-            {
-                name = tok.substr(2);
-            }
+            else { name = tok.substr(2); }
             option opt;
             opt.string_key = PIKA_MOVE(name);
-            if (!adjacent.empty())
-                opt.value.push_back(adjacent);
+            if (!adjacent.empty()) opt.value.push_back(adjacent);
             opt.original_tokens.push_back(tok);
             result.push_back(opt);
             args.erase(args.begin());
@@ -562,8 +530,7 @@ namespace pika::program_options::detail {
                     option opt;
                     opt.string_key = name;
                     opt.original_tokens.push_back(tok);
-                    if (!adjacent.empty())
-                        opt.value.push_back(adjacent);
+                    if (!adjacent.empty()) opt.value.push_back(adjacent);
                     result.push_back(opt);
                     args.erase(args.begin());
                     break;
@@ -585,8 +552,7 @@ namespace pika::program_options::detail {
 
             option opt;
             opt.string_key = PIKA_MOVE(name);
-            if (!adjacent.empty())
-                opt.value.push_back(adjacent);
+            if (!adjacent.empty()) opt.value.push_back(adjacent);
             opt.original_tokens.push_back(tok);
             result.push_back(opt);
             args.erase(args.begin());
@@ -608,8 +574,7 @@ namespace pika::program_options::detail {
                         is_style_active(short_case_insensitive)))
                 {
                     args[0].insert(0, "-");
-                    if (args[0][1] == '/')
-                        args[0][1] = '-';
+                    if (args[0][1] == '/') args[0][1] = '-';
                     return parse_long_option(args);
                 }
             }
@@ -650,22 +615,15 @@ namespace pika::program_options::detail {
         {
             option next;
             next.string_key = r.first;
-            if (!r.second.empty())
-                next.value.push_back(r.second);
+            if (!r.second.empty()) next.value.push_back(r.second);
             result.push_back(next);
             args.erase(args.begin());
         }
         return result;
     }
 
-    void cmdline::set_additional_parser(additional_parser p)
-    {
-        m_additional_parser = p;
-    }
+    void cmdline::set_additional_parser(additional_parser p) { m_additional_parser = p; }
 
-    void cmdline::extra_style_parser(style_parser s)
-    {
-        m_style_parser = s;
-    }
+    void cmdline::extra_style_parser(style_parser s) { m_style_parser = s; }
 
 }    // namespace pika::program_options::detail

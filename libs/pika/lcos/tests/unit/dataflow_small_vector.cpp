@@ -49,10 +49,7 @@ using small_vector = pika::detail::small_vector<T, 3, pika::detail::internal_all
 std::atomic<std::uint32_t> void_f_count;
 std::atomic<std::uint32_t> int_f_count;
 
-void void_f()
-{
-    ++void_f_count;
-}
+void void_f() { ++void_f_count; }
 int int_f()
 {
     ++int_f_count;
@@ -62,10 +59,7 @@ int int_f()
 std::atomic<std::uint32_t> void_f1_count;
 std::atomic<std::uint32_t> int_f1_count;
 
-void void_f1(int)
-{
-    ++void_f1_count;
-}
+void void_f1(int) { ++void_f1_count; }
 int int_f1(int i)
 {
     ++int_f1_count;
@@ -84,10 +78,7 @@ std::atomic<std::uint32_t> int_f_vector_count;
 int int_f_vector(small_vector<int> const& vf)
 {
     int sum = 0;
-    for (int f : vf)
-    {
-        sum += f;
-    }
+    for (int f : vf) { sum += f; }
     return sum;
 }
 

@@ -43,12 +43,10 @@ namespace pika::threads::detail {
         PIKA_UNUSED(running);    //-V601
         return false;
 #else
-        if (!get_deadlock_detection_enabled())
-            return false;
+        if (!get_deadlock_detection_enabled()) return false;
 
         // attempt to output possibly deadlocked threads occasionally only
-        if (PIKA_LIKELY((idle_loop_count % PIKA_IDLE_LOOP_COUNT_MAX) != 0))
-            return false;
+        if (PIKA_LIKELY((idle_loop_count % PIKA_IDLE_LOOP_COUNT_MAX) != 0)) return false;
 
         bool result = false;
         bool collect_suspended = true;

@@ -29,17 +29,11 @@ namespace pika::lcos::detail {
     {
         // Check for state right away as the element might not be able to
         // produce a shared state (even if it's ready).
-        if (current.is_ready())
-        {
-            return true;
-        }
+        if (current.is_ready()) { return true; }
 
         auto const& state = traits::detail::get_shared_state(PIKA_FORWARD(T, current));
 
-        if (state.get() == nullptr)
-        {
-            return true;
-        }
+        if (state.get() == nullptr) { return true; }
 
         // Execute_deferred might make the future ready
         state->execute_deferred();
@@ -88,10 +82,7 @@ namespace pika::lcos::detail {
         traits::detail::reserve_if_reservable(values, count);
 
         traits::acquire_future_disp func;
-        for (std::size_t i = 0; i != count; ++i)
-        {
-            values.push_back(func(*begin++));
-        }
+        for (std::size_t i = 0; i != count; ++i) { values.push_back(func(*begin++)); }
 
         return values;
     }

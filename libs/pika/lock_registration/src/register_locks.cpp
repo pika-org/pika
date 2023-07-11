@@ -48,10 +48,7 @@ namespace pika::util {
 # endif
         }
 
-        lock_data::~lock_data()
-        {
-            delete user_data_;
-        }
+        lock_data::~lock_data() { delete user_data_; }
 
         struct held_locks_data_ptr
         {
@@ -60,10 +57,7 @@ namespace pika::util {
             {
             }
 
-            void reinitialize()
-            {
-                data_.reset(new held_locks_data);
-            }
+            void reinitialize() { data_.reset(new held_locks_data); }
 
             // note: this invalidates the stored pointer - this is intentional
             std::unique_ptr<held_locks_data> release()
@@ -72,10 +66,7 @@ namespace pika::util {
                 return PIKA_MOVE(data_);
             }
 
-            void set(std::unique_ptr<held_locks_data>&& data)
-            {
-                data_ = PIKA_MOVE(data);
-            }
+            void set(std::unique_ptr<held_locks_data>&& data) { data_ = PIKA_MOVE(data); }
 
             std::unique_ptr<held_locks_data> data_;
         };
@@ -87,30 +78,18 @@ namespace pika::util {
             static held_locks_data_ptr& get_held_locks()
             {
                 static thread_local held_locks_data_ptr held_locks;
-                if (!held_locks.data_)
-                {
-                    held_locks.reinitialize();
-                }
+                if (!held_locks.data_) { held_locks.reinitialize(); }
                 return held_locks;
             }
 
             static bool lock_detection_enabled_;
             static std::size_t lock_detection_trace_depth_;
 
-            static held_locks_map& get_lock_map()
-            {
-                return get_held_locks().data_->map_;
-            }
+            static held_locks_map& get_lock_map() { return get_held_locks().data_->map_; }
 
-            static bool get_lock_enabled()
-            {
-                return get_held_locks().data_->enabled_;
-            }
+            static bool get_lock_enabled() { return get_held_locks().data_->enabled_; }
 
-            static void set_lock_enabled(bool enable)
-            {
-                get_held_locks().data_->enabled_ = enable;
-            }
+            static void set_lock_enabled(bool enable) { get_held_locks().data_->enabled_ = enable; }
 
             static bool get_ignore_all_locks()
             {
@@ -133,10 +112,7 @@ namespace pika::util {
             {
                 register_locks::set_lock_enabled(false);
             }
-            ~reset_lock_enabled_on_exit()
-            {
-                register_locks::set_lock_enabled(old_value_);
-            }
+            ~reset_lock_enabled_on_exit() { register_locks::set_lock_enabled(old_value_); }
 
             bool old_value_;
         };
@@ -155,15 +131,9 @@ namespace pika::util {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    void enable_lock_detection()
-    {
-        detail::register_locks::lock_detection_enabled_ = true;
-    }
+    void enable_lock_detection() { detail::register_locks::lock_detection_enabled_ = true; }
 
-    void disable_lock_detection()
-    {
-        detail::register_locks::lock_detection_enabled_ = false;
-    }
+    void disable_lock_detection() { detail::register_locks::lock_detection_enabled_ = false; }
 
     void trace_depth_lock_detection(std::size_t value)
     {
@@ -195,8 +165,7 @@ namespace pika::util {
             register_locks::held_locks_map& held_locks = register_locks::get_lock_map();
 
             register_locks::held_locks_map::iterator it = held_locks.find(lock);
-            if (it != held_locks.end())
-                return false;    // this lock is already registered
+            if (it != held_locks.end()) return false;    // this lock is already registered
 
             std::pair<register_locks::held_locks_map::iterator, bool> p;
             if (!data)
@@ -225,8 +194,7 @@ namespace pika::util {
             register_locks::held_locks_map& held_locks = register_locks::get_lock_map();
 
             register_locks::held_locks_map::iterator it = held_locks.find(lock);
-            if (it == held_locks.end())
-                return false;    // this lock is not registered
+            if (it == held_locks.end()) return false;    // this lock is not registered
 
             held_locks.erase(lock);
         }
@@ -244,8 +212,7 @@ namespace pika::util {
             for (iterator it = held_locks.begin(); it != end; ++it)
             {
                 //lock_data const& data = *(*it).second;
-                if (!it->second.ignore_)
-                    return true;
+                if (!it->second.ignore_) return true;
             }
 
             return false;
@@ -273,10 +240,7 @@ namespace pika::util {
 
                 if (detail::some_locks_are_not_ignored(held_locks))
                 {
-                    if (registered_locks_error_handler)
-                    {
-                        registered_locks_error_handler();
-                    }
+                    if (registered_locks_error_handler) { registered_locks_error_handler(); }
                     else
                     {
                         PIKA_THROW_EXCEPTION(pika::error::invalid_status, "verify_no_locks",
@@ -334,37 +298,19 @@ namespace pika::util {
         }
     }    // namespace detail
 
-    void ignore_lock(void const* lock)
-    {
-        detail::set_ignore_status(lock, true);
-    }
+    void ignore_lock(void const* lock) { detail::set_ignore_status(lock, true); }
 
-    void reset_ignored(void const* lock)
-    {
-        detail::set_ignore_status(lock, false);
-    }
+    void reset_ignored(void const* lock) { detail::set_ignore_status(lock, false); }
 
-    void ignore_all_locks()
-    {
-        detail::register_locks::set_ignore_all_locks(true);
-    }
+    void ignore_all_locks() { detail::register_locks::set_ignore_all_locks(true); }
 
-    void reset_ignored_all()
-    {
-        detail::register_locks::set_ignore_all_locks(false);
-    }
+    void reset_ignored_all() { detail::register_locks::set_ignore_all_locks(false); }
 
 #else
 
-    bool register_lock(void const*, util::register_lock_data*)
-    {
-        return true;
-    }
+    bool register_lock(void const*, util::register_lock_data*) { return true; }
 
-    bool unregister_lock(void const*)
-    {
-        return true;
-    }
+    bool unregister_lock(void const*) { return true; }
 
     void verify_no_locks() {}
 

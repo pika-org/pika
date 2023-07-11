@@ -63,40 +63,25 @@ struct adaptable_mult_functor : mult_functor
 
 struct const_select_first
 {
-    int const& operator()(std::pair<int, int> const* p) const
-    {
-        return p->first;
-    }
+    int const& operator()(std::pair<int, int> const* p) const { return p->first; }
 };
 
 struct select_first : const_select_first    // derivation to allow conversions
 {
-    int& operator()(std::pair<int, int>* p) const
-    {
-        return p->first;
-    }
+    int& operator()(std::pair<int, int>* p) const { return p->first; }
 };
 
 struct select_second
 {
-    int& operator()(std::pair<int, int>* p) const
-    {
-        return p->second;
-    }
+    int& operator()(std::pair<int, int>* p) const { return p->second; }
 };
 
 struct value_select_first
 {
-    int operator()(std::pair<int, int> const* p) const
-    {
-        return p->first;
-    }
+    int operator()(std::pair<int, int> const* p) const { return p->first; }
 };
 
-int mult_2(int* arg)
-{
-    return *arg * 2;
-}
+int mult_2(int* arg) { return *arg * 2; }
 
 struct polymorphic_mult_functor
 {
@@ -122,12 +107,10 @@ int main()
     // Test transform_iterator
     {
         int x[N], y[N];
-        for (int k = 0; k < N; ++k)
-            x[k] = k;
+        for (int k = 0; k < N; ++k) x[k] = k;
         std::copy(x, x + N, y);
 
-        for (int k2 = 0; k2 < N; ++k2)
-            x[k2] = x[k2] * 2;
+        for (int k2 = 0; k2 < N; ++k2) x[k2] = x[k2] * 2;
 
         using iter_t = pika::util::transform_iterator<int*, adaptable_mult_functor>;
         iter_t i(y, adaptable_mult_functor(2));
@@ -141,12 +124,10 @@ int main()
     // Test transform_iterator non adaptable functor
     {
         int x[N], y[N];
-        for (int k = 0; k < N; ++k)
-            x[k] = k;
+        for (int k = 0; k < N; ++k) x[k] = k;
         std::copy(x, x + N, y);
 
-        for (int k2 = 0; k2 < N; ++k2)
-            x[k2] = x[k2] * 2;
+        for (int k2 = 0; k2 < N; ++k2) x[k2] = x[k2] * 2;
 
         using iter_t = pika::util::transform_iterator<int*, mult_functor, int>;
         iter_t i(y, mult_functor(2));
@@ -181,12 +162,10 @@ int main()
 // Test transform_iterator with function pointers
 {
     int x[N], y[N];
-    for (int k = 0; k < N; ++k)
-        x[k] = k;
+    for (int k = 0; k < N; ++k) x[k] = k;
     std::copy(x, x + N, y);
 
-    for (int k2 = 0; k2 < N; ++k2)
-        x[k2] = x[k2] * 2;
+    for (int k2 = 0; k2 < N; ++k2) x[k2] = x[k2] * 2;
 
     tests::input_iterator_test(pika::util::make_transform_iterator(&y[0], &mult_2), x[0], x[1]);
 
@@ -232,12 +211,10 @@ int main()
 // Test transform_iterator with polymorphic object function
 {
     int x[N], y[N];
-    for (int k = 0; k < N; ++k)
-        x[k] = k;
+    for (int k = 0; k < N; ++k) x[k] = k;
     std::copy(x, x + N, y);
 
-    for (int k2 = 0; k2 < N; ++k2)
-        x[k2] = x[k2] * 2;
+    for (int k2 = 0; k2 < N; ++k2) x[k2] = x[k2] * 2;
 
     tests::input_iterator_test(
         pika::util::make_transform_iterator(&y[0], polymorphic_mult_functor()), x[0], x[1]);

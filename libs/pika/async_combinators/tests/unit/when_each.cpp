@@ -76,11 +76,9 @@ void test_when_each_from_list()
     PIKA_TEST_EQ(call_count, count);
     PIKA_TEST_EQ(call_with_index_count, count);
 
-    for (const auto& f : futures1)
-        PIKA_TEST(!f.valid());
+    for (const auto& f : futures1) PIKA_TEST(!f.valid());
 
-    for (const auto& f : futures2)
-        PIKA_TEST(!f.valid());
+    for (const auto& f : futures2) PIKA_TEST(!f.valid());
 }
 
 template <class Container>
@@ -127,11 +125,9 @@ void test_when_each_from_list_iterators()
     PIKA_TEST_EQ(call_count, count);
     PIKA_TEST_EQ(call_with_index_count, count);
 
-    for (const auto& f : futures1)
-        PIKA_TEST(!f.valid());
+    for (const auto& f : futures1) PIKA_TEST(!f.valid());
 
-    for (const auto& f : futures2)
-        PIKA_TEST(!f.valid());
+    for (const auto& f : futures2) PIKA_TEST(!f.valid());
 }
 
 template <class Container>
@@ -181,16 +177,10 @@ void test_when_each_n_from_list_iterators()
     PIKA_TEST_EQ(call_with_index_count, n);
 
     unsigned num = 0;
-    for (auto it = futures1.begin(); num < n; ++num, ++it)
-    {
-        PIKA_TEST(!it->valid());
-    }
+    for (auto it = futures1.begin(); num < n; ++num, ++it) { PIKA_TEST(!it->valid()); }
 
     num = 0;
-    for (auto it = futures2.begin(); num < n; ++num, ++it)
-    {
-        PIKA_TEST(!it->valid());
-    }
+    for (auto it = futures2.begin(); num < n; ++num, ++it) { PIKA_TEST(!it->valid()); }
 }
 
 void test_when_each_one_future()

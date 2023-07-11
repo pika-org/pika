@@ -17,18 +17,14 @@ namespace pika::detail {
         using size_type = std::string::size_type;
 
         size_type first = s.find_first_not_of(" \t");
-        if (std::string::npos == first)
-            return std::string();
+        if (std::string::npos == first) return std::string();
 
         size_type last = s.find_last_not_of(" \t");
         return s.substr(first, last - first + 1);
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    manage_config::manage_config(std::vector<std::string> const& cfg)
-    {
-        add(cfg);
-    }
+    manage_config::manage_config(std::vector<std::string> const& cfg) { add(cfg); }
 
     void manage_config::add(std::vector<std::string> const& cfg)
     {
@@ -36,8 +32,7 @@ namespace pika::detail {
         {
             std::string::size_type p = s.find_first_of('=');
             std::string key(trim_whitespace(s.substr(0, p)));
-            if (key[key.size() - 1] == '!')
-                key.erase(key.size() - 1);
+            if (key[key.size() - 1] == '!') key.erase(key.size() - 1);
 
             std::string value(trim_whitespace(s.substr(p + 1)));
             config_.insert(map_type::value_type(key, value));

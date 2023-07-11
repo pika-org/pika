@@ -80,26 +80,14 @@ namespace pika::cuda::experimental {
 
     cusolver_handle::~cusolver_handle()
     {
-        if (handle != 0)
-        {
-            check_cusolver_error(cusolverDnDestroy(handle));
-        }
+        if (handle != 0) { check_cusolver_error(cusolverDnDestroy(handle)); }
     }
 
-    cusolverDnHandle_t cusolver_handle::get() const noexcept
-    {
-        return handle;
-    }
+    cusolverDnHandle_t cusolver_handle::get() const noexcept { return handle; }
 
-    int cusolver_handle::get_device() const noexcept
-    {
-        return device;
-    }
+    int cusolver_handle::get_device() const noexcept { return device; }
 
-    whip::stream_t cusolver_handle::get_stream() const noexcept
-    {
-        return stream;
-    }
+    whip::stream_t cusolver_handle::get_stream() const noexcept { return stream; }
 
     void cusolver_handle::set_stream(cuda_stream const& stream)
     {

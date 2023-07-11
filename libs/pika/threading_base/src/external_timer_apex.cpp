@@ -73,10 +73,7 @@ namespace pika::detail::external_timer {
         }
     }
 
-    scoped_timer::~scoped_timer()
-    {
-        stop();
-    }
+    scoped_timer::~scoped_timer() { stop(); }
 
     void scoped_timer::stop()
     {
@@ -86,10 +83,7 @@ namespace pika::detail::external_timer {
             // APEX internal actions are not timed. Otherwise, we would
             // end up with recursive timers. So it's possible to have a
             // null task wrapper pointer here.
-            if (data_ != nullptr)
-            {
-                pika::detail::external_timer::stop(data_);
-            }
+            if (data_ != nullptr) { pika::detail::external_timer::stop(data_); }
         }
     }
 
@@ -101,10 +95,7 @@ namespace pika::detail::external_timer {
             // APEX internal actions are not timed. Otherwise, we would
             // end up with recursive timers. So it's possible to have a
             // null task wrapper pointer here.
-            if (data_ != nullptr)
-            {
-                pika::detail::external_timer::yield(data_);
-            }
+            if (data_ != nullptr) { pika::detail::external_timer::yield(data_); }
         }
     }
 }    // namespace pika::detail::external_timer

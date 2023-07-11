@@ -30,10 +30,7 @@ void __cpuid(registers_t& CPUInfo, uint32_t InfoType)
 # include <intrin.h>
 #endif
 
-bool has_bit_set(uint32_t value, uint32_t bit)
-{
-    return (value & (1U << bit)) != 0;
-}
+bool has_bit_set(uint32_t value, uint32_t bit) { return (value & (1U << bit)) != 0; }
 
 struct matcher
 {
@@ -55,8 +52,7 @@ const size_t noptions = sizeof options / sizeof options[0];
 int main(int argc, char** argv)
 {
     registers_t registers;
-    if (argc < 2)
-        return -1;
+    if (argc < 2) return -1;
 
     string target(argv[1]);
     __cpuid(registers, 0x00000000);
@@ -71,8 +67,7 @@ int main(int argc, char** argv)
             break;
         }
     }
-    if (i >= noptions)
-        return -2;
+    if (i >= noptions) return -2;
 
     __cpuid(registers, m.function);
 

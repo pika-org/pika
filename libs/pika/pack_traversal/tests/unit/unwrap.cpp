@@ -326,10 +326,7 @@ void test_development_regressions(FutureProvider&& futurize)
 namespace legacy_tests {
     std::atomic<std::size_t> void_counter;
 
-    static void null_thread()
-    {
-        ++void_counter;
-    }
+    static void null_thread() { ++void_counter; }
 
     std::atomic<std::size_t> result_counter;
 
@@ -339,20 +336,11 @@ namespace legacy_tests {
         return true;
     }
 
-    static int increment(int c)
-    {
-        return c + 1;
-    }
+    static int increment(int c) { return c + 1; }
 
-    static int accumulate(std::vector<int> cs)
-    {
-        return std::accumulate(cs.begin(), cs.end(), 0);
-    }
+    static int accumulate(std::vector<int> cs) { return std::accumulate(cs.begin(), cs.end(), 0); }
 
-    static int add(tuple<int, int> result)
-    {
-        return get<0>(result) + get<1>(result);
-    }
+    static int add(tuple<int, int> result) { return get<0>(result) + get<1>(result); }
 
     template <template <typename> class FutureType, typename FutureProvider>
     void test_legacy_requirements(FutureProvider&& futurize)
@@ -404,8 +392,7 @@ namespace legacy_tests {
                 std::vector<FutureType<void>> futures;
                 futures.reserve(64);
 
-                for (std::size_t i = 0; i < 64; ++i)
-                    futures.push_back(async(null_thread));
+                for (std::size_t i = 0; i < 64; ++i) futures.push_back(async(null_thread));
 
                 unwrap(futures);
 
@@ -418,8 +405,7 @@ namespace legacy_tests {
             {
                 std::array<FutureType<void>, 64> futures;
 
-                for (std::size_t i = 0; i < 64; ++i)
-                    futures[i] = async(null_thread);
+                for (std::size_t i = 0; i < 64; ++i) futures[i] = async(null_thread);
 
                 unwrap(futures);
 
@@ -436,15 +422,13 @@ namespace legacy_tests {
                 std::vector<bool> values;
                 values.reserve(64);
 
-                for (std::size_t i = 0; i < 64; ++i)
-                    futures.push_back(async(null_result_thread));
+                for (std::size_t i = 0; i < 64; ++i) futures.push_back(async(null_result_thread));
 
                 values = unwrap(futures);
 
                 PIKA_TEST_EQ(64U, result_counter.load());
 
-                for (std::size_t i = 0; i < 64; ++i)
-                    PIKA_TEST_EQ(true, bool(values[i]));
+                for (std::size_t i = 0; i < 64; ++i) PIKA_TEST_EQ(true, bool(values[i]));
 
                 result_counter.store(0);
             }
@@ -453,15 +437,13 @@ namespace legacy_tests {
             {
                 std::array<FutureType<bool>, 64> futures;
 
-                for (std::size_t i = 0; i < 64; ++i)
-                    futures[i] = async(null_result_thread);
+                for (std::size_t i = 0; i < 64; ++i) futures[i] = async(null_result_thread);
 
                 std::array<bool, 64> values = unwrap(futures);
 
                 PIKA_TEST_EQ(64U, result_counter.load());
 
-                for (std::size_t i = 0; i < 64; ++i)
-                    PIKA_TEST_EQ(true, bool(values[i]));
+                for (std::size_t i = 0; i < 64; ++i) PIKA_TEST_EQ(true, bool(values[i]));
 
                 result_counter.store(0);
             }
@@ -471,8 +453,7 @@ namespace legacy_tests {
                 std::vector<FutureType<bool>> futures;
                 futures.reserve(64);
 
-                for (std::size_t i = 0; i < 64; ++i)
-                    futures.push_back(async(null_result_thread));
+                for (std::size_t i = 0; i < 64; ++i) futures.push_back(async(null_result_thread));
 
                 unwrap(futures);
 
@@ -485,8 +466,7 @@ namespace legacy_tests {
             {
                 std::array<FutureType<bool>, 64> futures;
 
-                for (std::size_t i = 0; i < 64; ++i)
-                    futures[i] = async(null_result_thread);
+                for (std::size_t i = 0; i < 64; ++i) futures[i] = async(null_result_thread);
 
                 unwrap(futures);
 
@@ -507,8 +487,7 @@ namespace legacy_tests {
                 std::vector<FutureType<int>> futures;
                 futures.reserve(64);
 
-                for (std::size_t i = 0; i < 64; ++i)
-                    futures.push_back(futurize(42));
+                for (std::size_t i = 0; i < 64; ++i) futures.push_back(futurize(42));
 
                 PIKA_TEST_EQ(unwrapping(&accumulate)(futures), 42 * 64);
             }
@@ -536,10 +515,7 @@ namespace legacy_tests {
 template <template <typename> class FutureType>
 struct future_factory
 {
-    FutureType<void> operator()() const
-    {
-        return pika::make_ready_future();
-    }
+    FutureType<void> operator()() const { return pika::make_ready_future(); }
 
     template <typename T>
     FutureType<std::decay_t<T>> operator()(T&& value) const
@@ -590,10 +566,7 @@ int main(int argc, char* argv[])
     init_args.desc_cmdline = cmdline;
     init_args.cfg = cfg;
 
-    if (int result = pika::init(pika_main, argc, argv, init_args))
-    {
-        return result;
-    }
+    if (int result = pika::init(pika_main, argc, argv, init_args)) { return result; }
     // Report errors after pika was finished
     return 0;
 }

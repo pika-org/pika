@@ -47,15 +47,11 @@ void both()
 
 int increments = 3000;
 
-void check_()
-{
-    PIKA_TEST(2 * increments == i1 && 2 * increments == i2);
-}
+void check_() { PIKA_TEST(2 * increments == i1 && 2 * increments == i2); }
 
 int pika_main(pika::program_options::variables_map& vm)
 {
-    if (vm.count("increments"))
-        increments = vm["increments"].as<int>();
+    if (vm.count("increments")) increments = vm["increments"].as<int>();
 
     // create the guard set
     guards.add(l1);

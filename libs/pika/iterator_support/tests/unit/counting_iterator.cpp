@@ -31,10 +31,7 @@ std::mt19937 gen(seed);
 template <typename T>
 struct signed_assert_nonnegative
 {
-    static void test(T x)
-    {
-        PIKA_TEST(x >= 0);
-    }
+    static void test(T x) { PIKA_TEST(x >= 0); }
 };
 
 template <typename T>
@@ -91,10 +88,7 @@ void category_test(
     using value_type = typename CountingIterator::value_type;
 
     std::vector<value_type> v;
-    for (value_type z = *start; !(z == *finish); ++z)
-    {
-        v.push_back(z);
-    }
+    for (value_type z = *start; !(z == *finish); ++z) { v.push_back(z); }
 
     // Note that this test requires a that the first argument is
     // dereferenceable /and/ a valid iterator prior to the first argument
@@ -211,10 +205,7 @@ public:
         return *this;
     }
 
-    bool operator==(my_int1 const& x) const
-    {
-        return m_int == x.m_int;
-    }
+    bool operator==(my_int1 const& x) const { return m_int == x.m_int; }
 
 private:
     int m_int;
@@ -245,10 +236,7 @@ public:
         --m_int;
         return *this;
     }
-    bool operator==(my_int2 const& x) const
-    {
-        return m_int == x.m_int;
-    }
+    bool operator==(my_int2 const& x) const { return m_int == x.m_int; }
 
 private:
     int m_int;
@@ -278,27 +266,15 @@ public:
         m_int += static_cast<int>(n);
         return *this;
     }
-    std::ptrdiff_t operator-(my_int3 const& x) const
-    {
-        return m_int - x.m_int;
-    }
+    std::ptrdiff_t operator-(my_int3 const& x) const { return m_int - x.m_int; }
     my_int3& operator--()
     {
         --m_int;
         return *this;
     }
-    bool operator==(my_int3 const& x) const
-    {
-        return m_int == x.m_int;
-    }
-    bool operator!=(my_int3 const& x) const
-    {
-        return m_int != x.m_int;
-    }
-    bool operator<(my_int3 const& x) const
-    {
-        return m_int < x.m_int;
-    }
+    bool operator==(my_int3 const& x) const { return m_int == x.m_int; }
+    bool operator!=(my_int3 const& x) const { return m_int != x.m_int; }
+    bool operator<(my_int3 const& x) const { return m_int < x.m_int; }
 
 private:
     int m_int;

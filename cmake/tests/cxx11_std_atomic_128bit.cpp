@@ -24,7 +24,4 @@ struct uint128_type
     std::uint64_t right;
 };
 
-int main()
-{
-    test_atomic<uint128_type>();
-}
+int main() { test_atomic<uint128_type>(); }

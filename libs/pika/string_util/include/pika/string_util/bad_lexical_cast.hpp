@@ -35,15 +35,9 @@ namespace pika::detail {
         {
         }
 
-        std::type_info const& source_type() const noexcept
-        {
-            return *source;
-        }
+        std::type_info const& source_type() const noexcept { return *source; }
 
-        std::type_info const& target_type() const noexcept
-        {
-            return *target;
-        }
+        std::type_info const& target_type() const noexcept { return *target; }
 
     private:
         std::type_info const* source;

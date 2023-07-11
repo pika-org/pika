@@ -16,8 +16,7 @@
 void do_sum_avg(int values[], int n, int& sum, double& avg)
 {
     sum = 0;
-    for (int i = 0; i < n; i++)
-        sum += values[i];
+    for (int i = 0; i < n; i++) sum += values[i];
     avg = (double) sum / n;
 }
 

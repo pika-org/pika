@@ -31,53 +31,43 @@ namespace pika::debug::detail {
     public:
         explicit backtrace(std::size_t frames_no = PIKA_HAVE_THREAD_BACKTRACE_DEPTH)
         {
-            if (frames_no == 0)
-                return;
+            if (frames_no == 0) return;
             frames_no += 2;    // we omit two frames from printing
             frames_.resize(frames_no, nullptr);
             std::size_t size = stack_trace::trace(&frames_.front(), frames_no);
-            if (size != 0)
-                frames_.resize(size);
+            if (size != 0) frames_.resize(size);
         }
 
         virtual ~backtrace() noexcept {}
 
-        std::size_t stack_size() const
-        {
-            return frames_.size();
-        }
+        std::size_t stack_size() const { return frames_.size(); }
 
         void* return_address(std::size_t frame_no) const
         {
-            if (frame_no < stack_size())
-                return frames_[frame_no];
+            if (frame_no < stack_size()) return frames_[frame_no];
             return nullptr;
         }
 
         void trace_line(std::size_t frame_no, std::ostream& out) const
         {
-            if (frame_no < frames_.size())
-                stack_trace::write_symbols(&frames_[frame_no], 1, out);
+            if (frame_no < frames_.size()) stack_trace::write_symbols(&frames_[frame_no], 1, out);
         }
 
         std::string trace_line(std::size_t frame_no) const
         {
-            if (frame_no < frames_.size())
-                return stack_trace::get_symbol(frames_[frame_no]);
+            if (frame_no < frames_.size()) return stack_trace::get_symbol(frames_[frame_no]);
             return std::string();
         }
 
         std::string trace() const
         {
-            if (frames_.empty())
-                return std::string();
+            if (frames_.empty()) return std::string();
             return stack_trace::get_symbols(&frames_.front(), frames_.size());
         }
 
         void trace(std::ostream& out) const
         {
-            if (frames_.empty())
-                return;
+            if (frames_.empty()) return;
             stack_trace::write_symbols(&frames_.front(), frames_.size(), out);
         }
 
@@ -94,8 +84,7 @@ namespace pika::debug::detail {
         }
         std::ostream& write(std::ostream& out) const
         {
-            if (tr_)
-                tr_->trace(out);
+            if (tr_) tr_->trace(out);
             return out;
         }
 

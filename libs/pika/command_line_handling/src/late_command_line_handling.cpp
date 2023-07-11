@@ -23,10 +23,7 @@ namespace pika::detail {
     void decode(std::string& str, char const* s, char const* r)
     {
         std::string::size_type pos = 0;
-        while ((pos = str.find(s, pos)) != std::string::npos)
-        {
-            str.replace(pos, 2, r);
-        }
+        while ((pos = str.find(s, pos)) != std::string::npos) { str.replace(pos, 2, r); }
     }
 
     std::string decode_string(std::string str)
@@ -50,8 +47,7 @@ namespace pika::detail {
 
                 commandline_error_mode mode = commandline_error_mode::rethrow_on_error;
                 std::string allow_unknown(ini.get_entry("pika.commandline.allow_unknown", "0"));
-                if (allow_unknown != "0")
-                    mode = commandline_error_mode::allow_unregistered;
+                if (allow_unknown != "0") mode = commandline_error_mode::allow_unregistered;
 
                 std::vector<std::string> still_unregistered_options;
                 parse_commandline(
@@ -60,10 +56,7 @@ namespace pika::detail {
                 std::string still_unknown_commandline;
                 for (std::size_t i = 1; i < still_unregistered_options.size(); ++i)
                 {
-                    if (i != 1)
-                    {
-                        still_unknown_commandline += " ";
-                    }
+                    if (i != 1) { still_unknown_commandline += " "; }
                     still_unknown_commandline += enquote(still_unregistered_options[i]);
                 }
 
@@ -114,10 +107,7 @@ namespace pika::detail {
                     handle_print_bind(num_threads);
                 }
 
-                if (vm.count("pika:exit"))
-                {
-                    return 1;
-                }
+                if (vm.count("pika:exit")) { return 1; }
             }
         }
         catch (std::exception const& e)

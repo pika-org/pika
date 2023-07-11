@@ -34,10 +34,7 @@ struct sender
 
     struct operation_state
     {
-        friend operation_state tag_invoke(ex::start_t, operation_state&) noexcept
-        {
-            return {};
-        }
+        friend operation_state tag_invoke(ex::start_t, operation_state&) noexcept { return {}; }
     };
 
     template <typename R>
@@ -55,10 +52,7 @@ struct sender
         }
     };
 
-    friend env tag_invoke(ex::get_env_t, sender const&) noexcept
-    {
-        return {};
-    }
+    friend env tag_invoke(ex::get_env_t, sender const&) noexcept { return {}; }
 };
 
 struct non_scheduler_1
@@ -72,10 +66,7 @@ struct non_scheduler_2
 
 struct non_scheduler_3
 {
-    friend sender<non_scheduler_3> tag_invoke(ex::schedule_t, non_scheduler_3)
-    {
-        return {};
-    }
+    friend sender<non_scheduler_3> tag_invoke(ex::schedule_t, non_scheduler_3) { return {}; }
 };
 
 struct scheduler_1
@@ -86,28 +77,16 @@ struct scheduler_1
         return {};
     }
 
-    bool operator==(scheduler_1 const&) const noexcept
-    {
-        return true;
-    }
+    bool operator==(scheduler_1 const&) const noexcept { return true; }
 
-    bool operator!=(scheduler_1 const&) const noexcept
-    {
-        return false;
-    }
+    bool operator!=(scheduler_1 const&) const noexcept { return false; }
 };
 
 struct scheduler_2
 {
-    bool operator==(scheduler_2 const&) const noexcept
-    {
-        return true;
-    }
+    bool operator==(scheduler_2 const&) const noexcept { return true; }
 
-    bool operator!=(scheduler_2 const&) const noexcept
-    {
-        return false;
-    }
+    bool operator!=(scheduler_2 const&) const noexcept { return false; }
 };
 
 sender<scheduler_2> tag_invoke(ex::schedule_t, scheduler_2)

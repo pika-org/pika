@@ -261,10 +261,7 @@ namespace pika::when_all_vector_detail {
                     ++i;
                 }
 
-                if constexpr (!is_void_value_type)
-                {
-                    ts.resize(num_predecessors);
-                }
+                if constexpr (!is_void_value_type) { ts.resize(num_predecessors); }
             }
 
             operation_state(operation_state&&) = delete;
@@ -286,10 +283,7 @@ namespace pika::when_all_vector_detail {
                         {
                             std::vector<element_value_type> values;
                             values.reserve(num_predecessors);
-                            for (auto&& t : ts)
-                            {
-                                values.push_back(PIKA_MOVE(t.value()));
-                            }
+                            for (auto&& t : ts) { values.push_back(PIKA_MOVE(t.value())); }
                             pika::execution::experimental::set_value(
                                 PIKA_MOVE(receiver), PIKA_MOVE(values));
                         }
@@ -314,10 +308,7 @@ namespace pika::when_all_vector_detail {
                         {
                             pika::execution::experimental::set_stopped(PIKA_MOVE(receiver));
                         }
-                        else
-                        {
-                            PIKA_UNREACHABLE;
-                        }
+                        else { PIKA_UNREACHABLE; }
                     }
                 }
             }

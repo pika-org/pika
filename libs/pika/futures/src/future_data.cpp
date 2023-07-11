@@ -46,10 +46,7 @@ namespace pika::lcos::detail {
         {
             ++count_;
         }
-        ~handle_continuation_recursion_count()
-        {
-            --count_;
-        }
+        ~handle_continuation_recursion_count() { --count_; }
 
         std::size_t& count_;
     };
@@ -62,10 +59,7 @@ namespace pika::lcos::detail {
 
         bool is_pika_thread = nullptr != pika::threads::detail::get_self_ptr();
         pika::launch policy = launch::fork;
-        if (!is_pika_thread)
-        {
-            policy = launch::async;
-        }
+        if (!is_pika_thread) { policy = launch::async; }
 
         policy.set_priority(execution::thread_priority::boost);
         policy.set_stacksize(execution::thread_stacksize::current);
@@ -95,10 +89,7 @@ namespace pika::lcos::detail {
     {
         // yields control if needed
         state s = wait(ec);
-        if (ec)
-        {
-            return nullptr;
-        }
+        if (ec) { return nullptr; }
 
         // No locking is required. Once a future has been made ready, which
         // is a postcondition of wait, either:
@@ -109,15 +100,9 @@ namespace pika::lcos::detail {
 
         // Avoid retrieving state twice. If wait() returns 'empty' then this
         // thread was suspended, in this case we need to load it again.
-        if (s == empty)
-        {
-            s = state_.load(std::memory_order_relaxed);
-        }
+        if (s == empty) { s = state_.load(std::memory_order_relaxed); }
 
-        if (s == value)
-        {
-            return &unused_;
-        }
+        if (s == value) { return &unused_; }
 
         if (s == empty)
         {
@@ -142,10 +127,7 @@ namespace pika::lcos::detail {
                 std::rethrow_exception(*exception_ptr);
                 // never reached
             }
-            else
-            {
-                ec = make_error_code(*exception_ptr);
-            }
+            else { ec = make_error_code(*exception_ptr); }
         }
 
         return nullptr;
@@ -167,20 +149,14 @@ namespace pika::lcos::detail {
                 {
                     run_on_completed_error_handler(PIKA_MOVE(ep));
                 }
-                else
-                {
-                    std::terminate();
-                }
+                else { std::terminate(); }
             });
     }
 
     void future_data_base<traits::detail::future_data_void>::run_on_completed(
         completed_callback_vector_type&& on_completed) noexcept
     {
-        for (auto&& func : on_completed)
-        {
-            run_on_completed(PIKA_MOVE(func));
-        }
+        for (auto&& func : on_completed) { run_on_completed(PIKA_MOVE(func)); }
     }
 
     // make sure continuation invocation does not recurse deeper than
@@ -221,10 +197,7 @@ namespace pika::lcos::detail {
                     {
                         run_on_completed_error_handler(PIKA_MOVE(ep));
                     }
-                    else
-                    {
-                        std::rethrow_exception(PIKA_MOVE(ep));
-                    }
+                    else { std::rethrow_exception(PIKA_MOVE(ep)); }
                 });
         }
     }
@@ -243,8 +216,7 @@ namespace pika::lcos::detail {
     void future_data_base<traits::detail::future_data_void>::set_on_completed(
         completed_callback_type data_sink)
     {
-        if (!data_sink)
-            return;
+        if (!data_sink) return;
 
         if (is_ready())
         {
@@ -261,10 +233,7 @@ namespace pika::lcos::detail {
                 // invoke the callback (continuation) function
                 handle_on_completed(PIKA_MOVE(data_sink));
             }
-            else
-            {
-                on_completed_.push_back(PIKA_MOVE(data_sink));
-            }
+            else { on_completed_.push_back(PIKA_MOVE(data_sink)); }
         }
     }
 
@@ -280,20 +249,14 @@ namespace pika::lcos::detail {
             if (s == empty)
             {
                 cond_.wait(l, "future_data_base::wait", ec);
-                if (ec)
-                {
-                    return s;
-                }
+                if (ec) { return s; }
 
                 // reload the state, it's not empty anymore
                 s = state_.load(std::memory_order_relaxed);
             }
         }
 
-        if (&ec != &throws)
-        {
-            ec = make_success_code();
-        }
+        if (&ec != &throws) { ec = make_success_code(); }
         return s;
     }
 
@@ -308,10 +271,7 @@ namespace pika::lcos::detail {
             {
                 threads::detail::thread_restart_state const reason =
                     cond_.wait_until(l, abs_time, "future_data_base::wait_until", ec);
-                if (ec)
-                {
-                    return pika::future_status::uninitialized;
-                }
+                if (ec) { return pika::future_status::uninitialized; }
 
                 if (reason == threads::detail::thread_restart_state::timeout &&
                     state_.load(std::memory_order_acquire) == empty)
@@ -321,10 +281,7 @@ namespace pika::lcos::detail {
             }
         }
 
-        if (&ec != &throws)
-        {
-            ec = make_success_code();
-        }
+        if (&ec != &throws) { ec = make_success_code(); }
         return pika::future_status::ready;    //-V110
     }
 }    // namespace pika::lcos::detail

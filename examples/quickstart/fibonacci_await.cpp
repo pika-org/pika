@@ -30,8 +30,7 @@ std::uint64_t threshold = 2;
 ///////////////////////////////////////////////////////////////////////////////
 PIKA_NOINLINE std::uint64_t fibonacci_serial(std::uint64_t n)
 {
-    if (n < 2)
-        return n;
+    if (n < 2) return n;
     return fibonacci_serial(n - 1) + fibonacci_serial(n - 2);
 }
 
@@ -80,10 +79,8 @@ void fibonacci_impl(std::shared_ptr<fibonacci_frame> const& frame_)
 
     switch (state)
     {
-    case 1:
-        goto L1;
-    case 2:
-        goto L2;
+    case 1: goto L1;
+    case 2: goto L2;
     }
 
     // if (n < 2) return pika::make_ready_future(n);
@@ -117,8 +114,7 @@ void fibonacci_impl(std::shared_ptr<fibonacci_frame> const& frame_)
     if (!frame->lhs_.is_ready())
     {
         frame->state_ = 1;
-        if (!frame->result_.valid())
-            frame->result_ = frame->result_promise_.get_future();
+        if (!frame->result_.valid()) frame->result_ = frame->result_promise_.get_future();
         frame->lhs_.then(pika::util::detail::bind(&fibonacci_impl, frame_));
         return;
     }
@@ -129,8 +125,7 @@ L1:
     if (!frame->rhs_.is_ready())
     {
         frame->state_ = 2;
-        if (!frame->result_.valid())
-            frame->result_ = frame->result_promise_.get_future();
+        if (!frame->result_.valid()) frame->result_ = frame->result_promise_.get_future();
         frame->rhs_.then(pika::util::detail::bind(&fibonacci_impl, frame_));
         return;
     }

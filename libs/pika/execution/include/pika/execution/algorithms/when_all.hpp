@@ -273,10 +273,7 @@ namespace pika::when_all_impl {
             operation_state(operation_state const&) = delete;
             operation_state& operator=(operation_state const&) = delete;
 
-            void start() & noexcept
-            {
-                pika::execution::experimental::start(op_state);
-            }
+            void start() & noexcept { pika::execution::experimental::start(op_state); }
 
             template <std::size_t... Is, typename... Ts>
             void set_value_helper(
@@ -290,10 +287,7 @@ namespace pika::when_all_impl {
             {
                 if (--predecessors_remaining == 0)
                 {
-                    if (!set_stopped_error_called)
-                    {
-                        set_value_helper(ts);
-                    }
+                    if (!set_stopped_error_called) { set_value_helper(ts); }
                     else if (error)
                     {
                         pika::detail::visit(
@@ -303,10 +297,7 @@ namespace pika::when_all_impl {
                             },
                             PIKA_MOVE(error.value()));
                     }
-                    else
-                    {
-                        pika::execution::experimental::set_stopped(PIKA_MOVE(receiver));
-                    }
+                    else { pika::execution::experimental::set_stopped(PIKA_MOVE(receiver)); }
                 }
             }
         };

@@ -53,8 +53,7 @@ namespace pika::memory {
         intrusive_ptr(T* p, bool add_ref = true)
           : px(p)
         {
-            if (px != nullptr && add_ref)
-                intrusive_ptr_add_ref(px);
+            if (px != nullptr && add_ref) intrusive_ptr_add_ref(px);
         }
 
         template <typename U,
@@ -62,8 +61,7 @@ namespace pika::memory {
         intrusive_ptr(intrusive_ptr<U> const& rhs)
           : px(rhs.get())
         {
-            if (px != nullptr)
-                intrusive_ptr_add_ref(px);
+            if (px != nullptr) intrusive_ptr_add_ref(px);
         }
 
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 120000
@@ -76,14 +74,12 @@ namespace pika::memory {
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 120000
 # pragma GCC diagnostic pop
 #endif
-            if (px != nullptr)
-                intrusive_ptr_add_ref(px);
+            if (px != nullptr) intrusive_ptr_add_ref(px);
         }
 
         ~intrusive_ptr()
         {
-            if (px != nullptr)
-                intrusive_ptr_release(px);
+            if (px != nullptr) intrusive_ptr_release(px);
         }
 
         template <typename U>
@@ -137,25 +133,13 @@ namespace pika::memory {
             return *this;
         }
 
-        void reset() noexcept
-        {
-            this_type().swap(*this);
-        }
+        void reset() noexcept { this_type().swap(*this); }
 
-        void reset(T* rhs) noexcept
-        {
-            this_type(rhs).swap(*this);
-        }
+        void reset(T* rhs) noexcept { this_type(rhs).swap(*this); }
 
-        void reset(T* rhs, bool add_ref) noexcept
-        {
-            this_type(rhs, add_ref).swap(*this);
-        }
+        void reset(T* rhs, bool add_ref) noexcept { this_type(rhs, add_ref).swap(*this); }
 
-        constexpr T* get() const noexcept
-        {
-            return px;
-        }
+        constexpr T* get() const noexcept { return px; }
 
         constexpr T* detach() noexcept
         {
@@ -176,10 +160,7 @@ namespace pika::memory {
             return px;
         }
 
-        explicit constexpr operator bool() const noexcept
-        {
-            return px != nullptr;
-        }
+        explicit constexpr operator bool() const noexcept { return px != nullptr; }
 
         constexpr void swap(intrusive_ptr& rhs) noexcept
         {
@@ -309,8 +290,7 @@ namespace pika::memory {
 
         intrusive_ptr<T> r(p2, false);
 
-        if (p2)
-            p.detach();
+        if (p2) p.detach();
 
         return r;
     }

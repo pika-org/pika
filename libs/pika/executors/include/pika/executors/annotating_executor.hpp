@@ -55,10 +55,7 @@ namespace pika::execution::experimental {
             return exec_ != rhs.exec_;
         }
 
-        constexpr auto const& context() const noexcept
-        {
-            return exec_.context();
-        }
+        constexpr auto const& context() const noexcept { return exec_.context(); }
         /// \endcond
 
         /// \cond NOINTERNAL

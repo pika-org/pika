@@ -43,15 +43,9 @@ namespace pika::threads::detail {
         return std::uint64_t(1) << idx;
     }
 
-    inline bool any(mask_cref_type mask)
-    {
-        return mask != 0;
-    }
+    inline bool any(mask_cref_type mask) { return mask != 0; }
 
-    inline mask_type not_(mask_cref_type mask)
-    {
-        return ~mask;
-    }
+    inline mask_type not_(mask_cref_type mask) { return ~mask; }
 
     inline bool test(mask_cref_type mask, std::size_t idx)
     {
@@ -71,10 +65,7 @@ namespace pika::threads::detail {
         mask &= not_(bits(idx));
     }
 
-    inline std::size_t mask_size(mask_cref_type /*mask*/)
-    {
-        return CHAR_BIT * sizeof(mask_type);
-    }
+    inline std::size_t mask_size(mask_cref_type /*mask*/) { return CHAR_BIT * sizeof(mask_type); }
 
     inline void resize(mask_type& /*mask*/, std::size_t s)
     {
@@ -90,8 +81,7 @@ namespace pika::threads::detail {
 
             // Set mask's trailing 0s to 1s and zero rest.
             mask = (mask ^ (mask - 1)) >> 1;
-            for (/**/; mask; ++c)
-                mask >>= 1;
+            for (/**/; mask; ++c) mask >>= 1;
 
             return c;
         }
@@ -127,10 +117,7 @@ namespace pika::threads::detail {
         return c;
     }
 
-    inline void reset(mask_type& mask)
-    {
-        mask = 0ull;
-    }
+    inline void reset(mask_type& mask) { mask = 0ull; }
 
 // clang-format off
 #else
@@ -143,35 +130,17 @@ namespace pika::threads::detail {
 #  endif
     // clang-format on
 
-    inline bool any(mask_cref_type mask)
-    {
-        return mask.any();
-    }
+    inline bool any(mask_cref_type mask) { return mask.any(); }
 
-    inline mask_type not_(mask_cref_type mask)
-    {
-        return ~mask;
-    }
+    inline mask_type not_(mask_cref_type mask) { return ~mask; }
 
-    inline bool test(mask_cref_type mask, std::size_t idx)
-    {
-        return mask.test(idx);
-    }
+    inline bool test(mask_cref_type mask, std::size_t idx) { return mask.test(idx); }
 
-    inline void set(mask_type& mask, std::size_t idx)
-    {
-        mask.set(idx);
-    }
+    inline void set(mask_type& mask, std::size_t idx) { mask.set(idx); }
 
-    inline void unset(mask_type& mask, std::size_t idx)
-    {
-        mask.set(idx, 0);
-    }
+    inline void unset(mask_type& mask, std::size_t idx) { mask.set(idx, 0); }
 
-    inline std::size_t mask_size(mask_cref_type mask)
-    {
-        return mask.size();
-    }
+    inline std::size_t mask_size(mask_cref_type mask) { return mask.size(); }
 
     // clang-format off
     inline void resize(mask_type& mask, std::size_t s)
@@ -221,15 +190,9 @@ namespace pika::threads::detail {
     }
 
     // returns the number of bits set
-    inline std::size_t count(mask_cref_type mask)
-    {
-        return mask.count();
-    }
+    inline std::size_t count(mask_cref_type mask) { return mask.count(); }
 
-    inline void reset(mask_type& mask)
-    {
-        mask.reset();
-    }
+    inline void reset(mask_type& mask) { mask.reset(); }
 
 #endif
 

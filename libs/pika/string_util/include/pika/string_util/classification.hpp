@@ -13,10 +13,7 @@ namespace pika::detail {
     template <typename CharT, typename Traits, typename Allocator>
     struct is_any_of_pred
     {
-        bool operator()(int c) const noexcept
-        {
-            return chars.find(c) != std::string::npos;
-        }
+        bool operator()(int c) const noexcept { return chars.find(c) != std::string::npos; }
 
         std::basic_string<CharT, Traits, Allocator> chars;
     };

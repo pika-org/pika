@@ -50,97 +50,61 @@ int pika_main()
             {
                 // MPI function pointer
                 int data = 0, count = 1;
-                if (rank == 0)
-                {
-                    data = 42;
-                }
+                if (rank == 0) { data = 42; }
                 auto s = mpi::transform_mpi(ex::just(&data, count, datatype, 0, comm), MPI_Ibcast);
                 auto result = tt::sync_wait(PIKA_MOVE(s));
-                if (rank != 0)
-                {
-                    PIKA_TEST_EQ(data, 42);
-                }
-                if (rank == 0)
-                {
-                    PIKA_TEST(result == MPI_SUCCESS);
-                }
+                if (rank != 0) { PIKA_TEST_EQ(data, 42); }
+                if (rank == 0) { PIKA_TEST(result == MPI_SUCCESS); }
             }
 
             {
                 // Lambda
                 int data = 0, count = 1;
-                if (rank == 0)
-                {
-                    data = 42;
-                }
+                if (rank == 0) { data = 42; }
                 auto s = mpi::transform_mpi(ex::just(&data, count, datatype, 0, comm),
                     [](int* data, int count, MPI_Datatype datatype, int i, MPI_Comm comm,
                         MPI_Request* request) {
                         return MPI_Ibcast(data, count, datatype, i, comm, request);
                     });
                 auto result = tt::sync_wait(PIKA_MOVE(s));
-                if (rank != 0)
-                {
-                    PIKA_TEST_EQ(data, 42);
-                }
-                if (rank == 0)
-                {
-                    PIKA_TEST(result == MPI_SUCCESS);
-                }
+                if (rank != 0) { PIKA_TEST_EQ(data, 42); }
+                if (rank == 0) { PIKA_TEST(result == MPI_SUCCESS); }
             }
 
             {
                 // Lambda returning void
                 int data = 0, count = 1;
-                if (rank == 0)
-                {
-                    data = 42;
-                }
+                if (rank == 0) { data = 42; }
                 auto s = mpi::transform_mpi(ex::just(&data, count, datatype, 0, comm),
                     [](int* data, int count, MPI_Datatype datatype, int i, MPI_Comm comm,
                         MPI_Request* request) {
                         MPI_Ibcast(data, count, datatype, i, comm, request);
                     });
                 tt::sync_wait(PIKA_MOVE(s));
-                if (rank != 0)
-                {
-                    PIKA_TEST_EQ(data, 42);
-                }
+                if (rank != 0) { PIKA_TEST_EQ(data, 42); }
             }
 
             // transform_mpi should be able to handle reference types (by copying
             // them to the operation state)
             {
                 int data = 0, count = 1;
-                if (rank == 0)
-                {
-                    data = 42;
-                }
+                if (rank == 0) { data = 42; }
                 auto s = mpi::transform_mpi(
                     const_reference_sender<int>{count}, [&](int& count, MPI_Request* request) {
                         MPI_Ibcast(&data, count, datatype, 0, comm, request);
                     });
                 tt::sync_wait(PIKA_MOVE(s));
-                if (rank != 0)
-                {
-                    PIKA_TEST_EQ(data, 42);
-                }
+                if (rank != 0) { PIKA_TEST_EQ(data, 42); }
             }
 
             {
                 // tag_invoke overload
                 std::atomic<bool> tag_invoke_overload_called{false};
                 custom_type<int> c{tag_invoke_overload_called, 0};
-                if (rank == 0)
-                {
-                    c.x = 3;
-                }
+                if (rank == 0) { c.x = 3; }
                 auto s = mpi::transform_mpi(c);
                 tt::sync_wait(s);
-                if (rank == 0)
-                {
-                    PIKA_TEST_EQ(c.x, 3);
-                }
+                if (rank == 0) { PIKA_TEST_EQ(c.x, 3); }
                 PIKA_TEST(tag_invoke_overload_called);
             }
 
@@ -148,20 +112,11 @@ int pika_main()
             {
                 // MPI function pointer
                 int data = 0, count = 1;
-                if (rank == 0)
-                {
-                    data = 42;
-                }
+                if (rank == 0) { data = 42; }
                 auto result = tt::sync_wait(
                     ex::just(&data, count, datatype, 0, comm) | mpi::transform_mpi(MPI_Ibcast));
-                if (rank != 0)
-                {
-                    PIKA_TEST_EQ(data, 42);
-                }
-                if (rank == 0)
-                {
-                    PIKA_TEST(result == MPI_SUCCESS);
-                }
+                if (rank != 0) { PIKA_TEST_EQ(data, 42); }
+                if (rank == 0) { PIKA_TEST(result == MPI_SUCCESS); }
             }
 
             // Failure path

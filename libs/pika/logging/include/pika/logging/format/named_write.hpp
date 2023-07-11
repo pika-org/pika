@@ -41,8 +41,7 @@ namespace pika::util::logging::detail {
     {
         for (auto iter = c.begin(), end = c.end(); iter != end; ++iter)
         {
-            if (iter->name == name)
-                return iter;
+            if (iter->name == name) return iter;
         }
         return c.end();
     }
@@ -119,8 +118,7 @@ namespace pika::util::logging::detail {
         // NOLINTEND(bugprone-easily-swappable-parameters)
         {
             auto iter = find_named(formatters, name);
-            if (iter != formatters.end())
-                iter->value->configure(configure_str);
+            if (iter != formatters.end()) iter->value->configure(configure_str);
         }
 
         void operator()(std::stringstream& out, message const& msg) const
@@ -243,14 +241,12 @@ namespace pika::util::logging::detail {
         // NOLINTEND(bugprone-easily-swappable-parameters)
         {
             auto iter = find_named(destinations, name);
-            if (iter != destinations.end())
-                iter->value->configure(configure_str);
+            if (iter != destinations.end()) iter->value->configure(configure_str);
         }
 
         void operator()(const message& msg) const
         {
-            for (auto const& step : write_steps)
-                (*step)(msg);
+            for (auto const& step : write_steps) (*step)(msg);
         }
 
     private:

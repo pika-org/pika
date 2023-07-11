@@ -23,14 +23,10 @@ namespace pika::threads::detail {
         switch (data.initial_state)
         {
         // NOLINTNEXTLINE(bugprone-branch-clone)
-        case thread_schedule_state::pending:
-            [[fallthrough]];
-        case thread_schedule_state::pending_do_not_schedule:
-            [[fallthrough]];
-        case thread_schedule_state::pending_boost:
-            [[fallthrough]];
-        case thread_schedule_state::suspended:
-            break;
+        case thread_schedule_state::pending: [[fallthrough]];
+        case thread_schedule_state::pending_do_not_schedule: [[fallthrough]];
+        case thread_schedule_state::pending_boost: [[fallthrough]];
+        case thread_schedule_state::suspended: break;
 
         default:
         {
@@ -60,12 +56,10 @@ namespace pika::threads::detail {
                 data.parent_phase = self->get_thread_phase();
             }
         }
-        if (0 == data.parent_locality_id)
-            data.parent_locality_id = get_locality_id(pika::throws);
+        if (0 == data.parent_locality_id) data.parent_locality_id = get_locality_id(pika::throws);
 #endif
 
-        if (nullptr == data.scheduler_base)
-            data.scheduler_base = scheduler;
+        if (nullptr == data.scheduler_base) data.scheduler_base = scheduler;
 
         // Pass critical priority from parent to child (but only if there is
         // none is explicitly specified).

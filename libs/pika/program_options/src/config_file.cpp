@@ -23,10 +23,7 @@ namespace pika::program_options::detail {
       : allowed_options(allowed_options)
       , m_allow_unregistered(allow_unregistered)
     {
-        for (const auto& allowed_option : allowed_options)
-        {
-            add_option(allowed_option.c_str());
-        }
+        for (const auto& allowed_option : allowed_options) { add_option(allowed_option.c_str()); }
     }
 
     void common_config_file_iterator::add_option(const char* name)
@@ -44,14 +41,12 @@ namespace pika::program_options::detail {
             set<string>::iterator i = allowed_prefixes.lower_bound(s);
             if (i != allowed_prefixes.end())
             {
-                if (i->find(s) == 0)
-                    bad_prefixes = true;
+                if (i->find(s) == 0) bad_prefixes = true;
             }
             if (i != allowed_prefixes.begin())
             {
                 --i;
-                if (s.find(*i) == 0)
-                    bad_prefixes = true;
+                if (s.find(*i) == 0) bad_prefixes = true;
             }
             if (bad_prefixes)
                 throw error("options '" + string(name) + "' and '" + *i +
@@ -84,8 +79,7 @@ namespace pika::program_options::detail {
         while (this->getline(s))
         {
             // strip '#' comments and whitespace
-            if ((n = s.find('#')) != string::npos)
-                s = s.substr(0, n);
+            if ((n = s.find('#')) != string::npos) s = s.substr(0, n);
             s = trim_ws(s);
 
             if (!s.empty())
@@ -94,8 +88,7 @@ namespace pika::program_options::detail {
                 if (*s.begin() == '[' && *s.rbegin() == ']')
                 {
                     m_prefix = s.substr(1, s.size() - 2);
-                    if (*m_prefix.rbegin() != '.')
-                        m_prefix += '.';
+                    if (*m_prefix.rbegin() != '.') m_prefix += '.';
                 }
                 else if ((n = s.find('=')) != string::npos)
                 {
@@ -103,8 +96,7 @@ namespace pika::program_options::detail {
                     string value = trim_ws(s.substr(n + 1));
 
                     bool registered = allowed_option(name);
-                    if (!registered && !m_allow_unregistered)
-                        throw unknown_option(name);
+                    if (!registered && !m_allow_unregistered) throw unknown_option(name);
 
                     found = true;
                     this->value().string_key = name;
@@ -116,27 +108,21 @@ namespace pika::program_options::detail {
                     this->value().original_tokens.push_back(value);
                     break;
                 }
-                else
-                {
-                    throw invalid_config_file_syntax(s, invalid_syntax::unrecognized_line);
-                }
+                else { throw invalid_config_file_syntax(s, invalid_syntax::unrecognized_line); }
             }
         }
-        if (!found)
-            found_eof();
+        if (!found) found_eof();
     }
 
     bool common_config_file_iterator::allowed_option(const std::string& s) const
     {
         set<string>::const_iterator i = allowed_options.find(s);
-        if (i != allowed_options.end())
-            return true;
+        if (i != allowed_options.end()) return true;
         // If s is "pa" where "p" is allowed prefix then
         // lower_bound should find the element after "p".
         // This depends on 'allowed_prefixes' invariant.
         i = allowed_prefixes.lower_bound(s);
-        if (i != allowed_prefixes.begin() && s.find(*--i) == 0)
-            return true;
+        if (i != allowed_prefixes.begin() && s.find(*--i) == 0) return true;
         return false;
     }
 
@@ -155,10 +141,7 @@ namespace pika::program_options::detail {
             s = to_utf8(ws);
             return true;
         }
-        else
-        {
-            return false;
-        }
+        else { return false; }
     }
 #endif
 

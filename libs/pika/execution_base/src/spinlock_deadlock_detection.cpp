@@ -24,10 +24,7 @@ namespace pika::util::detail {
         spinlock_break_on_deadlock_enabled = enabled;
     }
 
-    bool get_spinlock_break_on_deadlock_enabled()
-    {
-        return spinlock_break_on_deadlock_enabled;
-    }
+    bool get_spinlock_break_on_deadlock_enabled() { return spinlock_break_on_deadlock_enabled; }
 
     void set_spinlock_deadlock_detection_limit(std::size_t limit)
     {
@@ -44,9 +41,6 @@ namespace pika::util::detail {
         return spinlock_deadlock_detection_limit;
     }
 
-    std::size_t get_spinlock_deadlock_warning_limit()
-    {
-        return spinlock_deadlock_warning_limit;
-    }
+    std::size_t get_spinlock_deadlock_warning_limit() { return spinlock_deadlock_warning_limit; }
 }    // namespace pika::util::detail
 #endif

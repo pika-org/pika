@@ -119,10 +119,7 @@ namespace pika::execution::experimental {
             return sched_ != rhs.sched_;
         }
 
-        constexpr auto const& context() const noexcept
-        {
-            return *this;
-        }
+        constexpr auto const& context() const noexcept { return *this; }
 
         template <typename Enable = std::enable_if_t<std::is_invocable_v<with_priority_t,
                       BaseScheduler, pika::execution::thread_priority>>>

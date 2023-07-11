@@ -34,10 +34,7 @@ namespace pika::threads::detail {
         // (1L << 48L) - 1;
         static const tagged_state_type tag_mask = 0x0000ffffffffffffull;
 
-        static tag_type extract_tag(tagged_state_type const& i)
-        {
-            return i & tag_mask;
-        }
+        static tag_type extract_tag(tagged_state_type const& i) { return i & tag_mask; }
 
         static thread_state_type extract_state(tagged_state_type const& i)
         {
@@ -79,55 +76,28 @@ namespace pika::threads::detail {
         }
 
         ///////////////////////////////////////////////////////////////////////
-        void set(T1 state, T2 state_ex, tag_type t)
-        {
-            state_ = pack_state(state, state_ex, t);
-        }
+        void set(T1 state, T2 state_ex, tag_type t) { state_ = pack_state(state, state_ex, t); }
 
         ///////////////////////////////////////////////////////////////////////
-        bool operator==(combined_tagged_state const& p) const
-        {
-            return state_ == p.state_;
-        }
+        bool operator==(combined_tagged_state const& p) const { return state_ == p.state_; }
 
-        bool operator!=(combined_tagged_state const& p) const
-        {
-            return !operator==(p);
-        }
+        bool operator!=(combined_tagged_state const& p) const { return !operator==(p); }
 
         ///////////////////////////////////////////////////////////////////////
         // state access
-        T1 state() const
-        {
-            return static_cast<T1>(extract_state(state_));
-        }
+        T1 state() const { return static_cast<T1>(extract_state(state_)); }
 
-        void set_state(T1 state)
-        {
-            state_ = pack_state(state, state_ex(), tag());
-        }
+        void set_state(T1 state) { state_ = pack_state(state, state_ex(), tag()); }
 
-        T2 state_ex() const
-        {
-            return static_cast<T2>(extract_state_ex(state_));
-        }
+        T2 state_ex() const { return static_cast<T2>(extract_state_ex(state_)); }
 
-        void set_state_ex(T2 state_ex)
-        {
-            state_ = pack_state(state(), state_ex, tag());
-        }
+        void set_state_ex(T2 state_ex) { state_ = pack_state(state(), state_ex, tag()); }
 
         ///////////////////////////////////////////////////////////////////////
         // tag access
-        tag_type tag() const
-        {
-            return extract_tag(state_);
-        }
+        tag_type tag() const { return extract_tag(state_); }
 
-        void set_tag(tag_type t)
-        {
-            state_ = pack_state(state(), state_ex(), t);
-        }
+        void set_tag(tag_type t) { state_ = pack_state(state(), state_ex(), t); }
 
     protected:
         tagged_state_type state_;

@@ -24,10 +24,7 @@ struct data
 {
     data() = default;
 
-    explicit data(int d)
-    {
-        data_[0] = d;
-    }
+    explicit data(int d) { data_[0] = d; }
 
     int data_[8];
 };
@@ -44,10 +41,7 @@ constexpr int NUM_TESTS = 100000000;
 inline data channel_get(pika::experimental::channel_spsc<data> const& c)
 {
     data result;
-    while (!c.get(&result))
-    {
-        pika::this_thread::yield();
-    }
+    while (!c.get(&result)) { pika::this_thread::yield(); }
     return result;
 }
 
@@ -65,10 +59,7 @@ double thread_func_0(pika::experimental::channel_spsc<data>& c)
 {
     auto start = std::chrono::high_resolution_clock::now();
 
-    for (int i = 0; i != NUM_TESTS; ++i)
-    {
-        channel_set(c, data{i});
-    }
+    for (int i = 0; i != NUM_TESTS; ++i) { channel_set(c, data{i}); }
 
     auto end = std::chrono::high_resolution_clock::now();
 
@@ -83,10 +74,7 @@ double thread_func_1(pika::experimental::channel_spsc<data>& c)
     for (int i = 0; i != NUM_TESTS; ++i)
     {
         data d = channel_get(c);
-        if (d.data_[0] != i)
-        {
-            std::cout << "Error!\n";
-        }
+        if (d.data_[0] != i) { std::cout << "Error!\n"; }
     }
 
     auto end = std::chrono::high_resolution_clock::now();
@@ -112,7 +100,4 @@ int pika_main()
     return pika::finalize();
 }
 
-int main(int argc, char* argv[])
-{
-    return pika::init(pika_main, argc, argv);
-}
+int main(int argc, char* argv[]) { return pika::init(pika_main, argc, argv); }

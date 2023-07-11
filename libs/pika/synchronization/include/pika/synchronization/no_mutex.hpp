@@ -13,10 +13,7 @@ namespace pika {
     {
         void lock() {}
 
-        bool try_lock()
-        {
-            return true;
-        };
+        bool try_lock() { return true; };
 
         void unlock() {}
     };

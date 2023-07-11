@@ -9,10 +9,7 @@
 
 #include <vector>
 
-int pika_main()
-{
-    return pika::finalize();
-}
+int pika_main() { return pika::finalize(); }
 
 int main()
 {

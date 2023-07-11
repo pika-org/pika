@@ -13,10 +13,7 @@
 
 // Our main pika thread does nothing except for signalling to the runtime to
 // finalize.
-int pika_main()
-{
-    return pika::finalize();
-}
+int pika_main() { return pika::finalize(); }
 
 int main(int argc, char* argv[])
 {

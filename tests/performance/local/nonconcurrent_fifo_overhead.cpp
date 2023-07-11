@@ -137,10 +137,7 @@ std::pair<double, double> bench_fifo(Fifo& fifo, std::uint64_t local_iterations)
         // Restart the clock.
         t.restart();
 
-        for (std::uint64_t i = 0; i < blocksize; ++i)
-        {
-            push(fifo, seed);
-        }
+        for (std::uint64_t i = 0; i < blocksize; ++i) { push(fifo, seed); }
 
         elapsed.first += t.elapsed();
 
@@ -150,10 +147,7 @@ std::pair<double, double> bench_fifo(Fifo& fifo, std::uint64_t local_iterations)
         // Restart the clock.
         t.restart();
 
-        for (std::uint64_t i = 0; i < blocksize; ++i)
-        {
-            pop(fifo);
-        }
+        for (std::uint64_t i = 0; i < blocksize; ++i) { pop(fifo); }
 
         elapsed.second += t.elapsed();
     }
@@ -201,8 +195,7 @@ int app_main(variables_map& vm)
 
     for (std::thread& thread : workers)
     {
-        if (thread.joinable())
-            thread.join();
+        if (thread.joinable()) thread.join();
     }
 
     std::pair<double, double> total_elapsed_control(0.0, 0.0);
@@ -258,8 +251,7 @@ int main(int argc, char* argv[])
     if (iterations % blocksize)
         throw std::invalid_argument("iterations must be cleanly divisible by blocksize\n");
 
-    if (vm.count("no-header"))
-        header = false;
+    if (vm.count("no-header")) header = false;
 
     return app_main(vm);
 }

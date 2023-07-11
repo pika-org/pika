@@ -20,10 +20,7 @@ namespace pika::debug::detail {
     template <typename T>
     struct demangle_helper
     {
-        char const* type_id() const
-        {
-            return typeid(T).name();
-        }
+        char const* type_id() const { return typeid(T).name(); }
     };
 }    // namespace pika::debug::detail
 
@@ -46,10 +43,7 @@ namespace pika::debug::detail {
         {
         }
 
-        char const* type_id() const
-        {
-            return demangled_ ? demangled_.get() : typeid(T).name();
-        }
+        char const* type_id() const { return demangled_ ? demangled_.get() : typeid(T).name(); }
 
     private:
         std::unique_ptr<char, void (*)(void*)> demangled_;

@@ -77,10 +77,7 @@ namespace pika::lcos::local::detail {
                         f_();
                         this->set_value(result_type());
                     }
-                    else
-                    {
-                        this->set_value(f_());
-                    }
+                    else { this->set_value(f_()); }
                 },
                 [&](std::exception_ptr ep) { this->set_exception(PIKA_MOVE(ep)); });
         }
@@ -713,10 +710,7 @@ namespace pika::lcos::local {
             return future_access<pika::future<Result>>::create(PIKA_MOVE(task_));
         }
 
-        constexpr bool valid() const noexcept
-        {
-            return !!task_;
-        }
+        constexpr bool valid() const noexcept { return !!task_; }
 
         void set_exception(std::exception_ptr const& e)
         {

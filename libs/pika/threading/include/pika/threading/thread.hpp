@@ -124,14 +124,8 @@ namespace pika {
         std::size_t set_thread_data(std::size_t);
 
     private:
-        bool joinable_locked() const noexcept
-        {
-            return threads::detail::invalid_thread_id != id_;
-        }
-        void detach_locked()
-        {
-            id_ = threads::detail::invalid_thread_id;
-        }
+        bool joinable_locked() const noexcept { return threads::detail::invalid_thread_id != id_; }
+        void detach_locked() { id_ = threads::detail::invalid_thread_id; }
         void start_thread(
             threads::detail::thread_pool_base* pool, util::detail::unique_function<void()>&& func);
         static threads::detail::thread_result_type thread_function_nullary(
@@ -141,10 +135,7 @@ namespace pika {
         threads::detail::thread_id_ref_type id_;
     };
 
-    inline void swap(thread& x, thread& y) noexcept
-    {
-        x.swap(y);
-    }
+    inline void swap(thread& x, thread& y) noexcept { x.swap(y); }
 
     ///////////////////////////////////////////////////////////////////////////
     class thread::id
@@ -186,10 +177,7 @@ namespace pika {
         {
         }
 
-        threads::detail::thread_id_type const& native_handle() const
-        {
-            return id_;
-        }
+        threads::detail::thread_id_type const& native_handle() const { return id_; }
     };
 
     inline bool operator==(thread::id const& x, thread::id const& y) noexcept
@@ -197,30 +185,18 @@ namespace pika {
         return x.id_ == y.id_;
     }
 
-    inline bool operator!=(thread::id const& x, thread::id const& y) noexcept
-    {
-        return !(x == y);
-    }
+    inline bool operator!=(thread::id const& x, thread::id const& y) noexcept { return !(x == y); }
 
     inline bool operator<(thread::id const& x, thread::id const& y) noexcept
     {
         return x.id_ < y.id_;
     }
 
-    inline bool operator>(thread::id const& x, thread::id const& y) noexcept
-    {
-        return y < x;
-    }
+    inline bool operator>(thread::id const& x, thread::id const& y) noexcept { return y < x; }
 
-    inline bool operator<=(thread::id const& x, thread::id const& y) noexcept
-    {
-        return !(x > y);
-    }
+    inline bool operator<=(thread::id const& x, thread::id const& y) noexcept { return !(x > y); }
 
-    inline bool operator>=(thread::id const& x, thread::id const& y) noexcept
-    {
-        return !(x < y);
-    }
+    inline bool operator>=(thread::id const& x, thread::id const& y) noexcept { return !(x < y); }
 
     template <typename Char, typename Traits>
     std::basic_ostream<Char, Traits>&

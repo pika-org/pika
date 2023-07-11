@@ -41,24 +41,17 @@ namespace pika::detail {
         auto token_begin = std::begin(str);
         auto token_end = std::end(str);
 
-        do
-        {
+        do {
             token_end = std::find_if(token_begin, std::end(str), pred);
 
             container.push_back(substr(str, token_begin, token_end));
 
-            if (token_end != std::end(str))
-            {
-                token_begin = token_end + 1;
-            }
+            if (token_end != std::end(str)) { token_begin = token_end + 1; }
 
             if (compress_mode == token_compress_mode::on)
             {
                 // Skip contiguous separators
-                while (token_begin != std::end(str) && pred(int(*token_begin)))
-                {
-                    ++token_begin;
-                }
+                while (token_begin != std::end(str) && pred(int(*token_begin))) { ++token_begin; }
             }
         } while (token_end != std::end(str));
     }

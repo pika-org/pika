@@ -266,10 +266,7 @@ namespace pika::util {
 
             using iterator_tuple_type = IteratorTuple;
 
-            PIKA_HOST_DEVICE iterator_tuple_type get_iterator_tuple() const
-            {
-                return iterators_;
-            }
+            PIKA_HOST_DEVICE iterator_tuple_type get_iterator_tuple() const { return iterators_; }
 
         private:
             friend class pika::util::iterator_core_access;
@@ -286,20 +283,11 @@ namespace pika::util {
                     iterators_);
             }
 
-            PIKA_HOST_DEVICE void increment()
-            {
-                this->apply(increment_iterator());
-            }
+            PIKA_HOST_DEVICE void increment() { this->apply(increment_iterator()); }
 
-            PIKA_HOST_DEVICE void decrement()
-            {
-                this->apply(decrement_iterator());
-            }
+            PIKA_HOST_DEVICE void decrement() { this->apply(decrement_iterator()); }
 
-            PIKA_HOST_DEVICE void advance(std::ptrdiff_t n)
-            {
-                this->apply(advance_iterator(n));
-            }
+            PIKA_HOST_DEVICE void advance(std::ptrdiff_t n) { this->apply(advance_iterator(n)); }
 
             PIKA_HOST_DEVICE
             std::ptrdiff_t distance_to(zip_iterator_base const& other) const

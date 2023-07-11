@@ -22,10 +22,7 @@ namespace pika::execution::experimental::detail {
             "attempted to call start on empty any_operation_state");
     }
 
-    bool empty_any_operation_state::empty() const noexcept
-    {
-        return true;
-    }
+    bool empty_any_operation_state::empty() const noexcept { return true; }
 
     void tag_invoke(pika::execution::experimental::start_t, any_operation_state& os) noexcept
     {

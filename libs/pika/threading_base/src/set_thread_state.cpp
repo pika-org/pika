@@ -83,8 +83,7 @@ namespace pika::threads::detail {
 
         thread_state previous_state;
         std::size_t k = 0;
-        do
-        {
+        do {
             // action depends on the current state
             previous_state = get_thread_id_data(thrd)->get_state();
             thread_schedule_state previous_state_val = previous_state.state();
@@ -99,8 +98,7 @@ namespace pika::threads::detail {
                     thrd, get_thread_id_data(thrd)->get_description(),
                     get_thread_state_name(new_state));
 
-                if (&ec != &throws)
-                    ec = make_success_code();
+                if (&ec != &throws) ec = make_success_code();
 
                 return thread_state(new_state, previous_state.state_ex());
             }
@@ -127,8 +125,7 @@ namespace pika::threads::detail {
 
                     create_work(get_thread_id_data(thrd)->get_scheduler_base(), data, ec);
 
-                    if (&ec != &throws)
-                        ec = make_success_code();
+                    if (&ec != &throws) ec = make_success_code();
                 }
                 else
                 {
@@ -146,8 +143,7 @@ namespace pika::threads::detail {
                     continue;
                 }
 
-                if (&ec != &throws)
-                    ec = make_success_code();
+                if (&ec != &throws) ec = make_success_code();
 
                 return previous_state;    // done
             }
@@ -159,15 +155,13 @@ namespace pika::threads::detail {
                     thrd, get_thread_id_data(thrd)->get_description(),
                     get_thread_state_name(new_state));
 
-                if (&ec != &throws)
-                    ec = make_success_code();
+                if (&ec != &throws) ec = make_success_code();
 
                 // If the thread has been terminated while this set_state was
                 // pending nothing has to be done anymore.
                 return previous_state;
             }
-            case thread_schedule_state::pending:
-                [[fallthrough]];
+            case thread_schedule_state::pending: [[fallthrough]];
             case thread_schedule_state::pending_boost:
                 if (thread_schedule_state::suspended == new_state)
                 {
@@ -187,10 +181,8 @@ namespace pika::threads::detail {
                         thread_schedule_state::unknown, thread_restart_state::unknown);
                 }
                 break;
-            case thread_schedule_state::suspended:
-                break;    // fine, just set the new state
-            case thread_schedule_state::pending_do_not_schedule:
-                [[fallthrough]];
+            case thread_schedule_state::suspended: break;    // fine, just set the new state
+            case thread_schedule_state::pending_do_not_schedule: [[fallthrough]];
             default:
             {
                 PIKA_ASSERT_MSG(false,
@@ -244,8 +236,7 @@ namespace pika::threads::detail {
             scheduler->do_some_work(schedulehint.hint);
         }
 
-        if (&ec != &throws)
-            ec = make_success_code();
+        if (&ec != &throws) ec = make_success_code();
 
         return previous_state;
     }

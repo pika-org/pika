@@ -75,10 +75,7 @@ void pingpong1()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void ping_void(pika::lcos::local::send_channel<> pings)
-{
-    pings.set();
-}
+void ping_void(pika::lcos::local::send_channel<> pings) { pings.set(); }
 
 void pong_void(pika::lcos::local::receive_channel<> pings, pika::lcos::local::send_channel<> pongs,
     bool& pingponged)
@@ -136,10 +133,7 @@ void dispatch_work()
             pika::error_code ec(pika::throwmode::lightweight);
             int next = jobs.get(pika::launch::sync, ec);
             (void) next;
-            if (!ec)
-            {
-                ++received_jobs;
-            }
+            if (!ec) { ++received_jobs; }
             else
             {
                 was_closed = true;
@@ -149,10 +143,7 @@ void dispatch_work()
         }
     });
 
-    for (int j = 1; j <= 3; ++j)
-    {
-        jobs.set(j);
-    }
+    for (int j = 1; j <= 3; ++j) { jobs.set(j); }
 
     jobs.close();
     done.get(pika::launch::sync);

@@ -32,10 +32,7 @@ namespace pika::cuda::experimental {
         {
             whip::stream_create_with_priority(&stream, flags, p.least);
         }
-        else
-        {
-            whip::stream_create_with_priority(&stream, flags, p.greatest);
-        }
+        else { whip::stream_create_with_priority(&stream, flags, p.greatest); }
 
         return stream;
     }
@@ -96,29 +93,14 @@ namespace pika::cuda::experimental {
 
     cuda_stream::~cuda_stream()
     {
-        if (stream != 0)
-        {
-            whip::stream_destroy(stream);
-        }
+        if (stream != 0) { whip::stream_destroy(stream); }
     }
 
-    int cuda_stream::get_device() const noexcept
-    {
-        return device;
-    }
+    int cuda_stream::get_device() const noexcept { return device; }
 
-    pika::execution::thread_priority cuda_stream::get_priority() const noexcept
-    {
-        return priority;
-    }
+    pika::execution::thread_priority cuda_stream::get_priority() const noexcept { return priority; }
 
-    unsigned int cuda_stream::get_flags() const noexcept
-    {
-        return flags;
-    }
+    unsigned int cuda_stream::get_flags() const noexcept { return flags; }
 
-    whip::stream_t cuda_stream::get() const noexcept
-    {
-        return stream;
-    }
+    whip::stream_t cuda_stream::get() const noexcept { return stream; }
 }    // namespace pika::cuda::experimental

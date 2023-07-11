@@ -89,32 +89,20 @@ namespace pika::threads::coroutines::detail {
             m_result = res;
         }
 
-        result_type result() const
-        {
-            return m_result;
-        }
+        result_type result() const { return m_result; }
         arg_type* args() noexcept
         {
             PIKA_ASSERT(m_arg);
             return m_arg;
         };
 
-        void bind_args(arg_type* arg) noexcept
-        {
-            m_arg = arg;
-        }
+        void bind_args(arg_type* arg) noexcept { m_arg = arg; }
 
 #if defined(PIKA_HAVE_THREAD_PHASE_INFORMATION)
-        std::size_t get_thread_phase() const
-        {
-            return this->phase();
-        }
+        std::size_t get_thread_phase() const { return this->phase(); }
 #endif
 
-        void init()
-        {
-            this->super_type::init();
-        }
+        void init() { this->super_type::init(); }
 
         void reset()
         {

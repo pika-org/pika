@@ -62,8 +62,7 @@ namespace pika::threads::detail {
         }
 #endif
 
-        for (std::size_t i = 0; i != num_threads; ++i)
-            states_[i].store(runtime_state::initialized);
+        for (std::size_t i = 0; i != num_threads; ++i) states_[i].store(runtime_state::initialized);
     }
 
     void scheduler_base::idle_callback(std::size_t num_thread)
@@ -103,10 +102,7 @@ namespace pika::threads::detail {
     void scheduler_base::do_some_work(std::size_t)
     {
 #if defined(PIKA_HAVE_THREAD_MANAGER_IDLE_BACKOFF)
-        if (has_scheduler_mode(scheduler_mode::enable_idle_backoff))
-        {
-            cond_.notify_all();
-        }
+        if (has_scheduler_mode(scheduler_mode::enable_idle_backoff)) { cond_.notify_all(); }
 #endif
     }
 
@@ -132,10 +128,7 @@ namespace pika::threads::detail {
     {
         if (num_thread == std::size_t(-1))
         {
-            for (std::condition_variable& c : suspend_conds_)
-            {
-                c.notify_one();
-            }
+            for (std::condition_variable& c : suspend_conds_) { c.notify_one(); }
         }
         else
         {
@@ -244,10 +237,7 @@ namespace pika::threads::detail {
     void scheduler_base::set_all_states(pika::runtime_state s)
     {
         using state_type = std::atomic<pika::runtime_state>;
-        for (state_type& state : states_)
-        {
-            state.store(s);
-        }
+        for (state_type& state : states_) { state.store(s); }
     }
 
     void scheduler_base::set_all_states_at_least(pika::runtime_state s)
@@ -255,10 +245,7 @@ namespace pika::threads::detail {
         using state_type = std::atomic<pika::runtime_state>;
         for (state_type& state : states_)
         {
-            if (state < s)
-            {
-                state.store(s);
-            }
+            if (state < s) { state.store(s); }
         }
     }
 
@@ -268,8 +255,7 @@ namespace pika::threads::detail {
         using state_type = std::atomic<pika::runtime_state>;
         for (state_type const& state : states_)
         {
-            if (state.load(std::memory_order_relaxed) < s)
-                return false;
+            if (state.load(std::memory_order_relaxed) < s) return false;
         }
         return true;
     }
@@ -279,8 +265,7 @@ namespace pika::threads::detail {
         using state_type = std::atomic<pika::runtime_state>;
         for (state_type const& state : states_)
         {
-            if (state.load(std::memory_order_relaxed) != s)
-                return false;
+            if (state.load(std::memory_order_relaxed) != s) return false;
         }
         return true;
     }
@@ -324,38 +309,27 @@ namespace pika::threads::detail {
 
     void scheduler_base::update_scheduler_mode(scheduler_mode mode, bool set)
     {
-        if (set)
-        {
-            add_scheduler_mode(mode);
-        }
-        else
-        {
-            remove_scheduler_mode(mode);
-        }
+        if (set) { add_scheduler_mode(mode); }
+        else { remove_scheduler_mode(mode); }
     }
 
 #if defined(PIKA_HAVE_SCHEDULER_LOCAL_STORAGE)
     coroutines::detail::tss_data_node* scheduler_base::find_tss_data(void const* key)
     {
-        if (!thread_data_)
-            return nullptr;
+        if (!thread_data_) return nullptr;
         return thread_data_->find(key);
     }
 
     void scheduler_base::add_new_tss_node(void const* key,
         std::shared_ptr<coroutines::detail::tss_cleanup_function> const& func, void* tss_data)
     {
-        if (!thread_data_)
-        {
-            thread_data_ = std::make_shared<coroutines::detail::tss_storage>();
-        }
+        if (!thread_data_) { thread_data_ = std::make_shared<coroutines::detail::tss_storage>(); }
         thread_data_->insert(key, func, tss_data);
     }
 
     void scheduler_base::erase_tss_node(void const* key, bool cleanup_existing)
     {
-        if (thread_data_)
-            thread_data_->erase(key, cleanup_existing);
+        if (thread_data_) thread_data_->erase(key, cleanup_existing);
     }
 
     void* scheduler_base::get_tss_data(void const* key)
@@ -378,10 +352,7 @@ namespace pika::threads::detail {
             else
                 erase_tss_node(key, cleanup_existing);
         }
-        else if (func || (tss_data != 0))
-        {
-            add_new_tss_node(key, func, tss_data);
-        }
+        else if (func || (tss_data != 0)) { add_new_tss_node(key, func, tss_data); }
     }
 #endif
 }    // namespace pika::threads::detail

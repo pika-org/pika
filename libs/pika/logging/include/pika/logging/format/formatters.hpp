@@ -90,10 +90,7 @@ std::(w)string and the string that holds your logged message. See convert_format
         PIKA_EXPORT ~high_precision_time();
 
     protected:
-        explicit high_precision_time(std::string const& format)
-        {
-            configure(format);
-        }
+        explicit high_precision_time(std::string const& format) { configure(format); }
     };
 
     /**

@@ -49,27 +49,12 @@ namespace pika::lcos::local {
             virtual pika::future<void> set(std::size_t generation, T&& t) = 0;
             virtual std::size_t close(bool force_delete_entries = false) = 0;
 
-            virtual bool requires_delete() noexcept
-            {
-                return 0 == release();
-            }
-            virtual void destroy() noexcept
-            {
-                delete this;
-            }
+            virtual bool requires_delete() noexcept { return 0 == release(); }
+            virtual void destroy() noexcept { delete this; }
 
-            long use_count() const noexcept
-            {
-                return count_;
-            }
-            long addref() noexcept
-            {
-                return ++count_;
-            }
-            long release() noexcept
-            {
-                return --count_;
-            }
+            long use_count() const noexcept { return count_; }
+            long addref() noexcept { return ++count_; }
+            long release() noexcept { return --count_; }
 
         private:
             pika::detail::atomic_count count_;
@@ -85,10 +70,7 @@ namespace pika::lcos::local {
         template <typename T>
         void intrusive_ptr_release(channel_impl_base<T>* p)
         {
-            if (p->requires_delete())
-            {
-                p->destroy();
-            }
+            if (p->requires_delete()) { p->destroy(); }
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -134,8 +116,7 @@ namespace pika::lcos::local {
                 }
 
                 ++get_generation_;
-                if (generation == std::size_t(-1))
-                    generation = get_generation_;
+                if (generation == std::size_t(-1)) generation = get_generation_;
 
                 if (closed_)
                 {
@@ -160,15 +141,12 @@ namespace pika::lcos::local {
             {
                 std::lock_guard<mutex_type> l(mtx_);
 
-                if (buffer_.empty() && closed_)
-                    return false;
+                if (buffer_.empty() && closed_) return false;
 
                 ++get_generation_;
-                if (generation == std::size_t(-1))
-                    generation = get_generation_;
+                if (generation == std::size_t(-1)) generation = get_generation_;
 
-                if (f != nullptr)
-                    *f = buffer_.receive(generation);
+                if (f != nullptr) *f = buffer_.receive(generation);
 
                 return true;
             }
@@ -185,8 +163,7 @@ namespace pika::lcos::local {
                 }
 
                 ++set_generation_;
-                if (generation == std::size_t(-1))
-                    generation = set_generation_;
+                if (generation == std::size_t(-1)) generation = set_generation_;
 
                 buffer_.store_received(generation, PIKA_MOVE(t), &l);
                 return pika::make_ready_future();
@@ -206,8 +183,7 @@ namespace pika::lcos::local {
 
                 closed_ = true;
 
-                if (buffer_.empty())
-                    return 0;
+                if (buffer_.empty()) return 0;
 
                 std::exception_ptr e;
 
@@ -448,10 +424,7 @@ namespace pika::lcos::local {
                     return false;
                 }
 
-                if (f != nullptr)
-                {
-                    *f = buffer_.pop(l);
-                }
+                if (f != nullptr) { *f = buffer_.pop(l); }
                 return true;
             }
 
@@ -485,10 +458,7 @@ namespace pika::lcos::local {
 
                 closed_ = true;
 
-                if (buffer_.is_empty(l) || !buffer_.has_pending_request(l))
-                {
-                    return 0;
-                }
+                if (buffer_.is_empty(l) || !buffer_.has_pending_request(l)) { return 0; }
 
                 // all pending requests which can't be satisfied have to be
                 // canceled at this point
@@ -507,10 +477,7 @@ namespace pika::lcos::local {
                 std::unique_lock<mutex_type> l(mtx_);
                 closed_ = true;
 
-                if (!buffer_.is_empty(l))
-                {
-                    buffer_.cancel(e, l);
-                }
+                if (!buffer_.is_empty(l)) { buffer_.cancel(e, l); }
             }
 
         private:
@@ -556,10 +523,7 @@ namespace pika::lcos::local {
         std::pair<T, bool> get_checked() const
         {
             pika::future<T> f;
-            if (channel_->try_get(std::size_t(-1), &f))
-            {
-                return std::make_pair(f.get(), true);
-            }
+            if (channel_->try_get(std::size_t(-1), &f)) { return std::make_pair(f.get(), true); }
             return std::make_pair(T(), false);
         }
 
@@ -574,8 +538,7 @@ namespace pika::lcos::local {
 
         void increment()
         {
-            if (channel_)
-                data_ = get_checked();
+            if (channel_) data_ = get_checked();
         }
 
         typename base_type::reference dereference() const
@@ -629,8 +592,7 @@ namespace pika::lcos::local {
 
         void increment()
         {
-            if (channel_)
-                data_ = get_checked();
+            if (channel_) data_ = get_checked();
         }
 
         typename base_type::reference dereference() const
@@ -656,14 +618,8 @@ namespace pika::lcos::local {
             }
 
             ///////////////////////////////////////////////////////////////////
-            channel_async_iterator<T> begin() const
-            {
-                return channel_async_iterator<T>(&channel_);
-            }
-            channel_async_iterator<T> end() const
-            {
-                return channel_async_iterator<T>();
-            }
+            channel_async_iterator<T> begin() const { return channel_async_iterator<T>(&channel_); }
+            channel_async_iterator<T> end() const { return channel_async_iterator<T>(); }
 
         private:
             channel_base<T> const& channel_;
@@ -722,33 +678,18 @@ namespace pika::lcos::local {
             }
 
             ///////////////////////////////////////////////////////////////////
-            channel_iterator<T> begin() const
-            {
-                return channel_iterator<T>(this);
-            }
-            channel_iterator<T> end() const
-            {
-                return channel_iterator<T>();
-            }
+            channel_iterator<T> begin() const { return channel_iterator<T>(this); }
+            channel_iterator<T> end() const { return channel_iterator<T>(); }
 
-            channel_base const& range() const noexcept
-            {
-                return *this;
-            }
-            channel_base const& range(launch::sync_policy) const noexcept
-            {
-                return *this;
-            }
+            channel_base const& range() const noexcept { return *this; }
+            channel_base const& range(launch::sync_policy) const noexcept { return *this; }
             channel_async_range<T> range(launch::async_policy) const
             {
                 return channel_async_range<T>(*this);
             }
 
             ///////////////////////////////////////////////////////////////////
-            channel_impl_base<T>* get_channel_impl() const noexcept
-            {
-                return channel_.get();
-            }
+            channel_impl_base<T>* get_channel_impl() const noexcept { return channel_.get(); }
 
         protected:
             pika::intrusive_ptr<channel_impl_base<T>> channel_;
@@ -927,8 +868,7 @@ namespace pika::lcos::local {
 
         void increment()
         {
-            if (channel_)
-                data_ = get_checked();
+            if (channel_) data_ = get_checked();
         }
 
         base_type::reference dereference() const
@@ -995,23 +935,11 @@ namespace pika::lcos::local {
             }
 
             ///////////////////////////////////////////////////////////////////
-            channel_iterator<void> begin() const
-            {
-                return channel_iterator<void>(this);
-            }
-            channel_iterator<void> end() const
-            {
-                return channel_iterator<void>();
-            }
+            channel_iterator<void> begin() const { return channel_iterator<void>(this); }
+            channel_iterator<void> end() const { return channel_iterator<void>(); }
 
-            channel_base const& range() const noexcept
-            {
-                return *this;
-            }
-            channel_base const& range(launch::sync_policy) const noexcept
-            {
-                return *this;
-            }
+            channel_base const& range() const noexcept { return *this; }
+            channel_base const& range(launch::sync_policy) const noexcept { return *this; }
             channel_async_range<void> range(launch::async_policy) const
             {
                 return channel_async_range<void>(*this);

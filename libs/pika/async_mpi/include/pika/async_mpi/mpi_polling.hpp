@@ -171,20 +171,11 @@ namespace pika::mpi::experimental {
         {
             switch (get_handler_mode(flags))
             {
-            case handler_mode::yield_while:
-                return "yield_while";
-                break;
-            case handler_mode::new_task:
-                return "new_task";
-                break;
-            case handler_mode::continuation:
-                return "continuation";
-                break;
-            case handler_mode::suspend_resume:
-                return "suspend_resume";
-                break;
-            default:
-                return "invalid";
+            case handler_mode::yield_while: return "yield_while"; break;
+            case handler_mode::new_task: return "new_task"; break;
+            case handler_mode::continuation: return "continuation"; break;
+            case handler_mode::suspend_resume: return "suspend_resume"; break;
+            default: return "invalid";
             }
         }
 
@@ -267,10 +258,7 @@ namespace pika::mpi::experimental {
             mpi::experimental::init(false, init_errorhandler);
         }
 
-        ~enable_user_polling()
-        {
-            mpi::experimental::finalize(pool_name_);
-        }
+        ~enable_user_polling() { mpi::experimental::finalize(pool_name_); }
 
     private:
         std::string pool_name_;

@@ -20,10 +20,7 @@ namespace pika::detail {
     std::ostream& operator<<(std::ostream& os, thread_description const& d)
     {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
-        if (d.kind() == thread_description::data_type_description)
-        {
-            os << d.get_description();
-        }
+        if (d.kind() == thread_description::data_type_description) { os << d.get_description(); }
         else
         {
             PIKA_ASSERT(d.kind() == thread_description::data_type_address);
@@ -66,10 +63,7 @@ namespace pika::detail {
             thread_description desc = pika::threads::detail::get_thread_description(id);
             type_ = desc.kind();
             // if the current task has a description, use it.
-            if (type_ == data_type_description)
-            {
-                data_.desc_ = desc.get_description();
-            }
+            if (type_ == data_type_description) { data_.desc_ = desc.get_description(); }
             else
             {
                 // otherwise, use the address of the task.
@@ -105,8 +99,7 @@ namespace pika::threads::detail {
                 "pika::threads::detail::set_thread_description", "null thread id encountered");
             return ::pika::detail::thread_description();
         }
-        if (&ec != &throws)
-            ec = make_success_code();
+        if (&ec != &throws) ec = make_success_code();
 
         return get_thread_id_data(id)->set_description(desc);
     }
@@ -122,8 +115,7 @@ namespace pika::threads::detail {
             return nullptr;
         }
 
-        if (&ec != &throws)
-            ec = make_success_code();
+        if (&ec != &throws) ec = make_success_code();
 
         return get_thread_id_data(id)->get_lco_description();
     }
@@ -138,8 +130,7 @@ namespace pika::threads::detail {
             return nullptr;
         }
 
-        if (&ec != &throws)
-            ec = make_success_code();
+        if (&ec != &throws) ec = make_success_code();
 
         return get_thread_id_data(id)->set_lco_description(desc);
     }

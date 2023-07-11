@@ -72,10 +72,7 @@ namespace pika::cuda::experimental {
         __global__ void bulk_function_kernel_integral(F f, Shape shape, Size n, Ts... ts)
         {
             int i = threadIdx.x + blockIdx.x * blockDim.x;
-            if (i < static_cast<int>(n))
-            {
-                f(shape_dereference(shape, i), ts...);
-            }
+            if (i < static_cast<int>(n)) { f(shape_dereference(shape, i), ts...); }
         }
 #endif
 
@@ -129,10 +126,7 @@ namespace pika::cuda::experimental {
             // TODO: This should pass through the additional arguments.
             // Currently only works with zero or one arguments with a plain call
             // operator like here.
-            void operator()(whip::stream_t stream) const
-            {
-                launch_bulk_function(f, shape, stream);
-            }
+            void operator()(whip::stream_t stream) const { launch_bulk_function(f, shape, stream); }
 
             template <typename T>
             std::decay_t<T> operator()(T&& t, whip::stream_t stream) const

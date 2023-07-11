@@ -49,12 +49,10 @@ bool use_ittnotify_api = false;
   (use_ittnotify_api && __itt_stack_caller_create_ptr) ? __itt_stack_caller_create_ptr() :         \
                                                          (__itt_caller) nullptr /**/
 # define PIKA_INTERNAL_ITT_STACK_ENTER(ctx)                                                        \
-  if (use_ittnotify_api && __itt_stack_callee_enter_ptr)                                           \
-   __itt_stack_callee_enter_ptr(ctx);                                                              \
+  if (use_ittnotify_api && __itt_stack_callee_enter_ptr) __itt_stack_callee_enter_ptr(ctx);        \
   /**/
 # define PIKA_INTERNAL_ITT_STACK_LEAVE(ctx)                                                        \
-  if (use_ittnotify_api && __itt_stack_callee_leave_ptr)                                           \
-   __itt_stack_callee_leave_ptr(ctx);                                                              \
+  if (use_ittnotify_api && __itt_stack_callee_leave_ptr) __itt_stack_callee_leave_ptr(ctx);        \
   /**/
 # define PIKA_INTERNAL_ITT_STACK_DESTROY(ctx)                                                      \
   if (use_ittnotify_api && __itt_stack_caller_destroy_ptr && ctx != (__itt_caller) nullptr)        \
@@ -63,34 +61,28 @@ bool use_ittnotify_api = false;
 
 ///////////////////////////////////////////////////////////////////////////////
 # define PIKA_INTERNAL_ITT_FRAME_BEGIN(domain, id)                                                 \
-  if (use_ittnotify_api && __itt_frame_begin_v3_ptr)                                               \
-   __itt_frame_begin_v3_ptr(domain, id);                                                           \
+  if (use_ittnotify_api && __itt_frame_begin_v3_ptr) __itt_frame_begin_v3_ptr(domain, id);         \
   /**/
 # define PIKA_INTERNAL_ITT_FRAME_END(domain, id)                                                   \
-  if (use_ittnotify_api && __itt_frame_end_v3_ptr)                                                 \
-   __itt_frame_end_v3_ptr(domain, id);                                                             \
+  if (use_ittnotify_api && __itt_frame_end_v3_ptr) __itt_frame_end_v3_ptr(domain, id);             \
   /**/
 
 ///////////////////////////////////////////////////////////////////////////////
 # define PIKA_INTERNAL_ITT_MARK_CREATE(name)                                                       \
   (use_ittnotify_api && __itt_mark_create_ptr) ? __itt_mark_create_ptr(name) : 0 /**/
 # define PIKA_INTERNAL_ITT_MARK_OFF(mark)                                                          \
-  if (use_ittnotify_api && __itt_mark_off_ptr)                                                     \
-   __itt_mark_off_ptr(mark);                                                                       \
+  if (use_ittnotify_api && __itt_mark_off_ptr) __itt_mark_off_ptr(mark);                           \
   /**/
 # define PIKA_INTERNAL_ITT_MARK(mark, parameter)                                                   \
-  if (use_ittnotify_api && __itt_mark_ptr)                                                         \
-   __itt_mark_ptr(mark, parameter);                                                                \
+  if (use_ittnotify_api && __itt_mark_ptr) __itt_mark_ptr(mark, parameter);                        \
   /**/
 
 ///////////////////////////////////////////////////////////////////////////////
 # define PIKA_INTERNAL_ITT_THREAD_SET_NAME(name)                                                   \
-  if (use_ittnotify_api && __itt_thread_set_name_ptr)                                              \
-   __itt_thread_set_name_ptr(name);                                                                \
+  if (use_ittnotify_api && __itt_thread_set_name_ptr) __itt_thread_set_name_ptr(name);             \
   /**/
 # define PIKA_INTERNAL_ITT_THREAD_IGNORE()                                                         \
-  if (use_ittnotify_api && __itt_thread_ignore_ptr)                                                \
-   __itt_thread_ignore_ptr();                                                                      \
+  if (use_ittnotify_api && __itt_thread_ignore_ptr) __itt_thread_ignore_ptr();                     \
   /**/
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -103,8 +95,7 @@ bool use_ittnotify_api = false;
    __itt_task_begin_ptr(domain, id, __itt_null, name);                                             \
   /**/
 # define PIKA_INTERNAL_ITT_TASK_END(domain)                                                        \
-  if (use_ittnotify_api && __itt_task_end_ptr)                                                     \
-   __itt_task_end_ptr(domain);                                                                     \
+  if (use_ittnotify_api && __itt_task_end_ptr) __itt_task_end_ptr(domain);                         \
   /**/
 
 # define PIKA_INTERNAL_ITT_DOMAIN_CREATE(name)                                                     \
@@ -118,8 +109,7 @@ bool use_ittnotify_api = false;
   use_ittnotify_api ? __itt_id_make(addr, extra) : __itt_null /**/
 
 # define PIKA_INTERNAL_ITT_ID_CREATE(domain, id)                                                   \
-  if (use_ittnotify_api && __itt_id_create_ptr)                                                    \
-   __itt_id_create_ptr(domain, id);                                                                \
+  if (use_ittnotify_api && __itt_id_create_ptr) __itt_id_create_ptr(domain, id);                   \
   /**/
 # define PIKA_INTERNAL_ITT_ID_DESTROY(id) delete id
 
@@ -139,12 +129,10 @@ bool use_ittnotify_api = false;
   /**/
 
 # define PIKA_INTERNAL_HEAP_FREE_BEGIN(f, addr)                                                    \
-  if (use_ittnotify_api && __itt_heap_free_begin_ptr)                                              \
-   __itt_heap_free_begin_ptr(f, addr);                                                             \
+  if (use_ittnotify_api && __itt_heap_free_begin_ptr) __itt_heap_free_begin_ptr(f, addr);          \
   /**/
 # define PIKA_INTERNAL_HEAP_FREE_END(f, addr)                                                      \
-  if (use_ittnotify_api && __itt_heap_free_end_ptr)                                                \
-   __itt_heap_free_end_ptr(f, addr);                                                               \
+  if (use_ittnotify_api && __itt_heap_free_end_ptr) __itt_heap_free_end_ptr(f, addr);              \
   /**/
 
 # define PIKA_INTERNAL_HEAP_REALLOCATE_BEGIN(f, addr, size, init)                                  \
@@ -179,8 +167,7 @@ bool use_ittnotify_api = false;
     __itt_counter_set_value_ptr(id, value_ptr);                                                    \
    /**/
 #  define PIKA_INTERNAL_COUNTER_DESTROY(id)                                                        \
-   if (use_ittnotify_api && __itt_counter_destroy_ptr)                                             \
-    __itt_counter_destroy_ptr(id);                                                                 \
+   if (use_ittnotify_api && __itt_counter_destroy_ptr) __itt_counter_destroy_ptr(id);              \
    /**/
 # else
 // older itt-notify implementations don't support the typed counter API
@@ -227,43 +214,28 @@ bool use_ittnotify_api = false;
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika { namespace util { namespace itt {
 
-    stack_context::stack_context()
-    {
-        PIKA_ITT_STACK_CREATE(itt_context_);
-    }
+    stack_context::stack_context() { PIKA_ITT_STACK_CREATE(itt_context_); }
 
     stack_context::~stack_context()
     {
-        if (itt_context_)
-        {
-            PIKA_ITT_STACK_DESTROY(itt_context_);
-        }
+        if (itt_context_) { PIKA_ITT_STACK_DESTROY(itt_context_); }
     }
 
     caller_context::caller_context(stack_context& ctx)
       : ctx_(ctx)
     {
-        if (ctx.itt_context_)
-        {
-            PIKA_ITT_STACK_CALLEE_ENTER(ctx_.itt_context_);
-        }
+        if (ctx.itt_context_) { PIKA_ITT_STACK_CALLEE_ENTER(ctx_.itt_context_); }
     }
 
     caller_context::~caller_context()
     {
-        if (ctx_.itt_context_)
-        {
-            PIKA_ITT_STACK_CALLEE_LEAVE(ctx_.itt_context_);
-        }
+        if (ctx_.itt_context_) { PIKA_ITT_STACK_CALLEE_LEAVE(ctx_.itt_context_); }
     }
 
     domain::domain(char const* name) noexcept
       : domain_(PIKA_ITT_DOMAIN_CREATE(name))
     {
-        if (domain_ != nullptr)
-        {
-            domain_->flags = 1;
-        }
+        if (domain_ != nullptr) { domain_->flags = 1; }
     }
 
     static thread_local std::unique_ptr<___itt_domain> thread_domain_;
@@ -278,10 +250,7 @@ namespace pika { namespace util { namespace itt {
 
         domain_ = thread_domain_.get();
 
-        if (domain_ != nullptr)
-        {
-            domain_->flags = 1;
-        }
+        if (domain_ != nullptr) { domain_->flags = 1; }
     }
 
     id::id(domain const& domain, void* addr, unsigned long extra) noexcept
@@ -295,10 +264,7 @@ namespace pika { namespace util { namespace itt {
 
     id::~id()
     {
-        if (use_ittnotify_api)
-        {
-            PIKA_ITT_ID_DESTROY(id_);
-        }
+        if (use_ittnotify_api) { PIKA_ITT_ID_DESTROY(id_); }
     }
 
     frame_context::frame_context(domain const& domain, id* ident) noexcept
@@ -331,20 +297,14 @@ namespace pika { namespace util { namespace itt {
         PIKA_ITT_MARK_CREATE(itt_mark_, name);
     }
 
-    mark_context::~mark_context()
-    {
-        PIKA_ITT_MARK_OFF(itt_mark_);
-    }
+    mark_context::~mark_context() { PIKA_ITT_MARK_OFF(itt_mark_); }
 
     undo_mark_context::undo_mark_context(mark_context& mark) noexcept
       : mark_(mark)
     {
         PIKA_ITT_MARK_OFF(mark_.itt_mark_);
     }
-    undo_mark_context::~undo_mark_context()
-    {
-        PIKA_ITT_MARK_CREATE(mark_.itt_mark_, mark_.name_);
-    }
+    undo_mark_context::~undo_mark_context() { PIKA_ITT_MARK_CREATE(mark_.itt_mark_, mark_.name_); }
 
     string_handle::string_handle(char const* s) noexcept
       : handle_(s == nullptr ? nullptr : PIKA_ITT_STRING_HANDLE_CREATE(s))
@@ -410,15 +370,9 @@ namespace pika { namespace util { namespace itt {
     {
     }
 
-    heap_internal_access::heap_internal_access() noexcept
-    {
-        PIKA_ITT_HEAP_INTERNAL_ACCESS_BEGIN();
-    }
+    heap_internal_access::heap_internal_access() noexcept { PIKA_ITT_HEAP_INTERNAL_ACCESS_BEGIN(); }
 
-    heap_internal_access::~heap_internal_access()
-    {
-        PIKA_ITT_HEAP_INTERNAL_ACCESS_END();
-    }
+    heap_internal_access::~heap_internal_access() { PIKA_ITT_HEAP_INTERNAL_ACCESS_END(); }
 
     heap_free::heap_free(heap_function& heap_function, void* addr) noexcept
       : heap_function_(heap_function)
@@ -427,10 +381,7 @@ namespace pika { namespace util { namespace itt {
         PIKA_ITT_HEAP_FREE_BEGIN(heap_function_.heap_function_, addr_);
     }
 
-    heap_free::~heap_free()
-    {
-        PIKA_ITT_HEAP_FREE_END(heap_function_.heap_function_, addr_);
-    }
+    heap_free::~heap_free() { PIKA_ITT_HEAP_FREE_END(heap_function_.heap_function_, addr_); }
 
     counter::counter(char const* name, char const* domain) noexcept
       : id_(PIKA_ITT_COUNTER_CREATE(name, domain))
@@ -444,10 +395,7 @@ namespace pika { namespace util { namespace itt {
 
     counter::~counter()
     {
-        if (id_)
-        {
-            PIKA_ITT_COUNTER_DESTROY(id_);
-        }
+        if (id_) { PIKA_ITT_COUNTER_DESTROY(id_); }
     }
 }}}    // namespace pika::util::itt
 
@@ -462,56 +410,26 @@ void itt_sync_rename(void* addr, const char* objname) noexcept
     PIKA_INTERNAL_ITT_SYNC_RENAME(addr, objname);
 }
 
-void itt_sync_prepare(void* addr) noexcept
-{
-    PIKA_INTERNAL_ITT_SYNC_PREPARE(addr);
-}
+void itt_sync_prepare(void* addr) noexcept { PIKA_INTERNAL_ITT_SYNC_PREPARE(addr); }
 
-void itt_sync_acquired(void* addr) noexcept
-{
-    PIKA_INTERNAL_ITT_SYNC_ACQUIRED(addr);
-}
+void itt_sync_acquired(void* addr) noexcept { PIKA_INTERNAL_ITT_SYNC_ACQUIRED(addr); }
 
-void itt_sync_cancel(void* addr) noexcept
-{
-    PIKA_INTERNAL_ITT_SYNC_CANCEL(addr);
-}
+void itt_sync_cancel(void* addr) noexcept { PIKA_INTERNAL_ITT_SYNC_CANCEL(addr); }
 
-void itt_sync_releasing(void* addr) noexcept
-{
-    PIKA_INTERNAL_ITT_SYNC_RELEASING(addr);
-}
+void itt_sync_releasing(void* addr) noexcept { PIKA_INTERNAL_ITT_SYNC_RELEASING(addr); }
 
-void itt_sync_released(void* addr) noexcept
-{
-    PIKA_INTERNAL_ITT_SYNC_RELEASED(addr);
-}
+void itt_sync_released(void* addr) noexcept { PIKA_INTERNAL_ITT_SYNC_RELEASED(addr); }
 
-void itt_sync_destroy(void* addr) noexcept
-{
-    PIKA_INTERNAL_ITT_SYNC_DESTROY(addr);
-}
+void itt_sync_destroy(void* addr) noexcept { PIKA_INTERNAL_ITT_SYNC_DESTROY(addr); }
 
 ///////////////////////////////////////////////////////////////////////////////
-__itt_caller itt_stack_create() noexcept
-{
-    return PIKA_INTERNAL_ITT_STACK_CREATE();
-}
+__itt_caller itt_stack_create() noexcept { return PIKA_INTERNAL_ITT_STACK_CREATE(); }
 
-void itt_stack_enter(__itt_caller ctx) noexcept
-{
-    PIKA_INTERNAL_ITT_STACK_ENTER(ctx);
-}
+void itt_stack_enter(__itt_caller ctx) noexcept { PIKA_INTERNAL_ITT_STACK_ENTER(ctx); }
 
-void itt_stack_leave(__itt_caller ctx) noexcept
-{
-    PIKA_INTERNAL_ITT_STACK_LEAVE(ctx);
-}
+void itt_stack_leave(__itt_caller ctx) noexcept { PIKA_INTERNAL_ITT_STACK_LEAVE(ctx); }
 
-void itt_stack_destroy(__itt_caller ctx) noexcept
-{
-    PIKA_INTERNAL_ITT_STACK_DESTROY(ctx);
-}
+void itt_stack_destroy(__itt_caller ctx) noexcept { PIKA_INTERNAL_ITT_STACK_DESTROY(ctx); }
 
 ///////////////////////////////////////////////////////////////////////////////
 void itt_frame_begin(___itt_domain const* domain, ___itt_id* id) noexcept
@@ -525,31 +443,16 @@ void itt_frame_end(___itt_domain const* domain, ___itt_id* id) noexcept
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int itt_mark_create(char const* name) noexcept
-{
-    return PIKA_INTERNAL_ITT_MARK_CREATE(name);
-}
+int itt_mark_create(char const* name) noexcept { return PIKA_INTERNAL_ITT_MARK_CREATE(name); }
 
-void itt_mark_off(int mark) noexcept
-{
-    PIKA_INTERNAL_ITT_MARK_OFF(mark);
-}
+void itt_mark_off(int mark) noexcept { PIKA_INTERNAL_ITT_MARK_OFF(mark); }
 
-void itt_mark(int mark, char const* par) noexcept
-{
-    PIKA_INTERNAL_ITT_MARK(mark, par);
-}
+void itt_mark(int mark, char const* par) noexcept { PIKA_INTERNAL_ITT_MARK(mark, par); }
 
 ///////////////////////////////////////////////////////////////////////////////
-void itt_thread_set_name(char const* name) noexcept
-{
-    PIKA_INTERNAL_ITT_THREAD_SET_NAME(name);
-}
+void itt_thread_set_name(char const* name) noexcept { PIKA_INTERNAL_ITT_THREAD_SET_NAME(name); }
 
-void itt_thread_ignore() noexcept
-{
-    PIKA_INTERNAL_ITT_THREAD_IGNORE();
-}
+void itt_thread_ignore() noexcept { PIKA_INTERNAL_ITT_THREAD_IGNORE(); }
 
 ///////////////////////////////////////////////////////////////////////////////
 void itt_task_begin(___itt_domain const* domain, ___itt_string_handle* name) noexcept
@@ -562,10 +465,7 @@ void itt_task_begin(___itt_domain const* domain, ___itt_id* id, ___itt_string_ha
     PIKA_INTERNAL_ITT_TASK_BEGIN_ID(domain, *id, name);
 }
 
-void itt_task_end(___itt_domain const* domain) noexcept
-{
-    PIKA_INTERNAL_ITT_TASK_END(domain);
-}
+void itt_task_end(___itt_domain const* domain) noexcept { PIKA_INTERNAL_ITT_TASK_END(domain); }
 
 ___itt_domain* itt_domain_create(char const* name) noexcept
 {
@@ -587,10 +487,7 @@ void itt_id_create(___itt_domain const* domain, ___itt_id* id) noexcept
     PIKA_INTERNAL_ITT_ID_CREATE(domain, *id);
 }
 
-void itt_id_destroy(___itt_id* id) noexcept
-{
-    PIKA_INTERNAL_ITT_ID_DESTROY(id);
-}
+void itt_id_destroy(___itt_id* id) noexcept { PIKA_INTERNAL_ITT_ID_DESTROY(id); }
 
 ///////////////////////////////////////////////////////////////////////////////
 __itt_heap_function itt_heap_function_create(const char* name, const char* domain) noexcept
@@ -630,15 +527,9 @@ void itt_heap_reallocate_end(
     PIKA_INTERNAL_HEAP_REALLOCATE_END(f, addr, new_addr, new_size, init);
 }
 
-void itt_heap_internal_access_begin() noexcept
-{
-    PIKA_INTERNAL_INTERNAL_ACCESS_BEGIN();
-}
+void itt_heap_internal_access_begin() noexcept { PIKA_INTERNAL_INTERNAL_ACCESS_BEGIN(); }
 
-void itt_heap_internal_access_end() noexcept
-{
-    PIKA_INTERNAL_INTERNAL_ACCESS_END();
-}
+void itt_heap_internal_access_end() noexcept { PIKA_INTERNAL_INTERNAL_ACCESS_END(); }
 
 ///////////////////////////////////////////////////////////////////////////////
 __itt_counter itt_counter_create(char const* name, char const* domain) noexcept
@@ -651,10 +542,7 @@ __itt_counter itt_counter_create_typed(char const* name, char const* domain, int
     return PIKA_INTERNAL_COUNTER_CREATE_TYPED(name, domain, (__itt_metadata_type) type);
 }
 
-void itt_counter_destroy(__itt_counter id) noexcept
-{
-    PIKA_INTERNAL_COUNTER_DESTROY(id);
-}
+void itt_counter_destroy(__itt_counter id) noexcept { PIKA_INTERNAL_COUNTER_DESTROY(id); }
 
 void itt_counter_set_value(__itt_counter id, void* value_ptr) noexcept
 {
@@ -667,15 +555,9 @@ __itt_event itt_event_create(char const* name, int namelen) noexcept
     return PIKA_INTERNAL_EVENT_CREATE(name, namelen);
 }
 
-int itt_event_start(__itt_event evnt) noexcept
-{
-    return PIKA_INTERNAL_EVENT_START(evnt);
-}
+int itt_event_start(__itt_event evnt) noexcept { return PIKA_INTERNAL_EVENT_START(evnt); }
 
-int itt_event_end(__itt_event evnt) noexcept
-{
-    return PIKA_INTERNAL_EVENT_END(evnt);
-}
+int itt_event_end(__itt_event evnt) noexcept { return PIKA_INTERNAL_EVENT_END(evnt); }
 
 ///////////////////////////////////////////////////////////////////////////////
 void itt_metadata_add(___itt_domain* domain, ___itt_id* id, ___itt_string_handle* key,

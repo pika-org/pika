@@ -60,16 +60,10 @@ struct disable_small_object_optimization
 template <typename base>
 struct plus_int : base
 {
-    int operator()(int x, int y) const
-    {
-        return x + y;
-    }
+    int operator()(int x, int y) const { return x + y; }
 };
 
-static int do_minus(int x, int y)
-{
-    return x - y;
-}
+static int do_minus(int x, int y) { return x - y; }
 
 template <typename base>
 struct DoNothing : base

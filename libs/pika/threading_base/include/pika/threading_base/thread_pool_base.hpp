@@ -94,14 +94,8 @@ namespace pika::threads::detail {
         {
         }
 
-        std::size_t index() const
-        {
-            return index_;
-        };
-        std::string const& name() const
-        {
-            return name_;
-        }
+        std::size_t index() const { return index_; };
+        std::string const& name() const { return name_; }
 
     private:
         std::size_t const index_;
@@ -169,10 +163,7 @@ namespace pika::threads::detail {
 
         virtual void print_pool(std::ostream&) = 0;
 
-        pool_id_type get_pool_id() const
-        {
-            return id_;
-        }
+        pool_id_type get_pool_id() const { return id_; }
         /// \endcond
 
         /// Suspends the given processing unit. Blocks until the processing unit
@@ -230,23 +221,11 @@ namespace pika::threads::detail {
             thread_restart_state new_state_ex, execution::thread_priority priority,
             error_code& ec) = 0;
 
-        std::size_t get_pool_index() const
-        {
-            return id_.index();
-        }
-        std::string const& get_pool_name() const
-        {
-            return id_.name();
-        }
-        std::size_t get_thread_offset() const
-        {
-            return thread_offset_;
-        }
+        std::size_t get_pool_index() const { return id_.index(); }
+        std::string const& get_pool_name() const { return id_.name(); }
+        std::size_t get_thread_offset() const { return thread_offset_; }
 
-        virtual scheduler_base* get_scheduler() const
-        {
-            return nullptr;
-        }
+        virtual scheduler_base* get_scheduler() const { return nullptr; }
 
         mask_type get_used_processing_units() const;
         hwloc_bitmap_ptr get_numa_domain_bitmap() const;
@@ -297,14 +276,8 @@ namespace pika::threads::detail {
         }
 
 #if defined(PIKA_HAVE_THREAD_IDLE_RATES)
-        virtual std::int64_t avg_idle_rate_all(bool /*reset*/)
-        {
-            return 0;
-        }
-        virtual std::int64_t avg_idle_rate(std::size_t, bool)
-        {
-            return 0;
-        }
+        virtual std::int64_t avg_idle_rate_all(bool /*reset*/) { return 0; }
+        virtual std::int64_t avg_idle_rate(std::size_t, bool) { return 0; }
 
 # if defined(PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES)
         virtual std::int64_t avg_creation_idle_rate(std::size_t /*thread_num*/, bool /*reset*/)
@@ -318,10 +291,7 @@ namespace pika::threads::detail {
 # endif
 #endif
 
-        virtual std::int64_t get_queue_length(std::size_t, bool)
-        {
-            return 0;
-        }
+        virtual std::int64_t get_queue_length(std::size_t, bool) { return 0; }
 
 #if defined(PIKA_HAVE_THREAD_QUEUE_WAITTIME)
         virtual std::int64_t get_average_thread_wait_time(
@@ -369,10 +339,7 @@ namespace pika::threads::detail {
             return 0;
         }
 
-        virtual std::int64_t get_idle_core_count() const
-        {
-            return 0;
-        }
+        virtual std::int64_t get_idle_core_count() const { return 0; }
 
         virtual void get_idle_core_mask(mask_type&) const {}
 
@@ -422,10 +389,7 @@ namespace pika::threads::detail {
         virtual void reset_thread_distribution() {}
 
         virtual void abort_all_suspended_threads() {}
-        virtual bool cleanup_terminated(bool /*delete_all*/)
-        {
-            return false;
-        }
+        virtual bool cleanup_terminated(bool /*delete_all*/) { return false; }
 
         virtual pika::runtime_state get_state() const = 0;
         virtual pika::runtime_state get_state(std::size_t num_thread) const = 0;
@@ -439,10 +403,7 @@ namespace pika::threads::detail {
             notifier_.on_error(global_thread_num, e);
         }
 
-        double timestamp_scale() const
-        {
-            return timestamp_scale_;
-        }
+        double timestamp_scale() const { return timestamp_scale_; }
         /// \endcond
 
     protected:

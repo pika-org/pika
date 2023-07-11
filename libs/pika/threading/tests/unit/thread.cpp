@@ -30,8 +30,7 @@ template <typename Clock, typename Duration>
 inline int time_cmp(std::chrono::time_point<Clock, Duration> const& xt1,
     std::chrono::time_point<Clock, Duration> const& xt2)
 {
-    if (xt1 == xt2)
-        return 0;
+    if (xt1 == xt2) return 0;
     return xt1 > xt2 ? 1 : -1;
 }
 
@@ -58,10 +57,7 @@ void timed_test(F func, int /*secs*/)
 ///////////////////////////////////////////////////////////////////////////////
 int test_value = 0;
 
-void simple_thread()
-{
-    test_value = 999;
-}
+void simple_thread() { test_value = 999; }
 
 void comparison_thread(pika::thread::id parent)
 {
@@ -214,10 +210,7 @@ struct non_copyable_callable
     non_copyable_callable(non_copyable_callable const&) = delete;
     non_copyable_callable& operator=(non_copyable_callable const&) = delete;
 
-    void operator()()
-    {
-        value = 999;
-    }
+    void operator()() { value = 999; }
 };
 
 void do_test_creation_through_reference_wrapper()

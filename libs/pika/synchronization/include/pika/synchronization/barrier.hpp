@@ -199,10 +199,7 @@ namespace pika {
             }
 
             std::unique_lock<mutex_type> l(mtx_);
-            if (phase_ == old_phase)
-            {
-                cond_.wait(l, "barrier::wait");
-            }
+            if (phase_ == old_phase) { cond_.wait(l, "barrier::wait"); }
             PIKA_ASSERT(phase_ != old_phase);
         }
 

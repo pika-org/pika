@@ -33,10 +33,7 @@ void cv_wait(pika::stop_token stoken, int /* id */, bool& ready, pika::mutex& re
         {
             std::unique_lock<pika::mutex> lg{ready_mtx};
             ready_cv.wait(lg, stoken, [&ready] { return ready; });
-            if (stoken.stop_requested())
-            {
-                throw "interrupted";
-            }
+            if (stoken.stop_requested()) { throw "interrupted"; }
         }
         PIKA_TEST(!stoken.stop_requested());
         PIKA_TEST(notify_called);
@@ -98,10 +95,7 @@ void test_cv_pred(bool call_notify)
             {
                 std::unique_lock<pika::mutex> lg{ready_mtx};
                 ready_cv.wait(lg, st, [&ready] { return ready; });
-                if (st.stop_requested())
-                {
-                    throw "interrupted";
-                }
+                if (st.stop_requested()) { throw "interrupted"; }
                 PIKA_TEST(call_notify);
             }
             catch (std::exception const&)
@@ -153,10 +147,7 @@ void test_cv_thread_no_pred(bool call_notify)
                     PIKA_TEST(!st.stop_requested());
                     PIKA_TEST(call_notify);
                 }
-                else if (st.stop_requested())
-                {
-                    PIKA_TEST(!call_notify);
-                }
+                else if (st.stop_requested()) { PIKA_TEST(!call_notify); }
             }
         });
 
@@ -175,10 +166,7 @@ void test_cv_thread_no_pred(bool call_notify)
 
             ready_cv.notify_one();
         }
-        else
-        {
-            is.request_stop();
-        }
+        else { is.request_stop(); }
         t1.join();
     }    // leave scope of t1 without join() or detach() (signals cancellation)
 }
@@ -197,14 +185,8 @@ void test_cv_thread_pred(bool call_notify)
             {
                 std::unique_lock<pika::mutex> lg{ready_mtx};
                 ret = ready_cv.wait(lg, st, [&ready] { return ready; });
-                if (ret)
-                {
-                    PIKA_TEST(!st.stop_requested());
-                }
-                else
-                {
-                    PIKA_TEST(st.stop_requested());
-                }
+                if (ret) { PIKA_TEST(!st.stop_requested()); }
+                else { PIKA_TEST(st.stop_requested()); }
             }
             PIKA_TEST(call_notify != st.stop_requested());
         });
@@ -224,10 +206,7 @@ void test_cv_thread_pred(bool call_notify)
 
             ready_cv.notify_one();
         }
-        else
-        {
-            is.request_stop();
-        }
+        else { is.request_stop(); }
         t1.join();
     }    // leave scope of t1 without join() or detach() (signals cancellation)
 }
@@ -372,10 +351,7 @@ void test_timed_cv(bool call_notify, bool /* call_interrupt */, Dur dur)
             pika::this_thread::yield();
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
-        else
-        {
-            t1.request_stop();
-        }
+        else { t1.request_stop(); }
     }    // leave scope of t1 without join() or detach() (signals cancellation)
 }
 
@@ -410,10 +386,7 @@ void test_timed_wait(bool call_notify, bool call_interrupt, Dur dur)
                     {
                         std::unique_lock<pika::mutex> lg{ready_mtx};
                         auto ret = ready_cv.wait_for(lg, st, dur, [&ready_] { return ready_; });
-                        if (st.stop_requested())
-                        {
-                            throw "interrupted";
-                        }
+                        if (st.stop_requested()) { throw "interrupted"; }
                         if (dur > std::chrono::seconds(5))
                         {
                             PIKA_TEST(std::chrono::steady_clock::now() < t0 + dur);
@@ -434,10 +407,7 @@ void test_timed_wait(bool call_notify, bool call_interrupt, Dur dur)
                         PIKA_TEST(!ready_);
                         PIKA_TEST(!call_notify);
                         ++times_done;
-                        if (times_done >= 3)
-                        {
-                            return;
-                        }
+                        if (times_done >= 3) { return; }
                     }
                     catch (...)
                     {
@@ -552,10 +522,7 @@ void test_many_cvs(bool call_notify, bool call_interrupt)
                     }    // release lock
                 }
             }
-            else if (call_interrupt)
-            {
-                t0.request_stop();
-            }
+            else if (call_interrupt) { t0.request_stop(); }
             else
             {
                 // Move ownership of the threads to a scope that will

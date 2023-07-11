@@ -45,8 +45,7 @@ namespace test {
         template <typename Iterator>
         typename std::iterator_traits<Iterator>::reference operator()(Iterator const& it) const
         {
-            if (it == begin_)
-                return *value_;
+            if (it == begin_) return *value_;
             return *test::previous(it);
         }
 
@@ -78,8 +77,7 @@ namespace test {
         template <typename Iterator>
         typename std::iterator_traits<Iterator>::reference operator()(Iterator const& it) const
         {
-            if (it == end_)
-                return *value_;
+            if (it == end_) return *value_;
             return *test::next(it);
         }
 

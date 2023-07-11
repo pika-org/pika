@@ -51,10 +51,7 @@ void test_tss_thread(pika::lcos::local::promise<void> p)
     for (int i = 0; i < 1000; ++i)
     {
         int& n = tss_value->value;
-        if (n != i)
-        {
-            PIKA_TEST_EQ(n, i);
-        }
+        if (n != i) { PIKA_TEST_EQ(n, i); }
         ++n;
     }
 }
@@ -98,10 +95,7 @@ void tss_custom_cleanup(Dummy* d)
 
 pika::threads::detail::thread_specific_ptr<Dummy> tss_with_cleanup(&tss_custom_cleanup);
 
-void tss_thread_with_custom_cleanup()
-{
-    tss_with_cleanup.reset(new Dummy);
-}
+void tss_thread_with_custom_cleanup() { tss_with_cleanup.reset(new Dummy); }
 
 void test_tss_with_custom_cleanup()
 {
@@ -135,10 +129,7 @@ void test_tss_does_no_cleanup_after_release()
     t.join();
 
     PIKA_TEST(!tss_cleanup_called);
-    if (!tss_cleanup_called)
-    {
-        delete tss_object;
-    }
+    if (!tss_cleanup_called) { delete tss_object; }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -146,10 +137,7 @@ struct dummy_class_tracks_deletions
 {
     static unsigned deletions;
 
-    ~dummy_class_tracks_deletions()
-    {
-        ++deletions;
-    }
+    ~dummy_class_tracks_deletions() { ++deletions; }
 };
 
 unsigned dummy_class_tracks_deletions::deletions = 0;
@@ -169,10 +157,7 @@ void test_tss_does_no_cleanup_with_null_cleanup_function()
     t.join();
 
     PIKA_TEST(!dummy_class_tracks_deletions::deletions);
-    if (!dummy_class_tracks_deletions::deletions)
-    {
-        delete delete_tracker;
-    }
+    if (!dummy_class_tracks_deletions::deletions) { delete delete_tracker; }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

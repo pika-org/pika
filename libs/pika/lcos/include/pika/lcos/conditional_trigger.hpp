@@ -38,16 +38,12 @@ namespace pika::lcos::local {
             return f;
         }
 
-        void reset()
-        {
-            cond_.reset();
-        }
+        void reset() { cond_.reset(); }
 
         /// \brief Trigger this object.
         bool set(error_code& ec = throws)
         {
-            if (&ec != &throws)
-                ec = make_success_code();
+            if (&ec != &throws) ec = make_success_code();
 
             // trigger this object
             if (cond_ && cond_())

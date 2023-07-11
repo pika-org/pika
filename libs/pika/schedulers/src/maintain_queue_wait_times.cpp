@@ -17,9 +17,6 @@ namespace pika::threads::detail {
         maintain_queue_wait_times_enabled = enabled;
     }
 
-    bool get_maintain_queue_wait_times_enabled()
-    {
-        return maintain_queue_wait_times_enabled;
-    }
+    bool get_maintain_queue_wait_times_enabled() { return maintain_queue_wait_times_enabled; }
 #endif
 }    // namespace pika::threads::detail

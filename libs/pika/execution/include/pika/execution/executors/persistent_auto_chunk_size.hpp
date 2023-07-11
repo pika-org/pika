@@ -78,10 +78,7 @@ namespace pika::execution {
         get_chunk_size(Executor& /* exec */, F&& f, std::size_t cores, std::size_t count)
         {
             // by default use 1% of the iterations
-            if (num_iters_for_timing_ == 0)
-            {
-                num_iters_for_timing_ = count / 100;
-            }
+            if (num_iters_for_timing_ == 0) { num_iters_for_timing_ = count / 100; }
 
             // perform measurements only if necessary
             if (num_iters_for_timing_ > 0)
@@ -100,10 +97,7 @@ namespace pika::execution {
                         dur = (steady_clock::now() - t) / test_chunk_size;
                         chunk_size_time_ = dur;
                     }
-                    else
-                    {
-                        dur = chunk_size_time_;
-                    }
+                    else { dur = chunk_size_time_; }
 
                     if (dur != zero_duration && min_time_ >= dur)
                     {

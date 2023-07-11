@@ -49,10 +49,7 @@ namespace pika::util::detail {
         other.object = nullptr;
     }
 
-    function_base::~function_base()
-    {
-        destroy();
-    }
+    function_base::~function_base() { destroy(); }
 
     void function_base::op_assign(function_base const& other, vtable const* /* empty_vtable */)
     {
@@ -74,10 +71,7 @@ namespace pika::util::detail {
                 object = vptr->copy(
                     storage, detail::function_storage_size, other.object, /*destroy*/ false);
             }
-            else
-            {
-                object = nullptr;
-            }
+            else { object = nullptr; }
         }
     }
 
@@ -111,10 +105,8 @@ namespace pika::util::detail {
         std::swap(vptr, f.vptr);
         std::swap(object, f.object);
         std::swap(storage, f.storage);
-        if (object == &f.storage)
-            object = &storage;
-        if (f.object == &storage)
-            f.object = &f.storage;
+        if (object == &f.storage) object = &storage;
+        if (f.object == &storage) f.object = &f.storage;
     }
 
     std::size_t function_base::get_function_address() const

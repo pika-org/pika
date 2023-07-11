@@ -66,24 +66,14 @@ public:
     {
     }
 
-    ~test_allocator() noexcept
-    {
-        data_ = 0;
-    }
+    ~test_allocator() noexcept { data_ = 0; }
 
-    pointer address(reference x) const
-    {
-        return &x;
-    }
-    const_pointer address(const_reference x) const
-    {
-        return &x;
-    }
+    pointer address(reference x) const { return &x; }
+    const_pointer address(const_reference x) const { return &x; }
 
     pointer allocate(size_type n, const void* = nullptr)
     {
-        if (count >= throw_after)
-            throw std::bad_alloc();
+        if (count >= throw_after) throw std::bad_alloc();
         ++count;
         return static_cast<pointer>(std::malloc(n * sizeof(T)));
     }
@@ -94,10 +84,7 @@ public:
         std::free(p);
     }
 
-    size_type max_size() const noexcept
-    {
-        return UINT_MAX / sizeof(T);
-    }
+    size_type max_size() const noexcept { return UINT_MAX / sizeof(T); }
 
     template <typename U, typename... Ts>
     void construct(U* p, Ts&&... ts)
@@ -105,19 +92,13 @@ public:
         ::new ((void*) p) T(std::forward<Ts>(ts)...);
     }
 
-    void destroy(pointer p)
-    {
-        p->~T();
-    }
+    void destroy(pointer p) { p->~T(); }
 
     friend bool operator==(test_allocator const& x, test_allocator const& y)
     {
         return x.data_ == y.data_;
     }
-    friend bool operator!=(test_allocator const& x, test_allocator const& y)
-    {
-        return !(x == y);
-    }
+    friend bool operator!=(test_allocator const& x, test_allocator const& y) { return !(x == y); }
 };
 
 template <>
@@ -162,17 +143,11 @@ public:
     {
     }
 
-    ~test_allocator() noexcept
-    {
-        data_ = 0;
-    }
+    ~test_allocator() noexcept { data_ = 0; }
 
     friend bool operator==(test_allocator const& x, test_allocator const& y)
     {
         return x.data_ == y.data_;
     }
-    friend bool operator!=(test_allocator const& x, test_allocator const& y)
-    {
-        return !(x == y);
-    }
+    friend bool operator!=(test_allocator const& x, test_allocator const& y) { return !(x == y); }
 };

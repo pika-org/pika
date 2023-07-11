@@ -20,10 +20,8 @@ std::string mapper(std::string env_var)
     std::transform(
         env_var.begin(), env_var.end(), env_var.begin(), [](char c) { return std::toupper(c); });
 
-    if (env_var == "PATH")
-        return "path";
-    if (env_var == "EXAMPLE_VERBOSE")
-        return "verbosity";
+    if (env_var == "PATH") return "path";
+    if (env_var == "EXAMPLE_VERBOSE") return "verbosity";
 
     return "";
 }

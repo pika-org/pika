@@ -90,10 +90,7 @@ namespace pika::detail {
             }
 
 # if defined(PIKA_HAVE_THREAD_DESCRIPTION_FULL)
-            if (altname != nullptr)
-            {
-                data_.desc_ = altname;
-            }
+            if (altname != nullptr) { data_.desc_ = altname; }
             else
             {
                 type_ = data_type_address;
@@ -104,17 +101,11 @@ namespace pika::detail {
 # endif
 
 # if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
-            if (!desc_itt_)
-            {
-                desc_itt_ = util::itt::string_handle(get_description());
-            }
+            if (!desc_itt_) { desc_itt_ = util::itt::string_handle(get_description()); }
 # endif
         }
 
-        constexpr data_type kind() const noexcept
-        {
-            return type_;
-        }
+        constexpr data_type kind() const noexcept { return type_; }
 
         char const* get_description() const noexcept
         {
@@ -136,12 +127,8 @@ namespace pika::detail {
             case data_type_description:
                 return util::itt::task(domain, get_description_itt());
                 break;
-            case data_type_address:
-                return util::itt::task(domain, "address", get_address());
-                break;
-            default:
-                PIKA_ASSERT(false);
-                break;
+            case data_type_address: return util::itt::task(domain, "address", get_address()); break;
+            default: PIKA_ASSERT(false); break;
             }
 
             return util::itt::task(domain, "<error>");
@@ -154,15 +141,11 @@ namespace pika::detail {
             return data_.addr_;
         }
 
-        explicit operator bool() const noexcept
-        {
-            return valid();
-        }
+        explicit operator bool() const noexcept { return valid(); }
 
         bool valid() const noexcept
         {
-            if (type_ == data_type_description)
-                return nullptr != data_.desc_;
+            if (type_ == data_type_description) return nullptr != data_.desc_;
 
             PIKA_ASSERT(type_ == data_type_address);
             return 0 != data_.addr_;
@@ -195,15 +178,9 @@ namespace pika::detail {
         {
         }
 
-        constexpr data_type kind() const noexcept
-        {
-            return data_type_description;
-        }
+        constexpr data_type kind() const noexcept { return data_type_description; }
 
-        constexpr char const* get_description() const noexcept
-        {
-            return "<unknown>";
-        }
+        constexpr char const* get_description() const noexcept { return "<unknown>"; }
 
 # if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
         util::itt::string_handle get_description_itt() const noexcept
@@ -219,32 +196,19 @@ namespace pika::detail {
             case data_type_description:
                 return util::itt::task(domain, get_description_itt());
                 break;
-            case data_type_address:
-                return util::itt::task(domain, "address", get_address());
-                break;
-            default:
-                PIKA_ASSERT(false);
-                break;
+            case data_type_address: return util::itt::task(domain, "address", get_address()); break;
+            default: PIKA_ASSERT(false); break;
             }
 
             return util::itt::task(domain, "<error>");
         }
 # endif
 
-        constexpr std::size_t get_address() const noexcept
-        {
-            return 0;
-        }
+        constexpr std::size_t get_address() const noexcept { return 0; }
 
-        explicit constexpr operator bool() const noexcept
-        {
-            return valid();
-        }
+        explicit constexpr operator bool() const noexcept { return valid(); }
 
-        constexpr bool valid() const noexcept
-        {
-            return true;
-        }
+        constexpr bool valid() const noexcept { return true; }
     };
 #endif
 

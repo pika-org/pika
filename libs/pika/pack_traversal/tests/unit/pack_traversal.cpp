@@ -177,15 +177,9 @@ struct my_allocator
         using other = my_allocator<O>;
     };
 
-    pointer allocate(size_type n, void const* = nullptr)
-    {
-        return std::allocator<T>{}.allocate(n);
-    }
+    pointer allocate(size_type n, void const* = nullptr) { return std::allocator<T>{}.allocate(n); }
 
-    void deallocate(pointer p, size_type n)
-    {
-        return std::allocator<T>{}.deallocate(p, n);
-    }
+    void deallocate(pointer p, size_type n) { return std::allocator<T>{}.deallocate(p, n); }
 };
 
 static void test_mixed_container_remap()
@@ -240,10 +234,7 @@ struct mytester
 {
     using traversor_type = mytester;
 
-    int operator()(int)
-    {
-        return 0;
-    }
+    int operator()(int) { return 0; }
 };
 
 struct my_int_mapper
@@ -311,33 +302,18 @@ public:
     {
     }
 
-    void operator()(test_tag_1)
-    {
-        ++counter_.get();
-    }
+    void operator()(test_tag_1) { ++counter_.get(); }
 };
 
 struct tag_shift_mapper
 {
-    test_tag_2 operator()(test_tag_1) const
-    {
-        return {};
-    }
+    test_tag_2 operator()(test_tag_1) const { return {}; }
 
-    test_tag_3 operator()(test_tag_2) const
-    {
-        return {};
-    }
+    test_tag_3 operator()(test_tag_2) const { return {}; }
 
-    test_tag_1 operator()(test_tag_3) const
-    {
-        return {};
-    }
+    test_tag_1 operator()(test_tag_3) const { return {}; }
 
-    float operator()(int) const
-    {
-        return 0.f;
-    }
+    float operator()(int) const { return 0.f; }
 };
 
 class counter_mapper_rejecting_non_tag_1_sfinae

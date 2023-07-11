@@ -15,10 +15,7 @@
 int const num_threads = 10;
 
 ///////////////////////////////////////////////////////////////////////////////
-void wait_for_latch(pika::latch& l)
-{
-    l.arrive_and_wait();
-}
+void wait_for_latch(pika::latch& l) { l.arrive_and_wait(); }
 
 int pika_main()
 {
@@ -53,7 +50,4 @@ int pika_main()
     return pika::finalize();
 }
 
-int main(int argc, char* argv[])
-{
-    return pika::init(pika_main, argc, argv);
-}
+int main(int argc, char* argv[]) { return pika::init(pika_main, argc, argv); }

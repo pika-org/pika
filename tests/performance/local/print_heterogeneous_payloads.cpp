@@ -35,8 +35,7 @@ std::uint64_t seed = 0;
 ///////////////////////////////////////////////////////////////////////////////
 std::uint64_t shuffler(std::mt19937_64& prng, std::uint64_t high)
 {
-    if (high == 0)
-        throw std::logic_error("high value was 0");
+    if (high == 0) throw std::logic_error("high value was 0");
 
     // Our range is [0, x).
     std::uniform_int_distribution<std::uint64_t> dist(0, high - 1);
@@ -49,13 +48,11 @@ int app_main(variables_map&)
 {
     ///////////////////////////////////////////////////////////////////////
     // Initialize the PRNG seed.
-    if (!seed)
-        seed = std::uint64_t(std::time(nullptr));
+    if (!seed) seed = std::uint64_t(std::time(nullptr));
 
     ///////////////////////////////////////////////////////////////////////
     // Validate command-line arguments.
-    if (0 == tasks)
-        throw std::invalid_argument("count of 0 tasks specified\n");
+    if (0 == tasks) throw std::invalid_argument("count of 0 tasks specified\n");
 
     if (min_delay > max_delay)
         throw std::invalid_argument("minimum delay cannot be larger than maximum delay\n");
@@ -105,11 +102,9 @@ int app_main(variables_map&)
 
         std::uint64_t const payload = dist(prng);
 
-        if (payload < min_delay)
-            throw std::logic_error("task delay is below minimum");
+        if (payload < min_delay) throw std::logic_error("task delay is below minimum");
 
-        if (payload > max_delay)
-            throw std::logic_error("task delay is above maximum");
+        if (payload > max_delay) throw std::logic_error("task delay is above maximum");
 
         current_sum += payload;
         payloads.push_back(payload);
@@ -122,15 +117,12 @@ int app_main(variables_map&)
 
     ///////////////////////////////////////////////////////////////////////
     // Validate the payloads.
-    if (payloads.size() != tasks)
-        throw std::logic_error("incorrect number of tasks generated");
+    if (payloads.size() != tasks) throw std::logic_error("incorrect number of tasks generated");
 
     std::uint64_t const payloads_sum = std::accumulate(payloads.begin(), payloads.end(), 0ULL);
-    if (payloads_sum != total_delay)
-        throw std::logic_error("incorrect total delay generated");
+    if (payloads_sum != total_delay) throw std::logic_error("incorrect total delay generated");
 
-    for (std::size_t i = 0; i < payloads.size(); ++i)
-        std::cout << payloads[i] << "\n";
+    for (std::size_t i = 0; i < payloads.size(); ++i) std::cout << payloads[i] << "\n";
 
     return 0;
 }

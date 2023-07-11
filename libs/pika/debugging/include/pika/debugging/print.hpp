@@ -57,10 +57,7 @@
 // when debugging is disabled
 #define PIKA_DETAIL_DP_LAZY(printer, Expr) printer.eval([&] { return Expr; })
 #define PIKA_DETAIL_DP(printer, Expr)                                                              \
- if constexpr (printer.is_enabled())                                                               \
- {                                                                                                 \
-  printer.Expr;                                                                                    \
- };
+ if constexpr (printer.is_enabled()) { printer.Expr; };
 
 #define PIKA_DETAIL_NS_DEBUG pika::debug::detail
 
@@ -361,23 +358,14 @@ namespace PIKA_DETAIL_NS_DEBUG {
             display("<SCO> ", prefix_, str<>(">> enter <<"), tempstream.str());
         }
 
-        ~scoped_var()
-        {
-            display("<SCO> ", prefix_, str<>("<< leave >>"), buffered_msg);
-        }
+        ~scoped_var() { display("<SCO> ", prefix_, str<>("<< leave >>"), buffered_msg); }
     };
 
     struct empty_timed_var
     {
-        constexpr bool trigger() const
-        {
-            return false;
-        }
+        constexpr bool trigger() const { return false; }
 
-        constexpr double elapsed() const
-        {
-            return 0;
-        }
+        constexpr double elapsed() const { return 0; }
     };
 
     template <typename... Args>
@@ -435,10 +423,7 @@ namespace PIKA_DETAIL_NS_DEBUG {
     {
         constexpr enable_print(const char*) {}
 
-        constexpr bool is_enabled() const
-        {
-            return false;
-        }
+        constexpr bool is_enabled() const { return false; }
 
         template <typename... Args>
         constexpr void debug(Args const&...) const
@@ -532,10 +517,7 @@ namespace PIKA_DETAIL_NS_DEBUG {
         {
         }
 
-        constexpr bool is_enabled() const
-        {
-            return true;
-        }
+        constexpr bool is_enabled() const { return true; }
 
         template <typename... Args>
         constexpr void debug(Args const&... args) const
@@ -570,10 +552,7 @@ namespace PIKA_DETAIL_NS_DEBUG {
         template <typename... T, typename... Args>
         void timed(timed_var<T...> const& init, Args const&... args) const
         {
-            if (init.trigger())
-            {
-                timed_impl(prefix_, init, args...);
-            }
+            if (init.trigger()) { timed_impl(prefix_, init, args...); }
         }
 
         template <typename T>

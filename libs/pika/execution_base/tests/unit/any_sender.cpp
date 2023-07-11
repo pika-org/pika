@@ -614,10 +614,7 @@ ex::any_sender<> global_any_sender{ex::just()};
 // started before being destructed.
 struct wait_globals
 {
-    ~wait_globals()
-    {
-        tt::sync_wait(std::move(global_any_sender));
-    }
+    ~wait_globals() { tt::sync_wait(std::move(global_any_sender)); }
 } waiter{};
 
 void test_globals()

@@ -123,11 +123,9 @@ namespace pika::threads::detail {
 
                 // ABA prevention for state only (not for state_ex)
                 std::int64_t tag = tmp.tag();
-                if (state != tmp.state())
-                    ++tag;
+                if (state != tmp.state()) ++tag;
 
-                if (state_ex == thread_restart_state::unknown)
-                    state_ex = tmp.state_ex();
+                if (state_ex == thread_restart_state::unknown) state_ex = tmp.state_ex();
 
                 if (PIKA_LIKELY(current_state_.compare_exchange_strong(
                         tmp, thread_state(state, state_ex, tag), exchange_order)))
@@ -182,8 +180,7 @@ namespace pika::threads::detail {
 
             // ABA prevention for state only (not for state_ex)
             std::int64_t tag = current_state.tag();
-            if (new_state.state() != old_state.state())
-                ++tag;
+            if (new_state.state() != old_state.state()) ++tag;
 
             thread_state old_tmp(old_state.state(), state_ex, old_state.tag());
             thread_state new_tmp(new_state.state(), state_ex, tag);
@@ -197,8 +194,7 @@ namespace pika::threads::detail {
         {
             // ABA prevention for state only (not for state_ex)
             std::int64_t tag = old_state.tag();
-            if (new_state != old_state.state())
-                ++tag;
+            if (new_state != old_state.state()) ++tag;
 
             return current_state_.compare_exchange_strong(
                 old_state, thread_state(new_state, state_ex, tag), load_exchange);
@@ -297,63 +293,33 @@ namespace pika::threads::detail {
         }
 
         /// Return the thread id of the parent thread
-        constexpr thread_id_type get_parent_thread_id() const noexcept
-        {
-            return invalid_thread_id;
-        }
+        constexpr thread_id_type get_parent_thread_id() const noexcept { return invalid_thread_id; }
 
         /// Return the phase of the parent thread
-        constexpr std::size_t get_parent_thread_phase() const noexcept
-        {
-            return 0;
-        }
+        constexpr std::size_t get_parent_thread_phase() const noexcept { return 0; }
 #else
         /// Return the locality of the parent thread
-        std::uint32_t get_parent_locality_id() const noexcept
-        {
-            return parent_locality_id_;
-        }
+        std::uint32_t get_parent_locality_id() const noexcept { return parent_locality_id_; }
 
         /// Return the thread id of the parent thread
-        thread_id_type get_parent_thread_id() const noexcept
-        {
-            return parent_thread_id_;
-        }
+        thread_id_type get_parent_thread_id() const noexcept { return parent_thread_id_; }
 
         /// Return the phase of the parent thread
-        std::size_t get_parent_thread_phase() const noexcept
-        {
-            return parent_thread_phase_;
-        }
+        std::size_t get_parent_thread_phase() const noexcept { return parent_thread_phase_; }
 #endif
 
 #ifdef PIKA_HAVE_THREAD_DEADLOCK_DETECTION
-        void set_marked_state(thread_schedule_state mark) const noexcept
-        {
-            marked_state_ = mark;
-        }
-        thread_schedule_state get_marked_state() const noexcept
-        {
-            return marked_state_;
-        }
+        void set_marked_state(thread_schedule_state mark) const noexcept { marked_state_ = mark; }
+        thread_schedule_state get_marked_state() const noexcept { return marked_state_; }
 #endif
 
 #if !defined(PIKA_HAVE_THREAD_BACKTRACE_ON_SUSPENSION)
 
 # ifdef PIKA_HAVE_THREAD_FULLBACKTRACE_ON_SUSPENSION
-        constexpr char const* get_backtrace() const noexcept
-        {
-            return nullptr;
-        }
-        char const* set_backtrace(char const*) noexcept
-        {
-            return nullptr;
-        }
+        constexpr char const* get_backtrace() const noexcept { return nullptr; }
+        char const* set_backtrace(char const*) noexcept { return nullptr; }
 # else
-        constexpr debug::detail::backtrace const* get_backtrace() const noexcept
-        {
-            return nullptr;
-        }
+        constexpr debug::detail::backtrace const* get_backtrace() const noexcept { return nullptr; }
         debug::detail::backtrace const* set_backtrace(debug::detail::backtrace const*) noexcept
         {
             return nullptr;
@@ -434,14 +400,8 @@ namespace pika::threads::detail {
             scoped_thread_priority& operator=(scoped_thread_priority const&) = delete;
         };
 
-        constexpr execution::thread_priority get_priority() const noexcept
-        {
-            return priority_;
-        }
-        void set_priority(execution::thread_priority priority) noexcept
-        {
-            priority_ = priority;
-        }
+        constexpr execution::thread_priority get_priority() const noexcept { return priority_; }
+        void set_priority(execution::thread_priority priority) noexcept { priority_ = priority; }
 
         // handle thread interruption
         bool interruption_requested() const noexcept
@@ -482,37 +442,22 @@ namespace pika::threads::detail {
         void run_thread_exit_callbacks();
         void free_thread_exit_callbacks();
 
-        PIKA_FORCEINLINE bool is_stackless() const noexcept
-        {
-            return is_stackless_;
-        }
+        PIKA_FORCEINLINE bool is_stackless() const noexcept { return is_stackless_; }
 
         void destroy_thread() override;
 
-        scheduler_base* get_scheduler_base() const noexcept
-        {
-            return scheduler_base_;
-        }
+        scheduler_base* get_scheduler_base() const noexcept { return scheduler_base_; }
 
-        std::size_t get_last_worker_thread_num() const noexcept
-        {
-            return last_worker_thread_num_;
-        }
+        std::size_t get_last_worker_thread_num() const noexcept { return last_worker_thread_num_; }
 
         void set_last_worker_thread_num(std::size_t last_worker_thread_num) noexcept
         {
             last_worker_thread_num_ = last_worker_thread_num;
         }
 
-        std::ptrdiff_t get_stack_size() const noexcept
-        {
-            return stacksize_;
-        }
+        std::ptrdiff_t get_stack_size() const noexcept { return stacksize_; }
 
-        execution::thread_stacksize get_stack_size_enum() const noexcept
-        {
-            return stacksize_enum_;
-        }
+        execution::thread_stacksize get_stack_size_enum() const noexcept { return stacksize_enum_; }
 
         template <typename ThreadQueue>
         ThreadQueue& get_queue() noexcept
@@ -535,10 +480,7 @@ namespace pika::threads::detail {
         }
 
 #if !defined(PIKA_HAVE_THREAD_PHASE_INFORMATION)
-        virtual std::size_t get_thread_phase() const noexcept
-        {
-            return 0;
-        }
+        virtual std::size_t get_thread_phase() const noexcept { return 0; }
 #else
         virtual std::size_t get_thread_phase() const noexcept = 0;
 #endif
@@ -712,10 +654,7 @@ namespace pika::threads::detail {
     PIKA_FORCEINLINE coroutine_type::result_type thread_data::operator()(
         pika::execution::this_thread::detail::agent_storage* agent_storage)
     {
-        if (is_stackless())
-        {
-            return static_cast<thread_data_stackless*>(this)->call();
-        }
+        if (is_stackless()) { return static_cast<thread_data_stackless*>(this)->call(); }
         return static_cast<thread_data_stackful*>(this)->call(agent_storage);
     }
 }    // namespace pika::threads::detail

@@ -99,8 +99,7 @@ void print_results(std::uint64_t cores, double walltime)
 ///////////////////////////////////////////////////////////////////////////////
 std::uint64_t shuffler(std::mt19937_64& prng, std::uint64_t high)
 {
-    if (high == 0)
-        throw std::logic_error("high value was 0");
+    if (high == 0) throw std::logic_error("high value was 0");
 
     // Our range is [0, x).
     std::uniform_int_distribution<std::uint64_t> dist(0, high - 1);
@@ -126,13 +125,11 @@ int qthreads_main(variables_map& vm)
     {
         ///////////////////////////////////////////////////////////////////////
         // Initialize the PRNG seed.
-        if (!seed)
-            seed = std::uint64_t(std::time(nullptr));
+        if (!seed) seed = std::uint64_t(std::time(nullptr));
 
         ///////////////////////////////////////////////////////////////////////
         // Validate command-line arguments.
-        if (0 == tasks)
-            throw std::invalid_argument("count of 0 tasks specified\n");
+        if (0 == tasks) throw std::invalid_argument("count of 0 tasks specified\n");
 
         if (min_delay > max_delay)
             throw std::invalid_argument("minimum delay cannot be larger than maximum delay\n");
@@ -184,11 +181,9 @@ int qthreads_main(variables_map& vm)
 
             std::uint64_t const payload = dist(prng);
 
-            if (payload < min_delay)
-                throw std::logic_error("task delay is below minimum");
+            if (payload < min_delay) throw std::logic_error("task delay is below minimum");
 
-            if (payload > max_delay)
-                throw std::logic_error("task delay is above maximum");
+            if (payload > max_delay) throw std::logic_error("task delay is above maximum");
 
             current_sum += payload;
             payloads.push_back(payload);
@@ -201,12 +196,10 @@ int qthreads_main(variables_map& vm)
 
         ///////////////////////////////////////////////////////////////////////
         // Validate the payloads.
-        if (payloads.size() != tasks)
-            throw std::logic_error("incorrect number of tasks generated");
+        if (payloads.size() != tasks) throw std::logic_error("incorrect number of tasks generated");
 
         std::uint64_t const payloads_sum = std::accumulate(payloads.begin(), payloads.end(), 0LLU);
-        if (payloads_sum != total_delay)
-            throw std::logic_error("incorrect total delay generated");
+        if (payloads_sum != total_delay) throw std::logic_error("incorrect total delay generated");
 
         ///////////////////////////////////////////////////////////////////////
         // Start the clock.
@@ -222,8 +215,7 @@ int qthreads_main(variables_map& vm)
 
         ///////////////////////////////////////////////////////////////////////
         // Wait for the work to finish.
-        do
-        {
+        do {
             // Yield until all our null qthreads are done.
             qthread_yield();
         } while (donecount != tasks);
@@ -281,8 +273,7 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    if (vm.count("no-header"))
-        header = false;
+    if (vm.count("no-header")) header = false;
 
     // Set qthreads environment variables.
     std::string const shepherds = std::to_string(vm["shepherds"].as<std::uint64_t>());
@@ -292,8 +283,7 @@ int main(int argc, char* argv[])
     setenv("QT_NUM_WORKERS_PER_SHEPHERD", workers.c_str(), 1);
 
     // Setup the qthreads environment.
-    if (qthread_initialize() != 0)
-        throw std::runtime_error("qthreads failed to initialize\n");
+    if (qthread_initialize() != 0) throw std::runtime_error("qthreads failed to initialize\n");
 
     return qthreads_main(vm);
 }

@@ -54,20 +54,17 @@ namespace pika::program_options {
                 auto const& opts = options.options[i];
                 option_name = opts.string_key;
                 // Skip positional options without name
-                if (option_name.empty())
-                    continue;
+                if (option_name.empty()) continue;
 
                 // Ignore unregistered option. The 'unregistered'
                 // field can be true only if user has explicitly asked
                 // to allow unregistered options. We can't store them
                 // to variables map (lacking any information about paring),
                 // so just ignore them.
-                if (opts.unregistered)
-                    continue;
+                if (opts.unregistered) continue;
 
                 // If option has final value, skip this assignment
-                if (xm.m_final.count(option_name))
-                    continue;
+                if (xm.m_final.count(option_name)) continue;
 
                 original_token = !opts.original_tokens.empty() ? opts.original_tokens[0] : "";
                 const option_description& d = desc.find(option_name, false, false, false);
@@ -88,8 +85,7 @@ namespace pika::program_options {
                 // calls to 'store'. We store this to a temporary set,
                 // so that several assignment inside *this* 'store' call
                 // are allowed.
-                if (!d.semantic()->is_composing())
-                    new_final.insert(option_name);
+                if (!d.semantic()->is_composing()) new_final.insert(option_name);
             }
         }
         catch (error_with_option_name& e)
@@ -112,10 +108,7 @@ namespace pika::program_options {
             // The 'key' is empty if options description contains '*'.
             // In that
             // case, default value makes no sense at all.
-            if (key.empty())
-            {
-                continue;
-            }
+            if (key.empty()) { continue; }
             if (m.count(key) == 0)
             {
                 std::any def;
@@ -145,10 +138,7 @@ namespace pika::program_options {
         store(options.utf8_encoded_options, m, true);
     }
 
-    void notify(variables_map& vm)
-    {
-        vm.notify();
-    }
+    void notify(variables_map& vm) { vm.notify(); }
 
     abstract_variables_map::abstract_variables_map()
       : m_next(nullptr)
@@ -173,16 +163,10 @@ namespace pika::program_options {
             else
                 return v;
         }
-        else
-        {
-            return v;
-        }
+        else { return v; }
     }
 
-    void abstract_variables_map::next(abstract_variables_map* next)
-    {
-        m_next = next;
-    }
+    void abstract_variables_map::next(abstract_variables_map* next) { m_next = next; }
 
     variables_map::variables_map() {}
 
@@ -216,10 +200,7 @@ namespace pika::program_options {
             const string& opt = r->first;
             const string& display_opt = r->second;
             map<string, variable_value>::const_iterator iter = find(opt);
-            if (iter == end() || iter->second.empty())
-            {
-                throw required_option(display_opt);
-            }
+            if (iter == end() || iter->second.empty()) { throw required_option(display_opt); }
         }
 
         // Lastly, run notify actions.
@@ -233,8 +214,7 @@ namespace pika::program_options {
                not nullptr. See:
                    https://svn.boost.org/trac/boost/ticket/2782
             */
-            if (k.second.m_value_semantic)
-                k.second.m_value_semantic->notify(k.second.value());
+            if (k.second.m_value_semantic) k.second.m_value_semantic->notify(k.second.value());
         }
     }
 

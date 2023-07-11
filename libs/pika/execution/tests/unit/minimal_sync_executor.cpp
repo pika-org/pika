@@ -30,10 +30,7 @@ pika::thread::id sync_test(int passed_through)
     return pika::this_thread::get_id();
 }
 
-void sync_test_void(int passed_through)
-{
-    PIKA_TEST_EQ(passed_through, 42);
-}
+void sync_test_void(int passed_through) { PIKA_TEST_EQ(passed_through, 42); }
 
 pika::thread::id sync_bulk_test(int, pika::thread::id tid,
     int passed_through)    //-V813
@@ -135,16 +132,10 @@ void test_bulk_sync(Executor& exec)
 
     std::vector<pika::thread::id> ids = pika::parallel::execution::bulk_sync_execute(
         exec, pika::util::detail::bind(&sync_bulk_test, _1, tid, _2), v, 42);
-    for (auto const& id : ids)
-    {
-        PIKA_TEST_EQ(id, pika::this_thread::get_id());
-    }
+    for (auto const& id : ids) { PIKA_TEST_EQ(id, pika::this_thread::get_id()); }
 
     ids = pika::parallel::execution::bulk_sync_execute(exec, &sync_bulk_test, v, tid, 42);
-    for (auto const& id : ids)
-    {
-        PIKA_TEST_EQ(id, pika::this_thread::get_id());
-    }
+    for (auto const& id : ids) { PIKA_TEST_EQ(id, pika::this_thread::get_id()); }
 
     pika::parallel::execution::bulk_sync_execute(
         exec, pika::util::detail::bind(&sync_bulk_test_void, _1, tid, _2), v, 42);
@@ -190,10 +181,7 @@ void test_bulk_then(Executor& exec)
     std::vector<pika::thread::id> tids =
         pika::parallel::execution::bulk_then_execute(exec, &then_bulk_test, v, f, tid, 42).get();
 
-    for (auto const& tid : tids)
-    {
-        PIKA_TEST_EQ(tid, pika::this_thread::get_id());
-    }
+    for (auto const& tid : tids) { PIKA_TEST_EQ(tid, pika::this_thread::get_id()); }
 
     pika::parallel::execution::bulk_then_execute(exec, &then_bulk_test_void, v, f, tid, 42).get();
 }
@@ -269,10 +257,7 @@ struct test_sync_executor2 : test_sync_executor1
     template <typename F, typename Shape, typename... Ts>
     static void call(std::true_type, F&& f, Shape const& shape, Ts&&... ts)
     {
-        for (auto const& elem : shape)
-        {
-            pika::util::detail::invoke(f, elem, ts...);
-        }
+        for (auto const& elem : shape) { pika::util::detail::invoke(f, elem, ts...); }
     }
 
     template <typename F, typename Shape, typename... Ts>

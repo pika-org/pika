@@ -38,10 +38,7 @@ void test_wait_some()
         int count = 0;
         for (auto& f : future_array)
         {
-            if (f.is_ready())
-            {
-                ++count;
-            }
+            if (f.is_ready()) { ++count; }
         }
         PIKA_TEST_NEQ(count, 0);
     }
@@ -66,10 +63,7 @@ void test_wait_some()
             int count = 0;
             for (auto& f : future_array)
             {
-                if (f.is_ready())
-                {
-                    ++count;
-                }
+                if (f.is_ready()) { ++count; }
             }
             PIKA_TEST_NEQ(count, 0);
         }
@@ -139,10 +133,7 @@ void test_wait_some_n()
         int count = 0;
         for (auto& f : future_array)
         {
-            if (f.is_ready())
-            {
-                ++count;
-            }
+            if (f.is_ready()) { ++count; }
         }
         PIKA_TEST_NEQ(count, 0);
     }
@@ -159,10 +150,7 @@ void test_wait_some_n()
             int count = 0;
             for (auto& f : future_array)
             {
-                if (f.is_ready())
-                {
-                    ++count;
-                }
+                if (f.is_ready()) { ++count; }
             }
             PIKA_TEST_NEQ(count, 0);
         }

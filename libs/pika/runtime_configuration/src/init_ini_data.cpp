@@ -56,8 +56,7 @@ namespace pika::util {
         if (nullptr != env)
         {
             std::filesystem::path inipath(env);
-            if (nullptr != file_suffix)
-                inipath /= std::filesystem::path(file_suffix);
+            if (nullptr != file_suffix) inipath /= std::filesystem::path(file_suffix);
 
             if (handle_ini_file(ini, inipath.string()))
             {
@@ -96,10 +95,7 @@ namespace pika::util {
                 std::string path = *it;
                 path += *jt;
                 bool result2 = handle_ini_file(ini, path + "/pika.ini");
-                if (result2)
-                {
-                    LBT_(info).format("loaded configuration: {}/pika.ini", path);
-                }
+                if (result2) { LBT_(info).format("loaded configuration: {}/pika.ini", path); }
                 result = result2 || result;
             }
         }
@@ -108,10 +104,7 @@ namespace pika::util {
         std::string cwd = std::filesystem::current_path().string() + "/.pika.ini";
         {
             bool result2 = handle_ini_file(ini, cwd);
-            if (result2)
-            {
-                LBT_(info).format("loaded configuration: {}", cwd);
-            }
+            if (result2) { LBT_(info).format("loaded configuration: {}", cwd); }
             result = result2 || result;
         }
 
@@ -122,10 +115,7 @@ namespace pika::util {
 #if !defined(PIKA_WINDOWS)    // /etc/pika.ini doesn't make sense for Windows
         {
             bool result2 = handle_ini_file(ini, "/etc/pika.ini");
-            if (result2)
-            {
-                LBT_(info).format("loaded configuration: /etc/pika.ini");
-            }
+            if (result2) { LBT_(info).format("loaded configuration: /etc/pika.ini"); }
             result = result2 || result;
         }
 #endif
@@ -147,10 +137,7 @@ namespace pika::util {
             else
             {
                 bool result2 = handle_ini_file(ini, pika_ini_file);
-                if (result2)
-                {
-                    LBT_(info).format("loaded configuration: {}", pika_ini_file);
-                }
+                if (result2) { LBT_(info).format("loaded configuration: {}", pika_ini_file); }
                 return result || result2;
             }
         }
@@ -171,8 +158,7 @@ namespace pika::util {
         boost::char_separator<char> sep(PIKA_INI_PATH_DELIMITER);
         tokenizer_type tok(ini_path, sep);
         tokenizer_type::iterator end = tok.end();
-        for (tokenizer_type::iterator it = tok.begin(); it != end; ++it)
-            ini_paths.push_back(*it);
+        for (tokenizer_type::iterator it = tok.begin(); it != end; ++it) ini_paths.push_back(*it);
 
         // have all path elements, now find ini files in there...
         std::vector<std::string>::iterator ini_end = ini_paths.end();
@@ -184,13 +170,11 @@ namespace pika::util {
                 std::filesystem::path this_path(*it);
 
                 std::error_code ec;
-                if (!std::filesystem::exists(this_path, ec) || ec)
-                    continue;
+                if (!std::filesystem::exists(this_path, ec) || ec) continue;
 
                 for (std::filesystem::directory_iterator dir(this_path); dir != nodir; ++dir)
                 {
-                    if (dir->path().extension() != ".ini")
-                        continue;
+                    if (dir->path().extension() != ".ini") continue;
 
                     // read and merge the ini file into the main ini hierarchy
                     try

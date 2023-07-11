@@ -31,8 +31,7 @@ namespace pika { namespace program_options {
 
         std::string::const_iterator i = input.begin(), e = input.end();
         for (; i != e; ++i)
-            if (!isspace((unsigned char) *i))
-                break;
+            if (!isspace((unsigned char) *i)) break;
 
         if (i != e)
         {
@@ -62,10 +61,7 @@ namespace pika { namespace program_options {
                     }
                     backslash_count = 0;
                 }
-                else if (*i == '\\')
-                {
-                    ++backslash_count;
-                }
+                else if (*i == '\\') { ++backslash_count; }
                 else
                 {
                     // Not quote or backslash. All accumulated backslashes should be
@@ -85,21 +81,16 @@ namespace pika { namespace program_options {
                             ;
                         --i;
                     }
-                    else
-                    {
-                        current += *i;
-                    }
+                    else { current += *i; }
                 }
             }
 
             // If we have trailing backslashes, add them
-            if (backslash_count)
-                current.append(backslash_count, '\\');
+            if (backslash_count) current.append(backslash_count, '\\');
 
             // If we have non-empty 'current' or we're still in quoted
             // section (even if 'current' is empty), add the last token.
-            if (!current.empty() || inside_quoted || empty_quote)
-                result.push_back(current);
+            if (!current.empty() || inside_quoted || empty_quote) result.push_back(current);
         }
         return result;
     }
@@ -108,8 +99,7 @@ namespace pika { namespace program_options {
     {
         std::vector<std::wstring> result;
         std::vector<std::string> aux = split_winmain(to_internal(cmdline));
-        for (const auto& i : aux)
-            result.push_back(from_utf8(i));
+        for (const auto& i : aux) result.push_back(from_utf8(i));
         return result;
     }
 

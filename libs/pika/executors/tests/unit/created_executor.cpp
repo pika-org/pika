@@ -200,8 +200,7 @@ void sum_test()
 int pika_main(pika::program_options::variables_map& vm)
 {
     unsigned int seed = static_cast<unsigned int>(std::time(nullptr));
-    if (vm.count("seed"))
-        seed = vm["seed"].as<unsigned int>();
+    if (vm.count("seed")) seed = vm["seed"].as<unsigned int>();
 
     std::cout << "using seed: " << seed << std::endl;
     std::srand(seed);

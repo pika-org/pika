@@ -31,10 +31,7 @@ struct custom_bulk_operation
         PIKA_TEST_EQ(n, call_operator_count.load());
 
         call_operator_called = true;
-        if (n == 3 && throws)
-        {
-            throw std::runtime_error("error");
-        }
+        if (n == 3 && throws) { throw std::runtime_error("error"); }
         ++call_operator_count;
     }
 };
@@ -194,8 +191,7 @@ int main()
     {
         std::atomic<bool> set_error_called{false};
         auto s = ex::bulk(ex::just(), 10, [](int n) {
-            if (n == 3)
-                throw std::runtime_error("error");
+            if (n == 3) throw std::runtime_error("error");
         });
         auto r = error_callback_receiver<decltype(check_exception_ptr)>{
             check_exception_ptr, set_error_called};
@@ -208,8 +204,7 @@ int main()
         std::atomic<bool> set_error_called{false};
         auto s1 = ex::bulk(ex::just(0), 10, [](int, int x) { return ++x; });
         auto s2 = ex::bulk(std::move(s1), 10, [](int n, int x) {
-            if (n == 3)
-                throw std::runtime_error("error");
+            if (n == 3) throw std::runtime_error("error");
             return x + 1;
         });
         auto s3 = ex::bulk(std::move(s2), 10, [](int, int) { PIKA_TEST(false); });

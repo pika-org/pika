@@ -18,10 +18,7 @@ struct test_data
 {
     test_data() = default;
 
-    ~test_data()
-    {
-        data_deallocated = true;
-    }
+    ~test_data() { data_deallocated = true; }
 };
 
 void test()

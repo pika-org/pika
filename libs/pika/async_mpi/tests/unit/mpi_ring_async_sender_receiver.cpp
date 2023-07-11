@@ -90,10 +90,7 @@ struct message_buffer
 {
     header header_;
     //
-    std::uint32_t size()
-    {
-        return header_.size_;
-    }
+    std::uint32_t size() { return header_.size_; }
     //
     explicit message_buffer(header& h)
     {
@@ -103,10 +100,7 @@ struct message_buffer
 };
 
 // ------------------------------------------------------------
-inline std::uint32_t next_rank(std::uint32_t rank, std::uint32_t size)
-{
-    return (rank + 1) % size;
-}
+inline std::uint32_t next_rank(std::uint32_t rank, std::uint32_t size) { return (rank + 1) % size; }
 
 inline std::uint32_t prev_rank(std::uint32_t rank, std::uint32_t size)
 {
@@ -291,10 +285,7 @@ struct message_receiver
                     str<>("start_detached"), "rx_snd2", buf->header_.round, buf->header_.step);
                 ex::start_detached(std::move(rx_snd2));
             }
-            else
-            {
-                release_msg_buffer(buf);
-            }
+            else { release_msg_buffer(buf); }
 
             // prepare new send buffer for forwarding message on
             auto buf2 = get_msg_buffer(hcopy);
@@ -429,10 +420,7 @@ int pika_main(pika::program_options::variables_map& vm)
         }
 
         // don't exit until all messages are drained
-        while (counter > 0)
-        {
-            pika::this_thread::yield();
-        }
+        while (counter > 0) { pika::this_thread::yield(); }
         if (output)
         {
             using namespace pika::debug::detail;

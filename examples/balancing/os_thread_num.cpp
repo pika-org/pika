@@ -42,8 +42,7 @@ std::uint64_t num_iterations = 0;
 double delay()
 {
     double d = 0.;
-    for (std::uint64_t i = 0; i < num_iterations; ++i)
-        d += 1 / (2. * static_cast<double>(i) + 1);
+    for (std::uint64_t i = 0; i < num_iterations; ++i) d += 1 / (2. * static_cast<double>(i) + 1);
     return d;
 }
 
@@ -94,8 +93,7 @@ int pika_main(variables_map& vm)
 
             std::size_t shepherd = 0;
 
-            while (os_threads.pop(shepherd))
-                ++results[shepherd];
+            while (os_threads.pop(shepherd)) ++results[shepherd];
         }
 
         sorter sort;

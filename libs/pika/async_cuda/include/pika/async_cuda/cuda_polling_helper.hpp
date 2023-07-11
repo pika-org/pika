@@ -47,10 +47,7 @@ namespace pika::cuda::experimental {
             {
                 detail::unregister_polling(pika::resource::get_thread_pool(0));
             }
-            else
-            {
-                detail::unregister_polling(pika::resource::get_thread_pool(pool_name_));
-            }
+            else { detail::unregister_polling(pika::resource::get_thread_pool(pool_name_)); }
         }
 
     private:

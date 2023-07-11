@@ -82,14 +82,8 @@ int pika_main(int argc, char* argv[])
             {
                 pika::threads::detail::resume_processing_unit(tp, thread_num).get();
 
-                if (thread_num > 0)
-                {
-                    --thread_num;
-                }
-                else
-                {
-                    up = true;
-                }
+                if (thread_num > 0) { --thread_num; }
+                else { up = true; }
             }
         }
 
@@ -144,10 +138,7 @@ int main(int argc, char* argv[])
 #endif
         };
 
-        for (auto const scheduler : schedulers)
-        {
-            test_scheduler(argc, argv, scheduler);
-        }
+        for (auto const scheduler : schedulers) { test_scheduler(argc, argv, scheduler); }
     }
 
     {

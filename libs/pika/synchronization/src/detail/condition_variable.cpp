@@ -86,8 +86,7 @@ namespace pika::detail {
             return not_empty;
         }
 
-        if (&ec != &throws)
-            ec = make_success_code();
+        if (&ec != &throws) ec = make_success_code();
 
         return false;
     }
@@ -105,11 +104,9 @@ namespace pika::detail {
         if (!queue.empty())
         {
             // update reference to queue for all queue entries
-            for (queue_entry& qe : queue)
-                qe.q_ = &queue;
+            for (queue_entry& qe : queue) qe.q_ = &queue;
 
-            do
-            {
+            do {
                 auto ctx = queue.front().ctx_;
 
                 // remove item from queue before error handling
@@ -132,8 +129,7 @@ namespace pika::detail {
             } while (!queue.empty());
         }
 
-        if (&ec != &throws)
-            ec = make_success_code();
+        if (&ec != &throws) ec = make_success_code();
     }
 
     void condition_variable::abort_all(std::unique_lock<mutex_type> lock)
@@ -197,8 +193,7 @@ namespace pika::detail {
             queue.swap(queue_);
 
             // update reference to queue for all queue entries
-            for (queue_entry& qe : queue)
-                qe.q_ = &queue;
+            for (queue_entry& qe : queue) qe.q_ = &queue;
 
             while (!queue.empty())
             {
@@ -238,17 +233,11 @@ namespace pika::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    void intrusive_ptr_add_ref(condition_variable_data* p)
-    {
-        ++p->count_;
-    }
+    void intrusive_ptr_add_ref(condition_variable_data* p) { ++p->count_; }
 
     void intrusive_ptr_release(condition_variable_data* p)
     {
-        if (0 == --p->count_)
-        {
-            delete p;
-        }
+        if (0 == --p->count_) { delete p; }
     }
 
 }    // namespace pika::detail

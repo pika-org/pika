@@ -39,10 +39,7 @@ namespace pika::detail {
     void stop_callback_base::add_this_callback(stop_callback_base*& callbacks)
     {
         next_ = callbacks;
-        if (next_ != nullptr)
-        {
-            next_->prev_ = &next_;
-        }
+        if (next_ != nullptr) { next_->prev_ = &next_; }
         prev_ = &callbacks;
         callbacks = this;
     }
@@ -54,10 +51,7 @@ namespace pika::detail {
         {
             // Still registered, not yet executed: just remove from the list.
             *prev_ = next_;
-            if (next_ != nullptr)
-            {
-                next_->prev_ = prev_;
-            }
+            if (next_ != nullptr) { next_->prev_ = prev_; }
             return true;
         }
         return false;
@@ -89,8 +83,7 @@ namespace pika::detail {
     {
         std::uint64_t old_state = state_.load(std::memory_order_acquire);
 
-        if (stop_requested(old_state))
-            return false;
+        if (stop_requested(old_state)) return false;
 
         auto expected = old_state & ~stop_state::locked_flag;
         while (!state_.compare_exchange_weak(expected,
@@ -105,8 +98,7 @@ namespace pika::detail {
                     k, "stop_state::lock_and_request_stop");
                 old_state = state_.load(std::memory_order_acquire);
 
-                if (stop_requested(old_state))
-                    return false;
+                if (stop_requested(old_state)) return false;
             }
 
             expected = old_state & ~stop_state::locked_flag;
@@ -128,10 +120,7 @@ namespace pika::detail {
 
             return false;
         }
-        else if (!stop_possible(old_state))
-        {
-            return false;
-        }
+        else if (!stop_possible(old_state)) { return false; }
 
         auto expected = old_state & ~stop_state::locked_flag;
         while (!state_.compare_exchange_weak(expected, old_state | stop_state::locked_flag,
@@ -152,10 +141,7 @@ namespace pika::detail {
 
                     return false;
                 }
-                else if (!stop_possible(old_state))
-                {
-                    return false;
-                }
+                else if (!stop_possible(old_state)) { return false; }
             }
 
             expected = old_state & ~stop_state::locked_flag;
@@ -174,14 +160,10 @@ namespace pika::detail {
         }
         ~scoped_lock_if_not_stopped()
         {
-            if (has_lock_)
-                state_.unlock();
+            if (has_lock_) state_.unlock();
         }
 
-        explicit operator bool() const noexcept
-        {
-            return has_lock_;
-        }
+        explicit operator bool() const noexcept { return has_lock_; }
 
         stop_state& state_;
         bool has_lock_;
@@ -190,8 +172,7 @@ namespace pika::detail {
     bool stop_state::add_callback(stop_callback_base* cb) noexcept
     {
         scoped_lock_if_not_stopped l(*this, cb);
-        if (!l)
-            return false;
+        if (!l) return false;
 
         // Push callback onto callback list
         cb->add_this_callback(callbacks_);
@@ -203,10 +184,7 @@ namespace pika::detail {
     {
         {
             std::lock_guard<stop_state> l(*this);
-            if (cb->remove_this_callback())
-            {
-                return;
-            }
+            if (cb->remove_this_callback()) { return; }
         }
 
         // Callback has either already executed or is executing concurrently
@@ -243,14 +221,10 @@ namespace pika::detail {
         }
         ~scoped_lock_and_request_stop()
         {
-            if (has_lock_)
-                state_.unlock();
+            if (has_lock_) state_.unlock();
         }
 
-        explicit operator bool() const noexcept
-        {
-            return has_lock_;
-        }
+        explicit operator bool() const noexcept { return has_lock_; }
 
         stop_state& state_;
         bool has_lock_;
@@ -260,8 +234,7 @@ namespace pika::detail {
     {
         // Set the 'stop_requested' signal and acquired the lock.
         scoped_lock_and_request_stop l(*this);
-        if (!l)
-            return false;    // stop has already been requested.
+        if (!l) return false;    // stop has already been requested.
 
         PIKA_ASSERT(stop_requested(state_.load(std::memory_order_acquire)));
 
@@ -275,8 +248,7 @@ namespace pika::detail {
             callbacks_ = cb->next_;
 
             const bool more_callbacks = callbacks_ != nullptr;
-            if (more_callbacks)
-                callbacks_->prev_ = &callbacks_;
+            if (more_callbacks) callbacks_->prev_ = &callbacks_;
 
             // Mark this item as removed from the list.
             cb->prev_ = nullptr;

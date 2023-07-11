@@ -139,10 +139,7 @@ namespace pika::lcos::detail {
                 if (threads::detail::get_self_ptr() != nullptr)
                     target.set_id(threads::detail::get_self_id());
             }
-            ~reset_id()
-            {
-                target_.set_id(threads::detail::invalid_thread_id);
-            }
+            ~reset_id() { target_.set_id(threads::detail::invalid_thread_id); }
             continuation& target_;
         };
 
@@ -200,8 +197,7 @@ namespace pika::lcos::detail {
 
             run_impl(PIKA_MOVE(f));
 
-            if (&ec != &throws)
-                ec = make_success_code();
+            if (&ec != &throws) ec = make_success_code();
         }
 
         void run_nounwrap(
@@ -220,8 +216,7 @@ namespace pika::lcos::detail {
 
             run_impl_nounwrap(PIKA_MOVE(f));
 
-            if (&ec != &throws)
-                ec = make_success_code();
+            if (&ec != &throws) ec = make_success_code();
         }
 
     protected:
@@ -267,8 +262,7 @@ namespace pika::lcos::detail {
                         f = PIKA_MOVE(f)]() mutable -> void { this_->async_impl(PIKA_MOVE(f)); },
                 desc);
 
-            if (&ec != &throws)
-                ec = make_success_code();
+            if (&ec != &throws) ec = make_success_code();
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -296,27 +290,21 @@ namespace pika::lcos::detail {
                 },
                 desc);
 
-            if (&ec != &throws)
-                ec = make_success_code();
+            if (&ec != &throws) ec = make_success_code();
         }
 
         ///////////////////////////////////////////////////////////////////////
         // cancellation support
-        bool cancelable() const noexcept
-        {
-            return true;
-        }
+        bool cancelable() const noexcept { return true; }
 
         void cancel()
         {
             std::unique_lock<mutex_type> l(this->mtx_);
             pika::detail::try_catch_exception_ptr(
                 [&]() {
-                    if (!this->started_)
-                        PIKA_THROW_THREAD_INTERRUPTED_EXCEPTION();
+                    if (!this->started_) PIKA_THROW_THREAD_INTERRUPTED_EXCEPTION();
 
-                    if (this->is_ready())
-                        return;    // nothing we can do
+                    if (this->is_ready()) return;    // nothing we can do
 
                     if (id_ != threads::detail::invalid_thread_id)
                     {
@@ -373,10 +361,7 @@ namespace pika::lcos::detail {
                     {
                         this_->async(PIKA_MOVE(state), spawner);
                     }
-                    else
-                    {
-                        this_->run(PIKA_MOVE(state));
-                    }
+                    else { this_->run(PIKA_MOVE(state)); }
                 });
         }
 
@@ -406,10 +391,7 @@ namespace pika::lcos::detail {
                 {
                     this_->async(PIKA_MOVE(state), PIKA_MOVE(spawner));
                 }
-                else
-                {
-                    this_->run(PIKA_MOVE(state));
-                }
+                else { this_->run(PIKA_MOVE(state)); }
             });
         }
 
@@ -440,10 +422,7 @@ namespace pika::lcos::detail {
                     {
                         this_->async_nounwrap(PIKA_MOVE(state), spawner);
                     }
-                    else
-                    {
-                        this_->run_nounwrap(PIKA_MOVE(state));
-                    }
+                    else { this_->run_nounwrap(PIKA_MOVE(state)); }
                 });
         }
 
@@ -473,10 +452,7 @@ namespace pika::lcos::detail {
                 {
                     this_->async_nounwrap(PIKA_MOVE(state), PIKA_MOVE(spawner));
                 }
-                else
-                {
-                    this_->run_nounwrap(PIKA_MOVE(state));
-                }
+                else { this_->run_nounwrap(PIKA_MOVE(state)); }
             });
         }
 

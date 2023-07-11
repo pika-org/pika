@@ -18,8 +18,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 void test_yield()
 {
-    for (std::size_t i = 0; i != NUM_YIELD_TESTS; ++i)
-        pika::this_thread::yield();
+    for (std::size_t i = 0; i != NUM_YIELD_TESTS; ++i) pika::this_thread::yield();
 }
 
 int pika_main()
@@ -29,8 +28,7 @@ int pika_main()
     std::vector<pika::future<void>> finished;
     finished.reserve(num_cores);
 
-    for (std::size_t i = 0; i != num_cores; ++i)
-        finished.push_back(pika::async(&test_yield));
+    for (std::size_t i = 0; i != num_cores; ++i) finished.push_back(pika::async(&test_yield));
 
     pika::wait_all(finished);
 

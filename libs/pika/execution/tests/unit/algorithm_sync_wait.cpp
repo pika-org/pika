@@ -22,10 +22,7 @@ namespace tt = pika::this_thread::experimental;
 
 // NOTE: This is not a conforming sync_wait implementation. It only exists to
 // check that the tag_invoke overload is called.
-void tag_invoke(tt::sync_wait_t, custom_sender2 s)
-{
-    s.tag_invoke_overload_called = true;
-}
+void tag_invoke(tt::sync_wait_t, custom_sender2 s) { s.tag_invoke_overload_called = true; }
 
 int pika_main()
 {

@@ -89,8 +89,7 @@ namespace pika {
 
                 for (auto const& entry : entries)
                 {
-                    if (entry.first == tag)
-                        return entry.second;
+                    if (entry.first == tag) return entry.second;
                 }
 
                 return next ? next->lookup(tag) : nullptr;
@@ -219,8 +218,7 @@ namespace pika {
     {
         try
         {
-            if (p)
-                std::rethrow_exception(p);
+            if (p) std::rethrow_exception(p);
         }
         catch (exception_info const& xi)
         {

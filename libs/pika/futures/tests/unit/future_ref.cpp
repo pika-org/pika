@@ -13,10 +13,7 @@
 
 int global;
 
-int& foo()
-{
-    return global;
-}
+int& foo() { return global; }
 
 void test_make_ready_future()
 {

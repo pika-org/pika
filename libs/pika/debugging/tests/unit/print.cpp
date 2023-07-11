@@ -25,10 +25,7 @@ namespace pika {
     static pika::debug::detail::enable_print<false> p_disabled("PRINT  ");
 }    // namespace pika
 
-int increment(std::atomic<int>& counter)
-{
-    return ++counter;
-}
+int increment(std::atomic<int>& counter) { return ++counter; }
 
 int main()
 {
@@ -51,10 +48,7 @@ int main()
     PIKA_TEST_EQ(enabled_counter.load(), 2);
 
     // we do not expect the counter to increment
-    if (p_disabled.is_enabled())
-    {
-        p_disabled.debug("Increment", increment(disabled_counter));
-    }
+    if (p_disabled.is_enabled()) { p_disabled.debug("Increment", increment(disabled_counter)); }
     PIKA_TEST_EQ(disabled_counter.load(), 0);
 
     // we do not expect the counter to increment: PIKA_DETAIL_DP_LAZY will not be evaluated

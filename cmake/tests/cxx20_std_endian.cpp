@@ -10,12 +10,8 @@
 
 int main()
 {
-    if (std::endian::native == std::endian::big)
-    {
-    }
-    else if (std::endian::native == std::endian::little)
-    {
-    }
+    if (std::endian::native == std::endian::big) {}
+    else if (std::endian::native == std::endian::little) {}
 
     return 0;
 }

@@ -55,19 +55,13 @@ void test_scheduler(int argc, char* argv[], pika::resource::scheduling_policy sc
         pika::threads::detail::suspend_pool_cb(default_pool, [&suspended]() { suspended = true; });
 
         // NOLINTNEXTLINE(bugprone-infinite-loop)
-        while (!suspended)
-        {
-            std::this_thread::yield();
-        }
+        while (!suspended) { std::this_thread::yield(); }
 
         bool resumed = false;
         pika::threads::detail::resume_pool_cb(default_pool, [&resumed]() { resumed = true; });
 
         // NOLINTNEXTLINE(bugprone-infinite-loop)
-        while (!resumed)
-        {
-            std::this_thread::yield();
-        }
+        while (!resumed) { std::this_thread::yield(); }
     }
 
     pika::apply([]() { pika::finalize(); });
@@ -92,10 +86,7 @@ int main(int argc, char* argv[])
         pika::resource::scheduling_policy::shared_priority,
     };
 
-    for (auto const scheduler : schedulers)
-    {
-        test_scheduler(argc, argv, scheduler);
-    }
+    for (auto const scheduler : schedulers) { test_scheduler(argc, argv, scheduler); }
 
     return 0;
 }

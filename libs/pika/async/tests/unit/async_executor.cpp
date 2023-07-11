@@ -13,32 +13,20 @@
 #include <cstdint>
 
 ///////////////////////////////////////////////////////////////////////////////
-std::int32_t increment(std::int32_t i)
-{
-    return i + 1;
-}
+std::int32_t increment(std::int32_t i) { return i + 1; }
 
-std::int32_t increment_with_future(pika::shared_future<std::int32_t> fi)
-{
-    return fi.get() + 1;
-}
+std::int32_t increment_with_future(pika::shared_future<std::int32_t> fi) { return fi.get() + 1; }
 
 ///////////////////////////////////////////////////////////////////////////////
 struct mult2
 {
-    std::int32_t operator()(std::int32_t i) const
-    {
-        return i * 2;
-    }
+    std::int32_t operator()(std::int32_t i) const { return i * 2; }
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 struct decrement
 {
-    std::int32_t call(std::int32_t i) const
-    {
-        return i - 1;
-    }
+    std::int32_t call(std::int32_t i) const { return i - 1; }
 };
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -86,10 +86,7 @@ namespace pika {
                 return name_ ? name_ : typeid(f_).name();
             }
 
-            constexpr fun_type const& get_bound_function() const noexcept
-            {
-                return f_;
-            }
+            constexpr fun_type const& get_bound_function() const noexcept { return f_; }
 
         private:
             fun_type f_;

@@ -45,10 +45,7 @@ inline void* __aligned_alloc(std::size_t alignment, std::size_t size) noexcept
 }
 
 // NOLINTNEXTLINE(bugprone-reserved-identifier)
-inline void __aligned_free(void* p) noexcept
-{
-    std::free(p);
-}
+inline void __aligned_free(void* p) noexcept { std::free(p); }
 
 #elif defined(PIKA_HAVE_C11_ALIGNED_ALLOC)
 
@@ -61,10 +58,7 @@ inline void* __aligned_alloc(std::size_t alignment, std::size_t size) noexcept
 }
 
 // NOLINTNEXTLINE(bugprone-reserved-identifier)
-inline void __aligned_free(void* p) noexcept
-{
-    free(p);
-}
+inline void __aligned_free(void* p) noexcept { free(p); }
 
 #else    // !PIKA_HAVE_CXX17_STD_ALIGNED_ALLOC && !PIKA_HAVE_C11_ALIGNED_ALLOC
 
@@ -74,17 +68,11 @@ inline void __aligned_free(void* p) noexcept
 // NOLINTNEXTLINE(bugprone-reserved-identifier)
 inline void* __aligned_alloc(std::size_t alignment, std::size_t size) noexcept
 {
-    if (alignment < alignof(void*))
-    {
-        alignment = alignof(void*);
-    }
+    if (alignment < alignof(void*)) { alignment = alignof(void*); }
 
     std::size_t space = size + alignment - 1;
     void* allocated_mem = std::malloc(space + sizeof(void*));
-    if (allocated_mem == nullptr)
-    {
-        return nullptr;
-    }
+    if (allocated_mem == nullptr) { return nullptr; }
 
     void* aligned_mem = static_cast<void*>(static_cast<char*>(allocated_mem) + sizeof(void*));
 
@@ -97,10 +85,7 @@ inline void* __aligned_alloc(std::size_t alignment, std::size_t size) noexcept
 // NOLINTNEXTLINE(bugprone-reserved-identifier)
 inline void __aligned_free(void* p) noexcept
 {
-    if (nullptr != p)
-    {
-        std::free(*(static_cast<void**>(p) - 1));
-    }
+    if (nullptr != p) { std::free(*(static_cast<void**>(p) - 1)); }
 }
 
 #endif
@@ -137,37 +122,22 @@ namespace pika::detail {
         {
         }
 
-        pointer address(reference x) const noexcept
-        {
-            return &x;
-        }
+        pointer address(reference x) const noexcept { return &x; }
 
-        const_pointer address(const_reference x) const noexcept
-        {
-            return &x;
-        }
+        const_pointer address(const_reference x) const noexcept { return &x; }
 
         [[nodiscard]] pointer allocate(size_type n, void const* = nullptr)
         {
-            if (max_size() < n)
-            {
-                throw std::bad_array_new_length();
-            }
+            if (max_size() < n) { throw std::bad_array_new_length(); }
 
             pointer p = reinterpret_cast<pointer>(__aligned_alloc(alignof(T), n * sizeof(T)));
 
-            if (p == nullptr)
-            {
-                throw std::bad_alloc();
-            }
+            if (p == nullptr) { throw std::bad_alloc(); }
 
             return p;
         }
 
-        void deallocate(pointer p, size_type)
-        {
-            __aligned_free(p);
-        }
+        void deallocate(pointer p, size_type) { __aligned_free(p); }
 
         size_type max_size() const noexcept
         {

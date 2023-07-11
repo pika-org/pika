@@ -58,23 +58,14 @@ namespace pika::execution {
             parallel::execution::reset_thread_distribution(*this, exec);
 
             // use the given chunk size if given
-            if (chunk_size_ != 0)
-            {
-                return chunk_size_;
-            }
+            if (chunk_size_ != 0) { return chunk_size_; }
 
-            if (cores == 1)
-            {
-                return num_tasks;
-            }
+            if (cores == 1) { return num_tasks; }
 
             // Return a chunk size that is a power of two; and that leads to at
             // least 2 chunks per core, and at most 4 chunks per core.
             std::size_t chunk_size = 1;
-            while (chunk_size * cores * 4 < num_tasks)
-            {
-                chunk_size *= 2;
-            }
+            while (chunk_size * cores * 4 < num_tasks) { chunk_size *= 2; }
 
             return chunk_size;
         }

@@ -29,17 +29,11 @@
 namespace pika::threads::detail {
     static get_locality_id_type* get_locality_id_f;
 
-    void set_get_locality_id(get_locality_id_type* f)
-    {
-        get_locality_id_f = f;
-    }
+    void set_get_locality_id(get_locality_id_type* f) { get_locality_id_f = f; }
 
     std::uint32_t get_locality_id(pika::error_code& ec)
     {
-        if (get_locality_id_f)
-        {
-            return get_locality_id_f(ec);
-        }
+        if (get_locality_id_f) { return get_locality_id_f(ec); }
 
         // same as naming::invalid_locality_id
         return ~static_cast<std::uint32_t>(0);
@@ -92,8 +86,7 @@ namespace pika::threads::detail {
                 parent_thread_phase_ = self->get_thread_phase();
             }
         }
-        if (0 == parent_locality_id_)
-            parent_locality_id_ = get_locality_id(pika::throws);
+        if (0 == parent_locality_id_) parent_locality_id_ = get_locality_id(pika::throws);
 #endif
 #if defined(PIKA_HAVE_APEX)
         set_timer_data(init_data.timer_data);
@@ -122,8 +115,7 @@ namespace pika::threads::detail {
         {
             {
                 pika::detail::unlock_guard<std::unique_lock<pika::detail::spinlock>> ul(l);
-                if (!exit_funcs_.front().empty())
-                    exit_funcs_.front()();
+                if (!exit_funcs_.front().empty()) exit_funcs_.front()();
             }
             exit_funcs_.pop_front();
         }
@@ -234,10 +226,7 @@ namespace pika::threads::detail {
                 parent_thread_phase_ = self->get_thread_phase();
             }
         }
-        if (0 == parent_locality_id_)
-        {
-            parent_locality_id_ = get_locality_id(pika::throws);
-        }
+        if (0 == parent_locality_id_) { parent_locality_id_ = get_locality_id(pika::throws); }
 #endif
 #if defined(PIKA_HAVE_APEX)
         set_timer_data(init_data.timer_data);
@@ -256,16 +245,10 @@ namespace pika::threads::detail {
         return *p;
     }
 
-    thread_self* get_self_ptr()
-    {
-        return thread_self::get_self();
-    }
+    thread_self* get_self_ptr() { return thread_self::get_self(); }
 
     namespace detail {
-        void set_self_ptr(thread_self* self)
-        {
-            thread_self::set_self(self);
-        }
+        void set_self_ptr(thread_self* self) { thread_self::set_self(self); }
     }    // namespace detail
 
     thread_self::impl_type* get_ctx_ptr()
@@ -285,8 +268,7 @@ namespace pika::threads::detail {
             return nullptr;
         }
 
-        if (&ec != &throws)
-            ec = make_success_code();
+        if (&ec != &throws) ec = make_success_code();
 
         return p;
     }
@@ -294,8 +276,7 @@ namespace pika::threads::detail {
     thread_id_type get_self_id()
     {
         thread_self* self = get_self_ptr();
-        if (PIKA_LIKELY(nullptr != self))
-            return self->get_thread_id();
+        if (PIKA_LIKELY(nullptr != self)) return self->get_thread_id();
 
         return invalid_thread_id;
     }
@@ -303,8 +284,7 @@ namespace pika::threads::detail {
     thread_data* get_self_id_data()
     {
         thread_self* self = get_self_ptr();
-        if (PIKA_LIKELY(nullptr != self))
-            return get_thread_id_data(self->get_thread_id());
+        if (PIKA_LIKELY(nullptr != self)) return get_thread_id_data(self->get_thread_id());
 
         return nullptr;
     }
@@ -325,15 +305,9 @@ namespace pika::threads::detail {
     }
 
 #ifndef PIKA_HAVE_THREAD_PARENT_REFERENCE
-    thread_id_type get_parent_id()
-    {
-        return invalid_thread_id;
-    }
+    thread_id_type get_parent_id() { return invalid_thread_id; }
 
-    std::size_t get_parent_phase()
-    {
-        return 0;
-    }
+    std::size_t get_parent_phase() { return 0; }
 
     std::uint32_t get_parent_locality_id()
     {
@@ -344,30 +318,21 @@ namespace pika::threads::detail {
     thread_id_type get_parent_id()
     {
         thread_data* thrd_data = get_self_id_data();
-        if (PIKA_LIKELY(nullptr != thrd_data))
-        {
-            return thrd_data->get_parent_thread_id();
-        }
+        if (PIKA_LIKELY(nullptr != thrd_data)) { return thrd_data->get_parent_thread_id(); }
         return invalid_thread_id;
     }
 
     std::size_t get_parent_phase()
     {
         thread_data* thrd_data = get_self_id_data();
-        if (PIKA_LIKELY(nullptr != thrd_data))
-        {
-            return thrd_data->get_parent_thread_phase();
-        }
+        if (PIKA_LIKELY(nullptr != thrd_data)) { return thrd_data->get_parent_thread_phase(); }
         return 0;
     }
 
     std::uint32_t get_parent_locality_id()
     {
         thread_data* thrd_data = get_self_id_data();
-        if (PIKA_LIKELY(nullptr != thrd_data))
-        {
-            return thrd_data->get_parent_locality_id();
-        }
+        if (PIKA_LIKELY(nullptr != thrd_data)) { return thrd_data->get_parent_locality_id(); }
 
         // same as naming::invalid_locality_id
         return ~static_cast<std::uint32_t>(0);
@@ -380,10 +345,7 @@ namespace pika::threads::detail {
         return 0;
 #else
         thread_data* thrd_data = get_self_id_data();
-        if (PIKA_LIKELY(nullptr != thrd_data))
-        {
-            return thrd_data->get_component_id();
-        }
+        if (PIKA_LIKELY(nullptr != thrd_data)) { return thrd_data->get_component_id(); }
         return 0;
 #endif
     }
@@ -392,19 +354,13 @@ namespace pika::threads::detail {
     std::shared_ptr<pika::detail::external_timer::task_wrapper> get_self_timer_data()
     {
         thread_data* thrd_data = get_self_id_data();
-        if (PIKA_LIKELY(nullptr != thrd_data))
-        {
-            return thrd_data->get_timer_data();
-        }
+        if (PIKA_LIKELY(nullptr != thrd_data)) { return thrd_data->get_timer_data(); }
         return nullptr;
     }
     void set_self_timer_data(std::shared_ptr<pika::detail::external_timer::task_wrapper> data)
     {
         thread_data* thrd_data = get_self_id_data();
-        if (PIKA_LIKELY(nullptr != thrd_data))
-        {
-            thrd_data->set_timer_data(data);
-        }
+        if (PIKA_LIKELY(nullptr != thrd_data)) { thrd_data->set_timer_data(data); }
         return;
     }
 #endif

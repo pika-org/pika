@@ -57,10 +57,7 @@ class OptionsHierarchy
 {
 public:
     // The constructor sets up all the various options that will be parsed
-    OptionsHierarchy()
-    {
-        SetOptions();
-    }
+    OptionsHierarchy() { SetOptions(); }
 
     // Parse options runs through the hierarchy doing all the parsing
     void ParseOptions(int argc, char* argv[])
@@ -74,14 +71,8 @@ public:
     }
 
     // Below is the interface to access the data, once ParseOptions has been run
-    std::string Path()
-    {
-        return results["path"].as<std::string>();
-    }
-    std::string Verbosity()
-    {
-        return results["verbosity"].as<std::string>();
-    }
+    std::string Path() { return results["path"].as<std::string>(); }
+    std::string Verbosity() { return results["verbosity"].as<std::string>(); }
     std::vector<std::string> IncludePath()
     {
         if (results.count("include-path"))
@@ -92,26 +83,17 @@ public:
     }
     std::string MasterFile()
     {
-        if (results.count("master-file"))
-        {
-            return results["master-file"].as<std::string>();
-        }
+        if (results.count("master-file")) { return results["master-file"].as<std::string>(); }
         return "";
     }
     std::vector<std::string> Files()
     {
-        if (results.count("file"))
-        {
-            return results["file"].as<std::vector<std::string>>();
-        }
+        if (results.count("file")) { return results["file"].as<std::vector<std::string>>(); }
         return std::vector<std::string>();
     }
     bool GUI()
     {
-        if (results["run-gui"].as<bool>())
-        {
-            return true;
-        }
+        if (results["run-gui"].as<bool>()) { return true; }
         return false;
     }
     GuiOpts GuiValues()
@@ -218,10 +200,7 @@ private:
 
     void CheckForHelp()
     {
-        if (results.count("help"))
-        {
-            PrintHelp();
-        }
+        if (results.count("help")) { PrintHelp(); }
     }
 
     void PrintHelp()
@@ -238,10 +217,7 @@ private:
 
     void CheckForVersion()
     {
-        if (results.count("version"))
-        {
-            PrintVersion();
-        }
+        if (results.count("version")) { PrintVersion(); }
     }
 
     void PrintVersion()
@@ -264,10 +240,7 @@ private:
         std::transform(env_var.begin(), env_var.end(), env_var.begin(), ::toupper);
 
         auto entry = env_to_option.find(env_var);
-        if (entry != env_to_option.end())
-        {
-            return entry->second;
-        }
+        if (entry != env_to_option.end()) { return entry->second; }
         return "";
     }
 
@@ -276,10 +249,7 @@ private:
         if (results.count("config"))
         {
             auto files = results["config"].as<std::vector<std::string>>();
-            for (auto& file : files)
-            {
-                LoadAConfigFile(file);
-            }
+            for (auto& file : files) { LoadAConfigFile(file); }
         }
     }
 
@@ -298,10 +268,7 @@ private:
         }
     }
 
-    void ParseDefaultConfigFile()
-    {
-        LoadAConfigFile("default.cfg");
-    }
+    void ParseDefaultConfigFile() { LoadAConfigFile("default.cfg"); }
 
     std::map<std::string, std::string> env_to_option;
     po::options_description config_only_options;
@@ -326,18 +293,12 @@ void PrintOptions(OptionsHierarchy options)
     std::cout << "Verbosity: " << options.Verbosity() << std::endl;
     std::cout << "Include Path:\n";
     auto includePaths = options.IncludePath();
-    for (auto& includePath : includePaths)
-    {
-        std::cout << "   " << includePath << std::endl;
-    }
+    for (auto& includePath : includePaths) { std::cout << "   " << includePath << std::endl; }
 
     std::cout << "Master-File: " << options.MasterFile() << std::endl;
     std::cout << "Additional Files:\n";
     auto files = options.Files();
-    for (auto& file : files)
-    {
-        std::cout << "   " << file << std::endl;
-    }
+    for (auto& file : files) { std::cout << "   " << file << std::endl; }
 
     std::cout << "GUI Enabled: " << std::boolalpha << options.GUI() << std::endl;
     if (options.GUI())

@@ -40,8 +40,7 @@ namespace pika::concurrency::detail {
         }
 
         // Are we the first to enter?
-        if (total_ == barrier_flag)
-            total_ = 0;
+        if (total_ == barrier_flag) total_ = 0;
 
         ++total_;
 
@@ -60,10 +59,7 @@ namespace pika::concurrency::detail {
             --total_;
 
             // get entering threads to wake up
-            if (total_ == barrier_flag)
-            {
-                cond_.notify_all();
-            }
+            if (total_ == barrier_flag) { cond_.notify_all(); }
         }
     }
 }    // namespace pika::concurrency::detail

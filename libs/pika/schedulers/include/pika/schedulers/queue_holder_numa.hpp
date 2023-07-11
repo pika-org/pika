@@ -67,8 +67,7 @@ namespace pika::threads::detail {
         // ----------------------------------------------------------------
         ~queue_holder_numa()
         {
-            for (auto& q : queues_)
-                delete q;
+            for (auto& q : queues_) delete q;
             queues_.clear();
         }
 
@@ -83,16 +82,10 @@ namespace pika::threads::detail {
         }
 
         // ----------------------------------------------------------------
-        inline std::size_t size() const
-        {
-            return queues_.size();
-        }
+        inline std::size_t size() const { return queues_.size(); }
 
         // ----------------------------------------------------------------
-        inline ThreadQueue* thread_queue(std::size_t id) const
-        {
-            return queues_[id];
-        }
+        inline ThreadQueue* thread_queue(std::size_t id) const { return queues_[id]; }
 
         // ----------------------------------------------------------------
         inline bool get_next_thread_HP(std::size_t qidx, threads::detail::thread_id_ref_type& thrd,
@@ -117,8 +110,7 @@ namespace pika::threads::detail {
                     return true;
                 }
                 // if stealing disabled, do not check other queues
-                if (!core_stealing)
-                    return false;
+                if (!core_stealing) return false;
             }
             return false;
         }
@@ -144,8 +136,7 @@ namespace pika::threads::detail {
                     return true;
                 }
                 // if stealing disabled, do not check other queues
-                if (!core_stealing)
-                    return false;
+                if (!core_stealing) return false;
             }
             return false;
         }
@@ -173,8 +164,7 @@ namespace pika::threads::detail {
                     return true;
                 }
                 // if stealing disabled, do not check other queues
-                if (!allow_stealing)
-                    return false;
+                if (!allow_stealing) return false;
             }
             return false;
         }
@@ -202,8 +192,7 @@ namespace pika::threads::detail {
                     return true;
                 }
                 // if stealing disabled, do not check other queues
-                if (!allow_stealing)
-                    return false;
+                if (!allow_stealing) return false;
             }
             return false;
         }
@@ -212,8 +201,7 @@ namespace pika::threads::detail {
         inline std::size_t get_new_tasks_queue_length() const
         {
             std::size_t len = 0;
-            for (auto& q : queues_)
-                len += q->new_tasks_count_;
+            for (auto& q : queues_) len += q->new_tasks_count_;
             return len;
         }
 
@@ -223,16 +211,14 @@ namespace pika::threads::detail {
             execution::thread_priority priority = execution::thread_priority::default_) const
         {
             std::size_t len = 0;
-            for (auto& q : queues_)
-                len += q->get_thread_count(state, priority);
+            for (auto& q : queues_) len += q->get_thread_count(state, priority);
             return static_cast<std::int64_t>(len);
         }
 
         // ----------------------------------------------------------------
         void abort_all_suspended_threads()
         {
-            for (auto& q : queues_)
-                q->abort_all_suspended_threads();
+            for (auto& q : queues_) q->abort_all_suspended_threads();
         }
 
         // ----------------------------------------------------------------
@@ -241,8 +227,7 @@ namespace pika::threads::detail {
             threads::detail::thread_schedule_state state) const
         {
             bool result = true;
-            for (auto& q : queues_)
-                result = result && q->enumerate_threads(f, state);
+            for (auto& q : queues_) result = result && q->enumerate_threads(f, state);
             return result;
         }
 
@@ -285,8 +270,7 @@ namespace pika::threads::detail {
         // ------------------------------------------------------------
         void debug_info()
         {
-            for (auto& q : queues_)
-                q->debug_info();
+            for (auto& q : queues_) q->debug_info();
         }
 
         // ------------------------------------------------------------

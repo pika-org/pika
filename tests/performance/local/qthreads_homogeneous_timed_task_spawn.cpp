@@ -107,26 +107,22 @@ extern "C" aligned_t worker(void*)
 ///////////////////////////////////////////////////////////////////////////////
 int qthreads_main(variables_map& vm)
 {
-    if (vm.count("no-header"))
-        header = false;
+    if (vm.count("no-header")) header = false;
 
     //time in seconds
     delay_sec = (delay) *1.0E-6;
 
     {
         // Validate command line.
-        if (0 == tasks)
-            throw std::invalid_argument("count of 0 tasks specified\n");
+        if (0 == tasks) throw std::invalid_argument("count of 0 tasks specified\n");
 
         // Start the clock.
         high_resolution_timer t;
 
-        for (std::uint64_t i = 0; i < tasks; ++i)
-            qthread_fork(&worker, nullptr, nullptr);
+        for (std::uint64_t i = 0; i < tasks; ++i) qthread_fork(&worker, nullptr, nullptr);
 
         // Yield until all our null qthreads are done.
-        do
-        {
+        do {
             qthread_yield();
         } while (donecount != tasks);
 
@@ -179,8 +175,7 @@ int main(int argc, char** argv)
     setenv("QT_NUM_WORKERS_PER_SHEPHERD", workers.c_str(), 1);
 
     // Setup the qthreads environment.
-    if (qthread_initialize() != 0)
-        throw std::runtime_error("qthreads failed to initialize\n");
+    if (qthread_initialize() != 0) throw std::runtime_error("qthreads failed to initialize\n");
 
     return qthreads_main(vm);
 }

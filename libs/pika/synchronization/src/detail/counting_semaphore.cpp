@@ -30,10 +30,7 @@ namespace pika::detail {
     {
         PIKA_ASSERT_OWNS_LOCK(l);
 
-        while (value_ < count)
-        {
-            cond_.wait(l, "counting_semaphore::wait");
-        }
+        while (value_ < count) { cond_.wait(l, "counting_semaphore::wait"); }
         value_ -= count;
     }
 
@@ -93,8 +90,7 @@ namespace pika::detail {
         {
             // notify_one() returns false if no more threads are
             // waiting
-            if (!cond_.notify_one(PIKA_MOVE(l)))
-                break;
+            if (!cond_.notify_one(PIKA_MOVE(l))) break;
 
             l = std::unique_lock<mutex_type>(*mtx);
         }

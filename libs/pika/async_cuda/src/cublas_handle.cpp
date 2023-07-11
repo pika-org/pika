@@ -80,26 +80,14 @@ namespace pika::cuda::experimental {
 
     cublas_handle::~cublas_handle()
     {
-        if (handle != 0)
-        {
-            check_cublas_error(cublasDestroy(handle));
-        }
+        if (handle != 0) { check_cublas_error(cublasDestroy(handle)); }
     }
 
-    cublasHandle_t cublas_handle::get() const noexcept
-    {
-        return handle;
-    }
+    cublasHandle_t cublas_handle::get() const noexcept { return handle; }
 
-    int cublas_handle::get_device() const noexcept
-    {
-        return device;
-    }
+    int cublas_handle::get_device() const noexcept { return device; }
 
-    whip::stream_t cublas_handle::get_stream() const noexcept
-    {
-        return stream;
-    }
+    whip::stream_t cublas_handle::get_stream() const noexcept { return stream; }
 
     void cublas_handle::set_stream(cuda_stream const& stream)
     {

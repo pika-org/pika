@@ -51,10 +51,7 @@ namespace pika::execution {
 
         struct default_context : context_base
         {
-            resource_base const& resource() const override
-            {
-                return resource_;
-            }
+            resource_base const& resource() const override { return resource_; }
             resource_base resource_;
         };
 
@@ -62,15 +59,9 @@ namespace pika::execution {
         {
             default_agent();
 
-            std::string description() const override
-            {
-                return fmt::format("{}", id_);
-            }
+            std::string description() const override { return fmt::format("{}", id_); }
 
-            default_context const& context() const override
-            {
-                return context_;
-            }
+            default_context const& context() const override { return context_; }
 
             void yield(char const* desc) override;
             void yield_k(std::size_t k, char const* desc) override;
@@ -114,10 +105,7 @@ namespace pika::execution {
             if (k < 4)    //-V112
             {
             }
-            else if (k < 16)
-            {
-                PIKA_SMT_PAUSE;
-            }
+            else if (k < 16) { PIKA_SMT_PAUSE; }
             else if (k < 32 || k & 1)    //-V112
             {
 #if defined(PIKA_WINDOWS)
@@ -153,10 +141,7 @@ namespace pika::execution {
             running_ = false;
             resume_cv_.notify_all();
 
-            while (!running_)
-            {
-                suspend_cv_.wait(l);
-            }
+            while (!running_) { suspend_cv_.wait(l); }
 
             if (aborted_)
             {
@@ -169,10 +154,7 @@ namespace pika::execution {
         {
             {
                 std::unique_lock<std::mutex> l(mtx_);
-                while (running_)
-                {
-                    resume_cv_.wait(l);
-                }
+                while (running_) { resume_cv_.wait(l); }
                 running_ = true;
             }
             suspend_cv_.notify_one();
@@ -182,10 +164,7 @@ namespace pika::execution {
         {
             {
                 std::unique_lock<std::mutex> l(mtx_);
-                while (running_)
-                {
-                    resume_cv_.wait(l);
-                }
+                while (running_) { resume_cv_.wait(l); }
                 running_ = true;
                 aborted_ = true;
             }
@@ -249,20 +228,14 @@ namespace pika::execution {
         {
         }
 
-        reset_agent::~reset_agent()
-        {
-            storage_->set(old_);
-        }
+        reset_agent::~reset_agent() { storage_->set(old_); }
 
         pika::execution::detail::agent_ref agent()
         {
             return pika::execution::detail::agent_ref(detail::get_agent_storage()->impl_);
         }
 
-        void yield(char const* desc)
-        {
-            agent().yield(desc);
-        }
+        void yield(char const* desc) { agent().yield(desc); }
 
         void yield_k(std::size_t k, char const* desc)
         {
@@ -298,9 +271,6 @@ namespace pika::execution {
             agent().yield_k(k, desc);
         }
 
-        void suspend(char const* desc)
-        {
-            agent().suspend(desc);
-        }
+        void suspend(char const* desc) { agent().suspend(desc); }
     }    // namespace this_thread::detail
 }    // namespace pika::execution

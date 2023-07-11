@@ -42,10 +42,7 @@ public:
     int n;
 };
 
-bool operator==(magic_number const& lhs, magic_number const& rhs)
-{
-    return lhs.n == rhs.n;
-}
+bool operator==(magic_number const& lhs, magic_number const& rhs) { return lhs.n == rhs.n; }
 
 /* Overload the 'validate' function for the user-defined class.
    It makes sure that value is of form XXX-XXX
@@ -71,10 +68,7 @@ void validate(std::any& v, const std::vector<std::string>& values, magic_number*
     {
         v = std::any(magic_number(pika::detail::from_string<int>(match[1])));
     }
-    else
-    {
-        throw validation_error(validation_error::invalid_option_value);
-    }
+    else { throw validation_error(validation_error::invalid_option_value); }
 }
 
 int main(int ac, char* av[])

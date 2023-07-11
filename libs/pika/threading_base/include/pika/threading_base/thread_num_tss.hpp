@@ -39,15 +39,9 @@ namespace pika::threads::detail {
         {
         }
 
-        ~reset_tss_helper()
-        {
-            set_global_thread_num_tss(global_thread_num_);
-        }
+        ~reset_tss_helper() { set_global_thread_num_tss(global_thread_num_); }
 
-        std::size_t previous_global_thread_num() const
-        {
-            return global_thread_num_;
-        }
+        std::size_t previous_global_thread_num() const { return global_thread_num_; }
 
     private:
         std::size_t global_thread_num_;

@@ -39,10 +39,7 @@ namespace pika::detail {
             strm << "Trying to handle failed assertion while handling another failed assertion!"
                  << std::endl;
             strm << "Assertion '" << expr << "' failed";
-            if (!msg.empty())
-            {
-                strm << " (" << msg << ")";
-            }
+            if (!msg.empty()) { strm << " (" << msg << ")"; }
 
             strm << std::endl;
             strm << "{file}: " << loc.file_name << std::endl;
@@ -58,10 +55,7 @@ namespace pika::detail {
 
         std::ostringstream strm;
         strm << "Assertion '" << expr << "' failed";
-        if (!msg.empty())
-        {
-            strm << " (" << msg << ")";
-        }
+        if (!msg.empty()) { strm << " (" << msg << ")"; }
 
         pika::exception e(pika::error::assertion_failure, strm.str());
         std::cerr << pika::diagnostic_information(pika::detail::get_exception(
@@ -74,10 +68,7 @@ namespace pika::detail {
     }
 
 #if defined(PIKA_HAVE_APEX)
-    bool enable_parent_task_handler()
-    {
-        return !pika::is_networking_enabled();
-    }
+    bool enable_parent_task_handler() { return !pika::is_networking_enabled(); }
 #endif
 
 #if defined(PIKA_HAVE_VERIFY_LOCKS)
@@ -117,10 +108,7 @@ namespace pika::detail {
         }
     }
 
-    bool register_locks_predicate()
-    {
-        return threads::detail::get_self_ptr() != nullptr;
-    }
+    bool register_locks_predicate() { return threads::detail::get_self_ptr() != nullptr; }
 #endif
 
     threads::detail::thread_pool_base* get_default_pool()

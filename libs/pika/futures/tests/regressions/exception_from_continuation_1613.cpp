@@ -66,10 +66,7 @@ void test_exception_from_continuation2()
     // first future is the only one which does not hold exception
     PIKA_TEST(!results[0].has_exception());
 
-    for (std::size_t i = 1; i != results.size(); ++i)
-    {
-        PIKA_TEST(results[i].has_exception());
-    }
+    for (std::size_t i = 1; i != results.size(); ++i) { PIKA_TEST(results[i].has_exception()); }
 }
 
 int pika_main()

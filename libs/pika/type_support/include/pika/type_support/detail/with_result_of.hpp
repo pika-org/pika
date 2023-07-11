@@ -31,10 +31,7 @@ namespace pika::detail {
         {
         }
 
-        operator type()
-        {
-            return PIKA_FORWARD(F, f)();
-        }
+        operator type() { return PIKA_FORWARD(F, f)(); }
     };
 
     template <typename F>

@@ -32,10 +32,7 @@
 namespace pika::sync_wait_detail {
     struct sync_wait_error_visitor
     {
-        void operator()(std::exception_ptr ep) const
-        {
-            std::rethrow_exception(ep);
-        }
+        void operator()(std::exception_ptr ep) const { std::rethrow_exception(ep); }
 
         template <typename Error>
         void operator()(Error& error) const
@@ -144,10 +141,7 @@ namespace pika::sync_wait_detail {
                 if (!set_called)
                 {
                     std::unique_lock<mutex_type> l(mtx);
-                    if (!set_called)
-                    {
-                        cond_var.wait(l);
-                    }
+                    if (!set_called) { cond_var.wait(l); }
                 }
             }
 
@@ -155,14 +149,8 @@ namespace pika::sync_wait_detail {
             {
                 if (pika::detail::holds_alternative<value_type>(value))
                 {
-                    if constexpr (is_void_result)
-                    {
-                        return;
-                    }
-                    else
-                    {
-                        return PIKA_MOVE(pika::detail::get<value_type>(value));
-                    }
+                    if constexpr (is_void_result) { return; }
+                    else { return PIKA_MOVE(pika::detail::get<value_type>(value)); }
                 }
                 else if (pika::detail::holds_alternative<error_type>(value))
                 {

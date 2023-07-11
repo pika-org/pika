@@ -99,14 +99,11 @@ namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////
     std::string convert_to_log_file(std::string const& dest)
     {
-        if (dest.empty())
-            return "cout";
+        if (dest.empty()) return "cout";
 
-        if (dest == "cout" || dest == "cerr" || dest == "console")
-            return dest;
+        if (dest == "cout" || dest == "cerr" || dest == "console") return dest;
 #if defined(ANDROID) || defined(__ANDROID__)
-        if (dest == "android_log")
-            return dest;
+        if (dest == "android_log") return dest;
 #endif
         // everything else is assumed to be a file name
         return "file(" + dest + ")";
@@ -116,8 +113,7 @@ namespace pika::detail {
         pika::program_options::variables_map& vm, std::string const& default_)
     {
         // command line options is used preferred
-        if (vm.count("pika:queuing"))
-            return vm["pika:queuing"].as<std::string>();
+        if (vm.count("pika:queuing")) return vm["pika:queuing"].as<std::string>();
 
         // use either cfgmap value or default
         return cfgmap.get_value<std::string>("pika.scheduler", default_);
@@ -127,8 +123,7 @@ namespace pika::detail {
         pika::program_options::variables_map& vm, std::string const& default_)
     {
         // command line options is used preferred
-        if (vm.count("pika:affinity"))
-            return vm["pika:affinity"].as<std::string>();
+        if (vm.count("pika:affinity")) return vm["pika:affinity"].as<std::string>();
 
         // use either cfgmap value or default
         return cfgmap.get_value<std::string>("pika.affinity", default_);
@@ -145,8 +140,7 @@ namespace pika::detail {
             std::vector<std::string> bind_affinity = vm["pika:bind"].as<std::vector<std::string>>();
             for (std::string const& s : bind_affinity)
             {
-                if (!affinity_desc.empty())
-                    affinity_desc += ";";
+                if (!affinity_desc.empty()) affinity_desc += ";";
                 affinity_desc += s;
             }
 
@@ -161,8 +155,7 @@ namespace pika::detail {
         pika::program_options::variables_map& vm, std::size_t default_)
     {
         // command line options is used preferred
-        if (vm.count("pika:pu-step"))
-            return vm["pika:pu-step"].as<std::size_t>();
+        if (vm.count("pika:pu-step")) return vm["pika:pu-step"].as<std::size_t>();
 
         // use either cfgmap value or default
         return cfgmap.get_value<std::size_t>("pika.pu_step", default_);
@@ -172,8 +165,7 @@ namespace pika::detail {
         pika::program_options::variables_map& vm, std::size_t default_)
     {
         // command line options is used preferred
-        if (vm.count("pika:pu-offset"))
-            return vm["pika:pu-offset"].as<std::size_t>();
+        if (vm.count("pika:pu-offset")) return vm["pika:pu-offset"].as<std::size_t>();
 
         // use either cfgmap value or default
         return cfgmap.get_value<std::size_t>("pika.pu_offset", default_);
@@ -206,10 +198,7 @@ namespace pika::detail {
             threads::detail::topology& top = threads::detail::create_topology();
             return threads::detail::count(top.get_cpubind_mask());
         }
-        else
-        {
-            return threads::detail::hardware_concurrency();
-        }
+        else { return threads::detail::hardware_concurrency(); }
     }
 
     std::size_t get_number_of_default_cores(bool use_process_mask)
@@ -227,10 +216,7 @@ namespace pika::detail {
             {
                 threads::detail::mask_type core_mask =
                     top.init_core_affinity_mask_from_core(num_core);
-                if (threads::detail::bit_and(core_mask, proc_mask))
-                {
-                    ++num_cores_proc_mask;
-                }
+                if (threads::detail::bit_and(core_mask, proc_mask)) { ++num_cores_proc_mask; }
             }
 
             return num_cores_proc_mask;
@@ -254,36 +240,18 @@ namespace pika::detail {
         std::string threads_str = cfgmap.get_value<std::string>(
             "pika.os_threads", rtcfg.get_entry("pika.os_threads", std::to_string(default_threads)));
 
-        if ("cores" == threads_str)
-        {
-            default_threads = init_cores;
-        }
-        else if ("all" == threads_str)
-        {
-            default_threads = init_threads;
-        }
-        else
-        {
-            default_threads = pika::detail::from_string<std::size_t>(threads_str);
-        }
+        if ("cores" == threads_str) { default_threads = init_cores; }
+        else if ("all" == threads_str) { default_threads = init_threads; }
+        else { default_threads = pika::detail::from_string<std::size_t>(threads_str); }
 
         std::size_t threads = cfgmap.get_value<std::size_t>("pika.os_threads", default_threads);
 
         if (vm.count("pika:threads"))
         {
             threads_str = vm["pika:threads"].as<std::string>();
-            if ("all" == threads_str)
-            {
-                threads = init_threads;
-            }
-            else if ("cores" == threads_str)
-            {
-                threads = init_cores;
-            }
-            else
-            {
-                threads = pika::detail::from_string<std::size_t>(threads_str);
-            }
+            if ("all" == threads_str) { threads = init_threads; }
+            else if ("cores" == threads_str) { threads = init_cores; }
+            else { threads = pika::detail::from_string<std::size_t>(threads_str); }
 
             if (threads == 0)
             {
@@ -343,14 +311,8 @@ namespace pika::detail {
         if (vm.count("pika:cores"))
         {
             cores_str = vm["pika:cores"].as<std::string>();
-            if ("all" == cores_str)
-            {
-                num_cores = get_number_of_default_cores(use_process_mask);
-            }
-            else
-            {
-                num_cores = pika::detail::from_string<std::size_t>(cores_str);
-            }
+            if ("all" == cores_str) { num_cores = get_number_of_default_cores(use_process_mask); }
+            else { num_cores = pika::detail::from_string<std::size_t>(cores_str); }
         }
 
         return num_cores;
@@ -375,10 +337,7 @@ namespace pika::detail {
 
     void command_line_handling::check_affinity_description() const
     {
-        if (affinity_bind_.empty())
-        {
-            return;
-        }
+        if (affinity_bind_.empty()) { return; }
 
         if (!(pu_offset_ == std::size_t(-1) || pu_offset_ == std::size_t(0)) || pu_step_ != 1 ||
             affinity_domain_ != "pu")
@@ -488,10 +447,7 @@ namespace pika::detail {
             ini_config.emplace_back("pika.pu_offset=" + std::to_string(pu_offset_));
 #endif
         }
-        else
-        {
-            ini_config.emplace_back("pika.pu_offset=0");
-        }
+        else { ini_config.emplace_back("pika.pu_offset=0"); }
 
         check_pu_offset();
 
@@ -550,10 +506,7 @@ namespace pika::detail {
         {
             std::cerr << "Configuration before runtime start:\n";
             std::cerr << "-----------------------------------\n";
-            for (std::string const& s : ini_config)
-            {
-                std::cerr << s << std::endl;
-            }
+            for (std::string const& s : ini_config) { std::cerr << s << std::endl; }
             std::cerr << "-----------------------------------\n";
         }
 
@@ -622,19 +575,10 @@ namespace pika::detail {
             std::string arg = detail::encode_and_enquote(argv[i]);    //-V108
 
             cmd_line += arg;
-            if (i == 0)
-            {
-                command = arg;
-            }
-            else
-            {
-                options += " " + arg;
-            }
+            if (i == 0) { command = arg; }
+            else { options += " " + arg; }
 
-            if ((i + 1) != argc)
-            {
-                cmd_line += " ";
-            }
+            if ((i + 1) != argc) { cmd_line += " "; }
         }
 
         // Store the program name and the command line.
@@ -696,10 +640,7 @@ namespace pika::detail {
             }
             else
             {
-                if (option == "startup")
-                {
-                    debug::detail::attach_debugger();
-                }
+                if (option == "startup") { debug::detail::attach_debugger(); }
                 else if (option == "exception")
                 {
                     // Signal handlers need to be installed to be able to attach
@@ -734,19 +675,13 @@ namespace pika::detail {
         if (!options.empty())
         {
             std::string config_options;
-            for (auto const& option : options)
-            {
-                config_options += " " + option;
-            }
+            for (auto const& option : options) { config_options += " " + option; }
 
             rtcfg_.add_entry("pika.commandline.config_options", config_options);
         }
 
         // now append all original command line options
-        for (int i = 1; i != argc; ++i)
-        {
-            options.emplace_back(argv[i]);
-        }
+        for (int i = 1; i != argc; ++i) { options.emplace_back(argv[i]); }
 
         return options;
     }
@@ -754,10 +689,7 @@ namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     std::vector<std::string> prepend_options(std::vector<std::string>&& args, std::string&& options)
     {
-        if (options.empty())
-        {
-            return PIKA_MOVE(args);
-        }
+        if (options.empty()) { return PIKA_MOVE(args); }
 
         using tokenizer = boost::tokenizer<boost::escaped_list_separator<char>>;
         boost::escaped_list_separator<char> sep('\\', ' ', '\"');
@@ -813,10 +745,7 @@ namespace pika::detail {
 
             // handle all --pika:foo options
             std::vector<std::string> ini_config;    // discard
-            if (!handle_arguments(cfgmap, prevm, ini_config))
-            {
-                return -2;
-            }
+            if (!handle_arguments(cfgmap, prevm, ini_config)) { return -2; }
 
             // re-initialize runtime configuration object
             if (prevm.count("pika:config"))
@@ -865,10 +794,7 @@ namespace pika::detail {
         handle_attach_debugger();
 
         // handle all --pika:foo and --pika:*:foo options
-        if (!handle_arguments(cfgmap, vm_, ini_config_))
-        {
-            return -2;
-        }
+        if (!handle_arguments(cfgmap, vm_, ini_config_)) { return -2; }
 
         // store unregistered command line and arguments
         store_command_line(argc, argv);

@@ -63,8 +63,7 @@ namespace pika::util {
     // pre-initialize entries with compile time based values
     void runtime_configuration::pre_initialize_ini()
     {
-        if (!need_to_call_pre_initialize)
-            return;
+        if (!need_to_call_pre_initialize) return;
 
         std::vector<std::string> lines = {
             // clang-format off
@@ -615,8 +614,7 @@ namespace pika::util {
         catch (pika::exception const& e)
         {
             // file doesn't exist or is ill-formed
-            if (&ec == &throws)
-                throw;
+            if (&ec == &throws) throw;
             ec = make_error_code(e.get_error(), e.what(), pika::throwmode::rethrow);
             return false;
         }
@@ -629,21 +627,17 @@ namespace pika::util {
     {
         switch (stacksize)
         {
-        case execution::thread_stacksize::medium:
-            return medium_stacksize;
+        case execution::thread_stacksize::medium: return medium_stacksize;
 
-        case execution::thread_stacksize::large:
-            return large_stacksize;
+        case execution::thread_stacksize::large: return large_stacksize;
 
-        case execution::thread_stacksize::huge:
-            return huge_stacksize;
+        case execution::thread_stacksize::huge: return huge_stacksize;
 
         case execution::thread_stacksize::nostack:
             return (std::numeric_limits<std::ptrdiff_t>::max)();
 
         default:
-        case execution::thread_stacksize::small_:
-            break;
+        case execution::thread_stacksize::small_: break;
         }
         return small_stacksize;
     }

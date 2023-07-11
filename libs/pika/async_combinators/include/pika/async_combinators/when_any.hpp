@@ -147,10 +147,7 @@ namespace pika {
     template <typename Sequence>
     struct when_any_result
     {
-        static constexpr std::size_t index_error() noexcept
-        {
-            return static_cast<std::size_t>(-1);
-        }
+        static constexpr std::size_t index_error() noexcept { return static_cast<std::size_t>(-1); }
 
         when_any_result() noexcept
           : index(index_error())
@@ -302,14 +299,8 @@ namespace pika {
                 if (index_.compare_exchange_strong(index_not_initialized, idx))
                 {
                     // reactivate waiting thread only if it's not us
-                    if (ctx != pika::execution::this_thread::detail::agent())
-                    {
-                        ctx.resume();
-                    }
-                    else
-                    {
-                        goal_reached_on_calling_thread_ = true;
-                    }
+                    if (ctx != pika::execution::this_thread::detail::agent()) { ctx.resume(); }
+                    else { goal_reached_on_calling_thread_ = true; }
                 }
             }
 

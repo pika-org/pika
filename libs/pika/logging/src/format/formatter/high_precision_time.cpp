@@ -107,8 +107,7 @@ namespace pika::util::logging::formatter {
         bool replace_format(char const* from, char const* to)
         {
             size_t start_pos = m_format.find(from);
-            if (start_pos == std::string::npos)
-                return false;
+            if (start_pos == std::string::npos) return false;
             m_format.replace(start_pos, std::strlen(from), to);
             return true;
         }

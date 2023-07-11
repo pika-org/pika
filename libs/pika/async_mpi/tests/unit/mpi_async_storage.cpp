@@ -146,10 +146,7 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
 
     // this needs to scope all uses of mpi::experimental::executor
     std::string poolname = "default";
-    if (pika::resource::pool_exists(mpi::get_pool_name()))
-    {
-        poolname = mpi::get_pool_name();
-    }
+    if (pika::resource::pool_exists(mpi::get_pool_name())) { poolname = mpi::get_pool_name(); }
     mpi::enable_user_polling enable_polling(poolname);
 
     pika::scoped_annotation annotate("test_write");
@@ -163,10 +160,7 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
     recvs_in_flight = 0;
     std::uint64_t messages_sent = 0;
     //
-    if (rank == 0)
-    {
-        std::cout << (options.warmup ? "Warmup   " : "Progress ");
-    }
+    if (rank == 0) { std::cout << (options.warmup ? "Warmup   " : "Progress "); }
 
     // generate an array of location offsets where we are going to send data
     constexpr size_t array_size = 1024;
@@ -207,8 +201,7 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
     std::uint64_t final_count = (std::numeric_limits<std::uint64_t>().max)();
     bool count_complete = false;
     // loop for allowed time : sending and receiving
-    do
-    {
+    do {
         // read from a random slot on this node
         // (and ideally write to a random slot on remote node)
         int read_slot = random_slot(gen);
@@ -329,8 +322,7 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
     double IOPs = static_cast<double>(messages_sent);
     double Time = exec_timer.elapsed();
 
-    if (rank == 0)
-        std::cout << std::endl;
+    if (rank == 0) std::cout << std::endl;
 
     // ----------------------------------------------------------------
     nws_deb<2>.debug("Entering Barrier before update_performance on rank", rank);
@@ -420,8 +412,7 @@ int pika_main(pika::program_options::variables_map& vm)
     std::uniform_int_distribution<std::uint64_t> random_slot(0, (int) num_slots - 1);
 
     // ----------------------------------------------------------------
-    if (rank == 0)
-        nws_deb<1>.debug("Completed initialization on", rank);
+    if (rank == 0) nws_deb<1>.debug("Completed initialization on", rank);
     // ----------------------------------------------------------------
     nws_deb<1>.debug("Entering startup_barrier on rank", rank);
     MPI_Barrier(MPI_COMM_WORLD);
@@ -432,8 +423,7 @@ int pika_main(pika::program_options::variables_map& vm)
     warmup.num_seconds = 1;
     warmup.warmup = true;
 
-    if (rank == 0)
-        nws_deb<1>.debug("Starting warmup", rank);
+    if (rank == 0) nws_deb<1>.debug("Starting warmup", rank);
     nws_deb<1>.debug("test_write warmup on rank", rank);
 
     test_send_recv(rank, nranks, gen, random_offset, random_slot, warmup);
@@ -463,14 +453,12 @@ void init_resource_partitioner_handler(
     pika::resource::partitioner& rp, pika::program_options::variables_map const& vm)
 {
     // Don't create the MPI pool if the user disabled it
-    if (vm["no-mpi-pool"].as<bool>())
-        return;
+    if (vm["no-mpi-pool"].as<bool>()) return;
 
     // Don't create the MPI pool if there is a single process
     int ntasks;
     MPI_Comm_size(MPI_COMM_WORLD, &ntasks);
-    if (ntasks == 1)
-        return;
+    if (ntasks == 1) return;
 
     // Disable idle backoff on the MPI pool
     using pika::threads::scheduler_mode;

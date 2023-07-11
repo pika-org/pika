@@ -38,10 +38,7 @@ namespace pika::detail {
         U const max = (std::numeric_limits<T>::max)();
         if constexpr (std::is_unsigned_v<U>)
         {
-            if (value > max)
-            {
-                throw std::out_of_range("from_string: out of range");
-            }
+            if (value > max) { throw std::out_of_range("from_string: out of range"); }
         }
         else
         {

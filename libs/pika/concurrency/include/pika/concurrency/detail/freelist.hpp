@@ -25,15 +25,9 @@ namespace pika::concurrency::detail {
         {
         }
 
-        T* allocate()
-        {
-            return this->base_type::template allocate<true, false>();
-        }
+        T* allocate() { return this->base_type::template allocate<true, false>(); }
 
-        void deallocate(T* n)
-        {
-            this->base_type::template deallocate<true>(n);
-        }
+        void deallocate(T* n) { this->base_type::template deallocate<true>(n); }
     };
 
     template <typename T, typename Alloc = std::allocator<T>>
@@ -47,15 +41,9 @@ namespace pika::concurrency::detail {
         {
         }
 
-        T* allocate()
-        {
-            return this->base_type::template allocate<true, true>();
-        }
+        T* allocate() { return this->base_type::template allocate<true, true>(); }
 
-        void deallocate(T* n)
-        {
-            this->base_type::template deallocate<true>(n);
-        }
+        void deallocate(T* n) { this->base_type::template deallocate<true>(n); }
     };
 
     struct caching_freelist_t

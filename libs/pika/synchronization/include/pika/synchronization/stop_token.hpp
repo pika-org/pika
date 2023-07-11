@@ -156,10 +156,7 @@ namespace pika {
             // Effect: locks the state
             PIKA_EXPORT void lock() noexcept;
 
-            void unlock() noexcept
-            {
-                state_.fetch_sub(locked_flag, std::memory_order_release);
-            }
+            void unlock() noexcept { state_.fetch_sub(locked_flag, std::memory_order_release); }
 
         private:
             friend struct scoped_lock_if_not_stopped;
@@ -213,10 +210,7 @@ namespace pika {
         ~stop_token() = default;
 
         // Effects: Exchanges the values of *this and rhs.
-        void swap(stop_token& s) noexcept
-        {
-            std::swap(state_, s.state_);
-        }
+        void swap(stop_token& s) noexcept { std::swap(state_, s.state_); }
 
         // 32.3.3.2 stop handling
 
@@ -316,16 +310,14 @@ namespace pika {
         stop_source(stop_source const& rhs) noexcept
           : state_(rhs.state_)
         {
-            if (state_)
-                state_->add_source_count();
+            if (state_) state_->add_source_count();
         }
         stop_source(stop_source&&) noexcept = default;
 
         stop_source& operator=(stop_source const& rhs) noexcept
         {
             state_ = rhs.state_;
-            if (state_)
-                state_->add_source_count();
+            if (state_) state_->add_source_count();
             return *this;
         }
         stop_source& operator=(stop_source&&) noexcept = default;
@@ -333,15 +325,11 @@ namespace pika {
         // Effects: Releases ownership of the stop state, if any.
         ~stop_source()
         {
-            if (state_)
-                state_->remove_source_count();
+            if (state_) state_->remove_source_count();
         }
 
         // Effects: Exchanges the values of *this and rhs.
-        void swap(stop_source& s) noexcept
-        {
-            std::swap(state_, s.state_);
-        }
+        void swap(stop_source& s) noexcept { std::swap(state_, s.state_); }
 
         // 32.3.4.2 stop handling
 
@@ -349,18 +337,12 @@ namespace pika {
         //      associated stop_token object.
         [[nodiscard]] stop_token get_token() const noexcept
         {
-            if (!stop_possible())
-            {
-                return stop_token();
-            }
+            if (!stop_possible()) { return stop_token(); }
             return stop_token(state_);
         }
 
         // Returns: true if *this has ownership of a stop state; otherwise, false.
-        [[nodiscard]] bool stop_possible() const noexcept
-        {
-            return !!state_;
-        }
+        [[nodiscard]] bool stop_possible() const noexcept { return !!state_; }
 
         // Returns: true if *this has ownership of a stop state that has
         //      received a stop request; otherwise, false.
@@ -385,10 +367,7 @@ namespace pika {
         // Postconditions: stop_possible() is false or stop_requested() is true.
         //
         // Returns: true if this call made a stop request; otherwise false
-        bool request_stop() noexcept
-        {
-            return !!state_ && state_->request_stop();
-        }
+        bool request_stop() noexcept { return !!state_ && state_->request_stop(); }
 
         // 32.3.4.3 Comparisons
 
@@ -453,8 +432,7 @@ namespace pika {
           : callback_(PIKA_FORWARD(CB, cb))
           , state_(st.state_)
         {
-            if (state_)
-                state_->add_callback(this);
+            if (state_) state_->add_callback(this);
         }
 
         template <typename CB,
@@ -465,8 +443,7 @@ namespace pika {
           : callback_(PIKA_FORWARD(CB, cb))
           , state_(PIKA_MOVE(st.state_))
         {
-            if (state_)
-                state_->add_callback(this);
+            if (state_) state_->add_callback(this);
         }
 
         // Effects: Unregisters the callback from the owned stop state, if any.
@@ -480,8 +457,7 @@ namespace pika {
         //      ownership of the stop state, if any.
         ~stop_callback()
         {
-            if (state_)
-                state_->remove_callback(this);
+            if (state_) state_->remove_callback(this);
         }
 
         stop_callback(stop_callback const&) = delete;
@@ -491,10 +467,7 @@ namespace pika {
         stop_callback& operator=(stop_callback&&) = delete;
 
     private:
-        void execute() noexcept override
-        {
-            callback_();
-        }
+        void execute() noexcept override { callback_(); }
 
     private:
         Callback callback_;
@@ -531,16 +504,10 @@ namespace pika {
     // 32.3.3.4 Specialized algorithms
 
     // Effects: Equivalent to: x.swap(y).
-    inline void swap(stop_token& lhs, stop_token& rhs) noexcept
-    {
-        lhs.swap(rhs);
-    }
+    inline void swap(stop_token& lhs, stop_token& rhs) noexcept { lhs.swap(rhs); }
 
     // 32.3.4.4 Specialized algorithms
 
     // Effects: Equivalent to: x.swap(y).
-    inline void swap(stop_source& lhs, stop_source& rhs) noexcept
-    {
-        lhs.swap(rhs);
-    }
+    inline void swap(stop_source& lhs, stop_source& rhs) noexcept { lhs.swap(rhs); }
 }    // namespace pika

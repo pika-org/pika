@@ -249,8 +249,7 @@ namespace pika {
         {
             std::array<pika::future<T>, N> result;
 
-            for (std::size_t i = 0; i != N; ++i)
-                result[i] = extract_future_array<T>(i, f);
+            for (std::size_t i = 0; i != N; ++i) result[i] = extract_future_array<T>(i, f);
 
             return result;
         }
@@ -261,8 +260,7 @@ namespace pika {
             std::vector<pika::future<T>> result;
             result.reserve(size);
 
-            for (std::size_t i = 0; i != size; ++i)
-                result.push_back(extract_future_array<T>(i, f));
+            for (std::size_t i = 0; i != size; ++i) result.push_back(extract_future_array<T>(i, f));
 
             return result;
         }

@@ -15,10 +15,7 @@
 
 namespace cu = pika::cuda::experimental;
 
-__global__ void kernel(int* p, int i)
-{
-    p[i] = i * 2;
-}
+__global__ void kernel(int* p, int i) { p[i] = i * 2; }
 
 int main()
 {
@@ -178,9 +175,6 @@ int main()
         whip::memcpy(s.data(), p, sizeof(int) * streams.size(), whip::memcpy_device_to_host);
         whip::free(p);
 
-        for (int i = 0; i < static_cast<int>(streams.size()); ++i)
-        {
-            PIKA_TEST_EQ(s[i], i * 2);
-        }
+        for (int i = 0; i < static_cast<int>(streams.size()); ++i) { PIKA_TEST_EQ(s[i], i * 2); }
     }
 }

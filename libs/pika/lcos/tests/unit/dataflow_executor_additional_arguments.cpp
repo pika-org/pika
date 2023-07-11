@@ -78,10 +78,7 @@ namespace pika::parallel::execution {
 std::atomic<std::uint32_t> void_f_count;
 std::atomic<std::uint32_t> int_f_count;
 
-void void_f(additional_argument)
-{
-    ++void_f_count;
-}
+void void_f(additional_argument) { ++void_f_count; }
 int int_f()
 {
     ++int_f_count;
@@ -91,10 +88,7 @@ int int_f()
 std::atomic<std::uint32_t> void_f1_count;
 std::atomic<std::uint32_t> int_f1_count;
 
-void void_f1(additional_argument, int)
-{
-    ++void_f1_count;
-}
+void void_f1(additional_argument, int) { ++void_f1_count; }
 int int_f1(additional_argument, int i)
 {
     ++int_f1_count;
@@ -113,10 +107,7 @@ std::atomic<std::uint32_t> int_f_vector_count;
 int int_f_vector(additional_argument, std::vector<int> const& vf)
 {
     int sum = 0;
-    for (int f : vf)
-    {
-        sum += f;
-    }
+    for (int f : vf) { sum += f; }
     return sum;
 }
 
@@ -278,10 +269,7 @@ void future_function_pointers(Executor& exec)
 std::atomic<std::uint32_t> void_f4_count;
 std::atomic<std::uint32_t> int_f4_count;
 
-void void_f4(additional_argument, int)
-{
-    ++void_f4_count;
-}
+void void_f4(additional_argument, int) { ++void_f4_count; }
 int int_f4(additional_argument, int i)
 {
     ++int_f4_count;
@@ -291,10 +279,7 @@ int int_f4(additional_argument, int i)
 std::atomic<std::uint32_t> void_f5_count;
 std::atomic<std::uint32_t> int_f5_count;
 
-void void_f5(additional_argument, int, pika::future<int>)
-{
-    ++void_f5_count;
-}
+void void_f5(additional_argument, int, pika::future<int>) { ++void_f5_count; }
 int int_f5(additional_argument, int i, pika::future<int> j)
 {
     ++int_f5_count;

@@ -77,8 +77,7 @@ namespace pika {
             }
 
             // we're done if function was called
-            if (status == function_complete_flag_value)
-                break;
+            if (status == function_complete_flag_value) break;
 
             // wait for the function finish executing
             flag.event_.wait();

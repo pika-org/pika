@@ -37,10 +37,7 @@ namespace pika::detail {
         using section_map = std::map<std::string, section>;
 
     private:
-        section* this_()
-        {
-            return this;
-        }
+        section* this_() { return this; }
 
         using mutex_type = pika::concurrency::detail::spinlock;
 

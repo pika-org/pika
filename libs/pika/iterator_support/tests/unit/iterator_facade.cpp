@@ -33,20 +33,11 @@ public:
     {
     }
 
-    void increment()
-    {
-        ++*state;
-    }
+    void increment() { ++*state; }
 
-    Ref dereference() const
-    {
-        return *state;
-    }
+    Ref dereference() const { return *state; }
 
-    bool equal(counter_iterator const& y) const
-    {
-        return *this->state == *y.state;
-    }
+    bool equal(counter_iterator const& y) const { return *this->state == *y.state; }
 
     int* state;
 };
@@ -60,10 +51,7 @@ struct proxy
     {
     }
 
-    operator int const&() const
-    {
-        return state;
-    }
+    operator int const&() const { return state; }
 
     int& operator=(int x)
     {
@@ -92,15 +80,9 @@ public:
 
     void increment() {}
 
-    value dereference() const
-    {
-        return value();
-    }
+    value dereference() const { return value(); }
 
-    bool equal(input_iter const&) const
-    {
-        return false;
-    }
+    bool equal(input_iter const&) const { return false; }
 };
 
 template <typename T>
@@ -135,10 +117,7 @@ struct iterator_with_proxy_reference
 
     void increment() {}
 
-    reference dereference() const
-    {
-        return wrapper<int&>(m_x);
-    }
+    reference dereference() const { return wrapper<int&>(m_x); }
 };
 
 template <typename T, typename U>

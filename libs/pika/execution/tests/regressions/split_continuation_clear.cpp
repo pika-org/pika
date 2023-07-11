@@ -26,10 +26,7 @@ int pika_main()
     for (std::size_t i = 0; i < 100; ++i)
     {
         auto s = ex::schedule(sched) | ex::split();
-        for (std::size_t j = 0; j < 10; ++j)
-        {
-            ex::start_detached(s);
-        }
+        for (std::size_t j = 0; j < 10; ++j) { ex::start_detached(s); }
     }
 
     return pika::finalize();

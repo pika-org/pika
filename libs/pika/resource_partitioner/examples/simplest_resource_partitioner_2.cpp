@@ -14,10 +14,7 @@
 
 #include <iostream>
 
-int pika_main()
-{
-    return pika::finalize();
-}
+int pika_main() { return pika::finalize(); }
 
 void init_resource_partitioner_handler(
     pika::resource::partitioner& rp, pika::program_options::variables_map const& /*vm*/)

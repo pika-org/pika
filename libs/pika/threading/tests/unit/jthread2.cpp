@@ -33,10 +33,7 @@ void test_interrupt_by_destructor()
                 // loop until interrupted (at most 40 times the interval)
                 for ([[maybe_unused]] int i = 0; i < 40; ++i)
                 {
-                    if (stoken.stop_requested())
-                    {
-                        throw "interrupted";
-                    }
+                    if (stoken.stop_requested()) { throw "interrupted"; }
 
                     std::this_thread::sleep_for(interval);
                     pika::this_thread::yield();
@@ -83,10 +80,7 @@ void test_interrupt_started_thread()
                 // loop until interrupted (at most 40 times the interval)
                 for ([[maybe_unused]] int i = 0; i < 40; ++i)
                 {
-                    if (stoken.stop_requested())
-                    {
-                        throw "interrupted";
-                    }
+                    if (stoken.stop_requested()) { throw "interrupted"; }
                     std::this_thread::sleep_for(interval);
                 }
                 PIKA_TEST(false);
@@ -113,16 +107,10 @@ void test_interrupt_started_thread_with_subthread()
     {
         pika::jthread t([interval](pika::stop_token stoken) {
             pika::jthread t2([interval, stoken] {
-                while (!stoken.stop_requested())
-                {
-                    std::this_thread::sleep_for(interval);
-                }
+                while (!stoken.stop_requested()) { std::this_thread::sleep_for(interval); }
             });
 
-            while (!stoken.stop_requested())
-            {
-                std::this_thread::sleep_for(interval);
-            }
+            while (!stoken.stop_requested()) { std::this_thread::sleep_for(interval); }
         });
 
         std::this_thread::sleep_for(4 * interval);
@@ -169,10 +157,7 @@ void test_exchange_token()
                     if (pstoken.load() != nullptr)
                     {
                         act_token = *pstoken;
-                        if (act_token.stop_requested())
-                        {
-                            ++num_interrupts;
-                        }
+                        if (act_token.stop_requested()) { ++num_interrupts; }
                         pstoken.store(nullptr);
                     }
                     std::this_thread::sleep_for(std::chrono::microseconds(100));
@@ -217,14 +202,8 @@ void test_concurrent_interrupt()
                 for ([[maybe_unused]] int i = 0; !it.stop_requested(); ++i)
                 {
                     // should never switch back once requested
-                    if (stoken.stop_requested())
-                    {
-                        stop_requested = true;
-                    }
-                    else
-                    {
-                        PIKA_TEST(!stop_requested);
-                    }
+                    if (stoken.stop_requested()) { stop_requested = true; }
+                    else { PIKA_TEST(!stop_requested); }
                     std::this_thread::sleep_for(std::chrono::microseconds(100));
                 }
                 PIKA_TEST(stop_requested);
@@ -255,10 +234,7 @@ void test_concurrent_interrupt()
             tv.push_back(std::move(t));
         }
 
-        for (auto& t : tv)
-        {
-            t.join();
-        }
+        for (auto& t : tv) { t.join(); }
 
         // only one request to request_stop() should have returned true
         PIKA_TEST_EQ(num_requested_stops, 1);
@@ -276,10 +252,7 @@ void test_jthread_move()
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }
-            if (st.stop_requested())
-            {
-                interrupt_signalled = true;
-            }
+            if (st.stop_requested()) { interrupt_signalled = true; }
         }};
 
         pika::jthread t2{std::move(t)};    // should compile

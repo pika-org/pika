@@ -45,18 +45,15 @@ int pika_main(variables_map& vm)
 {
     std::size_t pxthreads = 0;
 
-    if (vm.count("pxthreads"))
-        pxthreads = vm["pxthreads"].as<std::size_t>();
+    if (vm.count("pxthreads")) pxthreads = vm["pxthreads"].as<std::size_t>();
 
     std::size_t iterations = 0;
 
-    if (vm.count("iterations"))
-        iterations = vm["iterations"].as<std::size_t>();
+    if (vm.count("iterations")) iterations = vm["iterations"].as<std::size_t>();
 
     std::size_t suspend_duration = 0;
 
-    if (vm.count("suspend-duration"))
-        suspend_duration = vm["suspend-duration"].as<std::size_t>();
+    if (vm.count("suspend-duration")) suspend_duration = vm["suspend-duration"].as<std::size_t>();
 
     {
         barrier b(pxthreads + 1);

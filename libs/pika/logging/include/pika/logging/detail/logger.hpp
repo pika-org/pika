@@ -91,8 +91,7 @@ namespace pika::util::logging {
 
             ~gather_holder()
             {
-                if (!empty())
-                    m_this.write(PIKA_MOVE(*this));
+                if (!empty()) m_this.write(PIKA_MOVE(*this));
             }
 
         private:
@@ -119,29 +118,14 @@ namespace pika::util::logging {
         /**
             reads all data about a log message (gathers all the data about it)
         */
-        gather_holder gather()
-        {
-            return {*this};
-        }
+        gather_holder gather() { return {*this}; }
 
-        writer::named_write& writer() noexcept
-        {
-            return m_writer;
-        }
-        writer::named_write const& writer() const noexcept
-        {
-            return m_writer;
-        }
+        writer::named_write& writer() noexcept { return m_writer; }
+        writer::named_write const& writer() const noexcept { return m_writer; }
 
-        bool is_enabled(level level) const noexcept
-        {
-            return level >= m_level;
-        }
+        bool is_enabled(level level) const noexcept { return level >= m_level; }
 
-        void set_enabled(level level) noexcept
-        {
-            m_level = level;
-        }
+        void set_enabled(level level) noexcept { m_level = level; }
 
         /** @brief Marks this logger as initialized
 
@@ -159,10 +143,7 @@ namespace pika::util::logging {
         g_l()->mark_as_initialized();
         @endcode
         */
-        void mark_as_initialized()
-        {
-            turn_cache_off();
-        }
+        void mark_as_initialized() { turn_cache_off(); }
 
     public:
         PIKA_EXPORT void turn_cache_off();

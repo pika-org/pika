@@ -244,10 +244,7 @@ namespace pika::execution::experimental {
         {
             F f;
 
-            void set_value() noexcept(noexcept(f()))
-            {
-                f();
-            }
+            void set_value() noexcept(noexcept(f())) { f(); }
 
             template <typename E_>
             [[noreturn]] void set_error(E_&&) noexcept
@@ -460,14 +457,8 @@ namespace pika::execution::experimental {
         template <typename T>
         friend constexpr auto tag_fallback_invoke(get_env_t const&, T const&) noexcept
         {
-            if constexpr (is_sender_v<T>)
-            {
-                return empty_env{};
-            }
-            else
-            {
-                static_assert(sizeof(T) == 0, "No environment for type T");
-            }
+            if constexpr (is_sender_v<T>) { return empty_env{}; }
+            else { static_assert(sizeof(T) == 0, "No environment for type T"); }
         }
     } get_env{};
 }    // namespace pika::execution::experimental

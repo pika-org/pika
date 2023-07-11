@@ -29,15 +29,9 @@ namespace pika::detail {
             return *this;
         }
 
-        long operator++()
-        {
-            return value_.fetch_add(1, std::memory_order_acq_rel) + 1;
-        }
+        long operator++() { return value_.fetch_add(1, std::memory_order_acq_rel) + 1; }
 
-        long operator--()
-        {
-            return value_.fetch_sub(1, std::memory_order_acq_rel) - 1;
-        }
+        long operator--() { return value_.fetch_sub(1, std::memory_order_acq_rel) - 1; }
 
         atomic_count& operator+=(long n)
         {
@@ -51,10 +45,7 @@ namespace pika::detail {
             return *this;
         }
 
-        operator long() const
-        {
-            return value_.load(std::memory_order_acquire);
-        }
+        operator long() const { return value_.load(std::memory_order_acquire); }
 
     private:
         std::atomic<long> value_;

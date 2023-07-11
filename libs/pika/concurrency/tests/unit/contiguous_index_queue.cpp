@@ -109,16 +109,10 @@ void test_concurrent_worker(pop_mode m, std::size_t thread_index, pika::barrier<
     switch (m)
     {
     case pop_mode::left:
-        while ((curr = q.pop_left()))
-        {
-            popped_indices.push_back(curr.value());
-        }
+        while ((curr = q.pop_left())) { popped_indices.push_back(curr.value()); }
         break;
     case pop_mode::right:
-        while ((curr = q.pop_right()))
-        {
-            popped_indices.push_back(curr.value());
-        }
+        while ((curr = q.pop_right())) { popped_indices.push_back(curr.value()); }
         break;
     case pop_mode::random:
         while (d(r) == 0 ? (curr = q.pop_left()) : (curr = q.pop_right()))
@@ -126,8 +120,7 @@ void test_concurrent_worker(pop_mode m, std::size_t thread_index, pika::barrier<
             popped_indices.push_back(curr.value());
         }
         break;
-    default:
-        PIKA_TEST(false);
+    default: PIKA_TEST(false);
     }
 }
 
@@ -165,10 +158,7 @@ void test_concurrent(pop_mode m)
     for (auto const& p : popped_indices)
     {
         std::copy(p.begin(), p.end(), std::back_inserter(collected_popped_indices));
-        if (!p.empty())
-        {
-            ++num_nonzero_indices_popped;
-        }
+        if (!p.empty()) { ++num_nonzero_indices_popped; }
     }
 
     // All the original indices should have been popped exactly once.
@@ -189,10 +179,7 @@ void test_concurrent(pop_mode m)
 
 int pika_main(pika::program_options::variables_map& vm)
 {
-    if (vm.count("seed"))
-    {
-        seed = vm["seed"].as<unsigned int>();
-    }
+    if (vm.count("seed")) { seed = vm["seed"].as<unsigned int>(); }
 
     test_basic();
     test_concurrent(pop_mode::left);

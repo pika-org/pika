@@ -14,10 +14,7 @@
 
 using namespace pika;
 
-future<void> nested_future()
-{
-    return make_ready_future();
-}
+future<void> nested_future() { return make_ready_future(); }
 
 int pika_main()
 {

@@ -40,24 +40,15 @@ namespace pika::program_options {
         {
             return var + " (=" + m_default_value_as_text + ")";
         }
-        else
-        {
-            return var;
-        }
+        else { return var; }
     }
 
     template <class T, class Char>
     void typed_value<T, Char>::notify(const std::any& value_store) const
     {
         const T* value = std::any_cast<T>(&value_store);
-        if (m_store_to)
-        {
-            *m_store_to = *value;
-        }
-        if (m_notifier)
-        {
-            m_notifier(*value);
-        }
+        if (m_store_to) { *m_store_to = *value; }
+        if (m_notifier) { m_notifier(*value); }
     }
 
     namespace validators {
@@ -124,10 +115,7 @@ namespace pika::program_options {
     template <class T, class Char>
     void validate(std::any& v, const std::vector<std::basic_string<Char>>& s, std::vector<T>*, int)
     {
-        if (!v.has_value())
-        {
-            v = std::any(std::vector<T>());
-        }
+        if (!v.has_value()) { v = std::any(std::vector<T>()); }
         std::vector<T>* tv = std::any_cast<std::vector<T>>(&v);
         PIKA_ASSERT(nullptr != tv);
         for (std::size_t i = 0; i < s.size(); ++i)

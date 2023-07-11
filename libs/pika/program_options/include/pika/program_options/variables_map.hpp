@@ -187,25 +187,13 @@ namespace pika::program_options {
      * Templates/inlines
      */
 
-    inline bool variable_value::empty() const
-    {
-        return !v.has_value();
-    }
+    inline bool variable_value::empty() const { return !v.has_value(); }
 
-    inline bool variable_value::defaulted() const
-    {
-        return m_defaulted;
-    }
+    inline bool variable_value::defaulted() const { return m_defaulted; }
 
-    inline const std::any& variable_value::value() const
-    {
-        return v;
-    }
+    inline const std::any& variable_value::value() const { return v; }
 
-    inline std::any& variable_value::value()
-    {
-        return v;
-    }
+    inline std::any& variable_value::value() { return v; }
 
 }    // namespace pika::program_options
 

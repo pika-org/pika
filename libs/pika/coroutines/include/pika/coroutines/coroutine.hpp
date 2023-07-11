@@ -72,37 +72,19 @@ namespace pika::threads::coroutines::detail {
         coroutine(coroutine&& src) = delete;
         coroutine& operator=(coroutine&& src) = delete;
 
-        thread_id_type get_thread_id() const
-        {
-            return impl_.get_thread_id();
-        }
+        thread_id_type get_thread_id() const { return impl_.get_thread_id(); }
 
 #if defined(PIKA_HAVE_THREAD_PHASE_INFORMATION)
-        std::size_t get_thread_phase() const
-        {
-            return impl_.get_thread_phase();
-        }
+        std::size_t get_thread_phase() const { return impl_.get_thread_phase(); }
 #endif
 
-        std::size_t get_thread_data() const
-        {
-            return impl_.get_thread_data();
-        }
+        std::size_t get_thread_data() const { return impl_.get_thread_data(); }
 
-        std::size_t set_thread_data(std::size_t data)
-        {
-            return impl_.set_thread_data(data);
-        }
+        std::size_t set_thread_data(std::size_t data) { return impl_.set_thread_data(data); }
 
-        void init()
-        {
-            impl_.init();
-        }
+        void init() { impl_.init(); }
 
-        void rebind(functor_type&& f, thread_id_type id)
-        {
-            impl_.rebind(PIKA_MOVE(f), id);
-        }
+        void rebind(functor_type&& f, thread_id_type id) { impl_.rebind(PIKA_MOVE(f), id); }
 
         PIKA_FORCEINLINE result_type operator()(arg_type arg = arg_type())
         {
@@ -115,10 +97,7 @@ namespace pika::threads::coroutines::detail {
             return impl_.result();
         }
 
-        bool is_ready() const
-        {
-            return impl_.is_ready();
-        }
+        bool is_ready() const { return impl_.is_ready(); }
 
         std::ptrdiff_t get_available_stack_space()
         {
@@ -129,10 +108,7 @@ namespace pika::threads::coroutines::detail {
 #endif
         }
 
-        impl_type* impl()
-        {
-            return &impl_;
-        }
+        impl_type* impl() { return &impl_; }
 
     private:
         impl_type impl_;

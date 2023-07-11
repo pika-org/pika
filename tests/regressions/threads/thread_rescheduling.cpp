@@ -97,8 +97,7 @@ void tree_boot(std::uint64_t count, std::uint64_t grain_size, thread_id_type thr
         {
             child_count = ((count - grain_size) / children);
 
-            if (child_count >= grain_size)
-                break;
+            if (child_count >= grain_size) break;
         }
 
         promises.reserve(children + grain_size);

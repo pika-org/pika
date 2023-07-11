@@ -182,8 +182,7 @@ namespace pika::mpi::experimental::detail {
                                     r.op_state.status, PIKA_MOVE(r.op_state.receiver));
                                 break;
                             }
-                            default:
-                                PIKA_UNREACHABLE;
+                            default: PIKA_UNREACHABLE;
                             }
                         },
                         [&](std::exception_ptr ep) {

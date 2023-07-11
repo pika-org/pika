@@ -29,8 +29,7 @@ namespace pika::program_options::detail {
         for (typename tokenizerT::iterator cur_token(tok.begin()), end_token(tok.end());
              cur_token != end_token; ++cur_token)
         {
-            if (!cur_token->empty())
-                result.push_back(*cur_token);
+            if (!cur_token->empty()) result.push_back(*cur_token);
         }
         return result;
     }

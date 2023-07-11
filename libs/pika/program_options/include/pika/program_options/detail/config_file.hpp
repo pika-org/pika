@@ -80,10 +80,7 @@ namespace pika::program_options::detail {
         // The most clean thing would be to pass 'line_iterator' to
         // constructor of this class, but to avoid templating this class
         // we'd need polymorphic iterator, which does not exist yet.
-        virtual bool getline(std::string&)
-        {
-            return false;
-        }
+        virtual bool getline(std::string&) { return false; }
 
     private:
         /** Adds another allowed option. If the 'name' ends with
@@ -108,10 +105,7 @@ namespace pika::program_options::detail {
     class basic_config_file_iterator : public common_config_file_iterator
     {
     public:
-        basic_config_file_iterator()
-        {
-            found_eof();
-        }
+        basic_config_file_iterator() { found_eof(); }
 
         /** Creates a config file parser for the specified stream.
         */
@@ -155,10 +149,7 @@ namespace pika::program_options::detail {
             s = to_internal(in);
             return true;
         }
-        else
-        {
-            return false;
-        }
+        else { return false; }
     }
 
 }    // namespace pika::program_options::detail

@@ -19,19 +19,13 @@ namespace pika::detail {
     template <typename T, typename Enable = void>
     struct to_string_impl
     {
-        static std::string call(T const& value)
-        {
-            return fmt::format("{}", value);
-        }
+        static std::string call(T const& value) { return fmt::format("{}", value); }
     };
 
     template <typename T>
     struct to_string_impl<T, std::enable_if_t<std::is_integral_v<T> || std::is_floating_point_v<T>>>
     {
-        static std::string call(T const& value)
-        {
-            return std::to_string(value);
-        }
+        static std::string call(T const& value) { return std::to_string(value); }
     };
 
     template <typename T>

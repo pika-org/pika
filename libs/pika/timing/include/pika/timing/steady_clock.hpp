@@ -31,10 +31,7 @@ namespace pika::chrono {
         {
         }
 
-        value_type const& value() const noexcept
-        {
-            return _abs_time;
-        }
+        value_type const& value() const noexcept { return _abs_time; }
 
     private:
         value_type _abs_time;
@@ -54,14 +51,10 @@ namespace pika::chrono {
         steady_duration(std::chrono::duration<Rep, Period> const& rel_time)
           : _rel_time(std::chrono::duration_cast<value_type>(rel_time))
         {
-            if (_rel_time < rel_time)
-                ++_rel_time;
+            if (_rel_time < rel_time) ++_rel_time;
         }
 
-        value_type const& value() const noexcept
-        {
-            return _rel_time;
-        }
+        value_type const& value() const noexcept { return _rel_time; }
 
         steady_clock::time_point from_now() const noexcept
         {

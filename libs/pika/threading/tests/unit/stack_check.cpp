@@ -53,8 +53,7 @@ void stack_waste(int N, info_stack& stack)
     temp << "stack_waste " << N;
     stack_remaining(temp.str().c_str(), stack);
     //
-    if (N > 0)
-        stack_waste(N - 1, stack);
+    if (N > 0) stack_waste(N - 1, stack);
 }
 //
 

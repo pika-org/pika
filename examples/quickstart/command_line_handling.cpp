@@ -23,13 +23,9 @@ int pika_main(pika::program_options::variables_map& vm)
     {
         std::vector<std::string> positional = vm["pika:positional"].as<std::vector<std::string>>();
         pika::cout << "positional command line options:\n";
-        for (std::string const& arg : positional)
-            pika::cout << arg << "\n";
+        for (std::string const& arg : positional) pika::cout << arg << "\n";
     }
-    else
-    {
-        pika::cout << "no positional command line options\n";
-    }
+    else { pika::cout << "no positional command line options\n"; }
 
     return pika::finalize();
 }

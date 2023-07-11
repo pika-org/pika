@@ -62,10 +62,7 @@ int main(int ac, char* av[])
         variables_map vm;
         store(command_line_parser(ac, av).options(desc).extra_parser(at_option_parser).run(), vm);
 
-        if (vm.count("help"))
-        {
-            cout << desc;
-        }
+        if (vm.count("help")) { cout << desc; }
         if (vm.count("response-file"))
         {
             // Load the file and tokenize it
@@ -100,10 +97,7 @@ int main(int ac, char* av[])
             copy(s.begin(), s.end(), ostream_iterator<string>(cout, " "));
             cout << "\n";
         }
-        if (vm.count("magic"))
-        {
-            cout << "Magic value: " << vm["magic"].as<int>() << "\n";
-        }
+        if (vm.count("magic")) { cout << "Magic value: " << vm["magic"].as<int>() << "\n"; }
     }
     catch (std::exception& e)
     {

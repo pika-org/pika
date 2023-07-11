@@ -57,8 +57,7 @@ namespace pika::threads::coroutines::detail {
             threads::detail::thread_schedule_state::unknown, threads::detail::invalid_thread_id);
 
         // loop as long this coroutine has been rebound
-        do
-        {
+        do {
 #if defined(PIKA_HAVE_ADDRESS_SANITIZER)
             finish_switch_fiber(nullptr, m_caller);
 #endif

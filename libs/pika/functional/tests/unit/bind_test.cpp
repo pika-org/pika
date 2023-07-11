@@ -29,30 +29,15 @@ namespace placeholders = std::placeholders;
 
 //
 
-long f_0()
-{
-    return 17041L;
-}
+long f_0() { return 17041L; }
 
-long f_1(long a)
-{
-    return a;
-}
+long f_1(long a) { return a; }
 
-long f_2(long a, long b)
-{
-    return a + 10 * b;
-}
+long f_2(long a, long b) { return a + 10 * b; }
 
-long f_3(long a, long b, long c)
-{
-    return a + 10 * b + 100 * c;
-}
+long f_3(long a, long b, long c) { return a + 10 * b + 100 * c; }
 
-long f_4(long a, long b, long c, long d)
-{
-    return a + 10 * b + 100 * c + 1000 * d;
-}
+long f_4(long a, long b, long c, long d) { return a + 10 * b + 100 * c + 1000 * d; }
 
 long f_5(long a, long b, long c, long d, long e)
 {
@@ -82,30 +67,15 @@ long f_9(long a, long b, long c, long d, long e, long f, long g, long h, long i)
 
 long global_result;
 
-void fv_0()
-{
-    global_result = 17041L;
-}
+void fv_0() { global_result = 17041L; }
 
-void fv_1(long a)
-{
-    global_result = a;
-}
+void fv_1(long a) { global_result = a; }
 
-void fv_2(long a, long b)
-{
-    global_result = a + 10 * b;
-}
+void fv_2(long a, long b) { global_result = a + 10 * b; }
 
-void fv_3(long a, long b, long c)
-{
-    global_result = a + 10 * b + 100 * c;
-}
+void fv_3(long a, long b, long c) { global_result = a + 10 * b + 100 * c; }
 
-void fv_4(long a, long b, long c, long d)
-{
-    global_result = a + 10 * b + 100 * c + 1000 * d;
-}
+void fv_4(long a, long b, long c, long d) { global_result = a + 10 * b + 100 * c + 1000 * d; }
 
 void fv_5(long a, long b, long c, long d, long e)
 {
@@ -172,18 +142,9 @@ void function_test()
 
 struct Y
 {
-    short operator()(short& r) const
-    {
-        return ++r;
-    }
-    int operator()(int a, int b) const
-    {
-        return a + 10 * b;
-    }
-    long operator()(long a, long b, long c) const
-    {
-        return a + 10 * b + 100 * c;
-    }
+    short operator()(short& r) const { return ++r; }
+    int operator()(int a, int b) const { return a + 10 * b; }
+    long operator()(long a, long b, long c) const { return a + 10 * b + 100 * c; }
     void operator()(long a, long b, long c, long d) const
     {
         global_result = a + 10 * b + 100 * c + 1000 * d;
@@ -238,16 +199,10 @@ void function_object_test2()
 
 struct Z
 {
-    int operator()(int a, int b) const
-    {
-        return a + 10 * b;
-    }
+    int operator()(int a, int b) const { return a + 10 * b; }
 };
 
-void adaptable_function_object_test()
-{
-    PIKA_TEST_EQ(pika::util::detail::bind(Z(), 7, 4)(), 47);
-}
+void adaptable_function_object_test() { PIKA_TEST_EQ(pika::util::detail::bind(Z(), 7, 4)(), 47); }
 
 #endif
 
@@ -385,23 +340,11 @@ struct V
     {
     }
 
-    void f0()
-    {
-        f1(17);
-    }
-    void g0() const
-    {
-        g1(17);
-    }
+    void f0() { f1(17); }
+    void g0() const { g1(17); }
 
-    void f1(int a1)
-    {
-        hash = (hash * 17041 + a1) % 32768;
-    }
-    void g1(int a1) const
-    {
-        hash = (hash * 17041 + a1 * 2) % 32768;
-    }
+    void f1(int a1) { hash = (hash * 17041 + a1) % 32768; }
+    void g1(int a1) const { hash = (hash * 17041 + a1 * 2) % 32768; }
 
     void f2(int a1, int a2)
     {

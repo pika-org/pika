@@ -156,10 +156,7 @@ namespace pika::threads::detail {
 
         virtual ~shared_priority_queue_scheduler() {}
 
-        static std::string get_scheduler_name()
-        {
-            return "shared_priority_queue_scheduler";
-        }
+        static std::string get_scheduler_name() { return "shared_priority_queue_scheduler"; }
 
         // ------------------------------------------------------------
         /// get/set scheduler mode, calls inherited set function
@@ -208,8 +205,7 @@ namespace pika::threads::detail {
             using namespace pika::threads::detail;
             const std::size_t thread_pool_num = get_thread_pool_num_tss();
             // if the thread belongs to this pool return local Id
-            if (pool_index_ == thread_pool_num)
-                return get_local_thread_num_tss();
+            if (pool_index_ == thread_pool_num) return get_local_thread_num_tss();
             return std::size_t(-1);
         }
 
@@ -458,8 +454,7 @@ namespace pika::threads::detail {
                         return result;
                     }
                     // if no numa stealing, skip other domains
-                    if (!steal_numa)
-                        break;
+                    if (!steal_numa) break;
                 }
                 for (std::size_t d = 0; d < num_domains_; ++d)
                 {
@@ -475,8 +470,7 @@ namespace pika::threads::detail {
                         return result;
                     }
                     // if no numa stealing, skip other domains
-                    if (!steal_numa)
-                        break;
+                    if (!steal_numa) break;
                 }
             }
             else /*scheduler_mode::steal_after_local*/
@@ -595,15 +589,13 @@ namespace pika::threads::detail {
                 numa_stealing_, core_stealing_, nullptr, thrd, "SBF-get_next_thread",
                 get_next_thread_function_HP, get_next_thread_function);
 
-            if (result)
-                return result;
+            if (result) return result;
 
             // if we did not get a task at all, then try converting
             // tasks in the pending queue into staged ones
             std::size_t added = 0;
             just_add_new(added);
-            if (added > 0)
-                return get_next_thread(0, true, thrd, enable_stealing);
+            if (added > 0) return get_next_thread(0, true, thrd, enable_stealing);
             return false;
         }
 
@@ -653,10 +645,7 @@ namespace pika::threads::detail {
                 steal_by_function<std::size_t>(domain, q_index, numa_stealing_, core_stealing_,
                     receiver, added, "just_add_new", add_new_function_HP, add_new_function);
 
-            if (added_tasks)
-            {
-                return false;
-            }
+            if (added_tasks) { return false; }
 
             return true;
         }
@@ -751,14 +740,8 @@ namespace pika::threads::detail {
                 domain_num = fast_mod(schedulehint.hint, num_domains_);
                 // if the thread creating the new task is on the domain
                 // assigned to the new task - try to reuse the core as well
-                if (d_lookup_[thread_num] == domain_num)
-                {
-                    q_index = q_lookup_[thread_num];
-                }
-                else
-                {
-                    throw std::runtime_error("counter problem in thread scheduler");
-                }
+                if (d_lookup_[thread_num] == domain_num) { q_index = q_lookup_[thread_num]; }
+                else { throw std::runtime_error("counter problem in thread scheduler"); }
                 break;
             }
 
@@ -846,10 +829,7 @@ namespace pika::threads::detail {
                 std::size_t q_index = q_lookup_[thread_num];
                 count += numa_holder_[domain_num].thread_queue(q_index)->get_queue_length();
             }
-            else
-            {
-                throw std::runtime_error("unhandled get_queue_length with -1");
-            }
+            else { throw std::runtime_error("unhandled get_queue_length with -1"); }
             PIKA_DETAIL_DP(spq_deb<3>,
                 debug(str<>("get_queue_length"), "thread_num ", dec<>(thread_num), dec<>(count)));
             return count;
@@ -949,10 +929,7 @@ namespace pika::threads::detail {
                     std::size_t pu_num = affinity_data_.get_pu_num(global_id);
                     std::size_t domain = topo.get_numa_node_number(pu_num);
 #if defined(SHARED_PRIORITY_SCHEDULER_DEBUG_NUMA)
-                    if (local_id >= (num_workers_ + 1) / 2)
-                    {
-                        domain += 1;
-                    }
+                    if (local_id >= (num_workers_ + 1) / 2) { domain += 1; }
 #endif
                     d_lookup_[local_id] = domain;
 
@@ -1166,10 +1143,7 @@ namespace pika::threads::detail {
 #ifdef PIKA_DETAIL_SHARED_PRIORITY_SCHEDULER_LINUX
                 spq_arr.array("# schedcpu_  ", &schedcpu_[0], num_workers_);
 #endif
-                for (std::size_t d = 0; d < num_domains_; ++d)
-                {
-                    numa_holder_[d].debug_info();
-                }
+                for (std::size_t d = 0; d < num_domains_; ++d) { numa_holder_[d].debug_info(); }
             }
         }
 

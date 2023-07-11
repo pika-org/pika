@@ -48,16 +48,10 @@ namespace pika::detail {
             // Wait for lock to be released without generating cache misses
             // Similar implementation to pika::concurrency::detail::spinlock
             unsigned k = 0;
-            while (!try_lock())
-            {
-                yield_k(k++);
-            }
+            while (!try_lock()) { yield_k(k++); }
         }
 
-        PIKA_FORCEINLINE void unlock() noexcept
-        {
-            m.store(false, std::memory_order_release);
-        }
+        PIKA_FORCEINLINE void unlock() noexcept { m.store(false, std::memory_order_release); }
     };
 
 }    // namespace pika::detail
