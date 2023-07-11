@@ -469,7 +469,7 @@ namespace pika::mpi::experimental {
             // start a scoped block where the polling lock is held
             {
 #ifdef PIKA_HAVE_APEX
-                apex::scoped_timer apex_poll("pika::mpi::poll");
+                //apex::scoped_timer apex_poll("pika::mpi::poll");
 #endif
                 std::unique_lock<mutex_type> lk(mpi_data_.polling_vector_mtx_, std::try_to_lock);
                 if (!lk.owns_lock())
