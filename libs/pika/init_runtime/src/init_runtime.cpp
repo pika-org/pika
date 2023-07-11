@@ -217,6 +217,21 @@ namespace pika {
         return result;
     }
 
+    int wait(error_code& ec)
+    {
+        runtime* rt = get_runtime_ptr();
+        if (nullptr == rt)
+        {
+            PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::wait",
+                "the runtime system is not active (did you already call pika::stop?)");
+            return -1;
+        }
+
+        rt->get_thread_manager().wait();
+
+        return 0;
+    }
+
     int suspend(error_code& ec)
     {
         if (threads::detail::get_self_ptr())
