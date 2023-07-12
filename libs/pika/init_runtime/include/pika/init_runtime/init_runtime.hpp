@@ -143,6 +143,7 @@ namespace pika {
         init_params const& params = init_params());
     PIKA_EXPORT int finalize(error_code& ec = throws);
     PIKA_EXPORT int stop(error_code& ec = throws);
+    PIKA_EXPORT int wait(error_code& ec = throws);
     PIKA_EXPORT int suspend(error_code& ec = throws);
     PIKA_EXPORT int resume(error_code& ec = throws);
 }    // namespace pika
