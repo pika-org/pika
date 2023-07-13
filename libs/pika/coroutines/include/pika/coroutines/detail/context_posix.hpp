@@ -312,6 +312,10 @@ namespace pika::threads::coroutines {
             {
                 if (m_stack)
                     free_stack(m_stack, m_stack_size);
+
+# if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION)
+                free(segv_stack.ss_sp);
+# endif
             }
 
             // Return the size of the reserved stack address space.

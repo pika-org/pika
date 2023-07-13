@@ -257,6 +257,10 @@ namespace pika::threads::coroutines {
 # endif
                     posix::free_stack(m_stack, static_cast<std::size_t>(m_stack_size));
                 }
+
+# if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) && !defined(PIKA_HAVE_ADDRESS_SANITIZER)
+                free(segv_stack.ss_sp);
+# endif
             }
 
 # if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) && !defined(PIKA_HAVE_ADDRESS_SANITIZER)
