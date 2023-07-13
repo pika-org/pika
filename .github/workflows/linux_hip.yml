@@ -21,7 +21,7 @@ jobs:
   build:
     name: github/linux/hip/fast
     runs-on: ubuntu-latest
-    container: pikaorg/pika-ci-hip:8
+    container: pikaorg/pika-ci-hip:10
     steps:
     - uses: actions/checkout@v3
     - name: Update apt repositories for ccache
