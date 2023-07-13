@@ -924,6 +924,13 @@ namespace pika::threads::detail {
         pika::detail::ios_flags_saver ifs(os);
         bool first = true;
 
+        if (!threads::detail::any(m))
+        {
+            os << std::setw(4) << num_thread << ": thread binding disabled"
+               << ", on pool \"" << pool_name << "\"" << std::endl;
+            return;
+        }
+
         for (std::size_t i = 0; i != num_of_pus_; ++i)
         {
             hwloc_obj_t obj = hwloc_get_obj_by_type(topo, HWLOC_OBJ_PU, unsigned(i));

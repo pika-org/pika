@@ -1137,16 +1137,8 @@ namespace pika {
                     // print the mask for the current PU
                     threads::detail::mask_cref_type pu_mask = rp.get_pu_mask(i);
 
-                    if (!threads::detail::any(pu_mask))
-                    {
-                        strm << std::setw(4) << i    //-V112
-                             << ": thread binding disabled" << std::endl;
-                    }
-                    else
-                    {
-                        std::string pool_name = tm.get_pool(i).get_pool_name();
-                        top.print_affinity_mask(strm, i, pu_mask, pool_name);
-                    }
+                    std::string pool_name = tm.get_pool(i).get_pool_name();
+                    top.print_affinity_mask(strm, i, pu_mask, pool_name);
 
                     // Make sure the mask does not contradict the CPU bindings
                     // returned by the system (see #973: Would like option to
@@ -1155,13 +1147,21 @@ namespace pika {
                     std::thread& blob = tm.get_os_thread_handle(i);
                     threads::detail::mask_type boundcpu = top.get_cpubind_mask(blob, ec);
 
+                    // Empty masks are equivalent to full masks, so we first
+                    // transform possible empty masks to full masks.
+                    threads::detail::mask_type boundcpu_never_empty =
+                        !threads::detail::any(boundcpu) ? ~boundcpu : boundcpu;
+                    threads::detail::mask_type pu_mask_never_empty =
+                        !threads::detail::any(pu_mask) ? ~pu_mask : pu_mask;
+
                     // The masks reported by pika must be the same as the ones
                     // reported from HWLOC.
-                    if (!ec && threads::detail::any(boundcpu) &&
-                        !threads::detail::equal(boundcpu, pu_mask, num_threads))
+                    if (!ec &&
+                        !threads::detail::equal(
+                            boundcpu_never_empty, pu_mask_never_empty, num_threads))
                     {
-                        std::string boundcpu_str = threads::detail::to_string(boundcpu);
-                        std::string pu_mask_str = threads::detail::to_string(pu_mask);
+                        std::string boundcpu_str = threads::detail::to_string(boundcpu_never_empty);
+                        std::string pu_mask_str = threads::detail::to_string(pu_mask_never_empty);
                         PIKA_THROW_EXCEPTION(pika::error::invalid_status, "handle_print_bind",
                             "unexpected mismatch between locality {}: binding reported from "
                             "HWLOC({}) and pika({}) on thread {}",
