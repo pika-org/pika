@@ -35,11 +35,6 @@
 
 namespace pika::mpi::experimental {
 
-    namespace {
-        namespace pud = pika::util::detail;
-        namespace ex = execution::experimental;
-    }    // namespace
-
     inline constexpr struct transform_mpi_t final
       : pika::functional::detail::tag_fallback<transform_mpi_t>
     {

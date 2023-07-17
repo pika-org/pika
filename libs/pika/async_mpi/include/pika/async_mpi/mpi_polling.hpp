@@ -29,13 +29,15 @@
 #include <utility>
 #include <vector>
 
-namespace pika::mpi::experimental {
-
+namespace pika::mpi::experimental::detail {
     template <typename E>
     constexpr std::underlying_type_t<E> to_underlying(E e) noexcept
     {
         return static_cast<std::underlying_type_t<E>>(e);
     }
+}    // namespace pika::mpi::experimental::detail
+
+namespace pika::mpi::experimental {
 
     enum pool_create_mode
     {
@@ -119,15 +121,14 @@ namespace pika::mpi::experimental {
             /// if transferred to a new task, or resumed from sleep.
             high_priority = 0x08,
 
-            /// 3 bits control the handler method,
-            method_mask = 0x70,
+            /// 2 bits control the handler method,
+            method_mask = 0x30,
 
             /// the individual methods that are supported for dispatching continuations
             yield_while = 0x00,
             suspend_resume = 0x10,
             new_task = 0x20,
             continuation = 0x30,
-            original = 0x40,
 
             /// Default flags are to invoke inline, but transfer completion using a dedicated pool
             default_mode = use_pool | request_inline | high_priority | new_task,
@@ -136,32 +137,34 @@ namespace pika::mpi::experimental {
         // 2 bits define continuation mode
         inline handler_mode get_handler_mode(int flags)
         {
-            return static_cast<handler_mode>(flags & to_underlying(handler_mode::method_mask));
+            return static_cast<handler_mode>(
+                flags & detail::to_underlying(handler_mode::method_mask));
         }
 
         // 1 bit defines high priority mode for completion
         inline bool use_HP_completion(int mode)
         {
-            return static_cast<bool>((mode & to_underlying(handler_mode::high_priority)) ==
-                to_underlying(handler_mode::high_priority));
+            return static_cast<bool>((mode & detail::to_underlying(handler_mode::high_priority)) ==
+                detail::to_underlying(handler_mode::high_priority));
         }
         // 1 bit defines inline or transfer completion
         inline bool use_inline_completion(int mode)
         {
-            return static_cast<bool>((mode & to_underlying(handler_mode::completion_inline)) ==
-                to_underlying(handler_mode::completion_inline));
+            return static_cast<bool>(
+                (mode & detail::to_underlying(handler_mode::completion_inline)) ==
+                detail::to_underlying(handler_mode::completion_inline));
         }
         // 1 bit defines inline or transfer mpi invocation
         inline bool use_inline_request(int mode)
         {
-            return static_cast<bool>((mode & to_underlying(handler_mode::request_inline)) ==
-                to_underlying(handler_mode::request_inline));
+            return static_cast<bool>((mode & detail::to_underlying(handler_mode::request_inline)) ==
+                detail::to_underlying(handler_mode::request_inline));
         }
         // 1 bit defines whether we use a pool or not
         inline bool use_pool(int mode)
         {
-            return static_cast<bool>((mode & to_underlying(handler_mode::use_pool)) ==
-                to_underlying(handler_mode::use_pool));
+            return static_cast<bool>((mode & detail::to_underlying(handler_mode::use_pool)) ==
+                detail::to_underlying(handler_mode::use_pool));
         }
 
         inline const char* mode_string(int flags)
@@ -181,7 +184,7 @@ namespace pika::mpi::experimental {
                 return "suspend_resume";
                 break;
             default:
-                return "default";
+                return "invalid";
             }
         }
 

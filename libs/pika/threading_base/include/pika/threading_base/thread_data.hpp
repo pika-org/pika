@@ -415,7 +415,7 @@ namespace pika::threads::detail {
         struct scoped_thread_priority
         {
             pika::execution::thread_priority old_priority_;
-            scoped_thread_priority(pika::execution::thread_priority new_p)
+            explicit scoped_thread_priority(pika::execution::thread_priority new_p)
               : old_priority_{threads::detail::get_self_id_data()->get_priority()}
             {
                 threads::detail::get_self_id_data()->set_priority(new_p);

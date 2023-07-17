@@ -37,7 +37,7 @@ namespace pika::mpi::experimental::detail {
     // by convention the title is 7 chars (for alignment)
     using namespace pika::debug::detail;
     template <int Level>
-    inline print_threshold<Level, 0> mpi_tran("MPITRAN");
+    inline constexpr print_threshold<Level, 0> mpi_tran("MPITRAN");
 
     namespace {
         namespace ex = pika::execution::experimental;

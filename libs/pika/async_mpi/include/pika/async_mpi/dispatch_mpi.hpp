@@ -124,7 +124,6 @@ namespace pika::mpi::experimental::detail {
                     pika::detail::try_catch_exception_ptr(
                         [&]() mutable {
                             using namespace pika::debug::detail;
-                            using ts_element_type = std::tuple<std::decay_t<Ts>...>;
                             using invoke_result_type = mpi_request_invoke_result_t<F, Ts...>;
 
                             PIKA_DETAIL_DP(mpi_tran<5>,

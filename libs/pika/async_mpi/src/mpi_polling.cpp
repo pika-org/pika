@@ -44,7 +44,7 @@ namespace pika::mpi::experimental {
         template <int Level>
         static print_threshold<Level, 0> mpi_debug("MPIPOLL");
 
-        constexpr std::uint32_t max_mpi_streams = to_underlying(stream_type::max_stream);
+        constexpr std::uint32_t max_mpi_streams = detail::to_underlying(stream_type::max_stream);
         constexpr std::uint32_t max_poll_requests = 32;
 
         // -----------------------------------------------------------------
@@ -197,7 +197,7 @@ namespace pika::mpi::experimental {
 
         void init_stream(stream_type s, std::int32_t limit)
         {
-            mpi_stream& stream = mpi_data_.default_queues_[to_underlying(s)];
+            mpi_stream& stream = mpi_data_.default_queues_[detail::to_underlying(s)];
             stream.semaphore_ = std::make_shared<semaphore_type>(limit);
             stream.name_ = stream_name(s);
             stream.limit_ = limit;
@@ -206,7 +206,7 @@ namespace pika::mpi::experimental {
 
         std::shared_ptr<semaphore_type> get_semaphore(stream_type s)
         {
-            mpi_stream& stream = mpi_data_.default_queues_[to_underlying(s)];
+            mpi_stream& stream = mpi_data_.default_queues_[detail::to_underlying(s)];
             PIKA_DETAIL_DP(mpi_debug<3>,
                 debug(str<>("get stream"), stream.name_, dec<5>(stream.semaphore_.use_count())));
             return stream.semaphore_;
@@ -220,7 +220,7 @@ namespace pika::mpi::experimental {
 
         inline mpi_stream& get_stream_ref(stream_type stream)
         {
-            return mpi_data_.default_queues_[to_underlying(stream)];
+            return mpi_data_.default_queues_[detail::to_underlying(stream)];
         }
 
         // stream operator to display debug mpi_data
@@ -678,7 +678,8 @@ namespace pika::mpi::experimental {
         }
         else
         {
-            PIKA_ASSERT(to_underlying(s.value()) <= detail::mpi_data_.default_queues_.size());
+            PIKA_ASSERT(
+                detail::to_underlying(s.value()) <= detail::mpi_data_.default_queues_.size());
             detail::init_stream(s.value(), N);
         }
     }
@@ -690,7 +691,7 @@ namespace pika::mpi::experimental {
         {
             return detail::mpi_data_.default_queues_[0].limit_;
         }
-        PIKA_ASSERT(to_underlying(s.value()) <= detail::mpi_data_.default_queues_.size());
+        PIKA_ASSERT(detail::to_underlying(s.value()) <= detail::mpi_data_.default_queues_.size());
         return detail::get_stream_ref(s.value()).limit_;
     }
 
@@ -725,7 +726,8 @@ namespace pika::mpi::experimental {
         }
         else
         {
-            throw std::runtime_error("MPI must be initialized prior to pool creation");
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "mpi::create_pool",
+                "MPI must be initialized prior to pool creation");
         }
         //
         int flags = detail::get_completion_mode_default();
@@ -858,7 +860,9 @@ namespace pika::mpi::experimental {
         if (pika::mpi::experimental::detail::get_handler_mode(mode) !=
             detail::handler_mode::yield_while)
         {
-            PIKA_DETAIL_DP(detail::mpi_debug<5>, debug(str<>("enabling polling"), name));
+            PIKA_DETAIL_DP(detail::mpi_debug<5>,
+                debug(
+                    str<>("enabling polling"), name, mpi::experimental::detail::mode_string(mode)));
             detail::register_polling(pika::resource::get_thread_pool(name));
         }
 
