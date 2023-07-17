@@ -32,6 +32,7 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+#include <pika/type_support/unused.hpp>
 
 // include unist.d conditionally to check for POSIX version. Not all OSs have the
 // unistd header...
@@ -75,9 +76,54 @@ namespace pika::threads::coroutines::detail::posix {
 
 # if defined(PIKA_HAVE_THREAD_STACK_MMAP) && defined(_POSIX_MAPPED_FILES) && _POSIX_MAPPED_FILES > 0
 
+    inline void* to_stack_with_guard_page(void* stack)
+    {
+#  if defined(PIKA_HAVE_THREAD_GUARD_PAGE)
+        if (use_guard_pages)
+        {
+            return static_cast<void*>(static_cast<void**>(stack) - (EXEC_PAGESIZE / sizeof(void*)));
+        }
+#  endif
+        return stack;
+    }
+
+    inline void* to_stack_without_guard_page(void* stack)
+    {
+#  if defined(PIKA_HAVE_THREAD_GUARD_PAGE)
+        if (use_guard_pages)
+        {
+            return static_cast<void*>(static_cast<void**>(stack) + (EXEC_PAGESIZE / sizeof(void*)));
+        }
+#  endif
+        return stack;
+    }
+
+    inline void add_guard_page(void* stack)
+    {
+#  if defined(PIKA_HAVE_THREAD_GUARD_PAGE)
+        if (use_guard_pages)
+        {
+            ::mprotect(stack, EXEC_PAGESIZE, PROT_NONE);
+        }
+#  else
+        PIKA_UNUSED(stack);
+#  endif
+    }
+
+    inline std::size_t stack_size_with_guard_page(std::size_t size)
+    {
+#  if defined(PIKA_HAVE_THREAD_GUARD_PAGE)
+        if (use_guard_pages)
+        {
+            return size + EXEC_PAGESIZE;
+        }
+#  endif
+        return size;
+    }
+
     inline void* alloc_stack(std::size_t size)
     {
-        void* real_stack = ::mmap(nullptr, size + EXEC_PAGESIZE, PROT_READ | PROT_WRITE,
+        void* real_stack = ::mmap(nullptr, stack_size_with_guard_page(size), PROT_READ | PROT_WRITE,
 #  if defined(__APPLE__)
             MAP_PRIVATE | MAP_ANON | MAP_NORESERVE,
 #  elif defined(__FreeBSD__)
@@ -99,19 +145,8 @@ namespace pika::threads::coroutines::detail::posix {
             throw std::runtime_error(error_message);
         }
 
-#  if defined(PIKA_HAVE_THREAD_GUARD_PAGE)
-        if (use_guard_pages)
-        {
-            // Add a guard page.
-            ::mprotect(real_stack, EXEC_PAGESIZE, PROT_NONE);
-
-            void** stack = static_cast<void**>(real_stack) + (EXEC_PAGESIZE / sizeof(void*));
-            return static_cast<void*>(stack);
-        }
-        return real_stack;
-#  else
-        return real_stack;
-#  endif
+        add_guard_page(real_stack);
+        return to_stack_without_guard_page(real_stack);
     }
 
     inline void watermark_stack(void* stack, std::size_t size)
@@ -142,19 +177,7 @@ namespace pika::threads::coroutines::detail::posix {
 
     inline void free_stack(void* stack, std::size_t size)
     {
-#  if defined(PIKA_HAVE_THREAD_GUARD_PAGE)
-        if (use_guard_pages)
-        {
-            void** real_stack = static_cast<void**>(stack) - (EXEC_PAGESIZE / sizeof(void*));
-            ::munmap(static_cast<void*>(real_stack), size + EXEC_PAGESIZE);
-        }
-        else
-        {
-            ::munmap(stack, size);
-        }
-#  else
-        ::munmap(stack, size);
-#  endif
+        ::munmap(to_stack_with_guard_page(stack), stack_size_with_guard_page(size));
     }
 
 # else    // non-mmap()
