@@ -521,7 +521,7 @@ namespace pika::mpi::experimental {
                         int req_init = 0;
                         while (vsize > 0)
                         {
-                            int req_size = std::min(vsize, max_poll_requests);
+                            int req_size = (std::min)(vsize, max_poll_requests);
                             /* @TODO: if we use MPI_STATUSES_IGNORE - how do we report failures? */
                             int status = MPI_Testsome(req_size, &mpi_data_.requests_[req_init],
                                 &num_completed, indices_vector_.data(),
