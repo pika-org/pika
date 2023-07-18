@@ -162,11 +162,11 @@ namespace pika::mpi::experimental::detail {
                         /*, "stream", detail::stream_name(op_state.stream)*/));
                 // wake up the suspended thread
                 {
-                    std::lock_guard lk(op_state.mutex_);
+                    std::lock_guard lk(op_state.mutex);
                     op_state.status = status;
                     op_state.completed = true;
                 }
-                op_state.cond_var_.notify_one();
+                op_state.cond_var.notify_one();
             },
             request);
     }

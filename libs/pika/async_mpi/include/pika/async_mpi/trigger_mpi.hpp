@@ -81,12 +81,12 @@ namespace pika::mpi::experimental::detail {
         struct operation_state
         {
             std::decay_t<Receiver> receiver;
-            int mode_flags_;
+            int mode_flags;
             int status;
             // these vars are needed by suspend/resume mode
             bool completed;
-            pika::detail::spinlock mutex_;
-            pika::condition_variable cond_var_;
+            pika::detail::spinlock mutex;
+            pika::condition_variable cond_var;
 
             // -----------------------------------------------------------------
             // The mpi_receiver receives inputs from the previous sender,
@@ -121,12 +121,12 @@ namespace pika::mpi::experimental::detail {
                     }
 
                     // which polling/testing mode are we using
-                    handler_mode mode = get_handler_mode(r.op_state.mode_flags_);
+                    handler_mode mode = get_handler_mode(r.op_state.mode_flags);
 
                     PIKA_DETAIL_DP(mpi_tran<5>,
                         debug(str<>("trigger_mpi_recv"), "set_value_t", "req", ptr(request),
-                            "flags", bin<8>(r.op_state.mode_flags_),
-                            mode_string(r.op_state.mode_flags_)));
+                            "flags", bin<8>(r.op_state.mode_flags),
+                            mode_string(r.op_state.mode_flags)));
 
                     pika::detail::try_catch_exception_ptr(
                         [&]() mutable {
@@ -163,18 +163,18 @@ namespace pika::mpi::experimental::detail {
                                 // suspend is invalid except on a pika thread
                                 PIKA_ASSERT(pika::threads::detail::get_self_id());
                                 // the callback will resume _this_ thread
-                                std::unique_lock l{r.op_state.mutex_};
+                                std::unique_lock l{r.op_state.mutex};
                                 resume_request_callback(request, r.op_state);
-                                if (use_HP_completion(r.op_state.mode_flags_))
+                                if (use_HP_completion(r.op_state.mode_flags))
                                 {
                                     threads::detail::thread_data::scoped_thread_priority
                                         set_restore(execution::thread_priority::high);
-                                    r.op_state.cond_var_.wait(
+                                    r.op_state.cond_var.wait(
                                         l, [&]() { return r.op_state.completed; });
                                 }
                                 else
                                 {
-                                    r.op_state.cond_var_.wait(
+                                    r.op_state.cond_var.wait(
                                         l, [&]() { return r.op_state.completed; });
                                 }
 #ifdef PIKA_HAVE_APEX
@@ -208,7 +208,7 @@ namespace pika::mpi::experimental::detail {
             template <typename Receiver_, typename Sender_>
             operation_state(Receiver_&& receiver, Sender_&& sender, int flags)
               : receiver(PIKA_FORWARD(Receiver_, receiver))
-              , mode_flags_{flags}
+              , mode_flags{flags}
               , status{MPI_SUCCESS}
               , op_state(ex::connect(PIKA_FORWARD(Sender_, sender), trigger_mpi_receiver{*this}))
             {
