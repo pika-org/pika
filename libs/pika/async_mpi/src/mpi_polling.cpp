@@ -293,8 +293,6 @@ namespace pika::mpi::experimental {
                     detail::init_stream(stream_type(i), val);
                 }
             }
-            // return default val for automatic (unspecified) stream
-            //            return get_stream_ref(stream_type::automatic).limit_;
         }
 
         // -----------------------------------------------------------------
