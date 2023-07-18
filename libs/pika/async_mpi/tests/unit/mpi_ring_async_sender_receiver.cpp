@@ -447,12 +447,6 @@ int pika_main(pika::program_options::variables_map& vm)
         // the user queue should always be empty by now since our counter tracks it
         PIKA_ASSERT(mpi::get_work_count() == 0);
 
-        // don't exit until messages that are still in flight are drained
-        //        while (mpi::get_work_count() > 0)
-        //        {
-        //            pika::this_thread::yield();
-        //        }
-
         double elapsed = t.elapsed();
 
         if (rank == 0)
