@@ -15,6 +15,7 @@
 #include <pika/modules/errors.hpp>
 #include <pika/modules/threading_base.hpp>
 #include <pika/mpi_base/mpi_environment.hpp>
+#include <pika/string_util/case_conv.hpp>
 #include <pika/synchronization/condition_variable.hpp>
 #include <pika/synchronization/mutex.hpp>
 //
@@ -285,8 +286,7 @@ namespace pika::mpi::experimental {
             {
                 std::string str =
                     "PIKA_MPI_MSG_THROTTLE_" + std::string(stream_name(stream_type(i)));
-                std::transform(str.begin(), str.end(), str.begin(),
-                    [](unsigned char c) { return std::toupper(c); });
+                pika::detail::to_upper(str);
                 val = pika::detail::get_env_var_as<std::uint32_t>(str.c_str(), def);
                 if (val != def)
                 {
