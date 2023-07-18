@@ -39,9 +39,7 @@ namespace pika::mpi::experimental::detail {
     template <int Level>
     inline constexpr print_threshold<Level, 0> mpi_tran("MPITRAN");
 
-    namespace {
-        namespace ex = pika::execution::experimental;
-    }
+    namespace ex = pika::execution::experimental;
 
     // -----------------------------------------------------------------
     template <typename T>

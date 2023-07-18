@@ -35,10 +35,8 @@
 #include <utility>
 
 namespace pika::mpi::experimental::detail {
+    namespace ex = pika::execution::experimental;
 
-    namespace {
-        namespace ex = pika::execution::experimental;
-    }
     // -----------------------------------------------------------------
     // route calls through an impl layer for ADL isolation
     template <typename Sender>
@@ -240,13 +238,13 @@ namespace pika::mpi::experimental::detail {
 
 namespace pika::mpi::experimental {
 
-    namespace exp = pika::execution::experimental;
-
     inline constexpr struct trigger_mpi_t final
       : pika::functional::detail::tag_fallback<trigger_mpi_t>
     {
     private:
-        template <typename Sender, PIKA_CONCEPT_REQUIRES_(ex::is_sender_v<std::decay_t<Sender>>)>
+        template <typename Sender,
+            PIKA_CONCEPT_REQUIRES_(
+                pika::execution::experimental::is_sender_v<std::decay_t<Sender>>)>
         friend constexpr PIKA_FORCEINLINE auto
         tag_fallback_invoke(trigger_mpi_t, Sender&& sender, int flags)
         {
@@ -258,7 +256,8 @@ namespace pika::mpi::experimental {
         //
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(trigger_mpi_t, int flags)
         {
-            return ex::detail::partial_algorithm<trigger_mpi_t, int>{flags};
+            return pika::execution::experimental::detail::partial_algorithm<trigger_mpi_t, int>{
+                flags};
         }
 
     } trigger_mpi{};

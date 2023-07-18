@@ -40,8 +40,10 @@ namespace pika::mpi::experimental {
     {
     private:
         template <typename Sender, typename F,
-            PIKA_CONCEPT_REQUIRES_(ex::is_sender_v<std::decay_t<Sender>>)>
-        friend constexpr PIKA_FORCEINLINE ex::unique_any_sender<> tag_fallback_invoke(
+            PIKA_CONCEPT_REQUIRES_(
+                pika::execution::experimental::is_sender_v<std::decay_t<Sender>>)>
+        friend constexpr PIKA_FORCEINLINE pika::execution::experimental::unique_any_sender<>
+        tag_fallback_invoke(
             transform_mpi_t, Sender&& sender, F&& f, stream_type s = stream_type::automatic)
         {
             using namespace pika::mpi::experimental::detail;
@@ -50,11 +52,12 @@ namespace pika::mpi::experimental {
                 debug(str<>("transform_mpi_t"), "tag_fallback_invoke", "stream",
                     detail::stream_name(s)));
 
-            using ex::just;
-            using ex::then;
-            using ex::transfer;
-            using ex::transfer_just;
             using execution::thread_priority;
+            using pika::execution::experimental::just;
+            using pika::execution::experimental::let_value;
+            using pika::execution::experimental::transfer;
+            using pika::execution::experimental::transfer_just;
+            using pika::execution::experimental::unique_any_sender;
 
             // get the mpi completion mode
             auto mode = get_completion_mode();
@@ -83,31 +86,30 @@ namespace pika::mpi::experimental {
             if (inline_req)
             {
                 return dispatch_mpi_sender<Sender, F>{PIKA_MOVE(sender), PIKA_FORWARD(F, f), s} |
-                    pika::execution::experimental::let_value(
-                        [=](MPI_Request request) -> ex::unique_any_sender<> {
-                            if (inline_com)
-                            {
-                                if (request == MPI_REQUEST_NULL)
-                                    return just();
-                                else
-                                    return just(request) | trigger_mpi(mode);
-                            }
+                    let_value([=](MPI_Request request) -> unique_any_sender<> {
+                        if (inline_com)
+                        {
+                            if (request == MPI_REQUEST_NULL)
+                                return just();
                             else
-                            {
-                                if (request == MPI_REQUEST_NULL)
-                                    return transfer_just(default_pool_scheduler(p));
-                                else
-                                    return transfer_just(default_pool_scheduler(p), request) |
-                                        trigger_mpi(mode);
-                            }
-                        });
+                                return just(request) | trigger_mpi(mode);
+                        }
+                        else
+                        {
+                            if (request == MPI_REQUEST_NULL)
+                                return transfer_just(default_pool_scheduler(p));
+                            else
+                                return transfer_just(default_pool_scheduler(p), request) |
+                                    trigger_mpi(mode);
+                        }
+                    });
             }
             else
             {
                 auto snd0 = PIKA_FORWARD(Sender, sender) | transfer(mpi_pool_scheduler());
                 return dispatch_mpi_sender<decltype(snd0), F>{
                            PIKA_MOVE(snd0), PIKA_FORWARD(F, f), s} |
-                    ex::let_value([=](MPI_Request request) -> ex::unique_any_sender<> {
+                    let_value([=](MPI_Request request) -> unique_any_sender<> {
                         if (inline_com)
                         {
                             if (request == MPI_REQUEST_NULL)
@@ -134,8 +136,8 @@ namespace pika::mpi::experimental {
         friend constexpr PIKA_FORCEINLINE auto
         tag_fallback_invoke(transform_mpi_t, F&& f, stream_type s = stream_type::automatic)
         {
-            return ex::detail::partial_algorithm<transform_mpi_t, F, stream_type>{
-                PIKA_FORWARD(F, f), /*p, */ s};
+            return pika::execution::experimental::detail::partial_algorithm<transform_mpi_t, F,
+                stream_type>{PIKA_FORWARD(F, f), /*p, */ s};
         }
 
     } transform_mpi{};

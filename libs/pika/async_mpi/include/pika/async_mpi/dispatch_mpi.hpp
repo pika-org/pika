@@ -34,10 +34,7 @@
 #include <utility>
 
 namespace pika::mpi::experimental::detail {
-
-    namespace {
-        namespace ex = execution::experimental;
-    }
+    namespace ex = execution::experimental;
 
     // -----------------------------------------------------------------
     // route calls through an impl layer for ADL isolation
@@ -240,28 +237,27 @@ namespace pika::mpi::experimental::detail {
 }    // namespace pika::mpi::experimental::detail
 
 namespace pika::mpi::experimental {
-
-    namespace ex = pika::execution::experimental;
-
     inline constexpr struct dispatch_mpi_t final
       : pika::functional::detail::tag_fallback<dispatch_mpi_t>
     {
     private:
         template <typename Sender, typename F,
-            PIKA_CONCEPT_REQUIRES_(ex::is_sender_v<std::decay_t<Sender>>)>
+            PIKA_CONCEPT_REQUIRES_(
+                pika::execution::experimental::is_sender_v<std::decay_t<Sender>>)>
         friend constexpr PIKA_FORCEINLINE auto
         tag_fallback_invoke(dispatch_mpi_t, Sender&& sender, F&& f, stream_type s)
         {
             auto snd1 = detail::dispatch_mpi_sender<Sender, F>{
                 PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), s};
-            return ex::make_unique_any_sender(std::move(snd1));
+            return pika::execution::experimental::make_unique_any_sender(std::move(snd1));
         }
 
         template <typename F>
         friend constexpr PIKA_FORCEINLINE auto
         tag_fallback_invoke(dispatch_mpi_t, F&& f, stream_type s)
         {
-            return ex::detail::partial_algorithm<dispatch_mpi_t, F>{PIKA_FORWARD(F, f), s};
+            return pika::execution::experimental::detail::partial_algorithm<dispatch_mpi_t, F>{
+                PIKA_FORWARD(F, f), s};
         }
 
     } dispatch_mpi{};
