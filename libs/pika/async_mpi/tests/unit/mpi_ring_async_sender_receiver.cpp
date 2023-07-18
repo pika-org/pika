@@ -486,16 +486,11 @@ void init_resource_partitioner_handler(
 }
 
 //----------------------------------------------------------------------------
-void dummy_printer(std::ostream& /*os*/) {}
-
-//----------------------------------------------------------------------------
 // the normal int main function that is called at startup and runs on an OS
 // thread the user must call pika::init to start the pika runtime which
 // will execute pika_main on an pika thread
 int main(int argc, char* argv[])
 {
-    //pika::debug::detail::register_print_info(&dummy_printer);
-
     // Init MPI
     int provided = MPI_THREAD_MULTIPLE;
     MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
