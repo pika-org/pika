@@ -220,8 +220,8 @@ namespace pika::mpi::experimental {
     PIKA_EXPORT size_t get_work_count();
 
     // -----------------------------------------------------------------
-    /// set the maximume number of MPI_Request completions to
-    /// handle at each polling event
+    /// set the maximum number of MPI_Request completions to handle at each
+    /// polling event
     PIKA_EXPORT void set_max_polling_size(std::size_t);
     PIKA_EXPORT std::size_t get_max_polling_size();
 
