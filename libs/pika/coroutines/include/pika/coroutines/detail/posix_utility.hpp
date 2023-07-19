@@ -32,6 +32,7 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+#include <pika/type_support/unused.hpp>
 
 // include unist.d conditionally to check for POSIX version. Not all OSs have the
 // unistd header...
@@ -47,7 +48,9 @@
 # include <cerrno>
 # include <cstddef>
 # include <cstdlib>
+# include <cstring>
 # include <stdexcept>
+# include <string>
 
 # if defined(_POSIX_MAPPED_FILES) && _POSIX_MAPPED_FILES > 0
 #  include <errno.h>
@@ -75,9 +78,60 @@ namespace pika::threads::coroutines::detail::posix {
 
 # if defined(PIKA_HAVE_THREAD_STACK_MMAP) && defined(_POSIX_MAPPED_FILES) && _POSIX_MAPPED_FILES > 0
 
+    inline void* to_stack_with_guard_page(void* stack)
+    {
+#  if defined(PIKA_HAVE_THREAD_GUARD_PAGE)
+        if (use_guard_pages)
+        {
+            return static_cast<void*>(static_cast<void**>(stack) - (EXEC_PAGESIZE / sizeof(void*)));
+        }
+#  endif
+        return stack;
+    }
+
+    inline void* to_stack_without_guard_page(void* stack)
+    {
+#  if defined(PIKA_HAVE_THREAD_GUARD_PAGE)
+        if (use_guard_pages)
+        {
+            return static_cast<void*>(static_cast<void**>(stack) + (EXEC_PAGESIZE / sizeof(void*)));
+        }
+#  endif
+        return stack;
+    }
+
+    inline void add_guard_page(void* stack)
+    {
+#  if defined(PIKA_HAVE_THREAD_GUARD_PAGE)
+        if (use_guard_pages)
+        {
+            int r = ::mprotect(stack, EXEC_PAGESIZE, PROT_NONE);
+            if (r != 0)
+            {
+                std::string error_message = "mprotect on a stack allocation failed with errno " +
+                    std::to_string(errno) + " (" + std::strerror(errno) + ")";
+                throw std::runtime_error(error_message);
+            }
+        }
+#  else
+        PIKA_UNUSED(stack);
+#  endif
+    }
+
+    inline std::size_t stack_size_with_guard_page(std::size_t size)
+    {
+#  if defined(PIKA_HAVE_THREAD_GUARD_PAGE)
+        if (use_guard_pages)
+        {
+            return size + EXEC_PAGESIZE;
+        }
+#  endif
+        return size;
+    }
+
     inline void* alloc_stack(std::size_t size)
     {
-        void* real_stack = ::mmap(nullptr, size + EXEC_PAGESIZE, PROT_READ | PROT_WRITE,
+        void* real_stack = ::mmap(nullptr, stack_size_with_guard_page(size), PROT_READ | PROT_WRITE,
 #  if defined(__APPLE__)
             MAP_PRIVATE | MAP_ANON | MAP_NORESERVE,
 #  elif defined(__FreeBSD__)
@@ -89,29 +143,25 @@ namespace pika::threads::coroutines::detail::posix {
 
         if (real_stack == MAP_FAILED)
         {
-            char const* error_message = "mmap() failed to allocate thread stack";
+#  if defined(PIKA_HAVE_THREAD_GUARD_PAGE)
             if (ENOMEM == errno && use_guard_pages)
             {
-                error_message = "mmap() failed to allocate thread stack due to insufficient "
-                                "resources, increase /proc/sys/vm/max_map_count or add "
-                                "-Ipika.stacks.use_guard_pages=0 to the command line";
+                char const* error_message =
+                    "mmap failed to allocate thread stack due to insufficient resources. "
+                    "Increasing /proc/sys/vm/max_map_count or disabling guard pages with the "
+                    "configuration option pika.stacks.use_guard_pages=0 may reduce memory "
+                    "consumption.";
+                throw std::runtime_error(error_message);
             }
+#  endif
+
+            std::string error_message = "mmap failed to allocate thread stack with errno " +
+                std::to_string(errno) + " (" + std::strerror(errno) + ")";
             throw std::runtime_error(error_message);
         }
 
-#  if defined(PIKA_HAVE_THREAD_GUARD_PAGE)
-        if (use_guard_pages)
-        {
-            // Add a guard page.
-            ::mprotect(real_stack, EXEC_PAGESIZE, PROT_NONE);
-
-            void** stack = static_cast<void**>(real_stack) + (EXEC_PAGESIZE / sizeof(void*));
-            return static_cast<void*>(stack);
-        }
-        return real_stack;
-#  else
-        return real_stack;
-#  endif
+        add_guard_page(real_stack);
+        return to_stack_without_guard_page(real_stack);
     }
 
     inline void watermark_stack(void* stack, std::size_t size)
@@ -133,7 +183,13 @@ namespace pika::threads::coroutines::detail::posix {
         {
             // We never free up the first page, as it's initialized only when the
             // stack is created.
-            ::madvise(stack, size - EXEC_PAGESIZE, MADV_DONTNEED);
+            int r = ::madvise(stack, size - EXEC_PAGESIZE, MADV_DONTNEED);
+            if (r != 0)
+            {
+                std::string error_message = "madvise on a stack allocation failed with errno " +
+                    std::to_string(errno) + " (" + std::strerror(errno) + ")";
+                throw std::runtime_error(error_message);
+            }
             return true;
         }
 
@@ -142,19 +198,13 @@ namespace pika::threads::coroutines::detail::posix {
 
     inline void free_stack(void* stack, std::size_t size)
     {
-#  if defined(PIKA_HAVE_THREAD_GUARD_PAGE)
-        if (use_guard_pages)
+        int r = ::munmap(to_stack_with_guard_page(stack), stack_size_with_guard_page(size));
+        if (r != 0)
         {
-            void** real_stack = static_cast<void**>(stack) - (EXEC_PAGESIZE / sizeof(void*));
-            ::munmap(static_cast<void*>(real_stack), size + EXEC_PAGESIZE);
+            std::string error_message = "munmap failed to deallocate thread stack with errno " +
+                std::to_string(errno) + " (" + std::strerror(errno) + ")";
+            throw std::runtime_error(error_message);
         }
-        else
-        {
-            ::munmap(stack, size);
-        }
-#  else
-        ::munmap(stack, size);
-#  endif
     }
 
 # else    // non-mmap()
