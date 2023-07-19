@@ -42,7 +42,7 @@ namespace pika::mpi::experimental {
         template <typename Sender, typename F,
             PIKA_CONCEPT_REQUIRES_(
                 pika::execution::experimental::is_sender_v<std::decay_t<Sender>>)>
-        friend constexpr PIKA_FORCEINLINE pika::execution::experimental::unique_any_sender<>
+        friend PIKA_FORCEINLINE pika::execution::experimental::unique_any_sender<>
         tag_fallback_invoke(
             transform_mpi_t, Sender&& sender, F&& f, stream_type s = stream_type::automatic)
         {
