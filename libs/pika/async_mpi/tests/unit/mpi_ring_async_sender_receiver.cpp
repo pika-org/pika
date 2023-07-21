@@ -55,6 +55,8 @@ using pika::program_options::options_description;
 using pika::program_options::value;
 using pika::program_options::variables_map;
 
+using namespace pika::debug::detail;
+
 namespace ex = pika::execution::experimental;
 namespace mpi = pika::mpi::experimental;
 namespace tt = pika::this_thread::experimental;
@@ -69,9 +71,8 @@ std::unique_ptr<pika::counting_semaphore<>> limiter;
 // ------------------------------------------------------------
 // a debug level of zero disables messages with a priority>0
 // a debug level of N shows messages with priority<N
-using namespace pika::debug::detail;
 template <int Level>
-static print_threshold<Level, 0> msr_deb("MPI_SR_");
+static pika::debug::detail::print_threshold<Level, 0> msr_deb("MPI_SR_");
 
 // ------------------------------------------------------------
 // caution: message_buffers will be constructed in-place in a buffer
@@ -136,7 +137,6 @@ void msg_info(
 {
     if (output)
     {
-        using namespace pika::debug::detail;
         int other = (mtype == msg_type::send) ? next_rank(rank, size) : prev_rank(rank, size);
         const char* msg = (mtype == msg_type::send) ? "send" : "recv";
         std::stringstream temp;
@@ -424,7 +424,6 @@ int pika_main(pika::program_options::variables_map& vm)
         while (counter > 0) { pika::this_thread::yield(); }
         if (output)
         {
-            using namespace pika::debug::detail;
             // clang-format off
             msr_deb<0>.debug(str<>("User Messages")
                 , "Rank", dec<3>(rank), "of", dec<3>(size)

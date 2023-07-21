@@ -42,9 +42,8 @@ namespace pika::mpi::experimental {
         // -----------------------------------------------------------------
         // by convention the title is 7 chars (for alignment)
         // a debug level of N shows messages with level 1..N
-        using namespace pika::debug::detail;
         template <int Level>
-        static print_threshold<Level, 0> mpi_debug("MPIPOLL");
+        static debug::detail::print_threshold<Level, 0> mpi_debug("MPIPOLL");
 
         constexpr std::uint32_t max_mpi_streams = detail::to_underlying(stream_type::max_stream);
         constexpr std::uint32_t max_poll_requests = 32;
@@ -204,6 +203,7 @@ namespace pika::mpi::experimental {
         // stream operator to display debug mpi_data
         PIKA_EXPORT std::ostream& operator<<(std::ostream& os, mpi_data const& info)
         {
+            using namespace pika::debug::detail;
             // clang-format off
             os << "R "
                << dec<3>(info.rank_) << "/"
@@ -220,6 +220,7 @@ namespace pika::mpi::experimental {
         // stream operator to display debug mpi_stream
         PIKA_EXPORT std::ostream& operator<<(std::ostream& os, mpi_stream const& stream)
         {
+            using namespace pika::debug::detail;
             // clang-format off
             os
                <<  "stream "    << stream.name_
@@ -232,7 +233,7 @@ namespace pika::mpi::experimental {
         PIKA_EXPORT std::ostream& operator<<(std::ostream& os, MPI_Request const& req)
         {
             // clang-format off
-            os <<  "req " << hex<8>(req);
+            os <<  "req " << debug::detail::hex<8>(req);
             // clang-format on
             return os;
         }
@@ -451,7 +452,7 @@ namespace pika::mpi::experimental {
                     {
                         // for debugging, create a timer : debug info every N seconds
                         static auto poll_deb =
-                            mpi_debug<5>.make_timer(2, str<>("Poll - lock failed"));
+                            mpi_debug<5>.make_timer(2, debug::detail::str<>("Poll - lock failed"));
                         PIKA_DETAIL_DP(mpi_debug<5>, timed(poll_deb, mpi_data_));
                     }
                     return polling_status::idle;
@@ -460,7 +461,8 @@ namespace pika::mpi::experimental {
                 if constexpr (mpi_debug<5>.is_enabled())
                 {
                     // for debugging, create a timer : debug info every N seconds
-                    static auto poll_deb = mpi_debug<5>.make_timer(2, str<>("Poll - lock success"));
+                    static auto poll_deb =
+                        mpi_debug<5>.make_timer(2, debug::detail::str<>("Poll - lock success"));
                     PIKA_DETAIL_DP(mpi_debug<5>, timed(poll_deb, mpi_data_));
                 }
 
@@ -560,7 +562,8 @@ namespace pika::mpi::experimental {
             // output a debug heartbeat every N seconds
             if constexpr (mpi_debug<4>.is_enabled())
             {
-                static auto poll_deb = mpi_debug<4>.make_timer(1, str<>("Poll - success"));
+                static auto poll_deb =
+                    mpi_debug<4>.make_timer(1, debug::detail::str<>("Poll - success"));
                 PIKA_DETAIL_DP(mpi_debug<4>, timed(poll_deb, mpi_data_));
             }
 
@@ -699,7 +702,6 @@ namespace pika::mpi::experimental {
             // if we have a single rank - disable pool
             if (detail::mpi_data_.size_ == 1) { flags &= ~1; }
         }
-        using namespace pika::debug::detail;
         PIKA_DETAIL_DP(detail::mpi_debug<6>,
             debug(str<>("completion mode"), bin<8>(flags), detail::mode_string(flags)));
         // override the variable used to control completion mode and pool flags
@@ -748,7 +750,6 @@ namespace pika::mpi::experimental {
     // but only one thread per rank needs to do so
     void init(bool init_mpi, bool init_errorhandler)
     {
-        using namespace pika::debug::detail;
         if (init_mpi)
         {
             int required = MPI_THREAD_MULTIPLE;
@@ -820,7 +821,6 @@ namespace pika::mpi::experimental {
     // -----------------------------------------------------------------
     void finalize(std::string const& pool_name)
     {
-        using namespace pika::debug::detail;
         if (detail::mpi_data_.error_handler_initialized_)
         {
             PIKA_ASSERT(detail::pika_mpi_errhandler != 0);
