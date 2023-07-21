@@ -17,4 +17,11 @@ namespace pika::detail {
         std::transform(
             std::begin(s), std::end(s), std::begin(s), [](int c) { return std::tolower(c); });
     }
+
+    template <typename CharT, class Traits, class Alloc>
+    void to_upper(std::basic_string<CharT, Traits, Alloc>& s)
+    {
+        std::transform(
+            std::begin(s), std::end(s), std::begin(s), [](int c) { return std::toupper(c); });
+    }
 }    // namespace pika::detail

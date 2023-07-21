@@ -12,7 +12,7 @@
 #include <pika/coroutines/thread_enums.hpp>
 
 #include <cstddef>
-#include <iostream>
+#include <ostream>
 
 namespace pika::threads::detail {
     namespace strings {

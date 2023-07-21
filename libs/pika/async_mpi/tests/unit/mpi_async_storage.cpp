@@ -39,7 +39,7 @@
 
 // a debug level of zero disables messages with a priority>0
 // a debug level of N shows messages with priority<N
-constexpr int debug_level = 0;
+constexpr int debug_level = 9;
 
 // cppcheck-suppress ConfigurationNotChecked
 template <int Level>
@@ -60,6 +60,17 @@ namespace ex = pika::execution::experimental;
 namespace mpi = pika::mpi::experimental;
 namespace tt = pika::this_thread::experimental;
 namespace deb = pika::debug::detail;
+
+template <typename Sender>
+auto launch_on_default_pool(Sender&& sender)
+{
+    namespace ex = pika::execution::experimental;
+    auto sched = ex::thread_pool_scheduler{&pika::resource::get_thread_pool("default")};
+    auto snd = ex::schedule(sched) | ex::then([sender = std::forward<Sender>(sender)]() mutable {
+        ex::start_detached(std::move(sender));
+    });
+    ex::start_detached(std::move(snd));
+}
 
 //----------------------------------------------------------------------------
 // namespace aliases
@@ -135,8 +146,10 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
 
     // this needs to scope all uses of mpi::experimental::executor
     std::string poolname = "default";
-    if (pika::resource::pool_exists("mpi"))
-        poolname = "mpi";
+    if (pika::resource::pool_exists(mpi::get_pool_name()))
+    {
+        poolname = mpi::get_pool_name();
+    }
     mpi::enable_user_polling enable_polling(poolname);
 
     pika::scoped_annotation annotate("test_write");
@@ -227,7 +240,7 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
             void* buffer_to_recv = &local_recv_storage[memory_offset_recv];
             auto rsnd = ex::just(buffer_to_recv, options.transfer_size_B, MPI_UNSIGNED_CHAR,
                             recv_rank, tag, MPI_COMM_WORLD) |
-                mpi::transform_mpi(MPI_Irecv, mpi::stream_type::receive) |
+                mpi::transform_mpi(MPI_Irecv, mpi::stream_type::receive_1) |
                 ex::then([&](int result) {
                     --recvs_in_flight;
                     nws_deb<5>.debug(deb::str<>("recv complete"), "recv in flight", recvs_in_flight,
@@ -250,13 +263,13 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
             void* buffer_to_send = &local_send_storage[memory_offset_send];
             auto ssnd = ex::just(buffer_to_send, options.transfer_size_B, MPI_UNSIGNED_CHAR,
                             send_rank, tag, MPI_COMM_WORLD) |
-                mpi::transform_mpi(MPI_Isend, mpi::stream_type::send) | ex::then([&](int result) {
+                mpi::transform_mpi(MPI_Isend, mpi::stream_type::send_1) | ex::then([&](int result) {
                     --sends_in_flight;
                     nws_deb<5>.debug(deb::str<>("send complete"), "recv in flight", recvs_in_flight,
                         "send in flight", sends_in_flight);
                     return result;
                 });
-            ex::start_detached(std::move(ssnd));
+            launch_on_default_pool(std::move(ssnd));
         }
         messages_sent++;
         //
@@ -466,8 +479,9 @@ void init_resource_partitioner_handler(
 
     // Create a thread pool with a single core that we will use for all
     // communication related tasks
-    rp.create_thread_pool("mpi", pika::resource::scheduling_policy::local_priority_fifo, mode);
-    rp.add_resource(rp.numa_domains()[0].cores()[0].pus()[0], "mpi");
+    rp.create_thread_pool(
+        mpi::get_pool_name(), pika::resource::scheduling_policy::local_priority_fifo, mode);
+    rp.add_resource(rp.numa_domains()[0].cores()[0].pus()[0], mpi::get_pool_name());
 }
 
 //----------------------------------------------------------------------------
@@ -510,13 +524,14 @@ int main(int argc, char* argv[])
     nws_deb<6>.debug(3, "Calling pika::init");
     pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
-    // Set the callback to init the thread_pools
+    // Set the callback to init thread_pools
     init_args.rp_callback = &init_resource_partitioner_handler;
 
-    auto res = pika::init(pika_main, argc, argv, init_args);
+    auto result = pika::init(pika_main, argc, argv, init_args);
+    PIKA_TEST_EQ(result, 0);
+
+    // Finalize MPI
     MPI_Finalize();
 
-    // This test should just run without crashing
-    PIKA_TEST(true);
-    return res;
+    return result;
 }

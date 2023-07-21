@@ -79,7 +79,7 @@ namespace PIKA_DETAIL_NS_DEBUG {
 
     std::ostream& operator<<(std::ostream& os, ptr const& d)
     {
-        os << std::internal << std::hex << std::setw(10) << std::setfill('0') << d.data_;
+        os << std::internal << std::hex << std::setw(14) << std::setfill('0') << d.data_;
         return os;
     }
 

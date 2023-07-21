@@ -13,8 +13,9 @@ endif()
 
 # Default location is $PIKA_ROOT/libs/mpi/include
 set(async_mpi_headers
-    pika/async_mpi/mpi_exception.hpp pika/async_mpi/mpi_polling.hpp
-    pika/async_mpi/transform_mpi.hpp
+    pika/async_mpi/mpi_exception.hpp pika/async_mpi/mpi_helpers.hpp
+    pika/async_mpi/mpi_polling.hpp pika/async_mpi/dispatch_mpi.hpp
+    pika/async_mpi/trigger_mpi.hpp pika/async_mpi/transform_mpi.hpp
 )
 
 # Default location is $PIKA_ROOT/libs/mpi/src
@@ -29,9 +30,12 @@ pika_add_module(
   DEPENDENCIES MPI::MPI_CXX
   MODULE_DEPENDENCIES
     pika_concurrency
+    pika_debugging
     pika_errors
     pika_execution_base
+    pika_executors
     pika_memory
+    pika_resource_partitioner
     pika_threading_base
     pika_mpi_base
     pika_runtime
