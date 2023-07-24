@@ -626,6 +626,8 @@ namespace pika::execution::experimental {
       : private detail::any_sender_static_empty_vtable_helper<Ts...>
 #endif
     {
+        static_assert(pika::util::detail::none_of_v<std::is_reference<Ts>...>,
+            "unique_any_sender does not handle references as completion signatures");
         using base_type = detail::unique_any_sender_base<Ts...>;
         template <typename Sender>
         using impl_type = detail::unique_any_sender_impl<Sender, Ts...>;
@@ -718,6 +720,8 @@ namespace pika::execution::experimental {
       : private detail::any_sender_static_empty_vtable_helper<Ts...>
 #endif
     {
+        static_assert(pika::util::detail::none_of_v<std::is_reference<Ts>...>,
+            "any_sender does not handle references as completion signatures");
         using base_type = detail::any_sender_base<Ts...>;
         template <typename Sender>
         using impl_type = detail::any_sender_impl<Sender, Ts...>;
