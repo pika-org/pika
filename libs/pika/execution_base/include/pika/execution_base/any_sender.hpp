@@ -233,6 +233,14 @@ namespace pika::detail {
                 object = heap_storage;
             }
         }
+
+        void reset()
+        {
+            if (!empty())
+            {
+                release();
+            }
+        }
     };
 
     template <typename Base, std::size_t EmbeddedStorageSize,
@@ -274,6 +282,7 @@ namespace pika::detail {
     public:
         using storage_base_type::empty;
         using storage_base_type::get;
+        using storage_base_type::reset;
         using storage_base_type::store;
 
         copyable_sbo_storage() = default;
@@ -773,6 +782,24 @@ namespace pika::execution::experimental {
             PIKA_UNREACHABLE;
         }
 
+        template <typename Sender>
+        void reset(Sender&& sender)
+        {
+            if constexpr (std::is_same_v<std::decay_t<Sender>, unique_any_sender>)
+            {
+                *this = std::forward<Sender>(sender);
+            }
+            else
+            {
+                storage.template store<impl_type<Sender>>(PIKA_FORWARD(Sender, sender));
+            }
+        }
+
+        void reset()
+        {
+            storage.reset();
+        }
+
         bool empty() const noexcept
         {
             return storage.empty();
@@ -861,6 +888,28 @@ namespace pika::execution::experimental {
             auto moved_storage = PIKA_MOVE(s.storage);
             return PIKA_MOVE(moved_storage.get())
                 .connect(detail::any_receiver<Ts...>{PIKA_FORWARD(R, r)});
+        }
+
+        template <typename Sender>
+        void reset(Sender&& sender)
+        {
+            if constexpr (std::is_same_v<std::decay_t<Sender>, any_sender>)
+            {
+                *this = std::forward<Sender>(sender);
+            }
+            else
+            {
+                static_assert(std::is_copy_constructible_v<std::decay_t<Sender>>,
+                    "any_sender requires the given sender to be copy constructible. Ensure the "
+                    "used sender type is copy constructible or use unique_any_sender if you do not "
+                    "require copyability.");
+                storage.template store<impl_type<Sender>>(PIKA_FORWARD(Sender, sender));
+            }
+        }
+
+        void reset()
+        {
+            storage.reset();
         }
 
         bool empty() const noexcept
