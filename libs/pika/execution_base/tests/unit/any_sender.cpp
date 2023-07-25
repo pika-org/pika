@@ -631,13 +631,49 @@ void test_globals()
 
 void test_empty_any_sender()
 {
-    ex::unique_any_sender<> uas{};
-    ex::any_sender<> as{};
+    {
+        ex::unique_any_sender<> uas{};
+        ex::any_sender<> as{};
 
-    PIKA_TEST(uas.empty());
-    PIKA_TEST(!uas);
-    PIKA_TEST(as.empty());
-    PIKA_TEST(!as);
+        PIKA_TEST(uas.empty());
+        PIKA_TEST(!uas);
+        PIKA_TEST(as.empty());
+        PIKA_TEST(!as);
+    }
+
+    {
+        ex::unique_any_sender<> uas{ex::just()};
+        ex::any_sender<> as{ex::just()};
+
+        PIKA_TEST(!uas.empty());
+        PIKA_TEST(uas);
+        PIKA_TEST(!as.empty());
+        PIKA_TEST(as);
+
+        uas.reset(ex::just());
+        as.reset(ex::just());
+
+        PIKA_TEST(!uas.empty());
+        PIKA_TEST(uas);
+        PIKA_TEST(!as.empty());
+        PIKA_TEST(as);
+
+        uas.reset();
+        as.reset();
+
+        PIKA_TEST(uas.empty());
+        PIKA_TEST(!uas);
+        PIKA_TEST(as.empty());
+        PIKA_TEST(!as);
+
+        uas.reset(ex::unique_any_sender<>{});
+        as.reset(ex::any_sender<>{});
+
+        PIKA_TEST(uas.empty());
+        PIKA_TEST(!uas);
+        PIKA_TEST(as.empty());
+        PIKA_TEST(!as);
+    }
 }
 
 void test_make_any_sender()
