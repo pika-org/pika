@@ -24,7 +24,6 @@
 #include <pika/functional/bind_back.hpp>
 #include <pika/functional/bind_front.hpp>
 #include <pika/functional/deferred_call.hpp>
-#include <pika/functional/invoke_fused.hpp>
 #include <pika/futures/promise.hpp>
 
 #include <exception>
@@ -64,9 +63,8 @@ namespace pika::execution::experimental {
             return [f = PIKA_FORWARD(F, f), rng = PIKA_FORWARD(Rng, rng),
                        t = std::make_tuple(PIKA_FORWARD(Ts, ts)...)](
                        auto i, auto&&... predecessor) mutable {
-                pika::util::detail::invoke_fused(
-                    pika::util::detail::bind_front(PIKA_FORWARD(F, f), std::begin(rng)[i],
-                        PIKA_FORWARD(decltype(predecessor), predecessor)...),
+                std::apply(pika::util::detail::bind_front(PIKA_FORWARD(F, f), std::begin(rng)[i],
+                               PIKA_FORWARD(decltype(predecessor), predecessor)...),
                     PIKA_MOVE(t));
             };
         }
@@ -77,7 +75,7 @@ namespace pika::execution::experimental {
             return [f = PIKA_FORWARD(F, f), rng = PIKA_FORWARD(Rng, rng),
                        t = std::make_tuple(PIKA_FORWARD(Ts, ts)...)](
                        auto i, auto&& predecessor, auto& v) mutable {
-                v[i] = pika::util::detail::invoke_fused(
+                v[i] = std::apply(
                     pika::util::detail::bind_front(PIKA_FORWARD(F, f), std::begin(rng)[i],
                         PIKA_FORWARD(decltype(predecessor), predecessor)),
                     PIKA_MOVE(t));

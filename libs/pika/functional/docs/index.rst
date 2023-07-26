@@ -21,7 +21,6 @@ their arguments.
 * :cpp:func:`pika::util::detail::bind_front`
 * :cpp:func:`pika::util::detail::deferred_call`
 * :cpp:func:`pika::util::detail::invoke`
-* :cpp:func:`pika::util::detail::invoke_fused`
 * :cpp:func:`pika::util::detail::one_shot`
 
 See the :ref:`API reference <modules_functional_api>` of the module for more

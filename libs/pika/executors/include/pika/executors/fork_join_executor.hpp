@@ -19,7 +19,6 @@
 #include <pika/execution_base/this_thread.hpp>
 #include <pika/execution_base/traits/is_executor.hpp>
 #include <pika/functional/invoke.hpp>
-#include <pika/functional/invoke_fused.hpp>
 #include <pika/modules/itt_notify.hpp>
 #include <pika/threading/thread.hpp>
 #include <pika/timing/detail/timestamp.hpp>
@@ -347,7 +346,8 @@ namespace pika::execution::experimental {
             struct thread_function_helper
             {
                 using argument_pack_type = std::decay_t<Tuple>;
-                using index_pack_type = typename pika::util::detail::fused_index_pack<Tuple>::type;
+                using index_pack_type =
+                    pika::util::detail::make_index_pack_t<std::tuple_size_v<argument_pack_type>>;
 
                 template <std::size_t... Is_, typename F_, typename A_, typename Tuple_>
                 static constexpr void

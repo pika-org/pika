@@ -328,6 +328,7 @@ patterns = [
     { pattern = '\bstd::(mt19937(_64)?)\b', include = 'random' },
     { pattern = '\bstd::random_device\b', include = 'random' },
     { pattern = '\bstd::uniform_(int|uniform)_distribution\b', include = 'random' },
+    { pattern = '\bstd::apply\b', include = 'tuple' },
     { pattern = '\bstd::(forward_as_|make_|)tuple\b', include = 'tuple' },
     { pattern = '\bstd::ignore\b', include = 'tuple' },
     { pattern = '\bstd::tie\b', include = 'tuple' },

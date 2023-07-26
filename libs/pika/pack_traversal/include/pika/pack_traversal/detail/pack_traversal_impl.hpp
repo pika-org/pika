@@ -8,7 +8,6 @@
 
 #include <pika/config.hpp>
 #include <pika/functional/detail/invoke.hpp>
-#include <pika/functional/invoke_fused.hpp>
 #include <pika/pack_traversal/detail/container_category.hpp>
 #include <pika/pack_traversal/traits/pack_traversal_rebind_container.hpp>
 #include <pika/type_support/decay.hpp>
@@ -189,10 +188,10 @@ namespace pika::util::detail {
         /// may contain spread types
         template <typename C, typename... T>
         constexpr auto apply_spread_impl(std::true_type, C&& callable, T&&... args)
-            -> decltype(invoke_fused(
+            -> decltype(std::apply(
                 PIKA_FORWARD(C, callable), std::tuple_cat(undecorate(PIKA_FORWARD(T, args))...)))
         {
-            return invoke_fused(
+            return std::apply(
                 PIKA_FORWARD(C, callable), std::tuple_cat(undecorate(PIKA_FORWARD(T, args))...));
         }
 
@@ -610,11 +609,14 @@ namespace pika::util::detail {
         /// to a container of the same type which may contain
         /// different types.
         template <typename Strategy, typename T, typename M>
-        auto remap(Strategy, T&& container, M&& mapper) -> decltype(invoke_fused(
-            std::declval<tuple_like_remapper<Strategy, std::decay_t<M>, std::decay_t<T>>>(),
-            PIKA_FORWARD(T, container)))
+        auto remap(Strategy, T&& container, M&& mapper) -> decltype(std::apply(
+            tuple_like_remapper<Strategy, std::decay_t<M>, std::decay_t<T>>{
+                PIKA_FORWARD(M, mapper)},
+            PIKA_FORWARD(T, container))
+
+        )
         {
-            return invoke_fused(
+            return std::apply(
                 tuple_like_remapper<Strategy, std::decay_t<M>, std::decay_t<T>>{
                     PIKA_FORWARD(M, mapper)},
                 PIKA_FORWARD(T, container));

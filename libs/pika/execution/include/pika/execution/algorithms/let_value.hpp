@@ -19,7 +19,6 @@
 # include <pika/execution_base/receiver.hpp>
 # include <pika/execution_base/sender.hpp>
 # include <pika/functional/detail/tag_fallback_invoke.hpp>
-# include <pika/functional/invoke_fused.hpp>
 # include <pika/type_support/detail/with_result_of.hpp>
 # include <pika/type_support/pack.hpp>
 
@@ -207,8 +206,7 @@ namespace pika::let_value_detail {
                     {
                         using operation_state_type =
                             decltype(pika::execution::experimental::connect(
-                                pika::util::detail::invoke_fused(PIKA_MOVE(f), t),
-                                std::declval<Receiver>()));
+                                std::apply(PIKA_MOVE(f), t), std::declval<Receiver>()));
 
 # if defined(PIKA_HAVE_CXX17_COPY_ELISION)
                         // with_result_of is used to emplace the operation state
@@ -218,15 +216,14 @@ namespace pika::let_value_detail {
                         op_state.successor_op_state.template emplace<operation_state_type>(
                             pika::detail::with_result_of([&]() {
                                 return pika::execution::experimental::connect(
-                                    pika::util::detail::invoke_fused(PIKA_MOVE(f), t),
-                                    PIKA_MOVE(receiver));
+                                    std::apply(PIKA_MOVE(f), t), PIKA_MOVE(receiver));
                             }));
 # else
                         // MSVC doesn't get copy elision quite right, the operation
                         // state must be constructed explicitly directly in place
                         op_state.successor_op_state.template emplace_f<operation_state_type>(
-                            pika::execution::experimental::connect,
-                            pika::util::detail::invoke_fused(PIKA_MOVE(f), t), PIKA_MOVE(receiver));
+                            pika::execution::experimental::connect, std::apply(PIKA_MOVE(f), t),
+                            PIKA_MOVE(receiver));
 # endif
                         pika::detail::visit(start_visitor{}, op_state.successor_op_state);
                     }
