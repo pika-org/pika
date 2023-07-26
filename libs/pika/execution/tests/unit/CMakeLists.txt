@@ -19,6 +19,7 @@ set(tests
     algorithm_then
     algorithm_transfer
     algorithm_transfer_just
+    algorithm_unpack
     algorithm_when_all
     algorithm_when_all_vector
     bulk_async
