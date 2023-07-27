@@ -7,6 +7,7 @@
 #pragma once
 
 #include <pika/config.hpp>
+#include <pika/assert.hpp>
 #include <pika/functional/detail/invoke.hpp>
 #include <pika/pack_traversal/detail/container_category.hpp>
 #include <pika/pack_traversal/traits/pack_traversal_rebind_container.hpp>
@@ -678,7 +679,10 @@ namespace pika::util::detail {
             template <typename T>
             auto operator()(T&& element)
                 -> decltype(std::declval<traversor>().get_helper()->traverse(
-                    Strategy{}, PIKA_FORWARD(T, element)));
+                    Strategy{}, PIKA_FORWARD(T, element)))
+            {
+                PIKA_UNREACHABLE;
+            }
 
             /// An alias to this type
             using traversor_type = traversor;
