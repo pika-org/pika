@@ -25,7 +25,6 @@
 # include <pika/execution_base/sender.hpp>
 # include <pika/functional/bind_front.hpp>
 # include <pika/functional/detail/tag_fallback_invoke.hpp>
-# include <pika/functional/invoke_fused.hpp>
 # include <pika/functional/unique_function.hpp>
 # include <pika/memory/intrusive_ptr.hpp>
 # include <pika/thread_support/atomic_count.hpp>
@@ -69,9 +68,8 @@ namespace pika::ensure_started_detail {
         template <typename Ts>
         void operator()(Ts&& ts)
         {
-            pika::util::detail::invoke_fused(
-                pika::util::detail::bind_front(
-                    pika::execution::experimental::set_value, PIKA_MOVE(receiver)),
+            std::apply(pika::util::detail::bind_front(
+                           pika::execution::experimental::set_value, PIKA_MOVE(receiver)),
                 PIKA_FORWARD(Ts, ts));
         }
     };

@@ -23,7 +23,6 @@ set(functional_headers
     pika/functional/first_argument.hpp
     pika/functional/function.hpp
     pika/functional/invoke.hpp
-    pika/functional/invoke_fused.hpp
     pika/functional/one_shot.hpp
     pika/functional/unique_function.hpp
     pika/functional/traits/get_function_address.hpp

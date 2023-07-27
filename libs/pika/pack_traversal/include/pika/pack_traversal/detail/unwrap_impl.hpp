@@ -9,12 +9,12 @@
 #include <pika/config.hpp>
 #include <pika/datastructures/traits/is_tuple_like.hpp>
 #include <pika/functional/detail/invoke.hpp>
-#include <pika/functional/invoke_fused.hpp>
 #include <pika/futures/traits/future_traits.hpp>
 #include <pika/futures/traits/is_future.hpp>
 #include <pika/pack_traversal/pack_traversal.hpp>
 
 #include <cstddef>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -158,13 +158,13 @@ namespace pika::util::detail {
     template <bool IsFusedInvoke>
     struct invoke_wrapped_invocation_select
     {
-        /// Invoke the callable with the tuple argument through invoke_fused
+        /// Invoke the callable with the tuple argument through apply
         template <typename C, typename T>
         static auto apply(C&& callable, T&& unwrapped)
-            // There is no trait for the invoke_fused result
-            -> decltype(invoke_fused(PIKA_FORWARD(C, callable), PIKA_FORWARD(T, unwrapped)))
+            // There is no trait for the apply result
+            -> decltype(std::apply(PIKA_FORWARD(C, callable), PIKA_FORWARD(T, unwrapped)))
         {
-            return invoke_fused(PIKA_FORWARD(C, callable), PIKA_FORWARD(T, unwrapped));
+            return std::apply(PIKA_FORWARD(C, callable), PIKA_FORWARD(T, unwrapped));
         }
     };
     template <>
@@ -189,7 +189,7 @@ namespace pika::util::detail {
         (HadMultipleArguments && traits::detail::is_tuple_like_v<std::decay_t<T>>)>;
 
     /// Invokes the callable object with the result:
-    /// - If the result is a tuple-like type `invoke_fused` is used
+    /// - If the result is a tuple-like type `apply` is used
     /// - Otherwise `invoke` is used
     template <bool HadMultipleArguments, typename C, typename T>
     auto dispatch_wrapped_invocation_select(C&& callable, T&& unwrapped)

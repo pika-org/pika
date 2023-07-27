@@ -17,7 +17,6 @@
 #include <pika/execution_base/traits/is_executor.hpp>
 #include <pika/executors/parallel_executor.hpp>
 #include <pika/functional/deferred_call.hpp>
-#include <pika/functional/invoke_fused.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
 #include <pika/functional/traits/is_action.hpp>
 #include <pika/futures/detail/future_transforms.hpp>
@@ -92,7 +91,7 @@ namespace pika::detail {
     {
         static auto error(F f, Args args)
         {
-            pika::util::detail::invoke_fused(PIKA_MOVE(f), PIKA_MOVE(args));
+            std::apply(PIKA_MOVE(f), PIKA_MOVE(args));
         }
 
         using type = decltype(error(std::declval<F>(), std::declval<Args>()));
@@ -110,7 +109,7 @@ namespace pika::detail {
         /*IsAction=*/false, Policy, F, Args,
         typename std::enable_if<pika::detail::is_launch_policy<Policy>::value>::type>
     {
-        using type = pika::future<typename util::detail::invoke_fused_result<F, Args>::type>;
+        using type = pika::future<decltype(std::apply(std::declval<F>(), std::declval<Args>()))>;
     };
 
     template <typename Executor, typename F, typename Args>
@@ -207,8 +206,7 @@ namespace pika::detail {
         {
             pika::detail::try_catch_exception_ptr(
                 [&]() {
-                    this->set_data(util::detail::invoke_fused(
-                        PIKA_MOVE(func_), PIKA_FORWARD(Futures_, futures)));
+                    this->set_data(std::apply(PIKA_MOVE(func_), PIKA_FORWARD(Futures_, futures)));
                 },
                 [&](std::exception_ptr ep) { this->set_exception(PIKA_MOVE(ep)); });
         }
@@ -220,7 +218,7 @@ namespace pika::detail {
         {
             pika::detail::try_catch_exception_ptr(
                 [&]() {
-                    util::detail::invoke_fused(PIKA_MOVE(func_), PIKA_FORWARD(Futures_, futures));
+                    std::apply(PIKA_MOVE(func_), PIKA_FORWARD(Futures_, futures));
 
                     this->set_data(util::detail::unused_type());
                 },

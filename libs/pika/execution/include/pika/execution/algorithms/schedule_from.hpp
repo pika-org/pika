@@ -18,7 +18,6 @@
 # include <pika/execution_base/sender.hpp>
 # include <pika/functional/bind_front.hpp>
 # include <pika/functional/detail/tag_fallback_invoke.hpp>
-# include <pika/functional/invoke_fused.hpp>
 # include <pika/type_support/detail/with_result_of.hpp>
 # include <pika/type_support/pack.hpp>
 
@@ -264,9 +263,8 @@ namespace pika::schedule_from_detail {
                         !std::is_same_v<std::decay_t<Ts>, pika::detail::monostate>>>
                 void operator()(Ts&& ts)
                 {
-                    pika::util::detail::invoke_fused(
-                        pika::util::detail::bind_front(
-                            pika::execution::experimental::set_value, PIKA_MOVE(receiver)),
+                    std::apply(pika::util::detail::bind_front(
+                                   pika::execution::experimental::set_value, PIKA_MOVE(receiver)),
                         PIKA_FORWARD(Ts, ts));
                 }
             };

@@ -10,7 +10,6 @@
 #include <pika/allocator_support/allocator_deleter.hpp>
 #include <pika/assert.hpp>
 #include <pika/functional/detail/invoke.hpp>
-#include <pika/functional/invoke_fused.hpp>
 #include <pika/futures/traits/future_access.hpp>
 #include <pika/memory/intrusive_ptr.hpp>
 #include <pika/pack_traversal/detail/container_category.hpp>
@@ -610,7 +609,7 @@ namespace pika {
         void resume_traversal_callable<Frame, State>::operator()()
         {
             auto hierarchy = std::tuple_cat(std::make_tuple(frame_), state_);
-            util::detail::invoke_fused(resume_state_callable{}, PIKA_MOVE(hierarchy));
+            std::apply(resume_state_callable{}, PIKA_MOVE(hierarchy));
         }
 
         /// Gives access to types related to the traversal frame

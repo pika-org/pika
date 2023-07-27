@@ -8,7 +8,6 @@
 #include <pika/execution_base/any_sender.hpp>
 #include <pika/execution_base/sender.hpp>
 #include <pika/functional/bind_front.hpp>
-#include <pika/functional/invoke_fused.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/testing.hpp>
 
@@ -78,9 +77,8 @@ struct non_copyable_sender
 
         friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
         {
-            pika::util::detail::invoke_fused(
-                pika::util::detail::bind_front(
-                    pika::execution::experimental::set_value, std::move(os.r)),
+            std::apply(pika::util::detail::bind_front(
+                           pika::execution::experimental::set_value, std::move(os.r)),
                 std::move(os.ts));
         };
     };
@@ -134,9 +132,8 @@ struct sender
 
         friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
         {
-            pika::util::detail::invoke_fused(
-                pika::util::detail::bind_front(
-                    pika::execution::experimental::set_value, std::move(os.r)),
+            std::apply(pika::util::detail::bind_front(
+                           pika::execution::experimental::set_value, std::move(os.r)),
                 std::move(os.ts));
         };
     };

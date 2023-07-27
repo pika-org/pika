@@ -8,7 +8,6 @@
 
 #include <pika/config.hpp>
 #include <pika/datastructures/member_pack.hpp>
-#include <pika/functional/invoke_fused.hpp>
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
 #include <pika/type_support/decay.hpp>

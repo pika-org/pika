@@ -19,7 +19,6 @@
 # include <pika/execution_base/receiver.hpp>
 # include <pika/execution_base/sender.hpp>
 # include <pika/functional/detail/tag_fallback_invoke.hpp>
-# include <pika/functional/invoke_fused.hpp>
 # include <pika/type_support/detail/with_result_of.hpp>
 # include <pika/type_support/pack.hpp>
 

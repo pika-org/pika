@@ -69,8 +69,7 @@ struct external_future_executor
     {
         pika::detail::try_catch_exception_ptr(
             [&]() {
-                pika::util::detail::invoke_fused(
-                    std::forward<F>(f), std::forward<Futures>(futures));
+                std::apply(std::forward<F>(f), std::forward<Futures>(futures));
 
                 // Signal completion from another thread/task.
                 pika::intrusive_ptr<typename std::remove_pointer<std::decay_t<Frame>>::type>
@@ -88,8 +87,7 @@ struct external_future_executor
     {
         pika::detail::try_catch_exception_ptr(
             [&]() {
-                auto&& r = pika::util::detail::invoke_fused(
-                    std::forward<F>(f), std::forward<Futures>(futures));
+                auto&& r = std::apply(std::forward<F>(f), std::forward<Futures>(futures));
 
                 // Signal completion from another thread/task.
                 pika::intrusive_ptr<typename std::remove_pointer<std::decay_t<Frame>>::type>
@@ -154,7 +152,7 @@ struct external_future_additional_argument_executor
         pika::detail::try_catch_exception_ptr(
             [&]() {
                 additional_argument a{};
-                pika::util::detail::invoke_fused(std::forward<F>(f),
+                std::apply(std::forward<F>(f),
                     std::tuple_cat(std::tie(a), std::forward<Futures>(futures)));
 
                 // Signal completion from another thread/task.
@@ -174,7 +172,7 @@ struct external_future_additional_argument_executor
         pika::detail::try_catch_exception_ptr(
             [&]() {
                 additional_argument a{};
-                auto&& r = pika::util::detail::invoke_fused(std::forward<F>(f),
+                auto&& r = std::apply(std::forward<F>(f),
                     std::tuple_cat(std::tie(a), std::forward<Futures>(futures)));
 
                 // Signal completion from another thread/task.
