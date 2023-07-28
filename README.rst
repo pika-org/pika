@@ -70,9 +70,9 @@ channel.
 
 pika is configured using CMake variables. The most important variables are:
 
-* ``PIKA_WITH_MALLOC``: This defaults to ``tcmalloc`` which requires gperftools.
-  Can be set to ``tcmalloc``, ``jemalloc``, ``mimalloc``, or ``system``. Setting
-  it to ``system`` can be useful in debug builds.
+* ``PIKA_WITH_MALLOC``: This defaults to ``mimalloc`` which requires mimalloc to be installed.  Can
+  be set to ``tcmalloc``, ``jemalloc``, ``mimalloc``, or ``system``. Setting it to ``system`` can be
+  useful in debug builds.
 * ``PIKA_WITH_CUDA``: Enable CUDA support.
 * ``PIKA_WITH_HIP``: Enable HIP support.
 * ``PIKA_WITH_MPI``: Enable MPI support.
