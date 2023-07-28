@@ -26,6 +26,7 @@ set(execution_headers
     pika/execution/algorithms/then.hpp
     pika/execution/algorithms/transfer.hpp
     pika/execution/algorithms/transfer_just.hpp
+    pika/execution/algorithms/unpack.hpp
     pika/execution/algorithms/when_all.hpp
     pika/execution/algorithms/when_all_vector.hpp
     pika/execution/detail/async_launch_policy_dispatch.hpp
