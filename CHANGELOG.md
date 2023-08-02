@@ -4,6 +4,24 @@
 <!--- Distributed under the Boost Software License, Version 1.0. (See accompanying -->
 <!--- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 
+## 0.17.0 (2023-08-02)
+
+### New features
+
+- Improve MPI polling: continuations are not triggered under lock anymore and can be explicitly transferred to a new task/pool, throttling is possible on a per stream basis, the number of completions to handle per poll iteration may be controlled. ([#593](https://github.com/pika-org/pika/pull/593))
+- Add `pika::wait` to wait for the runtime to be idle. ([#704](https://github.com/pika-org/pika/pull/704))
+- Failure information is now printed before attaching a debugger. ([#712](https://github.com/pika-org/pika/pull/712))
+- `--pika:print-bind` now also prints the thread pool of a thread when thread binding is disabled to be consistent with the output when thread binding is enabled. ([#710](https://github.com/pika-org/pika/pull/710))
+- Allow to explicitly reset `{unique_,}any_sender`.  ([#719](https://github.com/pika-org/pika/pull/719))
+- Add `execution::unpack` sender adaptor  unpack tuple-like types sent by predecessor senders. ([#721](https://github.com/pika-org/pika/pull/721))
+
+### Bugfixes
+
+- Fix warnings when CMake unity build is disabled. ([#697](https://github.com/pika-org/pika/pull/697))
+- Fix bogus error when `--pika:print-bind` and `--pika:bind=none` are used together. ([#710](https://github.com/pika-org/pika/pull/710))
+- Fix memory leak with stack overflow detection enabled. ([#714](https://github.com/pika-org/pika/pull/714))
+- Fix freeing stack when guard pages are disabled. ([#716](https://github.com/pika-org/pika/pull/716))
+
 ## 0.16.0 (2023-05-31)
 
 ### New features
