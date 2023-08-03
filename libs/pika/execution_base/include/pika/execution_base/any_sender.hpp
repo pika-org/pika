@@ -451,8 +451,9 @@ namespace pika::execution::experimental::detail {
         any_receiver& operator=(any_receiver const&) = delete;
 
         template <typename... Ts_>
-        friend void tag_invoke(
+        friend auto tag_invoke(
             pika::execution::experimental::set_value_t, any_receiver&& r, Ts_&&... ts) noexcept
+            -> decltype(PIKA_MOVE(r.storage.get()).set_value(PIKA_FORWARD(Ts_, ts)...))
         {
             // We first move the storage to a temporary variable so that
             // this any_receiver is empty after this set_value. Doing
