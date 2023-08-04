@@ -1,0 +1,30 @@
+ARG BASE_IMAGE=docker.io/pikaorg/pika-ci-base:17
+ARG SOURCE_DIR=/pika/source
+ARG BUILD_DIR=/pika/build
+
+FROM $BASE_IMAGE
+
+ARG SOURCE_DIR
+ARG BUILD_DIR
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+COPY . ${SOURCE_DIR}
+
+SHELL ["/bin/bash", "-c"]
+
+# Configure
+RUN mkdir -p ${BUILD_DIR} && pushd ${BUILD_DIR} && \
+    cmake ${SOURCE_DIR} \
+     -GNinja \
+     -DCMAKE_BUILD_TYPE=Debug \
+     -DPIKA_WITH_UNITY_BUILD=ON \
+     -DPIKA_WITH_MALLOC=system \
+     -DPIKA_WITH_TESTS=ON \
+     -DPIKA_WITH_TESTS_HEADERS=OFF \
+     -DPIKA_WITH_TESTS_MAX_THREADS=2 \
+     -DPIKA_WITH_COMPILER_WARNINGS=ON \
+     -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON
+
+# Build
+RUN pushd ${BUILD_DIR} && cmake --build . --target all

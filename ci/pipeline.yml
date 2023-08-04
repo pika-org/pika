@@ -1,0 +1,52 @@
+include:
+  - remote: 'https://gitlab.com/cscs-ci/recipes/-/raw/master/templates/v2/.ci-ext.yml'
+
+stages:
+  - build
+  - test
+
+
+# TODO: change to spack builds once this pipeline works
+.build_common:
+  tags: [rosa-k8s]
+  image: quay.io/podman/stable:latest
+  stage: build
+  before_script:
+    - !reference [.fetch-registry-tokens, script]
+    - podman login -u $CSCS_REGISTRY_USER -p $CSCS_REGISTRY_PASSWORD $CSCS_REGISTRY
+  script:
+    - TAG_IMAGE=`echo ${BASE_IMAGE##*/} | sed 's/[:]//g'`
+    - TAG_COMPILER=`echo ${COMPILER} | sed 's/[@]//g'`
+    - TAG_DOCKERFILE=`sha256sum $DOCKERFILE | head -c 16`
+    - TAG=${TAG_IMAGE}
+    - mount -t tmpfs none /var/tmp
+    - mount -t tmpfs none /var/lib/containers
+    - 'echo "INFO: building pika image"'
+    - '(podman pull $BUILD_IMAGE:$TAG)
+       ||  podman build
+           -t $BUILD_IMAGE:$TAG -t $BUILD_IMAGE:latest
+           --format docker --layers --isolation chroot
+           --build-arg BASE_IMAGE
+           --build-arg COMPILER
+           -f $DOCKERFILE .'
+    - podman push $BUILD_IMAGE:$TAG
+
+build cpu debug clang14:
+  extends: .build_common
+  timeout: 2 hours
+  variables:
+    DOCKERFILE: ci/docker/Dockerfile.build
+    BASE_IMAGE: docker.io/pikaorg/pika-ci-base:17
+    BUILD_IMAGE: $CSCS_REGISTRY_PATH/pika-debug-cpu-clang/build
+    SLURM_CONSTRAINT: mc
+    COMPILER: clang
+
+.test_common:
+  stage: test
+  trigger:
+    strategy: depend
+
+test cpu debug clang14:
+  extends: .test_common
+  needs:
+    - build cpu debug clang14
