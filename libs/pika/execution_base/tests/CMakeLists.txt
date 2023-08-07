@@ -8,6 +8,9 @@ include(pika_message)
 include(pika_option)
 
 if(PIKA_WITH_TESTS)
+  add_library(pika_execution_test_utilities INTERFACE)
+  target_include_directories(pika_execution_test_utilities INTERFACE include/)
+
   if(PIKA_WITH_TESTS_UNIT)
     pika_add_pseudo_target(tests.unit.modules.execution_base)
     pika_add_pseudo_dependencies(

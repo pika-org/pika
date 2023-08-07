@@ -22,5 +22,7 @@ foreach(test ${tests})
     FOLDER "Tests/Unit/Modules/ExecutionBase"
   )
 
+  target_link_libraries(${test}_test PRIVATE pika_execution_test_utilities)
+
   pika_add_unit_test("modules.execution_base" ${test} ${${test}_PARAMETERS})
 endforeach()

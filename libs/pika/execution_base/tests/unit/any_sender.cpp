@@ -11,6 +11,8 @@
 #include <pika/modules/errors.hpp>
 #include <pika/testing.hpp>
 
+#include <pika/execution_base/tests/algorithm_test_utils.hpp>
+
 #include <atomic>
 #include <exception>
 #include <string>
@@ -204,79 +206,6 @@ struct large_sender : sender<Ts...>
     large_sender& operator=(large_sender const&) = default;
 };
 
-struct error_sender
-{
-    template <template <typename...> class Tuple, template <typename...> class Variant>
-    using value_types = Variant<Tuple<>>;
-
-    template <template <typename...> class Variant>
-    using error_types = Variant<std::exception_ptr>;
-
-    static constexpr bool sends_done = false;
-
-    using completion_signatures = pika::execution::experimental::completion_signatures<
-        pika::execution::experimental::set_value_t(),
-        pika::execution::experimental::set_error_t(std::exception_ptr)>;
-
-    template <typename R>
-    struct operation_state
-    {
-        std::decay_t<R> r;
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
-        {
-            try
-            {
-                throw std::runtime_error("error");
-            }
-            catch (...)
-            {
-                pika::execution::experimental::set_error(std::move(os.r), std::current_exception());
-            }
-        }
-    };
-
-    template <typename R>
-    friend operation_state<R>
-    tag_invoke(pika::execution::experimental::connect_t, error_sender, R&& r)
-    {
-        return {std::forward<R>(r)};
-    }
-};
-
-template <typename F>
-struct callback_receiver
-{
-    std::decay_t<F> f;
-    std::atomic<bool>& set_value_called;
-
-    template <typename E>
-    friend void
-    tag_invoke(pika::execution::experimental::set_error_t, callback_receiver&&, E&&) noexcept
-    {
-        PIKA_TEST(false);
-    }
-
-    friend void tag_invoke(
-        pika::execution::experimental::set_stopped_t, callback_receiver&&) noexcept
-    {
-        PIKA_TEST(false);
-    };
-
-    template <typename... Ts>
-    friend auto tag_invoke(
-        pika::execution::experimental::set_value_t, callback_receiver&& r, Ts&&... ts) noexcept
-    {
-        PIKA_INVOKE(std::move(r.f), std::forward<Ts>(ts)...);
-        r.set_value_called = true;
-    }
-
-    friend constexpr pika::execution::experimental::empty_env tag_invoke(
-        pika::execution::experimental::get_env_t, callback_receiver const&) noexcept
-    {
-        return {};
-    }
-};
-
 struct error_receiver
 {
     std::atomic<bool>& set_error_called;
@@ -464,7 +393,7 @@ void test_unique_any_sender(F&& f, Ts&&... ts)
 
 void test_any_sender_set_error()
 {
-    error_sender s;
+    error_sender<> s;
 
     ex::any_sender<> as1{std::move(s)};
     auto as2 = as1;
@@ -545,7 +474,7 @@ void test_any_sender_set_error()
 
 void test_unique_any_sender_set_error()
 {
-    error_sender s;
+    error_sender<> s;
 
     ex::unique_any_sender<> as1{std::move(s)};
     auto as2 = std::move(as1);
@@ -711,43 +640,6 @@ void test_throwing_constructor()
         ex::just(std::move(throwing_constructor()));
     PIKA_TEST(true);
 }
-
-template <typename T>
-struct const_reference_sender
-{
-    std::reference_wrapper<std::decay_t<T>> x;
-
-    template <template <class...> class Tuple, template <class...> class Variant>
-    using value_types = Variant<Tuple<std::decay_t<T> const&>>;
-
-    template <template <class...> class Variant>
-    using error_types = Variant<std::exception_ptr>;
-
-    static constexpr bool sends_done = false;
-
-    using completion_signatures = pika::execution::experimental::completion_signatures<
-        pika::execution::experimental::set_value_t(std::decay_t<T> const&),
-        pika::execution::experimental::set_error_t(std::exception_ptr)>;
-
-    template <typename R>
-    struct operation_state
-    {
-        std::reference_wrapper<std::decay_t<T>> const x;
-        std::decay_t<R> r;
-
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
-        {
-            pika::execution::experimental::set_value(std::move(os.r), os.x.get());
-        };
-    };
-
-    template <typename R>
-    friend auto
-    tag_invoke(pika::execution::experimental::connect_t, const_reference_sender&& s, R&& r)
-    {
-        return operation_state<R>{std::move(s.x), std::forward<R>(r)};
-    }
-};
 
 void test_const_reference()
 {

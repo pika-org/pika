@@ -7,7 +7,7 @@
 #include <pika/execution/algorithms/just.hpp>
 #include <pika/testing.hpp>
 
-#include "algorithm_test_utils.hpp"
+#include <pika/execution_base/tests/algorithm_test_utils.hpp>
 
 #include <atomic>
 #include <string>
