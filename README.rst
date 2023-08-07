@@ -111,22 +111,6 @@ All functionality in a namespace containing ``detail`` and all macros prefixed
 with ``PIKA_DETAIL`` are implementation details and may change without warning
 at any time.
 
-Acknowledgements
-================
-
-pika is a fork of `HPX <https://hpx.stellar-group.org>`_ focusing on the
-single-node use case complemented by minimal MPI support.
-
-Name
-====
-
-Pick your favourite meaning from the following:
-
-* `pika the animal <https://en.wikipedia.org/wiki/Pika>`_
-* `pika- as a prefix for fast in Finnish
-  <https://en.wiktionary.org/wiki/pika->`_
-* `pika in various other languages <https://en.wiktionary.org/wiki/pika>`_
-
 .. |bors_enabled| image:: https://bors.tech/images/badge_small.svg
      :target: https://app.bors.tech/repositories/41470
      :alt: Bors enabled
