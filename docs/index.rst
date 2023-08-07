@@ -34,3 +34,4 @@ Pick your favourite meaning from the following:
    :hidden:
 
    usage
+   api

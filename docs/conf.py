@@ -47,6 +47,7 @@ html_theme_options = {
     "nav_links": [
         {"href": "index", "internal": True, "title": "Overview"},
         {"href": "usage", "internal": True, "title": "Usage"},
+        {"href": "api", "internal": True, "title": "API reference"},
     ],
     "heroes": {
         "index": "Concurrency and parallelism built on C++ std::execution",

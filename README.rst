@@ -24,30 +24,6 @@ thread pools, MPI, and CUDA.
 
 To get started using pika see the `documentation <https://pikacpp.org>`_.
 
-Documentation
-=============
-
-Documentation is a work in progress. The following headers are part of the
-public API. Any other headers are internal implementation details.
-
-- ``pika/async_rw_mutex.hpp``
-- ``pika/barrier.hpp``
-- ``pika/channel.hpp``
-- ``pika/condition_variable.hpp``
-- ``pika/cuda.hpp``
-- ``pika/execution.hpp``
-- ``pika/latch.hpp``
-- ``pika/mpi.hpp``
-- ``pika/mutex.hpp``
-- ``pika/runtime.hpp``
-- ``pika/semaphore.hpp``
-- ``pika/shared_mutex.hpp``
-- ``pika/thread.hpp``
-
-All functionality in a namespace containing ``detail`` and all macros prefixed
-with ``PIKA_DETAIL`` are implementation details and may change without warning
-at any time.
-
 .. |bors_enabled| image:: https://bors.tech/images/badge_small.svg
      :target: https://app.bors.tech/repositories/41470
      :alt: Bors enabled
