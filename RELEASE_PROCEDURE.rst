@@ -76,3 +76,5 @@ pika follows `Semantic Versioning <https://semver.org>`_.
 #. Check if pika-algorithms also needs a release.
 
 #. Delete your ``GITHUB_TOKEN`` if created only for the release.
+
+#. Announce the release on the #pika slack channel.
