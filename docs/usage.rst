@@ -62,7 +62,7 @@ pika optionally depends on:
 * `MPI <https://www.mpi-forum.org/>`_. MPI support can be enabled with ``PIKA_WITH_MPI=ON``.
 * `Boost.Context <https://boost.org>`_ on macOS or exotic platforms which are not supported by the
   default user-level thread implementations in pika. This can be enabled with
-  ``PIKA_WITH_GENERIC_CONTEXT_COROUTINES=ON`` (TODO rename option...).
+  ``PIKA_WITH_BOOST_CONTEXT=ON``.
 * `stdexec <https://github.com/NVIDIA/stdexec>`_. stdexec support can be enabled with
   ``PIKA_WITH_STDEXEC=ON`` (currently tested with commit `7a47a4aa411c1ca9adfcb152c28cc3dd7b156b4d
   <https://github.com/NVIDIA/stdexec/commit/7a47a4aa411c1ca9adfcb152c28cc3dd7b156b4d>`_).  The
@@ -104,15 +104,22 @@ of CMake options you can use to customize the installation.
 - ``PIKA_WITH_CUDA``: Enable CUDA support.
 - ``PIKA_WITH_HIP``: Enable HIP support.
 - ``PIKA_WITH_MPI``: Enable MPI support.
-- ``PIKA_WITH_STDEXEC``: Enable `stdexec <https://github.com/NVIDIA/stdexec`_ support.
+- ``PIKA_WITH_STDEXEC``: Enable `stdexec <https://github.com/NVIDIA/stdexec>`_ support.
 - ``PIKA_WITH_APEX``: Enable `APEX <https://uo-oaciss.github.io/apex>`_ support.
 - ``PIKA_WITH_TRACY``: Enable `Tracy <https://github.com/wolfpld/tracy>`_ support.
-- ``PIKA_WITH_GENERIC_CONTEXT_COROUTINES``: Enable the use of Boost.Context for fiber context
-  switching.
+- ``PIKA_WITH_BOOST_CONTEXT``: Use Boost.Context for user-level thread context switching.
 - ``PIKA_WITH_TESTS``: Enable tests. Tests can be built with ``cmake --build . --target tests`` and
   run with ``ctest --output-on-failure``.
 - ``PIKA_WITH_EXAMPLES``: Enable examples. Binaries will be placed under ``bin`` in the build
   directory.
+
+Testing
+-------
+
+Tests and examples are disabled by default and can be enabled with ``PIKA_WITH_TESTS``,
+``PIKA_WITH_TESTS_{BENCHMARKS,REGRESSIONS,UNIT}``, and ``PIKA_WITH_EXAMPLES``. The tests must be
+explicitly built before running them, e.g.  with ``cmake --build . --target tests && ctest
+--output-on-failure``.
 
 .. _pika_stdexec:
 

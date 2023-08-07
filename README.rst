@@ -22,72 +22,7 @@ pika is a C++ library for concurrency and parallelism. It implements
 senders/receivers (as proposed in `P2300 <https://wg21.link/p2300>`_) for CPU
 thread pools, MPI, and CUDA.
 
-To get started using pika see the `documentation <https://pika-org.github.io/pika>`_.
-
-Dependencies
-============
-
-pika requires:
-
-* a C++17-capable compiler:
-
-  * `GCC <https://gcc.gnu.org>`_ 9 or greater
-  * `clang <https://clang.llvm.org>`_ 11 or greater
-  * MSVC may work but it is not tested
-
-* `CMake <https://cmake.org>`_ 3.22.0 or greater
-* `header-only Boost <https://boost.org>`_ 1.71.0 or greater
-* `hwloc <https://www-lb.open-mpi.org/projects/hwloc/>`_ 1.11.5 or greater
-* `fmt <https://fmt.dev/latest/index.html>`_
-
-pika optionally requires:
-
-* `gperftools/tcmalloc <https://github.com/gperftools/gperftools>`_, `jemalloc
-  <http://jemalloc.net/>`_, or `mimalloc
-  <https://github.com/microsoft/mimalloc>`_
-* `CUDA <https://docs.nvidia.com/cuda/>`_ 11.0 or greater
-* `HIP <https://rocmdocs.amd.com/en/latest/index.html>`_ 5.2.0 or greater
-* `MPI <https://www.mpi-forum.org/>`_
-* `Boost.Context, Thread, and Chrono <https://boost.org>`_ on macOS
-* `stdexec <https://github.com/NVIDIA/stdexec>`_ when ``PIKA_WITH_STDEXEC`` is
-  enabled (currently tested with commit
-  `48c52df0f81c6151eecf4f39fa5eed2dc0216204
-  <https://github.com/NVIDIA/stdexec/commit/48c52df0f81c6151eecf4f39fa5eed2dc0216204>`_).
-  The integration is experimental.
-
-
-Building
-========
-
-pika is built using CMake. Please see the documentation of
-CMake for help on how to use it. Dependencies are usually available in
-distribution repositories. Alternatively, pika can be built using `spack
-<https://spack.readthedocs.io>`_ (`pika spack package
-<https://spack.readthedocs.io/en/latest/package_list.html#pika>`_). The pika
-repository also includes a ``shell.nix`` file for use with `nix
-<https://nixos.org/download.html#download-nix>`_. The file includes dependencies
-for regular development. It is provided for convenience only and is not
-comprehensive or guaranteed to be up to date. It may require the nixos unstable
-channel.
-
-pika is configured using CMake variables. The most important variables are:
-
-* ``PIKA_WITH_MALLOC``: This defaults to ``mimalloc`` which requires mimalloc to be installed.  Can
-  be set to ``tcmalloc``, ``jemalloc``, ``mimalloc``, or ``system``. Setting it to ``system`` can be
-  useful in debug builds.
-* ``PIKA_WITH_CUDA``: Enable CUDA support.
-* ``PIKA_WITH_HIP``: Enable HIP support.
-* ``PIKA_WITH_MPI``: Enable MPI support.
-* ``PIKA_WITH_BOOST_CONTEXT``: Enable the use of Boost.Context for fiber context switching. This has
-  to be enabled on non-Linux and non-x86 platforms.
-
-Tests and examples are disabled by default and can be enabled with
-``PIKA_WITH_TESTS``, ``PIKA_WITH_TESTS_*``, and ``PIKA_WITH_EXAMPLES``. Note
-that reconfiguring pika with ``PIKA_WITH_TESTS=ON`` after the option has been
-off the individual subcategories of ``PIKA_WITH_TESTS_*`` must be also enabled
-explicitly. Use e.g. ``ccmake`` or ``CMakeCache.txt`` for a list of
-subcategories. The tests must be explicitly built before running them, e.g.
-with ```cmake --build . --target tests && ctest --output-on-failure``.
+To get started using pika see the `documentation <https://pikacpp.org>`_.
 
 Documentation
 =============
