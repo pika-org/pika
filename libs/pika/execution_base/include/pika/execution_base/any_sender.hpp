@@ -460,7 +460,14 @@ namespace pika::execution::experimental::detail {
             // PIKA_MOVE(storage.get()).set_value(...) would leave us with a
             // non-empty any_receiver holding a moved-from receiver.
             auto moved_storage = PIKA_MOVE(r.storage);
-            PIKA_MOVE(moved_storage.get()).set_value(PIKA_FORWARD(Ts_, ts)...);
+            try
+            {
+                PIKA_MOVE(moved_storage.get()).set_value(PIKA_FORWARD(Ts_, ts)...);
+            }
+            catch (...)
+            {
+                PIKA_MOVE(moved_storage.get()).set_error(std::current_exception());
+            }
         }
 
         friend void tag_invoke(pika::execution::experimental::set_error_t, any_receiver&& r,

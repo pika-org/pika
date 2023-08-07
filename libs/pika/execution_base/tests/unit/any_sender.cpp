@@ -15,6 +15,7 @@
 
 #include <atomic>
 #include <exception>
+#include <stdexcept>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -625,20 +626,48 @@ void test_when_all()
     tt::sync_wait(std::move(as3));
 }
 
+// To control when the move constructor will throw, exception is caught in the set_value of
+// any_receiver
+bool throwing = false;
+
 struct throwing_constructor
 {
     throwing_constructor() noexcept(false) {}
-    throwing_constructor(throwing_constructor&&) noexcept(false){};
+    throwing_constructor(throwing_constructor&&) noexcept(false)
+    {
+        if (throwing) throw std::runtime_error("error");
+    };
     throwing_constructor(const throwing_constructor&) = default;
 };
 
 void test_throwing_constructor()
 {
-    [[maybe_unused]] ex::unique_any_sender<throwing_constructor> as1 =
-        ex::just(std::move(throwing_constructor()));
-    [[maybe_unused]] ex::any_sender<throwing_constructor> as2 =
-        ex::just(std::move(throwing_constructor()));
-    PIKA_TEST(true);
+    {
+        // With unique_any_sender
+        throwing = false;
+        std::atomic<bool> set_error_called{false};
+        ex::unique_any_sender<throwing_constructor> as1 =
+            ex::just(std::move(throwing_constructor()));
+        auto r = error_callback_receiver<decltype(check_exception_ptr)>{
+            check_exception_ptr, set_error_called};
+        auto os = ex::connect(std::move(as1), std::move(r));
+        throwing = true;
+        ex::start(os);
+        PIKA_TEST(set_error_called);
+    }
+
+    {
+        // With any_sender
+        throwing = false;
+        std::atomic<bool> set_error_called{false};
+        ex::any_sender<throwing_constructor> as1 = ex::just(std::move(throwing_constructor()));
+        auto r = error_callback_receiver<decltype(check_exception_ptr)>{
+            check_exception_ptr, set_error_called};
+        auto os = ex::connect(std::move(as1), std::move(r));
+        throwing = true;
+        ex::start(os);
+        PIKA_TEST(set_error_called);
+    }
 }
 
 void test_const_reference()
@@ -740,7 +769,7 @@ int main()
     // Test using any_senders together with when_all
     test_when_all();
 
-    // Test using {unique_,}any_sender with a just sender of move object
+    // Test using {unique_,}any_sender with a just sender of move object that can throw
     test_throwing_constructor();
 
     // Test using {unique_,}any_sender with a just sender of a const reference
