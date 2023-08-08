@@ -40,7 +40,7 @@
 #endif
 
 #if !defined(PIKA_SMALL_STACK_SIZE)
-#  if defined(PIKA_WINDOWS) && !defined(PIKA_HAVE_GENERIC_CONTEXT_COROUTINES)
+#  if defined(PIKA_WINDOWS) && !defined(PIKA_HAVE_BOOST_CONTEXT)
 #    define PIKA_SMALL_STACK_SIZE    0x4000        // 16kByte
 #  else
 #    if defined(PIKA_DEBUG)

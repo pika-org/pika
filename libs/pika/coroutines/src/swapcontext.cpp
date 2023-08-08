@@ -7,7 +7,7 @@
 
 #include <pika/config.hpp>
 
-#if !defined(PIKA_HAVE_GENERIC_CONTEXT_COROUTINES)
+#if !defined(PIKA_HAVE_BOOST_CONTEXT)
 
 # if (defined(__linux) || defined(linux) || defined(__linux__) || defined(__FreeBSD__)) &&         \
      !defined(__bgq__) && !defined(__powerpc__) && !defined(__s390x__) && !defined(__arm__) &&     \
@@ -20,7 +20,7 @@
 #  else
 #   error You are trying to use x86 context switching on a non-x86 platform. Your \
     platform may be supported with the CMake option \
-    PIKA_WITH_GENERIC_CONTEXT_COROUTINES=ON (requires Boost.Context).
+    PIKA_WITH_BOOST_CONTEXT=ON (requires Boost.Context).
 #  endif
 
 # endif

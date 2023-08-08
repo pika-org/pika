@@ -1082,7 +1082,7 @@ if("${PIKA_PLATFORM_UC}" STREQUAL "BLUEGENEQ")
   set(__use_generic_coroutine_context ON)
 endif()
 pika_option(
-  PIKA_WITH_GENERIC_CONTEXT_COROUTINES
+  PIKA_WITH_BOOST_CONTEXT
   BOOL
   "Use Boost.Context as the underlying coroutines context switch implementation."
   ${__use_generic_coroutine_context}
@@ -1230,7 +1230,7 @@ if(WIN32)
   if(NOT CMAKE_CL_64)
     pika_add_config_cond_define(BOOST_NO_ALIGNMENT)
   endif()
-  if(NOT PIKA_WITH_GENERIC_CONTEXT_COROUTINES)
+  if(NOT PIKA_WITH_BOOST_CONTEXT)
     pika_add_config_define(PIKA_HAVE_FIBER_BASED_COROUTINES)
   endif()
   pika_add_config_cond_define(PSAPI_VERSION 1)
@@ -1509,14 +1509,14 @@ endif()
 # with incompatible options with the currently selected platform.
 #
 
-if(PIKA_WITH_GENERIC_CONTEXT_COROUTINES)
+if(PIKA_WITH_BOOST_CONTEXT)
   # Check if we can use generic coroutine contexts without any problems
   if(NOT Boost_CONTEXT_FOUND)
     pika_error(
       "The usage of Boost.Context was selected but Boost.Context was not found."
     )
   endif()
-  pika_add_config_define(PIKA_HAVE_GENERIC_CONTEXT_COROUTINES)
+  pika_add_config_define(PIKA_HAVE_BOOST_CONTEXT)
 endif()
 
 # ##############################################################################

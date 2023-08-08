@@ -76,9 +76,8 @@ pika is configured using CMake variables. The most important variables are:
 * ``PIKA_WITH_CUDA``: Enable CUDA support.
 * ``PIKA_WITH_HIP``: Enable HIP support.
 * ``PIKA_WITH_MPI``: Enable MPI support.
-* ``PIKA_WITH_GENERIC_CONTEXT_COROUTINES``: Enable the use of Boost.Context for
-  fiber context switching. This has to be enabled on non-Linux and non-x86
-  platforms.
+* ``PIKA_WITH_BOOST_CONTEXT``: Enable the use of Boost.Context for fiber context switching. This has
+  to be enabled on non-Linux and non-x86 platforms.
 
 Tests and examples are disabled by default and can be enabled with
 ``PIKA_WITH_TESTS``, ``PIKA_WITH_TESTS_*``, and ``PIKA_WITH_EXAMPLES``. Note

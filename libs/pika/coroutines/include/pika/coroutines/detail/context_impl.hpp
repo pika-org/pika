@@ -98,11 +98,11 @@
      make copyable.
 */
 
-#if defined(PIKA_HAVE_GENERIC_CONTEXT_COROUTINES) && defined(PIKA_HAVE_FIBER_BASED_COROUTINES)
-#   error PIKA_HAVE_GENERIC_CONTEXT_COROUTINES and PIKA_HAVE_FIBER_BASED_COROUTINES cannot be defined at the same time.
+#if defined(PIKA_HAVE_BOOST_CONTEXT) && defined(PIKA_HAVE_FIBER_BASED_COROUTINES)
+#   error PIKA_HAVE_BOOST_CONTEXT and PIKA_HAVE_FIBER_BASED_COROUTINES cannot be defined at the same time.
 #endif
 
-#if defined(PIKA_HAVE_GENERIC_CONTEXT_COROUTINES)
+#if defined(PIKA_HAVE_BOOST_CONTEXT)
 
 # include <pika/coroutines/detail/context_generic_context.hpp>
 namespace pika { namespace threads { namespace coroutines { namespace detail {
@@ -142,6 +142,6 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
 
 # error No default context switching implementation available for this system. \
     Your platform may be supported with the CMake option \
-    PIKA_WITH_GENERIC_CONTEXT_COROUTINES=ON (requires Boost.Context).
+    PIKA_WITH_BOOST_CONTEXT=ON (requires Boost.Context).
 
-#endif    // PIKA_HAVE_GENERIC_CONTEXT_COROUTINES
+#endif    // PIKA_HAVE_BOOST_CONTEXT

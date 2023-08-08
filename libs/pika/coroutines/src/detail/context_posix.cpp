@@ -10,7 +10,7 @@
 // The preprocessor conditions below are kept in sync with those used in
 // context_impl.hpp
 
-#if defined(PIKA_HAVE_GENERIC_CONTEXT_COROUTINES)
+#if defined(PIKA_HAVE_BOOST_CONTEXT)
 
 // left empty on purpose
 
@@ -38,4 +38,4 @@ namespace pika { namespace threads { namespace coroutines { namespace detail { n
 
 # error No default_context_impl available for this system
 
-#endif    // PIKA_HAVE_GENERIC_CONTEXT_COROUTINES
+#endif    // PIKA_HAVE_BOOST_CONTEXT
