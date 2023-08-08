@@ -368,7 +368,7 @@ namespace pika::threads::detail {
 #include <pika/config/warnings_suffix.hpp>
 
     ///////////////////////////////////////////////////////////////////////////
-    PIKA_EXPORT topology& create_topology();
+    PIKA_EXPORT topology& get_topology();
 
     [[nodiscard]] PIKA_EXPORT unsigned int hardware_concurrency() noexcept;
 

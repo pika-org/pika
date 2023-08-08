@@ -195,7 +195,7 @@ namespace pika::detail {
     {
         if (use_process_mask)
         {
-            threads::detail::topology& top = threads::detail::create_topology();
+            threads::detail::topology& top = threads::detail::get_topology();
             return threads::detail::count(top.get_cpubind_mask_main_thread());
         }
         else { return threads::detail::hardware_concurrency(); }
@@ -203,7 +203,7 @@ namespace pika::detail {
 
     std::size_t get_number_of_default_cores(bool use_process_mask)
     {
-        threads::detail::topology& top = threads::detail::create_topology();
+        threads::detail::topology& top = threads::detail::get_topology();
 
         std::size_t num_cores = top.get_number_of_cores();
 

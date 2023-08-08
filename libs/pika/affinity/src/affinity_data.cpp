@@ -71,7 +71,7 @@ namespace pika::detail {
 
         init_cached_pu_nums(num_system_pus);
 
-        auto const& topo = threads::detail::create_topology();
+        auto const& topo = threads::detail::get_topology();
 
         if (affinity_description == "none")
         {

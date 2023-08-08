@@ -283,7 +283,7 @@ namespace pika::threads::detail {
             std::make_shared<pika::concurrency::detail::barrier>(pool_threads + 1);
         try
         {
-            topology const& topo = create_topology();
+            topology const& topo = get_topology();
 
             for (/**/; thread_num != pool_threads; ++thread_num)
             {
@@ -392,7 +392,7 @@ namespace pika::threads::detail {
     pika::threads::detail::scheduled_thread_pool<Scheduler>::thread_func(std::size_t thread_num,
         std::size_t global_thread_num, std::shared_ptr<pika::concurrency::detail::barrier> startup)
     {
-        topology const& topo = create_topology();
+        topology const& topo = get_topology();
 
         // Set the affinity for the current thread.
         threads::detail::mask_cref_type mask = affinity_data_.get_pu_mask(topo, global_thread_num);

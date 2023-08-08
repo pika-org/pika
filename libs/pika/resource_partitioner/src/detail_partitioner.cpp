@@ -182,7 +182,7 @@ namespace pika::resource::detail {
       : rtcfg_()
       , first_core_(std::size_t(-1))
       , mode_(mode_default)
-      , topo_(threads::detail::create_topology())
+      , topo_(threads::detail::get_topology())
       , default_scheduler_mode_(threads::scheduler_mode::default_mode)
     {
         // allow only one partitioner instance

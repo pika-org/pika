@@ -481,9 +481,7 @@ namespace pika::detail {
         parse_mappings(spec, mappings, ec);
         if (ec) return;
 
-        // We need to instantiate a new topology object as the runtime has not
-        // been initialized yet
-        threads::detail::topology& t = threads::detail::create_topology();
+        threads::detail::topology& t = threads::detail::get_topology();
 
         decode_distribution(mappings, t, affinities, used_cores, max_cores, num_threads, num_pus,
             use_process_mask, ec);

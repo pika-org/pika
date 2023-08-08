@@ -54,7 +54,7 @@
 namespace pika::threads::detail {
     std::size_t hwloc_hardware_concurrency()
     {
-        threads::detail::topology& top = threads::detail::create_topology();
+        threads::detail::topology& top = threads::detail::get_topology();
         return top.get_number_of_pus();
     }
 
@@ -187,9 +187,9 @@ namespace pika::threads::detail {
     // initialization order between TUs happening in a particular order and we guarantee that the
     // object has been created before access. However, we also want to initialize the topology
     // object early so that we can read the CPU mask of the main thread in case OpenMP wants to
-    // reset it, so we also have a global object call create_topology so that we don't depend on
-    // others calling create_topology early for us.
-    topology& create_topology()
+    // reset it, so we also have a global object call get_topology so that we don't depend on others
+    // calling get_topology early for us.
+    topology& get_topology()
     {
         static topology topo;
         return topo;
@@ -197,7 +197,7 @@ namespace pika::threads::detail {
 
     static struct init_topology_t
     {
-        init_topology_t() { create_topology(); }
+        init_topology_t() { get_topology(); }
     } init_topology{};
 
 #if !defined(PIKA_HAVE_MAX_CPU_COUNT)
@@ -1446,13 +1446,6 @@ namespace pika::threads::detail {
         print_vector(os, core_numbers_);
         //os << "PUs (/threads)        : \n";
         //print_vector(os, pu_numbers_);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    topology& create_topology()
-    {
-        static topology topo;
-        return topo;
     }
 
     ///////////////////////////////////////////////////////////////////////////
