@@ -42,10 +42,8 @@ void test_wait_for_all_from_array()
 
     std::array<pika::future<int>, 10> result = r.get();
 
-    for (const auto& f : futures)
-        PIKA_TEST(!f.valid());
-    for (const auto& r : result)
-        PIKA_TEST(r.is_ready());
+    for (const auto& f : futures) PIKA_TEST(!f.valid());
+    for (const auto& r : result) PIKA_TEST(r.is_ready());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

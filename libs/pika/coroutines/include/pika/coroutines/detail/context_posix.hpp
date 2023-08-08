@@ -130,8 +130,7 @@ namespace pika::threads::coroutines::detail::posix::ucontext {
         void (*startfunc)(void*), void* startarg, ::ucontext_t* exitto = nullptr)
     {
         int error = ::getcontext(ctx);
-        if (error)
-            return error;
+        if (error) return error;
 
         ctx->uc_stack.ss_sp = (char*) stack;
         ctx->uc_stack.ss_size = size;
@@ -185,14 +184,8 @@ namespace pika::threads::coroutines {
             // this constexpr
             PIKA_EXPORT static std::ptrdiff_t default_stack_size;
 
-            ucontext_context_impl_base()
-            {
-                PIKA_COROUTINE_CREATE_CONTEXT(m_ctx);
-            }
-            ~ucontext_context_impl_base()
-            {
-                PIKA_COROUTINE_DESTROY_CONTEXT(m_ctx);
-            }
+            ucontext_context_impl_base() { PIKA_COROUTINE_CREATE_CONTEXT(m_ctx); }
+            ~ucontext_context_impl_base() { PIKA_COROUTINE_DESTROY_CONTEXT(m_ctx); }
 
         private:
             /*
@@ -232,8 +225,7 @@ namespace pika::threads::coroutines {
 
             void init()
             {
-                if (m_stack != nullptr)
-                    return;
+                if (m_stack != nullptr) return;
 
                 m_stack = alloc_stack(static_cast<std::size_t>(m_stack_size));
                 if (m_stack == nullptr)
@@ -310,8 +302,7 @@ namespace pika::threads::coroutines {
 
             ~ucontext_context_impl()
             {
-                if (m_stack)
-                    free_stack(m_stack, m_stack_size);
+                if (m_stack) free_stack(m_stack, m_stack_size);
 
 # if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION)
                 free(segv_stack.ss_sp);
@@ -319,10 +310,7 @@ namespace pika::threads::coroutines {
             }
 
             // Return the size of the reserved stack address space.
-            std::ptrdiff_t get_stacksize() const
-            {
-                return m_stack_size;
-            }
+            std::ptrdiff_t get_stacksize() const { return m_stack_size; }
 
             std::ptrdiff_t get_available_stack_space()
             {

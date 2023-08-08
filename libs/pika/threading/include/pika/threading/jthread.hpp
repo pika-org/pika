@@ -165,10 +165,7 @@ namespace pika {
         }
 
         // Returns: get_id() != id().
-        [[nodiscard]] bool joinable() const noexcept
-        {
-            return thread_.joinable();
-        }
+        [[nodiscard]] bool joinable() const noexcept { return thread_.joinable(); }
 
         // Effects: Blocks until the thread represented by *this has
         //      completed.
@@ -187,10 +184,7 @@ namespace pika {
         //          or get_id() == thisthread_::get_id().
         //      - no_such_process - if the thread is not valid.
         //      - invalid_argument - if the thread is not joinable.
-        void join()
-        {
-            thread_.join();
-        }
+        void join() { thread_.join(); }
 
         // Effects: The thread represented by *this continues execution
         //      without the calling thread blocking. When detach() returns,
@@ -206,45 +200,27 @@ namespace pika {
         // Error conditions:
         //      - no_such_process - if the thread is not valid.
         //      - invalid_argument - if the thread is not joinable.
-        void detach()
-        {
-            thread_.detach();
-        }
+        void detach() { thread_.detach(); }
 
         // Returns: A default constructed id object if *this does not
         //      represent a thread, otherwise thisthread_::get_id() for
         //      the thread of execution represented by *this.
-        [[nodiscard]] id get_id() const noexcept
-        {
-            return thread_.get_id();
-        }
+        [[nodiscard]] id get_id() const noexcept { return thread_.get_id(); }
 
         // The presence of native_handle() and its semantic is
         //      implementation-defined.
-        [[nodiscard]] native_handle_type native_handle()
-        {
-            return thread_.native_handle();
-        }
+        [[nodiscard]] native_handle_type native_handle() { return thread_.native_handle(); }
 
         // 32.4.3.2, stop token handling
 
         // Effects: Equivalent to: return ssource_;
-        [[nodiscard]] stop_source get_stop_source() noexcept
-        {
-            return ssource_;
-        }
+        [[nodiscard]] stop_source get_stop_source() noexcept { return ssource_; }
 
         // Effects: Equivalent to: return ssource_.get_token();
-        [[nodiscard]] stop_token get_stop_token() const noexcept
-        {
-            return ssource_.get_token();
-        }
+        [[nodiscard]] stop_token get_stop_token() const noexcept { return ssource_.get_token(); }
 
         // Effects: Equivalent to: return ssource_.request_stop();
-        bool request_stop() noexcept
-        {
-            return ssource_.request_stop();
-        }
+        bool request_stop() noexcept { return ssource_.request_stop(); }
 
         // 32.4.3.5, static members
 
@@ -262,8 +238,5 @@ namespace pika {
     // 32.4.3.4, specialized algorithms
 
     // Effects: Equivalent to: x.swap(y).
-    inline void swap(jthread& lhs, jthread& rhs) noexcept
-    {
-        lhs.swap(rhs);
-    }
+    inline void swap(jthread& lhs, jthread& rhs) noexcept { lhs.swap(rhs); }
 }    // namespace pika

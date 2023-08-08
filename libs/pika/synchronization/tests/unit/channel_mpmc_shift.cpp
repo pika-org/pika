@@ -24,10 +24,7 @@ template <typename T>
 inline T channel_get(pika::experimental::channel_mpmc<T> const& c)
 {
     T result;
-    while (!c.get(&result))
-    {
-        pika::this_thread::yield();
-    }
+    while (!c.get(&result)) { pika::this_thread::yield(); }
     return result;
 }
 
@@ -57,10 +54,7 @@ int pika_main()
     std::vector<pika::future<int>> workers;
     workers.reserve(NUM_WORKERS);
 
-    for (int i = 0; i != NUM_WORKERS; ++i)
-    {
-        channels.emplace_back(std::size_t(1));
-    }
+    for (int i = 0; i != NUM_WORKERS; ++i) { channels.emplace_back(std::size_t(1)); }
 
     for (int i = 0; i != NUM_WORKERS; ++i)
     {
@@ -79,7 +73,4 @@ int pika_main()
     return 0;
 }
 
-int main(int argc, char* argv[])
-{
-    return pika::init(pika_main, argc, argv);
-}
+int main(int argc, char* argv[]) { return pika::init(pika_main, argc, argv); }

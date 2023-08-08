@@ -79,8 +79,7 @@ namespace pika::util {
         if (argv0_.length() > 0)
         {
             // Check for an absolute path.
-            if (argv0_[0] == '/')
-                return argv0_;
+            if (argv0_[0] == '/') return argv0_;
 
             // Check for a relative path.
             if (argv0_.find('/') != std::string::npos)

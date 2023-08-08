@@ -73,16 +73,10 @@ namespace pika::threads::detail {
 
         ~switch_status()
         {
-            if (need_restore_state_)
-            {
-                store_state(prev_state_);
-            }
+            if (need_restore_state_) { store_state(prev_state_); }
         }
 
-        bool is_valid() const
-        {
-            return need_restore_state_;
-        }
+        bool is_valid() const { return need_restore_state_; }
 
         // allow to change the state the thread will be switched to after
         // execution
@@ -97,10 +91,7 @@ namespace pika::threads::detail {
         // Get the state this thread was in before execution (usually pending),
         // this helps making sure no other worker-thread is started to execute this
         // pika-thread in the meantime.
-        thread_schedule_state get_previous() const
-        {
-            return prev_state_.state();
-        }
+        thread_schedule_state get_previous() const { return prev_state_.state(); }
 
         // This restores the previous state, while making sure that the
         // original state has not been changed since we started executing this
@@ -119,20 +110,11 @@ namespace pika::threads::detail {
         }
 
         // disable default handling in destructor
-        void disable_restore()
-        {
-            need_restore_state_ = false;
-        }
+        void disable_restore() { need_restore_state_ = false; }
 
-        thread_id_ref_type const& get_next_thread() const
-        {
-            return next_thread_id_;
-        }
+        thread_id_ref_type const& get_next_thread() const { return next_thread_id_; }
 
-        thread_id_ref_type move_next_thread()
-        {
-            return PIKA_MOVE(next_thread_id_);
-        }
+        thread_id_ref_type move_next_thread() { return PIKA_MOVE(next_thread_id_); }
 
     private:
         thread_id_ref_type const& thread_;
@@ -156,16 +138,10 @@ namespace pika::threads::detail {
 
         ~switch_status_background()
         {
-            if (need_restore_state_)
-            {
-                store_state(prev_state_);
-            }
+            if (need_restore_state_) { store_state(prev_state_); }
         }
 
-        bool is_valid() const
-        {
-            return need_restore_state_;
-        }
+        bool is_valid() const { return need_restore_state_; }
 
         // allow to change the state the thread will be switched to after
         // execution
@@ -180,10 +156,7 @@ namespace pika::threads::detail {
         // Get the state this thread was in before execution (usually pending),
         // this helps making sure no other worker-thread is started to execute this
         // pika-thread in the meantime.
-        thread_schedule_state get_previous() const
-        {
-            return prev_state_.state();
-        }
+        thread_schedule_state get_previous() const { return prev_state_.state(); }
 
         // This restores the previous state, while making sure that the
         // original state has not been changed since we started executing this
@@ -202,20 +175,11 @@ namespace pika::threads::detail {
         }
 
         // disable default handling in destructor
-        void disable_restore()
-        {
-            need_restore_state_ = false;
-        }
+        void disable_restore() { need_restore_state_ = false; }
 
-        thread_id_ref_type const& get_next_thread() const
-        {
-            return next_thread_id_;
-        }
+        thread_id_ref_type const& get_next_thread() const { return next_thread_id_; }
 
-        thread_id_ref_type move_next_thread()
-        {
-            return PIKA_MOVE(next_thread_id_);
-        }
+        thread_id_ref_type move_next_thread() { return PIKA_MOVE(next_thread_id_); }
 
     private:
         thread_id_ref_type const& thread_;
@@ -247,10 +211,7 @@ namespace pika::threads::detail {
                 tfunc_time_ = 0;
                 exec_time_ = 0;
             }
-            else
-            {
-                tfunc_time_ = pika::chrono::detail::timestamp() - start_timestamp_;
-            }
+            else { tfunc_time_ = pika::chrono::detail::timestamp() - start_timestamp_; }
         }
 
         std::int64_t start_timestamp_;
@@ -266,10 +227,7 @@ namespace pika::threads::detail {
           , idle_rate_(idle_rate)
         {
         }
-        ~exec_time_wrapper()
-        {
-            idle_rate_.collect_exec_time(timestamp_);
-        }
+        ~exec_time_wrapper() { idle_rate_.collect_exec_time(timestamp_); }
 
         std::int64_t timestamp_;
         idle_collect_rate& idle_rate_;
@@ -281,10 +239,7 @@ namespace pika::threads::detail {
           : idle_rate_(idle_rate)
         {
         }
-        ~tfunc_time_wrapper()
-        {
-            idle_rate_.take_snapshot();
-        }
+        ~tfunc_time_wrapper() { idle_rate_.take_snapshot(); }
 
         idle_collect_rate& idle_rate_;
     };
@@ -313,10 +268,7 @@ namespace pika::threads::detail {
         {
             is_active = true;
         }
-        ~is_active_wrapper()
-        {
-            is_active_ = false;
-        }
+        ~is_active_wrapper() { is_active_ = false; }
 
         bool& is_active_;
     };
@@ -487,10 +439,7 @@ namespace pika::threads::detail {
                                     // just in case, clean up the now dead pointer.
                                     thrdptr->set_timer_data(nullptr);
                                 }
-                                else
-                                {
-                                    profiler.yield();
-                                }
+                                else { profiler.yield(); }
 #else
 # if defined(PIKA_HAVE_TRACY)
                                 auto const desc = thrdptr->get_description();
@@ -657,10 +606,7 @@ namespace pika::threads::detail {
 
                     if (this_state.load() == runtime_state::pre_sleep)
                     {
-                        if (can_exit)
-                        {
-                            scheduler.SchedulingPolicy::suspend(num_thread);
-                        }
+                        if (can_exit) { scheduler.SchedulingPolicy::suspend(num_thread); }
                     }
                     else
                     {
@@ -671,8 +617,7 @@ namespace pika::threads::detail {
 
                         if (can_exit)
                         {
-                            if (!may_exit)
-                                idle_loop_count = 0;
+                            if (!may_exit) idle_loop_count = 0;
                             may_exit = true;
                         }
                     }
@@ -692,17 +637,12 @@ namespace pika::threads::detail {
             }
 
             // something went badly wrong, give up
-            if (PIKA_UNLIKELY(this_state.load() == runtime_state::terminating))
-                break;
+            if (PIKA_UNLIKELY(this_state.load() == runtime_state::terminating)) break;
 
-            if (busy_loop_count > params.max_busy_loop_count_)
-            {
-                busy_loop_count = 0;
-            }
+            if (busy_loop_count > params.max_busy_loop_count_) { busy_loop_count = 0; }
             else if (idle_loop_count > params.max_idle_loop_count_ || may_exit)
             {
-                if (idle_loop_count > params.max_idle_loop_count_)
-                    idle_loop_count = 0;
+                if (idle_loop_count > params.max_idle_loop_count_) idle_loop_count = 0;
 
                 // call back into invoking context
                 if (!params.outer_.empty())
@@ -733,10 +673,7 @@ namespace pika::threads::detail {
 
                     may_exit = false;
                 }
-                else
-                {
-                    scheduler.SchedulingPolicy::cleanup_terminated(true);
-                }
+                else { scheduler.SchedulingPolicy::cleanup_terminated(true); }
             }
         }
     }

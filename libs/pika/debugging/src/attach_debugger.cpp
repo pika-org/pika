@@ -26,10 +26,7 @@ namespace pika::debug::detail {
         std::cerr << "PID: " << getpid()
                   << " ready for attaching debugger. Once attached set i = 1 and continue"
                   << std::endl;
-        while (i == 0)
-        {
-            sleep(1);
-        }
+        while (i == 0) { sleep(1); }
 #elif defined(PIKA_WINDOWS)
         DebugBreak();
 #endif

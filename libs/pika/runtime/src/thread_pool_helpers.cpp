@@ -21,15 +21,9 @@
 #include <vector>
 
 namespace pika::resource {
-    std::size_t get_num_thread_pools()
-    {
-        return get_partitioner().get_num_pools();
-    }
+    std::size_t get_num_thread_pools() { return get_partitioner().get_num_pools(); }
 
-    std::size_t get_num_threads()
-    {
-        return get_partitioner().get_num_threads();
-    }
+    std::size_t get_num_threads() { return get_partitioner().get_num_threads(); }
 
     std::size_t get_num_threads(std::string const& pool_name)
     {
@@ -84,15 +78,9 @@ namespace pika::threads {
         return get_thread_manager().get_thread_count(state, priority);
     }
 
-    std::int64_t get_idle_core_count()
-    {
-        return get_thread_manager().get_idle_core_count();
-    }
+    std::int64_t get_idle_core_count() { return get_thread_manager().get_idle_core_count(); }
 
-    detail::mask_type get_idle_core_mask()
-    {
-        return get_thread_manager().get_idle_core_mask();
-    }
+    detail::mask_type get_idle_core_mask() { return get_thread_manager().get_idle_core_mask(); }
 
     bool enumerate_threads(util::detail::function<bool(detail::thread_id_type)> const& f,
         detail::thread_schedule_state state)

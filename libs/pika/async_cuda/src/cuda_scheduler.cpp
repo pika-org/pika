@@ -14,15 +14,9 @@ namespace pika::cuda::experimental {
     {
     }
 
-    cuda_pool const& cuda_scheduler::get_pool() const noexcept
-    {
-        return pool;
-    }
+    cuda_pool const& cuda_scheduler::get_pool() const noexcept { return pool; }
 
-    cuda_stream const& cuda_scheduler::get_next_stream()
-    {
-        return pool.get_next_stream(priority);
-    }
+    cuda_stream const& cuda_scheduler::get_next_stream() { return pool.get_next_stream(priority); }
 
     namespace detail {
         cuda_scheduler_sender::cuda_scheduler_sender(cuda_scheduler scheduler)

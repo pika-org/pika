@@ -12,7 +12,4 @@
 # error "libc++ inplace_merge implementation is not stable"
 #endif
 
-int main()
-{
-    return 0;
-}
+int main() { return 0; }

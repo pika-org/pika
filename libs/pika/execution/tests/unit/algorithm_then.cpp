@@ -27,10 +27,7 @@ struct custom_transformer
     void operator()() const
     {
         call_operator_called = true;
-        if (throws)
-        {
-            throw std::runtime_error("error");
-        }
+        if (throws) { throw std::runtime_error("error"); }
     }
 };
 

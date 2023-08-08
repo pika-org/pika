@@ -14,17 +14,11 @@ namespace pika::cuda::experimental {
       : device(device)
     {
         whip::get_device(&old_device);
-        if (device != old_device)
-        {
-            whip::set_device(device);
-        }
+        if (device != old_device) { whip::set_device(device); }
     }
 
     cuda_device_scope::~cuda_device_scope()
     {
-        if (device != old_device)
-        {
-            whip::set_device(old_device);
-        }
+        if (device != old_device) { whip::set_device(old_device); }
     }
 }    // namespace pika::cuda::experimental

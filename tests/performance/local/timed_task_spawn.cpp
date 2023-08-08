@@ -92,8 +92,7 @@ void print_results(std::uint64_t cores, double walltime, double warmup_estimate,
 {
     std::vector<pika::performance_counters::counter_value> counter_values;
 
-    if (ac)
-        counter_values = ac->evaluate_counters(pika::launch::sync);
+    if (ac) counter_values = ac->evaluate_counters(pika::launch::sync);
 
     if (csv_header)
     {
@@ -132,8 +131,7 @@ void print_results(std::uint64_t cores, double walltime, double warmup_estimate,
             cout << "## " << (i + 1 + last_index) << ":" << counter_shortnames[i] << ":"
                  << ac->name(i);
 
-            if (!ac->unit_of_measure(i).empty())
-                cout << " [" << ac->unit_of_measure(i) << "]";
+            if (!ac->unit_of_measure(i).empty()) cout << " [" << ac->unit_of_measure(i) << "]";
 
             cout << "\n";
         }
@@ -309,14 +307,11 @@ void stage_workers(
 int pika_main(variables_map& vm)
 {
     {
-        if (vm.count("no-header"))
-            header = false;
+        if (vm.count("no-header")) header = false;
 
-        if (vm.count("csv-header"))
-            csv_header = true;
+        if (vm.count("csv-header")) csv_header = true;
 
-        if (0 == tasks)
-            throw std::invalid_argument("count of 0 tasks specified\n");
+        if (0 == tasks) throw std::invalid_argument("count of 0 tasks specified\n");
 
         if (suspended_tasks > tasks)
             throw std::invalid_argument("suspended tasks must be smaller than tasks\n");
@@ -338,10 +333,7 @@ int pika_main(variables_map& vm)
         {
             stage_worker = &stage_worker_static_imbalanced;
         }
-        else if ("round-robin" == distribution)
-        {
-            stage_worker = &stage_worker_round_robin;
-        }
+        else if ("round-robin" == distribution) { stage_worker = &stage_worker_round_robin; }
         else
         {
             throw std::invalid_argument(
@@ -416,18 +408,12 @@ int pika_main(variables_map& vm)
         }
 
         std::shared_ptr<pika::util::activate_counters> ac;
-        if (!counters.empty())
-        {
-            ac = std::make_shared<pika::util::activate_counters>(counters);
-        }
+        if (!counters.empty()) { ac = std::make_shared<pika::util::activate_counters>(counters); }
 
         ///////////////////////////////////////////////////////////////////////
         // Start the clock.
         high_resolution_timer t;
-        if (ac)
-        {
-            ac->reset_counters();
-        }
+        if (ac) { ac->reset_counters(); }
 
         // This needs to stay here; we may have suspended as recently as the
         // performance counter reset (which is called just before the staging
@@ -436,8 +422,7 @@ int pika_main(variables_map& vm)
 
         for (std::uint64_t i = 0; i < os_thread_count; ++i)
         {
-            if (num_thread == i)
-                continue;
+            if (num_thread == i) continue;
 
             thread_init_data data(make_thread_function_nullary(pika::util::detail::bind(
                                       &stage_workers, i, tasks_per_feeder, stage_worker)),

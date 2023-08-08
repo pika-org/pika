@@ -31,10 +31,7 @@ namespace pika::detail {
             std::size_t pu_step = 1, std::size_t used_cores = 0, std::string affinity_domain = "pu",
             std::string const& affinity_description = "balanced", bool use_process_mask = true);
 
-        void set_num_threads(size_t num_threads)
-        {
-            num_threads_ = num_threads;
-        }
+        void set_num_threads(size_t num_threads) { num_threads_ = num_threads; }
 
         void set_affinity_masks(std::vector<threads::detail::mask_type> const& affinity_masks)
         {
@@ -45,15 +42,9 @@ namespace pika::detail {
             affinity_masks_ = PIKA_MOVE(affinity_masks);
         }
 
-        std::size_t get_num_threads() const
-        {
-            return num_threads_;
-        }
+        std::size_t get_num_threads() const { return num_threads_; }
 
-        bool using_process_mask() const noexcept
-        {
-            return use_process_mask_;
-        }
+        bool using_process_mask() const noexcept { return use_process_mask_; }
 
         threads::detail::mask_cref_type get_pu_mask(
             threads::detail::topology const& topo, std::size_t num_thread) const;
@@ -68,22 +59,13 @@ namespace pika::detail {
             PIKA_ASSERT(num_thread < pu_nums_.size());
             return pu_nums_[num_thread];
         }
-        void set_pu_nums(std::vector<std::size_t> const& pu_nums)
-        {
-            pu_nums_ = pu_nums;
-        }
-        void set_pu_nums(std::vector<std::size_t>&& pu_nums)
-        {
-            pu_nums_ = PIKA_MOVE(pu_nums);
-        }
+        void set_pu_nums(std::vector<std::size_t> const& pu_nums) { pu_nums_ = pu_nums; }
+        void set_pu_nums(std::vector<std::size_t>&& pu_nums) { pu_nums_ = PIKA_MOVE(pu_nums); }
 
         void add_punit(std::size_t virt_core, std::size_t thread_num);
         void init_cached_pu_nums(std::size_t hardware_concurrency);
 
-        std::size_t get_num_pus_needed() const
-        {
-            return num_pus_needed_;
-        }
+        std::size_t get_num_pus_needed() const { return num_pus_needed_; }
 
     protected:
         std::size_t get_pu_num(std::size_t num_thread, std::size_t hardware_concurrency) const;

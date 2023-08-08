@@ -36,8 +36,7 @@ namespace pika::util {
     void perftests_report(std::string const& name, std::string const& exec, const std::size_t steps,
         detail::function<void(void)>&& test)
     {
-        if (steps == 0)
-            return;
+        if (steps == 0) return;
         // First iteration to cache the data
         test();
         using timer = std::chrono::high_resolution_clock;
@@ -55,10 +54,7 @@ namespace pika::util {
         }
     }
 
-    void perftests_print_times()
-    {
-        std::cout << detail::times();
-    }
+    void perftests_print_times() { std::cout << detail::times(); }
 
     void print_cdash_timing(const char* name, double time)
     {

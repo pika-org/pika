@@ -72,10 +72,7 @@ struct receiver
 
     friend void tag_invoke(ex::set_stopped_t, receiver&&) noexcept {}
 
-    friend void tag_invoke(ex::set_value_t, receiver&& r, int v) noexcept
-    {
-        r.i.get() = v;
-    }
+    friend void tag_invoke(ex::set_value_t, receiver&& r, int v) noexcept { r.i.get() = v; }
 
     friend constexpr ex::empty_env tag_invoke(ex::get_env_t, receiver const&) noexcept
     {

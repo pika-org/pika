@@ -17,7 +17,4 @@ using error1 = pika::traits::is_future_range<future_range>::type;
 
 using error2 = pika::traits::future_range_traits<future_range>::future_type;
 
-int main()
-{
-    return 0;
-}
+int main() { return 0; }

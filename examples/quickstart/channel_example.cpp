@@ -110,10 +110,7 @@ void dispatch_work()
         {
             pika::error_code ec(pika::throwmode::lightweight);
             int value = jobs.get(pika::launch::sync, ec);
-            if (!ec)
-            {
-                std::cout << "received job: " << value << std::endl;
-            }
+            if (!ec) { std::cout << "received job: " << value << std::endl; }
             else
             {
                 std::cout << "received all jobs" << std::endl;
@@ -144,8 +141,7 @@ void channel_range()
     queue.set("two");
     queue.close();
 
-    for (auto const& elem : queue)
-        std::cout << elem << std::endl;
+    for (auto const& elem : queue) std::cout << elem << std::endl;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -161,7 +157,4 @@ int pika_main()
     return pika::finalize();
 }
 
-int main(int argc, char* argv[])
-{
-    return pika::init(pika_main, argc, argv);
-}
+int main(int argc, char* argv[]) { return pika::init(pika_main, argc, argv); }

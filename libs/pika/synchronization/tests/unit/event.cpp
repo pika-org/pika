@@ -44,13 +44,11 @@ int pika_main(variables_map& vm)
 {
     std::size_t pxthreads = 0;
 
-    if (vm.count("pxthreads"))
-        pxthreads = vm["pxthreads"].as<std::size_t>();
+    if (vm.count("pxthreads")) pxthreads = vm["pxthreads"].as<std::size_t>();
 
     std::size_t iterations = 0;
 
-    if (vm.count("iterations"))
-        iterations = vm["iterations"].as<std::size_t>();
+    if (vm.count("iterations")) iterations = vm["iterations"].as<std::size_t>();
 
     for (std::size_t i = 0; i < iterations; ++i)
     {

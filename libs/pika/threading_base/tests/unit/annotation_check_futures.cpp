@@ -45,8 +45,7 @@ void dummy_task(std::size_t n)
     // no other work can take place on this thread whilst it sleeps
     bool sleep = true;
     auto start = std::chrono::steady_clock::now();
-    do
-    {
+    do {
         std::this_thread::sleep_for(std::chrono::microseconds(n) / 25);
         auto now = std::chrono::steady_clock::now();
         auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(now - start);
@@ -58,30 +57,12 @@ void dummy_task(std::size_t n)
 // string for a policy
 std::string policy_string(const pika::launch& policy)
 {
-    if (policy == pika::launch::async)
-    {
-        return "async";
-    }
-    else if (policy == pika::launch::sync)
-    {
-        return "sync";
-    }
-    else if (policy == pika::launch::fork)
-    {
-        return "fork";
-    }
-    else if (policy == pika::launch::apply)
-    {
-        return "apply";
-    }
-    else if (policy == pika::launch::deferred)
-    {
-        return "deferred";
-    }
-    else
-    {
-        return "policy ?";
-    }
+    if (policy == pika::launch::async) { return "async"; }
+    else if (policy == pika::launch::sync) { return "sync"; }
+    else if (policy == pika::launch::fork) { return "fork"; }
+    else if (policy == pika::launch::apply) { return "apply"; }
+    else if (policy == pika::launch::deferred) { return "deferred"; }
+    else { return "policy ?"; }
 }
 
 // string for an executor

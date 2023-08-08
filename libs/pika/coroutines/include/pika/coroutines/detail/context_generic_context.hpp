@@ -74,20 +74,11 @@ namespace pika::threads::coroutines {
 #if !defined(PIKA_GENERIC_CONTEXT_USE_SEGMENTED_STACKS)
         struct stack_allocator
         {
-            static std::size_t maximum_stacksize()
-            {
-                return PIKA_HUGE_STACK_SIZE;
-            }
+            static std::size_t maximum_stacksize() { return PIKA_HUGE_STACK_SIZE; }
 
-            static std::size_t default_stacksize()
-            {
-                return PIKA_MEDIUM_STACK_SIZE;
-            }
+            static std::size_t default_stacksize() { return PIKA_MEDIUM_STACK_SIZE; }
 
-            static std::size_t minimum_stacksize()
-            {
-                return PIKA_SMALL_STACK_SIZE;
-            }
+            static std::size_t minimum_stacksize() { return PIKA_SMALL_STACK_SIZE; }
 
             void* allocate(std::size_t size) const
             {
@@ -96,8 +87,7 @@ namespace pika::threads::coroutines {
                 posix::watermark_stack(limit, size);
 # else
                 void* limit = std::calloc(size, sizeof(char));
-                if (!limit)
-                    throw std::bad_alloc();
+                if (!limit) throw std::bad_alloc();
 # endif
                 return static_cast<char*>(limit) + size;
             }
@@ -124,10 +114,7 @@ namespace pika::threads::coroutines {
                 return 0;
             }
 
-            static std::size_t default_stacksize()
-            {
-                return minimum_stacksize();
-            }
+            static std::size_t default_stacksize() { return minimum_stacksize(); }
 
             static std::size_t minimum_stacksize()
             {
@@ -139,8 +126,7 @@ namespace pika::threads::coroutines {
                 PIKA_ASSERT(default_stacksize() <= size);
 
                 void* limit = __splitstack_makecontext(size, segments_ctx_, &size);
-                if (!limit)
-                    throw std::bad_alloc();
+                if (!limit) throw std::bad_alloc();
 
                 int off = 0;
                 __splitstack_block_signals_context(segments_ctx_, &off, 0);
@@ -199,8 +185,7 @@ namespace pika::threads::coroutines {
 
             void init()
             {
-                if (stack_pointer_ != nullptr)
-                    return;
+                if (stack_pointer_ != nullptr) return;
 
                 stack_pointer_ = alloc_.allocate(stack_size_);
                 if (stack_pointer_ == nullptr)
@@ -212,17 +197,11 @@ namespace pika::threads::coroutines {
 
             ~fcontext_context_impl()
             {
-                if (ctx_ && stack_pointer_)
-                {
-                    alloc_.deallocate(stack_pointer_, stack_size_);
-                }
+                if (ctx_ && stack_pointer_) { alloc_.deallocate(stack_pointer_, stack_size_); }
             }
 
             // Return the size of the reserved stack address space.
-            std::ptrdiff_t get_stacksize() const
-            {
-                return stack_size_;
-            }
+            std::ptrdiff_t get_stacksize() const { return stack_size_; }
 
             std::ptrdiff_t get_available_stack_space()
             {

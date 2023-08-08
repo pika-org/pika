@@ -31,10 +31,7 @@ struct payload_precision_tracker : htts2::clocksource<BaseClock>
     }
 
     // Returns: stdev of the mean lost payload.
-    double precision_stat_uncertainty() const
-    {
-        return stdev_lost_;
-    }
+    double precision_stat_uncertainty() const { return stdev_lost_; }
 
     // Returns: the uncertainty of the mean lost payload.
     double precision_uncertainty() const
@@ -42,16 +39,10 @@ struct payload_precision_tracker : htts2::clocksource<BaseClock>
         return (std::max)(this->clock_uncertainty(), precision_stat_uncertainty());
     }
 
-    double average_precision() const
-    {
-        return mean_lost_;
-    }
+    double average_precision() const { return mean_lost_; }
 
     // Returns: the number of samples.
-    rep samples() const
-    {
-        return samples_;
-    }
+    rep samples() const { return samples_; }
 
     // Performs approximately 'expected_' nanoseconds of artificial work.
     void operator()()
@@ -139,8 +130,7 @@ private:
 
         htts2::timer<BaseClock> t;
 
-        for (std::uint64_t i = 0; i < this->tasks_ /* = m */; ++i)
-            p();
+        for (std::uint64_t i = 0; i < this->tasks_ /* = m */; ++i) p();
 
         // w_M [nanoseconds]
         double measured_walltime = static_cast<double>(t.elapsed());

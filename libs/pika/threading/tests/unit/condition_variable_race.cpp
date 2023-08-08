@@ -142,18 +142,12 @@ void test_cv_mutex()
         std::unique_lock<pika::mutex> ul{m};
         g_ready = true;
         cv->notify_one();
-        while (!f_ready)
-        {
-            cv->wait(ul);
-        }
+        while (!f_ready) { cv->wait(ul); }
     });
 
     {
         std::unique_lock<pika::mutex> ul{m};
-        while (!g_ready)
-        {
-            cv->wait(ul);
-        }
+        while (!g_ready) { cv->wait(ul); }
     }
 
     pika::thread t1([&] {
@@ -184,18 +178,12 @@ void test_cv_any_mutex()
         std::unique_lock<pika::mutex> ul{m};
         g_ready = true;
         cv->notify_one();
-        while (!f_ready)
-        {
-            cv->wait(ul);
-        }
+        while (!f_ready) { cv->wait(ul); }
     });
 
     {
         std::unique_lock<pika::mutex> ul{m};
-        while (!g_ready)
-        {
-            cv->wait(ul);
-        }
+        while (!g_ready) { cv->wait(ul); }
     }
 
     pika::thread t1([&] {

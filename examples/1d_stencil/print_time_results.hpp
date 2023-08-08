@@ -55,8 +55,7 @@ void print_time_results(std::uint64_t num_os_threads, double elapsed_seconds, st
 void print_time_results(std::uint64_t num_os_threads, double elapsed_seconds, std::uint64_t nx,
     std::uint64_t nt, bool header)
 {
-    if (header)
-        std::cout << "OS_Threads,Execution_Time_sec,Grid_Points,Time_Steps\n" << std::flush;
+    if (header) std::cout << "OS_Threads,Execution_Time_sec,Grid_Points,Time_Steps\n" << std::flush;
 
     std::string const threads_str = fmt::format("{},", num_os_threads);
     std::string const nx_str = fmt::format("{},", nx);

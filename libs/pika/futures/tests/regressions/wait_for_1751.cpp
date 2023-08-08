@@ -24,8 +24,7 @@ int pika_main()
 
         // run for 3 seconds max
         std::chrono::duration<double> overall_dif = start_time - overall_start_time;
-        if (overall_dif.count() > 3.0)
-            break;
+        if (overall_dif.count() > 3.0) break;
 
         auto f = pika::async([]() {});
 
@@ -37,10 +36,7 @@ int pika_main()
             PIKA_TEST_LTE(dif.count(), 1.5);
             break;
         }
-        else
-        {
-            f.get();
-        }
+        else { f.get(); }
 
         auto now = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> dif = now - start_time;

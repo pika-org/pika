@@ -103,10 +103,7 @@ namespace pika::util {
                 {
                     if (!predicate())
                     {
-                        if (++count > required_count)
-                        {
-                            return;
-                        }
+                        if (++count > required_count) { return; }
                     }
                     else
                     {
@@ -121,10 +118,7 @@ namespace pika::util {
                 {
                     if (!predicate())
                     {
-                        if (++count > required_count)
-                        {
-                            return;
-                        }
+                        if (++count > required_count) { return; }
                     }
                     else
                     {
@@ -156,17 +150,11 @@ namespace pika::util {
             {
                 for (std::size_t k = 0;; ++k)
                 {
-                    if (use_timeout && duration_type(t.elapsed()) > timeout)
-                    {
-                        return false;
-                    }
+                    if (use_timeout && duration_type(t.elapsed()) > timeout) { return false; }
 
                     if (!predicate())
                     {
-                        if (++count > required_count)
-                        {
-                            return true;
-                        }
+                        if (++count > required_count) { return true; }
                     }
                     else
                     {
@@ -179,17 +167,11 @@ namespace pika::util {
             {
                 for (std::size_t k = 0;; ++k)
                 {
-                    if (use_timeout && duration_type(t.elapsed()) > timeout)
-                    {
-                        return false;
-                    }
+                    if (use_timeout && duration_type(t.elapsed()) > timeout) { return false; }
 
                     if (!predicate())
                     {
-                        if (++count > required_count)
-                        {
-                            return true;
-                        }
+                        if (++count > required_count) { return true; }
                     }
                     else
                     {
@@ -220,38 +202,20 @@ namespace pika::util {
             {
                 for (std::size_t k = 0;; ++k)
                 {
-                    if (use_timeout && duration_type(t.elapsed()) > timeout)
-                    {
-                        return false;
-                    }
+                    if (use_timeout && duration_type(t.elapsed()) > timeout) { return false; }
 
-                    if (!predicate())
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        pika::execution::this_thread::detail::yield_k(k, thread_name);
-                    }
+                    if (!predicate()) { return true; }
+                    else { pika::execution::this_thread::detail::yield_k(k, thread_name); }
                 }
             }
             else
             {
                 for (std::size_t k = 0;; ++k)
                 {
-                    if (use_timeout && duration_type(t.elapsed()) > timeout)
-                    {
-                        return false;
-                    }
+                    if (use_timeout && duration_type(t.elapsed()) > timeout) { return false; }
 
-                    if (!predicate())
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        pika::execution::this_thread::detail::yield_k(k % 16, thread_name);
-                    }
+                    if (!predicate()) { return true; }
+                    else { pika::execution::this_thread::detail::yield_k(k % 16, thread_name); }
                 }
             }
         }

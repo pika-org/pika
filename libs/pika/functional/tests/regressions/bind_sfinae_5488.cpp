@@ -24,7 +24,4 @@ auto test(F&& f)
 
 void foo(int) {}
 
-int main()
-{
-    test(pika::util::detail::bind(foo, std::placeholders::_1));
-}
+int main() { test(pika::util::detail::bind(foo, std::placeholders::_1)); }

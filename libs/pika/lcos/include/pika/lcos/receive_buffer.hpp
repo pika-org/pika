@@ -42,10 +42,7 @@ namespace pika::lcos::local {
             {
             }
 
-            pika::future<T> get_future()
-            {
-                return promise_.get_future();
-            }
+            pika::future<T> get_future() { return promise_.get_future(); }
 
             template <typename Val>
             void set_value(Val&& val)
@@ -81,10 +78,7 @@ namespace pika::lcos::local {
             {
             }
 
-            ~erase_on_exit()
-            {
-                buffer_map_.erase(it_);
-            }
+            ~erase_on_exit() { buffer_map_.erase(it_); }
 
             buffer_map_type& buffer_map_;
             iterator it_;
@@ -99,10 +93,7 @@ namespace pika::lcos::local {
         {
         }
 
-        ~receive_buffer()
-        {
-            PIKA_ASSERT(buffer_map_.empty());
-        }
+        ~receive_buffer() { PIKA_ASSERT(buffer_map_.empty()); }
 
         receive_buffer& operator=(receive_buffer&& other) noexcept
         {
@@ -139,8 +130,7 @@ namespace pika::lcos::local {
             std::lock_guard<mutex_type> l(mtx_);
 
             iterator it = buffer_map_.find(step);
-            if (it == buffer_map_.end())
-                return false;
+            if (it == buffer_map_.end()) return false;
 
             // if the value was already set we delete the entry after
             // retrieving the future
@@ -190,17 +180,13 @@ namespace pika::lcos::local {
                 }
             }
 
-            if (lock)
-                lock->unlock();
+            if (lock) lock->unlock();
 
             // set value in promise, but only after the lock went out of scope
             entry->set_value(PIKA_MOVE(val));
         }
 
-        bool empty() const
-        {
-            return buffer_map_.empty();
-        }
+        bool empty() const { return buffer_map_.empty(); }
 
         // return the number of deleted buffer entries
         std::size_t cancel_waiting(std::exception_ptr const& e, bool force_delete_entries = false)
@@ -265,10 +251,7 @@ namespace pika::lcos::local {
             {
             }
 
-            pika::future<void> get_future()
-            {
-                return promise_.get_future();
-            }
+            pika::future<void> get_future() { return promise_.get_future(); }
 
             void set_value()
             {
@@ -303,10 +286,7 @@ namespace pika::lcos::local {
             {
             }
 
-            ~erase_on_exit()
-            {
-                buffer_map_.erase(it_);
-            }
+            ~erase_on_exit() { buffer_map_.erase(it_); }
 
             buffer_map_type& buffer_map_;
             iterator it_;
@@ -320,17 +300,11 @@ namespace pika::lcos::local {
         {
         }
 
-        ~receive_buffer()
-        {
-            PIKA_ASSERT(buffer_map_.empty());
-        }
+        ~receive_buffer() { PIKA_ASSERT(buffer_map_.empty()); }
 
         receive_buffer& operator=(receive_buffer&& other)
         {
-            if (this != &other)
-            {
-                buffer_map_ = PIKA_MOVE(other.buffer_map_);
-            }
+            if (this != &other) { buffer_map_ = PIKA_MOVE(other.buffer_map_); }
             return *this;
         }
 
@@ -359,8 +333,7 @@ namespace pika::lcos::local {
             std::lock_guard<mutex_type> l(mtx_);
 
             iterator it = buffer_map_.find(step);
-            if (it == buffer_map_.end())
-                return false;
+            if (it == buffer_map_.end()) return false;
 
             // if the value was already set we delete the entry after
             // retrieving the future
@@ -410,17 +383,13 @@ namespace pika::lcos::local {
                 }
             }
 
-            if (lock)
-                lock->unlock();
+            if (lock) lock->unlock();
 
             // set value in promise, but only after the lock went out of scope
             entry->set_value();
         }
 
-        bool empty() const
-        {
-            return buffer_map_.empty();
-        }
+        bool empty() const { return buffer_map_.empty(); }
 
         // return the number of deleted buffer entries
         std::size_t cancel_waiting(std::exception_ptr const& e, bool force_delete_entries = false)

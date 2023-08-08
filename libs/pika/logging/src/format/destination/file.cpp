@@ -33,10 +33,8 @@ namespace pika::util::logging::destination {
     {
         std::ios_base::openmode flags = std::ios_base::out;
         flags |= fs.extra_flags;
-        if (fs.do_append && !fs.initial_overwrite)
-            flags |= std::ios_base::app;
-        if (fs.initial_overwrite)
-            flags |= std::ios_base::trunc;
+        if (fs.do_append && !fs.initial_overwrite) flags |= std::ios_base::app;
+        if (fs.initial_overwrite) flags |= std::ios_base::trunc;
         return flags;
     }
 
@@ -55,8 +53,7 @@ namespace pika::util::logging::destination {
 
             open();    // make sure file is opened
             out << msg.full_string();
-            if (settings.flush_each_time)
-                out.flush();
+            if (settings.flush_each_time) out.flush();
         }
 
         /** configure through script
@@ -72,14 +69,10 @@ namespace pika::util::logging::destination {
     private:
         void open()
         {
-            if (!out.is_open())
-                out.open(name.c_str(), open_flags(settings));
+            if (!out.is_open()) out.open(name.c_str(), open_flags(settings));
         }
 
-        void close()
-        {
-            out.close();
-        }
+        void close() { out.close(); }
 
         std::ofstream out;
         mutable mutex_type mtx_;

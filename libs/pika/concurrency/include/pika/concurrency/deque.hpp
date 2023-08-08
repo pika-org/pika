@@ -121,10 +121,7 @@ namespace pika::concurrency::detail {
         {
         }
 
-        pair lrs(std::memory_order mo = std::memory_order_acquire) const
-        {
-            return pair_.load(mo);
-        }
+        pair lrs(std::memory_order mo = std::memory_order_acquire) const { return pair_.load(mo); }
 
         node* left(std::memory_order mo = std::memory_order_acquire) const
         {
@@ -179,25 +176,16 @@ namespace pika::concurrency::detail {
                 rhs.pair_.load(std::memory_order_acquire);
         }
 
-        bool operator!=(deque_anchor const& rhs) const
-        {
-            return !(*this == rhs);
-        }
+        bool operator!=(deque_anchor const& rhs) const { return !(*this == rhs); }
 
         bool operator==(pair const& rhs) const
         {
             return pair_.load(std::memory_order_acquire) == rhs;
         }
 
-        bool operator!=(pair const& rhs) const
-        {
-            return !(*this == rhs);
-        }
+        bool operator!=(pair const& rhs) const { return !(*this == rhs); }
 
-        bool is_lock_free() const
-        {
-            return pair_.is_lock_free();
-        }
+        bool is_lock_free() const { return pair_.is_lock_free(); }
     };
 
     // TODO: Experiment with memory ordering to see where we can optimize without
@@ -237,10 +225,7 @@ namespace pika::concurrency::detail {
         node* alloc_node(node* lptr, node* rptr, T const& v, tag_t ltag = 0, tag_t rtag = 0)
         {
             node* chunk = pool_.allocate();
-            if (chunk == nullptr)
-            {
-                throw std::bad_alloc();
-            }
+            if (chunk == nullptr) { throw std::bad_alloc(); }
             new (chunk) node(lptr, rptr, v, ltag, rtag);
             return chunk;
         }
@@ -248,10 +233,7 @@ namespace pika::concurrency::detail {
         node* alloc_node(node* lptr, node* rptr, T&& v, tag_t ltag = 0, tag_t rtag = 0)
         {
             node* chunk = pool_.allocate();
-            if (chunk == nullptr)
-            {
-                throw std::bad_alloc();
-            }
+            if (chunk == nullptr) { throw std::bad_alloc(); }
             new (chunk) node(lptr, rptr, PIKA_MOVE(v), ltag, rtag);
             return chunk;
         }
@@ -271,8 +253,7 @@ namespace pika::concurrency::detail {
             // tag (tagged_ptr).
             node_pointer prev = lrs.get_left_ptr()->right.load(std::memory_order_acquire);
 
-            if (anchor_ != lrs)
-                return;
+            if (anchor_ != lrs) return;
 
             // Get the left node of prev and its tag (again, a tuple represented by
             // a tagged_ptr).
@@ -281,8 +262,7 @@ namespace pika::concurrency::detail {
             // Check if prevnext is equal to r.
             if (prevnext.get_ptr() != lrs.get_left_ptr())
             {
-                if (anchor_ != lrs)
-                    return;
+                if (anchor_ != lrs) return;
 
                 // Attempt the CAS, incrementing the tag to protect from the ABA
                 // problem.
@@ -302,8 +282,7 @@ namespace pika::concurrency::detail {
             // tag (tagged_ptr).
             node_pointer prev = lrs.get_right_ptr()->left.load(std::memory_order_acquire);
 
-            if (anchor_ != lrs)
-                return;
+            if (anchor_ != lrs) return;
 
             // Get the right node of prev and its tag (again, a tuple represented
             // by a tagged_ptr).
@@ -312,8 +291,7 @@ namespace pika::concurrency::detail {
             // Check if prevnext is equal to r.
             if (prevnext.get_ptr() != lrs.get_right_ptr())
             {
-                if (anchor_ != lrs)
-                    return;
+                if (anchor_ != lrs) return;
 
                 // Attempt the CAS, incrementing the tag to protect from the ABA
                 // problem.
@@ -352,8 +330,7 @@ namespace pika::concurrency::detail {
                 T dummy = T();
                 while (true)
                 {
-                    if (!pop_left(dummy))
-                        break;
+                    if (!pop_left(dummy)) break;
                 }
             }
         }
@@ -368,10 +345,7 @@ namespace pika::concurrency::detail {
 
         // Thread-safe and non-blocking.
         // Complexity: O(1)
-        bool is_lock_free() const
-        {
-            return anchor_.is_lock_free();
-        }
+        bool is_lock_free() const { return anchor_.is_lock_free(); }
 
         // Thread-safe and non-blocking (may block if node needs to be allocated
         // from the operating system). Returns false if the freelist is not able to
@@ -382,8 +356,7 @@ namespace pika::concurrency::detail {
             // Allocate the new node which we will be inserting.
             node* n = alloc_node(nullptr, nullptr, PIKA_MOVE(data));
 
-            if (n == nullptr)
-                return false;
+            if (n == nullptr) return false;
 
             // Loop until we insert successfully.
             while (true)
@@ -438,8 +411,7 @@ namespace pika::concurrency::detail {
             // Allocate the new node which we will be inserting.
             node* n = alloc_node(nullptr, nullptr, PIKA_MOVE(data));
 
-            if (n == nullptr)
-                return false;
+            if (n == nullptr) return false;
 
             // Loop until we insert successfully.
             while (true)
@@ -497,8 +469,7 @@ namespace pika::concurrency::detail {
 
                 // Check if the deque is empty.
                 // FIXME: Should we check both pointers here?
-                if (lrs.get_left_ptr() == nullptr)
-                    return false;
+                if (lrs.get_left_ptr() == nullptr) return false;
 
                 // Check if the deque has 1 element.
                 if (lrs.get_left_ptr() == lrs.get_right_ptr())
@@ -519,8 +490,7 @@ namespace pika::concurrency::detail {
                 else if (lrs.get_left_tag() == stable)
                 {
                     // Make sure the anchor hasn't changed since we loaded it.
-                    if (anchor_ != lrs)
-                        continue;
+                    if (anchor_ != lrs) continue;
 
                     // Get the leftmost nodes' right node.
                     node_pointer prev = lrs.get_left_ptr()->right.load(std::memory_order_acquire);
@@ -545,10 +515,7 @@ namespace pika::concurrency::detail {
             }
         }
 
-        bool pop_left(T* r)
-        {
-            return pop_left(*r);
-        }
+        bool pop_left(T* r) { return pop_left(*r); }
 
         // Thread-safe and non-blocking. Returns false if the deque is empty.
         // Complexity: O(Processes)
@@ -562,8 +529,7 @@ namespace pika::concurrency::detail {
 
                 // Check if the deque is empty.
                 // FIXME: Should we check both pointers here?
-                if (lrs.get_right_ptr() == nullptr)
-                    return false;
+                if (lrs.get_right_ptr() == nullptr) return false;
 
                 // Check if the deque has 1 element.
                 if (lrs.get_right_ptr() == lrs.get_left_ptr())
@@ -584,8 +550,7 @@ namespace pika::concurrency::detail {
                 else if (lrs.get_left_tag() == stable)
                 {
                     // Make sure the anchor hasn't changed since we loaded it.
-                    if (anchor_ != lrs)
-                        continue;
+                    if (anchor_ != lrs) continue;
 
                     // Get the rightmost nodes' left node.
                     node_pointer prev = lrs.get_right_ptr()->left.load(std::memory_order_acquire);
@@ -610,9 +575,6 @@ namespace pika::concurrency::detail {
             }
         }
 
-        bool pop_right(T* r)
-        {
-            return pop_right(*r);
-        }
+        bool pop_right(T* r) { return pop_right(*r); }
     };
 }    // namespace pika::concurrency::detail

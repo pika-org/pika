@@ -63,10 +63,7 @@ namespace pika::program_options {
         if (utf8)
         {
             // Convert from utf8
-            for (const auto& new_token : new_tokens)
-            {
-                tokens.push_back(from_utf8(new_token));
-            }
+            for (const auto& new_token : new_tokens) { tokens.push_back(from_utf8(new_token)); }
         }
         else
         {
@@ -82,10 +79,7 @@ namespace pika::program_options {
 
     std::string arg("arg");
 
-    std::string untyped_value::name() const
-    {
-        return arg;
-    }
+    std::string untyped_value::name() const { return arg; }
 
     unsigned untyped_value::min_tokens() const
     {
@@ -106,17 +100,12 @@ namespace pika::program_options {
     void untyped_value::xparse(
         std::any& value_store, const std::vector<std::string>& new_tokens) const
     {
-        if (value_store.has_value())
-            throw multiple_occurrences();
-        if (new_tokens.size() > 1)
-            throw multiple_values();
+        if (value_store.has_value()) throw multiple_occurrences();
+        if (new_tokens.size() > 1) throw multiple_values();
         value_store = new_tokens.empty() ? std::string("") : new_tokens.front();
     }
 
-    typed_value<bool>* bool_switch()
-    {
-        return bool_switch(nullptr);
-    }
+    typed_value<bool>* bool_switch() { return bool_switch(nullptr); }
 
     typed_value<bool>* bool_switch(bool* v)
     {
@@ -138,8 +127,7 @@ namespace pika::program_options {
         check_first_occurrence(v);
         string s(get_single_string(xs, true));
 
-        for (char& i : s)
-            i = char(std::tolower(i));
+        for (char& i : s) i = char(std::tolower(i));
 
         if (s.empty() || s == "on" || s == "yes" || s == "1" || s == "true")
             v = std::any(true);
@@ -159,8 +147,7 @@ namespace pika::program_options {
         check_first_occurrence(v);
         wstring s(get_single_string(xs, true));
 
-        for (wchar_t& i : s)
-            i = wchar_t(tolower(i));
+        for (wchar_t& i : s) i = wchar_t(tolower(i));
 
         if (s.empty() || s == L"on" || s == L"yes" || s == L"1" || s == L"true")
             v = std::any(true);
@@ -189,8 +176,7 @@ namespace pika::program_options {
         PIKA_EXPORT
         void check_first_occurrence(const std::any& value)
         {
-            if (value.has_value())
-                throw multiple_occurrences();
+            if (value.has_value()) throw multiple_occurrences();
         }
     }    // namespace validators
 
@@ -245,8 +231,7 @@ namespace pika::program_options {
         {
             std::size_t pos = m_message.find(from);
             // not found: all replaced
-            if (pos == std::string::npos)
-                return;
+            if (pos == std::string::npos) return;
             m_message.replace(pos, from.length(), to);
         }
     }
@@ -255,16 +240,11 @@ namespace pika::program_options {
     {
         switch (m_option_style)
         {
-        case command_line_style::allow_dash_for_short:
-            return "-";
-        case command_line_style::allow_slash_for_short:
-            return "/";
-        case command_line_style::allow_long_disguise:
-            return "-";
-        case command_line_style::allow_long:
-            return "--";
-        case 0:
-            return "";
+        case command_line_style::allow_dash_for_short: return "-";
+        case command_line_style::allow_slash_for_short: return "/";
+        case command_line_style::allow_long_disguise: return "-";
+        case command_line_style::allow_long: return "--";
+        case 0: return "";
         }
         throw std::logic_error(
             "error_with_option_name::m_option_style can only be one of [0, allow_dash_for_short, "
@@ -378,11 +358,8 @@ namespace pika::program_options {
             msg = "option '%canonical_option%' requires at least one argument";
             break;
         // currently unused
-        case invalid_option:
-            msg = "option '%canonical_option%' is not valid";
-            break;
-        default:
-            msg = "unknown error";
+        case invalid_option: msg = "option '%canonical_option%' is not valid"; break;
+        default: msg = "unknown error";
         }
         return msg;
     }

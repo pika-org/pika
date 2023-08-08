@@ -68,18 +68,12 @@ namespace pika::util::logging::destination {
         /**
         @brief resets the stream. Further output will be written to this stream
     */
-        void set_stream(std::ostream* stream_ptr)
-        {
-            ptr = stream_ptr;
-        }
+        void set_stream(std::ostream* stream_ptr) { ptr = stream_ptr; }
 
         /**
         @brief clears the stream. Further output will be ignored
     */
-        void clear()
-        {
-            ptr = nullptr;
-        }
+        void clear() { ptr = nullptr; }
 
     protected:
         explicit stream(std::ostream* stream_ptr)

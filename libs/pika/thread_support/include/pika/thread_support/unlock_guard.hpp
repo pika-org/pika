@@ -28,10 +28,7 @@ namespace pika::detail {
             m_.unlock();
         }
 
-        ~unlock_guard()
-        {
-            m_.lock();
-        }
+        ~unlock_guard() { m_.lock(); }
 
     private:
         Mutex& m_;

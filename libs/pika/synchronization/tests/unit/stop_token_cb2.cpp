@@ -34,10 +34,7 @@ void test_stop_callback_inits()
         my_callback(implicit_arg) {}
         explicit my_callback(explicit_arg) {}
 
-        void operator()()
-        {
-            PIKA_TEST(false);
-        }
+        void operator()() { PIKA_TEST(false); }
     };
 
     auto stop10 = [] {};
@@ -149,7 +146,4 @@ int pika_main()
     return 0;
 }
 
-int main(int argc, char* argv[])
-{
-    return pika::init(pika_main, argc, argv);
-}
+int main(int argc, char* argv[]) { return pika::init(pika_main, argc, argv); }

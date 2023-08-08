@@ -176,8 +176,7 @@ namespace pika {
             return -1;
         }
 
-        if (&ec != &throws)
-            ec = make_success_code();
+        if (&ec != &throws) ec = make_success_code();
 
         runtime* rt = get_runtime_ptr();
         if (nullptr == rt)
@@ -285,10 +284,7 @@ namespace pika {
                 util::enable_lock_detection();
                 util::trace_depth_lock_detection(cmdline.rtcfg_.trace_depth());
             }
-            else
-            {
-                util::disable_lock_detection();
-            }
+            else { util::disable_lock_detection(); }
 #endif
 #ifdef PIKA_HAVE_THREAD_DEADLOCK_DETECTION
             threads::detail::set_deadlock_detection_enabled(
@@ -319,11 +315,9 @@ namespace pika {
                 rt.get_config().load_application_configuration(config.c_str());
             }
 
-            if (!!startup)
-                rt.add_startup_function(PIKA_MOVE(startup));
+            if (!!startup) rt.add_startup_function(PIKA_MOVE(startup));
 
-            if (!!shutdown)
-                rt.add_shutdown_function(PIKA_MOVE(shutdown));
+            if (!!shutdown) rt.add_shutdown_function(PIKA_MOVE(shutdown));
 
             if (vm.count("pika:dump-config-initial"))
             {
@@ -333,8 +327,7 @@ namespace pika {
                 std::cout << "-----------------------------------------\n";
             }
 
-            if (vm.count("pika:dump-config"))
-                rt.add_startup_function(dump_config(rt));
+            if (vm.count("pika:dump-config")) rt.add_startup_function(dump_config(rt));
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -348,8 +341,7 @@ namespace pika {
             add_startup_functions(rt, vm, PIKA_MOVE(startup), PIKA_MOVE(shutdown));
 
             // Run this runtime instance using the given function f.
-            if (!f.empty())
-                return rt.run(util::detail::bind_front(f, vm));
+            if (!f.empty()) return rt.run(util::detail::bind_front(f, vm));
 
             // Run this runtime instance without an pika_main
             return rt.run();
@@ -465,10 +457,7 @@ namespace pika {
             int result = 0;
             try
             {
-                if ((result = ensure_no_runtime_is_up()) != 0)
-                {
-                    return result;
-                }
+                if ((result = ensure_no_runtime_is_up()) != 0) { return result; }
 
                 pika::detail::command_line_handling cmdline{
                     pika::util::runtime_configuration(argv[0], pika::runtime_mode::local),
@@ -505,16 +494,12 @@ namespace pika {
                     // contain --pika:help or --pika:version, on error result is < 0)
                     if (result != 0)
                     {
-                        if (result > 0)
-                            result = 0;
+                        if (result > 0) result = 0;
                         return result;
                     }
 
                     // If thread_pools initialization in user main
-                    if (params.rp_callback)
-                    {
-                        params.rp_callback(rp, cmdline.vm_);
-                    }
+                    if (params.rp_callback) { params.rp_callback(rp, cmdline.vm_); }
 
                     // Setup all internal parameters of the resource_partitioner
                     rp.configure_pools();

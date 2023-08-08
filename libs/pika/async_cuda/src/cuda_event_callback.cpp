@@ -222,10 +222,7 @@ namespace pika::cuda::experimental::detail {
             return event_callback_queue.size_approx();
         }
 
-        std::size_t get_number_of_active_events() const noexcept
-        {
-            return active_events_counter;
-        }
+        std::size_t get_number_of_active_events() const noexcept { return active_events_counter; }
 
         void add_to_event_callback_vector(event_callback&& continuation)
         {
@@ -265,10 +262,7 @@ namespace pika::cuda::experimental::detail {
             pika::execution::thread_priority priority)
         {
             auto* queue = &np_queue;
-            if (priority >= pika::execution::thread_priority::high)
-            {
-                queue = &hp_queue;
-            }
+            if (priority >= pika::execution::thread_priority::high) { queue = &hp_queue; }
 
             queue->add_to_event_callback_queue(std::move(f), stream);
         }
@@ -300,15 +294,9 @@ namespace pika::cuda::experimental::detail {
         add_event_callback(std::move(f), stream.get(), stream.get_priority());
     }
 
-    pika::threads::detail::polling_status poll()
-    {
-        return get_cuda_event_queue_holder().poll();
-    }
+    pika::threads::detail::polling_status poll() { return get_cuda_event_queue_holder().poll(); }
 
-    std::size_t get_work_count()
-    {
-        return get_cuda_event_queue_holder().get_work_count();
-    }
+    std::size_t get_work_count() { return get_cuda_event_queue_holder().get_work_count(); }
 
     // -------------------------------------------------------------
     void register_polling(pika::threads::detail::thread_pool_base& pool)

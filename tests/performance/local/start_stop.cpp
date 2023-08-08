@@ -18,10 +18,7 @@
 #include <cstdint>
 #include <iostream>
 
-int pika_main()
-{
-    return pika::finalize();
-}
+int pika_main() { return pika::finalize(); }
 
 int main(int argc, char** argv)
 {

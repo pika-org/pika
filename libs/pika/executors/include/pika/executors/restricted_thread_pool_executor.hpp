@@ -79,10 +79,7 @@ namespace pika::parallel::execution {
             return !(*this == rhs);
         }
 
-        restricted_thread_pool_executor const& context() const noexcept
-        {
-            return *this;
-        }
+        restricted_thread_pool_executor const& context() const noexcept { return *this; }
 
     private:
         std::int16_t get_next_thread_num()

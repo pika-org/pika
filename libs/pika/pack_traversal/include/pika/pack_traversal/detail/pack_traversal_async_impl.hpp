@@ -104,15 +104,9 @@ namespace pika {
             std::tuple<Args...> args_;
             std::atomic<bool> finished_;
 
-            Visitor& visitor() noexcept
-            {
-                return *static_cast<Visitor*>(this);
-            }
+            Visitor& visitor() noexcept { return *static_cast<Visitor*>(this); }
 
-            Visitor const& visitor() const noexcept
-            {
-                return *static_cast<Visitor const*>(this);
-            }
+            Visitor const& visitor() const noexcept { return *static_cast<Visitor const*>(this); }
 
         public:
             explicit async_traversal_frame(Visitor visitor, Args... args)
@@ -123,10 +117,7 @@ namespace pika {
             }
 
             /// We require a virtual base
-            ~async_traversal_frame() override
-            {
-                PIKA_ASSERT(finished_);
-            }
+            ~async_traversal_frame() override { PIKA_ASSERT(finished_); }
 
             template <typename MapperArg>
             explicit async_traversal_frame(
@@ -138,10 +129,7 @@ namespace pika {
             }
 
             /// Returns the arguments of the frame
-            std::tuple<Args...>& head() noexcept
-            {
-                return args_;
-            }
+            std::tuple<Args...>& head() noexcept { return args_; }
 
             /// Calls the visitor with the given element
             template <typename T>
@@ -288,10 +276,7 @@ namespace pika {
                 return static_async_range<Target, Begin + 1, End>{target_};
             }
 
-            constexpr bool is_finished() const noexcept
-            {
-                return false;
-            }
+            constexpr bool is_finished() const noexcept { return false; }
         };
 
         /// Specialization for the end marker which doesn't provide
@@ -301,10 +286,7 @@ namespace pika {
         {
             explicit constexpr static_async_range(Target*) {}
 
-            constexpr bool is_finished() const noexcept
-            {
-                return true;
-            }
+            constexpr bool is_finished() const noexcept { return true; }
         };
 
         /// Returns a static range for the given type
@@ -341,10 +323,7 @@ namespace pika {
                 return other;
             }
 
-            bool is_finished() const
-            {
-                return begin_ == sentinel_;
-            }
+            bool is_finished() const { return begin_ == sentinel_; }
         };
 
         template <typename T>
@@ -390,10 +369,7 @@ namespace pika {
             }
 
             /// Returns true when we should abort the current control flow
-            bool is_detached() const noexcept
-            {
-                return detached_;
-            }
+            bool is_detached() const noexcept { return detached_; }
 
             /// Creates a new traversal point which
             template <typename Parent>
@@ -488,10 +464,7 @@ namespace pika {
             template <typename Current>
             void async_traverse_one_checked(Current&& current)
             {
-                if (!is_detached())
-                {
-                    async_traverse_one(PIKA_FORWARD(Current, current));
-                }
+                if (!is_detached()) { async_traverse_one(PIKA_FORWARD(Current, current)); }
             }
 
             template <std::size_t... Sequence, typename Current>
@@ -560,10 +533,7 @@ namespace pika {
                     point.async_traverse(PIKA_FORWARD(Current, current));
 
                     // Don't continue the frame when the execution was detached
-                    if (detached)
-                    {
-                        return;
-                    }
+                    if (detached) { return; }
                 }
 
                 frame->async_complete();
@@ -587,10 +557,7 @@ namespace pika {
                     point.async_traverse(PIKA_FORWARD(Current, current));
 
                     // Don't continue the frame when the execution was detached
-                    if (detached)
-                    {
-                        return;
-                    }
+                    if (detached) { return; }
                 }
 
                 // Pop the top element from the hierarchy, and shift the

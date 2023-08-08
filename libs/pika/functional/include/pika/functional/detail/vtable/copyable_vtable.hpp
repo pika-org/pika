@@ -20,8 +20,7 @@ namespace pika::util::detail {
         template <typename T>
         static void* _copy(void* storage, std::size_t storage_size, void const* src, bool destroy)
         {
-            if (destroy)
-                vtable::get<T>(storage).~T();
+            if (destroy) vtable::get<T>(storage).~T();
 
             void* buffer = vtable::allocate<T>(storage, storage_size);
             return ::new (buffer) T(vtable::get<T>(src));

@@ -57,10 +57,7 @@ namespace pika::threads::detail {
           : counter_(counter)
         {
         }
-        ~manage_active_thread_count()
-        {
-            --counter_;
-        }
+        ~manage_active_thread_count() { --counter_; }
 
         std::atomic<long>& counter_;
     };
@@ -212,10 +209,7 @@ namespace pika::threads::detail {
         {
             // wait for all work to be done before requesting threads to shut
             // down
-            if (blocking)
-            {
-                wait();
-            }
+            if (blocking) { wait(); }
 
             // wake up if suspended
             resume_internal(blocking, throws);
@@ -231,8 +225,7 @@ namespace pika::threads::detail {
                 for (std::size_t i = 0; i != threads_.size(); ++i)
                 {
                     // skip this if already stopped
-                    if (!threads_[i].joinable())
-                        continue;
+                    if (!threads_[i].joinable()) continue;
 
                     // make sure no OS thread is waiting
                     LTM_(info).format("stop: {} notify_all", id_.name());
@@ -323,8 +316,7 @@ namespace pika::threads::detail {
 
             // trigger the barrier
             pool_threads -= (thread_num + 1);
-            while (pool_threads-- != 0)
-                startup->wait();
+            while (pool_threads-- != 0) startup->wait();
 
             stop_locked(l);
             threads_.clear();
@@ -405,8 +397,7 @@ namespace pika::threads::detail {
         // Set the affinity for the current thread.
         threads::detail::mask_cref_type mask = affinity_data_.get_pu_mask(topo, global_thread_num);
 
-        if (LPIKA_ENABLED(debug))
-            topo.write_to_log();
+        if (LPIKA_ENABLED(debug)) topo.write_to_log();
 
         error_code ec(throwmode::lightweight);
         if (any(mask))
@@ -585,20 +576,14 @@ namespace pika::threads::detail {
     OutIter
     copy_projected(InIter first, InIter last, OutIter dest, ProjSrc&& srcproj, ProjDest&& destproj)
     {
-        while (first != last)
-        {
-            PIKA_INVOKE(destproj, *dest++) = PIKA_INVOKE(srcproj, *first++);
-        }
+        while (first != last) { PIKA_INVOKE(destproj, *dest++) = PIKA_INVOKE(srcproj, *first++); }
         return dest;
     }
 
     template <typename InIter, typename T, typename Proj>
     T accumulate_projected(InIter first, InIter last, T init, Proj&& proj)
     {
-        while (first != last)
-        {
-            init = PIKA_MOVE(init) + PIKA_INVOKE(proj, *first++);
-        }
+        while (first != last) { init = PIKA_MOVE(init) + PIKA_INVOKE(proj, *first++); }
         return init;
     }
 
@@ -614,8 +599,7 @@ namespace pika::threads::detail {
             executed_threads = counter_data_[num].executed_threads_;
             reset_executed_threads = counter_data_[num].reset_executed_threads_;
 
-            if (reset)
-                counter_data_[num].reset_executed_threads_ = executed_threads;
+            if (reset) counter_data_[num].reset_executed_threads_ = executed_threads;
         }
         else
         {
@@ -670,8 +654,7 @@ namespace pika::threads::detail {
             executed_phases = counter_data_[num].executed_thread_phases_;
             reset_executed_phases = counter_data_[num].reset_executed_thread_phases_;
 
-            if (reset)
-                counter_data_[num].reset_executed_thread_phases_ = executed_phases;
+            if (reset) counter_data_[num].reset_executed_thread_phases_ = executed_phases;
         }
         else
         {
@@ -967,10 +950,7 @@ namespace pika::threads::detail {
             exec_total = counter_data_[num].exec_times_;
             reset_exec_total = counter_data_[num].reset_cumulative_thread_duration_;
 
-            if (reset)
-            {
-                counter_data_[num].reset_cumulative_thread_duration_ = exec_total;
-            }
+            if (reset) { counter_data_[num].reset_cumulative_thread_duration_ = exec_total; }
         }
         else
         {
@@ -1064,8 +1044,7 @@ namespace pika::threads::detail {
             tfunc_total = counter_data_[num].tfunc_times_;
             reset_tfunc_total = counter_data_[num].reset_tfunc_times_;
 
-            if (reset)
-                counter_data_[num].reset_tfunc_times_ = tfunc_total;
+            if (reset) counter_data_[num].reset_tfunc_times_ = tfunc_total;
         }
         else
         {
@@ -1220,8 +1199,7 @@ namespace pika::threads::detail {
     template <typename Scheduler>
     std::int64_t scheduled_thread_pool<Scheduler>::avg_idle_rate(std::size_t num, bool reset)
     {
-        if (num == std::size_t(-1))
-            return avg_idle_rate_all(reset);
+        if (num == std::size_t(-1)) return avg_idle_rate_all(reset);
 
         std::int64_t exec_time = counter_data_[num].exec_times_;
         std::int64_t tfunc_time = counter_data_[num].tfunc_times_;
@@ -1290,10 +1268,7 @@ namespace pika::threads::detail {
         std::size_t i = 0;
         for (auto const& data : counter_data_)
         {
-            if (!data.tasks_active_ && sched_->Scheduler::is_core_idle(i))
-            {
-                ++count;
-            }
+            if (!data.tasks_active_ && sched_->Scheduler::is_core_idle(i)) { ++count; }
             ++i;
         }
         return count;
@@ -1305,10 +1280,7 @@ namespace pika::threads::detail {
         std::size_t i = 0;
         for (auto const& data : counter_data_)
         {
-            if (!data.tasks_active_ && sched_->Scheduler::is_core_idle(i))
-            {
-                set(mask, i);
-            }
+            if (!data.tasks_active_ && sched_->Scheduler::is_core_idle(i)) { set(mask, i); }
             ++i;
         }
     }
@@ -1329,8 +1301,7 @@ namespace pika::threads::detail {
         std::unique_lock<typename Scheduler::pu_mutex_type> l(
             sched_->Scheduler::get_pu_mutex(virt_core));
 
-        if (threads_.size() <= virt_core)
-            threads_.resize(virt_core + 1);
+        if (threads_.size() <= virt_core) threads_.resize(virt_core + 1);
 
         if (threads_[virt_core].joinable())
         {
@@ -1348,8 +1319,7 @@ namespace pika::threads::detail {
         threads_[virt_core] = std::thread(
             &scheduled_thread_pool::thread_func, this, virt_core, thread_num, PIKA_MOVE(startup));
 
-        if (&ec != &throws)
-            ec = make_success_code();
+        if (&ec != &throws) ec = make_success_code();
     }
 
     template <typename Scheduler>

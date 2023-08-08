@@ -44,8 +44,7 @@ int reduce(pika::future<std::vector<pika::future<int>>>&& futvec)
     std::vector<pika::future<int>> vfs = futvec.get();
     for (pika::future<int>& f : vfs)
     {
-        if (f.get() == TEST_FAIL)
-            return TEST_FAIL;
+        if (f.get() == TEST_FAIL) return TEST_FAIL;
     }
     return res;
 }
@@ -55,10 +54,7 @@ int generate_one()
 {
     // generate roughly x% fails
     int result = TEST_SUCCESS;
-    if (dist(gen) >= (100 - FAILURE_RATE_PERCENT))
-    {
-        result = TEST_FAIL;
-    }
+    if (dist(gen) >= (100 - FAILURE_RATE_PERCENT)) { result = TEST_FAIL; }
     return result;
 }
 
@@ -85,8 +81,7 @@ pika::future<int> test_reduce()
             int res = TEST_SUCCESS;
             for (pika::future<int>& f : vfs)
             {
-                if (f.get() == TEST_FAIL)
-                    return TEST_FAIL;
+                if (f.get() == TEST_FAIL) return TEST_FAIL;
             }
             return res;
         });

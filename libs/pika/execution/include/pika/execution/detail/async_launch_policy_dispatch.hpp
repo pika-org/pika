@@ -44,10 +44,7 @@ namespace pika::detail {
                 PIKA_INVOKE(PIKA_FORWARD(F, f), PIKA_MOVE(vs)...);
                 return make_ready_future();
             }
-            else
-            {
-                return make_ready_future<R>(PIKA_INVOKE(PIKA_FORWARD(F, f), PIKA_MOVE(vs)...));
-            }
+            else { return make_ready_future<R>(PIKA_INVOKE(PIKA_FORWARD(F, f), PIKA_MOVE(vs)...)); }
         }
         catch (...)
         {

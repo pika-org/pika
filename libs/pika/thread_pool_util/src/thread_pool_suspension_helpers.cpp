@@ -52,14 +52,8 @@ namespace pika::threads::detail {
             callback();
         };
 
-        if (threads::detail::get_self_ptr())
-        {
-            pika::apply(PIKA_MOVE(resume_direct_wrapper));
-        }
-        else
-        {
-            std::thread(PIKA_MOVE(resume_direct_wrapper)).detach();
-        }
+        if (threads::detail::get_self_ptr()) { pika::apply(PIKA_MOVE(resume_direct_wrapper)); }
+        else { std::thread(PIKA_MOVE(resume_direct_wrapper)).detach(); }
     }
 
     pika::future<void> suspend_processing_unit(thread_pool_base& pool, std::size_t virt_core)
@@ -117,10 +111,7 @@ namespace pika::threads::detail {
 
             pika::apply(PIKA_MOVE(suspend_direct_wrapper));
         }
-        else
-        {
-            std::thread(PIKA_MOVE(suspend_direct_wrapper)).detach();
-        }
+        else { std::thread(PIKA_MOVE(suspend_direct_wrapper)).detach(); }
     }
 
     future<void> resume_pool(thread_pool_base& pool)
@@ -144,14 +135,8 @@ namespace pika::threads::detail {
             callback();
         };
 
-        if (threads::detail::get_self_ptr())
-        {
-            pika::apply(PIKA_MOVE(resume_direct_wrapper));
-        }
-        else
-        {
-            std::thread(PIKA_MOVE(resume_direct_wrapper)).detach();
-        }
+        if (threads::detail::get_self_ptr()) { pika::apply(PIKA_MOVE(resume_direct_wrapper)); }
+        else { std::thread(PIKA_MOVE(resume_direct_wrapper)).detach(); }
     }
 
     future<void> suspend_pool(thread_pool_base& pool)
@@ -187,14 +172,8 @@ namespace pika::threads::detail {
             callback();
         };
 
-        if (threads::detail::get_self_ptr())
-        {
-            pika::apply(PIKA_MOVE(suspend_direct_wrapper));
-        }
-        else
-        {
-            std::thread(PIKA_MOVE(suspend_direct_wrapper)).detach();
-        }
+        if (threads::detail::get_self_ptr()) { pika::apply(PIKA_MOVE(suspend_direct_wrapper)); }
+        else { std::thread(PIKA_MOVE(suspend_direct_wrapper)).detach(); }
     }
 
 }    // namespace pika::threads::detail

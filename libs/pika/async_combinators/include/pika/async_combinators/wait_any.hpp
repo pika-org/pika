@@ -223,15 +223,9 @@ namespace pika {
         pika::wait_some(1, begin, end);
     }
 
-    inline void wait_any_nothrow()
-    {
-        pika::wait_some_nothrow(1);
-    }
+    inline void wait_any_nothrow() { pika::wait_some_nothrow(1); }
 
-    inline void wait_any()
-    {
-        pika::wait_some(1);
-    }
+    inline void wait_any() { pika::wait_some(1); }
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Iterator,

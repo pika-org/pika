@@ -37,10 +37,7 @@ namespace pika::util::detail {
             {
             }
 
-            std::tuple<T...> unbox()
-            {
-                return PIKA_MOVE(boxed_);
-            }
+            std::tuple<T...> unbox() { return PIKA_MOVE(boxed_); }
         };
 
         template <>
@@ -50,18 +47,12 @@ namespace pika::util::detail {
             explicit constexpr spread_box() noexcept {}
             explicit constexpr spread_box(std::tuple<> const&) noexcept {}
 
-            constexpr std::tuple<> unbox() const noexcept
-            {
-                return std::tuple<>{};
-            }
+            constexpr std::tuple<> unbox() const noexcept { return std::tuple<>{}; }
         };
 
         /// Returns an empty spread box which represents an empty
         /// mapped object.
-        constexpr inline spread_box<> empty_spread() noexcept
-        {
-            return spread_box<>{};
-        }
+        constexpr inline spread_box<> empty_spread() noexcept { return spread_box<>{}; }
 
         /// Deduces to a true_type if the given type is a spread marker
         template <typename T>
@@ -345,15 +336,9 @@ namespace pika::util::detail {
             {
             }
 
-            auto begin() -> decltype(container_.begin())
-            {
-                return container_.begin();
-            }
+            auto begin() -> decltype(container_.begin()) { return container_.begin(); }
 
-            auto end() -> decltype(container_.end())
-            {
-                return container_.end();
-            }
+            auto end() -> decltype(container_.end()) { return container_.end(); }
         };
         template <typename C>
         class container_accessor<C, std::enable_if_t<std::is_rvalue_reference<C&&>::value>>
@@ -662,10 +647,7 @@ namespace pika::util::detail {
             }
 
         protected:
-            mapping_helper* get_helper() noexcept
-            {
-                return helper_;
-            }
+            mapping_helper* get_helper() noexcept { return helper_; }
         };
 
         /// A callable object which forwards its invocations

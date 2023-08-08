@@ -106,10 +106,7 @@ namespace pika::threads::coroutines::detail {
         }
 
     private:
-        coroutine_impl* get_impl() override
-        {
-            return pimpl_;
-        }
+        coroutine_impl* get_impl() override { return pimpl_; }
         coroutine_impl* pimpl_;
     };
 }    // namespace pika::threads::coroutines::detail

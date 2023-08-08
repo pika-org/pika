@@ -66,8 +66,7 @@ namespace htts2 {
         {
             rep const measured = clocksource<BaseClock>::now() - start;
 
-            if (measured >= expected)
-                return measured;
+            if (measured >= expected) return measured;
         }
     }
 
@@ -81,22 +80,13 @@ namespace htts2 {
         {
         }
 
-        void restart()
-        {
-            start_ = this->now();
-        }
+        void restart() { start_ = this->now(); }
 
         // Returns: elapsed time in nanoseconds.
-        rep elapsed() const
-        {
-            return this->now() - start_;
-        }
+        rep elapsed() const { return this->now() - start_; }
 
         // Returns: uncertainty of elapsed time.
-        double elapsed_uncertainty() const
-        {
-            return this->clock_uncertainty();
-        }
+        double elapsed_uncertainty() const { return this->clock_uncertainty(); }
 
     private:
         rep start_;

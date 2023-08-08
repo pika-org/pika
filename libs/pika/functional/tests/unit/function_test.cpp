@@ -40,10 +40,7 @@ int global_int;
 
 struct write_five_obj
 {
-    void operator()() const
-    {
-        global_int = 5;
-    }
+    void operator()() const { global_int = 5; }
 };
 struct write_three_obj
 {
@@ -53,59 +50,26 @@ struct write_three_obj
         return 7;
     }
 };
-static void write_five()
-{
-    global_int = 5;
-}
-static void write_three()
-{
-    global_int = 3;
-}
+static void write_five() { global_int = 5; }
+static void write_three() { global_int = 3; }
 struct generate_five_obj
 {
-    int operator()() const
-    {
-        return 5;
-    }
+    int operator()() const { return 5; }
 };
 struct generate_three_obj
 {
-    int operator()() const
-    {
-        return 3;
-    }
+    int operator()() const { return 3; }
 };
-static int generate_five()
-{
-    return 5;
-}
-static int generate_three()
-{
-    return 3;
-}
-static string identity_str(const string& s)
-{
-    return s;
-}
-static string string_cat(const string& s1, const string& s2)
-{
-    return s1 + s2;
-}
-static int sum_ints(int x, int y)
-{
-    return x + y;
-}
+static int generate_five() { return 5; }
+static int generate_three() { return 3; }
+static string identity_str(const string& s) { return s; }
+static string string_cat(const string& s1, const string& s2) { return s1 + s2; }
+static int sum_ints(int x, int y) { return x + y; }
 
 struct write_const_1_nonconst_2
 {
-    void operator()()
-    {
-        global_int = 2;
-    }
-    void operator()() const
-    {
-        global_int = 1;
-    }
+    void operator()() { global_int = 2; }
+    void operator()() const { global_int = 1; }
 };
 
 struct add_to_obj
@@ -115,10 +79,7 @@ struct add_to_obj
     {
     }
 
-    int operator()(int x) const
-    {
-        return value + x;
-    }
+    int operator()(int x) const { return value + x; }
 
     int value;
 };
@@ -677,14 +638,8 @@ struct X
     {
     }
 
-    int twice() const
-    {
-        return 2 * value;
-    }
-    int plus(int v)
-    {
-        return value + v;
-    }
+    int twice() const { return 2 * value; }
+    int plus(int v) { return value + v; }
 
     int value;
 };
@@ -712,10 +667,7 @@ static void test_member_functions()
 
 struct add_with_throw_on_copy
 {
-    int operator()(int x, int y) const
-    {
-        return x + y;
-    }
+    int operator()(int x, int y) const { return x + y; }
 
     add_with_throw_on_copy() {}
 
@@ -795,10 +747,7 @@ static void test_implicit()
     m = mapped_type();
 }
 
-static void test_call_obj(pika::util::detail::function<int(int, int)> f)
-{
-    PIKA_TEST(!f.empty());
-}
+static void test_call_obj(pika::util::detail::function<int(int, int)> f) { PIKA_TEST(!f.empty()); }
 
 static void test_call_cref(const pika::util::detail::function<int(int, int)>& f)
 {
@@ -815,30 +764,15 @@ struct big_aggregating_structure
 {
     int disable_small_objects_optimizations[32];
 
-    big_aggregating_structure()
-    {
-        ++global_int;
-    }
+    big_aggregating_structure() { ++global_int; }
 
-    big_aggregating_structure(const big_aggregating_structure&)
-    {
-        ++global_int;
-    }
+    big_aggregating_structure(const big_aggregating_structure&) { ++global_int; }
 
-    ~big_aggregating_structure()
-    {
-        --global_int;
-    }
+    ~big_aggregating_structure() { --global_int; }
 
-    void operator()()
-    {
-        ++global_int;
-    }
+    void operator()() { ++global_int; }
 
-    void operator()(int)
-    {
-        ++global_int;
-    }
+    void operator()(int) { ++global_int; }
 };
 
 template <class FunctionT>

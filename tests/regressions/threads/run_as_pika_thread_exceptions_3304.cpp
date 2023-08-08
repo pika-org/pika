@@ -34,8 +34,7 @@ int start_func(pika::concurrency::detail::spinlock& mtx, pika::condition_variabl
     {
         std::unique_lock<pika::concurrency::detail::spinlock> lk(mtx);
         startup_cond.notify_one();
-        while (!stop_running)
-            cond.wait(lk);
+        while (!stop_running) cond.wait(lk);
     }
 
     return pika::finalize();
@@ -59,8 +58,7 @@ int main(int argc, char** argv)
     // wait for the main pika thread to run
     {
         std::unique_lock<std::mutex> lk(startup_mtx);
-        while (!running)
-            startup_cond.wait(lk);
+        while (!running) startup_cond.wait(lk);
     }
 
     bool exception_caught = false;

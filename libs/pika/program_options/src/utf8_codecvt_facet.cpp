@@ -200,8 +200,7 @@ namespace pika::program_options::detail {
     unsigned int utf8_codecvt_facet::get_octet_count(unsigned char lead_octet)
     {
         // if the 0-bit (MSB) is 0, then 1 character
-        if (lead_octet <= 0x7f)
-            return 1;
+        if (lead_octet <= 0x7f) return 1;
 
         // Otherwise the count number of consecutive 1 bits starting at MSB
         //    assert(0xc0 <= lead_octet && lead_octet <= 0xfd);
@@ -223,28 +222,16 @@ namespace pika::program_options::detail {
         template <std::size_t s>
         int get_cont_octet_out_count_impl(wchar_t word)
         {
-            if (word < 0x80)
-            {
-                return 0;
-            }
-            if (word < 0x800)
-            {
-                return 1;
-            }
+            if (word < 0x80) { return 0; }
+            if (word < 0x800) { return 1; }
             return 2;
         }
 
         template <>
         int get_cont_octet_out_count_impl<4>(wchar_t word)
         {
-            if (word < 0x80)
-            {
-                return 0;
-            }
-            if (word < 0x800)
-            {
-                return 1;
-            }
+            if (word < 0x80) { return 0; }
+            if (word < 0x800) { return 1; }
 
             // Note that the following code will generate warnings on some platforms
             // where wchar_t is defined as UCS2.  The warnings are superfluous as the
@@ -257,18 +244,9 @@ namespace pika::program_options::detail {
             return 2;
 #elif WCHAR_MAX > 0x10000
 
-            if (word < 0x10000)
-            {
-                return 2;
-            }
-            if (word < 0x200000)
-            {
-                return 3;
-            }
-            if (word < 0x4000000)
-            {
-                return 4;
-            }
+            if (word < 0x10000) { return 2; }
+            if (word < 0x200000) { return 3; }
+            if (word < 0x4000000) { return 4; }
             return 5;
 
 #else

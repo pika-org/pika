@@ -94,15 +94,9 @@ namespace pika::execution::experimental {
 
             // returns true if too many tasks would be in flight
             // NB. we use ">" because we count up right before testing
-            bool exceeds_upper()
-            {
-                return (limiting_.count_ > limiting_.upper_threshold_);
-            }
+            bool exceeds_upper() { return (limiting_.count_ > limiting_.upper_threshold_); }
             // returns true if we have not yet reached the lower threshold
-            bool exceeds_lower()
-            {
-                return (limiting_.count_ > limiting_.lower_threshold_);
-            }
+            bool exceeds_lower() { return (limiting_.count_ > limiting_.lower_threshold_); }
 
             limiting_executor& limiting_;
             F f_;
@@ -181,17 +175,11 @@ namespace pika::execution::experimental {
         // --------------------------------------------------------------------
         ~limiting_executor()
         {
-            if (block_)
-            {
-                set_and_wait(0, 0);
-            }
+            if (block_) { set_and_wait(0, 0); }
         }
 
         // --------------------------------------------------------------------
-        limiting_executor const& context() const noexcept
-        {
-            return *this;
-        }
+        limiting_executor const& context() const noexcept { return *this; }
 
         // --------------------------------------------------------------------
         // OneWayExecutor interface
@@ -274,15 +262,9 @@ namespace pika::execution::experimental {
         }
 
     private:
-        void count_up()
-        {
-            ++count_;
-        }
+        void count_up() { ++count_; }
 
-        void count_down() const
-        {
-            --count_;
-        }
+        void count_down() const { --count_; }
 
         void set_and_wait(std::size_t lower, std::size_t upper)
         {

@@ -37,19 +37,13 @@ void increment_with_future(pika::shared_future<std::int32_t> fi)
 ///////////////////////////////////////////////////////////////////////////////
 struct increment_function_object
 {
-    void operator()(std::int32_t i) const
-    {
-        accumulator += i;
-    }
+    void operator()(std::int32_t i) const { accumulator += i; }
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 struct increment_type
 {
-    void call(std::int32_t i) const
-    {
-        accumulator += i;
-    }
+    void call(std::int32_t i) const { accumulator += i; }
 };
 
 auto increment_lambda = [](std::int32_t i) { accumulator += i; };

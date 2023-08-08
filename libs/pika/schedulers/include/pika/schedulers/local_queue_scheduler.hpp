@@ -117,14 +117,10 @@ namespace pika::threads::detail {
 
         virtual ~local_queue_scheduler()
         {
-            for (std::size_t i = 0; i != queues_.size(); ++i)
-                delete queues_[i];
+            for (std::size_t i = 0; i != queues_.size(); ++i) delete queues_[i];
         }
 
-        static std::string get_scheduler_name()
-        {
-            return "local_queue_scheduler";
-        }
+        static std::string get_scheduler_name() { return "local_queue_scheduler"; }
 
 #ifdef PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES
         std::uint64_t get_creation_time(bool reset) override
@@ -271,14 +267,8 @@ namespace pika::threads::detail {
 
             std::size_t queue_size = queues_.size();
 
-            if (std::size_t(-1) == num_thread)
-            {
-                num_thread = curr_queue_++ % queue_size;
-            }
-            else if (num_thread >= queue_size)
-            {
-                num_thread %= queue_size;
-            }
+            if (std::size_t(-1) == num_thread) { num_thread = curr_queue_++ % queue_size; }
+            else if (num_thread >= queue_size) { num_thread %= queue_size; }
 
             std::unique_lock<pu_mutex_type> l;
             num_thread = select_active_pu(l, num_thread);
@@ -312,21 +302,16 @@ namespace pika::threads::detail {
                 bool result = q->get_next_thread(thrd);
 
                 q->increment_num_pending_accesses();
-                if (result)
-                    return true;
+                if (result) return true;
                 q->increment_num_pending_misses();
 
                 bool have_staged = q->get_staged_queue_length(std::memory_order_relaxed) != 0;
 
                 // Give up, we should have work to convert.
-                if (have_staged)
-                    return false;
+                if (have_staged) return false;
             }
 
-            if (!running)
-            {
-                return false;
-            }
+            if (!running) { return false; }
 
             bool numa_stealing = has_scheduler_mode(scheduler_mode::enable_stealing_numa);
             if (!numa_stealing)
@@ -428,21 +413,12 @@ namespace pika::threads::detail {
             {
                 num_thread = schedulehint.hint;
             }
-            else
-            {
-                allow_fallback = false;
-            }
+            else { allow_fallback = false; }
 
             std::size_t queue_size = queues_.size();
 
-            if (std::size_t(-1) == num_thread)
-            {
-                num_thread = curr_queue_++ % queue_size;
-            }
-            else if (num_thread >= queue_size)
-            {
-                num_thread %= queue_size;
-            }
+            if (std::size_t(-1) == num_thread) { num_thread = curr_queue_++ % queue_size; }
+            else if (num_thread >= queue_size) { num_thread %= queue_size; }
 
             std::unique_lock<pu_mutex_type> l;
             num_thread = select_active_pu(l, num_thread, allow_fallback);
@@ -470,21 +446,12 @@ namespace pika::threads::detail {
             {
                 num_thread = schedulehint.hint;
             }
-            else
-            {
-                allow_fallback = false;
-            }
+            else { allow_fallback = false; }
 
             std::size_t queue_size = queues_.size();
 
-            if (std::size_t(-1) == num_thread)
-            {
-                num_thread = curr_queue_++ % queue_size;
-            }
-            else if (num_thread >= queue_size)
-            {
-                num_thread %= queue_size;
-            }
+            if (std::size_t(-1) == num_thread) { num_thread = curr_queue_++ % queue_size; }
+            else if (num_thread >= queue_size) { num_thread %= queue_size; }
 
             std::unique_lock<pu_mutex_type> l;
             num_thread = select_active_pu(l, num_thread, allow_fallback);
@@ -671,14 +638,10 @@ namespace pika::threads::detail {
             bool result = true;
 
             result = queues_[num_thread]->wait_or_add_new(running, added) && result;
-            if (0 != added)
-                return result;
+            if (0 != added) return result;
 
             // Check if we have been disabled
-            if (!running)
-            {
-                return true;
-            }
+            if (!running) { return true; }
 
             bool numa_stealing_ = has_scheduler_mode(scheduler_mode::enable_stealing_numa);
             // limited or no stealing across domains

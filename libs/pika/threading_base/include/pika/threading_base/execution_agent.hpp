@@ -38,10 +38,7 @@ namespace pika::threads::detail {
 
         std::string description() const override;
 
-        execution_context const& context() const override
-        {
-            return context_;
-        }
+        execution_context const& context() const override { return context_; }
 
         void yield(char const* desc) override;
         void yield_k(std::size_t k, char const* desc) override;

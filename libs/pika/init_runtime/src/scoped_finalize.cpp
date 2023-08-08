@@ -9,8 +9,5 @@
 #include <pika/init_runtime/scoped_finalize.hpp>
 
 namespace pika {
-    scoped_finalize::~scoped_finalize()
-    {
-        pika::finalize();
-    }
+    scoped_finalize::~scoped_finalize() { pika::finalize(); }
 }    // namespace pika

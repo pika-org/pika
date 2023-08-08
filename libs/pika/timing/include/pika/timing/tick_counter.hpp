@@ -26,16 +26,10 @@ namespace pika::chrono::detail {
         {
         }
 
-        ~tick_counter()
-        {
-            output_ += take_time_stamp() - start_time_;
-        }
+        ~tick_counter() { output_ += take_time_stamp() - start_time_; }
 
     protected:
-        static std::uint64_t take_time_stamp()
-        {
-            return timestamp();
-        }
+        static std::uint64_t take_time_stamp() { return timestamp(); }
 
     private:
         std::uint64_t const start_time_;

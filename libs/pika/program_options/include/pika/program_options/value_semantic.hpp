@@ -132,15 +132,9 @@ namespace pika::program_options {
         unsigned min_tokens() const override;
         unsigned max_tokens() const override;
 
-        bool is_composing() const override
-        {
-            return false;
-        }
+        bool is_composing() const override { return false; }
 
-        bool is_required() const override
-        {
-            return false;
-        }
+        bool is_required() const override { return false; }
 
         /** If 'value_store' is already initialized, or new_tokens
             has more than one elements, throws. Otherwise, assigns
@@ -151,10 +145,7 @@ namespace pika::program_options {
             std::any& value_store, const std::vector<std::string>& new_tokens) const override;
 
         /** Does nothing. */
-        bool apply_default(std::any&) const override
-        {
-            return false;
-        }
+        bool apply_default(std::any&) const override { return false; }
 
         /** Does nothing. */
         void notify(const std::any&) const override {}
@@ -306,43 +297,22 @@ namespace pika::program_options {
     public:    // value semantic overrides
         std::string name() const override;
 
-        bool is_composing() const override
-        {
-            return m_composing;
-        }
+        bool is_composing() const override { return m_composing; }
 
         unsigned min_tokens() const override
         {
-            if (m_zero_tokens || m_implicit_value.has_value())
-            {
-                return 0;
-            }
-            else
-            {
-                return 1;
-            }
+            if (m_zero_tokens || m_implicit_value.has_value()) { return 0; }
+            else { return 1; }
         }
 
         unsigned max_tokens() const override
         {
-            if (m_multitoken)
-            {
-                return (std::numeric_limits<unsigned>::max)();
-            }
-            else if (m_zero_tokens)
-            {
-                return 0;
-            }
-            else
-            {
-                return 1;
-            }
+            if (m_multitoken) { return (std::numeric_limits<unsigned>::max)(); }
+            else if (m_zero_tokens) { return 0; }
+            else { return 1; }
         }
 
-        bool is_required() const override
-        {
-            return m_required;
-        }
+        bool is_required() const override { return m_required; }
 
         /** Creates an instance of the 'validator' class and calls
             its operator() to perform the actual conversion. */
@@ -355,10 +325,7 @@ namespace pika::program_options {
         */
         virtual bool apply_default(std::any& value_store) const override
         {
-            if (!m_default_value.has_value())
-            {
-                return false;
-            }
+            if (!m_default_value.has_value()) { return false; }
             else
             {
                 value_store = m_default_value;
@@ -372,10 +339,7 @@ namespace pika::program_options {
         void notify(const std::any& value_store) const override;
 
     public:    // typed_value_base overrides
-        const std::type_info& value_type() const override
-        {
-            return typeid(T);
-        }
+        const std::type_info& value_type() const override { return typeid(T); }
 
     private:
         T* m_store_to;

@@ -173,10 +173,7 @@ namespace pika::make_future_detail {
             pika::execution::experimental::start(op_state.value());
         }
 
-        void reset_operation_state() override
-        {
-            op_state.reset();
-        }
+        void reset_operation_state() override { op_state.reset(); }
     };
 
     ///////////////////////////////////////////////////////////////////////

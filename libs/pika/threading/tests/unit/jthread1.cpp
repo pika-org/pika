@@ -38,17 +38,11 @@ void test_jthread_without_token()
             all_set.store(true);
 
             // wait until loop is done (no interrupt checked)
-            for (int c = 9; c >= 0; --c)
-            {
-                pika::this_thread::yield();
-            }
+            for (int c = 9; c >= 0; --c) { pika::this_thread::yield(); }
         });
 
         // wait until t has set all initial values
-        for ([[maybe_unused]] int i = 0; !all_set.load(); ++i)
-        {
-            pika::this_thread::yield();
-        }
+        for ([[maybe_unused]] int i = 0; !all_set.load(); ++i) { pika::this_thread::yield(); }
 
         // and check all values
         PIKA_TEST(t.joinable());
@@ -89,10 +83,7 @@ void test_jthread_with_token()
             ssource.get_token());
 
         // wait until t has set all initial values
-        for ([[maybe_unused]] int i = 0; !all_set.load(); ++i)
-        {
-            pika::this_thread::yield();
-        }
+        for ([[maybe_unused]] int i = 0; !all_set.load(); ++i) { pika::this_thread::yield(); }
 
         // and check all values
         PIKA_TEST(t.joinable());
@@ -194,10 +185,7 @@ void test_detach()
         });
 
         // wait until t has set all initial values
-        for ([[maybe_unused]] int i = 0; !all_set.load(); ++i)
-        {
-            pika::this_thread::yield();
-        }
+        for ([[maybe_unused]] int i = 0; !all_set.load(); ++i) { pika::this_thread::yield(); }
 
         // and check all values
         PIKA_TEST(!t0.joinable());
@@ -247,10 +235,7 @@ void test_pika_thread()
         bool caught_exception = false;
         try
         {
-            while (!shall_die.stop_requested())
-            {
-                pika::this_thread::yield();
-            }
+            while (!shall_die.stop_requested()) { pika::this_thread::yield(); }
 
             throw "interrupted";
         }
@@ -272,10 +257,7 @@ void test_pika_thread()
     });
 
     // wait until t has set all initial values
-    for ([[maybe_unused]] int i = 0; !all_set.load(); ++i)
-    {
-        pika::this_thread::yield();
-    }
+    for ([[maybe_unused]] int i = 0; !all_set.load(); ++i) { pika::this_thread::yield(); }
 
     // and check all values
     PIKA_TEST(id == t.get_id());
@@ -311,10 +293,7 @@ void test_temporarily_disable_token()
             {
                 for ([[maybe_unused]] int i = 0; i < 10; ++i)
                 {
-                    if (actToken.stop_requested())
-                    {
-                        throw "interrupted";
-                    }
+                    if (actToken.stop_requested()) { throw "interrupted"; }
                     pika::this_thread::yield();
                 }
             }
@@ -333,17 +312,11 @@ void test_temporarily_disable_token()
             {
                 while (!actToken.stop_requested())
                 {
-                    if (stoken.stop_requested())
-                    {
-                        throw "interrupted";
-                    }
+                    if (stoken.stop_requested()) { throw "interrupted"; }
                     pika::this_thread::yield();
                 }
 
-                for ([[maybe_unused]] int i = 0; i < 10; ++i)
-                {
-                    pika::this_thread::yield();
-                }
+                for ([[maybe_unused]] int i = 0; i < 10; ++i) { pika::this_thread::yield(); }
             }
             catch (...)
             {
@@ -358,10 +331,7 @@ void test_temporarily_disable_token()
             PIKA_TEST(!interrupt_disabled.stop_requested());
             try
             {
-                if (actToken.stop_requested())
-                {
-                    throw "interrupted";
-                }
+                if (actToken.stop_requested()) { throw "interrupted"; }
             }
             catch (const char*)
             {
@@ -369,10 +339,7 @@ void test_temporarily_disable_token()
             }
         });
 
-        while (state.load() != State::disabled)
-        {
-            pika::this_thread::yield();
-        }
+        while (state.load() != State::disabled) { pika::this_thread::yield(); }
 
         pika::this_thread::yield();
         tis = t.get_stop_source();
@@ -426,10 +393,7 @@ void test_jthread_api()
         });
 
         // wait until t has set all initial values
-        for ([[maybe_unused]] int i = 0; !all_set.load(); ++i)
-        {
-            pika::this_thread::yield();
-        }
+        for ([[maybe_unused]] int i = 0; !all_set.load(); ++i) { pika::this_thread::yield(); }
 
         // and check all values
         PIKA_TEST(t.joinable());

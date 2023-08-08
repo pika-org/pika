@@ -108,10 +108,7 @@ namespace pika::util {
         {
             using type = T*;
 
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE static type call(T& x)
-            {
-                return std::addressof(x);
-            }
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE static type call(T& x) { return std::addressof(x); }
         };
 
         template <typename T>
@@ -134,10 +131,7 @@ namespace pika::util {
             iterator_facade_base() = default;
 
         protected:
-            PIKA_HOST_DEVICE Derived& derived()
-            {
-                return *static_cast<Derived*>(this);
-            }
+            PIKA_HOST_DEVICE Derived& derived() { return *static_cast<Derived*>(this); }
 
             PIKA_HOST_DEVICE Derived const& derived() const
             {
@@ -224,10 +218,7 @@ namespace pika::util {
             }
 
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
-            PIKA_HOST_DEVICE operator reference() const
-            {
-                return *iter_;
-            }
+            PIKA_HOST_DEVICE operator reference() const { return *iter_; }
 
             PIKA_HOST_DEVICE operator_brackets_proxy& operator=(value_type const& val)
             {
@@ -379,10 +370,7 @@ namespace pika::util {
             // but it imposes fewer assumptions about the behavior of the
             // value_type. In particular, recall that (*r).mutate() is legal if
             // operator* returns by value.
-            PIKA_HOST_DEVICE value_type& operator*() const
-            {
-                return this->stored_value;
-            }
+            PIKA_HOST_DEVICE value_type& operator*() const { return this->stored_value; }
 
         private:
             mutable std::remove_const_t<value_type> stored_value;
@@ -410,16 +398,10 @@ namespace pika::util {
             // and the conversion operator below is used to ensure readability.
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             PIKA_HOST_DEVICE
-            writable_postfix_increment_proxy const& operator*() const
-            {
-                return *this;
-            }
+            writable_postfix_increment_proxy const& operator*() const { return *this; }
 
             // Provides readability of *r++
-            PIKA_HOST_DEVICE operator value_type&() const
-            {
-                return stored_value;
-            }
+            PIKA_HOST_DEVICE operator value_type&() const { return stored_value; }
 
             // Provides writability of *r++
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
@@ -440,10 +422,7 @@ namespace pika::util {
             }
 
             // Provides X(r++)
-            PIKA_HOST_DEVICE operator Iterator const&() const
-            {
-                return stored_iterator;
-            }
+            PIKA_HOST_DEVICE operator Iterator const&() const { return stored_iterator; }
 
         private:
             mutable std::remove_const_t<value_type> stored_value;

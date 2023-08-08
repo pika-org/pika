@@ -46,8 +46,7 @@ void blocker(pika::barrier<>& exit_barrier, std::atomic<std::uint64_t>& entered,
 
     PIKA_TEST_EQ(worker, pika::get_worker_thread_num());
 
-    while (started.load() != 1)
-        continue;
+    while (started.load() != 1) continue;
 
     exit_barrier.arrive_and_drop();
 }
@@ -70,14 +69,12 @@ int pika_main()
         std::unique_ptr<std::atomic<std::uint64_t>[]> blocked_threads(
             new std::atomic<std::uint64_t>[os_thread_count]);
 
-        for (std::uint64_t i = 0; i < os_thread_count; ++i)
-            blocked_threads[i].store(0);
+        for (std::uint64_t i = 0; i < os_thread_count; ++i) blocked_threads[i].store(0);
 
         std::uint64_t scheduled = 0;
         for (std::uint64_t i = 0; i < os_thread_count; ++i)
         {
-            if (i == pika::get_worker_thread_num())
-                continue;
+            if (i == pika::get_worker_thread_num()) continue;
 
             pika::threads::detail::thread_init_data data(
                 pika::threads::detail::make_thread_function_nullary(
@@ -90,8 +87,7 @@ int pika_main()
         }
         PIKA_TEST_EQ(scheduled, os_thread_count - 1);
 
-        while (entered.load() != (os_thread_count - 1))
-            continue;
+        while (entered.load() != (os_thread_count - 1)) continue;
 
         {
             double delay_sec = delay * 1e-6;
@@ -99,8 +95,7 @@ int pika_main()
 
             while (true)
             {
-                if (td.elapsed() > delay_sec)
-                    break;
+                if (td.elapsed() > delay_sec) break;
             }
         }
 

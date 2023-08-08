@@ -36,18 +36,12 @@ struct X
     {
     }
 
-    int f()
-    {
-        return v_;
-    }
+    int f() { return v_; }
 };
 
 struct Y
 {
-    std::shared_ptr<X> f()
-    {
-        return std::shared_ptr<X>(new X(42));
-    }
+    std::shared_ptr<X> f() { return std::shared_ptr<X>(new X(42)); }
 };
 
 int main()

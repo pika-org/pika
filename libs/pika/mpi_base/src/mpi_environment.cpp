@@ -78,17 +78,11 @@ namespace pika { namespace util {
         // Check if MPI_Init has been called previously
         int is_initialized = 0;
         int retval = MPI_Initialized(&is_initialized);
-        if (MPI_SUCCESS != retval)
-        {
-            return retval;
-        }
+        if (MPI_SUCCESS != retval) { return retval; }
         if (!is_initialized)
         {
             retval = MPI_Init_thread(nullptr, nullptr, required, &provided);
-            if (MPI_SUCCESS != retval)
-            {
-                return retval;
-            }
+            if (MPI_SUCCESS != retval) { return retval; }
 
             if (provided < minimal)
             {
@@ -104,17 +98,13 @@ namespace pika { namespace util {
     ///////////////////////////////////////////////////////////////////////////
     void mpi_environment::init(int* argc, char*** argv, util::runtime_configuration& rtcfg)
     {
-        if (enabled_)
-            return;    // don't call twice
+        if (enabled_) return;    // don't call twice
 
         int this_rank = -1;
         has_called_init_ = false;
 
         enabled_ = check_mpi_environment(rtcfg);
-        if (!enabled_)
-        {
-            return;
-        }
+        if (!enabled_) { return; }
 
         int required = MPI_THREAD_SINGLE;
         int minimal = MPI_THREAD_SINGLE;
@@ -125,8 +115,7 @@ namespace pika { namespace util {
 
 #  if defined(MVAPICH2_VERSION) && defined(_POSIX_SOURCE)
         // This enables multi threading support in MVAPICH2 if requested.
-        if (required == MPI_THREAD_MULTIPLE)
-            setenv("MV2_ENABLE_AFFINITY", "0", 1);
+        if (required == MPI_THREAD_MULTIPLE) setenv("MV2_ENABLE_AFFINITY", "0", 1);
 #  endif
 # endif
 
@@ -165,14 +154,8 @@ namespace pika { namespace util {
 
         this_rank = rank();
 
-        if (this_rank == 0)
-        {
-            rtcfg.mode_ = pika::runtime_mode::console;
-        }
-        else
-        {
-            rtcfg.mode_ = pika::runtime_mode::worker;
-        }
+        if (this_rank == 0) { rtcfg.mode_ = pika::runtime_mode::console; }
+        else { rtcfg.mode_ = pika::runtime_mode::worker; }
 
         rtcfg.add_entry("pika.parcel.mpi.rank", std::to_string(this_rank));
         rtcfg.add_entry("pika.parcel.mpi.processorname", get_processor_name());
@@ -193,80 +176,59 @@ namespace pika { namespace util {
         {
             int is_finalized = 0;
             MPI_Finalized(&is_finalized);
-            if (!is_finalized)
-            {
-                MPI_Finalize();
-            }
+            if (!is_finalized) { MPI_Finalize(); }
         }
     }
 
-    bool mpi_environment::enabled()
-    {
-        return enabled_;
-    }
+    bool mpi_environment::enabled() { return enabled_; }
 
     bool mpi_environment::multi_threaded()
     {
         return provided_threading_flag_ >= MPI_THREAD_SERIALIZED;
     }
 
-    bool mpi_environment::has_called_init()
-    {
-        return has_called_init_;
-    }
+    bool mpi_environment::has_called_init() { return has_called_init_; }
 
     int mpi_environment::size()
     {
         int res(-1);
-        if (enabled())
-            MPI_Comm_size(communicator(), &res);
+        if (enabled()) MPI_Comm_size(communicator(), &res);
         return res;
     }
 
     int mpi_environment::rank()
     {
         int res(-1);
-        if (enabled())
-            MPI_Comm_rank(communicator(), &res);
+        if (enabled()) MPI_Comm_rank(communicator(), &res);
         return res;
     }
 
-    MPI_Comm& mpi_environment::communicator()
-    {
-        return communicator_;
-    }
+    MPI_Comm& mpi_environment::communicator() { return communicator_; }
 
     mpi_environment::scoped_lock::scoped_lock()
     {
-        if (!multi_threaded())
-            mtx_.lock();
+        if (!multi_threaded()) mtx_.lock();
     }
 
     mpi_environment::scoped_lock::~scoped_lock()
     {
-        if (!multi_threaded())
-            mtx_.unlock();
+        if (!multi_threaded()) mtx_.unlock();
     }
 
     void mpi_environment::scoped_lock::unlock()
     {
-        if (!multi_threaded())
-            mtx_.unlock();
+        if (!multi_threaded()) mtx_.unlock();
     }
 
     mpi_environment::scoped_try_lock::scoped_try_lock()
       : locked(true)
     {
-        if (!multi_threaded())
-        {
-            locked = mtx_.try_lock();
-        }
+        if (!multi_threaded()) { locked = mtx_.try_lock(); }
     }
 
     mpi_environment::scoped_try_lock::~scoped_try_lock()
     {
-        if (!multi_threaded() && locked)
-            mtx_.unlock();
+        if (!multi_threaded() && locked) mtx_.unlock();
     }
 
     void mpi_environment::scoped_try_lock::unlock()

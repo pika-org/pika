@@ -49,10 +49,7 @@ double null_function() noexcept
         std::array<double, array_size> dummy;
         for (std::uint64_t i = 0; i < num_iterations; ++i)
         {
-            for (std::uint64_t j = 0; j < array_size; ++j)
-            {
-                dummy[j] = 1.0 / (2.0 * i * j + 1.0);
-            }
+            for (std::uint64_t j = 0; j < array_size; ++j) { dummy[j] = 1.0 / (2.0 * i * j + 1.0); }
         }
         return dummy[0];
     }
@@ -61,10 +58,7 @@ double null_function() noexcept
 
 struct scratcher
 {
-    void operator()(future<double> r) const
-    {
-        global_scratch += r.get();
-    }
+    void operator()(future<double> r) const { global_scratch += r.get(); }
 };
 
 void measure_function_futures_create_thread_hierarchical_placement(
@@ -132,8 +126,7 @@ void measure_function_futures_create_thread_hierarchical_placement(
 int pika_main(variables_map& vm)
 {
     {
-        if (vm.count("pika:queuing"))
-            queuing = vm["pika:queuing"].as<std::string>();
+        if (vm.count("pika:queuing")) queuing = vm["pika:queuing"].as<std::string>();
 
         if (vm.count("pika:numa-sensitive"))
             numa_sensitive = 1;
@@ -143,8 +136,7 @@ int pika_main(variables_map& vm)
         bool test_all = (vm.count("test-all") > 0);
         const int repetitions = vm["repetitions"].as<int>();
 
-        if (vm.count("info"))
-            info_string = vm["info"].as<std::string>();
+        if (vm.count("info")) info_string = vm["info"].as<std::string>();
 
         num_threads = pika::get_num_worker_threads();
 

@@ -33,10 +33,7 @@ struct mult_functor
     {
     }
 
-    int operator()(int b) const
-    {
-        return a * b;
-    }
+    int operator()(int b) const { return a * b; }
 
     int a;
 };
@@ -44,23 +41,14 @@ struct mult_functor
 template <typename Pair>
 struct select1st_
 {
-    const typename Pair::first_type& operator()(const Pair& x) const
-    {
-        return x.first;
-    }
+    const typename Pair::first_type& operator()(const Pair& x) const { return x.first; }
 
-    typename Pair::first_type& operator()(Pair& x) const
-    {
-        return x.first;
-    }
+    typename Pair::first_type& operator()(Pair& x) const { return x.first; }
 };
 
 struct one_or_four
 {
-    bool operator()(tests::dummy_type x) const
-    {
-        return x.foo() == 1 || x.foo() == 4;
-    }
+    bool operator()(tests::dummy_type x) const { return x.foo() == 1 || x.foo() == 4; }
 };
 
 using storage = std::deque<int>;
@@ -81,10 +69,7 @@ struct my_gen
     {
     }
 
-    int operator()()
-    {
-        return ++n;
-    }
+    int operator()() { return ++n; }
 
     int n;
 };

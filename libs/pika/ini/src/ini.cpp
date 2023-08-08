@@ -46,8 +46,7 @@ namespace pika::detail {
         using size_type = std::string::size_type;
 
         size_type first = s.find_first_not_of(" \t\r\n");
-        if (std::string::npos == first)
-            return (std::string());
+        if (std::string::npos == first) return (std::string());
 
         size_type last = s.find_last_not_of(" \t\r\n");
         return s.substr(first, last - first + 1);
@@ -72,8 +71,7 @@ namespace pika::detail {
     {
         entry_map const& e = in.get_entries();
         entry_map::const_iterator end = e.end();
-        for (entry_map::const_iterator i = e.begin(); i != end; ++i)
-            add_entry(i->first, i->second);
+        for (entry_map::const_iterator i = e.begin(); i != end; ++i) add_entry(i->first, i->second);
 
         section_map s = in.get_sections();
         section_map::iterator send = s.end();
@@ -142,14 +140,12 @@ namespace pika::detail {
 
         // build ini - open file and parse each line
         std::ifstream input(filename.c_str(), std::ios::in);
-        if (!input.is_open())
-            line_msg("Cannot open file: ", filename);
+        if (!input.is_open()) line_msg("Cannot open file: ", filename);
 
         // read file
         std::string line;
         std::vector<std::string> lines;
-        while (std::getline(input, line))
-            lines.push_back(line);
+        while (std::getline(input, line)) lines.push_back(line);
 
         // parse file
         parse(filename, lines, false);
@@ -184,8 +180,7 @@ namespace pika::detail {
             std::string line(trim_whitespace(*it));
 
             // skip if empty line
-            if (line.empty())
-                continue;
+            if (line.empty()) continue;
 
             // weed out comments
             if (weed_out_comments)
@@ -196,8 +191,7 @@ namespace pika::detail {
                     PIKA_ASSERT(3 == what_comment.size());
 
                     line = trim_whitespace(what_comment[1]);
-                    if (line.empty())
-                        continue;
+                    if (line.empty()) continue;
                 }
             }
             // no comments anymore: line is either section, key=val,
@@ -244,10 +238,7 @@ namespace pika::detail {
                     current = current->add_section_if_new(sec_key.substr(pos, dot_pos - pos));
                 }
                 // if we don't have section qualifiers, restore current...
-                if (current == this)
-                {
-                    current = s;
-                }
+                if (current == this) { current = s; }
 
                 std::string key = sec_key.substr(pos);
 
@@ -314,15 +305,9 @@ namespace pika::detail {
         return get_section(l, sec_name);
     }
 
-    section::section_map& section::get_sections() noexcept
-    {
-        return sections_;
-    }
+    section::section_map& section::get_sections() noexcept { return sections_; }
 
-    section::section_map const& section::get_sections() const noexcept
-    {
-        return sections_;
-    }
+    section::section_map const& section::get_sections() const noexcept { return sections_; }
 
     void section::add_entry(std::string const& key, entry_type const& val)
     {
@@ -361,10 +346,7 @@ namespace pika::detail {
         add_notification_callback(l, key, callback);
     }
 
-    section::entry_map const& section::get_entries() const noexcept
-    {
-        return entries_;
-    }
+    section::entry_map const& section::get_entries() const noexcept { return entries_; }
 
     ///////////////////////////////////////////////////////////////////////////////
     void section::add_section(std::unique_lock<mutex_type>& /* l */, std::string const& sec_name,
@@ -427,8 +409,7 @@ namespace pika::detail {
             }
 
             std::string name(get_name());
-            if (name.empty())
-                name = "<root>";
+            if (name.empty()) name = "<root>";
 
             PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "section::get_section",
                 "No such section ({}) in section: {}", sec_name, name);
@@ -436,8 +417,7 @@ namespace pika::detail {
         }
 
         section_map::iterator it = sections_.find(sec_name);
-        if (it != sections_.end())
-            return &((*it).second);
+        if (it != sections_.end()) return &((*it).second);
 
         PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "section::get_section",
             "No such section ({}) in section: {}", sec_name, get_name());
@@ -460,8 +440,7 @@ namespace pika::detail {
             }
 
             std::string name(get_name());
-            if (name.empty())
-                name = "<root>";
+            if (name.empty()) name = "<root>";
 
             PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "section::get_section",
                 "No such section ({}) in section: {}", sec_name, name);
@@ -469,8 +448,7 @@ namespace pika::detail {
         }
 
         section_map::const_iterator it = sections_.find(sec_name);
-        if (it != sections_.end())
-            return &((*it).second);
+        if (it != sections_.end()) return &((*it).second);
 
         PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "section::get_section",
             "No such section ({}) in section: {}", sec_name, get_name());
@@ -653,10 +631,7 @@ namespace pika::detail {
             {
                 it->second.second = compose_callback(callback, it->second.second);
             }
-            else
-            {
-                entries_[key] = entry_type("", callback);
-            }
+            else { entries_[key] = entry_type("", callback); }
         }
     }
 
@@ -729,44 +704,34 @@ namespace pika::detail {
              iter != end; ++iter)
         {
             section_map::const_iterator next = cur_section->sections_.find(*iter);
-            if (cur_section->sections_.end() == next)
-                return expand(l, default_val);
+            if (cur_section->sections_.end() == next) return expand(l, default_val);
             cur_section = &next->second;
         }
 
         entry_map::const_iterator entry = cur_section->entries_.find(sk);
-        if (cur_section->entries_.end() == entry)
-            return expand(l, default_val);
+        if (cur_section->entries_.end() == entry) return expand(l, default_val);
 
         return expand(l, entry->second.first);
     }
 
     inline void indent(int ind, std::ostream& strm)
     {
-        for (int i = 0; i < ind; ++i)
-            strm << "  ";
+        for (int i = 0; i < ind; ++i) strm << "  ";
     }
 
-    void section::dump(int ind) const
-    {
-        return dump(ind, std::cout);
-    }
+    void section::dump(int ind) const { return dump(ind, std::cout); }
 
     void section::dump(int ind, std::ostream& strm) const
     {
         std::unique_lock<mutex_type> l(mtx_);
 
         bool header = false;
-        if (0 == ind)
-            header = true;
+        if (0 == ind) header = true;
 
         ++ind;
         if (header)
         {
-            if (get_root() == this)
-            {
-                strm << "============================\n";
-            }
+            if (get_root() == this) { strm << "============================\n"; }
             else
             {
                 strm << "============================[\n"
@@ -800,8 +765,7 @@ namespace pika::detail {
             (*i).second.dump(ind, strm);
         }
 
-        if (header)
-            strm << "============================\n";
+        if (header) strm << "============================\n";
 
         strm << std::flush;
     }
@@ -827,8 +791,7 @@ namespace pika::detail {
         for (section_map::iterator i = sections_.begin(); i != send; ++i)
         {
             // is there something to merge with?
-            if (second.has_section(l, i->first))
-                i->second.merge(second.sections_[i->first]);
+            if (second.has_section(l, i->first)) i->second.merge(second.sections_[i->first]);
         }
 
         // merge subsection known in second section
@@ -850,10 +813,8 @@ namespace pika::detail {
         std::string msg, std::string const& file, int lnum, std::string const& line)
     {
         msg += " " + file;
-        if (lnum > 0)
-            msg += ": line " + std::to_string(lnum);
-        if (!line.empty())
-            msg += " (offending entry: " + line + ")";
+        if (lnum > 0) msg += ": line " + std::to_string(lnum);
+        if (!line.empty()) msg += " (offending entry: " + line + ")";
 
         PIKA_THROW_EXCEPTION(pika::error::no_success, "section::line_msg", "{}", msg);
     }
@@ -867,8 +828,7 @@ namespace pika::detail {
         std::string::size_type end = value.find_first_of(ch, begin + 1);
         while (end != std::string::npos)
         {
-            if (end != 0 && value[end - 1] != '\\')
-                break;
+            if (end != 0 && value[end - 1] != '\\') break;
             value.replace(end - 1, 2, ch);
             end = value.find_first_of(ch, end);
         }
@@ -1046,30 +1006,17 @@ namespace pika::detail {
         }
     }
 
-    section* section::get_root() const noexcept
-    {
-        return root_;
-    }
+    section* section::get_root() const noexcept { return root_; }
 
-    std::string section::get_name() const
-    {
-        return name_;
-    }
+    std::string section::get_name() const { return name_; }
 
-    std::string section::get_parent_name() const
-    {
-        return parent_name_;
-    }
+    std::string section::get_parent_name() const { return parent_name_; }
 
     std::string section::get_full_name() const
     {
-        if (!parent_name_.empty())
-            return parent_name_ + "." + name_;
+        if (!parent_name_.empty()) return parent_name_ + "." + name_;
         return name_;
     }
 
-    void section::set_name(std::string const& name)
-    {
-        name_ = name;
-    }
+    void section::set_name(std::string const& name) { name_ = name; }
 }    // namespace pika::detail

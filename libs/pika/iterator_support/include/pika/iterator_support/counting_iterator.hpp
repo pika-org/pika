@@ -143,15 +143,9 @@ namespace pika::util {
             return this->base() == rhs.base();
         }
 
-        PIKA_HOST_DEVICE void increment()
-        {
-            ++this->base_reference();
-        }
+        PIKA_HOST_DEVICE void increment() { ++this->base_reference(); }
 
-        PIKA_HOST_DEVICE void decrement()
-        {
-            --this->base_reference();
-        }
+        PIKA_HOST_DEVICE void decrement() { --this->base_reference(); }
 
         template <typename Distance>
         PIKA_HOST_DEVICE void advance(Distance n)

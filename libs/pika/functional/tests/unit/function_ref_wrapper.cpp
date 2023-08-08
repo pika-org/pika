@@ -18,10 +18,7 @@
 
 struct stateful_type
 {
-    int operator()(int x) const
-    {
-        return x;
-    }
+    int operator()(int x) const { return x; }
 };
 
 int main()

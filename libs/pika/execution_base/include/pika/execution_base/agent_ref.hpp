@@ -37,15 +37,9 @@ namespace pika::execution::detail {
         constexpr agent_ref(agent_ref&&) noexcept = default;
         constexpr agent_ref& operator=(agent_ref&&) noexcept = default;
 
-        constexpr explicit operator bool() const noexcept
-        {
-            return impl_ != nullptr;
-        }
+        constexpr explicit operator bool() const noexcept { return impl_ != nullptr; }
 
-        void reset(agent_base* impl = nullptr)
-        {
-            impl_ = impl;
-        }
+        void reset(agent_base* impl = nullptr) { impl_ = impl; }
 
         void yield(char const* desc = "pika::execution::detail::agent_ref::yield");
         void yield_k(
@@ -68,10 +62,7 @@ namespace pika::execution::detail {
             sleep_until(pika::chrono::steady_time_point{sleep_time}, desc);
         }
 
-        agent_base& ref()
-        {
-            return *impl_;
-        }
+        agent_base& ref() { return *impl_; }
 
         // TODO:
         // affinity

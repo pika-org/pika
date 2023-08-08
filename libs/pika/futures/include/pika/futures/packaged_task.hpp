@@ -82,10 +82,7 @@ namespace pika::lcos::local {
                         function_(PIKA_FORWARD(Ts, ts)...);
                         promise_.set_value();
                     }
-                    else
-                    {
-                        promise_.set_value(function_(PIKA_FORWARD(Ts, ts)...));
-                    }
+                    else { promise_.set_value(function_(PIKA_FORWARD(Ts, ts)...)); }
                 },
                 [&](std::exception_ptr ep) { promise_.set_exception(PIKA_MOVE(ep)); });
         }
@@ -103,10 +100,7 @@ namespace pika::lcos::local {
             return promise_.get_future();
         }
 
-        bool valid() const noexcept
-        {
-            return !function_.empty() && promise_.valid();
-        }
+        bool valid() const noexcept { return !function_.empty() && promise_.valid(); }
 
         void reset(error_code& ec = throws)
         {
@@ -121,10 +115,7 @@ namespace pika::lcos::local {
         }
 
         // extension
-        void set_exception(std::exception_ptr const& e)
-        {
-            promise_.set_exception(e);
-        }
+        void set_exception(std::exception_ptr const& e) { promise_.set_exception(e); }
 
     private:
         function_type function_;

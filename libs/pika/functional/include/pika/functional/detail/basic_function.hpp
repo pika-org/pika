@@ -51,15 +51,9 @@ namespace pika::util::detail {
         void reset(vtable const* empty_vptr) noexcept;
         void swap(function_base& f) noexcept;
 
-        bool empty() const noexcept
-        {
-            return object == nullptr;
-        }
+        bool empty() const noexcept { return object == nullptr; }
 
-        explicit operator bool() const noexcept
-        {
-            return !empty();
-        }
+        explicit operator bool() const noexcept { return !empty(); }
 
         std::size_t get_function_address() const;
         char const* get_function_annotation() const;
@@ -88,15 +82,9 @@ namespace pika::util::detail {
         return mp == nullptr;
     }
 
-    inline bool is_empty_function_impl(function_base const* f) noexcept
-    {
-        return f->empty();
-    }
+    inline bool is_empty_function_impl(function_base const* f) noexcept { return f->empty(); }
 
-    inline constexpr bool is_empty_function_impl(...) noexcept
-    {
-        return false;
-    }
+    inline constexpr bool is_empty_function_impl(...) noexcept { return false; }
 
     template <typename F>
     constexpr bool is_empty_function(F const& f) noexcept
@@ -142,10 +130,7 @@ namespace pika::util::detail {
             return *this;
         }
 
-        void assign(std::nullptr_t) noexcept
-        {
-            base_type::reset(get_empty_vtable());
-        }
+        void assign(std::nullptr_t) noexcept { base_type::reset(get_empty_vtable()); }
 
         template <typename F>
         void assign(F&& f)
@@ -173,16 +158,10 @@ namespace pika::util::detail {
                 }
                 object = ::new (buffer) T(PIKA_FORWARD(F, f));
             }
-            else
-            {
-                base_type::reset(get_empty_vtable());
-            }
+            else { base_type::reset(get_empty_vtable()); }
         }
 
-        void reset() noexcept
-        {
-            base_type::reset(get_empty_vtable());
-        }
+        void reset() noexcept { base_type::reset(get_empty_vtable()); }
 
         using base_type::empty;
         using base_type::swap;
@@ -196,8 +175,7 @@ namespace pika::util::detail {
                 "T shall be Callable with the function signature");
 
             vtable const* f_vptr = get_vtable<TD>();
-            if (vptr != f_vptr || empty())
-                return nullptr;
+            if (vptr != f_vptr || empty()) return nullptr;
 
             return &vtable::template get<TD>(object);
         }
@@ -210,8 +188,7 @@ namespace pika::util::detail {
                 "T shall be Callable with the function signature");
 
             vtable const* f_vptr = get_vtable<TD>();
-            if (vptr != f_vptr || empty())
-                return nullptr;
+            if (vptr != f_vptr || empty()) return nullptr;
 
             return &vtable::template get<TD>(object);
         }

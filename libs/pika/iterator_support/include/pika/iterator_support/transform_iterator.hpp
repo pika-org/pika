@@ -93,18 +93,12 @@ namespace pika::util {
         {
         }
 
-        Transformer const& transformer() const
-        {
-            return transformer_;
-        }
+        Transformer const& transformer() const { return transformer_; }
 
     private:
         friend class pika::util::iterator_core_access;
 
-        typename base_type::reference dereference() const
-        {
-            return transformer_(this->base());
-        }
+        typename base_type::reference dereference() const { return transformer_(this->base()); }
 
         Transformer transformer_;
     };

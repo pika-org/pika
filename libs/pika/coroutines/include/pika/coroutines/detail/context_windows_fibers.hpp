@@ -159,15 +159,13 @@ namespace pika::threads::coroutines {
                 else
                 {
                     bool call_from_main = from.m_ctx == nullptr;
-                    if (call_from_main)
-                        from.m_ctx = GetCurrentFiber();
+                    if (call_from_main) from.m_ctx = GetCurrentFiber();
 #if defined(PIKA_HAVE_SWAP_CONTEXT_EMULATION)
                     switch_to_fiber(to.m_ctx);
 #else
                     SwitchToFiber(to.m_ctx);
 #endif
-                    if (call_from_main)
-                        from.m_ctx = nullptr;
+                    if (call_from_main) from.m_ctx = nullptr;
                 }
             }
 
@@ -252,8 +250,7 @@ namespace pika::threads::coroutines {
 
             void init()
             {
-                if (m_ctx != nullptr)
-                    return;
+                if (m_ctx != nullptr) return;
 
                 m_ctx = CreateFiberEx(stacksize_, stacksize_, 0,
                     static_cast<LPFIBER_START_ROUTINE>(&trampoline<CoroutineImpl>),
@@ -271,15 +268,11 @@ namespace pika::threads::coroutines {
 
             ~fibers_context_impl()
             {
-                if (m_ctx != nullptr)
-                    DeleteFiber(m_ctx);
+                if (m_ctx != nullptr) DeleteFiber(m_ctx);
             }
 
             // Return the size of the reserved stack address space.
-            std::ptrdiff_t get_stacksize() const noexcept
-            {
-                return stacksize_;
-            }
+            std::ptrdiff_t get_stacksize() const noexcept { return stacksize_; }
 
             constexpr void reset_stack() noexcept {}
 

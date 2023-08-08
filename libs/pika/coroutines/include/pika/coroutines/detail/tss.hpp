@@ -75,10 +75,7 @@ namespace pika::threads::coroutines::detail {
             return *this;
         }
 
-        ~tss_data_node()
-        {
-            cleanup();
-        }
+        ~tss_data_node() { cleanup(); }
 
         template <typename T>
         T get_data() const
@@ -106,10 +103,7 @@ namespace pika::threads::coroutines::detail {
             value_ = data;
         }
 
-        void* get_value() const
-        {
-            return value_;
-        }
+        void* get_value() const { return value_; }
     };
 
     //////////////////////////////////////////////////////////////////////////
@@ -121,15 +115,13 @@ namespace pika::threads::coroutines::detail {
         tss_data_node const* find_entry(void const* key) const
         {
             tss_node_data_map::const_iterator it = data_.find(key);
-            if (it == data_.end())
-                return nullptr;
+            if (it == data_.end()) return nullptr;
             return &(it->second);
         }
         tss_data_node* find_entry(void const* key)
         {
             tss_node_data_map::iterator it = data_.find(key);
-            if (it == data_.end())
-                return nullptr;
+            if (it == data_.end()) return nullptr;
             return &(it->second);
         }
 
@@ -138,20 +130,13 @@ namespace pika::threads::coroutines::detail {
 
         ~tss_storage() {}
 
-        std::size_t get_thread_data() const
-        {
-            return 0;
-        }
-        std::size_t set_thread_data(std::size_t /*val*/)
-        {
-            return 0;
-        }
+        std::size_t get_thread_data() const { return 0; }
+        std::size_t set_thread_data(std::size_t /*val*/) { return 0; }
 
         tss_data_node* find(void const* key)
         {
             tss_node_data_map::iterator current_node = data_.find(key);
-            if (current_node != data_.end())
-                return &current_node->second;
+            if (current_node != data_.end()) return &current_node->second;
             return nullptr;
         }
 
@@ -172,8 +157,7 @@ namespace pika::threads::coroutines::detail {
             tss_data_node* node = find(key);
             if (node)
             {
-                if (!cleanup_existing)
-                    node->cleanup(false);
+                if (!cleanup_existing) node->cleanup(false);
                 data_.erase(key);
             }
         }

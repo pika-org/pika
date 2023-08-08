@@ -34,60 +34,27 @@ struct X
     ~X() {}
 #endif
 
-    int operator()()
-    {
-        return 17041;
-    }
+    int operator()() { return 17041; }
 
-    int operator()() const
-    {
-        return -17041;
-    }
+    int operator()() const { return -17041; }
 
-    int operator()(int x1)
-    {
-        return x1;
-    }
+    int operator()(int x1) { return x1; }
 
-    int operator()(int x1) const
-    {
-        return -x1;
-    }
+    int operator()(int x1) const { return -x1; }
 
-    int operator()(int x1, int x2)
-    {
-        return x1 + x2;
-    }
+    int operator()(int x1, int x2) { return x1 + x2; }
 
-    int operator()(int x1, int x2) const
-    {
-        return -(x1 + x2);
-    }
+    int operator()(int x1, int x2) const { return -(x1 + x2); }
 
-    int operator()(int x1, int x2, int x3)
-    {
-        return x1 + x2 + x3;
-    }
+    int operator()(int x1, int x2, int x3) { return x1 + x2 + x3; }
 
-    int operator()(int x1, int x2, int x3) const
-    {
-        return -(x1 + x2 + x3);
-    }
+    int operator()(int x1, int x2, int x3) const { return -(x1 + x2 + x3); }
 
-    int operator()(int x1, int x2, int x3, int x4)
-    {
-        return x1 + x2 + x3 + x4;
-    }
+    int operator()(int x1, int x2, int x3, int x4) { return x1 + x2 + x3 + x4; }
 
-    int operator()(int x1, int x2, int x3, int x4) const
-    {
-        return -(x1 + x2 + x3 + x4);
-    }
+    int operator()(int x1, int x2, int x3, int x4) const { return -(x1 + x2 + x3 + x4); }
 
-    int operator()(int x1, int x2, int x3, int x4, int x5)
-    {
-        return x1 + x2 + x3 + x4 + x5;
-    }
+    int operator()(int x1, int x2, int x3, int x4, int x5) { return x1 + x2 + x3 + x4 + x5; }
 
     int operator()(int x1, int x2, int x3, int x4, int x5) const
     {

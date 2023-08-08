@@ -38,10 +38,7 @@ namespace pika::traits::detail {
     template <typename Container>
     PIKA_FORCEINLINE void reserve_if_reservable(Container& v, std::size_t n)
     {
-        if constexpr (is_reservable_v<Container>)
-        {
-            v.reserve(n);
-        }
+        if constexpr (is_reservable_v<Container>) { v.reserve(n); }
     }
 
     ///////////////////////////////////////////////////////////////////////

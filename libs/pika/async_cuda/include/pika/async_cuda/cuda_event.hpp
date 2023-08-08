@@ -30,10 +30,7 @@ namespace pika::cuda::experimental::detail {
         cuda_event_pool()
           : free_list_(initial_events_in_pool)
         {
-            for (int i = 0; i < initial_events_in_pool; ++i)
-            {
-                add_event_to_pool();
-            }
+            for (int i = 0; i < initial_events_in_pool; ++i) { add_event_to_pool(); }
         }
 
         // on destruction, all objects in stack will be freed
@@ -44,25 +41,18 @@ namespace pika::cuda::experimental::detail {
             while (ok)
             {
                 ok = free_list_.pop(event);
-                if (ok)
-                    whip::event_destroy(event);
+                if (ok) whip::event_destroy(event);
             }
         }
 
         inline bool pop(whip::event_t& event)
         {
             // pop an event off the pool, if that fails, create a new one
-            while (!free_list_.pop(event))
-            {
-                add_event_to_pool();
-            }
+            while (!free_list_.pop(event)) { add_event_to_pool(); }
             return true;
         }
 
-        inline bool push(whip::event_t event)
-        {
-            return free_list_.push(event);
-        }
+        inline bool push(whip::event_t event) { return free_list_.push(event); }
 
     private:
         void add_event_to_pool()

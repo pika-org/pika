@@ -41,8 +41,7 @@ void test_fn(atype& acnt, atype& atot, atype& amax)
 {
     // Increment active task count
     // set the max tasks running (not 100% atomic, but hopefully good enough)
-    if (++acnt > amax)
-        amax.store(acnt.load());
+    if (++acnt > amax) amax.store(acnt.load());
     ++atot;
 
     // yield some random amount of times to make the test more realistic
@@ -51,10 +50,7 @@ void test_fn(atype& acnt, atype& atot, atype& amax)
     std::default_random_engine eng;
     std::uniform_int_distribution<std::size_t> idist(10, 50);
     std::size_t loop = idist(eng);
-    for (std::size_t i = 0; i < loop; ++i)
-    {
-        pika::this_thread::yield();
-    }
+    for (std::size_t i = 0; i < loop; ++i) { pika::this_thread::yield(); }
 
     // task is completing, decrement active task count
     --acnt;

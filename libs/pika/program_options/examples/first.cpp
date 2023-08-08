@@ -40,10 +40,7 @@ int main(int ac, char* av[])
         {
             cout << "Compression level was set to " << vm["compression"].as<double>() << ".\n";
         }
-        else
-        {
-            cout << "Compression level was not set.\n";
-        }
+        else { cout << "Compression level was not set.\n"; }
     }
     catch (exception const& e)
     {

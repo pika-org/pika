@@ -54,8 +54,7 @@ namespace pika::program_options {
       , utf8_encoded_options(po)
       , m_options_prefix(po.m_options_prefix)
     {
-        for (const auto& option : po.options)
-            options.push_back(woption_from_option(option));
+        for (const auto& option : po.options) options.push_back(woption_from_option(option));
     }
 
     template <class Char>
@@ -96,17 +95,11 @@ namespace pika::program_options {
     {
         // Parser return char strings
         std::basic_ifstream<Char> strm(filename);
-        if (!strm)
-        {
-            throw reading_file(filename);
-        }
+        if (!strm) { throw reading_file(filename); }
 
         basic_parsed_options<Char> result = parse_config_file(strm, desc, allow_unregistered);
 
-        if (strm.bad())
-        {
-            throw reading_file(filename);
-        }
+        if (strm.bad()) { throw reading_file(filename); }
 
         return result;
     }

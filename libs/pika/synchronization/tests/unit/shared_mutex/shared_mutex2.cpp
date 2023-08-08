@@ -117,10 +117,7 @@ void test_can_lock_upgrade_if_currently_locked_shared()
         {
             std::unique_lock<mutex_type> lk(unblocked_count_mutex);
             // NOLINTNEXTLINE(bugprone-infinite-loop)
-            while (unblocked_count < (reader_count + 1))
-            {
-                unblocked_condition.wait(lk);
-            }
+            while (unblocked_count < (reader_count + 1)) { unblocked_condition.wait(lk); }
         }
 
         CHECK_LOCKED_VALUE_EQUAL(unblocked_count_mutex, unblocked_count, reader_count + 1);
@@ -168,10 +165,7 @@ void test_if_other_thread_has_write_lock_try_lock_shared_returns_false()
 
     bool const try_succeeded = rw_mutex.try_lock_shared();
     PIKA_TEST(!try_succeeded);
-    if (try_succeeded)
-    {
-        rw_mutex.unlock_shared();
-    }
+    if (try_succeeded) { rw_mutex.unlock_shared(); }
 
     finish_lock.unlock();
     writer.join();
@@ -196,10 +190,7 @@ void test_if_other_thread_has_write_lock_try_lock_upgrade_returns_false()
 
     bool const try_succeeded = rw_mutex.try_lock_upgrade();
     PIKA_TEST(!try_succeeded);
-    if (try_succeeded)
-    {
-        rw_mutex.unlock_upgrade();
-    }
+    if (try_succeeded) { rw_mutex.unlock_upgrade(); }
 
     finish_lock.unlock();
     writer.join();
@@ -212,10 +203,7 @@ void test_if_no_thread_has_lock_try_lock_shared_returns_true()
     shared_mutex_type rw_mutex;
     bool const try_succeeded = rw_mutex.try_lock_shared();
     PIKA_TEST(try_succeeded);
-    if (try_succeeded)
-    {
-        rw_mutex.unlock_shared();
-    }
+    if (try_succeeded) { rw_mutex.unlock_shared(); }
 }
 
 void test_if_no_thread_has_lock_try_lock_upgrade_returns_true()
@@ -225,10 +213,7 @@ void test_if_no_thread_has_lock_try_lock_upgrade_returns_true()
     shared_mutex_type rw_mutex;
     bool const try_succeeded = rw_mutex.try_lock_upgrade();
     PIKA_TEST(try_succeeded);
-    if (try_succeeded)
-    {
-        rw_mutex.unlock_upgrade();
-    }
+    if (try_succeeded) { rw_mutex.unlock_upgrade(); }
 }
 
 void test_if_other_thread_has_shared_lock_try_lock_shared_returns_true()
@@ -250,10 +235,7 @@ void test_if_other_thread_has_shared_lock_try_lock_shared_returns_true()
 
     bool const try_succeeded = rw_mutex.try_lock_shared();
     PIKA_TEST(try_succeeded);
-    if (try_succeeded)
-    {
-        rw_mutex.unlock_shared();
-    }
+    if (try_succeeded) { rw_mutex.unlock_shared(); }
 
     finish_lock.unlock();
     writer.join();
@@ -278,10 +260,7 @@ void test_if_other_thread_has_shared_lock_try_lock_upgrade_returns_true()
 
     bool const try_succeeded = rw_mutex.try_lock_upgrade();
     PIKA_TEST(try_succeeded);
-    if (try_succeeded)
-    {
-        rw_mutex.unlock_upgrade();
-    }
+    if (try_succeeded) { rw_mutex.unlock_upgrade(); }
 
     finish_lock.unlock();
     writer.join();

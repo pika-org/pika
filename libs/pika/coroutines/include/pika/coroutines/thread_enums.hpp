@@ -233,10 +233,7 @@ namespace pika::execution {
             return mode == rhs.mode && hint == rhs.hint;
         }
 
-        bool operator!=(thread_schedule_hint const& rhs) const noexcept
-        {
-            return !(*this == rhs);
-        }
+        bool operator!=(thread_schedule_hint const& rhs) const noexcept { return !(*this == rhs); }
         /// \endcond
 
         /// The hint associated with the mode. The interpretation of this hint

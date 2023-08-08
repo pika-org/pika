@@ -61,8 +61,7 @@ namespace pika::program_options::detail {
             // least one new target character was produced. If not, it means
             // the source data is incomplete, and since we don't have extra
             // data to add to source, it's error.
-            if (to_next == buffer)
-                throw std::logic_error("character conversion failed");
+            if (to_next == buffer) throw std::logic_error("character conversion failed");
 
             // Add converted characters
             result.append(buffer, to_next);
@@ -96,15 +95,9 @@ namespace pika::program_options {
         pika::program_options::detail::utf8_codecvt_facet utf8_facet;
     }
 
-    std::wstring from_utf8(const std::string& s)
-    {
-        return from_8_bit(s, utf8_facet);
-    }
+    std::wstring from_utf8(const std::string& s) { return from_8_bit(s, utf8_facet); }
 
-    std::string to_utf8(const std::wstring& s)
-    {
-        return to_8_bit(s, utf8_facet);
-    }
+    std::string to_utf8(const std::wstring& s) { return to_8_bit(s, utf8_facet); }
 
     std::wstring from_local_8_bit(const std::string& s)
     {
@@ -118,13 +111,7 @@ namespace pika::program_options {
         return to_8_bit(s, std::use_facet<facet_type>(std::locale()));
     }
 
-    std::string to_internal(const std::string& s)
-    {
-        return s;
-    }
+    std::string to_internal(const std::string& s) { return s; }
 
-    std::string to_internal(const std::wstring& s)
-    {
-        return to_utf8(s);
-    }
+    std::string to_internal(const std::wstring& s) { return to_utf8(s); }
 }    // namespace pika::program_options

@@ -95,10 +95,7 @@ namespace pika::util::detail {
         {
         }
 
-        static R _empty_invoke(void*, Ts&&...)
-        {
-            return throw_bad_function_call<R>();
-        }
+        static R _empty_invoke(void*, Ts&&...) { return throw_bad_function_call<R>(); }
 
         constexpr callable_vtable(construct_vtable<trivial_empty_function>) noexcept
           : invoke(&callable_vtable::_empty_invoke)

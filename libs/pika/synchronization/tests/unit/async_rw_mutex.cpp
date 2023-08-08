@@ -44,10 +44,7 @@ public:
     mytype_base(mytype_base const&) = delete;
     mytype_base& operator=(mytype_base const&) = delete;
 
-    std::size_t const& read() const
-    {
-        return x;
-    }
+    std::size_t const& read() const { return x; }
 };
 
 class mytype : public mytype_base
@@ -59,10 +56,7 @@ public:
     mytype(mytype const&) = delete;
     mytype& operator=(mytype const&) = delete;
 
-    std::size_t& readwrite()
-    {
-        return x;
-    }
+    std::size_t& readwrite() { return x; }
 };
 
 // Struct with call operators used for checking that the correct types are sent
@@ -288,10 +282,7 @@ void test_multiple_when_all(async_rw_mutex<ReadWriteT, ReadT> rwm)
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main(pika::program_options::variables_map& vm)
 {
-    if (vm.count("seed"))
-    {
-        seed = vm["seed"].as<unsigned int>();
-    }
+    if (vm.count("seed")) { seed = vm["seed"].as<unsigned int>(); }
 
     test_single_read_access(async_rw_mutex<void>{});
     test_single_read_access(async_rw_mutex<std::size_t>{0});

@@ -84,15 +84,9 @@ struct scheduler_schedule_from
         return {s.schedule_called, s.execute_called, s.tag_invoke_overload_called};
     }
 
-    bool operator==(scheduler_schedule_from const&) const noexcept
-    {
-        return true;
-    }
+    bool operator==(scheduler_schedule_from const&) const noexcept { return true; }
 
-    bool operator!=(scheduler_schedule_from const&) const noexcept
-    {
-        return false;
-    }
+    bool operator!=(scheduler_schedule_from const&) const noexcept { return false; }
 };
 
 template <typename Sender>
@@ -167,15 +161,9 @@ struct scheduler_transfer
         return {s.schedule_called, s.execute_called, s.tag_invoke_overload_called};
     }
 
-    bool operator==(scheduler_transfer const&) const noexcept
-    {
-        return true;
-    }
+    bool operator==(scheduler_transfer const&) const noexcept { return true; }
 
-    bool operator!=(scheduler_transfer const&) const noexcept
-    {
-        return false;
-    }
+    bool operator!=(scheduler_transfer const&) const noexcept { return false; }
 };
 
 template <typename Sender, typename Scheduler>

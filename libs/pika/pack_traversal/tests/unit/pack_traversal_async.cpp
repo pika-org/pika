@@ -43,10 +43,7 @@ struct thread_safe_counter
         return static_cast<unsigned int>(static_cast<long>(counter));
     }
 
-    static void increment(pika::detail::atomic_count& counter) noexcept
-    {
-        ++counter;
-    }
+    static void increment(pika::detail::atomic_count& counter) noexcept { ++counter; }
 
     static unsigned int decrement(pika::detail::atomic_count& counter) noexcept
     {
@@ -77,10 +74,7 @@ public:
     {
     }
 
-    unsigned int use_count() const noexcept
-    {
-        return CounterPolicy::load(ref_counter);
-    }
+    unsigned int use_count() const noexcept { return CounterPolicy::load(ref_counter); }
 
 protected:
     ~intrusive_ref_counter() = default;
@@ -101,8 +95,7 @@ inline void intrusive_ptr_add_ref(intrusive_ref_counter<Derived, CounterPolicy> 
 template <typename Derived, typename CounterPolicy>
 inline void intrusive_ptr_release(intrusive_ref_counter<Derived, CounterPolicy> const* p) noexcept
 {
-    if (CounterPolicy::decrement(p->ref_counter) == 0)
-        delete static_cast<Derived const*>(p);
+    if (CounterPolicy::decrement(p->ref_counter) == 0) delete static_cast<Derived const*>(p);
 }
 
 template <typename Child>
@@ -115,15 +108,9 @@ public:
 
     virtual ~async_counter_base() {}
 
-    std::size_t const& counter() const noexcept
-    {
-        return counter_;
-    }
+    std::size_t const& counter() const noexcept { return counter_; }
 
-    std::size_t& counter() noexcept
-    {
-        return counter_;
-    }
+    std::size_t& counter() noexcept { return counter_; }
 };
 
 template <std::size_t ArgCount>

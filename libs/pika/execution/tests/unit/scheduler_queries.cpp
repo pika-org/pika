@@ -42,20 +42,11 @@ struct uncustomized_scheduler
         }
     };
 
-    friend sender tag_invoke(ex::schedule_t, uncustomized_scheduler)
-    {
-        return {};
-    }
+    friend sender tag_invoke(ex::schedule_t, uncustomized_scheduler) { return {}; }
 
-    bool operator==(uncustomized_scheduler const&) const noexcept
-    {
-        return true;
-    }
+    bool operator==(uncustomized_scheduler const&) const noexcept { return true; }
 
-    bool operator!=(uncustomized_scheduler const&) const noexcept
-    {
-        return false;
-    }
+    bool operator!=(uncustomized_scheduler const&) const noexcept { return false; }
 };
 
 struct customized_scheduler : uncustomized_scheduler

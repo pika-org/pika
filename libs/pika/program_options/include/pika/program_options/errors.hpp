@@ -22,14 +22,8 @@ namespace pika::program_options {
     {
         // "--foo-bar" -> "foo-bar"
         std::string::size_type i = text.find_first_not_of("-/");
-        if (i == std::string::npos)
-        {
-            return text;
-        }
-        else
-        {
-            return text.substr(i);
-        }
+        if (i == std::string::npos) { return text; }
+        else { return text.substr(i); }
     }
 
     /** Base class for all errors in the library. */
@@ -155,10 +149,7 @@ namespace pika::program_options {
             set_prefix(option_style);
         }
 
-        void set_prefix(int option_style)
-        {
-            m_option_style = option_style;
-        }
+        void set_prefix(int option_style) { m_option_style = option_style; }
 
         /** Overridden in error_with_no_option_name */
         virtual void set_option_name(const std::string& option_name)
@@ -166,10 +157,7 @@ namespace pika::program_options {
             set_substitute("option", option_name);
         }
 
-        std::string get_option_name() const
-        {
-            return get_canonical_option_name();
-        }
+        std::string get_option_name() const { return get_canonical_option_name(); }
 
         void set_original_token(const std::string& original_token)
         {
@@ -288,10 +276,7 @@ namespace pika::program_options {
 
         ~ambiguous_option() noexcept {}
 
-        const std::vector<std::string>& alternatives() const noexcept
-        {
-            return m_alternatives;
-        }
+        const std::vector<std::string>& alternatives() const noexcept { return m_alternatives; }
 
     protected:
         /** Makes all substitutions using the template */
@@ -328,16 +313,10 @@ namespace pika::program_options {
 
         ~invalid_syntax() noexcept {}
 
-        kind_t kind() const
-        {
-            return m_kind;
-        }
+        kind_t kind() const { return m_kind; }
 
         /** Convenience functions for backwards compatibility */
-        virtual std::string tokens() const
-        {
-            return get_option_name();
-        }
+        virtual std::string tokens() const { return get_option_name(); }
 
     protected:
         /** Used to convert kind_t to a related error text */
@@ -360,10 +339,7 @@ namespace pika::program_options {
         std::string tokens() const override
         {
             auto it = m_substitutions.find("invalid_line");
-            if (it != m_substitutions.end())
-            {
-                return it->second;
-            }
+            if (it != m_substitutions.end()) { return it->second; }
             return "<unknown>";
         }
     };
@@ -403,10 +379,7 @@ namespace pika::program_options {
 
         ~validation_error() noexcept {}
 
-        kind_t kind() const
-        {
-            return m_kind;
-        }
+        kind_t kind() const { return m_kind; }
 
     protected:
         /** Used to convert kind_t to a related error text */

@@ -38,10 +38,7 @@ struct dec_counter
       : counter_(counter)
     {
     }
-    ~dec_counter()
-    {
-        --counter_;
-    }
+    ~dec_counter() { --counter_; }
     //
     std::atomic<int>& counter_;
 };
@@ -72,8 +69,7 @@ void threadLoop()
         pika::async(exec, f, i, (i % threads)).get();
     }
 
-    do
-    {
+    do {
         pika::this_thread::yield();
         pika::deb_schbin.debug(
             pika::debug::detail::str<15>("count_down"), pika::debug::detail::dec<4>(count_down));

@@ -18,8 +18,7 @@ namespace pika::threads {
             return parallel::execution::current_executor();
         }
 
-        if (&ec != &throws)
-            ec = make_success_code();
+        if (&ec != &throws) ec = make_success_code();
 
         return parallel::execution::current_executor(
             detail::get_thread_id_data(id)->get_scheduler_base()->get_parent_pool());

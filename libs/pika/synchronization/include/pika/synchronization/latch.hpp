@@ -61,10 +61,7 @@ namespace pika {
         ///       thread enters wait() after one thread has called the
         ///       destructor. This may require additional coordination.
 #if defined(PIKA_DEBUG)
-        ~latch()
-        {
-            PIKA_ASSERT(counter_ == 0);
-        }
+        ~latch() { PIKA_ASSERT(counter_ == 0); }
 #else
         ~latch() = default;
 #endif
@@ -111,10 +108,7 @@ namespace pika {
 
         /// Returns:        With very low probability false. Otherwise
         ///                 counter == 0.
-        bool try_wait() const noexcept
-        {
-            return counter_.load(std::memory_order_acquire) == 0;
-        }
+        bool try_wait() const noexcept { return counter_.load(std::memory_order_acquire) == 0; }
 
         /// If counter_ is 0, returns immediately. Otherwise, blocks the
         /// calling thread at the synchronization point until counter_

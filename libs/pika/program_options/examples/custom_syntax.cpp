@@ -33,10 +33,7 @@ pair<string, string> reg_foo(const string& s)
         else
             return make_pair(s.substr(2), string("true"));
     }
-    else
-    {
-        return make_pair(string(), string());
-    }
+    else { return make_pair(string(), string()); }
 }
 
 int main(int ac, char* av[])

@@ -61,18 +61,12 @@ namespace pika::threads::detail {
         if (k < 4)    //-V112
         {
         }
-        else if (k < 16)
-        {
-            PIKA_SMT_PAUSE;
-        }
+        else if (k < 16) { PIKA_SMT_PAUSE; }
         else if (k < 32 || k & 1)    //-V112
         {
             do_yield(desc, thread_schedule_state::pending_boost);
         }
-        else
-        {
-            do_yield(desc, thread_schedule_state::pending);
-        }
+        else { do_yield(desc, thread_schedule_state::pending); }
     }
 
     void execution_agent::resume(const char* desc)
@@ -80,10 +74,7 @@ namespace pika::threads::detail {
         do_resume(desc, thread_restart_state::signaled);
     }
 
-    void execution_agent::abort(const char* desc)
-    {
-        do_resume(desc, thread_restart_state::abort);
-    }
+    void execution_agent::abort(const char* desc) { do_resume(desc, thread_restart_state::abort); }
 
     void execution_agent::suspend(const char* desc)
     {
@@ -106,16 +97,9 @@ namespace pika::threads::detail {
         // make progress in any case. We also use yield instead of yield_k
         // for the same reason.
         std::size_t k = 0;
-        do
-        {
-            if (k < 32 || k & 1)
-            {
-                do_yield(desc, thread_schedule_state::pending_boost);
-            }
-            else
-            {
-                do_yield(desc, thread_schedule_state::pending);
-            }
+        do {
+            if (k < 32 || k & 1) { do_yield(desc, thread_schedule_state::pending_boost); }
+            else { do_yield(desc, thread_schedule_state::pending); }
             ++k;
             now = std::chrono::steady_clock::now();
         } while (now < sleep_time.value());
@@ -129,10 +113,7 @@ namespace pika::threads::detail {
         {
         }
 
-        ~on_exit_reset_held_lock_data()
-        {
-            pika::util::set_held_locks_data(PIKA_MOVE(data_));
-        }
+        ~on_exit_reset_held_lock_data() { pika::util::set_held_locks_data(PIKA_MOVE(data_)); }
 
         std::unique_ptr<pika::util::held_locks_data> data_;
     };

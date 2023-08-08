@@ -215,67 +215,42 @@ namespace pika::threads::detail {
                 debug::detail::dec<>(std::get<1>(rollover_counters_.data_)));
             thread_map_count_.data_ = 0;
             terminated_items_count_.data_ = 0;
-            if (bp_queue_)
-                bp_queue_->set_holder(this);
-            if (hp_queue_)
-                hp_queue_->set_holder(this);
-            if (np_queue_)
-                np_queue_->set_holder(this);
-            if (lp_queue_)
-                lp_queue_->set_holder(this);
+            if (bp_queue_) bp_queue_->set_holder(this);
+            if (hp_queue_) hp_queue_->set_holder(this);
+            if (np_queue_) np_queue_->set_holder(this);
+            if (lp_queue_) lp_queue_->set_holder(this);
         }
 
         // ----------------------------------------------------------------
         ~queue_holder_thread()
         {
-            if (owns_bp_queue())
-                delete bp_queue_;
-            if (owns_hp_queue())
-                delete hp_queue_;
-            if (owns_np_queue())
-                delete np_queue_;
-            if (owns_lp_queue())
-                delete lp_queue_;
+            if (owns_bp_queue()) delete bp_queue_;
+            if (owns_hp_queue()) delete hp_queue_;
+            if (owns_np_queue()) delete np_queue_;
+            if (owns_lp_queue()) delete lp_queue_;
             //
-            for (auto t : thread_heap_small_)
-                deallocate(threads::detail::get_thread_id_data(t));
+            for (auto t : thread_heap_small_) deallocate(threads::detail::get_thread_id_data(t));
 
-            for (auto t : thread_heap_medium_)
-                deallocate(threads::detail::get_thread_id_data(t));
+            for (auto t : thread_heap_medium_) deallocate(threads::detail::get_thread_id_data(t));
 
-            for (auto t : thread_heap_large_)
-                deallocate(threads::detail::get_thread_id_data(t));
+            for (auto t : thread_heap_large_) deallocate(threads::detail::get_thread_id_data(t));
 
-            for (auto t : thread_heap_huge_)
-                deallocate(threads::detail::get_thread_id_data(t));
+            for (auto t : thread_heap_huge_) deallocate(threads::detail::get_thread_id_data(t));
 
-            for (auto t : thread_heap_nostack_)
-                deallocate(threads::detail::get_thread_id_data(t));
+            for (auto t : thread_heap_nostack_) deallocate(threads::detail::get_thread_id_data(t));
         }
 
         // ----------------------------------------------------------------
-        inline bool owns_bp_queue() const
-        {
-            return bp_queue_ && ((owner_mask_ & 1) != 0);
-        }
+        inline bool owns_bp_queue() const { return bp_queue_ && ((owner_mask_ & 1) != 0); }
 
         // ----------------------------------------------------------------
-        inline bool owns_hp_queue() const
-        {
-            return hp_queue_ && ((owner_mask_ & 2) != 0);
-        }
+        inline bool owns_hp_queue() const { return hp_queue_ && ((owner_mask_ & 2) != 0); }
 
         // ----------------------------------------------------------------
-        inline bool owns_np_queue() const
-        {
-            return ((owner_mask_ & 4) != 0);
-        }
+        inline bool owns_np_queue() const { return ((owner_mask_ & 4) != 0); }
 
         // ----------------------------------------------------------------
-        inline bool owns_lp_queue() const
-        {
-            return lp_queue_ && ((owner_mask_ & 8) != 0);
-        }
+        inline bool owns_lp_queue() const { return lp_queue_ && ((owner_mask_ & 8) != 0); }
 
         // ------------------------------------------------------------
         // return the next round robin thread index across all workers
@@ -351,8 +326,7 @@ namespace pika::threads::detail {
             // clang-format on
             PIKA_ASSERT(thread_num == thread_num_);
 
-            if (terminated_items_count_.data_.load(std::memory_order_relaxed) == 0)
-                return true;
+            if (terminated_items_count_.data_.load(std::memory_order_relaxed) == 0) return true;
 
             scoped_lock lk(thread_map_mtx_.data_);
 
@@ -400,10 +374,7 @@ namespace pika::threads::detail {
             threads::detail::thread_id_ref_type* tid, std::size_t thread_num, error_code& ec)
         {
             PIKA_ASSERT((!data.run_now || (data.run_now && thread_num == thread_num_)));
-            if (data.run_now && thread_num != thread_num_)
-            {
-                data.run_now = false;
-            }
+            if (data.run_now && thread_num != thread_num_) { data.run_now = false; }
 
             // create the thread using priority to select queue
             if (data.priority == execution::thread_priority::normal)
@@ -464,26 +435,11 @@ namespace pika::threads::detail {
             std::ptrdiff_t const stacksize = data.scheduler_base->get_stack_size(data.stacksize);
 
             thread_heap_type* heap = nullptr;
-            if (stacksize == parameters_.small_stacksize_)
-            {
-                heap = &thread_heap_small_;
-            }
-            else if (stacksize == parameters_.medium_stacksize_)
-            {
-                heap = &thread_heap_medium_;
-            }
-            else if (stacksize == parameters_.large_stacksize_)
-            {
-                heap = &thread_heap_large_;
-            }
-            else if (stacksize == parameters_.huge_stacksize_)
-            {
-                heap = &thread_heap_huge_;
-            }
-            else if (stacksize == parameters_.nostack_stacksize_)
-            {
-                heap = &thread_heap_nostack_;
-            }
+            if (stacksize == parameters_.small_stacksize_) { heap = &thread_heap_small_; }
+            else if (stacksize == parameters_.medium_stacksize_) { heap = &thread_heap_medium_; }
+            else if (stacksize == parameters_.large_stacksize_) { heap = &thread_heap_large_; }
+            else if (stacksize == parameters_.huge_stacksize_) { heap = &thread_heap_huge_; }
+            else if (stacksize == parameters_.nostack_stacksize_) { heap = &thread_heap_nostack_; }
             PIKA_ASSERT(heap);
 
             if (data.initial_state ==
@@ -516,10 +472,7 @@ namespace pika::threads::detail {
                 {
                     p = threads::detail::thread_data_stackless::create(data, this, stacksize);
                 }
-                else
-                {
-                    p = threads::detail::thread_data_stackful::create(data, this, stacksize);
-                }
+                else { p = threads::detail::thread_data_stackful::create(data, this, stacksize); }
                 tid = threads::detail::thread_id_ref_type(p, threads::detail::thread_id_addref::no);
 
                 ::pika::detail::tq_deb.debug(debug::detail::str<>("create_thread_object"), "new",
@@ -533,10 +486,7 @@ namespace pika::threads::detail {
         {
             std::ptrdiff_t stacksize = threads::detail::get_thread_id_data(tid)->get_stack_size();
 
-            if (stacksize == parameters_.small_stacksize_)
-            {
-                thread_heap_small_.push_front(tid);
-            }
+            if (stacksize == parameters_.small_stacksize_) { thread_heap_small_.push_front(tid); }
             else if (stacksize == parameters_.medium_stacksize_)
             {
                 thread_heap_medium_.push_front(tid);
@@ -553,10 +503,7 @@ namespace pika::threads::detail {
             {
                 thread_heap_nostack_.push_front(tid);
             }
-            else
-            {
-                PIKA_ASSERT_MSG(false, fmt::format("Invalid stack size {}", stacksize));
-            }
+            else { PIKA_ASSERT_MSG(false, fmt::format("Invalid stack size {}", stacksize)); }
         }
 
         // ----------------------------------------------------------------
@@ -617,10 +564,7 @@ namespace pika::threads::detail {
             ::pika::detail::tq_deb.debug(debug::detail::str<>("map remove"), queue_data_print(this),
                 debug::detail::threadinfo<threads::detail::thread_id_type*>(&tid));
 
-            if (dealloc)
-            {
-                deallocate(threads::detail::get_thread_id_data(tid));
-            }
+            if (dealloc) { deallocate(threads::detail::get_thread_id_data(tid)); }
             --thread_map_count_.data_;
         }
 
@@ -683,15 +627,13 @@ namespace pika::threads::detail {
             if (owns_bp_queue() && !stealing)
             {
                 added = bp_queue_->add_new(add_count, addfrom->bp_queue_, stealing);
-                if (added > 0)
-                    return added;
+                if (added > 0) return added;
             }
 
             if (owns_hp_queue())
             {
                 added = hp_queue_->add_new(add_count, addfrom->hp_queue_, stealing);
-                if (added > 0)
-                    return added;
+                if (added > 0) return added;
             }
             return 0;
         }
@@ -703,15 +645,13 @@ namespace pika::threads::detail {
             if (owns_np_queue())
             {
                 added = np_queue_->add_new(add_count, addfrom->np_queue_, stealing);
-                if (added > 0)
-                    return added;
+                if (added > 0) return added;
             }
 
             if (owns_lp_queue())
             {
                 added = lp_queue_->add_new(add_count, addfrom->lp_queue_, stealing);
-                if (added > 0)
-                    return added;
+                if (added > 0) return added;
             }
             //
             static auto an_timed =
@@ -939,8 +879,7 @@ namespace pika::threads::detail {
             // now invoke callback function for all matching threads
             for (threads::detail::thread_id_type const& id : tids)
             {
-                if (!f(id))
-                    return false;    // stop iteration
+                if (!f(id)) return false;    // stop iteration
             }
 
             return true;

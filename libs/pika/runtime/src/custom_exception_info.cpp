@@ -54,10 +54,7 @@ namespace pika {
     // to go through without attaching a debugger.
     std::atomic<bool> expect_exception_flag(false);
 
-    bool expect_exception(bool flag)
-    {
-        return expect_exception_flag.exchange(flag);
-    }
+    bool expect_exception(bool flag) { return expect_exception_flag.exchange(flag); }
 
     ///////////////////////////////////////////////////////////////////////////
     // Extract the diagnostic information embedded in the given exception and
@@ -76,8 +73,7 @@ namespace pika {
             strm << pika::detail::get_full_build_string();
 
             std::string const* env = xi.get<pika::detail::throw_env>();
-            if (env && !env->empty())
-                strm << "{env}: " << *env;
+            if (env && !env->empty()) strm << "{env}: " << *env;
         }
 
         if (verbosity >= 1)
@@ -90,16 +86,13 @@ namespace pika {
             }
 
             std::uint32_t const* locality = xi.get<pika::detail::throw_locality>();
-            if (locality)
-                strm << "{locality-id}: " << *locality << "\n";
+            if (locality) strm << "{locality-id}: " << *locality << "\n";
 
             std::string const* hostname_ = xi.get<pika::detail::throw_hostname>();
-            if (hostname_ && !hostname_->empty())
-                strm << "{hostname}: " << *hostname_ << "\n";
+            if (hostname_ && !hostname_->empty()) strm << "{hostname}: " << *hostname_ << "\n";
 
             std::int64_t const* pid_ = xi.get<pika::detail::throw_pid>();
-            if (pid_ && -1 != *pid_)
-                strm << "{process-id}: " << *pid_ << "\n";
+            if (pid_ && -1 != *pid_) strm << "{process-id}: " << *pid_ << "\n";
 
             bool thread_info = false;
             char const* const thread_prefix = "{os-thread}: ";
@@ -129,31 +122,25 @@ namespace pika {
                 strm << "{thread-description}: " << *thread_description << "\n";
 
             std::string const* state = xi.get<pika::detail::throw_state>();
-            if (state)
-                strm << "{state}: " << *state << "\n";
+            if (state) strm << "{state}: " << *state << "\n";
 
             std::string const* auxinfo = xi.get<pika::detail::throw_auxinfo>();
-            if (auxinfo)
-                strm << "{auxinfo}: " << *auxinfo << "\n";
+            if (auxinfo) strm << "{auxinfo}: " << *auxinfo << "\n";
         }
 
         std::string const* file = xi.get<pika::detail::throw_file>();
-        if (file)
-            strm << "{file}: " << *file << "\n";
+        if (file) strm << "{file}: " << *file << "\n";
 
         long const* line = xi.get<pika::detail::throw_line>();
-        if (line)
-            strm << "{line}: " << *line << "\n";
+        if (line) strm << "{line}: " << *line << "\n";
 
         std::string const* function = xi.get<pika::detail::throw_function>();
-        if (function)
-            strm << "{function}: " << *function << "\n";
+        if (function) strm << "{function}: " << *function << "\n";
 
         // Try a cast to std::exception - this should handle boost.system
         // error codes in addition to the standard library exceptions.
         std::exception const* se = dynamic_cast<std::exception const*>(&xi);
-        if (se)
-            strm << "{what}: " << se->what() << "\n";
+        if (se) strm << "{what}: " << se->what() << "\n";
 
         return strm.str();
     }
@@ -178,14 +165,8 @@ namespace pika {
 
         std::string get_full_build_string()
         {
-            if (detail::get_full_build_string_f)
-            {
-                return detail::get_full_build_string_f();
-            }
-            else
-            {
-                return pika::full_build_string();
-            }
+            if (detail::get_full_build_string_f) { return detail::get_full_build_string_f(); }
+            else { return pika::full_build_string(); }
         }
 
         ///////////////////////////////////////////////////////////////////////////
@@ -304,8 +285,7 @@ namespace pika {
             std::size_t count = 0;
             if (nullptr != array)
             {
-                while (nullptr != array[count])
-                    ++count;    // simply count the environment strings
+                while (nullptr != array[count]) ++count;    // simply count the environment strings
             }
             return count;
         }
@@ -417,8 +397,7 @@ namespace pika {
     std::string get_error_host_name(pika::exception_info const& xi)
     {
         std::string const* hostname_ = xi.get<pika::detail::throw_hostname>();
-        if (hostname_ && !hostname_->empty())
-            return *hostname_;
+        if (hostname_ && !hostname_->empty()) return *hostname_;
         return std::string();
     }
 
@@ -426,8 +405,7 @@ namespace pika {
     std::uint32_t get_error_locality_id(pika::exception_info const& xi)
     {
         std::uint32_t const* locality = xi.get<pika::detail::throw_locality>();
-        if (locality)
-            return *locality;
+        if (locality) return *locality;
 
         // same as naming::invalid_locality_id
         return ~static_cast<std::uint32_t>(0);
@@ -438,8 +416,7 @@ namespace pika {
     std::int64_t get_error_process_id(pika::exception_info const& xi)
     {
         std::int64_t const* pid_ = xi.get<pika::detail::throw_pid>();
-        if (pid_)
-            return *pid_;
+        if (pid_) return *pid_;
         return -1;
     }
 
@@ -448,8 +425,7 @@ namespace pika {
     std::string get_error_env(pika::exception_info const& xi)
     {
         std::string const* env = xi.get<pika::detail::throw_env>();
-        if (env && !env->empty())
-            return *env;
+        if (env && !env->empty()) return *env;
 
         return "<unknown>";
     }
@@ -458,8 +434,7 @@ namespace pika {
     std::string get_error_backtrace(pika::exception_info const& xi)
     {
         std::string const* back_trace = xi.get<pika::detail::throw_stacktrace>();
-        if (back_trace && !back_trace->empty())
-            return *back_trace;
+        if (back_trace && !back_trace->empty()) return *back_trace;
 
         return std::string();
     }
@@ -469,8 +444,7 @@ namespace pika {
     std::size_t get_error_os_thread(pika::exception_info const& xi)
     {
         std::size_t const* shepherd = xi.get<pika::detail::throw_shepherd>();
-        if (shepherd && std::size_t(-1) != *shepherd)
-            return *shepherd;
+        if (shepherd && std::size_t(-1) != *shepherd) return *shepherd;
         return std::size_t(-1);
     }
 
@@ -479,8 +453,7 @@ namespace pika {
     std::size_t get_error_thread_id(pika::exception_info const& xi)
     {
         std::size_t const* thread_id = xi.get<pika::detail::throw_thread_id>();
-        if (thread_id && *thread_id)
-            return *thread_id;
+        if (thread_id && *thread_id) return *thread_id;
         return std::size_t(-1);
     }
 
@@ -489,8 +462,7 @@ namespace pika {
     std::string get_error_thread_description(pika::exception_info const& xi)
     {
         std::string const* thread_description = xi.get<pika::detail::throw_thread_name>();
-        if (thread_description && !thread_description->empty())
-            return *thread_description;
+        if (thread_description && !thread_description->empty()) return *thread_description;
         return std::string();
     }
 
@@ -499,8 +471,7 @@ namespace pika {
     std::string get_error_config(pika::exception_info const& xi)
     {
         std::string const* config_info = xi.get<pika::detail::throw_config>();
-        if (config_info && !config_info->empty())
-            return *config_info;
+        if (config_info && !config_info->empty()) return *config_info;
         return std::string();
     }
 
@@ -509,8 +480,7 @@ namespace pika {
     std::string get_error_state(pika::exception_info const& xi)
     {
         std::string const* state_info = xi.get<pika::detail::throw_state>();
-        if (state_info && !state_info->empty())
-            return *state_info;
+        if (state_info && !state_info->empty()) return *state_info;
         return std::string();
     }
 }    // namespace pika

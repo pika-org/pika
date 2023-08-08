@@ -45,10 +45,8 @@ void test_wait_for_all_from_list()
     Container result = r.get();
 
     PIKA_TEST_EQ(futures.size(), result.size());
-    for (const auto& f : futures)
-        PIKA_TEST(!f.valid());
-    for (const auto& r : result)
-        PIKA_TEST(r.is_ready());
+    for (const auto& f : futures) PIKA_TEST(!f.valid());
+    for (const auto& r : result) PIKA_TEST(r.is_ready());
 }
 
 template <class Container>
@@ -70,10 +68,8 @@ void test_wait_for_all_from_list_iterators()
     Container result = r.get();
 
     PIKA_TEST_EQ(futures.size(), result.size());
-    for (const auto& f : futures)
-        PIKA_TEST(!f.valid());
-    for (const auto& r : result)
-        PIKA_TEST(r.is_ready());
+    for (const auto& f : futures) PIKA_TEST(!f.valid());
+    for (const auto& r : result) PIKA_TEST(r.is_ready());
 }
 
 void test_wait_for_all_one_future()

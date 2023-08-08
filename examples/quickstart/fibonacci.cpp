@@ -26,8 +26,7 @@
 //[fibonacci
 std::uint64_t fibonacci(std::uint64_t n)
 {
-    if (n < 2)
-        return n;
+    if (n < 2) return n;
 
     // Invoking the Fibonacci algorithm twice is inefficient.
     // However, we intentionally demonstrate it this way to create some

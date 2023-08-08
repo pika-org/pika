@@ -71,8 +71,7 @@ namespace htts2 {
             std::exit(0);
         }
 
-        if (vm.count("no-header"))
-            io_ = csv_without_headers;
+        if (vm.count("no-header")) io_ = csv_without_headers;
     }
 
 }    // namespace htts2

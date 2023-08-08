@@ -116,10 +116,7 @@ struct reg_unreg_cb
     {
         cb.emplace(stok, [&] { called = true; });
     }
-    void unreg()
-    {
-        cb.reset();
-    }
+    void unreg() { cb.reset(); }
 };
 
 void test_callback_concurrent_unregister()

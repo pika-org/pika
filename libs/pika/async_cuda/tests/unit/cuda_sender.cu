@@ -27,8 +27,7 @@ namespace tt = pika::this_thread::experimental;
 __global__ void saxpy(int n, float a, float* x, float* y)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
-    if (i < n)
-        y[i] = a * x[i] + y[i];
+    if (i < n) y[i] = a * x[i] + y[i];
 }
 
 template <typename Sender>
@@ -124,8 +123,7 @@ int pika_main(pika::program_options::variables_map& vm)
 #if !defined(PIKA_HAVE_HIP)
     // ROCm Clang-15 (HIP 5.3.3) fails to compile this with an internal compiler
     // error. See https://github.com/pika-org/pika/issues/585 for more details.
-    if (vm.count("seed"))
-        seed = vm["seed"].as<unsigned int>();
+    if (vm.count("seed")) seed = vm["seed"].as<unsigned int>();
 #else
     std::cout << "The --seed command line argument is ignored because HIP is ";
     std::cout << "enabled. See https://github.com/pika-org/pika/issues/585 ";

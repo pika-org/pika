@@ -44,10 +44,7 @@ void p3(pika::future<int> f)
     return;
 }
 
-pika::future<int> p4(pika::future<int> f)
-{
-    return pika::async(p2, std::move(f));
-}
+pika::future<int> p4(pika::future<int> f) { return pika::async(p2, std::move(f)); }
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename Executor>

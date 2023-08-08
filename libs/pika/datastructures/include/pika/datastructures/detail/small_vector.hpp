@@ -268,160 +268,64 @@ namespace pika::detail {
             return *this;
         }
 
-        allocator_type get_allocator() const noexcept
-        {
-            return storage_.resource_.allocator_;
-        }
+        allocator_type get_allocator() const noexcept { return storage_.resource_.allocator_; }
 
-        void assign(size_type count, value_type const& value)
-        {
-            data_.assign(count, value);
-        }
+        void assign(size_type count, value_type const& value) { data_.assign(count, value); }
         template <typename Iterator>
         void assign(Iterator first, Iterator last)
         {
             data_.assign(first, last);
         }
-        void assign(std::initializer_list<T> init_list)
-        {
-            data_.assign(init_list);
-        }
+        void assign(std::initializer_list<T> init_list) { data_.assign(init_list); }
 
-        reference operator[](size_type pos)
-        {
-            return data_[pos];
-        }
-        const_reference operator[](size_type pos) const
-        {
-            return data_[pos];
-        }
+        reference operator[](size_type pos) { return data_[pos]; }
+        const_reference operator[](size_type pos) const { return data_[pos]; }
 
-        reference at(size_type pos)
-        {
-            return data_.at(pos);
-        }
-        const_reference at(size_type pos) const
-        {
-            return data_.at(pos);
-        }
+        reference at(size_type pos) { return data_.at(pos); }
+        const_reference at(size_type pos) const { return data_.at(pos); }
 
-        reference front()
-        {
-            return data_.front();
-        }
-        const_reference front() const
-        {
-            return data_.front();
-        }
+        reference front() { return data_.front(); }
+        const_reference front() const { return data_.front(); }
 
-        reference back()
-        {
-            return data_.back();
-        }
-        const_reference back() const
-        {
-            return data_.back();
-        }
+        reference back() { return data_.back(); }
+        const_reference back() const { return data_.back(); }
 
-        T* data() noexcept
-        {
-            return data_.data();
-        }
-        T const* data() const noexcept
-        {
-            return data_.data();
-        }
+        T* data() noexcept { return data_.data(); }
+        T const* data() const noexcept { return data_.data(); }
 
-        iterator begin()
-        {
-            return data_.begin();
-        }
-        const_iterator begin() const
-        {
-            return data_.begin();
-        }
+        iterator begin() { return data_.begin(); }
+        const_iterator begin() const { return data_.begin(); }
 
-        const_iterator cbegin() const
-        {
-            return data_.cbegin();
-        }
+        const_iterator cbegin() const { return data_.cbegin(); }
 
-        reverse_iterator rbegin()
-        {
-            return data_.rbegin();
-        }
-        const_reverse_iterator rbegin() const
-        {
-            return data_.rbegin();
-        }
+        reverse_iterator rbegin() { return data_.rbegin(); }
+        const_reverse_iterator rbegin() const { return data_.rbegin(); }
 
-        const_reverse_iterator crbegin() const
-        {
-            return data_.crbegin();
-        }
+        const_reverse_iterator crbegin() const { return data_.crbegin(); }
 
-        iterator end()
-        {
-            return data_.end();
-        }
-        const_iterator end() const
-        {
-            return data_.end();
-        }
+        iterator end() { return data_.end(); }
+        const_iterator end() const { return data_.end(); }
 
-        const_iterator cend() const
-        {
-            return data_.cend();
-        }
+        const_iterator cend() const { return data_.cend(); }
 
-        reverse_iterator rend()
-        {
-            return data_.rend();
-        }
-        const_reverse_iterator rend() const
-        {
-            return data_.rend();
-        }
+        reverse_iterator rend() { return data_.rend(); }
+        const_reverse_iterator rend() const { return data_.rend(); }
 
-        const_reverse_iterator crend() const
-        {
-            return data_.crend();
-        }
+        const_reverse_iterator crend() const { return data_.crend(); }
 
-        bool empty() const
-        {
-            return data_.empty();
-        }
+        bool empty() const { return data_.empty(); }
 
-        size_type size() const
-        {
-            return data_.size();
-        }
+        size_type size() const { return data_.size(); }
 
-        size_type max_size() const
-        {
-            return data_.max_size();
-        }
+        size_type max_size() const { return data_.max_size(); }
 
-        void reserve(std::size_t count)
-        {
-            data_.reserve(count);
-        }
+        void reserve(std::size_t count) { data_.reserve(count); }
 
-        size_type capacity() const
-        {
-            return data_.capacity();
-        }
+        size_type capacity() const { return data_.capacity(); }
 
-        void shrink_to_fit()
-        {
-            data_.shrink_to_fit();
-        }
+        void shrink_to_fit() { data_.shrink_to_fit(); }
 
-        void clear() noexcept
-        {
-            data_.clear();
-        }
+        void clear() noexcept { data_.clear(); }
 
         iterator insert(const_iterator pos, value_type const& value)
         {
@@ -456,19 +360,10 @@ namespace pika::detail {
             return data_.emplace(pos, PIKA_FORWARD(Ts, ts)...);
         }
 
-        iterator erase(const_iterator pos)
-        {
-            return data_.erase(pos);
-        }
+        iterator erase(const_iterator pos) { return data_.erase(pos); }
 
-        void push_back(value_type const& value)
-        {
-            data_.push_back(value);
-        }
-        void push_back(value_type&& value)
-        {
-            data_.push_back(PIKA_MOVE(value));
-        }
+        void push_back(value_type const& value) { data_.push_back(value); }
+        void push_back(value_type&& value) { data_.push_back(PIKA_MOVE(value)); }
 
         template <typename... Ts>
         reference emplace_back(Ts&&... ts)
@@ -476,19 +371,10 @@ namespace pika::detail {
             return data_.emplace_back(PIKA_FORWARD(Ts, ts)...);
         }
 
-        void pop_back()
-        {
-            data_.pop_back();
-        }
+        void pop_back() { data_.pop_back(); }
 
-        void resize(size_type count)
-        {
-            data_.resize(count);
-        }
-        void resize(size_type count, value_type const& value)
-        {
-            data_.resize(count, value);
-        }
+        void resize(size_type count) { data_.resize(count); }
+        void resize(size_type count, value_type const& value) { data_.resize(count, value); }
 
         void swap(small_vector& other) noexcept
         {

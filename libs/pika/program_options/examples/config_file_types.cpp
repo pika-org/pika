@@ -27,10 +27,7 @@ bool check_float(Double1 test, Double2 expected)
     double expected_d = double(expected);
 
     double separation = expected_d * (1. + FLOAT_SEPARATION) / expected_d;
-    if ((test_d < expected_d + separation) && (test_d > expected_d - separation))
-    {
-        return true;
-    }
+    if ((test_d < expected_d + separation) && (test_d > expected_d - separation)) { return true; }
     return false;
 }
 
@@ -166,10 +163,7 @@ vector<string> parse_file(stringstream& file, po::options_description& opts, po:
 
 #define VERIFY(expr)                                                                               \
  {                                                                                                 \
-  if (!(expr))                                                                                     \
-  {                                                                                                \
-   std::cerr << PIKA_PP_STRINGIZE(expr) << " failed!\n";                                           \
-  }                                                                                                \
+  if (!(expr)) { std::cerr << PIKA_PP_STRINGIZE(expr) << " failed!\n"; }                           \
  }                                                                                                 \
  /**/
 

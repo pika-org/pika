@@ -35,15 +35,9 @@ namespace pika::util {
         {
         }
 
-        void increment()
-        {
-            m_value = (*m_g)();
-        }
+        void increment() { m_value = (*m_g)(); }
 
-        typename Generator::result_type const& dereference() const
-        {
-            return m_value;
-        }
+        typename Generator::result_type const& dereference() const { return m_value; }
 
         bool equal(generator_iterator const& y) const
         {

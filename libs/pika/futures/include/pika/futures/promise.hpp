@@ -101,10 +101,7 @@ namespace pika::lcos::local {
                 std::swap(shared_future_retrieved_, other.shared_future_retrieved_);
             }
 
-            bool valid() const noexcept
-            {
-                return shared_state_ != nullptr;
-            }
+            bool valid() const noexcept { return shared_state_ != nullptr; }
 
             pika::future<R> get_future(error_code& ec = throws)
             {
@@ -250,10 +247,7 @@ namespace pika::lcos::local {
         // Postcondition: *this has the shared state (if any) that other had
         //                prior to the call to swap. other has the shared state
         //                (if any) that *this had prior to the call to swap.
-        void swap(promise& other) noexcept
-        {
-            base_type::swap(other);
-        }
+        void swap(promise& other) noexcept { base_type::swap(other); }
 
         // Returns: true only if *this refers to a shared state.
         using base_type::valid;
@@ -290,10 +284,7 @@ namespace pika::lcos::local {
         //   - promise_already_satisfied if its shared state already has a
         //     stored value or exception.
         //   - no_state if *this has no shared state.
-        void set_value(R const& r)
-        {
-            base_type::set_value(r);
-        }
+        void set_value(R const& r) { base_type::set_value(r); }
 
         // Effects: atomically stores the value r in the shared state and makes
         //          that state ready (30.6.4).
@@ -306,10 +297,7 @@ namespace pika::lcos::local {
         //   - promise_already_satisfied if its shared state already has a
         //     stored value or exception.
         //   - no_state if *this has no shared state.
-        void set_value(R&& r)
-        {
-            base_type::set_value(PIKA_MOVE(r));
-        }
+        void set_value(R&& r) { base_type::set_value(PIKA_MOVE(r)); }
 
         // Extension (see wg21.link/P0319)
         //
@@ -381,10 +369,7 @@ namespace pika::lcos::local {
         // Postcondition: *this has the shared state (if any) that other had
         //                prior to the call to swap. other has the shared state
         //                (if any) that *this had prior to the call to swap.
-        void swap(promise& other) noexcept
-        {
-            base_type::swap(other);
-        }
+        void swap(promise& other) noexcept { base_type::swap(other); }
 
         // Returns: true only if *this refers to a shared state.
         using base_type::valid;
@@ -419,10 +404,7 @@ namespace pika::lcos::local {
         //   - promise_already_satisfied if its shared state already has a
         //     stored value or exception.
         //   - no_state if *this has no shared state.
-        void set_value(R& r)
-        {
-            base_type::set_value(r);
-        }
+        void set_value(R& r) { base_type::set_value(r); }
 
         // Effects: atomically stores the exception pointer p in the shared
         //          state and makes that state ready (30.6.4).
@@ -471,10 +453,7 @@ namespace pika::lcos::local {
         // Postcondition: *this has the shared state (if any) that other had
         //                prior to the call to swap. other has the shared state
         //                (if any) that *this had prior to the call to swap.
-        void swap(promise& other) noexcept
-        {
-            base_type::swap(other);
-        }
+        void swap(promise& other) noexcept { base_type::swap(other); }
 
         // Returns: true only if *this refers to a shared state.
         using base_type::valid;
@@ -511,10 +490,7 @@ namespace pika::lcos::local {
         //   - promise_already_satisfied if its shared state already has a
         //     stored value or exception.
         //   - no_state if *this has no shared state.
-        void set_value()
-        {
-            base_type::set_value(pika::util::detail::unused);
-        }
+        void set_value() { base_type::set_value(pika::util::detail::unused); }
 
         // Effects: atomically stores the exception pointer p in the shared
         //          state and makes that state ready (30.6.4).

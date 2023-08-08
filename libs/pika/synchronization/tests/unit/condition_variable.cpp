@@ -36,8 +36,7 @@ namespace {
 
     void join_all(std::vector<pika::thread>& group)
     {
-        for (std::size_t i = 0; i < group.size(); ++i)
-            group[i].join();
+        for (std::size_t i = 0; i < group.size(); ++i) group[i].join();
     }
 
 }    // namespace
@@ -65,19 +64,13 @@ struct wait_for_flag
         {
         }
 
-        bool operator()() const
-        {
-            return flag;
-        }
+        bool operator()() const { return flag; }
     };
 
     void wait_without_predicate()
     {
         std::unique_lock<pika::mutex> lock(mutex);
-        while (!flag)
-        {
-            cond_var.wait(lock);
-        }
+        while (!flag) { cond_var.wait(lock); }
         ++woken;
     }
 
@@ -85,10 +78,7 @@ struct wait_for_flag
     {
         std::unique_lock<pika::mutex> lock(mutex);
         cond_var.wait(lock, check_flag(flag));
-        if (flag)
-        {
-            ++woken;
-        }
+        if (flag) { ++woken; }
     }
 
     void wait_until_without_predicate()
@@ -99,10 +89,7 @@ struct wait_for_flag
         std::unique_lock<pika::mutex> lock(mutex);
         while (!flag)
         {
-            if (cond_var.wait_until(lock, timeout) == pika::cv_status::timeout)
-            {
-                return;
-            }
+            if (cond_var.wait_until(lock, timeout) == pika::cv_status::timeout) { return; }
         }
         ++woken;
     }
@@ -113,10 +100,7 @@ struct wait_for_flag
             std::chrono::system_clock::now() + std::chrono::milliseconds(5);
 
         std::unique_lock<pika::mutex> lock(mutex);
-        if (cond_var.wait_until(lock, timeout, check_flag(flag)) && flag)
-        {
-            ++woken;
-        }
+        if (cond_var.wait_until(lock, timeout, check_flag(flag)) && flag) { ++woken; }
     }
     void relative_wait_until_with_predicate()
     {
@@ -441,8 +425,7 @@ void condition_test_thread(condition_test_data* data)
 {
     std::unique_lock<pika::mutex> lock(data->mutex);
     PIKA_TEST(lock ? true : false);
-    while (!(data->notified > 0))
-        data->condition.wait(lock);
+    while (!(data->notified > 0)) data->condition.wait(lock);
     PIKA_TEST(lock ? true : false);
     data->awoken++;
 }
@@ -455,10 +438,7 @@ struct cond_predicate
     {
     }
 
-    bool operator()()
-    {
-        return _var == _val;
-    }
+    bool operator()() { return _var == _val; }
 
     int& _var;
     int _val;
@@ -470,8 +450,7 @@ void condition_test_waits(condition_test_data* data)
     PIKA_TEST(lock ? true : false);
 
     // Test wait.
-    while (data->notified != 1)
-        data->condition.wait(lock);
+    while (data->notified != 1) data->condition.wait(lock);
     PIKA_TEST(lock ? true : false);
     PIKA_TEST_EQ(data->notified, 1);
     data->awoken++;
@@ -487,8 +466,7 @@ void condition_test_waits(condition_test_data* data)
     // Test wait_until.
     std::chrono::system_clock::time_point xt =
         std::chrono::system_clock::now() + std::chrono::milliseconds(100);
-    while (data->notified != 3)
-        data->condition.wait_until(lock, xt);
+    while (data->notified != 3) data->condition.wait_until(lock, xt);
     PIKA_TEST(lock ? true : false);
     PIKA_TEST_EQ(data->notified, 3);
     data->awoken++;
@@ -533,8 +511,7 @@ void test_condition_waits()
 
         data.notified++;
         data.condition.notify_one();
-        while (data.awoken != 1)
-            data.condition.wait(lock);
+        while (data.awoken != 1) data.condition.wait(lock);
         PIKA_TEST(lock ? true : false);
         PIKA_TEST_EQ(data.awoken, 1);
 
@@ -545,8 +522,7 @@ void test_condition_waits()
 
         data.notified++;
         data.condition.notify_one();
-        while (data.awoken != 2)
-            data.condition.wait(lock);
+        while (data.awoken != 2) data.condition.wait(lock);
         PIKA_TEST(lock ? true : false);
         PIKA_TEST_EQ(data.awoken, 2);
 
@@ -557,8 +533,7 @@ void test_condition_waits()
 
         data.notified++;
         data.condition.notify_one();
-        while (data.awoken != 3)
-            data.condition.wait(lock);
+        while (data.awoken != 3) data.condition.wait(lock);
         PIKA_TEST(lock ? true : false);
         PIKA_TEST_EQ(data.awoken, 3);
 
@@ -569,8 +544,7 @@ void test_condition_waits()
 
         data.notified++;
         data.condition.notify_one();
-        while (data.awoken != 4)
-            data.condition.wait(lock);
+        while (data.awoken != 4) data.condition.wait(lock);
         PIKA_TEST(lock ? true : false);
         PIKA_TEST_EQ(data.awoken, 4);
 
@@ -581,8 +555,7 @@ void test_condition_waits()
 
         data.notified++;
         data.condition.notify_one();
-        while (data.awoken != 5)
-            data.condition.wait(lock);
+        while (data.awoken != 5) data.condition.wait(lock);
         PIKA_TEST(lock ? true : false);
         PIKA_TEST_EQ(data.awoken, 5);
     }
@@ -593,10 +566,7 @@ void test_condition_waits()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-bool fake_predicate()
-{
-    return false;
-}
+bool fake_predicate() { return false; }
 
 std::chrono::milliseconds const delay(1000);
 std::chrono::milliseconds const timeout_resolution(100);
@@ -610,9 +580,7 @@ void test_wait_until_times_out()
     std::chrono::system_clock::time_point const start = std::chrono::system_clock::now();
     std::chrono::system_clock::time_point const timeout = start + delay;
 
-    while (cond.wait_until(lock, timeout) == pika::cv_status::no_timeout)
-    {
-    }
+    while (cond.wait_until(lock, timeout) == pika::cv_status::no_timeout) {}
 
     std::chrono::system_clock::time_point const end = std::chrono::system_clock::now();
     PIKA_TEST_LTE((delay - timeout_resolution).count(), (end - start).count());
@@ -657,9 +625,7 @@ void test_wait_until_relative_times_out()
     std::unique_lock<pika::mutex> lock(m);
     std::chrono::system_clock::time_point const start = std::chrono::system_clock::now();
 
-    while (cond.wait_for(lock, delay) == pika::cv_status::no_timeout)
-    {
-    }
+    while (cond.wait_for(lock, delay) == pika::cv_status::no_timeout) {}
 
     std::chrono::system_clock::time_point const end = std::chrono::system_clock::now();
     PIKA_TEST_LTE((delay - timeout_resolution).count(), (end - start).count());

@@ -68,10 +68,7 @@ namespace pika::execution::experimental {
                     // wrapped value, so we move the value to the next state.
                     next_state->set_value(PIKA_MOVE(value.value()));
 
-                    for (auto& continuation : continuations)
-                    {
-                        continuation(next_state);
-                    }
+                    for (auto& continuation : continuations) { continuation(next_state); }
                 }
             }
 
@@ -129,10 +126,7 @@ namespace pika::execution::experimental {
                 // If there is no next state the continuations must be empty.
                 PIKA_ASSERT(next_state || continuations.empty());
 
-                for (auto& continuation : continuations)
-                {
-                    continuation(next_state);
-                }
+                for (auto& continuation : continuations) { continuation(next_state); }
             }
 
             void set_next_state(std::shared_ptr<async_rw_mutex_shared_state> state)
@@ -546,10 +540,7 @@ namespace pika::execution::experimental {
                     shared_prev_state->set_next_state(state);
                     prev_state = shared_prev_state;
                 }
-                else
-                {
-                    state->set_value(PIKA_MOVE(value));
-                }
+                else { state->set_value(PIKA_MOVE(value)); }
             }
 
             return {prev_state, state};
@@ -570,10 +561,7 @@ namespace pika::execution::experimental {
                 shared_prev_state->set_next_state(state);
                 prev_state = shared_prev_state;
             }
-            else
-            {
-                state->set_value(PIKA_MOVE(value));
-            }
+            else { state->set_value(PIKA_MOVE(value)); }
 
             return {prev_state, state};
         }

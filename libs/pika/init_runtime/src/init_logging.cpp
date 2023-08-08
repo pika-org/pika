@@ -39,14 +39,8 @@ namespace pika::detail {
         {
             std::size_t thread_num = pika::get_worker_thread_num();
 
-            if (std::size_t(-1) != thread_num)
-            {
-                fmt::print(to, "{:016x}", thread_num);
-            }
-            else
-            {
-                to << std::string(16, '-');
-            }
+            if (std::size_t(-1) != thread_num) { fmt::print(to, "{:016x}", thread_num); }
+            else { to << std::string(16, '-'); }
         }
     };
 
@@ -192,10 +186,7 @@ namespace pika::detail {
             __android_log_write(ANDROID_LOG_DEBUG, tag.c_str(), msg.full_string().c_str());
         }
 
-        bool operator==(android_log const& rhs) const
-        {
-            return tag == rhs.tag;
-        }
+        bool operator==(android_log const& rhs) const { return tag == rhs.tag; }
 
         std::string tag;
     };
@@ -204,10 +195,7 @@ namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     struct dummy_thread_component_id : pika::util::logging::formatter::manipulator
     {
-        void operator()(std::ostream& to) const override
-        {
-            to << std::string(16, '-');
-        }
+        void operator()(std::ostream& to) const override { to << std::string(16, '-'); }
     };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -217,21 +205,13 @@ namespace pika::detail {
         switch (dest_)
         {
         default:
-        case destination_pika:
-            LPIKA_CONSOLE_(level_) << msg;
-            break;
+        case destination_pika: LPIKA_CONSOLE_(level_) << msg; break;
 
-        case destination_timing:
-            LTIM_CONSOLE_(level_) << msg;
-            break;
+        case destination_timing: LTIM_CONSOLE_(level_) << msg; break;
 
-        case destination_app:
-            LAPP_CONSOLE_(level_) << msg;
-            break;
+        case destination_app: LAPP_CONSOLE_(level_) << msg; break;
 
-        case destination_debuglog:
-            LDEB_CONSOLE_ << msg;
-            break;
+        case destination_debuglog: LDEB_CONSOLE_ << msg; break;
         }
     }
 
@@ -243,8 +223,7 @@ namespace pika::detail {
         std::string::size_type pos1 = value.find_first_of('\\', 0);
         if (std::string::npos != pos1)
         {
-            do
-            {
+            do {
                 switch (value[pos1 + 1])
                 {
                 case '\\':
@@ -342,8 +321,7 @@ namespace pika::detail {
             if (logdest.empty())    // ensure minimal defaults
                 logdest = isconsole ? "cerr" : "console";
 # endif
-            if (logformat.empty())
-                logformat = "|\\n";
+            if (logformat.empty()) logformat = "|\\n";
 
             set_console_dest(writer, "console", lvl, destination_timing);    //-V106
             writer.write(logformat, logdest);
@@ -389,8 +367,7 @@ namespace pika::detail {
         if (logdest.empty())    // ensure minimal defaults
             logdest = isconsole ? "cerr" : "console";
 # endif
-        if (logformat.empty())
-            logformat = "|\\n";
+        if (logformat.empty()) logformat = "|\\n";
 
         if (pika::util::logging::level::disable_all != lvl)
         {
@@ -404,8 +381,7 @@ namespace pika::detail {
             // errors are logged to the given destination and to cerr
             set_console_dest(error_writer, "console", lvl, destination_pika);    //-V106
 # if !defined(ANDROID) && !defined(__ANDROID__)
-            if (logdest != "cerr")
-                error_writer.write(logformat, logdest + " cerr");
+            if (logdest != "cerr") error_writer.write(logformat, logdest + " cerr");
 # endif
             define_formatters(error_writer);
 
@@ -470,8 +446,7 @@ namespace pika::detail {
             if (logdest.empty())    // ensure minimal defaults
                 logdest = isconsole ? "cerr" : "console";
 # endif
-            if (logformat.empty())
-                logformat = "|\\n";
+            if (logformat.empty()) logformat = "|\\n";
 
             set_console_dest(writer, "console", lvl, destination_app);    //-V106
             writer.write(logformat, logdest);
@@ -517,8 +492,7 @@ namespace pika::detail {
             if (logdest.empty())    // ensure minimal defaults
                 logdest = isconsole ? "cerr" : "console";
 # endif
-            if (logformat.empty())
-                logformat = "|\\n";
+            if (logformat.empty()) logformat = "|\\n";
 
             set_console_dest(writer, "console", lvl, destination_debuglog);    //-V106
             writer.write(logformat, logdest);
@@ -560,8 +534,7 @@ namespace pika::detail {
             if (logdest.empty())    // ensure minimal defaults
                 logdest = "cerr";
 # endif
-            if (logformat.empty())
-                logformat = "|\\n";
+            if (logformat.empty()) logformat = "|\\n";
 
             writer.write(logformat, logdest);
 
@@ -597,8 +570,7 @@ namespace pika::detail {
             if (logdest.empty())    // ensure minimal defaults
                 logdest = "cerr";
 # endif
-            if (logformat.empty())
-                logformat = "|\\n";
+            if (logformat.empty()) logformat = "|\\n";
 
             writer.write(logformat, logdest);
 
@@ -634,8 +606,7 @@ namespace pika::detail {
             if (logdest.empty())    // ensure minimal defaults
                 logdest = "cerr";
 # endif
-            if (logformat.empty())
-                logformat = "|\\n";
+            if (logformat.empty()) logformat = "|\\n";
 
             writer.write(logformat, logdest);
 
@@ -671,8 +642,7 @@ namespace pika::detail {
             if (logdest.empty())    // ensure minimal defaults
                 logdest = "cerr";
 # endif
-            if (logformat.empty())
-                logformat = "|\\n";
+            if (logformat.empty()) logformat = "|\\n";
 
             writer.write(logformat, logdest);
 
@@ -763,10 +733,7 @@ namespace pika::detail {
     // NOLINTEND(bugprone-easily-swappable-parameters)
     {
         auto lvl = pika::util::logging::level::enable_all;
-        if (!level.empty())
-        {
-            lvl = pika::util::detail::get_log_level(level, true);
-        }
+        if (!level.empty()) { lvl = pika::util::detail::get_log_level(level, true); }
 
         switch (dest)
         {

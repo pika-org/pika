@@ -7,21 +7,12 @@
 // Test if decltype on a lambda capture correctly detects rvalues. The rvalue
 // overload should be used.
 
-constexpr bool g(int&)
-{
-    return false;
-}
-constexpr bool g(int&&)
-{
-    return true;
-}
+constexpr bool g(int&) { return false; }
+constexpr bool g(int&&) { return true; }
 
 template <typename T>
 constexpr bool f(T&& t)
 {
     return [&]() { return g(static_cast<decltype(t)&&>(t)); }();
 }
-int main()
-{
-    static_assert(f(3));
-}
+int main() { static_assert(f(3)); }

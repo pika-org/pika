@@ -24,8 +24,7 @@ using namespace std;
 vector<string> sv(const char* array[], unsigned size)
 {
     vector<string> r;
-    for (unsigned i = 0; i < size; ++i)
-        r.emplace_back(array[i]);
+    for (unsigned i = 0; i < size; ++i) r.emplace_back(array[i]);
     return r;
 }
 
@@ -126,10 +125,7 @@ void test_variable_map()
 
 int stored_value;
 
-void notifier(const vector<int>& v)
-{
-    stored_value = v.front();
-}
+void notifier(const vector<int>& v) { stored_value = v.front(); }
 
 void test_semantic_values()
 {

@@ -60,10 +60,7 @@ namespace pika::threads::detail {
         {
         }
 
-        static std::string get_scheduler_name()
-        {
-            return "static_queue_scheduler";
-        }
+        static std::string get_scheduler_name() { return "static_queue_scheduler"; }
 
         void set_scheduler_mode(scheduler_mode mode) override
         {
@@ -87,8 +84,7 @@ namespace pika::threads::detail {
                 bool result = q->get_next_thread(thrd);
 
                 q->increment_num_pending_accesses();
-                if (result)
-                    return true;
+                if (result) return true;
                 q->increment_num_pending_misses();
             }
 
@@ -109,14 +105,10 @@ namespace pika::threads::detail {
             bool result = true;
 
             result = this->queues_[num_thread]->wait_or_add_new(running, added) && result;
-            if (0 != added)
-                return result;
+            if (0 != added) return result;
 
             // Check if we have been disabled
-            if (!running)
-            {
-                return true;
-            }
+            if (!running) { return true; }
 
 #ifdef PIKA_HAVE_THREAD_DEADLOCK_DETECTION
             // no new work is available, are we deadlocked?

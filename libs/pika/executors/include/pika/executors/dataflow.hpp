@@ -89,10 +89,7 @@ namespace pika::detail {
     template <typename F, typename Args>
     struct dataflow_not_callable
     {
-        static auto error(F f, Args args)
-        {
-            std::apply(PIKA_MOVE(f), PIKA_MOVE(args));
-        }
+        static auto error(F f, Args args) { std::apply(PIKA_MOVE(f), PIKA_MOVE(args)); }
 
         using type = decltype(error(std::declval<F>(), std::declval<Args>()));
     };
@@ -262,10 +259,7 @@ namespace pika::detail {
                 {
                     ++count_;
                 }
-                ~handle_continuation_recursion_count()
-                {
-                    --count_;
-                }
+                ~handle_continuation_recursion_count() { --count_; }
 
                 std::size_t& count_;
             } cnt;
@@ -277,27 +271,18 @@ namespace pika::detail {
                 pika::scoped_annotation annotate(func_);
                 execute(is_void{}, PIKA_FORWARD(Futures_, futures));
             }
-            else
-            {
-                finalize(pika::launch::async, PIKA_FORWARD(Futures_, futures));
-            }
+            else { finalize(pika::launch::async, PIKA_FORWARD(Futures_, futures)); }
         }
 
         template <typename Futures_>
         void finalize(launch policy, Futures_&& futures)
         {
-            if (policy == launch::sync)
-            {
-                finalize(launch::sync, PIKA_FORWARD(Futures_, futures));
-            }
+            if (policy == launch::sync) { finalize(launch::sync, PIKA_FORWARD(Futures_, futures)); }
             else if (policy == launch::fork)
             {
                 finalize(launch::fork, PIKA_FORWARD(Futures_, futures));
             }
-            else
-            {
-                finalize(launch::async, PIKA_FORWARD(Futures_, futures));
-            }
+            else { finalize(launch::async, PIKA_FORWARD(Futures_, futures)); }
         }
 
         // The overload for pika::dataflow taking an executor simply forwards

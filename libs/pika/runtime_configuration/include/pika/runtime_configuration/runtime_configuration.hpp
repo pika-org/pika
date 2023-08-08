@@ -81,10 +81,7 @@ namespace pika::util {
         std::string get_cmd_line() const;
 
         // Will return the default stack size to use for all pika-threads.
-        std::ptrdiff_t get_default_stack_size() const
-        {
-            return small_stacksize;
-        }
+        std::ptrdiff_t get_default_stack_size() const { return small_stacksize; }
 
         // Will return the requested stack size to use for an pika-threads.
         std::ptrdiff_t get_stack_size(execution::thread_stacksize stacksize) const;

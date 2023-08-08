@@ -35,10 +35,7 @@ namespace pika::resource {
         {
         }
 
-        std::size_t id() const
-        {
-            return id_;
-        }
+        std::size_t id() const { return id_; }
 
     private:
         friend class core;
@@ -72,14 +69,8 @@ namespace pika::resource {
         {
         }
 
-        std::vector<pu> const& pus() const
-        {
-            return pus_;
-        }
-        std::size_t id() const
-        {
-            return id_;
-        }
+        std::vector<pu> const& pus() const { return pus_; }
+        std::size_t id() const { return id_; }
 
     private:
         std::vector<core> cores_sharing_numa_domain();
@@ -103,14 +94,8 @@ namespace pika::resource {
         {
         }
 
-        std::vector<core> const& cores() const
-        {
-            return cores_;
-        }
-        std::size_t id() const
-        {
-            return id_;
-        }
+        std::vector<core> const& cores() const { return cores_; }
+        std::size_t id() const { return id_; }
 
     private:
         friend class pu;

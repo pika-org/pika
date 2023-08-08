@@ -35,10 +35,8 @@ double dx = 1.;        // grid spacing
 
 inline std::size_t idx(std::size_t i, int dir, std::size_t size)
 {
-    if (i == 0 && dir == -1)
-        return size - 1;
-    if (i == size - 1 && dir == +1)
-        return 0;
+    if (i == 0 && dir == -1) return size - 1;
+    if (i == size - 1 && dir == +1) return 0;
 
     PIKA_ASSERT((i + dir) < size);
 
@@ -58,23 +56,13 @@ struct partition_data
       : data_(size)
     {
         double base_value = initial_value * static_cast<double>(size);
-        for (std::size_t i = 0; i != size; ++i)
-            data_[i] = base_value + double(i);
+        for (std::size_t i = 0; i != size; ++i) data_[i] = base_value + double(i);
     }
 
-    double& operator[](std::size_t idx)
-    {
-        return data_[idx];
-    }
-    double operator[](std::size_t idx) const
-    {
-        return data_[idx];
-    }
+    double& operator[](std::size_t idx) { return data_[idx]; }
+    double operator[](std::size_t idx) const { return data_[idx]; }
 
-    std::size_t size() const
-    {
-        return data_.size();
-    }
+    std::size_t size() const { return data_.size(); }
 
 private:
     std::vector<double> data_;
@@ -85,8 +73,7 @@ std::ostream& operator<<(std::ostream& os, partition_data const& c)
     os << "{";
     for (std::size_t i = 0; i != c.size(); ++i)
     {
-        if (i != 0)
-            os << ", ";
+        if (i != 0) os << ", ";
         os << c[i];
     }
     os << "}";
@@ -130,12 +117,10 @@ struct stepper
     {
         // U[t][i] is the state of position i at time t.
         std::vector<space> U(2);
-        for (space& s : U)
-            s.resize(np);
+        for (space& s : U) s.resize(np);
 
         // Initial conditions: f(0, i) = i
-        for (std::size_t i = 0; i != np; ++i)
-            U[0][i] = partition_data(nx, double(i));
+        for (std::size_t i = 0; i != np; ++i) U[0][i] = partition_data(nx, double(i));
 
         // Actual time step loop
         for (std::size_t t = 0; t != nt; ++t)
@@ -159,8 +144,7 @@ int pika_main(pika::program_options::variables_map& vm)
     std::uint64_t nx = vm["nx"].as<std::uint64_t>();    // Number of grid points.
     std::uint64_t nt = vm["nt"].as<std::uint64_t>();    // Number of steps.
 
-    if (vm.count("no-header"))
-        header = false;
+    if (vm.count("no-header")) header = false;
 
     // Create the stepper object
     stepper step;

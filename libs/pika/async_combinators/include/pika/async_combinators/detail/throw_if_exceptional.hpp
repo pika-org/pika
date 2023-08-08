@@ -40,19 +40,13 @@ namespace pika::detail {
     template <typename Future>
     void throw_if_exceptional(std::vector<Future> const& values)
     {
-        for (auto const& f : values)
-        {
-            rethrow_if_needed(f);
-        }
+        for (auto const& f : values) { rethrow_if_needed(f); }
     }
 
     template <typename Future, std::size_t N>
     void throw_if_exceptional(std::array<Future, N> const& values)
     {
-        for (auto const& f : values)
-        {
-            rethrow_if_needed(f);
-        }
+        for (auto const& f : values) { rethrow_if_needed(f); }
     }
 
     template <typename... Ts>

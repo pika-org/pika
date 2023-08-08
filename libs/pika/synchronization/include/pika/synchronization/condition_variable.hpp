@@ -99,10 +99,7 @@ namespace pika {
         {
             PIKA_ASSERT_OWNS_LOCK(lock);
 
-            while (!pred())
-            {
-                wait(lock);
-            }
+            while (!pred()) { wait(lock); }
         }
 
         template <typename Mutex>
@@ -125,8 +122,7 @@ namespace pika {
             threads::detail::thread_restart_state const reason =
                 data->cond_.wait_until(l, abs_time, ec);
 
-            if (ec)
-                return cv_status::error;
+            if (ec) return cv_status::error;
 
             // if the timer has hit, the waiting period timed out
             return (reason == threads::detail::thread_restart_state::timeout) ?    //-V110
@@ -143,8 +139,7 @@ namespace pika {
 
             while (!pred())
             {
-                if (wait_until(lock, abs_time, ec) == cv_status::timeout)
-                    return pred();
+                if (wait_until(lock, abs_time, ec) == cv_status::timeout) return pred();
             }
             return true;
         }
@@ -235,10 +230,7 @@ namespace pika {
         {
             PIKA_ASSERT_OWNS_LOCK(lock);
 
-            while (!pred())
-            {
-                wait(lock);
-            }
+            while (!pred()) { wait(lock); }
         }
 
         template <typename Lock>
@@ -261,8 +253,7 @@ namespace pika {
             threads::detail::thread_restart_state const reason =
                 data->cond_.wait_until(l, abs_time, ec);
 
-            if (ec)
-                return cv_status::error;
+            if (ec) return cv_status::error;
 
             // if the timer has hit, the waiting period timed out
             return (reason == threads::detail::thread_restart_state::timeout) ?    //-V110
@@ -278,8 +269,7 @@ namespace pika {
 
             while (!pred())
             {
-                if (wait_until(lock, abs_time, ec) == cv_status::timeout)
-                    return pred();
+                if (wait_until(lock, abs_time, ec) == cv_status::timeout) return pred();
             }
             return true;
         }
@@ -302,10 +292,7 @@ namespace pika {
         template <typename Lock, typename Predicate>
         bool wait(Lock& lock, stop_token stoken, Predicate pred, error_code& ec = throws)
         {
-            if (stoken.stop_requested())
-            {
-                return pred();
-            }
+            if (stoken.stop_requested()) { return pred(); }
 
             auto data = data_;    // keep data alive
 
@@ -344,10 +331,7 @@ namespace pika {
         wait_until(Lock& lock, stop_token stoken, pika::chrono::steady_time_point const& abs_time,
             Predicate pred, error_code& ec = throws)
         {
-            if (stoken.stop_requested())
-            {
-                return pred();
-            }
+            if (stoken.stop_requested()) { return pred(); }
 
             auto data = data_;    // keep data alive
 
@@ -380,17 +364,13 @@ namespace pika {
                     threads::detail::thread_restart_state const reason =
                         data->cond_.wait_until(l, abs_time, ec);
 
-                    if (ec)
-                        return false;
+                    if (ec) return false;
 
                     should_stop = (reason == threads::detail::thread_restart_state::timeout) ||
                         stoken.stop_requested();
                 }
 
-                if (should_stop)
-                {
-                    return pred();
-                }
+                if (should_stop) { return pred(); }
             }
             return true;
         }

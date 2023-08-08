@@ -10,10 +10,7 @@
 //[body
 #include <pika/init.hpp>
 
-int pika_main()
-{
-    return pika::finalize();
-}
+int pika_main() { return pika::finalize(); }
 
 int main(int argc, char** argv)
 {

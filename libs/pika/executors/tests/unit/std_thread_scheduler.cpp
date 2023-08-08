@@ -219,10 +219,7 @@ struct callback_receiver
         PIKA_TEST(false);
     }
 
-    friend void tag_invoke(ex::set_stopped_t, callback_receiver&&) noexcept
-    {
-        PIKA_TEST(false);
-    }
+    friend void tag_invoke(ex::set_stopped_t, callback_receiver&&) noexcept { PIKA_TEST(false); }
 
     template <typename... Ts>
     friend void tag_invoke(ex::set_value_t, callback_receiver&& r, Ts&&...) noexcept
@@ -1127,10 +1124,7 @@ void test_bulk()
             PIKA_TEST_NEQ(parent_id, std::this_thread::get_id());
         }));
 
-        for (int i = 0; i < n; ++i)
-        {
-            PIKA_TEST_EQ(v[i], 1);
-        }
+        for (int i = 0; i < n; ++i) { PIKA_TEST_EQ(v[i], 1); }
     }
 
     for (auto n : ns)
@@ -1144,10 +1138,7 @@ void test_bulk()
                 PIKA_TEST_NEQ(parent_id, std::this_thread::get_id());
             }));
 
-        for (int i = 0; i < n; ++i)
-        {
-            PIKA_TEST_EQ(v_out[i], i);
-        }
+        for (int i = 0; i < n; ++i) { PIKA_TEST_EQ(v_out[i], i); }
     }
 
     // The specification only allows integral shapes
@@ -1165,10 +1156,7 @@ void test_bulk()
                 string_map.insert(s);
             }));
 
-        for (auto const& s : v_ref)
-        {
-            PIKA_TEST(string_map.find(s) != string_map.end());
-        }
+        for (auto const& s : v_ref) { PIKA_TEST(string_map.find(s) != string_map.end()); }
     }
 #endif
 
@@ -1182,38 +1170,23 @@ void test_bulk()
         try
         {
             tt::sync_wait(ex::transfer_just(ex::std_thread_scheduler{}) | ex::bulk(n, [&v](int i) {
-                if (i == i_fail)
-                {
-                    throw std::runtime_error("error");
-                }
+                if (i == i_fail) { throw std::runtime_error("error"); }
                 v[i] = i;
             }));
 
-            if (expect_exception)
-            {
-                PIKA_TEST(false);
-            }
+            if (expect_exception) { PIKA_TEST(false); }
         }
         catch (std::runtime_error const& e)
         {
-            if (!expect_exception)
-            {
-                PIKA_TEST(false);
-            }
+            if (!expect_exception) { PIKA_TEST(false); }
 
             PIKA_TEST_EQ(std::string(e.what()), std::string("error"));
         }
 
-        if (expect_exception)
-        {
-            PIKA_TEST_EQ(v[i_fail], -1);
-        }
+        if (expect_exception) { PIKA_TEST_EQ(v[i_fail], -1); }
         else
         {
-            for (int i = 0; i < n; ++i)
-            {
-                PIKA_TEST_EQ(v[i], i);
-            }
+            for (int i = 0; i < n; ++i) { PIKA_TEST_EQ(v[i], i); }
         }
     }
 }

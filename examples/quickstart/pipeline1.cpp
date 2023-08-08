@@ -33,10 +33,7 @@ struct pipeline
         };
 
         std::vector<pika::future<void>> tasks;
-        for (auto s : input)
-        {
-            tasks.push_back(pika::async(grep, "Error.*", std::move(s)));
-        }
+        for (auto s : input) { tasks.push_back(pika::async(grep, "Error.*", std::move(s))); }
 
         pika::wait_all(tasks);
     }
@@ -53,7 +50,4 @@ int pika_main()
     return pika::finalize();
 }
 
-int main(int argc, char* argv[])
-{
-    return pika::init(pika_main, argc, argv);
-}
+int main(int argc, char* argv[]) { return pika::init(pika_main, argc, argv); }

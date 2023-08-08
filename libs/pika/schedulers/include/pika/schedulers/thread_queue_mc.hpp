@@ -82,10 +82,7 @@ namespace pika::threads::detail {
                 debug::detail::hex<6>(holder_->owner_id_), stealing);
             PIKA_ASSERT(holder_->owner_id_ == std::this_thread::get_id());
 
-            if (addfrom->new_tasks_count_.data_.load(std::memory_order_relaxed) == 0)
-            {
-                return 0;
-            }
+            if (addfrom->new_tasks_count_.data_.load(std::memory_order_relaxed) == 0) { return 0; }
 
             std::size_t added = 0;
             task_description task;
@@ -181,8 +178,7 @@ namespace pika::threads::detail {
             threads::detail::thread_id_ref_type* id, error_code& ec)
         {
             // thread has not been created yet
-            if (id)
-                *id = threads::detail::invalid_thread_id;
+            if (id) *id = threads::detail::invalid_thread_id;
 
             if (data.stacksize == execution::thread_stacksize::current)
             {
@@ -201,10 +197,7 @@ namespace pika::threads::detail {
                 if (data.initial_state == threads::detail::thread_schedule_state::pending)
                 {
                     // return the thread_id_ref of the newly created thread
-                    if (id)
-                    {
-                        *id = tid;
-                    }
+                    if (id) { *id = tid; }
                     schedule_work(PIKA_MOVE(tid), false);
                 }
                 else
@@ -216,8 +209,7 @@ namespace pika::threads::detail {
                     *id = PIKA_MOVE(tid);
                 }
 
-                if (&ec != &throws)
-                    ec = make_success_code();
+                if (&ec != &throws) ec = make_success_code();
                 return;
             }
 
@@ -236,8 +228,7 @@ namespace pika::threads::detail {
 
             new_task_items_.push(task_description(PIKA_MOVE(data)));
 
-            if (&ec != &throws)
-                ec = make_success_code();
+            if (&ec != &throws) ec = make_success_code();
         }
 
         // ----------------------------------------------------------------

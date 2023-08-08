@@ -36,10 +36,7 @@ namespace executor_example {
                 exec_.on_start_();
             }
 
-            ~on_exit()
-            {
-                exec_.on_stop_();
-            }
+            ~on_exit() { exec_.on_stop_(); }
 
             executor_with_thread_hooks const& exec_;
         };
@@ -80,10 +77,7 @@ namespace executor_example {
             return !(*this == rhs);
         }
 
-        executor_with_thread_hooks const& context() const noexcept
-        {
-            return *this;
-        }
+        executor_with_thread_hooks const& context() const noexcept { return *this; }
 
         // OneWayExecutor interface
         template <typename F, typename... Ts>
@@ -220,7 +214,4 @@ int pika_main()
     return pika::finalize();
 }
 
-int main(int argc, char* argv[])
-{
-    return pika::init(pika_main, argc, argv);
-}
+int main(int argc, char* argv[]) { return pika::init(pika_main, argc, argv); }

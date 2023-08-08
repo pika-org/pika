@@ -21,17 +21,11 @@ namespace pika::parallel::execution::detail {
         return f;
     }
 
-    void set_get_os_thread_count(get_os_thread_count_type f)
-    {
-        get_get_os_thread_count() = f;
-    }
+    void set_get_os_thread_count(get_os_thread_count_type f) { get_get_os_thread_count() = f; }
 
     std::size_t get_os_thread_count()
     {
-        if (get_get_os_thread_count())
-        {
-            return get_get_os_thread_count()();
-        }
+        if (get_get_os_thread_count()) { return get_get_os_thread_count()(); }
         else
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status,
@@ -50,18 +44,12 @@ namespace pika::parallel::execution::detail {
         return f;
     }
 
-    void set_get_pu_mask(get_pu_mask_type f)
-    {
-        get_get_pu_mask() = f;
-    }
+    void set_get_pu_mask(get_pu_mask_type f) { get_get_pu_mask() = f; }
 
     threads::detail::mask_cref_type get_pu_mask(
         threads::detail::topology& topo, std::size_t thread_num)
     {
-        if (get_get_pu_mask())
-        {
-            return get_get_pu_mask()(topo, thread_num);
-        }
+        if (get_get_pu_mask()) { return get_get_pu_mask()(topo, thread_num); }
         else
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status,

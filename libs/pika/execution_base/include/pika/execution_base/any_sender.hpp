@@ -118,19 +118,13 @@ namespace pika::detail {
             return object == reinterpret_cast<base_type const*>(&embedded_storage);
         }
 
-        void reset_vtable()
-        {
-            object = const_cast<base_type*>(get_empty_vtable<base_type>());
-        }
+        void reset_vtable() { object = const_cast<base_type*>(get_empty_vtable<base_type>()); }
 
         void release()
         {
             PIKA_ASSERT(!empty());
 
-            if (using_embedded_storage())
-            {
-                get().~base_type();
-            }
+            if (using_embedded_storage()) { get().~base_type(); }
             else
             {
                 delete heap_storage;
@@ -170,25 +164,16 @@ namespace pika::detail {
 
         ~movable_sbo_storage()
         {
-            if (!empty())
-            {
-                release();
-            }
+            if (!empty()) { release(); }
         }
 
-        movable_sbo_storage(movable_sbo_storage&& other)
-        {
-            move_assign(PIKA_MOVE(other));
-        }
+        movable_sbo_storage(movable_sbo_storage&& other) { move_assign(PIKA_MOVE(other)); }
 
         movable_sbo_storage& operator=(movable_sbo_storage&& other)
         {
             if (&other != this)
             {
-                if (!empty())
-                {
-                    release();
-                }
+                if (!empty()) { release(); }
 
                 move_assign(PIKA_MOVE(other));
             }
@@ -198,28 +183,16 @@ namespace pika::detail {
         movable_sbo_storage(movable_sbo_storage const&) = delete;
         movable_sbo_storage& operator=(movable_sbo_storage const&) = delete;
 
-        bool empty() const noexcept
-        {
-            return get().empty();
-        }
+        bool empty() const noexcept { return get().empty(); }
 
-        base_type const& get() const noexcept
-        {
-            return *object;
-        }
+        base_type const& get() const noexcept { return *object; }
 
-        base_type& get() noexcept
-        {
-            return *object;
-        }
+        base_type& get() noexcept { return *object; }
 
         template <typename Impl, typename... Ts>
         void store(Ts&&... ts)
         {
-            if (!empty())
-            {
-                release();
-            }
+            if (!empty()) { release(); }
 
             if constexpr (can_use_embedded_storage<Impl>())
             {
@@ -236,10 +209,7 @@ namespace pika::detail {
 
         void reset()
         {
-            if (!empty())
-            {
-                release();
-            }
+            if (!empty()) { release(); }
         }
     };
 
@@ -299,10 +269,7 @@ namespace pika::detail {
         {
             if (&other != this)
             {
-                if (!empty())
-                {
-                    release();
-                }
+                if (!empty()) { release(); }
                 copy_assign(other);
             }
             return *this;
@@ -314,10 +281,7 @@ namespace pika::execution::experimental::detail {
     struct any_operation_state_base
     {
         virtual ~any_operation_state_base() = default;
-        virtual bool empty() const noexcept
-        {
-            return false;
-        }
+        virtual bool empty() const noexcept { return false; }
         virtual void start() & noexcept = 0;
     };
 
@@ -349,10 +313,7 @@ namespace pika::execution::experimental::detail {
         {
         }
 
-        void start() & noexcept override
-        {
-            pika::execution::experimental::start(operation_state);
-        }
+        void start() & noexcept override { pika::execution::experimental::start(operation_state); }
     };
 
     class PIKA_EXPORT any_operation_state
@@ -390,10 +351,7 @@ namespace pika::execution::experimental::detail {
         virtual void set_value(Ts... ts) && = 0;
         virtual void set_error(std::exception_ptr ep) && noexcept = 0;
         virtual void set_stopped() && noexcept = 0;
-        virtual bool empty() const noexcept
-        {
-            return false;
-        }
+        virtual bool empty() const noexcept { return false; }
     };
 
     [[noreturn]] PIKA_EXPORT void throw_bad_any_call(
@@ -402,20 +360,11 @@ namespace pika::execution::experimental::detail {
     template <typename... Ts>
     struct empty_any_receiver final : any_receiver_base<Ts...>
     {
-        void move_into(void*) override
-        {
-            PIKA_UNREACHABLE;
-        }
+        void move_into(void*) override { PIKA_UNREACHABLE; }
 
-        bool empty() const noexcept override
-        {
-            return true;
-        }
+        bool empty() const noexcept override { return true; }
 
-        void set_value(Ts...) && override
-        {
-            throw_bad_any_call("any_receiver", "set_value");
-        }
+        void set_value(Ts...) && override { throw_bad_any_call("any_receiver", "set_value"); }
 
         [[noreturn]] void set_error(std::exception_ptr) && noexcept override
         {
@@ -451,10 +400,7 @@ namespace pika::execution::experimental::detail {
         {
         }
 
-        void move_into(void* p) override
-        {
-            new (p) any_receiver_impl(PIKA_MOVE(receiver));
-        }
+        void move_into(void* p) override { new (p) any_receiver_impl(PIKA_MOVE(receiver)); }
 
         void set_value(Ts... ts) && override
         {
@@ -550,10 +496,7 @@ namespace pika::execution::experimental::detail {
         virtual ~unique_any_sender_base() = default;
         virtual void move_into(void* p) = 0;
         virtual any_operation_state connect(any_receiver<Ts...>&& receiver) && = 0;
-        virtual bool empty() const noexcept
-        {
-            return false;
-        }
+        virtual bool empty() const noexcept { return false; }
     };
 
     template <typename... Ts>
@@ -568,15 +511,9 @@ namespace pika::execution::experimental::detail {
     template <typename... Ts>
     struct empty_unique_any_sender final : unique_any_sender_base<Ts...>
     {
-        void move_into(void*) override
-        {
-            PIKA_UNREACHABLE;
-        }
+        void move_into(void*) override { PIKA_UNREACHABLE; }
 
-        bool empty() const noexcept override
-        {
-            return true;
-        }
+        bool empty() const noexcept override { return true; }
 
         [[noreturn]] any_operation_state connect(any_receiver<Ts...>&&) && override
         {
@@ -587,25 +524,13 @@ namespace pika::execution::experimental::detail {
     template <typename... Ts>
     struct empty_any_sender final : any_sender_base<Ts...>
     {
-        void move_into(void*) override
-        {
-            PIKA_UNREACHABLE;
-        }
+        void move_into(void*) override { PIKA_UNREACHABLE; }
 
-        any_sender_base<Ts...>* clone() const override
-        {
-            PIKA_UNREACHABLE;
-        }
+        any_sender_base<Ts...>* clone() const override { PIKA_UNREACHABLE; }
 
-        void clone_into(void*) const override
-        {
-            PIKA_UNREACHABLE;
-        }
+        void clone_into(void*) const override { PIKA_UNREACHABLE; }
 
-        bool empty() const noexcept override
-        {
-            return true;
-        }
+        bool empty() const noexcept override { return true; }
 
         [[noreturn]] any_operation_state connect(any_receiver<Ts...>&&) const& override
         {
@@ -631,10 +556,7 @@ namespace pika::execution::experimental::detail {
         {
         }
 
-        void move_into(void* p) override
-        {
-            new (p) unique_any_sender_impl(PIKA_MOVE(sender));
-        }
+        void move_into(void* p) override { new (p) unique_any_sender_impl(PIKA_MOVE(sender)); }
 
         any_operation_state connect(any_receiver<Ts...>&& receiver) && override
         {
@@ -654,20 +576,11 @@ namespace pika::execution::experimental::detail {
         {
         }
 
-        void move_into(void* p) override
-        {
-            new (p) any_sender_impl(PIKA_MOVE(sender));
-        }
+        void move_into(void* p) override { new (p) any_sender_impl(PIKA_MOVE(sender)); }
 
-        any_sender_base<Ts...>* clone() const override
-        {
-            return new any_sender_impl(sender);
-        }
+        any_sender_base<Ts...>* clone() const override { return new any_sender_impl(sender); }
 
-        void clone_into(void* p) const override
-        {
-            new (p) any_sender_impl(sender);
-        }
+        void clone_into(void* p) const override { new (p) any_sender_impl(sender); }
 
         any_operation_state connect(any_receiver<Ts...>&& receiver) const& override
         {
@@ -789,26 +702,14 @@ namespace pika::execution::experimental {
             {
                 *this = std::forward<Sender>(sender);
             }
-            else
-            {
-                storage.template store<impl_type<Sender>>(PIKA_FORWARD(Sender, sender));
-            }
+            else { storage.template store<impl_type<Sender>>(PIKA_FORWARD(Sender, sender)); }
         }
 
-        void reset()
-        {
-            storage.reset();
-        }
+        void reset() { storage.reset(); }
 
-        bool empty() const noexcept
-        {
-            return storage.empty();
-        }
+        bool empty() const noexcept { return storage.empty(); }
 
-        explicit operator bool() const noexcept
-        {
-            return !empty();
-        }
+        explicit operator bool() const noexcept { return !empty(); }
     };
 
     template <typename... Ts>
@@ -907,20 +808,11 @@ namespace pika::execution::experimental {
             }
         }
 
-        void reset()
-        {
-            storage.reset();
-        }
+        void reset() { storage.reset(); }
 
-        bool empty() const noexcept
-        {
-            return storage.empty();
-        }
+        bool empty() const noexcept { return storage.empty(); }
 
-        explicit operator bool() const noexcept
-        {
-            return !empty();
-        }
+        explicit operator bool() const noexcept { return !empty(); }
     };
 
     namespace detail {

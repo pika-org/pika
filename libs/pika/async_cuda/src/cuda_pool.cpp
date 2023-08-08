@@ -55,15 +55,9 @@ namespace pika::cuda::experimental {
     {
     }
 
-    bool cuda_pool::valid() const noexcept
-    {
-        return bool(data);
-    }
+    bool cuda_pool::valid() const noexcept { return bool(data); }
 
-    cuda_pool::operator bool() noexcept
-    {
-        return bool(data);
-    }
+    cuda_pool::operator bool() noexcept { return bool(data); }
 
     cuda_stream const& cuda_pool::get_next_stream(pika::execution::thread_priority priority)
     {
@@ -73,9 +67,6 @@ namespace pika::cuda::experimental {
         {
             return data->normal_priority_streams.get_next_stream();
         }
-        else
-        {
-            return data->high_priority_streams.get_next_stream();
-        }
+        else { return data->high_priority_streams.get_next_stream(); }
     }
 }    // namespace pika::cuda::experimental

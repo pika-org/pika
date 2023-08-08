@@ -186,10 +186,7 @@ namespace pika {
             template <std::size_t I>
             PIKA_FORCEINLINE void do_await()
             {
-                if constexpr (is_end_v<I>)
-                {
-                    this->set_value(util::detail::unused);
-                }
+                if constexpr (is_end_v<I>) { this->set_value(util::detail::unused); }
                 else
                 {
                     using future_type =
@@ -253,10 +250,7 @@ namespace pika {
                     {
                         f_(count_, PIKA_MOVE(*next));
                     }
-                    else
-                    {
-                        f_(PIKA_MOVE(*next));
-                    }
+                    else { f_(PIKA_MOVE(*next)); }
 
                     if (++count_ == needed_count_)
                     {
@@ -307,10 +301,7 @@ namespace pika {
                 {
                     f_(count_, PIKA_MOVE(fut));
                 }
-                else
-                {
-                    f_(PIKA_MOVE(fut));
-                }
+                else { f_(PIKA_MOVE(fut)); }
 
                 if (++count_ == needed_count_)
                 {
@@ -386,10 +377,7 @@ namespace pika {
         values.reserve(count);
 
         traits::acquire_future_disp func;
-        while (count-- != 0)
-        {
-            values.push_back(func(*begin++));
-        }
+        while (count-- != 0) { values.push_back(func(*begin++)); }
 
         return pika::when_each(PIKA_FORWARD(F, f), values)
             .then(pika::launch::sync,

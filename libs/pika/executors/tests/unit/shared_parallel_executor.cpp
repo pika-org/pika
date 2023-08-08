@@ -110,10 +110,7 @@ void test_bulk_async()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void void_test(int passed_through)
-{
-    PIKA_TEST_EQ(passed_through, 42);
-}
+void void_test(int passed_through) { PIKA_TEST_EQ(passed_through, 42); }
 
 void test_sync_void()
 {

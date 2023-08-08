@@ -35,10 +35,7 @@ void test_wait_all()
 
         pika::wait_all_nothrow(future_array);
 
-        for (auto& f : future_array)
-        {
-            PIKA_TEST(f.is_ready());
-        }
+        for (auto& f : future_array) { PIKA_TEST(f.is_ready()); }
     }
     {
         std::array<pika::future<int>, 2> future_array;
@@ -50,10 +47,7 @@ void test_wait_all()
         {
             pika::wait_all_nothrow(future_array);
 
-            for (auto& f : future_array)
-            {
-                PIKA_TEST(f.is_ready());
-            }
+            for (auto& f : future_array) { PIKA_TEST(f.is_ready()); }
         }
         catch (std::runtime_error const&)
         {
@@ -97,10 +91,7 @@ void test_wait_all_n()
 
         pika::wait_all_n_nothrow(future_array.begin(), 2);
 
-        for (auto& f : future_array)
-        {
-            PIKA_TEST(f.is_ready());
-        }
+        for (auto& f : future_array) { PIKA_TEST(f.is_ready()); }
     }
     {
         std::array<pika::future<int>, 2> future_array;
@@ -112,10 +103,7 @@ void test_wait_all_n()
         {
             pika::wait_all_n_nothrow(future_array.begin(), 2);
 
-            for (auto& f : future_array)
-            {
-                PIKA_TEST(f.is_ready());
-            }
+            for (auto& f : future_array) { PIKA_TEST(f.is_ready()); }
         }
         catch (std::runtime_error const&)
         {

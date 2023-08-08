@@ -12,19 +12,13 @@
 
 struct s
 {
-    int f() const
-    {
-        return 42;
-    }
+    int f() const { return 42; }
 };
 
 struct p
 {
     s x;
-    s const& operator*() const
-    {
-        return x;
-    }
+    s const& operator*() const { return x; }
 };
 
 ///////////////////////////////////////////////////////////////////////////////

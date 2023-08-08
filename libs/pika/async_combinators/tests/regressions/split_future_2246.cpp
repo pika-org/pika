@@ -38,8 +38,7 @@ int pika_main()
     // see if the values of mm2 and ss2 are the same
     std::map<int, int> mm2 = pair_f.first.get();
     std::cout << "Printing map: ";
-    for (auto val : mm2)
-        std::cout << "(" << val.first << ", " << val.second << ") ";
+    for (auto val : mm2) std::cout << "(" << val.first << ", " << val.second << ") ";
     std::cout << std::endl;
 
     PIKA_TEST_EQ(mm.size(), mm2.size());
@@ -53,8 +52,7 @@ int pika_main()
 
     std::set<int> ss2 = pair_f.second.get();
     std::cout << "Printing set: ";
-    for (auto val : ss2)
-        std::cout << val << " ";
+    for (auto val : ss2) std::cout << val << " ";
     std::cout << std::endl;
 
     PIKA_TEST_EQ(ss.size(), ss2.size());

@@ -159,10 +159,7 @@ namespace pika {
         {
             using type = T;
 
-            static type call(T&& t) noexcept
-            {
-                return PIKA_MOVE(t);
-            }
+            static type call(T&& t) noexcept { return PIKA_MOVE(t); }
         };
 
         template <typename T>
@@ -170,10 +167,7 @@ namespace pika {
         {
             using type = T;
 
-            static type call(std::tuple<T>&& t) noexcept
-            {
-                return PIKA_MOVE(std::get<0>(t));
-            }
+            static type call(std::tuple<T>&& t) noexcept { return PIKA_MOVE(std::get<0>(t)); }
         };
 
         template <typename T>

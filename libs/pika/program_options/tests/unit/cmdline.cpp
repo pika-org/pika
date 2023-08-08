@@ -99,14 +99,8 @@ void apply_syntax(options_description& desc, const char* syntax)
             v = value<vector<string>>()->multitoken();
             s.resize(s.size() - 1);
         }
-        if (v)
-        {
-            desc.add_options()(s.c_str(), v, "");
-        }
-        else
-        {
-            desc.add_options()(s.c_str(), "");
-        }
+        if (v) { desc.add_options()(s.c_str(), v, ""); }
+        else { desc.add_options()(s.c_str(), ""); }
     }
 }
 
@@ -120,10 +114,7 @@ void test_cmdline(const char* syntax, command_line_style::style_t style, const t
             string s;
             stringstream ss;
             ss << cases[i].input;
-            while (ss >> s)
-            {
-                xinput.push_back(s);
-            }
+            while (ss >> s) { xinput.push_back(s); }
         }
         options_description desc;
         apply_syntax(desc, syntax);
@@ -143,19 +134,16 @@ void test_cmdline(const char* syntax, command_line_style::style_t style, const t
             {
                 if (opt.position_key != -1)
                 {
-                    if (!result.empty())
-                        result += " ";
+                    if (!result.empty()) result += " ";
                     result += opt.value[0];
                 }
                 else
                 {
-                    if (!result.empty())
-                        result += " ";
+                    if (!result.empty()) result += " ";
                     result += opt.string_key + ":";
                     for (size_t k = 0; k < opt.value.size(); ++k)
                     {
-                        if (k != 0)
-                            result += "-";
+                        if (k != 0) result += "-";
                         result += opt.value[k];
                     }
                 }

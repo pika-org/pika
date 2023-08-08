@@ -23,10 +23,7 @@ namespace pika::program_options {
 
         if (max_count == -1)
             m_trailing = name;
-        else
-        {
-            m_names.resize(m_names.size() + static_cast<std::size_t>(max_count), name);
-        }
+        else { m_names.resize(m_names.size() + static_cast<std::size_t>(max_count), name); }
         return *this;
     }
 

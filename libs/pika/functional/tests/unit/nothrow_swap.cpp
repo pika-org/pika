@@ -29,23 +29,18 @@ struct MaybeThrowOnCopy
     MaybeThrowOnCopy(const MaybeThrowOnCopy& other)
       : value(other.value)
     {
-        if (throwOnCopy)
-            throw tried_to_copy();
+        if (throwOnCopy) throw tried_to_copy();
     }
 
     // NOLINTNEXTLINE(bugprone-unhandled-self-assignment)
     MaybeThrowOnCopy& operator=(const MaybeThrowOnCopy& other)
     {
-        if (throwOnCopy)
-            throw tried_to_copy();
+        if (throwOnCopy) throw tried_to_copy();
         value = other.value;
         return *this;
     }
 
-    int operator()()
-    {
-        return value;
-    }
+    int operator()() { return value; }
 
     int value;
 

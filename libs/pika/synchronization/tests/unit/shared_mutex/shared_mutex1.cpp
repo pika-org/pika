@@ -59,10 +59,7 @@ void test_multiple_readers()
         {
             std::unique_lock<mutex_type> lk(unblocked_count_mutex);
             // NOLINTNEXTLINE(bugprone-infinite-loop)
-            while (unblocked_count < number_of_threads)
-            {
-                unblocked_condition.wait(lk);
-            }
+            while (unblocked_count < number_of_threads) { unblocked_condition.wait(lk); }
         }
 
         CHECK_LOCKED_VALUE_EQUAL(unblocked_count_mutex, unblocked_count, number_of_threads);
@@ -150,10 +147,7 @@ void test_reader_blocks_writer()
         {
             std::unique_lock<mutex_type> lk(unblocked_count_mutex);
             // NOLINTNEXTLINE(bugprone-infinite-loop)
-            while (unblocked_count < 1)
-            {
-                unblocked_condition.wait(lk);
-            }
+            while (unblocked_count < 1) { unblocked_condition.wait(lk); }
         }
 
         CHECK_LOCKED_VALUE_EQUAL(unblocked_count_mutex, unblocked_count, 1u);
@@ -217,10 +211,7 @@ void test_unlocking_writer_unblocks_all_readers()
         {
             std::unique_lock<mutex_type> lk(unblocked_count_mutex);
             // NOLINTNEXTLINE(bugprone-infinite-loop)
-            while (unblocked_count < reader_count)
-            {
-                unblocked_condition.wait(lk);
-            }
+            while (unblocked_count < reader_count) { unblocked_condition.wait(lk); }
         }
 
         CHECK_LOCKED_VALUE_EQUAL(unblocked_count_mutex, unblocked_count, reader_count);
@@ -283,10 +274,7 @@ void test_unlocking_last_reader_only_unblocks_one_writer()
         {
             std::unique_lock<mutex_type> lk(unblocked_count_mutex);
             // NOLINTNEXTLINE(bugprone-infinite-loop)
-            while (unblocked_count < reader_count)
-            {
-                unblocked_condition.wait(lk);
-            }
+            while (unblocked_count < reader_count) { unblocked_condition.wait(lk); }
         }
 
         std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -299,10 +287,7 @@ void test_unlocking_last_reader_only_unblocks_one_writer()
         {
             std::unique_lock<mutex_type> lk(unblocked_count_mutex);
             // NOLINTNEXTLINE(bugprone-infinite-loop)
-            while (unblocked_count < (reader_count + 1))
-            {
-                unblocked_condition.wait(lk);
-            }
+            while (unblocked_count < (reader_count + 1)) { unblocked_condition.wait(lk); }
         }
 
         CHECK_LOCKED_VALUE_EQUAL(unblocked_count_mutex, unblocked_count, reader_count + 1);

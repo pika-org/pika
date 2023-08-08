@@ -21,8 +21,7 @@ void test_atomic()
 int main()
 {
     std::atomic_flag af = ATOMIC_FLAG_INIT;
-    if (af.test_and_set())
-        af.clear();
+    if (af.test_and_set()) af.clear();
 
     test_atomic<int>();
     test_atomic<std::uint8_t>();

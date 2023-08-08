@@ -46,10 +46,7 @@ namespace pika::parallel::execution {
 }    // namespace pika::parallel::execution
 
 ///////////////////////////////////////////////////////////////////////////////
-std::int32_t increment(additional_argument, std::int32_t i)
-{
-    return i + 1;
-}
+std::int32_t increment(additional_argument, std::int32_t i) { return i + 1; }
 
 std::int32_t increment_with_future(additional_argument, pika::shared_future<std::int32_t> fi)
 {
@@ -59,19 +56,13 @@ std::int32_t increment_with_future(additional_argument, pika::shared_future<std:
 ///////////////////////////////////////////////////////////////////////////////
 struct mult2
 {
-    std::int32_t operator()(additional_argument, std::int32_t i) const
-    {
-        return i * 2;
-    }
+    std::int32_t operator()(additional_argument, std::int32_t i) const { return i * 2; }
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 struct decrement
 {
-    std::int32_t call(additional_argument, std::int32_t i) const
-    {
-        return i - 1;
-    }
+    std::int32_t call(additional_argument, std::int32_t i) const { return i - 1; }
 };
 
 ///////////////////////////////////////////////////////////////////////////////

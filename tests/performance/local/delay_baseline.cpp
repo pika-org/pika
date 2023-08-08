@@ -76,19 +76,14 @@ void print_results(variables_map& vm, double sum_, double mean_)
 ///////////////////////////////////////////////////////////////////////////////
 int app_main(variables_map& vm)
 {
-    if (vm.count("no-header"))
-        header = false;
+    if (vm.count("no-header")) header = false;
 
-    if (0 == tasks)
-        throw std::invalid_argument("count of 0 tasks specified\n");
+    if (0 == tasks) throw std::invalid_argument("count of 0 tasks specified\n");
 
     // Start the clock.
     high_resolution_timer t;
 
-    for (std::uint64_t i = 0; i < tasks; ++i)
-    {
-        worker_timed(delay * 1000);
-    }
+    for (std::uint64_t i = 0; i < tasks; ++i) { worker_timed(delay * 1000); }
 
     double elapsed = t.elapsed();
 

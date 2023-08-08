@@ -112,36 +112,16 @@ namespace pika::resource::detail {
         std::string sched;
         switch (scheduling_policy_)
         {
-        case resource::unspecified:
-            sched = "unspecified";
-            break;
-        case resource::user_defined:
-            sched = "user supplied";
-            break;
-        case resource::local:
-            sched = "local";
-            break;
-        case resource::local_priority_fifo:
-            sched = "local_priority_fifo";
-            break;
-        case resource::local_priority_lifo:
-            sched = "local_priority_lifo";
-            break;
-        case resource::static_:
-            sched = "static";
-            break;
-        case resource::static_priority:
-            sched = "static_priority";
-            break;
-        case resource::abp_priority_fifo:
-            sched = "abp_priority_fifo";
-            break;
-        case resource::abp_priority_lifo:
-            sched = "abp_priority_lifo";
-            break;
-        case resource::shared_priority:
-            sched = "shared_priority";
-            break;
+        case resource::unspecified: sched = "unspecified"; break;
+        case resource::user_defined: sched = "user supplied"; break;
+        case resource::local: sched = "local"; break;
+        case resource::local_priority_fifo: sched = "local_priority_fifo"; break;
+        case resource::local_priority_lifo: sched = "local_priority_lifo"; break;
+        case resource::static_: sched = "static"; break;
+        case resource::static_priority: sched = "static_priority"; break;
+        case resource::abp_priority_fifo: sched = "abp_priority_fifo"; break;
+        case resource::abp_priority_lifo: sched = "abp_priority_lifo"; break;
+        case resource::shared_priority: sched = "shared_priority"; break;
         }
 
         os << "\"" << sched << "\" is running on PUs : \n";
@@ -263,8 +243,7 @@ namespace pika::resource::detail {
 
         std::size_t pid = 0;
         std::size_t num_numa_nodes = topo.get_number_of_numa_nodes();
-        if (num_numa_nodes == 0)
-            num_numa_nodes = topo.get_number_of_sockets();
+        if (num_numa_nodes == 0) num_numa_nodes = topo.get_number_of_sockets();
         numa_domains_.reserve(num_numa_nodes);
 
         // loop on the numa-domains
@@ -308,20 +287,11 @@ namespace pika::resource::detail {
                     ++pid;
                 }
 
-                if (core_contains_exposed_pus)
-                {
-                    numa_domain_contains_exposed_cores = true;
-                }
-                else
-                {
-                    nd.cores_.pop_back();
-                }
+                if (core_contains_exposed_pus) { numa_domain_contains_exposed_cores = true; }
+                else { nd.cores_.pop_back(); }
             }
 
-            if (!numa_domain_contains_exposed_cores)
-            {
-                numa_domains_.pop_back();
-            }
+            if (!numa_domain_contains_exposed_cores) { numa_domains_.pop_back(); }
         }
     }
 
@@ -335,18 +305,12 @@ namespace pika::resource::detail {
             std::size_t offset = first_core;
             std::size_t num_pus_core = get_topology().get_number_of_core_pus(offset);
 
-            if (first_core_ != std::size_t(-1))
-            {
-                offset -= first_core_;
-            }
+            if (first_core_ != std::size_t(-1)) { offset -= first_core_; }
 
             if (offset != 0)
             {
                 offset *= num_pus_core;
-                for (auto& d : initial_thread_pools_)
-                {
-                    d.assign_first_core(offset);
-                }
+                for (auto& d : initial_thread_pools_) { d.assign_first_core(offset); }
             }
             first_core_ = first_core;
             reconfigure_affinities_locked();
@@ -518,10 +482,7 @@ namespace pika::resource::detail {
         {
             for (auto& itp : initial_thread_pools_)
             {
-                for (auto const& mask : itp.assigned_pus_)
-                {
-                    new_affinity_masks.push_back(mask);
-                }
+                for (auto const& mask : itp.assigned_pus_) { new_affinity_masks.push_back(mask); }
                 for (auto const& pu_num : itp.assigned_pu_nums_)
                 {
                     new_pu_nums.push_back(std::get<0>(pu_num));
@@ -542,16 +503,10 @@ namespace pika::resource::detail {
 
         for (std::size_t i = 0; i != num_thread_pools; i++)
         {
-            if (initial_thread_pools_[i].assigned_pus_.empty())
-            {
-                return true;
-            }
+            if (initial_thread_pools_[i].assigned_pus_.empty()) { return true; }
             for (auto assigned_pus : initial_thread_pools_[i].assigned_pus_)
             {
-                if (!threads::detail::any(assigned_pus))
-                {
-                    return true;
-                }
+                if (!threads::detail::any(assigned_pus)) { return true; }
             }
         }
 
@@ -684,10 +639,7 @@ namespace pika::resource::detail {
     void partitioner::add_resource(
         std::vector<pu> const& pv, std::string const& pool_name, bool exclusive)
     {
-        for (pu const& p : pv)
-        {
-            add_resource(p, pool_name, exclusive);
-        }
+        for (pu const& p : pv) { add_resource(p, pool_name, exclusive); }
     }
 
     void partitioner::add_resource(core const& c, std::string const& pool_name, bool exclusive)
@@ -698,10 +650,7 @@ namespace pika::resource::detail {
     void partitioner::add_resource(
         std::vector<core> const& cv, std::string const& pool_name, bool exclusive)
     {
-        for (const core& c : cv)
-        {
-            add_resource(c.pus_, pool_name, exclusive);
-        }
+        for (const core& c : cv) { add_resource(c.pus_, pool_name, exclusive); }
     }
 
     void partitioner::add_resource(
@@ -713,10 +662,7 @@ namespace pika::resource::detail {
     void partitioner::add_resource(
         std::vector<numa_domain> const& ndv, std::string const& pool_name, bool exclusive)
     {
-        for (const numa_domain& d : ndv)
-        {
-            add_resource(d, pool_name, exclusive);
-        }
+        for (const numa_domain& d : ndv) { add_resource(d, pool_name, exclusive); }
     }
 
     void partitioner::set_scheduler(scheduling_policy sched, std::string const& pool_name)
@@ -750,10 +696,7 @@ namespace pika::resource::detail {
         return sched_type;
     }
 
-    threads::detail::topology& partitioner::get_topology() const
-    {
-        return topo_;
-    }
+    threads::detail::topology& partitioner::get_topology() const { return topo_; }
 
     std::size_t partitioner::get_num_threads() const
     {
@@ -898,10 +841,7 @@ namespace pika::resource::detail {
                 if (!data.pu_is_exclusive(i))
                 {
                     has_non_exclusive_pus = true;
-                    if (data.pu_is_assigned(i))
-                    {
-                        pu_nums_to_remove.push_back(i);
-                    }
+                    if (data.pu_is_assigned(i)) { pu_nums_to_remove.push_back(i); }
                 }
             }
         }
@@ -912,10 +852,7 @@ namespace pika::resource::detail {
                 "pool '{}' has no non-exclusive pus associated", pool_name);
         }
 
-        for (std::size_t pu_num : pu_nums_to_remove)
-        {
-            remove_pu(pu_num);
-        }
+        for (std::size_t pu_num : pu_nums_to_remove) { remove_pu(pu_num); }
 
         return pu_nums_to_remove.size();
     }
@@ -943,10 +880,7 @@ namespace pika::resource::detail {
                 if (!data.pu_is_exclusive(i))
                 {
                     has_non_exclusive_pus = true;
-                    if (!data.pu_is_assigned(i))
-                    {
-                        pu_nums_to_add.push_back(i);
-                    }
+                    if (!data.pu_is_assigned(i)) { pu_nums_to_add.push_back(i); }
                 }
             }
         }
@@ -957,10 +891,7 @@ namespace pika::resource::detail {
                 "pool '{}' has no non-exclusive pus associated", pool_name);
         }
 
-        for (std::size_t pu_num : pu_nums_to_add)
-        {
-            add_pu(pu_num);
-        }
+        for (std::size_t pu_num : pu_nums_to_add) { add_pu(pu_num); }
 
         return pu_nums_to_add.size();
     }
@@ -970,19 +901,13 @@ namespace pika::resource::detail {
     {
         // the default pool is always index 0, it may be renamed
         // but the user can always ask for "default"
-        if (pool_name == "default")
-        {
-            return 0;
-        }
+        if (pool_name == "default") { return 0; }
         {
             std::lock_guard<mutex_type> l(mtx_);
             std::size_t num_pools = initial_thread_pools_.size();
             for (std::size_t i = 0; i < num_pools; i++)
             {
-                if (initial_thread_pools_[i].pool_name_ == pool_name)
-                {
-                    return i;
-                }
+                if (initial_thread_pools_[i].pool_name_ == pool_name) { return i; }
             }
         }
 
@@ -1000,10 +925,7 @@ namespace pika::resource::detail {
                 return (itp.pool_name_ == pool_name);
             });
 
-        if (pool != initial_thread_pools_.end())
-        {
-            return *pool;
-        }
+        if (pool != initial_thread_pools_.end()) { return *pool; }
 
         l.unlock();
         throw_invalid_argument("partitioner::get_pool_data",
@@ -1018,10 +940,7 @@ namespace pika::resource::detail {
                 return (itp.pool_name_ == pool_name);
             });
 
-        if (pool != initial_thread_pools_.end())
-        {
-            return *pool;
-        }
+        if (pool != initial_thread_pools_.end()) { return *pool; }
 
         l.unlock();
         throw_invalid_argument("partitioner::get_pool_data",
@@ -1035,10 +954,7 @@ namespace pika::resource::detail {
         //! make this prettier
         os << "the resource partitioner owns " << initial_thread_pools_.size()
            << " pool(s) : \n";    // -V128
-        for (auto itp : initial_thread_pools_)
-        {
-            itp.print_pool(os);
-        }
+        for (auto itp : initial_thread_pools_) { itp.print_pool(os); }
     }
 
     ////////////////////////////////////////////////////////////////////////

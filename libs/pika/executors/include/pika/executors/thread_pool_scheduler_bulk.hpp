@@ -155,10 +155,7 @@ namespace pika::thread_pool_bulk_detail {
                     operation_state* const op_state;
                     task_function const* const task_f;
 
-                    void operator()(pika::detail::monostate const&) const
-                    {
-                        PIKA_UNREACHABLE;
-                    }
+                    void operator()(pika::detail::monostate const&) const { PIKA_UNREACHABLE; }
 
                     // Perform the work in one chunk indexed by index.  The
                     // index represents a range of indices (iterators) in
@@ -216,10 +213,7 @@ namespace pika::thread_pool_bulk_detail {
                 {
                     operation_state* const op_state;
 
-                    void operator()(pika::detail::monostate&&) const
-                    {
-                        std::terminate();
-                    }
+                    void operator()(pika::detail::monostate&&) const { std::terminate(); }
 
                     // Visit the values sent from the predecessor sender.
                     // This function is called once all worker threads have
@@ -321,10 +315,7 @@ namespace pika::thread_pool_bulk_detail {
                     std::uint32_t const num_threads, size_type const n)
                 {
                     std::uint32_t chunk_size = 1;
-                    while (chunk_size * num_threads * 8 < n)
-                    {
-                        chunk_size *= 2;
-                    }
+                    while (chunk_size * num_threads * 8 < n) { chunk_size *= 2; }
                     return chunk_size;
                 }
 
@@ -430,10 +421,7 @@ namespace pika::thread_pool_bulk_detail {
                     {
                         // The queue for the local thread is handled later
                         // inline.
-                        if (worker_thread == local_worker_thread)
-                        {
-                            continue;
-                        }
+                        if (worker_thread == local_worker_thread) { continue; }
 
                         r.do_work_task(n, chunk_size, worker_thread);
                     }

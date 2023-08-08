@@ -35,18 +35,12 @@ namespace pika::util::logging::formatter {
         {
         }
 
-        void operator()(std::ostream& to) const override
-        {
-            fmt::print(to, "{:016x}", ++value);
-        }
+        void operator()(std::ostream& to) const override { fmt::print(to, "{:016x}", ++value); }
 
     private:
         mutable std::uint64_t value;
     };
 
-    std::unique_ptr<idx> idx::make()
-    {
-        return std::unique_ptr<idx>(new idx_impl());
-    }
+    std::unique_ptr<idx> idx::make() { return std::unique_ptr<idx>(new idx_impl()); }
 
 }    // namespace pika::util::logging::formatter

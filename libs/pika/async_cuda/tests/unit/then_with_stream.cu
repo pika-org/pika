@@ -171,10 +171,7 @@ struct dummy
         cusolver_double_calls = 0;
     }
 
-    void operator()() const
-    {
-        ++host_void_calls;
-    }
+    void operator()() const { ++host_void_calls; }
 
     void operator()(whip::stream_t stream) const
     {
@@ -182,18 +179,12 @@ struct dummy
         dummy_kernel<<<1, 1, 0, stream>>>();
     }
 
-    void operator()(cublasHandle_t) const
-    {
-        ++cublas_void_calls;
-    }
+    void operator()(cublasHandle_t) const { ++cublas_void_calls; }
 
 #if !defined(PIKA_HAVE_HIP)
     // cusolverDnHandle_t and cublasHandle_t are the same so this results in a
     // redefinition with HIP.
-    void operator()(cusolverDnHandle_t) const
-    {
-        ++cusolver_void_calls;
-    }
+    void operator()(cusolverDnHandle_t) const { ++cusolver_void_calls; }
 #endif
 
     double operator()(int x) const
@@ -267,34 +258,22 @@ std::atomic<std::size_t> dummy::cusolver_double_calls{0};
 struct dummy_stream
 {
     bool& called;
-    void operator()(whip::stream_t)
-    {
-        called = true;
-    }
+    void operator()(whip::stream_t) { called = true; }
 };
 
 struct dummy_cublas
 {
     bool& called;
-    void operator()(cublasHandle_t)
-    {
-        called = true;
-    }
+    void operator()(cublasHandle_t) { called = true; }
 };
 
 struct dummy_cusolver
 {
     bool& called;
-    void operator()(cusolverDnHandle_t)
-    {
-        called = true;
-    }
+    void operator()(cusolverDnHandle_t) { called = true; }
 };
 
-__global__ void increment_kernel(int* p)
-{
-    ++(*p);
-}
+__global__ void increment_kernel(int* p) { ++(*p); }
 
 struct increment
 {

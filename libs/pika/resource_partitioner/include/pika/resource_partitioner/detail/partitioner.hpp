@@ -112,10 +112,7 @@ namespace pika::resource::detail {
         void add_resource(const std::vector<pika::resource::numa_domain>& ndv,
             std::string const& pool_name, bool exclusive = true);
 
-        pika::detail::affinity_data const& get_affinity_data() const
-        {
-            return affinity_data_;
-        }
+        pika::detail::affinity_data const& get_affinity_data() const { return affinity_data_; }
 
         // Does initialization of all resources and internal data of the
         // resource partitioner called in pika_init
@@ -154,10 +151,7 @@ namespace pika::resource::detail {
 
         scheduler_function get_pool_creator(size_t index) const;
 
-        std::vector<numa_domain> const& numa_domains() const
-        {
-            return numa_domains_;
-        }
+        std::vector<numa_domain> const& numa_domains() const { return numa_domains_; }
 
         std::size_t assign_cores(std::size_t first_core);
 

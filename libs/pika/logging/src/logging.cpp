@@ -39,24 +39,18 @@ namespace pika::util {
             try
             {
                 int env_val = pika::detail::from_string<int>(env);
-                if (env_val < 0)
-                    return pika::util::logging::level::disable_all;
+                if (env_val < 0) return pika::util::logging::level::disable_all;
 
                 switch (env_val)
                 {
                 case 0:
                     return allow_always ? pika::util::logging::level::always :
                                           pika::util::logging::level::disable_all;
-                case 1:
-                    return pika::util::logging::level::fatal;
-                case 2:
-                    return pika::util::logging::level::error;
-                case 3:
-                    return pika::util::logging::level::warning;
-                case 4:
-                    return pika::util::logging::level::info;
-                default:
-                    break;
+                case 1: return pika::util::logging::level::fatal;
+                case 2: return pika::util::logging::level::error;
+                case 3: return pika::util::logging::level::warning;
+                case 4: return pika::util::logging::level::info;
+                default: break;
                 }
                 return pika::util::logging::level::debug;
             }
@@ -75,8 +69,7 @@ namespace pika::util::logging {
 
     void logger::turn_cache_off()
     {
-        if (m_is_caching_off)
-            return;    // already turned off
+        if (m_is_caching_off) return;    // already turned off
 
         m_is_caching_off = true;
 
@@ -84,8 +77,7 @@ namespace pika::util::logging {
         std::vector<message> msgs;
         std::swap(m_cache, msgs);
 
-        for (auto& msg : msgs)
-            m_writer(msg);
+        for (auto& msg : msgs) m_writer(msg);
     }
 
 }    // namespace pika::util::logging

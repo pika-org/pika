@@ -128,10 +128,7 @@ namespace pika::util {
 
         using base_type = Base;
 
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE Base const& base() const
-        {
-            return iterator_;
-        }
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE Base const& base() const { return iterator_; }
 
     protected:
         // for convenience in derived classes
@@ -139,15 +136,9 @@ namespace pika::util {
             iterator_adaptor<Derived, Base, Value, Category, Reference, Difference, Pointer>;
 
         // lvalue access to the Base object for Derived
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE Base const& base_reference() const
-        {
-            return iterator_;
-        }
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE Base const& base_reference() const { return iterator_; }
 
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE Base& base_reference()
-        {
-            return iterator_;
-        }
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE Base& base_reference() { return iterator_; }
 
     private:
         // Core iterator interface for iterator_facade.  This is private
@@ -178,10 +169,7 @@ namespace pika::util {
             std::advance(iterator_, n);
         }
 
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE void increment()
-        {
-            ++iterator_;
-        }
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE void increment() { ++iterator_; }
 
         // prevent this function from being instantiated if not needed
         template <typename Iterator = Base,

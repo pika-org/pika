@@ -85,15 +85,9 @@ namespace pika::lcos::detail {
 
         virtual void set_on_completed(completed_callback_type) = 0;
 
-        virtual bool requires_delete() noexcept
-        {
-            return 0 == --count_;
-        }
+        virtual bool requires_delete() noexcept { return 0 == --count_; }
 
-        virtual void destroy() noexcept
-        {
-            delete this;
-        }
+        virtual void destroy() noexcept { delete this; }
 
         // This is a tag type used to convey the information that the caller is
         // _not_ going to addref the future_data instance
@@ -119,16 +113,10 @@ namespace pika::lcos::detail {
     };
 
     /// support functions for pika::intrusive_ptr
-    inline void intrusive_ptr_add_ref(future_data_refcnt_base* p) noexcept
-    {
-        ++p->count_;
-    }
+    inline void intrusive_ptr_add_ref(future_data_refcnt_base* p) noexcept { ++p->count_; }
     inline void intrusive_ptr_release(future_data_refcnt_base* p) noexcept
     {
-        if (p->requires_delete())
-        {
-            p->destroy();
-        }
+        if (p->requires_delete()) { p->destroy(); }
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -149,15 +137,9 @@ namespace pika::lcos::detail {
     {
         using type = Result*;
 
-        PIKA_FORCEINLINE static constexpr Result* set(Result* u) noexcept
-        {
-            return u;
-        }
+        PIKA_FORCEINLINE static constexpr Result* set(Result* u) noexcept { return u; }
 
-        PIKA_FORCEINLINE static constexpr Result* set(Result& u) noexcept
-        {
-            return &u;
-        }
+        PIKA_FORCEINLINE static constexpr Result* set(Result& u) noexcept { return &u; }
     };
 
     template <>
@@ -240,10 +222,7 @@ namespace pika::lcos::detail {
             return (state_.load(order) & ready) != 0;
         }
 
-        bool has_value() const noexcept
-        {
-            return state_.load(std::memory_order_acquire) == value;
-        }
+        bool has_value() const noexcept { return state_.load(std::memory_order_acquire) == value; }
 
         bool has_exception() const noexcept
         {
@@ -260,10 +239,7 @@ namespace pika::lcos::detail {
         virtual void execute_deferred(error_code& /*ec*/ = throws) {}
 
         // cancellation is disabled by default
-        virtual bool cancelable() const noexcept
-        {
-            return false;
-        }
+        virtual bool cancelable() const noexcept { return false; }
         virtual void cancel()
         {
             PIKA_THROW_EXCEPTION(pika::error::future_does_not_support_cancellation,
@@ -331,10 +307,7 @@ namespace pika::lcos::detail {
     struct future_data_base : future_data_base<traits::detail::future_data_void>
     {
     private:
-        static void construct(void* p)
-        {
-            ::new (p) result_type();
-        }
+        static void construct(void* p) { ::new (p) result_type(); }
 
         template <typename T, typename... Ts>
         static void construct(void* p, T&& t, Ts&&... ts)
@@ -385,10 +358,7 @@ namespace pika::lcos::detail {
             state_.store(exception, std::memory_order_relaxed);
         }
 
-        ~future_data_base() noexcept override
-        {
-            reset();
-        }
+        ~future_data_base() noexcept override { reset(); }
 
         /// Get the result of the requested action. This call blocks (yields
         /// control) if the result is not ready. As soon as the result has been
@@ -471,10 +441,7 @@ namespace pika::lcos::detail {
             //       it unlocked when returning.
 
             // invoke the callback (continuation) function
-            if (!on_completed.empty())
-            {
-                handle_on_completed(PIKA_MOVE(on_completed));
-            }
+            if (!on_completed.empty()) { handle_on_completed(PIKA_MOVE(on_completed)); }
         }
 
         void set_exception(std::exception_ptr data) override
@@ -526,10 +493,7 @@ namespace pika::lcos::detail {
             //       it unlocked when returning.
 
             // invoke the callback (continuation) function
-            if (!on_completed.empty())
-            {
-                handle_on_completed(PIKA_MOVE(on_completed));
-            }
+            if (!on_completed.empty()) { handle_on_completed(PIKA_MOVE(on_completed)); }
         }
 
         // helper functions for setting data (if successful) or the error (if
@@ -571,8 +535,7 @@ namespace pika::lcos::detail {
                 exception_ptr->~exception_ptr();
                 break;
             }
-            default:
-                break;
+            default: break;
             }
 
             on_completed_.clear();
@@ -756,29 +719,20 @@ namespace pika::lcos::detail {
 
         void execute_deferred(error_code& /*ec*/ = throws) override
         {
-            if (!started_test_and_set())
-            {
-                this->do_run();
-            }
+            if (!started_test_and_set()) { this->do_run(); }
         }
 
         // retrieving the value
         result_type* get_result(error_code& ec = throws) override
         {
-            if (!started_test_and_set())
-            {
-                this->do_run();
-            }
+            if (!started_test_and_set()) { this->do_run(); }
             return this->future_data<Result>::get_result(ec);
         }
 
         // wait support
         typename base_type::state wait(error_code& ec = throws) override
         {
-            if (!started_test_and_set())
-            {
-                this->do_run();
-            }
+            if (!started_test_and_set()) { this->do_run(); }
             return this->future_data<Result>::wait(ec);
         }
 
@@ -803,10 +757,7 @@ namespace pika::lcos::detail {
         bool started_test_and_set_locked(Lock& l)
         {
             PIKA_ASSERT_OWNS_LOCK(l);
-            if (started_)
-            {
-                return true;
-            }
+            if (started_) { return true; }
             started_ = true;
             return false;
         }
@@ -849,10 +800,7 @@ namespace pika::lcos::detail {
         }
 
     protected:
-        static void run_impl(future_base_type this_)
-        {
-            this_->do_run();
-        }
+        static void run_impl(future_base_type this_) { this_->do_run(); }
 
     public:
         template <typename T>
@@ -920,10 +868,7 @@ namespace pika::lcos::detail {
             {
                 target.set_thread_id(threads::detail::get_self_id());
             }
-            ~reset_id()
-            {
-                target_.set_thread_id(threads::detail::invalid_thread_id);
-            }
+            ~reset_id() { target_.set_thread_id(threads::detail::invalid_thread_id); }
             cancelable_task_base& target_;
         };
 
@@ -936,20 +881,14 @@ namespace pika::lcos::detail {
 
     public:
         // cancellation support
-        bool cancelable() const noexcept override
-        {
-            return true;
-        }
+        bool cancelable() const noexcept override { return true; }
 
         void cancel() override
         {
             std::unique_lock<mutex_type> l(mtx_);
             pika::detail::try_catch_exception_ptr(
                 [&]() {
-                    if (!this->started_)
-                    {
-                        PIKA_THROW_THREAD_INTERRUPTED_EXCEPTION();
-                    }
+                    if (!this->started_) { PIKA_THROW_THREAD_INTERRUPTED_EXCEPTION(); }
 
                     if (this->is_ready())
                     {

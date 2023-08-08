@@ -20,10 +20,7 @@ namespace ex = pika::execution::experimental;
 
 // This overload is only used to check dispatching. It is not a useful
 // implementation.
-void tag_invoke(ex::start_detached_t, custom_sender2 s)
-{
-    s.tag_invoke_overload_called = true;
-}
+void tag_invoke(ex::start_detached_t, custom_sender2 s) { s.tag_invoke_overload_called = true; }
 
 int main()
 {

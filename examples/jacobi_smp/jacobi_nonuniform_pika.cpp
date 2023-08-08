@@ -87,10 +87,7 @@ namespace jacobi_smp {
                 std::vector<std::size_t> const& deps(dependencies[block]);
                 std::vector<pika::shared_future<void>> trigger;
                 trigger.reserve(deps.size());
-                for (std::size_t dep : deps)
-                {
-                    trigger.push_back((*deps_src)[dep]);
-                }
+                for (std::size_t dep : deps) { trigger.push_back((*deps_src)[dep]); }
 
                 (*deps_dst)[block] =
                     pika::when_all(std::move(trigger))

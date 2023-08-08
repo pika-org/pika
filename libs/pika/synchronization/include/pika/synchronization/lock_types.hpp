@@ -78,10 +78,7 @@ namespace pika {
           : m(other.mutex())
           , is_locked(other.owns_lock())
         {
-            if (is_locked)
-            {
-                m->unlock_and_lock_upgrade();
-            }
+            if (is_locked) { m->unlock_and_lock_upgrade(); }
             other.release();
         }
 
@@ -97,10 +94,7 @@ namespace pika {
             std::swap(m, other.m);
             std::swap(is_locked, other.is_locked);
         }
-        Mutex* mutex() const noexcept
-        {
-            return m;
-        }
+        Mutex* mutex() const noexcept { return m; }
 
         Mutex* release() noexcept
         {
@@ -111,10 +105,7 @@ namespace pika {
         }
         ~upgrade_lock()
         {
-            if (owns_lock())
-            {
-                m->unlock_upgrade();
-            }
+            if (owns_lock()) { m->unlock_upgrade(); }
         }
 
         void lock()
@@ -162,14 +153,8 @@ namespace pika {
             m->unlock_upgrade();
             is_locked = false;
         }
-        explicit operator bool() const noexcept
-        {
-            return owns_lock();
-        }
-        bool owns_lock() const noexcept
-        {
-            return is_locked;
-        }
+        explicit operator bool() const noexcept { return owns_lock(); }
+        bool owns_lock() const noexcept { return is_locked; }
     };
 
     template <typename Mutex>
@@ -200,18 +185,12 @@ namespace pika {
                 exclusive = std::unique_lock<Mutex>(*m_.m, std::adopt_lock);
                 m_.m->unlock_upgrade_and_lock();
             }
-            else
-            {
-                exclusive = std::unique_lock<Mutex>(*m_.m, std::defer_lock);
-            }
+            else { exclusive = std::unique_lock<Mutex>(*m_.m, std::defer_lock); }
             m_.release();
         }
         ~upgrade_to_unique_lock()
         {
-            if (source != nullptr)
-            {
-                *source = upgrade_lock<Mutex>(PIKA_MOVE(exclusive));
-            }
+            if (source != nullptr) { *source = upgrade_lock<Mutex>(PIKA_MOVE(exclusive)); }
         }
 
         upgrade_to_unique_lock(upgrade_to_unique_lock<Mutex>&& other) noexcept
@@ -234,18 +213,9 @@ namespace pika {
             exclusive.swap(other.exclusive);
         }
 
-        explicit operator bool() const noexcept
-        {
-            return owns_lock();
-        }
+        explicit operator bool() const noexcept { return owns_lock(); }
 
-        bool owns_lock() const noexcept
-        {
-            return exclusive.owns_lock();
-        }
-        Mutex* mutex() const noexcept
-        {
-            return exclusive.mutex();
-        }
+        bool owns_lock() const noexcept { return exclusive.owns_lock(); }
+        Mutex* mutex() const noexcept { return exclusive.mutex(); }
     };
 }    // namespace pika

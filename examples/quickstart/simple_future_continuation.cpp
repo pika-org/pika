@@ -12,10 +12,7 @@
 
 #include <iostream>
 
-int get_id(int i)
-{
-    return i;
-}
+int get_id(int i) { return i; }
 
 int func1()
 {
@@ -59,7 +56,4 @@ int pika_main()
     return pika::finalize();
 }
 
-int main(int argc, char* argv[])
-{
-    return pika::init(pika_main, argc, argv);
-}
+int main(int argc, char* argv[]) { return pika::init(pika_main, argc, argv); }

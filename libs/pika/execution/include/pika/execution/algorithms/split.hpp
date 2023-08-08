@@ -229,10 +229,7 @@ namespace pika::split_detail {
             {
                 PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
-                [[noreturn]] void operator()(pika::detail::monostate) const
-                {
-                    PIKA_UNREACHABLE;
-                }
+                [[noreturn]] void operator()(pika::detail::monostate) const { PIKA_UNREACHABLE; }
 
                 void operator()(pika::execution::detail::stopped_type)
                 {
@@ -306,10 +303,7 @@ namespace pika::split_detail {
                     // because the shared state may already be released by
                     // the last continuation to run.
                     auto continuations_local = PIKA_MOVE(continuations);
-                    for (auto const& continuation : continuations_local)
-                    {
-                        continuation();
-                    }
+                    for (auto const& continuation : continuations_local) { continuation(); }
                 }
             }
 
@@ -375,10 +369,7 @@ namespace pika::split_detail {
                 }
             }
 
-            friend void intrusive_ptr_add_ref(shared_state* p)
-            {
-                ++p->reference_count;
-            }
+            friend void intrusive_ptr_add_ref(shared_state* p) { ++p->reference_count; }
 
             friend void intrusive_ptr_release(shared_state* p)
             {

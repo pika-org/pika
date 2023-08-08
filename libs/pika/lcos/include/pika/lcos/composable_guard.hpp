@@ -160,10 +160,7 @@ namespace pika::lcos::local {
         }
         ~guard_set() {}
 
-        std::shared_ptr<guard> get(std::size_t i)
-        {
-            return guards[i];
-        }
+        std::shared_ptr<guard> get(std::size_t i) { return guards[i]; }
 
         void add(std::shared_ptr<guard> const& guard_ptr)
         {
@@ -172,10 +169,7 @@ namespace pika::lcos::local {
             sorted = false;
         }
 
-        std::size_t size()
-        {
-            return guards.size();
-        }
+        std::size_t size() { return guards.size(); }
 
         friend PIKA_EXPORT void run_guarded(guard_set& guards, detail::guard_function task);
     };

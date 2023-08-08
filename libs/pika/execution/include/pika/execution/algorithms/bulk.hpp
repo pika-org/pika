@@ -99,10 +99,7 @@ namespace pika::bulk_detail {
             {
                 pika::detail::try_catch_exception_ptr(
                     [&]() {
-                        for (auto const& s : shape)
-                        {
-                            PIKA_INVOKE(f, s, ts...);
-                        }
+                        for (auto const& s : shape) { PIKA_INVOKE(f, s, ts...); }
                         pika::execution::experimental::set_value(
                             PIKA_MOVE(receiver), PIKA_FORWARD(Ts, ts)...);
                     },

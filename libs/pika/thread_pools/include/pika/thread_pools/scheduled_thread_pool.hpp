@@ -50,10 +50,7 @@ namespace pika::threads::detail {
 
         void print_pool(std::ostream& os) override;
 
-        threads::detail::scheduler_base* get_scheduler() const override
-        {
-            return sched_.get();
-        }
+        threads::detail::scheduler_base* get_scheduler() const override { return sched_.get(); }
 
         ///////////////////////////////////////////////////////////////////
         pika::runtime_state get_state() const override;
@@ -141,10 +138,7 @@ namespace pika::threads::detail {
         void thread_func(std::size_t thread_num, std::size_t global_thread_num,
             std::shared_ptr<pika::concurrency::detail::barrier> startup);
 
-        std::size_t get_os_thread_count() const override
-        {
-            return thread_count_;
-        }
+        std::size_t get_os_thread_count() const override { return thread_count_; }
 
         std::size_t get_active_os_thread_count() const override
         {

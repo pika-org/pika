@@ -75,8 +75,7 @@ namespace pika::detail {
 
     std::string enquote(std::string const& arg)
     {
-        if (arg.find_first_of(" \t\"") != std::string::npos)
-            return std::string("\"") + arg + "\"";
+        if (arg.find_first_of(" \t\"") != std::string::npos) return std::string("\"") + arg + "\"";
         return arg;
     }
 
@@ -85,8 +84,7 @@ namespace pika::detail {
         using size_type = std::string::size_type;
 
         size_type first = s.find_first_not_of(" \t");
-        if (std::string::npos == first)
-            return std::string();
+        if (std::string::npos == first) return std::string();
 
         size_type last = s.find_last_not_of(" \t");
         return s.substr(first, last - first + 1);
@@ -101,12 +99,10 @@ namespace pika::detail {
         std::pair<std::string, std::string> result;
 
         std::string opt(trim_whitespace(option));
-        if (opt.size() < 2 || opt[0] != '-')
-            return result;
+        if (opt.size() < 2 || opt[0] != '-') return result;
 
         pika::detail::section const* sec = ini.get_section("pika.commandline.aliases");
-        if (nullptr == sec)
-            return result;    // no alias mappings are defined
+        if (nullptr == sec) return result;    // no alias mappings are defined
 
         // we found shortcut option definitions, try to find mapping
         std::string expand_to;
@@ -130,10 +126,7 @@ namespace pika::detail {
             {
                 expand_to = trim_whitespace(sec->get_entry(opt.substr(0, start_at), ""));
             }
-            else
-            {
-                expand_to = trim_whitespace(sec->get_entry(opt, ""));
-            }
+            else { expand_to = trim_whitespace(sec->get_entry(opt, "")); }
         }
 
         if (expand_to.size() < 2 || expand_to.substr(0, 2) != "--")
@@ -177,8 +170,7 @@ namespace pika::detail {
         std::pair<std::string, std::string> operator()(std::string const& s) const
         {
             // handle special syntax for configuration files @filename
-            if ('@' == s[0])
-                return std::make_pair(std::string("pika:options-file"), s.substr(1));
+            if ('@' == s[0]) return std::make_pair(std::string("pika:options-file"), s.substr(1));
 
             // handle aliasing, if enabled
             if (ini_.get_entry("pika.commandline.aliasing", "0") == "0" || ignore_aliases_)
@@ -228,8 +220,7 @@ namespace pika::detail {
         {
             // skip empty lines
             std::string::size_type pos = line.find_first_not_of(" \t");
-            if (pos == std::string::npos)
-                continue;
+            if (pos == std::string::npos) continue;
 
             // strip leading and trailing whitespace
             line = trim_whitespace(line);
@@ -280,8 +271,7 @@ namespace pika::detail {
         pika::program_options::options_description const& desc_cfgfile,
         pika::detail::section const& ini, commandline_error_mode error_mode)
     {
-        if (appname.empty())
-            return;
+        if (appname.empty()) return;
 
         std::filesystem::path dir(filesystem::initial_path());
         std::filesystem::path app(appname);
@@ -293,13 +283,11 @@ namespace pika::detail {
             std::filesystem::path filename = dir / (appname + ".cfg");
             bool result = read_config_file_options(filename.string(), desc_cfgfile, vm, ini,
                 error_mode & ~commandline_error_mode::report_missing_config_file);
-            if (result)
-                break;    // break on the first options file found
+            if (result) break;    // break on the first options file found
 
             auto dir_prev = dir;
             dir = dir.parent_path();    // chop off last directory part
-            if (dir_prev == dir)
-                break;
+            if (dir_prev == dir) break;
         }
     }
 

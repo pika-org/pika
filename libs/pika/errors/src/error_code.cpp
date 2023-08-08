@@ -20,18 +20,14 @@ namespace pika {
         class pika_category : public std::error_category
         {
         public:
-            const char* name() const noexcept
-            {
-                return "pika";
-            }
+            const char* name() const noexcept { return "pika"; }
 
             std::string message(int value) const
             {
                 if (value >= static_cast<int>(pika::error::success) &&
                     value < static_cast<int>(pika::error::last_error))
                     return std::string("pika(") + error_names[value] + ")";    //-V108
-                if (error_code_has_system_error(value))
-                    return std::string("pika(system_error)");
+                if (error_code_has_system_error(value)) return std::string("pika(system_error)");
                 return "pika(unknown_error)";
             }
         };
@@ -44,15 +40,9 @@ namespace pika {
         class pika_category_rethrow : public std::error_category
         {
         public:
-            const char* name() const noexcept
-            {
-                return "";
-            }
+            const char* name() const noexcept { return ""; }
 
-            std::string message(int) const noexcept
-            {
-                return "";
-            }
+            std::string message(int) const noexcept { return ""; }
         };
 
         struct lightweight_pika_category_rethrow : pika_category_rethrow
@@ -84,16 +74,13 @@ namespace pika {
         {
             switch (mode)
             {
-            case throwmode::rethrow:
-                return get_pika_rethrow_category();
+            case throwmode::rethrow: return get_pika_rethrow_category();
 
             case throwmode::lightweight:
-            case throwmode::lightweight_rethrow:
-                return get_lightweight_pika_category();
+            case throwmode::lightweight_rethrow: return get_lightweight_pika_category();
 
             case throwmode::plain:
-            default:
-                break;
+            default: break;
             }
             return pika::get_pika_category();
         }
@@ -214,10 +201,7 @@ namespace pika {
                             pika::throwmode::lightweight :
                             pika::throwmode::plain));
             }
-            else
-            {
-                this->std::error_code::operator=(rhs);
-            }
+            else { this->std::error_code::operator=(rhs); }
             exception_ = rhs.exception_;
         }
         return *this;

@@ -199,10 +199,7 @@ struct void_callback_helper
 
     // This overload is only used to satisfy tests that have a predecessor that
     // can send void, but never does in practice.
-    void operator()() const
-    {
-        PIKA_TEST(false);
-    }
+    void operator()() const { PIKA_TEST(false); }
 
     template <typename T>
     void operator()(T&& t)
@@ -242,10 +239,7 @@ struct custom_sender_tag_invoke
     struct operation_state
     {
         std::decay_t<R> r;
-        void start() noexcept
-        {
-            pika::execution::experimental::set_value(std::move(r));
-        }
+        void start() noexcept { pika::execution::experimental::set_value(std::move(r)); }
     };
 
     template <typename R>
@@ -491,15 +485,9 @@ struct scheduler
         return {s.schedule_called, s.execute_called, s.tag_invoke_overload_called};
     }
 
-    bool operator==(scheduler const&) const noexcept
-    {
-        return true;
-    }
+    bool operator==(scheduler const&) const noexcept { return true; }
 
-    bool operator!=(scheduler const&) const noexcept
-    {
-        return false;
-    }
+    bool operator!=(scheduler const&) const noexcept { return false; }
 };
 
 struct scheduler2
@@ -576,15 +564,9 @@ struct scheduler2
         return {s.schedule_called, s.execute_called, s.tag_invoke_overload_called};
     }
 
-    bool operator==(scheduler2 const&) const noexcept
-    {
-        return true;
-    }
+    bool operator==(scheduler2 const&) const noexcept { return true; }
 
-    bool operator!=(scheduler2 const&) const noexcept
-    {
-        return false;
-    }
+    bool operator!=(scheduler2 const&) const noexcept { return false; }
 };
 
 namespace tag_namespace {
@@ -684,15 +666,9 @@ namespace my_namespace {
             return {};
         }
 
-        bool operator==(my_scheduler const&) const noexcept
-        {
-            return true;
-        }
+        bool operator==(my_scheduler const&) const noexcept { return true; }
 
-        bool operator!=(my_scheduler const&) const noexcept
-        {
-            return false;
-        }
+        bool operator!=(my_scheduler const&) const noexcept { return false; }
     };
 
     template <typename... Ts>

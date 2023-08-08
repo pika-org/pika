@@ -28,10 +28,7 @@ namespace pika::threads::detail {
         threads::detail::set_thread_backtrace(id_, backtrace_.get(), ec_);
 # endif
     }
-    reset_backtrace::~reset_backtrace()
-    {
-        threads::detail::set_thread_backtrace(id_, 0, ec_);
-    }
+    reset_backtrace::~reset_backtrace() { threads::detail::set_thread_backtrace(id_, 0, ec_); }
 }    // namespace pika::threads::detail
 
 #endif    // PIKA_HAVE_THREAD_BACKTRACE_ON_SUSPENSION

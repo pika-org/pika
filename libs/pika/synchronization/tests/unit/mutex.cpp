@@ -142,10 +142,7 @@ struct test_lock_times_out_if_other_thread_has_lock
         done_cond.notify_one();
     }
 
-    bool is_done() const
-    {
-        return done;
-    }
+    bool is_done() const { return done; }
 
     using this_type = test_lock_times_out_if_other_thread_has_lock<Mutex>;
 
@@ -191,10 +188,7 @@ struct test_timedlock
     using mutex_type = M;
     using try_lock_for_type = std::unique_lock<M>;
 
-    static bool fake_predicate()
-    {
-        return false;
-    }
+    static bool fake_predicate() { return false; }
 
     void operator()()
     {

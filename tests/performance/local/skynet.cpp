@@ -45,8 +45,7 @@ std::int64_t skynet(std::int64_t num, std::int64_t size, std::int64_t div)
         pika::wait_all(results);
 
         std::int64_t sum = 0;
-        for (auto& f : results)
-            sum += f.get();
+        for (auto& f : results) sum += f.get();
         return sum;
     }
     return num;
@@ -71,8 +70,7 @@ pika::future<std::int64_t> skynet_f(std::int64_t num, std::int64_t size, std::in
         return pika::dataflow(
             [](std::vector<pika::future<std::int64_t>>&& sums) {
                 std::int64_t sum = 0;
-                for (auto& f : sums)
-                    sum += f.get();
+                for (auto& f : sums) sum += f.get();
                 return sum;
             },
             results);
@@ -109,7 +107,4 @@ int pika_main()
     return 0;
 }
 
-int main(int argc, char* argv[])
-{
-    return pika::init(pika_main, argc, argv);
-}
+int main(int argc, char* argv[]) { return pika::init(pika_main, argc, argv); }

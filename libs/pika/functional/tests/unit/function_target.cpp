@@ -11,10 +11,7 @@
 
 struct foo
 {
-    int operator()()
-    {
-        return 0;
-    }
+    int operator()() { return 0; }
     void operator()() const {}
 };
 

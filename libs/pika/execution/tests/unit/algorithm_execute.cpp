@@ -65,15 +65,9 @@ struct scheduler_1
         return {};
     }
 
-    bool operator==(scheduler_1 const&) const noexcept
-    {
-        return true;
-    }
+    bool operator==(scheduler_1 const&) const noexcept { return true; }
 
-    bool operator!=(scheduler_1 const&) const noexcept
-    {
-        return false;
-    }
+    bool operator!=(scheduler_1 const&) const noexcept { return false; }
 };
 
 struct scheduler_2
@@ -84,15 +78,9 @@ struct scheduler_2
         return {};
     }
 
-    bool operator==(scheduler_2 const&) const noexcept
-    {
-        return true;
-    }
+    bool operator==(scheduler_2 const&) const noexcept { return true; }
 
-    bool operator!=(scheduler_2 const&) const noexcept
-    {
-        return false;
-    }
+    bool operator!=(scheduler_2 const&) const noexcept { return false; }
 };
 
 template <typename F>

@@ -58,10 +58,7 @@ namespace pika::threads::coroutines::detail {
                 set_self(self->next_self_);
             }
 
-            ~reset_self_on_exit()
-            {
-                set_self(self_);
-            }
+            ~reset_self_on_exit() { set_self(self_); }
 
             coroutine_self* self_;
         };
@@ -137,22 +134,13 @@ namespace pika::threads::coroutines::detail {
 
     private:
         friend struct coroutine_accessor;
-        virtual impl_ptr get_impl()
-        {
-            return nullptr;
-        }
+        virtual impl_ptr get_impl() { return nullptr; }
 
     public:
         static PIKA_EXPORT coroutine_self*& local_self();
 
-        static void set_self(coroutine_self* self)
-        {
-            local_self() = self;
-        }
-        static coroutine_self* get_self()
-        {
-            return local_self();
-        }
+        static void set_self(coroutine_self* self) { local_self() = self; }
+        static coroutine_self* get_self() { return local_self(); }
 
     private:
         yield_decorator_type yield_decorator_;
@@ -170,10 +158,7 @@ namespace pika::threads::coroutines::detail {
             coroutine_self::set_self(val);
         }
 
-        ~reset_self_on_exit()
-        {
-            coroutine_self::set_self(old_self);
-        }
+        ~reset_self_on_exit() { coroutine_self::set_self(old_self); }
 
         coroutine_self* old_self;
     };

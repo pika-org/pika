@@ -58,25 +58,16 @@ namespace pika::program_options {
     protected:    // interface for derived
         /** Returns the reference which should be used by derived
             class to store the next value. */
-        ValueType& value()
-        {
-            return m_value;
-        }
+        ValueType& value() { return m_value; }
 
         /** Should be called by derived class to indicate that it can't
             produce next element. */
-        void found_eof()
-        {
-            m_at_eof = true;
-        }
+        void found_eof() { m_at_eof = true; }
 
     private:    // iterator core operations
         friend class pika::util::iterator_core_access;
 
-        void increment()
-        {
-            static_cast<Derived&>(*this).get();
-        }
+        void increment() { static_cast<Derived&>(*this).get(); }
 
         bool equal(const eof_iterator& other) const
         {
@@ -86,10 +77,7 @@ namespace pika::program_options {
                 return false;
         }
 
-        const ValueType& dereference() const
-        {
-            return m_value;
-        }
+        const ValueType& dereference() const { return m_value; }
 
         bool m_at_eof;
         ValueType m_value;

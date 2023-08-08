@@ -30,14 +30,8 @@ std::vector<pika::future<void>> create_tasks(std::size_t num_tasks, std::size_t 
     tasks.reserve(num_tasks);
     for (std::size_t i = 0; i != num_tasks; ++i)
     {
-        if (delay == 0)
-        {
-            tasks.push_back(pika::make_ready_future());
-        }
-        else
-        {
-            tasks.push_back(pika::make_ready_future_after(std::chrono::microseconds(delay)));
-        }
+        if (delay == 0) { tasks.push_back(pika::make_ready_future()); }
+        else { tasks.push_back(pika::make_ready_future_after(std::chrono::microseconds(delay))); }
     }
     return tasks;
 }
@@ -65,10 +59,7 @@ double wait_tasks(
 
         // wait of tasks in chunks
         pika::chrono::detail::high_resolution_timer t;
-        if (num_chunks == 1)
-        {
-            pika::wait_all(chunks[0]);
-        }
+        if (num_chunks == 1) { pika::wait_all(chunks[0]); }
         else
         {
             for (std::size_t c = 0; c != num_chunks; ++c)
@@ -92,27 +83,20 @@ int pika_main(pika::program_options::variables_map& vm)
     std::size_t delay = 0;
     bool header = true;
 
-    if (vm.count("no-header"))
-        header = false;
-    if (vm.count("samples"))
-        num_samples = vm["samples"].as<std::size_t>();
-    if (vm.count("futures"))
-        num_tasks = vm["futures"].as<std::size_t>();
-    if (vm.count("chunks"))
-        num_chunks = vm["chunks"].as<std::size_t>();
-    if (vm.count("delay"))
-        delay = vm["delay"].as<std::size_t>();
+    if (vm.count("no-header")) header = false;
+    if (vm.count("samples")) num_samples = vm["samples"].as<std::size_t>();
+    if (vm.count("futures")) num_tasks = vm["futures"].as<std::size_t>();
+    if (vm.count("chunks")) num_chunks = vm["chunks"].as<std::size_t>();
+    if (vm.count("delay")) delay = vm["delay"].as<std::size_t>();
 
-    if (num_chunks == 0)
-        num_chunks = 1;
+    if (num_chunks == 0) num_chunks = 1;
 
     // wait for all of the tasks sequentially
     double elapsed_seq = wait_tasks(num_samples, num_tasks, 1, delay);
 
     // wait of tasks in chunks
     double elapsed_chunks = 0;
-    if (num_chunks != 1)
-        elapsed_chunks = wait_tasks(num_samples, num_tasks, num_chunks, delay);
+    if (num_chunks != 1) elapsed_chunks = wait_tasks(num_samples, num_tasks, num_chunks, delay);
 
     if (header)
     {

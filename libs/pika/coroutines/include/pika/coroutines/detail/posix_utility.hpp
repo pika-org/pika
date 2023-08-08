@@ -121,10 +121,7 @@ namespace pika::threads::coroutines::detail::posix {
     inline std::size_t stack_size_with_guard_page(std::size_t size)
     {
 #  if defined(PIKA_HAVE_THREAD_GUARD_PAGE)
-        if (use_guard_pages)
-        {
-            return size + EXEC_PAGESIZE;
-        }
+        if (use_guard_pages) { return size + EXEC_PAGESIZE; }
 #  endif
         return size;
     }
@@ -233,10 +230,7 @@ namespace pika::threads::coroutines::detail::posix {
 
     inline void watermark_stack(void* stack, std::size_t size) {}    // no-op
 
-    inline bool reset_stack(void* stack, std::size_t size)
-    {
-        return false;
-    }
+    inline bool reset_stack(void* stack, std::size_t size) { return false; }
 
     inline void free_stack(void* stack, std::size_t size)
     {
@@ -265,25 +259,16 @@ namespace pika::threads::coroutines::detail::posix {
             int_[1] = second_;
         }
 
-        int first()
-        {
-            return int_[0];
-        }
+        int first() { return int_[0]; }
 
-        int second()
-        {
-            return int_[1];
-        }
+        int second() { return int_[1]; }
 
         splitter(T* ptr_)
           : ptr(ptr_)
         {
         }
 
-        void operator()()
-        {
-            (*ptr)();
-        }
+        void operator()() { (*ptr)(); }
     };
 
     template <typename T>

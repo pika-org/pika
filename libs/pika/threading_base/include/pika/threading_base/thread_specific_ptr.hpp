@@ -31,10 +31,7 @@ namespace pika::threads::detail {
 
         struct delete_data : coroutines::detail::tss_cleanup_function
         {
-            void operator()(void* data) override
-            {
-                delete static_cast<T*>(data);
-            }
+            void operator()(void* data) override { delete static_cast<T*>(data); }
         };
 
         struct run_custom_cleanup_function : coroutines::detail::tss_cleanup_function
@@ -44,10 +41,7 @@ namespace pika::threads::detail {
             {
             }
 
-            void operator()(void* data) override
-            {
-                cleanup_function(static_cast<T*>(data));
-            }
+            void operator()(void* data) override { cleanup_function(static_cast<T*>(data)); }
 
             void (*cleanup_function)(T*);
         };
@@ -64,31 +58,20 @@ namespace pika::threads::detail {
 
         explicit thread_specific_ptr(void (*func_)(T*))
         {
-            if (func_)
-                cleanup_.reset(new run_custom_cleanup_function(func_));
+            if (func_) cleanup_.reset(new run_custom_cleanup_function(func_));
         }
 
         ~thread_specific_ptr()
         {
             // clean up data if this type is used locally for one thread
-            if (get_self_ptr())
-                coroutines::detail::erase_tss_node(this, true);
+            if (get_self_ptr()) coroutines::detail::erase_tss_node(this, true);
         }
 
-        T* get() const
-        {
-            return static_cast<T*>(coroutines::detail::get_tss_data(this));
-        }
+        T* get() const { return static_cast<T*>(coroutines::detail::get_tss_data(this)); }
 
-        T* operator->() const
-        {
-            return get();
-        }
+        T* operator->() const { return get(); }
 
-        T& operator*() const
-        {
-            return *get();
-        }
+        T& operator*() const { return *get(); }
 
         T* release()
         {

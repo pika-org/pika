@@ -14,33 +14,18 @@ struct resumable
 
     struct promise_type
     {
-        resumable get_return_object()
-        {
-            return {};
-        }
+        resumable get_return_object() { return {}; }
 
-        std::suspend_never initial_suspend() const noexcept
-        {
-            return {};
-        }
+        std::suspend_never initial_suspend() const noexcept { return {}; }
 
-        std::suspend_never final_suspend() const noexcept
-        {
-            return {};
-        }
+        std::suspend_never final_suspend() const noexcept { return {}; }
 
         void return_value(int value) const noexcept {}
         void unhandled_exception() const noexcept {}
     };
 
-    bool await_ready() const noexcept
-    {
-        return true;
-    }
-    int await_resume() const noexcept
-    {
-        return 42;
-    }
+    bool await_ready() const noexcept { return true; }
+    int await_resume() const noexcept { return 42; }
     void await_suspend(std::coroutine_handle<promise_type>) const noexcept {}
 };
 

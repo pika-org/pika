@@ -35,8 +35,7 @@ void dummy_task(std::size_t n)
     // no other work can take place on this thread whilst it sleeps
     bool sleep = true;
     auto start = std::chrono::steady_clock::now();
-    do
-    {
+    do {
         std::this_thread::sleep_for(std::chrono::microseconds(n) / 25);
         auto now = std::chrono::steady_clock::now();
         auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(now - start);
@@ -44,10 +43,7 @@ void dummy_task(std::size_t n)
     } while (sleep);
 }
 
-inline std::size_t st_rand()
-{
-    return std::size_t(std::rand());
-}
+inline std::size_t st_rand() { return std::size_t(std::rand()); }
 
 int pika_main(variables_map& vm)
 {
@@ -89,10 +85,7 @@ int pika_main(variables_map& vm)
           : counter_(counter)
         {
         }
-        ~dec_counter()
-        {
-            --counter_;
-        }
+        ~dec_counter() { --counter_; }
         //
         std::atomic<int>& counter_;
     };
@@ -124,8 +117,7 @@ int pika_main(variables_map& vm)
                     // continuation runs as a sync task
                     f3.then(pika::launch::sync, [&](pika::future<void>&&) {
                         // on every Nth task, spawn new HP tasks, otherwise quit
-                        if ((++counter) % np_loop != 0)
-                            return;
+                        if ((++counter) % np_loop != 0) return;
 
                         // Launch HP tasks using an HP task to do it
                         pika::async(HP_executor,
@@ -151,8 +143,7 @@ int pika_main(variables_map& vm)
             "Launch"));
 
     // wait for everything to finish
-    do
-    {
+    do {
         pika::this_thread::yield();
     } while (count_down > 0);
 

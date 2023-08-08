@@ -39,15 +39,9 @@ namespace test {
         {
         }
 
-        T* allocate(std::size_t n)
-        {
-            return reinterpret_cast<T*>(::new char[sizeof(T) * n]);
-        }
+        T* allocate(std::size_t n) { return reinterpret_cast<T*>(::new char[sizeof(T) * n]); }
 
-        void deallocate(T* p, std::size_t)
-        {
-            delete[](reinterpret_cast<char*>(p));
-        }
+        void deallocate(T* p, std::size_t) { delete[](reinterpret_cast<char*>(p)); }
 
         friend bool operator==(simple_allocator const&, simple_allocator const&) noexcept
         {
@@ -155,10 +149,7 @@ namespace test {
             return l.int_ > r.int_;
         }
 
-        int get_int() const noexcept
-        {
-            return int_;
-        }
+        int get_int() const noexcept { return int_; }
 
         friend bool operator==(const movable_and_copyable_int& l, int r) noexcept
         {
@@ -314,10 +305,7 @@ namespace test {
             PIKA_TEST_EQ(v.capacity(), vec::static_capacity);
 #endif
 
-            for (std::size_t i = 0, max = v.capacity() + 1; i != max; ++i)
-            {
-                v.push_back(int(i));
-            }
+            for (std::size_t i = 0, max = v.capacity() + 1; i != max; ++i) { v.push_back(int(i)); }
 
             vec w;
 
@@ -331,10 +319,7 @@ namespace test {
         {
             // v smaller than static capacity, w empty
             vec v;
-            for (std::size_t i = 0, max = v.capacity() - 1; i != max; ++i)
-            {
-                v.push_back(int(i));
-            }
+            for (std::size_t i = 0, max = v.capacity() - 1; i != max; ++i) { v.push_back(int(i)); }
 
             vec w;
 
@@ -348,16 +333,10 @@ namespace test {
         {
             // v & w smaller than static capacity
             vec v;
-            for (std::size_t i = 0, max = v.capacity() - 1; i != max; ++i)
-            {
-                v.push_back(int(i));
-            }
+            for (std::size_t i = 0, max = v.capacity() - 1; i != max; ++i) { v.push_back(int(i)); }
 
             vec w;
-            for (std::size_t i = 0, max = v.capacity() / 2; i != max; ++i)
-            {
-                w.push_back(int(i));
-            }
+            for (std::size_t i = 0, max = v.capacity() / 2; i != max; ++i) { w.push_back(int(i)); }
 
             vec v_copy(v);
             vec w_copy(w);
@@ -369,16 +348,10 @@ namespace test {
         {
             // v & w bigger than static capacity
             vec v;
-            for (std::size_t i = 0, max = v.capacity() + 1; i != max; ++i)
-            {
-                v.push_back(int(i));
-            }
+            for (std::size_t i = 0, max = v.capacity() + 1; i != max; ++i) { v.push_back(int(i)); }
 
             vec w;
-            for (std::size_t i = 0, max = v.capacity() * 2; i != max; ++i)
-            {
-                w.push_back(int(i));
-            }
+            for (std::size_t i = 0, max = v.capacity() * 2; i != max; ++i) { w.push_back(int(i)); }
 
             vec v_copy(v);
             vec w_copy(w);
@@ -429,10 +402,7 @@ namespace test {
         using value_type = typename SeqContainer::value_type;
 
         std::deque<int> input_deque;
-        for (int element = -10; element < 10; ++element)
-        {
-            input_deque.push_back(element + 20);
-        }
+        for (int element = -10; element < 10; ++element) { input_deque.push_back(element + 20); }
 
         for (std::size_t i = 0; i <= input_deque.size(); ++i)
         {
@@ -532,10 +502,7 @@ namespace test {
                 }
 
                 int aux_vect2[50];
-                for (int i = 0; i < 50; ++i)
-                {
-                    aux_vect2[i] = -1;
-                }
+                for (int i = 0; i < 50; ++i) { aux_vect2[i] = -1; }
 
                 auto insert_it = vector.insert(vector.end(), &aux_vect[0], aux_vect + 50);
                 PIKA_TEST_EQ(std::size_t(std::distance(insert_it, vector.end())), std::size_t(50));
@@ -563,10 +530,7 @@ namespace test {
                 }
 
                 int aux_vect2[50];
-                for (int i = 0; i < 50; ++i)
-                {
-                    aux_vect2[i] = -i;
-                }
+                for (int i = 0; i < 50; ++i) { aux_vect2[i] = -i; }
 
                 auto old_size = vector.size();
                 auto insert_it =
@@ -710,20 +674,11 @@ namespace test {
             return l.sum() > r.sum();
         }
 
-        friend bool operator!=(emplace_int const& l, emplace_int const& r)
-        {
-            return !(l == r);
-        }
+        friend bool operator!=(emplace_int const& l, emplace_int const& r) { return !(l == r); }
 
-        ~emplace_int()
-        {
-            a_ = b_ = c_ = d_ = e_ = 0;
-        }
+        ~emplace_int() { a_ = b_ = c_ = d_ = e_ = 0; }
 
-        int sum() const
-        {
-            return a_ + b_ + c_ + d_ + e_;
-        }
+        int sum() const { return a_ + b_ + c_ + d_ + e_; }
 
         int a_, b_, c_, d_, e_;
         int padding[6];
@@ -742,10 +697,7 @@ namespace test {
 
         const_iterator itb(ec.begin()), ite(ec.end());
         unsigned int cur = 0;
-        while (cont_offset--)
-        {
-            ++itb;
-        }
+        while (cont_offset--) { ++itb; }
 
         for (; itb != ite && only_first_n--; ++itb, ++cur)
         {

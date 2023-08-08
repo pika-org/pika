@@ -27,10 +27,7 @@ namespace pika {
     std::string get_os_thread_type_name(os_thread_type type)
     {
         int idx = static_cast<int>(type);
-        if (idx < -1 || idx > static_cast<int>(os_thread_type::custom_thread))
-        {
-            idx = -1;
-        }
+        if (idx < -1 || idx > static_cast<int>(os_thread_type::custom_thread)) { idx = -1; }
         return detail::thread_type_names[idx + 1];
     }
 }    // namespace pika

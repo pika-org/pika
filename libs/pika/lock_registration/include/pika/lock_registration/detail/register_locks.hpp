@@ -101,15 +101,9 @@ namespace pika::util {
     ///////////////////////////////////////////////////////////////////////////
     struct ignore_all_while_checking
     {
-        ignore_all_while_checking()
-        {
-            ignore_all_locks();
-        }
+        ignore_all_while_checking() { ignore_all_locks(); }
 
-        ~ignore_all_while_checking()
-        {
-            reset_ignored_all();
-        }
+        ~ignore_all_while_checking() { reset_ignored_all(); }
     };
 
     namespace detail {
@@ -125,10 +119,7 @@ namespace pika::util {
             ignore_lock(mtx_);
         }
 
-        ~ignore_while_checking()
-        {
-            reset_ignored(mtx_);
-        }
+        ~ignore_while_checking() { reset_ignored(mtx_); }
 
         void const* mtx_;
     };
@@ -161,10 +152,7 @@ namespace pika::util {
     {
         return true;
     }
-    constexpr inline bool unregister_lock(void const*) noexcept
-    {
-        return true;
-    }
+    constexpr inline bool unregister_lock(void const*) noexcept { return true; }
     constexpr inline void verify_no_locks() noexcept {}
     constexpr inline void force_error_on_lock() noexcept {}
     constexpr inline void enable_lock_detection() noexcept {}

@@ -37,15 +37,9 @@ namespace tests {
         {
         }
 
-        int foo() const
-        {
-            return x_;
-        }
+        int foo() const { return x_; }
 
-        bool operator==(const dummy_type& d) const
-        {
-            return x_ == d.x_;
-        }
+        bool operator==(const dummy_type& d) const { return x_ == d.x_; }
 
         int x_;
     };
@@ -479,44 +473,20 @@ namespace tests {
         using value_type = T;
         struct reference
         {
-            reference& operator=(const T&)
-            {
-                return *this;
-            }
-            operator value_type()
-            {
-                return static_object<T>::get();
-            }
+            reference& operator=(const T&) { return *this; }
+            operator value_type() { return static_object<T>::get(); }
         };
 
         using pointer = const T*;
         using difference_type = std::ptrdiff_t;
 
         input_output_iterator_archetype() {}
-        self& operator=(const self&)
-        {
-            return *this;
-        }
-        bool operator==(const self&) const
-        {
-            return true;
-        }
-        bool operator!=(const self&) const
-        {
-            return true;
-        }
-        reference operator*() const
-        {
-            return reference();
-        }
-        self& operator++()
-        {
-            return *this;
-        }
-        self operator++(int)
-        {
-            return *this;
-        }
+        self& operator=(const self&) { return *this; }
+        bool operator==(const self&) const { return true; }
+        bool operator!=(const self&) const { return true; }
+        reference operator*() const { return reference(); }
+        self& operator++() { return *this; }
+        self operator++(int) { return *this; }
     };
 
     template <typename T>
@@ -533,30 +503,12 @@ namespace tests {
         using difference_type = std::ptrdiff_t;
         input_iterator_archetype_no_proxy() {}
         input_iterator_archetype_no_proxy(input_iterator_archetype_no_proxy const&) {}
-        self& operator=(const self&)
-        {
-            return *this;
-        }
-        bool operator==(const self&) const
-        {
-            return true;
-        }
-        bool operator!=(const self&) const
-        {
-            return true;
-        }
-        reference operator*() const
-        {
-            return static_object<T>::get();
-        }
-        self& operator++()
-        {
-            return *this;
-        }
-        self operator++(int)
-        {
-            return *this;
-        }
+        self& operator=(const self&) { return *this; }
+        bool operator==(const self&) const { return true; }
+        bool operator!=(const self&) const { return true; }
+        reference operator*() const { return static_object<T>::get(); }
+        self& operator++() { return *this; }
+        self operator++(int) { return *this; }
     };
 
     template <typename T>
@@ -573,29 +525,11 @@ namespace tests {
         using difference_type = std::ptrdiff_t;
         forward_iterator_archetype() {}
         forward_iterator_archetype(forward_iterator_archetype const&) {}
-        self& operator=(const self&)
-        {
-            return *this;
-        }
-        bool operator==(const self&) const
-        {
-            return true;
-        }
-        bool operator!=(const self&) const
-        {
-            return true;
-        }
-        reference operator*() const
-        {
-            return static_object<T>::get();
-        }
-        self& operator++()
-        {
-            return *this;
-        }
-        self operator++(int)
-        {
-            return *this;
-        }
+        self& operator=(const self&) { return *this; }
+        bool operator==(const self&) const { return true; }
+        bool operator!=(const self&) const { return true; }
+        reference operator*() const { return static_object<T>::get(); }
+        self& operator++() { return *this; }
+        self operator++(int) { return *this; }
     };
 }    // namespace tests

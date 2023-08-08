@@ -34,15 +34,9 @@ namespace pika::threads::coroutines::detail {
 
         static constexpr std::ptrdiff_t default_stack_size = -1;
 
-        bool running() const
-        {
-            return state_ == ctx_running;
-        }
+        bool running() const { return state_ == ctx_running; }
 
-        bool exited() const
-        {
-            return state_ == ctx_exited;
-        }
+        bool exited() const { return state_ == ctx_exited; }
 
     public:
         friend struct coroutine_accessor;
@@ -85,22 +79,15 @@ namespace pika::threads::coroutines::detail {
         stackless_coroutine(stackless_coroutine&& src) = delete;
         stackless_coroutine& operator=(stackless_coroutine&& src) = delete;
 
-        thread_id_type get_thread_id() const
-        {
-            return id_;
-        }
+        thread_id_type get_thread_id() const { return id_; }
 
 #if defined(PIKA_HAVE_THREAD_PHASE_INFORMATION)
-        std::size_t get_thread_phase() const
-        {
-            return phase_;
-        }
+        std::size_t get_thread_phase() const { return phase_; }
 #endif
         std::size_t get_thread_data() const
         {
 #if defined(PIKA_HAVE_THREAD_LOCAL_STORAGE)
-            if (!thread_data_)
-                return 0;
+            if (!thread_data_) return 0;
             return get_tss_thread_data(thread_data_);
 #else
             return thread_data_;
@@ -121,8 +108,7 @@ namespace pika::threads::coroutines::detail {
 #if defined(PIKA_HAVE_THREAD_LOCAL_STORAGE)
         tss_storage* get_thread_tss_data(bool create_if_needed) const
         {
-            if (!thread_data_ && create_if_needed)
-                thread_data_ = create_tss_storage();
+            if (!thread_data_ && create_if_needed) thread_data_ = create_tss_storage();
             return thread_data_;
         }
 #endif
@@ -175,10 +161,7 @@ namespace pika::threads::coroutines::detail {
                 this_.state_ = stackless_coroutine::ctx_running;
             }
 
-            ~reset_on_exit()
-            {
-                this_.state_ = stackless_coroutine::ctx_exited;
-            }
+            ~reset_on_exit() { this_.state_ = stackless_coroutine::ctx_exited; }
             stackless_coroutine& this_;
         };
         friend struct reset_on_exit;
@@ -186,25 +169,16 @@ namespace pika::threads::coroutines::detail {
     public:
         PIKA_FORCEINLINE result_type operator()(arg_type arg = arg_type());
 
-        explicit operator bool() const
-        {
-            return !exited();
-        }
+        explicit operator bool() const { return !exited(); }
 
-        bool is_ready() const
-        {
-            return state_ == ctx_ready;
-        }
+        bool is_ready() const { return state_ == ctx_ready; }
 
         std::ptrdiff_t get_available_stack_space()
         {
             return (std::numeric_limits<std::ptrdiff_t>::max)();
         }
 
-        std::size_t& get_continuation_recursion_count()
-        {
-            return continuation_recursion_count_;
-        }
+        std::size_t& get_continuation_recursion_count() { return continuation_recursion_count_; }
 
     protected:
         functor_type f_;

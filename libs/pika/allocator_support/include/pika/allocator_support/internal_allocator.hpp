@@ -55,36 +55,21 @@ namespace pika::detail {
         {
         }
 
-        pointer address(reference x) const noexcept
-        {
-            return &x;
-        }
+        pointer address(reference x) const noexcept { return &x; }
 
-        const_pointer address(const_reference x) const noexcept
-        {
-            return &x;
-        }
+        const_pointer address(const_reference x) const noexcept { return &x; }
 
         [[nodiscard]] pointer allocate(size_type n, void const* hint = nullptr)
         {
-            if (max_size() < n)
-            {
-                throw std::bad_array_new_length();
-            }
+            if (max_size() < n) { throw std::bad_array_new_length(); }
 
             pointer p = reinterpret_cast<pointer>(
                 PIKA_PP_CAT(PIKA_HAVE_JEMALLOC_PREFIX, malloc)(n * sizeof(T)));
-            if (p == nullptr)
-            {
-                throw std::bad_alloc();
-            }
+            if (p == nullptr) { throw std::bad_alloc(); }
             return p;
         }
 
-        void deallocate(pointer p, size_type n)
-        {
-            PIKA_PP_CAT(PIKA_HAVE_JEMALLOC_PREFIX, free)(p);
-        }
+        void deallocate(pointer p, size_type n) { PIKA_PP_CAT(PIKA_HAVE_JEMALLOC_PREFIX, free)(p); }
 
         size_type max_size() const noexcept
         {

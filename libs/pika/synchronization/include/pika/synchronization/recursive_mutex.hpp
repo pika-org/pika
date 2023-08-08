@@ -99,8 +99,7 @@ namespace pika::detail {
         {
             if (locking_context.load(std::memory_order_acquire) == current_context)
             {
-                if (++recursion_count == 1)
-                    util::register_lock(this);
+                if (++recursion_count == 1) util::register_lock(this);
                 return true;
             }
             return false;

@@ -34,18 +34,9 @@ struct counter
         std::cout << "move-constructions: " << move_constructions << "\n" << std::endl;
     }
 
-    counter()
-    {
-        ++default_constructions;
-    }
-    counter(counter const&)
-    {
-        ++copy_constructions;
-    }
-    counter(counter&&)
-    {
-        ++move_constructions;
-    }
+    counter() { ++default_constructions; }
+    counter(counter const&) { ++copy_constructions; }
+    counter(counter&&) { ++move_constructions; }
 
 private:
     counter& operator=(counter const&);

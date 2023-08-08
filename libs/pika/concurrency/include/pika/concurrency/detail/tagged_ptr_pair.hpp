@@ -54,10 +54,7 @@ namespace pika::concurrency::detail {
             return (left == rhs.left) && (right == rhs.right);
         }
 
-        bool operator!=(volatile uint128_type const& rhs) const
-        {
-            return !(*this == rhs);
-        }
+        bool operator!=(volatile uint128_type const& rhs) const { return !(*this == rhs); }
     };
 
     template <class Left, class Right>
@@ -137,24 +134,15 @@ namespace pika::concurrency::detail {
         /** copy constructors */
         tagged_ptr_pair(tagged_ptr_pair const& p) = default;
 
-        tagged_ptr_pair(Left* lptr, Right* rptr)
-        {
-            pack_ptr_pair(pair_, lptr, rptr, 0, 0);
-        }
+        tagged_ptr_pair(Left* lptr, Right* rptr) { pack_ptr_pair(pair_, lptr, rptr, 0, 0); }
 
         /** unsafe set operations */
         /* @{ */
         tagged_ptr_pair& operator=(tagged_ptr_pair const& p) = default;
 
-        void set(Left* lptr, Right* rptr)
-        {
-            pack_ptr_pair(pair_, lptr, rptr, 0, 0);
-        }
+        void set(Left* lptr, Right* rptr) { pack_ptr_pair(pair_, lptr, rptr, 0, 0); }
 
-        void reset(Left* lptr, Right* rptr)
-        {
-            set(lptr, rptr, 0, 0);
-        }
+        void reset(Left* lptr, Right* rptr) { set(lptr, rptr, 0, 0); }
 
         template <typename IntegralL>
         void set(Left* lptr, Right* rptr, IntegralL ltag)
@@ -183,28 +171,16 @@ namespace pika::concurrency::detail {
 
         /** comparing semantics */
         /* @{ */
-        bool operator==(volatile tagged_ptr_pair const& p) const
-        {
-            return (pair_ == p.pair_);
-        }
+        bool operator==(volatile tagged_ptr_pair const& p) const { return (pair_ == p.pair_); }
 
-        bool operator!=(volatile tagged_ptr_pair const& p) const
-        {
-            return !operator==(p);
-        }
+        bool operator!=(volatile tagged_ptr_pair const& p) const { return !operator==(p); }
         /* @} */
 
         /** pointer access */
         /* @{ */
-        Left* get_left_ptr() const volatile
-        {
-            return extract_left_ptr(pair_);
-        }
+        Left* get_left_ptr() const volatile { return extract_left_ptr(pair_); }
 
-        Right* get_right_ptr() const volatile
-        {
-            return extract_right_ptr(pair_);
-        }
+        Right* get_right_ptr() const volatile { return extract_right_ptr(pair_); }
 
         void set_left_ptr(Left* lptr) volatile
         {
@@ -225,15 +201,9 @@ namespace pika::concurrency::detail {
 
         /** tag access */
         /* @{ */
-        tag_t get_left_tag() const volatile
-        {
-            return extract_left_tag(pair_);
-        }
+        tag_t get_left_tag() const volatile { return extract_left_tag(pair_); }
 
-        tag_t get_right_tag() const volatile
-        {
-            return extract_right_tag(pair_);
-        }
+        tag_t get_right_tag() const volatile { return extract_right_tag(pair_); }
 
         template <typename Integral>
         void set_left_tag(Integral ltag) volatile
@@ -256,10 +226,7 @@ namespace pika::concurrency::detail {
 
         /** smart pointer support  */
         /* @{ */
-        operator bool() const
-        {
-            return (get_left_ptr() != 0) && (get_right_ptr() != 0);
-        }
+        operator bool() const { return (get_left_ptr() != 0) && (get_right_ptr() != 0); }
         /* @} */
 
     private:

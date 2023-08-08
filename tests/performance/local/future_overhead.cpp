@@ -70,10 +70,7 @@ void print_stats(const char* title, const char* wait, const char* exec, std::int
     //pika::util::print_cdash_timing(title, duration);
 }
 
-const char* exec_name(pika::execution::parallel_executor const&)
-{
-    return "parallel_executor";
-}
+const char* exec_name(pika::execution::parallel_executor const&) { return "parallel_executor"; }
 
 const char* exec_name(pika::execution::experimental::scheduler_executor<
     pika::execution::experimental::thread_pool_scheduler> const&)
@@ -95,10 +92,7 @@ double null_function() noexcept
         std::array<double, array_size> dummy;
         for (std::uint64_t i = 0; i < num_iterations; ++i)
         {
-            for (std::uint64_t j = 0; j < array_size; ++j)
-            {
-                dummy[j] = 1.0 / (2.0 * i * j + 1.0);
-            }
+            for (std::uint64_t j = 0; j < array_size; ++j) { dummy[j] = 1.0 / (2.0 * i * j + 1.0); }
         }
         return dummy[0];
     }
@@ -107,10 +101,7 @@ double null_function() noexcept
 
 struct scratcher
 {
-    void operator()(future<double> r) const
-    {
-        global_scratch += r.get();
-    }
+    void operator()(future<double> r) const { global_scratch += r.get(); }
 };
 
 // Time async execution using wait each on futures vector
@@ -122,8 +113,7 @@ void function_futures_wait_each(std::uint64_t count, bool csv, Executor& exec)
 
     // start the clock
     high_resolution_timer walltime;
-    for (std::uint64_t i = 0; i < count; ++i)
-        futures.push_back(async(exec, &null_function));
+    for (std::uint64_t i = 0; i < count; ++i) futures.push_back(async(exec, &null_function));
     pika::wait_each(scratcher(), futures);
 
     // stop the clock
@@ -139,8 +129,7 @@ void function_futures_wait_all(std::uint64_t count, bool csv, Executor& exec)
 
     // start the clock
     high_resolution_timer walltime;
-    for (std::uint64_t i = 0; i < count; ++i)
-        futures.push_back(async(exec, &null_function));
+    for (std::uint64_t i = 0; i < count; ++i) futures.push_back(async(exec, &null_function));
     pika::wait_all(futures);
 
     const double duration = walltime.elapsed();
@@ -319,10 +308,7 @@ void function_futures_apply_hierarchical_placement(std::uint64_t count, bool csv
             std::uint64_t const count_start = t * count / num_threads;
             std::uint64_t const count_end = (t + 1) * count / num_threads;
 
-            for (std::uint64_t i = count_start; i < count_end; ++i)
-            {
-                pika::apply(exec, func);
-            }
+            for (std::uint64_t i = count_start; i < count_end; ++i) { pika::apply(exec, func); }
         };
 
         auto exec = pika::execution::parallel_executor(hint);
@@ -339,8 +325,7 @@ void function_futures_apply_hierarchical_placement(std::uint64_t count, bool csv
 int pika_main(variables_map& vm)
 {
     {
-        if (vm.count("pika:queuing"))
-            queuing = vm["pika:queuing"].as<std::string>();
+        if (vm.count("pika:queuing")) queuing = vm["pika:queuing"].as<std::string>();
 
         if (vm.count("pika:numa-sensitive"))
             numa_sensitive = 1;
@@ -350,8 +335,7 @@ int pika_main(variables_map& vm)
         bool test_all = (vm.count("test-all") > 0);
         const int repetitions = vm["repetitions"].as<int>();
 
-        if (vm.count("info"))
-            info_string = vm["info"].as<std::string>();
+        if (vm.count("info")) info_string = vm["info"].as<std::string>();
 
         num_threads = pika::get_num_worker_threads();
 

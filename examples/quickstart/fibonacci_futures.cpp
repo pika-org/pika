@@ -28,8 +28,7 @@ std::uint64_t threshold = 2;
 ///////////////////////////////////////////////////////////////////////////////
 PIKA_NOINLINE std::uint64_t fibonacci_serial(std::uint64_t n)
 {
-    if (n < 2)
-        return n;
+    if (n < 2) return n;
     return fibonacci_serial(n - 1) + fibonacci_serial(n - 2);
 }
 
@@ -69,18 +68,13 @@ struct fibonacci_future_one_continuation
     std::uint64_t n_;
 };
 
-std::uint64_t fib(std::uint64_t n)
-{
-    return fibonacci_future_one(n).get();
-}
+std::uint64_t fib(std::uint64_t n) { return fibonacci_future_one(n).get(); }
 
 pika::future<std::uint64_t> fibonacci_future_one(std::uint64_t n)
 {
     // if we know the answer, we return a future encapsulating the final value
-    if (n < 2)
-        return pika::make_ready_future(n);
-    if (n < threshold)
-        return pika::make_ready_future(fibonacci_serial(n));
+    if (n < 2) return pika::make_ready_future(n);
+    if (n < threshold) return pika::make_ready_future(fibonacci_serial(n));
 
     // asynchronously launch the calculation of one of the sub-terms
     // attach a continuation to this future which is called asynchronously on
@@ -92,10 +86,8 @@ pika::future<std::uint64_t> fibonacci_future_one(std::uint64_t n)
 std::uint64_t fibonacci(std::uint64_t n)
 {
     // if we know the answer, we return the final value
-    if (n < 2)
-        return n;
-    if (n < threshold)
-        return fibonacci_serial(n);
+    if (n < 2) return n;
+    if (n < threshold) return fibonacci_serial(n);
 
     // asynchronously launch the creation of one of the sub-terms of the
     // execution graph
@@ -109,10 +101,8 @@ std::uint64_t fibonacci(std::uint64_t n)
 std::uint64_t fibonacci_fork(std::uint64_t n)
 {
     // if we know the answer, we return the final value
-    if (n < 2)
-        return n;
-    if (n < threshold)
-        return fibonacci_serial(n);
+    if (n < 2) return n;
+    if (n < threshold) return fibonacci_serial(n);
 
     // asynchronously launch the creation of one of the sub-terms of the
     // execution graph
@@ -126,10 +116,8 @@ std::uint64_t fibonacci_fork(std::uint64_t n)
 pika::future<std::uint64_t> fibonacci_future(std::uint64_t n)
 {
     // if we know the answer, we return a future encapsulating the final value
-    if (n < 2)
-        return pika::make_ready_future(n);
-    if (n < threshold)
-        return pika::make_ready_future(fibonacci_serial(n));
+    if (n < 2) return pika::make_ready_future(n);
+    if (n < threshold) return pika::make_ready_future(fibonacci_serial(n));
 
     // asynchronously launch the creation of one of the sub-terms of the
     // execution graph
@@ -143,10 +131,8 @@ pika::future<std::uint64_t> fibonacci_future(std::uint64_t n)
 pika::future<std::uint64_t> fibonacci_future_fork(std::uint64_t n)
 {
     // if we know the answer, we return a future encapsulating the final value
-    if (n < 2)
-        return pika::make_ready_future(n);
-    if (n < threshold)
-        return pika::make_ready_future(fibonacci_serial(n));
+    if (n < 2) return pika::make_ready_future(n);
+    if (n < threshold) return pika::make_ready_future(fibonacci_serial(n));
 
     // asynchronously launch the creation of one of the sub-terms of the
     // execution graph
@@ -160,10 +146,8 @@ pika::future<std::uint64_t> fibonacci_future_fork(std::uint64_t n)
 pika::future<std::uint64_t> fibonacci_future_when_all(std::uint64_t n)
 {
     // if we know the answer, we return a future encapsulating the final value
-    if (n < 2)
-        return pika::make_ready_future(n);
-    if (n < threshold)
-        return pika::make_ready_future(fibonacci_serial(n));
+    if (n < 2) return pika::make_ready_future(n);
+    if (n < threshold) return pika::make_ready_future(fibonacci_serial(n));
 
     // asynchronously launch the creation of one of the sub-terms of the
     // execution graph
@@ -176,10 +160,8 @@ pika::future<std::uint64_t> fibonacci_future_when_all(std::uint64_t n)
 pika::future<std::uint64_t> fibonacci_future_unwrapped_when_all(std::uint64_t n)
 {
     // if we know the answer, we return a future encapsulating the final value
-    if (n < 2)
-        return pika::make_ready_future(n);
-    if (n < threshold)
-        return pika::make_ready_future(fibonacci_serial(n));
+    if (n < 2) return pika::make_ready_future(n);
+    if (n < threshold) return pika::make_ready_future(fibonacci_serial(n));
 
     // asynchronously launch the creation of one of the sub-terms of the
     // execution graph
@@ -193,10 +175,8 @@ pika::future<std::uint64_t> fibonacci_future_unwrapped_when_all(std::uint64_t n)
 pika::future<std::uint64_t> fibonacci_future_all(std::uint64_t n)
 {
     // if we know the answer, we return a future encapsulating the final value
-    if (n < 2)
-        return pika::make_ready_future(n);
-    if (n < threshold)
-        return pika::make_ready_future(fibonacci_serial(n));
+    if (n < 2) return pika::make_ready_future(n);
+    if (n < threshold) return pika::make_ready_future(fibonacci_serial(n));
 
     // asynchronously launch the calculation of both of the sub-terms
     pika::future<std::uint64_t> f1 = fibonacci_future_all(n - 1);
@@ -210,10 +190,8 @@ pika::future<std::uint64_t> fibonacci_future_all(std::uint64_t n)
 pika::future<std::uint64_t> fibonacci_future_all_when_all(std::uint64_t n)
 {
     // if we know the answer, we return a future encapsulating the final value
-    if (n < 2)
-        return pika::make_ready_future(n);
-    if (n < threshold)
-        return pika::make_ready_future(fibonacci_serial(n));
+    if (n < 2) return pika::make_ready_future(n);
+    if (n < threshold) return pika::make_ready_future(fibonacci_serial(n));
 
     // asynchronously launch the calculation of both of the sub-terms
     pika::future<std::uint64_t> f1 = fibonacci_future_all(n - 1);

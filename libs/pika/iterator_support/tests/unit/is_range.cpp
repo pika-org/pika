@@ -24,25 +24,13 @@ struct member
 {
     int x;
 
-    int* begin()
-    {
-        return &x;
-    }
+    int* begin() { return &x; }
 
-    int const* begin() const
-    {
-        return &x;
-    }
+    int const* begin() const { return &x; }
 
-    int* end()
-    {
-        return &x + 1;
-    }
+    int* end() { return &x + 1; }
 
-    int const* end() const
-    {
-        return &x + 1;
-    }
+    int const* end() const { return &x + 1; }
 };
 
 void member_range()
@@ -60,25 +48,13 @@ namespace adl {
         int x;
     };
 
-    int* begin(free& r)
-    {
-        return &r.x;
-    }
+    int* begin(free& r) { return &r.x; }
 
-    int const* begin(free const& r)
-    {
-        return &r.x;
-    }
+    int const* begin(free const& r) { return &r.x; }
 
-    int* end(free& r)
-    {
-        return &r.x + 1;
-    }
+    int* end(free& r) { return &r.x + 1; }
 
-    int const* end(free const& r)
-    {
-        return &r.x + 1;
-    }
+    int const* end(free const& r) { return &r.x + 1; }
 }    // namespace adl
 
 void adl_range()

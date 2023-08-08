@@ -59,10 +59,7 @@ namespace pika::util {
             cleanup_.reset();
         }
 
-        bool os_thread_data::is_valid() const
-        {
-            return tid_ != thread_mapper::invalid_tid;
-        }
+        bool os_thread_data::is_valid() const { return tid_ != thread_mapper::invalid_tid; }
     }    // namespace detail
 
     ///////////////////////////////////////////////////////////////////////////
@@ -75,10 +72,7 @@ namespace pika::util {
         std::uint32_t i = 0;
         for (auto&& tinfo : thread_map_)
         {
-            if (tinfo.cleanup_)
-            {
-                tinfo.cleanup_(i++);
-            }
+            if (tinfo.cleanup_) { tinfo.cleanup_(i++); }
         }
     }
 
@@ -116,20 +110,11 @@ namespace pika::util {
             if (tinfo.tid_ == tid)
             {
                 label_map_.erase(tinfo.label_);
-                if (tinfo.cleanup_)
-                {
-                    tinfo.cleanup_(i);
-                }
+                if (tinfo.cleanup_) { tinfo.cleanup_(i); }
 
                 std::size_t size = thread_map_.size();
-                if (static_cast<std::size_t>(i) == size)
-                {
-                    thread_map_.resize(size - 1);
-                }
-                else
-                {
-                    tinfo.invalidate();
-                }
+                if (static_cast<std::size_t>(i) == size) { thread_map_.resize(size - 1); }
+                else { tinfo.invalidate(); }
                 return true;
             }
             ++i;
@@ -142,10 +127,7 @@ namespace pika::util {
         std::lock_guard<mutex_type> m(mtx_);
 
         auto idx = static_cast<std::size_t>(tix);
-        if (idx >= thread_map_.size() || !thread_map_[tix].is_valid())
-        {
-            return false;
-        }
+        if (idx >= thread_map_.size() || !thread_map_[tix].is_valid()) { return false; }
 
         thread_map_[tix].cleanup_ = cb;
         return true;
@@ -156,10 +138,7 @@ namespace pika::util {
         std::lock_guard<mutex_type> m(mtx_);
 
         auto idx = static_cast<std::size_t>(tix);
-        if (idx >= thread_map_.size() || !thread_map_[tix].is_valid())
-        {
-            return false;
-        }
+        if (idx >= thread_map_.size() || !thread_map_[tix].is_valid()) { return false; }
 
         thread_map_[tix].cleanup_.reset();
         return true;
@@ -170,10 +149,7 @@ namespace pika::util {
         std::lock_guard<mutex_type> m(mtx_);
 
         auto idx = static_cast<std::size_t>(tix);
-        if (idx >= thread_map_.size())
-        {
-            return std::thread::id{};
-        }
+        if (idx >= thread_map_.size()) { return std::thread::id{}; }
         return thread_map_[idx].id_;
     }
 
@@ -182,10 +158,7 @@ namespace pika::util {
         std::lock_guard<mutex_type> m(mtx_);
 
         auto idx = static_cast<std::size_t>(tix);
-        if (idx >= thread_map_.size())
-        {
-            return thread_mapper::invalid_tid;
-        }
+        if (idx >= thread_map_.size()) { return thread_mapper::invalid_tid; }
         return thread_map_[idx].tid_;
     }
 
@@ -195,10 +168,7 @@ namespace pika::util {
         std::lock_guard<mutex_type> m(mtx_);
 
         auto idx = static_cast<std::size_t>(tix);
-        if (idx >= thread_map_.size())
-        {
-            return -1;
-        }
+        if (idx >= thread_map_.size()) { return -1; }
         return thread_map_[idx].linux_tid_;
     }
 #endif
@@ -221,10 +191,7 @@ namespace pika::util {
         std::lock_guard<mutex_type> m(mtx_);
 
         auto idx = static_cast<std::size_t>(tix);
-        if (idx >= thread_map_.size())
-        {
-            return os_thread_type::unknown;
-        }
+        if (idx >= thread_map_.size()) { return os_thread_type::unknown; }
         return thread_map_[idx].type_;
     }
 
@@ -233,10 +200,7 @@ namespace pika::util {
         std::lock_guard<mutex_type> m(mtx_);
 
         auto it = label_map_.find(label);
-        if (it == label_map_.end())
-        {
-            return invalid_index;
-        }
+        if (it == label_map_.end()) { return invalid_index; }
         return static_cast<std::uint32_t>(it->second);
     }
 
@@ -277,10 +241,7 @@ namespace pika::util {
         for (auto const& tinfo : thread_map_)
         {
             os_thread_data data{tinfo.label_, tinfo.id_, tinfo.tid_, tinfo.type_};
-            if (!f(data))
-            {
-                return false;
-            }
+            if (!f(data)) { return false; }
         }
         return true;
     }

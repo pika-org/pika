@@ -79,14 +79,12 @@ namespace pika::lcos::local {
                 for (conditional_trigger* c : conditions_)
                 {
                     triggered |= c->set(rc);
-                    if (rc && (&ec != &throws))
-                        ec = rc;
+                    if (rc && (&ec != &throws)) ec = rc;
                 }
             }
             else
             {
-                if (&ec != &throws)
-                    ec = make_success_code();
+                if (&ec != &throws) ec = make_success_code();
             }
             return triggered;
         }
@@ -100,8 +98,7 @@ namespace pika::lcos::local {
             std::unique_lock<mutex_type> l(mtx_);
 
             // by default we use as many segments as specified during construction
-            if (count == std::size_t(-1))
-                count = received_segments_.size();
+            if (count == std::size_t(-1)) count = received_segments_.size();
             PIKA_ASSERT(count != 0);
 
             init_locked(outer_lock, l, count, ec);
@@ -114,8 +111,7 @@ namespace pika::lcos::local {
                 trigger_conditions(ec);
                 if (!ec)
                 {
-                    if (generation_value)
-                        *generation_value = generation_;
+                    if (generation_value) *generation_value = generation_;
                     return promise_.get_future(ec);
                 }
             }
@@ -141,8 +137,7 @@ namespace pika::lcos::local {
             std::unique_lock<mutex_type> l(mtx_);
 
             // by default we use as many segments as specified during construction
-            if (count == std::size_t(-1))
-                count = received_segments_.size();
+            if (count == std::size_t(-1)) count = received_segments_.size();
             PIKA_ASSERT(count != 0);
             PIKA_ASSERT(generation_ != std::size_t(-1));
 
@@ -158,8 +153,7 @@ namespace pika::lcos::local {
                 trigger_conditions(ec);
                 if (!ec)
                 {
-                    if (generation_value)
-                        *generation_value = generation_;
+                    if (generation_value) *generation_value = generation_;
                     return promise_.get_shared_future(ec);
                 }
             }
@@ -202,8 +196,7 @@ namespace pika::lcos::local {
                 return false;
             }
 
-            if (&ec != &throws)
-                ec = make_success_code();
+            if (&ec != &throws) ec = make_success_code();
 
             // set the corresponding bit
             received_segments_.set(which);
@@ -252,10 +245,7 @@ namespace pika::lcos::local {
                 --it_;    // refer to the newly added element
             }
 
-            ~manage_condition()
-            {
-                this_.conditions_.erase(it_);
-            }
+            ~manage_condition() { this_.conditions_.erase(it_); }
 
             template <typename Condition>
             pika::future<void> get_future(Condition&& func, error_code& ec = pika::throws)
@@ -307,8 +297,7 @@ namespace pika::lcos::local {
                 }    // make sure lock gets re-acquired
             }
 
-            if (&ec != &throws)
-                ec = make_success_code();
+            if (&ec != &throws) ec = make_success_code();
         }
 
     public:
@@ -347,8 +336,7 @@ namespace pika::lcos::local {
                 received_segments_.resize(count);    // resize the bitmap
             received_segments_.reset();              // reset all existing bits
 
-            if (&ec != &throws)
-                ec = make_success_code();
+            if (&ec != &throws) ec = make_success_code();
         }
 
     private:
@@ -381,8 +369,7 @@ namespace pika::lcos::local {
 
         and_gate& operator=(and_gate&& rhs) noexcept
         {
-            if (this != &rhs)
-                static_cast<base_type&>(*this) = PIKA_MOVE(rhs);
+            if (this != &rhs) static_cast<base_type&>(*this) = PIKA_MOVE(rhs);
             return *this;
         }
 

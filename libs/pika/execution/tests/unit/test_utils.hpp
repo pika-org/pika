@@ -70,8 +70,7 @@ namespace test {
 
         typename base_type::reference dereference() const
         {
-            if (m_callback)
-                m_callback();
+            if (m_callback) m_callback();
             return *(this->base());
         }
 
@@ -117,10 +116,7 @@ namespace test {
             return *this;
         }
 
-        ~count_instances_v()
-        {
-            --instance_count;
-        }
+        ~count_instances_v() { --instance_count; }
 
         T value_;
         static std::atomic<std::size_t> instance_count;
@@ -159,10 +155,7 @@ namespace test {
     template <typename ExPolicy>
     struct test_num_exceptions<ExPolicy, std::input_iterator_tag>
     {
-        static void call(ExPolicy, pika::exception_list const& e)
-        {
-            PIKA_TEST_EQ(e.size(), 1u);
-        }
+        static void call(ExPolicy, pika::exception_list const& e) { PIKA_TEST_EQ(e.size(), 1u); }
     };
 
     template <>
@@ -230,18 +223,15 @@ namespace test {
     ///////////////////////////////////////////////////////////////////////////
     inline std::vector<std::size_t> fill_all_any_none(std::size_t size, std::size_t num_filled)
     {
-        if (num_filled == 0)
-            return std::vector<std::size_t>(size, 0);
+        if (num_filled == 0) return std::vector<std::size_t>(size, 0);
 
-        if (num_filled == size)
-            return std::vector<std::size_t>(size, 1);
+        if (num_filled == size) return std::vector<std::size_t>(size, 1);
 
         std::vector<std::size_t> c(size, 0);
         for (std::size_t i = 0; i < num_filled; /**/)
         {
             std::size_t pos = std::rand() % c.size();    //-V104
-            if (c[pos])
-                continue;
+            if (c[pos]) continue;
 
             c[pos] = 1;
             ++i;
@@ -253,8 +243,7 @@ namespace test {
     template <typename InputIter1, typename InputIter2>
     bool equal(InputIter1 first1, InputIter1 last1, InputIter2 first2, InputIter2 last2)
     {
-        if (std::distance(first1, last1) != std::distance(first2, last2))
-            return false;
+        if (std::distance(first1, last1) != std::distance(first2, last2)) return false;
 
         return std::equal(first1, last1, first2);
     }

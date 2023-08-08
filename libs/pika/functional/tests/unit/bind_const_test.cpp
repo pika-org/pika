@@ -29,30 +29,15 @@ namespace placeholders = std::placeholders;
 
 //
 
-long f_0()
-{
-    return 17041L;
-}
+long f_0() { return 17041L; }
 
-long f_1(long a)
-{
-    return a;
-}
+long f_1(long a) { return a; }
 
-long f_2(long a, long b)
-{
-    return a + 10 * b;
-}
+long f_2(long a, long b) { return a + 10 * b; }
 
-long f_3(long a, long b, long c)
-{
-    return a + 10 * b + 100 * c;
-}
+long f_3(long a, long b, long c) { return a + 10 * b + 100 * c; }
 
-long f_4(long a, long b, long c, long d)
-{
-    return a + 10 * b + 100 * c + 1000 * d;
-}
+long f_4(long a, long b, long c, long d) { return a + 10 * b + 100 * c + 1000 * d; }
 
 long f_5(long a, long b, long c, long d, long e)
 {
@@ -82,30 +67,15 @@ long f_9(long a, long b, long c, long d, long e, long f, long g, long h, long i)
 
 long global_result;
 
-void fv_0()
-{
-    global_result = 17041L;
-}
+void fv_0() { global_result = 17041L; }
 
-void fv_1(long a)
-{
-    global_result = a;
-}
+void fv_1(long a) { global_result = a; }
 
-void fv_2(long a, long b)
-{
-    global_result = a + 10 * b;
-}
+void fv_2(long a, long b) { global_result = a + 10 * b; }
 
-void fv_3(long a, long b, long c)
-{
-    global_result = a + 10 * b + 100 * c;
-}
+void fv_3(long a, long b, long c) { global_result = a + 10 * b + 100 * c; }
 
-void fv_4(long a, long b, long c, long d)
-{
-    global_result = a + 10 * b + 100 * c + 1000 * d;
-}
+void fv_4(long a, long b, long c, long d) { global_result = a + 10 * b + 100 * c + 1000 * d; }
 
 void fv_5(long a, long b, long c, long d, long e)
 {

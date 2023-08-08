@@ -48,35 +48,20 @@ namespace pika {
             {
             }
 
-            constexpr explicit operator bool() const noexcept
-            {
-                return is_valid();
-            }
+            constexpr explicit operator bool() const noexcept { return is_valid(); }
 
-            constexpr launch_policy get_policy() const noexcept
-            {
-                return policy_;
-            }
+            constexpr launch_policy get_policy() const noexcept { return policy_; }
 
-            constexpr bool is_valid() const noexcept
-            {
-                return static_cast<int>(policy_) != 0;
-            }
+            constexpr bool is_valid() const noexcept { return static_cast<int>(policy_) != 0; }
 
-            constexpr execution::thread_priority get_priority() const noexcept
-            {
-                return priority_;
-            }
+            constexpr execution::thread_priority get_priority() const noexcept { return priority_; }
 
             constexpr execution::thread_stacksize get_stacksize() const noexcept
             {
                 return stacksize_;
             }
 
-            constexpr execution::thread_schedule_hint get_hint() const noexcept
-            {
-                return hint_;
-            }
+            constexpr execution::thread_schedule_hint get_hint() const noexcept { return hint_; }
 
             void set_priority(execution::thread_priority priority) noexcept
             {
@@ -88,10 +73,7 @@ namespace pika {
                 stacksize_ = stacksize;
             }
 
-            void set_hint(execution::thread_schedule_hint hint) noexcept
-            {
-                hint_ = hint;
-            }
+            void set_hint(execution::thread_schedule_hint hint) noexcept { hint_ = hint; }
 
         protected:
             launch_policy policy_;
@@ -475,10 +457,7 @@ namespace pika {
                 return pred_();
             }
 
-            constexpr bool is_valid() const noexcept
-            {
-                return true;
-            }
+            constexpr bool is_valid() const noexcept { return true; }
 
             friend select_policy tag_invoke(pika::execution::experimental::with_priority_t,
                 select_policy const& policy, execution::thread_priority priority) noexcept

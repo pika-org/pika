@@ -77,19 +77,13 @@ namespace pika::lcos::detail {
             return PIKA_FORWARD(U, u);
         }
 
-        static T get_default()
-        {
-            return T();
-        }
+        static T get_default() { return T(); }
     };
 
     template <typename T>
     struct future_value<T&> : future_data_result<T&>
     {
-        PIKA_FORCEINLINE static T& get(T* u)
-        {
-            return *u;
-        }
+        PIKA_FORCEINLINE static T& get(T* u) { return *u; }
 
         static T& get_default()
         {
@@ -358,19 +352,13 @@ namespace pika::lcos::detail {
         future_base(future_base const& other) = default;
         future_base(future_base&& other) noexcept = default;
 
-        void swap(future_base& other) noexcept
-        {
-            shared_state_.swap(other.shared_state_);
-        }
+        void swap(future_base& other) noexcept { shared_state_.swap(other.shared_state_); }
 
         future_base& operator=(future_base const& other) = default;
         future_base& operator=(future_base&& other) noexcept = default;
 
         // Returns: true only if *this refers to a shared state.
-        constexpr bool valid() const noexcept
-        {
-            return shared_state_ != nullptr;
-        }
+        constexpr bool valid() const noexcept { return shared_state_ != nullptr; }
 
         // Returns: true if the shared state is ready, false if it isn't.
         bool is_ready() const noexcept
@@ -617,10 +605,7 @@ namespace pika {
             {
             }
 
-            ~invalidate()
-            {
-                f_.shared_state_.reset();
-            }
+            ~invalidate() { f_.shared_state_.reset(); }
 
             future& f_;
         };
@@ -715,10 +700,7 @@ namespace pika {
 
         // Returns: shared_future<R>(PIKA_MOVE(*this)).
         // Postcondition: valid() == false.
-        shared_future<R> share() noexcept
-        {
-            return shared_future<R>(PIKA_MOVE(*this));
-        }
+        shared_future<R> share() noexcept { return shared_future<R>(PIKA_MOVE(*this)); }
 
         // Effects: wait()s until the shared state is ready, then retrieves
         //          the value stored in the shared state.
@@ -763,10 +745,7 @@ namespace pika {
             using result_type = typename shared_state_type::result_type;
             result_type* result =
                 lcos::detail::future_get_result<result_type>::call(this->shared_state_, ec);
-            if (ec)
-            {
-                return lcos::detail::future_value<R>::get_default();
-            }
+            if (ec) { return lcos::detail::future_value<R>::get_default(); }
 
             // no error has been reported, return the result
             return lcos::detail::future_value<R>::get(PIKA_MOVE(*result));

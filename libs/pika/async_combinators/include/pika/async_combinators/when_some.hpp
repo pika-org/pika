@@ -335,10 +335,7 @@ namespace pika {
 
                     if (new_count == needed_count_)
                     {
-                        if (ctx != pika::execution::this_thread::detail::agent())
-                        {
-                            ctx.resume();
-                        }
+                        if (ctx != pika::execution::this_thread::detail::agent()) { ctx.resume(); }
                         else
                         {
                             goal_reached_on_calling_thread_.store(true, std::memory_order_release);
@@ -402,10 +399,7 @@ namespace pika {
     {
         using result_type = std::decay_t<Range>;
 
-        if (n == 0)
-        {
-            return pika::make_ready_future(when_some_result<result_type>());
-        }
+        if (n == 0) { return pika::make_ready_future(when_some_result<result_type>()); }
 
         result_type values = traits::acquire_future<result_type>()(lazy_values);
 
@@ -452,10 +446,7 @@ namespace pika {
         traits::detail::reserve_if_reservable(values, count);
 
         traits::acquire_future_disp func;
-        for (std::size_t i = 0; i != count; ++i)
-        {
-            values.push_back(func(*begin++));
-        }
+        for (std::size_t i = 0; i != count; ++i) { values.push_back(func(*begin++)); }
 
         return pika::when_some(n, PIKA_MOVE(values));
     }
@@ -464,10 +455,7 @@ namespace pika {
     {
         using result_type = std::tuple<>;
 
-        if (n == 0)
-        {
-            return pika::make_ready_future(when_some_result<result_type>());
-        }
+        if (n == 0) { return pika::make_ready_future(when_some_result<result_type>()); }
 
         return pika::make_exceptional_future<when_some_result<result_type>>(
             PIKA_GET_EXCEPTION(pika::error::bad_parameter, "pika::when_some",
@@ -484,10 +472,7 @@ namespace pika {
         using result_type =
             std::tuple<traits::acquire_future_t<T>, traits::acquire_future_t<Ts>...>;
 
-        if (n == 0)
-        {
-            return pika::make_ready_future(when_some_result<result_type>());
-        }
+        if (n == 0) { return pika::make_ready_future(when_some_result<result_type>()); }
 
         if (n > 1 + sizeof...(Ts))
         {

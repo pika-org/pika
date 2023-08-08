@@ -66,8 +66,7 @@ namespace pika::detail {
         {
             if (lazy_values_[i].has_value())
             {
-                if (pika::error::success_counter_)
-                    ++*success_counter_;
+                if (pika::error::success_counter_) ++*success_counter_;
                 // invoke callback function
                 f_(i, lazy_values_[i].get());
             }
@@ -81,8 +80,7 @@ namespace pika::detail {
         {
             if (lazy_values_[i].has_value())
             {
-                if (pika::error::success_counter_)
-                    ++*success_counter_;
+                if (pika::error::success_counter_) ++*success_counter_;
                 // invoke callback function
                 f_(i);
             }

@@ -20,10 +20,7 @@
 #include <vector>
 
 // Tests for https://svn.boost.org/trac/boost/ticket/1517
-int to_value(std::list<int>::const_iterator v)
-{
-    return *v;
-}
+int to_value(std::list<int>::const_iterator v) { return *v; }
 
 void category_test()
 {

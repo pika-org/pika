@@ -292,10 +292,7 @@ void test_stop_token_api()
 template <typename D>
 void sleep(D dur)
 {
-    if (dur > std::chrono::milliseconds{0})
-    {
-        std::this_thread::sleep_for(dur);
-    }
+    if (dur > std::chrono::milliseconds{0}) { std::this_thread::sleep_for(dur); }
 }
 
 template <typename D>
@@ -363,7 +360,4 @@ int pika_main()
     return 0;
 }
 
-int main(int argc, char* argv[])
-{
-    return pika::init(pika_main, argc, argv);
-}
+int main(int argc, char* argv[]) { return pika::init(pika_main, argc, argv); }

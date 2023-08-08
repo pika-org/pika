@@ -22,10 +22,7 @@ struct sentinel
     {
     }
 
-    ValueType get_stop() const
-    {
-        return this->stop;
-    }
+    ValueType get_stop() const { return this->stop; }
 
 private:
     ValueType stop;
@@ -73,10 +70,7 @@ struct iterator
     {
     }
 
-    virtual Value operator*() const
-    {
-        return this->state;
-    }
+    virtual Value operator*() const { return this->state; }
 
     virtual Value operator->() const = delete;
 
@@ -106,10 +100,7 @@ struct iterator
         return copy;
     }
 
-    virtual Value operator[](difference_type n) const
-    {
-        return this->state + n;
-    }
+    virtual Value operator[](difference_type n) const { return this->state + n; }
 
     iterator& operator+=(difference_type n)
     {
@@ -135,35 +126,17 @@ struct iterator
         return copy -= n;
     }
 
-    bool operator==(const iterator& that) const
-    {
-        return this->state == that.state;
-    }
+    bool operator==(const iterator& that) const { return this->state == that.state; }
 
-    bool operator!=(const iterator& that) const
-    {
-        return this->state != that.state;
-    }
+    bool operator!=(const iterator& that) const { return this->state != that.state; }
 
-    bool operator<(const iterator& that) const
-    {
-        return this->state < that.state;
-    }
+    bool operator<(const iterator& that) const { return this->state < that.state; }
 
-    bool operator<=(const iterator& that) const
-    {
-        return this->state <= that.state;
-    }
+    bool operator<=(const iterator& that) const { return this->state <= that.state; }
 
-    bool operator>(const iterator& that) const
-    {
-        return this->state > that.state;
-    }
+    bool operator>(const iterator& that) const { return this->state > that.state; }
 
-    bool operator>=(const iterator& that) const
-    {
-        return this->state >= that.state;
-    }
+    bool operator>=(const iterator& that) const { return this->state >= that.state; }
 
 protected:
     Value state;

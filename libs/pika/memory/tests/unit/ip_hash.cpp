@@ -31,20 +31,13 @@ protected:
     virtual ~base() {}
 
 public:
-    long use_count() const
-    {
-        return use_count_;
-    }
+    long use_count() const { return use_count_; }
 
-    inline friend void intrusive_ptr_add_ref(base* p)
-    {
-        ++p->use_count_;
-    }
+    inline friend void intrusive_ptr_add_ref(base* p) { ++p->use_count_; }
 
     inline friend void intrusive_ptr_release(base* p)
     {
-        if (--p->use_count_ == 0)
-            delete p;
+        if (--p->use_count_ == 0) delete p;
     }
 };
 

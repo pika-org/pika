@@ -32,10 +32,7 @@ namespace pika::concurrency::detail {
             PIKA_ITT_SYNC_CREATE(this, desc, "");
         }
 
-        ~spinlock()
-        {
-            PIKA_ITT_SYNC_DESTROY(this);
-        }
+        ~spinlock() { PIKA_ITT_SYNC_DESTROY(this); }
 
         void lock()
         {
@@ -64,8 +61,7 @@ namespace pika::concurrency::detail {
             //      The above order can be changed arbitrarily but
             //      the nature of execution will still remain the
             //      same.
-            do
-            {
+            do {
                 util::yield_while([this] { return is_locked(); },
                     "pika::concurrency::detail::spinlock::lock", false);
             } while (!acquire_lock());
@@ -109,14 +105,8 @@ namespace pika::concurrency::detail {
         }
 
         // relinquish lock
-        PIKA_FORCEINLINE void relinquish_lock()
-        {
-            v_.store(false, std::memory_order_release);
-        }
+        PIKA_FORCEINLINE void relinquish_lock() { v_.store(false, std::memory_order_release); }
 
-        PIKA_FORCEINLINE bool is_locked() const
-        {
-            return v_.load(std::memory_order_relaxed);
-        }
+        PIKA_FORCEINLINE bool is_locked() const { return v_.load(std::memory_order_relaxed); }
     };
 }    // namespace pika::concurrency::detail

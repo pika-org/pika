@@ -61,10 +61,7 @@ int pika_main(pika::program_options::variables_map& vm)
 
         for (std::size_t i = 0; i < batch_iterations; ++i)
         {
-            for (std::size_t b = 0; b < batch_size; ++b)
-            {
-                dummy<<<1, 1, 0, cuda_stream>>>();
-            }
+            for (std::size_t b = 0; b < batch_size; ++b) { dummy<<<1, 1, 0, cuda_stream>>>(); }
             whip::stream_synchronize(cuda_stream);
         }
 

@@ -24,10 +24,7 @@ std::size_t num_level_tasks = 16;
 std::size_t spread = 2;
 std::uint64_t delay_ns = 0;
 
-void test_func()
-{
-    worker_timed(delay_ns);
-}
+void test_func() { worker_timed(delay_ns); }
 
 ///////////////////////////////////////////////////////////////////////////////
 pika::future<void> spawn_level(std::size_t num_tasks)
@@ -58,8 +55,7 @@ pika::future<void> spawn_level(std::size_t num_tasks)
     }
 
     // then spawn required number of tasks on this level
-    for (std::size_t i = 0; i != num_tasks; ++i)
-        tasks.push_back(pika::async(&test_func));
+    for (std::size_t i = 0; i != num_tasks; ++i) tasks.push_back(pika::async(&test_func));
 
     return pika::when_all(tasks);
 }
@@ -68,8 +64,7 @@ pika::future<void> spawn_level(std::size_t num_tasks)
 int pika_main(pika::program_options::variables_map& vm)
 {
     std::size_t num_tasks = 128;
-    if (vm.count("tasks"))
-        num_tasks = vm["tasks"].as<std::size_t>();
+    if (vm.count("tasks")) num_tasks = vm["tasks"].as<std::size_t>();
 
     double sequential_time_per_task = 0;
 
@@ -79,8 +74,7 @@ int pika_main(pika::program_options::variables_map& vm)
 
         auto start = std::chrono::high_resolution_clock::now();
 
-        for (std::size_t i = 0; i != num_tasks; ++i)
-            tasks.push_back(pika::async(&test_func));
+        for (std::size_t i = 0; i != num_tasks; ++i) tasks.push_back(pika::async(&test_func));
 
         pika::wait_all(tasks);
 

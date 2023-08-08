@@ -32,15 +32,9 @@ struct Z : public X
 {
 };
 
-int f(pika::intrusive_ptr<X>)
-{
-    return 1;
-}
+int f(pika::intrusive_ptr<X>) { return 1; }
 
-int f(pika::intrusive_ptr<Y>)
-{
-    return 2;
-}
+int f(pika::intrusive_ptr<Y>) { return 2; }
 
 int main()
 {

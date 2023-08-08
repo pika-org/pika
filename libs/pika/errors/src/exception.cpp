@@ -146,10 +146,7 @@ namespace pika {
 
         static pre_exception_handler_type pre_exception_handler;
 
-        void set_pre_exception_handler(pre_exception_handler_type f)
-        {
-            pre_exception_handler = f;
-        }
+        void set_pre_exception_handler(pre_exception_handler_type f) { pre_exception_handler = f; }
     }    // namespace detail
 }    // namespace pika
 
@@ -236,10 +233,7 @@ namespace pika::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    std::exception_ptr access_exception(error_code const& e)
-    {
-        return e.exception_;
-    }
+    std::exception_ptr access_exception(error_code const& e) { return e.exception_; }
 
     template <typename Exception>
     PIKA_EXPORT std::exception_ptr get_exception(Exception const& e, std::string const& func,
@@ -257,10 +251,7 @@ namespace pika::detail {
     PIKA_EXPORT void
     throw_exception(Exception const& e, std::string const& func, std::string const& file, long line)
     {
-        if (pre_exception_handler)
-        {
-            pre_exception_handler();
-        }
+        if (pre_exception_handler) { pre_exception_handler(); }
 
         std::rethrow_exception(get_exception(e, func, file, line));
     }
@@ -352,15 +343,9 @@ namespace pika {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    error get_error(pika::exception const& e)
-    {
-        return static_cast<pika::error>(e.get_error());
-    }
+    error get_error(pika::exception const& e) { return static_cast<pika::error>(e.get_error()); }
 
-    error get_error(pika::error_code const& e)
-    {
-        return static_cast<pika::error>(e.value());
-    }
+    error get_error(pika::error_code const& e) { return static_cast<pika::error>(e.value()); }
 
     error get_error(std::exception_ptr const& e)
     {
@@ -394,8 +379,7 @@ namespace pika {
     std::string get_error_function_name(pika::exception_info const& xi)
     {
         std::string const* function = xi.get<pika::detail::throw_function>();
-        if (function)
-            return *function;
+        if (function) return *function;
 
         return std::string();
     }
@@ -405,8 +389,7 @@ namespace pika {
     std::string get_error_file_name(pika::exception_info const& xi)
     {
         std::string const* file = xi.get<pika::detail::throw_file>();
-        if (file)
-            return *file;
+        if (file) return *file;
 
         return "<unknown>";
     }
@@ -416,8 +399,7 @@ namespace pika {
     long get_error_line_number(pika::exception_info const& xi)
     {
         long const* line = xi.get<pika::detail::throw_line>();
-        if (line)
-            return *line;
+        if (line) return *line;
         return -1;
     }
 

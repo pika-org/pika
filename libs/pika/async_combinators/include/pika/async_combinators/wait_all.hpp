@@ -343,10 +343,7 @@ namespace pika {
                     using future_type =
                         pika::detail::decay_unwrap_t<typename std::tuple_element<I, Tuple>::type>;
 
-                    if constexpr (is_future_or_shared_state_v<future_type>)
-                    {
-                        await_future<I>();
-                    }
+                    if constexpr (is_future_or_shared_state_v<future_type>) { await_future<I>(); }
                     else
                     {
                         static_assert(is_future_or_shared_state_range_v<future_type>,
@@ -363,10 +360,7 @@ namespace pika {
 
                 // If there are still futures which are not ready, suspend
                 // and wait.
-                if (!this->is_ready())
-                {
-                    this->wait();
-                }
+                if (!this->is_ready()) { this->wait(); }
             }
 
         private:

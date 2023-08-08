@@ -159,10 +159,7 @@ namespace pika::execution::experimental {
                             PIKA_SMT_PAUSE;
 
                             current = tstate.load(std::memory_order_acquire);
-                            if (!op(current, state))
-                            {
-                                return current;
-                            }
+                            if (!op(current, state)) { return current; }
                         }
 
                         if ((pika::chrono::detail::timestamp() - base_time) > yield_delay)
@@ -330,10 +327,7 @@ namespace pika::execution::experimental {
                     yield_delay_ == rhs.yield_delay_;
             }
 
-            bool operator!=(shared_data const& rhs) const noexcept
-            {
-                return !(*this == rhs);
-            }
+            bool operator!=(shared_data const& rhs) const noexcept { return !(*this == rhs); }
 
         private:
             /// This struct implements the main work loop for a single parallel
@@ -399,10 +393,7 @@ namespace pika::execution::experimental {
                     catch (...)
                     {
                         std::lock_guard l(exception_mutex);
-                        if (!exception)
-                        {
-                            exception = std::current_exception();
-                        }
+                        if (!exception) { exception = std::current_exception(); }
                     }
 
                     set_state(data.state_, thread_state::idle);
@@ -464,10 +455,7 @@ namespace pika::execution::experimental {
                     catch (...)
                     {
                         std::lock_guard l(exception_mutex);
-                        if (!exception)
-                        {
-                            exception = std::current_exception();
-                        }
+                        if (!exception) { exception = std::current_exception(); }
                     }
 
                     set_state(data.state_, thread_state::idle);
@@ -483,10 +471,7 @@ namespace pika::execution::experimental {
                 {
                     func = &thread_function_helper<F, S, Args>::call_static;
                 }
-                else
-                {
-                    func = &thread_function_helper<F, S, Args>::call_dynamic;
-                }
+                else { func = &thread_function_helper<F, S, Args>::call_dynamic; }
 
                 for (std::size_t t = 0; t < num_threads_; ++t)
                 {
@@ -529,10 +514,7 @@ namespace pika::execution::experimental {
                 wait_state_all(thread_state::idle);
 
                 std::lock_guard l(exception_mutex_);
-                if (exception_)
-                {
-                    std::rethrow_exception(PIKA_MOVE(exception_));
-                }
+                if (exception_) { std::rethrow_exception(PIKA_MOVE(exception_)); }
             }
 
             template <typename F, typename S, typename... Ts>
@@ -581,15 +563,9 @@ namespace pika::execution::experimental {
             return *shared_data_ == *rhs.shared_data_;
         }
 
-        bool operator!=(fork_join_executor const& rhs) const noexcept
-        {
-            return !(*this == rhs);
-        }
+        bool operator!=(fork_join_executor const& rhs) const noexcept { return !(*this == rhs); }
 
-        fork_join_executor const& context() const noexcept
-        {
-            return *this;
-        }
+        fork_join_executor const& context() const noexcept { return *this; }
         /// \endcond
 
         /// \brief Construct a fork_join_executor.
@@ -634,15 +610,9 @@ struct fmt::formatter<pika::execution::experimental::fork_join_executor::loop_sc
         const char* schedule_str;
         switch (schedule)
         {
-        case fork_join_executor::loop_schedule::static_:
-            schedule_str = "static";
-            break;
-        case fork_join_executor::loop_schedule::dynamic:
-            schedule_str = "dynamic";
-            break;
-        default:
-            schedule_str = "<unknown>";
-            break;
+        case fork_join_executor::loop_schedule::static_: schedule_str = "static"; break;
+        case fork_join_executor::loop_schedule::dynamic: schedule_str = "dynamic"; break;
+        default: schedule_str = "<unknown>"; break;
         }
 
         return fmt::formatter<std::string>::format(

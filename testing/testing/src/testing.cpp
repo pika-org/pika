@@ -34,24 +34,16 @@ namespace pika::detail {
 
     fixture::~fixture()
     {
-        if (report_errors(stream_) != 0)
-        {
-            std::exit(EXIT_FAILURE);
-        }
+        if (report_errors(stream_) != 0) { std::exit(EXIT_FAILURE); }
     }
 
     void fixture::increment_tests(counter_type c)
     {
         switch (c)
         {
-        case counter_sanity:
-            ++sanity_tests_;
-            return;
-        case counter_test:
-            ++test_tests_;
-            return;
-        default:
-            break;
+        case counter_sanity: ++sanity_tests_; return;
+        case counter_test: ++test_tests_; return;
+        default: break;
         }
         PIKA_ASSERT(false);
     }
@@ -60,14 +52,9 @@ namespace pika::detail {
     {
         switch (c)
         {
-        case counter_sanity:
-            ++sanity_failures_;
-            return;
-        case counter_test:
-            ++test_failures_;
-            return;
-        default:
-            break;
+        case counter_sanity: ++sanity_failures_; return;
+        case counter_test: ++test_failures_; return;
+        default: break;
         }
         PIKA_ASSERT(false);
     }
@@ -76,12 +63,9 @@ namespace pika::detail {
     {
         switch (c)
         {
-        case counter_sanity:
-            return sanity_tests_;
-        case counter_test:
-            return test_tests_;
-        default:
-            break;
+        case counter_sanity: return sanity_tests_;
+        case counter_test: return test_tests_;
+        default: break;
         }
         PIKA_ASSERT(false);
         return std::size_t(-1);
@@ -91,12 +75,9 @@ namespace pika::detail {
     {
         switch (c)
         {
-        case counter_sanity:
-            return sanity_failures_;
-        case counter_test:
-            return test_failures_;
-        default:
-            break;
+        case counter_sanity: return sanity_failures_;
+        case counter_test: return test_failures_;
+        default: break;
         }
         PIKA_ASSERT(false);
         return std::size_t(-1);
@@ -104,10 +85,7 @@ namespace pika::detail {
 
     fixture global_fixture{std::cerr};
 
-    int report_errors()
-    {
-        return report_errors(std::cerr);
-    }
+    int report_errors() { return report_errors(std::cerr); }
 
     int report_errors(std::ostream& stream)
     {

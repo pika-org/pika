@@ -34,20 +34,11 @@ namespace pika::execution {
     struct sequenced_executor
     {
         /// \cond NOINTERNAL
-        bool operator==(sequenced_executor const& /*rhs*/) const noexcept
-        {
-            return true;
-        }
+        bool operator==(sequenced_executor const& /*rhs*/) const noexcept { return true; }
 
-        bool operator!=(sequenced_executor const& /*rhs*/) const noexcept
-        {
-            return false;
-        }
+        bool operator!=(sequenced_executor const& /*rhs*/) const noexcept { return false; }
 
-        sequenced_executor const& context() const noexcept
-        {
-            return *this;
-        }
+        sequenced_executor const& context() const noexcept { return *this; }
         /// \endcond
 
         /// \cond NOINTERNAL
@@ -90,10 +81,7 @@ namespace pika::execution {
 
             try
             {
-                for (auto const& elem : shape)
-                {
-                    results.push_back(async_execute(f, elem, ts...));
-                }
+                for (auto const& elem : shape) { results.push_back(async_execute(f, elem, ts...)); }
             }
             catch (std::bad_alloc const& ba)
             {

@@ -20,10 +20,7 @@ using pika::program_options::variables_map;
 ///////////////////////////////////////////////////////////////////////////////
 bool normal_function_called = false;
 
-void normal_function()
-{
-    normal_function_called = true;
-}
+void normal_function() { normal_function_called = true; }
 
 void test_thread_function_no_arguments()
 {
@@ -35,10 +32,7 @@ void test_thread_function_no_arguments()
 ///////////////////////////////////////////////////////////////////////////////
 int nfoa_res = 0;
 
-void normal_function_one_arg(int i)
-{
-    nfoa_res = i;
-}
+void normal_function_one_arg(int i) { nfoa_res = i; }
 
 void test_thread_function_one_argument()
 {
@@ -52,10 +46,7 @@ struct callable_no_args
 {
     static bool called;
 
-    void operator()() const
-    {
-        called = true;
-    }
+    void operator()() const { called = true; }
 };
 
 bool callable_no_args::called = false;
@@ -78,10 +69,7 @@ struct callable_noncopyable_no_args
     callable_noncopyable_no_args(callable_noncopyable_no_args const&) = delete;
     callable_noncopyable_no_args& operator=(callable_noncopyable_no_args const&) = delete;
 
-    void operator()() const
-    {
-        called = true;
-    }
+    void operator()() const { called = true; }
 };
 
 bool callable_noncopyable_no_args::called = false;
@@ -157,10 +145,7 @@ int callable_multiple_arg::called_three_arg3;
 void test_thread_callable_object_multiple_arguments()
 {
     std::vector<int> x;
-    for (int i = 0; i < 7; ++i)
-    {
-        x.push_back(i * i);
-    }
+    for (int i = 0; i < 7; ++i) { x.push_back(i * i); }
 
     callable_multiple_arg func;
 
@@ -197,15 +182,9 @@ struct X
     {
     }
 
-    void f0()
-    {
-        function_called = true;
-    }
+    void f0() { function_called = true; }
 
-    void f1(int i)
-    {
-        arg_value = i;
-    }
+    void f1(int i) { arg_value = i; }
 };
 
 void test_thread_member_function_no_arguments()

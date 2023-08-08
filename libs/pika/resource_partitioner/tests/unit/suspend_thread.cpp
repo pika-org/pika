@@ -167,14 +167,8 @@ int pika_main()
             {
                 pika::threads::detail::resume_processing_unit(tp, thread_num).get();
 
-                if (thread_num > 0)
-                {
-                    --thread_num;
-                }
-                else
-                {
-                    up = true;
-                }
+                if (thread_num > 0) { --thread_num; }
+                else { up = true; }
             }
         }
 
@@ -227,10 +221,7 @@ int main(int argc, char* argv[])
             // pika::resource::scheduling_policy::shared_priority,
         };
 
-        for (auto const scheduler : schedulers)
-        {
-            test_scheduler(argc, argv, scheduler);
-        }
+        for (auto const scheduler : schedulers) { test_scheduler(argc, argv, scheduler); }
     }
 
     {

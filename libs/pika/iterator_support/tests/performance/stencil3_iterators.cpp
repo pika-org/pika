@@ -88,8 +88,7 @@ namespace pika::experimental {
             template <typename Iterator>
             typename std::iterator_traits<Iterator>::reference operator()(Iterator const& it) const
             {
-                if (it == begin_)
-                    return *value_;
+                if (it == begin_) return *value_;
                 return *detail::previous(it);
             }
 
@@ -121,8 +120,7 @@ namespace pika::experimental {
             template <typename Iterator>
             typename std::iterator_traits<Iterator>::reference operator()(Iterator const& it) const
             {
-                if (it == end_)
-                    return *value_;
+                if (it == end_) return *value_;
                 return *detail::next(it);
             }
 
@@ -458,10 +456,7 @@ int pika_main(pika::program_options::variables_map& vm)
     partition_size = vm["partition_size"].as<int>();
 
     // verify that input is within domain of program
-    if (test_count <= 0)
-    {
-        std::cout << "test_count cannot be zero or negative..." << std::endl;
-    }
+    if (test_count <= 0) { std::cout << "test_count cannot be zero or negative..." << std::endl; }
     else if (partition_size < 3)
     {
         std::cout << "partition_size cannot be smaller than 3..." << std::endl;
@@ -471,8 +466,7 @@ int pika_main(pika::program_options::variables_map& vm)
         // first run full stencil3 tests
         {
             std::chrono::duration<double> t(0);
-            for (int i = 0; i != test_count; ++i)
-                t += bench_stencil3_iterator_full();
+            for (int i = 0; i != test_count; ++i) t += bench_stencil3_iterator_full();
             std::cout << "full: " << t.count() / test_count << std::endl;
             pika::util::print_cdash_timing("Stencil3Full", t.count() / test_count);
         }
@@ -480,16 +474,14 @@ int pika_main(pika::program_options::variables_map& vm)
         // now run explicit (no-check) stencil3 tests
         {
             std::chrono::duration<double> t(0);
-            for (int i = 0; i != test_count; ++i)
-                t += bench_stencil3_iterator_v1();
+            for (int i = 0; i != test_count; ++i) t += bench_stencil3_iterator_v1();
             std::cout << "nocheck(v1): " << t.count() / test_count << std::endl;
             pika::util::print_cdash_timing("Stencil3NocheckV1", t.count() / test_count);
         }
 
         {
             std::chrono::duration<double> t(0);
-            for (int i = 0; i != test_count; ++i)
-                t += bench_stencil3_iterator_v2();
+            for (int i = 0; i != test_count; ++i) t += bench_stencil3_iterator_v2();
             std::cout << "nocheck(v2): " << t.count() / test_count << std::endl;
             pika::util::print_cdash_timing("Stencil3NocheckV2", t.count() / test_count);
         }
@@ -497,8 +489,7 @@ int pika_main(pika::program_options::variables_map& vm)
         // now run explicit tests
         {
             std::chrono::duration<double> t(0);
-            for (int i = 0; i != test_count; ++i)
-                t += bench_stencil3_iterator_explicit();
+            for (int i = 0; i != test_count; ++i) t += bench_stencil3_iterator_explicit();
             std::cout << "explicit: " << t.count() / test_count << std::endl;
             pika::util::print_cdash_timing("Stencil3Explicit", t.count() / test_count);
         }

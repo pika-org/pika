@@ -60,20 +60,11 @@ namespace pika::threads::detail {
             return *this;
         }
 
-        explicit constexpr operator bool() const noexcept
-        {
-            return nullptr != thrd_;
-        }
+        explicit constexpr operator bool() const noexcept { return nullptr != thrd_; }
 
-        constexpr thread_id_repr get() const noexcept
-        {
-            return thrd_;
-        }
+        constexpr thread_id_repr get() const noexcept { return thrd_; }
 
-        constexpr void reset() noexcept
-        {
-            thrd_ = nullptr;
-        }
+        constexpr void reset() noexcept { thrd_ = nullptr; }
 
         friend constexpr bool operator==(std::nullptr_t, thread_id const& rhs) noexcept
         {
@@ -163,10 +154,7 @@ namespace pika::threads::detail {
         virtual void destroy_thread() = 0;
 
         // reference counting
-        friend void intrusive_ptr_add_ref(thread_data_reference_counting* p)
-        {
-            ++p->count_;
-        }
+        friend void intrusive_ptr_add_ref(thread_data_reference_counting* p) { ++p->count_; }
 
         friend void intrusive_ptr_release(thread_data_reference_counting* p)
         {
@@ -254,44 +242,20 @@ namespace pika::threads::detail {
             return *this;
         }
 
-        explicit operator bool() const noexcept
-        {
-            return nullptr != thrd_;
-        }
+        explicit operator bool() const noexcept { return nullptr != thrd_; }
 
-        thread_id noref() const noexcept
-        {
-            return thread_id(thrd_.get());
-        }
+        thread_id noref() const noexcept { return thread_id(thrd_.get()); }
 
-        thread_id_repr& get() & noexcept
-        {
-            return thrd_;
-        }
-        thread_id_repr&& get() && noexcept
-        {
-            return PIKA_MOVE(thrd_);
-        }
+        thread_id_repr& get() & noexcept { return thrd_; }
+        thread_id_repr&& get() && noexcept { return PIKA_MOVE(thrd_); }
 
-        thread_id_repr const& get() const& noexcept
-        {
-            return thrd_;
-        }
+        thread_id_repr const& get() const& noexcept { return thrd_; }
 
-        void reset() noexcept
-        {
-            thrd_.reset();
-        }
+        void reset() noexcept { thrd_.reset(); }
 
-        void reset(thread_repr* thrd, bool add_ref = true) noexcept
-        {
-            thrd_.reset(thrd, add_ref);
-        }
+        void reset(thread_repr* thrd, bool add_ref = true) noexcept { thrd_.reset(thrd, add_ref); }
 
-        constexpr thread_repr* detach() noexcept
-        {
-            return thrd_.detach();
-        }
+        constexpr thread_repr* detach() noexcept { return thrd_.detach(); }
 
         friend bool operator==(std::nullptr_t, thread_id_ref const& rhs) noexcept
         {

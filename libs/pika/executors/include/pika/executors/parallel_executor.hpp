@@ -44,10 +44,7 @@ namespace pika::parallel::execution::detail {
     template <typename Policy>
     struct get_default_policy
     {
-        static constexpr Policy call() noexcept
-        {
-            return Policy{};
-        }
+        static constexpr Policy call() noexcept { return Policy{}; }
     };
 
     template <>
@@ -207,10 +204,7 @@ namespace pika::execution {
             return !(*this == rhs);
         }
 
-        constexpr parallel_policy_executor const& context() const noexcept
-        {
-            return *this;
-        }
+        constexpr parallel_policy_executor const& context() const noexcept { return *this; }
         /// \endcond
 
         /// \cond NOINTERNAL

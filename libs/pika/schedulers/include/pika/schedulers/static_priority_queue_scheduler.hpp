@@ -71,10 +71,7 @@ namespace pika::threads::detail {
             scheduler_base::set_scheduler_mode(mode);
         }
 
-        static std::string get_scheduler_name()
-        {
-            return "static_priority_queue_scheduler";
-        }
+        static std::string get_scheduler_name() { return "static_priority_queue_scheduler"; }
     };
 }    // namespace pika::threads::detail
 

@@ -88,10 +88,7 @@ namespace pika::threads::detail {
             return n + parent_pool_->get_thread_offset();
         }
 
-        char const* get_description() const
-        {
-            return description_;
-        }
+        char const* get_description() const { return description_; }
 
         void idle_callback(std::size_t num_thread);
 
@@ -244,24 +241,18 @@ namespace pika::threads::detail {
 
             switch (stacksize)
             {
-            case execution::thread_stacksize::small_:
-                return thread_queue_init_.small_stacksize_;
+            case execution::thread_stacksize::small_: return thread_queue_init_.small_stacksize_;
 
-            case execution::thread_stacksize::medium:
-                return thread_queue_init_.medium_stacksize_;
+            case execution::thread_stacksize::medium: return thread_queue_init_.medium_stacksize_;
 
-            case execution::thread_stacksize::large:
-                return thread_queue_init_.large_stacksize_;
+            case execution::thread_stacksize::large: return thread_queue_init_.large_stacksize_;
 
-            case execution::thread_stacksize::huge:
-                return thread_queue_init_.huge_stacksize_;
+            case execution::thread_stacksize::huge: return thread_queue_init_.huge_stacksize_;
 
             case execution::thread_stacksize::nostack:
                 return (std::numeric_limits<std::ptrdiff_t>::max)();
 
-            default:
-                PIKA_ASSERT_MSG(false, fmt::format("Invalid stack size {}", stacksize));
-                break;
+            default: PIKA_ASSERT_MSG(false, fmt::format("Invalid stack size {}", stacksize)); break;
             }
 
             return thread_queue_init_.small_stacksize_;
@@ -270,15 +261,9 @@ namespace pika::threads::detail {
         using polling_function_ptr = polling_status (*)();
         using polling_work_count_function_ptr = std::size_t (*)();
 
-        static polling_status null_polling_function()
-        {
-            return polling_status::idle;
-        }
+        static polling_status null_polling_function() { return polling_status::idle; }
 
-        static std::size_t null_polling_work_count_function()
-        {
-            return 0;
-        }
+        static std::size_t null_polling_work_count_function() { return 0; }
 
         void set_mpi_polling_functions(
             polling_function_ptr mpi_func, polling_work_count_function_ptr mpi_work_count_func)

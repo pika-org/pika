@@ -46,10 +46,7 @@ public:
         return *this;
     }
 
-    ~small_object()
-    {
-        std::cout << "small_object: dtor(" << x_ << ")\n";
-    }
+    ~small_object() { std::cout << "small_object: dtor(" << x_ << ")\n"; }
 
     std::uint64_t operator()(std::uint64_t const& z_)
     {
@@ -95,10 +92,7 @@ public:
         return *this;
     }
 
-    ~big_object()
-    {
-        std::cout << "big_object: dtor(" << x_ << ", " << y_ << ")\n";
-    }
+    ~big_object() { std::cout << "big_object: dtor(" << x_ << ", " << y_ << ")\n"; }
 
     std::uint64_t operator()(std::uint64_t const& z_, std::uint64_t const& w_)
     {

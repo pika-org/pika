@@ -33,10 +33,7 @@ std::uint64_t delay = 5;
 
 struct foo
 {
-    void operator()() const
-    {
-        worker_timed(delay * 1000);
-    }
+    void operator()() const { worker_timed(delay * 1000); }
 };
 
 template <typename F>
@@ -45,8 +42,7 @@ void run(F const& f, std::uint64_t local_iterations)
     std::uint64_t i = 0;
     pika::chrono::detail::high_resolution_timer t;
 
-    for (; i < local_iterations; ++i)
-        f();
+    for (; i < local_iterations; ++i) f();
 
     double elapsed = t.elapsed();
     std::cout << " walltime/iteration: " << ((elapsed / i) * 1e9) << " ns\n";

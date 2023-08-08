@@ -364,10 +364,7 @@ namespace pika {
             return std::uint32_t(-1);
         }
 
-        virtual std::uint32_t assign_cores()
-        {
-            return std::uint32_t(-1);
-        }
+        virtual std::uint32_t assign_cores() { return std::uint32_t(-1); }
 
     protected:
         void init_global_data();

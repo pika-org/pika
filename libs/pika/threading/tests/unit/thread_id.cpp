@@ -108,34 +108,13 @@ void test_thread_ids_have_a_total_order()
     PIKA_TEST((t2_id <= t3_id) == (t3_id > t2_id));
     PIKA_TEST((t3_id <= t2_id) == (t2_id > t3_id));
 
-    if ((t1_id < t2_id) && (t2_id < t3_id))
-    {
-        PIKA_TEST_LT(t1_id, t3_id);
-    }
-    else if ((t1_id < t3_id) && (t3_id < t2_id))
-    {
-        PIKA_TEST_LT(t1_id, t2_id);
-    }
-    else if ((t2_id < t3_id) && (t3_id < t1_id))
-    {
-        PIKA_TEST_LT(t2_id, t1_id);
-    }
-    else if ((t2_id < t1_id) && (t1_id < t3_id))
-    {
-        PIKA_TEST_LT(t2_id, t3_id);
-    }
-    else if ((t3_id < t1_id) && (t1_id < t2_id))
-    {
-        PIKA_TEST_LT(t3_id, t2_id);
-    }
-    else if ((t3_id < t2_id) && (t2_id < t1_id))
-    {
-        PIKA_TEST_LT(t3_id, t1_id);
-    }
-    else
-    {
-        PIKA_TEST(false);
-    }
+    if ((t1_id < t2_id) && (t2_id < t3_id)) { PIKA_TEST_LT(t1_id, t3_id); }
+    else if ((t1_id < t3_id) && (t3_id < t2_id)) { PIKA_TEST_LT(t1_id, t2_id); }
+    else if ((t2_id < t3_id) && (t3_id < t1_id)) { PIKA_TEST_LT(t2_id, t1_id); }
+    else if ((t2_id < t1_id) && (t1_id < t3_id)) { PIKA_TEST_LT(t2_id, t3_id); }
+    else if ((t3_id < t1_id) && (t1_id < t2_id)) { PIKA_TEST_LT(t3_id, t2_id); }
+    else if ((t3_id < t2_id) && (t2_id < t1_id)) { PIKA_TEST_LT(t3_id, t1_id); }
+    else { PIKA_TEST(false); }
 
     pika::thread::id default_id;
 
@@ -162,10 +141,7 @@ void test_thread_ids_have_a_total_order()
     t3.join();
 }
 
-void get_thread_id(pika::thread::id* id)
-{
-    *id = pika::this_thread::get_id();
-}
+void get_thread_id(pika::thread::id* id) { *id = pika::this_thread::get_id(); }
 
 void test_thread_id_of_running_thread_returned_by_this_thread_get_id()
 {

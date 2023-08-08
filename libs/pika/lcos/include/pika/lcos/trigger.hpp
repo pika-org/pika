@@ -70,8 +70,7 @@ namespace pika::lcos::local {
             for (conditional_trigger* c : conditions_)
             {
                 triggered |= c->set(rc);
-                if (rc && (&ec != &throws))
-                    ec = rc;
+                if (rc && (&ec != &throws)) ec = rc;
             }
             return triggered;
         }
@@ -89,8 +88,7 @@ namespace pika::lcos::local {
             trigger_conditions(ec);    // re-check/trigger condition, if needed
             if (!ec)
             {
-                if (generation_value)
-                    *generation_value = generation_;
+                if (generation_value) *generation_value = generation_;
                 return promise_.get_future(ec);
             }
             return pika::future<void>();
@@ -101,14 +99,12 @@ namespace pika::lcos::local {
         {
             std::lock_guard<mutex_type> l(mtx_);
 
-            if (&ec != &throws)
-                ec = make_success_code();
+            if (&ec != &throws) ec = make_success_code();
 
             promise_.set_value();    // fire event
             promise_ = promise<void>();
 
-            if (&ec != &throws)
-                ec = make_success_code();
+            if (&ec != &throws) ec = make_success_code();
 
             return true;
         }
@@ -129,10 +125,7 @@ namespace pika::lcos::local {
                 --it_;    // refer to the newly added element
             }
 
-            ~manage_condition()
-            {
-                this_.conditions_.erase(it_);
-            }
+            ~manage_condition() { this_.conditions_.erase(it_); }
 
             template <typename Condition>
             pika::future<void> get_future(Condition&& func, error_code& ec = pika::throws)
@@ -183,8 +176,7 @@ namespace pika::lcos::local {
                 }    // make sure lock gets re-acquired
             }
 
-            if (&ec != &throws)
-                ec = make_success_code();
+            if (&ec != &throws) ec = make_success_code();
         }
 
     public:
@@ -231,8 +223,7 @@ namespace pika::lcos::local {
 
         trigger& operator=(trigger&& rhs) noexcept
         {
-            if (this != &rhs)
-                static_cast<base_type&>(*this) = PIKA_MOVE(rhs);
+            if (this != &rhs) static_cast<base_type&>(*this) = PIKA_MOVE(rhs);
             return *this;
         }
 

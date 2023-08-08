@@ -42,26 +42,17 @@ namespace mylib {
 
     struct tag_invocable
     {
-        friend constexpr bool tag_invoke(foo_fn, tag_invocable)
-        {
-            return true;
-        }
+        friend constexpr bool tag_invoke(foo_fn, tag_invocable) { return true; }
     };
 
     struct tag_invocable2
     {
-        friend constexpr bool tag_invoke(foo_fn, tag_invocable, int)
-        {
-            return true;
-        }
+        friend constexpr bool tag_invoke(foo_fn, tag_invocable, int) { return true; }
     };
 
     struct tag_invocable_noexcept
     {
-        friend constexpr bool tag_invoke(foo_fn, tag_invocable_noexcept) noexcept
-        {
-            return false;
-        }
+        friend constexpr bool tag_invoke(foo_fn, tag_invocable_noexcept) noexcept { return false; }
     };
 
     struct tag_not_invocable
@@ -72,10 +63,7 @@ namespace mylib {
 namespace otherlib {
     struct tag_invocable
     {
-        friend constexpr bool tag_invoke(mylib::foo_fn, tag_invocable)
-        {
-            return true;
-        }
+        friend constexpr bool tag_invoke(mylib::foo_fn, tag_invocable) { return true; }
     };
 
     struct tag_invocable_noexcept
@@ -94,22 +82,10 @@ namespace otherlib {
 namespace testlib {
     struct tag_invocable
     {
-        friend constexpr int tag_invoke(mylib::foo_fn, tag_invocable const&)
-        {
-            return 0;
-        }
-        friend constexpr int tag_invoke(mylib::foo_fn, tag_invocable&)
-        {
-            return 1;
-        }
-        friend constexpr int tag_invoke(mylib::foo_fn, tag_invocable const&&)
-        {
-            return 2;
-        }
-        friend constexpr int tag_invoke(mylib::foo_fn, tag_invocable&&)
-        {
-            return 3;
-        }
+        friend constexpr int tag_invoke(mylib::foo_fn, tag_invocable const&) { return 0; }
+        friend constexpr int tag_invoke(mylib::foo_fn, tag_invocable&) { return 1; }
+        friend constexpr int tag_invoke(mylib::foo_fn, tag_invocable const&&) { return 2; }
+        friend constexpr int tag_invoke(mylib::foo_fn, tag_invocable&&) { return 3; }
     };
 
     struct tag_invocable2

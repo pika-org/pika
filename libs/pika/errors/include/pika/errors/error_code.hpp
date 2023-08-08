@@ -271,10 +271,7 @@ namespace pika {
     {
         return error_code(e, msg, func, file, line, mode);
     }
-    inline error_code make_error_code(std::exception_ptr const& e)
-    {
-        return error_code(e);
-    }
+    inline error_code make_error_code(std::exception_ptr const& e) { return error_code(e); }
     ///@}
 
     /// \brief Returns error_code(pika::error:success, "success", mode).

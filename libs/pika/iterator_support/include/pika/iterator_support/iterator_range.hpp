@@ -29,25 +29,13 @@ namespace pika::util {
         {
         }
 
-        PIKA_HOST_DEVICE Iterator begin() const
-        {
-            return _iterator;
-        }
+        PIKA_HOST_DEVICE Iterator begin() const { return _iterator; }
 
-        PIKA_HOST_DEVICE Iterator end() const
-        {
-            return _sentinel;
-        }
+        PIKA_HOST_DEVICE Iterator end() const { return _sentinel; }
 
-        PIKA_HOST_DEVICE std::ptrdiff_t size() const
-        {
-            return std::distance(_iterator, _sentinel);
-        }
+        PIKA_HOST_DEVICE std::ptrdiff_t size() const { return std::distance(_iterator, _sentinel); }
 
-        PIKA_HOST_DEVICE bool empty() const
-        {
-            return _iterator == _sentinel;
-        }
+        PIKA_HOST_DEVICE bool empty() const { return _iterator == _sentinel; }
 
     private:
         Iterator _iterator;

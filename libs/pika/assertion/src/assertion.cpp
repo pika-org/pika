@@ -19,10 +19,7 @@ namespace pika::detail {
 
     void set_assertion_handler(assertion_handler_type handler)
     {
-        if (detail::get_handler() == nullptr)
-        {
-            detail::get_handler() = handler;
-        }
+        if (detail::get_handler() == nullptr) { detail::get_handler() = handler; }
     }
 
     void handle_assert(
@@ -31,14 +28,8 @@ namespace pika::detail {
         if (get_handler() == nullptr)
         {
             std::cerr << loc << ": Assertion '" << expr << "' failed";
-            if (!msg.empty())
-            {
-                std::cerr << " (" << msg << ")\n";
-            }
-            else
-            {
-                std::cerr << '\n';
-            }
+            if (!msg.empty()) { std::cerr << " (" << msg << ")\n"; }
+            else { std::cerr << '\n'; }
             std::abort();
         }
         get_handler()(loc, expr, msg);

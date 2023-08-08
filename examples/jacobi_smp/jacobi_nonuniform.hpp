@@ -18,30 +18,15 @@ namespace jacobi_smp {
         using const_reference = typename values_type::const_reference;
         using indices_type = std::vector<std::size_t>;
 
-        std::size_t row_begin(std::size_t i) const
-        {
-            return rows[i];
-        }
+        std::size_t row_begin(std::size_t i) const { return rows[i]; }
 
-        std::size_t row_end(std::size_t i) const
-        {
-            return rows[i + 1];
-        }
+        std::size_t row_end(std::size_t i) const { return rows[i + 1]; }
 
-        std::size_t col(std::size_t j)
-        {
-            return indices[j];
-        }
+        std::size_t col(std::size_t j) { return indices[j]; }
 
-        T& operator[](std::size_t j)
-        {
-            return values[j];
-        }
+        T& operator[](std::size_t j) { return values[j]; }
 
-        T const& operator[](std::size_t j) const
-        {
-            return values[j];
-        }
+        T const& operator[](std::size_t j) const { return values[j]; }
 
         std::vector<T> values;
         std::vector<std::size_t> indices;
@@ -64,14 +49,8 @@ namespace jacobi_smp {
         {
         }
 
-        std::size_t begin() const
-        {
-            return begin_;
-        }
-        std::size_t end() const
-        {
-            return end_;
-        }
+        std::size_t begin() const { return begin_; }
+        std::size_t end() const { return end_; }
 
         std::size_t begin_;
         std::size_t end_;

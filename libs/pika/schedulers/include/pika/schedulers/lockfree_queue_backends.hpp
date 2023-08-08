@@ -81,10 +81,7 @@ namespace pika::threads::detail {
 #endif
         }
 
-        bool empty()
-        {
-            return queue_.empty();
-        }
+        bool empty() { return queue_.empty(); }
 
     private:
         container_type queue_;
@@ -118,25 +115,16 @@ namespace pika::threads::detail {
         {
         }
 
-        bool push(const_reference val, bool /*other_end*/ = false)
-        {
-            return queue_.enqueue(val);
-        }
+        bool push(const_reference val, bool /*other_end*/ = false) { return queue_.enqueue(val); }
 
         bool push(rvalue_reference val, bool /*other_end*/ = false)
         {
             return queue_.enqueue(PIKA_MOVE(val));
         }
 
-        bool pop(reference val, bool /* steal */ = true)
-        {
-            return queue_.try_dequeue(val);
-        }
+        bool pop(reference val, bool /* steal */ = true) { return queue_.try_dequeue(val); }
 
-        bool empty()
-        {
-            return (queue_.size_approx() == 0);
-        }
+        bool empty() { return (queue_.size_approx() == 0); }
 
     private:
         container_type queue_;
@@ -175,27 +163,19 @@ namespace pika::threads::detail {
 
         bool push(const_reference val, bool other_end = false)
         {
-            if (other_end)
-                return queue_.push_right(val);
+            if (other_end) return queue_.push_right(val);
             return queue_.push_left(val);
         }
 
         bool push(rvalue_reference val, bool other_end = false)
         {
-            if (other_end)
-                return queue_.push_right(PIKA_MOVE(val));
+            if (other_end) return queue_.push_right(PIKA_MOVE(val));
             return queue_.push_left(PIKA_MOVE(val));
         }
 
-        bool pop(reference val, bool /* steal */ = true)
-        {
-            return queue_.pop_left(val);
-        }
+        bool pop(reference val, bool /* steal */ = true) { return queue_.pop_left(val); }
 
-        bool empty()
-        {
-            return queue_.empty();
-        }
+        bool empty() { return queue_.empty(); }
 
     private:
         container_type queue_;
@@ -233,10 +213,7 @@ namespace pika::threads::detail {
         {
         }
 
-        bool push(const_reference val, bool /*other_end*/ = false)
-        {
-            return queue_.push_left(val);
-        }
+        bool push(const_reference val, bool /*other_end*/ = false) { return queue_.push_left(val); }
 
         bool push(rvalue_reference val, bool /*other_end*/ = false)
         {
@@ -245,15 +222,11 @@ namespace pika::threads::detail {
 
         bool pop(reference val, bool steal = true)
         {
-            if (steal)
-                return queue_.pop_left(val);
+            if (steal) return queue_.pop_left(val);
             return queue_.pop_right(val);
         }
 
-        bool empty()
-        {
-            return queue_.empty();
-        }
+        bool empty() { return queue_.empty(); }
 
     private:
         container_type queue_;
@@ -292,29 +265,23 @@ namespace pika::threads::detail {
 
         bool push(const_reference val, bool other_end = false)
         {
-            if (other_end)
-                return queue_.push_right(PIKA_MOVE(val));
+            if (other_end) return queue_.push_right(PIKA_MOVE(val));
             return queue_.push_left(PIKA_MOVE(val));
         }
 
         bool push(rvalue_reference val, bool other_end = false)
         {
-            if (other_end)
-                return queue_.push_right(val);
+            if (other_end) return queue_.push_right(val);
             return queue_.push_left(val);
         }
 
         bool pop(reference val, bool steal = true)
         {
-            if (steal)
-                return queue_.pop_right(val);
+            if (steal) return queue_.pop_right(val);
             return queue_.pop_left(val);
         }
 
-        bool empty()
-        {
-            return queue_.empty();
-        }
+        bool empty() { return queue_.empty(); }
 
     private:
         container_type queue_;

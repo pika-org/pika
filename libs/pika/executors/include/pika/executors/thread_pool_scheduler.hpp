@@ -41,10 +41,7 @@ namespace pika::execution::experimental {
                 stacksize_ == rhs.stacksize_ && schedulehint_ == rhs.schedulehint_;
         }
 
-        bool operator!=(thread_pool_scheduler const& rhs) const noexcept
-        {
-            return !(*this == rhs);
-        }
+        bool operator!=(thread_pool_scheduler const& rhs) const noexcept { return !(*this == rhs); }
 
         pika::threads::detail::thread_pool_base* get_thread_pool()
         {
@@ -293,10 +290,7 @@ namespace pika::execution::experimental {
         char const* get_fallback_annotation() const
         {
             // Scheduler annotations have priority
-            if (annotation_)
-            {
-                return annotation_;
-            }
+            if (annotation_) { return annotation_; }
 
             // Next is the annotation from the current context scheduling work
             pika::threads::detail::thread_id_type id = pika::threads::detail::get_self_id();

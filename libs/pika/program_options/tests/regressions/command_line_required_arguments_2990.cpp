@@ -30,10 +30,7 @@ int main(int argc, char* argv[])
     char help_option[] = "--pika:help";
 
     std::vector<char*> newargv;
-    for (int i = 0; i != argc; ++i)
-    {
-        newargv.push_back(argv[i]);
-    }
+    for (int i = 0; i != argc; ++i) { newargv.push_back(argv[i]); }
     newargv.push_back(help_option);
     newargv.push_back(nullptr);
 

@@ -29,19 +29,13 @@ namespace pika_start {
 namespace pika::threads::detail {
     static get_default_pool_type get_default_pool;
 
-    void set_get_default_pool(get_default_pool_type f)
-    {
-        get_default_pool = f;
-    }
+    void set_get_default_pool(get_default_pool_type f) { get_default_pool = f; }
 
     thread_pool_base* get_self_or_default_pool()
     {
         thread_pool_base* pool = nullptr;
         auto thrd_data = get_self_id_data();
-        if (thrd_data)
-        {
-            pool = thrd_data->get_scheduler_base()->get_parent_pool();
-        }
+        if (thrd_data) { pool = thrd_data->get_scheduler_base()->get_parent_pool(); }
         else if (get_default_pool)
         {
             pool = get_default_pool();

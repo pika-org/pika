@@ -19,29 +19,17 @@ std::size_t dummy_called = 0;
 
 struct dummy_context : pika::execution::detail::context_base
 {
-    pika::execution::detail::resource_base const& resource() const override
-    {
-        return resource_;
-    }
+    pika::execution::detail::resource_base const& resource() const override { return resource_; }
 
     pika::execution::detail::resource_base resource_;
 };
 
 struct dummy_agent : pika::execution::detail::agent_base
 {
-    std::string description() const override
-    {
-        return "";
-    }
-    dummy_context const& context() const override
-    {
-        return context_;
-    }
+    std::string description() const override { return ""; }
+    dummy_context const& context() const override { return context_; }
 
-    void yield(char const*) override
-    {
-        ++dummy_called;
-    }
+    void yield(char const*) override { ++dummy_called; }
     void yield_k(std::size_t, char const*) override {}
     void suspend(char const*) override {}
     void resume(char const*) override {}
@@ -86,16 +74,10 @@ struct simple_spinlock
 
     void lock()
     {
-        while (locked_.test_and_set())
-        {
-            pika::execution::this_thread::detail::yield();
-        }
+        while (locked_.test_and_set()) { pika::execution::this_thread::detail::yield(); }
     }
 
-    void unlock()
-    {
-        locked_.clear();
-    }
+    void unlock() { locked_.clear(); }
 
     std::atomic_flag locked_ = ATOMIC_FLAG_INIT;
 };
@@ -118,8 +100,7 @@ void test_yield()
         });
     }
 
-    for (auto& t : ts)
-        t.join();
+    for (auto& t : ts) t.join();
 
     PIKA_TEST_EQ(counter, std::thread::hardware_concurrency() * repetitions * 10);
 }
@@ -144,8 +125,7 @@ void test_suspend_resume()
     while (true)
     {
         std::unique_lock<std::mutex> l(mtx);
-        if (suspended)
-            break;
+        if (suspended) break;
     }
 
     suspended.resume();

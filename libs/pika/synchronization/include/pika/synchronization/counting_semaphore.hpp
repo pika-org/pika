@@ -53,10 +53,7 @@ namespace pika {
     public:
         // Returns The maximum value of counter. This value is greater than or
         // equal to LeastMaxValue.
-        static constexpr std::ptrdiff_t(max)() noexcept
-        {
-            return LeastMaxValue;
-        }
+        static constexpr std::ptrdiff_t(max)() noexcept { return LeastMaxValue; }
 
         // \brief Construct a new counting semaphore
         //

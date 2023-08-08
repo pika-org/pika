@@ -26,40 +26,24 @@ namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     void parse_mappings(std::string const& spec, mappings_type& mappings, error_code& ec)
     {
-        if (spec == "compact")
-        {
-            mappings = compact;
-        }
-        else if (spec == "scatter")
-        {
-            mappings = scatter;
-        }
-        else if (spec == "balanced")
-        {
-            mappings = balanced;
-        }
-        else if (spec == "numa-balanced")
-        {
-            mappings = numa_balanced;
-        }
+        if (spec == "compact") { mappings = compact; }
+        else if (spec == "scatter") { mappings = scatter; }
+        else if (spec == "balanced") { mappings = balanced; }
+        else if (spec == "numa-balanced") { mappings = numa_balanced; }
         else
         {
             PIKA_THROWS_IF(ec, pika::error::bad_parameter, "parse_affinity_options",
                 "failed to parse affinity specification: \"{}\"", spec);
         }
 
-        if (&ec != &throws)
-            ec = make_success_code();
+        if (&ec != &throws) ec = make_success_code();
     }
 
     ///////////////////////////////////////////////////////////////////////////
     //                  index,       mask
     using mask_info = std::tuple<std::size_t, threads::detail::mask_type>;
 
-    inline std::size_t get_index(mask_info const& smi)
-    {
-        return std::get<0>(smi);
-    }
+    inline std::size_t get_index(mask_info const& smi) { return std::get<0>(smi); }
     inline threads::detail::mask_cref_type get_mask(mask_info const& smi)
     {
         return std::get<1>(smi);
@@ -100,10 +84,7 @@ namespace pika::detail {
     bool pu_in_process_mask(bool use_process_mask, threads::detail::topology& t,
         std::size_t num_core, std::size_t num_pu)
     {
-        if (!use_process_mask)
-        {
-            return true;
-        }
+        if (!use_process_mask) { return true; }
 
         threads::detail::mask_type proc_mask = t.get_cpubind_mask();
         threads::detail::mask_type pu_mask = t.init_thread_affinity_mask(num_core, num_pu);
@@ -169,10 +150,7 @@ namespace pika::detail {
                 std::size_t num_core_pus = t.get_number_of_core_pus(num_core + used_cores);
                 for (std::size_t num_pu = 0; num_pu < num_core_pus; ++num_pu)
                 {
-                    if (!pu_in_process_mask(use_process_mask, t, num_core, num_pu))
-                    {
-                        continue;
-                    }
+                    if (!pu_in_process_mask(use_process_mask, t, num_core, num_pu)) { continue; }
 
                     if (threads::detail::any(affinities[num_thread]))
                     {
@@ -186,8 +164,7 @@ namespace pika::detail {
                     affinities[num_thread] =
                         t.init_thread_affinity_mask(num_core + used_cores, num_pu);
 
-                    if (++num_thread == num_threads)
-                        return;
+                    if (++num_thread == num_threads) return;
                 }
             }
         }
@@ -236,26 +213,19 @@ namespace pika::detail {
                     use_pu = pu_in_process_mask(use_process_mask, t, num_core, pu_index);
                     ++pu_index;
 
-                    if (use_pu)
-                    {
-                        break;
-                    }
+                    if (use_pu) { break; }
                 }
 
                 next_pu_index[num_core] = pu_index;
 
-                if (!use_pu)
-                {
-                    continue;
-                }
+                if (!use_pu) { continue; }
 
                 num_pus[num_thread] =
                     t.get_pu_number(num_core + used_cores, next_pu_index[num_core] - 1);
                 affinities[num_thread] =
                     t.init_thread_affinity_mask(num_core + used_cores, next_pu_index[num_core] - 1);
 
-                if (++num_thread == num_threads)
-                    return;
+                if (++num_thread == num_threads) return;
             }
         }
     }
@@ -302,24 +272,17 @@ namespace pika::detail {
                     use_pu = pu_in_process_mask(use_process_mask, t, num_core, pu_index);
                     ++pu_index;
 
-                    if (use_pu)
-                    {
-                        break;
-                    }
+                    if (use_pu) { break; }
                 }
 
                 next_pu_index[num_core] = pu_index;
 
-                if (!use_pu)
-                {
-                    continue;
-                }
+                if (!use_pu) { continue; }
 
                 pu_indexes[num_core].push_back(next_pu_index[num_core] - 1);
 
                 num_pus_cores[num_core]++;
-                if (++num_thread == num_threads)
-                    break;
+                if (++num_thread == num_threads) break;
             }
         }
 
@@ -358,10 +321,7 @@ namespace pika::detail {
 
         check_num_threads(use_process_mask, t, num_threads, ec);
 
-        if (use_process_mask)
-        {
-            used_cores = 0;
-        }
+        if (use_process_mask) { used_cores = 0; }
 
         num_pus.resize(num_threads);
 
@@ -403,8 +363,7 @@ namespace pika::detail {
                 static_cast<double>(num_threads * num_pus_numa[n]) / static_cast<double>(pus_t)));
 
             // due to rounding up, we might have too many threads
-            if ((pus_t2 + temp) > num_threads)
-                temp = num_threads - pus_t2;
+            if ((pus_t2 + temp) > num_threads) temp = num_threads - pus_t2;
             pus_t2 += temp;
             num_threads_numa[n] = temp;
 
@@ -439,24 +398,17 @@ namespace pika::detail {
                             use_process_mask, t, num_core + core_offset, pu_index);
                         ++pu_index;
 
-                        if (use_pu)
-                        {
-                            break;
-                        }
+                        if (use_pu) { break; }
                     }
 
                     next_pu_index[num_core] = pu_index;
 
-                    if (!use_pu)
-                    {
-                        continue;
-                    }
+                    if (!use_pu) { continue; }
 
                     pu_indexes[num_core].push_back(next_pu_index[num_core] - 1);
 
                     num_pus_cores[num_core]++;
-                    if (++num_thread_numa == num_threads_numa[n])
-                        break;
+                    if (++num_thread_numa == num_threads_numa[n]) break;
                 }
             }
 
@@ -515,8 +467,7 @@ namespace pika::detail {
                 t, affinities, used_cores, max_cores, num_pus, use_process_mask, ec);
             break;
 
-        default:
-            PIKA_ASSERT(false);
+        default: PIKA_ASSERT(false);
         }
     }
 
@@ -528,8 +479,7 @@ namespace pika::detail {
     {
         mappings_type mappings;
         parse_mappings(spec, mappings, ec);
-        if (ec)
-            return;
+        if (ec) return;
 
         // We need to instantiate a new topology object as the runtime has not
         // been initialized yet
@@ -537,7 +487,6 @@ namespace pika::detail {
 
         decode_distribution(mappings, t, affinities, used_cores, max_cores, num_threads, num_pus,
             use_process_mask, ec);
-        if (ec)
-            return;
+        if (ec) return;
     }
 }    // namespace pika::detail

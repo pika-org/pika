@@ -183,10 +183,7 @@ namespace pika {
             template <typename SharedState>
             void operator()(SharedState const& shared_state) const
             {
-                if constexpr (!traits::is_shared_state_v<SharedState>)
-                {
-                    apply(shared_state);
-                }
+                if constexpr (!traits::is_shared_state_v<SharedState>) { apply(shared_state); }
                 else
                 {
                     std::size_t counter = wait_.count_.load(std::memory_order_acquire);
@@ -253,14 +250,8 @@ namespace pika {
                 if (count_.fetch_add(1) + 1 == needed_count_)
                 {
                     // reactivate waiting thread only if it's not us
-                    if (ctx != pika::execution::this_thread::detail::agent())
-                    {
-                        ctx.resume();
-                    }
-                    else
-                    {
-                        goal_reached_on_calling_thread_ = true;
-                    }
+                    if (ctx != pika::execution::this_thread::detail::agent()) { ctx.resume(); }
+                    else { goal_reached_on_calling_thread_ = true; }
                 }
             }
 
@@ -320,10 +311,7 @@ namespace pika {
     {
         static_assert(pika::traits::is_future_v<Future>, "invalid use of pika::wait_some");
 
-        if (n == 0)
-        {
-            return;
-        }
+        if (n == 0) { return; }
 
         if (n > values.size())
         {
@@ -376,10 +364,7 @@ namespace pika {
     {
         static_assert(pika::traits::is_future_v<Future>, "invalid use of wait_some");
 
-        if (n == 0)
-        {
-            return;
-        }
+        if (n == 0) { return; }
 
         if (n > values.size())
         {
@@ -474,10 +459,7 @@ namespace pika {
         }
     }
 
-    inline void wait_some(std::size_t n)
-    {
-        wait_some_nothrow(n);
-    }
+    inline void wait_some(std::size_t n) { wait_some_nothrow(n); }
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename T>
@@ -524,10 +506,7 @@ namespace pika {
     template <typename... Ts>
     void wait_some_nothrow(std::size_t n, Ts&&... ts)
     {
-        if (n == 0)
-        {
-            return;
-        }
+        if (n == 0) { return; }
 
         if (n > sizeof...(Ts))
         {

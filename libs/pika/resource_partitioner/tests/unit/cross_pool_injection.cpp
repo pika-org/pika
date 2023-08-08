@@ -39,9 +39,7 @@ void dummy_task(std::size_t n)
     // no other work can take place on this thread whilst it sleeps
     std::this_thread::sleep_for(std::chrono::milliseconds(n));
     //
-    for (std::size_t i(0); i < n; ++i)
-    {
-    }
+    for (std::size_t i(0); i < n; ++i) {}
 }
 
 inline std::size_t st_rand(std::size_t a, std::size_t b)
@@ -108,8 +106,7 @@ int pika_main()
             --counter;
         });
     }
-    do
-    {
+    do {
         pika::this_thread::yield();
     } while (counter > 0);
 
@@ -128,8 +125,7 @@ int pika_main()
             --counter;
         });
     }
-    do
-    {
+    do {
         pika::this_thread::yield();
     } while (counter > 0);
 
@@ -148,8 +144,7 @@ int pika_main()
             --counter;
         });
     }
-    do
-    {
+    do {
         pika::this_thread::yield();
     } while (counter > 0);
 
@@ -168,8 +163,7 @@ int pika_main()
             --counter;
         });
     }
-    do
-    {
+    do {
         pika::this_thread::yield();
     } while (counter > 0);
 
@@ -192,8 +186,7 @@ int pika_main()
             --counter;
         });
     }
-    do
-    {
+    do {
         pika::this_thread::yield();
     } while (counter > 0);
 
@@ -270,10 +263,7 @@ int main(int argc, char* argv[])
         //pika::resource::scheduling_policy::shared_priority,
     };
 
-    for (auto const scheduler : schedulers)
-    {
-        test_scheduler(argc, argv, scheduler);
-    }
+    for (auto const scheduler : schedulers) { test_scheduler(argc, argv, scheduler); }
 
     return 0;
 }

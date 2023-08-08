@@ -16,8 +16,7 @@
 
 PIKA_FORCEINLINE void worker_timed(std::uint64_t delay_ns) noexcept
 {
-    if (delay_ns == 0)
-        return;
+    if (delay_ns == 0) return;
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -26,7 +25,6 @@ PIKA_FORCEINLINE void worker_timed(std::uint64_t delay_ns) noexcept
     {
         // Check if we've reached the specified delay.
         dur = std::chrono::high_resolution_clock::now() - start;
-        if (dur.count() >= delay_ns)
-            break;
+        if (dur.count() >= delay_ns) break;
     }
 }

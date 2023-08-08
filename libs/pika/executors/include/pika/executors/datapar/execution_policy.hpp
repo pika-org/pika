@@ -66,10 +66,7 @@ namespace pika::execution {
         ///
         /// \returns The new sequenced_task_policy
         ///
-        constexpr simd_task_policy operator()(task_policy_tag) const
-        {
-            return *this;
-        }
+        constexpr simd_task_policy operator()(task_policy_tag) const { return *this; }
 
         /// Create a new non task policy from itself
         ///
@@ -133,33 +130,18 @@ namespace pika::execution {
         }
 
         using base_policy_type = sequenced_task_policy;
-        base_policy_type base_policy()
-        {
-            return sequenced_task_policy{};
-        }
+        base_policy_type base_policy() { return sequenced_task_policy{}; }
 
     public:
         /// Return the associated executor object.
-        executor_type& executor()
-        {
-            return exec_;
-        }
+        executor_type& executor() { return exec_; }
         /// Return the associated executor object.
-        constexpr executor_type const& executor() const
-        {
-            return exec_;
-        }
+        constexpr executor_type const& executor() const { return exec_; }
 
         /// Return the associated executor parameters object.
-        executor_parameters_type& parameters()
-        {
-            return params_;
-        }
+        executor_parameters_type& parameters() { return params_; }
         /// Return the associated executor parameters object.
-        constexpr executor_parameters_type const& parameters() const
-        {
-            return params_;
-        }
+        constexpr executor_parameters_type const& parameters() const { return params_; }
 
     private:
         executor_type exec_;
@@ -208,10 +190,7 @@ namespace pika::execution {
         ///
         /// \returns The new sequenced_task_policy
         ///
-        constexpr simd_task_policy_shim const& operator()(task_policy_tag) const
-        {
-            return *this;
-        }
+        constexpr simd_task_policy_shim const& operator()(task_policy_tag) const { return *this; }
 
         /// Create a new non task policy from itself
         ///
@@ -282,26 +261,14 @@ namespace pika::execution {
         }
 
         /// Return the associated executor object.
-        Executor& executor()
-        {
-            return exec_;
-        }
+        Executor& executor() { return exec_; }
         /// Return the associated executor object.
-        constexpr Executor const& executor() const
-        {
-            return exec_;
-        }
+        constexpr Executor const& executor() const { return exec_; }
 
         /// Return the associated executor parameters object.
-        Parameters& parameters()
-        {
-            return params_;
-        }
+        Parameters& parameters() { return params_; }
         /// Return the associated executor parameters object.
-        constexpr Parameters const& parameters() const
-        {
-            return params_;
-        }
+        constexpr Parameters const& parameters() const { return params_; }
 
         /// \cond NOINTERNAL
         constexpr simd_task_policy_shim() = default;
@@ -358,19 +325,13 @@ namespace pika::execution {
         ///
         /// \returns The new simd_task_policy
         ///
-        constexpr simd_task_policy operator()(task_policy_tag) const
-        {
-            return simd_task_policy();
-        }
+        constexpr simd_task_policy operator()(task_policy_tag) const { return simd_task_policy(); }
 
         /// Create a new non task policy from itself
         ///
         /// \returns The non task simd policy
         ///
-        constexpr decltype(auto) operator()(non_task_policy_tag /*tag*/) const
-        {
-            return *this;
-        }
+        constexpr decltype(auto) operator()(non_task_policy_tag /*tag*/) const { return *this; }
 
         /// Create a new simd_policy from the given
         /// executor
@@ -428,34 +389,19 @@ namespace pika::execution {
         }
 
         using base_policy_type = sequenced_policy;
-        base_policy_type base_policy()
-        {
-            return sequenced_policy{};
-        }
+        base_policy_type base_policy() { return sequenced_policy{}; }
 
     public:
         /// Return the associated executor object.
         /// Return the associated executor object.
-        executor_type& executor()
-        {
-            return exec_;
-        }
+        executor_type& executor() { return exec_; }
         /// Return the associated executor object.
-        constexpr executor_type const& executor() const
-        {
-            return exec_;
-        }
+        constexpr executor_type const& executor() const { return exec_; }
 
         /// Return the associated executor parameters object.
-        executor_parameters_type& parameters()
-        {
-            return params_;
-        }
+        executor_parameters_type& parameters() { return params_; }
         /// Return the associated executor parameters object.
-        constexpr executor_parameters_type const& parameters() const
-        {
-            return params_;
-        }
+        constexpr executor_parameters_type const& parameters() const { return params_; }
 
     private:
         executor_type exec_;
@@ -509,10 +455,7 @@ namespace pika::execution {
         ///
         /// \returns The non task simd_policy_shim
         ///
-        constexpr decltype(auto) operator()(non_task_policy_tag /*tag*/) const
-        {
-            return *this;
-        }
+        constexpr decltype(auto) operator()(non_task_policy_tag /*tag*/) const { return *this; }
 
         /// Create a new simd_policy from the given
         /// executor
@@ -577,26 +520,14 @@ namespace pika::execution {
         }
 
         /// Return the associated executor object.
-        Executor& executor()
-        {
-            return exec_;
-        }
+        Executor& executor() { return exec_; }
         /// Return the associated executor object.
-        constexpr Executor const& executor() const
-        {
-            return exec_;
-        }
+        constexpr Executor const& executor() const { return exec_; }
 
         /// Return the associated executor parameters object.
-        Parameters& parameters()
-        {
-            return params_;
-        }
+        Parameters& parameters() { return params_; }
         /// Return the associated executor parameters object.
-        constexpr Parameters const& parameters() const
-        {
-            return params_;
-        }
+        constexpr Parameters const& parameters() const { return params_; }
 
         /// \cond NOINTERNAL
         constexpr simd_policy_shim() = default;
@@ -657,10 +588,7 @@ namespace pika::execution {
         ///
         /// \returns The new par_simd_task_policy
         ///
-        constexpr par_simd_task_policy operator()(task_policy_tag) const
-        {
-            return *this;
-        }
+        constexpr par_simd_task_policy operator()(task_policy_tag) const { return *this; }
 
         /// Create a new non task policy from itself
         ///
@@ -723,33 +651,18 @@ namespace pika::execution {
         }
 
         using base_policy_type = parallel_task_policy;
-        base_policy_type base_policy()
-        {
-            return parallel_task_policy{};
-        }
+        base_policy_type base_policy() { return parallel_task_policy{}; }
 
     public:
         /// Return the associated executor object.
-        executor_type& executor()
-        {
-            return exec_;
-        }
+        executor_type& executor() { return exec_; }
         /// Return the associated executor object.
-        constexpr executor_type const& executor() const
-        {
-            return exec_;
-        }
+        constexpr executor_type const& executor() const { return exec_; }
 
         /// Return the associated executor parameters object.
-        executor_parameters_type& parameters()
-        {
-            return params_;
-        }
+        executor_parameters_type& parameters() { return params_; }
         /// Return the associated executor parameters object.
-        constexpr executor_parameters_type const& parameters() const
-        {
-            return params_;
-        }
+        constexpr executor_parameters_type const& parameters() const { return params_; }
 
     private:
         executor_type exec_;
@@ -804,10 +717,7 @@ namespace pika::execution {
         ///
         /// \returns The non task par_simd policy
         ///
-        constexpr decltype(auto) operator()(non_task_policy_tag /*tag*/) const
-        {
-            return *this;
-        }
+        constexpr decltype(auto) operator()(non_task_policy_tag /*tag*/) const { return *this; }
 
         /// Create a new par_simd_policy referencing an executor and
         /// a chunk size.
@@ -859,33 +769,18 @@ namespace pika::execution {
         }
 
         using base_policy_type = parallel_policy;
-        base_policy_type base_policy()
-        {
-            return parallel_policy{};
-        }
+        base_policy_type base_policy() { return parallel_policy{}; }
 
     public:
         /// Return the associated executor object.
-        executor_type& executor()
-        {
-            return exec_;
-        }
+        executor_type& executor() { return exec_; }
         /// Return the associated executor object.
-        constexpr executor_type const& executor() const
-        {
-            return exec_;
-        }
+        constexpr executor_type const& executor() const { return exec_; }
 
         /// Return the associated executor parameters object.
-        executor_parameters_type& parameters()
-        {
-            return params_;
-        }
+        executor_parameters_type& parameters() { return params_; }
         /// Return the associated executor parameters object.
-        constexpr executor_parameters_type const& parameters() const
-        {
-            return params_;
-        }
+        constexpr executor_parameters_type const& parameters() const { return params_; }
 
     private:
         executor_type exec_;
@@ -939,10 +834,7 @@ namespace pika::execution {
         ///
         /// \returns The non task par_simd policy
         ///
-        constexpr decltype(auto) operator()(non_task_policy_tag /*tag*/) const
-        {
-            return *this;
-        }
+        constexpr decltype(auto) operator()(non_task_policy_tag /*tag*/) const { return *this; }
 
         /// Create a new par_simd_task_policy_shim from the given
         /// executor
@@ -1006,26 +898,14 @@ namespace pika::execution {
         }
 
         /// Return the associated executor object.
-        Executor& executor()
-        {
-            return exec_;
-        }
+        Executor& executor() { return exec_; }
         /// Return the associated executor object.
-        constexpr Executor const& executor() const
-        {
-            return exec_;
-        }
+        constexpr Executor const& executor() const { return exec_; }
 
         /// Return the associated executor parameters object.
-        Parameters& parameters()
-        {
-            return params_;
-        }
+        Parameters& parameters() { return params_; }
         /// Return the associated executor parameters object.
-        constexpr Parameters const& parameters() const
-        {
-            return params_;
-        }
+        constexpr Parameters const& parameters() const { return params_; }
 
         /// \cond NOINTERNAL
         constexpr par_simd_policy_shim() = default;
@@ -1080,10 +960,7 @@ namespace pika::execution {
         ///
         /// \returns The new sequenced_task_policy
         ///
-        constexpr par_simd_task_policy_shim operator()(task_policy_tag) const
-        {
-            return *this;
-        }
+        constexpr par_simd_task_policy_shim operator()(task_policy_tag) const { return *this; }
 
         /// Create a new non task policy from itself
         ///
@@ -1154,26 +1031,14 @@ namespace pika::execution {
         }
 
         /// Return the associated executor object.
-        Executor& executor()
-        {
-            return exec_;
-        }
+        Executor& executor() { return exec_; }
         /// Return the associated executor object.
-        constexpr Executor const& executor() const
-        {
-            return exec_;
-        }
+        constexpr Executor const& executor() const { return exec_; }
 
         /// Return the associated executor parameters object.
-        Parameters& parameters()
-        {
-            return params_;
-        }
+        Parameters& parameters() { return params_; }
         /// Return the associated executor parameters object.
-        constexpr Parameters const& parameters() const
-        {
-            return params_;
-        }
+        constexpr Parameters const& parameters() const { return params_; }
 
         /// \cond NOINTERNAL
         constexpr par_simd_task_policy_shim() = default;

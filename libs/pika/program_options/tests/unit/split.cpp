@@ -19,10 +19,7 @@
 using namespace pika::program_options;
 using namespace std;
 
-void check_value(const string& option, const string& value)
-{
-    PIKA_TEST_EQ(option, value);
-}
+void check_value(const string& option, const string& value) { PIKA_TEST_EQ(option, value); }
 
 void split_whitespace(const options_description& description)
 {

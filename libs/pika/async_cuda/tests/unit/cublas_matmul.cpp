@@ -109,10 +109,7 @@ inline bool compare_L2_err(
     }
 
     float normRef = sqrtf(ref);
-    if (std::fabs(ref) < 1e-7f)
-    {
-        return false;
-    }
+    if (std::fabs(ref) < 1e-7f) { return false; }
 
     float normError = sqrtf(error);
     error = normError / normRef;
@@ -274,8 +271,7 @@ int pika_main(pika::program_options::variables_map& vm)
     std::size_t iterations = vm["iterations"].as<std::size_t>();
     //
     unsigned int seed = std::random_device{}();
-    if (vm.count("seed"))
-        seed = vm["seed"].as<unsigned int>();
+    if (vm.count("seed")) seed = vm["seed"].as<unsigned int>();
 
     pika::cuda::experimental::cuda_pool cuda_pool(device);
 

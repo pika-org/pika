@@ -23,10 +23,7 @@ public:
       : f(std::forward<F>(f))
     {
     }
-    operator type()
-    {
-        return std::forward<F>(f)();
-    }
+    operator type() { return std::forward<F>(f)(); }
 };
 
 template <typename F>
@@ -44,10 +41,7 @@ struct cant_do_anything
     cant_do_anything& operator=(cant_do_anything const&) = delete;
 };
 
-cant_do_anything f()
-{
-    return {};
-}
+cant_do_anything f() { return {}; }
 
 struct wrapper
 {
@@ -60,7 +54,4 @@ struct wrapper
     cant_do_anything value;
 };
 
-int main()
-{
-    wrapper value(with_result_of(&f));
-}
+int main() { wrapper value(with_result_of(&f)); }

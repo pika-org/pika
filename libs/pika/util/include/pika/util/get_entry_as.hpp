@@ -20,8 +20,7 @@ namespace pika::detail {
     DestType get_entry_as(Config const& config, std::string const& key, DestType const& dflt)
     {
         std::string const& entry = config.get_entry(key, "");
-        if (entry.empty())
-            return dflt;
+        if (entry.empty()) return dflt;
         return detail::from_string<DestType>(entry, dflt);
     }
 

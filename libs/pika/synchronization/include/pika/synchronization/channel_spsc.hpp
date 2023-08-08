@@ -33,10 +33,7 @@ namespace pika::experimental {
         {
             std::size_t numitems = size_ + tail - head_.data_.load(std::memory_order_acquire);
 
-            if (numitems < size_)
-            {
-                return numitems == size_ - 1;
-            }
+            if (numitems < size_) { return numitems == size_ - 1; }
             return (numitems - size_ == size_ - 1);
         }
 
@@ -54,10 +51,7 @@ namespace pika::experimental {
             PIKA_ASSERT(size != 0);
 
             // invoke constructors for allocated buffer
-            for (std::size_t i = 0; i != size_; ++i)
-            {
-                new (&buffer_[i]) T();
-            }
+            for (std::size_t i = 0; i != size_; ++i) { new (&buffer_[i]) T(); }
 
             head_.data_.store(0, std::memory_order_relaxed);
             tail_.data_.store(0, std::memory_order_relaxed);
@@ -95,41 +89,23 @@ namespace pika::experimental {
         ~channel_spsc()
         {
             // invoke destructors for allocated buffer
-            for (std::size_t i = 0; i != size_; ++i)
-            {
-                (&buffer_[i])->~T();
-            }
+            for (std::size_t i = 0; i != size_; ++i) { (&buffer_[i])->~T(); }
 
-            if (!closed_.load(std::memory_order_relaxed))
-            {
-                close();
-            }
+            if (!closed_.load(std::memory_order_relaxed)) { close(); }
         }
 
         bool get(T* val = nullptr) const noexcept
         {
-            if (closed_.load(std::memory_order_relaxed))
-            {
-                return false;
-            }
+            if (closed_.load(std::memory_order_relaxed)) { return false; }
 
             std::size_t head = head_.data_.load(std::memory_order_relaxed);
 
-            if (is_empty(head))
-            {
-                return false;
-            }
+            if (is_empty(head)) { return false; }
 
-            if (val == nullptr)
-            {
-                return true;
-            }
+            if (val == nullptr) { return true; }
 
             *val = PIKA_MOVE(buffer_[head]);
-            if (++head >= size_)
-            {
-                head = 0;
-            }
+            if (++head >= size_) { head = 0; }
             head_.data_.store(head, std::memory_order_release);
 
             return true;
@@ -137,23 +113,14 @@ namespace pika::experimental {
 
         bool set(T&& t) noexcept
         {
-            if (closed_.load(std::memory_order_relaxed))
-            {
-                return false;
-            }
+            if (closed_.load(std::memory_order_relaxed)) { return false; }
 
             std::size_t tail = tail_.data_.load(std::memory_order_relaxed);
 
-            if (is_full(tail))
-            {
-                return false;
-            }
+            if (is_full(tail)) { return false; }
 
             buffer_[tail] = PIKA_MOVE(t);
-            if (++tail >= size_)
-            {
-                tail = 0;
-            }
+            if (++tail >= size_) { tail = 0; }
             tail_.data_.store(tail, std::memory_order_release);
 
             return true;
@@ -171,10 +138,7 @@ namespace pika::experimental {
             return 0;
         }
 
-        std::size_t capacity() const
-        {
-            return size_ - 1;
-        }
+        std::size_t capacity() const { return size_ - 1; }
 
     private:
         // keep the mutex, the head, and the tail pointer in separate cache

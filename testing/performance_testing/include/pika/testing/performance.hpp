@@ -37,8 +37,7 @@ namespace pika::util {
                 int outputs = 0;
                 for (auto&& item : obj.m_map)
                 {
-                    if (outputs)
-                        strm << ",";
+                    if (outputs) strm << ",";
                     strm << "\n    {\n";
                     strm << "      \"name\" : \"" << std::get<0>(item.first) << "\",\n";
                     strm << "      \"executor\" : \"" << std::get<1>(item.first) << "\",\n";
@@ -46,8 +45,7 @@ namespace pika::util {
                     int series = 0;
                     for (auto val : item.second)
                     {
-                        if (series)
-                            strm << ", ";
+                        if (series) strm << ", ";
                         strm << val;
                         ++series;
                     }
@@ -55,8 +53,7 @@ namespace pika::util {
                     strm << "    }";
                     ++outputs;
                 }
-                if (outputs)
-                    strm << "\n  ";
+                if (outputs) strm << "\n  ";
                 strm << "]\n";
                 strm << "}\n";
                 return strm;

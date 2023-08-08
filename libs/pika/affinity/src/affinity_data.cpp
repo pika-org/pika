@@ -24,8 +24,7 @@ namespace pika::detail {
         std::size_t count = 0;
         for (threads::detail::mask_cref_type m : masks)
         {
-            if (threads::detail::any(m))
-                ++count;
+            if (threads::detail::any(m)) ++count;
         }
         return count;
     }
@@ -45,10 +44,7 @@ namespace pika::detail {
         threads::detail::resize(no_affinity_, threads::detail::hardware_concurrency());
     }
 
-    affinity_data::~affinity_data()
-    {
-        --instance_number_counter_;
-    }
+    affinity_data::~affinity_data() { --instance_number_counter_; }
 
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     void affinity_data::init(std::size_t num_threads, std::size_t max_cores, std::size_t pu_offset,
@@ -65,19 +61,10 @@ namespace pika::detail {
         num_threads_ = num_threads;
         std::size_t num_system_pus = threads::detail::hardware_concurrency();
 
-        if (pu_offset == std::size_t(-1))
-        {
-            pu_offset_ = 0;
-        }
-        else
-        {
-            pu_offset_ = pu_offset;
-        }
+        if (pu_offset == std::size_t(-1)) { pu_offset_ = 0; }
+        else { pu_offset_ = pu_offset; }
 
-        if (num_system_pus > 1)
-        {
-            pu_step_ = pu_step % num_system_pus;
-        }
+        if (num_system_pus > 1) { pu_step_ = pu_step % num_system_pus; }
 
         affinity_domain_ = PIKA_MOVE(affinity_domain);
         pu_nums_.clear();
@@ -124,10 +111,7 @@ namespace pika::detail {
         }
 
         // correct used_cores from config data if appropriate
-        if (used_cores_ == 0)
-        {
-            used_cores_ = used_cores;
-        }
+        if (used_cores_ == 0) { used_cores_ = used_cores; }
 
         pu_offset_ %= num_system_pus;
 
@@ -160,8 +144,7 @@ namespace pika::detail {
         }
 
         // if we have individual, predefined affinity masks, return those
-        if (!affinity_masks_.empty())
-            return affinity_masks_[global_thread_num];
+        if (!affinity_masks_.empty()) return affinity_masks_[global_thread_num];
 
         // otherwise return mask based on affinity domain
         std::size_t pu_num = get_pu_num(global_thread_num);
@@ -217,10 +200,7 @@ namespace pika::detail {
         threads::detail::topology const& topo, std::size_t pu_num) const
     {
         std::size_t count = 0;
-        if (threads::detail::test(no_affinity_, pu_num))
-        {
-            ++count;
-        }
+        if (threads::detail::test(no_affinity_, pu_num)) { ++count; }
         else
         {
             threads::detail::mask_type pu_mask = threads::detail::mask_type();
@@ -231,8 +211,7 @@ namespace pika::detail {
             for (std::size_t num_thread = 0; num_thread < num_threads_; ++num_thread)
             {
                 threads::detail::mask_cref_type affinity_mask = get_pu_mask(topo, num_thread);
-                if (threads::detail::any(pu_mask & affinity_mask))
-                    ++count;
+                if (threads::detail::any(pu_mask & affinity_mask)) ++count;
             }
         }
         return count;
@@ -259,8 +238,7 @@ namespace pika::detail {
             std::size_t first = threads::detail::find_first(affinity_masks_[i]);
             first_pu = (std::min)(first_pu, first);
         }
-        if (first_pu != std::size_t(-1))
-            pu_offset_ = first_pu;
+        if (first_pu != std::size_t(-1)) pu_offset_ = first_pu;
 
         init_cached_pu_nums(num_system_pus);
     }

@@ -27,10 +27,7 @@
 std::size_t iterations = 10000;
 std::uint64_t delay = 0;
 
-void just_wait()
-{
-    worker_timed(delay * 1000);
-}
+void just_wait() { worker_timed(delay * 1000); }
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename Policy>
@@ -74,18 +71,15 @@ int pika_main(pika::program_options::variables_map& vm)
     bool do_child = vm.count("no-child") == 0;      // fork only
     bool do_parent = vm.count("no-parent") == 0;    // async only
     std::size_t num_cores = pika::get_os_thread_count();
-    if (vm.count("num_cores") != 0)
-        num_cores = vm["num_cores"].as<std::size_t>();
+    if (vm.count("num_cores") != 0) num_cores = vm["num_cores"].as<std::size_t>();
 
     // first collect child stealing times
     double child_stealing_time = 0;
-    if (do_parent)
-        child_stealing_time = measure(pika::launch::async);
+    if (do_parent) child_stealing_time = measure(pika::launch::async);
 
     // now collect parent stealing times
     double parent_stealing_time = 0;
-    if (do_child)
-        parent_stealing_time = measure(pika::launch::fork);
+    if (do_child) parent_stealing_time = measure(pika::launch::fork);
 
     if (print_header)
     {

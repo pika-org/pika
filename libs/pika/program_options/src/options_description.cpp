@@ -90,10 +90,7 @@ namespace pika::program_options {
                 }
                 else if (approx)
                 {
-                    if (local_long_name.find(local_option) == 0)
-                    {
-                        result = approximate_match;
-                    }
+                    if (local_long_name.find(local_option) == 0) { result = approximate_match; }
                 }
             }
         }
@@ -102,10 +99,7 @@ namespace pika::program_options {
         {
             std::string local_short_name(short_ignore_case ? tolower_(m_short_name) : m_short_name);
 
-            if (local_short_name == local_option)
-            {
-                result = full_match;
-            }
+            if (local_short_name == local_option) { result = full_match; }
         }
 
         return result;
@@ -137,8 +131,7 @@ namespace pika::program_options {
         // We prefer the first long name over any others
         if (!m_long_names.empty())
         {
-            if (prefix_style == command_line_style::allow_long)
-                return "--" + *m_long_names.begin();
+            if (prefix_style == command_line_style::allow_long) return "--" + *m_long_names.begin();
             if (prefix_style == command_line_style::allow_long_disguise)
                 return "-" + *m_long_names.begin();
         }
@@ -184,10 +177,7 @@ namespace pika::program_options {
         std::istringstream iss(_names);
         std::string name;
 
-        while (std::getline(iss, name, ','))
-        {
-            m_long_names.push_back(name);
-        }
+        while (std::getline(iss, name, ',')) { m_long_names.push_back(name); }
         PIKA_ASSERT(!m_long_names.empty() && "No option names were specified");
 
         bool try_interpreting_last_name_as_a_switch = m_long_names.size() > 1;
@@ -212,10 +202,7 @@ namespace pika::program_options {
         return *this;
     }
 
-    const std::string& option_description::description() const
-    {
-        return m_description;
-    }
+    const std::string& option_description::description() const { return m_description; }
 
     std::shared_ptr<const value_semantic> option_description::semantic() const
     {
@@ -330,8 +317,7 @@ namespace pika::program_options {
     {
         const option_description* d =
             find_nothrow(name, approx, long_ignore_case, short_ignore_case);
-        if (!d)
-            throw unknown_option();
+        if (!d) throw unknown_option();
         return *d;
     }
 
@@ -356,8 +342,7 @@ namespace pika::program_options {
             option_description::match_result r =
                 option->match(name, approx, long_ignore_case, short_ignore_case);
 
-            if (r == option_description::no_match)
-                continue;
+            if (r == option_description::no_match) continue;
 
             if (r == option_description::full_match)
             {
@@ -370,12 +355,10 @@ namespace pika::program_options {
                 // FIXME: the use of 'key' here might not
                 // be the best approach.
                 approximate_matches.push_back(option->key(name));
-                if (!had_full_match)
-                    found = option;
+                if (!had_full_match) found = option;
             }
         }
-        if (full_matches.size() > 1)
-            throw ambiguous_option(full_matches);
+        if (full_matches.size() > 1) throw ambiguous_option(full_matches);
 
         // If we have a full match, and an approximate match,
         // ignore approximate match instead of reporting error.
@@ -420,10 +403,7 @@ namespace pika::program_options {
             // lines if tab is not on first line it is ignored
             string::size_type par_indent = par.find('\t');
 
-            if (par_indent == string::npos)
-            {
-                par_indent = 0;
-            }
+            if (par_indent == string::npos) { par_indent = 0; }
             else
             {
                 // only one tab per paragraph allowed
@@ -441,16 +421,10 @@ namespace pika::program_options {
                 PIKA_ASSERT(par_indent < line_length);
 
                 // ignore tab if not on first line
-                if (par_indent >= line_length)
-                {
-                    par_indent = 0;
-                }
+                if (par_indent >= line_length) { par_indent = 0; }
             }
 
-            if (par.size() < line_length)
-            {
-                os << par;
-            }
+            if (par.size() < line_length) { os << par; }
             else
             {
                 string::const_iterator line_begin = par.begin();
@@ -519,10 +493,7 @@ namespace pika::program_options {
                     {
                         os << '\n';
 
-                        for (std::size_t pad = indent; pad > 0; --pad)
-                        {
-                            os.put(' ');
-                        }
+                        for (std::size_t pad = indent; pad > 0; --pad) { os.put(' '); }
                     }
 
                     // next line starts after of this line
@@ -537,10 +508,7 @@ namespace pika::program_options {
             // we need to use one char less per line to work correctly if actual
             // console has longer lines
             PIKA_ASSERT(line_length > 1);
-            if (line_length > 1)
-            {
-                --line_length;
-            }
+            if (line_length > 1) { --line_length; }
 
             // line_length must be larger than first_column_width
             // this PIKA_ASSERT may fail due to user error or environment
@@ -568,10 +536,7 @@ namespace pika::program_options {
                 {
                     os << '\n';
 
-                    for (std::size_t pad = first_column_width; pad > 0; --pad)
-                    {
-                        os.put(' ');
-                    }
+                    for (std::size_t pad = first_column_width; pad > 0; --pad) { os.put(' '); }
                 }
             }    // paragraphs
         }
@@ -591,10 +556,7 @@ namespace pika::program_options {
                 {
                     // first column is too long, lets put description in new line
                     os.put('\n');
-                    for (std::size_t pad = first_column_width; pad > 0; --pad)
-                    {
-                        os.put(' ');
-                    }
+                    for (std::size_t pad = first_column_width; pad > 0; --pad) { os.put(' '); }
                 }
                 else
                 {
@@ -639,17 +601,14 @@ namespace pika::program_options {
 
     void options_description::print(std::ostream& os, std::size_t width) const
     {
-        if (!m_caption.empty())
-            os << m_caption << ":\n";
+        if (!m_caption.empty()) os << m_caption << ":\n";
 
-        if (!width)
-            width = get_option_column_width();
+        if (!width) width = get_option_column_width();
 
         /* The options formatting style is stolen from Subversion. */
         for (std::size_t i = 0; i < m_options.size(); ++i)
         {
-            if (belong_to_group[i])
-                continue;
+            if (belong_to_group[i]) continue;
 
             const option_description& opt = *m_options[i];
 

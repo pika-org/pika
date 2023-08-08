@@ -51,15 +51,11 @@ void check_value(const option& option, const char* name, const char* value)
 vector<string> sv(const char* array[], unsigned size)
 {
     vector<string> r;
-    for (unsigned i = 0; i < size; ++i)
-        r.emplace_back(array[i]);
+    for (unsigned i = 0; i < size; ++i) r.emplace_back(array[i]);
     return r;
 }
 
-pair<string, string> additional_parser(const std::string&)
-{
-    return pair<string, string>();
-}
+pair<string, string> additional_parser(const std::string&) { return pair<string, string>(); }
 
 namespace command_line {
 

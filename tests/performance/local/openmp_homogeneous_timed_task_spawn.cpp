@@ -82,8 +82,7 @@ void print_results(int cores, double walltime)
 int omp_main(variables_map&)
 {
     // Validate command line.
-    if (0 == tasks)
-        throw std::invalid_argument("count of 0 tasks specified\n");
+    if (0 == tasks) throw std::invalid_argument("count of 0 tasks specified\n");
 
     // Start the clock.
     high_resolution_timer t;

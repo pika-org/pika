@@ -29,18 +29,15 @@ std::uint64_t threshold = 2;
 ///////////////////////////////////////////////////////////////////////////////
 PIKA_NOINLINE std::uint64_t fibonacci_serial(std::uint64_t n)
 {
-    if (n < 2)
-        return n;
+    if (n < 2) return n;
     return fibonacci_serial(n - 1) + fibonacci_serial(n - 2);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 pika::future<std::uint64_t> fibonacci(std::uint64_t n)
 {
-    if (n < 2)
-        return pika::make_ready_future(n);
-    if (n < threshold)
-        return pika::make_ready_future(fibonacci_serial(n));
+    if (n < 2) return pika::make_ready_future(n);
+    if (n < threshold) return pika::make_ready_future(fibonacci_serial(n));
 
     pika::future<std::uint64_t> lhs_future = pika::async(&fibonacci, n - 1);
     pika::future<std::uint64_t> rhs_future = fibonacci(n - 2);

@@ -20,10 +20,7 @@ namespace cu = pika::cuda::experimental;
 namespace ex = pika::execution::experimental;
 namespace tt = pika::this_thread::experimental;
 
-__global__ void kernel(int* p, int i)
-{
-    p[i] = i * 2;
-}
+__global__ void kernel(int* p, int i) { p[i] = i * 2; }
 
 template <typename Scheduler>
 inline constexpr bool is_cuda_scheduler_v =
@@ -149,20 +146,14 @@ int pika_main()
         //
         // However, nvcc fails to compile it with an internal compiler error so
         // we use the less efficient but working manual version of it.
-        for (auto& s : senders)
-        {
-            tt::sync_wait(std::move(s));
-        }
+        for (auto& s : senders) { tt::sync_wait(std::move(s)); }
 
         std::vector<int> s(n, 0);
 
         whip::memcpy(s.data(), p, sizeof(int) * n, whip::memcpy_device_to_host);
         whip::free(p);
 
-        for (int i = 0; i < n; ++i)
-        {
-            PIKA_TEST_EQ(s[i], i * 2);
-        }
+        for (int i = 0; i < n; ++i) { PIKA_TEST_EQ(s[i], i * 2); }
     }
 
     return 0;

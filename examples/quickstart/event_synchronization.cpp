@@ -55,8 +55,7 @@ int pika_main()
     constexpr std::size_t num_tasks = 10;
     pika::latch l(num_tasks + 1);
 
-    for (std::size_t i = 0; i < num_tasks; ++i)
-        pika::apply(&worker, i, std::ref(d), std::ref(l));
+    for (std::size_t i = 0; i < num_tasks; ++i) pika::apply(&worker, i, std::ref(d), std::ref(l));
 
     d.initialize("initialized");
 
@@ -65,7 +64,4 @@ int pika_main()
     return pika::finalize();
 }
 
-int main(int argc, char* argv[])
-{
-    return pika::init(pika_main, argc, argv);
-}
+int main(int argc, char* argv[]) { return pika::init(pika_main, argc, argv); }

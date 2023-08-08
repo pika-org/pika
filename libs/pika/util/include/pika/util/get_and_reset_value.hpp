@@ -15,24 +15,21 @@ namespace pika::detail {
     inline std::uint64_t get_and_reset_value(std::uint64_t& value, bool reset) noexcept
     {
         std::uint64_t result = value;
-        if (reset)
-            value = 0;
+        if (reset) value = 0;
         return result;
     }
 
     inline std::int64_t get_and_reset_value(std::int64_t& value, bool reset) noexcept
     {
         std::int64_t result = value;
-        if (reset)
-            value = 0;
+        if (reset) value = 0;
         return result;
     }
 
     template <typename T>
     inline T get_and_reset_value(std::atomic<T>& value, bool reset) noexcept
     {
-        if (reset)
-            return value.exchange(0, std::memory_order_acq_rel);
+        if (reset) return value.exchange(0, std::memory_order_acq_rel);
         return value.load(std::memory_order_relaxed);
     }
 
@@ -40,8 +37,7 @@ namespace pika::detail {
         std::vector<std::int64_t>& value, bool reset) noexcept
     {
         std::vector<std::int64_t> result = value;
-        if (reset)
-            value.clear();
+        if (reset) value.clear();
 
         return result;
     }

@@ -47,8 +47,7 @@ namespace pika::lcos::local {
 
         void free(guard_task* task)
         {
-            if (task == nullptr)
-                return;
+            if (task == nullptr) return;
             task->check_();
             delete task;
         }
@@ -77,16 +76,12 @@ namespace pika::lcos::local {
           , n(guards.size())
           , stages(new detail::guard_task*[n])
         {
-            for (std::size_t i = 0; i < n; i++)
-            {
-                stages[i] = new detail::guard_task(false);
-            }
+            for (std::size_t i = 0; i < n; i++) { stages[i] = new detail::guard_task(false); }
         }
 
         ~stage_data()
         {
-            if (stages == nullptr)
-                abort();
+            if (stages == nullptr) abort();
             PIKA_ASSERT(n == gs.size());
             delete[] stages;
             stages = nullptr;
@@ -108,10 +103,7 @@ namespace pika::lcos::local {
                 free(prev);
             }
         }
-        else
-        {
-            run_composable(task);
-        }
+        else { run_composable(task); }
     }
 
     struct stage_task_cleanup
@@ -250,8 +242,7 @@ namespace pika::lcos::local {
 
     static void run_composable(detail::guard_task* task)
     {
-        if (task == &empty)
-            return;
+        if (task == &empty) return;
         PIKA_ASSERT(task != nullptr);
         task->check_();
         if (task->single_guard)
@@ -272,11 +263,7 @@ namespace pika::lcos::local {
     {
         guard_task* zero = nullptr;
         guard_task* current = task.load();
-        if (current == nullptr)
-            return;
-        if (!current->next.compare_exchange_strong(zero, &empty))
-        {
-            free(zero);
-        }
+        if (current == nullptr) return;
+        if (!current->next.compare_exchange_strong(zero, &empty)) { free(zero); }
     }
 }    // namespace pika::lcos::local

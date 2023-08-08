@@ -22,18 +22,12 @@ struct thread_function_yield_destructor
             pika::threads::detail::invalid_thread_id};
     }
 
-    ~thread_function_yield_destructor()
-    {
-        pika::this_thread::yield();
-    }
+    ~thread_function_yield_destructor() { pika::this_thread::yield(); }
 };
 
 struct yielder
 {
-    ~yielder()
-    {
-        pika::this_thread::yield();
-    }
+    ~yielder() { pika::this_thread::yield(); }
 };
 
 int pika_main()

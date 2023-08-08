@@ -253,10 +253,7 @@ namespace pika::schedule_from_detail {
             {
                 PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
-                [[noreturn]] void operator()(pika::detail::monostate) const
-                {
-                    PIKA_UNREACHABLE;
-                }
+                [[noreturn]] void operator()(pika::detail::monostate) const { PIKA_UNREACHABLE; }
 
                 template <typename Ts,
                     typename = std::enable_if_t<

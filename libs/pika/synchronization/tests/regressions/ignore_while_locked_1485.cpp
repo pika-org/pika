@@ -48,10 +48,7 @@ struct wait_for_flag
             }
 
             std::unique_lock<pika::concurrency::detail::spinlock> lk(mutex);
-            if (!flag)
-            {
-                cond_var.wait(mutex);
-            }
+            if (!flag) { cond_var.wait(mutex); }
         }
         ++woken;
     }
@@ -75,8 +72,7 @@ void test_condition_with_mutex()
     {
         std::unique_lock<pika::concurrency::detail::spinlock> lk(local_mutex);
         // NOLINTNEXTLINE(bugprone-infinite-loop)
-        while (!running)
-            local_cond_var.wait(lk);
+        while (!running) local_cond_var.wait(lk);
     }
 
     // now start actual test

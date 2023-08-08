@@ -138,16 +138,10 @@ int pika_main(variables_map& vm)
             iterator end;
             qi::phrase_parse(begin, end, *qi::double_, qi::ascii::space, b);
         }
-        else
-        {
-            b = std::vector<double>(A.rows.size() - 1, 1.0);
-        }
+        else { b = std::vector<double>(A.rows.size() - 1, 1.0); }
         std::cout << "b: " << b.size() << "\n";
 
-        if (mode == "solve")
-        {
-            jacobi_smp::jacobi(A, b, iterations, block_size);
-        }
+        if (mode == "solve") { jacobi_smp::jacobi(A, b, iterations, block_size); }
         else if (mode == "statistics")
         {
             std::size_t min_per_row = (std::numeric_limits<std::size_t>::max)();
@@ -159,14 +153,8 @@ int pika_main(variables_map& vm)
                 const std::size_t end = A.row_end(r);
                 std::size_t n_row = end - begin;
                 mean_per_row += double(n_row);
-                if (n_row > max_per_row)
-                {
-                    max_per_row = n_row;
-                }
-                if (n_row < min_per_row)
-                {
-                    min_per_row = n_row;
-                }
+                if (n_row > max_per_row) { max_per_row = n_row; }
+                if (n_row < min_per_row) { min_per_row = n_row; }
             }
             std::cout << "Matrix has " << A.values.size() << " non zero entries\n";
             std::cout << "order: " << b.size() << "x" << b.size() << "\n";

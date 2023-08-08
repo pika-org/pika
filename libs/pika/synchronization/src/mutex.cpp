@@ -30,10 +30,7 @@ namespace pika {
         PIKA_ITT_SYNC_RENAME(this, "lcos::local::mutex");
     }
 
-    mutex::~mutex()
-    {
-        PIKA_ITT_SYNC_DESTROY(this);
-    }
+    mutex::~mutex() { PIKA_ITT_SYNC_DESTROY(this); }
 
     void mutex::lock(char const* description, error_code& ec)
     {
