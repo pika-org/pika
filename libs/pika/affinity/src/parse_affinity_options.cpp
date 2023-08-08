@@ -86,7 +86,7 @@ namespace pika::detail {
     {
         if (!use_process_mask) { return true; }
 
-        threads::detail::mask_type proc_mask = t.get_cpubind_mask();
+        threads::detail::mask_type proc_mask = t.get_cpubind_mask_main_thread();
         threads::detail::mask_type pu_mask = t.init_thread_affinity_mask(num_core, num_pu);
 
         return threads::detail::bit_and(proc_mask, pu_mask);
@@ -97,7 +97,7 @@ namespace pika::detail {
     {
         if (use_process_mask)
         {
-            threads::detail::mask_type proc_mask = t.get_cpubind_mask();
+            threads::detail::mask_type proc_mask = t.get_cpubind_mask_main_thread();
             std::size_t num_pus_proc_mask = threads::detail::count(proc_mask);
 
             if (num_threads > num_pus_proc_mask)

@@ -358,7 +358,8 @@ namespace pika::resource::detail {
 
             std::string process_mask_message = affinity_data_.using_process_mask() ?
                 fmt::format("pika is using a process mask: {}.",
-                    pika::threads::detail::to_string(get_topology().get_cpubind_mask())) :
+                    pika::threads::detail::to_string(
+                        get_topology().get_cpubind_mask_main_thread())) :
                 "pika is not using a process mask.";
             auto omp_proc_bind = std::getenv("OMP_PROC_BIND");
             std::string omp_proc_bind_message = omp_proc_bind ?
