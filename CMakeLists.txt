@@ -153,11 +153,6 @@ if(PIKA_WITH_DEPRECATION_WARNINGS)
 endif()
 
 # Generic build options
-set(DEFAULT_MALLOC "system")
-if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
-  set(DEFAULT_MALLOC "mimalloc")
-endif()
-
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
   set(PIKA_WITH_STACKOVERFLOW_DETECTION_DEFAULT OFF)
   string(TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_UC)
@@ -176,6 +171,7 @@ if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
   endif()
 endif()
 
+set(DEFAULT_MALLOC "mimalloc")
 pika_option(
   PIKA_WITH_MALLOC
   STRING
