@@ -118,7 +118,7 @@ namespace pika::util {
 
                     // Make sure the file is executable and shares our
                     // effective uid and gid.
-                    // NOTE: If someone was using an pika application that was
+                    // NOTE: If someone was using a pika application that was
                     // seteuid'd to root, this may fail.
                     if (0 == ::stat(r.c_str(), &s))
                         if ((s.st_uid == ::geteuid()) && (s.st_mode & S_IXUSR) &&

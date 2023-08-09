@@ -196,7 +196,7 @@ namespace pika {
         if (threads::detail::get_self_ptr())
         {
             PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::stop",
-                "this function cannot be called from an pika thread");
+                "this function cannot be called from a pika thread");
             return -1;
         }
 
@@ -236,7 +236,7 @@ namespace pika {
         if (threads::detail::get_self_ptr())
         {
             PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::suspend",
-                "this function cannot be called from an pika thread");
+                "this function cannot be called from a pika thread");
             return -1;
         }
 
@@ -256,7 +256,7 @@ namespace pika {
         if (threads::detail::get_self_ptr())
         {
             PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::resume",
-                "this function cannot be called from an pika thread");
+                "this function cannot be called from a pika thread");
             return -1;
         }
 
@@ -343,7 +343,7 @@ namespace pika {
             // Run this runtime instance using the given function f.
             if (!f.empty()) return rt.run(util::detail::bind_front(f, vm));
 
-            // Run this runtime instance without an pika_main
+            // Run this runtime instance without a pika_main
             return rt.run();
         }
 
@@ -362,7 +362,7 @@ namespace pika {
                 return rt.start(util::detail::bind_front(f, vm));
             }
 
-            // Run this runtime instance without an pika_main
+            // Run this runtime instance without a pika_main
             return rt.start();
         }
 

@@ -59,7 +59,7 @@ void do_stuff(std::size_t n, bool printout)
     if (printout) std::cout << "\n";
 }
 
-// this is called on an pika thread after the runtime starts up
+// this is called on a pika thread after the runtime starts up
 int pika_main(/*pika::program_options::variables_map& vm*/)
 {
     std::size_t num_threads = pika::get_num_worker_threads();
@@ -232,7 +232,7 @@ void init_resource_partitioner_handler(
 
 // the normal int main function that is called at startup and runs on an OS
 // thread the user must call pika::init to start the pika runtime which
-// will execute pika_main on an pika thread
+// will execute pika_main on a pika thread
 int main(int argc, char* argv[])
 {
     // clang-format off

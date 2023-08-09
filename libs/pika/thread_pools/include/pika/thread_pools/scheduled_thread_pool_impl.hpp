@@ -174,7 +174,7 @@ namespace pika::threads::detail {
     template <typename Scheduler>
     bool scheduled_thread_pool<Scheduler>::is_busy()
     {
-        // If we are currently on an pika thread, which runs on the current pool,
+        // If we are currently on a pika thread, which runs on the current pool,
         // we ignore it for the purposes of checking if the pool is busy (i.e.
         // this returns true only if there is *other* work left on this pool).
         std::int64_t pika_thread_offset =

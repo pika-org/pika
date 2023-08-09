@@ -20,7 +20,7 @@ int func1()
     return get_id(1) ? 123 : 0;
 }
 
-// this continuation function will be executed by an pika thread
+// this continuation function will be executed by a pika thread
 int cont1(pika::future<int> f)
 {
     std::cout << "cont1 thread id: " << pika::this_thread::get_id() << std::endl;
@@ -30,7 +30,7 @@ int cont1(pika::future<int> f)
 }
 
 // this continuation function will be executed by the UI (main) thread, which is
-// not an pika thread
+// not a pika thread
 int cont2(pika::future<int> f)
 {
     std::cout << "Status code (main thread): " << f.get() << std::endl;

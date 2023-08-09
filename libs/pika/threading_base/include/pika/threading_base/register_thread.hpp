@@ -131,7 +131,7 @@ namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
     /// \brief Create a new \a thread using the given data on the same thread
     ///        pool as the calling thread, or on the default thread pool if
-    ///        not on an pika thread.
+    ///        not on a pika thread.
     ///
     /// \param data       [in] The data to use for creating the thread.
     /// \param ec         [in,out] This represents the error status on exit,
@@ -178,7 +178,7 @@ namespace pika::threads::detail {
 
     /// \brief Create a new work item using the given data on the same thread
     ///        pool as the calling thread, or on the default thread pool if
-    ///        not on an pika thread.
+    ///        not on a pika thread.
     ///
     /// \param data       [in] The data to use for creating the thread.
     /// \param ec         [in,out] This represents the error status on exit,

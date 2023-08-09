@@ -94,7 +94,7 @@ namespace pika::threads {
 
             std::exception_ptr exception;
 
-            // Create an pika thread
+            // Create a pika thread
             pika::threads::detail::thread_init_data data(
                 pika::threads::detail::make_thread_function_nullary([&, cond]() {
                     try

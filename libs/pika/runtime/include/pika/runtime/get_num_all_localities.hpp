@@ -41,7 +41,7 @@ namespace pika {
     /// future represents the actual result.
     ///
     /// \note     This function will return meaningful results only if called
-    ///           from an pika-thread. It will return 0 otherwise.
+    ///           from a pika-thread. It will return 0 otherwise.
     ///
     /// \see      \a pika::find_all_localities, \a pika::get_num_localities
     PIKA_EXPORT pika::future<std::uint32_t> get_num_localities();
@@ -58,7 +58,7 @@ namespace pika {
     ///           on error instead.
     ///
     /// \note     This function will return meaningful results only if called
-    ///           from an pika-thread. It will return 0 otherwise.
+    ///           from a pika-thread. It will return 0 otherwise.
     ///
     /// \note     As long as \a ec is not pre-initialized to \a pika::throws this
     ///           function doesn't throw but returns the result code using the

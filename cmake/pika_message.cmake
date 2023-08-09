@@ -62,7 +62,7 @@ function(pika_message level)
     pika_info(${ARGN})
   else()
     pika_error(
-      "message" "\"${level}\" is not an pika configuration logging level."
+      "message" "\"${level}\" is not a pika configuration logging level."
     )
   endif()
 endfunction()

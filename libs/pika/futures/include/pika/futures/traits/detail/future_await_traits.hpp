@@ -177,7 +177,7 @@ namespace pika::lcos::detail {
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace std {
-    // Allow for functions which use co_await to return an pika::future<T>
+    // Allow for functions which use co_await to return a pika::future<T>
     template <typename T, typename... Ts>
     struct coroutine_traits<pika::future<T>, Ts...>
     {

@@ -13,7 +13,7 @@ async_mpi
 
 The MPI library is intended to simplify the process of integrating MPI based
 codes with the |pika| runtime. Any MPI function that is asynchronous and uses an
-MPI_Request may be converted into an pika::future.
+MPI_Request may be converted into a pika::future.
 The syntax is designed to allow a simple replacement of the MPI call with a futurized
 async version that accepts an executor instead of a communicator,
 and returns a future instead of assigning a request.
