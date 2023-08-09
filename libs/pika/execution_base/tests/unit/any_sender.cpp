@@ -674,6 +674,7 @@ void test_const_reference()
 {
     int x = 42;
     [[maybe_unused]] ex::unique_any_sender<int> as1 = const_reference_sender<int>{x};
+    [[maybe_unused]] ex::any_sender<int> as2 = const_reference_sender<int>{x};
     PIKA_TEST(true);
 }
 
