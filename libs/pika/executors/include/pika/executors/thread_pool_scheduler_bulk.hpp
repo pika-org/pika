@@ -52,7 +52,7 @@ namespace pika::thread_pool_bulk_detail {
     /// thread. The pika thread is responsible for work in one queue. If the
     /// queue is empty, no pika thread will be spawned. Once the pika thread
     /// has finished working on its own queue, it will attempt to steal work
-    /// from other queues. Since predecessor sender must complete on an pika
+    /// from other queues. Since predecessor sender must complete on a pika
     /// thread (the completion scheduler is a thread_pool_scheduler;
     /// otherwise the customization defined in this file is not chosen) it
     /// will be reused as one of the worker threads.

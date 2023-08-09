@@ -61,7 +61,7 @@ namespace pika::detail {
 namespace pika {
     /// \cond NOINTERNAL
 
-    /// \brief throw an pika::exception initialized from the given arguments
+    /// \brief throw a pika::exception initialized from the given arguments
     [[noreturn]] inline void throw_exception(error e, std::string const& msg,
         std::string const& func, std::string const& file = "", long line = -1)
     {

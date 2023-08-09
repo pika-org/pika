@@ -194,14 +194,14 @@ namespace pika::threads::detail {
         /// Suspends the thread pool. Blocks until all OS threads on the thread pool
         /// have been suspended.
         ///
-        /// \note A thread pool cannot be suspended from an pika thread running
+        /// \note A thread pool cannot be suspended from a pika thread running
         ///       on the pool itself.
         ///
         /// \param ec [in,out] this represents the error status on exit, if this
         ///           is pre-initialized to \a pika#throws the function will
         ///           throw on error instead.
         ///
-        /// \throws pika::exception if called from an pika thread which is running
+        /// \throws pika::exception if called from a pika thread which is running
         ///         on the pool itself.
         virtual void suspend_direct(error_code& ec = throws) = 0;
 

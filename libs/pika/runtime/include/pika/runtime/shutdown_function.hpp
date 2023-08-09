@@ -23,11 +23,11 @@ namespace pika {
     /// executed (system-wide)
     ///
     /// Any of the functions registered with \a register_pre_shutdown_function
-    /// are guaranteed to be executed by an pika thread during the execution of
+    /// are guaranteed to be executed by a pika thread during the execution of
     /// \a pika::finalize() before any of the registered shutdown functions are
     /// executed (see: \a pika::register_shutdown_function()).
     ///
-    /// \param f  [in] The function to be registered to run by an pika thread as
+    /// \param f  [in] The function to be registered to run by a pika thread as
     ///           a pre-shutdown function.
     ///
     /// \note If this function is called while the pre-shutdown functions are
@@ -42,11 +42,11 @@ namespace pika {
     /// executed (system-wide)
     ///
     /// Any of the functions registered with \a register_shutdown_function
-    /// are guaranteed to be executed by an pika thread during the execution of
+    /// are guaranteed to be executed by a pika thread during the execution of
     /// \a pika::finalize() after any of the registered pre-shutdown functions
     /// are executed (see: \a pika::register_pre_shutdown_function()).
     ///
-    /// \param f  [in] The function to be registered to run by an pika thread as
+    /// \param f  [in] The function to be registered to run by a pika thread as
     ///           a shutdown function.
     ///
     /// \note If this function is called while the shutdown functions are

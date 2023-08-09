@@ -83,7 +83,7 @@ namespace pika::util {
         // Will return the default stack size to use for all pika-threads.
         std::ptrdiff_t get_default_stack_size() const { return small_stacksize; }
 
-        // Will return the requested stack size to use for an pika-threads.
+        // Will return the requested stack size to use for a pika-threads.
         std::ptrdiff_t get_stack_size(execution::thread_stacksize stacksize) const;
 
         // Return the configured sizes of any of the know thread pools

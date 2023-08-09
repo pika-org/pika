@@ -306,7 +306,7 @@ int pika_main()
         auto s =
             ex::just() | ex::transfer(cu::cuda_scheduler{pool}) | cu::then_with_stream(dummy{});
         // NOTE: then_with_stream calls triggers the receiver on a plain
-        // std::thread. We explicitly change the context back to an pika::thread.
+        // std::thread. We explicitly change the context back to a pika::thread.
         tt::sync_wait(ex::transfer(std::move(s), ex::thread_pool_scheduler{}));
         PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(1));

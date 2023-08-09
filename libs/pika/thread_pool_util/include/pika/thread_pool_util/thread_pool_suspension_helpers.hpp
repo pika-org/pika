@@ -17,7 +17,7 @@ namespace pika::threads::detail {
     /// Resumes the given processing unit. When the processing unit has been
     /// resumed the returned future will be ready.
     ///
-    /// \note Can only be called from an pika thread. Use
+    /// \note Can only be called from a pika thread. Use
     ///       resume_processing_unit_cb or to resume the processing unit from
     ///       outside pika. Requires that the pool has
     ///       threads::scheduler_mode::enable_elasticity set.
@@ -49,7 +49,7 @@ namespace pika::threads::detail {
     /// Suspends the given processing unit. When the processing unit has been
     /// suspended the returned future will be ready.
     ///
-    /// \note Can only be called from an pika thread. Use
+    /// \note Can only be called from a pika thread. Use
     ///       suspend_processing_unit_cb or to suspend the processing unit from
     ///       outside pika. Requires that the pool has
     ///       threads::scheduler_mode::enable_elasticity set.
@@ -83,7 +83,7 @@ namespace pika::threads::detail {
     /// Resumes the thread pool. When the all OS threads on the thread pool have
     /// been resumed the returned future will be ready.
     ///
-    /// \note Can only be called from an pika thread. Use resume_cb or
+    /// \note Can only be called from a pika thread. Use resume_cb or
     ///       resume_direct to suspend the pool from outside pika.
     ///
     /// \returns A `future<void>` which is ready when the thread pool has been
@@ -105,9 +105,9 @@ namespace pika::threads::detail {
     /// Suspends the thread pool. When the all OS threads on the thread pool
     /// have been suspended the returned future will be ready.
     ///
-    /// \note Can only be called from an pika thread. Use suspend_cb or
+    /// \note Can only be called from a pika thread. Use suspend_cb or
     ///       suspend_direct to suspend the pool from outside pika. A thread pool
-    ///       cannot be suspended from an pika thread running on the pool itself.
+    ///       cannot be suspended from a pika thread running on the pool itself.
     ///
     /// \returns A `future<void>` which is ready when the thread pool has
     ///          been suspended.
@@ -118,7 +118,7 @@ namespace pika::threads::detail {
     /// Suspends the thread pool. Takes a callback as a parameter which will be
     /// called when all OS threads on the thread pool have been suspended.
     ///
-    /// \note A thread pool cannot be suspended from an pika thread running on
+    /// \note A thread pool cannot be suspended from a pika thread running on
     ///       the pool itself.
     ///
     /// \param callback [in] called when the thread pool has been suspended.
@@ -126,7 +126,7 @@ namespace pika::threads::detail {
     ///                 is pre-initialized to \a pika#throws the function will throw
     ///                 on error instead.
     ///
-    /// \throws pika::exception if called from an pika thread which is running
+    /// \throws pika::exception if called from a pika thread which is running
     ///         on the pool itself.
     PIKA_EXPORT void suspend_pool_cb(thread_pool_base& pool,
         util::detail::function<void(void)> callback, error_code& ec = throws);

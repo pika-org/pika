@@ -117,7 +117,7 @@ namespace pika {
         ///        main \a thread and block waiting for all threads to
         ///        finish
         ///
-        /// \param func       [in] This is the main function of an pika
+        /// \param func       [in] This is the main function of a pika
         ///                   application. It will be scheduled for execution
         ///                   by the thread manager as soon as the runtime has
         ///                   been initialized. This function is expected to
@@ -149,7 +149,7 @@ namespace pika {
 
         /// \brief Start the runtime system
         ///
-        /// \param func       [in] This is the main function of an pika
+        /// \param func       [in] This is the main function of a pika
         ///                   application. It will be scheduled for execution
         ///                   by the thread manager as soon as the runtime has
         ///                   been initialized. This function is expected to
