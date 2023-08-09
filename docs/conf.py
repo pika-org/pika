@@ -34,7 +34,7 @@ html_theme_options = {
     "nav_title": "pika",
     "color_primary": "blue-grey",
     "color_accent": "orange",
-    "base_url": "https://pika-org.github.io/pika-docs",
+    "base_url": "https://pikacpp.org",
     "repo_url": "https://github.com/pika-org/pika",
     "repo_name": "pika",
     "html_minify": False,
