@@ -184,7 +184,7 @@ namespace pika::unpack_detail {
         }
 
         friend decltype(auto) tag_invoke(
-            pika::execution::experimental::get_env_t, unpack_sender_type const& s)
+            pika::execution::experimental::get_env_t, unpack_sender_type const& s) noexcept
         {
             return pika::execution::experimental::get_env(s.sender);
         }
