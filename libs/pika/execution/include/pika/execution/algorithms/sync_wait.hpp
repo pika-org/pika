@@ -53,6 +53,8 @@ namespace pika::sync_wait_detail {
     template <typename Sender>
     struct sync_wait_receiver_impl<Sender>::sync_wait_receiver_type
     {
+        using is_receiver = void;
+
 #if defined(PIKA_HAVE_STDEXEC)
         // value and error_types of the predecessor sender
         template <template <typename...> class Tuple, template <typename...> class Variant>
