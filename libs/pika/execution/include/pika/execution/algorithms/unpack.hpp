@@ -63,6 +63,12 @@ namespace pika::unpack_detail {
                            pika::execution::experimental::set_value, PIKA_MOVE(r.receiver)),
                 PIKA_FORWARD(Ts, ts));
         }
+
+        friend constexpr pika::execution::experimental::empty_env tag_invoke(
+            pika::execution::experimental::get_env_t, unpack_receiver_type const&) noexcept
+        {
+            return {};
+        }
     };
 
 #if defined(PIKA_HAVE_STDEXEC)
