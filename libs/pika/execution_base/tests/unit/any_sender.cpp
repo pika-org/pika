@@ -637,17 +637,21 @@ struct throwing_constructor
     {
         if (throwing) throw std::runtime_error("error");
     };
-    throwing_constructor(const throwing_constructor&) = default;
+    // to allow use with any_sender
+    throwing_constructor(throwing_constructor const&) = default;
+    throwing_constructor(throwing_constructor&) noexcept(false)
+    {
+        if (throwing) throw std::runtime_error("error");
+    };
 };
 
 void test_throwing_constructor()
 {
     {
-        // With unique_any_sender
+        // Throwing move with unique_any_sender
         throwing = false;
         std::atomic<bool> set_error_called{false};
-        ex::unique_any_sender<throwing_constructor> as1 =
-            ex::just(std::move(throwing_constructor()));
+        ex::unique_any_sender<throwing_constructor> as1 = ex::just(throwing_constructor());
         auto r = error_callback_receiver<decltype(check_exception_ptr)>{
             check_exception_ptr, set_error_called};
         auto os = ex::connect(std::move(as1), std::move(r));
@@ -657,10 +661,40 @@ void test_throwing_constructor()
     }
 
     {
-        // With any_sender
+        // Throwing move with any_sender
         throwing = false;
         std::atomic<bool> set_error_called{false};
-        ex::any_sender<throwing_constructor> as1 = ex::just(std::move(throwing_constructor()));
+        ex::any_sender<throwing_constructor> as1 = ex::just(throwing_constructor());
+        auto r = error_callback_receiver<decltype(check_exception_ptr)>{
+            check_exception_ptr, set_error_called};
+        auto os = ex::connect(std::move(as1), std::move(r));
+        throwing = true;
+        ex::start(os);
+        PIKA_TEST(set_error_called);
+    }
+
+    {
+        // Throwing copy with unique_any_sender
+        throwing = false;
+        auto throwing_object = throwing_constructor();
+        auto s = const_reference_sender<throwing_constructor>{throwing_object};
+        std::atomic<bool> set_error_called{false};
+        ex::unique_any_sender<throwing_constructor> as1 = s;
+        auto r = error_callback_receiver<decltype(check_exception_ptr)>{
+            check_exception_ptr, set_error_called};
+        auto os = ex::connect(std::move(as1), std::move(r));
+        throwing = true;
+        ex::start(os);
+        PIKA_TEST(set_error_called);
+    }
+
+    {
+        // Throwing copy with any_sender
+        throwing = false;
+        auto throwing_object = throwing_constructor();
+        auto s = const_reference_sender<throwing_constructor>{throwing_object};
+        std::atomic<bool> set_error_called{false};
+        ex::any_sender<throwing_constructor> as1 = s;
         auto r = error_callback_receiver<decltype(check_exception_ptr)>{
             check_exception_ptr, set_error_called};
         auto os = ex::connect(std::move(as1), std::move(r));
