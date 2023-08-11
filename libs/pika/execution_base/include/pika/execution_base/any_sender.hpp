@@ -453,7 +453,7 @@ namespace pika::execution::experimental::detail {
         template <typename... Ts_>
         friend auto tag_invoke(
             pika::execution::experimental::set_value_t, any_receiver&& r, Ts_&&... ts) noexcept
-            -> decltype(PIKA_MOVE(r.storage.get()).set_value(PIKA_FORWARD(Ts_, ts)...))
+            -> decltype(std::declval<base_type>().set_value(PIKA_FORWARD(Ts_, ts)...))
         {
             // We first move the storage to a temporary variable so that
             // this any_receiver is empty after this set_value. Doing
