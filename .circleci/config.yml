@@ -529,7 +529,9 @@ jobs:
               rm cmake.tar.gz
             cmake --version
             # Install pika dependencies
-            sudo apt install -y \
+            sudo apt update
+            sudo apt install --allow-downgrades \
+              --allow-remove-essential --allow-change-held-packages \
               clang \
               ninja-build \
               libboost-context-dev \
