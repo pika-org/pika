@@ -24,6 +24,7 @@
 #include <mutex>
 #include <string>
 #include <thread>
+#include <utility>
 #include <vector>
 
 #include <errno.h>
@@ -1138,6 +1139,28 @@ namespace pika::threads::detail {
     mask_type topology::get_cpubind_mask_main_thread(error_code&) const
     {
         return main_thread_affinity_mask_;
+    }
+
+    void topology::set_cpubind_mask_main_thread(mask_type mask, error_code& ec)
+    {
+        auto const concurrency = hardware_concurrency();
+        auto const size = mask_size(mask);
+
+        // If the given mask is smaller than the hardware concurrency, we simply resize it to
+        // contain hardware concurrency bits.
+        if (size < concurrency) { resize(mask, concurrency); }
+        // If the given mask is larger than the hardware concurrency, we may still be able to
+        // use it if the bits past hardware concurrency are unset. We mask shift away the bits
+        // that are allowed to be set and check if there are any remaining bits set.
+        else if (mask_size(mask) > concurrency && any(mask >> concurrency))
+        {
+            PIKA_THROWS_IF(ec, pika::error::bad_parameter,
+                "pika::threads::detail::topology::set_cpubind_mask_main_thread",
+                "CPU mask ({}) has bits set past the hardware concurrency of the system ({})",
+                fmt::streamed(mask), concurrency);
+        }
+
+        main_thread_affinity_mask_ = std::move(mask);
     }
 
     mask_type topology::get_cpubind_mask(error_code& ec) const

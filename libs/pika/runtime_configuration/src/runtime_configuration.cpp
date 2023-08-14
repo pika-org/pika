@@ -125,6 +125,7 @@ namespace pika::util {
 
             // add placeholders for keys to be added by command line handling
             "ignore_process_mask = 0",
+            "process_mask = ${PIKA_PROCESS_MASK:}",
             "os_threads = cores",
             "cores = all",
             "localities = 1",

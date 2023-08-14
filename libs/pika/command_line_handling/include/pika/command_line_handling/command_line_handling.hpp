@@ -59,6 +59,7 @@ namespace pika::detail {
         std::string affinity_bind_;
         std::size_t numa_sensitive_;
         bool use_process_mask_;
+        std::string process_mask_;
         bool cmd_line_parsed_;
         bool info_printed_;
         bool version_printed_;

@@ -42,7 +42,11 @@ void test_valid()
     {
         auto mask = pika::detail::from_string<pika::threads::detail::mask_type>(t.str);
 #if defined(PIKA_HAVE_MAX_CPU_COUNT)
+# if defined(PIKA_HAVE_MORE_THAN_64_THREADS)
+        PIKA_TEST_EQ(pika::threads::detail::mask_size(mask), std::size_t(PIKA_HAVE_MAX_CPU_COUNT));
+# else
         PIKA_TEST_EQ(pika::threads::detail::mask_size(mask), std::size_t(64));
+# endif
 #else
         PIKA_TEST_EQ(pika::threads::detail::mask_size(mask), t.expected_size);
 #endif
