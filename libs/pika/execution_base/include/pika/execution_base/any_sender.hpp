@@ -450,15 +450,24 @@ namespace pika::execution::experimental::detail {
         any_receiver& operator=(any_receiver&&) = default;
         any_receiver& operator=(any_receiver const&) = delete;
 
-        friend void tag_invoke(
-            pika::execution::experimental::set_value_t, any_receiver&& r, Ts... ts) noexcept
+        template <typename... Ts_>
+        friend auto tag_invoke(
+            pika::execution::experimental::set_value_t, any_receiver&& r, Ts_&&... ts) noexcept
+            -> decltype(std::declval<base_type>().set_value(PIKA_FORWARD(Ts_, ts)...))
         {
             // We first move the storage to a temporary variable so that
             // this any_receiver is empty after this set_value. Doing
             // PIKA_MOVE(storage.get()).set_value(...) would leave us with a
             // non-empty any_receiver holding a moved-from receiver.
             auto moved_storage = PIKA_MOVE(r.storage);
-            PIKA_MOVE(moved_storage.get()).set_value(PIKA_MOVE(ts)...);
+            try
+            {
+                PIKA_MOVE(moved_storage.get()).set_value(PIKA_FORWARD(Ts_, ts)...);
+            }
+            catch (...)
+            {
+                PIKA_MOVE(moved_storage.get()).set_error(std::current_exception());
+            }
         }
 
         friend void tag_invoke(pika::execution::experimental::set_error_t, any_receiver&& r,
@@ -626,6 +635,8 @@ namespace pika::execution::experimental {
       : private detail::any_sender_static_empty_vtable_helper<Ts...>
 #endif
     {
+        static_assert(pika::util::detail::none_of_v<std::is_reference<Ts>...>,
+            "unique_any_sender does not handle references as completion signatures");
         using base_type = detail::unique_any_sender_base<Ts...>;
         template <typename Sender>
         using impl_type = detail::unique_any_sender_impl<Sender, Ts...>;
@@ -718,6 +729,8 @@ namespace pika::execution::experimental {
       : private detail::any_sender_static_empty_vtable_helper<Ts...>
 #endif
     {
+        static_assert(pika::util::detail::none_of_v<std::is_reference<Ts>...>,
+            "any_sender does not handle references as completion signatures");
         using base_type = detail::any_sender_base<Ts...>;
         template <typename Sender>
         using impl_type = detail::any_sender_impl<Sender, Ts...>;

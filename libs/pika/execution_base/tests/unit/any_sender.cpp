@@ -11,8 +11,11 @@
 #include <pika/modules/errors.hpp>
 #include <pika/testing.hpp>
 
+#include <pika/execution_base/tests/algorithm_test_utils.hpp>
+
 #include <atomic>
 #include <exception>
+#include <stdexcept>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -204,79 +207,6 @@ struct large_sender : sender<Ts...>
     large_sender& operator=(large_sender const&) = default;
 };
 
-struct error_sender
-{
-    template <template <typename...> class Tuple, template <typename...> class Variant>
-    using value_types = Variant<Tuple<>>;
-
-    template <template <typename...> class Variant>
-    using error_types = Variant<std::exception_ptr>;
-
-    static constexpr bool sends_done = false;
-
-    using completion_signatures = pika::execution::experimental::completion_signatures<
-        pika::execution::experimental::set_value_t(),
-        pika::execution::experimental::set_error_t(std::exception_ptr)>;
-
-    template <typename R>
-    struct operation_state
-    {
-        std::decay_t<R> r;
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
-        {
-            try
-            {
-                throw std::runtime_error("error");
-            }
-            catch (...)
-            {
-                pika::execution::experimental::set_error(std::move(os.r), std::current_exception());
-            }
-        }
-    };
-
-    template <typename R>
-    friend operation_state<R>
-    tag_invoke(pika::execution::experimental::connect_t, error_sender, R&& r)
-    {
-        return {std::forward<R>(r)};
-    }
-};
-
-template <typename F>
-struct callback_receiver
-{
-    std::decay_t<F> f;
-    std::atomic<bool>& set_value_called;
-
-    template <typename E>
-    friend void
-    tag_invoke(pika::execution::experimental::set_error_t, callback_receiver&&, E&&) noexcept
-    {
-        PIKA_TEST(false);
-    }
-
-    friend void tag_invoke(
-        pika::execution::experimental::set_stopped_t, callback_receiver&&) noexcept
-    {
-        PIKA_TEST(false);
-    };
-
-    template <typename... Ts>
-    friend auto tag_invoke(
-        pika::execution::experimental::set_value_t, callback_receiver&& r, Ts&&... ts) noexcept
-    {
-        PIKA_INVOKE(std::move(r.f), std::forward<Ts>(ts)...);
-        r.set_value_called = true;
-    }
-
-    friend constexpr pika::execution::experimental::empty_env tag_invoke(
-        pika::execution::experimental::get_env_t, callback_receiver const&) noexcept
-    {
-        return {};
-    }
-};
-
 struct error_receiver
 {
     std::atomic<bool>& set_error_called;
@@ -464,7 +394,7 @@ void test_unique_any_sender(F&& f, Ts&&... ts)
 
 void test_any_sender_set_error()
 {
-    error_sender s;
+    error_sender<> s;
 
     ex::any_sender<> as1{std::move(s)};
     auto as2 = as1;
@@ -545,7 +475,7 @@ void test_any_sender_set_error()
 
 void test_unique_any_sender_set_error()
 {
-    error_sender s;
+    error_sender<> s;
 
     ex::unique_any_sender<> as1{std::move(s)};
     auto as2 = std::move(as1);
@@ -696,6 +626,92 @@ void test_when_all()
     tt::sync_wait(std::move(as3));
 }
 
+// To control when the move constructor will throw, exception is caught in the set_value of
+// any_receiver
+bool throwing = false;
+
+struct throwing_constructor
+{
+    throwing_constructor() noexcept(false) {}
+    throwing_constructor(throwing_constructor&&) noexcept(false)
+    {
+        if (throwing) throw std::runtime_error("error");
+    };
+    // to allow use with any_sender
+    throwing_constructor(throwing_constructor const&) = default;
+    throwing_constructor(throwing_constructor&) noexcept(false)
+    {
+        if (throwing) throw std::runtime_error("error");
+    };
+};
+
+void test_throwing_constructor()
+{
+    {
+        // Throwing move with unique_any_sender
+        throwing = false;
+        std::atomic<bool> set_error_called{false};
+        ex::unique_any_sender<throwing_constructor> as1 = ex::just(throwing_constructor());
+        auto r = error_callback_receiver<decltype(check_exception_ptr)>{
+            check_exception_ptr, set_error_called};
+        auto os = ex::connect(std::move(as1), std::move(r));
+        throwing = true;
+        ex::start(os);
+        PIKA_TEST(set_error_called);
+    }
+
+    {
+        // Throwing move with any_sender
+        throwing = false;
+        std::atomic<bool> set_error_called{false};
+        ex::any_sender<throwing_constructor> as1 = ex::just(throwing_constructor());
+        auto r = error_callback_receiver<decltype(check_exception_ptr)>{
+            check_exception_ptr, set_error_called};
+        auto os = ex::connect(std::move(as1), std::move(r));
+        throwing = true;
+        ex::start(os);
+        PIKA_TEST(set_error_called);
+    }
+
+    {
+        // Throwing copy with unique_any_sender
+        throwing = false;
+        auto throwing_object = throwing_constructor();
+        auto s = const_reference_sender<throwing_constructor>{throwing_object};
+        std::atomic<bool> set_error_called{false};
+        ex::unique_any_sender<throwing_constructor> as1 = s;
+        auto r = error_callback_receiver<decltype(check_exception_ptr)>{
+            check_exception_ptr, set_error_called};
+        auto os = ex::connect(std::move(as1), std::move(r));
+        throwing = true;
+        ex::start(os);
+        PIKA_TEST(set_error_called);
+    }
+
+    {
+        // Throwing copy with any_sender
+        throwing = false;
+        auto throwing_object = throwing_constructor();
+        auto s = const_reference_sender<throwing_constructor>{throwing_object};
+        std::atomic<bool> set_error_called{false};
+        ex::any_sender<throwing_constructor> as1 = s;
+        auto r = error_callback_receiver<decltype(check_exception_ptr)>{
+            check_exception_ptr, set_error_called};
+        auto os = ex::connect(std::move(as1), std::move(r));
+        throwing = true;
+        ex::start(os);
+        PIKA_TEST(set_error_called);
+    }
+}
+
+void test_const_reference()
+{
+    int x = 42;
+    [[maybe_unused]] ex::unique_any_sender<int> as1 = const_reference_sender<int>{x};
+    [[maybe_unused]] ex::any_sender<int> as2 = const_reference_sender<int>{x};
+    PIKA_TEST(true);
+}
+
 int main()
 {
     // We can only wrap copyable senders in any_sender
@@ -787,6 +803,12 @@ int main()
 
     // Test using any_senders together with when_all
     test_when_all();
+
+    // Test using {unique_,}any_sender with a just sender of move object that can throw
+    test_throwing_constructor();
+
+    // Test using {unique_,}any_sender with a just sender of a const reference
+    test_const_reference();
 
     return 0;
 }

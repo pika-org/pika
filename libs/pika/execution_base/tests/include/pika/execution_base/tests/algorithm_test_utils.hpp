@@ -372,6 +372,13 @@ struct const_reference_sender
     {
         return operation_state<R>{std::move(s.x), std::forward<R>(r)};
     }
+
+    template <typename R>
+    friend auto
+    tag_invoke(pika::execution::experimental::connect_t, const_reference_sender const& s, R&& r)
+    {
+        return operation_state<R>{s.x, std::forward<R>(r)};
+    }
 };
 
 template <typename T>
