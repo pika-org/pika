@@ -12,7 +12,11 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+#include <pika/string_util/from_string.hpp>
+#include <pika/string_util/trim.hpp>
 #include <pika/type_support/unused.hpp>
+
+#include <fmt/format.h>
 
 #include <climits>
 #include <cstddef>
@@ -199,3 +203,68 @@ namespace pika::threads::detail {
     PIKA_EXPORT std::string to_string(mask_cref_type);
     /// \endcond
 }    // namespace pika::threads::detail
+
+namespace pika::detail {
+    template <>
+    struct from_string_impl<pika::threads::detail::mask_type, void>
+    {
+        template <typename Char>
+        static void
+        call(std::basic_string<Char> const& value, pika::threads::detail::mask_type& target)
+        {
+            // Trim whitespace from beginning and end
+            std::basic_string<Char> value_trimmed = value;
+            pika::detail::trim(value_trimmed);
+
+            if (value_trimmed.size() < 3)
+            {
+                throw std::out_of_range(
+                    fmt::format("from_string<mask_type>: hexadecimal string (\"{}\"), expecting a "
+                                "prefix of 0x and at least one digit",
+                        value_trimmed));
+            }
+
+            if (value_trimmed.find("0x") != 0)
+            {
+                throw std::out_of_range(fmt::format("from_string<mask_type>: hexadecimal string "
+                                                    "(\"{}\") does not start with \"0x\"",
+                    value_trimmed));
+            }
+
+            // Convert a potentially hexadecimal character to an integer (mask) between 0 and 15
+            constexpr auto const to_mask = [](unsigned char const c) {
+                if (48 <= c && c < 58) { return c - 48; }
+                else if (auto const c_lower = std::tolower(c); 97 <= c_lower && c_lower < 103)
+                {
+                    return c_lower - 87;
+                }
+
+                throw std::out_of_range(fmt::format(
+                    "from_string<mask_type>: got invalid hexadecimal character (\"{}\")", c));
+            };
+
+            pika::threads::detail::reset(target);
+            pika::threads::detail::resize(target, 0);
+
+            for (auto begin = value_trimmed.begin() + 2; begin != value_trimmed.cend(); ++begin)
+            {
+                // Each character read represents 4 bits so we make space for those bytes
+#if !defined(PIKA_HAVE_MAX_CPU_COUNT)
+                pika::threads::detail::resize(target, pika::threads::detail::mask_size(target) + 4);
+#endif
+                target <<= 4;
+
+                // Store the current 4 bits into a mask of the same size as the target
+#if defined(PIKA_HAVE_MAX_CPU_COUNT)
+                pika::threads::detail::mask_type cur(to_mask(*begin));
+#else
+                pika::threads::detail::mask_type cur(
+                    pika::threads::detail::mask_size(target), to_mask(*begin));
+#endif
+
+                // Add the newly read bits to the mask
+                target |= cur;
+            }
+        }
+    };
+}    // namespace pika::detail
