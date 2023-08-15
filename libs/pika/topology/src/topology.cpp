@@ -52,12 +52,6 @@
 #endif
 
 namespace pika::threads::detail {
-    std::size_t hwloc_hardware_concurrency()
-    {
-        threads::detail::topology& top = threads::detail::get_topology();
-        return top.get_number_of_pus();
-    }
-
     void write_to_log(char const* valuename, std::size_t value)
     {
         LTM_(debug).format("topology: {}: {}", valuename, value);    //-V128
@@ -1455,7 +1449,7 @@ namespace pika::threads::detail {
 #if defined(__ANDROID__) && defined(ANDROID)
           : num_of_cores_(::android_getCpuCount())
 #else
-          : num_of_cores_(hwloc_hardware_concurrency())
+          : num_of_cores_(get_topology().get_number_of_pus())
 #endif
         {
             if (num_of_cores_ == 0) num_of_cores_ = 1;
