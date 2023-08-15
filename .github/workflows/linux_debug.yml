@@ -8,6 +8,7 @@ name: Linux CI (Debug)
 
 on:
   merge_group:
+  pull_request:
   push:
     branches:
       # Development and release branches
