@@ -86,7 +86,7 @@ namespace pika::detail {
     {
         if (!use_process_mask) { return true; }
 
-        threads::detail::mask_type proc_mask = t.get_cpubind_mask();
+        threads::detail::mask_type proc_mask = t.get_cpubind_mask_main_thread();
         threads::detail::mask_type pu_mask = t.init_thread_affinity_mask(num_core, num_pu);
 
         return threads::detail::bit_and(proc_mask, pu_mask);
@@ -97,7 +97,7 @@ namespace pika::detail {
     {
         if (use_process_mask)
         {
-            threads::detail::mask_type proc_mask = t.get_cpubind_mask();
+            threads::detail::mask_type proc_mask = t.get_cpubind_mask_main_thread();
             std::size_t num_pus_proc_mask = threads::detail::count(proc_mask);
 
             if (num_threads > num_pus_proc_mask)
@@ -481,9 +481,7 @@ namespace pika::detail {
         parse_mappings(spec, mappings, ec);
         if (ec) return;
 
-        // We need to instantiate a new topology object as the runtime has not
-        // been initialized yet
-        threads::detail::topology& t = threads::detail::create_topology();
+        threads::detail::topology& t = threads::detail::get_topology();
 
         decode_distribution(mappings, t, affinities, used_cores, max_cores, num_threads, num_pus,
             use_process_mask, ec);

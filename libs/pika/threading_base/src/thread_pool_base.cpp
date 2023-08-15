@@ -38,7 +38,7 @@ namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
     mask_type thread_pool_base::get_used_processing_units() const
     {
-        auto const& topo = create_topology();
+        auto const& topo = get_topology();
         auto const sched = get_scheduler();
 
         mask_type used_processing_units = mask_type();
@@ -58,7 +58,7 @@ namespace pika::threads::detail {
 
     hwloc_bitmap_ptr thread_pool_base::get_numa_domain_bitmap() const
     {
-        auto const& topo = create_topology();
+        auto const& topo = get_topology();
         mask_type used_processing_units = get_used_processing_units();
         return topo.cpuset_to_nodeset(used_processing_units);
     }

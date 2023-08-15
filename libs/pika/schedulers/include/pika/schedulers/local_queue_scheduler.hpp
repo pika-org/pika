@@ -98,9 +98,9 @@ namespace pika::threads::detail {
           , steals_in_numa_domain_()
           , steals_outside_numa_domain_()
           , numa_domain_masks_(init.num_queues_,
-                ::pika::threads::detail::create_topology().get_machine_affinity_mask())
+                ::pika::threads::detail::get_topology().get_machine_affinity_mask())
           , outside_numa_domain_masks_(init.num_queues_,
-                ::pika::threads::detail::create_topology().get_machine_affinity_mask())
+                ::pika::threads::detail::get_topology().get_machine_affinity_mask())
         {
             ::pika::threads::detail::resize(
                 steals_in_numa_domain_, threads::detail::hardware_concurrency());
@@ -781,7 +781,7 @@ namespace pika::threads::detail {
 
             queues_[num_thread]->on_start_thread(num_thread);
 
-            auto const& topo = ::pika::threads::detail::create_topology();
+            auto const& topo = ::pika::threads::detail::get_topology();
 
             // pre-calculate certain constants for the given thread number
             std::size_t num_pu = affinity_data_.get_pu_num(num_thread);

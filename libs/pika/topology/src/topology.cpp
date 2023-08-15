@@ -52,12 +52,6 @@
 #endif
 
 namespace pika::threads::detail {
-    std::size_t hwloc_hardware_concurrency()
-    {
-        threads::detail::topology& top = threads::detail::create_topology();
-        return top.get_number_of_pus();
-    }
-
     void write_to_log(char const* valuename, std::size_t value)
     {
         LTM_(debug).format("topology: {}: {}", valuename, value);    //-V128
@@ -183,6 +177,23 @@ namespace pika::threads::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
+    // We use a function-local static for the topology object so that we don't depend on
+    // initialization order between TUs happening in a particular order and we guarantee that the
+    // object has been created before access. However, we also want to initialize the topology
+    // object early so that we can read the CPU mask of the main thread in case OpenMP wants to
+    // reset it, so we also have a global object call get_topology so that we don't depend on others
+    // calling get_topology early for us.
+    topology& get_topology()
+    {
+        static topology topo;
+        return topo;
+    }
+
+    static struct init_topology_t
+    {
+        init_topology_t() { get_topology(); }
+    } init_topology{};
+
 #if !defined(PIKA_HAVE_MAX_CPU_COUNT)
     mask_type topology::empty_mask = mask_type(hardware_concurrency());
 #else
@@ -193,6 +204,7 @@ namespace pika::threads::detail {
       : topo(nullptr)
       , use_pus_as_cores_(false)
       , machine_affinity_mask_(0)
+      , main_thread_affinity_mask_(0)
     {    // {{{
         int err = hwloc_topology_init(&topo);
         if (err != 0)
@@ -287,6 +299,10 @@ namespace pika::threads::detail {
         {
             thread_affinity_masks_.push_back(init_thread_affinity_mask(i));
         }
+
+        // We assume here that the topology object is created in a global constructor on the main
+        // thread (get_cpubind_mask returns the mask of the current thread).
+        main_thread_affinity_mask_ = get_cpubind_mask();
     }    // }}}
 
     void topology::write_to_log() const
@@ -1119,6 +1135,11 @@ namespace pika::threads::detail {
     std::size_t topology::get_number_of_pus() const { return num_of_pus_; }
 
     ///////////////////////////////////////////////////////////////////////////
+    mask_type topology::get_cpubind_mask_main_thread(error_code&) const
+    {
+        return main_thread_affinity_mask_;
+    }
+
     mask_type topology::get_cpubind_mask(error_code& ec) const
     {
         hwloc_cpuset_t cpuset = hwloc_bitmap_alloc();
@@ -1422,20 +1443,13 @@ namespace pika::threads::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    topology& create_topology()
-    {
-        static topology topo;
-        return topo;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
     struct hw_concurrency
     {
         hw_concurrency() noexcept
 #if defined(__ANDROID__) && defined(ANDROID)
           : num_of_cores_(::android_getCpuCount())
 #else
-          : num_of_cores_(hwloc_hardware_concurrency())
+          : num_of_cores_(get_topology().get_number_of_pus())
 #endif
         {
             if (num_of_cores_ == 0) num_of_cores_ = 1;

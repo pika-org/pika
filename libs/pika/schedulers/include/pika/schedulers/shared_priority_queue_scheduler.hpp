@@ -903,7 +903,7 @@ namespace pika::threads::detail {
             using namespace pika::debug::detail;
             PIKA_DETAIL_DP(spq_deb<5>, debug(str<>("start_thread"), "local_thread", local_thread));
 
-            auto const& topo = ::pika::threads::detail::create_topology();
+            auto const& topo = ::pika::threads::detail::get_topology();
             // the main initialization can be done by any one thread
             std::unique_lock<Mutex> lock(init_mutex);
             if (!initialized_)

@@ -998,7 +998,7 @@ namespace pika {
     namespace detail {
         void handle_print_bind(std::size_t num_threads)
         {
-            threads::detail::topology& top = threads::detail::create_topology();
+            threads::detail::topology& top = threads::detail::get_topology();
             auto const& rp = pika::resource::get_partitioner();
             auto const& tm = get_runtime().get_thread_manager();
 

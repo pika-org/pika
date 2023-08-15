@@ -1084,7 +1084,7 @@ namespace pika::threads::detail {
             queues_[num_thread].data_->on_start_thread(num_thread);
 
             std::size_t num_threads = num_queues_;
-            auto const& topo = ::pika::threads::detail::create_topology();
+            auto const& topo = ::pika::threads::detail::get_topology();
 
             // get NUMA domain masks of all queues...
             std::vector<::pika::threads::detail::mask_type> numa_masks(num_threads);

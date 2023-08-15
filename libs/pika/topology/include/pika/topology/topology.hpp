@@ -244,6 +244,7 @@ namespace pika::threads::detail {
         std::size_t get_pu_number(
             std::size_t num_core, std::size_t num_pu, error_code& ec = throws) const;
 
+        mask_type get_cpubind_mask_main_thread(error_code& ec = throws) const;
         mask_type get_cpubind_mask(error_code& ec = throws) const;
         mask_type get_cpubind_mask(std::thread& handle, error_code& ec = throws) const;
 
@@ -361,12 +362,13 @@ namespace pika::threads::detail {
         std::vector<mask_type> numa_node_affinity_masks_;
         std::vector<mask_type> core_affinity_masks_;
         std::vector<mask_type> thread_affinity_masks_;
+        mask_type main_thread_affinity_mask_;
     };
 
 #include <pika/config/warnings_suffix.hpp>
 
     ///////////////////////////////////////////////////////////////////////////
-    PIKA_EXPORT topology& create_topology();
+    PIKA_EXPORT topology& get_topology();
 
     [[nodiscard]] PIKA_EXPORT unsigned int hardware_concurrency() noexcept;
 
