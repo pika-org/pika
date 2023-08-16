@@ -40,7 +40,7 @@ build_errors=1
 test_errors=1
 
 # Copy the testing directory for saving as an artifact
-cp -r ${build_dir}/Testing ${orig_src_dir}/${configuration_name_with_build_type}-Testing
+cp -r "${build_dir}/Testing" "${orig_src_dir}/${configuration_name_with_build_type}-Testing"
 
 if [[ -f "${build_dir}/Testing/TAG" ]]; then
     file_errors=0
