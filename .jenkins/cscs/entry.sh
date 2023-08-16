@@ -14,7 +14,7 @@ rm -rf ./jenkins-pika* ./*-Testing
 
 export configuration_name_with_build_type="${configuration_name}-${build_type,,}"
 
-source ".jenkins/cscs/slurm-constraint-${configuration_name}.sh"
+source ".jenkins/cscs/config-${configuration_name}.sh"
 
 if [[ -z "${ghprbPullId:-}" ]]; then
     # Set name of branch if not building a pull request

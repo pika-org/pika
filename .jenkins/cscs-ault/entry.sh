@@ -11,7 +11,7 @@ set -eux
 
 export configuration_name_with_build_type="${configuration_name}-${build_type,,}"
 
-source ".jenkins/cscs-ault/slurm-constraint-${configuration_name}.sh"
+source ".jenkins/cscs-ault/config-${configuration_name}.sh"
 
 if [[ -z "${ghprbPullId:-}" ]]; then
     # Set name of branch if not building a pull request
