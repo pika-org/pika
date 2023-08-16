@@ -21,6 +21,12 @@ branch_filter: &branch_filter
 working_dir_default: &working_dir_default
     working_directory: /pika/build
 
+setup_x86_small: &setup_x86_small
+    resource_class: small
+
+setup_x86_large: &setup_x86_large
+    resource_class: large
+
 setup_arm64_machine: &setup_arm64_machine
     machine:
       image: ubuntu-2004:current
@@ -78,6 +84,7 @@ version: 2
 jobs:
   checkout_code:
     <<: *docker_default
+    <<: *setup_x86_small
     working_directory: /pika
     steps:
       - checkout:
@@ -91,6 +98,7 @@ jobs:
   check_circular_deps:
     <<: *working_dir_default
     <<: *docker_default
+    <<: *setup_x86_small
     steps:
       - attach_workspace:
           at: /pika
@@ -116,6 +124,7 @@ jobs:
   # Check if all the module dependencies are listed
   check_module_cmakelists:
     <<: *defaults
+    <<: *setup_x86_small
     steps:
       - attach_workspace:
           at: /pika
@@ -136,6 +145,7 @@ jobs:
   # Ensure that the modules stay clang-formatted
   clang_format:
     <<: *defaults
+    <<: *setup_x86_small
     steps:
       - attach_workspace:
           at: /pika
@@ -158,6 +168,7 @@ jobs:
   # Ensure that CMake files stay cmake-formatted
   cmake_format:
     <<: *docker_default
+    <<: *setup_x86_small
     steps:
       - attach_workspace:
           at: /pika
@@ -175,6 +186,7 @@ jobs:
   # Ensure that Python files stay formatted with black
   python_format:
     <<: *docker_default
+    <<: *setup_x86_small
     steps:
       - attach_workspace:
           at: /pika
@@ -192,6 +204,7 @@ jobs:
   # Ensure that shell scripts stay formatted with shfmt
   shell_format:
     <<: *docker_default
+    <<: *setup_x86_small
     steps:
       - attach_workspace:
           at: /pika
@@ -208,6 +221,7 @@ jobs:
 
   configure:
     <<: *defaults
+    <<: *setup_x86_small
     steps:
       - attach_workspace:
           at: /pika
@@ -253,6 +267,7 @@ jobs:
 
   configure_test_combinations:
     <<: *defaults
+    <<: *setup_x86_small
     steps:
       - attach_workspace:
           at: /pika
@@ -279,13 +294,14 @@ jobs:
 
   inshpect:
     <<: *defaults
+    <<: *setup_x86_large
     steps:
       - attach_workspace:
           at: /pika
       - run:
           name: Running inshpect
           command: |
-              export INSHPECT_NUMTHREADS=2
+              export INSHPECT_NUMTHREADS=4
               export INSHPECT_VERBOSE=1
               inshpect /pika/source /pika/source/.inshpect.toml > \
                   inshpect.txt
@@ -304,6 +320,7 @@ jobs:
 
   spellcheck:
     <<: *defaults
+    <<: *setup_x86_small
     steps:
       - attach_workspace:
           at: /pika
@@ -325,6 +342,7 @@ jobs:
 
   core:
     <<: *defaults
+    <<: *setup_x86_large
     steps:
       - attach_workspace:
           at: /pika
@@ -339,6 +357,7 @@ jobs:
 
   tests.examples:
     <<: *defaults
+    <<: *setup_x86_large
     steps:
       - attach_workspace:
           at: /pika
@@ -375,6 +394,7 @@ jobs:
 
   tests.unit:
     <<: *defaults
+    <<: *setup_x86_large
     steps:
       - attach_workspace:
           at: /pika
@@ -423,6 +443,7 @@ jobs:
 
   tests.regressions:
     <<: *defaults
+    <<: *setup_x86_large
     steps:
       - attach_workspace:
           at: /pika
@@ -454,6 +475,7 @@ jobs:
 
   tests.headers:
     <<: *defaults
+    <<: *setup_x86_large
     steps:
       - attach_workspace:
           at: /pika
@@ -476,6 +498,7 @@ jobs:
 
   tests.performance:
     <<: *defaults
+    <<: *setup_x86_large
     steps:
       - attach_workspace:
           at: /pika
@@ -486,6 +509,7 @@ jobs:
 
   install:
     <<: *docker_default
+    <<: *setup_x86_small
     steps:
       - attach_workspace:
           at: /pika
@@ -493,14 +517,14 @@ jobs:
           name: Installing
           command: |
               ./bin/hello_world --pika:bind=none
-              ninja -j4 install
+              ninja -j2 install
           working_directory: /pika/build
           when: always
           no_output_timeout: 30m
       - run:
           name: Testing build unit tests
           command: |
-              ninja -j4 tests.unit.build
+              ninja -j2 tests.unit.build
           working_directory: /pika/build
           when: always
       - run:
