@@ -27,9 +27,15 @@ elif [[ "${commit_status}" == "skipped" ]]; then
     commit_status="success"
 fi
 
+if [[ "${build_id}" == "0" ]]; then
+    url="https://cdash.cscs.ch/index.php?project=pika"
+else
+    url="https://cdash.cscs.ch/buildSummary.php?buildid=${build_id}"
+fi
+
 curl --verbose \
     --request POST \
     --url "https://api.github.com/repos/${commit_repo}/statuses/${commit_sha}" \
     --header 'Content-Type: application/json' \
     --header "authorization: Bearer ${github_token}" \
-    --data "{ \"state\": \"${commit_status}\", \"target_url\": \"https://cdash.cscs.ch/buildSummary.php?buildid=${build_id}\", \"description\": \"${status_text}\", \"context\": \"${context}/${configuration_name}\" }"
+    --data "{ \"state\": \"${commit_status}\", \"target_url\": \"${url}\", \"description\": \"${status_text}\", \"context\": \"${context}/${configuration_name}\" }"
