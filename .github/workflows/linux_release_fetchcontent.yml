@@ -8,6 +8,7 @@ name: Linux CI (Release, FetchContent)
 
 on:
   merge_group:
+  pull_request:
   push:
     branches:
       # Development and release branches
@@ -20,6 +21,7 @@ on:
 jobs:
   build:
     name: github/linux/fetchcontent/fast
+    if: ${{ github.event_name == 'merge_group' }}
     runs-on: ubuntu-latest
     container: pikaorg/pika-ci-base:18
 

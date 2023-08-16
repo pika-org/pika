@@ -11,7 +11,7 @@ set -eux
 
 export configuration_name_with_build_type="${configuration_name}-${build_type,,}"
 
-source ".jenkins/cscs-ault/slurm-constraint-${configuration_name}.sh"
+source ".jenkins/cscs-ault/config-${configuration_name}.sh"
 
 if [[ -z "${ghprbPullId:-}" ]]; then
     # Set name of branch if not building a pull request
@@ -20,12 +20,46 @@ if [[ -z "${ghprbPullId:-}" ]]; then
     # trying
     export git_commit_message=$(git log --format=%B -n 1 HEAD | head -n1)
     export job_name="jenkins-pika-${git_local_branch}-${configuration_name_with_build_type}"
+
+    .jenkins/common/set_github_status.sh \
+        "${GITHUB_TOKEN}" \
+        "pika-org/pika" \
+        "${GIT_COMMIT}" \
+        "pending" \
+        "${configuration_name_with_build_type}" \
+        "0" \
+        "jenkins/cscs-ault"
 else
+    # Extract just the organization and repo names "org/repo" from the full URL
+    github_commit_repo=$(echo "$ghprbPullLink" | sed -n 's/https:\/\/github.com\/\(.*\)\/pull\/[0-9]*/\1/p')
+
+    if [[ "${configuration_skip_pr:-}" == "true" ]]; then
+        .jenkins/common/set_github_status.sh \
+            "${GITHUB_TOKEN}" \
+            "${github_commit_repo}" \
+            "${ghprbActualCommit}" \
+            "skipped" \
+            "${configuration_name_with_build_type}" \
+            "0" \
+            "jenkins/cscs-ault"
+
+        exit 0
+    fi
+
     export job_name="jenkins-pika-${ghprbPullId}-${configuration_name_with_build_type}"
 
     # Cancel currently running builds on the same branch, but only for pull
     # requests
     scancel --account="djenkssl" --jobname="${job_name}"
+
+    .jenkins/common/set_github_status.sh \
+        "${GITHUB_TOKEN}" \
+        "${github_commit_repo}" \
+        "${ghprbActualCommit}" \
+        "pending" \
+        "${configuration_name_with_build_type}" \
+        "0" \
+        "jenkins/cscs-ault"
 fi
 
 # Clean up old artifacts
@@ -72,9 +106,6 @@ if [[ -z "${ghprbPullId:-}" ]]; then
         "${cdash_build_id}" \
         "jenkins/cscs-ault"
 else
-    # Extract just the organization and repo names "org/repo" from the full URL
-    github_commit_repo=$(echo "$ghprbPullLink" | sed -n 's/https:\/\/github.com\/\(.*\)\/pull\/[0-9]*/\1/p')
-
     # Set GitHub status with CDash url
     .jenkins/common/set_github_status.sh \
         "${GITHUB_TOKEN}" \

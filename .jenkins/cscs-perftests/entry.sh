@@ -12,7 +12,7 @@ set -eux
 # Clean up old artifacts
 rm -rf ./jenkins-pika* ./*-Testing
 
-source ".jenkins/cscs-perftests/slurm-constraint-${configuration_name}.sh"
+source ".jenkins/cscs-perftests/config-${configuration_name}.sh"
 
 if [[ -z "${ghprbPullId:-}" ]]; then
     # Set name of branch if not building a pull request

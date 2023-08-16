@@ -8,6 +8,7 @@ name: macOS Arm64 CI (Debug)
 
 on:
   merge_group:
+  pull_request:
   push:
     branches:
       # Development and release branches
@@ -20,6 +21,7 @@ on:
 jobs:
   build_and_test:
     name: github/macos_arm64/debug
+    if: ${{ github.event_name == 'merge_group' }}
     runs-on: [ self-hosted, macOS, ARM64 ]
     steps:
     - name: Install dependencies

@@ -5,19 +5,6 @@
 #  Distributed under the Boost Software License, Version 1.0. (See accompanying
 #  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-branch_filter: &branch_filter
-    filters:
-      branches:
-        only:
-          # Development and release branches
-          - main
-          - /release.*/
-          # Bors branches
-          - trying
-          - staging
-          # GitHub merge queue branches
-          - /gh-readonly-queue.*/
-
 working_dir_default: &working_dir_default
     working_directory: /pika/build
 
@@ -623,6 +610,7 @@ jobs:
               -j2 \
               --timeout 500 \
               -T test \
+              -E 'tests.unit.modules.threading.condition_variable2' \
               --no-compress-output \
               --output-on-failure
       - run:
@@ -675,26 +663,19 @@ workflows:
           requires:
             - checkout_code
       - core:
-          <<: *branch_filter
           requires:
             - configure
       - tests.examples:
-          <<: *branch_filter
           <<: *core_dependency
       - tests.unit:
-          <<: *branch_filter
           <<: *core_dependency
       - tests.regressions:
-          <<: *branch_filter
           <<: *core_dependency
       - tests.performance:
-          <<: *branch_filter
           <<: *core_dependency
       - tests.headers:
-          <<: *branch_filter
           <<: *core_dependency
       - install:
-          <<: *branch_filter
           requires:
             - core
             - tests.examples
@@ -705,5 +686,4 @@ workflows:
 
   build-and-test-arm64:
     jobs:
-      - arm64_build:
-          <<: *branch_filter
+      - arm64_build

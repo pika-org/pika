@@ -8,6 +8,7 @@ name: Linux CI (lsan)
 
 on:
   merge_group:
+  pull_request:
   push:
     branches:
       # Development and release branches
@@ -20,6 +21,7 @@ on:
 jobs:
   build:
     name: github/linux/sanitizers/leak
+    if: ${{ github.event_name == 'merge_group' }}
     runs-on: ubuntu-latest
     container: pikaorg/pika-ci-base:18
 
