@@ -5,3 +5,4 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 configuration_slurm_partition="amdvega"
+configuration_skip_pr="true"

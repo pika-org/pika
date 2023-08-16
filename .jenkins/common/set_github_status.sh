@@ -16,9 +16,20 @@ configuration_name=${5}
 build_id=${6}
 context=${7}
 
+if [[ "${commit_status}" == "success" ]]; then
+    status_text="Passed"
+elif [[ "${commit_status}" == "failure" ]]; then
+    status_text="Failed"
+elif [[ "${commit_status}" == "pending" ]]; then
+    status_text="Running"
+elif [[ "${commit_status}" == "skipped" ]]; then
+    status_text="Skipped"
+    commit_status="success"
+fi
+
 curl --verbose \
     --request POST \
     --url "https://api.github.com/repos/${commit_repo}/statuses/${commit_sha}" \
     --header 'Content-Type: application/json' \
     --header "authorization: Bearer ${github_token}" \
-    --data "{ \"state\": \"${commit_status}\", \"target_url\": \"https://cdash.cscs.ch/buildSummary.php?buildid=${build_id}\", \"description\": \"Jenkins\", \"context\": \"${context}/${configuration_name}\" }"
+    --data "{ \"state\": \"${commit_status}\", \"target_url\": \"https://cdash.cscs.ch/buildSummary.php?buildid=${build_id}\", \"description\": \"${status_text}\", \"context\": \"${context}/${configuration_name}\" }"
