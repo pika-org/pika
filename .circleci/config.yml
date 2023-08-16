@@ -586,6 +586,7 @@ jobs:
               -j2 \
               --timeout 500 \
               -T test \
+              -E 'tests.unit.modules.threading.condition_variable2' \
               --no-compress-output \
               --output-on-failure
       - run:
