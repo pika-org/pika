@@ -20,6 +20,15 @@ if [[ -z "${ghprbPullId:-}" ]]; then
     # trying
     export git_commit_message=$(git log --format=%B -n 1 HEAD | head -n1)
     export job_name="jenkins-pika-${git_local_branch}-${configuration_name_with_build_type}"
+
+    .jenkins/common/set_github_status.sh \
+        "${GITHUB_TOKEN}" \
+        "pika-org/pika" \
+        "${GIT_COMMIT}" \
+        "pending" \
+        "${configuration_name_with_build_type}" \
+        "0" \
+        "jenkins/cscs-ault"
 else
     # Extract just the organization and repo names "org/repo" from the full URL
     github_commit_repo=$(echo "$ghprbPullLink" | sed -n 's/https:\/\/github.com\/\(.*\)\/pull\/[0-9]*/\1/p')
@@ -42,6 +51,15 @@ else
     # Cancel currently running builds on the same branch, but only for pull
     # requests
     scancel --account="djenkssl" --jobname="${job_name}"
+
+    .jenkins/common/set_github_status.sh \
+        "${GITHUB_TOKEN}" \
+        "${github_commit_repo}" \
+        "${ghprbActualCommit}" \
+        "pending" \
+        "${configuration_name_with_build_type}" \
+        "0" \
+        "jenkins/cscs-ault"
 fi
 
 # Clean up old artifacts
