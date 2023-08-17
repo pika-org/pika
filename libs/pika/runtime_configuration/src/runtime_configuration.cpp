@@ -119,15 +119,12 @@ namespace pika::util {
             "${PIKA_SPINLOCK_DEADLOCK_WARNING_LIMIT:" PIKA_PP_STRINGIZE(
                 PIKA_PP_EXPAND(PIKA_SPINLOCK_DEADLOCK_WARNING_LIMIT)) "}",
 #endif
-            "expect_connecting_localities = "
-            "${PIKA_EXPECT_CONNECTING_LOCALITIES:0}",
 
             // add placeholders for keys to be added by command line handling
             "ignore_process_mask = 0",
             "process_mask = ${PIKA_PROCESS_MASK:}",
             "os_threads = cores",
             "cores = all",
-            "localities = 1",
             "first_pu = 0",
             "scheduler = local-priority-fifo",
             "affinity = core",
