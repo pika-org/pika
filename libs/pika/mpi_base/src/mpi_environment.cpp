@@ -30,7 +30,7 @@ namespace pika { namespace util {
             // MPI environment
             return true;
 #else
-            std::string mpi_environment_strings = cfg.get_entry("pika.parcel.mpi.env", default_env);
+            std::string mpi_environment_strings = cfg.get_entry("pika.mpi.env", default_env);
 
             boost::char_separator<char> sep(";,: ");
             boost::tokenizer<boost::char_separator<char>> tokens(mpi_environment_strings, sep);
@@ -109,7 +109,7 @@ namespace pika { namespace util {
         int required = MPI_THREAD_SINGLE;
         int minimal = MPI_THREAD_SINGLE;
 # if defined(PIKA_HAVE_MPI_MULTITHREADED)
-        required = (pika::detail::get_entry_as(rtcfg, "pika.parcel.mpi.multithreaded", 1) != 0) ?
+        required = (pika::detail::get_entry_as(rtcfg, "pika.mpi.multithreaded", 1) != 0) ?
             MPI_THREAD_MULTIPLE :
             MPI_THREAD_SINGLE;
 
@@ -139,7 +139,7 @@ namespace pika { namespace util {
         if (provided_threading_flag_ < MPI_THREAD_SERIALIZED)
         {
             // explicitly disable mpi if not run by mpirun
-            rtcfg.add_entry("pika.parcel.mpi.multithreaded", "0");
+            rtcfg.add_entry("pika.mpi.multithreaded", "0");
         }
 
         if (provided_threading_flag_ == MPI_THREAD_FUNNELED)
@@ -155,8 +155,8 @@ namespace pika { namespace util {
 
         this_rank = rank();
 
-        rtcfg.add_entry("pika.parcel.mpi.rank", std::to_string(this_rank));
-        rtcfg.add_entry("pika.parcel.mpi.processorname", get_processor_name());
+        rtcfg.add_entry("pika.mpi.rank", std::to_string(this_rank));
+        rtcfg.add_entry("pika.mpi.processorname", get_processor_name());
     }
 
     std::string mpi_environment::get_processor_name()
