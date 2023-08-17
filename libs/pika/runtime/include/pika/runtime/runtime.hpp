@@ -21,7 +21,6 @@
 #include <pika/runtime/thread_hooks.hpp>
 #include <pika/runtime/thread_mapper.hpp>
 #include <pika/runtime_configuration/runtime_configuration.hpp>
-#include <pika/runtime_configuration/runtime_mode.hpp>
 #include <pika/threading_base/callback_notifier.hpp>
 
 #include <atomic>

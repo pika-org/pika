@@ -42,7 +42,6 @@ namespace pika::detail {
             std::string unknown_cmd_line(ini.get_entry("pika.unknown_cmd_line", ""));
             if (!unknown_cmd_line.empty())
             {
-                std::string runtime_mode(ini.get_entry("pika.runtime_mode", ""));
                 pika::program_options::variables_map vm;
 
                 commandline_error_mode mode = commandline_error_mode::rethrow_on_error;
@@ -93,7 +92,6 @@ namespace pika::detail {
 
             if (!cmd_line.empty())
             {
-                std::string runtime_mode(ini.get_entry("pika.runtime_mode", ""));
                 pika::program_options::variables_map vm;
 
                 parse_commandline(ini, options, cmd_line, vm,

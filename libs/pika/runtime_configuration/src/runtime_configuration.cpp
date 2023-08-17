@@ -14,7 +14,6 @@
 #include <pika/preprocessor/stringize.hpp>
 #include <pika/runtime_configuration/init_ini_data.hpp>
 #include <pika/runtime_configuration/runtime_configuration.hpp>
-#include <pika/runtime_configuration/runtime_mode.hpp>
 #include <pika/string_util/from_string.hpp>
 #include <pika/util/get_entry_as.hpp>
 #include <pika/version.hpp>
@@ -130,7 +129,6 @@ namespace pika::util {
             "cores = all",
             "localities = 1",
             "first_pu = 0",
-            "runtime_mode = console",
             "scheduler = local-priority-fifo",
             "affinity = core",
             "pu_step = 1",
@@ -325,10 +323,9 @@ namespace pika::util {
 
     ///////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
-    runtime_configuration::runtime_configuration(char const* argv0_, runtime_mode mode,
-        std::vector<std::string> const& extra_static_ini_defs_)
+    runtime_configuration::runtime_configuration(
+        char const* argv0_, std::vector<std::string> const& extra_static_ini_defs_)
       : extra_static_ini_defs(extra_static_ini_defs_)
-      , mode_(mode)
       , num_os_threads(0)
       , small_stacksize(PIKA_SMALL_STACK_SIZE)
       , medium_stacksize(PIKA_MEDIUM_STACK_SIZE)

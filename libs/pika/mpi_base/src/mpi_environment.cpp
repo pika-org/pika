@@ -155,9 +155,6 @@ namespace pika { namespace util {
 
         this_rank = rank();
 
-        if (this_rank == 0) { rtcfg.mode_ = pika::runtime_mode::console; }
-        else { rtcfg.mode_ = pika::runtime_mode::worker; }
-
         rtcfg.add_entry("pika.parcel.mpi.rank", std::to_string(this_rank));
         rtcfg.add_entry("pika.parcel.mpi.processorname", get_processor_name());
     }
