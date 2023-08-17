@@ -205,7 +205,7 @@ namespace pika {
         ///    \brief Resume the runtime system
         virtual int resume();
 
-        virtual int finalize(double /*shutdown_timeout*/);
+        virtual int finalize();
 
         ///  \brief Return true if networking is enabled.
         virtual bool is_networking_enabled();

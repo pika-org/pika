@@ -186,7 +186,7 @@ namespace pika {
             return -1;
         }
 
-        rt->finalize(0);
+        rt->finalize();
 
         return 0;
     }

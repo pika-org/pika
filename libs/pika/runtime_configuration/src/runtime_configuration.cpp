@@ -86,8 +86,6 @@ namespace pika::util {
 #ifdef PIKA_HAVE_ITTNOTIFY
             "use_itt_notify = ${PIKA_HAVE_ITTNOTIFY:0}",
 #endif
-            "finalize_wait_time = ${PIKA_FINALIZE_WAIT_TIME:-1.0}",
-            "shutdown_timeout = ${PIKA_SHUTDOWN_TIMEOUT:-1.0}",
             "shutdown_check_count = ${PIKA_SHUTDOWN_CHECK_COUNT:10}",
 #ifdef PIKA_HAVE_VERIFY_LOCKS
 #if defined(PIKA_DEBUG)
