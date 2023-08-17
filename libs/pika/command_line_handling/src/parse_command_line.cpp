@@ -373,6 +373,13 @@ namespace pika::detail {
                   "values. Do not use with --pika:pu-step, --pika:pu-offset, or "
                   "--pika:affinity options. Implies --pika:numa-sensitive=1"
                   "(--pika:bind=none disables defining thread affinities).")
+                ("pika:process-mask", value<std::string>(),
+                  "a process mask in hexadecimal form to restrict cores available for "
+                  "the pika runtime. If a mask has been set externally on the executable, "
+                  "this option overrides that mask. Has no effect if "
+                  "--pika:ignore-process-mask is used. This option does not set the "
+                  "process mask for the main thread. The mask only affects threads spawned "
+                  "by the pika runtime.")
                 ("pika:ignore-process-mask", "ignore the process mask to restrict "
                  "available hardware resources, use all available processing units")
                 ("pika:print-bind",

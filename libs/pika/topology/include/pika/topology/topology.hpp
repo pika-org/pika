@@ -245,6 +245,7 @@ namespace pika::threads::detail {
             std::size_t num_core, std::size_t num_pu, error_code& ec = throws) const;
 
         mask_type get_cpubind_mask_main_thread(error_code& ec = throws) const;
+        void set_cpubind_mask_main_thread(mask_type, error_code& ec = throws);
         mask_type get_cpubind_mask(error_code& ec = throws) const;
         mask_type get_cpubind_mask(std::thread& handle, error_code& ec = throws) const;
 

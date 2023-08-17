@@ -109,6 +109,26 @@ namespace pika::detail {
         return "file(" + dest + ")";
     }
 
+    std::string handle_process_mask(detail::manage_config& cfgmap,
+        pika::program_options::variables_map& vm, bool use_process_mask)
+    {
+        std::string mask_string = cfgmap.get_value<std::string>("pika.process_mask", "");
+
+        if (vm.count("pika:process-mask"))
+        {
+            mask_string = vm["pika:process-mask"].as<std::string>();
+        }
+
+        if (!mask_string.empty() && !use_process_mask)
+        {
+            fmt::print(std::cerr,
+                "Explicit process mask is set with --pika:process-mask, but "
+                "--pika:ignore-process-mask is also set. The process mask will be ignored.\n");
+        }
+
+        return mask_string;
+    }
+
     std::string handle_queuing(detail::manage_config& cfgmap,
         pika::program_options::variables_map& vm, std::string const& default_)
     {
@@ -393,6 +413,14 @@ namespace pika::detail {
 
         ini_config.emplace_back("pika.ignore_process_mask!=" + std::to_string(!use_process_mask_));
 
+        process_mask_ = handle_process_mask(cfgmap, vm, use_process_mask_);
+        ini_config.emplace_back("pika.process_mask!=" + process_mask_);
+        if (!process_mask_.empty())
+        {
+            auto const m = from_string<threads::detail::mask_type>(process_mask_);
+            threads::detail::get_topology().set_cpubind_mask_main_thread(m);
+        }
+
         // handle setting related to schedulers
         queuing_ = detail::handle_queuing(cfgmap, vm, "local-priority-fifo");
         ini_config.emplace_back("pika.scheduler=" + queuing_);
@@ -598,8 +626,17 @@ namespace pika::detail {
             using iterator_type = std::vector<std::string>::const_iterator;
 
             iterator_type end = unregistered_options.end();
+            // Silence bogus warning from GCC 12:
+            // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105329
+#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 120000
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wrestrict"
+#endif
             for (iterator_type it = unregistered_options.begin(); it != end; ++it)
                 unregistered_options_cmd_line += " " + detail::encode_and_enquote(*it);
+#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 120000
+# pragma GCC diagnostic pop
+#endif
 
             ini_config_.emplace_back("pika.unknown_cmd_line!=" +
                 detail::encode_and_enquote(cmd_name) + unregistered_options_cmd_line);
