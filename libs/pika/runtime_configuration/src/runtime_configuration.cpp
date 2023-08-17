@@ -197,8 +197,6 @@ namespace pika::util {
                 PIKA_PP_EXPAND(PIKA_THREAD_QUEUE_INIT_THREADS_COUNT)) "}",
 
             "[pika.commandline]",
-            // enable aliasing
-            "aliasing = ${PIKA_COMMANDLINE_ALIASING:1}",
 
             // allow for unknown options to be passed through
             "allow_unknown = ${PIKA_COMMANDLINE_ALLOW_UNKNOWN:0}",
@@ -206,26 +204,6 @@ namespace pika::util {
             // allow for command line options to to be passed through the
             // environment
             "prepend_options = ${PIKA_COMMANDLINE_OPTIONS}",
-
-            // predefine command line aliases
-            "[pika.commandline.aliases]",
-            "-h = --pika:help",
-            "-I = --pika:ini",
-            "-p = --pika:app-config",
-            "-q = --pika:queuing",
-            "-t = --pika:threads",
-            "-v = --pika:version",
-            "-x = --pika:pika",
-            "-0 = --pika:node=0",
-            "-1 = --pika:node=1",
-            "-2 = --pika:node=2",
-            "-3 = --pika:node=3",
-            "-4 = --pika:node=4",
-            "-5 = --pika:node=5",
-            "-6 = --pika:node=6",
-            "-7 = --pika:node=7",
-            "-8 = --pika:node=8",
-            "-9 = --pika:node=9",
             // clang-format on
         };
 

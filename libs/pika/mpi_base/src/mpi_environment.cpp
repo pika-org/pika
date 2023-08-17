@@ -149,7 +149,8 @@ namespace pika { namespace util {
             throw std::runtime_error(
                 "mpi_environment::init: MPI_Init_thread: The underlying MPI implementation only "
                 "supports MPI_THREAD_FUNNELED. This mode is not supported by pika. Please pass "
-                "-Ipika.parcel.mpi.multithreaded=0 to explicitly disable MPI multi-threading.");
+                "--pika:ini=pika.parcel.mpi.multithreaded=0 to explicitly disable MPI "
+                "multi-threading.");
         }
 
         this_rank = rank();
