@@ -21,7 +21,6 @@
 #include <pika/runtime/thread_hooks.hpp>
 #include <pika/runtime/thread_mapper.hpp>
 #include <pika/runtime_configuration/runtime_configuration.hpp>
-#include <pika/runtime_configuration/runtime_mode.hpp>
 #include <pika/threading_base/callback_notifier.hpp>
 
 #include <atomic>
@@ -206,7 +205,7 @@ namespace pika {
         ///    \brief Resume the runtime system
         virtual int resume();
 
-        virtual int finalize(double /*shutdown_timeout*/);
+        virtual int finalize();
 
         ///  \brief Return true if networking is enabled.
         virtual bool is_networking_enabled();

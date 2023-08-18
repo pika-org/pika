@@ -1066,7 +1066,7 @@ namespace pika {
                     lbt_ << "runtime::run_helper: bootstrap aborted, bailing out";
 
                     set_state(runtime_state::running);
-                    finalize(-1.0);
+                    finalize();
 
                     return threads::detail::thread_result_type(
                         threads::detail::thread_schedule_state::terminated,
@@ -1115,7 +1115,7 @@ namespace pika {
         {
             PIKA_ASSERT(exception_);
             report_error(exception_, false);
-            finalize(-1.0);    // make sure the application exits
+            finalize();    // make sure the application exits
         }
 
         return threads::detail::thread_result_type(
@@ -1368,7 +1368,7 @@ namespace pika {
         return 0;
     }
 
-    int runtime::finalize(double /*shutdown_timeout*/)
+    int runtime::finalize()
     {
         notify_finalize();
         return 0;

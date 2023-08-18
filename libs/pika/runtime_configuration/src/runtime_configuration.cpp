@@ -14,7 +14,6 @@
 #include <pika/preprocessor/stringize.hpp>
 #include <pika/runtime_configuration/init_ini_data.hpp>
 #include <pika/runtime_configuration/runtime_configuration.hpp>
-#include <pika/runtime_configuration/runtime_mode.hpp>
 #include <pika/string_util/from_string.hpp>
 #include <pika/util/get_entry_as.hpp>
 #include <pika/version.hpp>
@@ -87,8 +86,6 @@ namespace pika::util {
 #ifdef PIKA_HAVE_ITTNOTIFY
             "use_itt_notify = ${PIKA_HAVE_ITTNOTIFY:0}",
 #endif
-            "finalize_wait_time = ${PIKA_FINALIZE_WAIT_TIME:-1.0}",
-            "shutdown_timeout = ${PIKA_SHUTDOWN_TIMEOUT:-1.0}",
             "shutdown_check_count = ${PIKA_SHUTDOWN_CHECK_COUNT:10}",
 #ifdef PIKA_HAVE_VERIFY_LOCKS
 #if defined(PIKA_DEBUG)
@@ -120,17 +117,13 @@ namespace pika::util {
             "${PIKA_SPINLOCK_DEADLOCK_WARNING_LIMIT:" PIKA_PP_STRINGIZE(
                 PIKA_PP_EXPAND(PIKA_SPINLOCK_DEADLOCK_WARNING_LIMIT)) "}",
 #endif
-            "expect_connecting_localities = "
-            "${PIKA_EXPECT_CONNECTING_LOCALITIES:0}",
 
             // add placeholders for keys to be added by command line handling
             "ignore_process_mask = 0",
             "process_mask = ${PIKA_PROCESS_MASK:}",
             "os_threads = cores",
             "cores = all",
-            "localities = 1",
             "first_pu = 0",
-            "runtime_mode = console",
             "scheduler = local-priority-fifo",
             "affinity = core",
             "pu_step = 1",
@@ -197,8 +190,6 @@ namespace pika::util {
                 PIKA_PP_EXPAND(PIKA_THREAD_QUEUE_INIT_THREADS_COUNT)) "}",
 
             "[pika.commandline]",
-            // enable aliasing
-            "aliasing = ${PIKA_COMMANDLINE_ALIASING:1}",
 
             // allow for unknown options to be passed through
             "allow_unknown = ${PIKA_COMMANDLINE_ALLOW_UNKNOWN:0}",
@@ -206,26 +197,6 @@ namespace pika::util {
             // allow for command line options to to be passed through the
             // environment
             "prepend_options = ${PIKA_COMMANDLINE_OPTIONS}",
-
-            // predefine command line aliases
-            "[pika.commandline.aliases]",
-            "-h = --pika:help",
-            "-I = --pika:ini",
-            "-p = --pika:app-config",
-            "-q = --pika:queuing",
-            "-t = --pika:threads",
-            "-v = --pika:version",
-            "-x = --pika:pika",
-            "-0 = --pika:node=0",
-            "-1 = --pika:node=1",
-            "-2 = --pika:node=2",
-            "-3 = --pika:node=3",
-            "-4 = --pika:node=4",
-            "-5 = --pika:node=5",
-            "-6 = --pika:node=6",
-            "-7 = --pika:node=7",
-            "-8 = --pika:node=8",
-            "-9 = --pika:node=9",
             // clang-format on
         };
 
@@ -347,10 +318,9 @@ namespace pika::util {
 
     ///////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
-    runtime_configuration::runtime_configuration(char const* argv0_, runtime_mode mode,
-        std::vector<std::string> const& extra_static_ini_defs_)
+    runtime_configuration::runtime_configuration(
+        char const* argv0_, std::vector<std::string> const& extra_static_ini_defs_)
       : extra_static_ini_defs(extra_static_ini_defs_)
-      , mode_(mode)
       , num_os_threads(0)
       , small_stacksize(PIKA_SMALL_STACK_SIZE)
       , medium_stacksize(PIKA_MEDIUM_STACK_SIZE)

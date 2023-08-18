@@ -186,7 +186,7 @@ namespace pika {
             return -1;
         }
 
-        rt->finalize(0);
+        rt->finalize();
 
         return 0;
     }
@@ -460,8 +460,7 @@ namespace pika {
                 if ((result = ensure_no_runtime_is_up()) != 0) { return result; }
 
                 pika::detail::command_line_handling cmdline{
-                    pika::util::runtime_configuration(argv[0], pika::runtime_mode::local),
-                    params.cfg, f};
+                    pika::util::runtime_configuration(argv[0]), params.cfg, f};
 
                 // scope exception handling to resource partitioner initialization
                 // any exception thrown during run_or_start below are handled

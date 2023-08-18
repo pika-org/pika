@@ -13,7 +13,6 @@
 #include <pika/errors/error_code.hpp>
 #include <pika/ini/ini.hpp>
 #include <pika/runtime_configuration/runtime_configuration_fwd.hpp>
-#include <pika/runtime_configuration/runtime_mode.hpp>
 
 #include <cstddef>
 #include <cstdint>
@@ -37,8 +36,8 @@ namespace pika::util {
 
     public:
         // initialize and load configuration information
-        runtime_configuration(char const* argv0, runtime_mode mode,
-            std::vector<std::string> const& extra_static_ini_defs = {});
+        explicit runtime_configuration(
+            char const* argv0, std::vector<std::string> const& extra_static_ini_defs = {});
 
         // re-initialize all entries based on the additional information from
         // the given configuration file
@@ -104,9 +103,6 @@ namespace pika::util {
         void pre_initialize_logging_ini();
 
         void reconfigure();
-
-    public:
-        runtime_mode mode_;
 
     private:
         mutable std::uint32_t num_os_threads;

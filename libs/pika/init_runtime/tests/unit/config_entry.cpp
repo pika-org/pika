@@ -14,11 +14,11 @@
 
 void test_get_entry()
 {
-    std::string val = pika::get_config_entry("pika.localities", "42");
+    std::string val = pika::get_config_entry("pika.pu_step", "42");
     PIKA_TEST(!val.empty());
     PIKA_TEST_EQ(pika::detail::from_string<int>(val), 1);
 
-    val = pika::get_config_entry("pika.localities", 42);
+    val = pika::get_config_entry("pika.pu_step", 42);
     PIKA_TEST(!val.empty());
     PIKA_TEST_EQ(pika::detail::from_string<int>(val), 1);
 }

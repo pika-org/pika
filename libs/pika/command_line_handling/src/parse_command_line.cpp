@@ -91,71 +91,6 @@ namespace pika::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////
-    // Handle aliasing of command line options based on information stored
-    // in the ini-configuration
-    std::pair<std::string, std::string> handle_aliasing(
-        pika::detail::section const& ini, std::string const& option)
-    {
-        std::pair<std::string, std::string> result;
-
-        std::string opt(trim_whitespace(option));
-        if (opt.size() < 2 || opt[0] != '-') return result;
-
-        pika::detail::section const* sec = ini.get_section("pika.commandline.aliases");
-        if (nullptr == sec) return result;    // no alias mappings are defined
-
-        // we found shortcut option definitions, try to find mapping
-        std::string expand_to;
-        std::string::size_type start_at = 2;
-        bool long_option = false;
-        if (opt.size() > 2 && opt[1] != '-')
-        {
-            // short option with value: first two letters have to match
-            expand_to = trim_whitespace(sec->get_entry(opt.substr(0, start_at), ""));
-        }
-        else
-        {
-            // short option (no value) or long option
-            if (opt[1] == '-')
-            {
-                start_at = opt.find_last_of('=');
-                long_option = true;
-            }
-
-            if (start_at != std::string::npos)
-            {
-                expand_to = trim_whitespace(sec->get_entry(opt.substr(0, start_at), ""));
-            }
-            else { expand_to = trim_whitespace(sec->get_entry(opt, "")); }
-        }
-
-        if (expand_to.size() < 2 || expand_to.substr(0, 2) != "--")
-            return result;    // no sensible alias is defined for this option
-        expand_to.erase(0, 2);
-
-        std::string::size_type p = expand_to.find_first_of('=');
-        if (p != std::string::npos)
-        {
-            // the option alias defines its own value
-            std::string o(trim_whitespace(expand_to.substr(0, p)));
-            std::string v(trim_whitespace(expand_to.substr(p + 1)));
-            result = std::make_pair(o, v);
-        }
-        else if (start_at != std::string::npos && start_at < opt.size())
-        {
-            // extract value from original option
-            result = std::make_pair(expand_to, opt.substr(start_at + (long_option ? 1 : 0)));
-        }
-        else
-        {
-            // no value
-            result = std::make_pair(expand_to, std::string());
-        }
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////
     // Additional command line parser which interprets '@something' as an
     // option "options-file" with the value "something". Additionally we
     // resolve defined command line option aliases.
@@ -172,12 +107,7 @@ namespace pika::detail {
             // handle special syntax for configuration files @filename
             if ('@' == s[0]) return std::make_pair(std::string("pika:options-file"), s.substr(1));
 
-            // handle aliasing, if enabled
-            if (ini_.get_entry("pika.commandline.aliasing", "0") == "0" || ignore_aliases_)
-            {
-                return std::make_pair(std::string(), std::string());
-            }
-            return handle_aliasing(ini_, s);
+            return std::make_pair(std::string(), std::string());
         }
 
         pika::detail::section const& ini_;

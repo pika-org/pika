@@ -10,12 +10,9 @@ set(runtime_configuration_headers
     pika/runtime_configuration/init_ini_data.hpp
     pika/runtime_configuration/runtime_configuration.hpp
     pika/runtime_configuration/runtime_configuration_fwd.hpp
-    pika/runtime_configuration/runtime_mode.hpp
 )
 
-set(runtime_configuration_sources init_ini_data.cpp runtime_configuration.cpp
-                                  runtime_mode.cpp
-)
+set(runtime_configuration_sources init_ini_data.cpp runtime_configuration.cpp)
 
 include(pika_add_module)
 pika_add_module(
