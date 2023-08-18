@@ -83,6 +83,9 @@ namespace pika::detail {
         return &empty;
     }
 #endif
+    template <typename Base, std::size_t EmbeddedStorageSize,
+        std::size_t AlignmentSize = sizeof(void*)>
+    class copyable_sbo_storage;
 
     template <typename Base, std::size_t EmbeddedStorageSize,
         std::size_t AlignmentSize = sizeof(void*)>
@@ -90,10 +93,8 @@ namespace pika::detail {
     {
     protected:
         using base_type = Base;
-#if defined(PIKA_DETAIL_ENABLE_ANY_SENDER_SBO)
         static constexpr std::size_t embedded_storage_size = EmbeddedStorageSize;
         static constexpr std::size_t alignment_size = AlignmentSize;
-#endif
 
         // The union has two members:
         // - embedded_storage: Embedded storage size array used for types that
@@ -180,6 +181,35 @@ namespace pika::detail {
             }
         }
 
+        template <typename T>
+        void move_assign(copyable_sbo_storage<T, embedded_storage_size, alignment_size>&& other)
+        {
+            static_assert(std::is_base_of_v<base_type, T>);
+
+            PIKA_ASSERT(static_cast<void*>(&other) != static_cast<void*>(this));
+            PIKA_ASSERT(empty());
+
+            if (!other.empty())
+            {
+#if defined(PIKA_DETAIL_ENABLE_ANY_SENDER_SBO)
+                if (other.using_embedded_storage())
+                {
+                    auto p = reinterpret_cast<base_type*>(&embedded_storage);
+                    other.get().move_into(p);
+                    object = p;
+                }
+                else
+#endif
+                {
+                    heap_storage = other.heap_storage;
+                    other.heap_storage = nullptr;
+                    object = heap_storage;
+                }
+
+                other.reset_vtable();
+            }
+        }
+
     public:
         movable_sbo_storage() = default;
 
@@ -190,9 +220,33 @@ namespace pika::detail {
 
         movable_sbo_storage(movable_sbo_storage&& other) { move_assign(PIKA_MOVE(other)); }
 
+        template <typename T>
+        explicit movable_sbo_storage(
+            copyable_sbo_storage<T, embedded_storage_size, alignment_size>&& other)
+        {
+            static_assert(std::is_base_of_v<base_type, T>);
+
+            move_assign(PIKA_MOVE(other));
+        }
+
         movable_sbo_storage& operator=(movable_sbo_storage&& other)
         {
             if (&other != this)
+            {
+                if (!empty()) { release(); }
+
+                move_assign(PIKA_MOVE(other));
+            }
+            return *this;
+        }
+
+        template <typename T>
+        movable_sbo_storage&
+        operator=(copyable_sbo_storage<T, embedded_storage_size, alignment_size>&& other)
+        {
+            static_assert(std::is_base_of_v<base_type, T>);
+
+            if (static_cast<void*>(&other) != static_cast<void*>(this))
             {
                 if (!empty()) { release(); }
 
@@ -236,11 +290,13 @@ namespace pika::detail {
         }
     };
 
-    template <typename Base, std::size_t EmbeddedStorageSize,
-        std::size_t AlignmentSize = sizeof(void*)>
+    template <typename Base, std::size_t EmbeddedStorageSize, std::size_t AlignmentSize>
     class copyable_sbo_storage
       : public movable_sbo_storage<Base, EmbeddedStorageSize, AlignmentSize>
     {
+        template <typename Base2, std::size_t EmbeddedStorageSize2, std::size_t AlignmentSize2>
+        friend class movable_sbo_storage;
+
         using storage_base_type = movable_sbo_storage<Base, EmbeddedStorageSize, AlignmentSize>;
 
         using typename storage_base_type::base_type;
@@ -659,6 +715,9 @@ namespace pika::execution::experimental {
 #endif
 
     template <typename... Ts>
+    class any_sender;
+
+    template <typename... Ts>
     class unique_any_sender
 #if !defined(PIKA_HAVE_CXX20_TRIVIAL_VIRTUAL_DESTRUCTOR)
       : private detail::any_sender_static_empty_vtable_helper<Ts...>
@@ -697,6 +756,20 @@ namespace pika::execution::experimental {
         unique_any_sender(unique_any_sender const&) = delete;
         unique_any_sender& operator=(unique_any_sender&&) = default;
         unique_any_sender& operator=(unique_any_sender const&) = delete;
+
+        // cppcheck-suppress noExplicitConstructor
+        unique_any_sender(any_sender<Ts...>&& other)
+          : storage(PIKA_MOVE(other.storage))
+        {
+            other.reset();
+        }
+
+        unique_any_sender& operator=(any_sender<Ts...>&& other)
+        {
+            storage = PIKA_MOVE(other.storage);
+            other.reset();
+            return *this;
+        };
 
         template <template <typename...> class Tuple, template <typename...> class Variant>
         using value_types = Variant<Tuple<Ts...>>;
@@ -766,6 +839,8 @@ namespace pika::execution::experimental {
         using storage_type = pika::detail::copyable_sbo_storage<base_type, 4 * sizeof(void*)>;
 
         storage_type storage{};
+
+        friend unique_any_sender<Ts...>;
 
     public:
         using is_sender = void;

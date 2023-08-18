@@ -714,6 +714,85 @@ void test_const_reference()
     PIKA_TEST(true);
 }
 
+template <template <typename...> typename Sender, typename... Ts, typename F>
+void test_any_sender_to_unique_any_sender(F&& f, Ts&&... ts)
+{
+    static_assert(std::is_copy_constructible_v<Sender<Ts...>>,
+        "This test requires the sender to be copy constructible.");
+
+    Sender<std::decay_t<Ts>...> s{std::forward<Ts>(ts)...};
+
+    ex::any_sender<std::decay_t<Ts>...> as1{s};
+    ex::any_sender<std::decay_t<Ts>...> as2{s};
+
+    ex::unique_any_sender<std::decay_t<Ts>...> as3{as1};
+    ex::unique_any_sender<std::decay_t<Ts>...> as4;
+    as4 = as2;
+
+    ex::unique_any_sender<std::decay_t<Ts>...> as5{std::move(as1)};
+    ex::unique_any_sender<std::decay_t<Ts>...> as6;
+    as6 = std::move(as2);
+
+    PIKA_TEST(as1.empty());
+    PIKA_TEST(as2.empty());
+    PIKA_TEST(as3);
+    PIKA_TEST(as4);
+    PIKA_TEST(as5);
+    PIKA_TEST(as6);
+
+    // We expect set_value to be called here for as3 to as6
+    auto check_set_value = [&](auto&& s) {
+        std::atomic<bool> set_value_called = false;
+        auto os =
+            ex::connect(std::forward<decltype(s)>(s), callback_receiver<F>{f, set_value_called});
+        ex::start(os);
+        PIKA_TEST(set_value_called);
+        // NOLINTNEXTLINE(bugprone-use-after-move)
+        PIKA_TEST(s.empty());
+        PIKA_TEST(!s);
+    };
+
+    check_set_value(std::move(as3));
+    check_set_value(std::move(as4));
+    check_set_value(std::move(as5));
+    check_set_value(std::move(as6));
+
+    // All senders have been moved now so we expect exceptions here
+    auto check_exception = [&](auto&& s) {
+        std::atomic<bool> set_value_called{false};
+        try
+        {
+            auto os = ex::connect(
+                // NOLINTNEXTLINE(bugprone-use-after-move)
+                std::forward<decltype(s)>(s), callback_receiver<F>{f, set_value_called});
+            PIKA_TEST(false);
+            ex::start(os);
+        }
+        catch (pika::exception const& e)
+        {
+            PIKA_TEST_EQ(e.get_error(), pika::error::bad_function_call);
+        }
+        catch (...)
+        {
+            PIKA_TEST(false);
+        }
+        PIKA_TEST(!set_value_called);
+    };
+
+    // NOLINTNEXTLINE(bugprone-use-after-move)
+    check_exception(std::move(as1));
+    // NOLINTNEXTLINE(bugprone-use-after-move)
+    check_exception(std::move(as2));
+    // NOLINTNEXTLINE(bugprone-use-after-move)
+    check_exception(std::move(as3));
+    // NOLINTNEXTLINE(bugprone-use-after-move)
+    check_exception(std::move(as4));
+    // NOLINTNEXTLINE(bugprone-use-after-move)
+    check_exception(std::move(as5));
+    // NOLINTNEXTLINE(bugprone-use-after-move)
+    check_exception(std::move(as6));
+}
+
 int main()
 {
     // We can only wrap copyable senders in any_sender
@@ -811,6 +890,25 @@ int main()
 
     // Test using {unique_,}any_sender with a just sender of a const reference
     test_const_reference();
+
+    // Test construction of unique_any_sender from any_sender
+    test_any_sender_to_unique_any_sender<sender>([] {});
+    test_any_sender_to_unique_any_sender<sender, int>([](int x) { PIKA_TEST_EQ(x, 42); }, 42);
+    test_any_sender_to_unique_any_sender<sender, int, double>(
+        [](int x, double y) {
+            PIKA_TEST_EQ(x, 42);
+            PIKA_TEST_EQ(y, 3.14);
+        },
+        42, 3.14);
+
+    test_any_sender_to_unique_any_sender<large_sender>([] {});
+    test_any_sender_to_unique_any_sender<large_sender, int>([](int x) { PIKA_TEST_EQ(x, 42); }, 42);
+    test_any_sender_to_unique_any_sender<large_sender, int, double>(
+        [](int x, double y) {
+            PIKA_TEST_EQ(x, 42);
+            PIKA_TEST_EQ(y, 3.14);
+        },
+        42, 3.14);
 
     return 0;
 }
