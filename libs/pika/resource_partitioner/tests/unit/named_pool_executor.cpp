@@ -5,11 +5,10 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 // Simple test verifying basic resource partitioner
-// pool and executor
+// pool and scheduler
 
 #include <pika/assert.hpp>
 #include <pika/execution.hpp>
-#include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/resource_partitioner.hpp>
 #include <pika/testing.hpp>
@@ -20,6 +19,9 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+namespace ex = pika::execution::experimental;
+namespace tt = pika::this_thread::experimental;
 
 std::size_t const max_threads =
     (std::min)(std::size_t(4), std::size_t(pika::threads::detail::hardware_concurrency()));
@@ -53,53 +55,58 @@ int pika_main()
     }
 
     // Make sure default construction works
-    [[maybe_unused]] pika::execution::parallel_executor exec_default;
+    [[maybe_unused]] ex::thread_pool_scheduler sched_default;
 
-    // setup executors for different task priorities on the pools
+    // setup schedulers for different task priorities on the pools
     // segfaults or exceptions in any of the following will cause
     // the test to fail
-    pika::execution::parallel_executor exec_0_hp(
-        &pika::resource::get_thread_pool("default"), pika::execution::thread_priority::high);
+    auto sched_0_hp =
+        ex::with_priority(ex::thread_pool_scheduler{&pika::resource::get_thread_pool("default")},
+            pika::execution::thread_priority::high);
 
-    pika::execution::parallel_executor exec_0(
-        &pika::resource::get_thread_pool("default"), pika::execution::thread_priority::default_);
+    auto sched_0 =
+        ex::with_priority(ex::thread_pool_scheduler{&pika::resource::get_thread_pool("default")},
+            pika::execution::thread_priority::default_);
 
-    std::vector<pika::future<void>> lotsa_futures;
+    std::vector<ex::unique_any_sender<>> lotsa_senders;
 
-    // use executors to schedule work on pools
-    lotsa_futures.push_back(pika::async(exec_0_hp, &dummy_task, 3, "HP default"));
+    // use schedulers to schedule work on pools
+    lotsa_senders.push_back(ex::transfer_just(sched_0_hp, 3, "HP default") | ex::then(dummy_task));
+    lotsa_senders.push_back(ex::transfer_just(sched_0, 3, "Normal default") | ex::then(dummy_task));
 
-    lotsa_futures.push_back(pika::async(exec_0, &dummy_task, 3, "Normal default"));
-
-    std::vector<pika::execution::parallel_executor> execs;
-    std::vector<pika::execution::parallel_executor> execs_hp;
+    std::vector<ex::thread_pool_scheduler> scheds;
+    std::vector<ex::thread_pool_scheduler> scheds_hp;
     //
     for (std::size_t i = 0; i < max_threads; ++i)
     {
         std::string pool_name = "pool-" + std::to_string(i);
-        execs.push_back(
-            pika::execution::parallel_executor(&pika::resource::get_thread_pool(pool_name),
-                pika::execution::thread_priority::default_));
-        execs_hp.push_back(pika::execution::parallel_executor(
-            &pika::resource::get_thread_pool(pool_name), pika::execution::thread_priority::high));
+        scheds.push_back(ex::with_priority(
+            ex::thread_pool_scheduler{&pika::resource::get_thread_pool(pool_name)},
+            pika::execution::thread_priority::default_));
+        scheds_hp.push_back(ex::with_priority(
+            ex::thread_pool_scheduler{&pika::resource::get_thread_pool(pool_name)},
+            pika::execution::thread_priority::high));
     }
 
     for (std::size_t i = 0; i < max_threads; ++i)
     {
         std::string pool_name = "pool-" + std::to_string(i);
-        lotsa_futures.push_back(pika::async(execs[i], &dummy_task, 3, pool_name + " normal"));
-        lotsa_futures.push_back(pika::async(execs_hp[i], &dummy_task, 3, pool_name + " HP"));
+        lotsa_senders.push_back(
+            ex::transfer_just(scheds[i], 3, pool_name + "normal") | ex::then(dummy_task));
+        lotsa_senders.push_back(
+            ex::transfer_just(scheds_hp[i], 3, pool_name + " HP") | ex::then(dummy_task));
     }
 
-    // check that the default executor still works
-    pika::execution::parallel_executor large_stack_executor(
-        pika::execution::thread_stacksize::large);
+    // check that the default scheduler still works
+    auto large_stack_scheduler =
+        ex::with_stacksize(ex::thread_pool_scheduler{}, pika::execution::thread_stacksize::large);
 
-    lotsa_futures.push_back(
-        pika::async(large_stack_executor, &dummy_task, 3, "true default + large stack"));
+    lotsa_senders.push_back(
+        ex::transfer_just(large_stack_scheduler, 3, "true default + large stack") |
+        ex::then(dummy_task));
 
     // just wait until everything is done
-    pika::when_all(lotsa_futures).get();
+    tt::sync_wait(ex::when_all_vector(std::move(lotsa_senders)));
 
     return pika::finalize();
 }

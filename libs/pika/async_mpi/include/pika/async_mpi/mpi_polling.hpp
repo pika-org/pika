@@ -9,7 +9,6 @@
 #include <pika/config.hpp>
 #include <pika/async_mpi/mpi_exception.hpp>
 #include <pika/functional/unique_function.hpp>
-#include <pika/futures/future.hpp>
 #include <pika/modules/concurrency.hpp>
 #include <pika/modules/execution_base.hpp>
 #include <pika/modules/memory.hpp>

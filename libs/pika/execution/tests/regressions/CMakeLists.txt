@@ -4,13 +4,7 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(tests bulk_then_execute_3182 future_then_async_executor
-          split_continuation_clear
-)
-
-if(PIKA_WITH_DATAPAR)
-  set(tests ${tests} lambda_arguments_2403 lambda_return_type_2402)
-endif()
+set(tests split_continuation_clear)
 
 foreach(test ${tests})
   set(sources ${test}.cpp)

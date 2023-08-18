@@ -11,12 +11,9 @@
 #include <pika/command_line_handling/command_line_handling.hpp>
 #include <pika/coroutines/detail/context_impl.hpp>
 #include <pika/detail/filesystem.hpp>
-#include <pika/execution/detail/execution_parameter_callbacks.hpp>
 #include <pika/execution_base/detail/spinlock_deadlock_detection.hpp>
-#include <pika/executors/exception_list.hpp>
 #include <pika/functional/bind_front.hpp>
 #include <pika/functional/function.hpp>
-#include <pika/futures/detail/future_data.hpp>
 #include <pika/init_runtime/detail/init_logging.hpp>
 #include <pika/init_runtime/init_runtime.hpp>
 #include <pika/lock_registration/detail/register_locks.hpp>
@@ -37,6 +34,7 @@
 #include <pika/string_util/classification.hpp>
 #include <pika/string_util/split.hpp>
 #include <pika/threading/thread.hpp>
+#include <pika/threading_base/detail/get_default_pool.hpp>
 #include <pika/type_support/pack.hpp>
 #include <pika/type_support/unused.hpp>
 #include <pika/util/get_entry_as.hpp>
@@ -400,9 +398,6 @@ namespace pika {
             pika::detail::set_pre_exception_handler(&pika::detail::pre_exception_handler);
             pika::set_thread_termination_handler(
                 [](std::exception_ptr const& e) { report_error(e); });
-            pika::lcos::detail::set_run_on_completed_error_handler([](std::exception_ptr const& e) {
-                pika::detail::report_exception_and_terminate(e);
-            });
             pika::detail::set_get_full_build_string(&pika::full_build_string);
 #if defined(PIKA_HAVE_VERIFY_LOCKS)
             pika::util::set_registered_locks_error_handler(
@@ -416,9 +411,6 @@ namespace pika {
             }
 
             pika::threads::detail::set_get_default_pool(&pika::detail::get_default_pool);
-            pika::parallel::execution::detail::set_get_pu_mask(&pika::detail::get_pu_mask);
-            pika::parallel::execution::detail::set_get_os_thread_count(
-                []() { return pika::get_os_thread_count(); });
 
 #if defined(__bgq__) || defined(__bgqion__)
             unsetenv("LANG");

@@ -8,8 +8,6 @@
 #include <pika/functional/bind.hpp>
 #include <pika/functional/bind_front.hpp>
 #include <pika/functional/unique_function.hpp>
-#include <pika/futures/detail/future_data.hpp>
-#include <pika/futures/future.hpp>
 #include <pika/lock_registration/detail/register_locks.hpp>
 #include <pika/memory/intrusive_ptr.hpp>
 #include <pika/modules/errors.hpp>
@@ -235,83 +233,6 @@ namespace pika {
     std::size_t thread::set_thread_data(std::size_t data)
     {
         return threads::detail::set_thread_data(native_handle(), data);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    namespace detail {
-        struct thread_task_base : lcos::detail::future_data<void>
-        {
-        private:
-            using future_base_type = pika::intrusive_ptr<thread_task_base>;
-
-        protected:
-            using base_type = lcos::detail::future_data<void>;
-            using result_type = base_type::result_type;
-
-            using base_type::mtx_;
-
-        public:
-            explicit thread_task_base(threads::detail::thread_id_ref_type const& id)
-            {
-                if (threads::detail::add_thread_exit_callback(id.noref(),
-                        util::detail::bind_front(
-                            &thread_task_base::thread_exit_function, future_base_type(this))))
-                {
-                    id_ = id;
-                }
-            }
-
-            bool valid() const noexcept { return id_ != threads::detail::invalid_thread_id; }
-
-            // cancellation support
-            bool cancelable() const noexcept override { return true; }
-
-            void cancel() override
-            {
-                std::lock_guard l(mtx_);
-                if (!this->is_ready())
-                {
-                    threads::detail::interrupt_thread(id_.noref());
-                    this->set_error(pika::error::thread_cancelled, "thread_task_base::cancel",
-                        "future has been canceled");
-                    id_ = threads::detail::invalid_thread_id;
-                }
-            }
-
-        protected:
-            void thread_exit_function()
-            {
-                // might have been finished or canceled
-                std::lock_guard l(mtx_);
-                if (!this->is_ready()) this->set_data(result_type());
-                id_ = threads::detail::invalid_thread_id;
-            }
-
-        private:
-            threads::detail::thread_id_ref_type id_;
-        };
-    }    // namespace detail
-
-    pika::future<void> thread::get_future(error_code& ec)
-    {
-        if (id_ == threads::detail::invalid_thread_id)
-        {
-            PIKA_THROWS_IF(ec, pika::error::null_thread_id, "thread::get_future",
-                "null thread id encountered");
-            return pika::future<void>();
-        }
-
-        detail::thread_task_base* p = new detail::thread_task_base(id_);
-        pika::intrusive_ptr<lcos::detail::future_data<void>> base(p);
-        if (!p->valid())
-        {
-            PIKA_THROWS_IF(ec, pika::error::thread_resource_error, "thread::get_future",
-                "Could not create future as thread has been terminated.");
-            return pika::future<void>();
-        }
-
-        using traits::future_access;
-        return future_access<pika::future<void>>::create(PIKA_MOVE(base));
     }
 
     ///////////////////////////////////////////////////////////////////////////

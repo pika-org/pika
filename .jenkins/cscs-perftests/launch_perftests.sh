@@ -12,7 +12,7 @@ pika_targets=("future_overhead_report_test")
 pika_test_options=(
     "--pika:ini=pika.thread_queue.init_threads_count=100 \
     --pika:queuing=local-priority --pika:threads=4 --test-all \
-    --repetitions=100 --futures=500000")
+    --repetitions=100 --tasks=500000")
 
 # Build binaries for performance tests
 ${perftests_dir}/driver.py -v -l $logfile build -b release -o build \

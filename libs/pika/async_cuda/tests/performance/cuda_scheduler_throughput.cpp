@@ -61,8 +61,6 @@ struct sMatrixSize
 template <typename T>
 void matrixMultiply(sMatrixSize& matrix_size, std::size_t device, std::size_t iterations)
 {
-    using pika::execution::par;
-
     // Allocate host memory for matrices A and B
     unsigned int size_A = matrix_size.uiWA * matrix_size.uiHA;
     unsigned int size_B = matrix_size.uiWB * matrix_size.uiHB;

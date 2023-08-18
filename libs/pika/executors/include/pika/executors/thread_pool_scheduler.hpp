@@ -8,15 +8,16 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+#include <pika/async_base/scheduling_properties.hpp>
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/errors/try_catch_exception_ptr.hpp>
 #include <pika/execution/algorithms/execute.hpp>
 #include <pika/execution/algorithms/schedule_from.hpp>
-#include <pika/execution/executors/execution_parameters.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
 #include <pika/threading_base/annotated_function.hpp>
 #include <pika/threading_base/register_thread.hpp>
+#include <pika/threading_base/scoped_annotation.hpp>
 #include <pika/threading_base/thread_description.hpp>
 
 #include <cstddef>
