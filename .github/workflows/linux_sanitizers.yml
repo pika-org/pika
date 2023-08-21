@@ -23,7 +23,7 @@ jobs:
     name: github/linux/sanitizers/fast
     if: ${{ github.event_name == 'merge_group' }}
     runs-on: ubuntu-latest
-    container: pikaorg/pika-ci-base:18
+    container: pikaorg/pika-ci-base:19
 
     steps:
     - uses: actions/checkout@v3

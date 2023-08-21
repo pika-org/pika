@@ -22,7 +22,7 @@ jobs:
   build:
     name: github/linux/sanitizers/leak
     runs-on: ubuntu-latest
-    container: pikaorg/pika-ci-base:18
+    container: pikaorg/pika-ci-base:19
 
     steps:
     - uses: actions/checkout@v3
