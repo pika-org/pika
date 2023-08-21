@@ -38,8 +38,8 @@ namespace pika::execution {
 
         /// The type of the associated executor parameters object which is
         /// associated with this execution policy
-        typedef parallel::execution::extract_executor_parameters<executor_type>::type
-            executor_parameters_type;
+        using executor_parameters_type =
+            parallel::execution::extract_executor_parameters<executor_type>::type;
 
         /// The category of the execution agents created by this execution
         /// policy.
@@ -96,8 +96,8 @@ namespace pika::execution {
             static_assert(pika::traits::is_executor_any<Executor>::value,
                 "pika::traits::is_executor_any<Executor>::value");
 
-            typedef typename parallel::execution::rebind_executor<simd_task_policy, Executor,
-                executor_parameters_type>::type rebound_type;
+            using rebound_type = typename parallel::execution::rebind_executor<simd_task_policy,
+                Executor, executor_parameters_type>::type;
             return rebound_type(PIKA_FORWARD(Executor, exec), parameters());
         }
 
@@ -123,8 +123,8 @@ namespace pika::execution {
             ParametersType>::type
         with(Parameters&&... params) const
         {
-            typedef typename parallel::execution::rebind_executor<simd_task_policy, executor_type,
-                ParametersType>::type rebound_type;
+            using rebound_type = typename parallel::execution::rebind_executor<simd_task_policy,
+                executor_type, ParametersType>::type;
             return rebound_type(executor(),
                 parallel::execution::join_executor_parameters(PIKA_FORWARD(Parameters, params)...));
         }
@@ -170,8 +170,8 @@ namespace pika::execution {
 
         /// The category of the execution agents created by this execution
         /// policy.
-        typedef typename pika::traits::executor_execution_category<executor_type>::type
-            execution_category;
+        using execution_category =
+            typename pika::traits::executor_execution_category<executor_type>::type;
 
         /// Rebind the type of executor used by this execution policy. The
         /// execution category of Executor shall not be weaker than that of
@@ -220,8 +220,9 @@ namespace pika::execution {
             static_assert(pika::traits::is_executor_any<Executor_>::value,
                 "pika::traits::is_executor_any<Executor_>::value");
 
-            typedef typename parallel::execution::rebind_executor<simd_task_policy_shim, Executor_,
-                executor_parameters_type>::type rebound_type;
+            using rebound_type =
+                typename parallel::execution::rebind_executor<simd_task_policy_shim, Executor_,
+                    executor_parameters_type>::type;
             return rebound_type(PIKA_FORWARD(Executor_, exec), params_);
         }
 
@@ -247,8 +248,9 @@ namespace pika::execution {
             ParametersType>::type
         with(Parameters_&&... params) const
         {
-            typedef typename parallel::execution::rebind_executor<simd_task_policy_shim,
-                executor_type, ParametersType>::type rebound_type;
+            using rebound_type =
+                typename parallel::execution::rebind_executor<simd_task_policy_shim, executor_type,
+                    ParametersType>::type;
             return rebound_type(exec_,
                 parallel::execution::join_executor_parameters(
                     PIKA_FORWARD(Parameters_, params)...));
@@ -297,8 +299,8 @@ namespace pika::execution {
 
         /// The type of the associated executor parameters object which is
         /// associated with this execution policy
-        typedef parallel::execution::extract_executor_parameters<executor_type>::type
-            executor_parameters_type;
+        using executor_parameters_type =
+            parallel::execution::extract_executor_parameters<executor_type>::type;
 
         /// The category of the execution agents created by this execution
         /// policy.
@@ -355,8 +357,8 @@ namespace pika::execution {
             static_assert(pika::traits::is_executor_any<Executor>::value,
                 "pika::traits::is_executor_any<Executor>::value");
 
-            typedef typename parallel::execution::rebind_executor<simd_policy, Executor,
-                executor_parameters_type>::type rebound_type;
+            using rebound_type = typename parallel::execution::rebind_executor<simd_policy,
+                Executor, executor_parameters_type>::type;
             return rebound_type(PIKA_FORWARD(Executor, exec), parameters());
         }
 
@@ -382,8 +384,8 @@ namespace pika::execution {
             ParametersType>::type
         with(Parameters&&... params) const
         {
-            typedef typename parallel::execution::rebind_executor<simd_policy, executor_type,
-                ParametersType>::type rebound_type;
+            using rebound_type = typename parallel::execution::rebind_executor<simd_policy,
+                executor_type, ParametersType>::type;
             return rebound_type(executor(),
                 parallel::execution::join_executor_parameters(PIKA_FORWARD(Parameters, params)...));
         }
@@ -426,8 +428,8 @@ namespace pika::execution {
 
         /// The category of the execution agents created by this execution
         /// policy.
-        typedef typename pika::traits::executor_execution_category<executor_type>::type
-            execution_category;
+        using execution_category =
+            typename pika::traits::executor_execution_category<executor_type>::type;
 
         /// Rebind the type of executor used by this execution policy. The
         /// execution category of Executor shall not be weaker than that of
@@ -479,8 +481,8 @@ namespace pika::execution {
             static_assert(pika::traits::is_executor_any<Executor_>::value,
                 "pika::traits::is_executor_any<Executor_>::value");
 
-            typedef typename parallel::execution::rebind_executor<simd_policy_shim, Executor_,
-                executor_parameters_type>::type rebound_type;
+            using rebound_type = typename parallel::execution::rebind_executor<simd_policy_shim,
+                Executor_, executor_parameters_type>::type;
             return rebound_type(PIKA_FORWARD(Executor_, exec), params_);
         }
 
@@ -506,8 +508,8 @@ namespace pika::execution {
             ParametersType>::type
         with(Parameters_&&... params) const
         {
-            typedef typename parallel::execution::rebind_executor<simd_policy_shim, executor_type,
-                ParametersType>::type rebound_type;
+            using rebound_type = typename parallel::execution::rebind_executor<simd_policy_shim,
+                executor_type, ParametersType>::type;
             return rebound_type(exec_,
                 parallel::execution::join_executor_parameters(
                     PIKA_FORWARD(Parameters_, params)...));
@@ -560,8 +562,8 @@ namespace pika::execution {
 
         /// The type of the associated executor parameters object which is
         /// associated with this execution policy
-        typedef parallel::execution::extract_executor_parameters<executor_type>::type
-            executor_parameters_type;
+        using executor_parameters_type =
+            parallel::execution::extract_executor_parameters<executor_type>::type;
 
         /// The category of the execution agents created by this execution
         /// policy.
@@ -617,8 +619,8 @@ namespace pika::execution {
             static_assert(pika::traits::is_executor_any<Executor>::value,
                 "pika::traits::is_executor_any<Executor>::value");
 
-            typedef typename parallel::execution::rebind_executor<par_simd_task_policy, Executor,
-                executor_parameters_type>::type rebound_type;
+            using rebound_type = typename parallel::execution::rebind_executor<par_simd_task_policy,
+                Executor, executor_parameters_type>::type;
             return rebound_type(PIKA_FORWARD(Executor, exec), parameters());
         }
 
@@ -644,8 +646,8 @@ namespace pika::execution {
             ParametersType>::type
         with(Parameters&&... params) const
         {
-            typedef typename parallel::execution::rebind_executor<par_simd_task_policy,
-                executor_type, ParametersType>::type rebound_type;
+            using rebound_type = typename parallel::execution::rebind_executor<par_simd_task_policy,
+                executor_type, ParametersType>::type;
             return rebound_type(executor(),
                 parallel::execution::join_executor_parameters(PIKA_FORWARD(Parameters, params)...));
         }
@@ -680,8 +682,8 @@ namespace pika::execution {
 
         /// The type of the associated executor parameters object which is
         /// associated with this execution policy
-        typedef parallel::execution::extract_executor_parameters<executor_type>::type
-            executor_parameters_type;
+        using executor_parameters_type =
+            parallel::execution::extract_executor_parameters<executor_type>::type;
 
         /// The category of the execution agents created by this execution
         /// policy.
@@ -736,8 +738,8 @@ namespace pika::execution {
             static_assert(pika::traits::is_executor_any<Executor>::value,
                 "pika::traits::is_executor_any<Executor>::value");
 
-            typedef typename parallel::execution::rebind_executor<par_simd_policy, Executor,
-                executor_parameters_type>::type rebound_type;
+            using rebound_type = typename parallel::execution::rebind_executor<par_simd_policy,
+                Executor, executor_parameters_type>::type;
             return rebound_type(PIKA_FORWARD(Executor, exec), parameters());
         }
 
@@ -762,8 +764,8 @@ namespace pika::execution {
             ParametersType>::type
         with(Parameters&&... params) const
         {
-            typedef typename parallel::execution::rebind_executor<par_simd_policy, executor_type,
-                ParametersType>::type rebound_type;
+            using rebound_type = typename parallel::execution::rebind_executor<par_simd_policy,
+                executor_type, ParametersType>::type;
             return rebound_type(executor(),
                 parallel::execution::join_executor_parameters(PIKA_FORWARD(Parameters, params)...));
         }
@@ -805,8 +807,8 @@ namespace pika::execution {
 
         /// The category of the execution agents created by this execution
         /// policy.
-        typedef typename pika::traits::executor_execution_category<executor_type>::type
-            execution_category;
+        using execution_category =
+            typename pika::traits::executor_execution_category<executor_type>::type;
 
         /// Rebind the type of executor used by this execution policy. The
         /// execution category of Executor shall not be weaker than that of
@@ -858,8 +860,8 @@ namespace pika::execution {
             static_assert(pika::traits::is_executor_any<Executor_>::value,
                 "pika::traits::is_executor_any<Executor_>::value");
 
-            typedef typename parallel::execution::rebind_executor<par_simd_policy_shim, Executor_,
-                executor_parameters_type>::type rebound_type;
+            using rebound_type = typename parallel::execution::rebind_executor<par_simd_policy_shim,
+                Executor_, executor_parameters_type>::type;
             return rebound_type(PIKA_FORWARD(Executor_, exec), params_);
         }
 
@@ -884,8 +886,8 @@ namespace pika::execution {
             ParametersType>::type
         with(Parameters_&&... params) const
         {
-            typedef typename parallel::execution::rebind_executor<par_simd_policy_shim,
-                executor_type, ParametersType>::type rebound_type;
+            using rebound_type = typename parallel::execution::rebind_executor<par_simd_policy_shim,
+                executor_type, ParametersType>::type;
             return rebound_type(exec_,
                 parallel::execution::join_executor_parameters(
                     PIKA_FORWARD(Parameters_, params)...));
@@ -940,8 +942,8 @@ namespace pika::execution {
 
         /// The category of the execution agents created by this execution
         /// policy.
-        typedef typename pika::traits::executor_execution_category<executor_type>::type
-            execution_category;
+        using execution_category =
+            typename pika::traits::executor_execution_category<executor_type>::type;
 
         /// Rebind the type of executor used by this execution policy. The
         /// execution category of Executor shall not be weaker than that of
@@ -990,8 +992,9 @@ namespace pika::execution {
             static_assert(pika::traits::is_executor_any<Executor_>::value,
                 "pika::traits::is_executor_any<Executor_>::value");
 
-            typedef typename parallel::execution::rebind_executor<par_simd_task_policy_shim,
-                Executor_, executor_parameters_type>::type rebound_type;
+            using rebound_type =
+                typename parallel::execution::rebind_executor<par_simd_task_policy_shim, Executor_,
+                    executor_parameters_type>::type;
             return rebound_type(PIKA_FORWARD(Executor_, exec), params_);
         }
 
@@ -1017,8 +1020,9 @@ namespace pika::execution {
             ParametersType>::type
         with(Parameters_&&... params) const
         {
-            typedef typename parallel::execution::rebind_executor<par_simd_task_policy_shim,
-                executor_type, ParametersType>::type rebound_type;
+            using rebound_type =
+                typename parallel::execution::rebind_executor<par_simd_task_policy_shim,
+                    executor_type, ParametersType>::type;
             return rebound_type(exec_,
                 parallel::execution::join_executor_parameters(
                     PIKA_FORWARD(Parameters_, params)...));

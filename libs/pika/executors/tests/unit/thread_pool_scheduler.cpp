@@ -1847,7 +1847,7 @@ void test_split_tuple()
 
             try
             {
-                tt::sync_wait(std::move(s));
+                tt::sync_wait(std::forward<decltype(s)>(s));
                 PIKA_TEST(false);
             }
             catch (std::runtime_error const& e)
