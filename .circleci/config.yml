@@ -605,7 +605,6 @@ jobs:
           when: always
           command: |
             cd build
-            ulimit -c unlimited
             ctest \
               -j2 \
               --timeout 500 \
