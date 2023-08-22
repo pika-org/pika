@@ -81,7 +81,7 @@ namespace pika::mpi::experimental {
             execution::thread_priority p = use_priority_boost(mode) ?
                 execution::thread_priority::boost :
                 execution::thread_priority::normal;
-            if (inline_req)
+            if (inline_req || !pool_exists())
             {
                 return dispatch_mpi_sender<Sender, F>{PIKA_MOVE(sender), PIKA_FORWARD(F, f), s} |
                     let_value([=](MPI_Request request) -> unique_any_sender<> {
@@ -92,13 +92,20 @@ namespace pika::mpi::experimental {
                             else
                                 return just(request) | trigger_mpi(mode);
                         }
-                        else
-                        {
+                        else if (pool_exists())
+                        {    // do not transfer if there is no pool
                             if (request == MPI_REQUEST_NULL)
                                 return transfer_just(default_pool_scheduler(p));
                             else
                                 return transfer_just(default_pool_scheduler(p), request) |
                                     trigger_mpi(mode);
+                        }
+                        else
+                        {
+                            if (request == MPI_REQUEST_NULL)
+                                return just();
+                            else
+                                return just(request) | trigger_mpi(mode);
                         }
                     });
             }

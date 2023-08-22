@@ -136,7 +136,7 @@ namespace pika::mpi::experimental::detail {
                             case handler_mode::yield_while:
                             {
                                 pika::util::yield_while(
-                                    [&request]() { return !detail::poll_request(request); });
+                                    [request]() { return !detail::poll_request(request); });
 #ifdef PIKA_HAVE_APEX
                                 apex::scoped_timer apex_invoke("pika::mpi::trigger");
 #endif

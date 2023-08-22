@@ -15,6 +15,7 @@
 #include <pika/modules/errors.hpp>
 #include <pika/modules/threading_base.hpp>
 #include <pika/mpi_base/mpi_environment.hpp>
+#include <pika/resource_partitioner/detail/partitioner.hpp>
 #include <pika/string_util/case_conv.hpp>
 #include <pika/synchronization/condition_variable.hpp>
 #include <pika/synchronization/mutex.hpp>
@@ -54,7 +55,7 @@ namespace pika::mpi::experimental {
         /// thread trying to send more data
         void init_throttling_default();
         std::size_t get_polling_default();
-        //std::size_t get_completion_mode_default();
+        std::size_t get_completion_mode_default();
 
         // -----------------------------------------------------------------
         /// Holds an MPI_Request and a callback. The callback is intended to be
@@ -106,7 +107,6 @@ namespace pika::mpi::experimental {
 
         PIKA_EXPORT const char* stream_name(stream_type s)
         {
-            using namespace pika::mpi::experimental;
             switch (s)
             {
             case stream_type::automatic: return "auto"; break;
@@ -166,7 +166,9 @@ namespace pika::mpi::experimental {
 
         struct initializer
         {
-            initializer() { init_throttling_default(); }
+            initializer()
+            { /*init_throttling_default();*/
+            }
         };
 
         /// a single instance of all the mpi variables initialized once at startup
@@ -275,7 +277,7 @@ namespace pika::mpi::experimental {
         {
             std::uint32_t val =
                 pika::detail::get_env_var_as<std::uint32_t>("PIKA_MPI_POLLING_SIZE", 8);
-            PIKA_DETAIL_DP(mpi_debug<5>, debug(str<>("Poll size"), dec<3>(val)));
+            PIKA_DETAIL_DP(mpi_debug<2>, debug(str<>("Poll size"), dec<3>(val)));
             mpi_data_.max_polling_requests = val;
             return val;
         }
@@ -371,7 +373,7 @@ namespace pika::mpi::experimental {
         {
             int flag;
             MPI_Test(&req, &flag, MPI_STATUS_IGNORE);
-            if (flag) { PIKA_DETAIL_DP(mpi_debug<5>, debug(str<>("poll MPI_Test ok"), ptr(req))); }
+            if (flag) { PIKA_DETAIL_DP(mpi_debug<5>, debug(str<>("poll MPI_Test ok"), req)); }
             return flag;
         }
 
@@ -410,12 +412,10 @@ namespace pika::mpi::experimental {
 
         // -------------------------------------------------------------
         // Background progress function for MPI async operations
-        // Checks for completed MPI_Requests and sets mpi::experimental::future
-        // ready when found
-        pika::threads::detail::polling_status poll()
+        // Checks for completed MPI_Requests and readies sender when complete
+        pika::threads::detail::polling_status poll_multithreaded()
         {
             using pika::threads::detail::polling_status;
-            using namespace pika::mpi::experimental::detail;
 
             // If a thread is already polling and found a completion,
             // it first places it on the ready requests queue and any thread
@@ -588,6 +588,9 @@ namespace pika::mpi::experimental {
         }
 
         // -------------------------------------------------------------
+        pika::threads::detail::polling_status poll() { return poll_multithreaded(); }
+
+        // -------------------------------------------------------------
         void register_polling(pika::threads::detail::thread_pool_base& pool)
         {
 #if defined(PIKA_DEBUG)
@@ -595,13 +598,12 @@ namespace pika::mpi::experimental {
 #endif
             if (detail::mpi_data_.rank_ == 0)
             {
-                PIKA_DETAIL_DP(detail::mpi_debug<2>,
+                PIKA_DETAIL_DP(detail::mpi_debug<1>,
                     debug(str<>("register_polling"), pool.get_pool_name(), "mode",
-                        mpi::experimental::get_completion_mode()));
+                        get_completion_mode()));
             }
             auto* sched = pool.get_scheduler();
-            sched->set_mpi_polling_functions(
-                &pika::mpi::experimental::detail::poll, &get_work_count);
+            sched->set_mpi_polling_functions(&detail::poll, &get_work_count);
         }
 
         // -------------------------------------------------------------
@@ -609,8 +611,7 @@ namespace pika::mpi::experimental {
         {
 #if defined(PIKA_DEBUG)
             {
-                std::unique_lock<pika::mpi::experimental::detail::mutex_type> lk(
-                    detail::mpi_data_.polling_vector_mtx_);
+                std::unique_lock<detail::mutex_type> lk(detail::mpi_data_.polling_vector_mtx_);
                 bool request_queue_empty =
                     detail::mpi_data_.request_callback_queue_.size_approx() == 0;
                 bool requests_empty = detail::mpi_data_.all_in_flight_ == 0;
@@ -623,7 +624,7 @@ namespace pika::mpi::experimental {
                     "sure MPI request polling is not disabled too early.");
             }
 #endif
-            PIKA_DETAIL_DP(mpi_debug<5>, debug(str<>("disable polling")));
+            PIKA_DETAIL_DP(mpi_debug<1>, debug(str<>("disable polling")));
             auto* sched = pool.get_scheduler();
             sched->clear_mpi_polling_function();
         }
@@ -676,8 +677,7 @@ namespace pika::mpi::experimental {
     std::size_t get_completion_mode() { return detail::task_completion_flags_; }
 
     // -----------------------------------------------------------------
-    bool create_pool(
-        pika::resource::partitioner& rp, std::string const& pool_name, pool_create_mode mode)
+    bool create_pool(std::string const& pool_name, pool_create_mode mode)
     {
         int is_initialized;
         MPI_Initialized(&is_initialized);
@@ -692,7 +692,7 @@ namespace pika::mpi::experimental {
                 "MPI must be initialized prior to pool creation");
         }
         //
-        int flags = detail::get_completion_mode_default();
+        int flags = detail::task_completion_flags_;
         if (mode == pool_create_mode::force_create)
             flags |= 1;
         else if (mode == pool_create_mode::force_no_create)
@@ -702,7 +702,7 @@ namespace pika::mpi::experimental {
             // if we have a single rank - disable pool
             if (detail::mpi_data_.size_ == 1) { flags &= ~1; }
         }
-        PIKA_DETAIL_DP(detail::mpi_debug<6>,
+        PIKA_DETAIL_DP(detail::mpi_debug<1>,
             debug(str<>("completion mode"), bin<8>(flags), detail::mode_string(flags)));
         // override the variable used to control completion mode and pool flags
         setenv("PIKA_MPI_COMPLETION_MODE", std::to_string(flags).c_str(), true);
@@ -710,8 +710,11 @@ namespace pika::mpi::experimental {
         detail::task_completion_flags_ = flags;
 
         // if pool is now disabled, just exit
-        if ((flags & 1) == 0) return false;
-
+        if ((flags & 1) == 0)
+        {
+            set_pool_name("default");
+            return false;
+        }
         // Disable idle backoff on the MPI pool
         using pika::threads::scheduler_mode;
         auto smode = scheduler_mode::default_mode & ~scheduler_mode::enable_idle_backoff;
@@ -719,7 +722,7 @@ namespace pika::mpi::experimental {
         // Create a thread pool with a single core that we will use for all
         // communication related tasks
         std::string name = pool_name;
-        if (name.empty()) { name = mpi::experimental::get_pool_name(); }
+        if (name.empty()) { name = get_pool_name(); }
         else
         {
             // override mpi pool name with whatever we decided on
@@ -727,11 +730,12 @@ namespace pika::mpi::experimental {
         }
         detail::pool_exists_ = true;
         //
+        auto& rp = resource::get_partitioner();
         rp.create_thread_pool(
             get_pool_name(), pika::resource::scheduling_policy::static_priority, smode);
         rp.add_resource(rp.numa_domains()[0].cores()[0].pus()[0], get_pool_name());
         PIKA_DETAIL_DP(detail::mpi_debug<1>,
-            debug(str<>("pool created"), "name", name, "mode flags", bin<8>(flags)));
+            debug(str<>("pool created"), "name", get_pool_name(), "mode flags", bin<8>(flags)));
         return true;
     }
 
@@ -744,77 +748,81 @@ namespace pika::mpi::experimental {
     // -----------------------------------------------------------------
     bool pool_exists() { return detail::pool_exists_; }
 
+    void register_polling()
+    {
+        auto mode = get_completion_mode();
+        // enable pika polling on the mpi pool if the handling mode needs it
+        if (detail::get_handler_mode(mode) != detail::handler_mode::yield_while)
+        {
+            PIKA_DETAIL_DP(detail::mpi_debug<1>,
+                debug(str<>("enabling polling"), get_pool_name(), detail::mode_string(mode)));
+            detail::register_polling(pika::resource::get_thread_pool(get_pool_name()));
+        }
+    }
+
     // -------------------------------------------------------------
     // initialize the pika::mpi background request handler
     // All ranks should call this function,
     // but only one thread per rank needs to do so
-    void init(bool init_mpi, bool init_errorhandler)
+    void init(bool init_mpi, bool init_errorhandler, pool_create_mode pool_mode)
     {
+        // don't allow polling code to run until init has completed
+        std::lock_guard<detail::mutex_type> lk(detail::mpi_data_.polling_vector_mtx_);
+
+        // --------------------------------------
+        // fetch completion handling and polling mode/flags
+        auto mode = get_completion_mode();
+
+        // --------------------------------------
+        // the user has asked us to call mpi_init
         if (init_mpi)
         {
-            int required = MPI_THREAD_MULTIPLE;
-            int minimal = MPI_THREAD_FUNNELED;
-            int provided;
-            pika::util::mpi_environment::init(nullptr, nullptr, required, minimal, provided);
-            if (provided < MPI_THREAD_FUNNELED)
+            int provided, required = MPI_THREAD_MULTIPLE;
+            if ((mode & detail::to_underlying(detail::handler_mode::use_pool)) &&
+                !(mode & detail::to_underlying(detail::handler_mode::request_inline)) /*&&
+                !(mode & detail::to_underlying(detail::handler_mode::completion_inline))*/)
             {
-                PIKA_DETAIL_DP(detail::mpi_debug<5>,
-                    error(str<>("pika::mpi::experimental::init"), "init failed"));
-                PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::mpi::experimental::init",
-                    "the MPI installation doesn't allow multiple threads");
+                // when a dedicated pool is used (1 thread), and all requests are transferred to the pool, we can use MPI_THREAD_SINGLE
+                // std::int32_t ranks = pika::detail::get_env_var_as<std::int32_t>("OMPI_WORLD_SIZE", -1);
+                // if the mpi thread pool is disabled, then we can't use single threaded
+                if (pool_mode == pool_create_mode::pika_decides)
+                {
+                    // required = MPI_THREAD_SINGLE;
+                    // PIKA_DETAIL_DP(detail::mpi_debug<0>, debug(str<>("MPI_THREAD_SINGLE")));
+                }
             }
+            pika::util::mpi_environment::init(nullptr, nullptr, required, required, provided);
             MPI_Comm_rank(MPI_COMM_WORLD, &detail::mpi_data_.rank_);
             MPI_Comm_size(MPI_COMM_WORLD, &detail::mpi_data_.size_);
         }
         else
         {
-            // Check if MPI_Init has been called previously
-            if (detail::mpi_data_.size_ == -1)
+            int is_initialized = 0;
+            MPI_Initialized(&is_initialized);
+            if (is_initialized)
             {
-                int is_initialized = 0;
-                MPI_Initialized(&is_initialized);
-                if (is_initialized)
-                {
-                    MPI_Comm_rank(MPI_COMM_WORLD, &detail::mpi_data_.rank_);
-                    MPI_Comm_size(MPI_COMM_WORLD, &detail::mpi_data_.size_);
-                }
+                MPI_Comm_rank(MPI_COMM_WORLD, &detail::mpi_data_.rank_);
+                MPI_Comm_size(MPI_COMM_WORLD, &detail::mpi_data_.size_);
             }
+            else { PIKA_DETAIL_DP(detail::mpi_debug<0>, error(str<>("mpi not initialized"))); }
         }
 
         PIKA_DETAIL_DP(
-            detail::mpi_debug<5>, debug(str<>("pika::mpi::experimental::init"), detail::mpi_data_));
+            detail::mpi_debug<0>, debug(str<>("pika::mpi::experimental::init"), detail::mpi_data_));
 
+        // --------------------------------------
+        // install error handler (convert mpi errors into exceptoions
         if (init_errorhandler)
         {
             detail::set_error_handler();
             detail::mpi_data_.error_handler_initialized_ = true;
         }
 
-        std::string name = get_pool_name();
-        // install polling loop on mpi thread pool
-        if (!detail::pool_exists_)
-        {
-            // drop back to default pika pool name
-            name = resource::get_pool_name(0);
-        }
-        // override mpi pool name with whatever we decided on
-        set_pool_name(name);
-        //
-        auto mode = mpi::experimental::get_completion_mode();
-        if (pika::mpi::experimental::detail::get_handler_mode(mode) !=
-            detail::handler_mode::yield_while)
-        {
-            PIKA_DETAIL_DP(detail::mpi_debug<5>,
-                debug(
-                    str<>("enabling polling"), name, mpi::experimental::detail::mode_string(mode)));
-            detail::register_polling(pika::resource::get_thread_pool(name));
-        }
-
         static bool defaults_set = false;
         if (!defaults_set)
         {
-            detail::init_throttling_default();
-            defaults_set = true;
+            // detail::init_throttling_default();
+            // defaults_set = true;
         }
     }
 

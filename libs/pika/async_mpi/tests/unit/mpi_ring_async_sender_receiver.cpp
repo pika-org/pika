@@ -58,12 +58,9 @@ using pika::program_options::variables_map;
 using namespace pika::debug::detail;
 
 namespace ex = pika::execution::experimental;
-namespace mpi = pika::mpi::experimental;
-namespace tt = pika::this_thread::experimental;
-namespace deb = pika::debug;
+namespace mpix = pika::mpi::experimental;
 
 static bool output = false;
-static uint32_t mpi_completion_mode = mpi::get_completion_mode();
 static std::uint32_t mpi_poll_size = 16;
 std::atomic<std::uint32_t> counter;
 std::unique_ptr<pika::counting_semaphore<>> limiter;
@@ -279,7 +276,7 @@ struct message_receiver
                 // the recursive lambda will handle it
                 auto rx_snd2 = ex::just(buf, message_size, MPI_UNSIGNED_CHAR, prev_rank(rank, size),
                                    tag, MPI_COMM_WORLD) |
-                    mpi::transform_mpi(MPI_Irecv, mpi::stream_type::receive_2) |
+                    mpix::transform_mpi(MPI_Irecv /*, mpix::stream_type::receive_2*/) |
                     ex::then(std::move(reclambda));
                 // launch the receive for the msg on the next round
                 msr_deb<6>.debug(
@@ -293,7 +290,7 @@ struct message_receiver
             msg_info(rank, size, msg_type::send, buf2->header_, "send_R");
             auto tx_snd2 = ex::just(buf2, message_size, MPI_UNSIGNED_CHAR, next_rank(rank, size),
                                tag, MPI_COMM_WORLD) |
-                mpi::transform_mpi(MPI_Isend, mpi::stream_type::send_2) |
+                mpix::transform_mpi(MPI_Isend /*, mpix::stream_type::send_2*/) |
                 ex::then([buf2 = buf2, rank = rank, size = size](/*int result*/) {
                     counter--;
                     msg_info(rank, size, msg_type::send, buf2->header_, "forwarded");
@@ -322,7 +319,8 @@ int call_mpi_irecv(void* buf, int count, MPI_Datatype datatype, int source, int 
 int pika_main(pika::program_options::variables_map& vm)
 {
     // setup polling on default pool, enable exceptions and init mpi internals
-    mpi::init(false, true);
+    mpix::init(false, true);
+    mpix::register_polling();
     //
     std::int32_t rank, size;
     //
@@ -346,16 +344,16 @@ int pika_main(pika::program_options::variables_map& vm)
     const std::uint32_t num_rounds = vm["rounds"].as<std::uint32_t>();
     output = vm.count("output") != 0;
     //
-    auto in_flight = mpi::get_max_requests_in_flight();
+    auto in_flight = mpix::get_max_requests_in_flight();
     if (vm.count("in-flight-limit"))
     {
         in_flight = vm["in-flight-limit"].as<std::uint32_t>();
-        //mpi::set_max_requests_in_flight(in_flight, mpi::stream_type::user_1);
+        //mpix::set_max_requests_in_flight(in_flight, mpix::stream_type::user_1);
     }
     limiter = std::make_unique<pika::counting_semaphore<>>(in_flight);
 
     mpi_poll_size = vm["mpi-polling-size"].as<std::uint32_t>();
-    mpi::set_max_polling_size(mpi_poll_size);
+    mpix::set_max_polling_size(mpi_poll_size);
 
     std::uint32_t message_size = vm["message-bytes"].as<std::uint32_t>();
 
@@ -397,7 +395,7 @@ int pika_main(pika::program_options::variables_map& vm)
                 // create chain of senders to make the mpi recv and handle it
                 auto rx_snd1 = ex::just(rbuf, message_size, MPI_UNSIGNED_CHAR,
                                    prev_rank(rank, size), tag, MPI_COMM_WORLD) |
-                    mpi::transform_mpi(MPI_Irecv, mpi::stream_type::receive_1) |
+                    mpix::transform_mpi(MPI_Irecv /*, mpix::stream_type::receive_1*/) |
                     ex::then(std::move(reclambda));
                 msr_deb<6>.debug(str<>("start_detached"), "rx_snd1", i, orank);
                 ex::start_detached(std::move(rx_snd1));
@@ -409,7 +407,7 @@ int pika_main(pika::program_options::variables_map& vm)
             auto sbuf = get_msg_buffer(header{0, tag, i, 0, 0, std::uint32_t(rank), message_size});
             auto send_snd = ex::just(sbuf, message_size, MPI_UNSIGNED_CHAR, next_rank(rank, size),
                                 tag, MPI_COMM_WORLD) |
-                mpi::transform_mpi(MPI_Isend, mpi::stream_type::send_1) |
+                mpix::transform_mpi(MPI_Isend /*, mpix::stream_type::send_1*/) |
                 ex::then([rank, size, sbuf](/*int res*/) {
                     counter--;
                     msg_info(rank, size, msg_type::send, sbuf->header_, "sent");
@@ -428,12 +426,12 @@ int pika_main(pika::program_options::variables_map& vm)
             msr_deb<0>.debug(str<>("User Messages")
                 , "Rank", dec<3>(rank), "of", dec<3>(size)
                 , "Counter", hex<8>(std::uint32_t(counter.load()))
-                , "in-flight", dec<3>(mpi::get_work_count()));
+                , "in-flight", dec<3>(mpix::get_work_count()));
             // clang-format on
         }
 
         // the user queue should always be empty by now since our counter tracks it
-        PIKA_ASSERT(mpi::get_work_count() == 0);
+        PIKA_ASSERT(mpix::get_work_count() == 0);
 
         double elapsed = t.elapsed();
 
@@ -443,9 +441,10 @@ int pika_main(pika::program_options::variables_map& vm)
             std::stringstream temp;
             constexpr char const* msg =
                 "CSVData-2, in_flight, {}, ranks, {}, threads, {}, iterations, {}, rounds, {}, "
-                "completion_mode, {}, message-size, {}, polling-size, {}, time, {}";
+                "completion_mode, {}, message-size, {}, polling-size, {}, time, {}, {}";
             fmt::print(temp, msg, in_flight, size, pika::get_num_worker_threads(), iterations,
-                num_rounds, mpi::get_completion_mode(), message_size, mpi_poll_size, elapsed);
+                num_rounds, mpix::get_completion_mode(), message_size, mpi_poll_size, elapsed,
+                vm["pp-info"].as<std::string>());
             std::cout << temp.str() << std::endl;
         }
         // let the user polling go out of scope
@@ -457,22 +456,18 @@ int pika_main(pika::program_options::variables_map& vm)
 
 //----------------------------------------------------------------------------
 void init_resource_partitioner_handler(
-    pika::resource::partitioner& rp, pika::program_options::variables_map const& vm)
+    pika::resource::partitioner&, pika::program_options::variables_map const& vm)
 {
-    // Don't create the MPI pool if the user disabled it
-    int ntasks;
-    MPI_Comm_size(MPI_COMM_WORLD, &ntasks);
-    if (vm["no-mpi-pool"].as<bool>() || ntasks == 1)
+    // Don't create an MPI pool if the user disabled it
+    auto pool_mode = mpix::pool_create_mode::pika_decides;
+    if (vm["one-rank-consistent"].as<bool>())
     {
-        // turn off pool creation
-        int mode = pika::detail::get_env_var_as<int>("PIKA_MPI_COMPLETION_MODE", 1);
-        mode = mode & ~(0b01);
-        setenv("PIKA_MPI_COMPLETION_MODE", std::to_string(mode).c_str(), true);
-        pika::mpi::experimental::detail::get_completion_mode_default();
+        pool_mode = mpix::pool_create_mode::pika_decides_unoptimized;
     }
-    //
+    if (vm["no-mpi-pool"].as<bool>()) { pool_mode = mpix::pool_create_mode::force_no_create; }
+
     msr_deb<2>.debug(str<>("init RP"), "create_pool");
-    mpi::create_pool(rp, "", mpi::pool_create_mode::pika_decides);
+    mpix::create_pool("", mpix::pool_create_mode::pika_decides);
 }
 
 //----------------------------------------------------------------------------
@@ -508,6 +503,9 @@ int main(int argc, char* argv[])
     cmdline.add_options()("no-mpi-pool", pika::program_options::bool_switch(),
         "Disable the MPI pool.");
 
+    cmdline.add_options()("one-rank-consistent", pika::program_options::bool_switch(),
+        "Use an mpi pool even on one rank if the mode flags expect it");
+
     cmdline.add_options()("mpi-polling-size",
         pika::program_options::value<std::uint32_t>()->default_value(16),
         "The maximum number of mpi request completions to handle per poll.");
@@ -521,6 +519,12 @@ int main(int argc, char* argv[])
 
     cmdline.add_options()("standalone",
         "Allow test to run with a single rank (debugging)");
+
+    cmdline.add_options()("csv", pika::program_options::bool_switch()->default_value(false),
+                     "Enable CSV output of values");
+
+    cmdline.add_options()("pp-info", pika::program_options::value<std::string>()->default_value(""),
+                     "Info for postprocessing scripts appended to csv output (if enabled)");
     // clang-format on
 
     // Initialize and run pika.
