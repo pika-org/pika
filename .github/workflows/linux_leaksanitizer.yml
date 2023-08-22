@@ -46,6 +46,7 @@ jobs:
               -DPIKA_WITH_EXAMPLES=ON \
               -DPIKA_WITH_TESTS=ON \
               -DPIKA_WITH_TESTS_EXAMPLES=ON \
+              -DPIKA_WITH_TESTS_HEADERS=OFF \
               -DPIKA_WITH_TESTS_MAX_THREADS=2 \
               -DPIKA_WITH_COMPILER_WARNINGS=ON \
               -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON \
