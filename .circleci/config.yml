@@ -606,6 +606,8 @@ jobs:
           command: |
             cd build
             ctest \
+              --repeat-until-fail 1000 \
+              -R condition_variable2 \
               -j2 \
               --timeout 500 \
               -T test \
