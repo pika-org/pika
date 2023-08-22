@@ -21,7 +21,6 @@ on:
 jobs:
   build:
     name: github/linux/sanitizers/leak
-    if: ${{ github.event_name == 'merge_group' }}
     runs-on: ubuntu-latest
     container: pikaorg/pika-ci-base:18
 
@@ -47,22 +46,37 @@ jobs:
               -DPIKA_WITH_EXAMPLES=ON \
               -DPIKA_WITH_TESTS=ON \
               -DPIKA_WITH_TESTS_EXAMPLES=ON \
+              -DPIKA_WITH_TESTS_HEADERS=OFF \
               -DPIKA_WITH_TESTS_MAX_THREADS=2 \
               -DPIKA_WITH_COMPILER_WARNINGS=ON \
               -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON \
               -DPIKA_WITH_SANITIZERS=On \
               -DCMAKE_CXX_FLAGS="-fsanitize=leak -fno-omit-frame-pointer" \
               -DPIKA_WITH_STACKOVERFLOW_DETECTION=On
-    - name: Build
+    - name: Build examples
       shell: bash
       run: |
           cmake --build build --target all
           cmake --build build --target examples
-    - name: Test
+    - name: Test examples
       shell: bash
       run: |
           cd build
           ctest \
             --timeout 120 \
             --output-on-failure \
-            --tests-regex tests.examples
+            -R tests.examples
+    - name: Build all tests
+      if: ${{ github.event_name == 'merge_group' }}
+      shell: bash
+      run: |
+          cmake --build build --target tests
+    - name: Run all tests
+      if: ${{ github.event_name == 'merge_group' }}
+      shell: bash
+      run: |
+          cd build
+          ctest \
+            --timeout 120 \
+            --output-on-failure \
+            -E tests.examples
