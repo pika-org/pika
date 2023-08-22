@@ -19,6 +19,7 @@
 #include <pika/schedulers/queue_holder_numa.hpp>
 #include <pika/schedulers/queue_holder_thread.hpp>
 #include <pika/schedulers/thread_queue_mc.hpp>
+#include <pika/threading_base/detail/global_activity_count.hpp>
 #include <pika/threading_base/print.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_data.hpp>
@@ -265,6 +266,8 @@ namespace pika::threads::detail {
         void create_thread(threads::detail::thread_init_data& data,
             threads::detail::thread_id_ref_type* thrd, error_code& ec) override
         {
+            pika::threads::detail::increment_global_activity_count();
+
             // safety check that task was created by this thread/scheduler
             PIKA_ASSERT(data.scheduler_base == this);
 
@@ -808,6 +811,8 @@ namespace pika::threads::detail {
             // was stolen
             thrd->get_queue<queue_holder_thread<thread_queue_type>>().destroy_thread(
                 thrd, this_thread, xthread);
+
+            pika::threads::detail::decrement_global_activity_count();
         }
 
         //---------------------------------------------------------------------

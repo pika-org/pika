@@ -18,6 +18,7 @@
 #include <pika/string_util/case_conv.hpp>
 #include <pika/synchronization/condition_variable.hpp>
 #include <pika/synchronization/mutex.hpp>
+#include <pika/threading_base/detail/global_activity_count.hpp>
 //
 #include <array>
 #include <atomic>
@@ -293,6 +294,8 @@ namespace pika::mpi::experimental {
         /// have completed
         void add_to_request_callback_queue(request_callback&& req_callback)
         {
+            pika::threads::detail::increment_global_activity_count();
+
             // access data before moving it
             mpi_data_.request_callback_queue_.enqueue(PIKA_MOVE(req_callback));
             ++mpi_data_.request_queue_size_;
@@ -570,6 +573,8 @@ namespace pika::mpi::experimental {
 
                 // Invoke callback (PIKA_MOVE doesn't compile here)
                 PIKA_INVOKE(std::move(ready_callback_.cb_), ready_callback_.err_);
+
+                pika::threads::detail::decrement_global_activity_count();
             }
 
             return mpi_data_.all_in_flight_.load(std::memory_order_relaxed) == 0 ?
