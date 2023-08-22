@@ -63,6 +63,7 @@
 
 // ------------------------------------------------------------
 /// \cond NODETAIL
+// NOLINTNEXTLINE(modernize-concat-nested-namespaces)
 namespace PIKA_DETAIL_NS_DEBUG {
 
     // ------------------------------------------------------------------

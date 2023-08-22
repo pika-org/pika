@@ -429,6 +429,7 @@ namespace pika::concurrency::detail {
 
     // Some platforms have incorrectly set max_align_t to a type with <8 bytes alignment even while supporting
     // 8-byte aligned scalar values (*cough* 32-bit iOS). Work around this with our own union. See issue #64.
+    // NOLINTNEXTLINE(modernize-use-using)
     typedef union
     {
         std_max_align_t x;
@@ -2238,6 +2239,7 @@ namespace pika::concurrency::detail {
                             // to allocate a new index. Note pr_blockIndexRaw can only be nullptr if
                             // the initial allocation failed in the constructor.
 
+                            // NOLINTNEXTLINE(bugprone-branch-clone)
                             MOODYCAMEL_CONSTEXPR_IF(allocMode == CannotAlloc) { return false; }
                             else if (!new_block_index(pr_blockIndexSlotsUsed)) { return false; }
                         }
@@ -2486,6 +2488,7 @@ namespace pika::concurrency::detail {
                             pr_blockIndexSlotsUsed == pr_blockIndexSize || full)
                         {
                             MOODYCAMEL_CONSTEXPR_IF(allocMode == CannotAlloc)
+                            // NOLINTNEXTLINE(bugprone-branch-clone)
                             {
                                 // Failed to allocate, undo changes (but keep injected blocks)
                                 pr_blockIndexFront = originalBlockIndexFront;
@@ -3510,6 +3513,7 @@ namespace pika::concurrency::detail {
                 }
 
                 // No room in the old block index, try to allocate another one!
+                // NOLINTNEXTLINE(bugprone-branch-clone)
                 MOODYCAMEL_CONSTEXPR_IF(allocMode == CannotAlloc) { return false; }
                 else if (!new_block_index()) { return false; }
                 else
@@ -3572,6 +3576,7 @@ namespace pika::concurrency::detail {
                     std::alignment_of<BlockIndexEntry>::value - 1 +
                     sizeof(BlockIndexEntry) * entryCount +
                     std::alignment_of<BlockIndexEntry*>::value - 1 +
+                    // NOLINTNEXTLINE(bugprone-sizeof-expression)
                     sizeof(BlockIndexEntry*) * nextBlockIndexCapacity));
                 if (raw == nullptr) { return false; }
 

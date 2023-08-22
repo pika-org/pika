@@ -298,6 +298,7 @@ void test_any_sender(F&& f, Ts&&... ts)
         auto os = ex::connect(std::move(as2), callback_receiver<F>{f, set_value_called});
         ex::start(os);
         PIKA_TEST(set_value_called);
+        // NOLINTNEXTLINE(bugprone-use-after-move)
         PIKA_TEST(as2.empty());
         PIKA_TEST(!as2);
     }
@@ -365,6 +366,7 @@ void test_unique_any_sender(F&& f, Ts&&... ts)
         auto os = ex::connect(std::move(as2), callback_receiver<F>{f, set_value_called});
         ex::start(os);
         PIKA_TEST(set_value_called);
+        // NOLINTNEXTLINE(bugprone-use-after-move)
         PIKA_TEST(as2.empty());
         PIKA_TEST(!as2);
     }

@@ -25,7 +25,7 @@ Checks: >
     modernize-concat-nested-namespaces,
     modernize-use-nullptr,
     modernize-use-using,
-# WarningsAsErrors: '*'
+WarningsAsErrors: '*'
 HeaderFilterRegex: '.*pika.*'
 CheckOptions:
   - key: bugprone-assert-side-effect.CheckFunctionCalls
