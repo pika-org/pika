@@ -34,12 +34,14 @@ jobs:
         key: linux-valgrind
     - name: Configure
       shell: bash
+      # -gdwarf-4 because of https://github.com/llvm/llvm-project/issues/56550
       run: |
           cmake \
               . \
               -Bbuild \
               -GNinja \
               -DCMAKE_BUILD_TYPE=Debug \
+              -DCMAKE_CXX_FLAGS="-gdwarf-4" \
               -DPIKA_WITH_UNITY_BUILD=ON \
               -DPIKA_WITH_MALLOC=system \
               -DPIKA_WITH_EXAMPLES=ON \
