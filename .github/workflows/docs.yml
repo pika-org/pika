@@ -1,0 +1,68 @@
+# Copyright (c) 2023 ETH Zurich
+#
+# SPDX-License-Identifier: BSL-1.0
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+name: Documentation
+
+on:
+  merge_group:
+  pull_request:
+    branches:
+      # Development and release branches
+      - main
+      - release**
+  push:
+    branches:
+      # Development and release branches
+      - main
+      - release**
+      # Bors branches
+      - trying
+      - staging
+
+jobs:
+  build:
+    name: github/documentation/build
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install sphinx and a theme
+      run: |
+          sudo apt update
+          sudo apt install \
+              --allow-downgrades \
+              --allow-remove-essential \
+              --allow-change-held-packages \
+              python3 python3-pip
+          pip install sphinx sphinx-material
+    - name: Build documentation
+      run: sphinx-build -W -n -a -b html docs build/docs
+    - name: Upload HTML output as artifact
+      uses: actions/upload-pages-artifact@v2
+      with:
+        path: build/docs
+
+  deploy:
+    needs: build
+    name: github/documentation/deploy
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.repository == 'pika-org/pika'
+
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: "pages"
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+    - name: Deploy documentation to GitHub Pages
+      uses: actions/deploy-pages@v2
+      id: deployment

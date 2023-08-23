@@ -17,6 +17,8 @@ pkgs.mkShell.override { stdenv = pkgs.gcc11Stdenv; } {
     mpich
     ninja
     pkgconfig
+    python311Packages.sphinx
+    python311Packages.sphinx-material
   ];
 
   hardeningDisable = [ "fortify" ];
