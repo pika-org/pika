@@ -16,7 +16,7 @@ spack_spec="pika@main +generic_coroutines arch=${spack_arch} %${spack_compiler} 
 configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${cxx_std}"
 configure_extra_options+=" -DPIKA_WITH_MAX_CPU_COUNT=128"
 configure_extra_options+=" -DPIKA_WITH_MALLOC=system"
-configure_extra_options+=" -DPIKA_WITH_GENERIC_CONTEXT_COROUTINES=ON"
+configure_extra_options+=" -DPIKA_WITH_BOOST_CONTEXT=ON"
 configure_extra_options+=" -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
 
 build_extra_options+=" -j10"

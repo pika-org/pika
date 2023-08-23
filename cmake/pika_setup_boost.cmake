@@ -40,7 +40,7 @@ if(NOT TARGET pika_dependencies_boost)
   endif()
 
   set(__boost_libraries "")
-  if(PIKA_WITH_GENERIC_CONTEXT_COROUTINES)
+  if(PIKA_WITH_BOOST_CONTEXT)
     set(__boost_libraries ${__boost_libraries} context)
   endif()
 
