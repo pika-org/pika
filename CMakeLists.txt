@@ -1082,11 +1082,9 @@ if("${PIKA_PLATFORM_UC}" STREQUAL "BLUEGENEQ")
   set(__use_generic_coroutine_context ON)
 endif()
 pika_option(
-  PIKA_WITH_BOOST_CONTEXT
-  BOOL
-  "Use Boost.Context as the underlying coroutines context switch implementation."
-  ${__use_generic_coroutine_context}
-  ADVANCED
+  PIKA_WITH_BOOST_CONTEXT BOOL
+  "Use Boost.Context for user-level thread context switching."
+  ${__use_generic_coroutine_context} ADVANCED
 )
 
 # ##############################################################################
