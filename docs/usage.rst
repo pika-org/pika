@@ -121,6 +121,54 @@ Tests and examples are disabled by default and can be enabled with ``PIKA_WITH_T
 explicitly built before running them, e.g.  with ``cmake --build . --target tests && ctest
 --output-on-failure``.
 
+.. _thread_bindings:
+
+Controlling the number of threads and thread bindings
+=====================================================
+
+The thread pool created by the pika runtime will by default be created with a number of threads
+equal to the number of cores on the system. The number of threads can explicitly be controlled by a
+few command line options. The most straightforward way of changing the number of threads is with the
+``--pika:threads`` command line option. It takes an explicit number of threads. Alternatively it can
+also be passed the special values ``cores`` (the default, use one thread per core) or ``all`` (use
+one thread per hyperthread).
+
+Process masks
+-------------
+
+Many batch systems and e.g. MPI can set a process mask on the application to restrict on what cores
+an application can run. pika will by default take this process mask into account when determining
+how many threads to use for the runtime. ``hwloc-bind`` can also be used to manually set a process
+mask on the application. When a process mask is set, the default behaviour is to use only one thread
+per core in the process mask. Setting ``--pika:threads`` to a number higher than the number of cores
+available in the mask is not allowed. Using ``--pika:threads=all`` will use all the hyperthreads in
+the process mask. The process mask can explicitly be ignored with the option
+``--pika:ignore-process-mask``. In that case pika behaves as if no process mask is set. In addition
+to setting the mask with batch systems or ``hwloc-bind``, the mask used by the runtime can also be
+overridden with ``--pika:process-mask``. The option takes an explicit hexadecimal string (beginning
+with ``0x``) representing the process mask to use. ``--pika:print-bind`` can be used to verify that
+the bindings used by pika are correct.
+
+Interaction with OpenMP
+-----------------------
+
+When pika is used together with OpenMP extra care may be needed to ensure pika uses the correct
+process mask. This is because with OpenMP the main thread participates in parallel regions and if
+OpenMP binds threads to cores, the main thread may have a mask set to a single core before pika can
+read the mask. Typically, OpenMP will bind threads to cores if the ``OMP_PROC_BIND`` or
+``OMP_PLACES`` environment variables are set. Some implementations of OpenMP (e.g. LLVM) set the
+binding of the main thread only at the first parallel region which means that if pika is initialized
+before the first parallel region, the mask will most likely be read correctly. Other implementations
+(e.g. GNU) set the binding of the main thread in global constructors which may run before pika can
+read the process mask. In that case you may need to either use ``--pika:ignore-process-mask`` to use
+all cores on the system or explicitly set a mask with ``--pika:process-mask``. If there is a process
+mask already set in the environment that is launching the application (e.g. in a SLURM job) you can
+read the mask before the application runs with hwloc:
+
+.. code-block:: bash
+
+   ./app --pika:process-mask=$(hwloc-bind --get --taskset)
+
 .. _pika_stdexec:
 
 Relation to std::execution and stdexec
