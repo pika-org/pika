@@ -81,9 +81,8 @@ namespace pika::threads::detail {
                 if (running)
                 {
                     LTM_(warning)
-                        .format("queue({}): {}({}.{:02x}/{:08x})", num_thread,
-                            get_thread_state_name(state), *it, thrd->get_thread_phase(),
-                            thrd->get_component_id())
+                        .format("queue({}): {}({}.{:02x})", num_thread,
+                            get_thread_state_name(state), *it, thrd->get_thread_phase())
 # ifdef PIKA_HAVE_THREAD_PARENT_REFERENCE
                         .format(" P{}", thrd->get_parent_thread_id())
 # endif
@@ -92,9 +91,8 @@ namespace pika::threads::detail {
                 else
                 {
                     LPIKA_CONSOLE_(pika::util::logging::level::warning)
-                        .format("queue({}): {}({}.{:02x}/{:08x})", num_thread,
-                            get_thread_state_name(state), *it, thrd->get_thread_phase(),
-                            thrd->get_component_id())
+                        .format("queue({}): {}({}.{:02x})", num_thread,
+                            get_thread_state_name(state), *it, thrd->get_thread_phase())
 # ifdef PIKA_HAVE_THREAD_PARENT_REFERENCE
                         .format(" P{}", thrd->get_parent_thread_id())
 # endif
