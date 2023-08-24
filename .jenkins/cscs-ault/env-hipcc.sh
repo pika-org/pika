@@ -23,3 +23,5 @@ configure_extra_options+=" -DPIKA_WITH_HIP=ON"
 configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${cxx_std}"
 configure_extra_options+=" -DPIKA_WITH_MALLOC=system"
 configure_extra_options+=" -DPIKA_WITH_STDEXEC=ON"
+
+build_extra_options+=" -j16"
