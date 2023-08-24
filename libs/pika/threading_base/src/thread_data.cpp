@@ -339,17 +339,6 @@ namespace pika::threads::detail {
     }
 #endif
 
-    std::uint64_t get_self_component_id()
-    {
-#ifndef PIKA_HAVE_THREAD_TARGET_ADDRESS
-        return 0;
-#else
-        thread_data* thrd_data = get_self_id_data();
-        if (PIKA_LIKELY(nullptr != thrd_data)) { return thrd_data->get_component_id(); }
-        return 0;
-#endif
-    }
-
 #if defined(PIKA_HAVE_APEX)
     std::shared_ptr<pika::detail::external_timer::task_wrapper> get_self_timer_data()
     {

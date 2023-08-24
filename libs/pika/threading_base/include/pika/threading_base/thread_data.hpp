@@ -229,13 +229,6 @@ namespace pika::threads::detail {
         }
 
     public:
-        /// Return the id of the component this thread is running in
-        constexpr std::uint64_t    // same as naming::address_type
-        get_component_id() const noexcept
-        {
-            return 0;
-        }
-
 #if !defined(PIKA_HAVE_THREAD_DESCRIPTION)
         ::pika::detail::thread_description get_description() const
         {
@@ -635,14 +628,6 @@ namespace pika::threads::detail {
     ///       code was compiled with PIKA_HAVE_THREAD_PARENT_REFERENCE
     ///       being defined.
     PIKA_EXPORT std::uint32_t get_parent_locality_id();
-
-    /// The function \a get_self_component_id returns the lva of the
-    /// component the current thread is acting on
-    ///
-    /// \note This function will return a meaningful value only if the
-    ///       code was compiled with PIKA_HAVE_THREAD_TARGET_ADDRESS
-    ///       being defined.
-    PIKA_EXPORT std::uint64_t get_self_component_id();
 }    // namespace pika::threads::detail
 
 #include <pika/config/warnings_suffix.hpp>
