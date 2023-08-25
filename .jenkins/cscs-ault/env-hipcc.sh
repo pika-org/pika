@@ -12,7 +12,7 @@ hip_version="5.3.3"
 hwloc_version="2.6.0"
 spack_compiler="gcc@${gcc_version}"
 spack_arch="linux-centos8-zen"
-stdexec_version="git.4b441f333adaeb8eb0a6c7f38d36af30fa7ab366=main"
+stdexec_version="git.5e378418d9360a1a53392baae8502c4961f5f4c8=main"
 
 # The xnack- architectures are not supported by rocblas@5.3.3
 spack_spec="pika@main+rocm+stdexec amdgpu_target='gfx906:xnack-' arch=${spack_arch} %${spack_compiler} malloc=system cxxstd=${cxx_std} ^boost@${boost_version} ^hwloc@${hwloc_version} ^hip@${hip_version} ^whip amdgpu_target='gfx906:xnack-' ^stdexec@${stdexec_version}"
