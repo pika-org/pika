@@ -150,7 +150,6 @@ int main()
         PIKA_TEST(set_error_called);
     }
 
-#if !defined(PIKA_HAVE_STDEXEC)
     {
         std::atomic<bool> set_error_called{false};
         auto s =
@@ -161,7 +160,6 @@ int main()
         ex::start(os);
         PIKA_TEST(set_error_called);
     }
-#endif
 
     // It's allowed to discard the sender from ensure_started
     {
