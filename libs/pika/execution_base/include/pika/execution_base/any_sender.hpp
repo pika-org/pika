@@ -35,6 +35,9 @@
 # pragma GCC diagnostic ignored "-Warray-bounds"
 #endif
 
+// SBO is currently disabled as it seems to be buggy in certain use cases. It can still be
+// explicitly forced to on by defining PIKA_DETAIL_ENABLE_ANY_SENDER_SBO.
+
 namespace pika::detail {
     template <typename T>
     struct empty_vtable_type
@@ -87,8 +90,10 @@ namespace pika::detail {
     {
     protected:
         using base_type = Base;
+#if defined(PIKA_DETAIL_ENABLE_ANY_SENDER_SBO)
         static constexpr std::size_t embedded_storage_size = EmbeddedStorageSize;
         static constexpr std::size_t alignment_size = AlignmentSize;
+#endif
 
         // The union has two members:
         // - embedded_storage: Embedded storage size array used for types that
@@ -96,11 +101,15 @@ namespace pika::detail {
         //   alignment_size alignment.
         // - heap_storage: A pointer to base_type that is used when objects
         //   don't fit in the embedded storage.
+#if defined(PIKA_DETAIL_ENABLE_ANY_SENDER_SBO)
         union
         {
             std::aligned_storage_t<embedded_storage_size, alignment_size> embedded_storage;
+#endif
             base_type* heap_storage = nullptr;
+#if defined(PIKA_DETAIL_ENABLE_ANY_SENDER_SBO)
         };
+#endif
         base_type* object = const_cast<base_type*>(get_empty_vtable<base_type>());
 
         // Returns true when it's safe to use the embedded storage, i.e.
@@ -108,14 +117,22 @@ namespace pika::detail {
         template <typename Impl>
         static constexpr bool can_use_embedded_storage()
         {
+#if defined(PIKA_DETAIL_ENABLE_ANY_SENDER_SBO)
             constexpr bool fits_storage = sizeof(std::decay_t<Impl>) <= embedded_storage_size;
             constexpr bool sufficiently_aligned = alignof(std::decay_t<Impl>) <= alignment_size;
             return fits_storage && sufficiently_aligned;
+#else
+            return false;
+#endif
         }
 
         bool using_embedded_storage() const noexcept
         {
+#if defined(PIKA_DETAIL_ENABLE_ANY_SENDER_SBO)
             return object == reinterpret_cast<base_type const*>(&embedded_storage);
+#else
+            return false;
+#endif
         }
 
         void reset_vtable() { object = const_cast<base_type*>(get_empty_vtable<base_type>()); }
@@ -124,8 +141,10 @@ namespace pika::detail {
         {
             PIKA_ASSERT(!empty());
 
+#if defined(PIKA_DETAIL_ENABLE_ANY_SENDER_SBO)
             if (using_embedded_storage()) { get().~base_type(); }
             else
+#endif
             {
                 delete heap_storage;
                 heap_storage = nullptr;
@@ -142,6 +161,7 @@ namespace pika::detail {
 
             if (!other.empty())
             {
+#if defined(PIKA_DETAIL_ENABLE_ANY_SENDER_SBO)
                 if (other.using_embedded_storage())
                 {
                     auto p = reinterpret_cast<base_type*>(&embedded_storage);
@@ -149,6 +169,7 @@ namespace pika::detail {
                     object = p;
                 }
                 else
+#endif
                 {
                     heap_storage = other.heap_storage;
                     other.heap_storage = nullptr;
@@ -194,6 +215,7 @@ namespace pika::detail {
         {
             if (!empty()) { release(); }
 
+#if defined(PIKA_DETAIL_ENABLE_ANY_SENDER_SBO)
             if constexpr (can_use_embedded_storage<Impl>())
             {
                 Impl* p = reinterpret_cast<Impl*>(&embedded_storage);
@@ -201,6 +223,7 @@ namespace pika::detail {
                 object = p;
             }
             else
+#endif
             {
                 heap_storage = new Impl(PIKA_FORWARD(Ts, ts)...);
                 object = heap_storage;
@@ -222,7 +245,9 @@ namespace pika::detail {
 
         using typename storage_base_type::base_type;
 
+#if defined(PIKA_DETAIL_ENABLE_ANY_SENDER_SBO)
         using storage_base_type::embedded_storage;
+#endif
         using storage_base_type::heap_storage;
         using storage_base_type::object;
         using storage_base_type::release;
@@ -235,6 +260,7 @@ namespace pika::detail {
 
             if (!other.empty())
             {
+#if defined(PIKA_DETAIL_ENABLE_ANY_SENDER_SBO)
                 if (other.using_embedded_storage())
                 {
                     base_type* p = reinterpret_cast<base_type*>(&embedded_storage);
@@ -242,6 +268,7 @@ namespace pika::detail {
                     object = p;
                 }
                 else
+#endif
                 {
                     heap_storage = other.get().clone();
                     object = heap_storage;
