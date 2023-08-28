@@ -98,7 +98,8 @@ namespace pika::detail {
         //   don't fit in the embedded storage.
         union
         {
-            std::aligned_storage_t<embedded_storage_size, alignment_size> embedded_storage;
+            alignas(alignment_size) std::byte
+                embedded_storage[(std::max)(embedded_storage_size, sizeof(base_type*))];
             base_type* heap_storage = nullptr;
         };
         base_type* object = const_cast<base_type*>(get_empty_vtable<base_type>());
@@ -115,7 +116,7 @@ namespace pika::detail {
 
         bool using_embedded_storage() const noexcept
         {
-            return object == reinterpret_cast<base_type const*>(&embedded_storage);
+            return object == reinterpret_cast<base_type const*>(embedded_storage);
         }
 
         void reset_vtable() { object = const_cast<base_type*>(get_empty_vtable<base_type>()); }
@@ -144,7 +145,7 @@ namespace pika::detail {
             {
                 if (other.using_embedded_storage())
                 {
-                    auto p = reinterpret_cast<base_type*>(&embedded_storage);
+                    auto p = reinterpret_cast<base_type*>(embedded_storage);
                     other.get().move_into(p);
                     object = p;
                 }
@@ -196,7 +197,7 @@ namespace pika::detail {
 
             if constexpr (can_use_embedded_storage<Impl>())
             {
-                Impl* p = reinterpret_cast<Impl*>(&embedded_storage);
+                Impl* p = reinterpret_cast<Impl*>(embedded_storage);
                 new (p) Impl(PIKA_FORWARD(Ts, ts)...);
                 object = p;
             }
@@ -237,7 +238,7 @@ namespace pika::detail {
             {
                 if (other.using_embedded_storage())
                 {
-                    base_type* p = reinterpret_cast<base_type*>(&embedded_storage);
+                    base_type* p = reinterpret_cast<base_type*>(embedded_storage);
                     other.get().clone_into(p);
                     object = p;
                 }
