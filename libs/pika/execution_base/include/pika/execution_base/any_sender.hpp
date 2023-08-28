@@ -91,17 +91,11 @@ namespace pika::detail {
         static constexpr std::size_t alignment_size = AlignmentSize;
 
         // The union has two members:
-        // - embedded_storage: Embedded storage size array used for types that
+        // - storage: Embedded storage size array used for types that
         //   are at most embedded_storage_size bytes large, and require at most
         //   alignment_size alignment.
-        // - heap_storage: A pointer to base_type that is used when objects
-        //   don't fit in the embedded storage.
-        union
-        {
-            alignas(alignment_size) std::byte
-                embedded_storage[(std::max)(embedded_storage_size, sizeof(base_type*))];
-            base_type* heap_storage = nullptr;
-        };
+        alignas(alignment_size)
+            std::byte storage[(std::max)(embedded_storage_size, sizeof(base_type*))];
         base_type* object = const_cast<base_type*>(get_empty_vtable<base_type>());
 
         // Returns true when it's safe to use the embedded storage, i.e.
@@ -116,7 +110,7 @@ namespace pika::detail {
 
         bool using_embedded_storage() const noexcept
         {
-            return object == reinterpret_cast<base_type const*>(embedded_storage);
+            return object == reinterpret_cast<base_type const*>(storage);
         }
 
         void reset_vtable() { object = const_cast<base_type*>(get_empty_vtable<base_type>()); }
@@ -126,11 +120,7 @@ namespace pika::detail {
             PIKA_ASSERT(!empty());
 
             if (using_embedded_storage()) { get().~base_type(); }
-            else
-            {
-                delete heap_storage;
-                heap_storage = nullptr;
-            }
+            else { delete object; }
 
             reset_vtable();
         }
@@ -145,23 +135,18 @@ namespace pika::detail {
             {
                 if (other.using_embedded_storage())
                 {
-                    auto p = reinterpret_cast<base_type*>(embedded_storage);
+                    auto p = reinterpret_cast<base_type*>(storage);
                     other.get().move_into(p);
                     object = p;
                 }
-                else
-                {
-                    heap_storage = other.heap_storage;
-                    other.heap_storage = nullptr;
-                    object = heap_storage;
-                }
+                else { object = other.object; }
 
                 other.reset_vtable();
             }
         }
 
     public:
-        movable_sbo_storage() = default;
+        movable_sbo_storage() {}
 
         ~movable_sbo_storage()
         {
@@ -197,15 +182,11 @@ namespace pika::detail {
 
             if constexpr (can_use_embedded_storage<Impl>())
             {
-                Impl* p = reinterpret_cast<Impl*>(embedded_storage);
+                Impl* p = reinterpret_cast<Impl*>(storage);
                 new (p) Impl(PIKA_FORWARD(Ts, ts)...);
                 object = p;
             }
-            else
-            {
-                heap_storage = new Impl(PIKA_FORWARD(Ts, ts)...);
-                object = heap_storage;
-            }
+            else { object = new Impl(PIKA_FORWARD(Ts, ts)...); }
         }
 
         void reset()
@@ -223,10 +204,9 @@ namespace pika::detail {
 
         using typename storage_base_type::base_type;
 
-        using storage_base_type::embedded_storage;
-        using storage_base_type::heap_storage;
         using storage_base_type::object;
         using storage_base_type::release;
+        using storage_base_type::storage;
         using storage_base_type::using_embedded_storage;
 
         void copy_assign(copyable_sbo_storage const& other) &
@@ -238,15 +218,11 @@ namespace pika::detail {
             {
                 if (other.using_embedded_storage())
                 {
-                    base_type* p = reinterpret_cast<base_type*>(embedded_storage);
+                    base_type* p = reinterpret_cast<base_type*>(storage);
                     other.get().clone_into(p);
                     object = p;
                 }
-                else
-                {
-                    heap_storage = other.get().clone();
-                    object = heap_storage;
-                }
+                else { object = other.get().clone(); }
             }
         }
 
