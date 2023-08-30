@@ -747,20 +747,6 @@ namespace pika {
         return rt->get_config().get_os_thread_count();
     }
 
-    bool is_scheduler_numa_sensitive()
-    {
-        runtime* rt = get_runtime_ptr();
-        if (nullptr == rt)
-        {
-            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::is_scheduler_numa_sensitive",
-                "the runtime system has not been initialized yet");
-            return false;
-        }
-
-        if (std::size_t(-1) != get_worker_thread_num()) return false;
-        return false;
-    }
-
     ///////////////////////////////////////////////////////////////////////////
     bool is_running()
     {
