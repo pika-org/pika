@@ -7,7 +7,6 @@
 
 set(tests
     block_os_threads_1036
-    run_as_pika_thread_exceptions_3304
     stackless_self_4155
     thread_data_1111
     thread_rescheduling

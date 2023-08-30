@@ -19,7 +19,6 @@ set(runtime_headers
     pika/runtime/get_worker_thread_num.hpp
     pika/runtime/os_thread_type.hpp
     pika/runtime/report_error.hpp
-    pika/runtime/run_as_pika_thread.hpp
     pika/runtime/runtime_handlers.hpp
     pika/runtime/runtime.hpp
     pika/runtime/runtime_fwd.hpp
