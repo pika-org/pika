@@ -141,6 +141,8 @@ namespace pika {
         init_params const& params = init_params());
     PIKA_EXPORT bool start(std::nullptr_t, int argc, const char* const* argv,
         init_params const& params = init_params());
+    PIKA_EXPORT bool start(
+        int argc, const char* const* argv, init_params const& params = init_params());
     PIKA_EXPORT int finalize(error_code& ec = throws);
     PIKA_EXPORT int stop(error_code& ec = throws);
     PIKA_EXPORT int wait(error_code& ec = throws);
