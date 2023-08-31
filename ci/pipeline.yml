@@ -30,6 +30,10 @@ stages:
            --build-arg COMPILER
            -f $DOCKERFILE .'
     - podman push $BUILD_IMAGE:$TAG
+    - podman run -v $PWD/ci/ctest.sh:${BUILD_DIR}/ctest.sh $BUILD_IMAGE:$TAG ${BUILD_DIR}/ctest.sh "$BUILD_IMAGE" "$THREADS_PER_NODE" "$SLURM_CONSTRAINT" > pipeline_ci_local.yml
+  artifacts:
+    paths:
+      - pipeline_ci_local.yml
 
 build cpu debug clang14:
   extends: .build_common
@@ -39,6 +43,7 @@ build cpu debug clang14:
     BASE_IMAGE: docker.io/pikaorg/pika-ci-base:17
     BUILD_IMAGE: $CSCS_REGISTRY_PATH/pika-debug-cpu-clang/build
     SLURM_CONSTRAINT: mc
+    THREADS_PER_NODE: 72
     COMPILER: clang
 
 .test_common:
@@ -50,3 +55,7 @@ test cpu debug clang14:
   extends: .test_common
   needs:
     - build cpu debug clang14
+  trigger:
+    include:
+      - artifact: pipeline_ci_local.yml
+        job: build cpu debug clang14
