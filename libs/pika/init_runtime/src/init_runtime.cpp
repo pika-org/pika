@@ -167,6 +167,12 @@ namespace pika {
         return 0 == detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false);
     }
 
+    bool start(int argc, const char* const* argv, init_params const& params)
+    {
+        util::detail::function<int(pika::program_options::variables_map&)> main_f;
+        return 0 == detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false);
+    }
+
     int finalize(error_code& ec)
     {
         if (!is_running())
