@@ -108,3 +108,5 @@ endif()
 if(PIKA_WITH_ITTNOTIFY)
   target_link_libraries(pika PUBLIC pika_internal::amplifier)
 endif()
+
+add_subdirectory(pika_omp_hack)

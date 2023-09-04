@@ -98,6 +98,8 @@ function(pika_setup_target target)
       ${target} PRIVATE "PIKA_APPLICATION_NAME=${name}"
                         "PIKA_APPLICATION_STRING=\"${name}\""
     )
+
+    target_link_libraries(${target} PRIVATE pika_omp_hack)
   endif()
 
   if("${_type}" STREQUAL "LIBRARY")

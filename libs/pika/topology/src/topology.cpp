@@ -192,7 +192,11 @@ namespace pika::threads::detail {
 
     static struct init_topology_t
     {
-        init_topology_t() { get_topology(); }
+        init_topology_t()
+        {
+            std::cerr << "getting topology in libpika\n";
+            get_topology();
+        }
     } init_topology{};
 
 #if !defined(PIKA_HAVE_MAX_CPU_COUNT)
