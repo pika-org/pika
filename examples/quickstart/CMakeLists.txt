@@ -16,6 +16,7 @@ set(example_programs
     fibonacci_futures
     fibonacci
     hello_world
+    hello_world_documentation
     latch_example # suffix added to avoid conflict with unit tests
     channel_example # suffix added to avoid conflict with unit tests
     channel_docs
