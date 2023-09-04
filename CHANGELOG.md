@@ -4,6 +4,26 @@
 <!--- Distributed under the Boost Software License, Version 1.0. (See accompanying -->
 <!--- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 
+## 0.18.0 (2023-09-06)
+
+### New features
+
+- A new command line option `--pika:process-mask` has been added to allow overriding the mask detected at startup. The process mask is also now read before the pika runtime is started to avoid problems with e.g. OpenMP resetting the mask before pika can read it. ([#738](https://github.com/pika-org/pika/pull/738), [#739](https://github.com/pika-org/pika/pull/739))
+- An overload of `pika::start` which takes no callable and is equivalent to passing `nullptr_t` or an empty callable as the entry point. ([#761](https://github.com/pika-org/pika/pull/761))
+
+### Breaking changes
+
+- The `any_receiver` `set_value_t` overload now accepts types which may throw in move and copy constructors. ([#702](https://github.com/pika-org/pika/pull/702))
+- The `PIKA_WITH_GENERIC_CONTEXT_COROUTINES` CMake option has been renamed to `PIKA_WITH_BOOST_CONTEXT`. ([#729](https://github.com/pika-org/pika/pull/729))
+- The `then` and `unpack` sender adaptors now correctly have `noexcept` `get_env_t` customizations. ([#732](https://github.com/pika-org/pika/pull/732))
+- mimalloc is now the default allocator. ([#730](https://github.com/pika-org/pika/pull/730))
+- The `pika::this_thread::experimental::sync_wait` receiver now correctly advertises itself as a receiver when using stdexec. ([#735](https://github.com/pika-org/pika/pull/735))
+- Various outdated and unused utilities and configuration options have been removed. ([#744](https://github.com/pika-org/pika/pull/744), [#753](https://github.com/pika-org/pika/pull/753), [#758](https://github.com/pika-org/pika/pull/758), [#759](https://github.com/pika-org/pika/pull/759))
+
+### Bugfixes
+
+- The small buffer optimization in `any_sender` and its companions has been disabled due to issues with the implementation. ([#760](https://github.com/pika-org/pika/pull/760))
+
 ## 0.17.0 (2023-08-02)
 
 ### New features
