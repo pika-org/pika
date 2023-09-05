@@ -13,7 +13,7 @@
 
 ### Breaking changes
 
-- The `any_receiver` `set_value_t` overload now accepts types which may throw in move and copy constructors. ([#702](https://github.com/pika-org/pika/pull/702))
+- The `any_receiver` `set_value_t` overload now accepts types which may throw in their move and copy constructors. ([#702](https://github.com/pika-org/pika/pull/702))
 - The `PIKA_WITH_GENERIC_CONTEXT_COROUTINES` CMake option has been renamed to `PIKA_WITH_BOOST_CONTEXT`. ([#729](https://github.com/pika-org/pika/pull/729))
 - The `then` and `unpack` sender adaptors now correctly have `noexcept` `get_env_t` customizations. ([#732](https://github.com/pika-org/pika/pull/732))
 - mimalloc is now the default allocator. ([#730](https://github.com/pika-org/pika/pull/730))
