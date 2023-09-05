@@ -8,6 +8,7 @@
 
 ### New features
 
+- A documentation site has been created on [pikacpp.org](https://pikacpp.org). ([#723](https://github.com/pika-org/pika/pull/723))
 - A new command line option `--pika:process-mask` has been added to allow overriding the mask detected at startup. The process mask is also now read before the pika runtime is started to avoid problems with e.g. OpenMP resetting the mask before pika can read it. ([#738](https://github.com/pika-org/pika/pull/738), [#739](https://github.com/pika-org/pika/pull/739))
 - An overload of `pika::start` which takes no callable and is equivalent to passing `nullptr_t` or an empty callable as the entry point. ([#761](https://github.com/pika-org/pika/pull/761))
 
