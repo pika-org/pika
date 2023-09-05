@@ -183,10 +183,10 @@ earlier revisions of P2300. The main differences to stdexec and the proposed fac
 - The pika implementation uses ``value_types``, ``error_types``, and ``sends_done`` instead of
   ``completion_signatures`` in sender types, as in the `first 3 revisions of P2300
   <https://wg21.link/p2300r3>`_.
-- `pika::this_thread::experimental::sync_wait` differs from `std::this_thread::sync_wait` in that
-  the former expects the sender to send a single value which is returned directly by `sync_wait`. If
-  no value is sent by the sender, `sync_wait` returns `void`.  Errors in `set_error` are thrown and
-  `set_stopped` is not supported.
+- ``pika::this_thread::experimental::sync_wait`` differs from ``std::this_thread::sync_wait`` in that
+  the former expects the sender to send a single value which is returned directly by ``sync_wait``. If
+  no value is sent by the sender, ``sync_wait`` returns `void`.  Errors in ``set_error`` are thrown and
+  ``set_stopped`` is not supported.
 
 pika has an experimental CMake option ``PIKA_WITH_STDEXEC`` which can be enabled to use stdexec for
 the P2300 facilities. pika brings the ``stdexec`` namespace into ``pika::execution::experimental``,
