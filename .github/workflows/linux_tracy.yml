@@ -27,7 +27,7 @@ jobs:
 
     steps:
     - name: Check out Tracy
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: wolfpld/tracy
         ref: v0.8.2
@@ -58,7 +58,7 @@ jobs:
           cmake --build build --target install
 
     - name: Check out pika
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         path: pika
     - name: Configure
