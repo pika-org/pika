@@ -35,8 +35,7 @@
 # pragma GCC diagnostic ignored "-Warray-bounds"
 #endif
 
-// SBO is currently disabled as it seems to be buggy in certain use cases. It can still be
-// explicitly forced to on by defining PIKA_DETAIL_ENABLE_ANY_SENDER_SBO.
+#define PIKA_DETAIL_ENABLE_ANY_SENDER_SBO
 
 namespace pika::detail {
     template <typename T>
