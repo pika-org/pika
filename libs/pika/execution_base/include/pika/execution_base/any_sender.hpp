@@ -35,6 +35,8 @@
 # pragma GCC diagnostic ignored "-Warray-bounds"
 #endif
 
+#define PIKA_DETAIL_ENABLE_ANY_SENDER_SBO
+
 // SBO is currently disabled as it seems to be buggy in certain use cases. It can still be
 // explicitly forced to on by defining PIKA_DETAIL_ENABLE_ANY_SENDER_SBO.
 
@@ -102,13 +104,8 @@ namespace pika::detail {
         // - heap_storage: A pointer to base_type that is used when objects
         //   don't fit in the embedded storage.
 #if defined(PIKA_DETAIL_ENABLE_ANY_SENDER_SBO)
-        union
-        {
-            std::aligned_storage_t<embedded_storage_size, alignment_size> embedded_storage;
-#endif
-            base_type* heap_storage = nullptr;
-#if defined(PIKA_DETAIL_ENABLE_ANY_SENDER_SBO)
-        };
+        alignas((std::max)(AlignmentSize,
+            sizeof(void*))) char storage[std::max(EmbeddedStorageSize, sizeof(void*))];
 #endif
         base_type* object = const_cast<base_type*>(get_empty_vtable<base_type>());
 
@@ -129,7 +126,7 @@ namespace pika::detail {
         bool using_embedded_storage() const noexcept
         {
 #if defined(PIKA_DETAIL_ENABLE_ANY_SENDER_SBO)
-            return object == reinterpret_cast<base_type const*>(&embedded_storage);
+            return static_cast<void*>(object) == storage;
 #else
             return false;
 #endif
@@ -146,8 +143,7 @@ namespace pika::detail {
             else
 #endif
             {
-                delete heap_storage;
-                heap_storage = nullptr;
+                delete object;
             }
 
             reset_vtable();
@@ -164,16 +160,14 @@ namespace pika::detail {
 #if defined(PIKA_DETAIL_ENABLE_ANY_SENDER_SBO)
                 if (other.using_embedded_storage())
                 {
-                    auto p = reinterpret_cast<base_type*>(&embedded_storage);
+                    auto p = static_cast<void*>(&storage);
                     other.get().move_into(p);
-                    object = p;
+                    object = reinterpret_cast<base_type*>(p);
                 }
                 else
 #endif
                 {
-                    heap_storage = other.heap_storage;
-                    other.heap_storage = nullptr;
-                    object = heap_storage;
+                    object = other.object;
                 }
 
                 other.reset_vtable();
@@ -181,7 +175,7 @@ namespace pika::detail {
         }
 
     public:
-        movable_sbo_storage() = default;
+        movable_sbo_storage() {}
 
         ~movable_sbo_storage()
         {
@@ -218,15 +212,14 @@ namespace pika::detail {
 #if defined(PIKA_DETAIL_ENABLE_ANY_SENDER_SBO)
             if constexpr (can_use_embedded_storage<Impl>())
             {
-                Impl* p = reinterpret_cast<Impl*>(&embedded_storage);
+                auto p = static_cast<void*>(&storage);
                 new (p) Impl(PIKA_FORWARD(Ts, ts)...);
-                object = p;
+                object = reinterpret_cast<base_type*>(p);
             }
             else
 #endif
             {
-                heap_storage = new Impl(PIKA_FORWARD(Ts, ts)...);
-                object = heap_storage;
+                object = new Impl(PIKA_FORWARD(Ts, ts)...);
             }
         }
 
@@ -246,9 +239,8 @@ namespace pika::detail {
         using typename storage_base_type::base_type;
 
 #if defined(PIKA_DETAIL_ENABLE_ANY_SENDER_SBO)
-        using storage_base_type::embedded_storage;
+        using storage_base_type::storage;
 #endif
-        using storage_base_type::heap_storage;
         using storage_base_type::object;
         using storage_base_type::release;
         using storage_base_type::using_embedded_storage;
@@ -263,15 +255,14 @@ namespace pika::detail {
 #if defined(PIKA_DETAIL_ENABLE_ANY_SENDER_SBO)
                 if (other.using_embedded_storage())
                 {
-                    base_type* p = reinterpret_cast<base_type*>(&embedded_storage);
+                    auto p = static_cast<void*>(&storage);
                     other.get().clone_into(p);
-                    object = p;
+                    object = reinterpret_cast<base_type*>(p);
                 }
                 else
 #endif
                 {
-                    heap_storage = other.get().clone();
-                    object = heap_storage;
+                    object = other.get().clone();
                 }
             }
         }
