@@ -97,6 +97,8 @@ namespace pika::detail {
         static constexpr std::size_t alignment_size = AlignmentSize;
 #endif
 
+        base_type* object = const_cast<base_type*>(get_empty_vtable<base_type>());
+
         // The union has two members:
         // - embedded_storage: Embedded storage size array used for types that
         //   are at most embedded_storage_size bytes large, and require at most
@@ -107,7 +109,6 @@ namespace pika::detail {
         alignas((std::max)(AlignmentSize,
             sizeof(void*))) char storage[std::max(EmbeddedStorageSize, sizeof(void*))];
 #endif
-        base_type* object = const_cast<base_type*>(get_empty_vtable<base_type>());
 
         // Returns true when it's safe to use the embedded storage, i.e.
         // when the size and alignment of Impl are small enough.
