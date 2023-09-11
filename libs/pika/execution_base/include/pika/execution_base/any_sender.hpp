@@ -303,10 +303,14 @@ namespace pika::execution::experimental::detail {
         virtual void start() & noexcept = 0;
     };
 
-    struct PIKA_EXPORT empty_any_operation_state final : any_operation_state_base
+    struct empty_any_operation_state final : any_operation_state_base
     {
-        bool empty() const noexcept override;
-        void start() & noexcept override;
+        bool empty() const noexcept override { return true; }
+        void start() & noexcept override
+        {
+            PIKA_THROW_EXCEPTION(pika::error::bad_function_call, "any_operation_state::start",
+                "attempted to call start on empty any_operation_state");
+        }
     };
 }    // namespace pika::execution::experimental::detail
 
@@ -334,7 +338,7 @@ namespace pika::execution::experimental::detail {
         void start() & noexcept override { pika::execution::experimental::start(operation_state); }
     };
 
-    class PIKA_EXPORT any_operation_state
+    class any_operation_state
     {
         using base_type = detail::any_operation_state_base;
         template <typename Sender, typename Receiver>
@@ -357,8 +361,11 @@ namespace pika::execution::experimental::detail {
         any_operation_state& operator=(any_operation_state&&) = delete;
         any_operation_state& operator=(any_operation_state const&) = delete;
 
-        PIKA_EXPORT friend void tag_invoke(
-            pika::execution::experimental::start_t, any_operation_state& os) noexcept;
+        friend void tag_invoke(
+            pika::execution::experimental::start_t, any_operation_state& os) noexcept
+        {
+            os.storage.get().start();
+        }
     };
 
     template <typename... Ts>
@@ -372,8 +379,12 @@ namespace pika::execution::experimental::detail {
         virtual bool empty() const noexcept { return false; }
     };
 
-    [[noreturn]] PIKA_EXPORT void throw_bad_any_call(
-        char const* class_name, char const* function_name);
+    [[noreturn]] inline void throw_bad_any_call(char const* class_name, char const* function_name)
+    {
+        PIKA_THROW_EXCEPTION(pika::error::bad_function_call,
+            fmt::format("{}::{}", class_name, function_name), "attempted to call {} on empty {}",
+            function_name, class_name);
+    }
 
     template <typename... Ts>
     struct empty_any_receiver final : any_receiver_base<Ts...>
