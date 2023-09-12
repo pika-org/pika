@@ -6,6 +6,7 @@
 
 set(tests
     algorithm_bulk
+    algorithm_drop_operation_state
     algorithm_drop_value
     algorithm_ensure_started
     algorithm_execute

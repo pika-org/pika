@@ -10,6 +10,7 @@ set(execution_headers
     pika/execution/algorithms/bulk.hpp
     pika/execution/algorithms/detail/helpers.hpp
     pika/execution/algorithms/detail/partial_algorithm.hpp
+    pika/execution/algorithms/drop_operation_state.hpp
     pika/execution/algorithms/drop_value.hpp
     pika/execution/algorithms/ensure_started.hpp
     pika/execution/algorithms/execute.hpp
