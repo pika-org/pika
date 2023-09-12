@@ -410,14 +410,12 @@ namespace pika {
                 &pika::detail::registered_locks_error_handler);
             pika::util::set_register_locks_predicate(&pika::detail::register_locks_predicate);
 #endif
-#if !defined(PIKA_HAVE_DISABLED_SIGNAL_EXCEPTION_HANDLERS)
             if (pika::detail::get_entry_as<bool>(
                     cmdline.rtcfg_, "pika.install_signal_handlers", false))
             {
                 set_signal_handlers();
             }
 
-#endif
             pika::threads::detail::set_get_default_pool(&pika::detail::get_default_pool);
             pika::threads::detail::set_get_locality_id(&get_locality_id);
             pika::parallel::execution::detail::set_get_pu_mask(&pika::detail::get_pu_mask);

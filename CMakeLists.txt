@@ -430,17 +430,6 @@ pika_option(
   ADVANCED
 )
 
-pika_option(
-  PIKA_WITH_DISABLED_SIGNAL_EXCEPTION_HANDLERS
-  BOOL
-  "Disables the mechanism that produces debug output for caught signals and unhandled exceptions (default: OFF)"
-  OFF
-  ADVANCED
-)
-if(PIKA_WITH_DISABLED_SIGNAL_EXCEPTION_HANDLERS)
-  pika_add_config_define(PIKA_HAVE_DISABLED_SIGNAL_EXCEPTION_HANDLERS)
-endif()
-
 # Thread Manager related build options
 
 set(PIKA_MAX_CPU_COUNT_DEFAULT "")
