@@ -142,12 +142,14 @@ how many threads to use for the runtime. ``hwloc-bind`` can also be used to manu
 mask on the application. When a process mask is set, the default behaviour is to use only one thread
 per core in the process mask. Setting ``--pika:threads`` to a number higher than the number of cores
 available in the mask is not allowed. Using ``--pika:threads=all`` will use all the hyperthreads in
-the process mask. The process mask can explicitly be ignored with the option
-``--pika:ignore-process-mask``. In that case pika behaves as if no process mask is set. In addition
-to setting the mask with batch systems or ``hwloc-bind``, the mask used by the runtime can also be
-overridden with ``--pika:process-mask``. The option takes an explicit hexadecimal string (beginning
-with ``0x``) representing the process mask to use. ``--pika:print-bind`` can be used to verify that
-the bindings used by pika are correct.
+the process mask.
+
+The process mask can explicitly be ignored with the option ``--pika:ignore-process-mask`` or
+overridden with ``--pika:process-mask``. With ``--pika:ignore-process-mask`` pika behaves as if no
+process mask is set. ``--pika:process-mask`` takes an explicit hexadecimal string (beginning with
+``0x``) representing the process mask to use. The mask can also be set with the environment variable
+``PIKA_PROCESS_MASK``. ``--pika:process-mask`` takes precedence over ``PIKA_PROCESS_MASK``.
+``--pika:print-bind`` can be used to verify that the bindings used by pika are correct.
 
 Interaction with OpenMP
 -----------------------
