@@ -41,6 +41,7 @@ clang14_debug_build:
   variables:
     SLURM_CONSTRAINT: mc
     SLURM_PARTITION: normal
+    PROCESSOR_COUNT: 36
 
 .test_common_gpu:
   extends: .test_common
@@ -48,6 +49,7 @@ clang14_debug_build:
   variables:
     SLURM_CONSTRAINT: gpu
     SLURM_PARTITION: normal
+    PROCESSOR_COUNT: 12
 
 clang14_debug_test:
   extends: .test_common_mc
@@ -55,7 +57,7 @@ clang14_debug_test:
     - clang14_debug_build
   image: $CSCS_REGISTRY_PATH/pika-debug-cpu-clang14:$CI_COMMIT_SHORT_SHA
   script:
-    - ctest -B${BUILD_DIR} --verbose --timeout 120 --output-on-failure --no-compress-output -R tests --exclude-regex "tests.unit.modules.executors.std_thread_scheduler"
+    - ctest -B${BUILD_DIR} --verbose -j${PROCESSOR_COUNT} --timeout 120 --output-on-failure --no-compress-output -R tests --exclude-regex "tests.unit.modules.executors.std_thread_scheduler"
   variables:
     SLURM_JOB_NUM_NODES: 1
     SLURM_NTASKS: 1
