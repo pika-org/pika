@@ -399,15 +399,6 @@ jobs:
               export OMPI_ALLOW_RUN_AS_ROOT=1
               export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 
-              # The glibc tcache _may_ be causing issues with the
-              # std_thread_scheduler test. See
-              # https://github.com/pika-org/pika/pull/250#issuecomment-1150765258
-              # for more details and links. This is disabled to check if it has
-              # a noticeable effect on the error rate in the test. This should
-              # be revisited to see if newer versions of glibc can do without
-              # disabling this.
-              export GLIBC_TUNABLES=glibc.malloc.tcache_count=0
-
               ulimit -c unlimited
               ctest \
                 -j2 \
