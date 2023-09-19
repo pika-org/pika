@@ -29,6 +29,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <cstdlib>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -113,6 +114,9 @@ namespace pika::detail {
         pika::program_options::variables_map& vm, bool use_process_mask)
     {
         std::string mask_string = cfgmap.get_value<std::string>("pika.process_mask", "");
+
+        char const* mask_env = std::getenv("PIKA_PROCESS_MASK");
+        if (nullptr != mask_env) { mask_string = mask_env; }
 
         if (vm.count("pika:process-mask"))
         {

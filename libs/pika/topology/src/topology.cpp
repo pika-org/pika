@@ -1160,6 +1160,15 @@ namespace pika::threads::detail {
                 fmt::streamed(mask), concurrency);
         }
 
+        if (!any(mask))
+        {
+            PIKA_THROWS_IF(ec, pika::error::bad_parameter,
+                "pika::threads::detail::topology::set_cpubind_mask_main_thread",
+                "CPU mask is empty ({}), make sure it has at least one bit set through "
+                "PIKA_PROCESS_MASK or --pika:process-mask",
+                fmt::streamed(mask));
+        }
+
         main_thread_affinity_mask_ = std::move(mask);
     }
 
