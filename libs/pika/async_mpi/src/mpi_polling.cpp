@@ -431,6 +431,8 @@ namespace pika::mpi::experimental {
 
                 // Invoke callback (PIKA_MOVE doesn't compile here)
                 PIKA_INVOKE(std::move(ready_callback_.cb_), ready_callback_.err_);
+
+                pika::threads::detail::decrement_global_activity_count();
             }
 
             // if we think there are no outstanding requests, then exit quickly
