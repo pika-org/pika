@@ -4,7 +4,7 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-cxx_std="20"
+cxx_std="23"
 clang_version="16.0.2"
 boost_version="1.82.0"
 hwloc_version="2.9.1"
