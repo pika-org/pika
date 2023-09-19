@@ -20,6 +20,9 @@ configure_extra_options+=" -DPIKA_WITH_MALLOC=system"
 configure_extra_options+=" -DPIKA_WITH_CUDA=ON"
 configure_extra_options+=" -DCMAKE_CUDA_ARCHITECTURES=60"
 
+# Force this option to off to test the fallback implementation of PIKA_FORWARD
+configure_extra_options+=" -DPIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE=OFF"
+
 # All async_cuda tests are disabled from running because the driver on Piz Daint
 # is too old for CUDA 12.
 test_extra_options+=" EXCLUDE async_cuda"
