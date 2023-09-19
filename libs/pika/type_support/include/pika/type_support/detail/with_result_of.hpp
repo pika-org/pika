@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <pika/config/forward.hpp>
+
 #include <utility>
 
 namespace pika::detail {
