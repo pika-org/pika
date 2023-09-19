@@ -850,11 +850,6 @@ pika_option(
   CATEGORY "Debugging"
   ADVANCED
 )
-pika_option(
-  PIKA_WITH_THREAD_GUARD_PAGE BOOL "Enable thread guard page (default: ON)" ON
-  CATEGORY "Debugging"
-  ADVANCED
-)
 
 if(PIKA_WITH_VERIFY_LOCKS)
   pika_add_config_define(PIKA_HAVE_VERIFY_LOCKS)
@@ -864,10 +859,6 @@ if(PIKA_WITH_VERIFY_LOCKS)
 endif()
 
 # Additional debug support
-if(NOT WIN32 AND PIKA_WITH_THREAD_GUARD_PAGE)
-  pika_add_config_define(PIKA_HAVE_THREAD_GUARD_PAGE)
-endif()
-
 if(NOT WIN32 AND PIKA_WITH_THREAD_STACK_MMAP)
   pika_add_config_define(PIKA_HAVE_THREAD_STACK_MMAP)
 endif()

@@ -80,29 +80,26 @@ namespace pika::threads::coroutines::detail::posix {
 
     inline void* to_stack_with_guard_page(void* stack)
     {
-#  if defined(PIKA_HAVE_THREAD_GUARD_PAGE)
         if (use_guard_pages)
         {
             return static_cast<void*>(static_cast<void**>(stack) - (EXEC_PAGESIZE / sizeof(void*)));
         }
-#  endif
+
         return stack;
     }
 
     inline void* to_stack_without_guard_page(void* stack)
     {
-#  if defined(PIKA_HAVE_THREAD_GUARD_PAGE)
         if (use_guard_pages)
         {
             return static_cast<void*>(static_cast<void**>(stack) + (EXEC_PAGESIZE / sizeof(void*)));
         }
-#  endif
+
         return stack;
     }
 
     inline void add_guard_page(void* stack)
     {
-#  if defined(PIKA_HAVE_THREAD_GUARD_PAGE)
         if (use_guard_pages)
         {
             int r = ::mprotect(stack, EXEC_PAGESIZE, PROT_NONE);
@@ -113,16 +110,12 @@ namespace pika::threads::coroutines::detail::posix {
                 throw std::runtime_error(error_message);
             }
         }
-#  else
-        PIKA_UNUSED(stack);
-#  endif
     }
 
     inline std::size_t stack_size_with_guard_page(std::size_t size)
     {
-#  if defined(PIKA_HAVE_THREAD_GUARD_PAGE)
         if (use_guard_pages) { return size + EXEC_PAGESIZE; }
-#  endif
+
         return size;
     }
 
@@ -140,7 +133,6 @@ namespace pika::threads::coroutines::detail::posix {
 
         if (real_stack == MAP_FAILED)
         {
-#  if defined(PIKA_HAVE_THREAD_GUARD_PAGE)
             if (ENOMEM == errno && use_guard_pages)
             {
                 char const* error_message =
@@ -150,7 +142,6 @@ namespace pika::threads::coroutines::detail::posix {
                     "consumption.";
                 throw std::runtime_error(error_message);
             }
-#  endif
 
             std::string error_message = "mmap failed to allocate thread stack with errno " +
                 std::to_string(errno) + " (" + std::strerror(errno) + ")";
