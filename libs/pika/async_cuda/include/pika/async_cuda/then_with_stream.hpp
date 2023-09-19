@@ -397,7 +397,14 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                 then_with_cuda_stream_receiver&& r, Ts&&... ts) noexcept
                 -> decltype(r.set_value(PIKA_FORWARD(Ts, ts)...))
             {
+                // nvcc fails to compile this with std::forward<Ts>(ts)...  or
+                // static_cast<Ts&&>(ts)... so we explicitly use
+                // static_cast<decltype(ts)>(ts)... as a workaround.
+#if defined(PIKA_HAVE_CUDA)
+                r.set_value(static_cast<decltype(ts)&&>(ts)...);
+#else
                 r.set_value(PIKA_FORWARD(Ts, ts)...);
+#endif
             }
 
             using operation_state_type =
