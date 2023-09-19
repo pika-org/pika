@@ -325,7 +325,7 @@ namespace pika::when_all_impl {
 
             template <typename Receiver_, typename SendersPack_>
             operation_state(Receiver_&& receiver, SendersPack_&& senders)
-              : base_type(PIKA_FORWARD(Receiver_, receiver), PIKA_FORWARD(SendersPack, senders))
+              : base_type(PIKA_FORWARD(Receiver_, receiver), PIKA_FORWARD(SendersPack_, senders))
               , op_state(pika::execution::experimental::connect(
 # if defined(PIKA_CUDA_VERSION)
                     std::forward<SendersPack_>(senders).template get<i>(),

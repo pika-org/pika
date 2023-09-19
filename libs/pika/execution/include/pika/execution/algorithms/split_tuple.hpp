@@ -507,7 +507,7 @@ namespace pika::split_tuple_detail {
         unique_ptr p(allocator_traits::allocate(alloc, 1),
             pika::detail::allocator_deleter<other_allocator>{alloc});
 
-        new (p.get()) shared_state_type{PIKA_FORWARD(Sender_, sender), allocator};
+        new (p.get()) shared_state_type{PIKA_FORWARD(Sender, sender), allocator};
         pika::intrusive_ptr<shared_state_type> state = p.release();
 
         // nvcc does not like decay_t, so this uses decay<>::type instead.

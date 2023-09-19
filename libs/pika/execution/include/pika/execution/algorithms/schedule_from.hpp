@@ -185,7 +185,14 @@ namespace pika::schedule_from_detail {
                                         PIKA_FORWARD(Ts, ts)...),
                         void())
                 {
+                    // nvcc fails to compile this with std::forward<Ts>(ts)...
+                    // or static_cast<Ts&&>(ts)... so we explicitly use
+                    // static_cast<decltype(ts)>(ts)... as a workaround.
+# if defined(PIKA_HAVE_CUDA)
+                    r.op_state.set_value_predecessor_sender(static_cast<decltype(ts)&&>(ts)...);
+# else
                     r.op_state.set_value_predecessor_sender(PIKA_FORWARD(Ts, ts)...);
+# endif
                 }
             };
 

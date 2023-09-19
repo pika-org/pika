@@ -23,6 +23,9 @@ configure_extra_options+=" -DPIKA_WITH_STDEXEC=ON"
 configure_extra_options+=" -DCMAKE_CUDA_COMPILER=c++"
 configure_extra_options+=" -DCMAKE_CUDA_ARCHITECTURES=60"
 
+# Force this option to off to test the fallback implementation of PIKA_FORWARD
+configure_extra_options+=" -DPIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE=OFF"
+
 # The build unit test with pika in Debug and the hello_world project in Debug
 # mode hangs on this configuration. Release-Debug, Debug-Release, and
 # Release-Release do not hang.
