@@ -122,11 +122,6 @@ namespace pika::execution {
             high priority queue and will never be stolen by another thread
             after initial assignment. This should be used for thread placement
             tasks such as OpenMP type for loops. */
-
-        /// \cond NOINTERNAL
-        // obsolete, kept for compatibility only
-        critical = high_recursive,
-        /// \endcond
     };
     // clang-format on
 
