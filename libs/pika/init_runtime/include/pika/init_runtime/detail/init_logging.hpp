@@ -26,13 +26,9 @@ namespace pika::detail {
         std::string format_;
     };
 
-    PIKA_EXPORT void define_common_formatters(pika::util::logging::writer::named_write& writer);
-
-    PIKA_EXPORT void define_formatters_local(pika::util::logging::writer::named_write& writer);
-
+    PIKA_EXPORT void define_formatters(pika::util::logging::writer::named_write& writer);
     PIKA_EXPORT log_settings get_log_settings(pika::detail::section const&, char const*);
-    PIKA_EXPORT void init_logging(pika::util::runtime_configuration& ini,
-        void (*define_formatters)(pika::util::logging::writer::named_write&));
+    PIKA_EXPORT void init_logging(pika::util::runtime_configuration& ini);
 
     PIKA_EXPORT void init_logging_local(pika::util::runtime_configuration&);
 

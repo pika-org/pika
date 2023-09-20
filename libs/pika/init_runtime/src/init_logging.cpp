@@ -7,20 +7,20 @@
 
 #include <pika/config.hpp>
 
-# include <pika/assert.hpp>
-# include <pika/init_runtime/detail/init_logging.hpp>
-# include <pika/runtime/get_worker_thread_num.hpp>
-# include <pika/runtime_configuration/runtime_configuration.hpp>
-# include <pika/threading_base/thread_data.hpp>
+#include <pika/assert.hpp>
+#include <pika/init_runtime/detail/init_logging.hpp>
+#include <pika/runtime/get_worker_thread_num.hpp>
+#include <pika/runtime_configuration/runtime_configuration.hpp>
+#include <pika/threading_base/thread_data.hpp>
 
-# include <fmt/ostream.h>
-# include <fmt/printf.h>
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
-# include <cstddef>
-# include <cstdint>
-# include <cstdlib>
-# include <iostream>
-# include <string>
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
+#include <iostream>
+#include <string>
 
 namespace pika::detail {
     using logger_writer_type = pika::util::logging::writer::named_write;
@@ -172,18 +172,14 @@ namespace pika::detail {
         return result;
     }
 
-    void define_common_formatters(logger_writer_type& writer)
+    void define_formatters(logger_writer_type& writer)
     {
         writer.set_formatter("osthread", shepherd_thread_id());
         writer.set_formatter("pikathread", thread_id());
         writer.set_formatter("pikaphase", thread_phase());
         writer.set_formatter("pikaparent", parent_thread_id());
         writer.set_formatter("pikaparentphase", parent_thread_phase());
-    }
-
-    void define_formatters_local(logger_writer_type& writer)
-    {
-        define_common_formatters(writer);
+        writer.set_formatter("parentloc", parent_thread_locality());
         writer.set_formatter("pikacomponent", dummy_thread_component_id());
     }
 
@@ -210,8 +206,7 @@ namespace pika::detail {
 
     ///////////////////////////////////////////////////////////////////////
     // initialize logging for performance measurements
-    void init_timing_log(pika::util::logging::level lvl, std::string logdest, std::string logformat,
-        void (*define_formatters)(pika::util::logging::writer::named_write&))
+    void init_timing_log(pika::util::logging::level lvl, std::string logdest, std::string logformat)
     {
         if (pika::util::logging::level::disable_all != lvl)
         {
@@ -230,8 +225,7 @@ namespace pika::detail {
         pika::util::timing_logger()->set_enabled(lvl);
     }
 
-    void init_timing_log(pika::util::runtime_configuration& ini,
-        void (*define_formatters)(pika::util::logging::writer::named_write&))
+    void init_timing_log(pika::util::runtime_configuration& ini)
     {
         auto settings = get_log_settings(ini, "pika.logging.timing");
 
@@ -239,13 +233,11 @@ namespace pika::detail {
         if (!settings.level_.empty())
             lvl = pika::util::detail::get_log_level(settings.level_, true);
 
-        init_timing_log(
-            lvl, PIKA_MOVE(settings.dest_), PIKA_MOVE(settings.format_), define_formatters);
+        init_timing_log(lvl, PIKA_MOVE(settings.dest_), PIKA_MOVE(settings.format_));
     }
 
     ///////////////////////////////////////////////////////////////////////
-    void init_pika_log(pika::util::logging::level lvl, std::string logdest, std::string logformat,
-        void (*define_formatters)(pika::util::logging::writer::named_write&))
+    void init_pika_log(pika::util::logging::level lvl, std::string logdest, std::string logformat)
     {
         logger_writer_type& writer = pika::util::pika_logger()->writer();
         logger_writer_type& error_writer = pika::util::pika_error_logger()->writer();
@@ -282,8 +274,7 @@ namespace pika::detail {
         }
     }
 
-    void init_pika_log(pika::util::runtime_configuration& ini,
-        void (*define_formatters)(pika::util::logging::writer::named_write&))
+    void init_pika_log(pika::util::runtime_configuration& ini)
     {
         auto settings = get_log_settings(ini, "pika.logging");
 
@@ -291,14 +282,13 @@ namespace pika::detail {
         if (!settings.level_.empty())
             lvl = pika::util::detail::get_log_level(settings.level_, true);
 
-        init_pika_log(
-            lvl, PIKA_MOVE(settings.dest_), PIKA_MOVE(settings.format_), define_formatters);
+        init_pika_log(lvl, PIKA_MOVE(settings.dest_), PIKA_MOVE(settings.format_));
     }
 
     ///////////////////////////////////////////////////////////////////////
     // initialize logging for application
-    void init_debuglog_log(pika::util::logging::level lvl, std::string logdest,
-        std::string logformat, void (*define_formatters)(pika::util::logging::writer::named_write&))
+    void init_debuglog_log(
+        pika::util::logging::level lvl, std::string logdest, std::string logformat)
     {
         if (pika::util::logging::level::disable_all != lvl)
         {
@@ -317,8 +307,7 @@ namespace pika::detail {
         pika::util::debuglog_logger()->set_enabled(lvl);
     }
 
-    void init_debuglog_log(pika::util::runtime_configuration& ini,
-        void (*define_formatters)(pika::util::logging::writer::named_write&))
+    void init_debuglog_log(pika::util::runtime_configuration& ini)
     {
         auto settings = get_log_settings(ini, "pika.logging.debuglog");
 
@@ -326,27 +315,17 @@ namespace pika::detail {
         if (!settings.level_.empty())
             lvl = pika::util::detail::get_log_level(settings.level_, true);
 
-        init_debuglog_log(
-            lvl, PIKA_MOVE(settings.dest_), PIKA_MOVE(settings.format_), define_formatters);
+        init_debuglog_log(lvl, PIKA_MOVE(settings.dest_), PIKA_MOVE(settings.format_));
     }
 
-    static void (*default_define_formatters)(
-        pika::util::logging::writer::named_write&) = define_formatters_local;
-
-    void init_logging(pika::util::runtime_configuration& ini,
-        void (*define_formatters)(pika::util::logging::writer::named_write&))
+    void init_logging(pika::util::runtime_configuration& ini)
     {
-        default_define_formatters = define_formatters;
-
-        init_timing_log(ini, define_formatters);
-        init_pika_log(ini, define_formatters);
-        init_debuglog_log(ini, define_formatters);
+        init_timing_log(ini);
+        init_pika_log(ini);
+        init_debuglog_log(ini);
     }
 
-    void init_logging_local(pika::util::runtime_configuration& ini)
-    {
-        init_logging(ini, define_formatters_local);
-    }
+    void init_logging_local(pika::util::runtime_configuration& ini) { init_logging(ini); }
 
     ///////////////////////////////////////////////////////////////////////////
     void disable_logging(logging_destination dest)
@@ -377,17 +356,11 @@ namespace pika::detail {
 
         switch (dest)
         {
-        case destination_pika:
-            detail::init_pika_log(lvl, logdest, logformat, detail::default_define_formatters);
-            break;
+        case destination_pika: detail::init_pika_log(lvl, logdest, logformat); break;
 
-        case destination_timing:
-            detail::init_debuglog_log(lvl, logdest, logformat, detail::default_define_formatters);
-            break;
+        case destination_timing: detail::init_debuglog_log(lvl, logdest, logformat); break;
 
-        case destination_debuglog:
-            detail::init_debuglog_log(lvl, logdest, logformat, detail::default_define_formatters);
-            break;
+        case destination_debuglog: detail::init_debuglog_log(lvl, logdest, logformat); break;
         }
     }
 }    // namespace pika::detail
