@@ -61,7 +61,7 @@ int pika_main(pika::program_options::variables_map&)
 
     // create an executor with high priority for important tasks
     pika::execution::parallel_executor high_priority_executor(
-        pika::this_thread::get_pool(), pika::execution::thread_priority::critical);
+        pika::this_thread::get_pool(), pika::execution::thread_priority::high_recursive);
     pika::execution::parallel_executor normal_priority_executor;
 
     pika::execution::parallel_executor pool_executor;

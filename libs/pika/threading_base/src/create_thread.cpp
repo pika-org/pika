@@ -61,8 +61,8 @@ namespace pika::threads::detail {
 
         if (nullptr == data.scheduler_base) data.scheduler_base = scheduler;
 
-        // Pass critical priority from parent to child (but only if there is
-        // none is explicitly specified).
+        // Pass recursive high priority from parent to child (but only if there is none is
+        // explicitly specified).
         if (self)
         {
             if (data.priority == execution::thread_priority::default_ &&
