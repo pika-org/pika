@@ -19,29 +19,7 @@
 
 #if defined(PIKA_HAVE_LOGGING)
 namespace pika::detail {
-
     /// \cond NOINTERNAL
-
-    // custom log destination: send generated strings to console
-    struct PIKA_EXPORT console_local : pika::util::logging::destination::manipulator
-    {
-        console_local(pika::util::logging::level level, pika::logging_destination dest)
-          : level_(level)
-          , dest_(dest)
-        {
-        }
-
-        void operator()(pika::util::logging::message const& msg) override;
-
-        friend bool operator==(console_local const& lhs, console_local const& rhs)
-        {
-            return lhs.dest_ == rhs.dest_;
-        }
-
-        pika::util::logging::level level_;
-        pika::logging_destination dest_;
-    };
-
     struct log_settings
     {
         std::string level_;
@@ -54,9 +32,7 @@ namespace pika::detail {
     PIKA_EXPORT void define_formatters_local(pika::util::logging::writer::named_write& writer);
 
     PIKA_EXPORT log_settings get_log_settings(pika::detail::section const&, char const*);
-    PIKA_EXPORT void init_logging(pika::util::runtime_configuration& ini, bool isconsole,
-        void (*set_console_dest)(pika::util::logging::writer::named_write&, char const*,
-            pika::util::logging::level, pika::logging_destination),
+    PIKA_EXPORT void init_logging(pika::util::runtime_configuration& ini,
         void (*define_formatters)(pika::util::logging::writer::named_write&));
 
     PIKA_EXPORT void init_logging_local(pika::util::runtime_configuration&);

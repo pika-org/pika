@@ -234,77 +234,34 @@ namespace pika::util {
             // general logging
             "[pika.logging]",
             "level = ${PIKA_LOGLEVEL:0}",
-            "destination = ${PIKA_LOGDESTINATION:console}",
+            "destination = ${PIKA_LOGDESTINATION:cerr}",
             "format = ${PIKA_LOGFORMAT:" PIKA_LOGFORMAT
                 "P%parentloc%/%pikaparent%.%pikaparentphase% %time%("
                 PIKA_TIMEFORMAT ") [%idx%]|\\n}",
 
-            // general console logging
-            "[pika.logging.console]",
-            "level = ${PIKA_LOGLEVEL:$[pika.logging.level]}",
-#if defined(ANDROID) || defined(__ANDROID__)
-            "destination = ${PIKA_CONSOLE_LOGDESTINATION:android_log}",
-#else
-            "destination = ${PIKA_CONSOLE_LOGDESTINATION:"
-                "file(pika.$[system.pid].log)}",
-#endif
-            "format = ${PIKA_CONSOLE_LOGFORMAT:|}",
-
             // logging related to timing
             "[pika.logging.timing]",
             "level = ${PIKA_TIMING_LOGLEVEL:-1}",
-            "destination = ${PIKA_TIMING_LOGDESTINATION:console}",
+            "destination = ${PIKA_TIMING_LOGDESTINATION:cerr}",
             "format = ${PIKA_TIMING_LOGFORMAT:" PIKA_LOGFORMAT
                 "P%parentloc%/%pikaparent%.%pikaparentphase% %time%("
                 PIKA_TIMEFORMAT ") [%idx%] [TIM] |\\n}",
 
-            // console logging related to timing
-            "[pika.logging.console.timing]",
-            "level = ${PIKA_TIMING_LOGLEVEL:$[pika.logging.timing.level]}",
-#if defined(ANDROID) || defined(__ANDROID__)
-            "destination = ${PIKA_CONSOLE_TIMING_LOGDESTINATION:android_log}",
-#else
-            "destination = ${PIKA_CONSOLE_TIMING_LOGDESTINATION:"
-                "file(pika.timing.$[system.pid].log)}",
-#endif
-            "format = ${PIKA_CONSOLE_TIMING_LOGFORMAT:|}",
-
             // logging related to applications
             "[pika.logging.application]",
             "level = ${PIKA_APP_LOGLEVEL:-1}",
-            "destination = ${PIKA_APP_LOGDESTINATION:console}",
+            "destination = ${PIKA_APP_LOGDESTINATION:cerr}",
             "format = ${PIKA_APP_LOGFORMAT:" PIKA_LOGFORMAT
                 "P%parentloc%/%pikaparent%.%pikaparentphase% %time%("
                 PIKA_TIMEFORMAT ") [%idx%] [APP] |\\n}",
 
-            // console logging related to applications
-            "[pika.logging.console.application]",
-            "level = ${PIKA_APP_LOGLEVEL:$[pika.logging.application.level]}",
-#if defined(ANDROID) || defined(__ANDROID__)
-            "destination = ${PIKA_CONSOLE_APP_LOGDESTINATION:android_log}",
-#else
-            "destination = ${PIKA_CONSOLE_APP_LOGDESTINATION:"
-                "file(pika.application.$[system.pid].log)}",
-#endif
-            "format = ${PIKA_CONSOLE_APP_LOGFORMAT:|}",
-
             // logging of debug channel
             "[pika.logging.debuglog]",
             "level = ${PIKA_DEB_LOGLEVEL:-1}",
-            "destination = ${PIKA_DEB_LOGDESTINATION:console}",
+            "destination = ${PIKA_DEB_LOGDESTINATION:cerr}",
             "format = ${PIKA_DEB_LOGFORMAT:" PIKA_LOGFORMAT
                 "P%parentloc%/%pikaparent%.%pikaparentphase% %time%("
                 PIKA_TIMEFORMAT ") [%idx%] [DEB] |\\n}",
-
-            "[pika.logging.console.debuglog]",
-            "level = ${PIKA_DEB_LOGLEVEL:$[pika.logging.debuglog.level]}",
-#if defined(ANDROID) || defined(__ANDROID__)
-            "destination = ${PIKA_CONSOLE_DEB_LOGDESTINATION:android_log}",
-#else
-            "destination = ${PIKA_CONSOLE_DEB_LOGDESTINATION:"
-                "file(pika.debuglog.$[system.pid].log)}",
-#endif
-            "format = ${PIKA_CONSOLE_DEB_LOGFORMAT:|}"
 
 #undef PIKA_TIMEFORMAT
 #undef PIKA_LOGFORMAT

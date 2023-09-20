@@ -22,16 +22,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::util {
     PIKA_DEFINE_LOG(app, disable_all)
-    PIKA_DEFINE_LOG(app_console, disable_all)
     PIKA_DEFINE_LOG(app_error, fatal)
     PIKA_DEFINE_LOG(debuglog, disable_all)
-    PIKA_DEFINE_LOG(debuglog_console, disable_all)
     PIKA_DEFINE_LOG(debuglog_error, fatal)
     PIKA_DEFINE_LOG(pika, disable_all)
-    PIKA_DEFINE_LOG(pika_console, disable_all)
     PIKA_DEFINE_LOG(pika_error, fatal)
     PIKA_DEFINE_LOG(timing, disable_all)
-    PIKA_DEFINE_LOG(timing_console, disable_all)
 
     namespace detail {
         pika::util::logging::level get_log_level(std::string const& env, bool allow_always)

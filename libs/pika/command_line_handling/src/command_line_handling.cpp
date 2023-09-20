@@ -103,9 +103,7 @@ namespace pika::detail {
         if (dest.empty()) return "cout";
 
         if (dest == "cout" || dest == "cerr" || dest == "console") return dest;
-#if defined(ANDROID) || defined(__ANDROID__)
-        if (dest == "android_log") return dest;
-#endif
+
         // everything else is assumed to be a file name
         return "file(" + dest + ")";
     }
@@ -562,31 +560,22 @@ namespace pika::detail {
 #if defined(PIKA_HAVE_LOGGING)
         if (vm.count("pika:debug-pika-log"))
         {
-            ini_config.emplace_back("pika.logging.console.destination=" +
-                detail::convert_to_log_file(vm["pika:debug-pika-log"].as<std::string>()));
             ini_config.emplace_back("pika.logging.destination=" +
                 detail::convert_to_log_file(vm["pika:debug-pika-log"].as<std::string>()));
-            ini_config.emplace_back("pika.logging.console.level=5");
             ini_config.emplace_back("pika.logging.level=5");
         }
 
         if (vm.count("pika:debug-timing-log"))
         {
-            ini_config.emplace_back("pika.logging.console.timing.destination=" +
-                detail::convert_to_log_file(vm["pika:debug-timing-log"].as<std::string>()));
             ini_config.emplace_back("pika.logging.timing.destination=" +
                 detail::convert_to_log_file(vm["pika:debug-timing-log"].as<std::string>()));
-            ini_config.emplace_back("pika.logging.console.timing.level=1");
             ini_config.emplace_back("pika.logging.timing.level=1");
         }
 
         if (vm.count("pika:debug-app-log"))
         {
-            ini_config.emplace_back("pika.logging.console.application.destination=" +
-                detail::convert_to_log_file(vm["pika:debug-app-log"].as<std::string>()));
             ini_config.emplace_back("pika.logging.application.destination=" +
                 detail::convert_to_log_file(vm["pika:debug-app-log"].as<std::string>()));
-            ini_config.emplace_back("pika.logging.console.application.level=5");
             ini_config.emplace_back("pika.logging.application.level=5");
         }
 #else

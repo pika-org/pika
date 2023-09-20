@@ -93,35 +93,9 @@ namespace pika::util {
         PIKA_EXPORT PIKA_DECLARE_LOG(pika_error)
 
 # define LFATAL_                                                                                   \
-     PIKA_LOG_FORMAT(pika::util::pika_error, ::pika::util::logging::level::fatal, "{:>10} [ERR] ", \
-         ::pika::util::logging::level::fatal) /**/
-
-        //
-        PIKA_EXPORT PIKA_DECLARE_LOG(timing_console)
-        //
-        PIKA_EXPORT PIKA_DECLARE_LOG(pika_console)
-        //
-        PIKA_EXPORT PIKA_DECLARE_LOG(app_console)
-        // special debug logging channel
-        PIKA_EXPORT PIKA_DECLARE_LOG(debuglog_console)
+  PIKA_LOG_FORMAT(pika::util::pika_error, ::pika::util::logging::level::fatal, "{:>10} [ERR] ",    \
+      ::pika::util::logging::level::fatal) /**/
 }    // namespace pika::util
-
-///////////////////////////////////////////////////////////////////////////////
-# define LTIM_CONSOLE_(lvl)                                                                        \
-     PIKA_LOG_USE_LOG(pika::util::timing_console, static_cast<::pika::util::logging::level>(lvl))  \
-     /**/
-
-# define LPIKA_CONSOLE_(lvl)                                                                       \
-     PIKA_LOG_USE_LOG(pika::util::pika_console, static_cast<::pika::util::logging::level>(lvl))    \
-     /**/
-
-# define LAPP_CONSOLE_(lvl)                                                                        \
-     PIKA_LOG_USE_LOG(pika::util::app_console, static_cast<::pika::util::logging::level>(lvl))     \
-     /**/
-
-# define LDEB_CONSOLE_                                                                             \
-     PIKA_LOG_USE_LOG(pika::util::debuglog_console, ::pika::util::logging::level::error)           \
-/**/
 
 // helper type to forward logging during bootstrap to two destinations
 struct bootstrap_logging
@@ -182,11 +156,6 @@ namespace pika { namespace util {
     #define LBT_(lvl)             if(true) {} else pika::util::detail::dummy_log
 
     #define LFATAL_               if(true) {} else pika::util::detail::dummy_log
-
-    #define LTIM_CONSOLE_(lvl)    if(true) {} else pika::util::detail::dummy_log
-    #define LPIKA_CONSOLE_(lvl)    if(true) {} else pika::util::detail::dummy_log
-    #define LAPP_CONSOLE_(lvl)    if(true) {} else pika::util::detail::dummy_log
-    #define LDEB_CONSOLE_         if(true) {} else pika::util::detail::dummy_log
 
     #define LTIM_ENABLED(lvl)     (false)
     #define LPIKA_ENABLED(lvl)     (false)
