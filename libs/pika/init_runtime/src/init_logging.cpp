@@ -7,7 +7,6 @@
 
 #include <pika/config.hpp>
 
-#if defined(PIKA_HAVE_LOGGING)
 # include <pika/assert.hpp>
 # include <pika/init_runtime/detail/init_logging.hpp>
 # include <pika/runtime/get_worker_thread_num.hpp>
@@ -436,37 +435,3 @@ namespace pika::detail {
         }
     }
 }    // namespace pika::detail
-
-#else
-
-# include <pika/init_runtime/detail/init_logging.hpp>
-# include <pika/modules/logging.hpp>
-# include <pika/util/get_entry_as.hpp>
-
-# include <iostream>
-# include <string>
-
-namespace pika::detail {
-    void enable_logging(logging_destination, std::string const&, std::string, std::string) {}
-
-    void disable_logging(logging_destination) {}
-
-    void warn_if_logging_requested(pika::util::runtime_configuration& ini)
-    {
-        using detail::get_entry_as;
-
-        // warn if logging is requested
-        if (get_entry_as<int>(ini, "pika.logging.level", -1) > 0 ||
-            get_entry_as<int>(ini, "pika.logging.timing.level", -1) > 0 ||
-            get_entry_as<int>(ini, "pika.logging.debuglog.level", -1) > 0 ||
-            get_entry_as<int>(ini, "pika.logging.application.level", -1) > 0)
-        {
-            std::cerr << "pika::init_logging: warning: logging is requested even while it was "
-                         "disabled at compile time. If you need logging to be functional, "
-                         "please reconfigure and rebuild pika with PIKA_WITH_LOGGING set to ON."
-                      << std::endl;
-        }
-    }
-}    // namespace pika::detail
-
-#endif    // PIKA_HAVE_LOGGING

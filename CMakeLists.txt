@@ -184,12 +184,6 @@ if(${PIKA_WITH_MALLOC} STREQUAL "jemalloc")
   )
 endif()
 
-# Logging configuration
-pika_option(PIKA_WITH_LOGGING BOOL "Build pika with logging enabled (default: ON)." ON ADVANCED)
-if(PIKA_WITH_LOGGING)
-  pika_add_config_define(PIKA_HAVE_LOGGING)
-endif()
-
 # Compiler related build options
 pika_option(
   PIKA_WITH_GCC_VERSION_CHECK BOOL "Don't ignore version reported by gcc (default: ON)" ON ADVANCED

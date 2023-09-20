@@ -225,7 +225,6 @@ namespace pika::util {
 
     void runtime_configuration::pre_initialize_logging_ini()
     {
-#if defined(PIKA_HAVE_LOGGING)
         std::vector<std::string> lines = {
         // clang-format off
 #define PIKA_TIMEFORMAT "$hh:$mm.$ss.$mili"
@@ -270,7 +269,6 @@ namespace pika::util {
 
         // don't overload user overrides
         this->parse("<static logging defaults>", lines, false, false);
-#endif
     }
 
     ///////////////////////////////////////////////////////////////////////////

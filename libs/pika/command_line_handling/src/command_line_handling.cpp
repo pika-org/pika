@@ -102,7 +102,7 @@ namespace pika::detail {
     {
         if (dest.empty()) return "cout";
 
-        if (dest == "cout" || dest == "cerr" || dest == "console") return dest;
+        if (dest == "cout" || dest == "cerr") return dest;
 
         // everything else is assumed to be a file name
         return "file(" + dest + ")";
@@ -557,7 +557,6 @@ namespace pika::detail {
     void command_line_handling::enable_logging_settings(
         pika::program_options::variables_map& vm, std::vector<std::string>& ini_config)
     {
-#if defined(PIKA_HAVE_LOGGING)
         if (vm.count("pika:debug-pika-log"))
         {
             ini_config.emplace_back("pika.logging.destination=" +
@@ -578,19 +577,6 @@ namespace pika::detail {
                 detail::convert_to_log_file(vm["pika:debug-app-log"].as<std::string>()));
             ini_config.emplace_back("pika.logging.application.level=5");
         }
-#else
-        if (vm.count("pika:debug-pika-log") || vm.count("pika:debug-timing-log") ||
-            vm.count("pika:debug-app-log"))
-        {
-            // clang-format off
-            throw pika::detail::command_line_error(
-                "Command line option error: can't enable logging while it "
-                "was disabled at configuration time. Please re-configure "
-                "pika using the option -DPIKA_WITH_LOGGING=On.");
-            // clang-format on
-        }
-        PIKA_UNUSED(ini_config);
-#endif
     }
 
     ///////////////////////////////////////////////////////////////////////////

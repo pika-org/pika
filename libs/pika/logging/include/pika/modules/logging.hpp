@@ -18,8 +18,6 @@ namespace pika {
     };
 }    // namespace pika
 
-#if defined(PIKA_HAVE_LOGGING)
-
 # include <pika/assertion/current_function.hpp>
 # include <pika/logging/level.hpp>
 # include <pika/logging/logging.hpp>
@@ -113,69 +111,3 @@ bootstrap_logging const& operator<<(bootstrap_logging const& l, T const& t)
 }
 
 constexpr bootstrap_logging lbt_;
-
-#else
-// logging is disabled all together
-
-namespace pika { namespace util {
-        namespace detail {
-            struct dummy_log_impl
-            {
-                constexpr dummy_log_impl() noexcept {}
-
-                template <typename T>
-                dummy_log_impl const& operator<<(T&&) const noexcept
-                {
-                    return *this;
-                }
-
-                template <typename... Args>
-                dummy_log_impl const& format(char const*, Args const&...) const noexcept
-                {
-                    return *this;
-                }
-            };
-            constexpr dummy_log_impl dummy_log;
-        }    // namespace detail
-
-        // clang-format off
-
-    #define LTIM_(lvl)            if(true) {} else pika::util::detail::dummy_log
-    #define LPROGRESS_            if(true) {} else pika::util::detail::dummy_log
-    #define LPIKA_(lvl, cat)       if(true) {} else pika::util::detail::dummy_log
-    #define LAPP_(lvl)            if(true) {} else pika::util::detail::dummy_log
-    #define LDEB_                 if(true) {} else pika::util::detail::dummy_log
-
-    #define LTM_(lvl)             if(true) {} else pika::util::detail::dummy_log
-    #define LRT_(lvl)             if(true) {} else pika::util::detail::dummy_log
-    #define LOSH_(lvl)            if(true) {} else pika::util::detail::dummy_log
-    #define LERR_(lvl)            if(true) {} else pika::util::detail::dummy_log
-    #define LLCO_(lvl)            if(true) {} else pika::util::detail::dummy_log
-    #define LPCS_(lvl)            if(true) {} else pika::util::detail::dummy_log
-    #define LAS_(lvl)             if(true) {} else pika::util::detail::dummy_log
-    #define LBT_(lvl)             if(true) {} else pika::util::detail::dummy_log
-
-    #define LFATAL_               if(true) {} else pika::util::detail::dummy_log
-
-    #define LTIM_ENABLED(lvl)     (false)
-    #define LPIKA_ENABLED(lvl)     (false)
-    #define LAPP_ENABLED(lvl)     (false)
-    #define LDEB_ENABLED          (false)
-
-        // clang-format on
-
-}}    // namespace pika::util
-
-struct bootstrap_logging
-{
-    constexpr bootstrap_logging() {}
-};
-constexpr bootstrap_logging lbt_;
-
-template <typename T>
-bootstrap_logging const& operator<<(bootstrap_logging const& l, T&&)
-{
-    return l;
-}
-
-#endif

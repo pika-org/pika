@@ -7,7 +7,6 @@
 
 #include <pika/config.hpp>
 
-#if defined(PIKA_HAVE_LOGGING)
 # include <pika/detail/filesystem.hpp>
 # include <pika/modules/logging.hpp>
 # include <pika/string_util/from_string.hpp>
@@ -77,5 +76,3 @@ namespace pika::util::logging {
     }
 
 }    // namespace pika::util::logging
-
-#endif    // PIKA_HAVE_LOGGING

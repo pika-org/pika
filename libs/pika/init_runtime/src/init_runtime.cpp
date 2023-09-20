@@ -134,11 +134,7 @@ namespace pika {
             util::detail::set_spinlock_deadlock_warning_limit(
                 cmdline.rtcfg_.get_spinlock_deadlock_warning_limit());
 #endif
-#if defined(PIKA_HAVE_LOGGING)
             init_logging_local(cmdline.rtcfg_);
-#else
-            warn_if_logging_requested(cmdline.rtcfg_);
-#endif
         }
 
         struct dump_config

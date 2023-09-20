@@ -7,8 +7,6 @@
 
 #include <pika/logging/level.hpp>
 
-#if defined(PIKA_HAVE_LOGGING)
-
 # include <cstddef>
 # include <iomanip>
 # include <ostream>
@@ -35,5 +33,3 @@ namespace pika::util::logging {
         return '<' + std::to_string(static_cast<int>(value)) + '>';
     }
 }    // namespace pika::util::logging
-
-#endif    // PIKA_HAVE_LOGGING

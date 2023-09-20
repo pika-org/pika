@@ -17,7 +17,6 @@
 
 #include <string>
 
-#if defined(PIKA_HAVE_LOGGING)
 namespace pika::detail {
     /// \cond NOINTERNAL
     struct log_settings
@@ -46,16 +45,3 @@ namespace pika::detail {
     /// Disable all logging for the given destination
     PIKA_EXPORT void disable_logging(pika::logging_destination dest);
 }    // namespace pika::detail
-
-#else    // PIKA_HAVE_LOGGING
-
-namespace pika::detail {
-    PIKA_EXPORT void warn_if_logging_requested(pika::util::runtime_configuration&);
-
-    PIKA_EXPORT void enable_logging(pika::logging_destination dest, std::string const& lvl = "5",
-        std::string logdest = "", std::string logformat = "");
-
-    PIKA_EXPORT void disable_logging(pika::logging_destination dest);
-}    // namespace pika::detail
-
-#endif    // PIKA_HAVE_LOGGING
