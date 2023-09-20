@@ -1,0 +1,25 @@
+ARG BASE_IMAGE
+FROM $BASE_IMAGE
+
+SHELL ["/bin/bash", "-c"]
+
+# Disable host compatibility to be able to compile for broadwell on zen2
+RUN spack config --scope site add  concretizer:targets:host_compatible:false
+
+# Install compiler
+ARG ARCH
+ARG COMPILER
+RUN export spack_compiler=${COMPILER/clang/llvm} && \
+    spack install $spack_compiler languages=c++ arch=$ARCH && \
+    spack compiler add --scope site $(spack location -i $spack_compiler)
+
+RUN echo "spack arch: $(spack arch)"
+
+# Print spec
+ARG BOOST
+ARG BUILD_TYPE
+ARG CXXSTD
+ARG HWLOC
+ENV spack_spec "pika@main build_type=$BUILD_TYPE arch=$ARCH %$COMPILER malloc=system cxxstd=$CXXSTD ^$BOOST ^$HWLOC"
+# Install dependencies for this configuration
+RUN spack spec -lI $spack_spec && spack install --fail-fast --only dependencies $spack_spec
