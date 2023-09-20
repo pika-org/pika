@@ -13,8 +13,7 @@ namespace pika {
     {
         destination_pika = 0,
         destination_timing = 1,
-        destination_app = 2,
-        destination_debuglog = 3
+        destination_debuglog = 2
     };
 }    // namespace pika
 
@@ -63,16 +62,6 @@ namespace pika::util {
 
 # define LPIKA_ENABLED(lvl)                                                                        \
      pika::util::pika_logger()->is_enabled(::pika::util::logging::level::lvl) /**/
-
-        ////////////////////////////////////////////////////////////////////////
-        PIKA_EXPORT PIKA_DECLARE_LOG(app)
-
-# define LAPP_(lvl)                                                                                \
-     PIKA_LOG_FORMAT(pika::util::app, ::pika::util::logging::level::lvl, "{:>10} ",                \
-         ::pika::util::logging::level::lvl) /**/
-
-# define LAPP_ENABLED(lvl)                                                                         \
-     pika::util::app_logger()->is_enabled(::pika::util::logging::level::lvl) /**/
 
         ////////////////////////////////////////////////////////////////////////
         // special debug logging channel

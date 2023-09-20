@@ -356,14 +356,11 @@ namespace pika::detail {
             // enable debug output from command line handling
             ("pika:debug-clp", "debug command line processing")
             ("pika:debug-pika-log", value<std::string>()->implicit_value("cout"),
-                "enable all messages on the pika log channel and send all "
-                "pika logs to the target destination")
+              "enable all messages on the pika log channel and send all "
+              "pika logs to the target destination")
             ("pika:debug-timing-log", value<std::string>()->implicit_value("cout"),
-                "enable all messages on the timing log channel and send all "
-                "timing logs to the target destination")
-            ("pika:debug-app-log", value<std::string>()->implicit_value("cout"),
-                "enable all messages on the application log channel and send all "
-                "application logs to the target destination")
+              "enable all messages on the timing log channel and send all "
+              "timing logs to the target destination")
 #if defined(_POSIX_VERSION) || defined(PIKA_WINDOWS)
             ("pika:attach-debugger",
                 value<std::string>()->implicit_value("startup"),

@@ -297,41 +297,6 @@ namespace pika::detail {
 
     ///////////////////////////////////////////////////////////////////////
     // initialize logging for application
-    void init_app_log(pika::util::logging::level lvl, std::string logdest, std::string logformat,
-        void (*define_formatters)(pika::util::logging::writer::named_write&))
-    {
-        if (pika::util::logging::level::disable_all != lvl)
-        {
-            logger_writer_type& writer = pika::util::app_logger()->writer();
-
-            if (logdest.empty())    // ensure minimal defaults
-                logdest = "cerr";
-
-            if (logformat.empty()) logformat = "|\\n";
-
-            writer.write(logformat, logdest);
-            define_formatters(writer);
-
-            pika::util::app_logger()->mark_as_initialized();
-        }
-        pika::util::app_logger()->set_enabled(lvl);
-    }
-
-    void init_app_log(pika::util::runtime_configuration& ini,
-        void (*define_formatters)(pika::util::logging::writer::named_write&))
-    {
-        auto settings = get_log_settings(ini, "pika.logging.application");
-
-        auto lvl = pika::util::logging::level::disable_all;
-        if (!settings.level_.empty())
-            lvl = pika::util::detail::get_log_level(settings.level_, true);
-
-        init_app_log(
-            lvl, PIKA_MOVE(settings.dest_), PIKA_MOVE(settings.format_), define_formatters);
-    }
-
-    ///////////////////////////////////////////////////////////////////////
-    // initialize logging for application
     void init_debuglog_log(pika::util::logging::level lvl, std::string logdest,
         std::string logformat, void (*define_formatters)(pika::util::logging::writer::named_write&))
     {
@@ -375,7 +340,6 @@ namespace pika::detail {
 
         init_timing_log(ini, define_formatters);
         init_pika_log(ini, define_formatters);
-        init_app_log(ini, define_formatters);
         init_debuglog_log(ini, define_formatters);
     }
 
@@ -395,10 +359,6 @@ namespace pika::detail {
 
         case destination_timing:
             pika::util::timing_logger()->set_enabled(pika::util::logging::level::disable_all);
-            break;
-
-        case destination_app:
-            pika::util::app_logger()->set_enabled(pika::util::logging::level::disable_all);
             break;
 
         case destination_debuglog:
@@ -423,10 +383,6 @@ namespace pika::detail {
 
         case destination_timing:
             detail::init_debuglog_log(lvl, logdest, logformat, detail::default_define_formatters);
-            break;
-
-        case destination_app:
-            detail::init_app_log(lvl, logdest, logformat, detail::default_define_formatters);
             break;
 
         case destination_debuglog:

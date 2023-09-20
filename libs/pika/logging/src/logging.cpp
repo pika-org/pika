@@ -20,8 +20,6 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::util {
-    PIKA_DEFINE_LOG(app, disable_all)
-    PIKA_DEFINE_LOG(app_error, fatal)
     PIKA_DEFINE_LOG(debuglog, disable_all)
     PIKA_DEFINE_LOG(debuglog_error, fatal)
     PIKA_DEFINE_LOG(pika, disable_all)

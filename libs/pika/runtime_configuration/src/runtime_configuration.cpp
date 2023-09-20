@@ -246,14 +246,6 @@ namespace pika::util {
                 "P%parentloc%/%pikaparent%.%pikaparentphase% %time%("
                 PIKA_TIMEFORMAT ") [%idx%] [TIM] |\\n}",
 
-            // logging related to applications
-            "[pika.logging.application]",
-            "level = ${PIKA_APP_LOGLEVEL:-1}",
-            "destination = ${PIKA_APP_LOGDESTINATION:cerr}",
-            "format = ${PIKA_APP_LOGFORMAT:" PIKA_LOGFORMAT
-                "P%parentloc%/%pikaparent%.%pikaparentphase% %time%("
-                PIKA_TIMEFORMAT ") [%idx%] [APP] |\\n}",
-
             // logging of debug channel
             "[pika.logging.debuglog]",
             "level = ${PIKA_DEB_LOGLEVEL:-1}",
