@@ -325,8 +325,6 @@ namespace pika::detail {
         init_debuglog_log(ini);
     }
 
-    void init_logging_local(pika::util::runtime_configuration& ini) { init_logging(ini); }
-
     ///////////////////////////////////////////////////////////////////////////
     void disable_logging(logging_destination dest)
     {

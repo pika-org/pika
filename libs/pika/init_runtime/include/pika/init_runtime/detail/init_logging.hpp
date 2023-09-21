@@ -30,8 +30,6 @@ namespace pika::detail {
     PIKA_EXPORT log_settings get_log_settings(pika::detail::section const&, char const*);
     PIKA_EXPORT void init_logging(pika::util::runtime_configuration& ini);
 
-    PIKA_EXPORT void init_logging_local(pika::util::runtime_configuration&);
-
     /// \endcond
 
     /// Enable logging for given destination
