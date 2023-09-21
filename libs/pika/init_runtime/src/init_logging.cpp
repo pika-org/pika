@@ -15,6 +15,7 @@
 
 #include <fmt/ostream.h>
 #include <fmt/printf.h>
+#include <spdlog/spdlog.h>
 
 #include <cstddef>
 #include <cstdint>
