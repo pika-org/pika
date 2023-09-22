@@ -6,6 +6,7 @@
 
 #include <pika/execution.hpp>
 #include <pika/init.hpp>
+#include <pika/thread.hpp>
 
 #include <fmt/ostream.h>
 #include <fmt/printf.h>
