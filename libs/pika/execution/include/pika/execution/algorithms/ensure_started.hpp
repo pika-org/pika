@@ -234,8 +234,8 @@ namespace pika::ensure_started_detail {
 
                 void operator()(error_type&& error)
                 {
-                    pika::detail::visit(error_visitor<Receiver>{PIKA_FORWARD(Receiver, receiver)},
-                        PIKA_MOVE(error));
+                    pika::detail::visit(
+                        error_visitor<Receiver>{PIKA_MOVE(receiver)}, PIKA_MOVE(error));
                 }
 
                 template <typename T,
@@ -244,8 +244,8 @@ namespace pika::ensure_started_detail {
                         std::is_same_v<std::decay_t<T>, value_type>>>
                 void operator()(T&& t)
                 {
-                    pika::detail::visit(value_visitor<Receiver>{PIKA_FORWARD(Receiver, receiver)},
-                        PIKA_FORWARD(T, t));
+                    pika::detail::visit(
+                        value_visitor<Receiver>{PIKA_MOVE(receiver)}, PIKA_FORWARD(T, t));
                 }
             };
 
