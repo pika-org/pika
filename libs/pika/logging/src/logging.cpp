@@ -23,6 +23,7 @@ namespace pika::util {
     PIKA_DEFINE_LOG(debuglog, disable_all)
     PIKA_DEFINE_LOG(debuglog_error, fatal)
     PIKA_DEFINE_LOG(pika, disable_all)
+    PIKA_DETAIL_DEFINE_SPDLOG(pika, off)
     PIKA_DEFINE_LOG(pika_error, fatal)
     PIKA_DEFINE_LOG(timing, disable_all)
 

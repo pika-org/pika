@@ -31,6 +31,9 @@ namespace pika {
 # define LLCO_(lvl) LPIKA_(lvl, " [LCO] ") /* lcos */
 # define LBT_(lvl) LPIKA_(lvl, "  [BT] ")  /* bootstrap */
 
+#define PIKA_DETAIL_LOG_PIKA_TM(loglevel, ...)                                                     \
+ PIKA_DETAIL_LOG_PIKA(loglevel, "  [TM] ", __VA_ARGS__)
+
 ////////////////////////////////////////////////////////////////////////////////
 namespace pika::util {
 
@@ -62,6 +65,11 @@ namespace pika::util {
 
 # define LPIKA_ENABLED(lvl)                                                                        \
      pika::util::pika_logger()->is_enabled(::pika::util::logging::level::lvl) /**/
+
+        PIKA_EXPORT PIKA_DETAIL_DECLARE_SPDLOG(pika)
+
+#define PIKA_DETAIL_LOG_PIKA(loglevel, category, ...)                                              \
+ PIKA_DETAIL_SPDLOG(pika, loglevel, __VA_ARGS__)
 
         ////////////////////////////////////////////////////////////////////////
         // special debug logging channel

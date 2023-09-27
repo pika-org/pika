@@ -18,6 +18,9 @@
 // - don't change the macro name!
 #pragma once
 
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/spdlog.h>
+
 #include <string>
 
 namespace pika::util::logging {
@@ -125,7 +128,6 @@ PIKA_DEFINE_LOG(g_l, logger_type)
 
     ////////////////////////////////////////////////////////////////////////////
     // Defining Macros
-
 #define PIKA_DECLARE_LOG(NAME)                                                                     \
     ::pika::util::logging::logger* NAME##_logger();                                                \
     namespace {                                                                                    \
@@ -139,10 +141,24 @@ PIKA_DEFINE_LOG(g_l, logger_type)
         return &l;                                                                                 \
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Messages that were logged before initializing the log
-    // - cache the message (and I'll write it even if the filter is turned off)
+// TODO: Return ptr directly? Return reference?
+#define PIKA_DETAIL_DECLARE_SPDLOG(name)                                                           \
+ std::shared_ptr<spdlog::logger> get_##name##_logger() noexcept;
+#define PIKA_DETAIL_DEFINE_SPDLOG(name, loglevel)                                                  \
+ std::shared_ptr<spdlog::logger> get_##name##_logger() noexcept                                    \
+ {                                                                                                 \
+  static auto logger = []() {                                                                      \
+auto logger =                                                                                         \
+ std::make_shared<spdlog::logger>(#name, std::make_shared<spdlog::sinks::stdout_color_sink_mt>()); \
+logger->set_level(spdlog::level::loglevel);                                                           \
+return logger;                                                                                        \
+  }();                                                                                             \
+  return logger;                                                                                   \
+ }
 
+////////////////////////////////////////////////////////////////////////////
+// Messages that were logged before initializing the log
+// - cache the message (and I'll write it even if the filter is turned off)
 #define PIKA_LOG_USE_LOG(NAME, LEVEL)                                                              \
     if (!(NAME##_logger()->is_enabled(LEVEL)))                                                     \
         ;                                                                                          \
@@ -151,5 +167,9 @@ PIKA_DEFINE_LOG(g_l, logger_type)
 
 #define PIKA_LOG_FORMAT(NAME, LEVEL, FORMAT, ...)                                                  \
     PIKA_LOG_USE_LOG(NAME, LEVEL).format(FORMAT, __VA_ARGS__)
+
+// TODO: pika::detail::get_...
+#define PIKA_DETAIL_SPDLOG(name, loglevel, ...)                                                    \
+ ::pika::util::get_##name##_logger()->loglevel(__VA_ARGS__)
 
 }    // namespace pika::util::logging
