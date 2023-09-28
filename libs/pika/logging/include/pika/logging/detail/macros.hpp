@@ -168,8 +168,9 @@ return logger;                                                                  
 #define PIKA_LOG_FORMAT(NAME, LEVEL, FORMAT, ...)                                                  \
     PIKA_LOG_USE_LOG(NAME, LEVEL).format(FORMAT, __VA_ARGS__)
 
-// TODO: pika::detail::get_...
 #define PIKA_DETAIL_SPDLOG(name, loglevel, ...)                                                    \
- ::pika::util::get_##name##_logger()->loglevel(__VA_ARGS__)
-
+ if (::pika::util::get_##name##_logger()->level() <= spdlog::level::loglevel)                      \
+ {                                                                                                 \
+  ::pika::util::get_##name##_logger()->loglevel(__VA_ARGS__);                                      \
+ }
 }    // namespace pika::util::logging
