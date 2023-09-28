@@ -324,6 +324,8 @@ namespace pika::detail {
         init_timing_log(ini);
         init_pika_log(ini);
         init_debuglog_log(ini);
+
+        pika::util::get_pika_logger()->set_pattern("[%Y-%m-%d %H:%M:%S.%F] [%n] [pid:%P] [tid:%t] [%l] %v");
     }
 
     ///////////////////////////////////////////////////////////////////////////
