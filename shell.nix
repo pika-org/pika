@@ -16,7 +16,7 @@ pkgs.mkShell.override { stdenv = pkgs.gcc11Stdenv; } {
     hwloc
     mpich
     ninja
-    pkgconfig
+    pkg-config
     python311Packages.sphinx
     python311Packages.sphinx-material
   ];
