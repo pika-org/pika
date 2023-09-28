@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
     auto snd2 = ex::just(3.14) | ex::split();
     auto snd3 = ex::transfer(snd2, sched) |
         ex::then([](double pi) { fmt::print(std::cout, "Is this pi: {}?\n", pi); });
-    auto snd4 = ex::when_all(std::move(snd2), ex::just(500.3)) | ex::transfer(sched) |
+    auto snd4 = ex::transfer_when_all(sched, std::move(snd2), ex::just(500.3)) |
         ex::then([](double pi, double r) { return pi * r * r; });
     auto result = tt::sync_wait(ex::when_all(std::move(snd3), std::move(snd4)));
     fmt::print(std::cout, "The result is {}\n", result);
