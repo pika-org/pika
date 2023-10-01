@@ -1,5 +1,6 @@
 numpy>=1.22.2
 matplotlib
+pillow>=10.0.1
 python-dateutil
 lxml
 # noinshpect
