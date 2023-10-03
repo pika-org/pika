@@ -1,0 +1,68 @@
+# Copyright (c) 2023 ETH Zurich
+#
+# SPDX-License-Identifier: BSL-1.0
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+name: Linux CI (valgrind)
+
+on:
+  merge_group:
+  pull_request:
+  push:
+    branches:
+      # Development and release branches
+      - main
+      - release**
+      # Bors branches
+      - trying
+      - staging
+
+jobs:
+  build:
+    name: github/linux/valgrind
+    runs-on: ubuntu-latest
+    container: pikaorg/pika-ci-base:20
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Update apt repositories for ccache
+      run: apt update
+    - name: Setup ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: ccache-linux-valgrind
+    - name: Configure
+      shell: bash
+      # -gdwarf-4 because of https://github.com/llvm/llvm-project/issues/56550
+      run: |
+          cmake \
+              . \
+              -Bbuild \
+              -GNinja \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DCMAKE_CXX_FLAGS="-gdwarf-4" \
+              -DPIKA_WITH_UNITY_BUILD=ON \
+              -DPIKA_WITH_MALLOC=system \
+              -DPIKA_WITH_EXAMPLES=ON \
+              -DPIKA_WITH_TESTS=ON \
+              -DPIKA_WITH_TESTS_EXAMPLES=ON \
+              -DPIKA_WITH_TESTS_EXTERNAL_BUILD=OFF \
+              -DPIKA_WITH_TESTS_HEADERS=OFF \
+              -DPIKA_WITH_TESTS_MAX_THREADS=2 \
+              -DPIKA_WITH_TESTS_VALGRIND=ON \
+              -DPIKA_WITH_STACKOVERFLOW_DETECTION=Off \
+              -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=On
+    - name: Build
+      shell: bash
+      run: |
+          cmake --build build --target tests.unit.modules.execution
+    - name: Test
+      shell: bash
+      run: |
+          cd build
+          ctest \
+            -L VALGRIND \
+            --timeout 300 \
+            --output-on-failure

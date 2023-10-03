@@ -30,12 +30,26 @@ set(tests
     scheduler_queries
 )
 
-set(future_then_executor_PARAMETERS THREADS 4)
+set(algorithm_bulk_PARAMETERS VALGRIND)
+set(algorithm_drop_value_PARAMETERS VALGRIND)
+set(algorithm_ensure_started_PARAMETERS VALGRIND)
+set(algorithm_execute_PARAMETERS VALGRIND)
+set(algorithm_just_PARAMETERS VALGRIND)
+set(algorithm_let_error_PARAMETERS VALGRIND)
+set(algorithm_let_value_PARAMETERS VALGRIND)
+set(algorithm_split_PARAMETERS VALGRIND)
+set(algorithm_split_tuple_PARAMETERS VALGRIND)
+set(algorithm_start_detached_PARAMETERS VALGRIND)
+set(algorithm_then_PARAMETERS VALGRIND)
+set(algorithm_transfer_PARAMETERS VALGRIND)
+set(algorithm_transfer_just_PARAMETERS VALGRIND)
+set(algorithm_unpack_PARAMETERS VALGRIND)
+set(algorithm_when_all_PARAMETERS VALGRIND)
+set(algorithm_when_all_vector_PARAMETERS VALGRIND)
+set(scheduler_queries_PARAMETERS VALGRIND)
 
 foreach(test ${tests})
   set(sources ${test}.cpp)
-
-  set(${test}_PARAMETERS THREADS 4)
 
   source_group("Source Files" FILES ${sources})
 
@@ -51,6 +65,7 @@ foreach(test ${tests})
 
   target_link_libraries(${test}_test PRIVATE pika_execution_test_utilities)
 
-  pika_add_unit_test("modules.execution" ${test} ${${test}_PARAMETERS})
-
+  pika_add_unit_test(
+    "modules.execution" ${test} ${${test}_PARAMETERS} THREADS 4
+  )
 endforeach()
