@@ -4,8 +4,12 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+if(PIKA_WITH_TESTS_VALGRIND)
+  find_program(VALGRIND_EXECUTABLE valgrind REQUIRED)
+endif()
+
 function(pika_add_test category name)
-  set(options FAILURE_EXPECTED RUN_SERIAL TESTING PERFORMANCE_TESTING)
+  set(options FAILURE_EXPECTED RUN_SERIAL TESTING PERFORMANCE_TESTING VALGRIND)
   set(one_value_args EXECUTABLE LOCALITIES THREADS TIMEOUT RUNWRAPPER)
   set(multi_value_args ARGS)
   cmake_parse_arguments(
@@ -78,8 +82,12 @@ function(pika_add_test category name)
     )
   endif()
 
+  if(PIKA_WITH_TESTS_VALGRIND)
+    set(valgrind_cmd ${VALGRIND_EXECUTABLE} ${PIKA_WITH_TESTS_VALGRIND_OPTIONS})
+  endif()
+
   set(_full_name "${category}.${name}")
-  add_test(NAME "${category}.${name}" COMMAND ${cmd} ${args})
+  add_test(NAME "${category}.${name}" COMMAND ${valgrind_cmd} ${cmd} ${args})
   if(${run_serial})
     set_tests_properties("${_full_name}" PROPERTIES RUN_SERIAL TRUE)
   endif()
@@ -88,6 +96,9 @@ function(pika_add_test category name)
   endif()
   if(${name}_FAILURE_EXPECTED)
     set_tests_properties("${_full_name}" PROPERTIES WILL_FAIL TRUE)
+  endif()
+  if(${${name}_VALGRIND})
+    set_tests_properties(${_full_name} PROPERTIES LABELS "VALGRIND")
   endif()
 
   # Only real tests, i.e. executables ending in _test, link to pika_testing
