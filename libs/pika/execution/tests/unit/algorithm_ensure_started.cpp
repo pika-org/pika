@@ -12,6 +12,7 @@
 
 #include <atomic>
 #include <exception>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -173,11 +174,11 @@ int main()
     // If the released shared state is accessed after it's released this test will fail under
     // valgrind (e.g. while resetting the continuation right after invoking it).
     {
-        pika::latch l(2);
+        auto l = std::make_shared<pika::latch>(2);
         auto s = ex::schedule(ex::std_thread_scheduler{}) |
-            ex::then([&]() { l.arrive_and_wait(); }) | ex::ensure_started();
+            ex::then([l]() { l->arrive_and_wait(); }) | ex::ensure_started();
         ex::start_detached(std::move(s));
-        l.arrive_and_wait();
+        l->arrive_and_wait();
     }
 
     // It's allowed to discard the sender from ensure_started
