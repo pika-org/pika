@@ -58,6 +58,7 @@ jobs:
       shell: bash
       run: |
           cmake --build build --target tests.unit.modules.execution
+          cmake --build build --target std_thread_scheduler_test
     - name: Test
       shell: bash
       run: |
