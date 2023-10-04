@@ -22,6 +22,7 @@
 - Fix a few instances of the wrong type being forwarded in `split_tuple` and `when_all` sender adaptors. ([#781](https://github.com/pika-org/pika/pull/781))
 - Fix a hang introduced by the global activity count when using MPI polling. ([#778](https://github.com/pika-org/pika/pull/778))
 - Fix a use-after-free in `ensure_started`. ([#795](https://github.com/pika-org/pika/pull/795))
+- Fix lifetime bug in `ensure_started` when the sender is dropped without being connected. ([#797](https://github.com/pika-org/pika/pull/797))
 
 ## 0.18.0 (2023-09-06)
 
