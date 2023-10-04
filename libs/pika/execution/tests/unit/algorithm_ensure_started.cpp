@@ -4,13 +4,15 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#include <pika/execution.hpp>
+#include <pika/execution_base/tests/algorithm_test_utils.hpp>
+#include <pika/latch.hpp>
 #include <pika/modules/execution.hpp>
 #include <pika/testing.hpp>
 
-#include <pika/execution_base/tests/algorithm_test_utils.hpp>
-
 #include <atomic>
 #include <exception>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -159,6 +161,24 @@ int main()
         auto os = ex::connect(std::move(s), std::move(r));
         ex::start(os);
         PIKA_TEST(set_error_called);
+    }
+
+    // This test makes sure that a 1. continuation is registered for later invocation in
+    // ensure_started and 2. that continuation holds the last reference to the ensure_started shared
+    // state. Using a latch to delay the completion of the then operation means that by the time
+    // start_detached is connected a continuation has to be registered in ensure_started rather than
+    // running the continuation immediately inline. This fulfills 2. Since the ensure_started sender
+    // is moved into start_detached the last reference to the ensure_started shared state is
+    // released in the continuation of ensure_started.
+    //
+    // If the released shared state is accessed after it's released this test will fail under
+    // valgrind (e.g. while resetting the continuation right after invoking it).
+    {
+        auto l = std::make_shared<pika::latch>(2);
+        auto s = ex::schedule(ex::std_thread_scheduler{}) |
+            ex::then([l]() { l->arrive_and_wait(); }) | ex::ensure_started();
+        ex::start_detached(std::move(s));
+        l->arrive_and_wait();
     }
 
     // It's allowed to discard the sender from ensure_started

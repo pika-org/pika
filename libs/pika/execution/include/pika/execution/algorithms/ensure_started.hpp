@@ -297,8 +297,12 @@ namespace pika::ensure_started_detail {
 
                 if (continuation)
                 {
-                    continuation.value()();
-                    continuation.reset();
+                    // We move the continuation to a local variable to release it once the
+                    // continuation has been called. We cannot call reset on continuation after the
+                    // invocation because the shared state may already be released by the
+                    // continuation itself.
+                    auto continuation_local = PIKA_MOVE(continuation.value());
+                    continuation_local();
                 }
             }
 

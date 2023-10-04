@@ -818,6 +818,19 @@ pika_option(
 )
 
 pika_option(
+  PIKA_WITH_TESTS_VALGRIND BOOL "Run selected tests with valgrind." OFF
+  CATEGORY "Debugging"
+  ADVANCED
+)
+
+pika_option(
+  PIKA_WITH_TESTS_VALGRIND_OPTIONS STRING
+  "Use these options when running tests under valgrind." "--error-exitcode=1"
+  CATEGORY "Debugging"
+  ADVANCED
+)
+
+pika_option(
   PIKA_WITH_SANITIZERS BOOL "Configure with sanitizer instrumentation support."
   OFF
   CATEGORY "Debugging"
