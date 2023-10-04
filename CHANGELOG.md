@@ -4,6 +4,26 @@
 <!--- Distributed under the Boost Software License, Version 1.0. (See accompanying -->
 <!--- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 
+## 0.19.0 (2023-10-04)
+
+### New features
+
+- A `transfer_when_all` sender adaptor has been introduced. ([#792](https://github.com/pika-org/pika/pull/792))
+- A `drop_operation_state` sender adaptor has been introduced. ([#772](https://github.com/pika-org/pika/pull/772))
+
+### Breaking changes
+
+- The `PIKA_WITH_DISABLED_SIGNAL_EXCEPTION_HANDLERS` CMake option has been removed. This option can be controlled at runtime as before. ([#773](https://github.com/pika-org/pika/pull/773))
+- The `PIKA_WITH_THREAD_GUARD_PAGE` CMake option has been removed. This option can be controlled at runtime as before. ([#782](https://github.com/pika-org/pika/pull/782))
+- `thread_priority::critical` has been removed as it is an alias to `high_recursive` and is unused.([#783](https://github.com/pika-org/pika/pull/783))
+
+### Bugfixes
+
+- Fix a few instances of the wrong type being forwarded in `split_tuple` and `when_all` sender adaptors. ([#781](https://github.com/pika-org/pika/pull/781))
+- Fix a hang introduced by the global activity count when using MPI polling. ([#778](https://github.com/pika-org/pika/pull/778))
+- Fix a use-after-free in `ensure_started`. ([#795](https://github.com/pika-org/pika/pull/795))
+- Fix lifetime bug in `ensure_started` when the sender is dropped without being connected. ([#797](https://github.com/pika-org/pika/pull/797))
+
 ## 0.18.0 (2023-09-06)
 
 ### New features
