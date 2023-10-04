@@ -158,14 +158,14 @@ namespace pika::ensure_started_detail {
 
                 template <typename Error>
                 friend void tag_invoke(pika::execution::experimental::set_error_t,
-                    ensure_started_receiver&& r, Error&& error) noexcept
+                    ensure_started_receiver r, Error&& error) noexcept
                 {
                     r.state->v.template emplace<error_type>(error_type(PIKA_FORWARD(Error, error)));
                     r.state->set_predecessor_done();
                 }
 
                 friend void tag_invoke(pika::execution::experimental::set_stopped_t,
-                    ensure_started_receiver&& r) noexcept
+                    ensure_started_receiver r) noexcept
                 {
                     r.state->set_predecessor_done();
                 };
@@ -188,7 +188,7 @@ namespace pika::ensure_started_detail {
 
                 template <typename... Ts>
                 friend auto tag_invoke(pika::execution::experimental::set_value_t,
-                    ensure_started_receiver&& r, Ts&&... ts) noexcept
+                    ensure_started_receiver r, Ts&&... ts) noexcept
                     -> decltype(std::declval<
                                     pika::detail::variant<pika::detail::monostate, value_type>>()
                                     .template emplace<value_type>(
