@@ -20,6 +20,8 @@ set(tests
     thread_pool_scheduler
 )
 
+set(std_thread_scheduler_PARAMETERS VALGRIND)
+
 # nvc++ causes test failures in release mode. This is assumed to be a code
 # generation bug.
 if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC")
@@ -33,8 +35,6 @@ endif()
 foreach(test ${tests})
   set(sources ${test}.cpp)
 
-  set(${test}_PARAMETERS THREADS 4)
-
   source_group("Source Files" FILES ${sources})
 
   set(folder_name "Tests/Unit/Modules/Executors")
@@ -47,6 +47,7 @@ foreach(test ${tests})
     FOLDER ${folder_name}
   )
 
-  pika_add_unit_test("modules.executors" ${test} ${${test}_PARAMETERS})
-
+  pika_add_unit_test(
+    "modules.executors" ${test} ${${test}_PARAMETERS} THREADS 4
+  )
 endforeach()
