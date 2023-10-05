@@ -14,6 +14,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -101,6 +102,19 @@ int main()
         int x = 42;
         auto s = ex::drop_operation_state(const_reference_sender<decltype(x)>{x});
         constexpr auto f = [](int x) { PIKA_TEST_EQ(x, 42); };
+        auto r = callback_receiver<decltype(f)>{f, set_value_called};
+        auto os = ex::connect(std::move(s), std::move(r));
+        ex::start(os);
+        PIKA_TEST(set_value_called);
+    }
+
+    {
+        std::atomic<bool> set_value_called{false};
+        auto s = ex::just(std::tuple<int, std::string>(42, "hello")) | ex::drop_operation_state();
+        constexpr auto f = [](std::tuple<int, std::string>&& t) {
+            PIKA_TEST_EQ(std::get<int>(t), 42);
+            PIKA_TEST_EQ(std::get<std::string>(t), std::string("hello"));
+        };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));
         ex::start(os);
