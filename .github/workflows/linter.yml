@@ -20,6 +20,7 @@ jobs:
       - name: Lint Yaml files
         uses: github/super-linter/slim@v5
         env:
+          DEFAULT_BRANCH: main
           VALIDATE_ALL_CODEBASE: false
           VALIDATE_YAML: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
