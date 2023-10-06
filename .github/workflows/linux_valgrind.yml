@@ -64,6 +64,7 @@ jobs:
               tests.unit.modules.datastructures \
               tests.unit.modules.errors \
               tests.{regressions,unit}.modules.execution \
+              tests.unit.modules.execution_base \
               std_thread_scheduler_test
       - name: Test
         shell: bash
