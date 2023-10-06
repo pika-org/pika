@@ -23,4 +23,5 @@ jobs:
           DEFAULT_BRANCH: main
           VALIDATE_ALL_CODEBASE: false
           VALIDATE_YAML: true
+          YAML_CONFIG_FILE: .yamllint.yml
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
