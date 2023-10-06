@@ -56,9 +56,12 @@ jobs:
                 -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=On
       - name: Build
         shell: bash
+        working-directory: build
         run: |
-            cmake --build build --target tests.unit.modules.execution
-            cmake --build build --target std_thread_scheduler_test
+            ninja \
+              tests.unit.modules.concurrency \
+              tests.unit.modules.execution \
+              std_thread_scheduler_test
       - name: Test
         shell: bash
         run: |
