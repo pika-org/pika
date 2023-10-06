@@ -62,6 +62,7 @@ jobs:
               tests.regressions.modules.coroutines \
               tests.unit.modules.concurrency \
               tests.unit.modules.datastructures \
+              tests.unit.modules.errors \
               tests.unit.modules.execution \
               std_thread_scheduler_test
       - name: Test
