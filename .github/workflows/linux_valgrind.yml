@@ -59,6 +59,7 @@ jobs:
         working-directory: build
         run: |
             ninja \
+              tests.regressions.modules.coroutines \
               tests.unit.modules.concurrency \
               tests.unit.modules.execution \
               std_thread_scheduler_test

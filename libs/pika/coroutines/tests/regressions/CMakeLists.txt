@@ -8,7 +8,6 @@ set(tests coroutine_function_destructor_yield_4800)
 
 foreach(test ${tests})
   set(sources ${test}.cpp)
-  set(${test}_PARAMETERS THREADS 4)
 
   source_group("Source Files" FILES ${sources})
 
@@ -19,5 +18,5 @@ foreach(test ${tests})
     FOLDER "Tests/Regressions/Modules/Coroutines"
   )
 
-  pika_add_regression_test("modules.coroutines" ${test} ${${test}_PARAMETERS})
+  pika_add_regression_test("modules.coroutines" ${test} ${${test}_PARAMETERS} THREADS 4 VALGRIND)
 endforeach()
