@@ -102,9 +102,20 @@ else
 fi
 
 echo ""
-echo "Tagging release."
-git tag --annotate "${VERSION_FULL_TAG}" --message="${VERSION_TITLE}"
-git push origin "${VERSION_FULL_TAG}"
+if [[ "$(git tag -l ${VERSION_FULL_TAG})" == "${VERSION_FULL_TAG}" ]]; then
+    echo "Tag already exists locally."
+else
+    echo "Tagging release."
+    git tag --annotate "${VERSION_FULL_TAG}" --message="${VERSION_TITLE}"
+fi
+
+remote=$(git remote -v | grep pika-org\/pika.git | cut -f1 | uniq)
+if [[ "$(git ls-remote --tags --refs $remote | grep -o ${VERSION_FULL_TAG}.*)" == "${VERSION_FULL_TAG}" ]]; then
+    echo "Tag already exists remotely."
+else
+    echo "Pushing tag to $remote."
+    git push $remote "${VERSION_FULL_TAG}"
+fi
 
 echo ""
 echo "Creating release."
