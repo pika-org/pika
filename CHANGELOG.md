@@ -4,6 +4,12 @@
 <!--- Distributed under the Boost Software License, Version 1.0. (See accompanying -->
 <!--- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 
+## 0.19.1 (2023-10-09)
+
+### Bugfixes
+
+- Fix a bug in `drop_operation_state` when the predecessor sender is sending a tuple. ([#801](https://github.com/pika-org/pika/pull/801))
+
 ## 0.19.0 (2023-10-04)
 
 ### New features

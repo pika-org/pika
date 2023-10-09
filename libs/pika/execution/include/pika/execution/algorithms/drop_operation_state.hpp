@@ -87,7 +87,7 @@ namespace pika::drop_op_state_detail {
 
             try
             {
-                auto ts_local = std::tuple(PIKA_FORWARD(Ts, ts)...);
+                std::tuple<std::decay_t<Ts>...> ts_local(PIKA_FORWARD(Ts, ts)...);
                 r.op_state->op_state.reset();
 
                 std::apply(pika::util::detail::bind_front(pika::execution::experimental::set_value,

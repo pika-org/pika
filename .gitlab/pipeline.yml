@@ -36,16 +36,18 @@ clang14_debug_build:
 
 .test_common_mc:
   stage: test
-  extends: .test_common
-  extends: .container-runner-daint-mc
+  extends:
+    - .test_common
+    - .container-runner-daint-mc
   variables:
     SLURM_CONSTRAINT: mc
     SLURM_PARTITION: normal
     PROCESSOR_COUNT: 36
 
 .test_common_gpu:
-  extends: .test_common
-  extends: .container-runner-daint-gpu
+  extends:
+    - .test_common
+    - .container-runner-daint-gpu
   variables:
     SLURM_CONSTRAINT: gpu
     SLURM_PARTITION: normal
