@@ -137,6 +137,7 @@ gcc11_debug_test:
 clang14_debug_build_pika-ci-image:
   stage: build
   extends: .container-builder
+  needs: [] # To clear the dotenv artifacts
   variables:
     BASE_IMAGE: docker.io/pikaorg/pika-ci-base:17
     DOCKERFILE: .gitlab/docker/Dockerfile.dockerhub_build
