@@ -104,7 +104,6 @@ gcc11_debug_build:
   variables:
     SLURM_CONSTRAINT: mc
     SLURM_PARTITION: normal
-    PROCESSOR_COUNT: 36
 
 .test_common_gpu:
   extends:
@@ -113,7 +112,6 @@ gcc11_debug_build:
   variables:
     SLURM_CONSTRAINT: gpu
     SLURM_PARTITION: normal
-    PROCESSOR_COUNT: 12
 
 gcc11_debug_test:
   extends:
@@ -124,7 +122,7 @@ gcc11_debug_test:
     - gcc11_debug_build
   script:
     - spack build-env $spack_spec -- bash -c ctest --test-dir ${BUILD_DIR} --verbose \
-      -j${PROCESSOR_COUNT} --timeout 120 --output-on-failure --no-compress-output -R tests \
+      -j$(nproc) --timeout 120 --output-on-failure --no-compress-output -R tests \
       --exclude-regex "tests.unit.modules.executors.std_thread_scheduler"
   image: $PERSIST_IMAGE_NAME
   variables:
@@ -151,7 +149,7 @@ clang14_debug_test_pika-ci-image:
     - clang14_debug_build_pika-ci-image
   image: $CSCS_REGISTRY_PATH/pika-debug-cpu-clang14:$CI_COMMIT_SHORT_SHA
   script:
-    - ctest --test-dir ${BUILD_DIR} --verbose -j${PROCESSOR_COUNT} --timeout 120 --output-on-failure --no-compress-output -R tests --exclude-regex "tests.unit.modules.executors.std_thread_scheduler"
+    - ctest --test-dir ${BUILD_DIR} --verbose -j$(nproc) --timeout 120 --output-on-failure --no-compress-output -R tests --exclude-regex "tests.unit.modules.executors.std_thread_scheduler"
   variables:
     SLURM_JOB_NUM_NODES: 1
     SLURM_NTASKS: 1
