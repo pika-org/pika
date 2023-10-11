@@ -1169,7 +1169,28 @@ namespace pika::threads::detail {
                 fmt::streamed(mask));
         }
 
-        main_thread_affinity_mask_ = std::move(mask);
+        // The mask is assumed to use physical/OS indices (as returned by e.g. hwloc-bind --get
+        // --taskset or taskset --pid) while pika deals with logical indices from this point
+        // onwards. We convert the mask from physical indices to logical indices before storing it.
+        mask_type logical_mask{};
+        resize(logical_mask, get_number_of_pus());
+
+#if !defined(__APPLE__)
+        {
+            std::unique_lock<mutex_type> lk(topo_mtx);
+
+            int const pu_depth = hwloc_get_type_or_below_depth(topo, HWLOC_OBJ_PU);
+            for (unsigned int i = 0; i != get_number_of_pus(); ++i)
+            {
+                hwloc_obj_t const pu_obj = hwloc_get_obj_by_depth(topo, pu_depth, i);
+                unsigned idx = static_cast<unsigned>(pu_obj->os_index);
+                PIKA_ASSERT(i == detail::get_index(pu_obj));
+                if (test(mask, idx)) { set(logical_mask, detail::get_index(pu_obj)); }
+            }
+        }
+#endif    // __APPLE__
+
+        main_thread_affinity_mask_ = std::move(logical_mask);
     }
 
     mask_type topology::get_cpubind_mask(error_code& ec) const
