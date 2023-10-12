@@ -129,15 +129,15 @@ namespace pika::detail {
         if (!mask_string.empty())
         {
             fmt::print(std::cerr,
-                "Explicit process mask is set with --pika:process-mask, but thread binding is not "
-                "supported on macOS. The process mask will be ignored.");
+                "Explicit process mask is set with --pika:process-mask or PIKA_PROCESS_MASK, but "
+                "thread binding is not supported on macOS. The process mask will be ignored.");
             mask_string = "";
         }
 #else
         if (!mask_string.empty() && !use_process_mask)
         {
             fmt::print(std::cerr,
-                "Explicit process mask is set with --pika:process-mask, but "
+                "Explicit process mask is set with --pika:process-mask or PIKA_PROCESS_MASK, but "
                 "--pika:ignore-process-mask is also set. The process mask will be ignored.\n");
         }
 #endif
