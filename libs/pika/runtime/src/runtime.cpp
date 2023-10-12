@@ -993,7 +993,6 @@ namespace pika {
                 std::ostringstream strm;
 
                 strm << std::string(79, '*') << '\n';
-                strm << "locality: " << pika::get_locality_id() << '\n';
                 for (std::size_t i = 0; i != num_threads; ++i)
                 {
                     // print the mask for the current PU
