@@ -44,6 +44,10 @@ set(runtime_sources
     thread_stacktrace.cpp
 )
 
+if(PIKA_WITH_MPI)
+  list(APPEND runtime_additional_module_dependencies pika_mpi_base)
+endif()
+
 include(pika_add_module)
 pika_add_module(
   pika runtime
@@ -65,5 +69,6 @@ pika_add_module(
     pika_thread_manager
     pika_timing
     pika_topology
+    ${runtime_additional_module_dependencies}
   CMAKE_SUBDIRS examples tests
 )
