@@ -6,12 +6,15 @@ SHELL ["/bin/bash", "-c"]
 # Disable host compatibility to be able to compile for broadwell on zen2
 RUN spack config --scope site add  concretizer:targets:host_compatible:false
 
-# Install compiler
+# Install compiler if not already installed
 ARG ARCH
 ARG COMPILER
-RUN export spack_compiler=${COMPILER/clang/llvm} && \
-    spack install $spack_compiler languages=c++ arch=$ARCH && \
-    spack compiler add --scope site $(spack location -i $spack_compiler)
+RUN spack compiler info $COMPILER > /dev/null 2> /dev/null; compiler_missing=$?; \
+    export spack_compiler=${COMPILER/clang/llvm} && \
+    if [[ $compiler_missing != 0 ]]; then \
+        spack install $spack_compiler languages=c++ arch=$ARCH && \
+        spack compiler add --scope site $(spack location -i $spack_compiler);\
+    fi
 
 RUN echo "spack arch: $(spack arch)"
 
