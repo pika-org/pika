@@ -40,9 +40,15 @@ int pika_main()
         pika::threads::detail::register_thread(data);
     }
 
+#if defined(PIKA_WITH_VALGRIND)
+    const int num_iterations = 100;
+#else
+    const int num_iterations = 1000;
+#endif
+
     // This is a more complicated example which sometimes leads to the yielder
     // destructor being called late in the coroutine call operator.
-    for (int i = 0; i < 1000; ++i)
+    for (int i = 0; i < num_iterations; ++i)
     {
         pika::lcos::local::promise<yielder> p;
         pika::future<yielder> f = p.get_future();
@@ -53,7 +59,7 @@ int pika_main()
     // In the following two cases the yielder instance gets destructed earlier
     // in the coroutine call operator (before the thread function returns), so
     // these cases should never fail, even when the above two cases may fail.
-    for (int i = 0; i < 1000; ++i)
+    for (int i = 0; i < num_iterations; ++i)
     {
         pika::lcos::local::promise<yielder> p;
         pika::future<yielder> f = p.get_future();
@@ -61,7 +67,7 @@ int pika_main()
         p.set_value(yielder{});
     }
 
-    for (int i = 0; i < 1000; ++i)
+    for (int i = 0; i < num_iterations; ++i)
     {
         yielder y;
         pika::apply([y = std::move(y)]() {});
