@@ -6,7 +6,14 @@
 
 name: Lint Yaml Files
 
-on: [push, pull_request]
+on:
+  merge_group:
+  pull_request:
+  push:
+    branches:
+      # Development and release branches
+      - main
+      - release**
 
 jobs:
   build:
