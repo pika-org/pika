@@ -25,11 +25,10 @@ variables:
 .variables_gcc11_config:
   variables:
     ARCH: linux-ubuntu22.04-broadwell
-    BOOST: boost@1.78.0
     BUILD_TYPE: Debug
     COMPILER: gcc@11.2.0
     CXXSTD: 20
-    HWLOC: hwloc@2.7.0
+    SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD ^boost@1.78.0 ^hwloc@2.7.0"
 
 ###################################################################################################
 
@@ -53,14 +52,14 @@ gcc11_spack_image:
     - .container-builder
     - .variables_gcc11_config
   before_script:
-    - CONFIG_TAG=`echo $CXXSTD-$BOOST-$HWLOC | sha256sum - | head -c 16`
+    - CONFIG_TAG=`echo $SPACK_SPEC | sha256sum - | head -c 16`
     - compiler=${COMPILER/@/-}
     - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/pika-$compiler:$CONFIG_TAG
     - echo -e "compiler=$compiler\nBASE_IMAGE=$PERSIST_IMAGE_NAME" >> compiler.env
   variables:
     BASE_IMAGE: $CSCS_REGISTRY_PATH/pika-spack-base:$SPACK_VERSION
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_compiler
-    DOCKER_BUILD_ARGS: '["BASE_IMAGE","ARCH","BOOST","COMPILER","CXXSTD","HWLOC"]'
+    DOCKER_BUILD_ARGS: '["BASE_IMAGE","ARCH","COMPILER","SPACK_SPEC"]'
   artifacts:
     reports:
       dotenv: compiler.env
