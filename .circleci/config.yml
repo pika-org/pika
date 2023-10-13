@@ -6,65 +6,58 @@
 #  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 working_dir_default: &working_dir_default
-    working_directory: /pika/build
+  working_directory: /pika/build
 
 setup_x86_small: &setup_x86_small
-    resource_class: small
+  resource_class: small
 
 setup_x86_large: &setup_x86_large
-    resource_class: large
+  resource_class: large
 
 setup_arm64_machine: &setup_arm64_machine
-    machine:
-      image: ubuntu-2004:current
-    resource_class: arm.large
+  machine:
+    image: ubuntu-2004:current
+  resource_class: arm.large
 
 docker_default: &docker_default
-    docker:
-      - image: pikaorg/pika-ci-base:19
+  docker:
+    - image: pikaorg/pika-ci-base:19
 
 defaults: &defaults
-    <<: *working_dir_default
-    <<: *docker_default
+  <<: *working_dir_default
+  <<: *docker_default
 
 convert_xml: &convert_xml
-    name: Converting XML
-    when: always
-    command: |
-        mkdir -p ${CIRCLE_JOB}
-        curl \
-          https://raw.githubusercontent.com/Kitware/CDash/master/app/cdash/tests/circle/conv.xsl \
-          --fail -o $HOME/conv.xsl
-        xsltproc \
-          $HOME/conv.xsl Testing/`head -n 1 < Testing/TAG`/Test.xml \
-          > ${CIRCLE_JOB}/Test.xml
+  name: Converting XML
+  when: always
+  command: |
+      mkdir -p ${CIRCLE_JOB}
+      curl \
+        https://raw.githubusercontent.com/Kitware/CDash/master/app/cdash/tests/circle/conv.xsl \
+        --fail -o $HOME/conv.xsl
+      xsltproc \
+        $HOME/conv.xsl Testing/`head -n 1 < Testing/TAG`/Test.xml \
+        > ${CIRCLE_JOB}/Test.xml
 
 
 move_core_dump: &move_core_dump
-    name: Moving core dumps
-    when: on_fail
-    command: |
-        mkdir -p ${CIRCLE_JOB}
-        # Ignore errors if there are no core dumps
-        cp core.* ${CIRCLE_JOB} || true
+  name: Moving core dumps
+  when: on_fail
+  command: |
+      mkdir -p ${CIRCLE_JOB}
+      # Ignore errors if there are no core dumps
+      cp core.* ${CIRCLE_JOB} || true
 
 move_debug_log: &move_debug_log
-    name: Moving debug logs
-    when: on_fail
-    command: |
-        mkdir -p ${CIRCLE_JOB}
-        cp debug-log.txt ${CIRCLE_JOB} || true
+  name: Moving debug logs
+  when: on_fail
+  command: |
+      mkdir -p ${CIRCLE_JOB}
+      cp debug-log.txt ${CIRCLE_JOB} || true
 
 core_dependency: &core_dependency
-    requires:
-      - core
-
-add_github_to_known_hosts: &add_github_to_known_hosts
-    run:
-        name: Add Github's key(s) to known_hosts
-        command: |
-            mkdir -p ~/.ssh
-            ssh-keyscan -H github.com >>~/.ssh/known_hosts
+  requires:
+    - core
 
 version: 2
 

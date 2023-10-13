@@ -25,65 +25,65 @@ jobs:
     runs-on: macos-latest
 
     steps:
-    - name: Install dependencies
-      run: |
-        # Workaround for https://github.com/actions/setup-python/issues/577
-        rm /usr/local/bin/2to3*
-        rm /usr/local/bin/idle3*
-        rm /usr/local/bin/pydoc3*
-        rm /usr/local/bin/python3*
+      - name: Install dependencies
+        run: |
+          # Workaround for https://github.com/actions/setup-python/issues/577
+          rm /usr/local/bin/2to3*
+          rm /usr/local/bin/idle3*
+          rm /usr/local/bin/pydoc3*
+          rm /usr/local/bin/python3*
 
-        export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
-        brew upgrade
-        brew update
-        brew install boost cmake fmt hwloc ninja
-    - uses: actions/checkout@v4
-    - name: Setup ccache
-      uses: hendrikmuhs/ccache-action@v1.2
-      with:
-        key: ccache-macos-debug
-    - name: Configure
-      shell: bash
-      run: |
-          cmake \
-              -H. \
-              -Bbuild \
-              -GNinja \
-              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-              -DCMAKE_BUILD_TYPE=Debug \
-              -DPIKA_WITH_UNITY_BUILD=ON \
-              -DPIKA_WITH_EXAMPLES=ON \
-              -DPIKA_WITH_TESTS=ON \
-              -DPIKA_WITH_TESTS_HEADERS=OFF \
-              -DPIKA_WITH_PARALLEL_TESTS_BIND_NONE=ON \
-              -DPIKA_WITH_TESTS_MAX_THREADS=3 \
-              -DPIKA_WITH_MALLOC=system \
-              -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=ON \
-              -DPIKA_WITH_COMPILER_WARNINGS=ON \
-              -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=On
-    - name: Build pika
-      shell: bash
-      run: |
-          cmake --build build --target all
-          cmake --build build --target examples
-          cmake --build build --target tests
-    - name: Test
-      shell: bash
-      run: |
-          cd build
-          ctest \
-            -j3 \
-            --output-on-failure \
-            --timeout 120 \
-            --exclude-regex \
-          "tests.unit.modules.execution.standalone_thread_pool_executor|\
-          tests.unit.modules.executors.std_thread_scheduler|\
-          tests.unit.modules.resource_partitioner.used_pus"
-    - name: Install
-      shell: bash
-      run: |
-          cmake --build build --target install
-    - name: Hello
-      shell: bash
-      run: |
-          hello_world
+          export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
+          brew upgrade
+          brew update
+          brew install boost cmake fmt hwloc ninja
+      - uses: actions/checkout@v4
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ccache-macos-debug
+      - name: Configure
+        shell: bash
+        run: |
+            cmake \
+                -H. \
+                -Bbuild \
+                -GNinja \
+                -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+                -DCMAKE_BUILD_TYPE=Debug \
+                -DPIKA_WITH_UNITY_BUILD=ON \
+                -DPIKA_WITH_EXAMPLES=ON \
+                -DPIKA_WITH_TESTS=ON \
+                -DPIKA_WITH_TESTS_HEADERS=OFF \
+                -DPIKA_WITH_PARALLEL_TESTS_BIND_NONE=ON \
+                -DPIKA_WITH_TESTS_MAX_THREADS=3 \
+                -DPIKA_WITH_MALLOC=system \
+                -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=ON \
+                -DPIKA_WITH_COMPILER_WARNINGS=ON \
+                -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=On
+      - name: Build pika
+        shell: bash
+        run: |
+            cmake --build build --target all
+            cmake --build build --target examples
+            cmake --build build --target tests
+      - name: Test
+        shell: bash
+        run: |
+            cd build
+            ctest \
+              -j3 \
+              --output-on-failure \
+              --timeout 120 \
+              --exclude-regex \
+            "tests.unit.modules.execution.standalone_thread_pool_executor|\
+            tests.unit.modules.executors.std_thread_scheduler|\
+            tests.unit.modules.resource_partitioner.used_pus"
+      - name: Install
+        shell: bash
+        run: |
+            cmake --build build --target install
+      - name: Hello
+        shell: bash
+        run: |
+            hello_world
