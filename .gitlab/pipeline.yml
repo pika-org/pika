@@ -54,14 +54,13 @@ gcc11_spack_image:
     - .variables_gcc11_config
   before_script:
     - CONFIG_TAG=`echo $CXXSTD-$BOOST-$HWLOC | sha256sum - | head -c 16`
-    - build_type=`echo $BUILD_TYPE | tr '[:upper:]' '[:lower:]'`
     - compiler=${COMPILER/@/-}
-    - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/pika-$compiler-$build_type:$CONFIG_TAG
-    - echo -e "build_type=$build_type\ncompiler=$compiler\nBASE_IMAGE=$PERSIST_IMAGE_NAME" >> compiler.env
+    - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/pika-$compiler:$CONFIG_TAG
+    - echo -e "compiler=$compiler\nBASE_IMAGE=$PERSIST_IMAGE_NAME" >> compiler.env
   variables:
     BASE_IMAGE: $CSCS_REGISTRY_PATH/pika-spack-base:$SPACK_VERSION
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_compiler
-    DOCKER_BUILD_ARGS: '["BASE_IMAGE","ARCH","BOOST","BUILD_TYPE","COMPILER","CXXSTD","HWLOC"]'
+    DOCKER_BUILD_ARGS: '["BASE_IMAGE","ARCH","BOOST","COMPILER","CXXSTD","HWLOC"]'
   artifacts:
     reports:
       dotenv: compiler.env
@@ -77,6 +76,7 @@ gcc11_debug_build:
   needs:
     - gcc11_spack_image
   before_script:
+    - build_type=`echo $BUILD_TYPE | tr '[:upper:]' '[:lower:]'`
     - configuration=$CMAKE_COMMON_FLAGS-$CMAKE_FLAGS-$CI_COMMIT_SHORT_SHA
     - configuration=${configuration//-D/}
     - CONFIG_TAG=`echo $configuration | sha256sum - | head -c 16`
