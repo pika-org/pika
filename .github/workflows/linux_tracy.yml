@@ -26,76 +26,76 @@ jobs:
     container: pikaorg/pika-ci-base:19
 
     steps:
-    - name: Check out Tracy
-      uses: actions/checkout@v4
-      with:
-        repository: wolfpld/tracy
-        ref: v0.8.2
-        path: tracy
-    - name: Update apt repositories for ccache
-      run: apt update
-    - name: Setup ccache
-      uses: hendrikmuhs/ccache-action@v1.2
-      with:
-        key: ccache-linux-tracy
-    - name: Install Tracy
-      shell: bash
-      working-directory: tracy
-      run: |
-          # TRACY_TIMER_FALLBACK is set to ON to silence Tracy complaining with:
-          #   Tracy Profiler initialization failure: CPU doesn't support invariant TSC.
-          #   Define TRACY_NO_INVARIANT_CHECK=1 to ignore this error, *if you know what you are doing*.
-          #   Alternatively you may rebuild the application with the TRACY_TIMER_FALLBACK define to use lower resolution timer.
-          # Since we only want to check that the executables run, we don't care
-          # about having a lower precision timer.
-          cmake \
-              . \
-              -Bbuild \
-              -GNinja \
-              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-              -DBUILD_SHARED_LIBS=ON \
-              -DTRACY_TIMER_FALLBACK=ON
-          cmake --build build --target install
+      - name: Check out Tracy
+        uses: actions/checkout@v4
+        with:
+          repository: wolfpld/tracy
+          ref: v0.8.2
+          path: tracy
+      - name: Update apt repositories for ccache
+        run: apt update
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ccache-linux-tracy
+      - name: Install Tracy
+        shell: bash
+        working-directory: tracy
+        run: |
+            # TRACY_TIMER_FALLBACK is set to ON to silence Tracy complaining with:
+            #   Tracy Profiler initialization failure: CPU doesn't support invariant TSC.
+            #   Define TRACY_NO_INVARIANT_CHECK=1 to ignore this error, *if you know what you are doing*.
+            #   Alternatively you may rebuild the application with the TRACY_TIMER_FALLBACK define to use lower resolution timer.
+            # Since we only want to check that the executables run, we don't care
+            # about having a lower precision timer.
+            cmake \
+                . \
+                -Bbuild \
+                -GNinja \
+                -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+                -DBUILD_SHARED_LIBS=ON \
+                -DTRACY_TIMER_FALLBACK=ON
+            cmake --build build --target install
 
-    - name: Check out pika
-      uses: actions/checkout@v4
-      with:
-        path: pika
-    - name: Configure
-      shell: bash
-      working-directory: pika
-      run: |
-          cmake \
-              . \
-              -Bbuild \
-              -GNinja \
-              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-              -DCMAKE_BUILD_TYPE=Debug \
-              -DPIKA_WITH_UNITY_BUILD=ON \
-              -DPIKA_WITH_MALLOC=system \
-              -DPIKA_WITH_TRACY=ON \
-              -DPIKA_WITH_EXAMPLES=ON \
-              -DPIKA_WITH_TESTS=ON \
-              -DPIKA_WITH_TESTS_EXAMPLES=ON \
-              -DPIKA_WITH_TESTS_MAX_THREADS=2 \
-              -DPIKA_WITH_COMPILER_WARNINGS=ON \
-              -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON \
-              -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=On
-    - name: Build
-      shell: bash
-      working-directory: pika
-      run: |
-          cmake --build build --target all
-          cmake --build build --target examples
-    - name: Test
-      shell: bash
-      working-directory: pika/build
-      run: |
-          ctest \
-            --timeout 120 \
-            --output-on-failure \
-            --tests-regex tests.examples.quickstart.hello_world
-          ctest \
-            --timeout 120 \
-            --output-on-failure \
-            --tests-regex tests.unit.build
+      - name: Check out pika
+        uses: actions/checkout@v4
+        with:
+          path: pika
+      - name: Configure
+        shell: bash
+        working-directory: pika
+        run: |
+            cmake \
+                . \
+                -Bbuild \
+                -GNinja \
+                -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+                -DCMAKE_BUILD_TYPE=Debug \
+                -DPIKA_WITH_UNITY_BUILD=ON \
+                -DPIKA_WITH_MALLOC=system \
+                -DPIKA_WITH_TRACY=ON \
+                -DPIKA_WITH_EXAMPLES=ON \
+                -DPIKA_WITH_TESTS=ON \
+                -DPIKA_WITH_TESTS_EXAMPLES=ON \
+                -DPIKA_WITH_TESTS_MAX_THREADS=2 \
+                -DPIKA_WITH_COMPILER_WARNINGS=ON \
+                -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON \
+                -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=On
+      - name: Build
+        shell: bash
+        working-directory: pika
+        run: |
+            cmake --build build --target all
+            cmake --build build --target examples
+      - name: Test
+        shell: bash
+        working-directory: pika/build
+        run: |
+            ctest \
+              --timeout 120 \
+              --output-on-failure \
+              --tests-regex tests.examples.quickstart.hello_world
+            ctest \
+              --timeout 120 \
+              --output-on-failure \
+              --tests-regex tests.unit.build

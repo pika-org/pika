@@ -18,53 +18,53 @@ jobs:
     container: pikaorg/pika-ci-base:19
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Update apt repositories for ccache
-      run: apt update
-    - name: Setup ccache
-      uses: hendrikmuhs/ccache-action@v1.2
-      with:
-        key: ccache-linux-coverage
-    - name: Configure
-      shell: bash
-      run: |
-          cmake \
-              . \
-              -Bbuild \
-              -GNinja \
-              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-              -DCMAKE_BUILD_TYPE=Debug \
-              -DCMAKE_CXX_FLAGS="--coverage" \
-              -DCMAKE_EXE_LINKER_FLAGS="--coverage" \
-              -DPIKA_WITH_UNITY_BUILD=ON \
-              -DPIKA_WITH_MALLOC=system \
-              -DPIKA_WITH_EXAMPLES=ON \
-              -DPIKA_WITH_TESTS=ON \
-              -DPIKA_WITH_TESTS_HEADERS=OFF \
-              -DPIKA_WITH_TESTS_MAX_THREADS=2 \
-              -DPIKA_WITH_PARALLEL_TESTS_BIND_NONE=ON
-    - name: Build
-      shell: bash
-      run: |
-          cmake --build build --target tests
-    - name: Test
-      shell: bash
-      working-directory: build
-      continue-on-error: true
-      run: |
-          ctest -j2 --timeout 120 --output-on-failure
-    - name: Upload coverage report
-      shell: bash
-      working-directory: build
-      run: |
-          grcov . \
-              --source-dir .. \
-              --output-path lcov.info \
-              --output-type lcov \
-              --llvm \
-              --ignore-not-existing \
-              --keep-only "*libs/pika/*/{src,include}/*"
-          bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-              --project-token ${{ secrets.CODACY_PIKA_PROJECT_TOKEN }} \
-              --language CPP \
-              --coverage-reports lcov.info
+      - uses: actions/checkout@v4
+      - name: Update apt repositories for ccache
+        run: apt update
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ccache-linux-coverage
+      - name: Configure
+        shell: bash
+        run: |
+            cmake \
+                . \
+                -Bbuild \
+                -GNinja \
+                -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+                -DCMAKE_BUILD_TYPE=Debug \
+                -DCMAKE_CXX_FLAGS="--coverage" \
+                -DCMAKE_EXE_LINKER_FLAGS="--coverage" \
+                -DPIKA_WITH_UNITY_BUILD=ON \
+                -DPIKA_WITH_MALLOC=system \
+                -DPIKA_WITH_EXAMPLES=ON \
+                -DPIKA_WITH_TESTS=ON \
+                -DPIKA_WITH_TESTS_HEADERS=OFF \
+                -DPIKA_WITH_TESTS_MAX_THREADS=2 \
+                -DPIKA_WITH_PARALLEL_TESTS_BIND_NONE=ON
+      - name: Build
+        shell: bash
+        run: |
+            cmake --build build --target tests
+      - name: Test
+        shell: bash
+        working-directory: build
+        continue-on-error: true
+        run: |
+            ctest -j2 --timeout 120 --output-on-failure
+      - name: Upload coverage report
+        shell: bash
+        working-directory: build
+        run: |
+            grcov . \
+                --source-dir .. \
+                --output-path lcov.info \
+                --output-type lcov \
+                --llvm \
+                --ignore-not-existing \
+                --keep-only "*libs/pika/*/{src,include}/*"
+            bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+                --project-token ${{ secrets.CODACY_PIKA_PROJECT_TOKEN }} \
+                --language CPP \
+                --coverage-reports lcov.info

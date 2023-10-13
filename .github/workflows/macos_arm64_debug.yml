@@ -24,49 +24,49 @@ jobs:
     if: ${{ github.event_name == 'merge_group' }}
     runs-on: [ self-hosted, macOS, ARM64 ]
     steps:
-    - name: Install dependencies
-      run: |
-          eval $(/opt/homebrew/bin/brew shellenv)
-          export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
-          brew upgrade
-          brew update
-          brew install boost cmake fmt hwloc ninja
-    - uses: actions/checkout@v4
-    - name: Configure
-      shell: bash
-      run: |
-          eval $(/opt/homebrew/bin/brew shellenv)
-          cmake \
-              . \
-              -Bbuild \
-              -GNinja \
-              -DCMAKE_BUILD_TYPE=Debug \
-              -DPIKA_WITH_MALLOC=system \
-              -DPIKA_WITH_EXAMPLES=ON \
-              -DPIKA_WITH_TESTS=ON \
-              -DPIKA_WITH_TESTS_EXAMPLES=ON \
-              -DPIKA_WITH_TESTS_HEADERS=OFF \
-              -DPIKA_WITH_COMPILER_WARNINGS=ON \
-              -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON
-    - name: Build
-      shell: bash
-      run: |
-          eval $(/opt/homebrew/bin/brew shellenv)
-          cmake --build build --target all
-          cmake --build build --target examples
-          cmake --build build --target tests
-    - name: Test
-      shell: bash
-      run: |
-          eval $(/opt/homebrew/bin/brew shellenv)
-          cd build
-          ctest \
-            --timeout 300 \
-            --output-on-failure \
-            --exclude-regex \
-          "tests.unit.modules.init_runtime.const_args_init|\
-          tests.unit.modules.resource_partitioner|\
-          tests.unit.modules.schedulers.schedule_last|\
-          tests.regressions.modules.threading_base.thread_stacksize_current|\
-          tests.performance.local.start_stop|\
-          tests.regressions.multiple_init"
+      - name: Install dependencies
+        run: |
+            eval $(/opt/homebrew/bin/brew shellenv)
+            export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
+            brew upgrade
+            brew update
+            brew install boost cmake fmt hwloc ninja
+      - uses: actions/checkout@v4
+      - name: Configure
+        shell: bash
+        run: |
+            eval $(/opt/homebrew/bin/brew shellenv)
+            cmake \
+                . \
+                -Bbuild \
+                -GNinja \
+                -DCMAKE_BUILD_TYPE=Debug \
+                -DPIKA_WITH_MALLOC=system \
+                -DPIKA_WITH_EXAMPLES=ON \
+                -DPIKA_WITH_TESTS=ON \
+                -DPIKA_WITH_TESTS_EXAMPLES=ON \
+                -DPIKA_WITH_TESTS_HEADERS=OFF \
+                -DPIKA_WITH_COMPILER_WARNINGS=ON \
+                -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON
+      - name: Build
+        shell: bash
+        run: |
+            eval $(/opt/homebrew/bin/brew shellenv)
+            cmake --build build --target all
+            cmake --build build --target examples
+            cmake --build build --target tests
+      - name: Test
+        shell: bash
+        run: |
+            eval $(/opt/homebrew/bin/brew shellenv)
+            cd build
+            ctest \
+              --timeout 300 \
+              --output-on-failure \
+              --exclude-regex \
+            "tests.unit.modules.init_runtime.const_args_init|\
+            tests.unit.modules.resource_partitioner|\
+            tests.unit.modules.schedulers.schedule_last|\
+            tests.regressions.modules.threading_base.thread_stacksize_current|\
+            tests.performance.local.start_stop|\
+            tests.regressions.multiple_init"

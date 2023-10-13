@@ -25,42 +25,42 @@ jobs:
     container: pikaorg/pika-ci-base:19
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Update apt repositories for ccache
-      run: apt update
-    - name: Setup ccache
-      uses: hendrikmuhs/ccache-action@v1.2
-      with:
-        key: ccache-linux-debug
-    - name: Configure
-      shell: bash
-      run: |
-          cmake \
-              . \
-              -Bbuild \
-              -GNinja \
-              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-              -DCMAKE_BUILD_TYPE=Debug \
-              -DPIKA_WITH_UNITY_BUILD=ON \
-              -DPIKA_WITH_MALLOC=system \
-              -DPIKA_WITH_EXAMPLES=ON \
-              -DPIKA_WITH_TESTS=ON \
-              -DPIKA_WITH_TESTS_EXAMPLES=ON \
-              -DPIKA_WITH_TESTS_HEADERS=OFF \
-              -DPIKA_WITH_TESTS_MAX_THREADS=2 \
-              -DPIKA_WITH_COMPILER_WARNINGS=ON \
-              -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON \
-              -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=On
-    - name: Build
-      shell: bash
-      run: |
-          cmake --build build --target all
-          cmake --build build --target examples
-    - name: Test
-      shell: bash
-      run: |
-          cd build
-          ctest \
-            --timeout 120 \
-            --output-on-failure \
-            --tests-regex tests.examples
+      - uses: actions/checkout@v4
+      - name: Update apt repositories for ccache
+        run: apt update
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ccache-linux-debug
+      - name: Configure
+        shell: bash
+        run: |
+            cmake \
+                . \
+                -Bbuild \
+                -GNinja \
+                -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+                -DCMAKE_BUILD_TYPE=Debug \
+                -DPIKA_WITH_UNITY_BUILD=ON \
+                -DPIKA_WITH_MALLOC=system \
+                -DPIKA_WITH_EXAMPLES=ON \
+                -DPIKA_WITH_TESTS=ON \
+                -DPIKA_WITH_TESTS_EXAMPLES=ON \
+                -DPIKA_WITH_TESTS_HEADERS=OFF \
+                -DPIKA_WITH_TESTS_MAX_THREADS=2 \
+                -DPIKA_WITH_COMPILER_WARNINGS=ON \
+                -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON \
+                -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=On
+      - name: Build
+        shell: bash
+        run: |
+            cmake --build build --target all
+            cmake --build build --target examples
+      - name: Test
+        shell: bash
+        run: |
+            cd build
+            ctest \
+              --timeout 120 \
+              --output-on-failure \
+              --tests-regex tests.examples

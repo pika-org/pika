@@ -28,22 +28,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Install sphinx and a theme
-      run: |
-          sudo apt update
-          sudo apt install \
-              --allow-downgrades \
-              --allow-remove-essential \
-              --allow-change-held-packages \
-              python3 python3-pip
-          pip install sphinx sphinx-material
-    - name: Build documentation
-      run: sphinx-build -W -n -a -b html docs build/docs
-    - name: Upload HTML output as artifact
-      uses: actions/upload-pages-artifact@v2
-      with:
-        path: build/docs
+      - uses: actions/checkout@v4
+      - name: Install sphinx and a theme
+        run: |
+            sudo apt update
+            sudo apt install \
+                --allow-downgrades \
+                --allow-remove-essential \
+                --allow-change-held-packages \
+                python3 python3-pip
+            pip install sphinx sphinx-material
+      - name: Build documentation
+        run: sphinx-build -W -n -a -b html docs build/docs
+      - name: Upload HTML output as artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: build/docs
 
   deploy:
     needs: build
@@ -63,6 +63,6 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-    - name: Deploy documentation to GitHub Pages
-      uses: actions/deploy-pages@v2
-      id: deployment
+      - name: Deploy documentation to GitHub Pages
+        uses: actions/deploy-pages@v2
+        id: deployment
