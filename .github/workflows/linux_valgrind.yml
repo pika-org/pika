@@ -52,6 +52,7 @@ jobs:
                 -DPIKA_WITH_TESTS_HEADERS=OFF \
                 -DPIKA_WITH_TESTS_MAX_THREADS=2 \
                 -DPIKA_WITH_TESTS_VALGRIND=ON \
+                -DPIKA_WITH_TESTS_VALGRIND_OPTIONS="--error-exitcode=1;--leak-check=full;--fair-sched=yes;--gen-suppressions=all;--suppressions=$PWD/tools/valgrind/memcheck.supp" \
                 -DPIKA_WITH_STACKOVERFLOW_DETECTION=Off \
                 -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=On
       - name: Build
