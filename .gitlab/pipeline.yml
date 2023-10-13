@@ -116,9 +116,10 @@ gcc11_debug_test:
   needs:
     - gcc11_debug_build
   script:
-    - spack build-env $spack_spec -- bash -c ctest --test-dir ${BUILD_DIR} --verbose \
+    - spack arch
+    - spack build-env $spack_spec -- bash -c "ctest --test-dir ${BUILD_DIR} --verbose \
       -j$(nproc) --timeout 120 --output-on-failure --no-compress-output -R tests \
-      --exclude-regex "tests.unit.modules.executors.std_thread_scheduler"
+      --exclude-regex tests.unit.modules.executors.std_thread_scheduler"
   image: $PERSIST_IMAGE_NAME
 
 ###################################################################################################
