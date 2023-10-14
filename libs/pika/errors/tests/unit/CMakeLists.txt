@@ -22,5 +22,5 @@ foreach(test ${tests})
     FOLDER ${folder_name}
   )
 
-  pika_add_unit_test("modules.errors" ${test} ${${test}_PARAMETERS})
+  pika_add_unit_test("modules.errors" ${test} ${${test}_PARAMETERS} VALGRIND)
 endforeach()

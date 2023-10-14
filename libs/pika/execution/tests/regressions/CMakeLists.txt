@@ -15,8 +15,6 @@ endif()
 foreach(test ${tests})
   set(sources ${test}.cpp)
 
-  set(${test}_PARAMETERS THREADS 4)
-
   source_group("Source Files" FILES ${sources})
 
   # add example executable
@@ -27,5 +25,7 @@ foreach(test ${tests})
     FOLDER "Tests/Regressions/Modules/Execution"
   )
 
-  pika_add_regression_test("modules.execution" ${test} ${${test}_PARAMETERS})
+  pika_add_regression_test(
+    "modules.execution" ${test} ${${test}_PARAMETERS} THREADS 4
+  )
 endforeach()

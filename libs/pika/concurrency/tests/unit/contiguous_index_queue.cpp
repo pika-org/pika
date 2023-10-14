@@ -127,7 +127,11 @@ void test_concurrent_worker(pop_mode m, std::size_t thread_index, pika::barrier<
 void test_concurrent(pop_mode m)
 {
     std::uint32_t first = 33;
+#if defined(PIKA_HAVE_VALGRIND)
+    std::uint32_t last = 5432;
+#else
     std::uint32_t last = 1372195;
+#endif
     pika::concurrency::detail::contiguous_index_queue<> q{first, last};
 
     std::size_t const num_threads = pika::get_num_worker_threads();
