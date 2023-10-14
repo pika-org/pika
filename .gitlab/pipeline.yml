@@ -20,7 +20,10 @@ variables:
 
 .cmake_variables_common:
   variables:
-    CMAKE_COMMON_FLAGS: "-GNinja -DPIKA_WITH_COMPILER_WARNINGS=ON -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=ON -DPIKA_WITH_EXAMPLES=ON -DPIKA_WITH_TESTS=ON"
+    CMAKE_COMMON_FLAGS: "-GNinja -DPIKA_WITH_COMPILER_WARNINGS=ON \
+                         -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON \
+                         -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=ON \
+                         -DPIKA_WITH_EXAMPLES=ON -DPIKA_WITH_TESTS=ON"
 
 .variables_gcc11_config:
   variables:
@@ -28,7 +31,8 @@ variables:
     BUILD_TYPE: Debug
     COMPILER: gcc@11.4.0
     CXXSTD: 20
-    SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD ^boost@1.78.0 ^hwloc@2.7.0"
+    SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD ^boost@1.78.0 \
+                 ^hwloc@2.7.0"
 
 ###################################################################################################
 
@@ -47,7 +51,7 @@ base_spack_image:
 
 gcc11_spack_image:
   stage: spack_configs
-  needs: [ base_spack_image ]
+  needs: [base_spack_image]
   extends:
     - .container-builder
     - .variables_gcc11_config
@@ -83,7 +87,9 @@ gcc11_debug_build:
     - echo -e "PERSIST_IMAGE_NAME=$PERSIST_IMAGE_NAME" > build.env
   variables:
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_build
-    CMAKE_FLAGS: "-DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_MAX_CPU_COUNT=256 -DPIKA_WITH_MALLOC=system -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
+    CMAKE_FLAGS: "-DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPIKA_WITH_CXX_STANDARD=$CXXSTD \
+                  -DPIKA_WITH_MAX_CPU_COUNT=256 -DPIKA_WITH_MALLOC=system \
+                  -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
     DOCKER_BUILD_ARGS: '["BASE_IMAGE","SOURCE_DIR","BUILD_DIR","CMAKE_COMMON_FLAGS","CMAKE_FLAGS"]'
   artifacts:
     reports:
@@ -117,10 +123,7 @@ gcc11_debug_test:
     - gcc11_debug_build
   script:
     - spack arch
-    - spack build-env $spack_spec -- bash -c "ctest --label-exclude COMPILE_ONLY \
-      --test-dir ${BUILD_DIR} \
-      --verbose -j$(nproc) --timeout 120 --output-on-failure --no-compress-output -R tests \
-      --exclude-regex tests.unit.modules.executors.std_thread_scheduler tests.unit.build"
+    - spack build-env $spack_spec -- bash -c "ctest --label-exclude COMPILE_ONLY --test-dir ${BUILD_DIR} --verbose -j$(nproc) --timeout 120 --output-on-failure --no-compress-output -R tests --exclude-regex tests.unit.modules.executors.std_thread_scheduler tests.unit.build"
   image: $PERSIST_IMAGE_NAME
 
 ###################################################################################################
@@ -129,7 +132,7 @@ gcc11_debug_test:
 clang14_debug_build_pika-ci-image:
   stage: build
   extends: .container-builder
-  needs: [] # To clear the dotenv artifacts
+  needs: []   # To clear the dotenv artifacts
   variables:
     BASE_IMAGE: docker.io/pikaorg/pika-ci-base:17
     DOCKERFILE: .gitlab/docker/Dockerfile.dockerhub_build
@@ -143,4 +146,6 @@ clang14_debug_test_pika-ci-image:
     - clang14_debug_build_pika-ci-image
   image: $CSCS_REGISTRY_PATH/pika-debug-cpu-clang14:$CI_COMMIT_SHORT_SHA
   script:
-    - ctest --test-dir ${BUILD_DIR} --verbose -j$(nproc) --timeout 120 --output-on-failure --no-compress-output -R tests --exclude-regex "tests.unit.modules.executors.std_thread_scheduler"
+    - ctest --test-dir ${BUILD_DIR} --verbose -j$(nproc) --timeout 120 --output-on-failure \
+      --no-compress-output -R tests \
+      --exclude-regex "tests.unit.modules.executors.std_thread_scheduler"
