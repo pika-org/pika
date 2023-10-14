@@ -1,0 +1,28 @@
+# Copyright (c) 2023 ETH Zurich
+#
+# SPDX-License-Identifier: BSL-1.0
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file BOOST_LICENSE_1_0.rst or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+include:
+  - local: '.gitlab/includes/common_pipeline.yml'
+
+clang14_debug_build_pika-ci-image:
+  stage: build
+  extends: .container-builder
+  needs: []   # To clear the dotenv artifacts
+  variables:
+    BASE_IMAGE: docker.io/pikaorg/pika-ci-base:17
+    DOCKERFILE: .gitlab/docker/Dockerfile.dockerhub_build
+    DOCKER_BUILD_ARGS: '["BASE_IMAGE","BUILD_DIR","SOURCE_DIR"]'
+    PERSIST_IMAGE_NAME: $CSCS_REGISTRY_PATH/pika-debug-cpu-clang14:$CI_COMMIT_SHORT_SHA
+
+clang14_debug_test_pika-ci-image:
+  stage: test
+  extends: .test_common_mc
+  needs:
+    - clang14_debug_build_pika-ci-image
+  image: $CSCS_REGISTRY_PATH/pika-debug-cpu-clang14:$CI_COMMIT_SHORT_SHA
+  script:
+    - ctest --test-dir ${BUILD_DIR} --verbose -j$(nproc) --timeout 120 --output-on-failure \
+      --no-compress-output -R tests
