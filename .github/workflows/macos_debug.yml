@@ -56,7 +56,7 @@ jobs:
                 -DPIKA_WITH_TESTS=ON \
                 -DPIKA_WITH_TESTS_HEADERS=OFF \
                 -DPIKA_WITH_PARALLEL_TESTS_BIND_NONE=ON \
-                -DPIKA_WITH_TESTS_MAX_THREADS=3 \
+                -DPIKA_WITH_TESTS_MAX_THREADS=$(sysctl -n hw.logicalcpu) \
                 -DPIKA_WITH_MALLOC=system \
                 -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=ON \
                 -DPIKA_WITH_COMPILER_WARNINGS=ON \
