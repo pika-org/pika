@@ -76,7 +76,11 @@ jobs:
         shell: bash
         run: |
             cd build
+            # The process_mask_flag test assumes that there are two hardware
+            # threads per core, but the test environment only has one per core
             ctest \
               --timeout 120 \
               --output-on-failure \
-              -E tests.examples
+              -E \
+            "tests.examples|\
+            tests.unit.modules.runtime.process_mask_flag"
