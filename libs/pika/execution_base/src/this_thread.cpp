@@ -242,6 +242,8 @@ namespace pika::execution {
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
             if (pika::util::detail::get_spinlock_break_on_deadlock_enabled())
             {
+                if (desc == nullptr) { desc = ""; }
+
                 auto const deadlock_detection_limit =
                     pika::util::detail::get_spinlock_deadlock_detection_limit();
                 if (k >= deadlock_detection_limit)
