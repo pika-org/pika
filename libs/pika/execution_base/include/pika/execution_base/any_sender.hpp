@@ -448,6 +448,8 @@ namespace pika::execution::experimental::detail {
     template <typename... Ts>
     class any_receiver
     {
+        using is_receiver = void;
+
         using base_type = detail::any_receiver_base<Ts...>;
         template <typename Receiver>
         using impl_type = detail::any_receiver_impl<Receiver, Ts...>;
