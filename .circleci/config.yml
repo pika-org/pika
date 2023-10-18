@@ -48,13 +48,6 @@ move_core_dump: &move_core_dump
       # Ignore errors if there are no core dumps
       cp core.* ${CIRCLE_JOB} || true
 
-move_debug_log: &move_debug_log
-  name: Moving debug logs
-  when: on_fail
-  command: |
-      mkdir -p ${CIRCLE_JOB}
-      cp debug-log.txt ${CIRCLE_JOB} || true
-
 core_dependency: &core_dependency
   requires:
     - core
@@ -236,8 +229,6 @@ jobs:
                 -DPIKA_WITH_THREAD_LOCAL_STORAGE=On \
                 -DPIKA_WITH_STACKTRACES_STATIC_SYMBOLS=On \
                 -DPIKA_WITH_STACKTRACES_DEMANGLE_SYMBOLS=Off \
-                -DPIKA_WITH_TESTS_DEBUG_LOG=On \
-                -DPIKA_WITH_TESTS_DEBUG_LOG_DESTINATION=/pika/build/debug-log.txt \
                 -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=On \
                 -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=On
       - persist_to_workspace:
@@ -361,8 +352,6 @@ jobs:
           <<: *convert_xml
       - run:
           <<: *move_core_dump
-      - run:
-          <<: *move_debug_log
       - store_test_results:
           path: tests.examples
       - store_artifacts:
@@ -405,8 +394,6 @@ jobs:
           <<: *convert_xml
       - run:
           <<: *move_core_dump
-      - run:
-          <<: *move_debug_log
       - store_test_results:
           path: tests.unit
       - store_artifacts:
@@ -437,8 +424,6 @@ jobs:
           <<: *convert_xml
       - run:
           <<: *move_core_dump
-      - run:
-          <<: *move_debug_log
       - store_test_results:
           path: tests.regressions
       - store_artifacts:
@@ -570,8 +555,6 @@ jobs:
                 -DPIKA_WITH_THREAD_LOCAL_STORAGE=On \
                 -DPIKA_WITH_STACKTRACES_STATIC_SYMBOLS=On \
                 -DPIKA_WITH_STACKTRACES_DEMANGLE_SYMBOLS=Off \
-                -DPIKA_WITH_TESTS_DEBUG_LOG=On \
-                -DPIKA_WITH_TESTS_DEBUG_LOG_DESTINATION=$HOME/project/build/debug-log.txt \
                 -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=On
       - run:
           name: Building pika Arm64
@@ -606,9 +589,6 @@ jobs:
           working_directory: /home/circleci/project/build
       - run:
           <<: *move_core_dump
-          working_directory: /home/circleci/project/build
-      - run:
-          <<: *move_debug_log
           working_directory: /home/circleci/project/build
       - store_test_results:
           path: build/arm64_build
