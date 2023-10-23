@@ -24,6 +24,10 @@
 #include <pika/threading_base/thread_helpers.hpp>
 #include <pika/version.hpp>
 
+#if defined(PIKA_HAVE_MPI)
+# include <pika/mpi_base/mpi.hpp>
+#endif
+
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <fmt/printf.h>
@@ -85,8 +89,17 @@ namespace pika {
                 strm << "{stack-trace}: " << *back_trace << "\n";
             }
 
-            std::uint32_t const* locality = xi.get<pika::detail::throw_locality>();
-            if (locality) strm << "{locality-id}: " << *locality << "\n";
+#if defined(PIKA_HAVE_MPI)
+            int mpi_initialized = 0;
+            if (MPI_Initialized(&mpi_initialized) == MPI_SUCCESS && mpi_initialized)
+            {
+                int rank = 0;
+                if (MPI_Comm_rank(MPI_COMM_WORLD, &rank) == MPI_SUCCESS)
+                {
+                    strm << "{mpi-rank}: " << rank << '\n';
+                }
+            }
+#endif
 
             std::string const* hostname_ = xi.get<pika::detail::throw_hostname>();
             if (hostname_ && !hostname_->empty()) strm << "{hostname}: " << *hostname_ << "\n";
