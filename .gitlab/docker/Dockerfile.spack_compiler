@@ -3,7 +3,8 @@ FROM $BASE_IMAGE
 
 SHELL ["/bin/bash", "-c"]
 
-# Disable host compatibility to be able to compile for broadwell on zen2
+# Disable host compatibility to be able to compile for other architectures than the one from the
+# CSCS CI's .container-builder
 RUN spack config --scope site add  concretizer:targets:host_compatible:false
 
 # Install compiler if not already installed
