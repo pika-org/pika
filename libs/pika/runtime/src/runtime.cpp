@@ -1318,51 +1318,41 @@ namespace pika {
         cond.notify_all();    // we're done now
     }
 
-    int runtime::suspend()
+    void runtime::suspend()
     {
         LRT_(info).format("runtime: about to suspend runtime");
 
-        if (state_.load() == runtime_state::sleeping) { return 0; }
+        if (state_.load() == runtime_state::sleeping) { return; }
 
         if (state_.load() != runtime_state::running)
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status, "runtime::suspend",
                 "Can only suspend runtime from running state");
-            return -1;
         }
 
         thread_manager_->suspend();
 
         set_state(runtime_state::sleeping);
-
-        return 0;
     }
 
-    int runtime::resume()
+    void runtime::resume()
     {
         LRT_(info).format("runtime: about to resume runtime");
 
-        if (state_.load() == runtime_state::running) { return 0; }
+        if (state_.load() == runtime_state::running) { return; }
 
         if (state_.load() != runtime_state::sleeping)
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status, "runtime::resume",
                 "Can only resume runtime from suspended state");
-            return -1;
         }
 
         thread_manager_->resume();
 
         set_state(runtime_state::running);
-
-        return 0;
     }
 
-    int runtime::finalize()
-    {
-        notify_finalize();
-        return 0;
-    }
+    void runtime::finalize() { notify_finalize(); }
 
     pika::threads::detail::thread_manager& runtime::get_thread_manager()
     {

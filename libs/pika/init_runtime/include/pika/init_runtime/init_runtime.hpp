@@ -49,27 +49,6 @@ extern char** environ;
 
 namespace pika {
     namespace detail {
-        PIKA_EXPORT int init_helper(
-            pika::program_options::variables_map&, util::detail::function<int(int, char**)> const&);
-
-        struct dump_config
-        {
-            dump_config(pika::runtime const& rt)
-              : rt_(std::cref(rt))
-            {
-            }
-
-            void operator()() const
-            {
-                std::cout << "Configuration after runtime start:\n";
-                std::cout << "----------------------------------\n";
-                rt_.get().get_config().dump(0, std::cout);
-                std::cout << "----------------------------------\n";
-            }
-
-            std::reference_wrapper<pika::runtime const> rt_;
-        };
-
         // Default params to initialize the init_params struct
         PIKA_MAYBE_UNUSED static int dummy_argc = 1;
         PIKA_MAYBE_UNUSED static char app_name[] = PIKA_APPLICATION_STRING;
@@ -97,34 +76,6 @@ namespace pika {
         pika::detail::rp_callback_type rp_callback;
     };
 
-    namespace detail {
-        PIKA_EXPORT int run_or_start(
-            util::detail::function<int(pika::program_options::variables_map& vm)> const& f,
-            int argc, const char* const* argv, init_params const& params, bool blocking);
-
-        inline int init_start_impl(
-            util::detail::function<int(pika::program_options::variables_map&)> f, int argc,
-            const char* const* argv, init_params const& params, bool blocking)
-        {
-            if (argc == 0 || argv == nullptr)
-            {
-                argc = dummy_argc;
-                argv = dummy_argv;
-            }
-
-#if defined(__FreeBSD__)
-            freebsd_environ = environ;
-#endif
-            // set a handler for std::abort
-            std::signal(SIGABRT, pika::detail::on_abort);
-            std::atexit(pika::detail::on_exit);
-#if defined(PIKA_HAVE_CXX11_STD_QUICK_EXIT)
-            std::at_quick_exit(pika::detail::on_exit);
-#endif
-            return run_or_start(f, argc, argv, params, blocking);
-        }
-    }    // namespace detail
-
     PIKA_EXPORT int init(std::function<int(pika::program_options::variables_map&)> f, int argc,
         const char* const* argv, init_params const& params = init_params());
     PIKA_EXPORT int init(std::function<int(int, char**)> f, int argc, const char* const* argv,
@@ -133,19 +84,110 @@ namespace pika {
         init_params const& params = init_params());
     PIKA_EXPORT int init(std::nullptr_t, int argc, const char* const* argv,
         init_params const& params = init_params());
-    PIKA_EXPORT bool start(std::function<int(pika::program_options::variables_map&)> f, int argc,
+
+    /// Start the runtime.
+    ///
+    /// @param f entry point of the first task on the pika runtime. f will be passed all non-pika
+    /// command line arguments.
+    /// @param argc number of arguments in argv
+    /// @param argv array of arguments. The first element is ignored.
+    ///
+    /// @pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
+    /// @pre the runtime is stopped
+    /// @post the runtime is running
+    PIKA_EXPORT void start(std::function<int(pika::program_options::variables_map&)> f, int argc,
         const char* const* argv, init_params const& params = init_params());
-    PIKA_EXPORT bool start(std::function<int(int, char**)> f, int argc, const char* const* argv,
+
+    /// Start the runtime.
+    ///
+    /// @param f entry point of the first task on the pika runtime. f will be passed all non-pika
+    /// command line arguments.
+    /// @param argc number of arguments in argv
+    /// @param argv array of arguments. The first element is ignored.
+    ///
+    /// @pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
+    /// @pre the runtime is stopped
+    /// @post the runtime is running
+    PIKA_EXPORT void start(std::function<int(int, char**)> f, int argc, const char* const* argv,
         init_params const& params = init_params());
-    PIKA_EXPORT bool start(std::function<int()> f, int argc, const char* const* argv,
+
+    /// Start the runtime.
+    ///
+    /// @param f entry point of the first task on the pika runtime
+    /// @param argc number of arguments in argv
+    /// @param argv array of arguments. The first element is ignored.
+    ///
+    /// @pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
+    /// @pre the runtime is not running
+    PIKA_EXPORT void start(std::function<int()> f, int argc, const char* const* argv,
         init_params const& params = init_params());
-    PIKA_EXPORT bool start(std::nullptr_t, int argc, const char* const* argv,
+
+    PIKA_EXPORT void start(std::nullptr_t, int argc, const char* const* argv,
         init_params const& params = init_params());
-    PIKA_EXPORT bool start(
+
+    /// Start the runtime.
+    ///
+    /// No task is created on the runtime.
+    ///
+    /// @param argc number of arguments in argv
+    /// @param argv array of arguments. The first element is ignored.
+    ///
+    /// @pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
+    /// @pre the runtime is inactive
+    /// @post the runtime is running
+    PIKA_EXPORT void start(
         int argc, const char* const* argv, init_params const& params = init_params());
-    PIKA_EXPORT int finalize(error_code& ec = throws);
-    PIKA_EXPORT int stop(error_code& ec = throws);
-    PIKA_EXPORT int wait(error_code& ec = throws);
-    PIKA_EXPORT int suspend(error_code& ec = throws);
-    PIKA_EXPORT int resume(error_code& ec = throws);
+
+    /// Stop the runtime.
+    ///
+    /// Waits until @ref pika::finalize has been called and there is no more activity on the
+    /// runtime. See @ref pika::wait. The runtime can be started again after calling @ref
+    /// pika::stop. Must be called from outside the runtime.
+    ///
+    /// @return the return value of the callable passed to @p pika::start, if any. If none was
+    /// passed, returns 0.
+    ///
+    /// @pre the runtime is active
+    /// @pre the calling thread is not a pika task
+    /// @post the runtime is inactive
+    PIKA_EXPORT int stop();
+
+    /// Signal the runtime that it may be stopped.
+    ///
+    /// Until @ref pika::finalize has been called, @ref pika::stop will not return. This function
+    /// exists to distinguish between the runtime being idle but still expecting work to be
+    /// scheduled on it and the runtime being idle and ready to be shutdown. Unlike @pika::stop,
+    /// @ref pika::finalize can be called from within or outside the runtime.
+    ///
+    /// @pre the runtime is active
+    PIKA_EXPORT void finalize();
+
+    /// Wait for the runtime to be idle.
+    ///
+    /// Waits until the runtime is idle. This includes tasks scheduled on the thread pools as well
+    /// as non-tasks such as CUDA kernels submitted through pika facilities. Can be called from
+    /// within the runtime, in which case the calling task is ignored when determining idleness.
+    ///
+    /// @pre the runtime is active
+    /// @post all work submitted before the call to wait is completed
+    PIKA_EXPORT void wait();
+
+    /// Suspend the runtime.
+    ///
+    /// Waits until the runtime is idle and suspends worker threads on all thread pools. Work can be
+    /// scheduled on the runtime even when it is suspended, but no progress will be made.
+    ///
+    /// @pre the calling thread is not a pika task
+    /// @pre runtime is running or suspended
+    /// @post runtime is suspended
+    PIKA_EXPORT void suspend();
+
+    /// Resume the runtime.
+    ///
+    /// Resumes the runtime by waking all worker threads on all thread pools.
+    ///
+    /// @pre the calling thread is not a pika task
+    /// @pre runtime is suspended or running
+    /// @post runtime is running
+    PIKA_EXPORT void resume();
 }    // namespace pika

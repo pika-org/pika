@@ -199,12 +199,12 @@ namespace pika {
         virtual void stop(bool blocking = true);
 
         /// \brief Suspend the runtime system
-        virtual int suspend();
+        virtual void suspend();
 
         ///    \brief Resume the runtime system
-        virtual int resume();
+        virtual void resume();
 
-        virtual int finalize();
+        virtual void finalize();
 
         /// \brief Allow access to the thread manager instance used by the pika
         ///        runtime.

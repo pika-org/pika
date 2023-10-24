@@ -107,174 +107,7 @@ namespace pika {
             // Invoke custom startup functions
             return f(static_cast<int>(argcount), argv.data());
         }
-    }    // namespace detail
 
-    // Print stack trace and exit.
-    int init(std::function<int(pika::program_options::variables_map&)> f, int argc,
-        const char* const* argv, init_params const& params)
-    {
-        return detail::init_start_impl(PIKA_MOVE(f), argc, argv, params, true);
-    }
-
-    int init(std::function<int(int, char**)> f, int argc, const char* const* argv,
-        init_params const& params)
-    {
-        util::detail::function<int(pika::program_options::variables_map&)> main_f =
-            pika::util::detail::bind_back(pika::detail::init_helper, f);
-        return detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, true);
-    }
-
-    int init(std::function<int()> f, int argc, const char* const* argv, init_params const& params)
-    {
-        util::detail::function<int(pika::program_options::variables_map&)> main_f =
-            pika::util::detail::bind(f);
-        return detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, true);
-    }
-
-    int init(std::nullptr_t, int argc, const char* const* argv, init_params const& params)
-    {
-        util::detail::function<int(pika::program_options::variables_map&)> main_f;
-        return detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, true);
-    }
-
-    bool start(std::function<int(pika::program_options::variables_map&)> f, int argc,
-        const char* const* argv, init_params const& params)
-    {
-        return 0 == detail::init_start_impl(PIKA_MOVE(f), argc, argv, params, false);
-    }
-
-    bool start(std::function<int(int, char**)> f, int argc, const char* const* argv,
-        init_params const& params)
-    {
-        util::detail::function<int(pika::program_options::variables_map&)> main_f =
-            pika::util::detail::bind_back(pika::detail::init_helper, f);
-        return 0 == detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false);
-    }
-
-    bool start(std::function<int()> f, int argc, const char* const* argv, init_params const& params)
-    {
-        util::detail::function<int(pika::program_options::variables_map&)> main_f =
-            pika::util::detail::bind(f);
-        return 0 == detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false);
-    }
-
-    bool start(std::nullptr_t, int argc, const char* const* argv, init_params const& params)
-    {
-        util::detail::function<int(pika::program_options::variables_map&)> main_f;
-        return 0 == detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false);
-    }
-
-    bool start(int argc, const char* const* argv, init_params const& params)
-    {
-        util::detail::function<int(pika::program_options::variables_map&)> main_f;
-        return 0 == detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false);
-    }
-
-    int finalize(error_code& ec)
-    {
-        if (!is_running())
-        {
-            PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::finalize",
-                "the runtime system is not active (did you already call finalize?)");
-            return -1;
-        }
-
-        if (&ec != &throws) ec = make_success_code();
-
-        runtime* rt = get_runtime_ptr();
-        if (nullptr == rt)
-        {
-            PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::finalize",
-                "the runtime system is not active (did you already call pika::stop?)");
-            return -1;
-        }
-
-        rt->finalize();
-
-        return 0;
-    }
-
-    int stop(error_code& ec)
-    {
-        if (threads::detail::get_self_ptr())
-        {
-            PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::stop",
-                "this function cannot be called from a pika thread");
-            return -1;
-        }
-
-        std::unique_ptr<runtime> rt(get_runtime_ptr());    // take ownership!
-        if (nullptr == rt.get())
-        {
-            PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::stop",
-                "the runtime system is not active (did you already call pika::stop?)");
-            return -1;
-        }
-
-        int result = rt->wait();
-
-        rt->stop();
-        rt->rethrow_exception();
-
-        return result;
-    }
-
-    int wait(error_code& ec)
-    {
-        runtime* rt = get_runtime_ptr();
-        if (nullptr == rt)
-        {
-            PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::wait",
-                "the runtime system is not active (did you already call pika::stop?)");
-            return -1;
-        }
-
-        rt->get_thread_manager().wait();
-
-        return 0;
-    }
-
-    int suspend(error_code& ec)
-    {
-        if (threads::detail::get_self_ptr())
-        {
-            PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::suspend",
-                "this function cannot be called from a pika thread");
-            return -1;
-        }
-
-        runtime* rt = get_runtime_ptr();
-        if (nullptr == rt)
-        {
-            PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::suspend",
-                "the runtime system is not active (did you already call pika::stop?)");
-            return -1;
-        }
-
-        return rt->suspend();
-    }
-
-    int resume(error_code& ec)
-    {
-        if (threads::detail::get_self_ptr())
-        {
-            PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::resume",
-                "this function cannot be called from a pika thread");
-            return -1;
-        }
-
-        runtime* rt = get_runtime_ptr();
-        if (nullptr == rt)
-        {
-            PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::resume",
-                "the runtime system is not active (did you already call pika::stop?)");
-            return -1;
-        }
-
-        return rt->resume();
-    }
-
-    namespace detail {
         void activate_global_options(detail::command_line_handling& cmdline)
         {
 #if defined(__linux) || defined(linux) || defined(__linux__) || defined(__FreeBSD__)
@@ -307,6 +140,24 @@ namespace pika {
             warn_if_logging_requested(cmdline.rtcfg_);
 #endif
         }
+
+        struct dump_config
+        {
+            dump_config(pika::runtime const& rt)
+              : rt_(std::cref(rt))
+            {
+            }
+
+            void operator()() const
+            {
+                std::cout << "Configuration after runtime start:\n";
+                std::cout << "----------------------------------\n";
+                rt_.get().get_config().dump(0, std::cout);
+                std::cout << "----------------------------------\n";
+            }
+
+            std::reference_wrapper<pika::runtime const> rt_;
+        };
 
         ///////////////////////////////////////////////////////////////////////
         void add_startup_functions(pika::runtime& rt, pika::program_options::variables_map& vm,
@@ -529,5 +380,190 @@ namespace pika {
             }
             return result;
         }
+
+        int init_start_impl(util::detail::function<int(pika::program_options::variables_map&)> f,
+            int argc, const char* const* argv, init_params const& params, bool blocking)
+        {
+            if (argc == 0 || argv == nullptr)
+            {
+                argc = dummy_argc;
+                argv = dummy_argv;
+            }
+
+#if defined(__FreeBSD__)
+            freebsd_environ = environ;
+#endif
+            // set a handler for std::abort
+            std::signal(SIGABRT, pika::detail::on_abort);
+            std::atexit(pika::detail::on_exit);
+#if defined(PIKA_HAVE_CXX11_STD_QUICK_EXIT)
+            std::at_quick_exit(pika::detail::on_exit);
+#endif
+            return run_or_start(f, argc, argv, params, blocking);
+        }
     }    // namespace detail
+
+    int init(std::function<int(pika::program_options::variables_map&)> f, int argc,
+        const char* const* argv, init_params const& params)
+    {
+        return detail::init_start_impl(PIKA_MOVE(f), argc, argv, params, true);
+    }
+
+    int init(std::function<int(int, char**)> f, int argc, const char* const* argv,
+        init_params const& params)
+    {
+        util::detail::function<int(pika::program_options::variables_map&)> main_f =
+            pika::util::detail::bind_back(pika::detail::init_helper, f);
+        return detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, true);
+    }
+
+    int init(std::function<int()> f, int argc, const char* const* argv, init_params const& params)
+    {
+        util::detail::function<int(pika::program_options::variables_map&)> main_f =
+            pika::util::detail::bind(f);
+        return detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, true);
+    }
+
+    int init(std::nullptr_t, int argc, const char* const* argv, init_params const& params)
+    {
+        util::detail::function<int(pika::program_options::variables_map&)> main_f;
+        return detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, true);
+    }
+
+    void start(std::function<int(pika::program_options::variables_map&)> f, int argc,
+        const char* const* argv, init_params const& params)
+    {
+        if (detail::init_start_impl(PIKA_MOVE(f), argc, argv, params, false) != 0)
+        {
+            PIKA_UNREACHABLE;
+        }
+    }
+
+    void start(std::function<int(int, char**)> f, int argc, const char* const* argv,
+        init_params const& params)
+    {
+        util::detail::function<int(pika::program_options::variables_map&)> main_f =
+            pika::util::detail::bind_back(pika::detail::init_helper, f);
+        if (detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false) != 0)
+        {
+            PIKA_UNREACHABLE;
+        }
+    }
+
+    void start(std::function<int()> f, int argc, const char* const* argv, init_params const& params)
+    {
+        util::detail::function<int(pika::program_options::variables_map&)> main_f =
+            pika::util::detail::bind(f);
+        if (detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false) != 0)
+        {
+            PIKA_UNREACHABLE;
+        }
+    }
+
+    void start(std::nullptr_t, int argc, const char* const* argv, init_params const& params)
+    {
+        util::detail::function<int(pika::program_options::variables_map&)> main_f;
+        if (detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false) != 0)
+        {
+            PIKA_UNREACHABLE;
+        }
+    }
+
+    void start(int argc, const char* const* argv, init_params const& params)
+    {
+        util::detail::function<int(pika::program_options::variables_map&)> main_f;
+        if (detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false) != 0)
+        {
+            PIKA_UNREACHABLE;
+        }
+    }
+
+    void finalize()
+    {
+        if (!is_running())
+        {
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::finalize",
+                "the runtime system is not active (did you already call finalize?)");
+        }
+
+        runtime* rt = get_runtime_ptr();
+        if (nullptr == rt)
+        {
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::finalize",
+                "the runtime system is not active (did you already call pika::stop?)");
+        }
+
+        rt->finalize();
+    }
+
+    int stop()
+    {
+        if (threads::detail::get_self_ptr())
+        {
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::stop",
+                "this function cannot be called from a pika thread");
+        }
+
+        std::unique_ptr<runtime> rt(get_runtime_ptr());    // take ownership!
+        if (nullptr == rt.get())
+        {
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::stop",
+                "the runtime system is not active (did you already call pika::stop?)");
+        }
+
+        int result = rt->wait();
+
+        rt->stop();
+        rt->rethrow_exception();
+
+        return result;
+    }
+
+    void wait()
+    {
+        runtime* rt = get_runtime_ptr();
+        if (nullptr == rt)
+        {
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::wait",
+                "the runtime system is not active (did you already call pika::stop?)");
+        }
+
+        rt->get_thread_manager().wait();
+    }
+
+    void suspend()
+    {
+        if (threads::detail::get_self_ptr())
+        {
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::suspend",
+                "this function cannot be called from a pika thread");
+        }
+
+        runtime* rt = get_runtime_ptr();
+        if (nullptr == rt)
+        {
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::suspend",
+                "the runtime system is not active (did you already call pika::stop?)");
+        }
+
+        rt->suspend();
+    }
+
+    void resume()
+    {
+        if (threads::detail::get_self_ptr())
+        {
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::resume",
+                "this function cannot be called from a pika thread");
+        }
+
+        runtime* rt = get_runtime_ptr();
+        if (nullptr == rt)
+        {
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::resume",
+                "the runtime system is not active (did you already call pika::stop?)");
+        }
+
+        rt->resume();
+    }
 }    // namespace pika
