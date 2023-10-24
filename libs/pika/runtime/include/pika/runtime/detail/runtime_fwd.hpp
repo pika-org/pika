@@ -18,12 +18,4 @@ namespace pika {
     /// specific) runtime instance.
     PIKA_EXPORT runtime& get_runtime();
     PIKA_EXPORT runtime*& get_runtime_ptr();
-
-    /// Return true if networking is enabled.
-    ///
-    /// \note Networking is enabled if `-DPIKA_WITH_NETWORKING=On` was used at
-    ///       configuration time and more than one locality is used or the
-    ///       command line option `--pika:expect-connecting-localities` was
-    ///       specified
-    PIKA_EXPORT bool is_networking_enabled();
 }    // namespace pika

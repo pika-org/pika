@@ -26,12 +26,7 @@ namespace pika {
     /// \cond NODETAIL
     namespace detail {
         ///////////////////////////////////////////////////////////////////////
-        // Stores the information about the locality id the exception has been
-        // raised on. This information will show up in error messages under the
-        // [locality] tag.
-        PIKA_DEFINE_ERROR_INFO(throw_locality, std::uint32_t);
-
-        // Stores the information about the hostname of the locality the exception
+        // Stores the information about the hostname of the process the exception
         // has been raised on. This information will show up in error messages
         // under the [hostname] tag.
         PIKA_DEFINE_ERROR_INFO(throw_hostname, std::string);
@@ -61,12 +56,12 @@ namespace pika {
         // messages under the [stack_trace] tag.
         PIKA_DEFINE_ERROR_INFO(throw_stacktrace, std::string);
 
-        // Stores the full execution environment of the locality the exception
+        // Stores the full execution environment of the process the exception
         // has been raised in. This information will show up in error messages
         // under the [env] tag.
         PIKA_DEFINE_ERROR_INFO(throw_env, std::string);
 
-        // Stores the full pika configuration information of the locality the
+        // Stores the full pika configuration information of the process the
         // exception has been raised in. This information will show up in error
         // messages under the [config] tag.
         PIKA_DEFINE_ERROR_INFO(throw_config, std::string);
@@ -128,7 +123,7 @@ namespace pika {
     /// formatted string. This simplifies debug output as it composes the
     /// diagnostics into one, easy to use function call. This includes
     /// the name of the source file and line number, the sequence number of the
-    /// OS-thread and the pika-thread id, the locality id and the stack backtrace
+    /// OS-thread and the pika-thread id and the stack backtrace
     /// of the point where the original exception was thrown.
     ///
     /// \param xi   The parameter \p e will be inspected for all diagnostic
@@ -145,7 +140,7 @@ namespace pika {
     /// \throws     std#bad_alloc (if any of the required allocation operations
     ///             fail)
     ///
-    /// \see        \a pika::get_error_locality_id(), \a pika::get_error_host_name(),
+    /// \see        \a pika::get_error_host_name(),
     ///             \a pika::get_error_process_id(), \a pika::get_error_function_name(),
     ///             \a pika::get_error_file_name(), \a pika::get_error_line_number(),
     ///             \a pika::get_error_os_thread(), \a pika::get_error_thread_id(),
@@ -170,48 +165,7 @@ namespace pika {
     // Extract elements of the diagnostic information embedded in the given
     // exception.
 
-    /// \brief Return the locality id where the exception was thrown.
-    ///
-    /// The function \a pika::get_error_locality_id can be used to extract the
-    /// diagnostic information element representing the locality id as stored
-    /// in the given exception instance.
-    ///
-    /// \param xi   The parameter \p e will be inspected for the requested
-    ///             diagnostic information elements which have been stored at
-    ///             the point where the exception was thrown. This parameter
-    ///             can be one of the following types: \a pika::exception_info,
-    ///             \a pika::error_code, \a std::exception, or
-    ///             \a std::exception_ptr.
-    ///
-    /// \returns    The locality id of the locality where the exception was
-    ///             thrown. If the exception instance does not hold
-    ///             this information, the function will return
-    ///             \a pika::naming#invalid_locality_id.
-    ///
-    /// \throws     nothing
-    ///
-    /// \see        \a pika::diagnostic_information(), \a pika::get_error_host_name(),
-    ///             \a pika::get_error_process_id(), \a pika::get_error_function_name(),
-    ///             \a pika::get_error_file_name(), \a pika::get_error_line_number(),
-    ///             \a pika::get_error_os_thread(), \a pika::get_error_thread_id(),
-    ///             \a pika::get_error_thread_description(), \a pika::get_error(),
-    ///             \a pika::get_error_backtrace(), \a pika::get_error_env(),
-    ///             \a pika::get_error_what(), \a pika::get_error_config(),
-    ///             \a pika::get_error_state()
-    ///
-    PIKA_EXPORT std::uint32_t get_error_locality_id(pika::exception_info const& xi);
-
-    /// \cond NOINTERNAL
-    template <typename E>
-    std::uint32_t get_error_locality_id(E const& e)
-    {
-        return invoke_with_exception_info(e, [](exception_info const* xi) {
-            return xi ? get_error_locality_id(*xi) : ~static_cast<std::uint32_t>(0);
-        });
-    }
-    /// \endcond
-
-    /// \brief Return the hostname of the locality where the exception was
+    /// \brief Return the hostname of the process where the exception was
     ///        thrown.
     ///
     /// The function \a pika::get_error_host_name can be used to extract the
@@ -225,7 +179,7 @@ namespace pika {
     ///             \a pika::error_code, \a std::exception, or
     ///             \a std::exception_ptr.
     ///
-    /// \returns    The hostname of the locality where the exception was
+    /// \returns    The hostname of the process where the exception was
     ///             thrown. If the exception instance does not hold
     ///             this information, the function will return and empty string.
     ///
@@ -251,7 +205,7 @@ namespace pika {
     }
     /// \endcond
 
-    /// \brief Return the (operating system) process id of the locality where
+    /// \brief Return the (operating system) process id of the process where
     ///        the exception was thrown.
     ///
     /// The function \a pika::get_error_process_id can be used to extract the

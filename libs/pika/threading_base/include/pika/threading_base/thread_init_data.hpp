@@ -32,7 +32,6 @@ namespace pika::threads::detail {
           , description()
 #endif
 #if defined(PIKA_HAVE_THREAD_PARENT_REFERENCE)
-          , parent_locality_id(0)
           , parent_id(nullptr)
           , parent_phase(0)
 #endif
@@ -67,7 +66,6 @@ namespace pika::threads::detail {
             description = PIKA_MOVE(rhs.description);
 #endif
 #if defined(PIKA_HAVE_THREAD_PARENT_REFERENCE)
-            parent_locality_id = rhs.parent_locality_id;
             parent_id = rhs.parent_id;
             parent_phase = rhs.parent_phase;
 #endif
@@ -85,15 +83,13 @@ namespace pika::threads::detail {
           , description(PIKA_MOVE(rhs.description))
 #endif
 #if defined(PIKA_HAVE_THREAD_PARENT_REFERENCE)
-          , parent_locality_id(rhs.parent_locality_id)
           , parent_id(rhs.parent_id)
           , parent_phase(rhs.parent_phase)
 #endif
 #ifdef PIKA_HAVE_APEX
           // PIKA_HAVE_APEX forces the PIKA_HAVE_THREAD_DESCRIPTION and
           // PIKA_HAVE_THREAD_PARENT_REFERENCE settings to be on
-          , timer_data(
-                pika::detail::external_timer::new_task(description, parent_locality_id, parent_id))
+          , timer_data(pika::detail::external_timer::new_task(description, parent_id))
 #endif
           , priority(rhs.priority)
           , schedulehint(rhs.schedulehint)
@@ -117,15 +113,13 @@ namespace pika::threads::detail {
           , description(desc)
 #endif
 #if defined(PIKA_HAVE_THREAD_PARENT_REFERENCE)
-          , parent_locality_id(0)
           , parent_id(nullptr)
           , parent_phase(0)
 #endif
 #ifdef PIKA_HAVE_APEX
           // PIKA_HAVE_APEX forces the PIKA_HAVE_THREAD_DESCRIPTION and
           // PIKA_HAVE_THREAD_PARENT_REFERENCE settings to be on
-          , timer_data(
-                pika::detail::external_timer::new_task(description, parent_locality_id, parent_id))
+          , timer_data(pika::detail::external_timer::new_task(description, parent_id))
 #endif
           , priority(priority_)
           , schedulehint(os_thread)
@@ -151,7 +145,6 @@ namespace pika::threads::detail {
         ::pika::detail::thread_description description;
 #endif
 #if defined(PIKA_HAVE_THREAD_PARENT_REFERENCE)
-        std::uint32_t parent_locality_id;
         thread_id_type parent_id;
         std::size_t parent_phase;
 #endif

@@ -67,10 +67,6 @@ namespace pika::detail {
         std::abort();
     }
 
-#if defined(PIKA_HAVE_APEX)
-    bool enable_parent_task_handler() { return !pika::is_networking_enabled(); }
-#endif
-
 #if defined(PIKA_HAVE_VERIFY_LOCKS)
     void registered_locks_error_handler()
     {

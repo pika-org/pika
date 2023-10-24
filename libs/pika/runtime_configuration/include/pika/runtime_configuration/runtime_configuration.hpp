@@ -73,10 +73,10 @@ namespace pika::util {
         // return trace_depth for stack-backtraces
         std::size_t trace_depth() const;
 
-        // Returns the number of OS threads this locality is running.
+        // Returns the number of OS threads this process is running.
         std::size_t get_os_thread_count() const;
 
-        // Returns the command line that this locality was invoked with.
+        // Returns the command line that this process was invoked with.
         std::string get_cmd_line() const;
 
         // Will return the default stack size to use for all pika-threads.

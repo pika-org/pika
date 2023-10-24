@@ -316,12 +316,12 @@ namespace pika::detail {
                   "print to the console the bit masks calculated from the "
                   "arguments specified to all --pika:bind options.")
                 ("pika:threads", value<std::string>(),
-                 "the number of operating system threads to spawn for this pika "
-                 "locality (default: 1, using 'all' will spawn one thread for "
+                 "the number of operating system threads to spawn for the pika "
+                 "runtime (default: cores, using 'all' will spawn one thread for "
                  "each processing unit")
                 ("pika:cores", value<std::string>(),
-                 "the number of cores to utilize for this pika "
-                 "locality (default: 'all', i.e. the number of cores is based on "
+                 "the number of cores to utilize for the pika "
+                 "runtime (default: 'all', i.e. the number of cores is based on "
                  "the number of total cores in the system)")
                 ("pika:queuing", value<std::string>(),
                   "the queue scheduling policy to use, options are "

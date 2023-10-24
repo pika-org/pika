@@ -27,18 +27,6 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace pika::threads::detail {
-    static get_locality_id_type* get_locality_id_f;
-
-    void set_get_locality_id(get_locality_id_type* f) { get_locality_id_f = f; }
-
-    std::uint32_t get_locality_id(pika::error_code& ec)
-    {
-        if (get_locality_id_f) { return get_locality_id_f(ec); }
-
-        // same as naming::invalid_locality_id
-        return ~static_cast<std::uint32_t>(0);
-    }
-
     thread_data::thread_data(thread_init_data& init_data, void* queue, std::ptrdiff_t stacksize,
         bool is_stackless, thread_id_addref addref)
       : thread_data_reference_counting(addref)
@@ -48,7 +36,6 @@ namespace pika::threads::detail {
       , lco_description_()
 #endif
 #ifdef PIKA_HAVE_THREAD_PARENT_REFERENCE
-      , parent_locality_id_(init_data.parent_locality_id)
       , parent_thread_id_(init_data.parent_id)
       , parent_thread_phase_(init_data.parent_phase)
 #endif
@@ -86,7 +73,6 @@ namespace pika::threads::detail {
                 parent_thread_phase_ = self->get_thread_phase();
             }
         }
-        if (0 == parent_locality_id_) parent_locality_id_ = get_locality_id(pika::throws);
 #endif
 #if defined(PIKA_HAVE_APEX)
         set_timer_data(init_data.timer_data);
@@ -186,7 +172,6 @@ namespace pika::threads::detail {
         lco_description_ = ::pika::detail::thread_description();
 #endif
 #ifdef PIKA_HAVE_THREAD_PARENT_REFERENCE
-        parent_locality_id_ = init_data.parent_locality_id;
         parent_thread_id_ = init_data.parent_id;
         parent_thread_phase_ = init_data.parent_phase;
 #endif
@@ -226,7 +211,6 @@ namespace pika::threads::detail {
                 parent_thread_phase_ = self->get_thread_phase();
             }
         }
-        if (0 == parent_locality_id_) { parent_locality_id_ = get_locality_id(pika::throws); }
 #endif
 #if defined(PIKA_HAVE_APEX)
         set_timer_data(init_data.timer_data);
@@ -308,12 +292,6 @@ namespace pika::threads::detail {
     thread_id_type get_parent_id() { return invalid_thread_id; }
 
     std::size_t get_parent_phase() { return 0; }
-
-    std::uint32_t get_parent_locality_id()
-    {
-        // same as naming::invalid_locality_id
-        return ~static_cast<std::uint32_t>(0);
-    }
 #else
     thread_id_type get_parent_id()
     {
@@ -327,15 +305,6 @@ namespace pika::threads::detail {
         thread_data* thrd_data = get_self_id_data();
         if (PIKA_LIKELY(nullptr != thrd_data)) { return thrd_data->get_parent_thread_phase(); }
         return 0;
-    }
-
-    std::uint32_t get_parent_locality_id()
-    {
-        thread_data* thrd_data = get_self_id_data();
-        if (PIKA_LIKELY(nullptr != thrd_data)) { return thrd_data->get_parent_locality_id(); }
-
-        // same as naming::invalid_locality_id
-        return ~static_cast<std::uint32_t>(0);
     }
 #endif
 

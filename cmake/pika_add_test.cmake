@@ -10,14 +10,14 @@ endif()
 
 function(pika_add_test category name)
   set(options FAILURE_EXPECTED RUN_SERIAL TESTING PERFORMANCE_TESTING VALGRIND)
-  set(one_value_args EXECUTABLE LOCALITIES THREADS TIMEOUT RUNWRAPPER)
+  set(one_value_args EXECUTABLE RANKS THREADS TIMEOUT RUNWRAPPER)
   set(multi_value_args ARGS)
   cmake_parse_arguments(
     ${name} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
   )
 
-  if(NOT ${name}_LOCALITIES)
-    set(${name}_LOCALITIES 1)
+  if(NOT ${name}_RANKS)
+    set(${name}_RANKS 1)
   endif()
 
   if(NOT ${name}_THREADS)
@@ -78,7 +78,7 @@ function(pika_add_test category name)
     set(_preflags_list_ ${MPIEXEC_PREFLAGS})
     separate_arguments(_preflags_list_)
     list(PREPEND cmd "${MPIEXEC_EXECUTABLE}" "${MPIEXEC_NUMPROC_FLAG}"
-         "${${name}_LOCALITIES}" ${_preflags_list_}
+         "${${name}_RANKS}" ${_preflags_list_}
     )
   endif()
 

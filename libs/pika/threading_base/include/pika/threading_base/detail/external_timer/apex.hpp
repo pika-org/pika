@@ -30,7 +30,7 @@ namespace pika::detail::external_timer {
     using apex::yield;
 
     PIKA_EXPORT std::shared_ptr<task_wrapper> new_task(
-        pika::detail::thread_description const& description, std::uint32_t parent_locality_id,
+        pika::detail::thread_description const& description,
         threads::detail::thread_id_type parent_task);
 
     PIKA_EXPORT std::shared_ptr<task_wrapper> update_task(

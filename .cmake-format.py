@@ -382,7 +382,7 @@ with section("parse"):
             "kwargs": {
                 "ARGS": "+",
                 "EXECUTABLE": 1,
-                "LOCALITIES": 1,
+                "RANKS": 1,
             },
             "pargs": {"flags": ["FAILURE_EXPECTED"], "nargs": "2+"},
         },

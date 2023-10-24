@@ -17,7 +17,6 @@
 #include <pika/runtime/config_entry.hpp>
 #include <pika/runtime/custom_exception_info.hpp>
 #include <pika/runtime/debugging.hpp>
-#include <pika/runtime/get_locality_id.hpp>
 #include <pika/runtime/get_worker_thread_num.hpp>
 #include <pika/runtime/runtime.hpp>
 #include <pika/runtime/state.hpp>
@@ -224,15 +223,14 @@ namespace pika {
         }
 
         pika::exception_info construct_exception_info(std::string const& func,
-            std::string const& file, long line, std::string const& back_trace, std::uint32_t node,
+            std::string const& file, long line, std::string const& back_trace,
             std::string const& hostname, std::int64_t pid, std::size_t shepherd,
             std::size_t thread_id, std::string const& thread_name, std::string const& env,
             std::string const& config, std::string const& state_name, std::string const& auxinfo)
         {
             return pika::exception_info().set(pika::detail::throw_stacktrace(back_trace),
-                pika::detail::throw_locality(node), pika::detail::throw_hostname(hostname),
-                pika::detail::throw_pid(pid), pika::detail::throw_shepherd(shepherd),
-                pika::detail::throw_thread_id(thread_id),
+                pika::detail::throw_hostname(hostname), pika::detail::throw_pid(pid),
+                pika::detail::throw_shepherd(shepherd), pika::detail::throw_thread_id(thread_id),
                 pika::detail::throw_thread_name(thread_name), pika::detail::throw_function(func),
                 pika::detail::throw_file(file), pika::detail::throw_line(line),
                 pika::detail::throw_env(env), pika::detail::throw_config(config),
@@ -365,14 +363,13 @@ namespace pika {
 
                 if (rts_state >= runtime_state::initialized && rts_state < runtime_state::stopped)
                 {
-                    hostname = get_runtime().here();
+                    hostname = pika::debug::detail::hostname_print_helper{}.get_hostname();
                 }
             }
 
             // if this is not a pika thread we do not need to query neither for
             // the shepherd thread nor for the thread id
             error_code ec(throwmode::lightweight);
-            std::uint32_t node = get_locality_id(ec);
 
             std::size_t shepherd = std::size_t(-1);
             threads::detail::thread_id_type thread_id;
@@ -392,8 +389,8 @@ namespace pika {
             std::string config(pika::configuration_string());
 
             return pika::exception_info().set(pika::detail::throw_stacktrace(back_trace),
-                pika::detail::throw_locality(node), pika::detail::throw_hostname(hostname),
-                pika::detail::throw_pid(pid), pika::detail::throw_shepherd(shepherd),
+                pika::detail::throw_hostname(hostname), pika::detail::throw_pid(pid),
+                pika::detail::throw_shepherd(shepherd),
                 pika::detail::throw_thread_id(reinterpret_cast<std::size_t>(thread_id.get())),
                 pika::detail::throw_thread_name(detail::as_string(thread_name)),
                 pika::detail::throw_function(func), pika::detail::throw_file(file),
@@ -406,7 +403,7 @@ namespace pika {
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {
-    /// Return the host-name of the locality where the exception was thrown.
+    /// Return the host-name of the process where the exception was thrown.
     std::string get_error_host_name(pika::exception_info const& xi)
     {
         std::string const* hostname_ = xi.get<pika::detail::throw_hostname>();
@@ -414,17 +411,7 @@ namespace pika {
         return std::string();
     }
 
-    /// Return the locality where the exception was thrown.
-    std::uint32_t get_error_locality_id(pika::exception_info const& xi)
-    {
-        std::uint32_t const* locality = xi.get<pika::detail::throw_locality>();
-        if (locality) return *locality;
-
-        // same as naming::invalid_locality_id
-        return ~static_cast<std::uint32_t>(0);
-    }
-
-    /// Return the (operating system) process id of the locality where the
+    /// Return the (operating system) process id of the process where the
     /// exception was thrown.
     std::int64_t get_error_process_id(pika::exception_info const& xi)
     {

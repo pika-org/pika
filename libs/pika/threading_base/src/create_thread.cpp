@@ -56,7 +56,6 @@ namespace pika::threads::detail {
                 data.parent_phase = self->get_thread_phase();
             }
         }
-        if (0 == data.parent_locality_id) data.parent_locality_id = get_locality_id(pika::throws);
 #endif
 
         if (nullptr == data.scheduler_base) data.scheduler_base = scheduler;
