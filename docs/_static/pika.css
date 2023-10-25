@@ -30,3 +30,7 @@
 .md-header-nav__topic {
     font-weight: bold;
 }
+
+.md-typeset .headerlink {
+    opacity: 1;
+}
