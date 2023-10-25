@@ -54,9 +54,9 @@ if(NOT TARGET pika_dependencies_boost)
 
   # We are assuming that there is only one Boost Root
   if(NOT BOOST_ROOT AND "$ENV{BOOST_ROOT}")
-    set(BOOST_ROOT $ENV{BOOST_ROOT})
+    set(Boost_ROOT $ENV{BOOST_ROOT})
   elseif(NOT BOOST_ROOT)
-    string(REPLACE "/include" "" BOOST_ROOT "${Boost_INCLUDE_DIRS}")
+    string(REPLACE "/include" "" Boost_ROOT "${Boost_INCLUDE_DIRS}")
   endif()
 
   add_library(pika_dependencies_boost INTERFACE IMPORTED)
