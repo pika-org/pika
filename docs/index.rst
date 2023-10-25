@@ -23,7 +23,7 @@ scheduler
 target the pika runtime. The stdexec repository contains `an excellent list of resources for
 learning more about std::execution <https://github.com/NVIDIA/stdexec#resources>`_ itself.
 
-.. literalinclude:: ../examples/quickstart/hello_world_documentation.cpp
+.. literalinclude:: ../examples/documentation/hello_world_documentation.cpp
    :language: c++
    :start-at: #include
 
