@@ -730,8 +730,8 @@ namespace pika::execution::experimental {
         {
             static_assert(sizeof(R) == 0,
                 "Are you missing a std::move? unique_any_sender is not copyable and thus not "
-                "l-value connectable. Make sure you are passing an r-value reference of the "
-                "sender.");
+                "l-value connectable. Make sure you are passing a non-const r-value reference of "
+                "the sender.");
             PIKA_UNREACHABLE;
         }
 
