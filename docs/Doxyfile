@@ -1,0 +1,18 @@
+DOXYFILE_ENCODING      = UTF-8
+PROJECT_NAME           = "pika"
+GENERATE_XML           = YES
+GENERATE_LATEX         = NO
+GENERATE_MAN           = NO
+GENERATE_RTF           = NO
+GENERATE_HTML          = NO
+QUIET                  = NO
+OUTPUT_DIRECTORY       = "$(PIKA_DOCS_DOXYGEN_OUTPUT_DIRECTORY)"
+INPUT                  = "$(PIKA_DOCS_DOXYGEN_INPUT_ROOT)/libs/pika/init_runtime"
+FILE_PATTERNS          = *.cpp *.hpp *.cu
+RECURSIVE              = YES
+EXCLUDE_PATTERNS       = */test */detail
+EXCLUDE_SYMBOLS        = "*detail*"
+ENABLE_PREPPROCESSING  = YES
+MACRO_EXPANSION        = YES
+EXPAND_ONLY_PREDEF     = YES
+PREDEFINED             = PIKA_EXPORT=

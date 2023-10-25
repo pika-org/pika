@@ -5,6 +5,7 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 from datetime import datetime
+import os
 
 # Project settings
 project = "pika"
@@ -14,12 +15,22 @@ version = ""
 release = version
 
 # General sphinx settings
-extensions = []
+extensions = ["breathe"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 source_suffix = [".rst"]
 language = "English"
 primary_domain = "cpp"
 highlight_language = "cpp"
+
+breathe_projects = {"pika": os.getenv("PIKA_DOCS_DOXYGEN_OUTPUT_DIRECTORY") + "/xml"}
+breathe_default_project = "pika"
+breathe_domain_by_extension = {
+    "hpp": "cpp",
+    "cpp": "cpp",
+    "cu": "cpp",
+}
+breathe_default_members = ("members",)
+breathe_show_include = False
 
 # HTML settings
 html_title = "pika"
@@ -38,7 +49,8 @@ html_theme_options = {
     "repo_url": "https://github.com/pika-org/pika",
     "repo_name": "pika",
     "html_minify": False,
-    "html_prettify": True,
+    # Disabled because of https://github.com/bashtage/sphinx-material/issues/123
+    "html_prettify": False,
     "logo_icon": "&#xe88a;",
     "css_minify": True,
     "repo_type": "github",
