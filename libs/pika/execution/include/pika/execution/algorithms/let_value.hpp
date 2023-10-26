@@ -305,8 +305,8 @@ namespace pika::let_value_detail {
         {
             static_assert(sizeof(Receiver) == 0,
                 "Are you missing a std::move? The let_value sender is not copyable and thus not "
-                "l-value connectable. Make sure you are passing an r-value reference of the "
-                "sender.");
+                "l-value connectable. Make sure you are passing a non-const r-value reference of "
+                "the sender.");
         }
     };
 }    // namespace pika::let_value_detail
