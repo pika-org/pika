@@ -369,7 +369,7 @@ namespace pika::threads::detail {
 
         for (std::size_t i = 0; i != threads_.size(); ++i)
         {
-            suspend_processing_unit_direct(i, ec);
+            suspend_processing_unit_internal(i, ec);
         }
     }
 
@@ -1372,7 +1372,7 @@ namespace pika::threads::detail {
     }
 
     template <typename Scheduler>
-    void scheduled_thread_pool<Scheduler>::suspend_processing_unit_direct(
+    void scheduled_thread_pool<Scheduler>::suspend_processing_unit_internal(
         std::size_t virt_core, error_code& ec)
     {
         // Yield to other pika threads if lock is not available to avoid
@@ -1381,13 +1381,13 @@ namespace pika::threads::detail {
             sched_->Scheduler::get_pu_mutex(virt_core), std::defer_lock);
 
         util::yield_while([&l]() { return !l.try_lock(); },
-            "scheduled_thread_pool::suspend_processing_unit_direct");
+            "scheduled_thread_pool::suspend_processing_unit_internal");
 
         if (threads_.size() <= virt_core || !threads_[virt_core].joinable())
         {
             l.unlock();
             PIKA_THROWS_IF(ec, pika::error::bad_parameter,
-                "scheduled_thread_pool<Scheduler>::suspend_processing_unit_direct",
+                "scheduled_thread_pool<Scheduler>::suspend_processing_unit_internal",
                 "the given virtual core has already been stopped to run on this thread pool");
             return;
         }
@@ -1404,7 +1404,31 @@ namespace pika::threads::detail {
             expected == runtime_state::sleeping);
 
         util::yield_while([&state]() { return state.load() == runtime_state::pre_sleep; },
-            "scheduled_thread_pool::suspend_processing_unit_direct");
+            "scheduled_thread_pool::suspend_processing_unit_internal");
+    }
+
+    template <typename Scheduler>
+    void scheduled_thread_pool<Scheduler>::suspend_processing_unit_direct(
+        std::size_t virt_core, error_code& ec)
+    {
+        if (!get_scheduler()->has_scheduler_mode(scheduler_mode::enable_elasticity))
+        {
+            PIKA_THROWS_IF(ec, pika::error::invalid_status,
+                "scheduled_thread_pool<Scheduler>::suspend_processing_unit_direct",
+                "this thread pool does not support suspending processing units");
+        }
+
+        if (threads::detail::get_self_ptr() &&
+            !get_scheduler()->has_scheduler_mode(scheduler_mode::enable_stealing) &&
+            pika::this_thread::get_pool() == this)
+        {
+            PIKA_THROWS_IF(ec, pika::error::invalid_status,
+                "scheduled_thread_pool<Scheduler>::suspend_processing_unit_direct",
+                "this thread pool does not support suspending processing units from itself (no "
+                "thread stealing)");
+        }
+
+        suspend_processing_unit_internal(virt_core, ec);
     }
 
     template <typename Scheduler>

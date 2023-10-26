@@ -8,8 +8,8 @@
 #include "jacobi_nonuniform.hpp"
 
 #include <pika/chrono.hpp>
-#include <pika/functional/bind.hpp>
-#include <pika/future.hpp>
+#include <pika/execution.hpp>
+#include <pika/functional/bind_front.hpp>
 
 #include <chrono>
 #include <cstddef>
@@ -18,6 +18,9 @@
 #include <memory>
 #include <utility>
 #include <vector>
+
+namespace ex = pika::execution::experimental;
+namespace tt = pika::this_thread::experimental;
 
 namespace jacobi_smp {
 
@@ -73,11 +76,9 @@ namespace jacobi_smp {
             }
         }
 
-        using future_vector = std::vector<pika::shared_future<void>>;
-        std::shared_ptr<future_vector> deps_dst(
-            new future_vector(dependencies.size(), pika::make_ready_future()));
-        std::shared_ptr<future_vector> deps_src(
-            new future_vector(dependencies.size(), pika::make_ready_future()));
+        using sender_vector = std::vector<ex::any_sender<>>;
+        std::shared_ptr<sender_vector> deps_dst(new sender_vector(dependencies.size(), ex::just()));
+        std::shared_ptr<sender_vector> deps_src(new sender_vector(dependencies.size(), ex::just()));
 
         pika::chrono::detail::high_resolution_timer t;
         for (std::size_t iter = 0; iter < iterations; ++iter)
@@ -85,22 +86,22 @@ namespace jacobi_smp {
             for (std::size_t block = 0; block < block_ranges.size(); ++block)
             {
                 std::vector<std::size_t> const& deps(dependencies[block]);
-                std::vector<pika::shared_future<void>> trigger;
+                sender_vector trigger;
                 trigger.reserve(deps.size());
                 for (std::size_t dep : deps) { trigger.push_back((*deps_src)[dep]); }
 
-                (*deps_dst)[block] =
-                    pika::when_all(std::move(trigger))
-                        .then(pika::launch::async,
-                            pika::util::detail::bind(jacobi_kernel_wrap, block_ranges[block],
-                                std::cref(A), std::ref(*dst), std::cref(*src), std::cref(b)));
+                (*deps_dst)[block] = ex::when_all_vector(std::move(trigger)) |
+                    ex::transfer(ex::thread_pool_scheduler{}) |
+                    ex::then(pika::util::detail::bind_front(jacobi_kernel_wrap, block_ranges[block],
+                        std::cref(A), std::ref(*dst), std::cref(*src), std::cref(b))) |
+                    ex::split();
             }
             std::swap(dst, src);
             std::swap(deps_dst, deps_src);
         }
 
-        pika::wait_all(*deps_dst);
-        pika::wait_all(*deps_src);
+        tt::sync_wait(ex::when_all_vector(std::move(*deps_dst)));
+        tt::sync_wait(ex::when_all_vector(std::move(*deps_src)));
 
         double time_elapsed = t.elapsed<std::chrono::seconds>();
         std::cout << dst->size() << " " << ((double(dst->size() * iterations) / 1e6) / time_elapsed)

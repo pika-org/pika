@@ -9,7 +9,6 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/futures/future.hpp>
 #include <pika/modules/program_options.hpp>
 #include <pika/modules/thread_manager.hpp>
 #include <pika/modules/topology.hpp>

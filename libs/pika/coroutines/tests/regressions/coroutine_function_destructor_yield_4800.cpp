@@ -6,13 +6,16 @@
 
 // This test verifies that the destructor of a thread function may yield.
 
-#include <pika/future.hpp>
+#include <pika/execution.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/threading.hpp>
 #include <pika/testing.hpp>
 #include <pika/thread.hpp>
 
 #include <utility>
+
+namespace ex = pika::execution::experimental;
+namespace tt = pika::this_thread::experimental;
 
 struct thread_function_yield_destructor
 {
@@ -50,27 +53,13 @@ int pika_main()
     // destructor being called late in the coroutine call operator.
     for (int i = 0; i < num_iterations; ++i)
     {
-        pika::lcos::local::promise<yielder> p;
-        pika::future<yielder> f = p.get_future();
-        pika::dataflow([](auto&&) {}, f);
-        p.set_value(yielder{});
-    }
-
-    // In the following two cases the yielder instance gets destructed earlier
-    // in the coroutine call operator (before the thread function returns), so
-    // these cases should never fail, even when the above two cases may fail.
-    for (int i = 0; i < num_iterations; ++i)
-    {
-        pika::lcos::local::promise<yielder> p;
-        pika::future<yielder> f = p.get_future();
-        f.then([](auto&&) {});
-        p.set_value(yielder{});
+        tt::sync_wait(
+            ex::transfer_just(ex::thread_pool_scheduler{}, yielder{}) | ex::then([](auto&&) {}));
     }
 
     for (int i = 0; i < num_iterations; ++i)
     {
-        yielder y;
-        pika::apply([y = std::move(y)]() {});
+        ex::execute(ex::thread_pool_scheduler{}, [y = yielder{}] {});
     }
 
     return pika::finalize();

@@ -4,15 +4,19 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#include <pika/execution.hpp>
 #include <pika/init.hpp>
 #include <pika/latch.hpp>
-#include <pika/modules/async.hpp>
 #include <pika/testing.hpp>
 
 #include <atomic>
 #include <cstddef>
 #include <functional>
+#include <utility>
 #include <vector>
+
+namespace ex = pika::execution::experimental;
+namespace tt = pika::this_thread::experimental;
 
 #define NUM_THREADS std::size_t(100)
 
@@ -39,15 +43,18 @@ void test_count_down(pika::latch& l)
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main()
 {
-    // arraive_and_wait
+    auto sched = ex::thread_pool_scheduler{};
+
+    // arrive_and_wait
     {
         pika::latch l(NUM_THREADS + 1);
         PIKA_TEST(!l.try_wait());
 
-        std::vector<pika::future<void>> results;
+        std::vector<ex::unique_any_sender<>> results;
         for (std::ptrdiff_t i = 0; i != NUM_THREADS; ++i)
         {
-            results.push_back(pika::async(&test_arrive_and_wait, std::ref(l)));
+            results.emplace_back(ex::transfer_just(sched, std::ref(l)) |
+                ex::then(test_arrive_and_wait) | ex::ensure_started());
         }
 
         PIKA_TEST(!l.try_wait());
@@ -55,7 +62,7 @@ int pika_main()
         // Wait for all threads to reach this point.
         l.arrive_and_wait();
 
-        pika::wait_all(results);
+        tt::sync_wait(ex::when_all_vector(std::move(results)));
 
         PIKA_TEST(l.try_wait());
         PIKA_TEST_EQ(num_threads.load(), NUM_THREADS);
@@ -68,12 +75,13 @@ int pika_main()
         pika::latch l(NUM_THREADS + 1);
         PIKA_TEST(!l.try_wait());
 
-        pika::future<void> f = pika::async(&test_count_down, std::ref(l));
+        auto s = ex::transfer_just(sched, std::ref(l)) | ex::then(test_count_down) |
+            ex::ensure_started();
 
         PIKA_TEST(!l.try_wait());
         l.arrive_and_wait();
 
-        f.get();
+        tt::sync_wait(std::move(s));
 
         PIKA_TEST(l.try_wait());
         PIKA_TEST_EQ(num_threads.load(), std::size_t(1));
@@ -86,13 +94,14 @@ int pika_main()
         pika::latch l(NUM_THREADS);
         PIKA_TEST(!l.try_wait());
 
-        std::vector<pika::future<void>> results;
+        std::vector<ex::unique_any_sender<>> results;
         for (std::ptrdiff_t i = 0; i != NUM_THREADS; ++i)
         {
-            results.push_back(pika::async(&test_arrive_and_wait, std::ref(l)));
+            results.emplace_back(ex::transfer_just(sched, std::ref(l)) |
+                ex::then(test_arrive_and_wait) | ex::ensure_started());
         }
 
-        pika::wait_all(results);
+        tt::sync_wait(ex::when_all_vector(std::move(results)));
 
         l.wait();
 

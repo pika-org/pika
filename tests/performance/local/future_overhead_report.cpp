@@ -1,4 +1,4 @@
-//  Copyright (c) 2018-2020 Mikael Simberg
+//  Copyright (c) 2018-2023 ETH Zurich
 //  Copyright (c) 2018-2019 John Biddiscombe
 //  Copyright (c) 2011 Bryce Adelstein-Lelbach
 //
@@ -8,8 +8,8 @@
 
 #include <pika/config.hpp>
 #include <pika/chrono.hpp>
-#include <pika/future.hpp>
 #include <pika/init.hpp>
+#include <pika/latch.hpp>
 #include <pika/testing/performance.hpp>
 #include <pika/thread.hpp>
 
@@ -22,10 +22,6 @@
 using pika::program_options::options_description;
 using pika::program_options::value;
 using pika::program_options::variables_map;
-
-using pika::apply;
-using pika::async;
-using pika::future;
 
 using pika::chrono::detail::high_resolution_timer;
 
@@ -56,12 +52,7 @@ double null_function() noexcept
     return 0.0;
 }
 
-struct scratcher
-{
-    void operator()(future<double> r) const { global_scratch += r.get(); }
-};
-
-void measure_function_futures_create_thread_hierarchical_placement(
+void measure_function_create_thread_hierarchical_placement(
     std::uint64_t count, const int repetitions)
 {
     auto sched = pika::threads::detail::get_self_id_data()->get_scheduler_base();
@@ -142,14 +133,11 @@ int pika_main(variables_map& vm)
 
         num_iterations = vm["delay-iterations"].as<std::uint64_t>();
 
-        const std::uint64_t count = vm["futures"].as<std::uint64_t>();
+        const std::uint64_t count = vm["tasks"].as<std::uint64_t>();
         if (PIKA_UNLIKELY(0 == count))
-            throw std::logic_error("error: count of 0 futures specified\n");
+            throw std::logic_error("error: count of 0 tasks specified\n");
 
-        if (test_all)
-        {
-            measure_function_futures_create_thread_hierarchical_placement(count, repetitions);
-        }
+        if (test_all) { measure_function_create_thread_hierarchical_placement(count, repetitions); }
     }
 
     return pika::finalize();
@@ -162,9 +150,9 @@ int main(int argc, char* argv[])
     options_description cmdline("usage: " PIKA_APPLICATION_STRING " [options]");
 
     // clang-format off
-    cmdline.add_options()("futures",
+    cmdline.add_options()("tasks",
         value<std::uint64_t>()->default_value(500000),
-        "number of futures to invoke")
+        "number of tasks to invoke")
 
         ("delay-iterations", value<std::uint64_t>()->default_value(0),
          "number of iterations in the delay loop")

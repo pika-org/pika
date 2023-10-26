@@ -8,14 +8,13 @@
 
 #include <pika/chrono.hpp>
 #include <pika/execution.hpp>
-#include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/schedulers.hpp>
 #include <pika/modules/thread_manager.hpp>
 #include <pika/testing.hpp>
 #include <pika/thread.hpp>
-#include <pika/thread_pool_util/thread_pool_suspension_helpers.hpp>
 #include <pika/threading_base/thread_helpers.hpp>
+#include <pika/threading_base/thread_pool_base.hpp>
 
 #include <atomic>
 #include <cstddef>
@@ -24,6 +23,8 @@
 #include <thread>
 #include <utility>
 #include <vector>
+
+namespace ex = pika::execution::experimental;
 
 void test_scheduler(int argc, char* argv[], pika::resource::scheduling_policy scheduler)
 {
@@ -48,23 +49,16 @@ void test_scheduler(int argc, char* argv[], pika::resource::scheduling_policy sc
     {
         for (std::size_t i = 0; i < default_pool_threads * 10000; ++i)
         {
-            pika::apply([]() {});
+            ex::execute(ex::thread_pool_scheduler{&default_pool}, [] {});
         }
 
-        bool suspended = false;
-        pika::threads::detail::suspend_pool_cb(default_pool, [&suspended]() { suspended = true; });
-
-        // NOLINTNEXTLINE(bugprone-infinite-loop)
-        while (!suspended) { std::this_thread::yield(); }
-
-        bool resumed = false;
-        pika::threads::detail::resume_pool_cb(default_pool, [&resumed]() { resumed = true; });
-
-        // NOLINTNEXTLINE(bugprone-infinite-loop)
-        while (!resumed) { std::this_thread::yield(); }
+        default_pool.suspend_direct();
+        PIKA_TEST(default_pool.get_state() == pika::runtime_state::sleeping);
+        default_pool.resume_direct();
+        PIKA_TEST(default_pool.get_state() == pika::runtime_state::running);
     }
 
-    pika::apply([]() { pika::finalize(); });
+    pika::finalize();
 
     PIKA_TEST_EQ(pika::stop(), 0);
 }

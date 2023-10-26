@@ -10,17 +10,14 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/async_combinators/wait_all.hpp>
 #include <pika/execution_base/this_thread.hpp>
 #include <pika/functional/bind.hpp>
-#include <pika/futures/future.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/logging.hpp>
 #include <pika/modules/schedulers.hpp>
 #include <pika/modules/thread_manager.hpp>
 #include <pika/resource_partitioner/detail/partitioner.hpp>
 #include <pika/runtime_configuration/runtime_configuration.hpp>
-#include <pika/thread_pool_util/thread_pool_suspension_helpers.hpp>
 #include <pika/thread_pools/scheduled_thread_pool.hpp>
 #include <pika/threading_base/detail/global_activity_count.hpp>
 #include <pika/threading_base/set_thread_state.hpp>
@@ -876,34 +873,16 @@ namespace pika::threads::detail {
 
     void thread_manager::suspend()
     {
+        PIKA_ASSERT(!threads::detail::get_self_ptr());
+
         wait();
-
-        if (threads::detail::get_self_ptr())
-        {
-            std::vector<pika::future<void>> fs;
-
-            for (auto& pool_iter : pools_) { fs.push_back(suspend_pool(*pool_iter)); }
-
-            pika::wait_all(fs);
-        }
-        else
-        {
-            for (auto& pool_iter : pools_) { pool_iter->suspend_direct(); }
-        }
+        for (auto& pool_iter : pools_) { pool_iter->suspend_direct(); }
     }
 
     void thread_manager::resume()
     {
-        if (threads::detail::get_self_ptr())
-        {
-            std::vector<pika::future<void>> fs;
+        PIKA_ASSERT(!threads::detail::get_self_ptr());
 
-            for (auto& pool_iter : pools_) { fs.push_back(resume_pool(*pool_iter)); }
-            pika::wait_all(fs);
-        }
-        else
-        {
-            for (auto& pool_iter : pools_) { pool_iter->resume_direct(); }
-        }
+        for (auto& pool_iter : pools_) { pool_iter->resume_direct(); }
     }
 }    // namespace pika::threads::detail

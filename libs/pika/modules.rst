@@ -18,9 +18,7 @@ Core modules
    /libs/core/allocator_support/docs/index.rst
    /libs/core/assertion/docs/index.rst
    /libs/core/async_base/docs/index.rst
-   /libs/core/async_combinators/docs/index.rst
    /libs/core/async_cuda/docs/index.rst
-   /libs/core/async/docs/index.rst
    /libs/core/async_mpi/docs/index.rst
    /libs/core/command_line_handling/docs/index.rst
    /libs/core/concepts/docs/index.rst
@@ -35,7 +33,6 @@ Core modules
    /libs/core/executors/docs/index.rst
    /libs/core/filesystem/docs/index.rst
    /libs/core/functional/docs/index.rst
-   /libs/core/futures/docs/index.rst
    /libs/core/hardware/docs/index.rst
    /libs/core/hashing/docs/index.rst
    /libs/core/include/docs/index.rst
@@ -43,12 +40,10 @@ Core modules
    /libs/core/init_runtime/docs/index.rst
    /libs/core/iterator_support/docs/index.rst
    /libs/core/itt_notify/docs/index.rst
-   /libs/core/lcos/docs/index.rst
    /libs/core/lock_registration/docs/index.rst
    /libs/core/logging/docs/index.rst
    /libs/core/memory/docs/index.rst
    /libs/core/mpi_base/docs/index.rst
-   /libs/core/pack_traversal/docs/index.rst
    /libs/core/prefix/docs/index.rst
    /libs/core/preprocessor/docs/index.rst
    /libs/core/program_options/docs/index.rst
@@ -60,7 +55,6 @@ Core modules
    /libs/core/string_util/docs/index.rst
    /libs/core/synchronization/docs/index.rst
    /libs/core/tag_invoke/docs/index.rst
-   /libs/core/thread_pool_util/docs/index.rst
    /libs/core/thread_pools/docs/index.rst
    /libs/core/thread_support/docs/index.rst
    /libs/core/threading/docs/index.rst

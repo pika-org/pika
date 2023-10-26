@@ -376,14 +376,6 @@ function(pika_check_for_cxx17_std_aligned_alloc)
   )
 endfunction()
 
-function(pika_check_for_cxx17_std_execution_policies)
-  pika_add_config_test(
-    PIKA_WITH_CXX17_STD_EXECUTION_POLICIES
-    SOURCE cmake/tests/cxx17_std_execution_policies.cpp
-    FILE ${ARGN}
-  )
-endfunction()
-
 # ##############################################################################
 function(pika_check_for_cxx11_std_quick_exit)
   pika_add_config_test(
@@ -440,33 +432,6 @@ function(pika_check_for_cxx17_memory_resource)
 endfunction()
 
 # ##############################################################################
-function(pika_check_for_cxx20_coroutines)
-  pika_add_config_test(
-    PIKA_WITH_CXX20_COROUTINES
-    SOURCE cmake/tests/cxx20_coroutines.cpp
-    FILE ${ARGN} CHECK_CXXSTD 20
-  )
-endfunction()
-
-# ##############################################################################
-function(pika_check_for_cxx20_lambda_capture)
-  pika_add_config_test(
-    PIKA_WITH_CXX20_LAMBDA_CAPTURE
-    SOURCE cmake/tests/cxx20_lambda_capture.cpp
-    FILE ${ARGN} CHECK_CXXSTD 20
-  )
-endfunction()
-
-# ##############################################################################
-function(pika_check_for_cxx20_perfect_pack_capture)
-  pika_add_config_test(
-    PIKA_WITH_CXX20_PERFECT_PACK_CAPTURE
-    SOURCE cmake/tests/cxx20_perfect_pack_capture.cpp
-    FILE ${ARGN} CHECK_CXXSTD 20
-  )
-endfunction()
-
-# ##############################################################################
 function(pika_check_for_cxx20_no_unique_address_attribute)
   pika_add_config_test(
     PIKA_WITH_CXX20_NO_UNIQUE_ADDRESS_ATTRIBUTE
@@ -476,37 +441,10 @@ function(pika_check_for_cxx20_no_unique_address_attribute)
 endfunction()
 
 # ##############################################################################
-function(pika_check_for_cxx20_paren_initialization_of_aggregates)
-  pika_add_config_test(
-    PIKA_WITH_CXX20_PAREN_INITIALIZATION_OF_AGGREGATES
-    SOURCE cmake/tests/cxx20_paren_initialization_of_aggregates.cpp
-    FILE ${ARGN} CHECK_CXXSTD 20
-  )
-endfunction()
-
-# ##############################################################################
 function(pika_check_for_cxx20_std_disable_sized_sentinel_for)
   pika_add_config_test(
     PIKA_WITH_CXX20_STD_DISABLE_SIZED_SENTINEL_FOR
     SOURCE cmake/tests/cxx20_std_disable_sized_sentinel_for.cpp
-    FILE ${ARGN} CHECK_CXXSTD 20
-  )
-endfunction()
-
-# ##############################################################################
-function(pika_check_for_cxx20_std_endian)
-  pika_add_config_test(
-    PIKA_WITH_CXX20_STD_ENDIAN
-    SOURCE cmake/tests/cxx20_std_endian.cpp
-    FILE ${ARGN} CHECK_CXXSTD 20
-  )
-endfunction()
-
-# ##############################################################################
-function(pika_check_for_cxx20_std_execution_policies)
-  pika_add_config_test(
-    PIKA_WITH_CXX20_STD_EXECUTION_POLICIES
-    SOURCE cmake/tests/cxx20_std_execution_policies.cpp
     FILE ${ARGN} CHECK_CXXSTD 20
   )
 endfunction()
