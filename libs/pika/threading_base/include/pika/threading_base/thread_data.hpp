@@ -41,10 +41,6 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace pika::threads::detail {
-    using get_locality_id_type = std::uint32_t(pika::error_code&);
-    PIKA_EXPORT void set_get_locality_id(get_locality_id_type* f);
-    PIKA_EXPORT std::uint32_t get_locality_id(pika::error_code&);
-
     ////////////////////////////////////////////////////////////////////////////
     class PIKA_EXPORT thread_data;    // forward declaration only
 
@@ -278,22 +274,12 @@ namespace pika::threads::detail {
 #endif
 
 #if !defined(PIKA_HAVE_THREAD_PARENT_REFERENCE)
-        /// Return the locality of the parent thread
-        constexpr std::uint32_t get_parent_locality_id() const noexcept
-        {
-            // this is the same as naming::invalid_locality_id
-            return ~static_cast<std::uint32_t>(0);
-        }
-
         /// Return the thread id of the parent thread
         constexpr thread_id_type get_parent_thread_id() const noexcept { return invalid_thread_id; }
 
         /// Return the phase of the parent thread
         constexpr std::size_t get_parent_thread_phase() const noexcept { return 0; }
 #else
-        /// Return the locality of the parent thread
-        std::uint32_t get_parent_locality_id() const noexcept { return parent_locality_id_; }
-
         /// Return the thread id of the parent thread
         thread_id_type get_parent_thread_id() const noexcept { return parent_thread_id_; }
 
@@ -516,7 +502,6 @@ namespace pika::threads::detail {
 #endif
 
 #ifdef PIKA_HAVE_THREAD_PARENT_REFERENCE
-        std::uint32_t parent_locality_id_;
         thread_id_type parent_thread_id_;
         std::size_t parent_thread_phase_;
 #endif
@@ -619,15 +604,6 @@ namespace pika::threads::detail {
     //current thread (or thread_stacksize::default if the current thread is not
     //a pika thread).
     PIKA_EXPORT execution::thread_stacksize get_self_stacksize_enum();
-
-    /// The function \a get_parent_locality_id returns the id of the locality of
-    /// the current thread's parent (or zero if the current thread is not a
-    /// pika thread).
-    ///
-    /// \note This function will return a meaningful value only if the
-    ///       code was compiled with PIKA_HAVE_THREAD_PARENT_REFERENCE
-    ///       being defined.
-    PIKA_EXPORT std::uint32_t get_parent_locality_id();
 }    // namespace pika::threads::detail
 
 #include <pika/config/warnings_suffix.hpp>

@@ -18,7 +18,7 @@
 
 namespace pika::detail::external_timer {
     std::shared_ptr<task_wrapper> new_task(pika::detail::thread_description const& description,
-        std::uint32_t /* parent_locality_id */, threads::detail::thread_id_type parent_task)
+        threads::detail::thread_id_type parent_task)
     {
         std::shared_ptr<task_wrapper> parent_wrapper = nullptr;
         if (parent_task != nullptr)
@@ -44,8 +44,7 @@ namespace pika::detail::external_timer {
         if (wrapper == nullptr)
         {
             threads::detail::thread_id_type parent_task;
-            // doesn't matter which locality we use, the parent is null
-            return external_timer::new_task(description, 0, parent_task);
+            return external_timer::new_task(description, parent_task);
         }
         else if (description.kind() == pika::detail::thread_description::data_type_description)
         {

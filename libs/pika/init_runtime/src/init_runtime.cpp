@@ -30,7 +30,6 @@
 #include <pika/runtime/config_entry.hpp>
 #include <pika/runtime/custom_exception_info.hpp>
 #include <pika/runtime/debugging.hpp>
-#include <pika/runtime/get_locality_id.hpp>
 #include <pika/runtime/runtime.hpp>
 #include <pika/runtime/runtime_handlers.hpp>
 #include <pika/runtime/shutdown_function.hpp>
@@ -417,7 +416,6 @@ namespace pika {
             }
 
             pika::threads::detail::set_get_default_pool(&pika::detail::get_default_pool);
-            pika::threads::detail::set_get_locality_id(&get_locality_id);
             pika::parallel::execution::detail::set_get_pu_mask(&pika::detail::get_pu_mask);
             pika::parallel::execution::detail::set_get_os_thread_count(
                 []() { return pika::get_os_thread_count(); });

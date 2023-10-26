@@ -479,27 +479,11 @@ namespace pika {
         return newf;
     }
 
-    std::uint32_t runtime::get_locality_id(error_code& /* ec */) const { return 0; }
-
     std::size_t runtime::get_num_worker_threads() const
     {
         PIKA_ASSERT(thread_manager_);
         return thread_manager_->get_os_thread_count();
     }
-
-    std::uint32_t runtime::get_num_localities(pika::launch::sync_policy, error_code& /* ec */) const
-    {
-        return 1;
-    }
-
-    std::uint32_t runtime::get_initial_num_localities() const { return 1; }
-
-    pika::future<std::uint32_t> runtime::get_num_localities() const
-    {
-        return make_ready_future(std::uint32_t(1));
-    }
-
-    std::string runtime::get_locality_name() const { return "console"; }
 
     ///////////////////////////////////////////////////////////////////////////
     threads::callback_notifier::on_startstop_type get_thread_on_start_func()
@@ -705,7 +689,7 @@ namespace pika {
 
     namespace detail {
         ///////////////////////////////////////////////////////////////////////////
-        // retrieve the command line arguments for the current locality
+        // retrieve the command line arguments
         bool retrieve_commandline_arguments(
             pika::program_options::options_description const& app_options,
             pika::program_options::variables_map& vm)
@@ -726,7 +710,7 @@ namespace pika {
         }
 
         ///////////////////////////////////////////////////////////////////////////
-        // retrieve the command line arguments for the current locality
+        // retrieve the command line arguments
         bool retrieve_commandline_arguments(
             std::string const& appname, pika::program_options::variables_map& vm)
         {
@@ -868,15 +852,6 @@ namespace pika {
     std::uint64_t get_system_uptime() { return runtime::get_system_uptime(); }
 
     pika::util::runtime_configuration const& get_config() { return get_runtime().get_config(); }
-
-    ///////////////////////////////////////////////////////////////////////////
-    /// Return true if networking is enabled.
-    bool is_networking_enabled()
-    {
-        runtime* rt = get_runtime_ptr();
-        if (nullptr != rt) { return rt->is_networking_enabled(); }
-        return true;    // be on the safe side, enable networking
-    }
 }    // namespace pika
 
 #if defined(_WIN64) && defined(PIKA_DEBUG) && !defined(PIKA_HAVE_FIBER_BASED_COROUTINES)
@@ -1041,9 +1016,9 @@ namespace pika {
                         std::string boundcpu_str = threads::detail::to_string(boundcpu_never_empty);
                         std::string pu_mask_str = threads::detail::to_string(pu_mask_never_empty);
                         PIKA_THROW_EXCEPTION(pika::error::invalid_status, "handle_print_bind",
-                            "unexpected mismatch between locality {}: binding reported from "
-                            "HWLOC({}) and pika({}) on thread {}",
-                            pika::get_locality_id(), boundcpu_str, pu_mask_str, i);
+                            "unexpected mismatch between binding reported from HWLOC({}) and "
+                            "pika({}) on thread {}",
+                            boundcpu_str, pu_mask_str, i);
                     }
                 }
 
@@ -1140,7 +1115,7 @@ namespace pika {
 
         LRT_(info).format("cmd_line: {}", get_config().get_cmd_line());
 
-        lbt_ << "(1st stage) runtime::start: booting locality " << here();
+        lbt_ << "(1st stage) runtime::start";
 
         // Register this thread with the runtime system to allow calling
         // certain pika functionality from the main thread. Also calls
@@ -1376,14 +1351,10 @@ namespace pika {
         return 0;
     }
 
-    bool runtime::is_networking_enabled() { return false; }
-
     pika::threads::detail::thread_manager& runtime::get_thread_manager()
     {
         return *thread_manager_;
     }
-
-    std::string runtime::here() const { return "127.0.0.1"; }
 
     ///////////////////////////////////////////////////////////////////////////
     bool runtime::report_error(
@@ -1652,18 +1623,6 @@ namespace pika {
         return get_runtime().get_notification_policy(prefix, os_thread_type::worker_thread);
     }
 
-    std::uint32_t get_locality_id(error_code& ec)
-    {
-        runtime* rt = get_runtime_ptr();
-        if (nullptr == rt || rt->get_state() == runtime_state::invalid)
-        {
-            // same as naming::invalid_locality_id
-            return ~static_cast<std::uint32_t>(0);
-        }
-
-        return rt->get_locality_id(ec);
-    }
-
     std::size_t get_num_worker_threads()
     {
         runtime* rt = get_runtime_ptr();
@@ -1675,47 +1634,6 @@ namespace pika {
         }
 
         return rt->get_num_worker_threads();
-    }
-
-    /// \brief Return the number of localities which are currently registered
-    ///        for the running application.
-    std::uint32_t get_num_localities(pika::launch::sync_policy, error_code& ec)
-    {
-        runtime* rt = get_runtime_ptr();
-        if (nullptr == rt)
-        {
-            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::get_num_localities",
-                "the runtime system has not been initialized yet");
-            return std::size_t(0);
-        }
-
-        return rt->get_num_localities(pika::launch::sync, ec);
-    }
-
-    std::uint32_t get_initial_num_localities()
-    {
-        runtime* rt = get_runtime_ptr();
-        if (nullptr == rt)
-        {
-            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::get_initial_num_localities",
-                "the runtime system has not been initialized yet");
-            return std::size_t(0);
-        }
-
-        return rt->get_initial_num_localities();
-    }
-
-    pika::future<std::uint32_t> get_num_localities()
-    {
-        runtime* rt = get_runtime_ptr();
-        if (nullptr == rt)
-        {
-            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::get_num_localities",
-                "the runtime system has not been initialized yet");
-            return make_ready_future(std::uint32_t(0));
-        }
-
-        return rt->get_num_localities();
     }
 
     namespace threads {

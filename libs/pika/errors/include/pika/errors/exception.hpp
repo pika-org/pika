@@ -355,10 +355,8 @@ namespace pika {
     ///             can be one of the following types: \a pika::exception,
     ///             \a pika::error_code, or \a std::exception_ptr.
     ///
-    /// \returns    The error value code of the locality where the exception was
-    ///             thrown. If the exception instance does not hold
-    ///             this information, the function will return
-    ///             \a pika::naming#invalid_locality_id.
+    /// \returns    The error value code of the process where the exception was
+    ///             thrown.
     ///
     /// \throws     nothing
     ///

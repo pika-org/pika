@@ -229,7 +229,7 @@ namespace pika::util {
         std::vector<std::string> lines = {
         // clang-format off
 #define PIKA_TIMEFORMAT "$hh:$mm.$ss.$mili"
-#define PIKA_LOGFORMAT "(T%locality%/%pikathread%.%pikaphase%) "
+#define PIKA_LOGFORMAT "(T%pikathread%.%pikaphase%) "
 
             // general logging
             "[pika.logging]",

@@ -11,9 +11,6 @@ set(runtime_headers
     pika/runtime/custom_exception_info.hpp
     pika/runtime/debugging.hpp
     pika/runtime/detail/runtime_fwd.hpp
-    pika/runtime/get_locality_id.hpp
-    pika/runtime/get_locality_name.hpp
-    pika/runtime/get_num_all_localities.hpp
     pika/runtime/get_os_thread_count.hpp
     pika/runtime/get_thread_name.hpp
     pika/runtime/get_worker_thread_num.hpp
@@ -34,7 +31,6 @@ set(runtime_headers
 set(runtime_sources
     custom_exception_info.cpp
     debugging.cpp
-    get_locality_name.cpp
     os_thread_type.cpp
     runtime_handlers.cpp
     runtime.cpp

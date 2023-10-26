@@ -207,15 +207,9 @@ namespace pika {
 
         virtual int finalize();
 
-        ///  \brief Return true if networking is enabled.
-        virtual bool is_networking_enabled();
-
         /// \brief Allow access to the thread manager instance used by the pika
         ///        runtime.
         virtual pika::threads::detail::thread_manager& get_thread_manager();
-
-        /// \brief Returns a string of the locality endpoints (usable in debug output)
-        virtual std::string here() const;
 
         /// \brief Report a non-recoverable error to the runtime system
         ///
@@ -346,17 +340,7 @@ namespace pika {
         notification_policy_type::on_error_type on_error_func(
             notification_policy_type::on_error_type&&);
 
-        virtual std::uint32_t get_locality_id(error_code& ec) const;
-
         virtual std::size_t get_num_worker_threads() const;
-
-        virtual std::uint32_t get_num_localities(pika::launch::sync_policy, error_code& ec) const;
-
-        virtual std::uint32_t get_initial_num_localities() const;
-
-        virtual pika::future<std::uint32_t> get_num_localities() const;
-
-        virtual std::string get_locality_name() const;
 
         virtual std::uint32_t assign_cores(std::string const&, std::uint32_t)
         {
@@ -452,13 +436,13 @@ namespace pika {
 
     namespace util {
         ///////////////////////////////////////////////////////////////////////////
-        // retrieve the command line arguments for the current locality
+        // retrieve the command line arguments for the current process
         PIKA_EXPORT bool retrieve_commandline_arguments(
             pika::program_options::options_description const& app_options,
             pika::program_options::variables_map& vm);
 
         ///////////////////////////////////////////////////////////////////////////
-        // retrieve the command line arguments for the current locality
+        // retrieve the command line arguments for the current process
         PIKA_EXPORT bool retrieve_commandline_arguments(
             std::string const& appname, pika::program_options::variables_map& vm);
     }    // namespace util

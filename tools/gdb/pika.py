@@ -285,7 +285,7 @@ class pika_thread(object):
 
 class pika_list_threads(gdb.Command):
     """
-    Get the list of all pika threads on this locality
+    Get the list of all pika threads
     """
 
     def __init__(self):

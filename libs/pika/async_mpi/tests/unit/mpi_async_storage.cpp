@@ -47,7 +47,7 @@ static pika::debug::detail::print_threshold<Level, debug_level> nws_deb("STORAGE
 
 //----------------------------------------------------------------------------
 //
-// Each locality allocates a buffer of memory which is used to host transfers
+// Each rank allocates a buffer of memory which is used to host transfers
 //
 using local_storage_type = std::vector<char>;
 static local_storage_type local_send_storage;
@@ -335,7 +335,7 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
 }
 
 //----------------------------------------------------------------------------
-// Main test loop which randomly sends packets of data from one locality to
+// Main test loop which randomly sends packets of data from one rank to
 // another looping over the entire buffer address space and timing the total
 // transmit/receive time to see how well we're doing.
 int pika_main(pika::program_options::variables_map& vm)
@@ -359,8 +359,8 @@ int pika_main(pika::program_options::variables_map& vm)
     if (rank == 0)
     {
         constexpr char const* msg =
-            "hello world from OS-thread {:02} on locality {:04} rank {:04} hostname {}\n\n";
-        fmt::print(std::cout, msg, current, pika::get_locality_id(), rank, name.c_str());
+            "hello world from OS-thread {:02} on rank {:04} hostname {}\n\n";
+        fmt::print(std::cout, msg, current, rank, name.c_str());
     }
 
     // extract command line argument

@@ -126,7 +126,7 @@ namespace pika {
 /// The purpose of this macro is to prepend the source file name and line number
 /// of the position where the exception is thrown to the error message.
 /// Moreover, this associates additional diagnostic information with the
-/// exception, such as file name and line number, locality id and thread id,
+/// exception, such as file name and line number, thread id,
 /// and stack backtrace from the point where the exception was thrown.
 ///
 /// The parameter \p errcode holds the pika::error code the new exception should

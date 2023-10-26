@@ -984,7 +984,7 @@ namespace pika::threads::detail {
 
             // sort by 1)domain, 2)core, 3)pu so that we can iterate over
             // worker threads and assign them into groups based on locality
-            // even if th thread numbering is arbitrary
+            // even if the thread numbering is arbitrary
             std::sort(locations.begin(), locations.end(),
                 [](const dcp_tuple& a, const dcp_tuple& b) -> bool {
                     return (std::get<0>(a) == std::get<0>(b)) ?

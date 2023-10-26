@@ -10,7 +10,6 @@
 #if defined(PIKA_HAVE_LOGGING)
 # include <pika/assert.hpp>
 # include <pika/init_runtime/detail/init_logging.hpp>
-# include <pika/runtime/get_locality_id.hpp>
 # include <pika/runtime/get_worker_thread_num.hpp>
 # include <pika/runtime_configuration/runtime_configuration.hpp>
 # include <pika/threading_base/thread_data.hpp>
@@ -41,26 +40,6 @@ namespace pika::detail {
 
             if (std::size_t(-1) != thread_num) { fmt::print(to, "{:016x}", thread_num); }
             else { to << std::string(16, '-'); }
-        }
-    };
-
-    ///////////////////////////////////////////////////////////////////////////
-    // custom formatter: locality prefix
-    struct locality_prefix : pika::util::logging::formatter::manipulator
-    {
-        void operator()(std::ostream& to) const override
-        {
-            std::uint32_t locality_id = pika::get_locality_id();
-
-            if (~static_cast<std::uint32_t>(0) != locality_id)
-            {
-                fmt::print(to, "{:08x}", locality_id);
-            }
-            else
-            {
-                // called from outside a pika thread
-                to << std::string(8, '-');
-            }
         }
     };
 
@@ -108,26 +87,6 @@ namespace pika::detail {
 
             // called from outside a pika thread or no phase given
             to << std::string(4, '-');
-        }
-    };
-
-    ///////////////////////////////////////////////////////////////////////////
-    // custom formatter: locality prefix of parent thread
-    struct parent_thread_locality : pika::util::logging::formatter::manipulator
-    {
-        void operator()(std::ostream& to) const override
-        {
-            std::uint32_t parent_locality_id = threads::detail::get_parent_locality_id();
-            if (~static_cast<std::uint32_t>(0) != parent_locality_id)
-            {
-                // called from inside a pika thread
-                fmt::print(to, "{:08x}", parent_locality_id);
-            }
-            else
-            {
-                // called from outside a pika thread
-                to << std::string(8, '-');
-            }
         }
     };
 
@@ -258,12 +217,10 @@ namespace pika::detail {
     void define_common_formatters(logger_writer_type& writer)
     {
         writer.set_formatter("osthread", shepherd_thread_id());
-        writer.set_formatter("locality", locality_prefix());
         writer.set_formatter("pikathread", thread_id());
         writer.set_formatter("pikaphase", thread_phase());
         writer.set_formatter("pikaparent", parent_thread_id());
         writer.set_formatter("pikaparentphase", parent_thread_phase());
-        writer.set_formatter("parentloc", parent_thread_locality());
     }
 
     void define_formatters_local(logger_writer_type& writer)

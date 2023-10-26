@@ -19,9 +19,6 @@
 namespace pika::detail {
     [[noreturn]] PIKA_EXPORT void assertion_handler(
         pika::detail::source_location const& loc, const char* expr, std::string const& msg);
-#if defined(PIKA_HAVE_APEX)
-    PIKA_EXPORT bool enable_parent_task_handler();
-#endif
 #if defined(PIKA_HAVE_VERIFY_LOCKS)
     PIKA_EXPORT void registered_locks_error_handler();
     PIKA_EXPORT bool register_locks_predicate();
