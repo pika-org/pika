@@ -149,7 +149,9 @@ overridden with ``--pika:process-mask``. With ``--pika:ignore-process-mask`` pik
 process mask is set. ``--pika:process-mask`` takes an explicit hexadecimal string (beginning with
 ``0x``) representing the process mask to use. The mask can also be set with the environment variable
 ``PIKA_PROCESS_MASK``. ``--pika:process-mask`` takes precedence over ``PIKA_PROCESS_MASK``.
-``--pika:print-bind`` can be used to verify that the bindings used by pika are correct.
+``--pika:print-bind`` can be used to verify that the bindings used by pika are correct. Exporting
+the environment variable ``PIKA_PRINT_BIND`` (any value) is equivalent to using the
+``--pika:print-bind`` option.
 
 Interaction with OpenMP
 -----------------------

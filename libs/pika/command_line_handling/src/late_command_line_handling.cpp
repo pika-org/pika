@@ -14,6 +14,7 @@
 #include <pika/type_support/unused.hpp>
 
 #include <cstddef>
+#include <cstdlib>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -98,7 +99,7 @@ namespace pika::detail {
                     commandline_error_mode::allow_unregistered |
                         commandline_error_mode::report_missing_config_file);
 
-                if (vm.count("pika:print-bind"))
+                if (vm.count("pika:print-bind") || (std::getenv("PIKA_PRINT_BIND") != nullptr))
                 {
                     std::size_t num_threads =
                         pika::detail::from_string<std::size_t>(ini.get_entry("pika.os_threads", 1));
