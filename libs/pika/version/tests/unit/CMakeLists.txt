@@ -4,7 +4,6 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-# compile only tests
 if(PIKA_WITH_COMPILE_ONLY_TESTS)
   set(compile_tests constexpr_version)
 
@@ -15,7 +14,7 @@ if(PIKA_WITH_COMPILE_ONLY_TESTS)
 
     pika_add_unit_compile_test(
       "modules.version" ${compile_test}
-      SOURCES ${sources} ${${compile_test}_FLAGS}
+      SOURCES ${sources}
       FOLDER "Tests/Unit/Modules/Version/CompileOnly"
     )
   endforeach()

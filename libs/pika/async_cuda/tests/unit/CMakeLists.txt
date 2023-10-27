@@ -52,26 +52,3 @@ foreach(test ${tests})
     "modules.async_cuda" ${test} ${${test}_PARAMETERS} RUN_SERIAL
   )
 endforeach()
-
-if(PIKA_WITH_COMPILE_ONLY_TESTS)
-  if(PIKA_WITH_HIP)
-    # TODO: to remove when the tests are not compile only anymore
-    set(deps pika_testing)
-  endif()
-  foreach(test ${compile_tests})
-    if(${${test}_GPU})
-      set(sources ${test}.cu)
-    else()
-      set(sources ${test}.cpp)
-    endif()
-
-    source_group("Source Files" FILES ${sources})
-
-    pika_add_unit_compile_test(
-      "modules.async_cuda" ${test}
-      SOURCES ${sources} ${${test}_FLAGS}
-      DEPENDENCIES ${deps}
-      FOLDER "Tests/Unit/Modules/AsyncCuda/CompileOnly"
-    )
-  endforeach()
-endif()

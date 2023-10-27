@@ -34,7 +34,7 @@ if(PIKA_WITH_COMPILE_ONLY_TESTS)
 
     pika_add_regression_compile_test(
       "modules.functional" ${compile_test}
-      SOURCES ${sources} ${${compile_test}_FLAGS}
+      SOURCES ${sources}
       FOLDER "Tests/Regressions/Modules/Functional/CompileOnly"
     )
   endforeach()

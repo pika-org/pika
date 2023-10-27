@@ -1,14 +1,10 @@
 ARG BASE_IMAGE
 FROM $BASE_IMAGE
 
-ARG SOURCE_DIR=/pika/source
-ARG BUILD_DIR=/pika/build
-
-ENV DEBIAN_FRONTEND=noninteractive
+ARG SOURCE_DIR
+ARG BUILD_DIR
 
 COPY . ${SOURCE_DIR}
-
-SHELL ["/bin/bash", "-c"]
 
 # Configure
 RUN cmake -B${BUILD_DIR} ${SOURCE_DIR} \

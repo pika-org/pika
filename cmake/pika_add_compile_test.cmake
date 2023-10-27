@@ -50,6 +50,8 @@ function(pika_add_compile_test category name)
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
   )
 
+  set_tests_properties("${category}.${name}" PROPERTIES LABELS "COMPILE_ONLY")
+
   if(${name}_FAILURE_EXPECTED)
     set_tests_properties("${category}.${name}" PROPERTIES WILL_FAIL TRUE)
   endif()

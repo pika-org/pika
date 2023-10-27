@@ -8,56 +8,143 @@ include:
   - remote: 'https://gitlab.com/cscs-ci/recipes/-/raw/master/templates/v2/.ci-ext.yml'
 
 stages:
+  - spack_base
+  - spack_configs
   - build
   - test
 
 variables:
   SOURCE_DIR: /pika/source
   BUILD_DIR: /pika/build
+  SPACK_VERSION: v0.20.1
+
+.cmake_variables_common:
+  variables:
+    CMAKE_COMMON_FLAGS: "-GNinja -DPIKA_WITH_COMPILER_WARNINGS=ON \
+                         -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON \
+                         -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=ON \
+                         -DPIKA_WITH_EXAMPLES=ON -DPIKA_WITH_TESTS=ON"
+
+.variables_gcc11_config:
+  variables:
+    ARCH: linux-ubuntu22.04-broadwell
+    BUILD_TYPE: Debug
+    COMPILER: gcc@11.4.0
+    CXXSTD: 20
+    SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD ^boost@1.78.0 \
+                 ^hwloc@2.7.0"
 
 ###################################################################################################
 
-clang14_debug_build:
-  stage: build
+base_spack_image:
+  stage: spack_base
+  timeout: 2 hours
   extends: .container-builder
+  before_script:
+    - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/pika-spack-base:$SPACK_VERSION
   variables:
-    BASE_IMAGE: docker.io/pikaorg/pika-ci-base:17
-    DOCKERFILE: .gitlab/docker/Dockerfile.build
-    DOCKER_BUILD_ARGS: '["BASE_IMAGE","BUILD_DIR","SOURCE_DIR"]'
-    PERSIST_IMAGE_NAME: $CSCS_REGISTRY_PATH/pika-debug-cpu-clang14:$CI_COMMIT_SHORT_SHA
+    BASE_IMAGE: docker.io/ubuntu:22.04
+    DOCKERFILE: .gitlab/docker/Dockerfile.spack_base
+    DOCKER_BUILD_ARGS: '["BASE_IMAGE","SPACK_VERSION"]'
+
+###################################################################################################
+
+gcc11_spack_image:
+  stage: spack_configs
+  needs: [base_spack_image]
+  extends:
+    - .container-builder
+    - .variables_gcc11_config
+  before_script:
+    - CONFIG_TAG=`echo $SPACK_SPEC | sha256sum - | head -c 16`
+    - compiler=${COMPILER/@/-}
+    - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/pika-$compiler:$CONFIG_TAG
+    - echo -e "compiler=$compiler\nBASE_IMAGE=$PERSIST_IMAGE_NAME" >> compiler.env
+  variables:
+    BASE_IMAGE: $CSCS_REGISTRY_PATH/pika-spack-base:$SPACK_VERSION
+    DOCKERFILE: .gitlab/docker/Dockerfile.spack_compiler
+    DOCKER_BUILD_ARGS: '["BASE_IMAGE","ARCH","COMPILER","SPACK_SPEC"]'
+  artifacts:
+    reports:
+      dotenv: compiler.env
+
+###################################################################################################
+
+gcc11_debug_build:
+  stage: build
+  extends:
+    - .container-builder
+    - .variables_gcc11_config
+    - .cmake_variables_common
+  needs:
+    - gcc11_spack_image
+  before_script:
+    - build_type=`echo $BUILD_TYPE | tr '[:upper:]' '[:lower:]'`
+    - configuration=$CMAKE_COMMON_FLAGS-$CMAKE_FLAGS-$CI_COMMIT_SHORT_SHA
+    - configuration=${configuration//-D/}
+    - CONFIG_TAG=`echo $configuration | sha256sum - | head -c 16`
+    - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/pika-$compiler-$build_type-build:$CONFIG_TAG
+    - echo -e "PERSIST_IMAGE_NAME=$PERSIST_IMAGE_NAME" > build.env
+  variables:
+    DOCKERFILE: .gitlab/docker/Dockerfile.spack_build
+    CMAKE_FLAGS: "-DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPIKA_WITH_CXX_STANDARD=$CXXSTD \
+                  -DPIKA_WITH_MAX_CPU_COUNT=256 -DPIKA_WITH_MALLOC=system \
+                  -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
+    DOCKER_BUILD_ARGS: '["BASE_IMAGE","SOURCE_DIR","BUILD_DIR","CMAKE_COMMON_FLAGS","CMAKE_FLAGS"]'
+  artifacts:
+    reports:
+      dotenv: build.env
 
 ###################################################################################################
 
 .test_common:
   variables:
     SLURM_PARTITION: normal
+    SLURM_JOB_NUM_NODES: 1
+    SLURM_NTASKS: 1
 
 .test_common_mc:
   stage: test
   extends:
     - .test_common
     - .container-runner-daint-mc
-  variables:
-    SLURM_CONSTRAINT: mc
-    SLURM_PARTITION: normal
-    PROCESSOR_COUNT: 36
 
 .test_common_gpu:
   extends:
     - .test_common
     - .container-runner-daint-gpu
-  variables:
-    SLURM_CONSTRAINT: gpu
-    SLURM_PARTITION: normal
-    PROCESSOR_COUNT: 12
 
-clang14_debug_test:
+gcc11_debug_test:
+  extends:
+    - .cmake_variables_common
+    - .variables_gcc11_config
+    - .test_common_mc
+  needs:
+    - gcc11_debug_build
+  script:
+    - spack arch
+    - spack build-env $spack_spec -- bash -c "ctest --label-exclude COMPILE_ONLY --test-dir ${BUILD_DIR} --verbose -j$(nproc) --timeout 120 --output-on-failure --no-compress-output -R tests --exclude-regex tests.unit.build"
+  image: $PERSIST_IMAGE_NAME
+
+###################################################################################################
+
+# Using the CI image on dockerhub
+clang14_debug_build_pika-ci-image:
+  stage: build
+  extends: .container-builder
+  needs: []   # To clear the dotenv artifacts
+  variables:
+    BASE_IMAGE: docker.io/pikaorg/pika-ci-base:17
+    DOCKERFILE: .gitlab/docker/Dockerfile.dockerhub_build
+    DOCKER_BUILD_ARGS: '["BASE_IMAGE","BUILD_DIR","SOURCE_DIR"]'
+    PERSIST_IMAGE_NAME: $CSCS_REGISTRY_PATH/pika-debug-cpu-clang14:$CI_COMMIT_SHORT_SHA
+
+clang14_debug_test_pika-ci-image:
+  stage: test
   extends: .test_common_mc
   needs:
-    - clang14_debug_build
+    - clang14_debug_build_pika-ci-image
   image: $CSCS_REGISTRY_PATH/pika-debug-cpu-clang14:$CI_COMMIT_SHORT_SHA
   script:
-    - ctest -B${BUILD_DIR} --verbose -j${PROCESSOR_COUNT} --timeout 120 --output-on-failure --no-compress-output -R tests --exclude-regex "tests.unit.modules.executors.std_thread_scheduler"
-  variables:
-    SLURM_JOB_NUM_NODES: 1
-    SLURM_NTASKS: 1
+    - ctest --test-dir ${BUILD_DIR} --verbose -j$(nproc) --timeout 120 --output-on-failure \
+      --no-compress-output -R tests

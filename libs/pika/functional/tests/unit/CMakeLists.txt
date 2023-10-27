@@ -56,7 +56,7 @@ if(PIKA_WITH_COMPILE_ONLY_TESTS)
 
     pika_add_unit_compile_test(
       "modules.functional" ${compile_test}
-      SOURCES ${sources} ${${compile_test}_FLAGS}
+      SOURCES ${sources}
       FOLDER "Tests/Unit/Modules/Functional/CompileOnly"
     )
   endforeach()
