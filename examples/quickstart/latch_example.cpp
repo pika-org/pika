@@ -6,13 +6,17 @@
 
 // Demonstrate the use of pika::latch
 
-#include <pika/future.hpp>
+#include <pika/execution.hpp>
 #include <pika/init.hpp>
 #include <pika/latch.hpp>
 
 #include <cstddef>
 #include <functional>
+#include <utility>
 #include <vector>
+
+namespace ex = pika::execution::experimental;
+namespace tt = pika::this_thread::experimental;
 
 ///////////////////////////////////////////////////////////////////////////////
 std::ptrdiff_t num_threads = 16;
@@ -27,14 +31,17 @@ int pika_main(pika::program_options::variables_map& vm)
 
     pika::latch l(num_threads + 1);
 
-    std::vector<pika::future<void>> results;
+    std::vector<ex::unique_any_sender<>> results;
     for (std::ptrdiff_t i = 0; i != num_threads; ++i)
-        results.push_back(pika::async(&wait_for_latch, std::ref(l)));
+    {
+        results.emplace_back(ex::transfer_just(ex::thread_pool_scheduler{}, std::ref(l)) |
+            ex::then(wait_for_latch) | ex::ensure_started());
+    }
 
     // Wait for all threads to reach this point.
     l.arrive_and_wait();
 
-    pika::wait_all(results);
+    tt::sync_wait(ex::when_all_vector(std::move(results)));
 
     return pika::finalize();
 }

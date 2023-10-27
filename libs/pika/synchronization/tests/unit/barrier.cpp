@@ -5,9 +5,10 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/barrier.hpp>
+#include <pika/execution.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/async.hpp>
 #include <pika/testing.hpp>
+#include <pika/thread.hpp>
 
 #include <atomic>
 #include <cstddef>
@@ -18,6 +19,9 @@
 
 std::atomic<std::size_t> c1(0);
 std::atomic<std::size_t> c2(0);
+
+namespace ex = pika::execution::experimental;
+namespace tt = pika::this_thread::experimental;
 
 ///////////////////////////////////////////////////////////////////////////////
 void local_barrier_test_no_completion(pika::barrier<>& b)
@@ -43,17 +47,18 @@ void test_barrier_empty_oncomplete()
         c2 = 0;
 
         // create the threads which will wait on the barrier
-        std::vector<pika::future<void>> results;
+        std::vector<ex::unique_any_sender<>> results;
         results.reserve(threads);
         for (std::size_t i = 0; i != threads; ++i)
         {
-            results.push_back(pika::async(&local_barrier_test_no_completion, std::ref(b)));
+            results.emplace_back(ex::transfer_just(ex::thread_pool_scheduler{}, std::ref(b)) |
+                ex::then(local_barrier_test_no_completion) | ex::ensure_started());
         }
 
         b.arrive_and_wait();    // wait for all threads to enter the barrier
         PIKA_TEST_EQ(threads, c1.load());
 
-        pika::wait_all(results);
+        tt::sync_wait(ex::when_all_vector(std::move(results)));
 
         PIKA_TEST_EQ(threads, c2.load());
     }
@@ -91,17 +96,18 @@ void test_barrier_oncomplete()
         complete = 0;
 
         // create the threads which will wait on the barrier
-        std::vector<pika::future<void>> results;
+        std::vector<ex::unique_any_sender<>> results;
         results.reserve(threads);
         for (std::size_t i = 0; i != threads; ++i)
         {
-            results.push_back(pika::async(&local_barrier_test, std::ref(b)));
+            results.emplace_back(ex::transfer_just(ex::thread_pool_scheduler{}, std::ref(b)) |
+                ex::then(local_barrier_test) | ex::ensure_started());
         }
 
         b.arrive_and_wait();    // wait for all threads to enter the barrier
         PIKA_TEST_EQ(threads, c1.load());
 
-        pika::wait_all(results);
+        tt::sync_wait(ex::when_all_vector(std::move(results)));
 
         PIKA_TEST_EQ(threads, c2.load());
         PIKA_TEST_EQ(complete.load(), std::size_t(1));
@@ -135,17 +141,18 @@ void test_barrier_empty_oncomplete_split()
         c2 = 0;
 
         // create the threads which will wait on the barrier
-        std::vector<pika::future<void>> results;
+        std::vector<ex::unique_any_sender<>> results;
         results.reserve(threads);
         for (std::size_t i = 0; i != threads; ++i)
         {
-            results.push_back(pika::async(&local_barrier_test_no_completion_split, std::ref(b)));
+            results.emplace_back(ex::transfer_just(ex::thread_pool_scheduler{}, std::ref(b)) |
+                ex::then(local_barrier_test_no_completion_split) | ex::ensure_started());
         }
 
         b.arrive_and_wait();    // wait for all threads to enter the barrier
         PIKA_TEST_EQ(threads, c1.load());
 
-        pika::wait_all(results);
+        tt::sync_wait(ex::when_all_vector(std::move(results)));
 
         PIKA_TEST_EQ(threads, c2.load());
     }
@@ -178,17 +185,18 @@ void test_barrier_oncomplete_split()
         complete = 0;
 
         // create the threads which will wait on the barrier
-        std::vector<pika::future<void>> results;
+        std::vector<ex::unique_any_sender<>> results;
         results.reserve(threads);
         for (std::size_t i = 0; i != threads; ++i)
         {
-            results.push_back(pika::async(&local_barrier_test_split, std::ref(b)));
+            results.emplace_back(ex::transfer_just(ex::thread_pool_scheduler{}, std::ref(b)) |
+                ex::then(local_barrier_test_split) | ex::ensure_started());
         }
 
         b.arrive_and_wait();    // wait for all threads to enter the barrier
         PIKA_TEST_EQ(threads, c1.load());
 
-        pika::wait_all(results);
+        tt::sync_wait(ex::when_all_vector(std::move(results)));
 
         PIKA_TEST_EQ(threads, c2.load());
         PIKA_TEST_EQ(complete.load(), std::size_t(1));

@@ -10,7 +10,6 @@
 // tool to verify that high priority tasks run before low ones.
 
 #include <pika/execution.hpp>
-#include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/program_options.hpp>
 #include <pika/testing.hpp>
@@ -29,7 +28,10 @@ using pika::program_options::options_description;
 using pika::program_options::value;
 using pika::program_options::variables_map;
 
-// dummy function we will call using async
+namespace ex = pika::execution::experimental;
+namespace tt = pika::this_thread::experimental;
+
+// dummy function we will call using execute
 void dummy_task(std::size_t n)
 {
     // no other work can take place on this thread whilst it sleeps
@@ -61,12 +63,14 @@ int pika_main(variables_map& vm)
             scheduler_mode::enable_elasticity);
     }
 
-    // setup executors for different task priorities on the pools
-    pika::execution::parallel_executor HP_executor(
-        &pika::resource::get_thread_pool("default"), pika::execution::thread_priority::high);
+    // setup schedulers for different task priorities on the pools
+    auto HP_scheduler =
+        ex::with_priority(ex::thread_pool_scheduler{&pika::resource::get_thread_pool("default")},
+            pika::execution::thread_priority::high);
 
-    pika::execution::parallel_executor NP_executor(
-        &pika::resource::get_thread_pool("default"), pika::execution::thread_priority::default_);
+    auto NP_scheduler =
+        ex::with_priority(ex::thread_pool_scheduler{&pika::resource::get_thread_pool("default")},
+            pika::execution::thread_priority::default_);
 
     // randomly create normal priority tasks
     // and then a set of HP tasks in periodic bursts
@@ -98,46 +102,46 @@ int pika_main(variables_map& vm)
     //
     std::atomic<int> count_down((np_loop + hp_loop) * cycles);
     std::atomic<int> counter(0);
-    auto f3 = pika::async(NP_executor,
+    ex::execute(NP_scheduler,
         pika::annotated_function(
             [&]() {
                 ++launch_count;
                 for (int i = 0; i < np_total; ++i)
                 {
                     // normal priority
-                    auto f3 = pika::async(NP_executor,
-                        pika::annotated_function(
+                    auto s = ex::schedule(NP_scheduler) |
+                        ex::then(pika::annotated_function(
                             [&, np_m]() {
                                 np_task_count++;
                                 dec_counter dec(count_down);
                                 dummy_task(std::size_t(np_m));
                             },
-                            "NP task"));
+                            "NP task")) |
+                        // continuation runs as a sync task
+                        ex::then([&]() {
+                            // on every Nth task, spawn new HP tasks, otherwise quit
+                            if ((++counter) % np_loop != 0) return;
 
-                    // continuation runs as a sync task
-                    f3.then(pika::launch::sync, [&](pika::future<void>&&) {
-                        // on every Nth task, spawn new HP tasks, otherwise quit
-                        if ((++counter) % np_loop != 0) return;
-
-                        // Launch HP tasks using an HP task to do it
-                        pika::async(HP_executor,
-                            pika::annotated_function(
-                                [&]() {
-                                    ++hp_launch_count;
-                                    for (int j = 0; j < hp_loop; ++j)
-                                    {
-                                        pika::async(HP_executor,
-                                            pika::annotated_function(
-                                                [&]() {
-                                                    ++hp_task_count;
-                                                    dec_counter dec(count_down);
-                                                    dummy_task(std::size_t(hp_m));
-                                                },
-                                                "HP task"));
-                                    }
-                                },
-                                "Launch HP"));
-                    });
+                            // Launch HP tasks using an HP task to do it
+                            ex::execute(HP_scheduler,
+                                pika::annotated_function(
+                                    [&]() {
+                                        ++hp_launch_count;
+                                        for (int j = 0; j < hp_loop; ++j)
+                                        {
+                                            ex::execute(HP_scheduler,
+                                                pika::annotated_function(
+                                                    [&]() {
+                                                        ++hp_task_count;
+                                                        dec_counter dec(count_down);
+                                                        dummy_task(std::size_t(hp_m));
+                                                    },
+                                                    "HP task"));
+                                        }
+                                    },
+                                    "Launch HP"));
+                        });
+                    ex::start_detached(std::move(s));
                 }
             },
             "Launch"));

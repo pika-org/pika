@@ -1,4 +1,4 @@
-//  Copyright (c) 2018-2020 Mikael Simberg
+//  Copyright (c) 2018-2023 ETH Zurich
 //  Copyright (c) 2018-2019 John Biddiscombe
 //  Copyright (c) 2011 Bryce Adelstein-Lelbach
 //
@@ -8,8 +8,8 @@
 
 #include <pika/config.hpp>
 #include <pika/execution.hpp>
-#include <pika/future.hpp>
 #include <pika/init.hpp>
+#include <pika/latch.hpp>
 #include <pika/modules/synchronization.hpp>
 #include <pika/modules/timing.hpp>
 #include <pika/runtime.hpp>
@@ -28,17 +28,17 @@
 #include <stdexcept>
 #include <string>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 using pika::program_options::options_description;
 using pika::program_options::value;
 using pika::program_options::variables_map;
 
-using pika::apply;
-using pika::async;
-using pika::future;
-
 using pika::chrono::detail::high_resolution_timer;
+
+namespace ex = pika::execution::experimental;
+namespace tt = pika::this_thread::experimental;
 
 // global vars we stick here to make printouts easy for plotting
 static std::string queuing = "default";
@@ -47,7 +47,7 @@ static std::uint64_t num_threads = 1;
 static std::string info_string = "";
 
 ///////////////////////////////////////////////////////////////////////////////
-void print_stats(const char* title, const char* wait, const char* exec, std::int64_t count,
+void print_stats(const char* title, const char* wait, const char* sched, std::int64_t count,
     double duration, bool csv)
 {
     std::ostringstream temp;
@@ -55,14 +55,14 @@ void print_stats(const char* title, const char* wait, const char* exec, std::int
     if (csv)
     {
         fmt::print(temp, "{}, {:27}, {:15}, {:45}, {:8}, {:8}, {:20}, {:4}, {:4}, {:20}", count,
-            title, wait, exec, duration, us, queuing, numa_sensitive, num_threads, info_string);
+            title, wait, sched, duration, us, queuing, numa_sensitive, num_threads, info_string);
     }
     else
     {
         fmt::print(temp,
-            "invoked {:1}, futures {:27} {:15} {:18} in {:8} seconds : {:8} us/future, queue "
+            "invoked {:1}, tasks {:27} {:15} {:18} in {:8} seconds : {:8} us/task, queue "
             "{:20}, numa {:4}, threads {:4}, info {:20}",
-            count, title, wait, exec, duration, us, queuing, numa_sensitive, num_threads,
+            count, title, wait, sched, duration, us, queuing, numa_sensitive, num_threads,
             info_string);
     }
     std::cout << temp.str() << std::endl;
@@ -70,13 +70,7 @@ void print_stats(const char* title, const char* wait, const char* exec, std::int
     //pika::util::print_cdash_timing(title, duration);
 }
 
-const char* exec_name(pika::execution::parallel_executor const&) { return "parallel_executor"; }
-
-const char* exec_name(pika::execution::experimental::scheduler_executor<
-    pika::execution::experimental::thread_pool_scheduler> const&)
-{
-    return "scheduler_executor<thread_pool_scheduler>";
-}
+const char* sched_name(ex::thread_pool_scheduler const&) { return "thread_pool_scheduler"; }
 
 ///////////////////////////////////////////////////////////////////////////////
 // we use globals here to prevent the delay from being optimized away
@@ -101,43 +95,86 @@ double null_function() noexcept
 
 struct scratcher
 {
-    void operator()(future<double> r) const { global_scratch += r.get(); }
+    void operator()(double r) const { global_scratch += r; }
 };
 
-// Time async execution using wait each on futures vector
-template <typename Executor>
-void function_futures_wait_each(std::uint64_t count, bool csv, Executor& exec)
+template <typename Scheduler>
+void function_senders_when_all_vector(std::uint64_t count, bool csv, Scheduler& sched)
 {
-    std::vector<future<double>> futures;
-    futures.reserve(count);
+    auto spawn = [&]() { return ex::schedule(sched) | ex::then(null_function) | ex::drop_value(); };
+    std::vector<decltype(spawn())> senders;
+    senders.reserve(count);
 
     // start the clock
     high_resolution_timer walltime;
-    for (std::uint64_t i = 0; i < count; ++i) futures.push_back(async(exec, &null_function));
-    pika::wait_each(scratcher(), futures);
+    for (std::uint64_t i = 0; i < count; ++i) senders.push_back(spawn());
+    tt::sync_wait(ex::when_all_vector(std::move(senders)));
 
     // stop the clock
     const double duration = walltime.elapsed();
-    print_stats("async", "WaitEach", exec_name(exec), count, duration, csv);
+    print_stats("schedule", "WhenAll", sched_name(sched), count, duration, csv);
 }
 
-template <typename Executor>
-void function_futures_wait_all(std::uint64_t count, bool csv, Executor& exec)
+template <typename Scheduler>
+void function_senders_when_all_vector_eager(std::uint64_t count, bool csv, Scheduler& sched)
 {
-    std::vector<future<double>> futures;
-    futures.reserve(count);
+    auto spawn = [&]() {
+        return ex::schedule(sched) | ex::then(null_function) | ex::ensure_started() |
+            ex::drop_value();
+    };
+    std::vector<decltype(spawn())> senders;
+    senders.reserve(count);
 
     // start the clock
     high_resolution_timer walltime;
-    for (std::uint64_t i = 0; i < count; ++i) futures.push_back(async(exec, &null_function));
-    pika::wait_all(futures);
+    for (std::uint64_t i = 0; i < count; ++i) senders.push_back(spawn());
+    tt::sync_wait(ex::when_all_vector(std::move(senders)));
 
+    // stop the clock
     const double duration = walltime.elapsed();
-    print_stats("async", "WaitAll", exec_name(exec), count, duration, csv);
+    print_stats("schedule", "WhenAllEager", sched_name(sched), count, duration, csv);
 }
 
-template <typename Executor>
-void function_futures_sliding_semaphore(std::uint64_t count, bool csv, Executor& exec)
+template <typename Scheduler>
+void function_senders_when_all_vector_any_sender(std::uint64_t count, bool csv, Scheduler& sched)
+{
+    auto spawn = [&]() { return ex::schedule(sched) | ex::then(null_function) | ex::drop_value(); };
+    std::vector<ex::unique_any_sender<>> senders;
+    senders.reserve(count);
+
+    // start the clock
+    high_resolution_timer walltime;
+    for (std::uint64_t i = 0; i < count; ++i) senders.emplace_back(spawn());
+    tt::sync_wait(ex::when_all_vector(std::move(senders)));
+
+    // stop the clock
+    const double duration = walltime.elapsed();
+    print_stats("schedule", "WhenAllAnySender", sched_name(sched), count, duration, csv);
+}
+
+template <typename Scheduler>
+void function_senders_when_all_vector_eager_any_sender(
+    std::uint64_t count, bool csv, Scheduler& sched)
+{
+    auto spawn = [&]() {
+        return ex::schedule(sched) | ex::then(null_function) | ex::ensure_started() |
+            ex::drop_value();
+    };
+    std::vector<ex::unique_any_sender<>> senders;
+    senders.reserve(count);
+
+    // start the clock
+    high_resolution_timer walltime;
+    for (std::uint64_t i = 0; i < count; ++i) senders.emplace_back(spawn());
+    tt::sync_wait(ex::when_all_vector(std::move(senders)));
+
+    // stop the clock
+    const double duration = walltime.elapsed();
+    print_stats("schedule", "WhenAllEagerAnySender", sched_name(sched), count, duration, csv);
+}
+
+template <typename Scheduler>
+void function_sliding_semaphore_execute(std::uint64_t count, bool csv, Scheduler& sched)
 {
     // start the clock
     high_resolution_timer walltime;
@@ -145,7 +182,7 @@ void function_futures_sliding_semaphore(std::uint64_t count, bool csv, Executor&
     pika::sliding_semaphore sem(sem_count);
     for (std::uint64_t i = 0; i < count; ++i)
     {
-        pika::async(exec, [i, &sem]() {
+        ex::execute(sched, [i, &sem]() {
             null_function();
             sem.signal(i);
         });
@@ -155,27 +192,10 @@ void function_futures_sliding_semaphore(std::uint64_t count, bool csv, Executor&
 
     // stop the clock
     const double duration = walltime.elapsed();
-    print_stats("apply", "Sliding-Sem", exec_name(exec), count, duration, csv);
+    print_stats("execute", "Sliding-Sem", sched_name(sched), count, duration, csv);
 }
 
-struct unlimited_number_of_chunks
-{
-    template <typename Executor>
-    std::size_t
-    maximal_number_of_chunks(Executor&& /*executor*/, std::size_t /*cores*/, std::size_t num_tasks)
-    {
-        return num_tasks;
-    }
-};
-
-namespace pika::parallel::execution {
-    template <>
-    struct is_executor_parameters<unlimited_number_of_chunks> : std::true_type
-    {
-    };
-}    // namespace pika::parallel::execution
-
-void function_futures_register_work(std::uint64_t count, bool csv)
+void function_register_work(std::uint64_t count, bool csv)
 {
     pika::latch l(count);
 
@@ -198,7 +218,7 @@ void function_futures_register_work(std::uint64_t count, bool csv)
     print_stats("register_work", "latch", "none", count, duration, csv);
 }
 
-void function_futures_create_thread(std::uint64_t count, bool csv)
+void function_create_thread(std::uint64_t count, bool csv)
 {
     pika::latch l(count);
 
@@ -230,7 +250,7 @@ void function_futures_create_thread(std::uint64_t count, bool csv)
     print_stats("create_thread", "latch", "none", count, duration, csv);
 }
 
-void function_futures_create_thread_hierarchical_placement(std::uint64_t count, bool csv)
+void function_create_thread_hierarchical_placement(std::uint64_t count, bool csv)
 {
     pika::latch l(count);
 
@@ -288,7 +308,7 @@ void function_futures_create_thread_hierarchical_placement(std::uint64_t count, 
     print_stats("create_thread_hierarchical", "latch", "none", count, duration, csv);
 }
 
-void function_futures_apply_hierarchical_placement(std::uint64_t count, bool csv)
+void function_apply_hierarchical_placement(std::uint64_t count, bool csv)
 {
     pika::latch l(count);
 
@@ -304,21 +324,21 @@ void function_futures_apply_hierarchical_placement(std::uint64_t count, bool csv
     {
         auto const hint = pika::execution::thread_schedule_hint(static_cast<std::int16_t>(t));
         auto spawn_func = [&func, hint, t, count, num_threads]() {
-            auto exec = pika::execution::parallel_executor(hint);
+            auto sched = ex::with_hint(ex::thread_pool_scheduler{}, hint);
             std::uint64_t const count_start = t * count / num_threads;
             std::uint64_t const count_end = (t + 1) * count / num_threads;
 
-            for (std::uint64_t i = count_start; i < count_end; ++i) { pika::apply(exec, func); }
+            for (std::uint64_t i = count_start; i < count_end; ++i) { ex::execute(sched, func); }
         };
 
-        auto exec = pika::execution::parallel_executor(hint);
-        pika::apply(exec, spawn_func);
+        auto sched = ex::with_hint(ex::thread_pool_scheduler{}, hint);
+        ex::execute(sched, spawn_func);
     }
     l.wait();
 
     // stop the clock
     const double duration = walltime.elapsed();
-    print_stats("apply_hierarchical", "latch", "parallel_executor", count, duration, csv);
+    print_stats("execute_hierarchical", "latch", "thread_pool_scheduler", count, duration, csv);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -341,24 +361,26 @@ int pika_main(variables_map& vm)
 
         num_iterations = vm["delay-iterations"].as<std::uint64_t>();
 
-        const std::uint64_t count = vm["futures"].as<std::uint64_t>();
+        const std::uint64_t count = vm["tasks"].as<std::uint64_t>();
         bool csv = vm.count("csv") != 0;
         if (PIKA_UNLIKELY(0 == count))
-            throw std::logic_error("error: count of 0 futures specified\n");
+            throw std::logic_error("error: count of 0 tasks specified\n");
 
-        pika::execution::parallel_executor par;
+        ex::thread_pool_scheduler sched;
 
         for (int i = 0; i < repetitions; i++)
         {
-            function_futures_create_thread_hierarchical_placement(count, csv);
+            function_create_thread_hierarchical_placement(count, csv);
             if (test_all)
             {
-                function_futures_wait_each(count, csv, par);
-                function_futures_wait_all(count, csv, par);
-                function_futures_sliding_semaphore(count, csv, par);
-                function_futures_register_work(count, csv);
-                function_futures_create_thread(count, csv);
-                function_futures_apply_hierarchical_placement(count, csv);
+                function_senders_when_all_vector(count, csv, sched);
+                function_senders_when_all_vector_eager(count, csv, sched);
+                function_senders_when_all_vector_any_sender(count, csv, sched);
+                function_senders_when_all_vector_eager_any_sender(count, csv, sched);
+                // function_sliding_semaphore_execute(count, csv, sched);
+                function_register_work(count, csv);
+                function_create_thread(count, csv);
+                function_apply_hierarchical_placement(count, csv);
             }
         }
     }
@@ -373,9 +395,9 @@ int main(int argc, char* argv[])
     options_description cmdline("usage: " PIKA_APPLICATION_STRING " [options]");
 
     // clang-format off
-    cmdline.add_options()("futures",
+    cmdline.add_options()("tasks",
         value<std::uint64_t>()->default_value(500000),
-        "number of futures to invoke")
+        "number of tasks to invoke")
 
         ("delay-iterations", value<std::uint64_t>()->default_value(0),
          "number of iterations in the delay loop")

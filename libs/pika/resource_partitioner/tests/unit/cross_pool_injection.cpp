@@ -8,14 +8,13 @@
 // and assigns a random number of threads to each (not exceeding the
 // number of threads available in total). Tasks are created and assigned
 // to random pools, with continuations assigned to another random pool
-// using an executor per pool.
+// using a scheduler per pool.
 // The test is intended to stress test the scheduler and ensure that
 // cross pool injection of tasks does not cause segfaults or other
 // problems such as lockups.
 
 #include <pika/execution.hpp>
 #include <pika/functional/bind_back.hpp>
-#include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/resource_partitioner.hpp>
 #include <pika/modules/thread_manager.hpp>
@@ -30,6 +29,9 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+namespace ex = pika::execution::experimental;
+namespace tt = pika::this_thread::experimental;
 
 std::size_t num_pools = 0;
 
@@ -70,16 +72,18 @@ int pika_main()
             scheduler_mode::steal_high_priority_first);
     }
 
-    // setup executors for different task priorities on the pools
-    std::vector<pika::execution::parallel_executor> HP_executors;
-    std::vector<pika::execution::parallel_executor> NP_executors;
+    // setup schedulers for different task priorities on the pools
+    std::vector<ex::thread_pool_scheduler> HP_schedulers;
+    std::vector<ex::thread_pool_scheduler> NP_schedulers;
     for (std::size_t i = 0; i < num_pools; ++i)
     {
         std::string pool_name = "pool-" + std::to_string(i);
-        HP_executors.emplace_back(
-            &pika::resource::get_thread_pool(pool_name), pika::execution::thread_priority::high);
-        NP_executors.emplace_back(&pika::resource::get_thread_pool(pool_name),
-            pika::execution::thread_priority::default_);
+        HP_schedulers.push_back(ex::with_priority(
+            ex::thread_pool_scheduler(&pika::resource::get_thread_pool(pool_name)),
+            pika::execution::thread_priority::high));
+        NP_schedulers.push_back(ex::with_priority(
+            ex::thread_pool_scheduler(&pika::resource::get_thread_pool(pool_name)),
+            pika::execution::thread_priority::default_));
     }
 
     // randomly create tasks that run on a random pool
@@ -98,13 +102,13 @@ int pika_main()
         // high priority
         std::size_t random_pool_1 = st_rand(0, num_pools - 1);
         std::size_t random_pool_2 = st_rand(0, num_pools - 1);
-        auto& exec_1 = HP_executors[random_pool_1];
-        auto& exec_2 = HP_executors[random_pool_2];
-        auto f1 = pika::async(exec_1, &dummy_task, 0);
-        auto f2 = f1.then(exec_2, [=, &counter](pika::future<void>&&) {
-            dummy_task(0);
-            --counter;
-        });
+        auto& sched_1 = HP_schedulers[random_pool_1];
+        auto& sched_2 = HP_schedulers[random_pool_2];
+        ex::start_detached(ex::transfer_just(sched_1, 0) | ex::then(dummy_task) |
+            ex::transfer(sched_2) | ex::then([=, &counter]() {
+                dummy_task(0);
+                --counter;
+            }));
     }
     do {
         pika::this_thread::yield();
@@ -117,13 +121,13 @@ int pika_main()
         // normal priority
         std::size_t random_pool_1 = st_rand(0, num_pools - 1);
         std::size_t random_pool_2 = st_rand(0, num_pools - 1);
-        auto& exec_3 = NP_executors[random_pool_1];
-        auto& exec_4 = NP_executors[random_pool_2];
-        auto f3 = pika::async(exec_3, &dummy_task, 0);
-        auto f4 = f3.then(exec_4, [=, &counter](pika::future<void>&&) {
-            dummy_task(0);
-            --counter;
-        });
+        auto& sched_3 = NP_schedulers[random_pool_1];
+        auto& sched_4 = NP_schedulers[random_pool_2];
+        ex::start_detached(ex::transfer_just(sched_3, 0) | ex::then(dummy_task) |
+            ex::transfer(sched_4) | ex::then([=, &counter]() {
+                dummy_task(0);
+                --counter;
+            }));
     }
     do {
         pika::this_thread::yield();
@@ -136,13 +140,13 @@ int pika_main()
         // mixed priority, HP->NP
         std::size_t random_pool_1 = st_rand(0, num_pools - 1);
         std::size_t random_pool_2 = st_rand(0, num_pools - 1);
-        auto& exec_5 = HP_executors[random_pool_1];
-        auto& exec_6 = NP_executors[random_pool_2];
-        auto f5 = pika::async(exec_5, &dummy_task, 0);
-        auto f6 = f5.then(exec_6, [=, &counter](pika::future<void>&&) {
-            dummy_task(0);
-            --counter;
-        });
+        auto& sched_5 = HP_schedulers[random_pool_1];
+        auto& sched_6 = NP_schedulers[random_pool_2];
+        ex::start_detached(ex::transfer_just(sched_5, 0) | ex::then(dummy_task) |
+            ex::transfer(sched_6) | ex::then([=, &counter]() {
+                dummy_task(0);
+                --counter;
+            }));
     }
     do {
         pika::this_thread::yield();
@@ -155,13 +159,13 @@ int pika_main()
         // mixed priority, NP->HP
         std::size_t random_pool_1 = st_rand(0, num_pools - 1);
         std::size_t random_pool_2 = st_rand(0, num_pools - 1);
-        auto& exec_7 = NP_executors[random_pool_1];
-        auto& exec_8 = HP_executors[random_pool_2];
-        auto f7 = pika::async(exec_7, &dummy_task, 0);
-        auto f8 = f7.then(exec_8, [=, &counter](pika::future<void>&&) {
-            dummy_task(0);
-            --counter;
-        });
+        auto& sched_7 = NP_schedulers[random_pool_1];
+        auto& sched_8 = HP_schedulers[random_pool_2];
+        ex::start_detached(ex::transfer_just(sched_7, 0) | ex::then(dummy_task) |
+            ex::transfer(sched_8) | ex::then([=, &counter]() {
+                dummy_task(0);
+                --counter;
+            }));
     }
     do {
         pika::this_thread::yield();
@@ -174,17 +178,17 @@ int pika_main()
         // tasks that depend on each other and need to suspend
         std::size_t random_pool_1 = st_rand(0, num_pools - 1);
         std::size_t random_pool_2 = st_rand(0, num_pools - 1);
-        auto& exec_7 = NP_executors[random_pool_1];
-        auto& exec_8 = HP_executors[random_pool_2];
+        auto& sched_7 = NP_schedulers[random_pool_1];
+        auto& sched_8 = HP_schedulers[random_pool_2];
         // random delay up to 5 milliseconds
         std::size_t delay = st_rand(0, 5);
-        auto f7 = pika::async(exec_7, &dummy_task, delay);
-        auto f8 = pika::async(exec_8, [f7(std::move(f7)), &counter]() mutable {
-            // if f7 is not ready then f8 will suspend itself on get
-            f7.get();
+        auto s = ex::transfer_just(sched_7, delay) | ex::then(dummy_task) | ex::ensure_started();
+        ex::start_detached(ex::schedule(sched_8) | ex::then([s = std::move(s), &counter]() mutable {
+            // if s is not ready then this task will suspend itself in sync_wait
+            tt::sync_wait(std::move(s));
             dummy_task(0);
             --counter;
-        });
+        }));
     }
     do {
         pika::this_thread::yield();

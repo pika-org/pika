@@ -122,6 +122,10 @@ namespace pika::threads::detail {
         void suspend_direct(error_code& ec = throws) override;
         void resume_direct(error_code& ec = throws) override;
 
+    private:
+        void suspend_processing_unit_internal(std::size_t virt_core, error_code&);
+
+    public:
         void suspend_processing_unit_direct(
             std::size_t virt_core, error_code& = pika::throws) override;
         void resume_processing_unit_direct(

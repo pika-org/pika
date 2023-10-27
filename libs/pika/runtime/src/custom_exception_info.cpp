@@ -7,7 +7,6 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/futures/futures_factory.hpp>
 #include <pika/lock_registration/detail/register_locks.hpp>
 #include <pika/modules/debugging.hpp>
 #include <pika/modules/errors.hpp>

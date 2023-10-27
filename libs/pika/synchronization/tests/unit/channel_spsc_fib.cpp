@@ -6,7 +6,7 @@
 
 //  This work is inspired by https://github.com/aprell/tasking-2.0
 
-#include <pika/future.hpp>
+#include <pika/execution.hpp>
 #include <pika/init.hpp>
 #include <pika/synchronization/channel_spsc.hpp>
 #include <pika/testing.hpp>
@@ -15,6 +15,9 @@
 #include <functional>
 #include <utility>
 #include <vector>
+
+namespace ex = pika::execution::experimental;
+namespace tt = pika::this_thread::experimental;
 
 ///////////////////////////////////////////////////////////////////////////////
 int verify_fibonacci(int n)
@@ -86,12 +89,10 @@ int pika_main()
     pika::experimental::channel_spsc<int> c2(1);
     pika::experimental::channel_spsc<int> c3(5);
 
-    pika::future<void> producer = pika::async(&produce_numbers, std::ref(c2), std::ref(c3));
-
-    pika::future<void> consumer =
-        pika::async(&consume_numbers, 22, std::ref(c1), std::ref(c2), std::ref(c3));
-
-    pika::wait_all(producer, consumer);
+    auto sched = ex::thread_pool_scheduler{};
+    tt::sync_wait(
+        ex::when_all(ex::schedule(sched) | ex::then([&]() mutable { produce_numbers(c2, c3); }),
+            ex::schedule(sched) | ex::then([&]() mutable { consume_numbers(22, c1, c2, c3); })));
 
     PIKA_TEST(channel_get(c1));
 

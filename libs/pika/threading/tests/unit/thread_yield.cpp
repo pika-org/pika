@@ -4,14 +4,18 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/future.hpp>
+#include <pika/execution.hpp>
 #include <pika/init.hpp>
 #include <pika/testing.hpp>
 #include <pika/thread.hpp>
 
 #include <cstddef>
 #include <string>
+#include <utility>
 #include <vector>
+
+namespace ex = pika::execution::experimental;
+namespace tt = pika::this_thread::experimental;
 
 #define NUM_YIELD_TESTS 1000
 
@@ -23,14 +27,19 @@ void test_yield()
 
 int pika_main()
 {
+    auto sched = ex::thread_pool_scheduler{};
+
     std::size_t num_cores = pika::get_os_thread_count();
 
-    std::vector<pika::future<void>> finished;
+    std::vector<ex::unique_any_sender<>> finished;
     finished.reserve(num_cores);
 
-    for (std::size_t i = 0; i != num_cores; ++i) finished.push_back(pika::async(&test_yield));
+    for (std::size_t i = 0; i != num_cores; ++i)
+    {
+        finished.emplace_back(ex::schedule(sched) | ex::then(test_yield));
+    }
 
-    pika::wait_all(finished);
+    tt::sync_wait(ex::when_all_vector(std::move(finished)));
 
     return pika::finalize();
 }
