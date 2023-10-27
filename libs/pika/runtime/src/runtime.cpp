@@ -45,7 +45,8 @@
 # include <common/TracySystem.hpp>
 #endif
 
-#include <fmt/format.h>
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <atomic>
 #include <chrono>
@@ -1091,7 +1092,19 @@ namespace pika {
         if (caught_exception)
         {
             PIKA_ASSERT(exception_);
+
+            // Always report the exception early in case the runtime becomes deadlocked because of the
+            // thrown exception and isn't able to shut down.
+            fmt::print(std::cerr,
+                "The pika runtime caught the following exception in the entry point (typically "
+                "pika_main). The exception may be rethrown later by pika::init or pika::stop. The "
+                "pika runtime will wait for all tasks to finish, but may be deadlocked because of "
+                "the exception.\n");
+            detail::report_exception_and_continue(exception_);
+
+            // Then call user-registered error handlers if available.
             report_error(exception_, false);
+
             finalize();    // make sure the application exits
         }
 
