@@ -15,6 +15,7 @@
 
 #include <pika/assert.hpp>
 #include <pika/chrono.hpp>
+#include <pika/future.hpp>
 #include <pika/init.hpp>
 
 #include <chrono>

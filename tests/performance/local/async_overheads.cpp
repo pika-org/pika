@@ -5,8 +5,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/chrono.hpp>
-#include <pika/execution.hpp>
-#include <pika/functional/bind_front.hpp>
+#include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/testing/performance.hpp>
 
@@ -20,9 +19,6 @@
 #include <utility>
 #include <vector>
 
-namespace ex = pika::execution::experimental;
-namespace tt = pika::this_thread::experimental;
-
 ///////////////////////////////////////////////////////////////////////////////
 std::size_t num_level_tasks = 16;
 std::size_t spread = 2;
@@ -31,9 +27,9 @@ std::uint64_t delay_ns = 0;
 void test_func() { worker_timed(delay_ns); }
 
 ///////////////////////////////////////////////////////////////////////////////
-ex::unique_any_sender<> spawn_level(std::size_t num_tasks)
+pika::future<void> spawn_level(std::size_t num_tasks)
 {
-    std::vector<ex::unique_any_sender<>> tasks;
+    std::vector<pika::future<void>> tasks;
     tasks.reserve(num_tasks);
 
     // spawn sub-levels
@@ -52,18 +48,16 @@ ex::unique_any_sender<> spawn_level(std::size_t num_tasks)
             spawn_hierarchically -= sub_spawn;
             num_tasks -= sub_spawn;
 
-            tasks.emplace_back(ex::schedule(ex::thread_pool_scheduler{}) |
-                ex::let_value(pika::util::detail::bind_front(spawn_level, sub_spawn)));
+            // force unwrapping
+            pika::future<void> f = pika::async(&spawn_level, sub_spawn);
+            tasks.push_back(std::move(f));
         }
     }
 
     // then spawn required number of tasks on this level
-    for (std::size_t i = 0; i != num_tasks; ++i)
-    {
-        tasks.emplace_back(ex::schedule(ex::thread_pool_scheduler{}) | ex::then(test_func));
-    }
+    for (std::size_t i = 0; i != num_tasks; ++i) tasks.push_back(pika::async(&test_func));
 
-    return ex::when_all_vector(std::move(tasks));
+    return pika::when_all(tasks);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -75,17 +69,14 @@ int pika_main(pika::program_options::variables_map& vm)
     double sequential_time_per_task = 0;
 
     {
-        std::vector<ex::unique_any_sender<>> tasks;
+        std::vector<pika::future<void>> tasks;
         tasks.reserve(num_tasks);
 
         auto start = std::chrono::high_resolution_clock::now();
 
-        for (std::size_t i = 0; i != num_tasks; ++i)
-        {
-            tasks.emplace_back(ex::schedule(ex::thread_pool_scheduler{}) | ex::then(test_func));
-        }
+        for (std::size_t i = 0; i != num_tasks; ++i) tasks.push_back(pika::async(&test_func));
 
-        tt::sync_wait(ex::when_all_vector(std::move(tasks)));
+        pika::wait_all(tasks);
 
         auto end = std::chrono::high_resolution_clock::now();
 
@@ -101,8 +92,8 @@ int pika_main(pika::program_options::variables_map& vm)
     {
         auto start = std::chrono::high_resolution_clock::now();
 
-        tt::sync_wait(
-            ex::transfer_just(ex::thread_pool_scheduler{}, num_tasks) | ex::then(spawn_level));
+        pika::future<void> f = pika::async(&spawn_level, num_tasks);
+        pika::wait_all(f);
 
         auto end = std::chrono::high_resolution_clock::now();
 

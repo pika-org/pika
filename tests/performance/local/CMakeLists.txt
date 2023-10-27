@@ -16,9 +16,11 @@ set(benchmarks
     future_overhead
     future_overhead_report
     heterogeneous_timed_task_spawn
+    parent_vs_child_stealing
     print_heterogeneous_payloads
     resume_suspend
     skynet
+    wait_all_timings
 )
 
 if(NOT PIKA_WITH_SANITIZERS)

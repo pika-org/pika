@@ -13,7 +13,6 @@
 # include <pika/modules/thread_pools.hpp>
 # include <pika/modules/topology.hpp>
 # include <pika/runtime.hpp>
-# include <pika/thread.hpp>
 
 # include <cmath>
 # include <cstddef>
@@ -26,9 +25,6 @@
 # include <vector>
 
 # include "system_characteristics.hpp"
-
-namespace ex = pika::execution::experimental;
-namespace tt = pika::this_thread::experimental;
 
 // ------------------------------------------------------------------------
 static bool use_pools = false;
@@ -63,21 +59,21 @@ int pika_main(pika::program_options::variables_map&)
     std::size_t loop_count = num_threads * 1;
     std::size_t async_count = num_threads * 1;
 
-    // create a scheduler with high priority for important tasks
-    auto high_priority_scheduler =
-        ex::with_priority(ex::thread_pool_scheduler{pika::this_thread::get_pool()},
-            pika::execution::thread_priority::high_recursive);
-    auto normal_priority_scheduler = ex::thread_pool_scheduler{pika::this_thread::get_pool()};
+    // create an executor with high priority for important tasks
+    pika::execution::parallel_executor high_priority_executor(
+        pika::this_thread::get_pool(), pika::execution::thread_priority::high_recursive);
+    pika::execution::parallel_executor normal_priority_executor;
 
-    ex::thread_pool_scheduler pool_scheduler;
-    // create a scheduler on the mpi pool
+    pika::execution::parallel_executor pool_executor;
+    // create an executor on the mpi pool
     if (use_pools)
     {
-        // get schedulers
-        pool_scheduler = ex::thread_pool_scheduler{&pika::resource::get_thread_pool(pool_name)};
-        std::cout << "\n[pika_main] got mpi scheduler " << std::endl;
+        // get executors
+        pika::execution::parallel_executor mpi_exec(&pika::resource::get_thread_pool(pool_name));
+        pool_executor = mpi_exec;
+        std::cout << "\n[pika_main] got mpi executor " << std::endl;
     }
-    else { pool_scheduler = high_priority_scheduler; }
+    else { pool_executor = high_priority_executor; }
 
     // print partition characteristics
     std::cout << "\n\n[pika_main] print resource_partitioner characteristics : "
@@ -92,89 +88,89 @@ int pika_main(pika::program_options::variables_map&)
     // print system characteristics
     print_system_characteristics();
 
-    // use scheduler to schedule work on custom pool
-    auto sender = ex::schedule(pool_scheduler) |
-        ex::then(pika::util::detail::bind_front(do_stuff, 5, true)) | ex::transfer(pool_scheduler) |
-        ex::then([]() { do_stuff(5, true); }) | ex::transfer(pool_scheduler) |
-        ex::then([pool_scheduler, high_priority_scheduler, async_count]() mutable {
-            ex::unique_any_sender<> sender1, sender2;
+    // use executor to schedule work on custom pool
+    pika::future<void> future_1 = pika::async(pool_executor, &do_stuff, 5, true);
+
+    pika::future<void> future_2 =
+        future_1.then(pool_executor, [](pika::future<void>&&) { do_stuff(5, true); });
+
+    pika::future<void> future_3 = future_2.then(pool_executor,
+        [pool_executor, high_priority_executor, async_count](pika::future<void>&&) mutable {
+            pika::future<void> future_4, future_5;
             for (std::size_t i = 0; i < async_count; i++)
             {
                 if (i % 2 == 0)
                 {
-                    sender1 = ex::schedule(pool_scheduler) |
-                        ex::then(pika::util::detail::bind_front(&do_stuff, async_count, false));
+                    future_4 = pika::async(pool_executor, &do_stuff, async_count, false);
                 }
                 else
                 {
-                    sender2 = ex::schedule(high_priority_scheduler) |
-                        ex::then(pika::util::detail::bind_front(&do_stuff, async_count, false));
+                    future_5 = pika::async(high_priority_executor, &do_stuff, async_count, false);
                 }
             }
-
-            // the last senders we made are stored in here
-            tt::sync_wait(std::move(sender1));
-            tt::sync_wait(std::move(sender2));
+            // the last futures we made are stored in here
+            if (future_4.valid()) future_4.get();
+            if (future_5.valid()) future_5.get();
         });
 
-    tt::sync_wait(std::move(sender));
+    future_3.get();
 
     pika::mutex m;
     std::set<std::thread::id> thread_set;
-    std::vector<ex::unique_any_sender<>> senders;
+    std::vector<pika::future<void>> futures;
 
     // launch tasks on custom pool with high priority
     for (std::size_t i = 0; i < loop_count; ++i)
     {
-        senders.push_back(ex::schedule(high_priority_scheduler) | ex::then([&, i]() {
+        futures.push_back(pika::async(high_priority_executor, [&, i]() {
             std::lock_guard<pika::mutex> lock(m);
             if (thread_set.insert(std::this_thread::get_id()).second)
             {
                 std::cout << std::hex << pika::this_thread::get_id() << " " << std::hex
-                          << std::this_thread::get_id() << " high priority scheduler i " << std::dec
+                          << std::this_thread::get_id() << " high priority executor i " << std::dec
                           << i << std::endl;
             }
         }));
     }
-    tt::sync_wait(ex::when_all_vector(std::move(senders)));
+    pika::wait_all(std::move(futures));
     std::cout << "thread set contains " << std::dec << thread_set.size() << std::endl;
-    senders.clear();
+    futures.clear();
     thread_set.clear();
 
     // launch tasks on custom pool with normal priority
     for (std::size_t i = 0; i < loop_count; ++i)
     {
-        senders.push_back(ex::schedule(normal_priority_scheduler) | ex::then([&, i]() {
+        futures.push_back(pika::async(normal_priority_executor, [&, i]() {
             std::lock_guard<pika::mutex> lock(m);
             if (thread_set.insert(std::this_thread::get_id()).second)
             {
                 std::cout << std::hex << pika::this_thread::get_id() << " " << std::hex
-                          << std::this_thread::get_id() << " normal priority scheduler i "
+                          << std::this_thread::get_id() << " normal priority executor i "
                           << std::dec << i << std::endl;
             }
         }));
     }
-    tt::sync_wait(ex::when_all_vector(std::move(senders)));
+    pika::wait_all(std::move(futures));
     std::cout << "thread set contains " << std::dec << thread_set.size() << std::endl;
-    senders.clear();
+    futures.clear();
     thread_set.clear();
 
-    // test a parallel algorithm on pool_scheduler
+    // test a parallel algorithm on pool_executor
     for (std::size_t i = 0; i < loop_count; ++i)
     {
-        senders.push_back(ex::schedule(pool_scheduler) | ex::then([&, i]() {
+        futures.push_back(pika::async(pool_executor, [&, i]() {
             std::lock_guard<pika::mutex> lock(m);
             if (thread_set.insert(std::this_thread::get_id()).second)
             {
                 std::cout << std::hex << pika::this_thread::get_id() << " " << std::hex
-                          << std::this_thread::get_id() << " pool scheduler i " << std::dec << i
+                          << std::this_thread::get_id() << " pool executor i " << std::dec << i
                           << std::endl;
             }
         }));
     }
-    tt::sync_wait(ex::when_all_vector(std::move(senders)));
+    pika::wait_all(std::move(futures));
     std::cout << "thread set contains " << std::dec << thread_set.size() << std::endl;
-    senders.clear();
+    futures.clear();
     thread_set.clear();
 
     return pika::finalize();

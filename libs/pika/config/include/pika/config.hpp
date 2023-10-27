@@ -26,6 +26,7 @@
 #include <pika/config/export_definitions.hpp>
 #include <pika/config/forceinline.hpp>
 #include <pika/config/forward.hpp>
+#include <pika/config/lambda_capture_this.hpp>
 #include <pika/config/manual_profiling.hpp>
 #include <pika/config/modules_enabled.hpp>
 #include <pika/config/move.hpp>

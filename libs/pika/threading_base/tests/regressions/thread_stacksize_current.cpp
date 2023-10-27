@@ -10,8 +10,9 @@
 // thread_stacksize::minimal and thread_stacksize::maximal when a thread has been
 // created.
 
-#include <pika/execution.hpp>
 #include <pika/init.hpp>
+
+#include <pika/modules/async.hpp>
 #include <pika/modules/threading_base.hpp>
 #include <pika/testing.hpp>
 
@@ -20,32 +21,28 @@
 #include <string>
 #include <vector>
 
-namespace ex = pika::execution::experimental;
-namespace tt = pika::this_thread::experimental;
-
 void test(pika::execution::thread_stacksize stacksize)
 {
-    auto sched = ex::with_stacksize(ex::thread_pool_scheduler{}, stacksize);
-    auto sched_current =
-        ex::with_stacksize(ex::thread_pool_scheduler{}, pika::execution::thread_stacksize::current);
+    pika::execution::parallel_executor exec(stacksize);
+    pika::execution::parallel_executor exec_current(pika::execution::thread_stacksize::current);
 
-    tt::sync_wait(ex::schedule(sched) | ex::then([&sched_current, stacksize]() {
+    pika::async(exec, [&exec_current, stacksize]() {
         // This thread should have the stack size stacksize; it has been
-        // explicitly set in the scheduler.
+        // explicitly set in the executor.
         pika::execution::thread_stacksize self_stacksize =
             pika::threads::detail::get_self_stacksize_enum();
         PIKA_TEST_EQ(self_stacksize, stacksize);
         PIKA_TEST_NEQ(self_stacksize, pika::execution::thread_stacksize::current);
 
-        tt::sync_wait(ex::schedule(sched_current) | ex::then([stacksize]() {
+        pika::async(exec_current, [stacksize]() {
             // This thread should also have the stack size stacksize; it has
             // been inherited size from the parent thread.
             pika::execution::thread_stacksize self_stacksize =
                 pika::threads::detail::get_self_stacksize_enum();
             PIKA_TEST_EQ(self_stacksize, stacksize);
             PIKA_TEST_NEQ(self_stacksize, pika::execution::thread_stacksize::current);
-        }));
-    }));
+        }).get();
+    }).get();
 }
 
 int pika_main()

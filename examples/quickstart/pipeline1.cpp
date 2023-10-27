@@ -4,48 +4,38 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/execution.hpp>
+#include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/string_util.hpp>
-
-#include <fmt/printf.h>
 
 #include <iostream>
 #include <iterator>
 #include <regex>
 #include <string>
-#include <string_view>
 #include <utility>
 #include <vector>
-
-namespace ex = pika::execution::experimental;
-namespace tt = pika::this_thread::experimental;
 
 struct pipeline
 {
     static void process(std::vector<std::string> const& input)
     {
-        std::vector<ex::unique_any_sender<>> tasks;
-        for (auto s : input)
-        {
-            auto sender = ex::transfer_just(ex::thread_pool_scheduler{}, "Error.*", std::move(s)) |
-                ex::let_value([](std::string re, std::string item) -> ex::unique_any_sender<> {
-                    std::regex regex(std::move(re));
-                    if (std::regex_match(item, regex))
-                    {
-                        return ex::transfer_just(ex::thread_pool_scheduler{}, std::move(item)) |
-                            ex::then([](std::string s) {
-                                return pika::detail::trim_copy(std::move(s));
-                            }) |
-                            ex::then([](std::string_view tc) { fmt::print("->{}\n", tc); });
-                    }
-                    else { return ex::just(); }
-                });
+        // job for first stage
+        auto grep = [](std::string const& re, std::string const& item) {
+            std::regex regex(re);
+            if (std::regex_match(item, regex))
+            {
+                auto trim = [](std::string const& s) { return pika::detail::trim_copy(s); };
 
-            tasks.push_back(std::move(sender));
-        }
+                pika::async(trim, std::move(item)).then(pika::unwrapping([](std::string const& tc) {
+                    std::cout << "->" << tc << std::endl;
+                }));
+            }
+        };
 
-        tt::sync_wait(ex::when_all_vector(std::move(tasks)));
+        std::vector<pika::future<void>> tasks;
+        for (auto s : input) { tasks.push_back(pika::async(grep, "Error.*", std::move(s))); }
+
+        pika::wait_all(tasks);
     }
 };
 

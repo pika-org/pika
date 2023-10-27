@@ -6,7 +6,7 @@
 
 //  This work is inspired by https://github.com/aprell/tasking-2.0
 
-#include <pika/execution.hpp>
+#include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/timing.hpp>
 #include <pika/synchronization/channel_mpmc.hpp>
@@ -18,9 +18,6 @@
 #include <functional>
 #include <iostream>
 #include <utility>
-
-namespace ex = pika::execution::experimental;
-namespace tt = pika::this_thread::experimental;
 
 ///////////////////////////////////////////////////////////////////////////////
 struct data
@@ -87,20 +84,16 @@ double thread_func_1(pika::experimental::channel_mpmc<data>& c)
 
 int pika_main()
 {
-    auto sched = ex::thread_pool_scheduler{};
-
     pika::experimental::channel_mpmc<data> c(10000);
 
-    ex::unique_any_sender<double> producer =
-        ex::transfer_just(sched, std::ref(c)) | ex::then(thread_func_0) | ex::ensure_started();
-    ex::unique_any_sender<double> consumer =
-        ex::transfer_just(sched, std::ref(c)) | ex::then(thread_func_1) | ex::ensure_started();
+    pika::future<double> producer = pika::async(thread_func_0, std::ref(c));
+    pika::future<double> consumer = pika::async(thread_func_1, std::ref(c));
 
-    auto producer_time = tt::sync_wait(std::move(producer));
+    auto producer_time = producer.get();
     std::cout << "Producer throughput: " << (NUM_TESTS / producer_time) << " [op/s] ("
               << (producer_time / NUM_TESTS) << " [s/op])\n";
 
-    auto consumer_time = tt::sync_wait(std::move(consumer));
+    auto consumer_time = consumer.get();
     std::cout << "Consumer throughput: " << (NUM_TESTS / consumer_time) << " [op/s] ("
               << (consumer_time / NUM_TESTS) << " [s/op])\n";
 

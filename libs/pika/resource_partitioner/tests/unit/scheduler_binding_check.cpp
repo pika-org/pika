@@ -10,6 +10,7 @@
 
 #include <pika/debugging/print.hpp>
 #include <pika/execution.hpp>
+#include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/resource_partitioner.hpp>
 #include <pika/modules/schedulers.hpp>
@@ -23,9 +24,6 @@
 #include <cstdint>
 #include <iostream>
 #include <string>
-
-namespace ex = pika::execution::experimental;
-namespace tt = pika::this_thread::experimental;
 
 namespace pika {
     // use <true>/<false> to enable/disable debug printing
@@ -65,11 +63,10 @@ void threadLoop()
     // launch tasks on threads using numbering 0,1,2,3...0,1,2,3
     for (std::size_t i = 0; i < iterations; ++i)
     {
-        auto sched = ex::with_hint(ex::with_stacksize(ex::with_priority(ex::thread_pool_scheduler{},
-                                                          pika::execution::thread_priority::bound),
-                                       pika::execution::thread_stacksize::default_),
+        auto exec = pika::execution::parallel_executor(pika::execution::thread_priority::bound,
+            pika::execution::thread_stacksize::default_,
             pika::execution::thread_schedule_hint(std::int16_t(i % threads)));
-        tt::sync_wait(ex::transfer_just(sched, i, i % threads) | ex::then(f));
+        pika::async(exec, f, i, (i % threads)).get();
     }
 
     do {

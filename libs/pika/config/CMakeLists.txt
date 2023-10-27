@@ -19,6 +19,7 @@ set(config_headers
     pika/config/export_definitions.hpp
     pika/config/forceinline.hpp
     pika/config/forward.hpp
+    pika/config/lambda_capture_this.hpp
     pika/config/manual_profiling.hpp
     pika/config/move.hpp
     pika/config/threads_stack.hpp

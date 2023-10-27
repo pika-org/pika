@@ -9,7 +9,7 @@ set(tests resume_suspended_same_thread)
 set(resume_suspended_same_thread_PARAMETERS THREADS 2)
 
 if(PIKA_WITH_APEX)
-  list(APPEND tests annotation_check_senders)
+  list(APPEND tests annotation_check_futures annotation_check_senders)
   set(annotation_check_senders_PARAMETERS THREADS 2)
 endif()
 
@@ -29,6 +29,52 @@ foreach(test ${tests})
 endforeach()
 
 if(PIKA_WITH_APEX)
+  string(
+    CONCAT REGEX_MATCH_S_
+           "0-execute.*"
+           "0-execute-annotated-function.*"
+           "0-execute-parent-annotation.*"
+           "0-schedule.*"
+           "0-schedule-then.*"
+           "0-transfer"
+  )
+
+  set(launch_types_
+      ""
+      "Executor "
+      "apply "
+      "async "
+      "deferred "
+      "fork "
+      "sync "
+  )
+
+  # dataflow
+  foreach(launch ${launch_types_})
+    set(REGEX_MATCH_D_ "${REGEX_MATCH_D_}.*1-${launch}Dataflow")
+  endforeach()
+
+  # continuations
+  foreach(launch ${launch_types_})
+    set(REGEX_MATCH_C_ "${REGEX_MATCH_C_}.*2-${launch}Continuation")
+  endforeach()
+
+  # continuations with unwrapping
+  foreach(launch ${launch_types_})
+    set(REGEX_MATCH_C_ "${REGEX_MATCH_C_}.*3-${launch}Unwrapping Continuation")
+  endforeach()
+
+  # annotate_function with std::string and char*
+  foreach(type "char" "string")
+    set(REGEX_MATCH_ANN_ "${REGEX_MATCH_ANN_}.*4-${type} annotate_function")
+  endforeach()
+
+  set_tests_properties(
+    tests.unit.modules.threading_base.annotation_check_futures
+    PROPERTIES PASS_REGULAR_EXPRESSION
+               "${REGEX_MATCH_D_}${REGEX_MATCH_C_}${REGEX_MATCH_ANN_}"
+  )
+
   string(
     CONCAT REGEX_MATCH_S_
            "0-execute-no-parent-A :[ ]+1[ ]+.*"

@@ -15,7 +15,9 @@ set(_pika_modules
     allocator_support
     assertion
     async_base
+    async_combinators
     async_cuda
+    async
     async_mpi
     command_line_handling
     concepts
@@ -30,16 +32,19 @@ set(_pika_modules
     executors
     filesystem
     functional
+    futures
     hashing
     include
     ini
     init_runtime
     iterator_support
     itt_notify
+    lcos
     lock_registration
     logging
     memory
     mpi_base
+    pack_traversal
     prefix
     preprocessor
     program_options
@@ -51,6 +56,7 @@ set(_pika_modules
     string_util
     synchronization
     tag_invoke
+    thread_pool_util
     thread_pools
     thread_support
     threading

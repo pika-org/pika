@@ -9,7 +9,7 @@
 
 #include <pika/barrier.hpp>
 #include <pika/concurrency/detail/contiguous_index_queue.hpp>
-#include <pika/execution.hpp>
+#include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/program_options.hpp>
 #include <pika/testing.hpp>
@@ -21,11 +21,7 @@
 #include <iterator>
 #include <optional>
 #include <random>
-#include <utility>
 #include <vector>
-
-namespace ex = pika::execution::experimental;
-namespace tt = pika::this_thread::experimental;
 
 unsigned int seed = std::random_device{}();
 
@@ -141,19 +137,18 @@ void test_concurrent(pop_mode m)
     std::size_t const num_threads = pika::get_num_worker_threads();
     // This test should be run on at least two worker threads.
     PIKA_TEST_LTE(std::size_t(2), num_threads);
-    std::vector<ex::unique_any_sender<>> senders;
+    std::vector<pika::future<void>> fs;
     std::vector<std::vector<std::uint32_t>> popped_indices(num_threads);
-    senders.reserve(num_threads);
+    fs.reserve(num_threads);
     pika::barrier<> b(num_threads);
 
     for (std::size_t i = 0; i < num_threads; ++i)
     {
-        senders.push_back(ex::transfer_just(ex::thread_pool_scheduler{}, m, i, std::ref(b),
-                              std::ref(q), std::ref(popped_indices[i])) |
-            ex::then(test_concurrent_worker));
+        fs.push_back(pika::async(
+            test_concurrent_worker, m, i, std::ref(b), std::ref(q), std::ref(popped_indices[i])));
     }
 
-    tt::sync_wait(ex::when_all_vector(std::move(senders)));
+    pika::wait_all(fs);
 
     // There should be no indices left in the queue at this point.
     PIKA_TEST(q.empty());

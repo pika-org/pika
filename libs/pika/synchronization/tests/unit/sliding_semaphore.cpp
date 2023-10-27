@@ -4,7 +4,7 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/execution.hpp>
+#include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/synchronization.hpp>
 #include <pika/testing.hpp>
@@ -16,9 +16,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-
-namespace ex = pika::execution::experimental;
-namespace tt = pika::this_thread::experimental;
 
 ///////////////////////////////////////////////////////////////////////////////
 std::atomic<int> count(0);
@@ -34,17 +31,14 @@ void worker(pika::sliding_semaphore& sem)
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main()
 {
-    std::vector<ex::unique_any_sender<>> senders;
-    senders.reserve(num_tasks);
+    std::vector<pika::future<void>> futures;
+    futures.reserve(num_tasks);
 
     pika::sliding_semaphore sem(initial_count);
 
-    auto sched = ex::thread_pool_scheduler{};
-
     for (std::size_t i = 0; i != num_tasks; ++i)
     {
-        senders.emplace_back(
-            ex::transfer_just(sched, std::ref(sem)) | ex::then(worker) | ex::ensure_started());
+        futures.emplace_back(pika::async(&worker, std::ref(sem)));
     }
 
     sem.wait(initial_count + num_tasks);
@@ -69,7 +63,7 @@ int pika_main()
     //                        (sem is a dangling ref)
     //                        sem.signal(new_count)
     //
-    tt::sync_wait(ex::when_all_vector(std::move(senders)));
+    pika::wait_all(std::move(futures));
 
     return pika::finalize();
 }

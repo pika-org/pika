@@ -7,7 +7,7 @@
 // Simple test verifying basic resource_partitioner functionality.
 
 #include <pika/chrono.hpp>
-#include <pika/execution.hpp>
+#include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/thread_manager.hpp>
 #include <pika/runtime.hpp>
@@ -18,8 +18,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-
-namespace ex = pika::execution::experimental;
 
 void test_scheduler(int argc, char* argv[], pika::resource::scheduling_policy scheduler)
 {
@@ -41,10 +39,10 @@ void test_scheduler(int argc, char* argv[], pika::resource::scheduling_policy sc
     {
         pika::resume();
 
-        ex::execute(ex::thread_pool_scheduler{}, [] {
+        pika::apply([]() {
             for (std::size_t i = 0; i < 10000; ++i)
             {
-                ex::execute(ex::thread_pool_scheduler{}, [] {});
+                pika::apply([]() {});
             }
         });
 
@@ -52,7 +50,7 @@ void test_scheduler(int argc, char* argv[], pika::resource::scheduling_policy sc
     }
 
     pika::resume();
-    pika::finalize();
+    pika::apply([]() { pika::finalize(); });
     PIKA_TEST_EQ(pika::stop(), 0);
 }
 

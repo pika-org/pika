@@ -35,6 +35,10 @@ function(pika_perform_cxx_feature_tests)
     DEFINITIONS PIKA_HAVE_CXX17_STD_ALIGNED_ALLOC
   )
 
+  pika_check_for_cxx17_std_execution_policies(
+    DEFINITIONS PIKA_HAVE_CXX17_STD_EXECUTION_POLICIES
+  )
+
   pika_check_for_cxx17_aligned_new(DEFINITIONS PIKA_HAVE_CXX17_ALIGNED_NEW)
 
   pika_check_for_cxx17_copy_elision(DEFINITIONS PIKA_HAVE_CXX17_COPY_ELISION)
@@ -44,12 +48,32 @@ function(pika_perform_cxx_feature_tests)
   )
 
   # C++20 feature tests
+  pika_check_for_cxx20_coroutines(DEFINITIONS PIKA_HAVE_CXX20_COROUTINES)
+
+  pika_check_for_cxx20_lambda_capture(
+    DEFINITIONS PIKA_HAVE_CXX20_LAMBDA_CAPTURE
+  )
+
+  pika_check_for_cxx20_perfect_pack_capture(
+    DEFINITIONS PIKA_HAVE_CXX20_PERFECT_PACK_CAPTURE
+  )
+
   pika_check_for_cxx20_no_unique_address_attribute(
     DEFINITIONS PIKA_HAVE_CXX20_NO_UNIQUE_ADDRESS_ATTRIBUTE
   )
 
+  pika_check_for_cxx20_paren_initialization_of_aggregates(
+    DEFINITIONS PIKA_HAVE_CXX20_PAREN_INITIALIZATION_OF_AGGREGATES
+  )
+
   pika_check_for_cxx20_std_disable_sized_sentinel_for(
     DEFINITIONS PIKA_HAVE_CXX20_STD_DISABLE_SIZED_SENTINEL_FOR
+  )
+
+  pika_check_for_cxx20_std_endian(DEFINITIONS PIKA_HAVE_CXX20_STD_ENDIAN)
+
+  pika_check_for_cxx20_std_execution_policies(
+    DEFINITIONS PIKA_HAVE_CXX20_STD_EXECUTION_POLICIES
   )
 
   pika_check_for_cxx20_trivial_virtual_destructor(

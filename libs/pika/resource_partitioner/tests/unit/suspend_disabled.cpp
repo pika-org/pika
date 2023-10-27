@@ -10,7 +10,7 @@
 #include <pika/modules/resource_partitioner.hpp>
 #include <pika/testing.hpp>
 #include <pika/thread.hpp>
-#include <pika/threading_base/thread_pool_base.hpp>
+#include <pika/thread_pool_util/thread_pool_suspension_helpers.hpp>
 
 #include <cstddef>
 #include <stdexcept>
@@ -28,7 +28,7 @@ int pika_main()
         pika::threads::detail::thread_pool_base& tp = pika::resource::get_thread_pool("default");
 
         // Use .get() to throw exception
-        tp.suspend_processing_unit_direct(0);
+        pika::threads::detail::suspend_processing_unit(tp, 0).get();
         PIKA_TEST_MSG(false, "Suspending should not be allowed with elasticity disabled");
     }
     catch (pika::exception const&)

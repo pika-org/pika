@@ -25,6 +25,8 @@ pika_add_module(
     pika_errors
     pika_logging
     pika_schedulers
+    pika_async_combinators
     pika_thread_pools
+    pika_thread_pool_util
   CMAKE_SUBDIRS examples tests
 )
