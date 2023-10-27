@@ -25,4 +25,4 @@ clang14_debug_test_pika-ci-image:
   image: $CSCS_REGISTRY_PATH/pika-debug-cpu-clang14:$CI_COMMIT_SHORT_SHA
   script:
     - ctest --test-dir ${BUILD_DIR} -j$(nproc) --timeout 120 --output-on-failure \
-      --no-compress-output -R tests
+      --no-compress-output --no-tests=error -R tests
