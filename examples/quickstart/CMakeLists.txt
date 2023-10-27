@@ -6,23 +6,39 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 set(example_programs
+    composable_guard
     customize_async
     enumerate_threads
     event_synchronization
+    executor_with_thread_hooks
+    fibonacci_await
+    fibonacci_dataflow
+    fibonacci_futures
     fibonacci
     hello_world
     hello_world_documentation
     latch_example # suffix added to avoid conflict with unit tests
+    channel_example # suffix added to avoid conflict with unit tests
+    channel_docs
     pipeline1
-    # shared_mutex # Disabled due to unavailable timed suspension timed_wake #
+    potpourri
+    # shared_mutex # Disabled due to unavailable timed suspension
+    simple_future_continuation
+    # timed_futures # Disabled due to unavailable timed suspension timed_wake #
     # Disabled due to unavailable timed suspension
     use_main_thread
+    wait_composition
 )
+
+# TODO: These examples currently fail. Disabled until they are fixed.
+set(disabled_tests fibonacci_await)
 
 set(customize_async_PARAMETERS THREADS 4)
 set(enumerate_threads_PARAMETERS THREADS 4)
 set(event_synchronization_PARAMETERS THREADS 4)
 set(hello_world_PARAMETERS THREADS 4 VALGRIND)
+set(channel_PARAMETERS THREADS 4)
+set(simple_future_continuation_PARAMETERS THREADS 4)
 set(timed_futures_PARAMETERS THREADS 4)
 
 foreach(example_program ${example_programs})

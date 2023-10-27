@@ -8,12 +8,12 @@
 #include <pika/command_line_handling/get_env_var_as.hpp>
 #include <pika/debugging/print.hpp>
 #include <pika/execution.hpp>
+#include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/mpi.hpp>
 #include <pika/program_options.hpp>
 #include <pika/synchronization/counting_semaphore.hpp>
 #include <pika/testing.hpp>
-#include <pika/thread.hpp>
 //
 #include <boost/lockfree/stack.hpp>
 #include <fmt/format.h>

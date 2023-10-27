@@ -7,18 +7,14 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <pika/assert.hpp>
-#include <pika/execution.hpp>
-#include <pika/functional/bind_front.hpp>
+#include <pika/future.hpp>
 #include <pika/init.hpp>
-#include <pika/latch.hpp>
 #include <pika/modules/synchronization.hpp>
 
 #include <cstddef>
 #include <functional>
 #include <iostream>
 #include <sstream>
-
-namespace ex = pika::execution::experimental;
 
 struct data
 {
@@ -59,9 +55,7 @@ int pika_main()
     constexpr std::size_t num_tasks = 10;
     pika::latch l(num_tasks + 1);
 
-    for (std::size_t i = 0; i < num_tasks; ++i)
-        ex::execute(ex::thread_pool_scheduler{},
-            pika::util::detail::bind_front(worker, i, std::ref(d), std::ref(l)));
+    for (std::size_t i = 0; i < num_tasks; ++i) pika::apply(&worker, i, std::ref(d), std::ref(l));
 
     d.initialize("initialized");
 

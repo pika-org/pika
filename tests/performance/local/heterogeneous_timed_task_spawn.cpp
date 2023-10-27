@@ -11,7 +11,6 @@
 # include <pika/init.hpp>
 # include <pika/modules/thread_manager.hpp>
 # include <pika/modules/timing.hpp>
-# include <pika/thread.hpp>
 
 # include <fmt/format.h>
 # include <fmt/ostream.h>

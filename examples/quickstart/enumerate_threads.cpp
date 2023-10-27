@@ -4,22 +4,17 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/execution.hpp>
-#include <pika/functional/bind_front.hpp>
+#include <pika/future.hpp>
 #include <pika/init.hpp>
-#include <pika/latch.hpp>
 #include <pika/thread.hpp>
 
 #include <functional>
 #include <iostream>
-#include <utility>
 #include <vector>
-
-namespace ex = pika::execution::experimental;
-namespace tt = pika::this_thread::experimental;
 
 int const num_threads = 10;
 
+///////////////////////////////////////////////////////////////////////////////
 void wait_for_latch(pika::latch& l) { l.arrive_and_wait(); }
 
 int pika_main()
@@ -27,15 +22,11 @@ int pika_main()
     // Spawn a couple of threads
     pika::latch l(num_threads + 1);
 
-    std::vector<ex::unique_any_sender<>> results;
+    std::vector<pika::future<void>> results;
     results.reserve(num_threads);
 
     for (int i = 0; i != num_threads; ++i)
-    {
-        results.push_back(ex::schedule(ex::thread_pool_scheduler{}) |
-            ex::then(pika::util::detail::bind_front(wait_for_latch, std::ref(l))) |
-            ex::ensure_started());
-    }
+        results.push_back(pika::async(&wait_for_latch, std::ref(l)));
 
     // Allow spawned threads to reach latch
     pika::this_thread::yield();
@@ -54,7 +45,7 @@ int pika_main()
     // Wait for all threads to reach this point.
     l.arrive_and_wait();
 
-    tt::sync_wait(ex::when_all_vector(std::move(results)));
+    pika::wait_all(results);
 
     return pika::finalize();
 }

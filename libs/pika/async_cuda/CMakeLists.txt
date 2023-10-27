@@ -61,7 +61,6 @@ pika_add_module(
   MODULE_DEPENDENCIES
     pika_allocator_support
     pika_assertion
-    pika_async_base
     pika_concurrency
     pika_config
     pika_debugging

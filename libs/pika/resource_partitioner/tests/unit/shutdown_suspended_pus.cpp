@@ -7,22 +7,20 @@
 // Simple test verifying basic resource_partitioner functionality.
 
 #include <pika/assert.hpp>
-#include <pika/execution.hpp>
+#include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/resource_partitioner.hpp>
 #include <pika/modules/schedulers.hpp>
 #include <pika/testing.hpp>
 #include <pika/thread.hpp>
+#include <pika/thread_pool_util/thread_pool_suspension_helpers.hpp>
 #include <pika/threading_base/scheduler_mode.hpp>
-#include <pika/threading_base/thread_pool_base.hpp>
 
 #include <cstddef>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
-
-namespace ex = pika::execution::experimental;
 
 std::size_t const max_threads =
     (std::min)(std::size_t(4), std::size_t(pika::threads::detail::hardware_concurrency()));
@@ -40,13 +38,13 @@ int pika_main()
     // Remove all but one pu
     for (std::size_t thread_num = 0; thread_num < num_threads - 1; ++thread_num)
     {
-        tp.suspend_processing_unit_direct(thread_num);
+        pika::threads::detail::suspend_processing_unit(tp, thread_num).get();
     }
 
     // Schedule some dummy work
     for (std::size_t i = 0; i < 10000; ++i)
     {
-        ex::execute(ex::thread_pool_scheduler{}, [] {});
+        pika::apply([]() {});
     }
 
     // Start shutdown

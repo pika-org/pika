@@ -12,23 +12,23 @@
 #endif
 
 #include <pika/assert.hpp>
-#include <pika/concepts/concepts.hpp>
 #include <pika/concurrency/detail/contiguous_index_queue.hpp>
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/execution/algorithms/bulk.hpp>
+#include <pika/execution/executors/execution_parameters.hpp>
 #include <pika/execution_base/completion_scheduler.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
 #include <pika/executors/thread_pool_scheduler.hpp>
 #include <pika/functional/bind_front.hpp>
 #include <pika/functional/tag_invoke.hpp>
+#include <pika/iterator_support/counting_iterator.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/iterator_support/traits/is_range.hpp>
 #include <pika/threading_base/annotated_function.hpp>
 #include <pika/threading_base/register_thread.hpp>
 #include <pika/threading_base/thread_description.hpp>
-#include <pika/threading_base/thread_num_tss.hpp>
 
 #include <atomic>
 #include <cstddef>
@@ -64,6 +64,8 @@ namespace pika::thread_pool_bulk_detail {
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Sender> sender;
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Shape> shape;
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
+
+        using size_type = decltype(pika::util::size(shape));
 
     public:
         template <typename Sender_, typename Shape_, typename F_>
@@ -161,14 +163,15 @@ namespace pika::thread_pool_bulk_detail {
                     template <typename Ts>
                     void do_work_chunk(Ts& ts, std::uint32_t const index) const
                     {
-                        auto const i_begin =
-                            static_cast<std::decay_t<Shape>>(index * task_f->chunk_size);
+                        auto const i_begin = static_cast<size_type>(index) * task_f->chunk_size;
                         auto const i_end = (std::min)(
-                            static_cast<std::decay_t<Shape>>((index + 1) * task_f->chunk_size),
-                            task_f->n);
-                        for (auto i = i_begin; i < i_end; ++i)
+                            static_cast<size_type>(index + 1) * task_f->chunk_size, task_f->n);
+                        auto it = pika::util::begin(op_state->shape);
+                        std::advance(it, i_begin);
+                        for (std::uint32_t i = i_begin; i < i_end; ++i)
                         {
-                            std::apply(pika::util::detail::bind_front(op_state->f, i), ts);
+                            std::apply(pika::util::detail::bind_front(op_state->f, *it), ts);
+                            ++it;
                         }
                     }
 
@@ -232,7 +235,7 @@ namespace pika::thread_pool_bulk_detail {
                 struct task_function
                 {
                     operation_state* const op_state;
-                    std::decay_t<Shape> const n;
+                    size_type const n;
                     std::uint32_t const chunk_size;
                     std::uint32_t const worker_thread;
 
@@ -309,13 +312,10 @@ namespace pika::thread_pool_bulk_detail {
                 // size that produces at most 8 and at least 4 chunks per
                 // worker thread.
                 static constexpr std::uint32_t get_chunk_size(
-                    std::uint32_t const num_threads, std::decay_t<Shape> const n)
+                    std::uint32_t const num_threads, size_type const n)
                 {
                     std::uint32_t chunk_size = 1;
-                    while (chunk_size * num_threads * 8 < static_cast<std::uint32_t>(n))
-                    {
-                        chunk_size *= 2;
-                    }
+                    while (chunk_size * num_threads * 8 < n) { chunk_size *= 2; }
                     return chunk_size;
                 }
 
@@ -332,7 +332,7 @@ namespace pika::thread_pool_bulk_detail {
 
                 // Spawn a task which will process a number of chunks. If
                 // the queue contains no chunks no task will be spawned.
-                void do_work_task(std::decay_t<Shape> const n, std::uint32_t const chunk_size,
+                void do_work_task(size_type const n, std::uint32_t const chunk_size,
                     std::uint32_t const worker_thread) const
                 {
                     task_function task_f{this->op_state, n, chunk_size, worker_thread};
@@ -375,18 +375,22 @@ namespace pika::thread_pool_bulk_detail {
                 // from the predecessor sender. This thread participates in
                 // the work and does not need a new task since it already
                 // runs on a task.
-                void do_work_local(std::decay_t<Shape> n, std::uint32_t chunk_size,
-                    std::uint32_t worker_thread) const
+                void do_work_local(
+                    size_type n, std::uint32_t chunk_size, std::uint32_t worker_thread) const
                 {
                     task_function{this->op_state, n, chunk_size, worker_thread}();
                 }
+
+                using range_value_type =
+                    pika::traits::iter_value_t<pika::traits::range_iterator_t<Shape>>;
 
                 template <typename... Ts>
                 friend void tag_invoke(pika::execution::experimental::set_value_t,
                     bulk_receiver&& r, Ts&&... ts) noexcept
                 {
                     // Don't spawn tasks if there is no work to be done
-                    if (r.op_state->shape == 0)
+                    auto const n = pika::util::size(r.op_state->shape);
+                    if (n == 0)
                     {
                         pika::execution::experimental::set_value(
                             PIKA_MOVE(r.op_state->receiver), PIKA_FORWARD(Ts, ts)...);
@@ -394,9 +398,8 @@ namespace pika::thread_pool_bulk_detail {
                     }
 
                     // Calculate chunk size and number of chunks
-                    auto const chunk_size =
-                        get_chunk_size(r.op_state->num_worker_threads, r.op_state->shape);
-                    auto const num_chunks = (r.op_state->shape + chunk_size - 1) / chunk_size;
+                    auto const chunk_size = get_chunk_size(r.op_state->num_worker_threads, n);
+                    auto const num_chunks = (n + chunk_size - 1) / chunk_size;
 
                     // Store sent values in the operation state
                     r.op_state->ts.template emplace<std::tuple<std::decay_t<Ts>...>>(
@@ -420,11 +423,11 @@ namespace pika::thread_pool_bulk_detail {
                         // inline.
                         if (worker_thread == local_worker_thread) { continue; }
 
-                        r.do_work_task(r.op_state->shape, chunk_size, worker_thread);
+                        r.do_work_task(n, chunk_size, worker_thread);
                     }
 
                     // Handle the queue for the local thread.
-                    r.do_work_local(r.op_state->shape, chunk_size, local_worker_thread);
+                    r.do_work_local(n, chunk_size, local_worker_thread);
                 }
 
                 friend constexpr pika::execution::experimental::empty_env tag_invoke(
@@ -446,8 +449,7 @@ namespace pika::thread_pool_bulk_detail {
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Shape> shape;
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
-            std::atomic<std::decay_t<Shape>> tasks_remaining{
-                static_cast<std::decay_t<Shape>>(num_worker_threads)};
+            std::atomic<decltype(pika::util::size(shape))> tasks_remaining{num_worker_threads};
             pika::util::detail::prepend_t<value_types<std::tuple, pika::detail::variant>,
                 pika::detail::monostate>
                 ts;
@@ -502,6 +504,17 @@ namespace pika::thread_pool_bulk_detail {
 namespace pika::execution::experimental {
     template <typename Sender, typename Shape, typename F,
         PIKA_CONCEPT_REQUIRES_(std::is_integral_v<std::decay_t<Shape>>)>
+    constexpr auto
+    tag_invoke(bulk_t, thread_pool_scheduler scheduler, Sender&& sender, Shape&& shape, F&& f)
+    {
+        return thread_pool_bulk_detail::thread_pool_bulk_sender<std::decay_t<Sender>,
+            pika::util::detail::counting_shape_type<std::decay_t<Shape>>, std::decay_t<F>>{
+            PIKA_MOVE(scheduler), PIKA_FORWARD(Sender, sender),
+            pika::util::detail::make_counting_shape(shape), PIKA_FORWARD(F, f)};
+    }
+
+    template <typename Sender, typename Shape, typename F,
+        PIKA_CONCEPT_REQUIRES_(!std::is_integral_v<std::decay_t<Shape>>)>
     constexpr auto
     tag_invoke(bulk_t, thread_pool_scheduler scheduler, Sender&& sender, Shape&& shape, F&& f)
     {

@@ -4,11 +4,33 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(tests standalone_thread_pool_scheduler std_thread_scheduler
-          thread_pool_scheduler
+set(tests
+    annotating_executor
+    annotation_property
+    created_executor
+    fork_join_executor
+    limiting_executor
+    parallel_executor
+    parallel_fork_executor
+    parallel_policy_executor
+    sequenced_executor
+    shared_parallel_executor
+    standalone_thread_pool_executor
+    std_thread_scheduler
+    thread_pool_scheduler
 )
 
 set(std_thread_scheduler_PARAMETERS VALGRIND)
+
+# nvc++ causes test failures in release mode. This is assumed to be a code
+# generation bug.
+if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC")
+  list(APPEND tests scheduler_executor)
+endif()
+
+if(PIKA_WITH_CXX17_STD_EXECUTION_POLICIES)
+  list(APPEND tests std_execution_policies)
+endif()
 
 foreach(test ${tests})
   set(sources ${test}.cpp)

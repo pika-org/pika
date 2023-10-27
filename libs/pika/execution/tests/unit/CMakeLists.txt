@@ -23,6 +23,11 @@ set(tests
     algorithm_unpack
     algorithm_when_all
     algorithm_when_all_vector
+    bulk_async
+    executor_parameters_dispatching
+    future_then_executor
+    minimal_async_executor
+    minimal_sync_executor
     scheduler_queries
 )
 

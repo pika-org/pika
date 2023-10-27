@@ -4,7 +4,7 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/execution.hpp>
+#include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/schedulers.hpp>
 #include <pika/testing.hpp>
@@ -18,12 +18,10 @@
 #include <utility>
 #include <vector>
 
-namespace ex = pika::execution::experimental;
-
 int pika_main()
 {
     bool run = false;
-    ex::execute(ex::thread_pool_scheduler{}, [&run]() { run = true; });
+    pika::future<void> f1 = pika::async([&run]() { run = true; });
 
     if (!run)
     {

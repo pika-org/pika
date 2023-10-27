@@ -6,24 +6,23 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-// This is the second in a series of examples demonstrating the development of a fully distributed
-// solver for a simple 1D heat distribution problem.
+// This is the second in a series of examples demonstrating the development of
+// a fully distributed solver for a simple 1D heat distribution problem.
 //
-// This example shows how the code from example one can be made asynchronous. While this nicely
-// parallelizes the code (note: without changing the overall structure of the algorithm), the
-// achieved performance is bad (a lot slower than example one). This is caused by the large amount
-// of overheads introduced by wrapping each and every grid point into its own sender The amount of
-// work performed by each of the created pika threads (one thread for every grid point and time
-// step) is too small compared to the imposed overheads.
+// This example shows how futurization can be applied to the code from example
+// one. While this nicely parallelizes the code (note: without changing the
+// overall structure of the algorithm), the achieved performance is bad (a lot
+// slower than example one). This is caused by the large amount of overheads
+// introduced by wrapping each and every grid point into its own future object.
+// The amount of work performed by each of the created pika threads (one thread
+// for every grid point and time step) is too small compared to the imposed
+// overheads.
 
 #include <pika/assert.hpp>
 #include <pika/chrono.hpp>
-#include <pika/execution.hpp>
+#include <pika/future.hpp>
 #include <pika/init.hpp>
 
-#include <fmt/printf.h>
-
-#include <array>
 #include <chrono>
 #include <cstddef>
 #include <cstdint>
@@ -31,9 +30,6 @@
 #include <vector>
 
 #include "print_time_results.hpp"
-
-namespace ex = pika::execution::experimental;
-namespace tt = pika::this_thread::experimental;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Command-line variables
@@ -57,7 +53,7 @@ inline std::size_t idx(std::size_t i, int dir, std::size_t size)
 struct stepper
 {
     // Our partition type
-    using partition = ex::any_sender<double>;
+    using partition = pika::shared_future<double>;
 
     // Our data for one time step
     using space = std::vector<partition>;
@@ -69,18 +65,19 @@ struct stepper
     }
 
     // do all the work on 'nx' data points for 'nt' time steps
-    space do_work(std::size_t nx, std::size_t nt)
+    pika::future<space> do_work(std::size_t nx, std::size_t nt)
     {
-        auto sched = ex::thread_pool_scheduler{};
+        using pika::dataflow;
+        using pika::unwrapping;
 
         // U[t][i] is the state of position i at time t.
-        std::array<space, 2> U{};
+        std::vector<space> U(2);
         for (space& s : U) s.resize(nx);
 
         // Initial conditions: f(0, i) = i
-        for (std::size_t i = 0; i != nx; ++i) U[0][i] = ex::just(double(i));
+        for (std::size_t i = 0; i != nx; ++i) U[0][i] = pika::make_ready_future(double(i));
 
-        auto Op = stepper::heat;
+        auto Op = unwrapping(&stepper::heat);
 
         // Actual time step loop
         for (std::size_t t = 0; t != nt; ++t)
@@ -92,9 +89,8 @@ struct stepper
             // can compute U[t+1][i]
             for (std::size_t i = 0; i != nx; ++i)
             {
-                next[i] =
-                    ex::when_all(current[idx(i, -1, nx)], current[i], current[idx(i, +1, nx)]) |
-                    ex::transfer(sched) | ex::then(Op) | ex::split();
+                next[i] = dataflow(pika::launch::async, Op, current[idx(i, -1, nx)], current[i],
+                    current[idx(i, +1, nx)]);
             }
         }
 
@@ -104,7 +100,7 @@ struct stepper
         // are ready and hardware is available.
 
         // Return the solution at time-step 'nt'.
-        return U[nt % 2];
+        return pika::when_all(U[nt % 2]);
     }
 };
 //]
@@ -124,7 +120,10 @@ int pika_main(pika::program_options::variables_map& vm)
     auto t = high_resolution_clock::now();
 
     // Execute nt time steps on nx grid points.
-    auto solution = tt::sync_wait(ex::when_all_vector(step.do_work(nx, nt)));
+    pika::future<stepper::space> result = step.do_work(nx, nt);
+
+    stepper::space solution = result.get();
+    pika::wait_all(solution);
 
     double elapsed = duration<double>(high_resolution_clock::now() - t).count();
 
@@ -132,7 +131,7 @@ int pika_main(pika::program_options::variables_map& vm)
     if (vm.count("results"))
     {
         for (std::size_t i = 0; i != nx; ++i)
-            std::cout << "U[" << i << "] = " << solution[i] << std::endl;
+            std::cout << "U[" << i << "] = " << solution[i].get() << std::endl;
     }
 
     std::uint64_t const os_thread_count = pika::get_os_thread_count();

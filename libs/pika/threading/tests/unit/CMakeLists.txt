@@ -29,6 +29,10 @@ if(PIKA_WITH_THREAD_STACKOVERFLOW_DETECTION)
   set(threading_tests ${threading_tests} thread_stacksize_overflow_v2)
 endif()
 
+if(PIKA_WITH_THREAD_LOCAL_STORAGE)
+  set(threading_tests ${threading_tests} tss)
+endif()
+
 set(condition_variable2_PARAMETERS THREADS 4)
 set(condition_variable3_PARAMETERS THREADS 4)
 set(condition_variable4_PARAMETERS THREADS 4)
@@ -42,6 +46,7 @@ set(thread_PARAMETERS THREADS 4)
 set(thread_id_PARAMETERS THREADS 4)
 set(thread_launching_PARAMETERS THREADS 4)
 set(thread_mf_PARAMETERS THREADS 4)
+set(tss_PARAMETERS THREADS 4)
 
 foreach(test ${threading_tests})
   set(sources ${test}.cpp)

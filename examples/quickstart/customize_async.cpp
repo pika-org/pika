@@ -6,17 +6,15 @@
 
 // The purpose of this example is to demonstrate how to customize certain
 // parameters (such like thread priority, the stacksize, or the targeted
-// processing unit) for a thread which is created with schedule/transfer.
+// processing unit) for a thread which is created by calling pika::apply() or
+// pika::async().
 
 #include <pika/execution.hpp>
+#include <pika/future.hpp>
 #include <pika/init.hpp>
-#include <pika/thread.hpp>
 
 #include <algorithm>
 #include <iostream>
-
-namespace ex = pika::execution::experimental;
-namespace tt = pika::this_thread::experimental;
 
 ///////////////////////////////////////////////////////////////////////////////
 void run_with_large_stack()
@@ -52,27 +50,29 @@ int pika_main()
 {
     // run a thread on a large stack
     {
-        auto large_stack_scheduler = ex::with_stacksize(
-            ex::thread_pool_scheduler{}, pika::execution::thread_stacksize::large);
+        pika::execution::parallel_executor large_stack_executor(
+            pika::execution::thread_stacksize::large);
 
-        tt::sync_wait(ex::schedule(large_stack_scheduler) | ex::then(run_with_large_stack));
+        pika::future<void> f = pika::async(large_stack_executor, &run_with_large_stack);
+        f.wait();
     }
 
     // run a thread with high priority
     {
-        auto high_priority_scheduler =
-            ex::with_priority(ex::thread_pool_scheduler{}, pika::execution::thread_priority::high);
+        pika::execution::parallel_executor high_priority_executor(
+            pika::execution::thread_priority::high);
 
-        tt::sync_wait(ex::schedule(high_priority_scheduler) | ex::then(run_with_high_priority));
+        pika::future<void> f = pika::async(high_priority_executor, &run_with_high_priority);
+        f.wait();
     }
 
     // combine both
     {
-        auto fancy_scheduler = ex::with_stacksize(
-            ex::with_priority(ex::thread_pool_scheduler{}, pika::execution::thread_priority::high),
-            pika::execution::thread_stacksize::large);
+        pika::execution::parallel_executor fancy_executor(
+            pika::execution::thread_priority::high, pika::execution::thread_stacksize::large);
 
-        tt::sync_wait(ex::schedule(fancy_scheduler) | ex::then(run_with_large_stack));
+        pika::future<void> f = pika::async(fancy_executor, &run_with_large_stack);
+        f.wait();
     }
 
     return pika::finalize();

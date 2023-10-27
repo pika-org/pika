@@ -143,7 +143,7 @@ namespace pika::sync_wait_detail {
                 if (!set_called)
                 {
                     std::unique_lock<mutex_type> l(mtx);
-                    cond_var.wait(l, [&] { return set_called.load(); });
+                    if (!set_called) { cond_var.wait(l); }
                 }
             }
 
