@@ -63,7 +63,6 @@ gcc11_debug_build:
 
 gcc11_debug_test:
   extends:
-    - .cmake_variables_common
     - .variables_gcc11_config
     - .test_common_mc
   needs:
