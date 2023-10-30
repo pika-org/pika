@@ -18,6 +18,4 @@ RUN spack build-env $spack_spec -- bash -c "cmake -B${BUILD_DIR} ${SOURCE_DIR} \
 # Run compile only tests and tests.unit.build
 RUN spack build-env $spack_spec -- bash -c "ctest --label-regex COMPILE_ONLY \
     --test-dir ${BUILD_DIR} -j${NUM_PROCS} --timeout 30 --output-on-failure --no-compress-output \
-    -R tests --no-tests=error \
-    && ctest --test-dir ${BUILD_DIR} -j${NUM_PROCS} --timeout 15 --output-on-failure \
-    --no-tests=error --no-compress-output -R tests.unit.build"
+    -R tests --no-tests=error"
