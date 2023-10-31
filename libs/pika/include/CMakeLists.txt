@@ -7,14 +7,12 @@
 set(include_headers
     pika/async_rw_mutex.hpp
     pika/barrier.hpp
-    pika/channel.hpp
     pika/chrono.hpp
     pika/condition_variable.hpp
     pika/cuda.hpp
     pika/exception.hpp
     pika/execution.hpp
     pika/functional.hpp
-    pika/future.hpp
     pika/latch.hpp
     pika/mpi.hpp
     pika/mutex.hpp
@@ -24,7 +22,6 @@ set(include_headers
     pika/stop_token.hpp
     pika/system_error.hpp
     pika/thread.hpp
-    pika/unwrap.hpp
 )
 
 set(include_additional_module_dependencies)
@@ -44,13 +41,9 @@ pika_add_module(
   HEADERS ${include_headers}
   MODULE_DEPENDENCIES
     pika_async_base
-    pika_async_combinators
-    pika_async
     pika_errors
     pika_execution
     pika_executors
-    pika_futures
-    pika_lcos
     pika_runtime
     pika_synchronization
     ${include_additional_module_dependencies}

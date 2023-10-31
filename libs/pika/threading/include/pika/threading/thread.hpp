@@ -12,7 +12,6 @@
 #include <pika/functional/deferred_call.hpp>
 #include <pika/functional/function.hpp>
 #include <pika/functional/unique_function.hpp>
-#include <pika/futures/future_fwd.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_data.hpp>
@@ -117,8 +116,6 @@ namespace pika {
         bool interruption_requested() const;
 
         static void interrupt(id, bool flag = true);
-
-        pika::future<void> get_future(error_code& ec = throws);
 
         std::size_t get_thread_data() const;
         std::size_t set_thread_data(std::size_t);

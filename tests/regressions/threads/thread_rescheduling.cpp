@@ -6,7 +6,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <pika/future.hpp>
+#include <pika/execution.hpp>
 #include <pika/init.hpp>
 #include <pika/testing.hpp>
 #include <pika/thread.hpp>
@@ -15,6 +15,7 @@
 
 #include <chrono>
 #include <cstdint>
+#include <utility>
 #include <vector>
 
 using pika::program_options::options_description;
@@ -25,57 +26,33 @@ using std::chrono::milliseconds;
 
 using pika::threads::detail::register_thread;
 
-using pika::async;
-using pika::future;
-
 using pika::this_thread::suspend;
+using pika::this_thread::yield;
 using pika::threads::detail::set_thread_state;
 using pika::threads::detail::thread_id_ref_type;
 using pika::threads::detail::thread_id_type;
 
+namespace ex = pika::execution::experimental;
+namespace tt = pika::this_thread::experimental;
+
+using sender_vector = std::vector<ex::unique_any_sender<>>;
+
 ///////////////////////////////////////////////////////////////////////////////
 namespace detail {
-    template <typename T1>
-    std::uint64_t
-    wait(std::vector<future<T1>> const& lazy_values, std::int32_t /*suspend_for*/ = 10)
+    void wait(sender_vector&& senders)
     {
-        boost::dynamic_bitset<> handled(lazy_values.size());
-        std::uint64_t handled_count = 0;
-
-        while (handled_count < lazy_values.size())
+        for (auto& sender : senders)
         {
-            bool suspended = false;
-
-            for (std::uint64_t i = 0; i < lazy_values.size(); ++i)
-            {
-                // loop over all lazy_values, executing the next as soon as its
-                // value gets available
-                if (!handled[i] && lazy_values[i].is_ready())
-                {
-                    handled[i] = true;
-                    ++handled_count;
-
-                    // give thread-manager a chance to look for more work while
-                    // waiting
-                    suspend();
-                    suspended = true;
-                }
-            }
-
-            // suspend after one full loop over all values, 10ms should be fine
-            // (default parameter)
-            if (!suspended)
-                // suspend(milliseconds(suspend_for));
-                suspend();
+            tt::sync_wait(std::move(sender));
+            yield();
         }
-        return handled.count();
     }
 }    // namespace detail
 
 ///////////////////////////////////////////////////////////////////////////////
 void change_thread_state(thread_id_type thread)
 {
-    set_thread_state(thread, pika::threads::detail::thread_schedule_state::suspended);
+    set_thread_state(thread, pika::threads::detail::thread_schedule_state::pending);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -84,7 +61,7 @@ void tree_boot(std::uint64_t count, std::uint64_t grain_size, thread_id_type thr
     PIKA_TEST(grain_size);
     PIKA_TEST(count);
 
-    std::vector<future<void>> promises;
+    sender_vector senders;
 
     std::uint64_t const actors = (count > grain_size) ? grain_size : count;
 
@@ -100,24 +77,30 @@ void tree_boot(std::uint64_t count, std::uint64_t grain_size, thread_id_type thr
             if (child_count >= grain_size) break;
         }
 
-        promises.reserve(children + grain_size);
+        senders.reserve(children + grain_size);
     }
-    else
-        promises.reserve(count);
+    else { senders.reserve(count); }
 
+    ex::thread_pool_scheduler sched{};
     for (std::uint64_t i = 0; i < children; ++i)
-        promises.push_back(async(&tree_boot, child_count, grain_size, thread));
+    {
+        senders.emplace_back(ex::transfer_just(sched, child_count, grain_size, thread) |
+            ex::then(tree_boot) | ex::ensure_started());
+    }
 
     for (std::uint64_t i = 0; i < actors; ++i)
-        promises.push_back(async(&change_thread_state, thread));
+    {
+        senders.emplace_back(ex::transfer_just(sched, thread) | ex::then(change_thread_state) |
+            ex::ensure_started());
+    }
 
-    detail::wait(promises);
+    detail::wait(std::move(senders));
 }
 
 bool woken = false;
 
 ///////////////////////////////////////////////////////////////////////////////
-void test_dummy_thread(std::uint64_t)
+void test_dummy_thread()
 {
     while (true)
     {
@@ -135,30 +118,30 @@ void test_dummy_thread(std::uint64_t)
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main(variables_map& vm)
 {
-    std::uint64_t const futures = vm["futures"].as<std::uint64_t>();
+    std::uint64_t const tasks = vm["tasks"].as<std::uint64_t>();
     std::uint64_t const grain_size = vm["grain-size"].as<std::uint64_t>();
 
     {
         pika::threads::detail::thread_init_data data(
-            pika::threads::detail::make_thread_function_nullary(
-                pika::util::detail::deferred_call(&test_dummy_thread, futures)),
+            pika::threads::detail::make_thread_function_nullary(test_dummy_thread),
             "test_dummy_thread");
         thread_id_ref_type thread_id = register_thread(data);
         PIKA_TEST_NEQ(thread_id, pika::threads::detail::invalid_thread_id);
 
-        // Flood the queues with suspension operations before the rescheduling
-        // attempt.
-        future<void> before = async(&tree_boot, futures, grain_size, thread_id.noref());
+        ex::thread_pool_scheduler sched{};
+        // Flood the queues with set_thread_state operations before the rescheduling attempt.
+        auto before = ex::transfer_just(sched, tasks, grain_size, thread_id.noref()) |
+            ex::then(tree_boot) | ex::ensure_started();
 
         set_thread_state(thread_id.noref(), pika::threads::detail::thread_schedule_state::pending,
             pika::threads::detail::thread_restart_state::signaled);
 
-        // Flood the queues with suspension operations after the rescheduling
-        // attempt.
-        future<void> after = async(&tree_boot, futures, grain_size, thread_id.noref());
+        // Flood the queues with set_thread_state operations after the rescheduling attempt.
+        auto after = ex::transfer_just(sched, tasks, grain_size, thread_id.noref()) |
+            ex::then(tree_boot) | ex::ensure_started();
 
-        before.get();
-        after.get();
+        tt::sync_wait(std::move(before));
+        tt::sync_wait(std::move(after));
 
         set_thread_state(thread_id.noref(), pika::threads::detail::thread_schedule_state::pending,
             pika::threads::detail::thread_restart_state::terminate);
@@ -175,10 +158,12 @@ int main(int argc, char* argv[])
     // Configure application-specific options
     options_description cmdline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
-    cmdline.add_options()("futures", value<std::uint64_t>()->default_value(64),
-        "number of futures to invoke before and after the rescheduling")
-
+    // clang-format off
+    cmdline.add_options()
+        ("tasks", value<std::uint64_t>()->default_value(64),
+         "number of tasks to invoke before and after the rescheduling")
         ("grain-size", value<std::uint64_t>()->default_value(4), "grain size of the future tree");
+    // clang-format on
 
     // Initialize and run pika
     pika::init_params init_args;

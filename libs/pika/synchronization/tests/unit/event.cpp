@@ -5,7 +5,7 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/future.hpp>
+#include <pika/execution.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/runtime.hpp>
 #include <pika/modules/synchronization.hpp>
@@ -16,6 +16,7 @@
 #include <cstddef>
 #include <functional>
 #include <string>
+#include <utility>
 #include <vector>
 
 using pika::program_options::options_description;
@@ -30,6 +31,9 @@ using pika::experimental::event;
 
 using pika::finalize;
 using pika::init;
+
+namespace ex = pika::execution::experimental;
+namespace tt = pika::this_thread::experimental;
 
 ///////////////////////////////////////////////////////////////////////////////
 void local_event_test(event& b, std::atomic<std::size_t>& c)
@@ -50,25 +54,28 @@ int pika_main(variables_map& vm)
 
     if (vm.count("iterations")) iterations = vm["iterations"].as<std::size_t>();
 
+    auto sched = ex::thread_pool_scheduler{};
+
     for (std::size_t i = 0; i < iterations; ++i)
     {
         event e;
 
         std::atomic<std::size_t> c(0);
 
-        std::vector<pika::future<void>> futs;
-        futs.reserve(pxthreads);
+        std::vector<ex::unique_any_sender<>> senders;
+        senders.reserve(pxthreads);
         // Create the threads which will wait on the event
         for (std::size_t i = 0; i < pxthreads; ++i)
         {
-            futs.push_back(pika::async(&local_event_test, std::ref(e), std::ref(c)));
+            senders.emplace_back(ex::transfer_just(sched, std::ref(e), std::ref(c)) |
+                ex::then(local_event_test) | ex::ensure_started());
         }
 
         // Release all the threads.
         e.set();
 
         // Wait for all the our threads to finish executing.
-        pika::wait_all(futs);
+        tt::sync_wait(ex::when_all_vector(std::move(senders)));
 
         PIKA_TEST_EQ(pxthreads, c.load());
 

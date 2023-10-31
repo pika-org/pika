@@ -5,7 +5,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/chrono.hpp>
-#include <pika/future.hpp>
+#include <pika/execution.hpp>
 #include <pika/init.hpp>
 #include <pika/runtime.hpp>
 //
@@ -17,12 +17,15 @@
 //
 // This is a simple example which generates random numbers and returns
 // pass or fail from a routine.
-// When called by many threads returning a vector of futures - if the user wants to
+// When called by many threads returning a vector of senders - if the user wants to
 // reduce the vector of pass/fails into a single pass fail based on a simple
 // any fail = !pass rule, then this example shows how to do it.
 // The user can experiment with the failure rate to see if the statistics match
 // their expectations.
 // Also. Routine can use either a lambda, or a function under control of USE_LAMBDA
+
+namespace ex = pika::execution::experimental;
+namespace tt = pika::this_thread::experimental;
 
 #define TEST_SUCCESS 1
 #define TEST_FAIL 0
@@ -38,15 +41,13 @@ std::uniform_int_distribution<int> dist(0, 99);    // interval [0,100)
 #define USE_LAMBDA
 
 //----------------------------------------------------------------------------
-int reduce(pika::future<std::vector<pika::future<int>>>&& futvec)
+int reduce(std::vector<int>&& vec)
 {
-    int res = TEST_SUCCESS;
-    std::vector<pika::future<int>> vfs = futvec.get();
-    for (pika::future<int>& f : vfs)
+    for (int t : vec)
     {
-        if (f.get() == TEST_FAIL) return TEST_FAIL;
+        if (t == TEST_FAIL) return TEST_FAIL;
     }
-    return res;
+    return TEST_SUCCESS;
 }
 
 //----------------------------------------------------------------------------
@@ -59,34 +60,28 @@ int generate_one()
 }
 
 //----------------------------------------------------------------------------
-pika::future<int> test_reduce()
+auto test_reduce()
 {
-    std::vector<pika::future<int>> req_futures;
+    std::vector<ex::unique_any_sender<int>> req_senders;
     //
     for (int i = 0; i < SAMPLES_PER_LOOP; i++)
     {
         // generate random sequence of pass/fails using % fail rate per incident
-        pika::future<int> result = pika::async(generate_one);
-        req_futures.push_back(std::move(result));
+        req_senders.push_back(ex::schedule(ex::thread_pool_scheduler{}) | ex::then(generate_one));
     }
 
-    pika::future<std::vector<pika::future<int>>> all_ready = pika::when_all(req_futures);
+    auto all_ready = ex::when_all_vector(std::move(req_senders));
 
 #ifdef USE_LAMBDA
-    pika::future<int> result =
-        all_ready.then([](pika::future<std::vector<pika::future<int>>>&& futvec) -> int {
-            // futvec is ready or the lambda would not be called
-            std::vector<pika::future<int>> vfs = futvec.get();
-            // all futures in v are ready as fut is ready
-            int res = TEST_SUCCESS;
-            for (pika::future<int>& f : vfs)
-            {
-                if (f.get() == TEST_FAIL) return TEST_FAIL;
-            }
-            return res;
-        });
+    auto result = std::move(all_ready) | ex::then([](std::vector<int>&& vec) -> int {
+        for (int t : vec)
+        {
+            if (t == TEST_FAIL) return TEST_FAIL;
+        }
+        return TEST_SUCCESS;
+    });
 #else
-    pika::future<int> result = all_ready.then(reduce);
+    auto result = std::move(all_ready) | ex::then(reduce);
 #endif
     //
     return result;
@@ -100,7 +95,7 @@ int pika_main()
     int count = 0;
     for (int i = 0; i < TEST_LOOPS; i++)
     {
-        int result = test_reduce().get();
+        int result = tt::sync_wait(test_reduce());
         count += result;
     }
     double pr_pass = std::pow(1.0 - FAILURE_RATE_PERCENT / 100.0, SAMPLES_PER_LOOP);
