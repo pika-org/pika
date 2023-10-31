@@ -1749,6 +1749,19 @@ install(
   COMPONENT license
 )
 
+# Install pika-bind script
+configure_file(
+  ${PROJECT_SOURCE_DIR}/scripts/pika-bind.sh.in
+  ${PROJECT_BINARY_DIR}/scripts/pika-bind @ONLY
+)
+
+install(
+  PROGRAMS ${PROJECT_BINARY_DIR}/scripts/pika-bind
+  DESTINATION ${CMAKE_INSTALL_BINDIR}
+  PERMISSIONS OWNER_READ GROUP_READ WORLD_READ OWNER_EXECUTE GROUP_EXECUTE
+              WORLD_EXECUTE
+)
+
 if(PIKA_WITH_VIM_YCM)
   set(build_dir_file ${PROJECT_BINARY_DIR}/.ycm_extra_conf.py)
   set(source_dir_file ${PROJECT_SOURCE_DIR}/.ycm_extra_conf.py)
