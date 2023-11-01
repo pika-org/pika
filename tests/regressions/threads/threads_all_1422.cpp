@@ -13,6 +13,7 @@
 #include <pika/thread.hpp>
 
 #include <cstddef>
+#include <cstdlib>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -28,7 +29,8 @@ int pika_main()
 
     PIKA_TEST_EQ(num_cores, os_threads);
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char** argv)

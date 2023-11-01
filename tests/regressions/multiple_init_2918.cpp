@@ -8,6 +8,7 @@
 #include <pika/init.hpp>
 #include <pika/testing.hpp>
 
+#include <cstdlib>
 #include <string>
 
 std::string expected;
@@ -15,7 +16,8 @@ std::string expected;
 int pika_init_test(std::string s, int, char**)
 {
     PIKA_TEST_EQ(s, expected);
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

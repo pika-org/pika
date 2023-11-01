@@ -358,10 +358,10 @@ namespace pika {
             freebsd_environ = environ;
 #endif
             // set a handler for std::abort
-            std::signal(SIGABRT, pika::detail::on_abort);
-            std::atexit(pika::detail::on_exit);
+            [[maybe_unused]] auto signal_handler = std::signal(SIGABRT, pika::detail::on_abort);
+            [[maybe_unused]] auto exit_result = std::atexit(pika::detail::on_exit);
 #if defined(PIKA_HAVE_CXX11_STD_QUICK_EXIT)
-            std::at_quick_exit(pika::detail::on_exit);
+            [[maybe_unused]] auto quick_exit_result = std::at_quick_exit(pika::detail::on_exit);
 #endif
             return run_or_start(f, argc, argv, params, blocking);
         }

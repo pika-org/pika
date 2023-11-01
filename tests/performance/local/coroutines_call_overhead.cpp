@@ -15,6 +15,7 @@
 
 #include <chrono>
 #include <cstdint>
+#include <cstdlib>
 #include <ctime>
 #include <iostream>
 #include <random>
@@ -163,7 +164,8 @@ int pika_main(variables_map& vm)
         print_results(total_elapsed);
     }
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

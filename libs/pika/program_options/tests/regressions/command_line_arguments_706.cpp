@@ -10,6 +10,8 @@
 #include <pika/init.hpp>
 #include <pika/testing.hpp>
 
+#include <cstdlib>
+
 char const* argv[] = {"command_line_argument_test",
     // We need only one thread, this argument should be gone in pika_main
     "--pika:threads=1", "nx=1", "ny=1=5"};

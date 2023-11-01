@@ -9,6 +9,8 @@
 #include <pika/init.hpp>
 #include <pika/testing.hpp>
 
+#include <cstdlib>
+
 bool invoked_main = false;
 
 int my_pika_main(int argc, char**)

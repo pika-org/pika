@@ -11,6 +11,7 @@
 
 #include <atomic>
 #include <cstddef>
+#include <cstdlib>
 #include <functional>
 #include <utility>
 #include <vector>
@@ -109,8 +110,8 @@ int pika_main()
         PIKA_TEST_EQ(num_threads.load(), NUM_THREADS);
     }
 
-    PIKA_TEST_EQ(pika::finalize(), 0);
-    return 0;
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

@@ -12,6 +12,7 @@
 # include <pika/testing.hpp>
 
 # include <atomic>
+# include <cstdlib>
 # include <string>
 
 std::atomic<bool> invoked_callback(false);
@@ -46,7 +47,8 @@ int pika_main()
     PIKA_TEST(!val.empty());
     PIKA_TEST_EQ(val, std::string("test1"));
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

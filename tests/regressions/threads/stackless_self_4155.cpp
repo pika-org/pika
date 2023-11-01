@@ -8,6 +8,8 @@
 #include <pika/testing.hpp>
 #include <pika/thread.hpp>
 
+#include <cstdlib>
+
 void stackless_thread()
 {
     PIKA_TEST_NEQ(pika::threads::detail::get_self_id(), pika::threads::detail::invalid_thread_id);
@@ -20,7 +22,8 @@ int pika_main()
         pika::execution::thread_priority::default_, pika::execution::thread_schedule_hint(),
         pika::execution::thread_stacksize::nostack);
     pika::threads::detail::register_work(data);
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char** argv)

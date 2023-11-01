@@ -16,6 +16,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <cstdlib>
 #include <string>
 #include <type_traits>
 
@@ -140,7 +141,8 @@ int pika_main(variables_map& vm)
         if (test_all) { measure_function_create_thread_hierarchical_placement(count, repetitions); }
     }
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -20,6 +20,7 @@
 #include <atomic>
 #include <chrono>
 #include <cstdint>
+#include <cstdlib>
 #include <functional>
 #include <iostream>
 #include <string>
@@ -63,7 +64,8 @@ private:
         results_type results = kernel();
         print_results(results);
 
-        return pika::finalize();
+        pika::finalize();
+        return EXIT_SUCCESS;
     }
 
     pika::threads::detail::thread_result_type payload_thread_function(

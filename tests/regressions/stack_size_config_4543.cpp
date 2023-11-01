@@ -9,6 +9,7 @@
 #include <pika/thread.hpp>
 
 #include <chrono>
+#include <cstdlib>
 
 // This test ensures that thread creation uses the correct stack sizes. We
 // slightly change all the stack sizes in the configuration to catch problems
@@ -21,7 +22,8 @@ int pika_main()
     pika::thread t([]() {});
     t.join();
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char** argv)

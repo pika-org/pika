@@ -11,6 +11,7 @@
 #include <pika/thread.hpp>
 
 #include <cstddef>
+#include <cstdlib>
 #include <iostream>
 #include <memory>
 
@@ -39,7 +40,8 @@ int pika_main()
 
     PIKA_TEST_EQ(get_thread_num(), 42);
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char** argv)

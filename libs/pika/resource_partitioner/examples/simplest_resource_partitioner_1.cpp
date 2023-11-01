@@ -10,6 +10,8 @@
 //[body
 #include <pika/init.hpp>
 
+#include <cstdlib>
+
 int pika_main()
 {
     pika::finalize();

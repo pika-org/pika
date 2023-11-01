@@ -12,6 +12,7 @@
 #include <pika/thread.hpp>
 
 #include <cstddef>
+#include <cstdlib>
 #include <functional>
 #include <string>
 #include <vector>
@@ -66,7 +67,8 @@ int pika_main(variables_map& vm)
     }
 
     // Initiate shutdown of the runtime system.
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
