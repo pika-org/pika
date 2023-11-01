@@ -280,104 +280,69 @@ namespace pika {
 #endif
         }
 
-        // make sure the runtime system is not active yet
-        int ensure_no_runtime_is_up()
-        {
-            // make sure the runtime system is not active yet
-            if (get_runtime_ptr() != nullptr)
-            {
-                std::cerr
-                    << "pika::init: can't initialize runtime system more than once! Exiting...\n";
-                return -1;
-            }
-            return 0;
-        }
-
         ///////////////////////////////////////////////////////////////////////
         int run_or_start(
             util::detail::function<int(pika::program_options::variables_map& vm)> const& f,
             int argc, const char* const* argv, init_params const& params, bool blocking)
         {
-            int result = 0;
-            try
+            if (get_runtime_ptr() != nullptr)
             {
-                if ((result = ensure_no_runtime_is_up()) != 0) { return result; }
+                PIKA_THROW_EXCEPTION(
+                    pika::error::invalid_status, "pika::start/init", "runtime already initialized");
+            }
 
-                pika::detail::command_line_handling cmdline{
-                    pika::util::runtime_configuration(argv[0]), params.cfg, f};
+            pika::detail::command_line_handling cmdline{
+                pika::util::runtime_configuration(argv[0]), params.cfg, f};
 
-                // scope exception handling to resource partitioner initialization
-                // any exception thrown during run_or_start below are handled
-                // separately
-                try
-                {
-                    result = cmdline.call(params.desc_cmdline, argc, argv);
+            auto cmdline_result = cmdline.call(params.desc_cmdline, argc, argv);
 
-                    pika::detail::affinity_data affinity_data{};
-                    affinity_data.init(pika::detail::get_entry_as<std::size_t>(
-                                           cmdline.rtcfg_, "pika.os_threads", 0),
-                        pika::detail::get_entry_as<std::size_t>(cmdline.rtcfg_, "pika.cores", 0),
-                        pika::detail::get_entry_as<std::size_t>(
-                            cmdline.rtcfg_, "pika.pu_offset", 0),
-                        pika::detail::get_entry_as<std::size_t>(cmdline.rtcfg_, "pika.pu_step", 0),
-                        0, cmdline.rtcfg_.get_entry("pika.affinity", ""),
-                        cmdline.rtcfg_.get_entry("pika.bind", ""),
-                        !pika::detail::get_entry_as<bool>(
-                            cmdline.rtcfg_, "pika.ignore_process_mask", false));
+            pika::detail::affinity_data affinity_data{};
+            affinity_data.init(
+                pika::detail::get_entry_as<std::size_t>(cmdline.rtcfg_, "pika.os_threads", 0),
+                pika::detail::get_entry_as<std::size_t>(cmdline.rtcfg_, "pika.cores", 0),
+                pika::detail::get_entry_as<std::size_t>(cmdline.rtcfg_, "pika.pu_offset", 0),
+                pika::detail::get_entry_as<std::size_t>(cmdline.rtcfg_, "pika.pu_step", 0), 0,
+                cmdline.rtcfg_.get_entry("pika.affinity", ""),
+                cmdline.rtcfg_.get_entry("pika.bind", ""),
+                !pika::detail::get_entry_as<bool>(
+                    cmdline.rtcfg_, "pika.ignore_process_mask", false));
 
-                    pika::resource::partitioner rp = pika::resource::detail::make_partitioner(
-                        params.rp_mode, cmdline.rtcfg_, affinity_data);
+            pika::resource::partitioner rp = pika::resource::detail::make_partitioner(
+                params.rp_mode, cmdline.rtcfg_, affinity_data);
 
-                    activate_global_options(cmdline);
+            activate_global_options(cmdline);
 
-                    init_environment(cmdline);
+            init_environment(cmdline);
 
-                    // check whether pika should be exited at this point
-                    // (parse_result is returning a result > 0, if the program options
-                    // contain --pika:help or --pika:version, on error result is < 0)
-                    if (result != 0)
-                    {
-                        if (result > 0) result = 0;
-                        return result;
-                    }
+            switch (cmdline_result)
+            {
+            case command_line_handling_result::success: break;
+            case command_line_handling_result::exit: return 0;
+            }
 
-                    // If thread_pools initialization in user main
-                    if (params.rp_callback) { params.rp_callback(rp, cmdline.vm_); }
+            // If thread_pools initialization in user main
+            if (params.rp_callback) { params.rp_callback(rp, cmdline.vm_); }
 
-                    // Setup all internal parameters of the resource_partitioner
-                    rp.configure_pools();
-                }
-                catch (pika::exception const& e)
-                {
-                    std::cerr << "pika::init: pika::exception caught: " << pika::get_error_what(e)
-                              << "\n";
-                    return -1;
-                }
+            // Setup all internal parameters of the resource_partitioner
+            rp.configure_pools();
 
 #if defined(PIKA_HAVE_HIP)
-                LPROGRESS_ << "run_local: initialize HIP";
-                whip::check_error(hipInit(0));
+            LPROGRESS_ << "run_local: initialize HIP";
+            whip::check_error(hipInit(0));
 #endif
 
-                // Initialize and start the pika runtime.
-                LPROGRESS_ << "run_local: create runtime";
+            // Initialize and start the pika runtime.
+            LPROGRESS_ << "run_local: create runtime";
 
-                // Build and configure this runtime instance.
-                std::unique_ptr<pika::runtime> rt;
+            // Build and configure this runtime instance.
+            std::unique_ptr<pika::runtime> rt;
 
-                // Command line handling should have updated this by now.
-                LPROGRESS_ << "creating local runtime";
-                rt.reset(new pika::runtime(cmdline.rtcfg_, true));
+            // Command line handling should have updated this by now.
+            LPROGRESS_ << "creating local runtime";
+            rt.reset(new pika::runtime(cmdline.rtcfg_, true));
 
-                result = run_or_start(blocking, PIKA_MOVE(rt), cmdline, PIKA_MOVE(params.startup),
-                    PIKA_MOVE(params.shutdown));
-            }
-            catch (pika::detail::command_line_error const& e)
-            {
-                std::cerr << "pika::init: std::exception caught: " << e.what() << "\n";
-                return -1;
-            }
-            return result;
+            return run_or_start(blocking, PIKA_MOVE(rt), cmdline, PIKA_MOVE(params.startup),
+                PIKA_MOVE(params.shutdown));
         }
 
         int init_start_impl(util::detail::function<int(pika::program_options::variables_map&)> f,

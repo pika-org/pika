@@ -691,7 +691,7 @@ namespace pika {
     namespace detail {
         ///////////////////////////////////////////////////////////////////////////
         // retrieve the command line arguments
-        bool retrieve_commandline_arguments(
+        void retrieve_commandline_arguments(
             pika::program_options::options_description const& app_options,
             pika::program_options::variables_map& vm)
         {
@@ -706,20 +706,20 @@ namespace pika {
             pika::detail::section& cfg = pika::get_runtime().get_config();
             if (cfg.has_entry("pika.cmd_line")) cmdline = cfg.get_entry("pika.cmd_line");
 
-            return parse_commandline(
+            parse_commandline(
                 cfg, app_options, cmdline, vm, commandline_error_mode::allow_unregistered);
         }
 
         ///////////////////////////////////////////////////////////////////////////
         // retrieve the command line arguments
-        bool retrieve_commandline_arguments(
+        void retrieve_commandline_arguments(
             std::string const& appname, pika::program_options::variables_map& vm)
         {
             using pika::program_options::options_description;
 
             options_description desc_commandline("Usage: " + appname + " [options]");
 
-            return retrieve_commandline_arguments(desc_commandline, vm);
+            retrieve_commandline_arguments(desc_commandline, vm);
         }
     }    // namespace detail
 
