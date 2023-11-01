@@ -4,6 +4,23 @@
 <!--- Distributed under the Boost Software License, Version 1.0. (See accompanying -->
 <!--- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 
+## 0.20.0 (2023-11-01)
+
+### New features
+
+- The MPI rank is now printed with `--pika:print-bind` and when handling exceptions, if MPI support is enabled. ([#805](https://github.com/pika-org/pika/pull/805), [#822](https://github.com/pika-org/pika/pull/822))
+- A warning message is now printed on macOS when using `--pika:process-mask` since thread bindings are unsupported. ([#806](https://github.com/pika-org/pika/pull/806))
+- Thread bindings can now be printed using the environment variable `PIKA_PRINT_BIND` in addition to the command line option `--pika:print-bind`. ([#828](https://github.com/pika-org/pika/pull/828))
+- The `pika-bind` helper script has been added to more conveniently set `PIKA_PROCESS_MASK` based on the environment. ([#834](https://github.com/pika-org/pika/pull/834))
+
+### Breaking changes
+
+- All remaining locality-related functions and files have been removed. ([#823](https://github.com/pika-org/pika/pull/823))
+
+### Bugfixes
+
+- Handling of explicitly specified process masks with `--pika:process-mask` or `PIKA_PROCESS_MASK` has been fixed. ([#807](https://github.com/pika-org/pika/pull/807))
+
 ## 0.19.1 (2023-10-09)
 
 ### Bugfixes
