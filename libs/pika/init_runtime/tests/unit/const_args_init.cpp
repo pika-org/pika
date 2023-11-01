@@ -26,7 +26,7 @@ int main()
 
         PIKA_TEST_EQ(pika::init(pika_main, argc, argv), 0);
 
-        PIKA_TEST(pika::start(pika_main, argc, argv));
+        pika::start(pika_main, argc, argv);
         PIKA_TEST_EQ(pika::stop(), 0);
     }
 
@@ -35,7 +35,7 @@ int main()
 
         PIKA_TEST_EQ(pika::init(pika_main, argc, argv), 0);
 
-        PIKA_TEST(pika::start(pika_main, argc, argv));
+        pika::start(pika_main, argc, argv);
         PIKA_TEST_EQ(pika::stop(), 0);
     }
 
@@ -44,7 +44,7 @@ int main()
 
         PIKA_TEST_EQ(pika::init(pika_main, argc, argv), 0);
 
-        PIKA_TEST(pika::start(pika_main, argc, argv));
+        pika::start(pika_main, argc, argv);
         PIKA_TEST_EQ(pika::stop(), 0);
     }
 
@@ -53,7 +53,7 @@ int main()
 
         PIKA_TEST_EQ(pika::init(pika_main, argc, argv), 0);
 
-        PIKA_TEST(pika::start(pika_main, argc, argv));
+        pika::start(pika_main, argc, argv);
         PIKA_TEST_EQ(pika::stop(), 0);
     }
 
