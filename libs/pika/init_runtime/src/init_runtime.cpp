@@ -143,7 +143,7 @@ namespace pika {
 
         struct dump_config
         {
-            dump_config(pika::runtime const& rt)
+            explicit dump_config(pika::runtime const& rt)
               : rt_(std::cref(rt))
             {
             }
