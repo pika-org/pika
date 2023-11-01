@@ -233,8 +233,7 @@ namespace pika {
             start(*rt, cfg.pika_main_f_, cfg.vm_, PIKA_MOVE(startup), PIKA_MOVE(shutdown));
 
             // pointer to runtime is stored in TLS
-            pika::runtime* p = rt.release();
-            (void) p;
+            [[maybe_unused]] pika::runtime* p = rt.release();
 
             return 0;
         }
