@@ -12,6 +12,7 @@
 #include <pika/modules/program_options.hpp>
 
 #include <cstddef>
+#include <cstdlib>
 #include <iostream>
 #include <string>
 
@@ -61,7 +62,8 @@ int pika_main(variables_map& vm)
 #if defined(JACOBI_SMP_NO_pika)
     return 0;
 #else
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 #endif
 }
 

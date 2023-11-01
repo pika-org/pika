@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <cstdlib>
 #include <functional>
 #include <iterator>
 #include <optional>
@@ -198,7 +199,9 @@ int pika_main(pika::program_options::variables_map& vm)
     test_concurrent(pop_mode::left);
     test_concurrent(pop_mode::right);
     test_concurrent(pop_mode::random);
-    return pika::finalize();
+
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char** argv)

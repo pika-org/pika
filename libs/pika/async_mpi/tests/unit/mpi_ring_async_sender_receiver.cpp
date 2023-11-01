@@ -22,6 +22,7 @@
 #include <array>
 #include <atomic>
 #include <cstdint>
+#include <cstdlib>
 #include <iomanip>
 #include <iostream>
 #include <memory>
@@ -450,7 +451,9 @@ int pika_main(pika::program_options::variables_map& vm)
         }
         // let the user polling go out of scope
     }
-    return pika::finalize();
+
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 //----------------------------------------------------------------------------

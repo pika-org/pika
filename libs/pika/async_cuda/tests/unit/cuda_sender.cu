@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <cstdlib>
 #include <iostream>
 #include <sstream>
 #include <utility>
@@ -174,7 +175,8 @@ int pika_main(pika::program_options::variables_map& vm)
     // test a full kernel example
     test_saxpy(cuda_sched);
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 // -------------------------------------------------------------------------

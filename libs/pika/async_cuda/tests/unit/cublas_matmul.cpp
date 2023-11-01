@@ -39,6 +39,7 @@
 #include <chrono>
 #include <cmath>
 #include <cstddef>
+#include <cstdlib>
 #include <iostream>
 #include <random>
 #include <sstream>
@@ -318,7 +319,8 @@ int pika_main(pika::program_options::variables_map& vm)
     pika::cuda::experimental::cuda_scheduler cuda_sched3(std::move(cuda_sched));
     matrixMultiply<float>(cuda_sched3, matrix_size, device, 1);
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 // -------------------------------------------------------------------------

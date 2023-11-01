@@ -10,6 +10,7 @@
 #include <pika/thread.hpp>
 
 #include <cstddef>
+#include <cstdlib>
 #include <string>
 #include <utility>
 #include <vector>
@@ -41,7 +42,8 @@ int pika_main()
 
     tt::sync_wait(ex::when_all_vector(std::move(finished)));
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

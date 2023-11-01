@@ -9,6 +9,7 @@
 #include <pika/init.hpp>
 #include <pika/runtime.hpp>
 //
+#include <cstdlib>
 #include <iostream>
 #include <random>
 #include <utility>
@@ -106,7 +107,8 @@ int pika_main()
               << "\n " << htimer.elapsed<std::chrono::seconds>() << " seconds \n"
               << std::flush;
     // Initiate shutdown of the runtime system.
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 //----------------------------------------------------------------------------

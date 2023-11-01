@@ -14,6 +14,7 @@
 #include <pika/modules/synchronization.hpp>
 
 #include <cstddef>
+#include <cstdlib>
 #include <functional>
 #include <iostream>
 #include <sstream>
@@ -67,7 +68,8 @@ int pika_main()
 
     l.arrive_and_wait();
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[]) { return pika::init(pika_main, argc, argv); }

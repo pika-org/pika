@@ -15,6 +15,7 @@
 #include <atomic>
 #include <chrono>
 #include <cstddef>
+#include <cstdlib>
 #include <exception>
 #include <stdexcept>
 #include <string>
@@ -1507,7 +1508,8 @@ int pika_main()
     test_completion_scheduler();
     test_scheduler_queries();
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

@@ -22,6 +22,7 @@
 
 #include <atomic>
 #include <cstddef>
+#include <cstdlib>
 #include <memory>
 #include <string>
 #include <utility>
@@ -110,7 +111,8 @@ int pika_main()
         }
     }
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 void test_scheduler(int argc, char* argv[], pika::resource::scheduling_policy scheduler)

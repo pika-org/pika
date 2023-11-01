@@ -12,6 +12,7 @@
 #include <pika/threading_base/scheduler_mode.hpp>
 
 #include <cstddef>
+#include <cstdlib>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -35,7 +36,8 @@ int pika_main()
 
     PIKA_TEST(run);
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 template <typename Scheduler>

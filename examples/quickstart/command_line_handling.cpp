@@ -9,6 +9,7 @@
 
 #include <pika/modules/program_options.hpp>
 
+#include <cstdlib>
 #include <string>
 #include <vector>
 
@@ -27,7 +28,8 @@ int pika_main(pika::program_options::variables_map& vm)
     }
     else { pika::cout << "no positional command line options\n"; }
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

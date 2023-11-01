@@ -13,6 +13,7 @@
 #include <pika/thread.hpp>
 
 #include <algorithm>
+#include <cstdlib>
 #include <iostream>
 
 namespace ex = pika::execution::experimental;
@@ -75,7 +76,8 @@ int pika_main()
         tt::sync_wait(ex::schedule(fancy_scheduler) | ex::then(run_with_large_stack));
     }
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[]) { return pika::init(pika_main, argc, argv); }

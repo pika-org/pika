@@ -11,6 +11,7 @@
 #include <pika/execution_base/tests/algorithm_test_utils.hpp>
 
 #include <atomic>
+#include <cstdlib>
 #include <exception>
 #include <stdexcept>
 #include <string>
@@ -113,7 +114,8 @@ int pika_main()
         PIKA_TEST(exception_thrown);
     }
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

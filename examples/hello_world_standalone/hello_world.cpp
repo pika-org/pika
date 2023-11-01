@@ -7,13 +7,15 @@
 #include <pika/init.hpp>
 #include <pika/thread.hpp>
 
+#include <cstdlib>
 #include <iostream>
 
 int pika_main()
 {
     std::cout << "Hello from pika-thread with id " << pika::this_thread::get_id() << std::endl;
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[]) { return pika::init(pika_main, argc, argv); }

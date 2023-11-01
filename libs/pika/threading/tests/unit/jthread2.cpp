@@ -15,6 +15,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <cstdlib>
 #include <thread>
 #include <utility>
 #include <vector>
@@ -297,7 +298,8 @@ int pika_main()
     test_jthread_move();
     //     testEnabledIfForCopyConstructor_CompileTimeOnly();
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

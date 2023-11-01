@@ -24,6 +24,7 @@
 #include <atomic>
 #include <chrono>
 #include <cstddef>
+#include <cstdlib>
 #include <iostream>
 #include <random>
 #include <string>
@@ -194,7 +195,8 @@ int pika_main()
         pika::this_thread::yield();
     } while (counter > 0);
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 void init_resource_partitioner_handler(pika::resource::partitioner& rp,

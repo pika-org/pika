@@ -12,6 +12,7 @@
 
 #include <atomic>
 #include <cstddef>
+#include <cstdlib>
 #include <functional>
 #include <string>
 #include <utility>
@@ -71,7 +72,8 @@ int pika_main()
     //
     tt::sync_wait(ex::when_all_vector(std::move(senders)));
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

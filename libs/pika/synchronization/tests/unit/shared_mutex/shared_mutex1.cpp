@@ -12,6 +12,7 @@
 #include <pika/thread.hpp>
 
 #include <chrono>
+#include <cstdlib>
 #include <mutex>
 #include <shared_mutex>
 #include <string>
@@ -313,7 +314,8 @@ int pika_main()
     test_unlocking_writer_unblocks_all_readers();
     test_unlocking_last_reader_only_unblocks_one_writer();
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

@@ -185,7 +185,8 @@ int pika_main()
     test_callback_concurrent_unregister();
     test_callback_concurrent_unregister_other_thread();
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

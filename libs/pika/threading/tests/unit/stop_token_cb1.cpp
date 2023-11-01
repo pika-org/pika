@@ -18,6 +18,7 @@
 #include <atomic>
 #include <chrono>
 #include <cstdint>
+#include <cstdlib>
 #include <functional>
 #include <iostream>
 #include <mutex>
@@ -431,7 +432,8 @@ int pika_main()
     test_callback_deregistration_blocks_until_callback_finishes();
     test_cancellation_single_thread_performance();
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

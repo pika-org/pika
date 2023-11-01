@@ -16,6 +16,7 @@
 #include <pika/testing.hpp>
 
 #include <cstddef>
+#include <cstdlib>
 
 namespace ex = pika::execution::experimental;
 
@@ -29,7 +30,8 @@ int pika_main()
         for (std::size_t j = 0; j < 10; ++j) { ex::start_detached(s); }
     }
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

@@ -10,6 +10,7 @@
 #include <pika/testing.hpp>
 
 #include <cstdint>
+#include <cstdlib>
 #include <string>
 #include <vector>
 
@@ -37,7 +38,8 @@ int pika_main()
     std::string s = pika::detail::get_env_var_as<std::string>("string", "wrong");
     PIKA_TEST_EQ(s, std::string("hello-world"));
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 ///////////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])

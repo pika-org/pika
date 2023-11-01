@@ -8,6 +8,7 @@
 #include <pika/modules/iterator_support.hpp>
 #include <pika/testing.hpp>
 
+#include <cstdlib>
 #include <iterator>
 #include <numeric>
 #include <sstream>
@@ -186,7 +187,8 @@ int pika_main()
     test_stencil3_iterator();
     test_stencil3_iterator_custom();
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

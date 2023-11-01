@@ -20,7 +20,8 @@ int pika_main(int argc, char** argv_init)
     PIKA_TEST_EQ(0, std::strcmp(argv[0], argv_init[0]));
     for (int i = 1; i < argc; ++i) { PIKA_TEST_EQ(0, std::strcmp(argv[i + 1], argv_init[i])); }
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main()

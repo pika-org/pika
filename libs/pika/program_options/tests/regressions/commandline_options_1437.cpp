@@ -17,7 +17,8 @@ int my_pika_main(int argc, char**)
     PIKA_TEST_EQ(argc, 1);
 
     invoked_main = true;
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char** argv)

@@ -10,6 +10,7 @@
 
 #include <fmt/printf.h>
 
+#include <cstdlib>
 #include <iostream>
 #include <iterator>
 #include <regex>
@@ -57,7 +58,8 @@ int pika_main()
 
     pipeline::process(input);
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[]) { return pika::init(pika_main, argc, argv); }

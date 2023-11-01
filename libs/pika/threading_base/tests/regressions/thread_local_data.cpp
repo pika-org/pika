@@ -11,6 +11,7 @@
 
 #include <atomic>
 #include <cstddef>
+#include <cstdlib>
 
 namespace ex = pika::execution::experimental;
 namespace tt = pika::this_thread::experimental;
@@ -44,7 +45,9 @@ int pika_main()
 {
     tt::sync_wait(ex::schedule(ex::thread_pool_scheduler{}) | ex::then(test));
     PIKA_TEST(data_deallocated);
-    return pika::finalize();
+
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

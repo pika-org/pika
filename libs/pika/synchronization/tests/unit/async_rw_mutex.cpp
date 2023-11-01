@@ -13,6 +13,7 @@
 
 #include <atomic>
 #include <cstddef>
+#include <cstdlib>
 #include <random>
 #include <type_traits>
 #include <utility>
@@ -317,7 +318,8 @@ int pika_main(pika::program_options::variables_map& vm)
     test_multiple_when_all(async_rw_mutex<std::size_t>{0});
     test_multiple_when_all(async_rw_mutex<mytype, mytype_base>{mytype{}});
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

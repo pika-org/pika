@@ -15,6 +15,7 @@
 #include <pika/thread.hpp>
 
 #include <cstddef>
+#include <cstdlib>
 #include <iostream>
 #include <memory>
 #include <mutex>
@@ -49,7 +50,8 @@ int pika_main()
         });
     }
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

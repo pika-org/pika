@@ -202,6 +202,7 @@ patterns = [
 [includes]
 enable = true
 patterns = [
+    { pattern = '\bEXIT_(SUCCESS|FAILURE)\b', include = 'cstdlib' },
     { pattern = '\bstd::make_shared\b', include = 'memory' },
     { pattern = '\bstd::map\b', include = 'map' },
     { pattern = '\bstd::set\b', include = 'set' },

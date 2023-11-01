@@ -15,6 +15,7 @@
 #include <pika/thread.hpp>
 
 #include <cstddef>
+#include <cstdlib>
 #include <iostream>
 #include <string>
 #include <utility>
@@ -108,7 +109,8 @@ int pika_main()
     // just wait until everything is done
     tt::sync_wait(ex::when_all_vector(std::move(lotsa_senders)));
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 void init_resource_partitioner_handler(

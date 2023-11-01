@@ -8,6 +8,7 @@
 #include <pika/init.hpp>
 #include <pika/testing.hpp>
 
+#include <cstdlib>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,8 @@ int pika_main(int argc, char* argv[])
     PIKA_TEST_EQ(argc, 2);
     PIKA_TEST_EQ(std::string(argv[1]), std::string("-wobble=1"));
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 ///////////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])

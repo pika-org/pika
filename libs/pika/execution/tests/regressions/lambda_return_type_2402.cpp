@@ -11,6 +11,7 @@
 #include <pika/testing.hpp>
 
 #include <cstddef>
+#include <cstdlib>
 #include <tuple>
 #include <type_traits>
 #include <vector>
@@ -32,7 +33,8 @@ int pika_main()
         PIKA_TEST(all_of(mass_density == 0.0));
     });
 
-    return pika::finalize();    // Handles pika shutdown
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char** argv)

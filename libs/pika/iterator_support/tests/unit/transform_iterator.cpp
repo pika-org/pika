@@ -9,6 +9,7 @@
 #include <pika/testing.hpp>
 
 #include <algorithm>
+#include <cstdlib>
 #include <iterator>
 #include <numeric>
 #include <sstream>
@@ -137,7 +138,8 @@ int pika_main()
     test_left_element_full();
     test_right_element_full();
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

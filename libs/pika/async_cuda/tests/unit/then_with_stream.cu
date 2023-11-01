@@ -15,6 +15,7 @@
 
 #include <atomic>
 #include <cstddef>
+#include <cstdlib>
 #include <exception>
 #include <functional>
 #include <string>
@@ -582,7 +583,8 @@ int pika_main()
         PIKA_TEST(exception_thrown);
     }
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

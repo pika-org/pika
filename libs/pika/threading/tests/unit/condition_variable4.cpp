@@ -15,6 +15,7 @@
 #include <pika/testing.hpp>
 
 #include <chrono>
+#include <cstdlib>
 #include <mutex>
 #include <thread>
 #include <vector>
@@ -142,7 +143,8 @@ int pika_main()
         PIKA_TEST(false);
     }
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

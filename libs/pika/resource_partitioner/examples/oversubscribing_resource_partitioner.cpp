@@ -192,7 +192,8 @@ int pika_main(/*pika::program_options::variables_map& vm*/)
     senders.clear();
     thread_set.clear();
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 // -------------------------------------------------------------------------

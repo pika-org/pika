@@ -10,6 +10,7 @@
 #include <pika/latch.hpp>
 #include <pika/thread.hpp>
 
+#include <cstdlib>
 #include <functional>
 #include <iostream>
 #include <utility>
@@ -56,7 +57,8 @@ int pika_main()
 
     tt::sync_wait(ex::when_all_vector(std::move(results)));
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[]) { return pika::init(pika_main, argc, argv); }
