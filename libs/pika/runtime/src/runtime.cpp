@@ -808,7 +808,6 @@ namespace pika::util {
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::threads {
-    detail::thread_manager& get_thread_manager() { return get_runtime().get_thread_manager(); }
 
     // shortcut for runtime_configuration::get_default_stack_size
     std::ptrdiff_t get_default_stack_size()

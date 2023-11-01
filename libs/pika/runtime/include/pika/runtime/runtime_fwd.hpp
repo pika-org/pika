@@ -142,12 +142,6 @@ namespace pika {
     namespace threads {
 
         /// \cond NOINTERNAL
-        // The function get_thread_manager returns a reference to the
-        // current thread manager.
-        PIKA_EXPORT detail::thread_manager& get_thread_manager();
-        /// \endcond
-
-        /// \cond NOINTERNAL
         /// Reset internal (round robin) thread distribution scheme
         PIKA_EXPORT void reset_thread_distribution();
 
