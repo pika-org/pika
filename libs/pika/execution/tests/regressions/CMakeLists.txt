@@ -20,6 +20,6 @@ foreach(test ${tests})
   )
 
   pika_add_regression_test(
-    "modules.execution" ${test} ${${test}_PARAMETERS} THREADS 4
+    "modules.execution" ${test} ${${test}_PARAMETERS} THREADS 4 VALGRIND
   )
 endforeach()
