@@ -63,6 +63,7 @@ jobs:
             ninja \
               examples.quickstart.hello_world \
               tests.regressions.modules.coroutines \
+              tests.unit.modules.assertion \
               tests.unit.modules.concurrency \
               tests.unit.modules.datastructures \
               tests.unit.modules.errors \
