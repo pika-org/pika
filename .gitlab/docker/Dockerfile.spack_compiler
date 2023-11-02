@@ -13,7 +13,7 @@ ARG COMPILER
 RUN spack compiler info $COMPILER > /dev/null 2> /dev/null; compiler_missing=$?; \
     export spack_compiler=${COMPILER/clang/llvm} && \
     if [[ $compiler_missing != 0 ]]; then \
-        spack install $spack_compiler languages=c++ arch=$ARCH && \
+        spack install $spack_compiler arch=$ARCH && \
         spack compiler add --scope site $(spack location -i $spack_compiler);\
     fi
 
