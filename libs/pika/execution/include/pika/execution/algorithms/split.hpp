@@ -297,13 +297,8 @@ namespace pika::split_detail {
 
                 if (!continuations.empty())
                 {
-                    // We move the continuations to a local variable to
-                    // release them once all continuations have been called.
-                    // We cannot call clear on continuations after the loop
-                    // because the shared state may already be released by
-                    // the last continuation to run.
-                    auto continuations_local = PIKA_MOVE(continuations);
-                    for (auto const& continuation : continuations_local) { continuation(); }
+                    for (auto const& continuation : continuations) { continuation(); }
+                    continuations.clear();
                 }
             }
 
