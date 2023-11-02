@@ -55,7 +55,7 @@ foreach(test ${threading_tests})
     FOLDER "Tests/Unit/Modules/Threading"
   )
 
-  pika_add_unit_test("modules.threading" ${test} ${${test}_PARAMETERS})
+  pika_add_unit_test("modules.threading" ${test} ${${test}_PARAMETERS} VALGRIND)
 
 endforeach()
 
