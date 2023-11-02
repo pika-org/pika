@@ -160,20 +160,20 @@ namespace pika::split_detail {
 
             struct split_receiver
             {
-                shared_state& state;
+                pika::intrusive_ptr<shared_state> state;
 
                 template <typename Error>
-                friend void tag_invoke(pika::execution::experimental::set_error_t,
-                    split_receiver&& r, Error&& error) noexcept
+                friend void tag_invoke(pika::execution::experimental::set_error_t, split_receiver r,
+                    Error&& error) noexcept
                 {
-                    r.state.v.template emplace<error_type>(error_type(PIKA_FORWARD(Error, error)));
-                    r.state.set_predecessor_done();
+                    r.state->v.template emplace<error_type>(error_type(PIKA_FORWARD(Error, error)));
+                    r.state->set_predecessor_done();
                 }
 
                 friend void tag_invoke(
-                    pika::execution::experimental::set_stopped_t, split_receiver&& r) noexcept
+                    pika::execution::experimental::set_stopped_t, split_receiver r) noexcept
                 {
-                    r.state.set_predecessor_done();
+                    r.state->set_predecessor_done();
                 };
 
                 // This typedef is duplicated from the parent struct. The
@@ -190,18 +190,18 @@ namespace pika::split_detail {
                     value_type_helper>;
 
                 template <typename... Ts>
-                friend auto tag_invoke(pika::execution::experimental::set_value_t,
-                    split_receiver&& r, Ts&&... ts) noexcept
+                friend auto tag_invoke(pika::execution::experimental::set_value_t, split_receiver r,
+                    Ts&&... ts) noexcept
                     -> decltype(std::declval<
                                     pika::detail::variant<pika::detail::monostate, value_type>>()
                                     .template emplace<value_type>(
                                         std::make_tuple<>(PIKA_FORWARD(Ts, ts)...)),
                         void())
                 {
-                    r.state.v.template emplace<value_type>(
+                    r.state->v.template emplace<value_type>(
                         std::make_tuple<>(PIKA_FORWARD(Ts, ts)...));
 
-                    r.state.set_predecessor_done();
+                    r.state->set_predecessor_done();
                 }
             };
 
@@ -213,7 +213,7 @@ namespace pika::split_detail {
             {
                 os.emplace(pika::detail::with_result_of([&]() {
                     return pika::execution::experimental::connect(
-                        PIKA_FORWARD(Sender_, sender), split_receiver{*this});
+                        PIKA_FORWARD(Sender_, sender), split_receiver{this});
                 }));
             }
 
