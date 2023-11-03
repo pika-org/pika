@@ -311,7 +311,7 @@ namespace pika::execution {
 
 #endif
 
-            agent().yield_k(k, desc);
+            agent().spin_k(k, desc);
         }
 
         void suspend(char const* desc) { agent().suspend(desc); }
