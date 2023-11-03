@@ -103,13 +103,8 @@ namespace pika::util {
 #endif
 #endif
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
-#ifdef PIKA_DEBUG
             "spinlock_deadlock_detection = "
             "${PIKA_SPINLOCK_DEADLOCK_DETECTION:1}",
-#else
-            "spinlock_deadlock_detection = "
-            "${PIKA_SPINLOCK_DEADLOCK_DETECTION:0}",
-#endif
             "spinlock_deadlock_detection_limit = "
             "${PIKA_SPINLOCK_DEADLOCK_DETECTION_LIMIT:" PIKA_PP_STRINGIZE(
                 PIKA_PP_EXPAND(PIKA_SPINLOCK_DEADLOCK_DETECTION_LIMIT)) "}",
