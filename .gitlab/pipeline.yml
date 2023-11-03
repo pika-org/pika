@@ -19,3 +19,4 @@ include:
   - local: '.gitlab/includes/clang15_pipeline.yml'
   - local: '.gitlab/includes/clang16_pipeline.yml'
   - local: '.gitlab/includes/performance_gcc13_pipeline.yml'
+  - local: '.gitlab/includes/hip_pipeline.yml'
