@@ -41,7 +41,7 @@ jobs:
                 -DPIKA_WITH_EXAMPLES=ON \
                 -DPIKA_WITH_TESTS=ON \
                 -DPIKA_WITH_TESTS_HEADERS=OFF \
-                -DPIKA_WITH_TESTS_MAX_THREADS=$(grep ^"core id" /proc/cpuinfo | sort -u | wc -l) \
+                -DPIKA_WITH_TESTS_MAX_THREADS=$(nproc) \
                 -DPIKA_WITH_PARALLEL_TESTS_BIND_NONE=ON
       - name: Build
         shell: bash

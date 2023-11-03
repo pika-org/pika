@@ -50,7 +50,7 @@ jobs:
                 -DPIKA_WITH_TESTS_EXAMPLES=ON \
                 -DPIKA_WITH_TESTS_EXTERNAL_BUILD=OFF \
                 -DPIKA_WITH_TESTS_HEADERS=OFF \
-                -DPIKA_WITH_TESTS_MAX_THREADS=$(grep ^"core id" /proc/cpuinfo | sort -u | wc -l) \
+                -DPIKA_WITH_TESTS_MAX_THREADS=$(nproc) \
                 -DPIKA_WITH_VALGRIND=ON \
                 -DPIKA_WITH_TESTS_VALGRIND=ON \
                 -DPIKA_WITH_TESTS_VALGRIND_OPTIONS="--error-exitcode=1;--leak-check=full;--fair-sched=yes;--gen-suppressions=all;--suppressions=$PWD/tools/valgrind/memcheck.supp" \
