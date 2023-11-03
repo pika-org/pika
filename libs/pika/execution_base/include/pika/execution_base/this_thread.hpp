@@ -43,6 +43,8 @@ namespace pika::execution {
         PIKA_EXPORT void yield(char const* desc = "pika::execution::this_thread::detail::yield");
         PIKA_EXPORT void yield_k(
             std::size_t k, char const* desc = "pika::execution::this_thread::detail::yield_k");
+        PIKA_EXPORT void spin_k(
+            std::size_t k, char const* desc = "pika::execution::this_thread::detail::spin_k");
         PIKA_EXPORT void suspend(
             char const* desc = "pika::execution::this_thread::detail::suspend");
 

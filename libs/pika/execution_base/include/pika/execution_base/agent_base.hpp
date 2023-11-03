@@ -23,6 +23,7 @@ namespace pika::execution::detail {
 
         virtual void yield(char const* desc) = 0;
         virtual void yield_k(std::size_t k, char const* desc) = 0;
+        virtual void spin_k(std::size_t k, char const* desc) = 0;
         virtual void suspend(char const* desc) = 0;
         virtual void resume(char const* desc) = 0;
         virtual void abort(char const* desc) = 0;
