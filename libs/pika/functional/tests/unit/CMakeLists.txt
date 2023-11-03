@@ -6,26 +6,26 @@
 
 # Function tests
 set(function_tests
-    # allocator_test
-    bind_const_test
-    bind_cv_test
-    bind_dm2_test
-    bind_dm3_test
-    bind_dm_test
-    bind_rv_sp_test
-    bind_rvalue_test
-    bind_stateful_test
-    bind_test
-    contains_test
+    # allocator
+    bind_const
+    bind_cv
+    bind_dm2
+    bind_dm3
+    bind_dm
+    bind_rv_sp
+    bind_rvalue
+    bind_stateful
+    bind
+    contains
     function_args
     function_arith
-    function_bind_test
+    function_bind
     function_object_size
     function_ref_wrapper
     function_target
-    function_test
+    function
     nothrow_swap
-    stateless_test
+    stateless
 )
 
 foreach(test ${function_tests})
