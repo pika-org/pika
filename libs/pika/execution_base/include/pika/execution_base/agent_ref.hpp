@@ -44,6 +44,8 @@ namespace pika::execution::detail {
         void yield(char const* desc = "pika::execution::detail::agent_ref::yield");
         void yield_k(
             std::size_t k, char const* desc = "pika::execution::detail::agent_ref::yield_k");
+        void spin_k(
+            std::size_t k, char const* desc = "pika::execution::detail::agent_ref::spin_k");
         void suspend(char const* desc = "pika::execution::detail::agent_ref::suspend");
         void resume(char const* desc = "pika::execution::detail::agent_ref::resume");
         void abort(char const* desc = "pika::execution::detail::agent_ref::abort");
