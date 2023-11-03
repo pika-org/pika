@@ -20,7 +20,7 @@ foreach(test ${tests})
     FOLDER "Tests/Unit/Modules/Assertion/"
   )
 
-  pika_add_unit_test("modules.assertion" ${test} ${${test}_PARAMETERS})
+  pika_add_unit_test("modules.assertion" ${test} VALGRIND)
 
 endforeach()
 
