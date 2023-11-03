@@ -687,7 +687,7 @@ pika_add_config_define(
 
 pika_option(
   PIKA_WITH_SPINLOCK_DEADLOCK_DETECTION BOOL
-  "Enable spinlock deadlock detection (default: OFF)" OFF
+  "Enable spinlock deadlock detection (default: ON)" ON
   CATEGORY "Thread Manager"
   ADVANCED
 )
