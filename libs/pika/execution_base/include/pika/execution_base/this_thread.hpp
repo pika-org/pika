@@ -80,7 +80,7 @@ namespace pika::util {
         {
             for (std::size_t k = 0; predicate(); ++k)
             {
-                pika::execution::this_thread::detail::yield_k(k % 16, thread_name);
+                pika::execution::this_thread::detail::spin_k(k, thread_name);
             }
         }
     }
@@ -125,7 +125,7 @@ namespace pika::util {
                     else
                     {
                         count = 0;
-                        pika::execution::this_thread::detail::yield_k(k % 16, thread_name);
+                        pika::execution::this_thread::detail::spin_k(k, thread_name);
                     }
                 }
             }
@@ -178,7 +178,7 @@ namespace pika::util {
                     else
                     {
                         count = 0;
-                        pika::execution::this_thread::detail::yield_k(k % 16, thread_name);
+                        pika::execution::this_thread::detail::spin_k(k, thread_name);
                     }
                 }
             }
@@ -217,7 +217,7 @@ namespace pika::util {
                     if (use_timeout && duration_type(t.elapsed()) > timeout) { return false; }
 
                     if (!predicate()) { return true; }
-                    else { pika::execution::this_thread::detail::yield_k(k % 16, thread_name); }
+                    else { pika::execution::this_thread::detail::spin_k(k, thread_name); }
                 }
             }
         }
