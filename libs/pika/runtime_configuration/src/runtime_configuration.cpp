@@ -99,7 +99,7 @@ namespace pika::util {
 #ifdef PIKA_DEBUG
             "deadlock_detection = ${PIKA_DEADLOCK_DETECTION:1}",
 #else
-            "deadlock_detection = ${PIKA_DEADLOCK_DETECTION:0}",
+            "deadlock_detection = ${PIKA_DEADLOCK_DETECTION:1}",
 #endif
 #endif
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
