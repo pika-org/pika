@@ -21,7 +21,7 @@ foreach(test ${function_tests})
     FOLDER "Tests/Regressions/Modules/Functional"
   )
 
-  pika_add_regression_test("modules.functional" ${test} ${${test}_PARAMETERS})
+  pika_add_regression_test("modules.functional" ${test} VALGRIND)
 endforeach()
 
 if(PIKA_WITH_COMPILE_ONLY_TESTS)

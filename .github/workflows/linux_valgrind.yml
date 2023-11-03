@@ -69,6 +69,7 @@ jobs:
               tests.unit.modules.errors \
               tests.{regressions,unit}.modules.execution \
               tests.unit.modules.execution_base \
+              tests.{regressions,unit}.modules.functional \
               tests.unit.modules.tag_invoke \
               tests.unit.modules.threading \
               tests.{regressions,unit}.modules.threading_base \
