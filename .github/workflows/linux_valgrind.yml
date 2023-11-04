@@ -70,6 +70,7 @@ jobs:
               tests.unit.modules.assertion \
               tests.unit.modules.concurrency \
               tests.unit.modules.datastructures \
+              tests.unit.modules.debugging \
               tests.unit.modules.errors \
               tests.{regressions,unit}.modules.execution \
               tests.unit.modules.execution_base \
