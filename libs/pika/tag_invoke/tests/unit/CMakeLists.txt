@@ -21,6 +21,6 @@ foreach(test ${function_tests})
     FOLDER "Tests/Unit/Modules/TagInvoke"
   )
 
-  pika_add_unit_test("modules.tag_invoke" ${test})
+  pika_add_unit_test("modules.tag_invoke" ${test} VALGRIND)
 
 endforeach()

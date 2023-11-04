@@ -69,6 +69,7 @@ jobs:
               tests.unit.modules.errors \
               tests.{regressions,unit}.modules.execution \
               tests.unit.modules.execution_base \
+              tests.unit.modules.tag_invoke \
               std_thread_scheduler_test
       - name: Test
         shell: bash
