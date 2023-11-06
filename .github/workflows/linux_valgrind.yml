@@ -24,6 +24,10 @@ jobs:
     runs-on: ubuntu-latest
     container: pikaorg/pika-ci-base:20
 
+    strategy:
+      matrix:
+        build_type: ["Debug", "Release"]
+
     steps:
       - uses: actions/checkout@v4
       - name: Update apt repositories for ccache
@@ -41,7 +45,7 @@ jobs:
                 -Bbuild \
                 -GNinja \
                 -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-                -DCMAKE_BUILD_TYPE=Debug \
+                -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
                 -DCMAKE_CXX_FLAGS="-gdwarf-4" \
                 -DPIKA_WITH_UNITY_BUILD=ON \
                 -DPIKA_WITH_MALLOC=system \
