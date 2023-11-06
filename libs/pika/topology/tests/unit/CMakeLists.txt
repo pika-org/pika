@@ -18,5 +18,5 @@ foreach(test ${tests})
     FOLDER "Tests/Unit/Modules/Topology"
   )
 
-  pika_add_unit_test("modules.topology" ${test} ${${test}_PARAMETERS})
+  pika_add_unit_test("modules.topology" ${test} ${${test}_PARAMETERS} VALGRIND)
 endforeach()
