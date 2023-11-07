@@ -14,6 +14,7 @@
 #include <pika/execution_base/detail/spinlock_deadlock_detection.hpp>
 #include <pika/execution_base/this_thread.hpp>
 #include <pika/timing/steady_clock.hpp>
+#include <pika/type_support/unused.hpp>
 
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
 # include <pika/errors/throw_exception.hpp>
@@ -242,7 +243,7 @@ namespace pika::execution {
 
         void yield(char const* desc) { agent().yield(desc); }
 
-        void yield_k(std::size_t k, char const* desc)
+        void check_spinlock_deadlock(std::size_t k, char const* name, char const* desc)
         {
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
             if (pika::util::detail::get_spinlock_break_on_deadlock_enabled())
@@ -254,10 +255,10 @@ namespace pika::execution {
                 if (k >= deadlock_detection_limit)
                 {
                     PIKA_THROW_EXCEPTION(pika::error::deadlock, desc,
-                        "yield_k yielded {} times. This may indicate a deadlock in your "
+                        "{} spun {} times. This may indicate a deadlock in your "
                         "application or a bug in pika. Stopping because "
                         "pika.spinlock_deadlock_detection_limit={}.",
-                        k, deadlock_detection_limit);
+                        name, k, deadlock_detection_limit);
                 }
 
                 auto const deadlock_warning_limit =
@@ -265,52 +266,29 @@ namespace pika::execution {
                 if (k >= deadlock_warning_limit && k % deadlock_warning_limit == 0)
                 {
                     fmt::print(std::cerr,
-                        "desc: {}. yield_k already yielded {} times "
+                        "desc: {}. {} already spun {} times "
                         "(pika.spinlock_deadlock_warning_limit={}). This may indicate a deadlock "
                         "in your application or a bug in pika. Stopping after "
                         "pika.spinlock_deadlock_detection_limit={} iterations.\n",
-                        desc, k, deadlock_warning_limit, deadlock_detection_limit);
+                        desc, name, k, deadlock_warning_limit, deadlock_detection_limit);
                 }
             }
-
+#else
+            PIKA_UNUSED(k);
+            PIKA_UNUSED(name);
+            PIKA_UNUSED(desc);
 #endif
+        }
 
+        void yield_k(std::size_t k, char const* desc)
+        {
+            check_spinlock_deadlock(k, "yield_k", desc);
             agent().yield_k(k, desc);
         }
 
         void spin_k(std::size_t k, char const* desc)
         {
-#ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
-            if (pika::util::detail::get_spinlock_break_on_deadlock_enabled())
-            {
-                if (desc == nullptr) { desc = ""; }
-
-                auto const deadlock_detection_limit =
-                    pika::util::detail::get_spinlock_deadlock_detection_limit();
-                if (k >= deadlock_detection_limit)
-                {
-                    PIKA_THROW_EXCEPTION(pika::error::deadlock, desc,
-                        "spin_k spun {} times. This may indicate a deadlock in your "
-                        "application or a bug in pika. Stopping because "
-                        "pika.spinlock_deadlock_detection_limit={}.",
-                        k, deadlock_detection_limit);
-                }
-
-                auto const deadlock_warning_limit =
-                    pika::util::detail::get_spinlock_deadlock_warning_limit();
-                if (k >= deadlock_warning_limit && k % deadlock_warning_limit == 0)
-                {
-                    fmt::print(std::cerr,
-                        "desc: {}. spin_k spun {} times "
-                        "(pika.spinlock_deadlock_warning_limit={}). This may indicate a deadlock "
-                        "in your application or a bug in pika. Stopping after "
-                        "pika.spinlock_deadlock_detection_limit={} iterations.\n",
-                        desc, k, deadlock_warning_limit, deadlock_detection_limit);
-                }
-            }
-
-#endif
-
+            check_spinlock_deadlock(k, "spin_k", desc);
             agent().spin_k(k, desc);
         }
 
