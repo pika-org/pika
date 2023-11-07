@@ -180,10 +180,14 @@ void test_concurrent(pop_mode m)
         ++curr_expected;
     }
 
-    // We expect at least two threads to have popped indices concurrently.
-    // There is a small chance of false positives here (resulting from big
-    // delays in starting threads).
+    // We expect at least two threads to have popped indices concurrently.  There is a small chance
+    // of false positives here (resulting from big delays in starting threads).
+    //
+    // With valgrind enabled in non-debug builds the false positive rate is too high, so we skip
+    // this check.
+#if !defined(PIKA_HAVE_VALGRIND) || defined(PIKA_DEBUG)
     PIKA_TEST_LTE(std::size_t(2), num_nonzero_indices_popped);
+#endif
 }
 
 int pika_main(pika::program_options::variables_map& vm)
