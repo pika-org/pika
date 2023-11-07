@@ -5,4 +5,4 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 configuration_slurm_constraint="gpu"
-configuration_skip_pr="true"
+configuration_skip_pr="false"
