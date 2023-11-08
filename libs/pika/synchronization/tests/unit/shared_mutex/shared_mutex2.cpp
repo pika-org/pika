@@ -12,6 +12,7 @@
 #include <pika/thread.hpp>
 
 #include <chrono>
+#include <cstdlib>
 #include <mutex>
 #include <string>
 #include <thread>
@@ -277,7 +278,8 @@ int pika_main()
     test_if_other_thread_has_shared_lock_try_lock_shared_returns_true();
     test_if_other_thread_has_shared_lock_try_lock_upgrade_returns_true();
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

@@ -12,9 +12,14 @@
 #include <pika/init.hpp>
 #include <pika/modules/resource_partitioner.hpp>
 
+#include <cstdlib>
 #include <iostream>
 
-int pika_main() { return pika::finalize(); }
+int pika_main()
+{
+    pika::finalize();
+    return EXIT_SUCCESS;
+}
 
 void init_resource_partitioner_handler(
     pika::resource::partitioner& rp, pika::program_options::variables_map const& /*vm*/)

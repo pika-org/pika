@@ -8,6 +8,7 @@
 #include <pika/testing.hpp>
 
 #include <atomic>
+#include <cstdlib>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,8 @@ std::atomic<bool> main_executed(false);
 int pika_main()
 {
     main_executed = true;
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char** argv)

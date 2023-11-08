@@ -13,6 +13,7 @@
 #include <pika/threading_base/thread_pool_base.hpp>
 
 #include <cstddef>
+#include <cstdlib>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -38,7 +39,8 @@ int pika_main()
 
     PIKA_TEST(exception_thrown);
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

@@ -24,6 +24,7 @@
 #include <chrono>
 #include <condition_variable>
 #include <cstdint>
+#include <cstdlib>
 #include <ctime>
 #include <functional>
 #include <iostream>
@@ -458,7 +459,8 @@ int pika_main(variables_map& vm)
         // Force termination of all suspended tasks.
         pika::get_runtime().get_thread_manager().abort_all_suspended_threads();
     }
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -16,6 +16,7 @@
 #include <chrono>
 #include <cstddef>
 #include <cstdint>
+#include <cstdlib>
 #include <iostream>
 #include <utility>
 #include <vector>
@@ -119,7 +120,8 @@ int pika_main(pika::program_options::variables_map& vm)
     pika::util::print_cdash_timing(
         "AsyncSpeedup", sequential_time_per_task / hierarchical_time_per_task);
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

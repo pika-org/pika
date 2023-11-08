@@ -13,6 +13,7 @@
 #include "algorithm_test_utils.hpp"
 
 #include <atomic>
+#include <cstdlib>
 #include <mpi.h>
 #include <string>
 #include <utility>
@@ -235,7 +236,8 @@ int pika_main()
 
     test_adl_isolation(mpi::transform_mpi(my_namespace::my_sender{}, [](MPI_Request) {}));
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

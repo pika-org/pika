@@ -9,11 +9,16 @@
 
 #include <pika/init.hpp>
 
+#include <cstdlib>
 #include <iostream>
 
 // Our main pika thread does nothing except for signalling to the runtime to
 // finalize.
-int pika_main() { return pika::finalize(); }
+int pika_main()
+{
+    pika::finalize();
+    return EXIT_SUCCESS;
+}
 
 int main(int argc, char* argv[])
 {

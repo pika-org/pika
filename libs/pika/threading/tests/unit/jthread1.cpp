@@ -15,6 +15,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <cstdlib>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -442,7 +443,8 @@ int pika_main()
     test_temporarily_disable_token();
     test_jthread_api();
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

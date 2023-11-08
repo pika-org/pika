@@ -11,6 +11,7 @@
 #include <pika/synchronization/shared_mutex.hpp>
 #include <pika/testing.hpp>
 
+#include <cstdlib>
 #include <mutex>
 #include <shared_mutex>
 
@@ -31,7 +32,8 @@ int pika_main()
         [[maybe_unused]] int i = data;
     }
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

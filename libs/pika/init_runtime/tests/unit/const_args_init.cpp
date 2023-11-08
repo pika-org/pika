@@ -7,9 +7,14 @@
 #include <pika/init.hpp>
 #include <pika/testing.hpp>
 
+#include <cstdlib>
 #include <vector>
 
-int pika_main() { return pika::finalize(); }
+int pika_main()
+{
+    pika::finalize();
+    return EXIT_SUCCESS;
+}
 
 int main()
 {
@@ -21,7 +26,7 @@ int main()
 
         PIKA_TEST_EQ(pika::init(pika_main, argc, argv), 0);
 
-        PIKA_TEST(pika::start(pika_main, argc, argv));
+        pika::start(pika_main, argc, argv);
         PIKA_TEST_EQ(pika::stop(), 0);
     }
 
@@ -30,7 +35,7 @@ int main()
 
         PIKA_TEST_EQ(pika::init(pika_main, argc, argv), 0);
 
-        PIKA_TEST(pika::start(pika_main, argc, argv));
+        pika::start(pika_main, argc, argv);
         PIKA_TEST_EQ(pika::stop(), 0);
     }
 
@@ -39,7 +44,7 @@ int main()
 
         PIKA_TEST_EQ(pika::init(pika_main, argc, argv), 0);
 
-        PIKA_TEST(pika::start(pika_main, argc, argv));
+        pika::start(pika_main, argc, argv);
         PIKA_TEST_EQ(pika::stop(), 0);
     }
 
@@ -48,7 +53,7 @@ int main()
 
         PIKA_TEST_EQ(pika::init(pika_main, argc, argv), 0);
 
-        PIKA_TEST(pika::start(pika_main, argc, argv));
+        pika::start(pika_main, argc, argv);
         PIKA_TEST_EQ(pika::stop(), 0);
     }
 

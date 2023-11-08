@@ -15,6 +15,7 @@
 #include <pika/thread.hpp>
 
 #include <atomic>
+#include <cstdlib>
 #include <functional>
 #include <mutex>
 
@@ -92,7 +93,8 @@ void test_condition_with_mutex()
 int pika_main()
 {
     test_condition_with_mutex();
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

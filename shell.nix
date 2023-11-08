@@ -17,6 +17,8 @@ pkgs.mkShell.override { stdenv = pkgs.gcc11Stdenv; } {
     mpich
     ninja
     pkg-config
+    doxygen
+    python311Packages.breathe
     python311Packages.sphinx
     python311Packages.sphinx-material
   ];

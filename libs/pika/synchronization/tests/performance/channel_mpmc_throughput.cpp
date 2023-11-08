@@ -15,6 +15,7 @@
 #include <chrono>
 #include <cstddef>
 #include <cstdint>
+#include <cstdlib>
 #include <functional>
 #include <iostream>
 #include <utility>
@@ -104,7 +105,8 @@ int pika_main()
     std::cout << "Consumer throughput: " << (NUM_TESTS / consumer_time) << " [op/s] ("
               << (consumer_time / NUM_TESTS) << " [s/op])\n";
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[]) { return pika::init(pika_main, argc, argv); }

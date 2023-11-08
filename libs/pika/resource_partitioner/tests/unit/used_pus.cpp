@@ -12,6 +12,7 @@
 #include <pika/thread.hpp>
 
 #include <cstddef>
+#include <cstdlib>
 #include <string>
 #include <utility>
 #include <vector>
@@ -30,7 +31,8 @@ int pika_main()
         PIKA_TEST(pika::threads::detail::bit_or(used_pu_mask, thread_mask));
     }
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

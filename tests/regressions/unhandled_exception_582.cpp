@@ -10,10 +10,13 @@
 #include <pika/init.hpp>
 #include <pika/testing.hpp>
 
+#include <cstdlib>
+
 int pika_main()
 {
     PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika_main", "testing");
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char** argv)

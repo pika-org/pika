@@ -16,11 +16,16 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <cstdlib>
 #include <iostream>
 
 namespace ex = pika::execution::experimental;
 
-int pika_main() { return pika::finalize(); }
+int pika_main()
+{
+    pika::finalize();
+    return EXIT_SUCCESS;
+}
 
 int main(int argc, char** argv)
 {

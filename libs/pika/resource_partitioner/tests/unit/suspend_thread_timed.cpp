@@ -19,6 +19,7 @@
 
 #include <chrono>
 #include <cstddef>
+#include <cstdlib>
 #include <iostream>
 #include <memory>
 #include <random>
@@ -96,7 +97,8 @@ int pika_main(int argc, char* argv[])
         }
     }
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 void test_scheduler(int argc, char* argv[], pika::resource::scheduling_policy scheduler)

@@ -10,6 +10,7 @@
 
 #include <atomic>
 #include <cstddef>
+#include <cstdlib>
 #include <exception>
 
 std::atomic<std::size_t> count_error_handler(0);
@@ -25,7 +26,8 @@ bool on_thread_error(std::size_t, std::exception_ptr const&)
 int pika_main()
 {
     PIKA_THROW_EXCEPTION(pika::error::invalid_status, "test", "test");
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

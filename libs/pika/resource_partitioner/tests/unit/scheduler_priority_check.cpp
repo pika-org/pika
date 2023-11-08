@@ -19,6 +19,7 @@
 #include <atomic>
 #include <chrono>
 #include <cstddef>
+#include <cstdlib>
 #include <iostream>
 #include <string>
 #include <utility>
@@ -156,7 +157,8 @@ int pika_main(variables_map& vm)
               << "Launch    : " << launch_count << "\n"
               << "Launch HP : " << hp_launch_count << std::endl;
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

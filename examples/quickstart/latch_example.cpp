@@ -11,6 +11,7 @@
 #include <pika/latch.hpp>
 
 #include <cstddef>
+#include <cstdlib>
 #include <functional>
 #include <utility>
 #include <vector>
@@ -43,7 +44,8 @@ int pika_main(pika::program_options::variables_map& vm)
 
     tt::sync_wait(ex::when_all_vector(std::move(results)));
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

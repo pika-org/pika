@@ -30,6 +30,7 @@
 #include <chrono>
 #include <cmath>
 #include <cstddef>
+#include <cstdlib>
 #include <iostream>
 #include <random>
 #include <sstream>
@@ -153,7 +154,8 @@ int pika_main(pika::program_options::variables_map& vm)
 
     matrixMultiply<float>(matrix_size, device, iterations);
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 // -------------------------------------------------------------------------

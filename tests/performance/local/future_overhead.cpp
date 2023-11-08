@@ -23,6 +23,7 @@
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
+#include <cstdlib>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -385,7 +386,8 @@ int pika_main(variables_map& vm)
         }
     }
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

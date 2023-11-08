@@ -9,12 +9,15 @@
 #include <pika/init.hpp>
 #include <pika/testing.hpp>
 
+#include <cstdlib>
+
 int invoked_init = 0;
 
 int pika_main()
 {
     ++invoked_init;
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char** argv)

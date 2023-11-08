@@ -11,7 +11,6 @@ set(example_programs
     event_synchronization
     fibonacci
     hello_world
-    hello_world_documentation
     latch_example # suffix added to avoid conflict with unit tests
     pipeline1
     # shared_mutex # Disabled due to unavailable timed suspension timed_wake #

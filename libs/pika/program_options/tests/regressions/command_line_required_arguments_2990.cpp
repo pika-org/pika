@@ -8,6 +8,7 @@
 #include <pika/program_options.hpp>
 #include <pika/testing.hpp>
 
+#include <cstdlib>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -20,7 +21,8 @@ int pika_main(variables_map& vm)
     std::cout << "Value of reqopt2: " << vm["reqopt2"].as<double>() << std::endl;
     std::cout << "Value of reqopt3: " << vm["reqopt3"].as<std::string>() << std::endl;
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

@@ -20,6 +20,12 @@
 #include <vector>
 
 namespace pika::detail {
+    enum class command_line_handling_result
+    {
+        success,    // All went well, continue starting the runtime
+        exit,       // All went well, but should exit (e.g. --pika:help was given)
+    };
+
     struct command_line_handling
     {
         command_line_handling(pika::util::runtime_configuration rtcfg,
@@ -41,7 +47,8 @@ namespace pika::detail {
         {
         }
 
-        int call(pika::program_options::options_description const& desc_cmdline, int argc,
+        command_line_handling_result call(
+            pika::program_options::options_description const& desc_cmdline, int argc,
             const char* const* argv);
 
         pika::program_options::variables_map vm_;
@@ -71,7 +78,7 @@ namespace pika::detail {
         void check_pu_offset() const;
         void check_pu_step() const;
 
-        bool handle_arguments(detail::manage_config& cfgmap,
+        void handle_arguments(detail::manage_config& cfgmap,
             pika::program_options::variables_map& vm, std::vector<std::string>& ini_config);
 
         void enable_logging_settings(

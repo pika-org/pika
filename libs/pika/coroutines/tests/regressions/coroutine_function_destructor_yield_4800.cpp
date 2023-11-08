@@ -12,6 +12,7 @@
 #include <pika/testing.hpp>
 #include <pika/thread.hpp>
 
+#include <cstdlib>
 #include <utility>
 
 namespace ex = pika::execution::experimental;
@@ -62,7 +63,8 @@ int pika_main()
         ex::execute(ex::thread_pool_scheduler{}, [y = yielder{}] {});
     }
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

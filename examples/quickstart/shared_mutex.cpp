@@ -16,6 +16,7 @@
 #include <atomic>
 #include <chrono>
 #include <cstdint>
+#include <cstdlib>
 #include <ctime>
 #include <iostream>
 #include <mutex>
@@ -88,7 +89,8 @@ int pika_main()
     ready = true;
     for (auto& t : threads) t.join();
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[]) { return pika::init(pika_main, argc, argv); }

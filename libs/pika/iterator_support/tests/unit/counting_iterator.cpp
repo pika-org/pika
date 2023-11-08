@@ -316,7 +316,8 @@ int pika_main(pika::program_options::variables_map& vm)
     test(pika::util::make_counting_iterator(array),
         pika::util::make_counting_iterator(array + 2000 - 1));
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

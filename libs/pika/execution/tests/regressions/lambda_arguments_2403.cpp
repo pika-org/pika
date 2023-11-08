@@ -11,6 +11,7 @@
 #include <pika/testing.hpp>
 
 #include <cstddef>
+#include <cstdlib>
 #include <vector>
 
 int pika_main()
@@ -25,7 +26,8 @@ int pika_main()
 
     PIKA_TEST_EQ(std::count(large.begin(), large.end(), 10.0), std::ptrdiff_t(large.size()));
 
-    return pika::finalize();    // Handles pika shutdown
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char** argv)

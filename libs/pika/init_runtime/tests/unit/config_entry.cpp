@@ -10,6 +10,7 @@
 #include <pika/testing.hpp>
 
 #include <atomic>
+#include <cstdlib>
 #include <string>
 
 void test_get_entry()
@@ -58,7 +59,9 @@ int pika_main()
 {
     test_get_entry();
     test_set_entry();
-    return pika::finalize();
+
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char** argv)

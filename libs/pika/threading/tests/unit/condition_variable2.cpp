@@ -17,6 +17,7 @@
 
 #include <array>
 #include <chrono>
+#include <cstdlib>
 #include <functional>
 #include <mutex>
 #include <thread>
@@ -600,7 +601,8 @@ int pika_main()
         PIKA_TEST(false);
     }
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

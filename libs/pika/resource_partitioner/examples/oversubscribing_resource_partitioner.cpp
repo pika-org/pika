@@ -16,6 +16,7 @@
 # include <cmath>
 # include <cstddef>
 # include <cstdint>
+# include <cstdlib>
 # include <iostream>
 # include <memory>
 # include <set>
@@ -192,7 +193,8 @@ int pika_main(/*pika::program_options::variables_map& vm*/)
     senders.clear();
     thread_set.clear();
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 // -------------------------------------------------------------------------

@@ -14,6 +14,7 @@
 
 #include <atomic>
 #include <cstddef>
+#include <cstdlib>
 #include <functional>
 #include <string>
 #include <utility>
@@ -84,7 +85,8 @@ int pika_main(variables_map& vm)
     }
 
     // Initiate shutdown of the runtime system.
-    return finalize();
+    finalize();
+    return EXIT_SUCCESS;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

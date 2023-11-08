@@ -17,6 +17,7 @@
 
 #include <atomic>
 #include <cstdint>
+#include <cstdlib>
 #include <functional>
 #include <memory>
 #include <string>
@@ -107,7 +108,8 @@ int pika_main()
         exit_barrier.arrive_and_wait();
     }
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

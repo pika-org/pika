@@ -27,6 +27,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
+#include <cstdlib>
 #include <iomanip>
 #include <iostream>
 #include <memory>
@@ -445,7 +446,8 @@ int pika_main(pika::program_options::variables_map& vm)
     local_send_storage.shrink_to_fit();
 
     nws_deb<2>.debug("Calling finalize ", rank);
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 //----------------------------------------------------------------------------

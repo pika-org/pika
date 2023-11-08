@@ -10,13 +10,15 @@
 
 #include <pika/init.hpp>
 
+#include <cstdlib>
 #include <iostream>
 
 int pika_main()
 {
     // Say hello to the world!
     std::cout << "Hello World!\n" << std::flush;
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[]) { return pika::init(pika_main, argc, argv); }

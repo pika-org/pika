@@ -38,14 +38,14 @@ namespace pika::detail {
         commandline_error_mode const m, commandline_error_mode const b) noexcept;
     std::string enquote(std::string const& arg);
 
-    bool parse_commandline(pika::detail::section const& rtcfg,
+    void parse_commandline(pika::detail::section const& rtcfg,
         pika::program_options::options_description const& app_options, std::string const& cmdline,
         pika::program_options::variables_map& vm,
         commandline_error_mode error_mode = commandline_error_mode::return_on_error,
         pika::program_options::options_description* visible = nullptr,
         std::vector<std::string>* unregistered_options = nullptr);
 
-    bool parse_commandline(pika::detail::section const& rtcfg,
+    void parse_commandline(pika::detail::section const& rtcfg,
         pika::program_options::options_description const& app_options, std::string const& arg0,
         std::vector<std::string> const& args, pika::program_options::variables_map& vm,
         commandline_error_mode error_mode = commandline_error_mode::return_on_error,

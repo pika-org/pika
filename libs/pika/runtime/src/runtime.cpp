@@ -691,7 +691,7 @@ namespace pika {
     namespace detail {
         ///////////////////////////////////////////////////////////////////////////
         // retrieve the command line arguments
-        bool retrieve_commandline_arguments(
+        void retrieve_commandline_arguments(
             pika::program_options::options_description const& app_options,
             pika::program_options::variables_map& vm)
         {
@@ -706,20 +706,20 @@ namespace pika {
             pika::detail::section& cfg = pika::get_runtime().get_config();
             if (cfg.has_entry("pika.cmd_line")) cmdline = cfg.get_entry("pika.cmd_line");
 
-            return parse_commandline(
+            parse_commandline(
                 cfg, app_options, cmdline, vm, commandline_error_mode::allow_unregistered);
         }
 
         ///////////////////////////////////////////////////////////////////////////
         // retrieve the command line arguments
-        bool retrieve_commandline_arguments(
+        void retrieve_commandline_arguments(
             std::string const& appname, pika::program_options::variables_map& vm)
         {
             using pika::program_options::options_description;
 
             options_description desc_commandline("Usage: " + appname + " [options]");
 
-            return retrieve_commandline_arguments(desc_commandline, vm);
+            retrieve_commandline_arguments(desc_commandline, vm);
         }
     }    // namespace detail
 
@@ -1318,51 +1318,41 @@ namespace pika {
         cond.notify_all();    // we're done now
     }
 
-    int runtime::suspend()
+    void runtime::suspend()
     {
         LRT_(info).format("runtime: about to suspend runtime");
 
-        if (state_.load() == runtime_state::sleeping) { return 0; }
+        if (state_.load() == runtime_state::sleeping) { return; }
 
         if (state_.load() != runtime_state::running)
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status, "runtime::suspend",
                 "Can only suspend runtime from running state");
-            return -1;
         }
 
         thread_manager_->suspend();
 
         set_state(runtime_state::sleeping);
-
-        return 0;
     }
 
-    int runtime::resume()
+    void runtime::resume()
     {
         LRT_(info).format("runtime: about to resume runtime");
 
-        if (state_.load() == runtime_state::running) { return 0; }
+        if (state_.load() == runtime_state::running) { return; }
 
         if (state_.load() != runtime_state::sleeping)
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status, "runtime::resume",
                 "Can only resume runtime from suspended state");
-            return -1;
         }
 
         thread_manager_->resume();
 
         set_state(runtime_state::running);
-
-        return 0;
     }
 
-    int runtime::finalize()
-    {
-        notify_finalize();
-        return 0;
-    }
+    void runtime::finalize() { notify_finalize(); }
 
     pika::threads::detail::thread_manager& runtime::get_thread_manager()
     {

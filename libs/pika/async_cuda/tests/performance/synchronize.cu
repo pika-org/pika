@@ -12,6 +12,7 @@
 #include <whip.hpp>
 
 #include <cstddef>
+#include <cstdlib>
 #include <iostream>
 
 __global__ void dummy() {}
@@ -210,7 +211,8 @@ int pika_main(pika::program_options::variables_map& vm)
                   << '\n';
     }
 
-    return pika::finalize();
+    pika::finalize();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])

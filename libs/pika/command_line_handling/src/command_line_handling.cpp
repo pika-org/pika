@@ -407,7 +407,7 @@ namespace pika::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    bool command_line_handling::handle_arguments(detail::manage_config& cfgmap,
+    void command_line_handling::handle_arguments(detail::manage_config& cfgmap,
         pika::program_options::variables_map& vm, std::vector<std::string>& ini_config)
     {
         bool debug_clp = vm.count("pika:debug-clp");
@@ -553,8 +553,6 @@ namespace pika::detail {
             for (std::string const& s : ini_config) { std::cerr << s << std::endl; }
             std::cerr << "-----------------------------------\n";
         }
-
-        return true;
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -754,8 +752,9 @@ namespace pika::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    int command_line_handling::call(pika::program_options::options_description const& desc_cmdline,
-        int argc, const char* const* argv)
+    command_line_handling_result command_line_handling::call(
+        pika::program_options::options_description const& desc_cmdline, int argc,
+        const char* const* argv)
     {
         // set the flag signaling that command line parsing has been done
         cmd_line_parsed_ = true;
@@ -791,14 +790,11 @@ namespace pika::detail {
             // creating a separate instance just for the preliminary
             // command line handling.
             pika::program_options::variables_map prevm;
-            if (!parse_commandline(rtcfg_, desc_cmdline, argv[0], args, prevm, error_mode))
-            {
-                return -1;
-            }
+            parse_commandline(rtcfg_, desc_cmdline, argv[0], args, prevm, error_mode);
 
             // handle all --pika:foo options
             std::vector<std::string> ini_config;    // discard
-            if (!handle_arguments(cfgmap, prevm, ini_config)) { return -2; }
+            handle_arguments(cfgmap, prevm, ini_config);
 
             // re-initialize runtime configuration object
             if (prevm.count("pika:config"))
@@ -836,18 +832,15 @@ namespace pika::detail {
         pika::program_options::options_description help;
         std::vector<std::string> unregistered_options;
 
-        if (!parse_commandline(rtcfg_, desc_cmdline, argv[0], args, vm_,
-                error_mode | commandline_error_mode::report_missing_config_file, &help,
-                &unregistered_options))
-        {
-            return -1;
-        }
+        parse_commandline(rtcfg_, desc_cmdline, argv[0], args, vm_,
+            error_mode | commandline_error_mode::report_missing_config_file, &help,
+            &unregistered_options);
 
         // break into debugger, if requested
         handle_attach_debugger();
 
         // handle all --pika:foo and --pika:*:foo options
-        if (!handle_arguments(cfgmap, vm_, ini_config_)) { return -2; }
+        handle_arguments(cfgmap, vm_, ini_config_);
 
         // store unregistered command line and arguments
         store_command_line(argc, argv);
@@ -857,10 +850,7 @@ namespace pika::detail {
         rtcfg_.reconfigure(ini_config_);
 
         // help can be printed only after the runtime mode has been set
-        if (handle_help_options(help))
-        {
-            return 1;    // exit application gracefully
-        }
+        if (handle_help_options(help)) { return command_line_handling_result::exit; }
 
         // print version/copyright information
         if (vm_.count("pika:version"))
@@ -871,7 +861,7 @@ namespace pika::detail {
                 version_printed_ = true;
             }
 
-            return 1;
+            return command_line_handling_result::exit;
         }
 
         // print configuration information (static and dynamic)
@@ -883,7 +873,7 @@ namespace pika::detail {
                 info_printed_ = true;
             }
 
-            return 1;
+            return command_line_handling_result::exit;
         }
 
         // Print a warning about process masks resulting in only one worker
@@ -916,7 +906,6 @@ namespace pika::detail {
             }
         }
 
-        // all is good
-        return 0;
+        return command_line_handling_result::success;
     }
 }    // namespace pika::detail
