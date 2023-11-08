@@ -451,7 +451,15 @@ namespace pika::threads::detail {
                 data.schedulehint.hint :
                 std::size_t(-1);
 
-            if (std::size_t(-1) == num_thread) { num_thread = curr_queue_++ % num_queues_; }
+            if (std::size_t(-1) == num_thread)
+            {
+                auto thrd_self = get_self_id_data();
+                if (thrd_self && thrd_self->get_scheduler_base() == this)
+                {
+                    num_thread = pika::threads::detail::get_local_thread_num_tss();
+                }
+                else { num_thread = 0; }
+            }
             else if (num_thread >= num_queues_) { num_thread %= num_queues_; }
 
             std::unique_lock<pu_mutex_type> l;
