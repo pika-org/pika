@@ -70,11 +70,13 @@ jobs:
               tests.unit.modules.assertion \
               tests.unit.modules.concurrency \
               tests.unit.modules.datastructures \
+              tests.unit.modules.debugging \
               tests.unit.modules.errors \
               tests.{regressions,unit}.modules.execution \
               tests.unit.modules.execution_base \
               tests.{regressions,unit}.modules.functional \
               tests.unit.modules.memory \
+              tests.unit.modules.properties \
               tests.unit.modules.string_util \
               tests.unit.modules.tag_invoke \
               tests.unit.modules.threading \
