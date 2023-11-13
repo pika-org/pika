@@ -78,9 +78,9 @@ namespace pika::mpi::experimental {
             PIKA_ASSERT(pool_exists() == need_pool);
 #endif
 
-            using execution::thread_priority;
-            thread_priority p =
-                use_HP_completion(mode) ? thread_priority::high : thread_priority::normal;
+            execution::thread_priority p = use_priority_boost(mode) ?
+                execution::thread_priority::boost :
+                execution::thread_priority::normal;
             if (inline_req)
             {
                 return dispatch_mpi_sender<Sender, F>{PIKA_MOVE(sender), PIKA_FORWARD(F, f), s} |
@@ -104,7 +104,7 @@ namespace pika::mpi::experimental {
             }
             else
             {
-                auto snd0 = PIKA_FORWARD(Sender, sender) | transfer(mpi_pool_scheduler());
+                auto snd0 = PIKA_FORWARD(Sender, sender) | transfer(mpi_pool_scheduler(p));
                 return dispatch_mpi_sender<decltype(snd0), F>{
                            PIKA_MOVE(snd0), PIKA_FORWARD(F, f), s} |
                     let_value([=](MPI_Request request) -> unique_any_sender<> {

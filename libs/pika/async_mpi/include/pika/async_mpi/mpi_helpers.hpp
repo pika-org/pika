@@ -66,16 +66,18 @@ namespace pika::mpi::experimental::detail {
 
     // -----------------------------------------------------------------
     // return a scheduler on the mpi pool, with or without stack
-    inline auto mpi_pool_scheduler(bool stack = true)
+    inline auto mpi_pool_scheduler(execution::thread_priority p, bool stack = true)
     {
         if (stack)
         {
-            return ex::thread_pool_scheduler{&resource::get_thread_pool(get_pool_name())};
+            return ex::with_priority(
+                ex::thread_pool_scheduler{&resource::get_thread_pool(get_pool_name())}, p);
         }
         else
         {
             return ex::with_stacksize(
-                ex::thread_pool_scheduler{&resource::get_thread_pool(get_pool_name())},
+                ex::with_priority(
+                    ex::thread_pool_scheduler{&resource::get_thread_pool(get_pool_name())}, p),
                 execution::thread_stacksize::nostack);
         }
     }
@@ -84,10 +86,6 @@ namespace pika::mpi::experimental::detail {
     // return a scheduler on the default pool with added priority if requested
     inline auto default_pool_scheduler(execution::thread_priority p)
     {
-        if (p == execution::thread_priority::normal)
-        {
-            return ex::thread_pool_scheduler{&resource::get_thread_pool("default")};
-        }
         return ex::with_priority(
             ex::thread_pool_scheduler{&resource::get_thread_pool("default")}, p);
     }
@@ -168,10 +166,11 @@ namespace pika::mpi::experimental::detail {
     // adds a request callback to the mpi polling code which will call
     // set_value/error on the receiver
     template <typename Receiver>
-    void schedule_task_callback(MPI_Request request, Receiver&& receiver)
+    void
+    schedule_task_callback(MPI_Request request, execution::thread_priority p, Receiver&& receiver)
     {
         detail::add_request_callback(
-            [receiver = PIKA_MOVE(receiver)](int status) mutable {
+            [receiver = PIKA_MOVE(receiver), p](int status) mutable {
                 PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("schedule_task_callback")));
                 if (status != MPI_SUCCESS)
                 {
@@ -181,8 +180,7 @@ namespace pika::mpi::experimental::detail {
                 else
                 {
                     // pass the result onto a new task and invoke the continuation
-                    auto snd0 = ex::just(status) |
-                        ex::transfer(default_pool_scheduler(execution::thread_priority::high)) |
+                    auto snd0 = ex::just(status) | ex::transfer(default_pool_scheduler(p)) |
                         ex::then([receiver = PIKA_MOVE(receiver)](int status) mutable {
                             PIKA_DETAIL_DP(
                                 mpi_tran<5>, debug(str<>("set_value_error_helper"), status));

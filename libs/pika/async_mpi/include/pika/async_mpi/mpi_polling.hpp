@@ -115,9 +115,11 @@ namespace pika::mpi::experimental {
             /// from the polling thread onto a new one
             completion_inline = 0x04,
 
-            /// this bit enables the use of a high priority task flag when a
-            /// completion is handled so that the continuation is executed quickly
-            /// if transferred to a new task, or resumed from sleep.
+            /// this bit enables the use of a high priority task flag
+            /// 1) requests are boosted to high priority if they are passed the the mpi-pool
+            ///    to ensure they execute before other polling tasks (reduce latency)
+            /// 2) completions are boosted to high priority when sent to the main thread pool
+            ///    so that the continuation is executed as quickly as possible
             high_priority = 0x08,
 
             /// 2 bits control the handler method,
@@ -140,8 +142,8 @@ namespace pika::mpi::experimental {
                 flags & detail::to_underlying(handler_mode::method_mask));
         }
 
-        // 1 bit defines high priority mode for completion
-        inline bool use_HP_completion(int mode)
+        // 1 bit defines high priority boost mode for pool transfers
+        inline bool use_priority_boost(int mode)
         {
             return static_cast<bool>((mode & detail::to_underlying(handler_mode::high_priority)) ==
                 detail::to_underlying(handler_mode::high_priority));
