@@ -29,7 +29,7 @@ gcc11_spack_image:
     - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/pika-$compiler:$CONFIG_TAG
     - echo -e "compiler=$compiler\nBASE_IMAGE=$PERSIST_IMAGE_NAME" >> compiler.env
   variables:
-    BASE_IMAGE: $CSCS_REGISTRY_PATH/pika-spack-base:$SPACK_VERSION
+    BASE_IMAGE: $CSCS_REGISTRY_PATH/pika-spack-base:$SPACK_VERSION-$SPACK_COMMIT
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_compiler
     DOCKER_BUILD_ARGS: '["BASE_IMAGE","ARCH","COMPILER","SPACK_SPEC"]'
   artifacts:
