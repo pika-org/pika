@@ -22,6 +22,7 @@ include:
 
 gcc12_hip5_spack_image:
   stage: spack_configs
+  timeout: 4 hours
   needs: [base_spack_image]
   extends:
     - .container-builder
