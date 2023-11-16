@@ -106,7 +106,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                 op_state.ts = {};
                 set_value_event_callback_helper(status, PIKA_MOVE(op_state.receiver));
             },
-            op_state.stream.value().get());
+            op_state.stream.get_stream_ref().get());
     }
 
     template <typename Result, typename OperationState>
@@ -119,7 +119,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                 set_value_event_callback_helper(status, PIKA_MOVE(op_state.receiver),
                     PIKA_MOVE(pika::detail::get<Result>(op_state.result)));
             },
-            op_state.stream.value().get());
+            op_state.stream.get_stream_ref().get());
     }
 
     template <typename Sender, typename F>
@@ -157,8 +157,8 @@ namespace pika::cuda::experimental::then_with_stream_detail {
 
 #if defined(PIKA_HAVE_STDEXEC)
         template <typename... Ts>
-        requires std::is_invocable_v<F, cuda_stream const&,
-            std::add_lvalue_reference_t<std::decay_t<Ts>>...>
+            requires std::is_invocable_v<F, cuda_stream const&,
+                         std::add_lvalue_reference_t<std::decay_t<Ts>>...>
         using invoke_result_helper =
             pika::execution::experimental::completion_signatures<pika::execution::experimental::
                     detail::result_type_signature_helper_t<std::invoke_result_t<F,
@@ -204,7 +204,16 @@ namespace pika::cuda::experimental::then_with_stream_detail {
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
             cuda_scheduler sched;
-            std::optional<std::reference_wrapper<const cuda_stream>> stream;
+
+            // The stream can be uninitialized, owned by this operation state, or a reference to a
+            // stream from another operation state.
+            static constexpr std::size_t stream_empty_index = 0;
+            static constexpr std::size_t stream_owning_index = 1;
+            static constexpr std::size_t stream_ref_index = 2;
+            pika::detail::variant<std::monostate, cuda_stream,
+                std::reference_wrapper<const cuda_stream>>
+                stream;
+            // std::optional<std::reference_wrapper<const cuda_stream>> stream;
 
             struct then_with_cuda_stream_receiver_tag
             {
@@ -256,7 +265,9 @@ namespace pika::cuda::experimental::then_with_stream_detail {
 
                 template <typename... Ts>
                 auto set_value(Ts&&... ts) noexcept
-                    -> decltype(PIKA_INVOKE(PIKA_MOVE(f), stream.value(), ts...), void())
+                    -> decltype(PIKA_INVOKE(
+                                    PIKA_MOVE(f), std::declval<cuda_stream const&>(), ts...),
+                        void())
                 {
                     pika::detail::try_catch_exception_ptr(
                         [&]() mutable {
@@ -264,9 +275,18 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                             op_state.ts.template emplace<ts_element_type>(PIKA_FORWARD(Ts, ts)...);
                             [[maybe_unused]] auto& t = std::get<ts_element_type>(op_state.ts);
 
-                            if (!op_state.stream)
+                            if (op_state.stream.index() == stream_empty_index)
                             {
-                                op_state.stream.emplace(op_state.sched.get_next_stream());
+                                op_state.stream.emplace<stream_owning_index>(
+                                    0,    // TODO: Don't hard code device 0
+                                    pika::execution::experimental::get_priority(op_state.sched),
+#if defined(DLAF_WITH_CUDA)
+                                    cudaStreamNonBlocking
+#else
+                                    0
+#endif
+
+                                );
                             }
 
                             // If the next receiver is also a
@@ -279,9 +299,12 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                             {
                                 if (op_state.sched == op_state.receiver.op_state.sched)
                                 {
-                                    PIKA_ASSERT(op_state.stream);
-                                    PIKA_ASSERT(!op_state.receiver.op_state.stream);
-                                    op_state.receiver.op_state.stream = op_state.stream;
+                                    PIKA_ASSERT(op_state.stream.index() == stream_owning_index ||
+                                        op_state.stream.index() == stream_ref_index);
+                                    PIKA_ASSERT(op_state.receiver.op_state.stream.index() ==
+                                        stream_empty_index);
+                                    op_state.receiver.op_state.stream.emplace<stream_ref_index>(
+                                        op_state.get_stream_ref());
 
                                     successor_uses_same_stream = true;
                                 }
@@ -295,8 +318,8 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                             {
                                 std::apply(
                                     [&](auto&... ts) mutable {
-                                        PIKA_INVOKE(
-                                            PIKA_MOVE(op_state.f), op_state.stream.value(), ts...);
+                                        PIKA_INVOKE(PIKA_MOVE(op_state.f),
+                                            op_state.get_stream_ref(), ts...);
                                     },
                                     t);
 
@@ -337,7 +360,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                                     [&](auto&... ts) mutable {
                                         op_state.result.template emplace<invoke_result_type>(
                                             PIKA_INVOKE(PIKA_MOVE(op_state.f),
-                                                op_state.stream.value(), ts...));
+                                                op_state.stream.get_stream_ref(), ts...));
                                     },
                                     t);
 
@@ -498,6 +521,22 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                 pika::execution::experimental::start_t, operation_state& os) noexcept
             {
                 pika::execution::experimental::start(os.op_state);
+            }
+
+            cuda_stream const& get_stream_ref() noexcept
+            {
+                PIKA_ASSERT(stream.index() != stream_empty_index);
+
+                if (stream.index() == stream_owning_index)
+                {
+                    return std::get<stream_owning_index>(stream);
+                }
+                else if (stream.index() == stream_ref_index)
+                {
+                    return std::get<stream_ref_index>(stream).get();
+                }
+
+                PIKA_UNREACHABLE;
             }
         };
 
