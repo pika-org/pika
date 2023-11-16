@@ -8,7 +8,6 @@ include:
   - local: '.gitlab/includes/common_pipeline.yml'
 
 variables:
-  SPACK_VERSION: develop
   SPACK_COMMIT: 495252f7f6f1e51842ccf37a44b8bf2c8ddb8950
 
 base_spack_image:
@@ -16,8 +15,8 @@ base_spack_image:
   timeout: 2 hours
   extends: .container-builder
   before_script:
-    - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/pika-spack-base:$SPACK_VERSION-$SPACK_COMMIT
+    - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/pika-spack-base:$SPACK_COMMIT
   variables:
     BASE_IMAGE: docker.io/ubuntu:22.04
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_base
-    DOCKER_BUILD_ARGS: '["BASE_IMAGE","SPACK_VERSION","SPACK_COMMIT"]'
+    DOCKER_BUILD_ARGS: '["BASE_IMAGE","SPACK_COMMIT"]'
