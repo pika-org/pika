@@ -12,16 +12,21 @@
 #include <pika/threading_base/thread_num_tss.hpp>
 #include <pika/topology/topology.hpp>
 
+#include <pika/ostream.h>
+#include <pika/printf.h>
+
 #include <cstddef>
 #include <memory>
 #include <vector>
 
 namespace pika::cuda::experimental {
-    cuda_pool::streams_holder::streams_holder(int device, std::size_t num_streams_per_thread,
-        pika::execution::thread_priority priority, unsigned int flags)
+    cuda_pool::streams_holder::streams_holder([[maybe_unused]] int device,
+        [[maybe_unused]] std::size_t num_streams_per_thread,
+        [[maybe_unused]] pika::execution::thread_priority priority,
+        [[maybe_unused]] unsigned int flags)
       : num_streams_per_thread(num_streams_per_thread)
       , concurrency(pika::threads::detail::hardware_concurrency())
-      , streams(num_streams_per_thread * concurrency, cuda_stream{device, priority, flags})
+      , streams()
       , active_stream_indices(concurrency, {0})
     {
         PIKA_ASSERT(num_streams_per_thread > 0);
@@ -29,6 +34,9 @@ namespace pika::cuda::experimental {
 
     cuda_stream const& cuda_pool::streams_holder::get_next_stream()
     {
+        fmt::print(std::cerr, "Do not call cuda_pool::streams_holder::get_next_stream\n");
+        PIKA_UNREACHABLE;
+
         // We do not care if there is oversubscription and t is bigger than
         // hardware_concurrency; we simply wrap it around
         auto const t = pika::threads::detail::get_global_thread_num_tss() % concurrency;
@@ -61,6 +69,9 @@ namespace pika::cuda::experimental {
 
     cuda_stream const& cuda_pool::get_next_stream(pika::execution::thread_priority priority)
     {
+        fmt::print(std::cerr, "Do not call cuda_pool::streams_holder::get_next_stream\n");
+        PIKA_UNREACHABLE;
+
         PIKA_ASSERT(data);
 
         if (priority <= pika::execution::thread_priority::normal)
