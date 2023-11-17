@@ -20,4 +20,3 @@ base_spack_image:
     BASE_IMAGE: docker.io/ubuntu:22.04
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_base
     DOCKER_BUILD_ARGS: '["BASE_IMAGE","SPACK_COMMIT"]'
-    CSCS_REBUILD_POLICY: always
