@@ -32,10 +32,11 @@ RUN apt-get update && apt-get -yqq install --no-install-recommends \
 
 # Install spack
 ARG SPACK_REPO=https://github.com/spack/spack
-ARG SPACK_VERSION
-ENV SPACK_ROOT=/opt/spack
+ARG SPACK_COMMIT
+ENV SPACK_ROOT=/opt/spack-$SPACK_COMMIT
 RUN mkdir -p $SPACK_ROOT \
-    && git clone --depth 1 -b ${SPACK_VERSION} ${SPACK_REPO} ${SPACK_ROOT}
+    && curl -OL $SPACK_REPO/archive/$SPACK_COMMIT.tar.gz \
+    && tar -xzvf $SPACK_COMMIT.tar.gz -C /opt && rm -f $SPACK_COMMIT.tar.gz
 
 ENV PATH $SPACK_ROOT/bin:$PATH
 
