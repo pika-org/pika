@@ -13,7 +13,7 @@ include:
     ARCH: linux-ubuntu22.04-zen3
     BUILD_TYPE: Debug
     COMPILER: clang@14.0.6
-    CXXSTD: 20
+    CXXSTD: 17
     SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} +cuda malloc=system cxxstd=$CXXSTD \
                  +stdexec ^boost@1.79.0 ^cuda@11.5.0 +allow-unsupported-compilers ^hwloc@2.7.0 \
                  ^stdexec@git.4b441f333adaeb8eb0a6c7f38d36af30fa7ab366=main"
@@ -55,7 +55,7 @@ clang14_cuda11_debug_build:
     - echo -e "PERSIST_IMAGE_NAME=$PERSIST_IMAGE_NAME" > build.env
   variables:
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_build
-    CMAKE_FLAGS: "-DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPIKA_WITH_CXX_STANDARD=$CXXSTD \
+    CMAKE_FLAGS: "-DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPIKA_WITH_CXX_STANDARD=20 \
                   -DPIKA_WITH_CUDA=ON -DPIKA_WITH_MALLOC=system \
                   -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON -DPIKA_WITH_STDEXEC=ON \
                   -DCMAKE_CUDA_COMPILER=c++ -DCMAKE_CUDA_ARCHITECTURES=80 \
