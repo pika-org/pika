@@ -9,6 +9,7 @@
 #include <pika/async_cuda/cuda_stream.hpp>
 #include <pika/concurrency/cache_line_data.hpp>
 #include <pika/coroutines/thread_enums.hpp>
+#include <pika/runtime/runtime_fwd.hpp>
 #include <pika/threading_base/thread_num_tss.hpp>
 #include <pika/topology/topology.hpp>
 
@@ -20,7 +21,8 @@ namespace pika::cuda::experimental {
     cuda_pool::streams_holder::streams_holder(int device, std::size_t num_streams_per_thread,
         pika::execution::thread_priority priority, unsigned int flags)
       : num_streams_per_thread(num_streams_per_thread)
-      , concurrency(pika::threads::detail::hardware_concurrency())
+      , concurrency(pika::get_runtime_ptr() ? pika::get_num_worker_threads() :
+                                              pika::threads::detail::hardware_concurrency())
       , streams(num_streams_per_thread * concurrency, cuda_stream{device, priority, flags})
       , active_stream_indices(concurrency, {0})
     {
