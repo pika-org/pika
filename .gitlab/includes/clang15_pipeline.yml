@@ -68,5 +68,5 @@ clang15_debug_test:
     - clang15_debug_build
   script:
     - spack arch
-    - spack build-env $spack_spec -- bash -c "ctest --label-exclude COMPILE_ONLY --test-dir ${BUILD_DIR} -j$(nproc) --timeout 120 --output-on-failure --no-compress-output --no-tests=error"
+    - spack build-env $spack_spec -- bash -c "ctest --label-exclude COMPILE_ONLY --test-dir ${BUILD_DIR} -j$(($(nproc)/2)) --timeout 120 --output-on-failure --no-compress-output --no-tests=error"
   image: $PERSIST_IMAGE_NAME
