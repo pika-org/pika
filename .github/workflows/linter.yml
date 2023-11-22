@@ -27,7 +27,8 @@ jobs:
       - name: Lint Yaml files
         uses: github/super-linter/slim@v5
         env:
-          DEFAULT_BRANCH: main
+          ACTIONS_RUNNER_DEBUG: true
+          LOG_LEVEL: DEBUG
           VALIDATE_ALL_CODEBASE: false
           VALIDATE_YAML: true
           YAML_CONFIG_FILE: .yamllint.yml
