@@ -15,6 +15,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <utility>
 #include <vector>
 
 namespace pika::cuda::experimental {
@@ -40,6 +41,102 @@ namespace pika::cuda::experimental {
         return streams[global_stream_index];
     }
 
+    cuda_pool::cublas_handles_holder::cublas_handles_holder()
+      : concurrency(pika::get_runtime_ptr() ? pika::get_num_worker_threads() :
+                                              pika::threads::detail::hardware_concurrency())
+      , unsynchronized_handles(concurrency, cublas_handle{})
+      , synchronized_handle_index{0}
+      , synchronized_handles(concurrency, cublas_handle{})
+      , handle_mutexes(concurrency)
+    {
+    }
+
+    locked_cublas_handle::locked_cublas_handle(
+        cublas_handle& handle, std::unique_lock<std::mutex>&& mutex)
+      : handle(handle)
+      , mutex(std::move(mutex))
+    {
+    }
+
+    cublas_handle const& locked_cublas_handle::get() noexcept { return handle; }
+
+    locked_cublas_handle cuda_pool::cublas_handles_holder::get_locked_handle(
+        cuda_stream const& stream, cublasPointerMode_t pointer_mode) const
+    {
+        auto const t = pika::threads::detail::get_global_thread_num_tss();
+
+        // If we are on a pika runtime worker thread we use one of the unsynchronized handles since
+        // this is the only thread that will access this handle
+        if (t < unsynchronized_handles.size())
+        {
+            auto& handle = unsynchronized_handles[t];
+            handle.set_stream(stream);
+            handle.set_pointer_mode(pointer_mode);
+
+            return locked_cublas_handle(handle, std::unique_lock<std::mutex>{});
+        }
+        // We use synchronized (locked) handles in a round-robin fashion for all other threads
+        else
+        {
+            auto const t = synchronized_handle_index++;
+
+            std::unique_lock lock{handle_mutexes[t]};
+
+            auto& handle = synchronized_handles[t];
+            handle.set_stream(stream);
+            handle.set_pointer_mode(pointer_mode);
+
+            return locked_cublas_handle(handle, std::move(lock));
+        }
+    }
+
+    cuda_pool::cusolver_handles_holder::cusolver_handles_holder()
+      : concurrency(pika::get_runtime_ptr() ? pika::get_num_worker_threads() :
+                                              pika::threads::detail::hardware_concurrency())
+      , unsynchronized_handles(concurrency, cusolver_handle{})
+      , synchronized_handle_index{0}
+      , synchronized_handles(concurrency, cusolver_handle{})
+      , handle_mutexes(concurrency)
+    {
+    }
+
+    locked_cusolver_handle::locked_cusolver_handle(
+        cusolver_handle& handle, std::unique_lock<std::mutex>&& mutex)
+      : handle(handle)
+      , mutex(std::move(mutex))
+    {
+    }
+
+    cusolver_handle const& locked_cusolver_handle::get() noexcept { return handle; }
+
+    locked_cusolver_handle cuda_pool::cusolver_handles_holder::get_locked_handle(
+        cuda_stream const& stream) const
+    {
+        auto const t = pika::threads::detail::get_global_thread_num_tss();
+
+        // If we are on a pika runtime worker thread we use one of the unsynchronized handles since
+        // this is the only thread that will access this handle
+        if (t < unsynchronized_handles.size())
+        {
+            auto& handle = unsynchronized_handles[t];
+            handle.set_stream(stream);
+
+            return locked_cusolver_handle(handle, std::unique_lock<std::mutex>{});
+        }
+        // We use synchronized (locked) handles in a round-robin fashion for all other threads
+        else
+        {
+            auto const t = synchronized_handle_index++;
+
+            std::unique_lock lock{handle_mutexes[t]};
+
+            auto& handle = synchronized_handles[t];
+            handle.set_stream(stream);
+
+            return {handle, std::move(lock)};
+        }
+    }
+
     cuda_pool::pool_data::pool_data(int device, std::size_t num_normal_priority_streams_per_thread,
         std::size_t num_high_priority_streams_per_thread, unsigned int flags)
       : device(device)
@@ -47,6 +144,8 @@ namespace pika::cuda::experimental {
             pika::execution::thread_priority::normal, flags)
       , high_priority_streams(device, num_high_priority_streams_per_thread,
             pika::execution::thread_priority::high, flags)
+      , cublas_handles()
+      , cusolver_handles()
     {
     }
 
@@ -70,5 +169,18 @@ namespace pika::cuda::experimental {
             return data->normal_priority_streams.get_next_stream();
         }
         else { return data->high_priority_streams.get_next_stream(); }
+    }
+
+    locked_cublas_handle cuda_pool::get_cublas_handle(
+        cuda_stream const& stream, cublasPointerMode_t pointer_mode) const
+    {
+        PIKA_ASSERT(data);
+        return data->cublas_handles.get_locked_handle(stream, pointer_mode);
+    }
+
+    locked_cusolver_handle cuda_pool::get_cusolver_handle(cuda_stream const& stream) const
+    {
+        PIKA_ASSERT(data);
+        return data->cusolver_handles.get_locked_handle(stream);
     }
 }    // namespace pika::cuda::experimental

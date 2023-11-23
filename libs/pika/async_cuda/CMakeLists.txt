@@ -41,7 +41,6 @@ set(async_cuda_sources
     cuda_stream.cpp
     cusolver_exception.cpp
     cusolver_handle.cpp
-    then_with_stream.cpp
 )
 
 if(PIKA_WITH_HIP)
