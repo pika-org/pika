@@ -42,6 +42,7 @@ namespace pika::threads::detail {
 
         void yield(char const* desc) override;
         void yield_k(std::size_t k, char const* desc) override;
+        void spin_k(std::size_t k, char const* desc) override;
         void suspend(char const* desc) override;
         void resume(char const* desc) override;
         void abort(char const* desc) override;

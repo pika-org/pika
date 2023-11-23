@@ -31,6 +31,7 @@ struct dummy_agent : pika::execution::detail::agent_base
 
     void yield(char const*) override { ++dummy_called; }
     void yield_k(std::size_t, char const*) override {}
+    void spin_k(std::size_t, char const*) override {}
     void suspend(char const*) override {}
     void resume(char const*) override {}
     void abort(char const*) override {}

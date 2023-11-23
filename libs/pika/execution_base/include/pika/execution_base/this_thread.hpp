@@ -43,6 +43,8 @@ namespace pika::execution {
         PIKA_EXPORT void yield(char const* desc = "pika::execution::this_thread::detail::yield");
         PIKA_EXPORT void yield_k(
             std::size_t k, char const* desc = "pika::execution::this_thread::detail::yield_k");
+        PIKA_EXPORT void spin_k(
+            std::size_t k, char const* desc = "pika::execution::this_thread::detail::spin_k");
         PIKA_EXPORT void suspend(
             char const* desc = "pika::execution::this_thread::detail::suspend");
 
@@ -67,20 +69,11 @@ namespace pika::util {
     void yield_while(Predicate&& predicate, const char* thread_name = nullptr,
         bool allow_timed_suspension = true)
     {
-        if (allow_timed_suspension)
-        {
-            for (std::size_t k = 0; predicate(); ++k)
-            {
-                pika::execution::this_thread::detail::yield_k(k, thread_name);
-            }
-        }
-        else
-        {
-            for (std::size_t k = 0; predicate(); ++k)
-            {
-                pika::execution::this_thread::detail::yield_k(k % 16, thread_name);
-            }
-        }
+        auto yield_or_spin = allow_timed_suspension ?
+            &pika::execution::this_thread::detail::yield_k :
+            &pika::execution::this_thread::detail::spin_k;
+
+        for (std::size_t k = 0; predicate(); ++k) { yield_or_spin(k, thread_name); }
     }
 
     namespace detail {
@@ -96,35 +89,21 @@ namespace pika::util {
         void yield_while_count(Predicate&& predicate, std::size_t required_count,
             const char* thread_name = nullptr, bool allow_timed_suspension = true)
         {
+            auto yield_or_spin = allow_timed_suspension ?
+                &pika::execution::this_thread::detail::yield_k :
+                &pika::execution::this_thread::detail::spin_k;
+
             std::size_t count = 0;
-            if (allow_timed_suspension)
+            for (std::size_t k = 0;; ++k)
             {
-                for (std::size_t k = 0;; ++k)
+                if (!predicate())
                 {
-                    if (!predicate())
-                    {
-                        if (++count > required_count) { return; }
-                    }
-                    else
-                    {
-                        count = 0;
-                        pika::execution::this_thread::detail::yield_k(k, thread_name);
-                    }
+                    if (++count > required_count) { return; }
                 }
-            }
-            else
-            {
-                for (std::size_t k = 0;; ++k)
+                else
                 {
-                    if (!predicate())
-                    {
-                        if (++count > required_count) { return; }
-                    }
-                    else
-                    {
-                        count = 0;
-                        pika::execution::this_thread::detail::yield_k(k % 16, thread_name);
-                    }
+                    count = 0;
+                    yield_or_spin(k, thread_name);
                 }
             }
         }
@@ -141,43 +120,26 @@ namespace pika::util {
             // Seconds represented using a double
             using duration_type = std::chrono::duration<double>;
 
-            bool use_timeout = timeout >= duration_type(0.0);
+            const bool use_timeout = timeout >= duration_type(0.0);
+            auto yield_or_spin = allow_timed_suspension ?
+                &pika::execution::this_thread::detail::yield_k :
+                &pika::execution::this_thread::detail::spin_k;
 
             std::size_t count = 0;
             pika::chrono::detail::high_resolution_timer t;
 
-            if (allow_timed_suspension)
+            for (std::size_t k = 0;; ++k)
             {
-                for (std::size_t k = 0;; ++k)
-                {
-                    if (use_timeout && duration_type(t.elapsed()) > timeout) { return false; }
+                if (use_timeout && duration_type(t.elapsed()) > timeout) { return false; }
 
-                    if (!predicate())
-                    {
-                        if (++count > required_count) { return true; }
-                    }
-                    else
-                    {
-                        count = 0;
-                        pika::execution::this_thread::detail::yield_k(k, thread_name);
-                    }
+                if (!predicate())
+                {
+                    if (++count > required_count) { return true; }
                 }
-            }
-            else
-            {
-                for (std::size_t k = 0;; ++k)
+                else
                 {
-                    if (use_timeout && duration_type(t.elapsed()) > timeout) { return false; }
-
-                    if (!predicate())
-                    {
-                        if (++count > required_count) { return true; }
-                    }
-                    else
-                    {
-                        count = 0;
-                        pika::execution::this_thread::detail::yield_k(k % 16, thread_name);
-                    }
+                    count = 0;
+                    yield_or_spin(k, thread_name);
                 }
             }
         }
@@ -194,29 +156,19 @@ namespace pika::util {
             // Seconds represented using a double
             using duration_type = std::chrono::duration<double>;
 
-            bool use_timeout = timeout >= duration_type(0.0);
+            const bool use_timeout = timeout >= duration_type(0.0);
+            auto yield_or_spin = allow_timed_suspension ?
+                &pika::execution::this_thread::detail::yield_k :
+                &pika::execution::this_thread::detail::spin_k;
 
             pika::chrono::detail::high_resolution_timer t;
 
-            if (allow_timed_suspension)
+            for (std::size_t k = 0;; ++k)
             {
-                for (std::size_t k = 0;; ++k)
-                {
-                    if (use_timeout && duration_type(t.elapsed()) > timeout) { return false; }
+                if (use_timeout && duration_type(t.elapsed()) > timeout) { return false; }
 
-                    if (!predicate()) { return true; }
-                    else { pika::execution::this_thread::detail::yield_k(k, thread_name); }
-                }
-            }
-            else
-            {
-                for (std::size_t k = 0;; ++k)
-                {
-                    if (use_timeout && duration_type(t.elapsed()) > timeout) { return false; }
-
-                    if (!predicate()) { return true; }
-                    else { pika::execution::this_thread::detail::yield_k(k % 16, thread_name); }
-                }
+                if (!predicate()) { return true; }
+                else { yield_or_spin(k, thread_name); }
             }
         }
     }    // namespace detail
