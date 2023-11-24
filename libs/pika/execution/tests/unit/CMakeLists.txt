@@ -13,6 +13,8 @@ set(tests
     algorithm_just
     algorithm_let_error
     algorithm_let_value
+    algorithm_require_started
+    algorithm_require_started_terminate
     algorithm_split
     algorithm_split_tuple
     algorithm_start_detached
@@ -33,7 +35,6 @@ foreach(test ${tests})
 
   set(folder_name "Tests/Unit/Modules/Execution")
 
-  # add example executable
   pika_add_executable(
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
@@ -47,3 +48,10 @@ foreach(test ${tests})
     "modules.execution" ${test} ${${test}_PARAMETERS} THREADS 4 VALGRIND
   )
 endforeach()
+
+set_tests_properties(
+  tests.unit.modules.execution.algorithm_require_started_terminate
+  PROPERTIES
+    PASS_REGULAR_EXPRESSION
+    ".*~require_started_sender: A require_started sender was never started\nstd::terminate called*"
+)
