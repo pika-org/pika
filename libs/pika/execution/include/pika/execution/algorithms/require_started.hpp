@@ -20,6 +20,7 @@
 #include <pika/type_support/detail/with_result_of.hpp>
 #include <pika/type_support/pack.hpp>
 
+#include <fmt/core.h>
 #include <fmt/ostream.h>
 #include <fmt/printf.h>
 
@@ -42,20 +43,20 @@ namespace pika {
     namespace require_started_detail {
         using pika::execution::experimental::require_started_mode;
 
-        void handle_unstarted_sender(require_started_mode mode, const char* f, const char* message)
-        {
-            switch (mode)
-            {
-            case require_started_mode::terminate_on_unstarted:
-                fmt::print(std::cerr, "{}: {}\n", f, message);
-                std::terminate();
-                break;
-
-            case require_started_mode::throw_on_unstarted:
-                PIKA_THROW_EXCEPTION(pika::error::invalid_status, f, message);
-                break;
-            }
-        }
+#define PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(mode, f, message)                      \
+ {                                                                                                 \
+  switch (mode)                                                                                    \
+  {                                                                                                \
+  case require_started_mode::terminate_on_unstarted:                                               \
+   fmt::print(std::cerr, "{}: {}\n", f, message);                                                  \
+   std::terminate();                                                                               \
+   break;                                                                                          \
+                                                                                                   \
+  case require_started_mode::throw_on_unstarted:                                                   \
+   PIKA_THROW_EXCEPTION(pika::error::invalid_status, f, fmt::runtime(message));                    \
+   break;                                                                                          \
+  }                                                                                                \
+ }
 
         template <typename OpState>
         struct require_started_receiver_impl
@@ -146,7 +147,8 @@ namespace pika {
                 {
                     op_state.reset();
 
-                    handle_unstarted_sender(mode, "~require_started_operation_state",
+                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(mode,
+                        "pika::execution::experimental::~require_started_operation_state",
                         "The operation state of a require_started sender was never started");
                 }
             }
@@ -223,8 +225,9 @@ namespace pika {
                 {
                     sender.reset();
 
-                    handle_unstarted_sender(mode,
-                        "require_started_sender::operator=(require_started_sender&&)",
+                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(mode,
+                        "pika::execution::experimental::require_started_sender::operator=(require_"
+                        "started_sender&&)",
                         "Assigning to a require_started sender that was never started, the target "
                         "would be discarded");
                 }
@@ -249,8 +252,9 @@ namespace pika {
                 {
                     sender.reset();
 
-                    handle_unstarted_sender(mode,
-                        "require_started_sender::operator=(require_started_sender const&)",
+                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(mode,
+                        "pika::execution::experimental::require_started_sender::operator=(require_"
+                        "started_sender const&)",
                         "Assigning to a require_started sender that was never started, the target "
                         "would be discarded");
                 }
@@ -268,7 +272,8 @@ namespace pika {
                 {
                     sender.reset();
 
-                    handle_unstarted_sender(mode, "~require_started_sender",
+                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(mode,
+                        "pika::execution::experimental::~require_started_sender",
                         "A require_started sender was never started");
                 }
             }
@@ -280,7 +285,8 @@ namespace pika {
             {
                 if (!s.sender.has_value())
                 {
-                    handle_unstarted_sender(s.mode, "connect(require_started_sender&&)",
+                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(s.mode,
+                        "pika::execution::experimental::connect(require_started_sender&&)",
                         "Trying to connect an empty require_started sender");
                 }
 
@@ -296,7 +302,8 @@ namespace pika {
             {
                 if (!s.sender.has_value())
                 {
-                    handle_unstarted_sender(s.mode, "connect(require_started_sender const&)",
+                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(s.mode,
+                        "pika::execution::experimental::connect(require_started_sender const&)",
                         "Trying to connect an empty require_started sender");
                 }
 
@@ -307,6 +314,8 @@ namespace pika {
             void discard() noexcept { connected = true; }
             void set_mode(require_started_mode mode) noexcept { this->mode = mode; }
         };
+
+#undef PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER
     }    // namespace require_started_detail
 
     namespace execution::experimental {
