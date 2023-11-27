@@ -182,20 +182,20 @@ void test_no_exception()
 {
     // Expect no exception to be thrown
     check_exception(expect_exception::no, [] {
-        auto s = ex::just();
+        auto s = void_sender{};
         auto rs = ex::require_started(s);
         tt::sync_wait(std::move(rs));
     });
 
     check_exception(expect_exception::no, [] {
-        auto s = ex::just();
+        auto s = void_sender{};
         auto rs1 = ex::require_started(s);
         auto rs2 = std::move(rs1);
         tt::sync_wait(std::move(rs2));
     });
 
     check_exception(expect_exception::no, [] {
-        auto s = ex::just();
+        auto s = void_sender{};
         auto rs1 = ex::require_started(s);
         auto rs2 = std::move(rs1);
         rs1 = std::move(rs2);
@@ -203,7 +203,7 @@ void test_no_exception()
     });
 
     check_exception(expect_exception::no, [] {
-        auto s = ex::just();
+        auto s = void_sender{};
         auto rs1 = ex::require_started(s);
         auto rs2 = std::move(rs1);
         // NOLINTNEXTLINE(bugprone-use-after-move)
@@ -212,7 +212,7 @@ void test_no_exception()
     });
 
     check_exception(expect_exception::no, [] {
-        auto s = ex::just();
+        auto s = void_sender{};
         auto rs1 = ex::require_started(s);
         auto rs2 = std::move(rs1);
         // NOLINTNEXTLINE(bugprone-use-after-move)
@@ -240,7 +240,7 @@ void test_exception(exception_test_mode mode)
     check_exception(
         mode == exception_test_mode::discard ? expect_exception::no : expect_exception::yes, [=] {
             auto rs = ex::require_started(
-                ex::just(), ex::require_started_mode::throw_on_unstarted);    // never started
+                void_sender{}, ex::require_started_mode::throw_on_unstarted);    // never started
             discard_if_required(rs, mode);
         });
 
@@ -248,8 +248,8 @@ void test_exception(exception_test_mode mode)
     check_exception(
         mode == exception_test_mode::discard ? expect_exception::no : expect_exception::yes, [=] {
             auto rs1 = ex::require_started(
-                ex::just(), ex::require_started_mode::throw_on_unstarted);    // empty
-            auto rs2 = std::move(rs1);                                        // never started
+                void_sender{}, ex::require_started_mode::throw_on_unstarted);    // empty
+            auto rs2 = std::move(rs1);                                           // never started
             discard_if_required(rs2, mode);
         });
 
@@ -257,7 +257,7 @@ void test_exception(exception_test_mode mode)
     check_exception(
         mode == exception_test_mode::discard ? expect_exception::no : expect_exception::yes, [=] {
             auto rs1 =
-                ex::require_started(ex::just(), ex::require_started_mode::throw_on_unstarted);
+                ex::require_started(void_sender{}, ex::require_started_mode::throw_on_unstarted);
             auto rs2 = rs1;        // never started
             tt::sync_wait(rs1);    // started
             discard_if_required(rs2, mode);
@@ -267,9 +267,9 @@ void test_exception(exception_test_mode mode)
     check_exception(
         mode == exception_test_mode::discard ? expect_exception::no : expect_exception::yes, [=] {
             auto rs1 =
-                ex::require_started(ex::just(), ex::require_started_mode::throw_on_unstarted);
+                ex::require_started(void_sender{}, ex::require_started_mode::throw_on_unstarted);
             auto rs2 =
-                ex::require_started(ex::just(), ex::require_started_mode::throw_on_unstarted);
+                ex::require_started(void_sender{}, ex::require_started_mode::throw_on_unstarted);
             tt::sync_wait(std::move(rs2));    // started
             rs2 = std::move(rs1);             // never started
             discard_if_required(rs2, mode);
@@ -278,10 +278,10 @@ void test_exception(exception_test_mode mode)
     check_exception(
         mode == exception_test_mode::discard ? expect_exception::no : expect_exception::yes, [=] {
             auto rs1 =
-                ex::require_started(ex::just(), ex::require_started_mode::throw_on_unstarted);
+                ex::require_started(void_sender{}, ex::require_started_mode::throw_on_unstarted);
             tt::sync_wait(std::move(rs1));    // started
             auto rs2 =
-                ex::require_started(ex::just(), ex::require_started_mode::throw_on_unstarted);
+                ex::require_started(void_sender{}, ex::require_started_mode::throw_on_unstarted);
             discard_if_required(rs2, mode);
             rs2 = std::move(rs1);    // never started
         });
@@ -290,9 +290,9 @@ void test_exception(exception_test_mode mode)
     check_exception(
         mode == exception_test_mode::discard ? expect_exception::no : expect_exception::yes, [=] {
             auto rs1 =
-                ex::require_started(ex::just(), ex::require_started_mode::throw_on_unstarted);
+                ex::require_started(void_sender{}, ex::require_started_mode::throw_on_unstarted);
             auto rs2 =
-                ex::require_started(ex::just(), ex::require_started_mode::throw_on_unstarted);
+                ex::require_started(void_sender{}, ex::require_started_mode::throw_on_unstarted);
             tt::sync_wait(std::move(rs2));    // started
             rs2 = rs1;                        // never started
             tt::sync_wait(std::move(rs1));    // started
@@ -302,10 +302,10 @@ void test_exception(exception_test_mode mode)
     check_exception(
         mode == exception_test_mode::discard ? expect_exception::no : expect_exception::yes, [=] {
             auto rs1 =
-                ex::require_started(ex::just(), ex::require_started_mode::throw_on_unstarted);
+                ex::require_started(void_sender{}, ex::require_started_mode::throw_on_unstarted);
             tt::sync_wait(std::move(rs1));    // started
             auto rs2 = ex::require_started(
-                ex::just(), ex::require_started_mode::throw_on_unstarted);    // never started
+                void_sender{}, ex::require_started_mode::throw_on_unstarted);    // never started
             discard_if_required(rs2, mode);
             rs2 = rs1;
         });
@@ -319,7 +319,7 @@ void test_unstarted()
 #if !defined(PIKA_HAVE_STDEXEC)
     // Connected, but not started
     check_exception(expect_exception::yes, [] {
-        auto rs = ex::require_started(ex::just(), ex::require_started_mode::throw_on_unstarted);
+        auto rs = ex::require_started(void_sender{}, ex::require_started_mode::throw_on_unstarted);
         std::atomic<bool> set_value_called{false};
         auto f = [] {};
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
@@ -327,7 +327,7 @@ void test_unstarted()
     });
 
     check_exception(expect_exception::yes, [] {
-        auto rs = ex::require_started(ex::just(), ex::require_started_mode::throw_on_unstarted);
+        auto rs = ex::require_started(void_sender{}, ex::require_started_mode::throw_on_unstarted);
         std::atomic<bool> set_value_called{false};
         auto f = [] {};
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
