@@ -235,6 +235,7 @@ void discard_if_required(S& s, exception_test_mode mode)
 
 void test_exception(exception_test_mode mode)
 {
+#if !defined(PIKA_HAVE_STDEXEC)
     // When the mode is no_discard we expect exceptions, otherwise we don't expect exceptions
     check_exception(
         mode == exception_test_mode::discard ? expect_exception::no : expect_exception::yes, [=] {
@@ -308,10 +309,14 @@ void test_exception(exception_test_mode mode)
             discard_if_required(rs2, mode);
             rs2 = rs1;
         });
+#else
+    PIKA_UNUSED(mode);
+#endif
 }
 
 void test_unstarted()
 {
+#if !defined(PIKA_HAVE_STDEXEC)
     // Connected, but not started
     check_exception(expect_exception::yes, [] {
         auto rs = ex::require_started(ex::just(), ex::require_started_mode::throw_on_unstarted);
@@ -329,6 +334,7 @@ void test_unstarted()
         auto os = ex::connect(rs, std::move(r));
         tt::sync_wait(std::move(rs));
     });
+#endif
 }
 
 int main()
