@@ -8,6 +8,7 @@ set(tests
     cublas_handle
     cublas_matmul
     cuda_bulk
+    cuda_device_reset
     cuda_pool
     cuda_scheduler
     cuda_sender
