@@ -36,7 +36,19 @@ variables:
     - .test_common
     - .container-runner-daint-mc
 
-.test_common_gpu:
+.test_common_gpu_daint_cuda:
   extends:
     - .test_common
     - .container-runner-daint-gpu
+  variables:
+    SLURM_PARTITION: normal
+
+.test_common_gpu_clariden_cuda:
+  extends:
+    - .test_common
+    - .container-runner-clariden-a100
+
+.test_common_gpu_clariden_hip:
+  extends:
+    - .test_common
+    - .container-runner-clariden-mi200
