@@ -10,6 +10,8 @@
 #include <boost/lockfree/stack.hpp>
 #include <whip.hpp>
 
+#include <cstddef>
+
 namespace pika::cuda::experimental::detail {
 
     // a pool of cudaEvent_t objects.
@@ -18,7 +20,7 @@ namespace pika::cuda::experimental::detail {
     // of them at startup.
     struct cuda_event_pool
     {
-        static constexpr int initial_events_in_pool = 128;
+        static constexpr std::size_t initial_events_in_pool = 128;
 
         static cuda_event_pool& get_event_pool()
         {
@@ -26,33 +28,46 @@ namespace pika::cuda::experimental::detail {
             return event_pool_;
         }
 
-        // create a bunch of events on initialization
+        // reserve space for a bunch of events on initialization
         cuda_event_pool()
           : free_list_(initial_events_in_pool)
         {
-            for (int i = 0; i < initial_events_in_pool; ++i) { add_event_to_pool(); }
         }
 
         // on destruction, all objects in stack will be freed
-        ~cuda_event_pool()
-        {
-            whip::event_t event;
-            bool ok = true;
-            while (ok)
-            {
-                ok = free_list_.pop(event);
-                if (ok) whip::event_destroy(event);
-            }
-        }
+        ~cuda_event_pool() { clear(); }
 
-        inline bool pop(whip::event_t& event)
+        bool pop(whip::event_t& event)
         {
             // pop an event off the pool, if that fails, create a new one
             while (!free_list_.pop(event)) { add_event_to_pool(); }
             return true;
         }
 
-        inline bool push(whip::event_t event) { return free_list_.push(event); }
+        bool push(whip::event_t event) { return free_list_.push(event); }
+
+        void clear()
+        {
+            whip::event_t event;
+            while (free_list_.pop(event))
+            {
+                if (!whip::event_ready(event))
+                {
+                    PIKA_THROW_EXCEPTION(pika::error::invalid_status,
+                        "pika::cuda::experimental::detail::cuda_event_pool::clear",
+                        "Clearing pool of CUDA/HIP events, but found an event that is not yet "
+                        "ready. Are you disabling event polling before all kernels have "
+                        "completed?");
+                }
+
+                whip::event_destroy(event);
+            }
+        }
+
+        void grow(std::size_t n)
+        {
+            for (std::size_t i = 0; i < n; ++i) { add_event_to_pool(); }
+        }
 
     private:
         void add_event_to_pool()
