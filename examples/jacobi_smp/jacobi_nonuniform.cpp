@@ -175,6 +175,10 @@ int pika_main(variables_map& vm)
     return 0;
 }
 
+#if !defined(PIKA_APPLICATION_STRING)
+# define PIKA_APPLICATION_STRING "jacobi_nonuniform"
+#endif
+
 int main(int argc, char** argv)
 {
     options_description desc_cmd("usage: " PIKA_APPLICATION_STRING " [options]");
