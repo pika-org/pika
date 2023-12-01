@@ -56,17 +56,8 @@ function(pika_add_executable name)
   # (recursively), but only if AUTOGLOB flag is specified.
   if(${${name}_AUTOGLOB})
     if(NOT ${name}_SOURCE_GLOB)
-      set(${name}_SOURCE_GLOB
-          "${${name}_SOURCE_ROOT}/*.cpp"
-          "${${name}_SOURCE_ROOT}/*.c"
-          "${${name}_SOURCE_ROOT}/*.f"
-          "${${name}_SOURCE_ROOT}/*.F"
-          "${${name}_SOURCE_ROOT}/*.f77"
-          "${${name}_SOURCE_ROOT}/*.F77"
-          "${${name}_SOURCE_ROOT}/*.f90"
-          "${${name}_SOURCE_ROOT}/*.F90"
-          "${${name}_SOURCE_ROOT}/*.f95"
-          "${${name}_SOURCE_ROOT}/*.F95"
+      set(${name}_SOURCE_GLOB "${${name}_SOURCE_ROOT}/*.cpp"
+                              "${${name}_SOURCE_ROOT}/*.c"
       )
     endif()
     pika_debug(
