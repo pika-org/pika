@@ -17,6 +17,7 @@ set(execution_headers
     pika/execution/algorithms/just.hpp
     pika/execution/algorithms/let_error.hpp
     pika/execution/algorithms/let_value.hpp
+    pika/execution/algorithms/require_started.hpp
     pika/execution/algorithms/schedule_from.hpp
     pika/execution/algorithms/split.hpp
     pika/execution/algorithms/split_tuple.hpp
