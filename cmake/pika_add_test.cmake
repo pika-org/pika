@@ -55,13 +55,13 @@ function(pika_add_test category name)
   endif()
 
   set(args "--pika:threads=${${name}_THREADS}")
-  if(${PIKA_WITH_TESTS_DEBUG_LOG})
+  if(PIKA_WITH_TESTS_DEBUG_LOG)
     set(args ${args}
              "--pika:debug-pika-log=${PIKA_WITH_TESTS_DEBUG_LOG_DESTINATION}"
     )
   endif()
 
-  if(${PIKA_WITH_PARALLEL_TESTS_BIND_NONE}
+  if(PIKA_WITH_PARALLEL_TESTS_BIND_NONE
      AND NOT run_serial
      AND NOT "${name}_RUNWRAPPER"
   )
