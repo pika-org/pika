@@ -7,6 +7,7 @@
 #pragma once
 
 #include <pika/timing/high_resolution_timer.hpp>
+
 #include <chrono>
 #include <cstddef>
 #include <cstdint>
