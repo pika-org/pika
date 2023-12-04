@@ -75,6 +75,7 @@ jobs:
               tests.{regressions,unit}.modules.execution \
               tests.unit.modules.execution_base \
               tests.{regressions,unit}.modules.functional \
+              tests.unit.modules.init_runtime \
               tests.unit.modules.memory \
               tests.{examples,regressions,unit}.modules.program_options \
               tests.unit.modules.properties \
