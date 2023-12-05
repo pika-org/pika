@@ -273,7 +273,6 @@ with section("parse"):
                 "flags": [
                     "EXCLUDE_FROM_ALL",
                     "EXCLUDE_FROM_DEFAULT_BUILD",
-                    "AUTOGLOB",
                     "INTERNAL_FLAGS",
                     "NOLIBS",
                 ],
@@ -321,7 +320,6 @@ with section("parse"):
                     "INTERNAL_FLAGS",
                     "NOLIBS",
                     "NOEXPORT",
-                    "AUTOGLOB",
                     "STATIC",
                     "NONAMEPREFIX",
                 ],

@@ -7,14 +7,8 @@
 
 function(pika_add_executable name)
   # retrieve arguments
-  set(options
-      GPU
-      EXCLUDE_FROM_ALL
-      EXCLUDE_FROM_DEFAULT_BUILD
-      AUTOGLOB
-      INTERNAL_FLAGS
-      NOLIBS
-      UNITY_BUILD
+  set(options GPU EXCLUDE_FROM_ALL EXCLUDE_FROM_DEFAULT_BUILD INTERNAL_FLAGS
+              NOLIBS UNITY_BUILD
   )
   set(one_value_args
       INI
@@ -52,73 +46,27 @@ function(pika_add_executable name)
     "Add executable ${name}: ${name}_HEADER_ROOT: ${${name}_HEADER_ROOT}"
   )
 
-  # Collect sources and headers from the given (current) directory
-  # (recursively), but only if AUTOGLOB flag is specified.
-  if(${${name}_AUTOGLOB})
-    if(NOT ${name}_SOURCE_GLOB)
-      set(${name}_SOURCE_GLOB "${${name}_SOURCE_ROOT}/*.cpp"
-                              "${${name}_SOURCE_ROOT}/*.c"
-      )
-    endif()
-    pika_debug(
-      "Add executable ${name}: ${name}_SOURCE_GLOB: ${${name}_SOURCE_GLOB}"
-    )
+  pika_add_library_sources_noglob(
+    ${name}_executable SOURCES "${${name}_SOURCES}"
+  )
 
-    pika_add_library_sources(
-      ${name}_executable GLOB_RECURSE GLOBS "${${name}_SOURCE_GLOB}"
-    )
+  pika_add_source_group(
+    NAME ${name}
+    CLASS "Source Files"
+    ROOT ${${name}_SOURCE_ROOT}
+    TARGETS ${${name}_executable_SOURCES}
+  )
 
-    set(${name}_SOURCES ${${name}_executable_SOURCES})
-    pika_add_source_group(
-      NAME ${name}
-      CLASS "Source Files"
-      ROOT ${${name}_SOURCE_ROOT}
-      TARGETS ${${name}_executable_SOURCES}
-    )
+  pika_add_library_headers_noglob(
+    ${name}_executable HEADERS "${${name}_HEADERS}"
+  )
 
-    if(NOT ${name}_HEADER_GLOB)
-      set(${name}_HEADER_GLOB "${${name}_HEADER_ROOT}/*.hpp"
-                              "${${name}_HEADER_ROOT}/*.h"
-      )
-    endif()
-    pika_debug(
-      "Add executable ${name}: ${name}_HEADER_GLOB: ${${name}_HEADER_GLOB}"
-    )
-
-    pika_add_library_headers(
-      ${name}_executable GLOB_RECURSE GLOBS "${${name}_HEADER_GLOB}"
-    )
-
-    set(${name}_HEADERS ${${name}_executable_HEADERS})
-    pika_add_source_group(
-      NAME ${name}
-      CLASS "Header Files"
-      ROOT ${${name}_HEADER_ROOT}
-      TARGETS ${${name}_executable_HEADERS}
-    )
-  else()
-    pika_add_library_sources_noglob(
-      ${name}_executable SOURCES "${${name}_SOURCES}"
-    )
-
-    pika_add_source_group(
-      NAME ${name}
-      CLASS "Source Files"
-      ROOT ${${name}_SOURCE_ROOT}
-      TARGETS ${${name}_executable_SOURCES}
-    )
-
-    pika_add_library_headers_noglob(
-      ${name}_executable HEADERS "${${name}_HEADERS}"
-    )
-
-    pika_add_source_group(
-      NAME ${name}
-      CLASS "Header Files"
-      ROOT ${${name}_HEADER_ROOT}
-      TARGETS ${${name}_executable_HEADERS}
-    )
-  endif()
+  pika_add_source_group(
+    NAME ${name}
+    CLASS "Header Files"
+    ROOT ${${name}_HEADER_ROOT}
+    TARGETS ${${name}_executable_HEADERS}
+  )
 
   set(${name}_SOURCES ${${name}_executable_SOURCES})
   set(${name}_HEADERS ${${name}_executable_HEADERS})

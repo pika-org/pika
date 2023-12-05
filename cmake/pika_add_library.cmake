@@ -12,7 +12,6 @@ function(pika_add_library name)
       INTERNAL_FLAGS
       NOLIBS
       NOEXPORT
-      AUTOGLOB
       STATIC
       OBJECT
       NONAMEPREFIX
@@ -55,76 +54,23 @@ function(pika_add_library name)
     "add_library.${name}" "${name}_HEADER_ROOT: ${${name}_HEADER_ROOT}"
   )
 
-  if(${${name}_AUTOGLOB})
-    if(NOT ${name}_SOURCE_GLOB)
-      set(${name}_SOURCE_GLOB
-          "${${name}_SOURCE_ROOT}/*.cpp"
-          "${${name}_SOURCE_ROOT}/*.c"
-          "${${name}_SOURCE_ROOT}/*.f"
-          "${${name}_SOURCE_ROOT}/*.F"
-          "${${name}_SOURCE_ROOT}/*.f77"
-          "${${name}_SOURCE_ROOT}/*.F77"
-          "${${name}_SOURCE_ROOT}/*.f90"
-          "${${name}_SOURCE_ROOT}/*.F90"
-          "${${name}_SOURCE_ROOT}/*.f95"
-          "${${name}_SOURCE_ROOT}/*.F95"
-      )
-    endif()
-    pika_debug(
-      "add_library.${name}" "${name}_SOURCE_GLOB: ${${name}_SOURCE_GLOB}"
-    )
+  pika_add_library_sources_noglob(${name} SOURCES "${${name}_SOURCES}")
 
-    pika_add_library_sources(
-      ${name} GLOB_RECURSE GLOBS "${${name}_SOURCE_GLOB}"
-    )
+  pika_add_source_group(
+    NAME ${name}
+    CLASS "Source Files"
+    ROOT ${${name}_SOURCE_ROOT}
+    TARGETS ${${name}_SOURCES}
+  )
 
-    set(${name}_SOURCES ${${name}_SOURCES})
-    pika_add_source_group(
-      NAME ${name}
-      CLASS "Source Files"
-      ROOT ${${name}_SOURCE_ROOT}
-      TARGETS ${${name}_SOURCES}
-    )
+  pika_add_library_headers_noglob(${name} HEADERS "${${name}_HEADERS}")
 
-    if(NOT ${name}_HEADER_GLOB)
-      set(${name}_HEADER_GLOB "${${name}_HEADER_ROOT}/*.hpp"
-                              "${${name}_HEADER_ROOT}/*.h"
-      )
-    endif()
-    pika_debug(
-      "add_library.${name}" "${name}_HEADER_GLOB: ${${name}_HEADER_GLOB}"
-    )
-
-    pika_add_library_headers(
-      ${name} GLOB_RECURSE GLOBS "${${name}_HEADER_GLOB}"
-    )
-
-    set(${name}_HEADERS ${${name}_HEADERS})
-    pika_add_source_group(
-      NAME ${name}
-      CLASS "Header Files"
-      ROOT ${${name}_HEADER_ROOT}
-      TARGETS ${${name}_HEADERS}
-    )
-  else()
-    pika_add_library_sources_noglob(${name} SOURCES "${${name}_SOURCES}")
-
-    pika_add_source_group(
-      NAME ${name}
-      CLASS "Source Files"
-      ROOT ${${name}_SOURCE_ROOT}
-      TARGETS ${${name}_SOURCES}
-    )
-
-    pika_add_library_headers_noglob(${name} HEADERS "${${name}_HEADERS}")
-
-    pika_add_source_group(
-      NAME ${name}
-      CLASS "Header Files"
-      ROOT ${${name}_HEADER_ROOT}
-      TARGETS ${${name}_HEADERS}
-    )
-  endif()
+  pika_add_source_group(
+    NAME ${name}
+    CLASS "Header Files"
+    ROOT ${${name}_HEADER_ROOT}
+    TARGETS ${${name}_HEADERS}
+  )
 
   pika_print_list(
     "DEBUG" "add_library.${name}" "Sources for ${name}" ${name}_SOURCES
