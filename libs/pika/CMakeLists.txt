@@ -64,9 +64,6 @@ set(_pika_modules
 )
 # cmake-format: on
 
-pika_info("")
-pika_info("  Configuring libpika modules:")
-
 foreach(module ${_pika_modules})
   add_subdirectory(${module})
 endforeach()
