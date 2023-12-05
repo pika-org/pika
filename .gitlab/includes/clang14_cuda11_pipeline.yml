@@ -15,8 +15,7 @@ include:
     COMPILER: clang@14.0.6
     CXXSTD: 17
     SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} +cuda malloc=system cxxstd=$CXXSTD \
-                 +stdexec ^boost@1.79.0 ^cuda@11.5.0 +allow-unsupported-compilers ^hwloc@2.7.0 \
-                 ^stdexec@git.4b441f333adaeb8eb0a6c7f38d36af30fa7ab366=main"
+                 ^boost@1.79.0 ^cuda@11.5.0 +allow-unsupported-compilers ^hwloc@2.7.0"
 
 clang14_cuda11_spack_image:
   stage: spack_configs
@@ -57,9 +56,8 @@ clang14_cuda11_debug_build:
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_build
     CMAKE_FLAGS: "-DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPIKA_WITH_CXX_STANDARD=20 \
                   -DPIKA_WITH_CUDA=ON -DPIKA_WITH_MALLOC=system \
-                  -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON -DPIKA_WITH_STDEXEC=ON \
-                  -DCMAKE_CUDA_COMPILER=c++ -DCMAKE_CUDA_ARCHITECTURES=80 \
-                  -DPIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE=OFF \
+                  -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON -DCMAKE_CUDA_COMPILER=c++ \
+                  -DCMAKE_CUDA_ARCHITECTURES=80 -DPIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE=OFF \
                   -DPIKA_WITH_TESTS_EXTERNAL_BUILD=OFF"
 # PIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE is OFF to test the fallback implementation of PIKA_FORWARD.
 # PIKA_WITH_TESTS_EXTERNAL_BUILD is OFF since build unit test with pika in Debug and
