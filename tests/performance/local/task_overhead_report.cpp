@@ -72,7 +72,7 @@ void measure_function_create_thread_hierarchical_placement(
     auto const num_threads = pika::get_num_worker_threads();
     pika::error_code ec;
 
-    pika::util::perftests_report("future overhead - create_thread_hierarchical - latch",
+    pika::util::perftests_report("task overhead - create_thread_hierarchical - latch",
         "no-executor", repetitions, [&]() -> void {
             pika::latch l(count);
 

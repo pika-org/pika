@@ -13,12 +13,12 @@ set(benchmarks
     delay_baseline
     delay_baseline_threaded
     function_object_wrapper_overhead
-    future_overhead
-    future_overhead_report
     heterogeneous_timed_task_spawn
     print_heterogeneous_payloads
     resume_suspend
     skynet
+    task_overhead
+    task_overhead_report
 )
 
 if(NOT PIKA_WITH_SANITIZERS)
@@ -75,8 +75,8 @@ set(print_heterogeneous_payloads_FLAGS NOLIBS DEPENDENCIES
 )
 set(resume_suspend_FLAGS DEPENDENCIES pika_timing)
 
-set(future_overhead_PARAMETERS THREADS 4)
-set(future_overhead_report_PARAMETERS THREADS 4)
+set(task_overhead_PARAMETERS THREADS 4)
+set(task_overhead_report_PARAMETERS THREADS 4)
 
 # These tests do not run on pika threads, so we don't want to pass pika params
 # into them
