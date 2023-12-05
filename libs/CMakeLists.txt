@@ -43,9 +43,6 @@ if(PIKA_WITH_TESTS)
   endif()
 endif()
 
-pika_info("")
-pika_info("Configuring modules:")
-
 # Generate a file that lists all enabled modules for checks that might be
 # optional based on the presence of a module or not
 set(MODULE_ENABLED_MODULE_DEFINES)
