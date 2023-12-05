@@ -6,8 +6,9 @@
 
 #pragma once
 
-#include <pika/chrono.hpp>
+#include <pika/timing/high_resolution_timer.hpp>
 
+#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <iostream>
@@ -39,7 +40,7 @@ namespace jacobi_smp {
             std::swap(dst, src);
         }
 
-        double time_elapsed = t.elapsed<seconds>();
+        double time_elapsed = t.elapsed<std::chrono::seconds>();
         std::cout << dst->size() << " " << ((double(dst->size() * iterations) / 1e6) / time_elapsed)
                   << " MLUPS/s\n"
                   << std::flush;

@@ -7,9 +7,9 @@
 
 #include "jacobi_nonuniform.hpp"
 
-#include <pika/chrono.hpp>
 #include <pika/execution.hpp>
 #include <pika/functional/bind_front.hpp>
+#include <pika/timing/high_resolution_timer.hpp>
 
 #include <chrono>
 #include <cstddef>
