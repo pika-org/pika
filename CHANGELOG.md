@@ -4,6 +4,25 @@
 <!--- Distributed under the Boost Software License, Version 1.0. (See accompanying -->
 <!--- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 
+## 0.21.0 (2023-12-06)
+
+### New features
+
+- A new sender adaptor `require_started` allows to detect unstarted senders. ([#869](https://github.com/pika-org/pika/pull/869))
+- The conversion from `any_sender` to `unique_any_sender` has been optimized, reusing the same
+  storage. ([#844](https://github.com/pika-org/pika/pull/844))
+- The number of streams created by the `cuda_pool` is now proportional to the number of threads used by the runtime instead of `hardware_concurrency`. ([#864](https://github.com/pika-org/pika/pull/864))
+
+
+### Breaking changes
+
+- `pika::start` and `pika::finalize` now return `void`. Most runtime management functions no longer take an `error_code` and always throw an exception on failure. ([#825](https://github.com/pika-org/pika/pull/825))
+
+### Bugfixes
+
+- One lifetime bug in split has been fixed. ([#839](https://github.com/pika-org/pika/pull/839))
+- `yield_while` is now able to warn about potential deadlocks when suspension is disabled. ([#856](https://github.com/pika-org/pika/pull/856))
+
 ## 0.20.0 (2023-11-01)
 
 ### New features
