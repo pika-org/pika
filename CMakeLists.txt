@@ -49,10 +49,10 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # Build all of pika
 # ##############################################################################
 set(PIKA_VERSION_MAJOR 0)
-set(PIKA_VERSION_MINOR 20)
+set(PIKA_VERSION_MINOR 21)
 set(PIKA_VERSION_PATCH 0)
-set(PIKA_VERSION_DATE 20231101)
-set(PIKA_VERSION_TAG "-trunk")
+set(PIKA_VERSION_DATE 20231205)
+set(PIKA_VERSION_TAG "")
 
 set(PIKA_VERSION
     "${PIKA_VERSION_MAJOR}.${PIKA_VERSION_MINOR}.${PIKA_VERSION_PATCH}"
