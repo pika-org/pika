@@ -14,8 +14,9 @@ include:
     BUILD_TYPE: Debug
     COMPILER: gcc@12.1.0
     CXXSTD: 17
-    SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} +cuda malloc=system cxxstd=$CXXSTD \
-                 ^boost@1.82.0 ^hwloc@2.9.1 ^cuda@12.0.0 ^fmt@10.0.0"
+    GPU_TARGET: "80"
+    SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} +cuda cuda_arch=${GPU_TARGET} malloc=system \
+                 cxxstd=$CXXSTD ^boost@1.82.0 ^hwloc@2.9.1 ^cuda@12.0.0 ^fmt@10.0.0"
 
 gcc12_cuda12_spack_image:
   stage: spack_configs
@@ -55,7 +56,8 @@ gcc12_cuda12_debug_build:
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_build
     CMAKE_FLAGS: "-DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPIKA_WITH_CXX_STANDARD=$CXXSTD \
                   -DPIKA_WITH_CUDA=ON -DPIKA_WITH_MALLOC=system \
-                  -DCMAKE_CUDA_ARCHITECTURES=80 -DPIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE=OFF"
+                  -DCMAKE_CUDA_ARCHITECTURES=$GPU_TARGET \
+                  -DPIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE=OFF"
 # PIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE is OFF to test the fallback implementation of PIKA_FORWARD.
     DOCKER_BUILD_ARGS: '["BASE_IMAGE","SOURCE_DIR","BUILD_DIR","CMAKE_COMMON_FLAGS","CMAKE_FLAGS"]'
   artifacts:
