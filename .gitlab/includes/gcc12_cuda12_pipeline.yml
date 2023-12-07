@@ -64,6 +64,8 @@ gcc12_cuda12_debug_build:
     reports:
       dotenv: build.env
 
+# Test step currently commented as the cuda driver is too old on clariden:
+# https://github.com/pika-org/pika/issues/884
 #gcc12_cuda12_debug_test:
 #  extends:
 #    - .variables_gcc12_cuda12_config
