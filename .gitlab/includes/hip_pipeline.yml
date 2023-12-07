@@ -17,8 +17,7 @@ include:
     GPU_TARGET: 'gfx90a'
     SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} +rocm +stdexec amdgpu_target=${GPU_TARGET} \
                  malloc=system cxxstd=$CXXSTD ^boost@1.79.0 ^hwloc@2.6.0 ^hip@5.3.3 ^llvm~gold \
-                 ^fmt@10.0.0 ^whip amdgpu_target=${GPU_TARGET} \
-                 ^stdexec@git.5e378418d9360a1a53392baae8502c4961f5f4c8=main"
+                 ^fmt@10.0.0 ^stdexec@git.5e378418d9360a1a53392baae8502c4961f5f4c8=main"
 
 gcc12_hip5_spack_image:
   stage: spack_configs
