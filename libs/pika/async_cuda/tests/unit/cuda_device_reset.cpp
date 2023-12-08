@@ -29,7 +29,8 @@ int main(int argc, char* argv[])
 
     {
         cu::cuda_pool pool{};
-        cu::enable_user_polling p;
+        // Explicitly do not use the RAII version here to test that pika::stop also clears events
+        cu::detail::register_polling(pika::resource::get_thread_pool("default"));
 
         // cuBLAS handle on a non-pika thread
         tt::sync_wait(ex::schedule(cu::cuda_scheduler{pool}) |

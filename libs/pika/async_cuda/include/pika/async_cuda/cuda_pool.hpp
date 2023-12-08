@@ -7,9 +7,9 @@
 #pragma once
 
 #include <pika/assert.hpp>
-#include <pika/async_cuda/cublas_handle.hpp>
-#include <pika/async_cuda/cuda_stream.hpp>
-#include <pika/async_cuda/cusolver_handle.hpp>
+#include <pika/async_cuda_base/cublas_handle.hpp>
+#include <pika/async_cuda_base/cuda_stream.hpp>
+#include <pika/async_cuda_base/cusolver_handle.hpp>
 #include <pika/concurrency/cache_line_data.hpp>
 #include <pika/coroutines/thread_enums.hpp>
 

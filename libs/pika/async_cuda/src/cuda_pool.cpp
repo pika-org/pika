@@ -6,7 +6,7 @@
 
 #include <pika/assert.hpp>
 #include <pika/async_cuda/cuda_pool.hpp>
-#include <pika/async_cuda/cuda_stream.hpp>
+#include <pika/async_cuda_base/cuda_stream.hpp>
 #include <pika/concurrency/cache_line_data.hpp>
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/runtime/runtime_fwd.hpp>

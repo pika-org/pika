@@ -8,12 +8,12 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/async_cuda/cublas_handle.hpp>
 #include <pika/async_cuda/cuda_scheduler.hpp>
-#include <pika/async_cuda/cusolver_handle.hpp>
-#include <pika/async_cuda/custom_blas_api.hpp>
-#include <pika/async_cuda/custom_lapack_api.hpp>
 #include <pika/async_cuda/detail/cuda_event_callback.hpp>
+#include <pika/async_cuda_base/cublas_handle.hpp>
+#include <pika/async_cuda_base/cusolver_handle.hpp>
+#include <pika/async_cuda_base/custom_blas_api.hpp>
+#include <pika/async_cuda_base/custom_lapack_api.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/execution/algorithms/detail/helpers.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
