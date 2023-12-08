@@ -37,6 +37,10 @@
 #include <pika/topology/topology.hpp>
 #include <pika/version.hpp>
 
+#if defined(PIKA_HAVE_GPU_SUPPORT)
+# include <pika/async_cuda_base/cuda_event.hpp>
+#endif
+
 #if defined(PIKA_HAVE_MPI)
 # include <pika/mpi_base/mpi.hpp>
 #endif
@@ -307,6 +311,12 @@ namespace pika {
 
         try
         {
+#if defined(PIKA_HAVE_GPU_SUPPORT)
+            // pre-create CUDA/HIP events
+            pika::cuda::experimental::detail::cuda_event_pool::get_event_pool().grow(
+                pika::cuda::experimental::detail::cuda_event_pool::initial_events_in_pool);
+#endif
+
             // now create all thread_manager pools
             thread_manager_->create_pools();
 
@@ -363,6 +373,10 @@ namespace pika {
         if (0 == instance_number_counter_) --instance_number_counter_;
 
         resource::detail::delete_partitioner();
+
+#if defined(PIKA_HAVE_GPU_SUPPORT)
+        pika::cuda::experimental::detail::cuda_event_pool::get_event_pool().clear();
+#endif
     }
 
     void runtime::on_exit(util::detail::function<void()> const& f)

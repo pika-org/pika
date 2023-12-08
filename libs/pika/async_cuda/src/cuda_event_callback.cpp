@@ -310,9 +310,6 @@ namespace pika::cuda::experimental::detail {
         ++get_register_polling_count();
 #endif
         PIKA_DETAIL_DP(cud_debug<2>, debug(str<>("enable polling"), pool.get_pool_name()));
-
-        cuda_event_pool::get_event_pool().grow(cuda_event_pool::initial_events_in_pool);
-
         auto* sched = pool.get_scheduler();
         sched->set_cuda_polling_functions(&pika::cuda::experimental::detail::poll, &get_work_count);
     }
@@ -330,8 +327,6 @@ namespace pika::cuda::experimental::detail {
         PIKA_DETAIL_DP(cud_debug<2>, debug(str<>("disable polling"), pool.get_pool_name()));
         auto* sched = pool.get_scheduler();
         sched->clear_cuda_polling_function();
-
-        cuda_event_pool::get_event_pool().clear();
     }
 
     static std::string polling_pool_name = "default";
