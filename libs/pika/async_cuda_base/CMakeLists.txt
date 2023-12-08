@@ -24,8 +24,13 @@ set(async_cuda_base_headers
 )
 
 set(async_cuda_base_sources
-    cublas_exception.cpp cublas_handle.cpp cuda_device_scope.cpp
-    cuda_stream.cpp cusolver_exception.cpp cusolver_handle.cpp
+    cublas_exception.cpp
+    cublas_handle.cpp
+    cuda_device_scope.cpp
+    cuda_event.cpp
+    cuda_stream.cpp
+    cusolver_exception.cpp
+    cusolver_handle.cpp
 )
 
 if(PIKA_WITH_HIP)
