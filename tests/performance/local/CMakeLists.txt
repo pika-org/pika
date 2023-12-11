@@ -19,6 +19,7 @@ set(benchmarks
     skynet
     task_overhead
     task_overhead_report
+    task_size
 )
 
 if(NOT PIKA_WITH_SANITIZERS)
