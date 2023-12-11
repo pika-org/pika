@@ -27,7 +27,7 @@ gcc12_cuda12_spack_image:
   before_script:
     - CONFIG_TAG=`echo $SPACK_SPEC-$SPACK_COMMIT | sha256sum - | head -c 16`
     - compiler=${COMPILER/@/-}
-    - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/pika-$compiler:$CONFIG_TAG
+    - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/base/pika-$compiler:$CONFIG_TAG
     - echo -e "compiler=$compiler\nBASE_IMAGE=$PERSIST_IMAGE_NAME" >> compiler.env
   variables:
     BASE_IMAGE: $CSCS_REGISTRY_PATH/pika-spack-base:$SPACK_COMMIT
