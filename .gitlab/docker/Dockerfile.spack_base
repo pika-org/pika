@@ -17,9 +17,11 @@ RUN apt-get update && apt-get -yqq install --no-install-recommends \
     gcc \
     git \
     gnupg2 \
+    jq \
     libtool \
     locales \
     m4 \
+    moreutils \
     openssl \
     pkgconf \
     python3 \
