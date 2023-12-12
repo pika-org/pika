@@ -16,7 +16,7 @@ include:
     CXXSTD: 20
     SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD +stdexec \
                  ^boost@1.82.0 ^hwloc@2.9.1 \
-                 ^stdexec@git.4b441f333adaeb8eb0a6c7f38d36af30fa7ab366=main"
+                 ^stdexec@git.nvhpc-23.09.rc4=main"
 
 gcc13_spack_image:
   stage: spack_configs

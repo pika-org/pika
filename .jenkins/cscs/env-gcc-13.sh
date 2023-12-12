@@ -8,7 +8,7 @@ cxx_std="20"
 gcc_version="13.1.0"
 boost_version="1.82.0"
 hwloc_version="2.9.1"
-stdexec_version="git.4b441f333adaeb8eb0a6c7f38d36af30fa7ab366=main"
+stdexec_version="git.nvhpc-23.09.rc4=main"
 spack_compiler="gcc@${gcc_version}"
 spack_arch="cray-cnl7-broadwell"
 
