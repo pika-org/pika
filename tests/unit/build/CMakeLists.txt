@@ -11,8 +11,14 @@ if(NOT PIKA_WITH_TESTS_EXTERNAL_BUILD)
 endif()
 
 # Try building an external cmake based project ...
-function(pika_create_cmake_test name using_install_dir pika_dir build_type
-         test_dir
+function(
+  pika_create_cmake_test
+  category
+  name
+  using_install_dir
+  pika_dir
+  build_type
+  test_dir
 )
   set(build_dir "${CMAKE_CURRENT_BINARY_DIR}/${name}")
   if(CMAKE_TOOLCHAIN_FILE)
@@ -44,22 +50,20 @@ function(pika_create_cmake_test name using_install_dir pika_dir build_type
   if(PIKA_WITH_CLANG_CUDA)
     set(cmake_cuda_compiler -DCMAKE_CUDA_COMPILER=${CMAKE_CUDA_COMPILER})
   endif()
-  add_custom_target(
-    ${name}
+  add_test(
+    NAME "${category}.${name}"
     COMMAND
       "${CMAKE_CTEST_COMMAND}" --build-and-test "${test_dir}" "${build_dir}"
       --build-generator "${CMAKE_GENERATOR}" --build-noclean --build-options
       -Dpika_DIR=${pika_dir} ${ADDITIONAL_CMAKE_OPTIONS}
-      -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS_SAFE} -DCMAKE_BUILD_TYPE=${build_type}
-      ${cmake_cuda_compiler} --test-command "${CMAKE_CTEST_COMMAND}"
-      --output-on-failure
-    VERBATIM
+      -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS_SAFE}
+      -DCMAKE_BUILD_TYPE=${build_type} ${cmake_cuda_compiler} --test-command
+      "${CMAKE_CTEST_COMMAND}" --output-on-failure
   )
-  add_dependencies(${name} pika)
+  set_tests_properties(
+    "${category}.${name}" PROPERTIES LABELS "STANDALONE_TESTS"
+  )
 
-  if(MSVC)
-    set_target_properties(${name} PROPERTIES FOLDER "Tests/Unit/Build")
-  endif()
 endfunction()
 
 if(MSVC)
@@ -79,38 +83,15 @@ if(NOT MSVC)
     string(TOLOWER "${build_type}" build_type_lc)
 
     pika_create_cmake_test(
-      cmake_${build_type_lc}_build_dir_test FALSE
+      tests.unit.build cmake_${build_type_lc}_build_dir_test FALSE
       "${PROJECT_BINARY_DIR}/lib/cmake/pika" ${build_type}
       "examples/hello_world_standalone"
     )
 
     pika_create_cmake_test(
-      cmake_${build_type_lc}_install_dir_test TRUE
+      tests.unit.build cmake_${build_type_lc}_install_dir_test TRUE
       "${CMAKE_INSTALL_FULL_LIBDIR}/cmake/pika" ${build_type}
       "examples/hello_world_standalone"
     )
   endforeach()
 endif()
-
-set(cmake_tests build_dir install_dir)
-
-pika_add_pseudo_target(tests.unit.build.cmake)
-foreach(build_type ${build_types})
-  string(TOLOWER "${build_type}" build_type_lc)
-  pika_add_pseudo_target(tests.unit.build.cmake.${build_type_lc})
-  foreach(test ${cmake_tests})
-    pika_add_pseudo_target(tests.unit.build.cmake.${build_type_lc}.${test})
-    pika_add_pseudo_dependencies(
-      tests.unit.build.cmake.${build_type_lc}.${test}
-      cmake_${build_type_lc}_${test}_test
-    )
-    pika_add_pseudo_dependencies(
-      tests.unit.build.cmake.${build_type_lc}
-      tests.unit.build.cmake.${build_type_lc}.${test}
-    )
-  endforeach()
-  pika_add_pseudo_dependencies(
-    tests.unit.build.cmake tests.unit.build.cmake.${build_type_lc}
-  )
-endforeach()
-pika_add_pseudo_dependencies(tests.unit.build tests.unit.build.cmake)
