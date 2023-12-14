@@ -19,6 +19,7 @@
 #include <pika/execution.hpp>
 #include <pika/init.hpp>
 #include <pika/runtime.hpp>
+#include <pika/testing/performance.hpp>
 #include <pika/thread.hpp>
 
 #include <fmt/ostream.h>
@@ -26,9 +27,11 @@
 
 #include <cstdint>
 #include <cstdlib>
+#include <iostream>
 #include <utility>
 #include <vector>
 
+using pika::program_options::bool_switch;
 using pika::program_options::options_description;
 using pika::program_options::value;
 using pika::program_options::variables_map;
@@ -67,6 +70,7 @@ int pika_main(variables_map& vm)
     auto const task_size_max_s = vm["task-size-max-s"].as<double>();
     auto const task_size_growth_factor = vm["task-size-growth-factor"].as<double>();
     auto const target_efficiency = vm["target-efficiency"].as<double>();
+    auto const perftest_json = vm["perftest-json"].as<bool>();
 
     if (task_size_min_s <= 0)
     {
@@ -104,8 +108,11 @@ int pika_main(variables_map& vm)
     auto const num_threads = pika::get_num_worker_threads();
     auto const total_tasks = num_threads * tasks_per_thread;
 
-    fmt::print("num_threads,tasks_per_thread,task_size_s,single_threaded_reference_time,time,"
-               "parallel_efficiency\n");
+    if (!perftest_json)
+    {
+        fmt::print("num_threads,tasks_per_thread,task_size_s,single_threaded_reference_time,time,"
+                   "parallel_efficiency\n");
+    }
 
     double task_size_s = task_size_min_s;
     double efficiency = 0.0;
@@ -118,10 +125,21 @@ int pika_main(variables_map& vm)
         double time = timer.elapsed();
 
         efficiency = single_threaded_reference_time / time / num_threads;
-        fmt::print("{},{},{:.9f},{:.9f},{:.9f},{:.4f}\n", num_threads, tasks_per_thread,
-            task_size_s, single_threaded_reference_time, time, efficiency);
+        if (!perftest_json)
+        {
+            fmt::print("{},{},{:.9f},{:.9f},{:.9f},{:.4f}\n", num_threads, tasks_per_thread,
+                task_size_s, single_threaded_reference_time, time, efficiency);
+        }
+
         task_size_s *= task_size_growth_factor;
     } while (efficiency < target_efficiency && task_size_s < task_size_max_s);
+
+    if (perftest_json)
+    {
+        pika::util::detail::json_perf_times t;
+        t.add("task_size - thread_pool_scheduler", task_size_s);
+        std::cout << t;
+    }
 
     pika::finalize();
     return EXIT_SUCCESS;
@@ -138,6 +156,7 @@ int main(int argc, char* argv[])
         ("task-size-max-s", value<double>()->default_value(1e-2), "maximum task size in seconds at which to stop the test")
         ("task-size-growth-factor", value<double>()->default_value(1.5), "factor with which to grow the task size each iteration")
         ("target-efficiency", value<double>()->default_value(0.90), "target parallel efficiency at which to stop the test")
+        ("perftest-json", bool_switch(), "print final task size in json format for use with performance CI.")
         // clang-format on
         ;
 
