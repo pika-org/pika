@@ -61,7 +61,7 @@ namespace pika::cuda::experimental {
     cublas_handle const& locked_cublas_handle::get() noexcept { return handle; }
 
     locked_cublas_handle cuda_pool::cublas_handles_holder::get_locked_handle(
-        cuda_stream const& stream, cublasPointerMode_t pointer_mode) const
+        cuda_stream const& stream, cublasPointerMode_t pointer_mode)
     {
         auto const t = pika::threads::detail::get_global_thread_num_tss();
 
@@ -110,7 +110,7 @@ namespace pika::cuda::experimental {
     cusolver_handle const& locked_cusolver_handle::get() noexcept { return handle; }
 
     locked_cusolver_handle cuda_pool::cusolver_handles_holder::get_locked_handle(
-        cuda_stream const& stream) const
+        cuda_stream const& stream)
     {
         auto const t = pika::threads::detail::get_global_thread_num_tss();
 
@@ -172,13 +172,13 @@ namespace pika::cuda::experimental {
     }
 
     locked_cublas_handle cuda_pool::get_cublas_handle(
-        cuda_stream const& stream, cublasPointerMode_t pointer_mode) const
+        cuda_stream const& stream, cublasPointerMode_t pointer_mode)
     {
         PIKA_ASSERT(data);
         return data->cublas_handles.get_locked_handle(stream, pointer_mode);
     }
 
-    locked_cusolver_handle cuda_pool::get_cusolver_handle(cuda_stream const& stream) const
+    locked_cusolver_handle cuda_pool::get_cusolver_handle(cuda_stream const& stream)
     {
         PIKA_ASSERT(data);
         return data->cusolver_handles.get_locked_handle(stream);

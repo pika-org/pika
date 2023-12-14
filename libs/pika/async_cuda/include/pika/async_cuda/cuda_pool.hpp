@@ -85,10 +85,10 @@ namespace pika::cuda::experimental {
         struct cublas_handles_holder
         {
             std::size_t const concurrency;
-            mutable std::vector<cublas_handle> unsynchronized_handles;
-            mutable std::atomic<std::size_t> synchronized_handle_index;
-            mutable std::vector<cublas_handle> synchronized_handles;
-            mutable std::vector<std::mutex> handle_mutexes;
+            std::vector<cublas_handle> unsynchronized_handles;
+            std::atomic<std::size_t> synchronized_handle_index;
+            std::vector<cublas_handle> synchronized_handles;
+            std::vector<std::mutex> handle_mutexes;
 
             PIKA_EXPORT cublas_handles_holder();
             cublas_handles_holder(cublas_handles_holder&&) = delete;
@@ -97,16 +97,16 @@ namespace pika::cuda::experimental {
             cublas_handles_holder& operator=(cublas_handles_holder const&) = delete;
 
             PIKA_EXPORT locked_cublas_handle get_locked_handle(
-                cuda_stream const& stream, cublasPointerMode_t pointer_mode) const;
+                cuda_stream const& stream, cublasPointerMode_t pointer_mode);
         };
 
         struct cusolver_handles_holder
         {
             std::size_t const concurrency;
-            mutable std::vector<cusolver_handle> unsynchronized_handles;
-            mutable std::atomic<std::size_t> synchronized_handle_index;
-            mutable std::vector<cusolver_handle> synchronized_handles;
-            mutable std::vector<std::mutex> handle_mutexes;
+            std::vector<cusolver_handle> unsynchronized_handles;
+            std::atomic<std::size_t> synchronized_handle_index;
+            std::vector<cusolver_handle> synchronized_handles;
+            std::vector<std::mutex> handle_mutexes;
 
             PIKA_EXPORT cusolver_handles_holder();
             cusolver_handles_holder(cusolver_handles_holder&&) = delete;
@@ -114,7 +114,7 @@ namespace pika::cuda::experimental {
             cusolver_handles_holder& operator=(cusolver_handles_holder&&) = delete;
             cusolver_handles_holder& operator=(cusolver_handles_holder const&) = delete;
 
-            PIKA_EXPORT locked_cusolver_handle get_locked_handle(cuda_stream const& stream) const;
+            PIKA_EXPORT locked_cusolver_handle get_locked_handle(cuda_stream const& stream);
         };
 
         struct pool_data
@@ -153,8 +153,8 @@ namespace pika::cuda::experimental {
         PIKA_EXPORT cuda_stream const& get_next_stream(
             pika::execution::thread_priority priority = pika::execution::thread_priority::normal);
         PIKA_EXPORT locked_cublas_handle get_cublas_handle(
-            cuda_stream const& stream, cublasPointerMode_t pointer_mode) const;
-        PIKA_EXPORT locked_cusolver_handle get_cusolver_handle(cuda_stream const& stream) const;
+            cuda_stream const& stream, cublasPointerMode_t pointer_mode);
+        PIKA_EXPORT locked_cusolver_handle get_cusolver_handle(cuda_stream const& stream);
 
         /// \cond NOINTERNAL
         friend bool operator==(cuda_pool const& lhs, cuda_pool const& rhs) noexcept

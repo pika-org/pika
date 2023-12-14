@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <pika/config.hpp>
+
 #include <boost/lockfree/stack.hpp>
 #include <whip.hpp>
 
@@ -18,7 +20,7 @@ namespace pika::cuda::experimental::detail {
     // Since allocation of a cuda event passes into the cuda runtime
     // it might be an expensive operation, so we pre-allocate a pool
     // of them at startup.
-    struct cuda_event_pool
+    struct PIKA_EXPORT cuda_event_pool
     {
         static constexpr std::size_t initial_events_in_pool = 128;
 
