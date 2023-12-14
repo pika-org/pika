@@ -25,12 +25,13 @@ gcc12_cuda12_spack_image:
     - .container-builder
     - .variables_gcc12_cuda12_config
   before_script:
-    - CONFIG_TAG=`echo $SPACK_SPEC-$SPACK_COMMIT | sha256sum - | head -c 16`
+    - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
+    - CONFIG_TAG=`echo $DOCKERFILE_SHA-$ARCH-$BASE_IMAGE-$COMPILER-$SPACK_SPEC | sha256sum - | head -c 16`
     - compiler=${COMPILER/@/-}
     - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/base/pika-$compiler:$CONFIG_TAG
-    - echo -e "compiler=$compiler\nBASE_IMAGE=$PERSIST_IMAGE_NAME" >> compiler.env
+    - echo -e "compiler=$compiler" >> compiler.env
+    - echo -e "BASE_IMAGE=$PERSIST_IMAGE_NAME" >> compiler.env
   variables:
-    BASE_IMAGE: $CSCS_REGISTRY_PATH/pika-spack-base:$SPACK_COMMIT
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_compiler
     DOCKER_BUILD_ARGS: '["BASE_IMAGE","ARCH","COMPILER","SPACK_SPEC"]'
   artifacts:
@@ -46,8 +47,9 @@ gcc12_cuda12_debug_build:
   needs:
     - gcc12_cuda12_spack_image
   before_script:
+    - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
     - build_type=`echo $BUILD_TYPE | tr '[:upper:]' '[:lower:]'`
-    - configuration=$CMAKE_COMMON_FLAGS-$CMAKE_FLAGS-$CI_COMMIT_SHORT_SHA
+    - configuration=$DOCKERFILE_SHA-$BASE_IMAGE-$BUILD_DIR-$CMAKE_COMMON_FLAGS-$CMAKE_FLAGS-$CI_COMMIT_SHORT_SHA-$SOURCE_DIR
     - configuration=${configuration//-D/}
     - CONFIG_TAG=`echo $configuration | sha256sum - | head -c 16`
     - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/pika-$compiler-$build_type-build:$CONFIG_TAG

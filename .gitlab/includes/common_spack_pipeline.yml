@@ -15,8 +15,14 @@ base_spack_image:
   timeout: 2 hours
   extends: .container-builder
   before_script:
-    - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/pika-spack-base:$SPACK_COMMIT
+    - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
+    - export CONFIG_TAG=`echo $DOCKERFILE_SHA-$BASE_IMAGE-$SPACK_COMMIT | sha256sum - | head -c 16`
+    - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/pika-spack-base:$CONFIG_TAG
+    - echo -e "BASE_IMAGE=$PERSIST_IMAGE_NAME" >> base.env
   variables:
     BASE_IMAGE: docker.io/ubuntu:22.04
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_base
     DOCKER_BUILD_ARGS: '["BASE_IMAGE","SPACK_COMMIT"]'
+  artifacts:
+    reports:
+      dotenv: base.env
