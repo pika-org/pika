@@ -26,15 +26,12 @@ namespace pika::util {
             return res;
         }
 
-        void add_time(std::string const& test_name, std::string const& executor, double time)
-        {
-            times().add(test_name, executor, time);
-        }
+        void add_time(std::string const& test_name, double time) { times().add(test_name, time); }
 
     }    // namespace detail
 
-    void perftests_report(std::string const& name, std::string const& exec, const std::size_t steps,
-        detail::function<void(void)>&& test)
+    void perftests_report(
+        std::string const& name, const std::size_t steps, detail::function<void(void)>&& test)
     {
         if (steps == 0) return;
         // First iteration to cache the data
@@ -50,7 +47,7 @@ namespace pika::util {
             // default is in seconds
             auto time =
                 std::chrono::duration_cast<std::chrono::duration<double>>(timer::now() - start);
-            detail::add_time(name, exec, time.count());
+            detail::add_time(name, time.count());
         }
     }
 
