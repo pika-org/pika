@@ -14,7 +14,7 @@ include:
     BUILD_TYPE: Debug
     COMPILER: clang@14.0.6
     CXXSTD: 17
-    SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} +cuda malloc=system cxxstd=$CXXSTD ^fmt@9 \
+    SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} +cuda malloc=system cxxstd=$CXXSTD \
                  ^boost@1.79.0 ^cuda@11.5.0 +allow-unsupported-compilers ^hwloc@2.7.0"
 
 clang14_cuda11_spack_image:
