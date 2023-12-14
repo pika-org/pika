@@ -125,7 +125,6 @@ int pika_main(variables_map& vm)
         else
             numa_sensitive = 0;
 
-        bool test_all = (vm.count("test-all") > 0);
         const int repetitions = vm["repetitions"].as<int>();
 
         if (vm.count("info")) info_string = vm["info"].as<std::string>();
@@ -138,7 +137,7 @@ int pika_main(variables_map& vm)
         if (PIKA_UNLIKELY(0 == count))
             throw std::logic_error("error: count of 0 tasks specified\n");
 
-        if (test_all) { measure_function_create_thread_hierarchical_placement(count, repetitions); }
+        measure_function_create_thread_hierarchical_placement(count, repetitions);
     }
 
     pika::finalize();
@@ -159,7 +158,6 @@ int main(int argc, char* argv[])
         ("delay-iterations", value<std::uint64_t>()->default_value(0),
          "number of iterations in the delay loop")
 
-        ("test-all", "run all benchmarks")
         ("repetitions", value<int>()->default_value(1),
          "number of repetitions of the full benchmark")
 
