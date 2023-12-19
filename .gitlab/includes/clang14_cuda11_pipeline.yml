@@ -16,6 +16,11 @@ include:
     CXXSTD: 17
     SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} +cuda malloc=system cxxstd=$CXXSTD \
                  ^boost@1.79.0 ^cuda@11.5.0 +allow-unsupported-compilers ^hwloc@2.7.0"
+    # PIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE is OFF to test the fallback implementation of PIKA_FORWARD.
+    CMAKE_FLAGS: "-DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPIKA_WITH_CXX_STANDARD=20 \
+                  -DPIKA_WITH_CUDA=ON -DPIKA_WITH_MALLOC=system \
+                  -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON -DCMAKE_CUDA_COMPILER=c++ \
+                  -DCMAKE_CUDA_ARCHITECTURES=80 -DPIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE=OFF"
 
 clang14_cuda11_spack_image:
   stage: spack_configs
@@ -53,14 +58,9 @@ clang14_cuda11_debug_build:
     - configuration=${configuration//-D/}
     - CONFIG_TAG=`echo $configuration | sha256sum - | head -c 16`
     - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/pika-$compiler-$build_type-build:$CONFIG_TAG
-    - echo -e "PERSIST_IMAGE_NAME=$PERSIST_IMAGE_NAME" > build.env
+    - echo -e "PERSIST_IMAGE_NAME=$PERSIST_IMAGE_NAME" >> build.env
   variables:
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_build
-    # PIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE is OFF to test the fallback implementation of PIKA_FORWARD.
-    CMAKE_FLAGS: "-DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPIKA_WITH_CXX_STANDARD=20 \
-                  -DPIKA_WITH_CUDA=ON -DPIKA_WITH_MALLOC=system \
-                  -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON -DCMAKE_CUDA_COMPILER=c++ \
-                  -DCMAKE_CUDA_ARCHITECTURES=80 -DPIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE=OFF"
     DOCKER_BUILD_ARGS: '["BASE_IMAGE","SOURCE_DIR","BUILD_DIR","CMAKE_COMMON_FLAGS","CMAKE_FLAGS"]'
   artifacts:
     reports:
@@ -70,9 +70,12 @@ clang14_cuda11_debug_test:
   extends:
     - .variables_clang14_cuda11_config
     - .test_common_gpu_clariden_cuda
+    - .cmake_variables_common
   needs:
     - clang14_cuda11_debug_build
   script:
     - spack arch
-    - spack build-env $spack_spec -- bash -c "ctest --label-exclude COMPILE_ONLY --test-dir ${BUILD_DIR} -j$(nproc) --timeout 120 --output-on-failure --no-compress-output --no-tests=error"
+    - export CTEST_XML=$PWD/ctest.xml
+    - trap "${SOURCE_DIR}/.gitlab/scripts/collect_ctest_metrics.sh ${CTEST_XML}" EXIT
+    - spack build-env $spack_spec -- bash -c "ctest --output-junit ${CTEST_XML} --label-exclude COMPILE_ONLY --test-dir ${BUILD_DIR} -j$(($(nproc)/2)) --timeout 120 --output-on-failure --no-compress-output --no-tests=error"
   image: $PERSIST_IMAGE_NAME
