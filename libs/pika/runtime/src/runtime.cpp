@@ -311,12 +311,6 @@ namespace pika {
 
         try
         {
-#if defined(PIKA_HAVE_GPU_SUPPORT)
-            // pre-create CUDA/HIP events
-            pika::cuda::experimental::detail::cuda_event_pool::get_event_pool().grow(
-                pika::cuda::experimental::detail::cuda_event_pool::initial_events_in_pool);
-#endif
-
             // now create all thread_manager pools
             thread_manager_->create_pools();
 
