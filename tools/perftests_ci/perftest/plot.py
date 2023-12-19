@@ -30,12 +30,10 @@ def _load_json(filename):
 
 class _OutputKey(typing.NamedTuple):
     name: str
-    executor: str
 
     def __str__(self):
         name = self.name.replace("_", " ").title()
-        executor = self.executor.upper()
-        return f"{name} ({executor})"
+        return name
 
     @classmethod
     def outputs_by_key(cls, data):
@@ -125,7 +123,6 @@ class _ConfidenceInterval(typing.NamedTuple):
 
 def _add_comparison_table(report, cis):
     names = list(sorted(set(k.name for k in cis.keys())))
-    executors = list(sorted(set(k.executor for k in cis.keys())))
     exitcode = 0
 
     def css_class(classification):
@@ -143,28 +140,26 @@ def _add_comparison_table(report, cis):
 
     with report.table("Comparison") as table:
         with table.row() as row:
-            row.fill("BENCHMARK", *(b.upper() for b in executors))
+            row.fill("BENCHMARK", "RESULT")
 
         for name in names:
             with table.row() as row:
                 name_cell = row.cell(name.replace("_", " ").title())
-                row_classification = ""
-                for executor in executors:
-                    try:
-                        classification = [
-                            cis[_OutputKey(name=name, executor=executor)].classify()
-                        ]
-                        if (len(classification) <= 1) or (
-                            classification[0] == classification[1]
-                        ):
-                            classification = classification[0]
-                        else:
-                            classification = " ".join(classification)
-                    except KeyError:
-                        classification = ""
-                    row_classification += classification
-                    class_qualifier = css_class(classification)
-                    row.cell(classification).set("class", class_qualifier[0])
+
+                try:
+                    classification = [cis[_OutputKey(name=name)].classify()]
+                    if (len(classification) <= 1) or (
+                        classification[0] == classification[1]
+                    ):
+                        classification = classification[0]
+                    else:
+                        classification = " ".join(classification)
+                except KeyError:
+                    classification = ""
+                row_classification = classification
+                class_qualifier = css_class(classification)
+                row.cell(classification).set("class", class_qualifier[0])
+
                 row_class_qualifier = css_class(row_classification)
                 name_cell.set("class", row_class_qualifier[0])
                 exitcode = exitcode or row_class_qualifier[1]
@@ -378,37 +373,3 @@ def _bar_plot(title, labels, full_data, output):
     fig.savefig(output, dpi=300)
     log.debug(f"Successfully written bar plot to {output}")
     plt.close(fig)
-
-
-def _add_executor_comparison_plots(report, data):
-    outputs = [_OutputKey.outputs_by_key(d) for d in data]
-
-    envs = (
-        envfile.stem.replace("_", "-").upper()
-        for envfile in (pathlib.Path(d["environment"]["envfile"]) for d in data)
-    )
-    labels = [f"Configuration {i + 1} ({env})" for i, env in enumerate(envs)]
-
-    executors = {k.executor for o in outputs for k in o.keys()}
-    names = {k.name for o in outputs for k in o.keys()}
-
-    for name in sorted(names):
-        key = functools.partial(_OutputKey, name=name)
-        title = name.replace("_", " ").title()
-        data = [
-            {
-                executor: np.median(output[key(executor=executor)])
-                for executor in executors
-                if key(executor=executor) in output
-            }
-            for output in outputs
-        ]
-        with report.image_grid() as grid:
-            _bar_plot(title, labels, data, grid.image())
-
-
-def compare_executors(data, output):
-    title = "pika executors Comparison"
-    with html.Report(output, title) as report:
-        _add_executor_comparison_plots(report, data)
-        _add_info(report, [f"Configuration {i + 1}" for i in range(len(data))], data)
