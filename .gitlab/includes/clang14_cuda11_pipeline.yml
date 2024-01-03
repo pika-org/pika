@@ -56,14 +56,11 @@ clang14_cuda11_debug_build:
     - echo -e "PERSIST_IMAGE_NAME=$PERSIST_IMAGE_NAME" > build.env
   variables:
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_build
+    # PIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE is OFF to test the fallback implementation of PIKA_FORWARD.
     CMAKE_FLAGS: "-DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPIKA_WITH_CXX_STANDARD=20 \
                   -DPIKA_WITH_CUDA=ON -DPIKA_WITH_MALLOC=system \
                   -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON -DCMAKE_CUDA_COMPILER=c++ \
-                  -DCMAKE_CUDA_ARCHITECTURES=80 -DPIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE=OFF \
-                  -DPIKA_WITH_TESTS_EXTERNAL_BUILD=OFF"
-# PIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE is OFF to test the fallback implementation of PIKA_FORWARD.
-# PIKA_WITH_TESTS_EXTERNAL_BUILD is OFF since build unit test with pika in Debug and
-# hello_world project in Debug mode hangs with this configuration.
+                  -DCMAKE_CUDA_ARCHITECTURES=80 -DPIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE=OFF"
     DOCKER_BUILD_ARGS: '["BASE_IMAGE","SOURCE_DIR","BUILD_DIR","CMAKE_COMMON_FLAGS","CMAKE_FLAGS"]'
   artifacts:
     reports:
