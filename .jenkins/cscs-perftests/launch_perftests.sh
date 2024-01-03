@@ -38,8 +38,6 @@ for executable in "${pika_targets[@]}"; do
 
     run_command=("./bin/${executable} ${test_opts}")
 
-    # TODO: make schedulers and other options vary
-
     # Run performance tests. This is run through srun so that the CPU frequency
     # can be controlled. Low significantly slows down the CPU but should reduce
     # variations due to frequency scaling.  For more details see

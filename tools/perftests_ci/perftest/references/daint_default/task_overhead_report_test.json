@@ -2,7 +2,6 @@
   "outputs": [
     {
       "name": "task overhead - create_thread_hierarchical - latch",
-      "executor": "no-executor",
       "series": [
         0.482435,
         0.3543,
