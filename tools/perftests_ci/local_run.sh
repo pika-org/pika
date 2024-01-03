@@ -15,7 +15,7 @@ rm -rf ${build_dir}/reports/reference-comparison
 
 # Setup the environment (libs + python)
 source ${src_dir}/.jenkins/cscs-perftests/env-perftests.sh
-source /apps/daint/SSL/pika/virtual_envs/perftests_env/bin/activate
+source /apps/daint/SSL/pika/virtual_envs/perftests_env_03_01_2023/bin/activate
 
 # Variables
 mkdir -p ${build_dir}/tools
