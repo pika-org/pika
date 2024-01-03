@@ -1,3 +1,4 @@
+fonttools>=4.43.0
 numpy>=1.22.2
 matplotlib
 pillow>=10.0.1
