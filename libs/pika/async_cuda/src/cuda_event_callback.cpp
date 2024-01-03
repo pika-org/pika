@@ -9,9 +9,9 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/async_cuda/cuda_event.hpp>
-#include <pika/async_cuda/detail/cuda_debug.hpp>
 #include <pika/async_cuda/detail/cuda_event_callback.hpp>
+#include <pika/async_cuda_base/cuda_event.hpp>
+#include <pika/async_cuda_base/detail/cuda_debug.hpp>
 #include <pika/concurrency/concurrentqueue.hpp>
 #include <pika/concurrency/spinlock.hpp>
 #include <pika/datastructures/detail/small_vector.hpp>
@@ -309,6 +309,10 @@ namespace pika::cuda::experimental::detail {
 #if defined(PIKA_DEBUG)
         ++get_register_polling_count();
 #endif
+
+        // pre-create CUDA/HIP events
+        cuda_event_pool::get_event_pool().grow(cuda_event_pool::initial_events_in_pool);
+
         PIKA_DETAIL_DP(cud_debug<2>, debug(str<>("enable polling"), pool.get_pool_name()));
         auto* sched = pool.get_scheduler();
         sched->set_cuda_polling_functions(&pika::cuda::experimental::detail::poll, &get_work_count);
