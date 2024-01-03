@@ -1,6 +1,6 @@
 fonttools>=4.43.0
 numpy>=1.22.2
-matplotlib
+matplotlib>=3.8.2
 pillow>=10.0.1
 python-dateutil
 lxml
