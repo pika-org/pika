@@ -65,8 +65,18 @@ int pika_main()
 
 int main(int argc, char** argv)
 {
-    std::vector<std::string> schedulers = {"local", "local-priority-fifo", "local-priority-lifo",
-        "static", "static-priority", "abp-priority-fifo", "abp-priority-lifo", "shared-priority"};
+    std::vector<std::string> schedulers = {
+        "local",
+        "local-priority-fifo",
+        "static",
+        "static-priority",
+        "shared-priority",
+#if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
+        "local-priority-lifo",
+        "abp-priority-fifo",
+        "abp-priority-lifo",
+#endif
+    };
     for (auto const& scheduler : schedulers)
     {
         pika::init_params iparams;
