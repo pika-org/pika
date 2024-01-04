@@ -117,6 +117,8 @@ json_add_from_env \
 pika_targets=(
 "task_overhead_report_test"
 "task_size_test"
+"task_size_test"
+"task_size_test"
 )
 pika_test_options=(
 "--pika:ini=pika.thread_queue.init_threads_count=100 \
@@ -124,10 +126,24 @@ pika_test_options=(
 --repetitions=100 \
 --tasks=500000"
 
-"--tasks-per-thread=10000 \
+"--method=task
+--tasks-per-thread=10000 \
 --task-size-growth-factor=1.01 \
 --target-efficiency=0.95 \
---perftest-json")
+--perftest-json"
+
+"--method=barrier
+--tasks-per-thread=10000 \
+--task-size-growth-factor=1.01 \
+--target-efficiency=0.95 \
+--perftest-json"
+
+"--method=bulk
+--tasks-per-thread=10000 \
+--task-size-growth-factor=1.01 \
+--target-efficiency=0.95 \
+--perftest-json"
+)
 
 index=0
 for executable in "${pika_targets[@]}"; do
