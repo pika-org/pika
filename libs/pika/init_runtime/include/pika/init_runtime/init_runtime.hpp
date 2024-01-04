@@ -133,7 +133,7 @@ namespace pika {
     /// @param argv array of arguments. The first element is ignored.
     ///
     /// @pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
-    /// @pre the runtime is inactive
+    /// @pre the runtime is not initialized
     /// @post the runtime is running
     PIKA_EXPORT void start(
         int argc, const char* const* argv, init_params const& params = init_params());
@@ -147,9 +147,9 @@ namespace pika {
     /// @return the return value of the callable passed to @p pika::start, if any. If none was
     /// passed, returns 0.
     ///
-    /// @pre the runtime is active
+    /// @pre the runtime is initialized
     /// @pre the calling thread is not a pika task
-    /// @post the runtime is inactive
+    /// @post the runtime is not initialized
     PIKA_EXPORT int stop();
 
     /// Signal the runtime that it may be stopped.
@@ -159,7 +159,7 @@ namespace pika {
     /// scheduled on it and the runtime being idle and ready to be shutdown. Unlike @pika::stop,
     /// @ref pika::finalize can be called from within or outside the runtime.
     ///
-    /// @pre the runtime is active
+    /// @pre the runtime is initialized
     PIKA_EXPORT void finalize();
 
     /// Wait for the runtime to be idle.
@@ -168,7 +168,7 @@ namespace pika {
     /// as non-tasks such as CUDA kernels submitted through pika facilities. Can be called from
     /// within the runtime, in which case the calling task is ignored when determining idleness.
     ///
-    /// @pre the runtime is active
+    /// @pre the runtime is initialized
     /// @post all work submitted before the call to wait is completed
     PIKA_EXPORT void wait();
 
