@@ -54,12 +54,12 @@ The ``pika/init.hpp`` header provides functionality to manage the pika runtime.
    :language: c++
    :start-at: #include
 
-.. doxygenfunction:: start(int argc, const char *const *argv, init_params const &params)
-.. doxygenfunction:: stop()
-.. doxygenfunction:: finalize()
-.. doxygenfunction:: wait()
-.. doxygenfunction:: resume()
-.. doxygenfunction:: suspend()
+.. doxygenfunction:: pika::start(int argc, const char *const *argv, init_params const &params)
+.. doxygenfunction:: pika::stop()
+.. doxygenfunction:: pika::finalize()
+.. doxygenfunction:: pika::wait()
+.. doxygenfunction:: pika::resume()
+.. doxygenfunction:: pika::suspend()
 
 .. doxygenstruct:: pika::init_params
    :members:
