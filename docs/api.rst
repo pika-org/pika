@@ -60,6 +60,7 @@ The ``pika/init.hpp`` header provides functionality to manage the pika runtime.
 .. doxygenfunction:: pika::wait()
 .. doxygenfunction:: pika::resume()
 .. doxygenfunction:: pika::suspend()
+.. doxygenfunction:: pika::is_runtime_initialized()
 
 .. doxygenstruct:: pika::init_params
    :members:
