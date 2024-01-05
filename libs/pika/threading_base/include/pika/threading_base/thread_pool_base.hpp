@@ -36,22 +36,6 @@
 #include <pika/config/warnings_prefix.hpp>
 
 namespace pika::threads::detail {
-    /// \brief Data structure which stores statistics collected by an
-    ///        executor instance.
-    struct executor_statistics
-    {
-        executor_statistics()
-          : tasks_scheduled_(0)
-          , tasks_completed_(0)
-          , queue_length_(0)
-        {
-        }
-
-        std::uint64_t tasks_scheduled_;
-        std::uint64_t tasks_completed_;
-        std::uint64_t queue_length_;
-    };
-
     ///////////////////////////////////////////////////////////////////////
     enum executor_parameter
     {
