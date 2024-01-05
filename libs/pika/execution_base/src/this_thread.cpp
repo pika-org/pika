@@ -104,8 +104,7 @@ namespace pika::execution {
 
         void default_agent::yield_k(std::size_t k, char const* /* desc */)
         {
-            if (k < 4) {}
-            else if (k < 16) { PIKA_SMT_PAUSE; }
+            if (k < 16) { PIKA_SMT_PAUSE; }
             else if (k < 32 || k & 1)
             {
 #if defined(PIKA_WINDOWS)

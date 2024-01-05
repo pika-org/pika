@@ -58,8 +58,7 @@ namespace pika::threads::detail {
 
     void execution_agent::yield_k(std::size_t k, const char* desc)
     {
-        if (k < 4) {}
-        else if (k < 16) { PIKA_SMT_PAUSE; }
+        if (k < 16) { PIKA_SMT_PAUSE; }
         else if (k < 32 || k & 1) { do_yield(desc, thread_schedule_state::pending_boost); }
         else { do_yield(desc, thread_schedule_state::pending); }
     }
