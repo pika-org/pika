@@ -60,9 +60,11 @@ namespace pika::thread_pool_bulk_detail {
     class thread_pool_bulk_sender
     {
     private:
+        using shape_type = std::decay_t<Shape>;
+
         pika::execution::experimental::thread_pool_scheduler scheduler;
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Sender> sender;
-        PIKA_NO_UNIQUE_ADDRESS std::decay_t<Shape> shape;
+        PIKA_NO_UNIQUE_ADDRESS shape_type shape;
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
 
     public:
@@ -161,10 +163,10 @@ namespace pika::thread_pool_bulk_detail {
                     template <typename Ts>
                     void do_work_chunk(Ts& ts, std::uint32_t const index) const
                     {
-                        auto const i_begin =
-                            static_cast<std::decay_t<Shape>>(index * task_f->chunk_size);
-                        auto const i_end = (std::min)(
-                            static_cast<std::decay_t<Shape>>((index + 1) * task_f->chunk_size),
+                        auto const i_begin = static_cast<shape_type>(index) *
+                            static_cast<shape_type>(task_f->chunk_size);
+                        auto const i_end = (std::min)((static_cast<shape_type>(index) + 1) *
+                                static_cast<shape_type>(task_f->chunk_size),
                             task_f->n);
                         for (auto i = i_begin; i < i_end; ++i)
                         {
@@ -447,7 +449,7 @@ namespace pika::thread_pool_bulk_detail {
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
             std::atomic<std::decay_t<Shape>> tasks_remaining{
-                static_cast<std::decay_t<Shape>>(num_worker_threads)};
+                static_cast<shape_type>(num_worker_threads)};
             pika::util::detail::prepend_t<value_types<std::tuple, pika::detail::variant>,
                 pika::detail::monostate>
                 ts;
