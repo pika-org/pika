@@ -277,7 +277,7 @@ namespace pika::threads::detail {
             std::size_t domain_num;
             std::size_t q_index;
 
-            const char* msg = nullptr;
+            [[maybe_unused]] const char* msg = nullptr;
 
             std::unique_lock<pu_mutex_type> l;
 
@@ -667,7 +667,7 @@ namespace pika::threads::detail {
             std::size_t q_index = std::size_t(-1);
 
             std::unique_lock<pu_mutex_type> l;
-            const char* msg;
+            [[maybe_unused]] const char* msg;
 
             using execution::thread_schedule_hint_mode;
 
