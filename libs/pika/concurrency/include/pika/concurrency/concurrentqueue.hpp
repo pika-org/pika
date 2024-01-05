@@ -1985,9 +1985,11 @@ namespace pika::concurrency::detail {
             }
 
         private:
+            // NOLINTNEXTLINE(bugprone-sizeof-expression)
             static_assert(std::alignment_of<T>::value <= sizeof(T),
                 "The queue does not support types with an alignment greater than their size at "
                 "this time");
+            // NOLINTNEXTLINE(bugprone-sizeof-expression)
             MOODYCAMEL_ALIGNED_TYPE_LIKE(char[sizeof(T) * BLOCK_SIZE], T) elements;
 
         public:
