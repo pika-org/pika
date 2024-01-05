@@ -66,8 +66,7 @@ namespace pika::threads::detail {
 
     void execution_agent::spin_k(std::size_t k, const char*)
     {
-        if (k < 4) {}
-        else { PIKA_SMT_PAUSE; }
+        for (std::size_t i = 0; i < k; ++i) { PIKA_SMT_PAUSE; }
     }
 
     void execution_agent::resume(const char* desc)

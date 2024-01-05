@@ -135,8 +135,7 @@ namespace pika::execution {
 
         void default_agent::spin_k(std::size_t k, char const* /* desc */)
         {
-            if (k < 4) {}
-            else { PIKA_SMT_PAUSE; }
+            for (std::size_t i = 0; i < k; ++i) { PIKA_SMT_PAUSE; }
         }
 
         void default_agent::suspend(char const* /* desc */)
