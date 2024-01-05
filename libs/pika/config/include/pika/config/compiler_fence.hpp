@@ -48,8 +48,13 @@ extern "C" void _mm_pause();
 #   else
 #    define PIKA_SMT_PAUSE __asm__ __volatile__("or 27,27,27")
 #   endif
-#  elif defined(__arm__)
-#   define PIKA_SMT_PAUSE __asm__ __volatile__("yield")
+#  elif (defined(__arm__) && __ARM_ARCH >= 7) || defined(__arm64__) || defined(__aarch64__)
+// See:
+// - https://developer.arm.com/documentation/ddi0596/2021-06/Base-Instructions/ISB--Instruction-Synchronization-Barrier-
+// - https://stackoverflow.com/questions/70810121/why-does-hintspin-loop-use-isb-on-aarch64
+// - https://github.com/rust-lang/rust/commit/c064b6560b7ce0adeb9bbf5d7dcf12b1acb0c807
+// - https://github.com/microsoft/mimalloc/pull/394/files
+#   define PIKA_SMT_PAUSE __asm__ __volatile__("isb" : : : "memory")
 #  else
 #   define PIKA_SMT_PAUSE PIKA_COMPILER_FENCE
 #  endif
