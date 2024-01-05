@@ -60,30 +60,6 @@ namespace pika::threads::detail {
         current_concurrency = 3
     };
 
-    ///////////////////////////////////////////////////////////////////////
-    // The interface below is used by the resource manager to
-    // interact with the executor.
-    struct PIKA_EXPORT manage_executor
-    {
-        virtual ~manage_executor() {}
-
-        // Return the requested policy element
-        virtual std::size_t get_policy_element(executor_parameter p, error_code& ec) const = 0;
-
-        // Return statistics collected by this scheduler
-        virtual void get_statistics(executor_statistics& stats, error_code& ec) const = 0;
-
-        // Provide the given processing unit to the scheduler.
-        virtual void add_processing_unit(
-            std::size_t virt_core, std::size_t thread_num, error_code& ec) = 0;
-
-        // Remove the given processing unit from the scheduler.
-        virtual void remove_processing_unit(std::size_t thread_num, error_code& ec) = 0;
-
-        // return the description string of the underlying scheduler
-        virtual char const* get_description() const = 0;
-    };
-
     ///////////////////////////////////////////////////////////////////////////
     /// \cond NOINTERNAL
     struct pool_id_type

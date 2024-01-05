@@ -320,7 +320,6 @@ namespace pika::threads::detail {
 
         std::vector<scheduling_counter_data> counter_data_;
 
-        // support detail::manage_executor interface
         std::atomic<long> thread_count_;
         std::atomic<std::int64_t> tasks_scheduled_;
 
