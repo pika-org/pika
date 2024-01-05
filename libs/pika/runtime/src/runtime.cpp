@@ -1667,4 +1667,6 @@ namespace pika {
             return execution::detail::get_stack_size_enum_name(size_enum);
         }
     }    // namespace threads
+
+    bool is_runtime_initialized() noexcept { return get_runtime_ptr() != nullptr; }
 }    // namespace pika

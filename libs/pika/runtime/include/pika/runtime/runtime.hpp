@@ -467,6 +467,12 @@ namespace pika {
         /// \param size this represents the stack size
         PIKA_EXPORT std::ptrdiff_t get_stack_size(execution::thread_stacksize);
     }    // namespace threads
+
+    /// Returns true when the runtime is initialized, false otherwise.
+    ///
+    /// Returns true while in a @ref pika::init call, or between calls of @ref pika::start and @ref
+    /// pika::stop, otherwise false.
+    PIKA_EXPORT bool is_runtime_initialized() noexcept;
 }    // namespace pika
 
 #include <pika/config/warnings_suffix.hpp>
