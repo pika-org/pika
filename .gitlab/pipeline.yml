@@ -8,6 +8,7 @@ include:
   - local: '.gitlab/includes/dockerhub_pipeline.yml'
   - local: '.gitlab/includes/gcc9_pipeline.yml'
   - local: '.gitlab/includes/gcc9_cuda11_pipeline.yml'
+  - local: '.gitlab/includes/gcc10_apex_pipeline.yml'
   - local: '.gitlab/includes/gcc11_pipeline.yml'
   - local: '.gitlab/includes/gcc12_pipeline.yml'
   - local: '.gitlab/includes/gcc12_cuda12_pipeline.yml'
