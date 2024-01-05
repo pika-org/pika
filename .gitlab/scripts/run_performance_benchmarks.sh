@@ -127,21 +127,21 @@ pika_test_options=(
 --tasks=500000"
 
 "--method=task
---tasks-per-thread=10000 \
---task-size-growth-factor=1.01 \
---target-efficiency=0.95 \
+--tasks-per-thread=1000 \
+--task-size-growth-factor=1.05 \
+--target-efficiency=0.9 \
 --perftest-json"
 
 "--method=barrier
---tasks-per-thread=10000 \
---task-size-growth-factor=1.01 \
---target-efficiency=0.95 \
+--tasks-per-thread=1000 \
+--task-size-growth-factor=1.05 \
+--target-efficiency=0.5 \
 --perftest-json"
 
 "--method=bulk
---tasks-per-thread=10000 \
---task-size-growth-factor=1.01 \
---target-efficiency=0.95 \
+--tasks-per-thread=1000 \
+--task-size-growth-factor=1.05 \
+--target-efficiency=0.5 \
 --perftest-json"
 )
 
