@@ -10,7 +10,7 @@ set -euo pipefail
 
 current_dir=$(dirname -- "${BASH_SOURCE[0]}")
 
-source "${current_dir}/json_utilities.sh"
+source "${current_dir}/utilities.sh"
 
 metadata_file=$(mktemp --tmpdir metadata.XXXXXXXXXX.json)
 create_metadata_file "${metadata_file}"
