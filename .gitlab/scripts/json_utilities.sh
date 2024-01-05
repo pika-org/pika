@@ -57,3 +57,57 @@ function json_add_from_command {
         jq --arg value "$(${cmd})" ".${key}.${cmd} += \$value" "${file}" | sponge "${file}"
     done
 }
+
+function create_metadata_file {
+    metadata_file=${1}
+    echo '{}' >"${metadata_file}"
+
+    # Logstash data stream metadata section
+    json_add_value "${metadata_file}" "data_stream.type" "logs"
+    json_add_value "${metadata_file}" "data_stream.dataset" "service.pika"
+    json_add_value "${metadata_file}" "data_stream.namespace" "alps"
+
+    # CI/git metadata section
+    json_add_value "${metadata_file}" "ci.organization" "pika-org"
+    json_add_value "${metadata_file}" "ci.repository" "pika"
+    json_add_from_env \
+        "${metadata_file}" "ci" \
+        CI_COMMIT_AUTHOR \
+        CI_COMMIT_BRANCH \
+        CI_COMMIT_DESCRIPTION \
+        CI_COMMIT_MESSAGE \
+        CI_COMMIT_SHA \
+        CI_COMMIT_SHORT_SHA \
+        CI_COMMIT_TIMESTAMP \
+        CI_COMMIT_TITLE \
+        CI_JOB_IMAGE
+
+    # System section
+    json_add_from_command "${metadata_file}" "system" "hostname"
+
+    # Slurm section
+    json_add_from_env \
+        "${metadata_file}" "slurm" \
+        SLURM_CLUSTER_NAME \
+        SLURM_CPUS_ON_NODE \
+        SLURM_CPU_BIND \
+        SLURM_JOBID \
+        SLURM_JOB_NAME \
+        SLURM_JOB_NODELIST \
+        SLURM_JOB_NUM_NODES \
+        SLURM_JOB_PARTITION \
+        SLURM_NODELIST \
+        SLURM_NTASKS \
+        SLURM_TASKS_PER_NODE
+
+    # Build configuration section
+    json_add_from_env \
+        "${metadata_file}" "build_configuration" \
+        ARCH \
+        BUILD_TYPE \
+        CMAKE_COMMON_FLAGS \
+        CMAKE_FLAGS \
+        COMPILER \
+        SPACK_COMMIT \
+        SPACK_SPEC
+}
