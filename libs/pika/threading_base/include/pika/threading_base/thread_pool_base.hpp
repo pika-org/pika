@@ -36,14 +36,6 @@
 #include <pika/config/warnings_prefix.hpp>
 
 namespace pika::threads::detail {
-    ///////////////////////////////////////////////////////////////////////
-    enum executor_parameter
-    {
-        min_concurrency = 1,
-        max_concurrency = 2,
-        current_concurrency = 3
-    };
-
     ///////////////////////////////////////////////////////////////////////////
     /// \cond NOINTERNAL
     struct pool_id_type
