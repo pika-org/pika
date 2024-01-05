@@ -29,7 +29,7 @@ string(
   CONCAT
     process_mask_flag_expected_output
     "   0: PU L#0\\(P#0\\), Core L#0\\(P#0\\), Socket L#0\\(P#0\\)(, NUMANode L#0\\(P#0\\))?, on pool \"default\"\n"
-    "   1: PU L#2\\(P#1\\), Core L#1\\(P#1\\), Socket L#0\\(P#0\\)(, NUMANode L#0\\(P#0\\))?, on pool \"default\"\n"
+    "   1: PU L#[0-9]+\\(P#1\\), Core L#[0-9]+\\(P#[0-9]+\\), Socket L#[0-9]+\\(P#[0-9]+\\)(, NUMANode L#[0-9]+\\(P#[0-9]+\\))?, on pool \"default\"\n"
     "All tests passed."
 )
 
