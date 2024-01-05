@@ -141,7 +141,8 @@ namespace pika::threads::detail {
         // -------------------------------------
         // terminated tasks
         // completed tasks that can be reused (stack space etc)
-        using terminated_items_type = lockfree_fifo::apply<threads::detail::thread_data*>::type;
+        using terminated_items_type =
+            concurrentqueue_fifo::apply<threads::detail::thread_data*>::type;
         terminated_items_type terminated_items_;
         mutable pika::concurrency::detail::cache_line_data<std::atomic<std::int32_t>>
             terminated_items_count_;
