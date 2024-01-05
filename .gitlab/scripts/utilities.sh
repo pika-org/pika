@@ -25,24 +25,24 @@ function json_merge {
 }
 
 function json_add_value {
-    file=${1}
-    key=${2}
-    value=${3}
+    file="${1}"
+    key="${2}"
+    value="${3}"
 
     jq --arg value "${value}" ".${key} += \$value" "${file}" | sponge "${file}"
 }
 
 function json_add_value_json {
-    file=${1}
-    key=${2}
-    value=${3}
+    file="${1}"
+    key="${2}"
+    value="${3}"
 
     jq --argjson value "${value}" ".${key} += \$value" "${file}" | sponge "${file}"
 }
 
 function json_add_from_env {
-    file=${1}
-    key=${2}
+    file="${1}"
+    key="${2}"
 
     for var in ${@:3}; do
         jq --arg value "${!var:-}" ".${key}.${var} += \$value" "${file}" | sponge "${file}"
@@ -50,8 +50,8 @@ function json_add_from_env {
 }
 
 function json_add_from_command {
-    file=${1}
-    key=${2}
+    file="${1}"
+    key="${2}"
 
     for cmd in ${@:3}; do
         jq --arg value "$(${cmd})" ".${key}.${cmd} += \$value" "${file}" | sponge "${file}"
@@ -59,7 +59,7 @@ function json_add_from_command {
 }
 
 function create_metadata_file {
-    metadata_file=${1}
+    metadata_file="${1}"
     echo '{}' >"${metadata_file}"
 
     # Logstash data stream metadata section
