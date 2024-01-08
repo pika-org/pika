@@ -472,6 +472,8 @@ namespace pika {
     ///
     /// Returns true while in a @ref pika::init call, or between calls of @ref pika::start and @ref
     /// pika::stop, otherwise false.
+    ///
+    /// Added in 0.22.0.
     PIKA_EXPORT bool is_runtime_initialized() noexcept;
 }    // namespace pika
 
