@@ -171,25 +171,29 @@ int pika_main(variables_map& vm)
 
     if (!perftest_json)
     {
-        fmt::print("method,num_threads,tasks_per_thread,task_size_s,single_threaded_reference_time,"
-                   "time,parallel_efficiency\n");
+        fmt::print(
+            "method,num_threads,tasks_per_thread,task_size_s,single_threaded_reference_time_s,"
+            "time_s,task_overhead_time_s,parallel_efficiency\n");
     }
 
     double task_size_s = task_size_min_s;
     double efficiency = 0.0;
 
     do {
-        double const single_threaded_reference_time = total_tasks * task_size_s;
+        double const single_threaded_reference_time_s = total_tasks * task_size_s;
 
         high_resolution_timer timer;
         do_work(tasks_per_thread, task_size_s);
-        double time = timer.elapsed();
+        double time_s = timer.elapsed();
 
-        efficiency = single_threaded_reference_time / time / num_threads;
+        efficiency = single_threaded_reference_time_s / time_s / num_threads;
         if (!perftest_json)
         {
-            fmt::print("{},{},{},{:.9f},{:.9f},{:.9f},{:.4f}\n", method, num_threads,
-                tasks_per_thread, task_size_s, single_threaded_reference_time, time, efficiency);
+            double task_overhead_time_s =
+                (time_s - single_threaded_reference_time_s / num_threads) / tasks_per_thread;
+            fmt::print("{},{},{},{:.9f},{:.9f},{:.9f},{:.9f},{:.4f}\n", method, num_threads,
+                tasks_per_thread, task_size_s, single_threaded_reference_time_s, time_s,
+                task_overhead_time_s, efficiency);
         }
 
         task_size_s *= task_size_growth_factor;
