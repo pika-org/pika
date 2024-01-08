@@ -60,7 +60,7 @@ namespace pika::debug::detail {
 
     template <int Level>
     static print_threshold<Level, debug_level> spq_deb("SPQUEUE");
-    static print_threshold<1, 1> spq_arr("SPQUEUE");
+    static print_threshold<1, debug_level> spq_arr("SPQUEUE");
 }    // namespace pika::debug::detail
 
 // ------------------------------------------------------------
