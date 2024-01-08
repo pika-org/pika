@@ -1,18 +1,33 @@
+//  Copyright (c) 2024      ETH Zurich
 //  Copyright (c) 2007-2013 Hartmut Kaiser
-//  Copyright (c) 2016 Thomas Heller
+//  Copyright (c) 2016      Thomas Heller
 //
 //  SPDX-License-Identifier: BSL-1.0
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+// The implementation is based on the tree barrier from libcxx with the license below. Compared to the original:
+// - Names have been de-uglified
+// - Only the tree barrier has been kept (the original has an alternative non-tree implementation)
+// - The heap allocation for the base implementation has been removed as it's not used here for ABI
+//   stability
+// - pika thread ids are used before std::thread ids are used for the tree index
+// - Waiting is done with pika's yield_while, spinning until the expected result (yielding done
+//   after some time)
+
+//===----------------------------------------------------------------------===//
 //
-//  The algorithm was taken from http://locklessinc.com/articles/barriers/
+// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
+// See https://llvm.org/LICENSE.txt for license information.
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+//
+//===----------------------------------------------------------------------===//
 
 #pragma once
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/concurrency/spinlock.hpp>
-#include <pika/synchronization/detail/condition_variable.hpp>
 #include <pika/thread_support/assert_owns_lock.hpp>
 
 #include <chrono>
@@ -23,14 +38,40 @@
 
 #include <pika/config/warnings_prefix.hpp>
 
-///////////////////////////////////////////////////////////////////////////////
 namespace pika {
+    // The implementation is a classic tree barrier.
 
+    // It looks different from literature pseudocode for two main reasons:
+    //  1. Threads that call into std::barrier functions do not provide indices,
+    //     so a numbering step is added before the actual barrier algorithm,
+    //     appearing as an N+1 round to the N rounds of the tree barrier.
+    //  2. A great deal of attention has been paid to avoid cache line thrashing
+    //     by flattening the tree structure into cache-line sized arrays, that
+    //     are indexed in an efficient way.
     namespace detail {
-
-        struct empty_oncompletion
+        struct empty_completion
         {
-            inline void operator()() noexcept {}
+            void operator()() noexcept {}
+        };
+
+        using barrier_phase_t = std::uint8_t;
+
+        class PIKA_EXPORT barrier_algorithm_base
+        {
+        public:
+            // naturally-align the heap state
+            struct alignas(64) state_t
+            {
+                struct
+                {
+                    std::atomic<detail::barrier_phase_t> phase{0};
+                } tickets[64];
+            };
+
+            std::unique_ptr<state_t[]> state;
+
+            barrier_algorithm_base(std::ptrdiff_t expected);
+            bool arrive(std::ptrdiff_t expected, detail::barrier_phase_t old_phase);
         };
     }    // namespace detail
 
@@ -88,24 +129,21 @@ namespace pika {
     // barrier::arrival_token is an unspecified type, such that it meets the
     // Cpp17MoveConstructible (Table 28), Cpp17MoveAssignable (Table 30), and
     // Cpp17Destructible (Table 32) requirements.
-
-    template <typename OnCompletion = detail::empty_oncompletion>
+    template <class Completion = detail::empty_completion>
     class barrier
     {
+        std::ptrdiff_t expected;
+        std::atomic<std::ptrdiff_t> expected_adjustment;
+        std::decay_t<Completion> completion;
+        std::atomic<detail::barrier_phase_t> phase;
+        detail::barrier_algorithm_base base;
+
     public:
-        PIKA_NON_COPYABLE(barrier);
+        using arrival_token = detail::barrier_phase_t;
 
-    private:
-        using mutex_type = pika::concurrency::detail::spinlock;
-
-    public:
-        using arrival_token = bool;
-
-        // Returns:        The maximum expected count that the implementation
-        //                 supports.
-        static constexpr std::ptrdiff_t(max)() noexcept
+        static constexpr std::ptrdiff_t max() noexcept
         {
-            return (std::numeric_limits<std::ptrdiff_t>::max)();
+            return std::numeric_limits<std::ptrdiff_t>::max();
         }
 
         // Preconditions:  expected >= 0 is true and expected <= max() is true.
@@ -117,36 +155,17 @@ namespace pika {
         //                 end note]
         // Throws:         Any exception thrown by CompletionFunction's move
         //                 constructor.
-        barrier(std::ptrdiff_t expected, OnCompletion completion = OnCompletion())
-          : expected_(expected)
-          , arrived_(expected)
-          , completion_(PIKA_MOVE(completion))
-          , phase_(false)
+        barrier(std::ptrdiff_t expected, Completion completion = Completion())
+          : expected(expected)
+          , expected_adjustment(0)
+          , completion(std::move(completion))
+          , phase(0)
+          , base(this->expected)
         {
-            PIKA_ASSERT(expected >= 0 && expected <= (max) ());
         }
 
-    private:
-        [[nodiscard]] arrival_token arrive_locked(
-            std::unique_lock<mutex_type>& l, std::ptrdiff_t update = 1)
-        {
-            PIKA_ASSERT_OWNS_LOCK(l);
-            PIKA_ASSERT(arrived_ >= update);
+        PIKA_NON_COPYABLE(barrier);
 
-            bool const old_phase = phase_;
-            std::ptrdiff_t const result = (arrived_ -= update);
-            std::ptrdiff_t const new_expected = expected_;
-            if (result == 0)
-            {
-                completion_();
-                arrived_ = new_expected;
-                phase_ = !old_phase;
-                cond_.notify_all(PIKA_MOVE(l));
-            }
-            return old_phase;
-        }
-
-    public:
         // Preconditions:  update > 0 is true, and update is less than or equal
         //                 to the expected count for the current barrier phase.
         // Effects:        Constructs an object of type arrival_token that is
@@ -165,8 +184,21 @@ namespace pika {
         //        to start.- end note]
         [[nodiscard]] arrival_token arrive(std::ptrdiff_t update = 1)
         {
-            std::unique_lock<mutex_type> l(mtx_);
-            return arrive_locked(l, update);
+            auto const old_phase = phase.load(std::memory_order_relaxed);
+            while (update != 0)
+            {
+                if (base.arrive(expected, old_phase))
+                {
+                    completion();
+                    expected += expected_adjustment.load(std::memory_order_relaxed);
+                    expected_adjustment.store(0, std::memory_order_relaxed);
+                    phase.store(old_phase + 2, std::memory_order_release);
+                }
+
+                --update;
+            }
+
+            return old_phase;
         }
 
         // Preconditions:  arrival is associated with the phase synchronization
@@ -186,24 +218,24 @@ namespace pika {
             std::chrono::duration<double> busy_wait_timeout = std::chrono::duration<double>(
                 0.0)) const
         {
+            auto const poll = [&]() {
+                // The original libcxx implementation uses the inverse condition here, since it
+                // polls until the condition is true. Here we poll as long as the condition is true.
+                return phase.load(std::memory_order_acquire) == old_phase;
+            };
+
             bool const do_busy_wait = busy_wait_timeout > std::chrono::duration<double>(0.0);
             if (do_busy_wait &&
                 pika::util::detail::yield_while_timeout(
-                    [&]() {
-                        std::unique_lock<mutex_type> l(mtx_);
-                        return phase_ == old_phase;
-                    },
-                    busy_wait_timeout, "barrier::wait", false))
+                    poll, busy_wait_timeout, "barrier::wait", false))
             {
                 return;
             }
 
-            std::unique_lock<mutex_type> l(mtx_);
-            if (phase_ == old_phase) { cond_.wait(l, "barrier::wait"); }
-            PIKA_ASSERT(phase_ != old_phase);
+            pika::util::yield_while(poll, "barrier::wait", true);
         }
 
-        /// Effects:        Equivalent to: wait(arrive()).
+        // Effects:        Equivalent to: wait(arrive()).
         void arrive_and_wait(
             std::chrono::duration<double> busy_wait_timeout = std::chrono::duration<double>(0.0))
         {
@@ -226,22 +258,10 @@ namespace pika {
         //        phase to start.- end note]
         void arrive_and_drop()
         {
-            std::unique_lock<mutex_type> l(mtx_);
-            PIKA_ASSERT(expected_ > 0);
-            --expected_;
-            PIKA_UNUSED(arrive_locked(l, 1));
+            expected_adjustment.fetch_sub(1, std::memory_order_relaxed);
+            [[maybe_unused]] auto phase = arrive(1);
         }
-
-    private:
-        mutable mutex_type mtx_;
-        mutable pika::detail::condition_variable cond_;
-
-        std::ptrdiff_t expected_;
-        std::ptrdiff_t arrived_;
-        OnCompletion completion_;
-        bool phase_;
     };
-
 }    // namespace pika
 
 #include <pika/config/warnings_suffix.hpp>
