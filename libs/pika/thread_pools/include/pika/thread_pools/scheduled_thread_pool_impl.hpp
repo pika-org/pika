@@ -97,7 +97,6 @@ namespace pika::threads::detail {
       : thread_pool_base(init)
       , sched_(PIKA_MOVE(sched))
       , thread_count_(0)
-      , tasks_scheduled_(0)
       , max_idle_loop_count_(init.max_idle_loop_count_)
       , max_busy_loop_count_(init.max_busy_loop_count_)
       , shutdown_check_count_(init.shutdown_check_count_)
@@ -532,9 +531,6 @@ namespace pika::threads::detail {
         }
 
         threads::detail::create_thread(sched_.get(), data, id, ec);    //-V601
-
-        // update statistics
-        ++tasks_scheduled_;
     }
 
     template <typename Scheduler>
@@ -551,9 +547,6 @@ namespace pika::threads::detail {
         }
 
         thread_id_ref_type id = threads::detail::create_work(sched_.get(), data, ec);    //-V601
-
-        // update statistics
-        ++tasks_scheduled_;
 
         return id;
     }
