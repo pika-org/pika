@@ -87,8 +87,8 @@ function(pika_add_regression_compile_test subcategory name)
 endfunction(pika_add_regression_compile_test)
 
 function(pika_add_headers_compile_test subcategory name)
-  # Important to keep the double quotes around subcategory otherwise don't
-  # consider empty argument but just remove it
+  # Important to keep the double quotes around subcategory otherwise it doesn't
+  # consider empty argument but just removes it
   pika_add_test_and_deps_compile_test(
     "headers" "${subcategory}" ${name} ${ARGN} OBJECT
   )
