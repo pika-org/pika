@@ -27,7 +27,6 @@ variables:
 
 .test_common:
   variables:
-    SLURM_PARTITION: normal
     SLURM_JOB_NUM_NODES: 1
     SLURM_NTASKS: 1
 
@@ -36,6 +35,8 @@ variables:
   extends:
     - .test_common
     - .container-runner-daint-mc
+  variables:
+    SLURM_PARTITION: normal
 
 .test_common_gpu_daint_cuda:
   extends:
