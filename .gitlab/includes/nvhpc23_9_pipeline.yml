@@ -12,10 +12,11 @@ include:
   variables:
     ARCH: linux-ubuntu22.04-zen3
     BUILD_TYPE: Release
-    COMPILER: nvhpc@23.9
+    COMPILER: gcc@12.1.0
+    NVHPC_COMPILER: nvhpc@23.9
     CXXSTD: 20
     GPU_TARGET: '80'
-    SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} +stdexec +mpi +cuda cuda_arch=${GPU_TARGET} \
+    SPACK_SPEC: "pika@main arch=$ARCH %${NVHPC_COMPILER} +stdexec +mpi +cuda cuda_arch=${GPU_TARGET} \
                  malloc=system cxxstd=$CXXSTD ^boost@1.78.0 ^hwloc@2.7.0 \
                  ^stdexec@git.nvhpc-23.09.rc4=main"
     CMAKE_FLAGS: "-DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPIKA_WITH_CXX_STANDARD=$CXXSTD \
@@ -37,7 +38,7 @@ nvhpc23_9_spack_compiler_image:
     - echo -e "BASE_IMAGE=$PERSIST_IMAGE_NAME" >> compiler.env
   variables:
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_compiler
-    DOCKER_BUILD_ARGS: '["BASE_IMAGE","ARCH","COMPILER"]'
+    DOCKER_BUILD_ARGS: '["BASE_IMAGE","ARCH","COMPILER","NVHPC_COMPILER"]'
   artifacts:
     reports:
       dotenv: compiler.env
