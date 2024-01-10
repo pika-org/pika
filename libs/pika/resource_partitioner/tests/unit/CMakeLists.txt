@@ -52,7 +52,7 @@ foreach(test ${tests})
   )
 
   pika_add_unit_test(
-    "modules.resource_partitioner" ${test} ${${test}_PARAMETERS}
+    "modules.resource_partitioner" ${test} ${${test}_PARAMETERS} VALGRIND
   )
 
 endforeach()
