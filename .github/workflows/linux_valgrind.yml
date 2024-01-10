@@ -77,6 +77,7 @@ jobs:
               tests.{regressions,unit}.modules.functional \
               tests.unit.modules.memory \
               tests.unit.modules.properties \
+              tests.unit.modules.schedulers \
               tests.unit.modules.string_util \
               tests.unit.modules.tag_invoke \
               tests.unit.modules.threading \
