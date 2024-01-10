@@ -68,6 +68,7 @@ jobs:
               examples.quickstart.hello_world \
               tests.regressions.modules.coroutines \
               tests.unit.modules.assertion \
+              tests.{regressions,unit}.modules.command_line_handling \
               tests.unit.modules.concurrency \
               tests.unit.modules.datastructures \
               tests.unit.modules.debugging \
