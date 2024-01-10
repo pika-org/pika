@@ -26,6 +26,7 @@ foreach(test ${tests})
 
   pika_add_unit_test(
     "modules.synchronization.shared_mutex" ${test} ${${test}_PARAMETERS}
+    VALGRIND
   )
 
 endforeach()

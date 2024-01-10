@@ -62,7 +62,9 @@ foreach(test ${tests})
     FOLDER "Tests/Unit/Modules/Synchronization"
   )
 
-  pika_add_unit_test("modules.synchronization" ${test} ${${test}_PARAMETERS})
+  pika_add_unit_test(
+    "modules.synchronization" ${test} ${${test}_PARAMETERS} VALGRIND
+  )
 
 endforeach()
 
