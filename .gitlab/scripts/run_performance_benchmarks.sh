@@ -135,7 +135,7 @@ pika_test_options=(
 "--method=barrier
 --tasks-per-thread=1000 \
 --task-size-growth-factor=1.05 \
---target-efficiency=0.5 \
+--target-efficiency=0.9 \
 --perftest-json"
 
 "--method=bulk
