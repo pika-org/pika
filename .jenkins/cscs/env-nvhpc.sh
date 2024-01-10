@@ -8,7 +8,7 @@ cxx_std="20"
 boost_version="1.78.0"
 hwloc_version="2.7.0"
 stdexec_version="git.nvhpc-23.09.rc4=main"
-nvhpc_version="22.11"
+nvhpc_version="23.9"
 spack_compiler="nvhpc@${nvhpc_version}"
 spack_arch="cray-cnl7-haswell"
 
