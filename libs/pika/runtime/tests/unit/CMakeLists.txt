@@ -14,7 +14,6 @@ foreach(test ${tests})
 
   source_group("Source Files" FILES ${sources})
 
-  # add example executable
   pika_add_executable(
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources}
@@ -22,7 +21,7 @@ foreach(test ${tests})
     FOLDER "Tests/Unit/Modules/Runtime"
   )
 
-  pika_add_unit_test("modules.runtime" ${test} ${${test}_PARAMETERS})
+  pika_add_unit_test("modules.runtime" ${test} ${${test}_PARAMETERS} VALGRIND)
 endforeach()
 
 string(
