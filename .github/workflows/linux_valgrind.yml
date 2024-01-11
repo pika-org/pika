@@ -78,6 +78,7 @@ jobs:
               tests.{regressions,unit}.modules.functional \
               tests.unit.modules.memory \
               tests.unit.modules.properties \
+              tests.{examples,regressions,unit}.modules.resource_partitioner \
               tests.unit.modules.runtime \
               tests.unit.modules.schedulers \
               tests.unit.modules.string_util \

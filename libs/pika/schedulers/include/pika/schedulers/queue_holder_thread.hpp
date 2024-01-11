@@ -508,12 +508,7 @@ namespace pika::threads::detail {
         }
 
         // ----------------------------------------------------------------
-        static void deallocate(threads::detail::thread_data* p)
-        {
-            using threads::detail::thread_data;
-            p->~thread_data();
-            thread_alloc_.deallocate(p, 1);
-        }
+        static void deallocate(threads::detail::thread_data* p) { p->destroy(); }
 
         // ----------------------------------------------------------------
         void add_to_thread_map(threads::detail::thread_id_type tid)

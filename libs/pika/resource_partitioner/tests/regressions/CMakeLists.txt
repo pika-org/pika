@@ -20,7 +20,7 @@ foreach(test ${tests})
   )
 
   pika_add_regression_test(
-    "modules.resource_partitioner" ${test} ${${test}_PARAMETERS}
+    "modules.resource_partitioner" ${test} ${${test}_PARAMETERS} VALGRIND
   )
 
 endforeach()
