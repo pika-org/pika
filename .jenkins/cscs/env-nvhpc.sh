@@ -12,7 +12,7 @@ nvhpc_version="23.9"
 spack_compiler="nvhpc@${nvhpc_version}"
 spack_arch="cray-cnl7-haswell"
 
-spack_spec="pika@main arch=${spack_arch} %${spack_compiler} +cuda malloc=system cxxstd=${cxx_std} ^boost@${boost_version} ^hwloc@${hwloc_version} ^stdexec@${stdexec_version}"
+spack_spec="pika@main arch=${spack_arch} %${spack_compiler} +stdexec +cuda malloc=system cxxstd=${cxx_std} ^boost@${boost_version} ^hwloc@${hwloc_version} ^stdexec@${stdexec_version}"
 
 configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${cxx_std}"
 configure_extra_options+=" -DPIKA_WITH_MALLOC=system"
