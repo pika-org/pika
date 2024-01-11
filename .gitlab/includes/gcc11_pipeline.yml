@@ -45,6 +45,7 @@ gcc11_debug_build:
   extends:
     - .container-builder
     - .variables_gcc11_config
+    - .build_variables_common
     - .cmake_variables_common
   needs:
     - gcc11_spack_image
@@ -56,9 +57,6 @@ gcc11_debug_build:
     - CONFIG_TAG=`echo $configuration | sha256sum - | head -c 16`
     - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/pika-$compiler-$build_type-build:$CONFIG_TAG
     - echo -e "PERSIST_IMAGE_NAME=$PERSIST_IMAGE_NAME" >> build.env
-  variables:
-    DOCKERFILE: .gitlab/docker/Dockerfile.spack_build
-    DOCKER_BUILD_ARGS: '["BASE_IMAGE","SOURCE_DIR","BUILD_DIR","CMAKE_COMMON_FLAGS","CMAKE_FLAGS"]'
   artifacts:
     reports:
       dotenv: build.env
