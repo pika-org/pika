@@ -19,6 +19,20 @@ RUN spack build-env $spack_spec -- bash -c "cmake -B${BUILD_DIR} ${SOURCE_DIR} \
     $CMAKE_COMMON_FLAGS $CMAKE_FLAGS && cmake --build ${BUILD_DIR} --target all tests examples"
 
 # Run compile only tests and tests.unit.build, submit ctest metrics to elastic
+ARG ARCH
+ARG BUILD_TYPE
+ARG CI_COMMIT_AUTHOR
+ARG CI_COMMIT_BRANCH
+ARG CI_COMMIT_DESCRIPTION
+ARG CI_COMMIT_MESSAGE
+ARG CI_COMMIT_SHA
+ARG CI_COMMIT_SHORT_SHA
+ARG CI_COMMIT_TIMESTAMP
+ARG CI_COMMIT_TITLE
+ARG COMPILER
+ARG CSCS_LOGSTASH_URL
+ARG SPACK_COMMIT
+ARG SPACK_SPEC
 RUN CTEST_XML=$PWD/ctest.xml; \
     trap "${SOURCE_DIR}/.gitlab/scripts/collect_ctest_metrics.sh ${CTEST_XML}" EXIT; \
     spack build-env $spack_spec -- \
