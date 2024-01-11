@@ -173,8 +173,6 @@ read the mask before the application runs with hwloc:
 
    ./app --pika:process-mask=$(hwloc-bind --get --taskset)
 
-.. _pika_stdexec:
-
 ``pika-bind`` helper script
 ---------------------------
 
@@ -182,6 +180,8 @@ Since version ``0.20.0``, the ``pika-bind`` helper script is bundled with pika. 
 ``PIKA_PROCESS_MASK`` environment variable based on process mask information found before the pika runtime is started,
 and then runs the given command. ``pika-bind`` is a more convenient alternative to manually setting ``PIKA_PROCESS_MASK``
 when pika is used together with a runtime that may reset the process mask of the main thread, like OpenMP.
+
+.. _pika_stdexec:
 
 Relation to std::execution and stdexec
 ======================================
