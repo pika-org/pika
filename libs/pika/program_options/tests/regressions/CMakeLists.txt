@@ -26,6 +26,6 @@ foreach(test ${tests})
   )
 
   pika_add_regression_test(
-    "modules.program_options" ${test} ${${test}_PARAMETERS}
+    "modules.program_options" ${test} ${${test}_PARAMETERS} VALGRIND
   )
 endforeach()
