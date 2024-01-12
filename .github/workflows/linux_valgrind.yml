@@ -92,6 +92,7 @@ jobs:
         run: |
             cd build
             ctest \
+              -j $(nproc) \
               -L VALGRIND \
               --timeout 300 \
               --output-on-failure
