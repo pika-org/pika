@@ -8,6 +8,7 @@
 #include <pika/testing.hpp>
 
 #include <cstdlib>
+#include <string>
 #include <vector>
 
 int pika_main()
@@ -19,7 +20,7 @@ int pika_main()
 int main()
 {
     int const argc = 1;
-    std::vector<char> name = {'t', 'e', 's', 't'};
+    std::string name = "test";
 
     {
         char* argv[] = {name.data(), nullptr};
