@@ -3,3 +3,25 @@
    Memcheck:Addr8
    fun:_ZN4pika7threads10coroutines6detail5posix11reset_stackEPvm
 }
+
+{
+   String comparison in unicode test
+   Memcheck:Addr32
+   fun:__wmemcmp_avx2_movbe
+   fun:_ZNKSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEE7compareEPKw
+   fun:_ZSteqIwSt11char_traitsIwESaIwEEbRKNSt7__cxx1112basic_stringIT_T0_T1_EEPKS5_
+   fun:_Z11check_valueRKN4pika15program_options12basic_optionIwEEPKcPKw
+   fun:_Z17test_command_linev
+   fun:main
+}
+
+{
+   String comparison in unicode test
+   Memcheck:Addr32
+   fun:__wmemcmp_avx2_movbe
+   fun:_ZNKSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEE7compareEPKw
+   fun:operator==<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t> >
+   fun:check_value
+   fun:_Z17test_command_linev
+   fun:main
+}
