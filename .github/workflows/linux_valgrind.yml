@@ -47,7 +47,6 @@ jobs:
                 -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
                 -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
                 -DCMAKE_CXX_FLAGS="-gdwarf-4" \
-                -DPIKA_WITH_UNITY_BUILD=ON \
                 -DPIKA_WITH_MALLOC=system \
                 -DPIKA_WITH_EXAMPLES=ON \
                 -DPIKA_WITH_TESTS=ON \

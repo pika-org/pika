@@ -16,7 +16,6 @@ spack_spec="pika@main arch=${spack_arch} %${spack_compiler} malloc=system cxxstd
 configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${cxx_std}"
 configure_extra_options+=" -DPIKA_WITH_MALLOC=system"
 configure_extra_options+=" -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
-configure_extra_options+=" -DPIKA_WITH_UNITY_BUILD=ON"
 configure_extra_options+=" -DPIKA_WITH_COROUTINE_COUNTERS=ON"
 configure_extra_options+=" -DPIKA_WITH_THREAD_IDLE_RATES=ON"
 configure_extra_options+=" -DPIKA_WITH_THREAD_CREATION_AND_CLEANUP_RATES=ON"

@@ -51,7 +51,6 @@ jobs:
                 -GNinja \
                 -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
                 -DCMAKE_BUILD_TYPE=Debug \
-                -DPIKA_WITH_UNITY_BUILD=ON \
                 -DPIKA_WITH_EXAMPLES=ON \
                 -DPIKA_WITH_TESTS=ON \
                 -DPIKA_WITH_TESTS_HEADERS=OFF \
