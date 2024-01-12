@@ -34,6 +34,7 @@
 #include <pika/thread_support/set_thread_name.hpp>
 #include <pika/threading_base/external_timer.hpp>
 #include <pika/threading_base/scheduler_mode.hpp>
+#include <pika/threading_base/thread_helpers.hpp>
 #include <pika/topology/topology.hpp>
 #include <pika/version.hpp>
 
