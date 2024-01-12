@@ -56,8 +56,8 @@ for executable in "${pika_targets[@]}"; do
     "${BUILD_DIR}/bin/${executable}" ${test_opts[@]} > "${raw_result_file}"
 
     # Append command and command line options
-    json_add_value "${result_file}" "metric.benchmark.command" "${executable}"
-    json_add_value "${result_file}" "metric.benchmark.command_options" "${test_opts}"
+    json_add_value_string "${result_file}" "metric.benchmark.command" "${executable}"
+    json_add_value_string "${result_file}" "metric.benchmark.command_options" "${test_opts}"
 
     # Extract name and timing data from raw result file
     benchmark_name=$(jq '.outputs[0].name' "${raw_result_file}")

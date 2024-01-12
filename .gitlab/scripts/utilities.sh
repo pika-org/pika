@@ -26,7 +26,15 @@ function json_merge {
     echo $(jq --slurp --sort-keys add "${1}" "${2}") >"${3}"
 }
 
-function json_add_value {
+function json_add_value_number {
+    file="${1}"
+    key="${2}"
+    value="${3}"
+
+    jq ".${key} += ${value}" "${file}" | sponge "${file}"
+}
+
+function json_add_value_string {
     file="${1}"
     key="${2}"
     value="${3}"
@@ -65,13 +73,13 @@ function create_metadata_file {
     echo '{}' >"${metadata_file}"
 
     # Logstash data stream metadata section
-    json_add_value "${metadata_file}" "data_stream.type" "logs"
-    json_add_value "${metadata_file}" "data_stream.dataset" "service.pika"
-    json_add_value "${metadata_file}" "data_stream.namespace" "alps"
+    json_add_value_string "${metadata_file}" "data_stream.type" "logs"
+    json_add_value_string "${metadata_file}" "data_stream.dataset" "service.pika"
+    json_add_value_string "${metadata_file}" "data_stream.namespace" "alps"
 
     # CI/git metadata section
-    json_add_value "${metadata_file}" "ci.organization" "pika-org"
-    json_add_value "${metadata_file}" "ci.repository" "pika"
+    json_add_value_string "${metadata_file}" "ci.organization" "pika-org"
+    json_add_value_string "${metadata_file}" "ci.repository" "pika"
     json_add_from_env \
         "${metadata_file}" "ci" \
         CI_COMMIT_AUTHOR \
