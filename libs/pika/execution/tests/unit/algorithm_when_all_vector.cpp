@@ -211,6 +211,20 @@ int main()
         PIKA_TEST(set_value_called);
     }
 
+    // This test checks that when_all_vector::start doesn't access the number of predecessors after
+    // the child operation states have been started. Starting the last operation state may release
+    // the when_all_vector operation state after which the number of predecessors can't be accessed
+    // anymore. Using start_detached here forces a heap allocation so that reading the number of
+    // predecessors is likely to trigger a segfault or failure with sanitizers or valgrind.
+    {
+        std::vector<ex::unique_any_sender<int>> senders;
+        senders.emplace_back(ex::just(42));
+        senders.emplace_back(ex::just(43));
+        senders.emplace_back(ex::just(44));
+        auto s = ex::when_all_vector(std::move(senders));
+        ex::start_detached(std::move(s));
+    }
+
     // Test a combination with when_all
     {
         std::atomic<bool> set_value_called{false};
