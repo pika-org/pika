@@ -20,25 +20,44 @@ include:
                   -DPIKA_WITH_MALLOC=system -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON \
                   -DPIKA_WITH_UNITY_BUILD=OFF"
 
-clang15_spack_image:
-  stage: spack_configs
+clang15_spack_compiler_image:
+  stage: spack_compiler
   needs: [base_spack_image]
   extends:
     - .container-builder
     - .variables_clang15_config
   before_script:
     - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
-    - CONFIG_TAG=`echo $DOCKERFILE_SHA-$ARCH-$BASE_IMAGE-$COMPILER-$SPACK_SPEC | sha256sum - | head -c 16`
+    - CONFIG_TAG=`echo $DOCKERFILE_SHA-$ARCH-$BASE_IMAGE-$COMPILER | sha256sum - | head -c 16`
     - compiler=${COMPILER/@/-}
     - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/base/pika-$compiler:$CONFIG_TAG
     - echo -e "compiler=$compiler" >> compiler.env
     - echo -e "BASE_IMAGE=$PERSIST_IMAGE_NAME" >> compiler.env
   variables:
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_compiler
-    DOCKER_BUILD_ARGS: '["BASE_IMAGE","ARCH","COMPILER","SPACK_SPEC"]'
+    DOCKER_BUILD_ARGS: '["BASE_IMAGE","ARCH","COMPILER"]'
   artifacts:
     reports:
       dotenv: compiler.env
+
+clang15_spack_image:
+  stage: spack_dependencies
+  needs: [clang15_spack_compiler_image]
+  extends:
+    - .container-builder
+    - .variables_clang15_config
+  before_script:
+    - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
+    - CONFIG_TAG=`echo $DOCKERFILE_SHA-$BASE_IMAGE-$SPACK_SPEC | sha256sum - | head -c 16`
+    - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/base/pika-$compiler-dependencies:$CONFIG_TAG
+    - echo -e "compiler=$compiler" >> dependencies.env
+    - echo -e "BASE_IMAGE=$PERSIST_IMAGE_NAME" >> dependencies.env
+  variables:
+    DOCKERFILE: .gitlab/docker/Dockerfile.spack_dependencies
+    DOCKER_BUILD_ARGS: '["BASE_IMAGE","SPACK_SPEC"]'
+  artifacts:
+    reports:
+      dotenv: dependencies.env
 
 clang15_debug_build:
   stage: build
