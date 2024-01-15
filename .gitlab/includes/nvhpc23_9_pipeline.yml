@@ -18,7 +18,7 @@ include:
     GPU_TARGET: '80'
     SPACK_SPEC: "pika@main arch=$ARCH %${NVHPC_COMPILER} +stdexec +mpi +cuda cuda_arch=${GPU_TARGET} \
                  malloc=system cxxstd=$CXXSTD ^boost@1.78.0 ^hwloc@2.7.0 \
-                 ^stdexec@git.nvhpc-23.09.rc4=main"
+                 ^stdexec@git.nvhpc-23.09.rc4=main ^cuda@11.8"
     CMAKE_FLAGS: "-DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPIKA_WITH_CXX_STANDARD=$CXXSTD \
                   -DPIKA_WITH_CUDA=ON -DPIKA_WITH_MALLOC=system -DPIKA_WITH_MPI=ON \
                   -DCMAKE_CUDA_ARCHITECTURES=$GPU_TARGET -DPIKA_WITH_STDEXEC=ON"
