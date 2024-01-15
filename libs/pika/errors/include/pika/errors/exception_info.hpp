@@ -11,6 +11,8 @@
 #include <pika/errors/error_code.hpp>
 #include <pika/errors/exception_info.hpp>
 
+#include <fmt/format.h>
+
 #include <cstddef>
 #include <exception>
 #include <memory>
@@ -223,6 +225,10 @@ namespace pika {
         catch (exception_info const& xi)
         {
             return PIKA_FORWARD(F, f)(&xi);
+        }
+        catch (std::exception const& e)
+        {
+            return fmt::format("std::exception:\n  what():  {}", e.what());
         }
         catch (...)
         {
