@@ -338,7 +338,12 @@ namespace pika::when_all_vector_detail {
                 // the predecessors to signal completion.
                 else
                 {
-                    for (std::size_t i = 0; i < os.num_predecessors; ++i)
+                    // After the call to start on the last child operation state the current
+                    // when_all_vector operation state may already have been released. We read the
+                    // number of predecessors from the operation state into a stack-local variable
+                    // so that the loop can end without reading freed memory.
+                    auto const num_predecessors = os.num_predecessors;
+                    for (std::size_t i = 0; i < num_predecessors; ++i)
                     {
                         pika::execution::experimental::start(os.op_states.get()[i].value());
                     }
