@@ -24,13 +24,22 @@ foreach(test ${tests})
   pika_add_unit_test("modules.runtime" ${test} ${${test}_PARAMETERS} VALGRIND)
 endforeach()
 
-string(
-  CONCAT
-    process_mask_flag_expected_output
-    "   0: PU L#0\\(P#0\\), Core L#0\\(P#0\\), Socket L#0\\(P#0\\)(, NUMANode L#0\\(P#0\\))?, on pool \"default\"\n"
-    "   1: PU L#[0-9]+\\(P#1\\), Core L#[0-9]+\\(P#[0-9]+\\), Socket L#[0-9]+\\(P#[0-9]+\\)(, NUMANode L#[0-9]+\\(P#[0-9]+\\))?, on pool \"default\"\n"
-    "All tests passed."
-)
+if(APPLE)
+  string(
+    CONCAT process_mask_flag_expected_output
+           "   0: thread binding disabled, on pool \"default\"\n"
+           "   1: thread binding disabled, on pool \"default\"\n"
+           "All tests passed."
+  )
+else()
+  string(
+    CONCAT
+      process_mask_flag_expected_output
+      "   0: PU L#0\\(P#0\\), Core L#0\\(P#0\\), Socket L#[0-9]+\\(P#[0-9]+\\)(, NUMANode L#[0-9]+\\(P#[0-9]+\\))?, on pool \"default\"\n"
+      "   1: PU L#[0-9]+\\(P#1\\), Core L#[0-9]+\\(P#[0-9]+\\), Socket L#[0-9]+\\(P#[0-9]+\\)(, NUMANode L#[0-9]+\\(P#[0-9]+\\))?, on pool \"default\"\n"
+      "All tests passed."
+  )
+endif()
 
 set_tests_properties(
   tests.unit.modules.runtime.process_mask_flag
