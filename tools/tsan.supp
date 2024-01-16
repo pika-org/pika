@@ -1,0 +1,14 @@
+# Copyright (c) 2024 ETH Zurich
+#
+# SPDX-License-Identifier: BSL-1.0
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+# https://github.com/pika-org/pika/issues/990
+race:pika::concurrency::detail::deque*
+race:boost::lockfree::deque*
+race:boost::lockfree::queue*
+race:pika::concurrency::detail::ConcurrentQueue*
+
+# https://github.com/pika-org/pika/issues/989
+race:pika::experimental::base_channel_mpsc

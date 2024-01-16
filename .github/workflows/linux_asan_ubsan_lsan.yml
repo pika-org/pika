@@ -1,0 +1,72 @@
+# Copyright (c) 2024 ETH Zurich
+# Copyright (c) 2020 EXASOL
+#
+# SPDX-License-Identifier: BSL-1.0
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+name: Linux CI (asan/ubsan/lsan)
+
+on:
+  merge_group:
+  pull_request:
+  push:
+    branches:
+      # Development and release branches
+      - main
+      - release**
+      # Bors branches
+      - trying
+      - staging
+
+jobs:
+  build:
+    name: github/linux/sanitizers/address-undefined-leak
+    runs-on: ubuntu-latest
+    container: pikaorg/pika-ci-base:21
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update apt repositories for ccache
+        run: apt update
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ccache-linux-sanitizers-address-undefined-leak
+      - name: Configure
+        shell: bash
+        run: |
+            cmake \
+                . \
+                -Bbuild \
+                -GNinja \
+                -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+                -DCMAKE_BUILD_TYPE=Debug \
+                -DPIKA_WITH_MALLOC=system \
+                -DPIKA_WITH_EXAMPLES=ON \
+                -DPIKA_WITH_TESTS=ON \
+                -DPIKA_WITH_TESTS_EXAMPLES=ON \
+                -DPIKA_WITH_TESTS_HEADERS=OFF \
+                -DPIKA_WITH_TESTS_MAX_THREADS=$(nproc) \
+                -DPIKA_WITH_COMPILER_WARNINGS=ON \
+                -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON \
+                -DPIKA_WITH_SANITIZERS=On \
+                -DCMAKE_CXX_FLAGS="-fsanitize=address -fsanitize-address-use-after-scope -fsanitize=undefined -fno-omit-frame-pointer" \
+                -DPIKA_WITH_STACKOVERFLOW_DETECTION=Off \
+                -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=On
+      - name: Build
+        if: always()
+        shell: bash
+        run: |
+            cmake --build build --target examples
+            cmake --build build --target tests
+      - name: Test
+        if: always()
+        shell: bash
+        run: |
+            export ASAN_OPTIONS=fast_unwind_on_malloc=0:strict_string_checks=1:detect_leaks=1:detect_stack_use_after_return=0:check_initialization_order=1:strict_init_order=1:suppressions=$PWD/tools/asan.supp
+            export UBSAN_OPTIONS=print_stacktrace=1:suppressions=$PWD/tools/ubsan.supp
+            cd build
+            ctest \
+              --timeout 300 \
+              --output-on-failure
