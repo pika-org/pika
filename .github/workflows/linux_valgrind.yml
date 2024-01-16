@@ -64,7 +64,7 @@ jobs:
         working-directory: build
         run: |
             ninja \
-              examples.quickstart.hello_world \
+              tests.examples \
               tests.regressions.modules.coroutines \
               tests.unit.modules.assertion \
               tests.{regressions,unit}.modules.command_line_handling \
@@ -78,7 +78,7 @@ jobs:
               tests.unit.modules.memory \
               tests.{examples,regressions,unit}.modules.program_options \
               tests.unit.modules.properties \
-              tests.{examples,regressions,unit}.modules.resource_partitioner \
+              tests.{regressions,unit}.modules.resource_partitioner \
               tests.unit.modules.runtime \
               tests.unit.modules.schedulers \
               tests.unit.modules.string_util \

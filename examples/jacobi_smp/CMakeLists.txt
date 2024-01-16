@@ -61,7 +61,7 @@ foreach(jacobi_smp_application ${jacobi_smp_applications})
   )
     pika_add_example_test(
       "jacobi_smp" ${jacobi_smp_application}
-      ${${jacobi_smp_application}_PARAMETERS}
+      ${${jacobi_smp_application}_PARAMETERS} VALGRIND
     )
   endif()
 endforeach()

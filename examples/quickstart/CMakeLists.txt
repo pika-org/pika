@@ -46,7 +46,7 @@ foreach(example_program ${example_programs})
      AND NOT ("${example_program}" IN_LIST disabled_tests)
   )
     pika_add_example_test(
-      "quickstart" ${example_program} ${${example_program}_PARAMETERS}
+      "quickstart" ${example_program} ${${example_program}_PARAMETERS} VALGRIND
     )
   endif()
 
