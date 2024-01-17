@@ -1,0 +1,9 @@
+ARG BASE_IMAGE
+FROM $BASE_IMAGE
+
+ARG SPACK_SPEC
+ENV spack_spec $SPACK_SPEC
+# Install dependencies for this configuration
+RUN spack spec -lI $spack_spec && \
+    spack install --fail-fast --only dependencies $spack_spec && \
+    spack clean --all

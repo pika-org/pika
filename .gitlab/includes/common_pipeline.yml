@@ -9,7 +9,8 @@ include:
 
 stages:
   - spack_base
-  - spack_configs
+  - spack_compiler
+  - spack_dependencies
   - build
   - test
 
