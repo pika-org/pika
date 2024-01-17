@@ -574,15 +574,11 @@ jobs:
             export CMAKE_PREFIX_PATH=$HOME/project/install/fmt:${CMAKE_PREFIX_PATH}
             cd build
             ulimit -c unlimited
-            # The process_mask_flag test assumes that there are two hardware threads per core, but
-            # the ARM test environment doesn't have that
             ctest \
               -j2 \
               --timeout 500 \
               -T test \
-              -E \
-            "tests.unit.modules.threading.condition_variable2|\
-            tests.unit.modules.runtime.process_mask_flag" \
+              -E "tests.unit.modules.threading.condition_variable2" \
               --no-compress-output \
               --output-on-failure
       - run:
