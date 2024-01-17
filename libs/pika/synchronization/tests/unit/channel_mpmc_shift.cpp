@@ -20,7 +20,11 @@
 namespace ex = pika::execution::experimental;
 namespace tt = pika::this_thread::experimental;
 
+#if defined(PIKA_HAVE_VALGRIND)
+constexpr int NUM_WORKERS = 100;
+#else
 constexpr int NUM_WORKERS = 1000;
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename T>
