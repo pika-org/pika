@@ -35,7 +35,7 @@ struct data
 
 #if defined(PIKA_HAVE_VERIFY_LOCKS)
 constexpr int NUM_TESTS = 10000;
-#elif PIKA_DEBUG
+#elif defined(PIKA_DEBUG) || defined(PIKA_HAVE_VALGRIND)
 constexpr int NUM_TESTS = 1000000;
 #else
 constexpr int NUM_TESTS = 100000000;
