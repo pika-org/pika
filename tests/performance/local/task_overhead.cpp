@@ -75,7 +75,6 @@ const char* sched_name(ex::thread_pool_scheduler const&) { return "thread_pool_s
 
 ///////////////////////////////////////////////////////////////////////////////
 // we use globals here to prevent the delay from being optimized away
-double global_scratch = 0;
 std::uint64_t num_iterations = 0;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -93,11 +92,6 @@ double null_function() noexcept
     }
     return 0.0;
 }
-
-struct scratcher
-{
-    void operator()(double r) const { global_scratch += r; }
-};
 
 template <typename Scheduler>
 void function_senders_when_all_vector(std::uint64_t count, bool csv, Scheduler& sched)
