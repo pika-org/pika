@@ -36,7 +36,7 @@ namespace tt = pika::this_thread::experimental;
 #define TEST_LOOPS 1000
 //
 std::random_device rseed;
-std::mt19937 gen(rseed());
+thread_local std::mt19937 gen(rseed());
 std::uniform_int_distribution<int> dist(0, 99);    // interval [0,100)
 
 #define USE_LAMBDA
