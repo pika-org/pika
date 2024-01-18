@@ -53,7 +53,8 @@ namespace pika::detail {
         {
             std::unique_lock<mutex_type> lk(state_change);
 
-            while (state.exclusive || state.exclusive_waiting_blocked) { shared_cond.wait(lk); }
+            shared_cond.wait(
+                lk, [&] { return !(state.exclusive || state.exclusive_waiting_blocked); });
 
             ++state.shared_count;
         }
@@ -97,11 +98,10 @@ namespace pika::detail {
         {
             std::unique_lock<mutex_type> lk(state_change);
 
-            while (state.shared_count || state.exclusive)
-            {
+            exclusive_cond.wait(lk, [&] {
                 state.exclusive_waiting_blocked = true;
-                exclusive_cond.wait(lk);
-            }
+                return !(state.shared_count || state.exclusive);
+            });
 
             state.exclusive = true;
         }
@@ -132,10 +132,9 @@ namespace pika::detail {
         {
             std::unique_lock<mutex_type> lk(state_change);
 
-            while (state.exclusive || state.exclusive_waiting_blocked || state.upgrade)
-            {
-                shared_cond.wait(lk);
-            }
+            shared_cond.wait(lk, [&] {
+                return !(state.exclusive || state.exclusive_waiting_blocked || state.upgrade);
+            });
 
             ++state.shared_count;
             state.upgrade = true;
@@ -174,7 +173,7 @@ namespace pika::detail {
             std::unique_lock<mutex_type> lk(state_change);
             --state.shared_count;
 
-            while (state.shared_count) { upgrade_cond.wait(lk); }
+            upgrade_cond.wait(lk, [&] { return !state.shared_count; });
 
             state.upgrade = false;
             state.exclusive = true;

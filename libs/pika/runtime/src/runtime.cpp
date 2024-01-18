@@ -1200,12 +1200,9 @@ namespace pika {
     void runtime::wait_finalize()
     {
         std::unique_lock<std::mutex> l(mtx_);
-        while (!stop_done_)
-        {
-            LRT_(info).format("runtime: about to enter wait state");
-            wait_condition_.wait(l);
-            LRT_(info).format("runtime: exiting wait state");
-        }
+        LRT_(info).format("runtime: about to enter wait state");
+        wait_condition_.wait(l, [&] { return stop_done_; });
+        LRT_(info).format("runtime: exiting wait state");
     }
 
     void runtime::wait_helper(std::mutex& mtx, std::condition_variable& cond, bool& running)
@@ -1247,9 +1244,7 @@ namespace pika {
         // wait for the thread to run
         {
             std::unique_lock<std::mutex> lk(mtx);
-            // NOLINTNEXTLINE(bugprone-infinite-loop)
-            while (!running)    // -V776 // -V1044
-                cond.wait(lk);
+            cond.wait(lk, [&] { return running; });
         }
 
         // block main thread
