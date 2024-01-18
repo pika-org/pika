@@ -15,6 +15,7 @@
 #include <fmt/ostream.h>
 #include <fmt/printf.h>
 
+#include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <functional>
@@ -35,7 +36,7 @@ using pika::threads::detail::thread_init_data;
 
 ///////////////////////////////////////////////////////////////////////////////
 // we use globals here to prevent the delay from being optimized away
-double global_scratch = 0;
+std::atomic<double> global_scratch = 0;
 std::uint64_t num_iterations = 0;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -49,7 +50,7 @@ double delay()
 ///////////////////////////////////////////////////////////////////////////////
 void get_os_thread_num(barrier& barr, queue<std::size_t>& os_threads)
 {
-    global_scratch = delay();
+    global_scratch.store(delay(), std::memory_order_relaxed);
     os_threads.push(pika::get_worker_thread_num());
     // `arrive_and_drop` is necessary here since the barrier can go out of scope
     // in pika_main.

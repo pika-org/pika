@@ -219,7 +219,7 @@ void test_concurrent_interrupt()
 
         // starts thread concurrently calling request_stop() for the same token
         std::vector<pika::jthread> tv;
-        int num_requested_stops = 0;
+        std::atomic<int> num_requested_stops = 0;
         for ([[maybe_unused]] int i = 0; i < num_threads; ++i)
         {
             std::this_thread::sleep_for(std::chrono::microseconds(100));
@@ -238,7 +238,7 @@ void test_concurrent_interrupt()
         for (auto& t : tv) { t.join(); }
 
         // only one request to request_stop() should have returned true
-        PIKA_TEST_EQ(num_requested_stops, 1);
+        PIKA_TEST_EQ(num_requested_stops.load(), 1);
         is.request_stop();
     }
 }
