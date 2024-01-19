@@ -49,6 +49,18 @@ pipeline {
                          values 'Debug', 'Release'
                     }
                 }
+                excludes {
+                    exclude {
+                        axis {
+                            name 'build_type'
+                            values 'Debug'
+                        }
+                        axis {
+                            name 'configuration_name'
+                            notValues 'cce', 'nvhpc'
+                        }
+                    }
+                }
                 stages {
                     stage('build') {
                         steps {
