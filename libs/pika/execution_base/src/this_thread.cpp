@@ -145,7 +145,7 @@ namespace pika::execution {
             running_ = false;
             resume_cv_.notify_all();
 
-            while (!running_) { suspend_cv_.wait(l); }
+            suspend_cv_.wait(l, [&] { return running_; });
 
             if (aborted_)
             {

@@ -72,8 +72,7 @@ void test_condition_with_mutex()
     // wait for the thread to run
     {
         std::unique_lock<pika::concurrency::detail::spinlock> lk(local_mutex);
-        // NOLINTNEXTLINE(bugprone-infinite-loop)
-        while (!running) local_cond_var.wait(lk);
+        local_cond_var.wait(lk, [&] { return running; });
     }
 
     // now start actual test
