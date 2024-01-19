@@ -156,22 +156,18 @@ namespace pika::execution {
 
         void default_agent::resume(char const* /* desc */)
         {
-            {
-                std::unique_lock<std::mutex> l(mtx_);
-                while (running_) { resume_cv_.wait(l); }
-                running_ = true;
-            }
+            std::unique_lock<std::mutex> l(mtx_);
+            resume_cv_.wait(l, [&] { return !running_; });
+            running_ = true;
             suspend_cv_.notify_one();
         }
 
         void default_agent::abort(char const* /* desc */)
         {
-            {
-                std::unique_lock<std::mutex> l(mtx_);
-                while (running_) { resume_cv_.wait(l); }
-                running_ = true;
-                aborted_ = true;
-            }
+            std::unique_lock<std::mutex> l(mtx_);
+            resume_cv_.wait(l, [&] { return !running_; });
+            running_ = true;
+            aborted_ = true;
             suspend_cv_.notify_one();
         }
 
