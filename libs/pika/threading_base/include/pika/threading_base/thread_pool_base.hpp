@@ -57,7 +57,7 @@ namespace pika::threads::detail {
 
     struct thread_pool_init_parameters
     {
-        std::string const& name_;
+        std::string name_;
         std::size_t index_;
         scheduler_mode mode_;
         std::size_t num_threads_;
