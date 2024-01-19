@@ -427,11 +427,14 @@ namespace pika::threads::detail {
 
         scheduler_base* get_scheduler_base() const noexcept { return scheduler_base_; }
 
-        std::size_t get_last_worker_thread_num() const noexcept { return last_worker_thread_num_; }
+        std::size_t get_last_worker_thread_num() const noexcept
+        {
+            return last_worker_thread_num_.load(std::memory_order_relaxed);
+        }
 
         void set_last_worker_thread_num(std::size_t last_worker_thread_num) noexcept
         {
-            last_worker_thread_num_ = last_worker_thread_num;
+            last_worker_thread_num_.store(last_worker_thread_num, std::memory_order_relaxed);
         }
 
         std::ptrdiff_t get_stack_size() const noexcept { return stacksize_; }
@@ -530,7 +533,7 @@ namespace pika::threads::detail {
 
         // reference to scheduler which created/manages this thread
         scheduler_base* scheduler_base_;
-        std::size_t last_worker_thread_num_;
+        std::atomic<std::size_t> last_worker_thread_num_;
 
         std::ptrdiff_t stacksize_;
         execution::thread_stacksize stacksize_enum_;

@@ -21,6 +21,7 @@
 
 #include <fmt/format.h>
 
+#include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -187,7 +188,7 @@ namespace pika::threads::detail {
         ran_exit_funcs_ = false;
         exit_funcs_.clear();
         scheduler_base_ = init_data.scheduler_base;
-        last_worker_thread_num_ = std::size_t(-1);
+        last_worker_thread_num_.store(std::size_t(-1), std::memory_order_relaxed);
 
         // We explicitly set the logical stack size again as it can be different
         // from what the previous use required. However, the physical stack size
