@@ -102,6 +102,7 @@ namespace pika::threads::detail {
                 ::pika::threads::detail::get_topology().get_machine_affinity_mask())
           , outside_numa_domain_masks_(init.num_queues_,
                 ::pika::threads::detail::get_topology().get_machine_affinity_mask())
+          , init_barrier(init.num_queues_)
         {
             ::pika::threads::detail::resize(
                 steals_in_numa_domain_, threads::detail::hardware_concurrency());
@@ -798,7 +799,11 @@ namespace pika::threads::detail {
 
             if (::pika::threads::detail::any(core_mask) && ::pika::threads::detail::any(node_mask))
             {
-                ::pika::threads::detail::set(steals_in_numa_domain_, num_pu);
+                {
+                    std::lock_guard l{init_mtx};
+                    ::pika::threads::detail::set(steals_in_numa_domain_, num_pu);
+                }
+
                 numa_domain_masks_[num_thread] = node_mask;
             }
 
@@ -816,10 +821,18 @@ namespace pika::threads::detail {
             bool numa_stealing = has_scheduler_mode(scheduler_mode::enable_stealing_numa);
             if (numa_stealing && ::pika::threads::detail::any(first_mask & core_mask))
             {
-                ::pika::threads::detail::set(steals_outside_numa_domain_, num_pu);
+                {
+                    std::lock_guard l{init_mtx};
+                    ::pika::threads::detail::set(steals_outside_numa_domain_, num_pu);
+                }
+
                 outside_numa_domain_masks_[num_thread] =
                     ::pika::threads::detail::not_(node_mask) & machine_mask;
             }
+
+            // Synchronize all worker threads so that the masks can be accessed without locks in the
+            // regular scheduling loop
+            init_barrier.wait();
         }
 
         void on_stop_thread(std::size_t num_thread) override
@@ -842,6 +855,9 @@ namespace pika::threads::detail {
         ::pika::threads::detail::mask_type steals_outside_numa_domain_;
         std::vector<::pika::threads::detail::mask_type> numa_domain_masks_;
         std::vector<::pika::threads::detail::mask_type> outside_numa_domain_masks_;
+
+        pika::concurrency::detail::barrier init_barrier;
+        std::mutex init_mtx;
     };
 }    // namespace pika::threads::detail
 
