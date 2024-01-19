@@ -5,8 +5,10 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 function submit_logstash {
-    echo Submitting to logstash:
-    jq . "${1}"
+    if [[ -n "${PIKA_CI_LOGSTASH_SUBMIT_VERBOSE+x}" ]]; then
+        echo Submitting to logstash:
+        jq . "${1}"
+    fi
 
     curl \
         --request POST \
