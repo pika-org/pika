@@ -552,6 +552,7 @@ namespace pika::threads::detail {
 
             if (!running) { return false; }
 
+#if !defined(PIKA_HAVE_THREAD_SANITIZER)
             if (enable_stealing)
             {
                 for (std::size_t idx : victim_threads_[num_thread].data_)
@@ -579,6 +580,13 @@ namespace pika::threads::detail {
             }
 
             return low_priority_queue_.get_next_thread(thrd);
+#else
+            PIKA_UNUSED(enable_stealing);
+
+            if (num_thread == num_queues_ - 1) { return low_priority_queue_.get_next_thread(thrd); }
+
+            return false;
+#endif
         }
 
         /// Schedule the passed thread
