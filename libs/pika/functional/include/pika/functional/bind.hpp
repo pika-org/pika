@@ -117,8 +117,10 @@ namespace pika::util::detail {
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename... Us>
-        constexpr PIKA_HOST_DEVICE invoke_bound_result_t<F&, util::detail::pack<Ts&...>, Us&&...>
-        operator()(Us&&... vs) &
+        // https://github.com/pika-org/pika/issues/993
+        constexpr PIKA_NO_SANITIZE_ADDRESS
+            PIKA_HOST_DEVICE invoke_bound_result_t<F&, util::detail::pack<Ts&...>, Us&&...>
+            operator()(Us&&... vs) &
         {
             return PIKA_INVOKE(_f,
                 detail::bind_eval<Ts&, sizeof...(Us)>::call(
