@@ -34,7 +34,10 @@ ARG CSCS_LOGSTASH_URL
 ARG SPACK_COMMIT
 ARG SPACK_SPEC
 RUN CTEST_XML=$PWD/ctest.xml; \
-    trap "${SOURCE_DIR}/.gitlab/scripts/collect_ctest_metrics.sh ${CTEST_XML}" EXIT; \
+    trap \
+        "${SOURCE_DIR}/.gitlab/scripts/collect_ctest_metrics.sh ${CTEST_XML}; \
+         ${SOURCE_DIR}/.gitlab/scripts/collect_file_sizes.sh ${BUILD_DIR}" \
+        EXIT; \
     spack -e pika_ci build-env $spack_spec -- \
         bash -c "ctest \
             --output-junit ${CTEST_XML} \
