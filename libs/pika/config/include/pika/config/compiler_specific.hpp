@@ -161,14 +161,17 @@
 #define PIKA_CDECL
 #endif
 
-#if defined(PIKA_HAVE_SANITIZERS)
-#  if defined(__has_feature)
-#  if __has_feature(address_sanitizer)
-#      define PIKA_HAVE_ADDRESS_SANITIZER
-#    endif
-#  elif defined(__SANITIZE_ADDRESS__)   // MSVC defines this
-#    define PIKA_HAVE_ADDRESS_SANITIZER
-#  endif
-#endif
 // clang-format on
+# if defined(PIKA_HAVE_SANITIZERS)
+#  if defined(__has_feature)
+#   if __has_feature(address_sanitizer)
+#    define PIKA_HAVE_ADDRESS_SANITIZER
+#   endif
+#   if __has_feature(thread_sanitizer)
+#    define PIKA_HAVE_THREAD_SANITIZER
+#   endif
+#  elif defined(__SANITIZE_ADDRESS__)    // MSVC defines this
+#   define PIKA_HAVE_ADDRESS_SANITIZER
+#  endif
+# endif
 #endif
