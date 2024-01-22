@@ -181,16 +181,20 @@ namespace PIKA_DETAIL_NS_DEBUG {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    std::function<void(std::ostream&)> print_info;
+    std::function<void(std::ostream&)>& get_print_info() noexcept
+    {
+        static std::function<void(std::ostream&)> print_info;
+        return print_info;
+    }
 
-    void register_print_info(void (*printer)(std::ostream&)) { print_info = printer; }
+    void register_print_info(void (*printer)(std::ostream&)) { get_print_info() = printer; }
 
     void generate_prefix(std::ostream& os)
     {
 #ifdef PIKA_DEBUG_PRINT_SHOW_TIME
         os << detail::current_time_print_helper();
 #endif
-        if (print_info) { print_info(os); }
+        if (auto& f = get_print_info()) { f(os); }
         os << detail::hostname_print_helper();
     }
 
