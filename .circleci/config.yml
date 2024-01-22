@@ -21,7 +21,7 @@ setup_arm64_machine: &setup_arm64_machine
 
 docker_default: &docker_default
   docker:
-    - image: pikaorg/pika-ci-base:19
+    - image: pikaorg/pika-ci-base:21
 
 defaults: &defaults
   <<: *working_dir_default
