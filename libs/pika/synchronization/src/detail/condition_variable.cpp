@@ -99,34 +99,22 @@ namespace pika::detail {
         // swap the list
         queue_type queue;
         queue.swap(queue_);
-        lock.unlock();
 
-        if (!queue.empty())
+        // update reference to queue for all queue entries
+        for (queue_entry& qe : queue) qe.q_ = &queue;
+
+        while (!queue.empty())
         {
-            // update reference to queue for all queue entries
-            for (queue_entry& qe : queue) qe.q_ = &queue;
+            PIKA_ASSERT(queue.front().ctx_);
+            queue_entry& qe = queue.front();
+            auto ctx = qe.ctx_;
+            qe.ctx_.reset();
+            queue.pop_front();
 
-            do {
-                auto ctx = queue.front().ctx_;
-
-                // remove item from queue before error handling
-                queue.front().ctx_.reset();
-                queue.pop_front();
-
-                if (PIKA_UNLIKELY(!ctx))
-                {
-                    lock.lock();
-                    prepend_entries(lock, queue);
-                    lock.unlock();
-
-                    PIKA_THROWS_IF(ec, pika::error::null_thread_id,
-                        "condition_variable::notify_all", "null thread id encountered");
-                    return;
-                }
-
-                ctx.resume();
-
-            } while (!queue.empty());
+            // Resume without holding lock (since resuming may yield, waiting for thread to be
+            // inactive)
+            pika::detail::unlock_guard<std::unique_lock<mutex_type>> ul(lock);
+            ctx.resume();
         }
 
         if (&ec != &throws) ec = make_success_code();
