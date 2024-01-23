@@ -23,24 +23,24 @@ include:
 
 clang13_spack_compiler_image:
   extends:
-    - .compiler_image_template
     - .variables_clang13_config
+    - .compiler_image_template
 
 clang13_spack_image:
   needs: [clang13_spack_compiler_image]
   extends:
-    - .dependencies_image_template
     - .variables_clang13_config
+    - .dependencies_image_template
 
 clang13_debug_build:
   needs: [clang13_spack_image]
   extends:
-    - .build_template
     - .variables_clang13_config
+    - .build_template
 
 clang13_debug_test:
   needs: [clang13_debug_build]
   extends:
-    - .test_template
-    - .test_common_mc
     - .variables_clang13_config
+    - .test_common_mc
+    - .test_template

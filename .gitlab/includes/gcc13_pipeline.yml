@@ -23,24 +23,24 @@ include:
 
 gcc13_spack_compiler_image:
   extends:
-    - .compiler_image_template
     - .variables_gcc13_config
+    - .compiler_image_template
 
 gcc13_spack_image:
   needs: [gcc13_spack_compiler_image]
   extends:
-    - .dependencies_image_template
     - .variables_gcc13_config
+    - .dependencies_image_template
 
 gcc13_debug_build:
   needs: [gcc13_spack_image]
   extends:
-    - .build_template
     - .variables_gcc13_config
+    - .build_template
 
 gcc13_debug_test:
   needs: [gcc13_debug_build]
   extends:
-    - .test_template
-    - .test_common_mc
     - .variables_gcc13_config
+    - .test_common_mc
+    - .test_template

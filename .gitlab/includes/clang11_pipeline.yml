@@ -22,24 +22,24 @@ include:
 
 clang11_spack_compiler_image:
   extends:
-    - .compiler_image_template
     - .variables_clang11_config
+    - .compiler_image_template
 
 clang11_spack_image:
   needs: [clang11_spack_compiler_image]
   extends:
-    - .dependencies_image_template
     - .variables_clang11_config
+    - .dependencies_image_template
 
 clang11_debug_build:
   needs: [clang11_spack_image]
   extends:
-    - .build_template
     - .variables_clang11_config
+    - .build_template
 
 clang11_debug_test:
   needs: [clang11_debug_build]
   extends:
-    - .test_template
-    - .test_common_mc
     - .variables_clang11_config
+    - .test_common_mc
+    - .test_template

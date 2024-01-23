@@ -22,14 +22,14 @@ include:
 
 gcc11_spack_compiler_image:
   extends:
-    - .compiler_image_template
     - .variables_gcc11_config
+    - .compiler_image_template
 
 gcc11_spack_image:
   needs: [gcc11_spack_compiler_image]
   extends:
-    - .dependencies_image_template
     - .variables_gcc11_config
+    - .dependencies_image_template
 
 gcc11_debug_build:
   needs: [gcc11_spack_image]
@@ -40,6 +40,6 @@ gcc11_debug_build:
 gcc11_debug_test:
   needs: [gcc11_debug_build]
   extends:
-    - .test_template
-    - .test_common_mc
     - .variables_gcc11_config
+    - .test_common_mc
+    - .test_template

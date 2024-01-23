@@ -24,26 +24,25 @@ include:
 
 gcc12_hip5_spack_compiler_image:
   extends:
-    - .compiler_image_template
     - .variables_gcc12_hip5_config
+    - .compiler_image_template
 
 gcc12_hip5_spack_image:
   timeout: 4 hours
   needs: [gcc12_hip5_spack_compiler_image]
   extends:
-    - .dependencies_image_template
     - .variables_gcc12_hip5_config
+    - .dependencies_image_template
 
 gcc12_hip5_debug_build:
   needs: [gcc12_hip5_spack_image]
   extends:
-    - .build_template
     - .variables_gcc12_hip5_config
+    - .build_template
 
 gcc12_hip5_debug_test:
   needs: [gcc12_hip5_debug_build]
   extends:
-    - .test_template
-    - .test_common_gpu_clariden_hip
     - .variables_gcc12_hip5_config
-    - .cmake_variables_common
+    - .test_common_gpu_clariden_hip
+    - .test_template

@@ -25,26 +25,26 @@ include:
 
 gcc12_cuda12_spack_compiler_image:
   extends:
-    - .compiler_image_template
     - .variables_gcc12_cuda12_config
+    - .compiler_image_template
 
 gcc12_cuda12_spack_image:
   needs: [gcc12_cuda12_spack_compiler_image]
   extends:
-    - .dependencies_image_template
     - .variables_gcc12_cuda12_config
+    - .dependencies_image_template
 
 gcc12_cuda12_debug_build:
   needs: [gcc12_cuda12_spack_image]
   extends:
-    - .build_template
     - .variables_gcc12_cuda12_config
+    - .build_template
 
 # Test step currently commented as the cuda driver is too old on clariden:
 # https://github.com/pika-org/pika/issues/884
 #gcc12_cuda12_debug_test:
 #  needs: [gcc12_cuda12_debug_build]
 #  extends:
-#    - .test_template
-#    - .test_common_gpu_clariden_cuda
 #    - .variables_gcc12_cuda12_config
+#    - .test_common_gpu_clariden_cuda
+#    - .test_template

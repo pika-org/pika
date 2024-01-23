@@ -22,24 +22,24 @@ include:
 
 gcc10_apex_spack_compiler_image:
   extends:
-    - .compiler_image_template
     - .variables_gcc10_apex_config
+    - .compiler_image_template
 
 gcc10_apex_spack_image:
   needs: [gcc10_apex_spack_compiler_image]
   extends:
-    - .dependencies_image_template
     - .variables_gcc10_apex_config
+    - .dependencies_image_template
 
 gcc10_apex_release_build:
   needs: [gcc10_apex_spack_image]
   extends:
-    - .build_template
     - .variables_gcc10_apex_config
+    - .build_template
 
 gcc10_apex_release_test:
   needs: [gcc10_apex_release_build]
   extends:
-    - .test_template
-    - .test_common_mc
     - .variables_gcc10_apex_config
+    - .test_common_mc
+    - .test_template

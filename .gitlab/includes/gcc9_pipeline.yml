@@ -22,24 +22,24 @@ include:
 
 gcc9_spack_compiler_image:
   extends:
-    - .compiler_image_template
     - .variables_gcc9_config
+    - .compiler_image_template
 
 gcc9_spack_image:
   needs: [gcc9_spack_compiler_image]
   extends:
-    - .dependencies_image_template
     - .variables_gcc9_config
+    - .dependencies_image_template
 
 gcc9_debug_build:
   needs: [gcc9_spack_image]
   extends:
-    - .build_template
     - .variables_gcc9_config
+    - .build_template
 
 gcc9_debug_test:
   needs: [gcc9_debug_build]
   extends:
-    - .test_template
-    - .test_common_mc
     - .variables_gcc9_config
+    - .test_common_mc
+    - .test_template
