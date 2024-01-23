@@ -136,6 +136,24 @@ int main()
         PIKA_TEST(set_value_called);
     }
 
+    // This is not recommended, but allowed
+    {
+        std::atomic<bool> set_value_called{false};
+        auto s1 = ex::then(ex::just(), []() -> int& {
+            static int x = 3;
+            return x;
+        });
+        auto s2 = ex::then(std::move(s1), [](int& x) -> int& {
+            x *= 4;
+            return x;
+        });
+        auto f = [](int& x) { PIKA_TEST_EQ(x, 12); };
+        auto r = callback_receiver<decltype(f)>{f, set_value_called};
+        auto os = ex::connect(std::move(s2), std::move(r));
+        ex::start(os);
+        PIKA_TEST(set_value_called);
+    }
+
     // operator| overload
     {
         std::atomic<bool> set_value_called{false};
