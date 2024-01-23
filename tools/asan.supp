@@ -1,14 +1,7 @@
-# Copyright (c) 2020 Hartmut Kaiser
+# Copyright (c) 2024 ETH Zurich
 #
 # SPDX-License-Identifier: BSL-1.0
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-# ASAN is reporting a memory leak from hwloc_topology_init, but we're 100% sure
-# that the corresponding hwloc_topology_destroy is being called. The reported
-# leak could be caused by HWLOC itself.
-leak:hwloc_topology_init
-
-# Tmp: Topology leak which appeared when changing the base image used for the
-# github action. Ignored temporarily as it is not related to bumping cmake
-leak:*pika::threads::detail::topology::topology*
+# No suppressions!

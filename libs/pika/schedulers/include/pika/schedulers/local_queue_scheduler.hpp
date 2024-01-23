@@ -297,7 +297,7 @@ namespace pika::threads::detail {
             threads::detail::thread_id_ref_type& thrd,
             bool /*scheduler_mode::enable_stealing*/) override
         {
-            std::size_t queues_size = queues_.size();
+            [[maybe_unused]] std::size_t queues_size = queues_.size();
 
             {
                 PIKA_ASSERT(num_thread < queues_size);
@@ -315,6 +315,7 @@ namespace pika::threads::detail {
                 if (have_staged) return false;
             }
 
+#if !defined(PIKA_HAVE_THREAD_SANITIZER)
             if (!running) { return false; }
 
             bool numa_stealing = has_scheduler_mode(scheduler_mode::enable_stealing_numa);
@@ -402,6 +403,9 @@ namespace pika::threads::detail {
                     }
                 }
             }
+#else
+            PIKA_UNUSED(running);
+#endif
 
             return false;
         }
