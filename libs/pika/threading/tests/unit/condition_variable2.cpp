@@ -16,6 +16,7 @@
 #include <pika/testing.hpp>
 
 #include <array>
+#include <atomic>
 #include <chrono>
 #include <cstdlib>
 #include <functional>
@@ -375,7 +376,7 @@ void test_timed_wait(bool call_notify, bool call_interrupt, Dur dur)
         interrupted
     };
 
-    state t1_feedback{state::loop};
+    std::atomic<state> t1_feedback{state::loop};
     {
         pika::jthread t1(
             [&ready_, &ready_mtx, &ready_cv, call_notify, dur, &t1_feedback](pika::stop_token st) {
@@ -395,7 +396,7 @@ void test_timed_wait(bool call_notify, bool call_interrupt, Dur dur)
 
                         if (ret)
                         {
-                            t1_feedback = state::ready;
+                            t1_feedback.store(state::ready, std::memory_order_relaxed);
                             PIKA_TEST(ready_);
                             PIKA_TEST(!st.stop_requested());
                             PIKA_TEST(call_notify);
@@ -404,7 +405,7 @@ void test_timed_wait(bool call_notify, bool call_interrupt, Dur dur)
                     }
                     catch (const char*)
                     {
-                        t1_feedback = state::interrupted;
+                        t1_feedback.store(state::interrupted, std::memory_order_relaxed);
                         PIKA_TEST(!ready_);
                         PIKA_TEST(!call_notify);
                         ++times_done;
@@ -432,7 +433,7 @@ void test_timed_wait(bool call_notify, bool call_interrupt, Dur dur)
 
             auto t0 = std::chrono::steady_clock::now();
             ready_cv.notify_one();
-            while (t1_feedback != state::ready)
+            while (t1_feedback.load(std::memory_order_relaxed) != state::ready)
             {
                 pika::this_thread::yield();
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
@@ -443,7 +444,7 @@ void test_timed_wait(bool call_notify, bool call_interrupt, Dur dur)
         {
             auto t0 = std::chrono::steady_clock::now();
             t1.request_stop();
-            while (t1_feedback != state::interrupted)
+            while (t1_feedback.load(std::memory_order_relaxed) != state::interrupted)
             {
                 pika::this_thread::yield();
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
@@ -453,7 +454,7 @@ void test_timed_wait(bool call_notify, bool call_interrupt, Dur dur)
     }    // leave scope of t1 without join() or detach() (signals cancellation)
 
     auto t0 = std::chrono::steady_clock::now();
-    while (t1_feedback == state::loop)
+    while (t1_feedback.load(std::memory_order_relaxed) == state::loop)
     {
         pika::this_thread::yield();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
