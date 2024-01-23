@@ -31,7 +31,7 @@ set(synchronization_headers
 )
 
 set(synchronization_sources
-    detail/condition_variable.cpp detail/counting_semaphore.cpp
+    barrier.cpp detail/condition_variable.cpp detail/counting_semaphore.cpp
     detail/sliding_semaphore.cpp mutex.cpp stop_token.cpp
 )
 
