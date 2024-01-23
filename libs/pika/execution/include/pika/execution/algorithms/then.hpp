@@ -77,12 +77,12 @@ namespace pika::then_detail {
                     // Certain versions of GCC with optimizations fail on
                     // the move with an internal compiler error.
 # if defined(PIKA_GCC_VERSION) && (PIKA_GCC_VERSION < 100000)
-                        auto&& result = PIKA_INVOKE(std::move(f), PIKA_FORWARD(Ts, ts)...);
+                        pika::execution::experimental::set_value(PIKA_MOVE(receiver),
+                            PIKA_INVOKE(std::move(f), PIKA_FORWARD(Ts, ts)...));
 # else
-                        auto&& result = PIKA_INVOKE(PIKA_MOVE(f), PIKA_FORWARD(Ts, ts)...);
+                        pika::execution::experimental::set_value(PIKA_MOVE(receiver),
+                            PIKA_INVOKE(PIKA_MOVE(f), PIKA_FORWARD(Ts, ts)...));
 # endif
-                        pika::execution::experimental::set_value(
-                            PIKA_MOVE(receiver), PIKA_MOVE(result));
                     }
                 },
                 [&](std::exception_ptr ep) {
