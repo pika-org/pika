@@ -23,7 +23,7 @@ jobs:
     name: github/linux/tracy/fast
     if: ${{ github.event_name == 'merge_group' }}
     runs-on: ubuntu-latest
-    container: pikaorg/pika-ci-base:21
+    container: pikaorg/pika-ci-base:22
 
     steps:
       - name: Check out Tracy
