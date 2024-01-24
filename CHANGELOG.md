@@ -28,6 +28,7 @@
 - A potential cause for dangling references has been fixed in `thread_pool_init_parameters`. ([#984](https://github.com/pika-org/pika/pull/984))
 - A few data races have been fixed in the schedulers. ([#985](https://github.com/pika-org/pika/pull/985), [#986](https://github.com/pika-org/pika/pull/986))
 - Forwarding of callable values in `execution::then` has been fixed. ([#994](https://github.com/pika-org/pika/pull/994))
+- A data race in `condition_variable::notify_all` has been fixed. ([#998](https://github.com/pika-org/pika/pull/998))
 
 ## 0.21.0 (2023-12-06)
 
