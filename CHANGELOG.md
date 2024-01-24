@@ -1,8 +1,34 @@
-<!--- Copyright (c) 2022-2023 ETH Zurich -->
+<!--- Copyright (c) 2022-2024 ETH Zurich -->
 <!----->
 <!--- SPDX-License-Identifier: BSL-1.0 -->
 <!--- Distributed under the Boost Software License, Version 1.0. (See accompanying -->
 <!--- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
+
+## 0.22.0 (2024-01-24)
+
+### New features
+
+- A new function `pika::is_runtime_initialized` has been added. ([#808](https://github.com/pika-org/pika/pull/808))
+- CUDA and HIP handles are now guaranteed to be released together with `cuda_pool` instead of on program exit. ([#872](https://github.com/pika-org/pika/pull/872))
+- Spinloop performance has been significantly improved on ARM64 systems. ([#923](https://github.com/pika-org/pika/pull/923), [#927](https://github.com/pika-org/pika/pull/927))
+- The `pika::barrier` now scales significantly better with the number of cores. ([#940](https://github.com/pika-org/pika/pull/940))
+- Exceptions thrown in the main entry point, e.g. `pika_main`, are now reported with the message of the exception, if available. ([#959](https://github.com/pika-org/pika/pull/959))
+
+### Breaking changes
+
+### Bugfixes
+
+- The CMake configuration now sets the policy CMP0144 to silence warnings about CMake package root directory variables. ([#885](https://github.com/pika-org/pika/pull/885))
+- The permissions on the installed `pika-bind` helper script have been fixed. ([#915](https://github.com/pika-org/pika/pull/915))
+- A missing include causing compilation failures with `PIKA_WITH_UNITY_BUILD=OFF` has been added. ([#955](https://github.com/pika-org/pika/pull/955))
+- A use-after-free has been fixed in `when_all_vector`. ([#966](https://github.com/pika-org/pika/pull/966))
+- A use-after-free has been fixed in `sync_wait`. ([#976](https://github.com/pika-org/pika/pull/976))
+- A use-after-free has been fixed in `default_agent`. ([#979](https://github.com/pika-org/pika/pull/979))
+- An initialization order issue has been fixed in debug printing facilities. ([#983](https://github.com/pika-org/pika/pull/983))
+- A potential cause for dangling references has been fixed in `thread_pool_init_parameters`. ([#984](https://github.com/pika-org/pika/pull/984))
+- A few data races have been fixed in the schedulers. ([#985](https://github.com/pika-org/pika/pull/985), [#986](https://github.com/pika-org/pika/pull/986))
+- Forwarding of callable values in `execution::then` has been fixed. ([#994](https://github.com/pika-org/pika/pull/994))
+- A data race in `condition_variable::notify_all` has been fixed. ([#998](https://github.com/pika-org/pika/pull/998))
 
 ## 0.21.0 (2023-12-06)
 
@@ -12,7 +38,6 @@
 - The conversion from `any_sender` to `unique_any_sender` has been optimized, reusing the same
   storage. ([#844](https://github.com/pika-org/pika/pull/844))
 - The number of streams created by the `cuda_pool` is now proportional to the number of threads used by the runtime instead of `hardware_concurrency`. ([#864](https://github.com/pika-org/pika/pull/864))
-
 
 ### Breaking changes
 
