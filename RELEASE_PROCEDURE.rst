@@ -73,8 +73,6 @@ pika follows `Semantic Versioning <https://semver.org>`_.
      and filter of `pika 0.X.0` to `pika 0.<X+1>.0`).
    - Change the status of `Done` items to `Archive` in the `Done` view.
 
-#. Check if pika-algorithms also needs a release.
-
 #. Delete your ``GITHUB_TOKEN`` if created only for the release.
 
 #. Announce the release on the #pika slack channel.
