@@ -31,7 +31,7 @@
 
 #include <hwloc.h>
 
-#if HWLOC_API_VERSION < 0x00010b00
+#if HWLOC_API_VERSION < 0x0001'0b00
 # define HWLOC_OBJ_NUMANODE HWLOC_OBJ_NODE
 #endif
 
@@ -96,7 +96,7 @@ namespace pika::threads::detail {
 
     hwloc_obj_t adjust_node_obj(hwloc_obj_t node) noexcept
     {
-#if HWLOC_API_VERSION >= 0x00020000
+#if HWLOC_API_VERSION >= 0x0002'0000
         // www.open-mpi.org/projects/hwloc/doc/hwloc-v2.0.0-letter.pdf:
         // Starting with hwloc v2.0, NUMA nodes are not in the main tree
         // anymore. They are attached under objects as Memory Children
@@ -214,7 +214,7 @@ namespace pika::threads::detail {
                 pika::error::no_success, "topology::topology", "Failed to init hwloc topology");
         }
 
-#if HWLOC_API_VERSION >= 0x00020000
+#if HWLOC_API_VERSION >= 0x0002'0000
 # if defined(PIKA_HAVE_ADDITIONAL_HWLOC_TESTING)
         // Enable HWLOC filtering that makes it report no cores. This is purely
         // an option allowing to test whether things work properly on systems
@@ -520,7 +520,7 @@ namespace pika::threads::detail {
         {
             std::unique_lock<mutex_type> lk(topo_mtx);
             int ret =
-#if HWLOC_API_VERSION >= 0x00010b06
+#if HWLOC_API_VERSION >= 0x0001'0b06
                 hwloc_get_area_membind(topo, lva, 1, nodeset, &policy, HWLOC_MEMBIND_BYNODESET);
 #else
                 hwloc_get_area_membind_nodeset(topo, lva, 1, nodeset, &policy, 0);
@@ -565,7 +565,7 @@ namespace pika::threads::detail {
 
     std::size_t topology::init_numa_node_number(std::size_t num_thread)
     {
-#if HWLOC_API_VERSION >= 0x00020000
+#if HWLOC_API_VERSION >= 0x0002'0000
         if (std::size_t(-1) == num_thread) return std::size_t(-1);
 
         std::size_t num_pu = (num_thread + pu_offset) % num_of_pus_;
@@ -858,7 +858,7 @@ namespace pika::threads::detail {
     {
         hwloc_bitmap_t cpuset = mask_to_bitmap(mask, HWLOC_OBJ_PU);
         hwloc_bitmap_t nodeset = hwloc_bitmap_alloc();
-#if HWLOC_API_VERSION >= 0x00020000
+#if HWLOC_API_VERSION >= 0x0002'0000
         hwloc_cpuset_to_nodeset(topo, cpuset, nodeset);
 #else
         hwloc_cpuset_to_nodeset_strict(topo, cpuset, nodeset);
@@ -1281,7 +1281,7 @@ namespace pika::threads::detail {
         std::size_t len, hwloc_bitmap_ptr bitmap, pika_hwloc_membind_policy policy, int flags) const
     {
         return
-#if HWLOC_API_VERSION >= 0x00010b06
+#if HWLOC_API_VERSION >= 0x0001'0b06
             hwloc_alloc_membind(topo, len, bitmap->get_bmp(), (hwloc_membind_policy_t) (policy),
                 flags | HWLOC_MEMBIND_BYNODESET);
 #else
@@ -1297,7 +1297,7 @@ namespace pika::threads::detail {
         hwloc_nodeset_t ns = reinterpret_cast<hwloc_nodeset_t>(nodeset);
 
         int ret =
-# if HWLOC_API_VERSION >= 0x00010b06
+# if HWLOC_API_VERSION >= 0x0001'0b06
             hwloc_set_area_membind(topo, addr, len, ns, policy, HWLOC_MEMBIND_BYNODESET);
 # else
             hwloc_set_area_membind_nodeset(topo, addr, len, ns, policy, 0);
@@ -1341,7 +1341,7 @@ namespace pika::threads::detail {
         hwloc_nodeset_t ns = reinterpret_cast<hwloc_nodeset_t>(nodeset.get_bmp());
 
         if (
-#if HWLOC_API_VERSION >= 0x00010b06
+#if HWLOC_API_VERSION >= 0x0001'0b06
             hwloc_get_area_membind(topo, addr, len, ns, &policy, HWLOC_MEMBIND_BYNODESET)
 #else
             hwloc_get_area_membind_nodeset(topo, addr, len, ns, &policy, 0)
@@ -1359,7 +1359,7 @@ namespace pika::threads::detail {
 
     int topology::get_numa_domain(const void* addr) const
     {
-#if HWLOC_API_VERSION >= 0x00010b06
+#if HWLOC_API_VERSION >= 0x0001'0b06
         pika_hwloc_bitmap_wrapper& nodeset = bitmap_storage();
         if (!nodeset) { nodeset.reset(hwloc_bitmap_alloc()); }
 

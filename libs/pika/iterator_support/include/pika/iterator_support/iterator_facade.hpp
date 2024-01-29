@@ -515,23 +515,25 @@ namespace pika::util {
     }    // namespace detail
 
 #define PIKA_UTIL_ITERATOR_FACADE_INTEROP_HEAD(prefix, op, result_type)                            \
- template <typename Derived1, typename T1, typename Category1, typename Reference1,                \
-     typename Distance1, typename Pointer1, typename Derived2, typename T2, typename Category2,    \
-     typename Reference2, typename Distance2, typename Pointer2>                                   \
- PIKA_HOST_DEVICE prefix typename pika::util::detail::enable_operator_interoperable<Derived1,      \
-     Derived2, result_type>::type                                                                  \
- operator op(iterator_facade<Derived1, T1, Category1, Reference1, Distance1, Pointer1> const& lhs, \
-     iterator_facade<Derived2, T2, Category2, Reference2, Distance2, Pointer2> const& rhs) /**/
+    template <typename Derived1, typename T1, typename Category1, typename Reference1,             \
+        typename Distance1, typename Pointer1, typename Derived2, typename T2, typename Category2, \
+        typename Reference2, typename Distance2, typename Pointer2>                                \
+    PIKA_HOST_DEVICE prefix typename pika::util::detail::enable_operator_interoperable<Derived1,   \
+        Derived2, result_type>::type                                                               \
+    operator op(                                                                                   \
+        iterator_facade<Derived1, T1, Category1, Reference1, Distance1, Pointer1> const& lhs,      \
+        iterator_facade<Derived2, T2, Category2, Reference2, Distance2, Pointer2> const& rhs) /**/
 
 #define PIKA_UTIL_ITERATOR_FACADE_INTEROP_HEAD_EX(prefix, op, result_type, cond)                   \
- template <typename Derived1, typename T1, typename Category1, typename Reference1,                \
-     typename Distance1, typename Pointer1, typename Derived2, typename T2, typename Category2,    \
-     typename Reference2, typename Distance2, typename Pointer2>                                   \
- PIKA_HOST_DEVICE prefix typename pika::util::detail::enable_operator_interoperable_ex<Derived1,   \
-     Derived2, result_type,                                                                        \
-     cond<typename Derived1::iterator_category, typename Derived2::iterator_category>>::type       \
- operator op(iterator_facade<Derived1, T1, Category1, Reference1, Distance1, Pointer1> const& lhs, \
-     iterator_facade<Derived2, T2, Category2, Reference2, Distance2, Pointer2> const& rhs) /**/
+    template <typename Derived1, typename T1, typename Category1, typename Reference1,             \
+        typename Distance1, typename Pointer1, typename Derived2, typename T2, typename Category2, \
+        typename Reference2, typename Distance2, typename Pointer2>                                \
+    PIKA_HOST_DEVICE prefix typename pika::util::detail::enable_operator_interoperable_ex<         \
+        Derived1, Derived2, result_type,                                                           \
+        cond<typename Derived1::iterator_category, typename Derived2::iterator_category>>::type    \
+    operator op(                                                                                   \
+        iterator_facade<Derived1, T1, Category1, Reference1, Distance1, Pointer1> const& lhs,      \
+        iterator_facade<Derived2, T2, Category2, Reference2, Distance2, Pointer2> const& rhs) /**/
 
     PIKA_UTIL_ITERATOR_FACADE_INTEROP_HEAD(inline, ==, bool)
     {

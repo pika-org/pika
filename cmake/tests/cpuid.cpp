@@ -38,15 +38,15 @@ struct matcher
     uint32_t registers_t::*reg;
     uint32_t bit;
     const char* target;
-} options[] = {{0x00000001U, &registers_t::edx, 19, "clflush"},
-    {0x00000001U, &registers_t::edx, 8, "cx8"}, {0x00000001U, &registers_t::ecx, 13, "cx16"},
-    {0x00000001U, &registers_t::edx, 15, "cmov"}, {0x00000001U, &registers_t::edx, 5, "msr"},
-    {0x00000001U, &registers_t::edx, 4, "rdtsc"}, {0x80000001U, &registers_t::edx, 27, "rdtscp"},
-    {0x00000001U, &registers_t::edx, 23, "mmx"}, {0x00000001U, &registers_t::edx, 25, "sse"},
-    {0x00000001U, &registers_t::edx, 26, "sse2"}, {0x00000001U, &registers_t::ecx, 0, "sse3"},
-    {0x00000001U, &registers_t::ecx, 9, "ssse3"}, {0x00000001U, &registers_t::ecx, 19, "sse4.1"},
-    {0x00000001U, &registers_t::ecx, 20, "sse4.2"}, {0x00000001U, &registers_t::ecx, 28, "avx"},
-    {0x80000001U, &registers_t::edx, 11, "xop"}, {0x80000001U, &registers_t::edx, 16, "fma4"}};
+} options[] = {{0x0000'0001U, &registers_t::edx, 19, "clflush"},
+    {0x0000'0001U, &registers_t::edx, 8, "cx8"}, {0x0000'0001U, &registers_t::ecx, 13, "cx16"},
+    {0x0000'0001U, &registers_t::edx, 15, "cmov"}, {0x0000'0001U, &registers_t::edx, 5, "msr"},
+    {0x0000'0001U, &registers_t::edx, 4, "rdtsc"}, {0x8000'0001U, &registers_t::edx, 27, "rdtscp"},
+    {0x0000'0001U, &registers_t::edx, 23, "mmx"}, {0x0000'0001U, &registers_t::edx, 25, "sse"},
+    {0x0000'0001U, &registers_t::edx, 26, "sse2"}, {0x0000'0001U, &registers_t::ecx, 0, "sse3"},
+    {0x0000'0001U, &registers_t::ecx, 9, "ssse3"}, {0x0000'0001U, &registers_t::ecx, 19, "sse4.1"},
+    {0x0000'0001U, &registers_t::ecx, 20, "sse4.2"}, {0x0000'0001U, &registers_t::ecx, 28, "avx"},
+    {0x8000'0001U, &registers_t::edx, 11, "xop"}, {0x8000'0001U, &registers_t::edx, 16, "fma4"}};
 const size_t noptions = sizeof options / sizeof options[0];
 
 int main(int argc, char** argv)
@@ -55,7 +55,7 @@ int main(int argc, char** argv)
     if (argc < 2) return -1;
 
     string target(argv[1]);
-    __cpuid(registers, 0x00000000);
+    __cpuid(registers, 0x0000'0000);
 
     matcher m;
     size_t i = 0;

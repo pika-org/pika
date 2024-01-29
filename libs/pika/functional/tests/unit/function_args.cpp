@@ -109,7 +109,7 @@ void f_rvalue_ref(counter&&) {}
 
 void test_by_rvalue_ref()
 {
-    pika::util::detail::function<void(counter &&)> f = f_rvalue_ref;
+    pika::util::detail::function<void(counter&&)> f = f_rvalue_ref;
 
     counter::reset();
 

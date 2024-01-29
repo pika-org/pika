@@ -14,7 +14,7 @@
 # include <pika/thread_support/set_thread_name.hpp>
 
 namespace pika::detail {
-    DWORD const MS_VC_EXCEPTION = 0x406D1388;
+    DWORD const MS_VC_EXCEPTION = 0x406D'1388;
 
 # pragma pack(push, 8)
     typedef struct tagTHREADNAME_INFO

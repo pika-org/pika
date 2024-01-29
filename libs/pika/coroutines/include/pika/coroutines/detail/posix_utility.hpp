@@ -158,7 +158,7 @@ namespace pika::threads::coroutines::detail::posix {
 
         // Fill the bottom 8 bytes of the first page with 1s.
         void** watermark = static_cast<void**>(stack) + ((size - EXEC_PAGESIZE) / sizeof(void*));
-        *watermark = reinterpret_cast<void*>(0xDEADBEEFDEADBEEFull);
+        *watermark = reinterpret_cast<void*>(0xDEAD'BEEF'DEAD'BEEFull);
     }
 
     inline bool reset_stack(void* stack, std::size_t size)
@@ -167,7 +167,7 @@ namespace pika::threads::coroutines::detail::posix {
 
         // If the watermark has been overwritten, then we've gone past the first
         // page.
-        if ((reinterpret_cast<void*>(0xDEADBEEFDEADBEEFull)) != *watermark)
+        if ((reinterpret_cast<void*>(0xDEAD'BEEF'DEAD'BEEFull)) != *watermark)
         {
             // We never free up the first page, as it's initialized only when the
             // stack is created.

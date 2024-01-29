@@ -48,25 +48,25 @@ namespace pika {
     namespace require_started_detail {
 #if defined(PIKA_HAVE_STDEXEC)
 # define PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(f, message)                           \
-  fmt::print(std::cerr, "{}: {}\n", f, message);                                                   \
-  std::terminate();
+     fmt::print(std::cerr, "{}: {}\n", f, message);                                                \
+     std::terminate();
 #else
         using pika::execution::experimental::require_started_mode;
 
 # define PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(mode, f, message)                     \
-  {                                                                                                \
-   switch (mode)                                                                                   \
-   {                                                                                               \
-   case require_started_mode::terminate_on_unstarted:                                              \
-    fmt::print(std::cerr, "{}: {}\n", f, message);                                                 \
-    std::terminate();                                                                              \
-    break;                                                                                         \
+     {                                                                                             \
+         switch (mode)                                                                             \
+         {                                                                                         \
+         case require_started_mode::terminate_on_unstarted:                                        \
+             fmt::print(std::cerr, "{}: {}\n", f, message);                                        \
+             std::terminate();                                                                     \
+             break;                                                                                \
                                                                                                    \
-   case require_started_mode::throw_on_unstarted:                                                  \
-    PIKA_THROW_EXCEPTION(pika::error::invalid_status, f, fmt::runtime(message));                   \
-    break;                                                                                         \
-   }                                                                                               \
-  }
+         case require_started_mode::throw_on_unstarted:                                            \
+             PIKA_THROW_EXCEPTION(pika::error::invalid_status, f, fmt::runtime(message));          \
+             break;                                                                                \
+         }                                                                                         \
+     }
 #endif
 
         template <typename OpState>

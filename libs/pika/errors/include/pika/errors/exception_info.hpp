@@ -47,18 +47,18 @@ namespace pika {
     };
 
 #define PIKA_DEFINE_ERROR_INFO(NAME, TYPE)                                                         \
- struct NAME : ::pika::error_info<NAME, TYPE>                                                      \
- {                                                                                                 \
-  explicit NAME(TYPE const& value)                                                                 \
-    : error_info(value)                                                                            \
-  {                                                                                                \
-  }                                                                                                \
+    struct NAME : ::pika::error_info<NAME, TYPE>                                                   \
+    {                                                                                              \
+        explicit NAME(TYPE const& value)                                                           \
+          : error_info(value)                                                                      \
+        {                                                                                          \
+        }                                                                                          \
                                                                                                    \
-  explicit NAME(TYPE&& value)                                                                      \
-    : error_info(PIKA_FORWARD(TYPE, value))                                                        \
-  {                                                                                                \
-  }                                                                                                \
- } /**/
+        explicit NAME(TYPE&& value)                                                                \
+          : error_info(PIKA_FORWARD(TYPE, value))                                                  \
+        {                                                                                          \
+        }                                                                                          \
+    } /**/
 
     ///////////////////////////////////////////////////////////////////////////
     namespace detail {

@@ -72,7 +72,7 @@ namespace pika::concurrency::detail {
 
         static constexpr std::size_t left_tag_index = 3;
         static constexpr std::size_t right_tag_index = 7;
-        static constexpr compressed_ptr_t ptr_mask = 0xffffffffffff;
+        static constexpr compressed_ptr_t ptr_mask = 0xffff'ffff'ffff;
 
         static Left* extract_left_ptr(volatile compressed_ptr_pair_t const& i)
         {

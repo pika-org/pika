@@ -363,7 +363,7 @@ void test_cancellation_single_thread_performance()
 
     pika::stop_source s;
 
-    constexpr int iteration_count = 100'000;
+    constexpr int iteration_count = 100000;
 
     auto start = std::chrono::high_resolution_clock::now();
 

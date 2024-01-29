@@ -38,11 +38,11 @@ void check_equal(const std::vector<string>& actual, char const** expected, int n
 
 # define COMMA ,
 # define TEST(input, expected)                                                                     \
-  char const* PIKA_PP_CAT(e, __LINE__)[] = expected;                                               \
-  vector<string> PIKA_PP_CAT(v, __LINE__) = split_winmain(input);                                  \
-  check_equal(PIKA_PP_CAT(v, __LINE__), PIKA_PP_CAT(e, __LINE__),                                  \
-      sizeof(PIKA_PP_CAT(e, __LINE__)) / sizeof(char*));                                           \
-  /**/
+     char const* PIKA_PP_CAT(e, __LINE__)[] = expected;                                            \
+     vector<string> PIKA_PP_CAT(v, __LINE__) = split_winmain(input);                               \
+     check_equal(PIKA_PP_CAT(v, __LINE__), PIKA_PP_CAT(e, __LINE__),                               \
+         sizeof(PIKA_PP_CAT(e, __LINE__)) / sizeof(char*));                                        \
+     /**/
 
 void test_winmain()
 {

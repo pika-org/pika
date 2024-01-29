@@ -42,6 +42,6 @@
 #  define PIKA_PP_STRINGIZE(text) PIKA_PP_STRINGIZE_I(text)
 # endif
 
-# define PIKA_PP_STRINGIZE_I(text) # text
+# define PIKA_PP_STRINGIZE_I(text) #text
 
 #endif
