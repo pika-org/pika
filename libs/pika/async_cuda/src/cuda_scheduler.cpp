@@ -18,17 +18,6 @@ namespace pika::cuda::experimental {
 
     cuda_stream const& cuda_scheduler::get_next_stream() { return pool.get_next_stream(priority); }
 
-    locked_cublas_handle cuda_scheduler::get_cublas_handle(
-        cuda_stream const& stream, cublasPointerMode_t pointer_mode)
-    {
-        return pool.get_cublas_handle(stream, pointer_mode);
-    }
-
-    locked_cusolver_handle cuda_scheduler::get_cusolver_handle(cuda_stream const& stream)
-    {
-        return pool.get_cusolver_handle(stream);
-    }
-
     namespace detail {
         cuda_scheduler_sender::cuda_scheduler_sender(cuda_scheduler scheduler)
           : scheduler(PIKA_MOVE(scheduler))
