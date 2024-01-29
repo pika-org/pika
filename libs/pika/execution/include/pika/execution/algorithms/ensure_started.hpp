@@ -297,7 +297,7 @@ namespace pika::ensure_started_detail {
 
                 if (continuation)
                 {
-                    continuation.value()();
+                    (*continuation)();
                     continuation.reset();
                 }
             }
@@ -360,7 +360,7 @@ namespace pika::ensure_started_detail {
                 if (!start_called.exchange(true))
                 {
                     PIKA_ASSERT(os.has_value());
-                    pika::execution::experimental::start(os.value());
+                    pika::execution::experimental::start(*os);
                 }
             }
 

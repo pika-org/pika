@@ -146,7 +146,8 @@ namespace pika::drop_op_state_detail {
             pika::execution::experimental::start_t, drop_op_state_op_state_type& os) noexcept
         {
             PIKA_ASSERT(os.op_state.has_value());
-            pika::execution::experimental::start(os.op_state.value());
+            // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+            pika::execution::experimental::start(*(os.op_state));
         }
     };
 

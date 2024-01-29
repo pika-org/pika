@@ -189,7 +189,8 @@ namespace pika::thread_pool_bulk_detail {
                         std::optional<std::uint32_t> index;
                         while ((index = local_queue.pop_left()))
                         {
-                            do_work_chunk(ts, index.value());
+                            // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+                            do_work_chunk(ts, *index);
                         }
 
                         // Then steal from neighboring queues
@@ -202,7 +203,8 @@ namespace pika::thread_pool_bulk_detail {
 
                             while ((index = neighbor_queue.pop_right()))
                             {
-                                do_work_chunk(ts, index.value());
+                                // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+                                do_work_chunk(ts, *index);
                             }
                         }
                     }
@@ -271,7 +273,8 @@ namespace pika::thread_pool_bulk_detail {
                                 PIKA_ASSERT(op_state->exception.has_value());
                                 pika::execution::experimental::set_error(
                                     PIKA_MOVE(op_state->receiver),
-                                    PIKA_MOVE(op_state->exception.value()));
+                                    // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+                                    PIKA_MOVE(*(op_state->exception)));
                             }
                             else
                             {

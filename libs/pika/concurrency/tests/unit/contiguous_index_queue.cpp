@@ -51,6 +51,7 @@ void test_basic()
         {
             std::optional<std::uint32_t> curr = q.pop_left();
             PIKA_TEST(curr);
+            // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
             PIKA_TEST_EQ(curr.value(), curr_expected);
         }
 
@@ -69,6 +70,7 @@ void test_basic()
         {
             std::optional<std::uint32_t> curr = q.pop_right();
             PIKA_TEST(curr);
+            // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
             PIKA_TEST_EQ(curr.value(), curr_expected);
         }
 
@@ -84,6 +86,7 @@ void test_basic()
         {
             std::optional<std::uint32_t> curr = q.pop_right();
             PIKA_TEST(curr);
+            // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
             PIKA_TEST_EQ(curr.value(), curr_expected);
         }
 
@@ -114,14 +117,23 @@ void test_concurrent_worker(pop_mode m, std::size_t thread_index, pika::barrier<
     switch (m)
     {
     case pop_mode::left:
-        while ((curr = q.pop_left())) { popped_indices.push_back(curr.value()); }
+        while ((curr = q.pop_left()))
+        {
+            // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+            popped_indices.push_back(curr.value());
+        }
         break;
     case pop_mode::right:
-        while ((curr = q.pop_right())) { popped_indices.push_back(curr.value()); }
+        while ((curr = q.pop_right()))
+        {
+            // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+            popped_indices.push_back(curr.value());
+        }
         break;
     case pop_mode::random:
         while (d(r) == 0 ? (curr = q.pop_left()) : (curr = q.pop_right()))
         {
+            // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
             popped_indices.push_back(curr.value());
         }
         break;

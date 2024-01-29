@@ -340,7 +340,8 @@ namespace pika::split_tuple_detail {
             if (!start_called.exchange(true))
             {
                 PIKA_ASSERT(os.has_value());
-                pika::execution::experimental::start(os.value());
+                // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+                pika::execution::experimental::start(*os);
             }
         }
 

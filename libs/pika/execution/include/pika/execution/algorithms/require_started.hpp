@@ -191,7 +191,9 @@ namespace pika {
                 PIKA_ASSERT(os.op_state.has_value());
 
                 os.started = true;
-                pika::execution::experimental::start(os.op_state.value());
+
+                // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+                pika::execution::experimental::start(*(os.op_state));
             }
         };
 
@@ -373,9 +375,10 @@ namespace pika {
                 s.connected = true;
                 return
                 {
-                    std::exchange(s.sender, std::nullopt).value(), PIKA_FORWARD(Receiver, receiver)
+                    // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+                    *std::exchange(s.sender, std::nullopt), PIKA_FORWARD(Receiver, receiver)
 #if !defined(PIKA_HAVE_STDEXEC)
-                                                                       ,
+                                                                ,
                         s.mode
 #endif
                 };
@@ -402,9 +405,9 @@ namespace pika {
                 s.connected = true;
                 return
                 {
-                    s.sender.value(), PIKA_FORWARD(Receiver, receiver)
+                    *s.sender, PIKA_FORWARD(Receiver, receiver)
 #if !defined(PIKA_HAVE_STDEXEC)
-                                          ,
+                                   ,
                         s.mode
 #endif
                 };
