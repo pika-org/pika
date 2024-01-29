@@ -5,12 +5,14 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 set(tests
+    cublas_handle
     cublas_matmul
     cuda_bulk
-    cuda_device_reset
     cuda_pool
     cuda_scheduler
     cuda_sender
+    cuda_stream
+    cusolver_handle
     then_with_stream
 )
 
@@ -19,10 +21,13 @@ set(cuda_sender_PARAMETERS THREADS 4)
 set(then_with_stream_PARAMETERS THREADS 4)
 set(then_with_stream_DEPENDENCIES pika_execution_test_utilities)
 
+set(cublas_handle_GPU ON)
 set(cuda_bulk_GPU ON)
 set(cuda_pool_GPU ON)
 set(cuda_scheduler_GPU ON)
 set(cuda_sender_GPU ON)
+set(cuda_stream_GPU ON)
+set(cusolver_handle_GPU ON)
 set(then_with_stream_GPU ON)
 
 foreach(test ${tests})

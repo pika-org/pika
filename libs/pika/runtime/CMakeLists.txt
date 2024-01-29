@@ -40,10 +40,6 @@ set(runtime_sources
     thread_stacktrace.cpp
 )
 
-if(PIKA_WITH_GPU_SUPPORT)
-  list(APPEND runtime_additional_module_dependencies pika_async_cuda_base)
-endif()
-
 if(PIKA_WITH_MPI)
   list(APPEND runtime_additional_module_dependencies pika_mpi_base)
 endif()

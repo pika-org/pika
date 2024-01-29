@@ -7,7 +7,7 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/async_cuda_base/custom_blas_api.hpp>
+#include <pika/async_cuda/custom_blas_api.hpp>
 #include <pika/errors/exception.hpp>
 
 #include <string>

@@ -5,11 +5,11 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
-#include <pika/async_cuda_base/cublas_exception.hpp>
-#include <pika/async_cuda_base/cublas_handle.hpp>
-#include <pika/async_cuda_base/cuda_device_scope.hpp>
-#include <pika/async_cuda_base/cuda_stream.hpp>
-#include <pika/async_cuda_base/custom_blas_api.hpp>
+#include <pika/async_cuda/cublas_exception.hpp>
+#include <pika/async_cuda/cublas_handle.hpp>
+#include <pika/async_cuda/cuda_device_scope.hpp>
+#include <pika/async_cuda/cuda_stream.hpp>
+#include <pika/async_cuda/custom_blas_api.hpp>
 
 #include <whip.hpp>
 

@@ -8,12 +8,12 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+#include <pika/async_cuda/cublas_handle.hpp>
 #include <pika/async_cuda/cuda_scheduler.hpp>
+#include <pika/async_cuda/cusolver_handle.hpp>
+#include <pika/async_cuda/custom_blas_api.hpp>
+#include <pika/async_cuda/custom_lapack_api.hpp>
 #include <pika/async_cuda/detail/cuda_event_callback.hpp>
-#include <pika/async_cuda_base/cublas_handle.hpp>
-#include <pika/async_cuda_base/cusolver_handle.hpp>
-#include <pika/async_cuda_base/custom_blas_api.hpp>
-#include <pika/async_cuda_base/custom_lapack_api.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/execution/algorithms/detail/helpers.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
@@ -35,23 +35,29 @@
 #include <utility>
 
 namespace pika::cuda::experimental::then_with_stream_detail {
+    PIKA_EXPORT pika::cuda::experimental::cublas_handle const& get_thread_local_cublas_handle(
+        cuda_stream const& stream, cublasPointerMode_t pointer_mode);
+
     template <typename F, typename... Ts>
-    auto invoke_with_thread_local_cublas_handle(cuda_scheduler& sched, cuda_stream const& stream,
-        cublasPointerMode_t pointer_mode, F&& f, Ts&&... ts)
+    auto invoke_with_thread_local_cublas_handle(
+        cuda_stream const& stream, cublasPointerMode_t pointer_mode, F&& f, Ts&&... ts)
         -> decltype(PIKA_INVOKE(
             PIKA_FORWARD(F, f), std::declval<cublasHandle_t>(), PIKA_FORWARD(Ts, ts)...))
     {
-        auto locked_handle = sched.get_cublas_handle(stream, pointer_mode);
-        return PIKA_INVOKE(PIKA_FORWARD(F, f), locked_handle.get().get(), PIKA_FORWARD(Ts, ts)...);
+        return PIKA_INVOKE(PIKA_FORWARD(F, f),
+            get_thread_local_cublas_handle(stream, pointer_mode).get(), PIKA_FORWARD(Ts, ts)...);
     }
 
+    PIKA_EXPORT pika::cuda::experimental::cusolver_handle const& get_thread_local_cusolver_handle(
+        cuda_stream const& stream);
+
     template <typename F, typename... Ts>
-    auto invoke_with_thread_local_cusolver_handle(cuda_scheduler& sched, cuda_stream const& stream,
-        F&& f, Ts&&... ts) -> decltype(PIKA_INVOKE(PIKA_FORWARD(F, f),
-        std::declval<cusolverDnHandle_t>(), PIKA_FORWARD(Ts, ts)...))
+    auto invoke_with_thread_local_cusolver_handle(cuda_stream const& stream, F&& f, Ts&&... ts)
+        -> decltype(PIKA_INVOKE(
+            PIKA_FORWARD(F, f), std::declval<cusolverDnHandle_t>(), PIKA_FORWARD(Ts, ts)...))
     {
-        auto locked_handle = sched.get_cusolver_handle(stream);
-        return PIKA_INVOKE(PIKA_FORWARD(F, f), locked_handle.get().get(), PIKA_FORWARD(Ts, ts)...);
+        return PIKA_INVOKE(PIKA_FORWARD(F, f), get_thread_local_cusolver_handle(stream).get(),
+            PIKA_FORWARD(Ts, ts)...);
     }
 
     template <typename R, typename... Ts>
@@ -151,11 +157,11 @@ namespace pika::cuda::experimental::then_with_stream_detail {
 
 #if defined(PIKA_HAVE_STDEXEC)
         template <typename... Ts>
-        requires std::is_invocable_v<F, cuda_scheduler&, cuda_stream const&,
+        requires std::is_invocable_v<F, cuda_stream const&,
             std::add_lvalue_reference_t<std::decay_t<Ts>>...>
         using invoke_result_helper =
             pika::execution::experimental::completion_signatures<pika::execution::experimental::
-                    detail::result_type_signature_helper_t<std::invoke_result_t<F, cuda_scheduler&,
+                    detail::result_type_signature_helper_t<std::invoke_result_t<F,
                         cuda_stream const&, std::add_lvalue_reference_t<std::decay_t<Ts>>...>>>;
 
         using completion_signatures =
@@ -171,7 +177,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
         template <template <typename...> class Tuple, typename... Ts>
         struct invoke_result_helper<Tuple<Ts...>>
         {
-            using result_type = std::invoke_result_t<F, cuda_scheduler&, cuda_stream const&,
+            using result_type = std::invoke_result_t<F, cuda_stream const&,
                 std::add_lvalue_reference_t<std::decay_t<Ts>>...>;
             using type =
                 std::conditional_t<std::is_void_v<result_type>, Tuple<>, Tuple<result_type>>;
@@ -250,8 +256,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
 
                 template <typename... Ts>
                 auto set_value(Ts&&... ts) noexcept
-                    -> decltype(PIKA_INVOKE(PIKA_MOVE(f), op_state.sched, stream.value(), ts...),
-                        void())
+                    -> decltype(PIKA_INVOKE(PIKA_MOVE(f), stream.value(), ts...), void())
                 {
                     pika::detail::try_catch_exception_ptr(
                         [&]() mutable {
@@ -282,16 +287,16 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                                 }
                             }
 
-                            using invoke_result_type = std::decay_t<
-                                std::invoke_result_t<F, cuda_scheduler&, cuda_stream const&,
+                            using invoke_result_type =
+                                std::decay_t<std::invoke_result_t<F, cuda_stream const&,
                                     std::add_lvalue_reference_t<std::decay_t<Ts>>...>>;
                             constexpr bool is_void_result = std::is_void_v<invoke_result_type>;
                             if constexpr (is_void_result)
                             {
                                 std::apply(
                                     [&](auto&... ts) mutable {
-                                        PIKA_INVOKE(PIKA_MOVE(op_state.f), op_state.sched,
-                                            op_state.stream.value(), ts...);
+                                        PIKA_INVOKE(
+                                            PIKA_MOVE(op_state.f), op_state.stream.value(), ts...);
                                     },
                                     t);
 
@@ -331,7 +336,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                                 std::apply(
                                     [&](auto&... ts) mutable {
                                         op_state.result.template emplace<invoke_result_type>(
-                                            PIKA_INVOKE(PIKA_MOVE(op_state.f), op_state.sched,
+                                            PIKA_INVOKE(PIKA_MOVE(op_state.f),
                                                 op_state.stream.value(), ts...));
                                     },
                                     t);
@@ -543,7 +548,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
         std::decay_t<F> f;
 
         template <typename... Ts>
-        auto operator()(cuda_scheduler&, cuda_stream const& stream, Ts&&... ts)
+        auto operator()(cuda_stream const& stream, Ts&&... ts)
         // nvcc does not compile this correctly with noexcept(...)
 #if defined(PIKA_CLANG_VERSION)
             noexcept(noexcept(PIKA_INVOKE(f, PIKA_FORWARD(Ts, ts)..., stream.get())))
@@ -563,17 +568,17 @@ namespace pika::cuda::experimental::then_with_stream_detail {
         cublasPointerMode_t pointer_mode;
 
         template <typename... Ts>
-        auto operator()(cuda_scheduler& sched, cuda_stream const& stream, Ts&&... ts)
+        auto operator()(cuda_stream const& stream, Ts&&... ts)
         // nvcc does not compile this correctly with noexcept(...)
 #if defined(PIKA_CLANG_VERSION)
             noexcept(noexcept(invoke_with_thread_local_cublas_handle(
-                sched, stream, pointer_mode, f, PIKA_FORWARD(Ts, ts)...)))
+                stream, pointer_mode, f, PIKA_FORWARD(Ts, ts)...)))
 #endif
                 -> decltype(invoke_with_thread_local_cublas_handle(
-                    sched, stream, pointer_mode, f, PIKA_FORWARD(Ts, ts)...))
+                    stream, pointer_mode, f, PIKA_FORWARD(Ts, ts)...))
         {
             return invoke_with_thread_local_cublas_handle(
-                sched, stream, pointer_mode, f, PIKA_FORWARD(Ts, ts)...);
+                stream, pointer_mode, f, PIKA_FORWARD(Ts, ts)...);
         }
     };
 
@@ -585,17 +590,16 @@ namespace pika::cuda::experimental::then_with_stream_detail {
         std::decay_t<F> f;
 
         template <typename... Ts>
-        auto operator()(cuda_scheduler& sched, cuda_stream const& stream, Ts&&... ts)
+        auto operator()(cuda_stream const& stream, Ts&&... ts)
         // nvcc does not compile this correctly with noexcept(...)
 #if defined(PIKA_CLANG_VERSION)
-            noexcept(noexcept(invoke_with_thread_local_cusolver_handle(
-                sched, stream, f, PIKA_FORWARD(Ts, ts)...)))
+            noexcept(noexcept(
+                invoke_with_thread_local_cusolver_handle(stream, f, PIKA_FORWARD(Ts, ts)...)))
 #endif
                 -> decltype(invoke_with_thread_local_cusolver_handle(
-                    sched, stream, f, PIKA_FORWARD(Ts, ts)...))
+                    stream, f, PIKA_FORWARD(Ts, ts)...))
         {
-            return invoke_with_thread_local_cusolver_handle(
-                sched, stream, f, PIKA_FORWARD(Ts, ts)...);
+            return invoke_with_thread_local_cusolver_handle(stream, f, PIKA_FORWARD(Ts, ts)...);
         }
     };
 }    // namespace pika::cuda::experimental::then_with_stream_detail
