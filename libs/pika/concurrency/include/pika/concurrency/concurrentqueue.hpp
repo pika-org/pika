@@ -1501,6 +1501,7 @@ namespace pika::concurrency::detail {
                 static_cast<ProducerBase*>(token.currentProducer)->dequeue_bulk(itemFirst, max);
             if (count == max)
             {
+                // NOLINTNEXTLINE(bugprone-assignment-in-if-condition)
                 if ((token.itemsConsumedFromCurrent += static_cast<std::uint32_t>(max)) >=
                     EXPLICIT_CONSUMER_CONSUMPTION_QUOTA_BEFORE_ROTATE)
                 {
@@ -2391,6 +2392,7 @@ namespace pika::concurrency::detail {
 
                         // Dequeue
                         auto& el = *((*block)[index]);
+                        // NOLINTNEXTLINE(bugprone-assignment-in-if-condition)
                         if (!MOODYCAMEL_NOEXCEPT_ASSIGN(T, T&&, element = PIKA_MOVE(el)))
                         {
                             // Make sure the element is still fully dequeued and destroyed even if the assignment
@@ -2742,6 +2744,7 @@ namespace pika::concurrency::detail {
                                 firstIndex + static_cast<index_t>(actualCount) :
                                 endIndex;
                             auto block = localBlockIndex->entries[indexIndex].block;
+                            // NOLINTNEXTLINE(bugprone-assignment-in-if-condition)
                             if (MOODYCAMEL_NOEXCEPT_ASSIGN(T, T&&,
                                     detail::deref_noexcept(itemFirst) =
                                         PIKA_MOVE((*(*block)[index]))))
@@ -3078,6 +3081,7 @@ namespace pika::concurrency::detail {
                         auto block = entry->value.load(std::memory_order_relaxed);
                         auto& el = *((*block)[index]);
 
+                        // NOLINTNEXTLINE(bugprone-assignment-in-if-condition)
                         if (!MOODYCAMEL_NOEXCEPT_ASSIGN(T, T&&, element = PIKA_MOVE(el)))
                         {
 #ifdef MCDBGQ_NOLOCKFREE_IMPLICITPRODBLOCKINDEX
@@ -3184,8 +3188,10 @@ namespace pika::concurrency::detail {
                                     MAX_SUBQUEUE_SIZE - BLOCK_SIZE < currentTailIndex - head));
 
                         if (full ||
+                            // NOLINTNEXTLINE(bugprone-assignment-in-if-condition)
                             !(indexInserted = insert_block_index_entry<allocMode>(
                                   idxEntry, currentTailIndex)) ||
+                            // NOLINTNEXTLINE(bugprone-assignment-in-if-condition)
                             (newBlock = this->parent->ConcurrentQueue::template requisition_block<
                                         allocMode>()) == nullptr)
                         {
@@ -3387,6 +3393,7 @@ namespace pika::concurrency::detail {
 
                             auto entry = localBlockIndex->index[indexIndex];
                             auto block = entry->value.load(std::memory_order_relaxed);
+                            // NOLINTNEXTLINE(bugprone-assignment-in-if-condition)
                             if (MOODYCAMEL_NOEXCEPT_ASSIGN(T, T&&,
                                     detail::deref_noexcept(itemFirst) =
                                         PIKA_MOVE((*(*block)[index]))))
