@@ -5,8 +5,8 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
-#include <pika/async_cuda_base/cublas_exception.hpp>
-#include <pika/async_cuda_base/custom_blas_api.hpp>
+#include <pika/async_cuda/cublas_exception.hpp>
+#include <pika/async_cuda/custom_blas_api.hpp>
 #include <pika/errors/exception.hpp>
 
 #include <string>
