@@ -334,7 +334,7 @@ namespace std {
     {
         using result_type = std::size_t;
 
-        result_type operator()(pika::memory::intrusive_ptr<T> const& p) const noexcept
+        result_type PIKA_STATIC_CALL_OPERATOR(pika::memory::intrusive_ptr<T> const& p) noexcept
         {
             return hash<T*>{}(p.get());
         }

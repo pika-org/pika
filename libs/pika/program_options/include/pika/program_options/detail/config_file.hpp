@@ -124,7 +124,7 @@ namespace pika::program_options::detail {
 
     struct null_deleter
     {
-        void operator()(void const*) const {}
+        void PIKA_STATIC_CALL_OPERATOR(void const*) {}
     };
 
     template <class Char>

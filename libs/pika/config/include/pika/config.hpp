@@ -29,6 +29,7 @@
 #include <pika/config/manual_profiling.hpp>
 #include <pika/config/modules_enabled.hpp>
 #include <pika/config/move.hpp>
+#include <pika/config/static_call_operator.hpp>
 #include <pika/config/threads_stack.hpp>
 #include <pika/config/version.hpp>
 

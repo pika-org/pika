@@ -621,14 +621,14 @@ namespace pika::cuda::experimental {
     inline constexpr struct then_with_stream_t final
     {
         template <typename Sender, typename F>
-        constexpr PIKA_FORCEINLINE auto operator()(Sender&& sender, F&& f) const
+        constexpr PIKA_FORCEINLINE auto PIKA_STATIC_CALL_OPERATOR(Sender&& sender, F&& f)
         {
             return then_with_stream_detail::then_with_cuda_stream(PIKA_FORWARD(Sender, sender),
                 then_with_stream_detail::cuda_stream_callable<F>{PIKA_FORWARD(F, f)});
         }
 
         template <typename F>
-        constexpr PIKA_FORCEINLINE auto operator()(F&& f) const
+        constexpr PIKA_FORCEINLINE auto PIKA_STATIC_CALL_OPERATOR(F&& f)
         {
             return pika::execution::experimental::detail::partial_algorithm<then_with_stream_t, F>{
                 PIKA_FORWARD(F, f)};
@@ -647,7 +647,7 @@ namespace pika::cuda::experimental {
     {
         template <typename Sender, typename F>
         constexpr PIKA_FORCEINLINE auto
-        operator()(Sender&& sender, F&& f, cublasPointerMode_t pointer_mode) const
+        PIKA_STATIC_CALL_OPERATOR(Sender&& sender, F&& f, cublasPointerMode_t pointer_mode)
         {
             return then_with_stream_detail::then_with_cuda_stream(PIKA_FORWARD(Sender, sender),
                 then_with_stream_detail::cublas_handle_callable<F>{
@@ -655,7 +655,8 @@ namespace pika::cuda::experimental {
         }
 
         template <typename F>
-        constexpr PIKA_FORCEINLINE auto operator()(F&& f, cublasPointerMode_t pointer_mode) const
+        constexpr PIKA_FORCEINLINE auto
+        PIKA_STATIC_CALL_OPERATOR(F&& f, cublasPointerMode_t pointer_mode)
         {
             return pika::execution::experimental::detail::partial_algorithm<then_with_cublas_t, F,
                 cublasPointerMode_t>{PIKA_FORWARD(F, f), pointer_mode};
@@ -673,14 +674,14 @@ namespace pika::cuda::experimental {
     inline constexpr struct then_with_cusolver_t final
     {
         template <typename Sender, typename F>
-        constexpr PIKA_FORCEINLINE auto operator()(Sender&& sender, F&& f) const
+        constexpr PIKA_FORCEINLINE auto PIKA_STATIC_CALL_OPERATOR(Sender&& sender, F&& f)
         {
             return then_with_stream_detail::then_with_cuda_stream(PIKA_FORWARD(Sender, sender),
                 then_with_stream_detail::cusolver_handle_callable<F>{PIKA_FORWARD(F, f)});
         }
 
         template <typename F>
-        constexpr PIKA_FORCEINLINE auto operator()(F&& f) const
+        constexpr PIKA_FORCEINLINE auto PIKA_STATIC_CALL_OPERATOR(F&& f)
         {
             return pika::execution::experimental::detail::partial_algorithm<then_with_cusolver_t,
                 F>{PIKA_FORWARD(F, f)};

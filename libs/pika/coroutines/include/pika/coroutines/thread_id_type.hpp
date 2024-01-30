@@ -326,7 +326,7 @@ namespace std {
     template <>
     struct hash<::pika::threads::detail::thread_id>
     {
-        std::size_t operator()(::pika::threads::detail::thread_id const& v) const noexcept
+        std::size_t PIKA_STATIC_CALL_OPERATOR(::pika::threads::detail::thread_id const& v) noexcept
         {
             std::hash<std::size_t> hasher_;
             return hasher_(reinterpret_cast<std::size_t>(v.get()));
@@ -336,7 +336,8 @@ namespace std {
     template <>
     struct hash<::pika::threads::detail::thread_id_ref>
     {
-        std::size_t operator()(::pika::threads::detail::thread_id_ref const& v) const noexcept
+        std::size_t PIKA_STATIC_CALL_OPERATOR(
+            ::pika::threads::detail::thread_id_ref const& v) noexcept
         {
             std::hash<std::size_t> hasher_;
             return hasher_(reinterpret_cast<std::size_t>(v.get().get()));

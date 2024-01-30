@@ -172,11 +172,17 @@ function(pika_add_config_test variable)
       if(PIKA_WITH_CUDA AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC")
         set(cuda_parameters CUDA_STANDARD ${CMAKE_CUDA_STANDARD})
       endif()
+      if(PIKA_WITH_HIP)
+        set(hip_parameters HIP_STANDARD ${CMAKE_HIP_STANDARD})
+      endif()
       set(CMAKE_CXX_FLAGS
           "${CMAKE_CXX_FLAGS} ${additional_cmake_flags} ${${variable}_CXXFLAGS}"
       )
       set(CMAKE_CUDA_FLAGS
           "${CMAKE_CUDA_FLAGS} ${additional_cmake_flags} ${${variable}_CXXFLAGS}"
+      )
+      set(CMAKE_HIP_FLAGS
+          "${CMAKE_HIP_FLAGS} ${additional_cmake_flags} ${${variable}_CXXFLAGS}"
       )
       # cmake-format: off
       try_compile(
@@ -193,6 +199,7 @@ function(pika_add_config_test variable)
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS FALSE
         ${cuda_parameters}
+        ${hip_parameters}
         COPY_FILE ${test_binary}
       )
       # cmake-format: on
@@ -456,6 +463,40 @@ function(pika_check_for_cxx20_trivial_virtual_destructor)
     SOURCE cmake/tests/cxx20_trivial_virtual_destructor.cpp
     FILE ${ARGN}
   )
+endfunction()
+
+# ##############################################################################
+function(pika_check_for_cxx23_static_call_operator)
+  pika_add_config_test(
+    PIKA_WITH_CXX23_STATIC_CALL_OPERATOR
+    SOURCE cmake/tests/cxx23_static_call_operator.cpp
+    FILE ${ARGN}
+  )
+endfunction()
+
+# ##############################################################################
+function(pika_check_for_cxx23_static_call_operator_gpu)
+  if(PIKA_WITH_GPU_SUPPORT)
+    set(static_call_operator_test_extension "cpp")
+    if(PIKA_WITH_CUDA AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC")
+      set(static_call_operator_test_extension "cu")
+    elseif(PIKA_WITH_HIP)
+      set(static_call_operator_test_extension "hip")
+    endif()
+
+    set(extra_cxxflags)
+    if(PIKA_WITH_CUDA AND CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC")
+      set(extra_cxxflags "-x cu")
+    endif()
+
+    pika_add_config_test(
+      PIKA_WITH_CXX23_STATIC_CALL_OPERATOR_GPU
+      SOURCE
+        cmake/tests/cxx23_static_call_operator.${static_call_operator_test_extension}
+        GPU
+      FILE ${ARGN}
+    )
+  endif()
 endfunction()
 
 # ##############################################################################

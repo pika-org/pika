@@ -21,6 +21,7 @@ set(config_headers
     pika/config/forward.hpp
     pika/config/manual_profiling.hpp
     pika/config/move.hpp
+    pika/config/static_call_operator.hpp
     pika/config/threads_stack.hpp
     pika/config/warnings_prefix.hpp
     pika/config/warnings_suffix.hpp

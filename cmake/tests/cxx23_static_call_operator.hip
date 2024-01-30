@@ -1,0 +1,1 @@
+../../cmake/tests/cxx23_static_call_operator.cpp
