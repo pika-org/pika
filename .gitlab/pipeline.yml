@@ -9,3 +9,43 @@ include:
   - local: '.gitlab/includes/clang14_cuda11_pipeline.yml'
   - local: '.gitlab/includes/performance_gcc13_pipeline.yml'
   - local: '.gitlab/includes/gcc12_hip5_pipeline.yml'
+  # The pipelines below are running only on main, release and on merge queues
+  - local: '.gitlab/includes/dockerhub_pipeline.yml'
+    rules:
+      - if: $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^gh-readonly-queue/ || $CI_COMMIT_BRANCH =~ /^release/
+  - local: '.gitlab/includes/gcc9_pipeline.yml'
+    rules:
+      - if: $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^gh-readonly-queue/ || $CI_COMMIT_BRANCH =~ /^release/
+  - local: '.gitlab/includes/gcc9_cuda11_pipeline.yml'
+    rules:
+      - if: $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^gh-readonly-queue/ || $CI_COMMIT_BRANCH =~ /^release/
+  - local: '.gitlab/includes/gcc10_apex_pipeline.yml'
+    rules:
+      - if: $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^gh-readonly-queue/ || $CI_COMMIT_BRANCH =~ /^release/
+  - local: '.gitlab/includes/gcc11_pipeline.yml'
+    rules:
+      - if: $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^gh-readonly-queue/ || $CI_COMMIT_BRANCH =~ /^release/
+  - local: '.gitlab/includes/gcc12_pipeline.yml'
+    rules:
+      - if: $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^gh-readonly-queue/ || $CI_COMMIT_BRANCH =~ /^release/
+  - local: '.gitlab/includes/gcc12_cuda12_pipeline.yml'
+    rules:
+      - if: $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^gh-readonly-queue/ || $CI_COMMIT_BRANCH =~ /^release/
+  - local: '.gitlab/includes/clang11_pipeline.yml'
+    rules:
+      - if: $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^gh-readonly-queue/ || $CI_COMMIT_BRANCH =~ /^release/
+  - local: '.gitlab/includes/clang12_pipeline.yml'
+    rules:
+      - if: $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^gh-readonly-queue/ || $CI_COMMIT_BRANCH =~ /^release/
+  - local: '.gitlab/includes/clang13_pipeline.yml'
+    rules:
+      - if: $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^gh-readonly-queue/ || $CI_COMMIT_BRANCH =~ /^release/
+  - local: '.gitlab/includes/clang15_pipeline.yml'
+    rules:
+      - if: $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^gh-readonly-queue/ || $CI_COMMIT_BRANCH =~ /^release/
+  - local: '.gitlab/includes/clang16_pipeline.yml'
+    rules:
+      - if: $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^gh-readonly-queue/ || $CI_COMMIT_BRANCH =~ /^release/
+  - local: '.gitlab/includes/clang17_pipeline.yml'
+    rules:
+      - if: $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^gh-readonly-queue/ || $CI_COMMIT_BRANCH =~ /^release/
