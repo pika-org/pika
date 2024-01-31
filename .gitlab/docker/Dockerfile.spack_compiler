@@ -22,7 +22,7 @@ RUN spack compiler info $COMPILER > /dev/null 2> /dev/null; compiler_missing=$?;
         spack install $spack_compiler arch=$ARCH && \
         spack compiler add --scope site $(spack location -i $spack_compiler) && \
         \
-        printf "  all:\n    require:\n    - one_of: [${NVHPC_COMPILER:+\"%%}${NVHPC_COMPILER}${NVHPC_COMPILER:+\",}\"%%${COMPILER}\"]" \
+        printf "  all:\n    require:\n    - one_of: [\"%%${COMPILER}\"${NVHPC_COMPILER:+,\"%%}${NVHPC_COMPILER}${NVHPC_COMPILER:+\"}]" \
             >> $SPACK_ROOT/etc/spack/packages.yaml && \
         \
         if [[ ! -z "$NVHPC_COMPILER" ]]; then \
