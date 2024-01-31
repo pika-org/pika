@@ -229,7 +229,7 @@ namespace pika::schedule_from_detail {
                     pika::execution::experimental::schedule(PIKA_MOVE(scheduler)),
                     scheduler_sender_receiver{*this});
 # endif
-                pika::execution::experimental::start(scheduler_op_state.value());
+                pika::execution::experimental::start(*scheduler_op_state);
             }
 
             struct scheduler_sender_receiver

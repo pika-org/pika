@@ -360,7 +360,7 @@ namespace pika::split_detail {
                 if (!start_called.exchange(true))
                 {
                     PIKA_ASSERT(os.has_value());
-                    pika::execution::experimental::start(os.value());
+                    pika::execution::experimental::start(*os);
                 }
             }
 

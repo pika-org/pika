@@ -20,57 +20,57 @@
 # include <pika/config/warnings_prefix.hpp>
 
 namespace pika { namespace util {
-    struct PIKA_EXPORT mpi_environment
-    {
-        static bool check_mpi_environment(runtime_configuration const& cfg);
-
-        static int init(
-            int* argc, char*** argv, const int required, const int minimal, int& provided);
-        static void init(int* argc, char*** argv, runtime_configuration& cfg);
-        static void finalize();
-
-        static bool enabled();
-        static bool multi_threaded();
-        static bool has_called_init();
-
-        static int rank();
-        static int size();
-
-        static MPI_Comm& communicator();
-
-        static std::string get_processor_name();
-
-        struct PIKA_EXPORT scoped_lock
+        struct PIKA_EXPORT mpi_environment
         {
-            scoped_lock();
-            scoped_lock(scoped_lock const&) = delete;
-            scoped_lock& operator=(scoped_lock const&) = delete;
-            ~scoped_lock();
-            void unlock();
+            static bool check_mpi_environment(runtime_configuration const& cfg);
+
+            static int init(
+                int* argc, char*** argv, const int required, const int minimal, int& provided);
+            static void init(int* argc, char*** argv, runtime_configuration& cfg);
+            static void finalize();
+
+            static bool enabled();
+            static bool multi_threaded();
+            static bool has_called_init();
+
+            static int rank();
+            static int size();
+
+            static MPI_Comm& communicator();
+
+            static std::string get_processor_name();
+
+            struct PIKA_EXPORT scoped_lock
+            {
+                scoped_lock();
+                scoped_lock(scoped_lock const&) = delete;
+                scoped_lock& operator=(scoped_lock const&) = delete;
+                ~scoped_lock();
+                void unlock();
+            };
+
+            struct PIKA_EXPORT scoped_try_lock
+            {
+                scoped_try_lock();
+                scoped_try_lock(scoped_try_lock const&) = delete;
+                scoped_try_lock& operator=(scoped_try_lock const&) = delete;
+                ~scoped_try_lock();
+                void unlock();
+                bool locked;
+            };
+
+            using mutex_type = pika::concurrency::detail::spinlock;
+
+        private:
+            static mutex_type mtx_;
+
+            static bool enabled_;
+            static bool has_called_init_;
+            static int provided_threading_flag_;
+            static MPI_Comm communicator_;
+
+            static int is_initialized_;
         };
-
-        struct PIKA_EXPORT scoped_try_lock
-        {
-            scoped_try_lock();
-            scoped_try_lock(scoped_try_lock const&) = delete;
-            scoped_try_lock& operator=(scoped_try_lock const&) = delete;
-            ~scoped_try_lock();
-            void unlock();
-            bool locked;
-        };
-
-        using mutex_type = pika::concurrency::detail::spinlock;
-
-    private:
-        static mutex_type mtx_;
-
-        static bool enabled_;
-        static bool has_called_init_;
-        static int provided_threading_flag_;
-        static MPI_Comm communicator_;
-
-        static int is_initialized_;
-    };
 }}    // namespace pika::util
 
 # include <pika/config/warnings_suffix.hpp>
@@ -82,10 +82,10 @@ namespace pika { namespace util {
 # include <pika/config/warnings_prefix.hpp>
 
 namespace pika { namespace util {
-    struct PIKA_EXPORT mpi_environment
-    {
-        static bool check_mpi_environment(runtime_configuration const& cfg);
-    };
+        struct PIKA_EXPORT mpi_environment
+        {
+            static bool check_mpi_environment(runtime_configuration const& cfg);
+        };
 }}    // namespace pika::util
 
 # include <pika/config/warnings_suffix.hpp>

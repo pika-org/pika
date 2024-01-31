@@ -19,7 +19,7 @@
 #   file while saving edits to disk
 # - Please do _not_ reformat a full source file without dire need.
 
-# PLEASE NOTE: This file requires clang-format V14.0
+# PLEASE NOTE: This file requires clang-format V16.0
 
 ---
 AccessModifierOffset: -4
@@ -55,9 +55,11 @@ BraceWrapping:
     BeforeCatch: true
     BeforeElse: true
     IndentBraces: false
+BreakAfterAttributes: Leave
 BreakBeforeBinaryOperators: None
 BreakBeforeBraces: Custom
 BreakBeforeInheritanceComma: true
+BreakBeforeInlineASMColon: OnlyMultiline
 BreakBeforeTernaryOperators: false
 BreakConstructorInitializersBeforeComma: true
 BreakStringLiterals: true
@@ -92,6 +94,11 @@ IndentCaseLabels: false
 IndentWidth: 4
 IndentWrappedFunctionNames: false
 IndentPPDirectives: AfterHash
+InsertBraces: false
+IntegerLiteralSeparator:
+  Binary: 4
+  Decimal: 0
+  Hex: 4
 KeepEmptyLinesAtTheStartOfBlocks: false
 Language: Cpp
 # MacroBlockBegin: ''
@@ -107,6 +114,8 @@ PenaltyReturnTypeOnItsOwnLine: 20
 PointerAlignment: Left
 PPIndentWidth: 1
 ReflowComments: false
+RequiresClausePosition: OwnLine
+RequiresExpressionIndentation: OuterScope
 SortIncludes:    true
 SpaceAfterCStyleCast: true
 SpaceAfterTemplateKeyword: true

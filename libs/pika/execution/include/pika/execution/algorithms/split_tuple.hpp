@@ -129,9 +129,9 @@ namespace pika::split_tuple_detail {
                 r.state.set_predecessor_done();
             };
 
-                // This typedef is duplicated from the parent struct. The
-                // parent typedef is not instantiated early enough for use
-                // here.
+            // This typedef is duplicated from the parent struct. The
+            // parent typedef is not instantiated early enough for use
+            // here.
 #if defined(PIKA_HAVE_STDEXEC)
             using value_type =
                 typename std::decay<pika::execution::experimental::detail::single_result_t<
@@ -340,7 +340,8 @@ namespace pika::split_tuple_detail {
             if (!start_called.exchange(true))
             {
                 PIKA_ASSERT(os.has_value());
-                pika::execution::experimental::start(os.value());
+                // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+                pika::execution::experimental::start(*os);
             }
         }
 

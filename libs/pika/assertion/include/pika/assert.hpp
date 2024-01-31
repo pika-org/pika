@@ -54,11 +54,11 @@ namespace pika::detail {
 #else
 /// \cond NOINTERNAL
 # define PIKA_ASSERT_(expr, msg)                                                                   \
-  (!!(expr) ? void() :                                                                             \
-              ::pika::detail::handle_assert(                                                       \
-                  ::pika::detail::source_location{                                                 \
-                      __FILE__, static_cast<unsigned>(__LINE__), PIKA_ASSERT_CURRENT_FUNCTION},    \
-                  PIKA_PP_STRINGIZE(expr), msg)) /**/
+     (!!(expr) ? void() :                                                                          \
+                 ::pika::detail::handle_assert(                                                    \
+                     ::pika::detail::source_location{                                              \
+                         __FILE__, static_cast<unsigned>(__LINE__), PIKA_ASSERT_CURRENT_FUNCTION}, \
+                     PIKA_PP_STRINGIZE(expr), msg)) /**/
 
 # if defined(PIKA_DEBUG)
 #  if defined(PIKA_COMPUTE_DEVICE_CODE)
@@ -74,9 +74,9 @@ namespace pika::detail {
 # endif
 
 # define PIKA_UNREACHABLE                                                                          \
-  PIKA_ASSERT_(false,                                                                              \
-      "This code is meant to be unreachable. If you are seeing this error "                        \
-      "message it means that you have found a bug in pika. Please report "                         \
-      "it on https://github.com/pika-org/pika/issues.");                                           \
-  std::terminate()
+     PIKA_ASSERT_(false,                                                                           \
+         "This code is meant to be unreachable. If you are seeing this error "                     \
+         "message it means that you have found a bug in pika. Please report "                      \
+         "it on https://github.com/pika-org/pika/issues.");                                        \
+     std::terminate()
 #endif

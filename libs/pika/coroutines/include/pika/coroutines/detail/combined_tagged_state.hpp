@@ -32,7 +32,7 @@ namespace pika::threads::detail {
         static const tagged_state_type state_ex_mask = 0xffull;
 
         // (1L << 48L) - 1;
-        static const tagged_state_type tag_mask = 0x0000ffffffffffffull;
+        static const tagged_state_type tag_mask = 0x0000'ffff'ffff'ffffull;
 
         static tag_type extract_tag(tagged_state_type const& i) { return i & tag_mask; }
 

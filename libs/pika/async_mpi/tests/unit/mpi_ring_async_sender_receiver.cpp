@@ -116,7 +116,7 @@ inline std::uint32_t prev_rank(std::uint32_t rank, std::uint32_t size)
 // at the same time
 inline std::uint32_t make_tag(std::uint32_t rank, std::uint32_t iteration, std::uint32_t ranks)
 {
-    std::int64_t tag = (rank + (iteration * ranks)) & 0xffffffff;
+    std::int64_t tag = (rank + (iteration * ranks)) & 0xffff'ffff;
     msr_deb<7>.debug(
         str<>("generating tag"), std::uint32_t(tag), "rank/s", rank, ranks, "iteration", iteration);
     return std::uint32_t(tag);

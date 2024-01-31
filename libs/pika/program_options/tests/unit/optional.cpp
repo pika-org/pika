@@ -42,9 +42,11 @@ void test_optional()
     po::notify(vm);
 
     PIKA_TEST(!!foo);
+    // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
     PIKA_TEST_EQ(*foo, 12);
 
     PIKA_TEST(!!bar);
+    // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
     PIKA_TEST_EQ(*bar, 1);
 
     PIKA_TEST(!baz);

@@ -3,10 +3,10 @@
 //  This code may be used under either of the following two licences:
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
-//  of this software and associated documentation files (the "Software"), to deal
-//  in the Software without restriction, including without limitation the rights
-//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//  copies of the Software, and to permit persons to whom the Software is
+//  of this software and associated documentation files (the "Software"), to
+//  deal in the Software without restriction, including without limitation the
+//  rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+//  sell copies of the Software, and to permit persons to whom the Software is
 //  furnished to do so, subject to the following conditions:
 //
 //  The above copyright notice and this permission notice shall be included in
@@ -16,9 +16,9 @@
 //  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 //  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
 //  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-//  THE SOFTWARE. OF SUCH DAMAGE.
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+//  IN THE SOFTWARE. OF SUCH DAMAGE.
 //
 //  Or:
 //
@@ -32,8 +32,8 @@
 // NOTE (per http://lists.apple.com/archives/darwin-dev/2008/Jan/msg00232.html):
 // > Why the bus error? What am I doing wrong?
 // This is a known issue where getcontext(3) is writing past the end of the
-// ucontext_t struct when _XOPEN_SOURCE is not defined (rdar://problem/5578699 ).
-// As a workaround, define _XOPEN_SOURCE before including ucontext.h.
+// ucontext_t struct when _XOPEN_SOURCE is not defined (rdar://problem/5578699
+// ). As a workaround, define _XOPEN_SOURCE before including ucontext.h.
 #if defined(__APPLE__) && !defined(_XOPEN_SOURCE)
 # define _XOPEN_SOURCE
 // However, the above #define will only affect <ucontext.h> if it has not yet
@@ -47,8 +47,8 @@
 #include <pika/type_support/unused.hpp>
 #include <pika/util/get_and_reset_value.hpp>
 
-// include unist.d conditionally to check for POSIX version. Not all OSs have the
-// unistd header...
+// include unist.d conditionally to check for POSIX version. Not all OSs have
+// the unistd header...
 #if defined(PIKA_HAVE_UNISTD_H)
 # include <unistd.h>
 #endif
@@ -69,30 +69,30 @@
 
 #  include "pth/pth.h"
 
-namespace pika { namespace threads { namespace coroutines { namespace detail { namespace posix {
-    namespace pth {
-        inline int check_(int rc)
-        {
-            // The makecontext() functions return zero for success, nonzero for
-            // error. The Pth library returns TRUE for success, FALSE for error,
-            // with errno set to the nonzero error in the latter case. Map the Pth
-            // returns to ucontext style.
-            return rc ? 0 : errno;
-        }
-}}}}}}    // namespace pika::threads::coroutines::detail::posix::pth
+namespace pika::threads::coroutines::detail::posix::pth {
+    inline int check_(int rc)
+    {
+        // The makecontext() functions return zero for success, nonzero for
+        // error. The Pth library returns TRUE for success, FALSE for error,
+        // with errno set to the nonzero error in the latter case. Map the Pth
+        // returns to ucontext style.
+        return rc ? 0 : errno;
+    }
+}    // namespace pika::threads::coroutines::detail::posix::pth
 
 #  define PIKA_COROUTINE_POSIX_IMPL "Pth implementation"
 #  define PIKA_COROUTINE_DECLARE_CONTEXT(name) pth_uctx_t name
 #  define PIKA_COROUTINE_CREATE_CONTEXT(ctx)                                                       \
-   pika::threads::coroutines::detail::posix::pth::check_(pth_uctx_create(&(ctx)))
+      pika::threads::coroutines::detail::posix::pth::check_(pth_uctx_create(&(ctx)))
 #  define PIKA_COROUTINE_MAKE_CONTEXT(ctx, stack, size, startfunc, startarg, exitto)               \
-   /* const sigset_t* sigmask = nullptr: we don't expect per-context signal masks */               \
-   pika::threads::coroutines::detail::posix::pth::check_(pth_uctx_make(                            \
-       *(ctx), static_cast<char*>(stack), (size), nullptr, (startfunc), (startarg), (exitto)))
+      /* const sigset_t* sigmask = nullptr: we don't expect per-context signal     \
+   * masks */               \
+      pika::threads::coroutines::detail::posix::pth::check_(pth_uctx_make(                         \
+          *(ctx), static_cast<char*>(stack), (size), nullptr, (startfunc), (startarg), (exitto)))
 #  define PIKA_COROUTINE_SWAP_CONTEXT(from, to)                                                    \
-   pika::threads::coroutines::detail::posix::pth::check_(                                          \
-       pth_uctx_switch(*(from), *(to))) #define PIKA_COROUTINE_DESTROY_CONTEXT(ctx)                \
-       pika::threads::coroutines::detail::posix::pth::check_(pth_uctx_destroy(ctx))
+      pika::threads::coroutines::detail::posix::pth::check_(                                       \
+          pth_uctx_switch(*(from), *(to))) #define PIKA_COROUTINE_DESTROY_CONTEXT(ctx)             \
+          pika::threads::coroutines::detail::posix::pth::check_(pth_uctx_destroy(ctx))
 
 # else                  // generic Posix platform (e.g. OS X >= 10.5)
 
@@ -137,7 +137,7 @@ namespace pika::threads::coroutines::detail::posix::ucontext {
         ctx->uc_link = exitto;
 
         using ctx_main = void (*)();
-        //makecontext can't fail.
+        // makecontext can't fail.
         ::makecontext(ctx, (ctx_main) (startfunc), 1, startarg);
         return 0;
     }
@@ -147,8 +147,8 @@ namespace pika::threads::coroutines::detail::posix::ucontext {
 #  define PIKA_COROUTINE_DECLARE_CONTEXT(name) ::ucontext_t name
 #  define PIKA_COROUTINE_CREATE_CONTEXT(ctx) /* nop */
 #  define PIKA_COROUTINE_MAKE_CONTEXT(ctx, stack, size, startfunc, startarg, exitto)               \
-   pika::threads::coroutines::detail::posix::ucontext::make_context(                               \
-       ctx, stack, size, startfunc, startarg, exitto)
+      pika::threads::coroutines::detail::posix::ucontext::make_context(                            \
+          ctx, stack, size, startfunc, startarg, exitto)
 #  define PIKA_COROUTINE_SWAP_CONTEXT(pfrom, pto) ::swapcontext((pfrom), (pto))
 #  define PIKA_COROUTINE_DESTROY_CONTEXT(ctx) /* nop */
 
@@ -170,13 +170,10 @@ namespace pika::threads::coroutines {
     }    // namespace detail
 
     namespace detail::posix {
-        /*
-         * Posix implementation for the context_impl_base class.
-         * @note context_impl is not required to be consistent
-         * If not initialized it can only be swapped out, not in
-         * (at that point it will be initialized).
-         *
-         */
+        /// Posix implementation for the context_impl_base class.
+        /// @note context_impl is not required to be consistent
+        /// If not initialized it can only be swapped out, not in
+        /// (at that point it will be initialized).
         class ucontext_context_impl_base : detail::context_impl_base
         {
         public:
@@ -188,10 +185,8 @@ namespace pika::threads::coroutines {
             ~ucontext_context_impl_base() { PIKA_COROUTINE_DESTROY_CONTEXT(m_ctx); }
 
         private:
-            /*
-             * Free function. Saves the current context in @p from
-             * and restores the context in @p to.
-             */
+            /// Free function. Saves the current context in @p from
+            /// and restores the context in @p to.
             friend void swap_context(ucontext_context_impl_base& from,
                 const ucontext_context_impl_base& to, default_hint)
             {
@@ -212,10 +207,8 @@ namespace pika::threads::coroutines {
         public:
             using context_impl_base = ucontext_context_impl_base;
 
-            /**
-             * Create a context that on restore invokes Functor on
-             *  a new stack. The stack size can be optionally specified.
-             */
+            /// Create a context that on restore invokes Functor on
+            ///  a new stack. The stack size can be optionally specified.
             explicit ucontext_context_impl(std::ptrdiff_t stack_size = -1)
               : m_stack_size(stack_size == -1 ? this->default_stack_size : stack_size)
               , m_stack(nullptr)
@@ -288,12 +281,13 @@ namespace pika::threads::coroutines {
                               << std::hex << std::setw(sizeof(sigsegv_ptr) * 2 + 2)
                               << std::setfill('0') << sigsegv_ptr << ".\n\n";
 
-                    std::cerr
-                        << "Configure the pika runtime to allocate a larger coroutine stack "
-                           "size.\n Use the pika.stacks.small_size, pika.stacks.medium_size,\n "
-                           "pika.stacks.large_size, or pika.stacks.huge_size configuration\nflags "
-                           "to configure coroutine stack sizes.\n"
-                        << std::endl;
+                    std::cerr << "Configure the pika runtime to allocate a larger coroutine stack "
+                                 "size.\n Use the pika.stacks.small_size, "
+                                 "pika.stacks.medium_size,\n "
+                                 "pika.stacks.large_size, or pika.stacks.huge_size "
+                                 "configuration\nflags "
+                                 "to configure coroutine stack sizes.\n"
+                              << std::endl;
 
                     std::terminate();
                 }

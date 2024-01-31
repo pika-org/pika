@@ -41,7 +41,7 @@ namespace test {
 
         T* allocate(std::size_t n) { return reinterpret_cast<T*>(::new char[sizeof(T) * n]); }
 
-        void deallocate(T* p, std::size_t) { delete[](reinterpret_cast<char*>(p)); }
+        void deallocate(T* p, std::size_t) { delete[] (reinterpret_cast<char*>(p)); }
 
         friend bool operator==(simple_allocator const&, simple_allocator const&) noexcept
         {

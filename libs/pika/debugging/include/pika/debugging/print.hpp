@@ -57,7 +57,7 @@
 // when debugging is disabled
 #define PIKA_DETAIL_DP_LAZY(printer, Expr) printer.eval([&] { return Expr; })
 #define PIKA_DETAIL_DP(printer, Expr)                                                              \
- if constexpr (printer.is_enabled()) { printer.Expr; };
+    if constexpr (printer.is_enabled()) { printer.Expr; };
 
 #define PIKA_DETAIL_NS_DEBUG pika::debug::detail
 

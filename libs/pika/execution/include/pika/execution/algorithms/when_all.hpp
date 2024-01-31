@@ -295,7 +295,7 @@ namespace pika::when_all_impl {
                                 pika::execution::experimental::set_error(
                                     PIKA_MOVE(receiver), PIKA_FORWARD(decltype(error), error));
                             },
-                            PIKA_MOVE(error.value()));
+                            PIKA_MOVE(*error));
                     }
                     else { pika::execution::experimental::set_stopped(PIKA_MOVE(receiver)); }
                 }

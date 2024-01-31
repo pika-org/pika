@@ -283,7 +283,12 @@ namespace pika::when_all_vector_detail {
                         {
                             std::vector<element_value_type> values;
                             values.reserve(num_predecessors);
-                            for (auto&& t : ts) { values.push_back(PIKA_MOVE(t.value())); }
+                            for (auto&& t : ts)
+                            {
+                                PIKA_ASSERT(t.has_value());
+                                // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+                                values.push_back(PIKA_MOVE(*t));
+                            }
                             pika::execution::experimental::set_value(
                                 PIKA_MOVE(receiver), PIKA_MOVE(values));
                         }
@@ -295,7 +300,7 @@ namespace pika::when_all_vector_detail {
                                 pika::execution::experimental::set_error(
                                     PIKA_MOVE(receiver), PIKA_FORWARD(decltype(error), error));
                             },
-                            PIKA_MOVE(error.value()));
+                            PIKA_MOVE(*error));
                     }
                     else
                     {
@@ -345,7 +350,9 @@ namespace pika::when_all_vector_detail {
                     auto const num_predecessors = os.num_predecessors;
                     for (std::size_t i = 0; i < num_predecessors; ++i)
                     {
-                        pika::execution::experimental::start(os.op_states.get()[i].value());
+                        PIKA_ASSERT(os.op_states[i].has_value());
+                        // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+                        pika::execution::experimental::start(*(os.op_states.get()[i]));
                     }
                 }
             }

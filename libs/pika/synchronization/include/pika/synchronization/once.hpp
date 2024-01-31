@@ -45,8 +45,8 @@ namespace pika {
     {
         // Try for a quick win: if the procedure has already been called
         // just skip through:
-        long const function_complete_flag_value = 0xc15730e2;
-        long const running_value = 0x7f0725e3;
+        long const function_complete_flag_value = 0xc157'30e2;
+        long const running_value = 0x7f07'25e3;
 
         while (flag.status_.load(std::memory_order_acquire) != function_complete_flag_value)
         {

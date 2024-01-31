@@ -79,7 +79,7 @@ namespace pika {
         private:
             // bits 0-30 - token ref count (31 bits)
             static constexpr std::uint64_t token_ref_increment = 1ull;
-            static constexpr std::uint64_t token_ref_mask = 0x7fffffffull;
+            static constexpr std::uint64_t token_ref_mask = 0x7fff'ffffull;
             // bit 31 - stop-requested
             static constexpr std::uint64_t stop_requested_flag = 1ull << 31;
 

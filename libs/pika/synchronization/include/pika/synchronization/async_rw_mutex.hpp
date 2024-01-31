@@ -66,7 +66,9 @@ namespace pika::execution::experimental {
                 {
                     // The current state has now finished all accesses to the
                     // wrapped value, so we move the value to the next state.
-                    next_state->set_value(PIKA_MOVE(value.value()));
+                    PIKA_ASSERT(value.has_value());
+                    // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+                    next_state->set_value(PIKA_MOVE(*value));
 
                     for (auto& continuation : continuations) { continuation(next_state); }
                 }
@@ -85,7 +87,8 @@ namespace pika::execution::experimental {
                 pika::util::yield_while(
                     [this]() { return !value_set.load(std::memory_order_acquire); });
                 PIKA_ASSERT(value);
-                return value.value();
+                // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+                return *value;
             }
 
             void set_next_state(std::shared_ptr<async_rw_mutex_shared_state> state)

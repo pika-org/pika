@@ -116,8 +116,8 @@ namespace pika::concurrency::detail {
 #if defined(MCDBGQ_USE_RELACY)
 namespace pika::concurrency::detail {
     using thread_id_t = std::uint32_t;
-    static const thread_id_t invalid_thread_id = 0xFFFFFFFFU;
-    static const thread_id_t invalid_thread_id2 = 0xFFFFFFFEU;
+    static const thread_id_t invalid_thread_id = 0xFFFF'FFFFU;
+    static const thread_id_t invalid_thread_id2 = 0xFFFF'FFFEU;
     static inline thread_id_t thread_id() { return rl::thread_index(); }
 }    // namespace pika::concurrency::detail
 #elif defined(_WIN32) || defined(__WINDOWS__) || defined(__WIN32__)
@@ -131,7 +131,7 @@ namespace pika::concurrency::detail {
     static const thread_id_t invalid_thread_id =
         0;    // See http://blogs.msdn.com/b/oldnewthing/archive/2004/02/23/78395.aspx
     static const thread_id_t invalid_thread_id2 =
-        0xFFFFFFFFU;    // Not technically guaranteed to be invalid, but is never used in practice. Note that all Win32 thread IDs are presently multiples of 4.
+        0xFFFF'FFFFU;    // Not technically guaranteed to be invalid, but is never used in practice. Note that all Win32 thread IDs are presently multiples of 4.
     static inline thread_id_t thread_id()
     {
         return static_cast<thread_id_t>(::GetCurrentThreadId());
@@ -251,31 +251,31 @@ namespace pika::concurrency::detail {
 // We have to assume *all* non-trivial constructors may throw on VS2012!
 #  define MOODYCAMEL_NOEXCEPT _NOEXCEPT
 #  define MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr)                                          \
-   (std::is_rvalue_reference<valueType>::value && std::is_move_constructible<type>::value ?        \
-           std::is_trivially_move_constructible<type>::value :                                     \
-           std::is_trivially_copy_constructible<type>::value)
+      (std::is_rvalue_reference<valueType>::value && std::is_move_constructible<type>::value ?     \
+              std::is_trivially_move_constructible<type>::value :                                  \
+              std::is_trivially_copy_constructible<type>::value)
 #  define MOODYCAMEL_NOEXCEPT_ASSIGN(type, valueType, expr)                                        \
-   ((std::is_rvalue_reference<valueType>::value && std::is_move_assignable<type>::value ?          \
-            std::is_trivially_move_assignable<type>::value ||                                      \
-                std::is_nothrow_move_assignable<type>::value :                                     \
-            std::is_trivially_copy_assignable<type>::value ||                                      \
-                std::is_nothrow_copy_assignable<type>::value) &&                                   \
-       MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr))
+      ((std::is_rvalue_reference<valueType>::value && std::is_move_assignable<type>::value ?       \
+               std::is_trivially_move_assignable<type>::value ||                                   \
+                   std::is_nothrow_move_assignable<type>::value :                                  \
+               std::is_trivially_copy_assignable<type>::value ||                                   \
+                   std::is_nothrow_copy_assignable<type>::value) &&                                \
+          MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr))
 # elif defined(_MSC_VER) && defined(_NOEXCEPT) && _MSC_VER < 1900
 #  define MOODYCAMEL_NOEXCEPT _NOEXCEPT
 #  define MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr)                                          \
-   (std::is_rvalue_reference<valueType>::value && std::is_move_constructible<type>::value ?        \
-           std::is_trivially_move_constructible<type>::value ||                                    \
-               std::is_nothrow_move_constructible<type>::value :                                   \
-           std::is_trivially_copy_constructible<type>::value ||                                    \
-               std::is_nothrow_copy_constructible<type>::value)
+      (std::is_rvalue_reference<valueType>::value && std::is_move_constructible<type>::value ?     \
+              std::is_trivially_move_constructible<type>::value ||                                 \
+                  std::is_nothrow_move_constructible<type>::value :                                \
+              std::is_trivially_copy_constructible<type>::value ||                                 \
+                  std::is_nothrow_copy_constructible<type>::value)
 #  define MOODYCAMEL_NOEXCEPT_ASSIGN(type, valueType, expr)                                        \
-   ((std::is_rvalue_reference<valueType>::value && std::is_move_assignable<type>::value ?          \
-            std::is_trivially_move_assignable<type>::value ||                                      \
-                std::is_nothrow_move_assignable<type>::value :                                     \
-            std::is_trivially_copy_assignable<type>::value ||                                      \
-                std::is_nothrow_copy_assignable<type>::value) &&                                   \
-       MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr))
+      ((std::is_rvalue_reference<valueType>::value && std::is_move_assignable<type>::value ?       \
+               std::is_trivially_move_assignable<type>::value ||                                   \
+                   std::is_nothrow_move_assignable<type>::value :                                  \
+               std::is_trivially_copy_assignable<type>::value ||                                   \
+                   std::is_nothrow_copy_assignable<type>::value) &&                                \
+          MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr))
 # else
 #  define MOODYCAMEL_NOEXCEPT noexcept
 #  define MOODYCAMEL_NOEXCEPT_CTOR(type, valueType, expr) noexcept(expr)
@@ -318,7 +318,7 @@ namespace pika::concurrency::detail {
 #  define MOODYCAMEL_ALIGNAS(alignment) __declspec(align(alignment))
 #  define MOODYCAMEL_ALIGNOF(obj) __alignof(obj)
 #  define MOODYCAMEL_ALIGNED_TYPE_LIKE(T, obj)                                                     \
-   typename detail::Vs2013Aligned<std::alignment_of<obj>::value, T>::type
+      typename detail::Vs2013Aligned<std::alignment_of<obj>::value, T>::type
     template <int Align, typename T>
     struct Vs2013Aligned
     {
@@ -377,7 +377,7 @@ namespace pika::concurrency::detail {
 #  define MOODYCAMEL_ALIGNAS(alignment) alignas(alignment)
 #  define MOODYCAMEL_ALIGNOF(obj) alignof(obj)
 #  define MOODYCAMEL_ALIGNED_TYPE_LIKE(T, obj)                                                     \
-   alignas(alignof(obj)) typename detail::identity<T>::type
+      alignas(alignof(obj)) typename detail::identity<T>::type
 # endif
 #endif
 }    // namespace pika::concurrency::detail
@@ -574,9 +574,9 @@ namespace pika::concurrency::detail {
             // uniqueness evenly across all the bits, so that we can use a subset of the bits while
             // reducing collisions significantly
             h ^= h >> 16;
-            h *= 0x85ebca6b;
+            h *= 0x85eb'ca6b;
             h ^= h >> 13;
-            h *= 0xc2b2ae35;
+            h *= 0xc2b2'ae35;
             return h ^ (h >> 16);
         }
     };
@@ -586,9 +586,9 @@ namespace pika::concurrency::detail {
         static inline std::uint64_t hash(std::uint64_t h)
         {
             h ^= h >> 33;
-            h *= 0xff51afd7ed558ccd;
+            h *= 0xff51'afd7'ed55'8ccd;
             h ^= h >> 33;
-            h *= 0xc4ceb9fe1a85ec53;
+            h *= 0xc4ce'b9fe'1a85'ec53;
             return h ^ (h >> 33);
         }
     };
@@ -993,7 +993,7 @@ namespace pika::concurrency::detail {
 #ifdef _MSC_VER
 # pragma warning(push)
 # pragma warning(                                                                                  \
-     disable : 4307)    // + integral constant overflow (that's what the ternary expression is for!)
+         disable : 4307)    // + integral constant overflow (that's what the ternary expression is for!)
 # pragma warning(disable : 4309)    // static_cast: Truncation of constant value
 #endif
         static const size_t MAX_SUBQUEUE_SIZE =
@@ -1501,6 +1501,7 @@ namespace pika::concurrency::detail {
                 static_cast<ProducerBase*>(token.currentProducer)->dequeue_bulk(itemFirst, max);
             if (count == max)
             {
+                // NOLINTNEXTLINE(bugprone-assignment-in-if-condition)
                 if ((token.itemsConsumedFromCurrent += static_cast<std::uint32_t>(max)) >=
                     EXPLICIT_CONSUMER_CONSUMPTION_QUOTA_BEFORE_ROTATE)
                 {
@@ -1818,8 +1819,8 @@ namespace pika::concurrency::detail {
             // Implemented like a stack, but where node order doesn't matter (nodes are inserted out of order under contention)
             std::atomic<N*> freeListHead;
 
-            static const std::uint32_t REFS_MASK = 0x7FFFFFFF;
-            static const std::uint32_t SHOULD_BE_ON_FREELIST = 0x80000000;
+            static const std::uint32_t REFS_MASK = 0x7FFF'FFFF;
+            static const std::uint32_t SHOULD_BE_ON_FREELIST = 0x8000'0000;
 
 #ifdef MCDBGQ_NOLOCKFREE_FREELIST
             debug::DebugMutex mutex;
@@ -2391,6 +2392,7 @@ namespace pika::concurrency::detail {
 
                         // Dequeue
                         auto& el = *((*block)[index]);
+                        // NOLINTNEXTLINE(bugprone-assignment-in-if-condition)
                         if (!MOODYCAMEL_NOEXCEPT_ASSIGN(T, T&&, element = PIKA_MOVE(el)))
                         {
                             // Make sure the element is still fully dequeued and destroyed even if the assignment
@@ -2742,6 +2744,7 @@ namespace pika::concurrency::detail {
                                 firstIndex + static_cast<index_t>(actualCount) :
                                 endIndex;
                             auto block = localBlockIndex->entries[indexIndex].block;
+                            // NOLINTNEXTLINE(bugprone-assignment-in-if-condition)
                             if (MOODYCAMEL_NOEXCEPT_ASSIGN(T, T&&,
                                     detail::deref_noexcept(itemFirst) =
                                         PIKA_MOVE((*(*block)[index]))))
@@ -3078,6 +3081,7 @@ namespace pika::concurrency::detail {
                         auto block = entry->value.load(std::memory_order_relaxed);
                         auto& el = *((*block)[index]);
 
+                        // NOLINTNEXTLINE(bugprone-assignment-in-if-condition)
                         if (!MOODYCAMEL_NOEXCEPT_ASSIGN(T, T&&, element = PIKA_MOVE(el)))
                         {
 #ifdef MCDBGQ_NOLOCKFREE_IMPLICITPRODBLOCKINDEX
@@ -3184,8 +3188,10 @@ namespace pika::concurrency::detail {
                                     MAX_SUBQUEUE_SIZE - BLOCK_SIZE < currentTailIndex - head));
 
                         if (full ||
+                            // NOLINTNEXTLINE(bugprone-assignment-in-if-condition)
                             !(indexInserted = insert_block_index_entry<allocMode>(
                                   idxEntry, currentTailIndex)) ||
+                            // NOLINTNEXTLINE(bugprone-assignment-in-if-condition)
                             (newBlock = this->parent->ConcurrentQueue::template requisition_block<
                                         allocMode>()) == nullptr)
                         {
@@ -3387,6 +3393,7 @@ namespace pika::concurrency::detail {
 
                             auto entry = localBlockIndex->index[indexIndex];
                             auto block = entry->value.load(std::memory_order_relaxed);
+                            // NOLINTNEXTLINE(bugprone-assignment-in-if-condition)
                             if (MOODYCAMEL_NOEXCEPT_ASSIGN(T, T&&,
                                     detail::deref_noexcept(itemFirst) =
                                         PIKA_MOVE((*(*block)[index]))))

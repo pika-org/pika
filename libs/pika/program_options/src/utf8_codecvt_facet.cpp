@@ -242,11 +242,11 @@ namespace pika::program_options::detail {
             // cope with VC++ 7.1 or earlier having invalid WCHAR_MAX
 #if defined(_MSC_VER) && _MSC_VER <= 1310    // 7.1 or earlier
             return 2;
-#elif WCHAR_MAX > 0x10000
+#elif WCHAR_MAX > 0x1'0000
 
-            if (word < 0x10000) { return 2; }
-            if (word < 0x200000) { return 3; }
-            if (word < 0x4000000) { return 4; }
+            if (word < 0x1'0000) { return 2; }
+            if (word < 0x20'0000) { return 3; }
+            if (word < 0x400'0000) { return 4; }
             return 5;
 
 #else

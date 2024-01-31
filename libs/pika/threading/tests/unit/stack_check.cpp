@@ -28,7 +28,7 @@ void stack_remaining(const char* txt, info_stack& stack)
 #if defined(PIKA_HAVE_THREADS_GET_STACK_POINTER)
     std::size_t stack_ptr = pika::threads::coroutines::detail::get_stack_ptr();
 #else
-    std::size_t stack_ptr = 0x00000000;
+    std::size_t stack_ptr = 0x0000'0000;
 #endif
     std::ptrdiff_t stacksize = pika::this_thread::get_stack_size();
     std::ptrdiff_t remaining_stack = pika::this_thread::get_available_stack_space();
