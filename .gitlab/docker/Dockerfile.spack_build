@@ -16,7 +16,8 @@ RUN spack -e pika_ci spec -lI $spack_spec
 
 # Configure & Build
 RUN spack -e pika_ci build-env $spack_spec -- bash -c "cmake -B${BUILD_DIR} ${SOURCE_DIR} \
-    $CMAKE_COMMON_FLAGS $CMAKE_FLAGS && cmake --build ${BUILD_DIR} --target all tests examples"
+    $CMAKE_COMMON_FLAGS $CMAKE_FLAGS && cmake --build ${BUILD_DIR} --target all tests examples \
+    install"
 
 # Run compile only tests and tests.unit.build, submit ctest metrics to elastic
 ARG ARCH
