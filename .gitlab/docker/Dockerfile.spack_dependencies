@@ -6,6 +6,5 @@ ENV spack_spec $SPACK_SPEC
 # Install dependencies for this configuration
 RUN spack env create pika_ci && \
     spack -e pika_ci add $spack_spec && \
-    spack -e pika_ci spec -lI $spack_spec && \
     spack -e pika_ci install --fail-fast --only dependencies $spack_spec && \
     spack -e pika_ci clean --all
