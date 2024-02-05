@@ -28,27 +28,42 @@ int main(int argc, char* argv[])
     pika::start(argc, argv);
 
     {
+        std::size_t const n = 1000;
+
         cu::cuda_pool pool{};
+
         // Explicitly do not use the RAII version here to test that pika::stop also clears events
         cu::detail::register_polling(pika::resource::get_thread_pool("default"));
 
         // cuBLAS handle on a non-pika thread
-        tt::sync_wait(ex::schedule(cu::cuda_scheduler{pool}) |
-            cu::then_with_cublas([](cublasHandle_t) {}, CUBLAS_POINTER_MODE_HOST));
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            tt::sync_wait(ex::schedule(cu::cuda_scheduler{pool}) |
+                cu::then_with_cublas([](cublasHandle_t) {}, CUBLAS_POINTER_MODE_HOST));
+        }
 
         // cuBLAS handle on a pika thread
-        tt::sync_wait(ex::schedule(ex::thread_pool_scheduler{}) |
-            ex::transfer(cu::cuda_scheduler{pool}) |
-            cu::then_with_cublas([](cublasHandle_t) {}, CUBLAS_POINTER_MODE_HOST));
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            tt::sync_wait(ex::schedule(ex::thread_pool_scheduler{}) |
+                ex::transfer(cu::cuda_scheduler{pool}) |
+                cu::then_with_cublas([](cublasHandle_t) {}, CUBLAS_POINTER_MODE_HOST));
+        }
 
         // cuSOLVER handle on a non-pika thread
-        tt::sync_wait(ex::schedule(cu::cuda_scheduler{pool}) |
-            cu::then_with_cusolver([](cusolverDnHandle_t) {}));
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            tt::sync_wait(ex::schedule(cu::cuda_scheduler{pool}) |
+                cu::then_with_cusolver([](cusolverDnHandle_t) {}));
+        }
 
         // cuSOLVER handle on a pika thread
-        tt::sync_wait(ex::schedule(ex::thread_pool_scheduler{}) |
-            ex::transfer(cu::cuda_scheduler{pool}) |
-            cu::then_with_cusolver([](cusolverDnHandle_t) {}));
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            tt::sync_wait(ex::schedule(ex::thread_pool_scheduler{}) |
+                ex::transfer(cu::cuda_scheduler{pool}) |
+                cu::then_with_cusolver([](cusolverDnHandle_t) {}));
+        }
     }
 
     pika::finalize();
