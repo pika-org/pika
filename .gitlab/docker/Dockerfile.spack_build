@@ -15,7 +15,8 @@ COPY . ${SOURCE_DIR}
 RUN spack -e pika_ci spec -lI $spack_spec
 
 # Configure & Build
-RUN spack -e pika_ci build-env $spack_spec -- bash -c "cmake -B${BUILD_DIR} ${SOURCE_DIR} \
+RUN spack -e pika_ci config add "config:flags:keep_werror:all" && \
+    spack -e pika_ci build-env $spack_spec -- bash -c "cmake -B${BUILD_DIR} ${SOURCE_DIR} \
     $CMAKE_COMMON_FLAGS $CMAKE_FLAGS && cmake --build ${BUILD_DIR} --target all tests examples \
     install"
 
