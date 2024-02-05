@@ -85,6 +85,7 @@ jobs:
               tests.unit.modules.string_util \
               tests.{performance,regressions,unit}.modules.synchronization \
               tests.unit.modules.tag_invoke \
+              tests.unit.modules.thread_manager \
               tests.unit.modules.threading \
               tests.{regressions,unit}.modules.threading_base \
               tests.unit.modules.topology \
