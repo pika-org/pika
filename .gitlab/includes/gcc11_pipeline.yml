@@ -11,14 +11,12 @@ include:
 .variables_gcc11_config:
   variables:
     ARCH: linux-ubuntu22.04-broadwell
-    BUILD_TYPE: Debug
     COMPILER: gcc@11.4.0
     CXXSTD: 20
     SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD ^boost@1.78.0 \
                  ^hwloc@2.7.0"
-    CMAKE_FLAGS: "-DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPIKA_WITH_CXX_STANDARD=$CXXSTD \
-                  -DPIKA_WITH_MAX_CPU_COUNT=256 -DPIKA_WITH_MALLOC=system \
-                  -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
+    CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_MAX_CPU_COUNT=256 \
+                  -DPIKA_WITH_MALLOC=system -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
 
 gcc11_spack_compiler_image:
   extends:
@@ -31,14 +29,14 @@ gcc11_spack_image:
     - .variables_gcc11_config
     - .dependencies_image_template
 
-gcc11_debug_build:
+gcc11_build:
   needs: [gcc11_spack_image]
   extends:
     - .build_template
     - .variables_gcc11_config
 
-gcc11_debug_test:
-  needs: [gcc11_debug_build]
+gcc11_test:
+  needs: [gcc11_build]
   extends:
     - .variables_gcc11_config
     - .test_common_mc

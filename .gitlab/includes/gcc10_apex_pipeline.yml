@@ -11,13 +11,11 @@ include:
 .variables_gcc10_apex_config:
   variables:
     ARCH: linux-ubuntu22.04-broadwell
-    BUILD_TYPE: Release
     COMPILER: gcc@10.3.0
     CXXSTD: 17
     SPACK_SPEC: "pika@main +apex arch=$ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD \
                  ^apex@2.4.1~activeharmony~plugins~binutils~openmp~papi ^otf2@2.3"
-    CMAKE_FLAGS: "-DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPIKA_WITH_CXX_STANDARD=$CXXSTD \
-                  -DPIKA_WITH_APEX=ON -DPIKA_WITH_MALLOC=system \
+    CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_APEX=ON -DPIKA_WITH_MALLOC=system \
                   -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
 
 gcc10_apex_spack_compiler_image:
@@ -31,14 +29,14 @@ gcc10_apex_spack_image:
     - .variables_gcc10_apex_config
     - .dependencies_image_template
 
-gcc10_apex_release_build:
+gcc10_apex_build:
   needs: [gcc10_apex_spack_image]
   extends:
     - .variables_gcc10_apex_config
     - .build_template
 
-gcc10_apex_release_test:
-  needs: [gcc10_apex_release_build]
+gcc10_apex_test:
+  needs: [gcc10_apex_build]
   extends:
     - .variables_gcc10_apex_config
     - .test_common_mc

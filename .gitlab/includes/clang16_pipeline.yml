@@ -11,13 +11,12 @@ include:
 .variables_clang16_config:
   variables:
     ARCH: linux-ubuntu22.04-broadwell
-    BUILD_TYPE: Debug
     COMPILER: clang@16.0.2
     CXXSTD: 23
     SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD ^boost@1.82.0 \
                  ^hwloc@2.9.1"
-    CMAKE_FLAGS: "-DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPIKA_WITH_CXX_STANDARD=$CXXSTD \
-                  -DPIKA_WITH_MALLOC=system -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
+    CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_MALLOC=system \
+                  -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
 
 clang16_spack_compiler_image:
   extends:
@@ -30,14 +29,14 @@ clang16_spack_image:
     - .variables_clang16_config
     - .dependencies_image_template
 
-clang16_debug_build:
+clang16_build:
   needs: [clang16_spack_image]
   extends:
     - .variables_clang16_config
     - .build_template
 
-clang16_debug_test:
-  needs: [clang16_debug_build]
+clang16_test:
+  needs: [clang16_build]
   extends:
     - .variables_clang16_config
     - .test_common_mc

@@ -11,15 +11,13 @@ include:
 .variables_gcc12_hip5_config:
   variables:
     ARCH: linux-ubuntu22.04-zen3
-    BUILD_TYPE: Debug
     COMPILER: gcc@12.2.0
     CXXSTD: 20
     GPU_TARGET: 'gfx90a'
     SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} +rocm +stdexec amdgpu_target=${GPU_TARGET} \
                  malloc=system cxxstd=$CXXSTD ^boost@1.79.0 ^hwloc@2.6.0 ^hip@5.5 ^llvm~gold \
                  ^fmt@10.0.0 ^stdexec@git.nvhpc-23.09.rc4=main"
-    CMAKE_FLAGS: "-DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPIKA_WITH_CXX_STANDARD=$CXXSTD \
-                  -DPIKA_WITH_HIP=ON -DPIKA_WITH_MALLOC=system \
+    CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_HIP=ON -DPIKA_WITH_MALLOC=system \
                   -DCMAKE_HIP_ARCHITECTURES=$GPU_TARGET -DPIKA_WITH_STDEXEC=ON"
 
 gcc12_hip5_spack_compiler_image:
@@ -34,14 +32,14 @@ gcc12_hip5_spack_image:
     - .variables_gcc12_hip5_config
     - .dependencies_image_template
 
-gcc12_hip5_debug_build:
+gcc12_hip5_build:
   needs: [gcc12_hip5_spack_image]
   extends:
     - .variables_gcc12_hip5_config
     - .build_template
 
-gcc12_hip5_debug_test:
-  needs: [gcc12_hip5_debug_build]
+gcc12_hip5_test:
+  needs: [gcc12_hip5_build]
   extends:
     - .variables_gcc12_hip5_config
     - .test_common_gpu_clariden_hip

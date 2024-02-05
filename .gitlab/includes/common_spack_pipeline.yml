@@ -63,10 +63,18 @@ base_spack_image:
     reports:
       dotenv: dependencies.env
 
+.parallel_build_types:
+  parallel:
+    matrix:
+      - BUILD_TYPE:
+          - Debug
+          - Release
+
 .build_template:
   stage: build
   extends:
     - .container-builder
+    - .parallel_build_types
     - .build_variables_common
     - .cmake_variables_common
   before_script:
@@ -84,6 +92,7 @@ base_spack_image:
 .test_template:
   extends:
     - .cmake_variables_common
+    - .parallel_build_types
   script:
     - spack arch
     - export CTEST_XML=$PWD/ctest.xml

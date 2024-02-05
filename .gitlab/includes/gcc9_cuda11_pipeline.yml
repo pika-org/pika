@@ -11,13 +11,11 @@ include:
 .variables_gcc9_cuda11_config:
   variables:
     ARCH: linux-ubuntu22.04-broadwell
-    BUILD_TYPE: Debug
     COMPILER: gcc@9.3.0
     CXXSTD: 17
     SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} +cuda malloc=system cxxstd=$CXXSTD \
                  ^boost@1.75.0 ^hwloc@2.0.3 ^cuda@11.2.0 ^fmt@9"
-    CMAKE_FLAGS: "-DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPIKA_WITH_CXX_STANDARD=$CXXSTD \
-                  -DPIKA_WITH_CUDA=ON -DPIKA_WITH_MALLOC=system \
+    CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_CUDA=ON -DPIKA_WITH_MALLOC=system \
                   -DPIKA_WITH_EXAMPLES_OPENMP=ON"
 
 gcc9_cuda11_spack_compiler_image:
@@ -31,14 +29,14 @@ gcc9_cuda11_spack_image:
     - .variables_gcc9_cuda11_config
     - .dependencies_image_template
 
-gcc9_cuda11_debug_build:
+gcc9_cuda11_build:
   needs: [gcc9_cuda11_spack_image]
   extends:
     - .variables_gcc9_cuda11_config
     - .build_template
 
-gcc9_cuda11_debug_test:
-  needs: [gcc9_cuda11_debug_build]
+gcc9_cuda11_test:
+  needs: [gcc9_cuda11_build]
   extends:
     - .variables_gcc9_cuda11_config
     - .test_common_gpu_clariden_cuda

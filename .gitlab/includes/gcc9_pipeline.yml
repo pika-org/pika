@@ -11,14 +11,13 @@ include:
 .variables_gcc9_config:
   variables:
     ARCH: linux-ubuntu22.04-broadwell
-    BUILD_TYPE: Debug
     COMPILER: gcc@9.3.0
     CXXSTD: 17
     SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD \
                  +generic_coroutines ^boost@1.71.0 ^hwloc@1.11.5"
-    CMAKE_FLAGS: "-DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPIKA_WITH_CXX_STANDARD=$CXXSTD \
-                  -DPIKA_WITH_MAX_CPU_COUNT=256 -DPIKA_WITH_MALLOC=system \
-                  -DPIKA_WITH_BOOST_CONTEXT=ON -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
+    CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_MAX_CPU_COUNT=256 \
+                  -DPIKA_WITH_MALLOC=system -DPIKA_WITH_BOOST_CONTEXT=ON \
+                  -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
 
 gcc9_spack_compiler_image:
   extends:
@@ -31,14 +30,14 @@ gcc9_spack_image:
     - .variables_gcc9_config
     - .dependencies_image_template
 
-gcc9_debug_build:
+gcc9_build:
   needs: [gcc9_spack_image]
   extends:
     - .variables_gcc9_config
     - .build_template
 
-gcc9_debug_test:
-  needs: [gcc9_debug_build]
+gcc9_test:
+  needs: [gcc9_build]
   extends:
     - .variables_gcc9_config
     - .test_common_mc
