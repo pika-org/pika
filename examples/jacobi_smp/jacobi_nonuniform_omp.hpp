@@ -21,7 +21,7 @@
 
 namespace jacobi_smp {
     void jacobi(crs_matrix<double> const& A, std::vector<double> const& b, std::size_t iterations,
-        std::size_t block_size)
+        [[maybe_unused]] std::size_t block_size)
     {
         using vector_type = std::vector<double>;
 
