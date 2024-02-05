@@ -78,7 +78,7 @@ namespace pika::cuda::experimental {
         // We use synchronized (locked) handles in a round-robin fashion for all other threads
         else
         {
-            auto const t = synchronized_handle_index++;
+            auto const t = synchronized_handle_index++ % synchronized_handles.size();
 
             std::unique_lock lock{handle_mutexes[t]};
 
@@ -126,7 +126,7 @@ namespace pika::cuda::experimental {
         // We use synchronized (locked) handles in a round-robin fashion for all other threads
         else
         {
-            auto const t = synchronized_handle_index++;
+            auto const t = synchronized_handle_index++ % synchronized_handles.size();
 
             std::unique_lock lock{handle_mutexes[t]};
 
