@@ -5,8 +5,8 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
-#include <pika/async_cuda/cuda_device_scope.hpp>
-#include <pika/async_cuda/cuda_stream.hpp>
+#include <pika/async_cuda_base/cuda_device_scope.hpp>
+#include <pika/async_cuda_base/cuda_stream.hpp>
 #include <pika/coroutines/thread_enums.hpp>
 
 #include <whip.hpp>

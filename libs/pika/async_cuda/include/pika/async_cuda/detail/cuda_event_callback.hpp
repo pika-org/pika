@@ -15,7 +15,7 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/async_cuda/cuda_stream.hpp>
+#include <pika/async_cuda_base/cuda_stream.hpp>
 #include <pika/functional/unique_function.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
 
