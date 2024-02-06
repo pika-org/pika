@@ -16,6 +16,7 @@ set(_pika_modules
     assertion
     async_base
     async_cuda
+    async_cuda_base
     async_mpi
     command_line_handling
     concepts
