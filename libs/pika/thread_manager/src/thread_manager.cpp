@@ -11,7 +11,6 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/execution_base/this_thread.hpp>
-#include <pika/functional/bind.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/logging.hpp>
 #include <pika/modules/schedulers.hpp>
@@ -60,19 +59,26 @@ namespace pika::threads::detail {
       : rtcfg_(rtcfg)
       , notifier_(notifier)
     {
-        using std::placeholders::_1;
-        using std::placeholders::_3;
-
         // Add callbacks local to thread_manager.
         notifier.add_on_start_thread_callback(
-            util::detail::bind(&thread_manager::init_tss, this, _1));
-        notifier.add_on_stop_thread_callback(util::detail::bind(&thread_manager::deinit_tss, this));
-
-        auto& rp = pika::resource::get_partitioner();
-        notifier.add_on_start_thread_callback(
-            util::detail::bind(&resource::detail::partitioner::assign_pu, std::ref(rp), _3, _1));
+            [this]([[maybe_unused]] std::size_t local_thread_num, std::size_t global_thread_num,
+                [[maybe_unused]] char const* pool_name,
+                [[maybe_unused]] char const* postfix) { this->init_tss(global_thread_num); });
         notifier.add_on_stop_thread_callback(
-            util::detail::bind(&resource::detail::partitioner::unassign_pu, std::ref(rp), _3, _1));
+            [this]([[maybe_unused]] std::size_t local_thread_num,
+                [[maybe_unused]] std::size_t global_thread_num,
+                [[maybe_unused]] char const* pool_name,
+                [[maybe_unused]] char const* postfix) { this->deinit_tss(); });
+        notifier.add_on_start_thread_callback(
+            [](std::size_t local_thread_num, [[maybe_unused]] std::size_t global_thread_num,
+                char const* pool_name, [[maybe_unused]] char const* postfix) {
+                pika::resource::get_partitioner().assign_pu(pool_name, local_thread_num);
+            });
+        notifier.add_on_stop_thread_callback(
+            [](std::size_t local_thread_num, [[maybe_unused]] std::size_t global_thread_num,
+                char const* pool_name, [[maybe_unused]] char const* postfix) {
+                pika::resource::get_partitioner().unassign_pu(pool_name, local_thread_num);
+            });
     }
 
     void thread_manager::create_pools()
