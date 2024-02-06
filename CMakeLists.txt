@@ -464,7 +464,7 @@ pika_add_config_define(
 
 pika_option(
   PIKA_WITH_THREAD_STACK_MMAP BOOL
-  "Use mmap for stack allocation on appropriate platforms" ON
+  "Use mmap for stack allocation on appropriate platforms" OFF
   CATEGORY "Thread Manager"
   ADVANCED
 )
