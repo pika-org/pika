@@ -120,8 +120,10 @@ namespace pika::threads::detail {
 
         using task_items_type = typename StagedQueuing::template apply<task_description*>::type;
 
+#ifdef PIKA_HAVE_THREAD_STACK_MMAP
         using terminated_items_type =
             typename TerminatedQueuing::template apply<threads::detail::thread_data*>::type;
+#endif
 
     protected:
         template <typename Lock>
@@ -132,6 +134,7 @@ namespace pika::threads::detail {
 
             std::ptrdiff_t const stacksize = data.scheduler_base->get_stack_size(data.stacksize);
 
+#ifdef PIKA_HAVE_THREAD_STACK_MMAP
             thread_heap_type* heap = nullptr;
 
             if (stacksize == parameters_.small_stacksize_) { heap = &thread_heap_small_; }
@@ -149,7 +152,7 @@ namespace pika::threads::detail {
             }
 
             // ASAN gets confused by reusing threads/stacks
-#if !defined(PIKA_HAVE_ADDRESS_SANITIZER)
+# if !defined(PIKA_HAVE_ADDRESS_SANITIZER)
 
             // Check for an unused thread object.
             if (!heap->empty())
@@ -160,6 +163,7 @@ namespace pika::threads::detail {
                 threads::detail::get_thread_id_data(thrd)->rebind(data);
             }
             else
+# endif
 #endif
             {
                 pika::detail::unlock_guard<Lock> ull(lk);
@@ -289,6 +293,7 @@ namespace pika::threads::detail {
             return addednew != 0;
         }
 
+#ifdef PIKA_HAVE_THREAD_STACK_MMAP
         void recycle_thread(threads::detail::thread_id_type thrd)
         {
             std::ptrdiff_t stacksize = threads::detail::get_thread_id_data(thrd)->get_stack_size();
@@ -312,8 +317,10 @@ namespace pika::threads::detail {
             }
             else { PIKA_ASSERT_MSG(false, fmt::format("Invalid stack size {}", stacksize)); }
         }
+#endif
 
     public:
+#ifdef PIKA_HAVE_THREAD_STACK_MMAP
         /// This function makes sure all threads which are marked for deletion
         /// (state is terminated) are properly destroyed.
         ///
@@ -321,9 +328,9 @@ namespace pika::threads::detail {
         /// to be deleted.
         bool cleanup_terminated_locked(bool delete_all = false)
         {
-#ifdef PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES
+# ifdef PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES
             chrono::detail::tick_counter tc(cleanup_terminated_time_);
-#endif
+# endif
 
             if (terminated_items_count_.load(std::memory_order_acquire) == 0) return true;
 
@@ -379,10 +386,12 @@ namespace pika::threads::detail {
             }
             return terminated_items_count_.load(std::memory_order_acquire) == 0;
         }
+#endif
 
     public:
         bool cleanup_terminated(bool delete_all = false)
         {
+#ifdef PIKA_HAVE_THREAD_STACK_MMAP
             if (terminated_items_count_.load(std::memory_order_acquire) == 0) return true;
 
             if (delete_all)
@@ -397,6 +406,9 @@ namespace pika::threads::detail {
 
             std::lock_guard<mutex_type> lk(mtx_);
             return cleanup_terminated_locked(false);
+#else
+            return true;
+#endif
         }
 
         thread_queue(
@@ -408,8 +420,10 @@ namespace pika::threads::detail {
           , work_items_wait_(0)
           , work_items_wait_count_(0)
 #endif
+#ifdef PIKA_HAVE_THREAD_STACK_MMAP
           , terminated_items_(128)
           , terminated_items_count_(0)
+#endif
           , new_tasks_(128)
 #ifdef PIKA_HAVE_THREAD_QUEUE_WAITTIME
           , new_tasks_wait_(0)
@@ -787,6 +801,7 @@ namespace pika::threads::detail {
         {
             PIKA_ASSERT(&thrd->get_queue<thread_queue>() == this);
 
+#ifdef PIKA_HAVE_THREAD_STACK_MMAP
             terminated_items_.push(thrd);
 
             std::int64_t count = ++terminated_items_count_;
@@ -794,6 +809,19 @@ namespace pika::threads::detail {
             {
                 cleanup_terminated(true);    // clean up all terminated threads
             }
+#else
+            {
+                threads::detail::thread_id_type tid(thrd);
+
+                std::lock_guard<mutex_type> lk(mtx_);
+                PIKA_ASSERT(thread_map_.find(tid) != thread_map_.end());
+                thread_map_.erase(tid);
+            }
+
+            --thread_map_count_;
+            PIKA_ASSERT(thread_map_count_ >= 0);
+            deallocate(thrd);
+#endif
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -802,14 +830,22 @@ namespace pika::threads::detail {
                                           threads::detail::thread_schedule_state::unknown) const
         {
             if (threads::detail::thread_schedule_state::terminated == state)
+#ifdef PIKA_HAVE_THREAD_STACK_MMAP
                 return terminated_items_count_;
+#else
+                return 0;
+#endif
 
             if (threads::detail::thread_schedule_state::staged == state)
                 return new_tasks_count_.data_;
 
             if (threads::detail::thread_schedule_state::unknown == state)
             {
+#ifdef PIKA_HAVE_THREAD_STACK_MMAP
                 return thread_map_count_ + new_tasks_count_.data_ - terminated_items_count_;
+#else
+                return thread_map_count_ + new_tasks_count_.data_;
+#endif
             }
 
             // acquire lock only if absolutely necessary
@@ -853,7 +889,11 @@ namespace pika::threads::detail {
             std::uint64_t count = thread_map_count_;
             if (state == threads::detail::thread_schedule_state::terminated)
             {
+#ifdef PIKA_HAVE_THREAD_STACK_MMAP
                 count = terminated_items_count_;
+#else
+                count = 0;
+#endif
             }
             else if (state == threads::detail::thread_schedule_state::staged)
             {
@@ -961,6 +1001,7 @@ namespace pika::threads::detail {
 
                 // stop running after all pika threads have been terminated
                 bool added_new = add_new_always(added, addfrom, lk, steal);
+#ifdef PIKA_HAVE_THREAD_STACK_MMAP
                 if (!added_new)
                 {
                     // Before exiting each of the OS threads deletes the
@@ -980,6 +1021,9 @@ namespace pika::threads::detail {
                     cleanup_terminated_locked();
                     return false;
                 }
+#else
+                return !added_new && !running;
+#endif
             }
 
             bool canexit = cleanup_terminated(true);
@@ -1070,10 +1114,12 @@ namespace pika::threads::detail {
         // overall number of work items in queue
         std::atomic<std::int64_t> work_items_wait_count_;
 #endif
+#ifdef PIKA_HAVE_THREAD_STACK_MMAP
         // list of terminated threads
         terminated_items_type terminated_items_;
         // count of terminated items
         std::atomic<std::int64_t> terminated_items_count_;
+#endif
 
         task_items_type new_tasks_;    // list of new tasks to run
 

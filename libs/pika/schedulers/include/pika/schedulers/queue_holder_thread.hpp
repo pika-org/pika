@@ -138,6 +138,7 @@ namespace pika::threads::detail {
         mutable pika::concurrency::detail::cache_line_data<std::atomic<std::int32_t>>
             thread_map_count_;
 
+#ifdef PIKA_HAVE_THREAD_STACK_MMAP
         // -------------------------------------
         // terminated tasks
         // completed tasks that can be reused (stack space etc)
@@ -145,6 +146,7 @@ namespace pika::threads::detail {
         terminated_items_type terminated_items_;
         mutable pika::concurrency::detail::cache_line_data<std::atomic<std::int32_t>>
             terminated_items_count_;
+#endif
 
         thread_queue_init_parameters parameters_;
         std::thread::id owner_id_;
@@ -181,8 +183,11 @@ namespace pika::threads::detail {
                    << debug::detail::dec<3>(d.q_->thread_map_count_.data_) << " [BP "
                    << queue_mc_print(d.q_->bp_queue_) << "] [HP " << queue_mc_print(d.q_->hp_queue_)
                    << "] [NP " << queue_mc_print(d.q_->np_queue_) << "] [LP "
-                   << queue_mc_print(d.q_->lp_queue_) << "] T "
-                   << debug::detail::dec<3>(d.q_->terminated_items_count_.data_);
+                   << queue_mc_print(d.q_->lp_queue_) << "]"
+#ifdef PIKA_HAVE_THREAD_STACK_MMAP
+                   << " T " << debug::detail::dec<3>(d.q_->terminated_items_count_.data_)
+#endif
+                    ;
                 return os;
             }
         };
@@ -204,7 +209,9 @@ namespace pika::threads::detail {
           , queue_index_(queue)
           , thread_num_(thread_num)
           , owner_mask_(owner)
+#ifdef PIKA_HAVE_THREAD_STACK_MMAP
           , terminated_items_(max_thread_count)
+#endif
           , parameters_(init)
           , owner_id_(owner_id)
         {
@@ -214,7 +221,9 @@ namespace pika::threads::detail {
                 "Rollover counter", debug::detail::dec<>(std::get<0>(rollover_counters_.data_)),
                 debug::detail::dec<>(std::get<1>(rollover_counters_.data_)));
             thread_map_count_.data_ = 0;
+#ifdef PIKA_HAVE_THREAD_STACK_MMAP
             terminated_items_count_.data_ = 0;
+#endif
             if (bp_queue_) bp_queue_->set_holder(this);
             if (hp_queue_) hp_queue_->set_holder(this);
             if (np_queue_) np_queue_->set_holder(this);
@@ -312,6 +321,7 @@ namespace pika::threads::detail {
         }
 
         // ----------------------------------------------------------------
+#ifdef PIKA_HAVE_THREAD_STACK_MMAP
         bool cleanup_terminated(std::size_t thread_num, bool delete_all)
         {
             // clang-format off
@@ -368,6 +378,7 @@ namespace pika::threads::detail {
             }
             return terminated_items_count_.data_.load(std::memory_order_relaxed) == 0;
         }
+#endif
 
         // ----------------------------------------------------------------
         void create_thread(threads::detail::thread_init_data& data,
@@ -481,6 +492,7 @@ namespace pika::threads::detail {
             }
         }
 
+#ifdef PIKA_HAVE_THREAD_STACK_MMAP
         // ----------------------------------------------------------------
         void recycle_thread(threads::detail::thread_id_type tid)
         {
@@ -505,6 +517,7 @@ namespace pika::threads::detail {
             }
             else { PIKA_ASSERT_MSG(false, fmt::format("Invalid stack size {}", stacksize)); }
         }
+#endif
 
         // ----------------------------------------------------------------
         static void deallocate(threads::detail::thread_data* p) { p->destroy(); }
@@ -763,7 +776,11 @@ namespace pika::threads::detail {
             execution::thread_priority priority = execution::thread_priority::default_) const
         {
             if (threads::detail::thread_schedule_state::terminated == state)
+#ifdef PIKA_HAVE_THREAD_STACK_MMAP
                 return terminated_items_count_.data_.load(std::memory_order_relaxed);
+#else
+                return 0;
+#endif
 
             if (threads::detail::thread_schedule_state::staged == state)
                 return get_thread_count_staged(priority);
@@ -772,9 +789,14 @@ namespace pika::threads::detail {
                 return get_thread_count_pending(priority);
 
             if (threads::detail::thread_schedule_state::unknown == state)
+#ifdef PIKA_HAVE_THREAD_STACK_MMAP
                 return thread_map_count_.data_.load(std::memory_order_relaxed) +
                     get_thread_count_staged(priority) -
                     terminated_items_count_.data_.load(std::memory_order_relaxed);
+#else
+                return thread_map_count_.data_.load(std::memory_order_relaxed) +
+                    get_thread_count_staged(priority);
+#endif
 
             // acquire lock only if absolutely necessary
             scoped_lock lk(thread_map_mtx_.data_);
@@ -797,6 +819,7 @@ namespace pika::threads::detail {
             // the thread must be destroyed by the same queue holder that created it
             PIKA_ASSERT(&thrd->get_queue<queue_holder_thread>() == this);
             //
+#ifdef PIKA_HAVE_THREAD_STACK_MMAP
             ::pika::detail::tq_deb.debug(debug::detail::str<>("destroy"), "terminated_items push",
                 "xthread", xthread, queue_data_print(this),
                 debug::detail::threadinfo<threads::detail::thread_data*>(thrd));
@@ -807,6 +830,15 @@ namespace pika::threads::detail {
             {
                 cleanup_terminated(thread_num, false);    // clean up all terminated threads
             }
+#else
+            PIKA_UNUSED(thread_num);
+            PIKA_UNUSED(xthread);
+
+            threads::detail::thread_id_type tid(thrd);
+
+            scoped_lock lk(thread_map_mtx_.data_);
+            remove_from_thread_map(tid, true);
+#endif
         }
 
         // ------------------------------------------------------------
@@ -838,7 +870,11 @@ namespace pika::threads::detail {
             std::uint64_t count = thread_map_count_.data_;
             if (state == threads::detail::thread_schedule_state::terminated)
             {
+#ifdef PIKA_HAVE_THREAD_STACK_MMAP
                 count = terminated_items_count_.data_;
+#else
+                count = 0;
+#endif
             }
             else if (state == threads::detail::thread_schedule_state::staged)
             {
