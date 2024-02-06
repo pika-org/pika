@@ -57,6 +57,8 @@ source "${src_dir}/.jenkins/cscs-perftests/env-${configuration_name}.sh"
 # variables like configure_build_errors in launch_perftests.sh. Modifications
 # written to variables in a sub-shell created with spack build-env would not be
 # visible here.
+export MIMALLOC_EAGER_COMMIT_DELAY=0
+export MIMALLOC_LARGE_OS_PAGES=1
 set +e
 spack build-env --dump env.txt "${spack_spec}"
 source env.txt
