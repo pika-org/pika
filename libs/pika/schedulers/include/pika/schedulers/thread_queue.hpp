@@ -407,6 +407,7 @@ namespace pika::threads::detail {
             std::lock_guard<mutex_type> lk(mtx_);
             return cleanup_terminated_locked(false);
 #else
+            PIKA_UNUSED(delete_all);
             return true;
 #endif
         }
