@@ -35,9 +35,17 @@ gcc10_apex_build:
     - .variables_gcc10_apex_config
     - .build_template
 
-gcc10_apex_test:
+.gcc10_apex_test_commmon:
   needs: [gcc10_apex_build]
   extends:
     - .variables_gcc10_apex_config
     - .test_common_mc
     - .test_template
+
+gcc10_apex_test_release:
+  extends: [.gcc10_apex_test_commmon]
+  image: $PERSIST_IMAGE_NAME_RELEASE
+
+gcc10_apex_test_debug:
+  extends: [.gcc10_apex_test_commmon]
+  image: $PERSIST_IMAGE_NAME_DEBUG

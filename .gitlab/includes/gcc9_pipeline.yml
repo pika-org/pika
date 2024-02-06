@@ -36,9 +36,17 @@ gcc9_build:
     - .variables_gcc9_config
     - .build_template
 
-gcc9_test:
+.gcc9_test_commmon:
   needs: [gcc9_build]
   extends:
     - .variables_gcc9_config
     - .test_common_mc
     - .test_template
+
+gcc9_test_release:
+  extends: [.gcc9_test_commmon]
+  image: $PERSIST_IMAGE_NAME_RELEASE
+
+gcc9_test_debug:
+  extends: [.gcc9_test_commmon]
+  image: $PERSIST_IMAGE_NAME_DEBUG

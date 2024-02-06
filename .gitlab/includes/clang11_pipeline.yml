@@ -35,9 +35,17 @@ clang11_build:
     - .variables_clang11_config
     - .build_template
 
-clang11_test:
+.clang11_test_commmon:
   needs: [clang11_build]
   extends:
     - .variables_clang11_config
     - .test_common_mc
     - .test_template
+
+clang11_test_release:
+  extends: [.clang11_test_commmon]
+  image: $PERSIST_IMAGE_NAME_RELEASE
+
+clang11_test_debug:
+  extends: [.clang11_test_commmon]
+  image: $PERSIST_IMAGE_NAME_DEBUG

@@ -36,9 +36,17 @@ gcc13_build:
     - .variables_gcc13_config
     - .build_template
 
-gcc13_test:
+.gcc13_test_commmon:
   needs: [gcc13_build]
   extends:
     - .variables_gcc13_config
     - .test_common_mc
     - .test_template
+
+gcc13_test_release:
+  extends: [.gcc13_test_commmon]
+  image: $PERSIST_IMAGE_NAME_RELEASE
+
+gcc13_test_debug:
+  extends: [.gcc13_test_commmon]
+  image: $PERSIST_IMAGE_NAME_DEBUG

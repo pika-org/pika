@@ -35,9 +35,17 @@ gcc12_build:
     - .variables_gcc12_config
     - .build_template
 
-gcc12_test:
+.gcc12_test_commmon:
   needs: [gcc12_build]
   extends:
     - .variables_gcc12_config
     - .test_common_mc
     - .test_template
+
+gcc12_test_release:
+  extends: [.gcc12_test_commmon]
+  image: $PERSIST_IMAGE_NAME_RELEASE
+
+gcc12_test_debug:
+  extends: [.gcc12_test_commmon]
+  image: $PERSIST_IMAGE_NAME_DEBUG

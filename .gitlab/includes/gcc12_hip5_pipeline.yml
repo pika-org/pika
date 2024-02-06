@@ -38,9 +38,17 @@ gcc12_hip5_build:
     - .variables_gcc12_hip5_config
     - .build_template
 
-gcc12_hip5_test:
+.gcc12_hip5_test_commmon:
   needs: [gcc12_hip5_build]
   extends:
     - .variables_gcc12_hip5_config
     - .test_common_gpu_clariden_hip
     - .test_template
+
+gcc12_hip5_test_release:
+  extends: [.gcc12_hip5_test_commmon]
+  image: $PERSIST_IMAGE_NAME_RELEASE
+
+gcc12_hip5_test_debug:
+  extends: [.gcc12_hip5_test_commmon]
+  image: $PERSIST_IMAGE_NAME_DEBUG

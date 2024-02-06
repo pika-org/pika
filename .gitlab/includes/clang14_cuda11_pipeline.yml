@@ -37,9 +37,17 @@ clang14_cuda11_build:
     - .variables_clang14_cuda11_config
     - .build_template
 
-clang14_cuda11_test:
+.clang14_cuda11_test_commmon:
   needs: [clang14_cuda11_build]
   extends:
     - .variables_clang14_cuda11_config
     - .test_common_gpu_clariden_cuda
     - .test_template
+
+clang14_cuda11_test_release:
+  extends: [.clang14_cuda11_test_commmon]
+  image: $PERSIST_IMAGE_NAME_RELEASE
+
+clang14_cuda11_test_debug:
+  extends: [.clang14_cuda11_test_commmon]
+  image: $PERSIST_IMAGE_NAME_DEBUG
