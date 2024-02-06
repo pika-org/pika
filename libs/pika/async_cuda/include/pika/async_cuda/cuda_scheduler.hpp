@@ -9,7 +9,7 @@
 #include <pika/assert.hpp>
 #include <pika/async_base/scheduling_properties.hpp>
 #include <pika/async_cuda/cuda_pool.hpp>
-#include <pika/async_cuda/cuda_stream.hpp>
+#include <pika/async_cuda_base/cuda_stream.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/execution/algorithms/execute.hpp>
@@ -40,6 +40,9 @@ namespace pika::cuda::experimental {
 
         PIKA_EXPORT cuda_pool const& get_pool() const noexcept;
         PIKA_EXPORT cuda_stream const& get_next_stream();
+        PIKA_EXPORT locked_cublas_handle get_cublas_handle(
+            cuda_stream const& stream, cublasPointerMode_t pointer_mode);
+        PIKA_EXPORT locked_cusolver_handle get_cusolver_handle(cuda_stream const& stream);
 
         /// \cond NOINTERNAL
         friend bool operator==(cuda_scheduler const& lhs, cuda_scheduler const& rhs)

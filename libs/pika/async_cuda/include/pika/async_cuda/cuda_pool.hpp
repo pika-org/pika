@@ -7,7 +7,9 @@
 #pragma once
 
 #include <pika/assert.hpp>
-#include <pika/async_cuda/cuda_stream.hpp>
+#include <pika/async_cuda_base/cublas_handle.hpp>
+#include <pika/async_cuda_base/cuda_stream.hpp>
+#include <pika/async_cuda_base/cusolver_handle.hpp>
 #include <pika/concurrency/cache_line_data.hpp>
 #include <pika/coroutines/thread_enums.hpp>
 
@@ -16,10 +18,43 @@
 #include <atomic>
 #include <cstddef>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <vector>
 
 namespace pika::cuda::experimental {
+    class locked_cublas_handle
+    {
+        cublas_handle& handle;
+        std::unique_lock<std::mutex> mutex;
+
+    public:
+        PIKA_EXPORT locked_cublas_handle(
+            cublas_handle& handle, std::unique_lock<std::mutex>&& mutex);
+        locked_cublas_handle(locked_cublas_handle&&) = delete;
+        locked_cublas_handle(locked_cublas_handle const&) = delete;
+        locked_cublas_handle& operator=(locked_cublas_handle&&) = delete;
+        locked_cublas_handle& operator=(locked_cublas_handle const&) = delete;
+
+        PIKA_EXPORT cublas_handle const& get() noexcept;
+    };
+
+    class locked_cusolver_handle
+    {
+        cusolver_handle& handle;
+        std::unique_lock<std::mutex> mutex;
+
+    public:
+        PIKA_EXPORT locked_cusolver_handle(
+            cusolver_handle& handle, std::unique_lock<std::mutex>&& mutex);
+        locked_cusolver_handle(locked_cusolver_handle&&) = delete;
+        locked_cusolver_handle(locked_cusolver_handle const&) = delete;
+        locked_cusolver_handle& operator=(locked_cusolver_handle&&) = delete;
+        locked_cusolver_handle& operator=(locked_cusolver_handle const&) = delete;
+
+        PIKA_EXPORT cusolver_handle const& get() noexcept;
+    };
+
     /// A pool of CUDA streams, used for scheduling work on a CUDA device.
     ///
     /// The pool initializes a set of CUDA (thread-local) streams on
@@ -47,11 +82,48 @@ namespace pika::cuda::experimental {
             PIKA_EXPORT cuda_stream const& get_next_stream();
         };
 
+        struct cublas_handles_holder
+        {
+            std::size_t const concurrency;
+            std::vector<cublas_handle> unsynchronized_handles;
+            std::atomic<std::size_t> synchronized_handle_index;
+            std::vector<cublas_handle> synchronized_handles;
+            std::vector<std::mutex> handle_mutexes;
+
+            PIKA_EXPORT cublas_handles_holder();
+            cublas_handles_holder(cublas_handles_holder&&) = delete;
+            cublas_handles_holder(cublas_handles_holder const&) = delete;
+            cublas_handles_holder& operator=(cublas_handles_holder&&) = delete;
+            cublas_handles_holder& operator=(cublas_handles_holder const&) = delete;
+
+            PIKA_EXPORT locked_cublas_handle get_locked_handle(
+                cuda_stream const& stream, cublasPointerMode_t pointer_mode);
+        };
+
+        struct cusolver_handles_holder
+        {
+            std::size_t const concurrency;
+            std::vector<cusolver_handle> unsynchronized_handles;
+            std::atomic<std::size_t> synchronized_handle_index;
+            std::vector<cusolver_handle> synchronized_handles;
+            std::vector<std::mutex> handle_mutexes;
+
+            PIKA_EXPORT cusolver_handles_holder();
+            cusolver_handles_holder(cusolver_handles_holder&&) = delete;
+            cusolver_handles_holder(cusolver_handles_holder const&) = delete;
+            cusolver_handles_holder& operator=(cusolver_handles_holder&&) = delete;
+            cusolver_handles_holder& operator=(cusolver_handles_holder const&) = delete;
+
+            PIKA_EXPORT locked_cusolver_handle get_locked_handle(cuda_stream const& stream);
+        };
+
         struct pool_data
         {
             int device;
             streams_holder normal_priority_streams;
             streams_holder high_priority_streams;
+            cublas_handles_holder cublas_handles;
+            cusolver_handles_holder cusolver_handles;
 
             PIKA_EXPORT pool_data(int device, std::size_t num_normal_priority_streams_per_thread,
                 std::size_t num_high_priority_streams_per_thread, unsigned int flags);
@@ -80,6 +152,9 @@ namespace pika::cuda::experimental {
         PIKA_EXPORT explicit operator bool() noexcept;
         PIKA_EXPORT cuda_stream const& get_next_stream(
             pika::execution::thread_priority priority = pika::execution::thread_priority::normal);
+        PIKA_EXPORT locked_cublas_handle get_cublas_handle(
+            cuda_stream const& stream, cublasPointerMode_t pointer_mode);
+        PIKA_EXPORT locked_cusolver_handle get_cusolver_handle(cuda_stream const& stream);
 
         /// \cond NOINTERNAL
         friend bool operator==(cuda_pool const& lhs, cuda_pool const& rhs) noexcept
