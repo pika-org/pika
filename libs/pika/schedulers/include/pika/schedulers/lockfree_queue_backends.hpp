@@ -29,9 +29,9 @@
 namespace pika::threads::detail {
 
     ////////////////////////////////////////////////////////////////////////////
-    // MoodyCamel FIFO
+    // FIFO
     template <typename T>
-    struct moodycamel_fifo_backend
+    struct lockfree_fifo_backend
     {
         using container_type = pika::concurrency::detail::ConcurrentQueue<T>;
 
@@ -41,7 +41,7 @@ namespace pika::threads::detail {
         using rvalue_reference = T&&;
         using size_type = std::uint64_t;
 
-        moodycamel_fifo_backend(
+        lockfree_fifo_backend(
             size_type initial_size = 0, size_type /* num_thread */ = size_type(-1))
           : queue_(std::size_t(initial_size))
         {
@@ -62,22 +62,12 @@ namespace pika::threads::detail {
         container_type queue_;
     };
 
-    struct concurrentqueue_fifo
-    {
-        template <typename T>
-        struct apply
-        {
-            using type = moodycamel_fifo_backend<T>;
-        };
-    };
-
-    // FIFO
     struct lockfree_fifo
     {
         template <typename T>
         struct apply
         {
-            using type = moodycamel_fifo_backend<T>;
+            using type = lockfree_fifo_backend<T>;
         };
     };
 
