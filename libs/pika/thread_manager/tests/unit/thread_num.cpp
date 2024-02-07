@@ -1,4 +1,4 @@
-//  Copyright (c) 2017 Mikael Simberg
+//  Copyright (c) 2024 ETH Zurich
 //
 //  SPDX-License-Identifier: BSL-1.0
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
