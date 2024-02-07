@@ -28,72 +28,6 @@
 
 namespace pika::threads::detail {
 
-    ///////////////////////////////////////////////////////////////////////////////
-    // FIFO
-    template <typename T>
-    struct lockfree_fifo_backend
-    {
-#if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
-        using container_type = pika::concurrency::detail::deque<T,
-            pika::concurrency::detail::caching_freelist_t, pika::detail::aligned_allocator<T>>;
-#else
-        using container_type = boost::lockfree::queue<T, pika::detail::aligned_allocator<T>>;
-#endif
-
-        using value_type = T;
-        using reference = T&;
-        using const_reference = T const&;
-        using rvalue_reference = T&&;
-        using size_type = std::uint64_t;
-
-        lockfree_fifo_backend(
-            size_type initial_size = 0, size_type /* num_thread */ = size_type(-1))
-          : queue_(std::size_t(initial_size))
-        {
-        }
-
-        bool push(const_reference val, bool /*other_end*/ = false)
-        {
-#if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
-            return queue_.push_left(val);
-#else
-            return queue_.push(val);
-#endif
-        }
-
-        bool push(rvalue_reference val, bool /*other_end*/ = false)
-        {
-#if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
-            return queue_.push_left(PIKA_MOVE(val));
-#else
-            return queue_.push(PIKA_MOVE(val));
-#endif
-        }
-
-        bool pop(reference val, bool /* steal */ = true)
-        {
-#if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
-            return queue_.pop_right(val);
-#else
-            return queue_.pop(val);
-#endif
-        }
-
-        bool empty() { return queue_.empty(); }
-
-    private:
-        container_type queue_;
-    };
-
-    struct lockfree_fifo
-    {
-        template <typename T>
-        struct apply
-        {
-            using type = lockfree_fifo_backend<T>;
-        };
-    };
-
     ////////////////////////////////////////////////////////////////////////////
     // MoodyCamel FIFO
     template <typename T>
@@ -129,6 +63,16 @@ namespace pika::threads::detail {
     };
 
     struct concurrentqueue_fifo
+    {
+        template <typename T>
+        struct apply
+        {
+            using type = moodycamel_fifo_backend<T>;
+        };
+    };
+
+    // FIFO
+    struct lockfree_fifo
     {
         template <typename T>
         struct apply
