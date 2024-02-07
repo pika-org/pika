@@ -28,8 +28,6 @@
 
 namespace pika::threads::detail {
 
-    struct lockfree_fifo;
-
     ///////////////////////////////////////////////////////////////////////////////
     // FIFO
     template <typename T>
@@ -141,8 +139,6 @@ namespace pika::threads::detail {
 
     // LIFO
 #if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
-    struct lockfree_lifo;
-
     template <typename T>
     struct lockfree_lifo_backend
     {
@@ -191,10 +187,6 @@ namespace pika::threads::detail {
     };
 
     ////////////////////////////////////////////////////////////////////////////
-    // FIFO + stealing at opposite end.
-    struct lockfree_abp_fifo;
-    struct lockfree_abp_lifo;
-
     template <typename T>
     struct lockfree_abp_fifo_backend
     {
