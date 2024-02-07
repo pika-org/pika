@@ -219,11 +219,11 @@ namespace pika::threads::coroutines::detail::posix {
         return new stack_aligner[size / sizeof(stack_aligner)];
     }
 
-    inline void watermark_stack(void* stack, std::size_t size) {}    // no-op
+    inline void watermark_stack(void* /* stack */, std::size_t /* size */) {}    // no-op
 
-    inline bool reset_stack(void* stack, std::size_t size) { return false; }
+    inline bool reset_stack(void* /* stack */, std::size_t /* size */) { return false; }
 
-    inline void free_stack(void* stack, std::size_t size)
+    inline void free_stack(void* stack, std::size_t /* size */)
     {
         delete[] static_cast<stack_aligner*>(stack);
     }
