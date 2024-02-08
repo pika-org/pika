@@ -11,14 +11,12 @@ include:
 .variables_clang14_cuda11_config:
   variables:
     ARCH: linux-ubuntu22.04-zen3
-    BUILD_TYPE: Debug
     COMPILER: clang@14.0.6
     CXXSTD: 17
     SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} +cuda malloc=system cxxstd=$CXXSTD \
                  ^boost@1.79.0 ^cuda@11.5.0 +allow-unsupported-compilers ^hwloc@2.7.0"
     # PIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE is OFF to test the fallback implementation of PIKA_FORWARD.
-    CMAKE_FLAGS: "-DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPIKA_WITH_CXX_STANDARD=20 \
-                  -DPIKA_WITH_CUDA=ON -DPIKA_WITH_MALLOC=system \
+    CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=20 -DPIKA_WITH_CUDA=ON -DPIKA_WITH_MALLOC=system \
                   -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON -DCMAKE_CUDA_COMPILER=c++ \
                   -DCMAKE_CUDA_ARCHITECTURES=80 -DPIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE=OFF"
 
@@ -33,15 +31,23 @@ clang14_cuda11_spack_image:
     - .variables_clang14_cuda11_config
     - .dependencies_image_template
 
-clang14_cuda11_debug_build:
+clang14_cuda11_build:
   needs: [clang14_cuda11_spack_image]
   extends:
     - .variables_clang14_cuda11_config
     - .build_template
 
-clang14_cuda11_debug_test:
-  needs: [clang14_cuda11_debug_build]
+.clang14_cuda11_test_commmon:
+  needs: [clang14_cuda11_build]
   extends:
     - .variables_clang14_cuda11_config
     - .test_common_gpu_clariden_cuda
     - .test_template
+
+clang14_cuda11_test_release:
+  extends: [.clang14_cuda11_test_commmon]
+  image: $PERSIST_IMAGE_NAME_RELEASE
+
+clang14_cuda11_test_debug:
+  extends: [.clang14_cuda11_test_commmon]
+  image: $PERSIST_IMAGE_NAME_DEBUG

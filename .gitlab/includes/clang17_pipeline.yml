@@ -11,14 +11,12 @@ include:
 .variables_clang17_config:
   variables:
     ARCH: linux-ubuntu22.04-broadwell
-    BUILD_TYPE: Debug
     COMPILER: clang@17.0.4
     CXXSTD: 23
     SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD ^boost@1.83.0 \
                  ^hwloc@2.9.1"
-    CMAKE_FLAGS: "-DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPIKA_WITH_CXX_STANDARD=$CXXSTD \
-                  -DPIKA_WITH_MALLOC=system -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON \
-                  -DPIKA_WITH_THREAD_STACK_MMAP=OFF"
+    CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_MALLOC=system
+                  -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON -DPIKA_WITH_THREAD_STACK_MMAP=OFF"
 
 clang17_spack_compiler_image:
   extends:
@@ -31,15 +29,23 @@ clang17_spack_image:
     - .variables_clang17_config
     - .dependencies_image_template
 
-clang17_debug_build:
+clang17_build:
   needs: [clang17_spack_image]
   extends:
     - .variables_clang17_config
     - .build_template
 
-clang17_debug_test:
-  needs: [clang17_debug_build]
+.clang17_test_commmon:
+  needs: [clang17_build]
   extends:
     - .variables_clang17_config
     - .test_common_mc
     - .test_template
+
+clang17_test_release:
+  extends: [.clang17_test_commmon]
+  image: $PERSIST_IMAGE_NAME_RELEASE
+
+clang17_test_debug:
+  extends: [.clang17_test_commmon]
+  image: $PERSIST_IMAGE_NAME_DEBUG

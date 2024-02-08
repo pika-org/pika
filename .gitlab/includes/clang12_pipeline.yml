@@ -11,14 +11,12 @@ include:
 .variables_clang12_config:
   variables:
     ARCH: linux-ubuntu22.04-broadwell
-    BUILD_TYPE: Debug
     COMPILER: clang@12.0.1
     CXXSTD: 17
     SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD ^boost@1.79.0 \
                  ^hwloc@2.2.0"
-    CMAKE_FLAGS: "-DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPIKA_WITH_CXX_STANDARD=$CXXSTD \
-                  -DPIKA_WITH_MALLOC=system -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON \
-                  -DPIKA_WITH_COROUTINE_COUNTERS=ON \
+    CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_MALLOC=system \
+                  -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON -DPIKA_WITH_COROUTINE_COUNTERS=ON \
                   -DPIKA_WITH_THREAD_IDLE_RATES=ON \
                   -DPIKA_WITH_THREAD_CREATION_AND_CLEANUP_RATES=ON \
                   -DPIKA_WITH_THREAD_CUMULATIVE_COUNTS=ON -DPIKA_WITH_THREAD_QUEUE_WAITTIME=ON \
@@ -35,15 +33,23 @@ clang12_spack_image:
     - .variables_clang12_config
     - .dependencies_image_template
 
-clang12_debug_build:
+clang12_build:
   needs: [clang12_spack_image]
   extends:
     - .variables_clang12_config
     - .build_template
 
-clang12_debug_test:
-  needs: [clang12_debug_build]
+.clang12_test_commmon:
+  needs: [clang12_build]
   extends:
     - .variables_clang12_config
     - .test_common_mc
     - .test_template
+
+clang12_test_release:
+  extends: [.clang12_test_commmon]
+  image: $PERSIST_IMAGE_NAME_RELEASE
+
+clang12_test_debug:
+  extends: [.clang12_test_commmon]
+  image: $PERSIST_IMAGE_NAME_DEBUG

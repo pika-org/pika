@@ -11,14 +11,12 @@ include:
 .variables_clang15_config:
   variables:
     ARCH: linux-ubuntu22.04-broadwell
-    BUILD_TYPE: Debug
     COMPILER: clang@15.0.0
     CXXSTD: 20
     SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD ^boost@1.80.0 \
                  ^hwloc@2.8.0"
-    CMAKE_FLAGS: "-DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPIKA_WITH_CXX_STANDARD=$CXXSTD \
-                  -DPIKA_WITH_MALLOC=system -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON \
-                  -DPIKA_WITH_UNITY_BUILD=OFF"
+    CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_MALLOC=system \
+                  -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON -DPIKA_WITH_UNITY_BUILD=OFF"
 
 clang15_spack_compiler_image:
   extends:
@@ -31,15 +29,23 @@ clang15_spack_image:
     - .variables_clang15_config
     - .dependencies_image_template
 
-clang15_debug_build:
+clang15_build:
   needs: [clang15_spack_image]
   extends:
     - .variables_clang15_config
     - .build_template
 
-clang15_debug_test:
-  needs: [clang15_debug_build]
+.clang15_test_commmon:
+  needs: [clang15_build]
   extends:
     - .variables_clang15_config
     - .test_common_mc
     - .test_template
+
+clang15_test_release:
+  extends: [.clang15_test_commmon]
+  image: $PERSIST_IMAGE_NAME_RELEASE
+
+clang15_test_debug:
+  extends: [.clang15_test_commmon]
+  image: $PERSIST_IMAGE_NAME_DEBUG

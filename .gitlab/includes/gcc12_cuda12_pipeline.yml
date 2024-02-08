@@ -11,15 +11,13 @@ include:
 .variables_gcc12_cuda12_config:
   variables:
     ARCH: linux-ubuntu22.04-zen3
-    BUILD_TYPE: Debug
     COMPILER: gcc@12.1.0
     CXXSTD: 17
     GPU_TARGET: "80"
     SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} +cuda cuda_arch=${GPU_TARGET} malloc=system \
                  cxxstd=$CXXSTD ^boost@1.82.0 ^hwloc@2.9.1 ^cuda@12.0.0 ^fmt@10.0.0"
     # PIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE is OFF to test the fallback implementation of PIKA_FORWARD.
-    CMAKE_FLAGS: "-DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPIKA_WITH_CXX_STANDARD=$CXXSTD \
-                  -DPIKA_WITH_CUDA=ON -DPIKA_WITH_MALLOC=system \
+    CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_CUDA=ON -DPIKA_WITH_MALLOC=system \
                   -DCMAKE_CUDA_ARCHITECTURES=$GPU_TARGET \
                   -DPIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE=OFF"
 
@@ -34,17 +32,25 @@ gcc12_cuda12_spack_image:
     - .variables_gcc12_cuda12_config
     - .dependencies_image_template
 
-gcc12_cuda12_debug_build:
-  needs: [gcc12_cuda12_spack_image]
-  extends:
-    - .variables_gcc12_cuda12_config
-    - .build_template
-
 # Test step currently commented as the cuda driver is too old on clariden:
 # https://github.com/pika-org/pika/issues/884
-#gcc12_cuda12_debug_test:
-#  needs: [gcc12_cuda12_debug_build]
+#gcc12_cuda12_build:
+#  needs: [gcc12_cuda12_spack_image]
+#  extends:
+#    - .variables_gcc12_cuda12_config
+#    - .build_template
+#
+#.gcc12_cuda12_test_commmon:
+#  needs: [gcc12_cuda12_build]
 #  extends:
 #    - .variables_gcc12_cuda12_config
 #    - .test_common_gpu_clariden_cuda
 #    - .test_template
+#
+#gcc12_cuda12_test_release:
+#  extends: [.gcc12_cuda12_test_commmon]
+#  image: $PERSIST_IMAGE_NAME_RELEASE
+#
+#gcc12_cuda12_test_debug:
+#  extends: [.gcc12_cuda12_test_commmon]
+#  image: $PERSIST_IMAGE_NAME_DEBUG

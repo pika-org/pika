@@ -11,15 +11,14 @@ include:
 .variables_clang13_config:
   variables:
     ARCH: linux-ubuntu22.04-broadwell
-    BUILD_TYPE: Debug
     COMPILER: clang@13.0.1
     CXXSTD: 20
     SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} cxxflags=-stdlib=libc++ malloc=system \
                  cxxstd=$CXXSTD +stdexec ^boost@1.79.0 ^hwloc@2.6.0 ^fmt cxxflags=-stdlib=libc++ \
                  ^stdexec@git.nvhpc-23.09.rc4=main"
-    CMAKE_FLAGS: "-DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPIKA_WITH_CXX_STANDARD=$CXXSTD \
-                  -DCMAKE_CXX_FLAGS=-stdlib=libc++ -DPIKA_WITH_MALLOC=system \
-                  -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON -DPIKA_WITH_STDEXEC=ON"
+    CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DCMAKE_CXX_FLAGS=-stdlib=libc++ \
+                  -DPIKA_WITH_MALLOC=system -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON \
+                  -DPIKA_WITH_STDEXEC=ON"
 
 clang13_spack_compiler_image:
   extends:
@@ -32,15 +31,23 @@ clang13_spack_image:
     - .variables_clang13_config
     - .dependencies_image_template
 
-clang13_debug_build:
+clang13_build:
   needs: [clang13_spack_image]
   extends:
     - .variables_clang13_config
     - .build_template
 
-clang13_debug_test:
-  needs: [clang13_debug_build]
+.clang13_test_commmon:
+  needs: [clang13_build]
   extends:
     - .variables_clang13_config
     - .test_common_mc
     - .test_template
+
+clang13_test_release:
+  extends: [.clang13_test_commmon]
+  image: $PERSIST_IMAGE_NAME_RELEASE
+
+clang13_test_debug:
+  extends: [.clang13_test_commmon]
+  image: $PERSIST_IMAGE_NAME_DEBUG
