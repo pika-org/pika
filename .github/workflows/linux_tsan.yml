@@ -33,6 +33,8 @@ jobs:
         uses: hendrikmuhs/ccache-action@v1.2
         with:
           key: ccache-linux-sanitizers-thread
+      - name: Setup tmate session
+        run: mxschmitt/action-tmate@v3
       - name: Configure
         shell: bash
         run: |
