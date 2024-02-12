@@ -14,10 +14,7 @@ function(pika_add_pseudo_target)
       pika_shorten_pseudo_target(${arg} shortened_arg)
       set(shortened_args ${shortened_args} ${shortened_arg})
     endforeach()
-    pika_debug(
-      "pika_add_pseudo_target"
-      "adding shortened pseudo target: ${shortened_args}"
-    )
+    pika_debug("pika_add_pseudo_target" "adding shortened pseudo target: ${shortened_args}")
     foreach(target ${shortened_args})
       if(NOT TARGET ${target})
         add_custom_target(${shortened_args})

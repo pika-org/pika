@@ -20,8 +20,6 @@ foreach(test ${tests})
     FOLDER "Tests/Unit/Modules/ThreadManager/"
   )
 
-  pika_add_unit_test(
-    "modules.thread_manager" ${test} ${${test}_PARAMETERS} VALGRIND
-  )
+  pika_add_unit_test("modules.thread_manager" ${test} ${${test}_PARAMETERS} VALGRIND)
 
 endforeach()

@@ -12,8 +12,7 @@ macro(pika_add_link_flag FLAG)
   set(one_value_args)
   set(multi_value_args TARGETS CONFIGURATIONS)
   cmake_parse_arguments(
-    PIKA_ADD_LINK_FLAG "${options}" "${one_value_args}" "${multi_value_args}"
-    ${ARGN}
+    PIKA_ADD_LINK_FLAG "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
   )
 
   if(PIKA_ADD_LINK_FLAG_PUBLIC)
@@ -55,8 +54,7 @@ macro(pika_add_link_flag_if_available FLAG)
   set(one_value_args NAME)
   set(multi_value_args TARGETS)
   cmake_parse_arguments(
-    PIKA_ADD_LINK_FLAG_IA "${options}" "${one_value_args}"
-    "${multi_value_args}" ${ARGN}
+    PIKA_ADD_LINK_FLAG_IA "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
   )
 
   set(_public)
@@ -78,9 +76,7 @@ macro(pika_add_link_flag_if_available FLAG)
 
   check_cxx_compiler_flag("${FLAG}" WITH_LINKER_FLAG_${_name})
   if(WITH_LINKER_FLAG_${_name})
-    pika_add_link_flag(
-      ${FLAG} TARGETS ${PIKA_ADD_LINK_FLAG_IA_TARGETS} ${_public}
-    )
+    pika_add_link_flag(${FLAG} TARGETS ${PIKA_ADD_LINK_FLAG_IA_TARGETS} ${_public})
   else()
     pika_info("Linker \"${FLAG}\" not available.")
   endif()

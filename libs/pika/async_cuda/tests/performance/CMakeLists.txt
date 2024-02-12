@@ -33,8 +33,6 @@ foreach(benchmark ${benchmarks})
   )
 
   # add a custom target for this benchmark
-  pika_add_performance_test(
-    "modules.async_cuda" ${benchmark} ${${benchmark}_PARAMETERS}
-  )
+  pika_add_performance_test("modules.async_cuda" ${benchmark} ${${benchmark}_PARAMETERS})
 
 endforeach()

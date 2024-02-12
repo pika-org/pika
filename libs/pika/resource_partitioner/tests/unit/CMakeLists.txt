@@ -23,11 +23,8 @@ set(tests
 
 set(cross_pool_injection_PARAMETERS THREADS -1 TIMEOUT 300)
 if(PIKA_WITH_SANITIZERS)
-  # This test triggers a possible false positive stack-use-after-scope in lock
-  # registration
-  list(APPEND cross_pool_injection_PARAMETERS
-       "--pika:ini=pika.lock_detection=0"
-  )
+  # This test triggers a possible false positive stack-use-after-scope in lock registration
+  list(APPEND cross_pool_injection_PARAMETERS "--pika:ini=pika.lock_detection=0")
 endif()
 set(scheduler_binding_check_PARAMETERS THREADS -1)
 
@@ -58,8 +55,6 @@ foreach(test ${tests})
     FOLDER "Tests/Unit/Modules/ResourcePartitioner/"
   )
 
-  pika_add_unit_test(
-    "modules.resource_partitioner" ${test} ${${test}_PARAMETERS} VALGRIND
-  )
+  pika_add_unit_test("modules.resource_partitioner" ${test} ${${test}_PARAMETERS} VALGRIND)
 
 endforeach()

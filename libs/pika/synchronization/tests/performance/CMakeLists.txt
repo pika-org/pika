@@ -4,9 +4,7 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(benchmarks channel_mpmc_throughput channel_mpsc_throughput
-               channel_spsc_throughput
-)
+set(benchmarks channel_mpmc_throughput channel_mpsc_throughput channel_spsc_throughput)
 
 set(channel_mpmc_throughput_PARAMETERS THREADS 2)
 set(channel_mpsc_throughput_PARAMETERS THREADS 2)

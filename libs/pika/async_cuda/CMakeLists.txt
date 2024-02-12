@@ -25,9 +25,7 @@ set(async_cuda_sources cuda_event_callback.cpp cuda_pool.cpp cuda_scheduler.cpp)
 if(PIKA_WITH_HIP)
   set(async_cuda_extra_deps roc::rocblas roc::rocsolver)
 elseif(PIKA_WITH_CUDA)
-  set(async_cuda_extra_deps pika_internal::cuda ${CUDA_CUBLAS_LIBRARIES}
-                            ${CUDA_CUSOLVER_LIBRARIES}
-  )
+  set(async_cuda_extra_deps pika_internal::cuda ${CUDA_CUBLAS_LIBRARIES} ${CUDA_CUSOLVER_LIBRARIES})
 endif()
 
 include(pika_add_module)

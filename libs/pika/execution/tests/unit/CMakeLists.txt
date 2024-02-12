@@ -44,9 +44,7 @@ foreach(test ${tests})
 
   target_link_libraries(${test}_test PRIVATE pika_execution_test_utilities)
 
-  pika_add_unit_test(
-    "modules.execution" ${test} ${${test}_PARAMETERS} THREADS 4 VALGRIND
-  )
+  pika_add_unit_test("modules.execution" ${test} ${${test}_PARAMETERS} THREADS 4 VALGRIND)
 endforeach()
 
 set_tests_properties(

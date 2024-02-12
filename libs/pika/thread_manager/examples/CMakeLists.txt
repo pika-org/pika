@@ -9,8 +9,6 @@ if(PIKA_WITH_EXAMPLES)
   pika_add_pseudo_dependencies(examples.modules examples.modules.thread_manager)
   if(PIKA_WITH_TESTS AND PIKA_WITH_TESTS_EXAMPLES)
     pika_add_pseudo_target(tests.examples.modules.thread_manager)
-    pika_add_pseudo_dependencies(
-      tests.examples.modules tests.examples.modules.thread_manager
-    )
+    pika_add_pseudo_dependencies(tests.examples.modules tests.examples.modules.thread_manager)
   endif()
 endif()

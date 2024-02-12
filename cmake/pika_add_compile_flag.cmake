@@ -12,8 +12,7 @@ function(pika_add_target_compile_option FLAG)
   set(one_value_args)
   set(multi_value_args CONFIGURATIONS LANGUAGES)
   cmake_parse_arguments(
-    target_compile_option "${options}" "${one_value_args}"
-    "${multi_value_args}" ${ARGN}
+    target_compile_option "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
   )
 
   if(target_compile_option_PUBLIC)
@@ -35,9 +34,7 @@ function(pika_add_target_compile_option FLAG)
   foreach(_lang ${_languages})
     foreach(_config ${_configurations})
       if(NOT _config STREQUAL "none")
-        set(_conf
-            "$<$<AND:$<CONFIG:${_config}>,$<COMPILE_LANGUAGE:${_lang}>>:${FLAG}>"
-        )
+        set(_conf "$<$<AND:$<CONFIG:${_config}>,$<COMPILE_LANGUAGE:${_lang}>>:${FLAG}>")
       else()
         set(_conf "$<$<COMPILE_LANGUAGE:${_lang}>:${FLAG}>")
       endif()
@@ -51,8 +48,7 @@ function(pika_add_target_compile_option_if_available FLAG)
   set(one_value_args NAME)
   set(multi_value_args CONFIGURATIONS LANGUAGES)
   cmake_parse_arguments(
-    target_compile_option_ia "${options}" "${one_value_args}"
-    "${multi_value_args}" ${ARGN}
+    target_compile_option_ia "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
   )
 
   if(target_compile_option_ia_PUBLIC)
@@ -101,8 +97,7 @@ function(pika_remove_target_compile_option FLAG)
   set(one_value_args)
   set(multi_value_args CONFIGURATIONS)
   cmake_parse_arguments(
-    PIKA_ADD_TARGET_COMPILE_OPTION "${options}" "${one_value_args}"
-    "${multi_value_args}" ${ARGN}
+    PIKA_ADD_TARGET_COMPILE_OPTION "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
   )
 
   set(_configurations "none")
@@ -111,12 +106,10 @@ function(pika_remove_target_compile_option FLAG)
   endif()
 
   get_property(
-    PIKA_TARGET_COMPILE_OPTIONS_PUBLIC_VAR GLOBAL
-    PROPERTY PIKA_TARGET_COMPILE_OPTIONS_PUBLIC
+    PIKA_TARGET_COMPILE_OPTIONS_PUBLIC_VAR GLOBAL PROPERTY PIKA_TARGET_COMPILE_OPTIONS_PUBLIC
   )
   get_property(
-    PIKA_TARGET_COMPILE_OPTIONS_PRIVATE_VAR GLOBAL
-    PROPERTY PIKA_TARGET_COMPILE_OPTIONS_PRIVATE
+    PIKA_TARGET_COMPILE_OPTIONS_PRIVATE_VAR GLOBAL PROPERTY PIKA_TARGET_COMPILE_OPTIONS_PRIVATE
   )
   set_property(GLOBAL PROPERTY PIKA_TARGET_COMPILE_OPTIONS_PUBLIC "")
   set_property(GLOBAL PROPERTY PIKA_TARGET_COMPILE_OPTIONS_PRIVATE "")
@@ -128,16 +121,12 @@ function(pika_remove_target_compile_option FLAG)
     endif()
     foreach(_flag ${PIKA_TARGET_COMPILE_OPTIONS_PUBLIC_VAR})
       if(NOT ${_flag} STREQUAL ${_conf})
-        set_property(
-          GLOBAL APPEND PROPERTY PIKA_TARGET_COMPILE_OPTIONS_PUBLIC "${_flag}"
-        )
+        set_property(GLOBAL APPEND PROPERTY PIKA_TARGET_COMPILE_OPTIONS_PUBLIC "${_flag}")
       endif()
     endforeach()
     foreach(_flag ${PIKA_TARGET_COMPILE_OPTIONS_PRIVATE_VAR})
       if(NOT ${_flag} STREQUAL ${_conf})
-        set_property(
-          GLOBAL APPEND PROPERTY PIKA_TARGET_COMPILE_OPTIONS_PRIVATE "${_flag}"
-        )
+        set_property(GLOBAL APPEND PROPERTY PIKA_TARGET_COMPILE_OPTIONS_PRIVATE "${_flag}")
       endif()
     endforeach()
   endforeach()
@@ -148,8 +137,8 @@ function(pika_add_target_compile_definition FLAG)
   set(one_value_args)
   set(multi_value_args CONFIGURATIONS)
   cmake_parse_arguments(
-    PIKA_ADD_TARGET_COMPILE_DEFINITION "${options}" "${one_value_args}"
-    "${multi_value_args}" ${ARGN}
+    PIKA_ADD_TARGET_COMPILE_DEFINITION "${options}" "${one_value_args}" "${multi_value_args}"
+    ${ARGN}
   )
 
   if(PIKA_ADD_TARGET_COMPILE_DEFINITION_PUBLIC)
@@ -182,8 +171,7 @@ function(pika_add_compile_flag_if_available FLAG)
   set(one_value_args NAME)
   set(multi_value_args CONFIGURATIONS LANGUAGES)
   cmake_parse_arguments(
-    PIKA_ADD_COMPILE_FLAG_IA "${options}" "${one_value_args}"
-    "${multi_value_args}" ${ARGN}
+    PIKA_ADD_COMPILE_FLAG_IA "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
   )
 
   set(_public)
@@ -215,8 +203,8 @@ function(pika_add_compile_flag_if_available FLAG)
     endif()
     if(PIKA_WITH_${_lang}_FLAG_${_name})
       pika_add_compile_flag(
-        ${FLAG} CONFIGURATIONS ${PIKA_ADD_COMPILE_FLAG_IA_CONFIGURATIONS}
-        LANGUAGES ${_lang} ${_public}
+        ${FLAG} CONFIGURATIONS ${PIKA_ADD_COMPILE_FLAG_IA_CONFIGURATIONS} LANGUAGES ${_lang}
+        ${_public}
       )
     else()
       pika_info("\"${FLAG}\" not available for language ${_lang}.")

@@ -61,9 +61,7 @@ function(pika_message level)
   elseif("${level}" MATCHES "INFO|info|Info")
     pika_info(${ARGN})
   else()
-    pika_error(
-      "message" "\"${level}\" is not a pika configuration logging level."
-    )
+    pika_error("message" "\"${level}\" is not a pika configuration logging level.")
   endif()
 endfunction()
 
@@ -72,30 +70,26 @@ function(pika_config_loglevel level return)
       FALSE
       PARENT_SCOPE
   )
-  if("${PIKA_CMAKE_LOGLEVEL}" MATCHES "ERROR|error|Error"
-     AND "${level}" MATCHES "ERROR|error|Error"
+  if("${PIKA_CMAKE_LOGLEVEL}" MATCHES "ERROR|error|Error" AND "${level}" MATCHES
+                                                              "ERROR|error|Error"
   )
     set(${return}
         TRUE
         PARENT_SCOPE
     )
-  elseif("${PIKA_CMAKE_LOGLEVEL}" MATCHES "WARN|warn|Warn"
-         AND "${level}" MATCHES "WARN|warn|Warn"
+  elseif("${PIKA_CMAKE_LOGLEVEL}" MATCHES "WARN|warn|Warn" AND "${level}" MATCHES "WARN|warn|Warn")
+    set(${return}
+        TRUE
+        PARENT_SCOPE
+    )
+  elseif("${PIKA_CMAKE_LOGLEVEL}" MATCHES "DEBUG|debug|Debug" AND "${level}" MATCHES
+                                                                  "DEBUG|debug|Debug"
   )
     set(${return}
         TRUE
         PARENT_SCOPE
     )
-  elseif("${PIKA_CMAKE_LOGLEVEL}" MATCHES "DEBUG|debug|Debug"
-         AND "${level}" MATCHES "DEBUG|debug|Debug"
-  )
-    set(${return}
-        TRUE
-        PARENT_SCOPE
-    )
-  elseif("${PIKA_CMAKE_LOGLEVEL}" MATCHES "INFO|info|Info"
-         AND "${level}" MATCHES "INFO|info|Info"
-  )
+  elseif("${PIKA_CMAKE_LOGLEVEL}" MATCHES "INFO|info|Info" AND "${level}" MATCHES "INFO|info|Info")
     set(${return}
         TRUE
         PARENT_SCOPE

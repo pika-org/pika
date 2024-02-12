@@ -4,8 +4,7 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(example_programs # thread_phase # Disabled due to unavailable timed
-                     # suspension
+set(example_programs # thread_phase # Disabled due to unavailable timed suspension
     os_thread_num
 )
 
@@ -27,8 +26,6 @@ foreach(example_program ${example_programs})
   pika_add_example_target_dependencies("balancing" ${example_program})
 
   if(PIKA_WITH_TESTS AND PIKA_WITH_TESTS_EXAMPLES)
-    pika_add_example_test(
-      "balancing" ${example_program} ${${example_program}_PARAMETERS} VALGRIND
-    )
+    pika_add_example_test("balancing" ${example_program} ${${example_program}_PARAMETERS} VALGRIND)
   endif()
 endforeach()

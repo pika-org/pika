@@ -4,10 +4,8 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(tests
-    config_entry const_args_init finalize_non_pika_thread pika_wait
-    scoped_finalize
-    # shutdown_suspended_thread # Disabled due to unavailable timed suspension
+set(tests config_entry const_args_init finalize_non_pika_thread pika_wait scoped_finalize
+          # shutdown_suspended_thread # Disabled due to unavailable timed suspension
 )
 
 foreach(test ${tests})
@@ -26,7 +24,5 @@ foreach(test ${tests})
     FOLDER ${folder_name}
   )
 
-  pika_add_unit_test(
-    "modules.init_runtime" ${test} ${${test}_PARAMETERS} VALGRIND
-  )
+  pika_add_unit_test("modules.init_runtime" ${test} ${${test}_PARAMETERS} VALGRIND)
 endforeach()

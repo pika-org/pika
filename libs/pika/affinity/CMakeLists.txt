@@ -6,9 +6,7 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(affinity_headers pika/affinity/affinity_data.hpp
-                     pika/affinity/parse_affinity_options.hpp
-)
+set(affinity_headers pika/affinity/affinity_data.hpp pika/affinity/parse_affinity_options.hpp)
 
 set(affinity_sources affinity_data.cpp parse_affinity_options.cpp)
 
@@ -18,8 +16,8 @@ pika_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${affinity_sources}
   HEADERS ${affinity_headers}
-  MODULE_DEPENDENCIES pika_assertion pika_config pika_datastructures pika_errors
-                      pika_topology pika_util
+  MODULE_DEPENDENCIES pika_assertion pika_config pika_datastructures pika_errors pika_topology
+                      pika_util
   DEPENDENCIES pika_internal::hwloc
   CMAKE_SUBDIRS tests
 )

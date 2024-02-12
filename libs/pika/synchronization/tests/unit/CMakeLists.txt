@@ -62,9 +62,7 @@ foreach(test ${tests})
     FOLDER "Tests/Unit/Modules/Synchronization"
   )
 
-  pika_add_unit_test(
-    "modules.synchronization" ${test} ${${test}_PARAMETERS} VALGRIND
-  )
+  pika_add_unit_test("modules.synchronization" ${test} ${${test}_PARAMETERS} VALGRIND)
 
 endforeach()
 
@@ -94,7 +92,7 @@ if(PIKA_WITH_COMPILE_ONLY_TESTS)
 
 endif()
 
-# ##############################################################################
+# ##################################################################################################
 set(subdirs shared_mutex)
 
 # add sub directories
@@ -102,7 +100,6 @@ foreach(subdir ${subdirs})
   pika_add_pseudo_target(tests.unit.modules.synchronization.${subdir})
   add_subdirectory(${subdir})
   pika_add_pseudo_dependencies(
-    tests.unit.modules.synchronization
-    tests.unit.modules.synchronization.${subdir}
+    tests.unit.modules.synchronization tests.unit.modules.synchronization.${subdir}
   )
 endforeach()

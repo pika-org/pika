@@ -10,9 +10,7 @@ include(pika_option)
 if(PIKA_WITH_TESTS)
   if(PIKA_WITH_TESTS_UNIT)
     pika_add_pseudo_target(tests.unit.modules.allocator_support)
-    pika_add_pseudo_dependencies(
-      tests.unit.modules tests.unit.modules.allocator_support
-    )
+    pika_add_pseudo_dependencies(tests.unit.modules tests.unit.modules.allocator_support)
     add_subdirectory(unit)
   endif()
 

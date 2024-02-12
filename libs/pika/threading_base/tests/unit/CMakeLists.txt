@@ -25,9 +25,7 @@ foreach(test ${tests})
     FOLDER "Tests/Unit/Modules/ThreadingBase"
   )
 
-  pika_add_unit_test(
-    "modules.threading_base" ${test} ${${test}_PARAMETERS} VALGRIND
-  )
+  pika_add_unit_test("modules.threading_base" ${test} ${${test}_PARAMETERS} VALGRIND)
 endforeach()
 
 if(PIKA_WITH_APEX)
@@ -59,7 +57,7 @@ if(PIKA_WITH_APEX)
   )
 
   set_tests_properties(
-    tests.unit.modules.threading_base.annotation_check_senders
-    PROPERTIES PASS_REGULAR_EXPRESSION "${REGEX_MATCH_S_}"
+    tests.unit.modules.threading_base.annotation_check_senders PROPERTIES PASS_REGULAR_EXPRESSION
+                                                                          "${REGEX_MATCH_S_}"
   )
 endif()

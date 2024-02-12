@@ -17,15 +17,12 @@ foreach(example_program ${example_programs})
     FOLDER "Examples/Documentation"
   )
 
-  target_link_libraries(
-    ${example_program} PRIVATE ${${example_program}_LIBRARIES}
-  )
+  target_link_libraries(${example_program} PRIVATE ${${example_program}_LIBRARIES})
   pika_add_example_target_dependencies("documentation" ${example_program})
 
   if(PIKA_WITH_TESTS AND PIKA_WITH_TESTS_EXAMPLES)
     pika_add_example_test(
-      "documentation" ${example_program} ${${example_program}_PARAMETERS}
-      VALGRIND
+      "documentation" ${example_program} ${${example_program}_PARAMETERS} VALGRIND
     )
   endif()
 endforeach()

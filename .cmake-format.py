@@ -57,7 +57,7 @@ with section("format"):
     line_ending = u"auto"
 
     # How wide to allow formatted cmake files
-    line_width = 80
+    line_width = 100
 
     # If a statement is wrapped to more than one line, than dangle the closing
     # parenthesis on its own line.

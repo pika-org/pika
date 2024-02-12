@@ -25,11 +25,9 @@ foreach(test ${tests})
 endforeach()
 
 if(APPLE)
-  string(
-    CONCAT process_mask_flag_expected_output
-           "   0: thread binding disabled, on pool \"default\"\n"
-           "   1: thread binding disabled, on pool \"default\"\n"
-           "All tests passed."
+  string(CONCAT process_mask_flag_expected_output
+                "   0: thread binding disabled, on pool \"default\"\n"
+                "   1: thread binding disabled, on pool \"default\"\n" "All tests passed."
   )
 else()
   string(
@@ -42,6 +40,6 @@ else()
 endif()
 
 set_tests_properties(
-  tests.unit.modules.runtime.process_mask_flag
-  PROPERTIES PASS_REGULAR_EXPRESSION "${process_mask_flag_expected_output}"
+  tests.unit.modules.runtime.process_mask_flag PROPERTIES PASS_REGULAR_EXPRESSION
+                                                          "${process_mask_flag_expected_output}"
 )

@@ -5,10 +5,8 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 set(datastructures_headers
-    pika/datastructures/detail/small_vector.hpp
-    pika/datastructures/detail/variant.hpp
-    pika/datastructures/member_pack.hpp
-    pika/datastructures/traits/is_tuple_like.hpp
+    pika/datastructures/detail/small_vector.hpp pika/datastructures/detail/variant.hpp
+    pika/datastructures/member_pack.hpp pika/datastructures/traits/is_tuple_like.hpp
     pika/datastructures/variant.hpp
 )
 

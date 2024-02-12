@@ -9,25 +9,19 @@ include(pika_message)
 if(PIKA_WITH_TESTS)
   if(PIKA_WITH_TESTS_UNIT)
     pika_add_pseudo_target(tests.unit.modules.tag_invoke)
-    pika_add_pseudo_dependencies(
-      tests.unit.modules tests.unit.modules.tag_invoke
-    )
+    pika_add_pseudo_dependencies(tests.unit.modules tests.unit.modules.tag_invoke)
     add_subdirectory(unit)
   endif()
 
   if(PIKA_WITH_TESTS_REGRESSIONS)
     pika_add_pseudo_target(tests.regressions.modules.tag_invoke)
-    pika_add_pseudo_dependencies(
-      tests.regressions.modules tests.regressions.modules.tag_invoke
-    )
+    pika_add_pseudo_dependencies(tests.regressions.modules tests.regressions.modules.tag_invoke)
     add_subdirectory(regressions)
   endif()
 
   if(PIKA_WITH_TESTS_BENCHMARKS)
     pika_add_pseudo_target(tests.performance.modules.tag_invoke)
-    pika_add_pseudo_dependencies(
-      tests.performance.modules tests.performance.modules.tag_invoke
-    )
+    pika_add_pseudo_dependencies(tests.performance.modules tests.performance.modules.tag_invoke)
     add_subdirectory(performance)
   endif()
 

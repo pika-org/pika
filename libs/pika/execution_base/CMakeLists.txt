@@ -19,8 +19,8 @@ set(execution_base_headers
     pika/execution_base/this_thread.hpp
 )
 
-set(execution_base_sources agent_ref.cpp any_sender.cpp
-                           spinlock_deadlock_detection.cpp this_thread.cpp
+set(execution_base_sources agent_ref.cpp any_sender.cpp spinlock_deadlock_detection.cpp
+                           this_thread.cpp
 )
 
 include(pika_add_module)

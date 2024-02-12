@@ -43,9 +43,9 @@ set(coroutines_sources
 
 if(MSVC)
   if(PIKA_WITH_SWAP_CONTEXT_EMULATION)
-    # ##########################################################################
+    # ##############################################################################################
     # Emulation of SwapContext on Windows
-    # ##########################################################################
+    # ##############################################################################################
     enable_language(ASM_MASM)
     if(NOT CMAKE_ASM_MASM_COMPILER)
       pika_error(
@@ -56,20 +56,14 @@ if(MSVC)
       )
     endif()
 
-    pika_add_config_define_namespace(
-      DEFINE PIKA_HAVE_SWAP_CONTEXT_EMULATION NAMESPACE COROUTINES
-    )
+    pika_add_config_define_namespace(DEFINE PIKA_HAVE_SWAP_CONTEXT_EMULATION NAMESPACE COROUTINES)
 
-    set(switch_to_fiber_source
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/switch_to_fiber.asm"
-    )
-    set(switch_to_fiber_object
-        "${CMAKE_CURRENT_BINARY_DIR}/switch_to_fiber.obj"
-    )
+    set(switch_to_fiber_source "${CMAKE_CURRENT_SOURCE_DIR}/src/switch_to_fiber.asm")
+    set(switch_to_fiber_object "${CMAKE_CURRENT_BINARY_DIR}/switch_to_fiber.obj")
     add_custom_command(
       OUTPUT "${switch_to_fiber_object}"
-      COMMAND "${CMAKE_ASM_MASM_COMPILER}" /Fo "${switch_to_fiber_object}"
-              /nologo /c "${switch_to_fiber_source}"
+      COMMAND "${CMAKE_ASM_MASM_COMPILER}" /Fo "${switch_to_fiber_object}" /nologo /c
+              "${switch_to_fiber_source}"
       DEPENDS "${switch_to_fiber_source}"
       VERBATIM
     )
@@ -109,7 +103,5 @@ pika_add_module(
 )
 
 if(MSVC AND PIKA_WITH_SWAP_CONTEXT_EMULATION)
-  pika_info(
-    "    SwitchToFiber emulation is enabled, using compiler: '${CMAKE_ASM_MASM_COMPILER}'"
-  )
+  pika_info("    SwitchToFiber emulation is enabled, using compiler: '${CMAKE_ASM_MASM_COMPILER}'")
 endif()

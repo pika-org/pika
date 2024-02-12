@@ -24,9 +24,7 @@ if(PIKA_WITH_VALGRIND AND NOT TARGET pika_internal::valgrind)
   endif()
 
   add_library(pika_internal::valgrind INTERFACE IMPORTED)
-  target_include_directories(
-    pika_internal::valgrind SYSTEM INTERFACE ${VALGRIND_INCLUDE_DIR}
-  )
+  target_include_directories(pika_internal::valgrind SYSTEM INTERFACE ${VALGRIND_INCLUDE_DIR})
 
   pika_add_config_define(PIKA_HAVE_VALGRIND)
 endif()

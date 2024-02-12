@@ -19,8 +19,6 @@ foreach(benchmark ${benchmarks})
     FOLDER "Benchmarks/Modules/IteratorSupport"
   )
 
-  pika_add_performance_test(
-    "modules.iterator_support" ${benchmark} ${${benchmark}_PARAMETERS}
-  )
+  pika_add_performance_test("modules.iterator_support" ${benchmark} ${${benchmark}_PARAMETERS})
 
 endforeach()

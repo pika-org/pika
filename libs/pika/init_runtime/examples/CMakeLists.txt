@@ -12,8 +12,6 @@ if(PIKA_WITH_EXAMPLES)
      AND PIKA_INIT_RUNTIME_WITH_TESTS
   )
     pika_add_pseudo_target(tests.examples.modules.init_runtime)
-    pika_add_pseudo_dependencies(
-      tests.examples.modules tests.examples.modules.init_runtime
-    )
+    pika_add_pseudo_dependencies(tests.examples.modules tests.examples.modules.init_runtime)
   endif()
 endif()

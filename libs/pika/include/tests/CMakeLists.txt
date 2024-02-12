@@ -15,17 +15,13 @@ if(PIKA_WITH_TESTS)
 
   if(PIKA_WITH_TESTS_REGRESSIONS)
     pika_add_pseudo_target(tests.regressions.modules.include)
-    pika_add_pseudo_dependencies(
-      tests.regressions.modules tests.regressions.modules.include
-    )
+    pika_add_pseudo_dependencies(tests.regressions.modules tests.regressions.modules.include)
     add_subdirectory(regressions)
   endif()
 
   if(PIKA_WITH_TESTS_BENCHMARKS)
     pika_add_pseudo_target(tests.performance.modules.include)
-    pika_add_pseudo_dependencies(
-      tests.performance.modules tests.performance.modules.include
-    )
+    pika_add_pseudo_dependencies(tests.performance.modules tests.performance.modules.include)
     add_subdirectory(performance)
   endif()
 

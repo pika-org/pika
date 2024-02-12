@@ -8,8 +8,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(resource_partitioner_headers
     pika/resource_partitioner/detail/create_partitioner.hpp
-    pika/resource_partitioner/detail/partitioner.hpp
-    pika/resource_partitioner/partitioner.hpp
+    pika/resource_partitioner/detail/partitioner.hpp pika/resource_partitioner/partitioner.hpp
     pika/resource_partitioner/partitioner_fwd.hpp
 )
 

@@ -21,10 +21,7 @@ function(pika_shorten_pseudo_target target shortened_target)
         ${args}
         PARENT_SCOPE
     )
-    pika_debug(
-      "pika_shorten_pseudo_target"
-      "shortened pseudo target: ${${shortened_target}}"
-    )
+    pika_debug("pika_shorten_pseudo_target" "shortened pseudo target: ${${shortened_target}}")
   else()
     set(${shortened_target}
         ${target}

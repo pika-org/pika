@@ -16,18 +16,13 @@ function(pika_create_configuration_summary message module_name)
     set(upper_option_suffix "_${module_name_uc}")
   endif()
 
-  get_property(
-    DEFINITIONS_VARS GLOBAL
-    PROPERTY PIKA_CONFIG_DEFINITIONS${upper_option_suffix}
-  )
+  get_property(DEFINITIONS_VARS GLOBAL PROPERTY PIKA_CONFIG_DEFINITIONS${upper_option_suffix})
   if(DEFINED DEFINITIONS_VARS)
     list(SORT DEFINITIONS_VARS)
     list(REMOVE_DUPLICATES DEFINITIONS_VARS)
   endif()
 
-  get_property(
-    _variableNames GLOBAL PROPERTY PIKA_MODULE_CONFIG_${module_name_uc}
-  )
+  get_property(_variableNames GLOBAL PROPERTY PIKA_MODULE_CONFIG_${module_name_uc})
   list(SORT _variableNames)
 
   # Only print the module configuration if options specified
@@ -54,12 +49,11 @@ function(pika_create_configuration_summary message module_name)
         string(REPLACE "_WITH_" "_HAVE_" __variableName ${_variableName})
         list(FIND DEFINITIONS_VARS ${__variableName} __pos)
         if(NOT ${__pos} EQUAL -1)
-          set(pika_config_information
-              "${pika_config_information}"
-              "\n        \"${_variableName}=${_value}\","
+          set(pika_config_information "${pika_config_information}"
+                                      "\n        \"${_variableName}=${_value}\","
           )
-        elseif(NOT ${_variableName}Category STREQUAL "Generic"
-               AND NOT ${_variableName}Category STREQUAL "Build Targets"
+        elseif(NOT ${_variableName}Category STREQUAL "Generic" AND NOT ${_variableName}Category
+                                                                   STREQUAL "Build Targets"
         )
           get_property(
             _type
@@ -91,8 +85,7 @@ function(pika_create_configuration_summary message module_name)
     )
     configure_file(
       "${PIKA_SOURCE_DIR}/cmake/templates/${_template}"
-      "${PIKA_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${_base_dir}/config_strings.hpp"
-      @ONLY
+      "${PIKA_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${_base_dir}/config_strings.hpp" @ONLY
     )
   endif()
 endfunction()

@@ -25,12 +25,8 @@ function(pika_setup_target target)
       UNITY_BUILD
   )
   set(one_value_args TYPE FOLDER NAME SOVERSION VERSION HEADER_ROOT)
-  set(multi_value_args DEPENDENCIES COMPILE_FLAGS LINK_FLAGS INSTALL_FLAGS
-                       INSTALL_PDB
-  )
-  cmake_parse_arguments(
-    target "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
-  )
+  set(multi_value_args DEPENDENCIES COMPILE_FLAGS LINK_FLAGS INSTALL_FLAGS INSTALL_PDB)
+  cmake_parse_arguments(target "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
   if(NOT TARGET ${target})
     pika_error("${target} does not represent a target")
@@ -95,8 +91,7 @@ function(pika_setup_target target)
 
   if("${_type}" STREQUAL "EXECUTABLE")
     target_compile_definitions(
-      ${target} PRIVATE "PIKA_APPLICATION_NAME=${name}"
-                        "PIKA_APPLICATION_STRING=\"${name}\""
+      ${target} PRIVATE "PIKA_APPLICATION_NAME=${name}" "PIKA_APPLICATION_STRING=\"${name}\""
     )
   endif()
 
@@ -104,8 +99,7 @@ function(pika_setup_target target)
     if(DEFINED PIKA_LIBRARY_VERSION AND DEFINED PIKA_SOVERSION)
       # set properties of generated shared library
       set_target_properties(
-        ${target} PROPERTIES VERSION ${PIKA_LIBRARY_VERSION} SOVERSION
-                                                             ${PIKA_SOVERSION}
+        ${target} PROPERTIES VERSION ${PIKA_LIBRARY_VERSION} SOVERSION ${PIKA_SOVERSION}
       )
     endif()
     if(NOT target_NONAMEPREFIX)
@@ -123,9 +117,7 @@ function(pika_setup_target target)
     target_link_libraries(${target} ${__tll_public} pika::pika)
     if(PIKA_WITH_PRECOMPILED_HEADERS_INTERNAL)
       if("${_type}" STREQUAL "EXECUTABLE")
-        target_precompile_headers(
-          ${target} REUSE_FROM pika_exe_precompiled_headers
-        )
+        target_precompile_headers(${target} REUSE_FROM pika_exe_precompiled_headers)
       endif()
     endif()
   endif()

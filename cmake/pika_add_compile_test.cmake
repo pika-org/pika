@@ -9,9 +9,7 @@ function(pika_add_compile_test category name)
   set(one_value_args SOURCE_ROOT FOLDER)
   set(multi_value_args SOURCES DEPENDENCIES)
 
-  cmake_parse_arguments(
-    ${name} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
-  )
+  cmake_parse_arguments(${name} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
   set(_additional_flags)
   if(${name}_NOLIBS)
@@ -45,8 +43,8 @@ function(pika_add_compile_test category name)
 
   add_test(
     NAME "${category}.${name}"
-    COMMAND ${CMAKE_COMMAND} --build ${PROJECT_BINARY_DIR} --target ${test_name}
-            --config $<CONFIGURATION>
+    COMMAND ${CMAKE_COMMAND} --build ${PROJECT_BINARY_DIR} --target ${test_name} --config
+            $<CONFIGURATION>
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
   )
 
@@ -70,9 +68,7 @@ function(pika_add_test_and_deps_compile_test category subcategory name)
     pika_add_compile_test_target_dependencies(tests.${category} ${name})
   else()
     pika_add_compile_test(tests.${category}.${subcategory} ${name} ${ARGN})
-    pika_add_compile_test_target_dependencies(
-      tests.${category}.${subcategory} ${name}
-    )
+    pika_add_compile_test_target_dependencies(tests.${category}.${subcategory} ${name})
   endif()
 endfunction(pika_add_test_and_deps_compile_test)
 
@@ -81,17 +77,13 @@ function(pika_add_unit_compile_test subcategory name)
 endfunction(pika_add_unit_compile_test)
 
 function(pika_add_regression_compile_test subcategory name)
-  pika_add_test_and_deps_compile_test(
-    "regressions" "${subcategory}" ${name} ${ARGN}
-  )
+  pika_add_test_and_deps_compile_test("regressions" "${subcategory}" ${name} ${ARGN})
 endfunction(pika_add_regression_compile_test)
 
 function(pika_add_headers_compile_test subcategory name)
-  # Important to keep the double quotes around subcategory otherwise it doesn't
-  # consider empty argument but just removes it
-  pika_add_test_and_deps_compile_test(
-    "headers" "${subcategory}" ${name} ${ARGN} OBJECT
-  )
+  # Important to keep the double quotes around subcategory otherwise it doesn't consider empty
+  # argument but just removes it
+  pika_add_test_and_deps_compile_test("headers" "${subcategory}" ${name} ${ARGN} OBJECT)
 endfunction(pika_add_headers_compile_test)
 
 function(pika_add_header_tests category)
@@ -99,9 +91,7 @@ function(pika_add_header_tests category)
   set(one_value_args HEADER_ROOT)
   set(multi_value_args HEADERS EXCLUDE EXCLUDE_FROM_ALL DEPENDENCIES)
 
-  cmake_parse_arguments(
-    ${category} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
-  )
+  cmake_parse_arguments(${category} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
   set(_additional_flags)
   if(${category}_NOLIBS)
@@ -129,8 +119,8 @@ function(pika_add_header_tests category)
 
       # generate the test
       file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${full_test_file}
-           "#include <${relpath}>\n" "#ifndef PIKA_MAIN_DEFINED\n"
-           "int main() { return 0; }\n" "#endif\n"
+           "#include <${relpath}>\n" "#ifndef PIKA_MAIN_DEFINED\n" "int main() { return 0; }\n"
+           "#endif\n"
       )
 
       set(exclude_all_pos -1)
@@ -146,8 +136,8 @@ function(pika_add_header_tests category)
         SOURCES "${CMAKE_CURRENT_BINARY_DIR}/${full_test_file}"
         SOURCE_ROOT "${CMAKE_CURRENT_BINARY_DIR}/${header_dir}"
         FOLDER "Tests/Headers/${header_dir}"
-        DEPENDENCIES ${${category}_DEPENDENCIES} pika_private_flags
-                     pika_public_flags ${_additional_flags}
+        DEPENDENCIES ${${category}_DEPENDENCIES} pika_private_flags pika_public_flags
+                     ${_additional_flags}
       )
 
     endif()
@@ -155,9 +145,8 @@ function(pika_add_header_tests category)
 
   set(test_name "all_headers")
   set(all_headers_test_file "${CMAKE_CURRENT_BINARY_DIR}/${test_name}.cpp")
-  file(WRITE ${all_headers_test_file}
-       ${all_headers} "#ifndef PIKA_MAIN_DEFINED\n"
-       "int main() { return 0; }\n" "#endif\n"
+  file(WRITE ${all_headers_test_file} ${all_headers} "#ifndef PIKA_MAIN_DEFINED\n"
+                                      "int main() { return 0; }\n" "#endif\n"
   )
 
   pika_add_headers_compile_test(

@@ -13,8 +13,8 @@ set(example_programs
     hello_world
     latch_example # suffix added to avoid conflict with unit tests
     pipeline1
-    # shared_mutex # Disabled due to unavailable timed suspension timed_wake #
-    # Disabled due to unavailable timed suspension
+    # shared_mutex # Disabled due to unavailable timed suspension timed_wake # Disabled due to
+    # unavailable timed suspension
     use_main_thread
 )
 
@@ -36,18 +36,14 @@ foreach(example_program ${example_programs})
     FOLDER "Examples/Quickstart"
   )
 
-  target_link_libraries(
-    ${example_program} PRIVATE ${${example_program}_LIBRARIES}
-  )
+  target_link_libraries(${example_program} PRIVATE ${${example_program}_LIBRARIES})
   pika_add_example_target_dependencies("quickstart" ${example_program})
 
   if(PIKA_WITH_TESTS
      AND PIKA_WITH_TESTS_EXAMPLES
      AND NOT ("${example_program}" IN_LIST disabled_tests)
   )
-    pika_add_example_test(
-      "quickstart" ${example_program} ${${example_program}_PARAMETERS} VALGRIND
-    )
+    pika_add_example_test("quickstart" ${example_program} ${${example_program}_PARAMETERS} VALGRIND)
   endif()
 
 endforeach()
