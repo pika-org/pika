@@ -4,6 +4,19 @@
 <!--- Distributed under the Boost Software License, Version 1.0. (See accompanying -->
 <!--- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 
+## 0.22.2 (2024-02-09)
+
+### Bugfixes
+
+- Fix incorrect worker thread numbers when using more than one thread pool. ([#1016](https://github.com/pika-org/pika/pull/1016))
+- Unrevert [#872](https://github.com/pika-org/pika/pull/872) with an indexing error fixed. ([#1017](https://github.com/pika-org/pika/pull/1017))
+
+## 0.22.1 (2024-01-29)
+
+### Bugfixes
+
+- Revert [#872](https://github.com/pika-org/pika/pull/872) as it was found to cause issues in applications. ([#1009](https://github.com/pika-org/pika/pull/1009))
+
 ## 0.22.0 (2024-01-24)
 
 ### New features

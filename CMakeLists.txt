@@ -50,8 +50,8 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # ##############################################################################
 set(PIKA_VERSION_MAJOR 0)
 set(PIKA_VERSION_MINOR 22)
-set(PIKA_VERSION_PATCH 0)
-set(PIKA_VERSION_DATE 20240124)
+set(PIKA_VERSION_PATCH 2)
+set(PIKA_VERSION_DATE 20240209)
 set(PIKA_VERSION_TAG "-trunk")
 
 set(PIKA_VERSION
