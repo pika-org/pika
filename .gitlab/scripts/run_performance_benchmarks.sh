@@ -20,6 +20,10 @@ pika_targets=(
 "task_size_test"
 "task_size_test"
 "task_size_test"
+"task_latency_test"
+"task_latency_test"
+"task_latency_test"
+"task_latency_test"
 )
 pika_test_options=(
 "--pika:ini=pika.thread_queue.init_threads_count=100 \
@@ -43,6 +47,24 @@ pika_test_options=(
 --tasks-per-thread=1000 \
 --task-size-growth-factor=1.05 \
 --target-efficiency=0.5 \
+--perftest-json"
+
+"--repetitions=1000000
+--pika:threads=1
+--perftest-json"
+
+"--repetitions=1000000
+--nostack
+--pika:threads=1
+--perftest-json"
+
+"--repetitions=1000000
+--pika:threads=2
+--perftest-json"
+
+"--repetitions=1000000
+--nostack
+--pika:threads=2
 --perftest-json"
 )
 
