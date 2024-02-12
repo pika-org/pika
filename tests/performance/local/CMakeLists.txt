@@ -17,6 +17,7 @@ set(benchmarks
     print_heterogeneous_payloads
     resume_suspend
     skynet
+    task_latency
     task_overhead
     task_overhead_report
     task_size
