@@ -120,7 +120,7 @@ namespace pika::execution::experimental {
     inline constexpr struct just_t final
     {
         template <typename... Ts>
-        constexpr PIKA_FORCEINLINE auto operator()(Ts&&... ts) const
+        constexpr PIKA_FORCEINLINE auto PIKA_STATIC_CALL_OPERATOR(Ts&&... ts)
         {
             return just_detail::just_sender<
                 typename pika::util::detail::make_index_pack<sizeof...(Ts)>::type, Ts...>{

@@ -11,7 +11,7 @@ namespace pika::detail {
     struct empty_function
     {
         template <typename... Ts>
-        constexpr void operator()(Ts&&...) const noexcept
+        constexpr void PIKA_STATIC_CALL_OPERATOR(Ts&&...) noexcept
         {
         }
     };

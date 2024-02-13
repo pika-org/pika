@@ -114,9 +114,10 @@ namespace pika::functional::detail {
         {
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename Tag, typename... Ts>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(Tag tag, Ts&&... ts) const
-                noexcept(noexcept(tag_invoke(std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...)))
-                    -> decltype(tag_invoke(std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...))
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
+            PIKA_STATIC_CALL_OPERATOR(Tag tag, Ts&&... ts) noexcept(
+                noexcept(tag_invoke(std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...)))
+                -> decltype(tag_invoke(std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...))
             {
                 return tag_invoke(tag, PIKA_FORWARD(Ts, ts)...);
             }
@@ -201,11 +202,11 @@ namespace pika::functional::detail {
         {
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(Args&&... args) const
-                noexcept(is_nothrow_tag_invocable_v<Tag, Args...>)
-                    -> tag_invoke_result_t<Tag, Args...>
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto PIKA_STATIC_CALL_OPERATOR(
+                Args&&... args) noexcept(is_nothrow_tag_invocable_v<Tag, Args...>)
+                -> tag_invoke_result_t<Tag, Args...>
             {
-                return tag_invoke(static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
+                return tag_invoke(Tag{}, PIKA_FORWARD(Args, args)...);
             }
         };
 
@@ -215,10 +216,10 @@ namespace pika::functional::detail {
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args,
                 typename Enable = std::enable_if_t<is_nothrow_tag_invocable_v<Tag, Args...>>>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
-            operator()(Args&&... args) const noexcept -> tag_invoke_result_t<Tag, decltype(args)...>
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto PIKA_STATIC_CALL_OPERATOR(
+                Args&&... args) noexcept -> tag_invoke_result_t<Tag, decltype(args)...>
             {
-                return tag_invoke(static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
+                return tag_invoke(Tag{}, PIKA_FORWARD(Args, args)...);
             }
         };
     }    // namespace tag_base_ns

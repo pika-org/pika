@@ -206,7 +206,7 @@ namespace pika::util {
         struct increment_iterator
         {
             template <typename T>
-            PIKA_HOST_DEVICE void operator()(T& iter) const
+            PIKA_HOST_DEVICE void PIKA_STATIC_CALL_OPERATOR(T& iter)
             {
                 ++iter;
             }
@@ -215,7 +215,7 @@ namespace pika::util {
         struct decrement_iterator
         {
             template <typename T>
-            PIKA_HOST_DEVICE void operator()(T& iter) const
+            PIKA_HOST_DEVICE void PIKA_STATIC_CALL_OPERATOR(T& iter)
             {
                 --iter;
             }

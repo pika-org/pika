@@ -278,7 +278,7 @@ namespace std {
     template <>
     struct hash<::pika::thread::id>
     {
-        std::size_t operator()(::pika::thread::id const& id) const
+        std::size_t PIKA_STATIC_CALL_OPERATOR(::pika::thread::id const& id)
         {
             std::hash<::pika::threads::detail::thread_id_ref_type> hasher_;
             return hasher_(id.native_handle());

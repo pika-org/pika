@@ -20,8 +20,19 @@ if(PIKA_WITH_CUDA AND NOT TARGET pika_internal::cuda)
       pika_internal::cuda INTERFACE CUDA::cublas CUDA::cusolver
     )
 
+    # nvc++ warns about the static keyword coming after the return type. We make
+    # use of static coming after the return type in the
+    # PIKA_STATIC_CALL_OPERATOR macro. Since the order has no significance we
+    # outright disable the warning.
+    target_compile_options(
+      pika_internal::cuda INTERFACE --diag_suppress storage_class_not_first
+    )
+
     if(NOT PIKA_FIND_PACKAGE)
       target_link_libraries(pika_base_libraries INTERFACE pika_internal::cuda)
+      target_compile_options(
+        pika_private_flags INTERFACE --display_error_number
+      )
     endif()
   else()
     # nvcc or clang are only used for cu files with CMake's CUDA language

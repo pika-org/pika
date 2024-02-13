@@ -118,7 +118,7 @@ namespace pika::let_error_detail {
 
                 struct start_visitor
                 {
-                    [[noreturn]] void operator()(pika::detail::monostate) const
+                    [[noreturn]] void PIKA_STATIC_CALL_OPERATOR(pika::detail::monostate)
                     {
                         PIKA_UNREACHABLE;
                     }
@@ -126,7 +126,7 @@ namespace pika::let_error_detail {
                     template <typename OperationState_,
                         typename = std::enable_if_t<!std::is_same_v<std::decay_t<OperationState_>,
                             pika::detail::monostate>>>
-                    void operator()(OperationState_& op_state) const
+                    void PIKA_STATIC_CALL_OPERATOR(OperationState_& op_state)
                     {
                         pika::execution::experimental::start(op_state);
                     }

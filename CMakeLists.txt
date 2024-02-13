@@ -1059,9 +1059,10 @@ pika_option(
 # ##############################################################################
 # C++ feature tests
 # ##############################################################################
-# Need to include the CUDA setup before the config test to enable the CUDA
-# language
+# Need to set up CUDA/HIP before feature tests to enable the respective
+# languages
 include(pika_setup_cuda)
+include(pika_setup_hip)
 include(pika_perform_cxx_feature_tests)
 pika_perform_cxx_feature_tests()
 
@@ -1482,7 +1483,6 @@ include(pika_setup_fmt)
 include(pika_setup_allocator)
 include(pika_setup_hwloc)
 include(pika_setup_mpi)
-include(pika_setup_hip)
 include(pika_setup_whip)
 include(pika_setup_apex)
 include(pika_setup_valgrind)

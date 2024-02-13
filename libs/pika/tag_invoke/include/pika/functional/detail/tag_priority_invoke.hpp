@@ -119,10 +119,10 @@ namespace pika::functional::detail {
         {
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename Tag, typename... Ts>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(Tag tag, Ts&&... ts) const
-                noexcept(
-                    noexcept(tag_override_invoke(std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...)))
-                    -> decltype(tag_override_invoke(std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...))
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
+            PIKA_STATIC_CALL_OPERATOR(Tag tag, Ts&&... ts) noexcept(
+                noexcept(tag_override_invoke(std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...)))
+                -> decltype(tag_override_invoke(std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...))
             {
                 return tag_override_invoke(tag, PIKA_FORWARD(Ts, ts)...);
             }
@@ -229,12 +229,11 @@ namespace pika::functional::detail {
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args,
                 typename Enable = std::enable_if_t<is_tag_override_invocable_v<Tag, Args&&...>>>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(Args&&... args) const
-                noexcept(is_nothrow_tag_override_invocable_v<Tag, Args...>)
-                    -> tag_override_invoke_result_t<Tag, Args&&...>
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto PIKA_STATIC_CALL_OPERATOR(
+                Args&&... args) noexcept(is_nothrow_tag_override_invocable_v<Tag, Args...>)
+                -> tag_override_invoke_result_t<Tag, Args&&...>
             {
-                return tag_override_invoke(
-                    static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
+                return tag_override_invoke(Tag{}, PIKA_FORWARD(Args, args)...);
             }
 
             // Is not tag-override-dispatchable, but tag-dispatchable
@@ -242,11 +241,11 @@ namespace pika::functional::detail {
             template <typename... Args,
                 typename Enable = std::enable_if_t<!is_tag_override_invocable_v<Tag, Args&&...> &&
                     is_tag_invocable_v<Tag, Args&&...>>>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(Args&&... args) const
-                noexcept(is_nothrow_tag_invocable_v<Tag, Args...>)
-                    -> tag_invoke_result_t<Tag, Args&&...>
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto PIKA_STATIC_CALL_OPERATOR(
+                Args&&... args) noexcept(is_nothrow_tag_invocable_v<Tag, Args...>)
+                -> tag_invoke_result_t<Tag, Args&&...>
             {
-                return tag_invoke(static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
+                return tag_invoke(Tag{}, PIKA_FORWARD(Args, args)...);
             }
 
             // Is not tag-override-dispatchable, not tag-dispatchable, but
@@ -256,12 +255,11 @@ namespace pika::functional::detail {
                 typename Enable = std::enable_if_t<!is_tag_override_invocable_v<Tag, Args&&...> &&
                     !is_tag_invocable_v<Tag, Args&&...> &&
                     is_tag_fallback_invocable_v<Tag, Args&&...>>>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(Args&&... args) const
-                noexcept(is_nothrow_tag_fallback_invocable_v<Tag, Args...>)
-                    -> tag_fallback_invoke_result_t<Tag, Args&&...>
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto PIKA_STATIC_CALL_OPERATOR(
+                Args&&... args) noexcept(is_nothrow_tag_fallback_invocable_v<Tag, Args...>)
+                -> tag_fallback_invoke_result_t<Tag, Args&&...>
             {
-                return tag_fallback_invoke(
-                    static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
+                return tag_fallback_invoke(Tag{}, PIKA_FORWARD(Args, args)...);
             }
         };
 
@@ -278,11 +276,10 @@ namespace pika::functional::detail {
             template <typename... Args,
                 typename Enable =
                     std::enable_if_t<is_nothrow_tag_override_invocable_v<Tag, Args&&...>>>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
-                Args&&... args) const noexcept -> tag_override_invoke_result_t<Tag, Args&&...>
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto PIKA_STATIC_CALL_OPERATOR(
+                Args&&... args) noexcept -> tag_override_invoke_result_t<Tag, Args&&...>
             {
-                return tag_override_invoke(
-                    static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
+                return tag_override_invoke(Tag{}, PIKA_FORWARD(Args, args)...);
             }
 
             // Is not nothrow tag-override-dispatchable, but nothrow
@@ -292,10 +289,10 @@ namespace pika::functional::detail {
                 typename Enable =
                     std::enable_if_t<!is_nothrow_tag_override_invocable_v<Tag, Args&&...> &&
                         is_nothrow_tag_invocable_v<Tag, Args&&...>>>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
-            operator()(Args&&... args) const noexcept -> tag_invoke_result_t<Tag, Args&&...>
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto PIKA_STATIC_CALL_OPERATOR(
+                Args&&... args) noexcept -> tag_invoke_result_t<Tag, Args&&...>
             {
-                return tag_invoke(static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
+                return tag_invoke(Tag{}, PIKA_FORWARD(Args, args)...);
             }
 
             // Is not nothrow tag-override-dispatchable, not nothrow
@@ -306,11 +303,10 @@ namespace pika::functional::detail {
                     std::enable_if_t<!is_nothrow_tag_override_invocable_v<Tag, Args&&...> &&
                         !is_nothrow_tag_invocable_v<Tag, Args&&...> &&
                         is_nothrow_tag_fallback_invocable_v<Tag, Args&&...>>>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
-                Args&&... args) const noexcept -> tag_fallback_invoke_result_t<Tag, Args&&...>
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto PIKA_STATIC_CALL_OPERATOR(
+                Args&&... args) noexcept -> tag_fallback_invoke_result_t<Tag, Args&&...>
             {
-                return tag_fallback_invoke(
-                    static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
+                return tag_fallback_invoke(Tag{}, PIKA_FORWARD(Args, args)...);
             }
         };
     }    // namespace tag_base_ns

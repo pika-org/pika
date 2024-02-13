@@ -239,12 +239,12 @@ namespace pika::execution::experimental {
     inline constexpr struct drop_operation_state_t final
     {
         template <typename Sender, PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender>)>
-        constexpr PIKA_FORCEINLINE auto operator()(Sender&& sender) const
+        constexpr PIKA_FORCEINLINE auto PIKA_STATIC_CALL_OPERATOR(Sender&& sender)
         {
             return drop_op_state_detail::drop_op_state_sender<Sender>{PIKA_FORWARD(Sender, sender)};
         }
 
-        constexpr PIKA_FORCEINLINE auto operator()() const
+        constexpr PIKA_FORCEINLINE auto PIKA_STATIC_CALL_OPERATOR()
         {
             return detail::partial_algorithm<drop_operation_state_t>{};
         }

@@ -422,30 +422,33 @@ namespace pika {
 #undef PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER
     }    // namespace require_started_detail
 
+#if defined(PIKA_HAVE_STDEXEC)
+# define PIKA_DETAIL_REQUIRE_STARTED_MODE_PARAMETER
+# define PIKA_DETAIL_REQUIRE_STARTED_MODE_ARGUMENT
+#else
+# define PIKA_DETAIL_REQUIRE_STARTED_MODE_PARAMETER                                                \
+     , require_started_mode mode = require_started_mode::terminate_on_unstarted
+# define PIKA_DETAIL_REQUIRE_STARTED_MODE_ARGUMENT , mode
+#endif
+
     namespace execution::experimental {
         inline constexpr struct require_started_t final
         {
             template <typename Sender, PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender>)>
-            constexpr PIKA_FORCEINLINE auto operator()(Sender&& sender
-#if !defined(PIKA_HAVE_STDEXEC)
-                ,
-                require_started_mode mode = require_started_mode::terminate_on_unstarted
-#endif
-            ) const
+            constexpr PIKA_FORCEINLINE auto
+            PIKA_STATIC_CALL_OPERATOR(Sender&& sender PIKA_DETAIL_REQUIRE_STARTED_MODE_PARAMETER)
             {
-                return require_started_detail::require_started_sender<Sender>
-                {
-                    PIKA_FORWARD(Sender, sender)
-#if !defined(PIKA_HAVE_STDEXEC)
-                    , mode
-#endif
-                };
+                return require_started_detail::require_started_sender<Sender>{
+                    PIKA_FORWARD(Sender, sender) PIKA_DETAIL_REQUIRE_STARTED_MODE_ARGUMENT};
             }
 
-            constexpr PIKA_FORCEINLINE auto operator()() const
+            constexpr PIKA_FORCEINLINE auto PIKA_STATIC_CALL_OPERATOR()
             {
                 return detail::partial_algorithm<require_started_t>{};
             }
         } require_started{};
     }    // namespace execution::experimental
+
+#undef PIKA_DETAIL_REQUIRE_STARTED_MODE_PARAMETER
+#undef PIKA_DETAIL_REQUIRE_STARTED_MODE_ARGUMENT
 }    // namespace pika

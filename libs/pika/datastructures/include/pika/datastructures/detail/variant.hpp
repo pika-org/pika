@@ -451,7 +451,7 @@ namespace pika::variant_ns {
 #else
       struct equal_to {
         template <typename Lhs, typename Rhs>
-        inline constexpr auto operator()(Lhs &&lhs, Rhs &&rhs) const
+        inline constexpr auto PIKA_STATIC_CALL_OPERATOR(Lhs &&lhs, Rhs &&rhs)
           PIKA_VARIANT_RETURN(lib::forward<Lhs>(lhs) == lib::forward<Rhs>(rhs))
       };
 #endif
@@ -461,7 +461,7 @@ namespace pika::variant_ns {
 #else
       struct not_equal_to {
         template <typename Lhs, typename Rhs>
-        inline constexpr auto operator()(Lhs &&lhs, Rhs &&rhs) const
+        inline constexpr auto PIKA_STATIC_CALL_OPERATOR(Lhs &&lhs, Rhs &&rhs)
           PIKA_VARIANT_RETURN(lib::forward<Lhs>(lhs) != lib::forward<Rhs>(rhs))
       };
 #endif
@@ -471,7 +471,7 @@ namespace pika::variant_ns {
 #else
       struct less {
         template <typename Lhs, typename Rhs>
-        inline constexpr auto operator()(Lhs &&lhs, Rhs &&rhs) const
+        inline constexpr auto PIKA_STATIC_CALL_OPERATOR(Lhs &&lhs, Rhs &&rhs)
           PIKA_VARIANT_RETURN(lib::forward<Lhs>(lhs) < lib::forward<Rhs>(rhs))
       };
 #endif
@@ -481,7 +481,7 @@ namespace pika::variant_ns {
 #else
       struct greater {
         template <typename Lhs, typename Rhs>
-        inline constexpr auto operator()(Lhs &&lhs, Rhs &&rhs) const
+        inline constexpr auto PIKA_STATIC_CALL_OPERATOR(Lhs &&lhs, Rhs &&rhs)
           PIKA_VARIANT_RETURN(lib::forward<Lhs>(lhs) > lib::forward<Rhs>(rhs))
       };
 #endif
@@ -491,7 +491,7 @@ namespace pika::variant_ns {
 #else
       struct less_equal {
         template <typename Lhs, typename Rhs>
-        inline constexpr auto operator()(Lhs &&lhs, Rhs &&rhs) const
+        inline constexpr auto PIKA_STATIC_CALL_OPERATOR(Lhs &&lhs, Rhs &&rhs)
           PIKA_VARIANT_RETURN(lib::forward<Lhs>(lhs) <= lib::forward<Rhs>(rhs))
       };
 #endif
@@ -501,7 +501,7 @@ namespace pika::variant_ns {
 #else
       struct greater_equal {
         template <typename Lhs, typename Rhs>
-        inline constexpr auto operator()(Lhs &&lhs, Rhs &&rhs) const
+        inline constexpr auto PIKA_STATIC_CALL_OPERATOR(Lhs &&lhs, Rhs &&rhs)
           PIKA_VARIANT_RETURN(lib::forward<Lhs>(lhs) >= lib::forward<Rhs>(rhs))
       };
 #endif
@@ -1117,14 +1117,14 @@ namespace pika::variant_ns {
         template <std::size_t I, bool Dummy = true>
         struct get_alt_impl {
           template <typename V>
-          inline constexpr AUTO_REFREF operator()(V &&v) const
+          inline constexpr AUTO_REFREF PIKA_STATIC_CALL_OPERATOR(V &&v)
             AUTO_REFREF_RETURN(get_alt_impl<I - 1>{}(lib::forward<V>(v).tail_))
         };
 
         template <bool Dummy>
         struct get_alt_impl<0, Dummy> {
           template <typename V>
-          inline constexpr AUTO_REFREF operator()(V &&v) const
+          inline constexpr AUTO_REFREF PIKA_STATIC_CALL_OPERATOR(V &&v)
             AUTO_REFREF_RETURN(lib::forward<V>(v).head_)
         };
 
@@ -1407,13 +1407,13 @@ namespace pika::variant_ns {
 
           template <std::size_t... Is>
           struct impl<lib::index_sequence<Is...>> {
-            inline constexpr AUTO operator()() const
+            inline constexpr AUTO PIKA_STATIC_CALL_OPERATOR()
               AUTO_RETURN(&dispatch<Is...>)
           };
 
           template <typename Is, std::size_t... Js, typename... Ls>
           struct impl<Is, lib::index_sequence<Js...>, Ls...> {
-            inline constexpr AUTO operator()() const
+            inline constexpr AUTO PIKA_STATIC_CALL_OPERATOR()
               AUTO_RETURN(
                   make_farray(impl<lib::push_back_t<Is, Js>, Ls...>{}()...))
           };
@@ -1746,7 +1746,7 @@ namespace pika::variant_ns {
 #pragma warning(disable : 4100)
 #endif
       template <typename Alt>
-      inline void operator()(Alt &alt) const noexcept { alt.~Alt(); }
+      inline void PIKA_STATIC_CALL_OPERATOR(Alt &alt) noexcept { alt.~Alt(); }
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
@@ -1820,7 +1820,7 @@ namespace pika::variant_ns {
 #ifndef PIKA_VARIANT_GENERIC_LAMBDAS
       struct ctor {
         template <typename LhsAlt, typename RhsAlt>
-        inline void operator()(LhsAlt &lhs_alt, RhsAlt &&rhs_alt) const {
+        inline void PIKA_STATIC_CALL_OPERATOR(LhsAlt &lhs_alt, RhsAlt &&rhs_alt) {
           constructor::construct_alt(lhs_alt,
                                      lib::forward<RhsAlt>(rhs_alt).value);
         }
@@ -1977,7 +1977,7 @@ namespace pika::variant_ns {
       template <typename That>
       struct assigner {
         template <typename ThisAlt, typename ThatAlt>
-        inline void operator()(ThisAlt &this_alt, ThatAlt &&that_alt) const {
+        inline void PIKA_STATIC_CALL_OPERATOR(ThisAlt &this_alt, ThatAlt &&that_alt) {
           self->assign_alt(this_alt, lib::forward<ThatAlt>(that_alt).value);
         }
         assignment *self;
@@ -1997,10 +1997,10 @@ namespace pika::variant_ns {
 #endif
         } else {
           struct {
-            void operator()(std::true_type) const {
+            void PIKA_STATIC_CALL_OPERATOR(std::true_type) {
               this_->emplace<I>(lib::forward<Arg>(arg_));
             }
-            void operator()(std::false_type) const {
+            void PIKA_STATIC_CALL_OPERATOR(std::false_type) {
               this_->emplace<I>(T(lib::forward<Arg>(arg_)));
             }
             assignment *this_;
@@ -2174,7 +2174,7 @@ namespace pika::variant_ns {
 #ifndef PIKA_VARIANT_GENERIC_LAMBDAS
       struct swapper {
         template <typename ThisAlt, typename ThatAlt>
-        inline void operator()(ThisAlt &this_alt, ThatAlt &that_alt) const {
+        inline void PIKA_STATIC_CALL_OPERATOR(ThisAlt &this_alt, ThatAlt &that_alt) {
           using std::swap;
           swap(this_alt.value, that_alt.value);
         }
@@ -2447,7 +2447,7 @@ namespace pika::variant_ns {
     struct generic_get_impl {
       constexpr generic_get_impl(int) noexcept {}
 
-      constexpr AUTO_REFREF operator()(V &&v) const
+      constexpr AUTO_REFREF PIKA_STATIC_CALL_OPERATOR(V &&v)
         AUTO_REFREF_RETURN(
             access::variant::get_alt<I>(lib::forward<V>(v)).value)
     };
@@ -2542,7 +2542,7 @@ namespace pika::variant_ns {
     template <typename RelOp>
     struct convert_to_bool {
       template <typename Lhs, typename Rhs>
-      inline constexpr bool operator()(Lhs &&lhs, Rhs &&rhs) const {
+      inline constexpr bool PIKA_STATIC_CALL_OPERATOR(Lhs &&lhs, Rhs &&rhs) {
         static_assert(std::is_convertible<lib::invoke_result_t<RelOp, Lhs, Rhs>,
                                           bool>::value,
                       "relational operators must return a type"
@@ -2796,7 +2796,7 @@ namespace std {
     using argument_type = pika::variant_ns::variant<Ts...>;
     using result_type = std::size_t;
 
-    inline result_type operator()(const argument_type &v) const {
+    inline result_type PIKA_STATIC_CALL_OPERATOR(const argument_type &v) {
       using pika::variant_ns::detail::visitation::variant;
       std::size_t result =
           v.valueless_by_exception()
@@ -2821,7 +2821,7 @@ namespace std {
 #ifndef PIKA_VARIANT_GENERIC_LAMBDAS
     struct hasher {
       template <typename Alt>
-      inline std::size_t operator()(const Alt &alt) const {
+      inline std::size_t PIKA_STATIC_CALL_OPERATOR(const Alt &alt) {
         using alt_type = pika::variant_ns::lib::decay_t<Alt>;
         using value_type =
             pika::variant_ns::lib::remove_const_t<typename alt_type::value_type>;
@@ -2840,7 +2840,7 @@ namespace std {
     using argument_type = pika::variant_ns::monostate;
     using result_type = std::size_t;
 
-    inline result_type operator()(const argument_type &) const noexcept {
+    inline result_type PIKA_STATIC_CALL_OPERATOR(const argument_type &) noexcept {
       return 66740831;  // return a fundamentally attractive random value.
     }
   };

@@ -28,15 +28,15 @@ namespace pika::execution::experimental {
             template <typename Query,
                 PIKA_CONCEPT_REQUIRES_(pika::functional::detail::is_nothrow_tag_invocable_v<
                     forwarding_scheduler_query_t, Query const&>)>
-            constexpr bool operator()(Query const& query) const noexcept
+            constexpr bool PIKA_STATIC_CALL_OPERATOR(Query const& query) noexcept
             {
-                return pika::functional::detail::tag_invoke(*this, query);
+                return pika::functional::detail::tag_invoke(forwarding_scheduler_query_t{}, query);
             }
 
             template <typename Query,
                 PIKA_CONCEPT_REQUIRES_(!pika::functional::detail::is_nothrow_tag_invocable_v<
                                        forwarding_scheduler_query_t, Query const&>)>
-            constexpr bool operator()(Query const&) const noexcept
+            constexpr bool PIKA_STATIC_CALL_OPERATOR(Query const&) noexcept
             {
                 return false;
             }
@@ -49,16 +49,18 @@ namespace pika::execution::experimental {
                         pika::functional::detail::is_nothrow_tag_invocable_v<
                             get_forward_progress_guarantee_t, Scheduler const&>)>
             constexpr forward_progress_guarantee
-            operator()(Scheduler const& scheduler) const noexcept
+            PIKA_STATIC_CALL_OPERATOR(Scheduler const& scheduler) noexcept
             {
-                return pika::functional::detail::tag_invoke(*this, scheduler);
+                return pika::functional::detail::tag_invoke(
+                    get_forward_progress_guarantee_t{}, scheduler);
             }
 
             template <typename Scheduler,
                 PIKA_CONCEPT_REQUIRES_(is_scheduler_v<Scheduler> &&
                     !pika::functional::detail::is_nothrow_tag_invocable_v<
                         get_forward_progress_guarantee_t, Scheduler const&>)>
-            constexpr forward_progress_guarantee operator()(Scheduler const&) const noexcept
+            constexpr forward_progress_guarantee
+            PIKA_STATIC_CALL_OPERATOR(Scheduler const&) noexcept
             {
                 return forward_progress_guarantee::weakly_parallel;
             }

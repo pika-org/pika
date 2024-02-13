@@ -32,10 +32,10 @@
 namespace pika::sync_wait_detail {
     struct sync_wait_error_visitor
     {
-        void operator()(std::exception_ptr ep) const { std::rethrow_exception(ep); }
+        void PIKA_STATIC_CALL_OPERATOR(std::exception_ptr ep) { std::rethrow_exception(ep); }
 
         template <typename Error>
-        void operator()(Error& error) const
+        void PIKA_STATIC_CALL_OPERATOR(Error& error)
         {
             throw error;
         }
