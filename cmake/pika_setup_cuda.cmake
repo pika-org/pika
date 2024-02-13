@@ -30,6 +30,9 @@ if(PIKA_WITH_CUDA AND NOT TARGET pika_internal::cuda)
 
     if(NOT PIKA_FIND_PACKAGE)
       target_link_libraries(pika_base_libraries INTERFACE pika_internal::cuda)
+      target_compile_options(
+        pika_private_flags INTERFACE --display_error_number
+      )
     endif()
   else()
     # nvcc or clang are only used for cu files with CMake's CUDA language
