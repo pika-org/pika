@@ -44,13 +44,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
-#if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
-    using default_local_priority_queue_scheduler_terminated_queue = lockfree_lifo;
-#else
-    using default_local_priority_queue_scheduler_terminated_queue = lockfree_fifo;
-#endif
-
-    ///////////////////////////////////////////////////////////////////////////
     /// The local_priority_queue_scheduler maintains exactly one queue of work
     /// items (threads) per OS thread, where this OS thread pulls its next work
     /// from. Additionally it maintains separate queues: several for high
@@ -59,8 +52,7 @@ namespace pika::threads::detail {
     /// other work is executed. Low priority threads are executed by the last
     /// OS thread whenever no other work is available.
     template <typename Mutex = std::mutex, typename PendingQueuing = lockfree_fifo,
-        typename StagedQueuing = lockfree_fifo,
-        typename TerminatedQueuing = default_local_priority_queue_scheduler_terminated_queue>
+        typename StagedQueuing = lockfree_fifo, typename TerminatedQueuing = lockfree_fifo>
     class PIKA_EXPORT local_priority_queue_scheduler : public scheduler_base
     {
     public:
