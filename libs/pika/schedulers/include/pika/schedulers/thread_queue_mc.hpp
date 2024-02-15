@@ -60,10 +60,8 @@ namespace pika::threads::detail {
         using task_description = threads::detail::thread_init_data;
         using thread_description = threads::detail::thread_data;
 
-        using work_items_type =
-            concurrentqueue_fifo::apply<threads::detail::thread_id_ref_type>::type;
-
-        using task_items_type = concurrentqueue_fifo::apply<task_description>::type;
+        using work_items_type = lockfree_fifo::apply<threads::detail::thread_id_ref_type>::type;
+        using task_items_type = lockfree_fifo::apply<task_description>::type;
 
     public:
         // ----------------------------------------------------------------
