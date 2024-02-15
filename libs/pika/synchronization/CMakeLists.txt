@@ -30,9 +30,8 @@ set(synchronization_headers
     pika/synchronization/stop_token.hpp
 )
 
-set(synchronization_sources
-    barrier.cpp detail/condition_variable.cpp detail/counting_semaphore.cpp
-    detail/sliding_semaphore.cpp mutex.cpp stop_token.cpp
+set(synchronization_sources barrier.cpp detail/condition_variable.cpp detail/counting_semaphore.cpp
+                            detail/sliding_semaphore.cpp mutex.cpp stop_token.cpp
 )
 
 include(pika_add_module)

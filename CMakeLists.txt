@@ -18,45 +18,38 @@ cmake_minimum_required(VERSION 3.22 FATAL_ERROR)
 
 # Overrides must go before the project() statement, otherwise they are ignored.
 
-# ##############################################################################
+# ##################################################################################################
 # C++ overrides
-# ##############################################################################
-set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/pika_cxx_overrides.cmake"
-)
+# ##################################################################################################
+set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX "${CMAKE_CURRENT_SOURCE_DIR}/cmake/pika_cxx_overrides.cmake")
 
-# ##############################################################################
+# ##################################################################################################
 # Build type (needs to be handled before project command below)
-# ##############################################################################
+# ##################################################################################################
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE
       "Release"
-      CACHE
-        STRING
-        "Configuration type (one of Debug, RelWithDebInfo, Release, MinSizeRel)"
-        FORCE
+      CACHE STRING "Configuration type (one of Debug, RelWithDebInfo, Release, MinSizeRel)" FORCE
   )
 endif()
 
-# ##############################################################################
+# ##################################################################################################
 # project metadata
-# ##############################################################################
+# ##################################################################################################
 project(pika CXX)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-# ##############################################################################
+# ##################################################################################################
 # Build all of pika
-# ##############################################################################
+# ##################################################################################################
 set(PIKA_VERSION_MAJOR 0)
 set(PIKA_VERSION_MINOR 22)
 set(PIKA_VERSION_PATCH 2)
 set(PIKA_VERSION_DATE 20240209)
 set(PIKA_VERSION_TAG "-trunk")
 
-set(PIKA_VERSION
-    "${PIKA_VERSION_MAJOR}.${PIKA_VERSION_MINOR}.${PIKA_VERSION_PATCH}"
-)
+set(PIKA_VERSION "${PIKA_VERSION_MAJOR}.${PIKA_VERSION_MINOR}.${PIKA_VERSION_PATCH}")
 set(PIKA_LIBRARY_VERSION "${PIKA_VERSION}")
 set(PIKA_SOVERSION ${PIKA_VERSION_MAJOR})
 set(PIKA_PACKAGE_NAME pika)
@@ -64,9 +57,9 @@ set(PIKA_PACKAGE_NAME pika)
 set(PIKA_SOURCE_DIR "${PROJECT_SOURCE_DIR}")
 set(PIKA_BINARY_DIR "${PROJECT_BINARY_DIR}")
 
-# ##############################################################################
+# ##################################################################################################
 # CMake configuration
-# ##############################################################################
+# ##################################################################################################
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
 
 include(GNUInstallDirs)
@@ -79,9 +72,8 @@ pika_set_cmake_policy(CMP0060 NEW)
 pika_set_cmake_policy(CMP0074 NEW)
 pika_set_cmake_policy(CMP0144 NEW)
 
-# We save the passed compiler flag to a special variable. This is needed for our
-# build system unit tests. Some flags might influence the created symbols
-# (_GLIBCXX_DEBUG i look at you)
+# We save the passed compiler flag to a special variable. This is needed for our build system unit
+# tests. Some flags might influence the created symbols (_GLIBCXX_DEBUG i look at you)
 set(CMAKE_CXX_FLAGS_SAFE ${CMAKE_CXX_FLAGS})
 include(pika_check_cxx_standard)
 
@@ -105,19 +97,19 @@ endif()
 pika_info("CMake version: ${CMAKE_VERSION}")
 pika_info("pika version: ${PIKA_VERSION}")
 
-# ##############################################################################
+# ##################################################################################################
 # reset cached variables that need to be re-filled
 unset(PIKA_EXPORT_TARGETS CACHE)
 unset(PIKA_EXPORT_INTERNAL_TARGETS CACHE)
 unset(PIKA_LIBS CACHE)
 unset(PIKA_ENABLED_MODULES CACHE)
 
-# ##############################################################################
+# ##################################################################################################
 # Set up dummy compiler flags targets
-# ##############################################################################
+# ##################################################################################################
 include(pika_compiler_flags_targets)
 
-# ##############################################################################
+# ##################################################################################################
 # Setup platform for which pika should be compiled.
 #
 include(pika_set_platform)
@@ -129,23 +121,22 @@ endif()
 if(MSVC)
   pika_option(
     PIKA_WITH_VS_STARTUP_PROJECT STRING
-    "Define the startup project for the pika solution (default: ALL_BUILD)."
-    "ALL_BUILD" ADVANCED
+    "Define the startup project for the pika solution (default: ALL_BUILD)." "ALL_BUILD" ADVANCED
   )
   if(PIKA_WITH_VS_STARTUP_PROJECT)
     set(VS_STARTUP_PROJECT ${PIKA_WITH_VS_STARTUP_PROJECT})
   endif()
 endif()
 
-# ##############################################################################
+# ##################################################################################################
 
-# ##############################################################################
+# ##################################################################################################
 # Set our build options cache variables which are customizable by users
 #
 
 pika_option(
-  PIKA_WITH_DEPRECATION_WARNINGS BOOL
-  "Enable warnings for deprecated facilities. (default: ON)" ON ADVANCED
+  PIKA_WITH_DEPRECATION_WARNINGS BOOL "Enable warnings for deprecated facilities. (default: ON)" ON
+  ADVANCED
 )
 
 if(PIKA_WITH_DEPRECATION_WARNINGS)
@@ -161,11 +152,9 @@ if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
     set(PIKA_WITH_STACKOVERFLOW_DETECTION_DEFAULT ON)
   endif()
   pika_option(
-    PIKA_WITH_STACKOVERFLOW_DETECTION
-    BOOL
+    PIKA_WITH_STACKOVERFLOW_DETECTION BOOL
     "Enable stackoverflow detection for pika threads/coroutines. (default: OFF, debug: ON)"
-    ${PIKA_WITH_STACKOVERFLOW_DETECTION_DEFAULT}
-    ADVANCED
+    ${PIKA_WITH_STACKOVERFLOW_DETECTION_DEFAULT} ADVANCED
   )
   if(PIKA_WITH_STACKOVERFLOW_DETECTION)
     pika_add_config_define(PIKA_HAVE_STACKOVERFLOW_DETECTION)
@@ -181,8 +170,8 @@ pika_option(
   STRINGS "system;tcmalloc;jemalloc;mimalloc;tbbmalloc;custom"
 )
 
-# On some systems jemalloc requires an explicit prefix for the API functions
-# (i.e. 'malloc' is called 'je_malloc', etc.)
+# On some systems jemalloc requires an explicit prefix for the API functions (i.e. 'malloc' is
+# called 'je_malloc', etc.)
 if(${PIKA_WITH_MALLOC} STREQUAL "jemalloc")
   if(MSVC)
     set(PIKA_WITH_JEMALLOC_PREFIX_DEFAULT "je_")
@@ -190,35 +179,27 @@ if(${PIKA_WITH_MALLOC} STREQUAL "jemalloc")
     set(PIKA_WITH_JEMALLOC_PREFIX_DEFAULT "<none>")
   endif()
   pika_option(
-    PIKA_WITH_JEMALLOC_PREFIX STRING
-    "Optional naming prefix for jemalloc API functions"
+    PIKA_WITH_JEMALLOC_PREFIX STRING "Optional naming prefix for jemalloc API functions"
     ${PIKA_WITH_JEMALLOC_PREFIX_DEFAULT} ADVANCED
   )
 endif()
 
 # Logging configuration
-pika_option(
-  PIKA_WITH_LOGGING BOOL "Build pika with logging enabled (default: ON)." ON
-  ADVANCED
-)
+pika_option(PIKA_WITH_LOGGING BOOL "Build pika with logging enabled (default: ON)." ON ADVANCED)
 if(PIKA_WITH_LOGGING)
   pika_add_config_define(PIKA_HAVE_LOGGING)
 endif()
 
 # Compiler related build options
 pika_option(
-  PIKA_WITH_GCC_VERSION_CHECK BOOL
-  "Don't ignore version reported by gcc (default: ON)" ON ADVANCED
+  PIKA_WITH_GCC_VERSION_CHECK BOOL "Don't ignore version reported by gcc (default: ON)" ON ADVANCED
 )
 
-pika_option(
-  PIKA_WITH_COMPILER_WARNINGS BOOL "Enable compiler warnings (default: ON)" ON
-  ADVANCED
-)
+pika_option(PIKA_WITH_COMPILER_WARNINGS BOOL "Enable compiler warnings (default: ON)" ON ADVANCED)
 
 pika_option(
-  PIKA_WITH_COMPILER_WARNINGS_AS_ERRORS BOOL
-  "Turn compiler warnings into errors (default: OFF)" OFF ADVANCED
+  PIKA_WITH_COMPILER_WARNINGS_AS_ERRORS BOOL "Turn compiler warnings into errors (default: OFF)"
+  OFF ADVANCED
 )
 
 pika_option(
@@ -249,24 +230,20 @@ else()
 endif()
 
 pika_option(
-  PIKA_WITH_UNITY_BUILD BOOL
-  "Enable unity build for certain build targets (default: ON)" ON ADVANCED
+  PIKA_WITH_UNITY_BUILD BOOL "Enable unity build for certain build targets (default: ON)" ON
+  ADVANCED
 )
 if(PIKA_WITH_UNITY_BUILD)
   set(PIKA_WITH_UNITY_BUILD_OPTION UNITY_BUILD)
 endif()
 
 pika_option(
-  PIKA_WITH_PRECOMPILED_HEADERS
-  BOOL
-  "Enable precompiled headers for certain build targets (experimental) (default: OFF)"
-  OFF
-  ADVANCED
+  PIKA_WITH_PRECOMPILED_HEADERS BOOL
+  "Enable precompiled headers for certain build targets (experimental) (default: OFF)" OFF ADVANCED
 )
 if(PIKA_WITH_PRECOMPILED_HEADERS)
   set(PIKA_WITH_PRECOMPILED_HEADERS_INTERNAL ON)
-  # Only create the targets here. They will be set up later once all modules are
-  # known.
+  # Only create the targets here. They will be set up later once all modules are known.
   add_library(pika_precompiled_headers OBJECT libs/src/dummy.cpp)
   add_executable(pika_exe_precompiled_headers libs/src/dummy.cpp)
 
@@ -274,26 +251,20 @@ if(PIKA_WITH_PRECOMPILED_HEADERS)
   set_target_properties(pika_exe_precompiled_headers PROPERTIES FOLDER "Core")
 endif()
 
-# ##############################################################################
+# ##################################################################################################
+pika_option(PIKA_WITH_EXAMPLES BOOL "Build examples (default: OFF)" OFF CATEGORY "Build Targets")
+pika_option(PIKA_WITH_TESTS BOOL "Build tests (default: OFF)" OFF CATEGORY "Build Targets")
 pika_option(
-  PIKA_WITH_EXAMPLES BOOL "Build examples (default: OFF)" OFF
+  PIKA_WITH_TESTS_BENCHMARKS BOOL "Build benchmark tests (default: ON)" ON DEPENDS "PIKA_WITH_TESTS"
   CATEGORY "Build Targets"
 )
 pika_option(
-  PIKA_WITH_TESTS BOOL "Build tests (default: OFF)" OFF
-  CATEGORY "Build Targets"
-)
-pika_option(
-  PIKA_WITH_TESTS_BENCHMARKS BOOL "Build benchmark tests (default: ON)" ON
-  DEPENDS "PIKA_WITH_TESTS" CATEGORY "Build Targets"
-)
-pika_option(
-  PIKA_WITH_TESTS_REGRESSIONS BOOL "Build regression tests (default: ON)" ON
-  DEPENDS "PIKA_WITH_TESTS" CATEGORY "Build Targets"
-)
-pika_option(
-  PIKA_WITH_TESTS_UNIT BOOL "Build unit tests (default: ON)" ON DEPENDS
+  PIKA_WITH_TESTS_REGRESSIONS BOOL "Build regression tests (default: ON)" ON DEPENDS
   "PIKA_WITH_TESTS" CATEGORY "Build Targets"
+)
+pika_option(
+  PIKA_WITH_TESTS_UNIT BOOL "Build unit tests (default: ON)" ON DEPENDS "PIKA_WITH_TESTS"
+  CATEGORY "Build Targets"
 )
 pika_option(
   PIKA_WITH_TESTS_HEADERS
@@ -327,35 +298,30 @@ pika_option(
 )
 pika_option(
   PIKA_WITH_COMPILE_ONLY_TESTS BOOL
-  "Create build system support for compile time only tests (default: ON)" ON
-  DEPENDS "PIKA_WITH_TESTS" CATEGORY "Build Targets"
+  "Create build system support for compile time only tests (default: ON)" ON DEPENDS
+  "PIKA_WITH_TESTS" CATEGORY "Build Targets"
 )
 pika_option(
   PIKA_WITH_FAIL_COMPILE_TESTS BOOL
-  "Create build system support for fail compile tests (default: ON)" ON DEPENDS
-  "PIKA_WITH_TESTS" CATEGORY "Build Targets"
-)
-
-pika_option(
-  PIKA_WITH_TOOLS BOOL "Build tools (default: OFF)" OFF ADVANCED
+  "Create build system support for fail compile tests (default: ON)" ON DEPENDS "PIKA_WITH_TESTS"
   CATEGORY "Build Targets"
 )
+
+pika_option(PIKA_WITH_TOOLS BOOL "Build tools (default: OFF)" OFF ADVANCED CATEGORY "Build Targets")
 
 set(PIKA_FULL_RPATH_DEFAULT ON)
 if(APPLE OR WIN32)
   set(PIKA_FULL_RPATH_DEFAULT OFF)
 endif()
 pika_option(
-  PIKA_WITH_FULL_RPATH
-  BOOL
+  PIKA_WITH_FULL_RPATH BOOL
   "Build and link libraries and executables with full RPATHs (default: ${PIKA_FULL_RPATH_DEFAULT})"
-  ${PIKA_FULL_RPATH_DEFAULT}
-  ADVANCED
+  ${PIKA_FULL_RPATH_DEFAULT} ADVANCED
 )
 
-# ##############################################################################
+# ##################################################################################################
 # CUDA/HIP configuration
-# ##############################################################################
+# ##################################################################################################
 set(CUDA_OPTION_STRING "Enable support for CUDA (default: OFF)")
 set(HIP_OPTION_STRING "Enable support for HIP (default: OFF)")
 pika_option(PIKA_WITH_CUDA BOOL "${CUDA_OPTION_STRING}" OFF ADVANCED)
@@ -390,14 +356,12 @@ else()
   )
 endif()
 
-# ##############################################################################
+# ##################################################################################################
 # Threadlevel Nice option
-# ##############################################################################
+# ##################################################################################################
 pika_option(
-  PIKA_WITH_NICE_THREADLEVEL
-  BOOL
-  "Set pika worker threads to have high NICE level (may impact performance) (default: OFF)"
-  OFF
+  PIKA_WITH_NICE_THREADLEVEL BOOL
+  "Set pika worker threads to have high NICE level (may impact performance) (default: OFF)" OFF
   ADVANCED
 )
 if(PIKA_WITH_NICE_THREADLEVEL)
@@ -407,9 +371,9 @@ else()
   pika_info("Nice threadlevel is disabled.")
 endif()
 
-# ##############################################################################
+# ##################################################################################################
 # Utility configuration
-# ##############################################################################
+# ##################################################################################################
 set(PIKA_HIDDEN_VISIBILITY_DEFAULT ON)
 if(CMAKE_COMPILER_IS_GNUCXX)
   if("${PIKA_PLATFORM_UC}" STREQUAL "ANDROID")
@@ -458,36 +422,30 @@ pika_option(
   CATEGORY "Thread Manager"
   ADVANCED
 )
-pika_add_config_define(
-  PIKA_HAVE_MAX_NUMA_DOMAIN_COUNT ${PIKA_WITH_MAX_NUMA_DOMAIN_COUNT}
-)
+pika_add_config_define(PIKA_HAVE_MAX_NUMA_DOMAIN_COUNT ${PIKA_WITH_MAX_NUMA_DOMAIN_COUNT})
 
 pika_option(
-  PIKA_WITH_THREAD_STACK_MMAP BOOL
-  "Use mmap for stack allocation on appropriate platforms" ON
+  PIKA_WITH_THREAD_STACK_MMAP BOOL "Use mmap for stack allocation on appropriate platforms" ON
   CATEGORY "Thread Manager"
   ADVANCED
 )
 
 pika_option(
   PIKA_WITH_THREAD_MANAGER_IDLE_BACKOFF BOOL
-  "pika scheduler threads do exponential backoff on idle queues (default: ON)"
-  ON
+  "pika scheduler threads do exponential backoff on idle queues (default: ON)" ON
   CATEGORY "Thread Manager"
   ADVANCED
 )
 
 pika_option(
-  PIKA_WITH_STACKTRACES BOOL
-  "Attach backtraces to pika exceptions (default: ON)" ON
+  PIKA_WITH_STACKTRACES BOOL "Attach backtraces to pika exceptions (default: ON)" ON
   CATEGORY "Thread Manager"
   ADVANCED
 )
 
 pika_option(
   PIKA_WITH_THREAD_BACKTRACE_ON_SUSPENSION BOOL
-  "Enable thread stack back trace being captured on suspension (default: OFF)"
-  OFF
+  "Enable thread stack back trace being captured on suspension (default: OFF)" OFF
   CATEGORY "Thread Manager"
   ADVANCED
 )
@@ -499,8 +457,7 @@ pika_option(
   ADVANCED
 )
 
-# We create a target to contain libraries like rt, dl etc. in order to remove
-# global variables
+# We create a target to contain libraries like rt, dl etc. in order to remove global variables
 add_library(pika_base_libraries INTERFACE)
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
@@ -520,17 +477,14 @@ if(PIKA_WITH_STACKTRACES OR PIKA_WITH_THREAD_BACKTRACE_ON_SUSPENSION)
     CATEGORY "Thread Manager"
     ADVANCED
   )
-  pika_add_config_define(
-    PIKA_HAVE_THREAD_BACKTRACE_DEPTH ${PIKA_WITH_THREAD_BACKTRACE_DEPTH}
+  pika_add_config_define(PIKA_HAVE_THREAD_BACKTRACE_DEPTH ${PIKA_WITH_THREAD_BACKTRACE_DEPTH})
+
+  if(("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux") AND ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"
+                                                    OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   )
 
-  if(("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
-     AND ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"
-          OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-  )
-
-    # This option is OFF by default as we have seen random segfaults out in the
-    # wild if this is enabled.
+    # This option is OFF by default as we have seen random segfaults out in the wild if this is
+    # enabled.
     pika_option(
       PIKA_WITH_STACKTRACES_STATIC_SYMBOLS BOOL
       "Thread stack back trace will resolve static symbols (default: OFF)" OFF
@@ -538,8 +492,7 @@ if(PIKA_WITH_STACKTRACES OR PIKA_WITH_THREAD_BACKTRACE_ON_SUSPENSION)
       ADVANCED
     )
     pika_add_config_define(
-      PIKA_HAVE_STACKTRACES_STATIC_SYMBOLS
-      ${PIKA_WITH_STACKTRACES_STATIC_SYMBOLS}
+      PIKA_HAVE_STACKTRACES_STATIC_SYMBOLS ${PIKA_WITH_STACKTRACES_STATIC_SYMBOLS}
     )
 
     # Demangling can segfault in certain configurations.
@@ -560,8 +513,7 @@ if(PIKA_WITH_THREAD_BACKTRACE_ON_SUSPENSION)
 
   pika_option(
     PIKA_WITH_THREAD_FULLBACKTRACE_ON_SUSPENSION BOOL
-    "Enable thread stack back trace being captured on suspension (default: OFF)"
-    OFF
+    "Enable thread stack back trace being captured on suspension (default: OFF)" OFF
     CATEGORY "Thread Manager"
     ADVANCED
   )
@@ -572,8 +524,7 @@ endif()
 
 pika_option(
   PIKA_WITH_THREAD_TARGET_ADDRESS BOOL
-  "Enable storing target address in thread for NUMA awareness (default: OFF)"
-  OFF
+  "Enable storing target address in thread for NUMA awareness (default: OFF)" OFF
   CATEGORY "Thread Manager"
   ADVANCED
 )
@@ -594,10 +545,8 @@ if(PIKA_WITH_THREAD_QUEUE_WAITTIME)
 endif()
 
 pika_option(
-  PIKA_WITH_THREAD_IDLE_RATES
-  BOOL
-  "Enable measuring the percentage of overhead times spent in the scheduler (default: OFF)"
-  OFF
+  PIKA_WITH_THREAD_IDLE_RATES BOOL
+  "Enable measuring the percentage of overhead times spent in the scheduler (default: OFF)" OFF
   CATEGORY "Thread Manager"
   ADVANCED
 )
@@ -617,10 +566,8 @@ if(PIKA_WITH_THREAD_IDLE_RATES)
 endif()
 
 pika_option(
-  PIKA_WITH_THREAD_CUMULATIVE_COUNTS
-  BOOL
-  "Enable keeping track of cumulative thread counts in the schedulers (default: OFF)"
-  OFF
+  PIKA_WITH_THREAD_CUMULATIVE_COUNTS BOOL
+  "Enable keeping track of cumulative thread counts in the schedulers (default: OFF)" OFF
   CATEGORY "Thread Manager"
   ADVANCED
 )
@@ -630,10 +577,8 @@ if(PIKA_WITH_THREAD_CUMULATIVE_COUNTS)
 endif()
 
 pika_option(
-  PIKA_WITH_THREAD_STEALING_COUNTS
-  BOOL
-  "Enable keeping track of counts of thread stealing incidents in the schedulers (default: OFF)"
-  OFF
+  PIKA_WITH_THREAD_STEALING_COUNTS BOOL
+  "Enable keeping track of counts of thread stealing incidents in the schedulers (default: OFF)" OFF
   CATEGORY "Thread Manager"
   ADVANCED
 )
@@ -644,8 +589,7 @@ endif()
 
 pika_option(
   PIKA_WITH_COROUTINE_COUNTERS BOOL
-  "Enable keeping track of coroutine creation and rebind counts (default: OFF)"
-  OFF
+  "Enable keeping track of coroutine creation and rebind counts (default: OFF)" OFF
   CATEGORY "Thread Manager"
   ADVANCED
 )
@@ -676,19 +620,15 @@ if(PIKA_WITH_SCHEDULER_LOCAL_STORAGE)
 endif()
 
 pika_option(
-  PIKA_WITH_SPINLOCK_POOL_NUM STRING
-  "Number of elements a spinlock pool manages (default: 128)" 128
+  PIKA_WITH_SPINLOCK_POOL_NUM STRING "Number of elements a spinlock pool manages (default: 128)" 128
   CATEGORY "Thread Manager"
   ADVANCED
 )
 
-pika_add_config_define(
-  PIKA_HAVE_SPINLOCK_POOL_NUM ${PIKA_WITH_SPINLOCK_POOL_NUM}
-)
+pika_add_config_define(PIKA_HAVE_SPINLOCK_POOL_NUM ${PIKA_WITH_SPINLOCK_POOL_NUM})
 
 pika_option(
-  PIKA_WITH_SPINLOCK_DEADLOCK_DETECTION BOOL
-  "Enable spinlock deadlock detection (default: OFF)" OFF
+  PIKA_WITH_SPINLOCK_DEADLOCK_DETECTION BOOL "Enable spinlock deadlock detection (default: OFF)" OFF
   CATEGORY "Thread Manager"
   ADVANCED
 )
@@ -704,10 +644,8 @@ pika_option(
 )
 
 pika_option(
-  PIKA_WITH_MPI
-  BOOL
-  "Enable support for returning futures from MPI asynchronous calls (default: ON)"
-  OFF
+  PIKA_WITH_MPI BOOL
+  "Enable support for returning futures from MPI asynchronous calls (default: ON)" OFF
   CATEGORY "MPI"
 )
 
@@ -731,8 +669,7 @@ if(PIKA_WITH_MPI)
   endif()
 
   pika_option(
-    PIKA_WITH_MPI_MULTITHREADED BOOL
-    "Turn on MPI multithreading support (default: ON)." ON
+    PIKA_WITH_MPI_MULTITHREADED BOOL "Turn on MPI multithreading support (default: ON)." ON
     CATEGORY "MPI"
     ADVANCED
   )
@@ -741,17 +678,15 @@ if(PIKA_WITH_MPI)
   endif()
 
   if(MSVC)
-    # FIXME: add OpenMPI specific flag here for now as the
-    # pika_add_compile_flag() below does not add the extra options to the top
-    # level directory
+    # FIXME: add OpenMPI specific flag here for now as the pika_add_compile_flag() below does not
+    # add the extra options to the top level directory
     pika_add_config_define(OMPI_IMPORTS)
   endif()
 endif()
 
 # External libraries/frameworks used by sme of the examples and benchmarks
 pika_option(
-  PIKA_WITH_EXAMPLES_OPENMP BOOL
-  "Enable examples requiring OpenMP support (default: OFF)." OFF
+  PIKA_WITH_EXAMPLES_OPENMP BOOL "Enable examples requiring OpenMP support (default: OFF)." OFF
   CATEGORY "Build Targets" DEPENDS "PIKA_WITH_EXAMPLES"
   ADVANCED
 )
@@ -759,8 +694,7 @@ if(PIKA_WITH_EXAMPLES_OPENMP)
   find_package(OpenMP REQUIRED)
 endif()
 pika_option(
-  PIKA_WITH_EXAMPLES_TBB BOOL
-  "Enable examples requiring TBB support (default: OFF)." OFF
+  PIKA_WITH_EXAMPLES_TBB BOOL "Enable examples requiring TBB support (default: OFF)." OFF
   CATEGORY "Build Targets" DEPENDS "PIKA_WITH_EXAMPLES"
   ADVANCED
 )
@@ -771,8 +705,7 @@ if(PIKA_WITH_EXAMPLES_TBB)
   endif()
 endif()
 pika_option(
-  PIKA_WITH_EXAMPLES_QTHREADS BOOL
-  "Enable examples requiring QThreads support (default: OFF)." OFF
+  PIKA_WITH_EXAMPLES_QTHREADS BOOL "Enable examples requiring QThreads support (default: OFF)." OFF
   CATEGORY "Build Targets" DEPENDS "PIKA_WITH_EXAMPLES"
   ADVANCED
 )
@@ -783,8 +716,7 @@ if(PIKA_WITH_EXAMPLES_QTHREADS)
   endif()
 endif()
 pika_option(
-  PIKA_WITH_EXAMPLES_HDF5 BOOL
-  "Enable examples requiring HDF5 support (default: OFF)." OFF
+  PIKA_WITH_EXAMPLES_HDF5 BOOL "Enable examples requiring HDF5 support (default: OFF)." OFF
   CATEGORY "Build Targets" DEPENDS "PIKA_WITH_EXAMPLES"
   ADVANCED
 )
@@ -798,8 +730,7 @@ endif()
 # Disabling the Qt example on BG/Q as GUIs don't make sense there anyways
 if(NOT "${PIKA_PLATFORM_UC}" STREQUAL "BLUEGENEQ")
   pika_option(
-    PIKA_WITH_EXAMPLES_QT4 BOOL
-    "Enable examples requiring Qt4 support (default: OFF)." OFF
+    PIKA_WITH_EXAMPLES_QT4 BOOL "Enable examples requiring Qt4 support (default: OFF)." OFF
     CATEGORY "Build Targets" DEPENDS "PIKA_WITH_EXAMPLES"
     ADVANCED
   )
@@ -825,15 +756,14 @@ pika_option(
 )
 
 pika_option(
-  PIKA_WITH_TESTS_VALGRIND_OPTIONS STRING
-  "Use these options when running tests under valgrind." "--error-exitcode=1"
+  PIKA_WITH_TESTS_VALGRIND_OPTIONS STRING "Use these options when running tests under valgrind."
+  "--error-exitcode=1"
   CATEGORY "Debugging"
   ADVANCED
 )
 
 pika_option(
-  PIKA_WITH_SANITIZERS BOOL "Configure with sanitizer instrumentation support."
-  OFF
+  PIKA_WITH_SANITIZERS BOOL "Configure with sanitizer instrumentation support." OFF
   CATEGORY "Debugging"
   ADVANCED
 )
@@ -859,8 +789,7 @@ pika_option(
   ADVANCED
 )
 pika_option(
-  PIKA_WITH_THREAD_DEBUG_INFO BOOL
-  "Enable thread debugging information (default: OFF)" OFF
+  PIKA_WITH_THREAD_DEBUG_INFO BOOL "Enable thread debugging information (default: OFF)" OFF
   CATEGORY "Debugging"
   ADVANCED
 )
@@ -896,8 +825,8 @@ pika_option(
 )
 
 pika_option(
-  PIKA_WITH_TESTS_DEBUG_LOG_DESTINATION STRING
-  "Destination for test debug logs (default: cout)" "cout"
+  PIKA_WITH_TESTS_DEBUG_LOG_DESTINATION STRING "Destination for test debug logs (default: cout)"
+  "cout"
   CATEGORY "Debugging"
   ADVANCED
 )
@@ -912,18 +841,15 @@ pika_option(
 )
 
 pika_option(
-  PIKA_WITH_PARALLEL_TESTS_BIND_NONE
-  BOOL
-  "Pass --pika:bind=none to tests that may run in parallel (cmake -j flag) (default: OFF)"
-  OFF
+  PIKA_WITH_PARALLEL_TESTS_BIND_NONE BOOL
+  "Pass --pika:bind=none to tests that may run in parallel (cmake -j flag) (default: OFF)" OFF
   CATEGORY "Debugging"
   ADVANCED
 )
 
-# Special option to enable testing of FreeBSD specific limitations This is
-# purely an option allowing to test whether things work properly on systems that
-# may not report cores in the topology at all (e.g. FreeBSD). There is no need
-# for a user to every enable this.
+# Special option to enable testing of FreeBSD specific limitations This is purely an option allowing
+# to test whether things work properly on systems that may not report cores in the topology at all
+# (e.g. FreeBSD). There is no need for a user to every enable this.
 pika_option(
   PIKA_WITH_ADDITIONAL_HWLOC_TESTING
   BOOL
@@ -936,16 +862,11 @@ pika_option(
 )
 
 if(PIKA_WITH_ADDITIONAL_HWLOC_TESTING)
-  pika_add_config_define_namespace(
-    DEFINE PIKA_HAVE_ADDITIONAL_HWLOC_TESTING NAMESPACE TOPOLOGY
-  )
+  pika_add_config_define_namespace(DEFINE PIKA_HAVE_ADDITIONAL_HWLOC_TESTING NAMESPACE TOPOLOGY)
 endif()
 
 # If APEX is defined, the action timers need thread debug info.
-pika_option(
-  PIKA_WITH_APEX BOOL "Enable APEX instrumentation support." OFF
-  CATEGORY "Profiling"
-)
+pika_option(PIKA_WITH_APEX BOOL "Enable APEX instrumentation support." OFF CATEGORY "Profiling")
 if(PIKA_WITH_APEX)
   pika_add_config_define(PIKA_HAVE_APEX)
   pika_add_config_define(PIKA_HAVE_THREAD_DESCRIPTION)
@@ -955,10 +876,7 @@ if(PIKA_WITH_APEX)
   endif()
 endif()
 
-pika_option(
-  PIKA_WITH_TRACY BOOL "Enable Tracy instrumentation support." OFF
-  CATEGORY "Profiling"
-)
+pika_option(PIKA_WITH_TRACY BOOL "Enable Tracy instrumentation support." OFF CATEGORY "Profiling")
 if(PIKA_WITH_TRACY)
   pika_add_config_define(PIKA_HAVE_TRACY)
   pika_add_config_define(PIKA_HAVE_THREAD_DESCRIPTION)
@@ -981,8 +899,7 @@ if(PIKA_WITH_THREAD_DEBUG_INFO)
 endif()
 
 pika_option(
-  PIKA_WITH_STDEXEC BOOL "Use stdexec for sender/receiver functionality." OFF
-  CATEGORY "Advanced"
+  PIKA_WITH_STDEXEC BOOL "Use stdexec for sender/receiver functionality." OFF CATEGORY "Advanced"
 )
 if(PIKA_WITH_STDEXEC)
   pika_add_config_define(PIKA_HAVE_STDEXEC)
@@ -990,19 +907,15 @@ endif()
 
 # Developer tools
 pika_option(
-  PIKA_WITH_VIM_YCM BOOL
-  "Generate completion file for VIM YouCompleteMe plugin" OFF ADVANCED
+  PIKA_WITH_VIM_YCM BOOL "Generate completion file for VIM YouCompleteMe plugin" OFF ADVANCED
 )
 
-# ##############################################################################
+# ##################################################################################################
 # Special diagnostic flags, do not enable by default, only if needed
 pika_option(
-  PIKA_WITH_CHECK_MODULE_DEPENDENCIES
-  BOOL
+  PIKA_WITH_CHECK_MODULE_DEPENDENCIES BOOL
   "Verify that no modules are cross-referenced from a different module category \
-  (default: OFF)"
-  OFF
-  ADVANCED
+  (default: OFF)" OFF ADVANCED
 )
 
 # Check for compiler compatibility
@@ -1044,31 +957,26 @@ elseif("${PIKA_PLATFORM_UC}" STREQUAL "BLUEGENEQ")
   pika_info("Compiling for BlueGene/Q")
 endif()
 
-# ##############################################################################
-# Some special handling of the compilation is need on build infrastructure for
-# generating packages for target architecture, see issue #3575
+# ##################################################################################################
+# Some special handling of the compilation is need on build infrastructure for generating packages
+# for target architecture, see issue #3575
 
 pika_option(
-  PIKA_WITH_BUILD_BINARY_PACKAGE
-  BOOL
-  "Build pika on the build infrastructure on any LINUX distribution (default: OFF)."
-  OFF
-  ADVANCED
+  PIKA_WITH_BUILD_BINARY_PACKAGE BOOL
+  "Build pika on the build infrastructure on any LINUX distribution (default: OFF)." OFF ADVANCED
 )
 
-# ##############################################################################
+# ##################################################################################################
 # C++ feature tests
-# ##############################################################################
-# Need to set up CUDA/HIP before feature tests to enable the respective
-# languages
+# ##################################################################################################
+# Need to set up CUDA/HIP before feature tests to enable the respective languages
 include(pika_setup_cuda)
 include(pika_setup_hip)
 include(pika_perform_cxx_feature_tests)
 pika_perform_cxx_feature_tests()
 
-# ##############################################################################
-# Set configuration option to use Boost.Context or not. This depends on the
-# platform.
+# ##################################################################################################
+# Set configuration option to use Boost.Context or not. This depends on the platform.
 set(__use_generic_coroutine_context OFF)
 if(APPLE)
   set(__use_generic_coroutine_context ON)
@@ -1077,31 +985,28 @@ if("${PIKA_PLATFORM_UC}" STREQUAL "BLUEGENEQ")
   set(__use_generic_coroutine_context ON)
 endif()
 pika_option(
-  PIKA_WITH_BOOST_CONTEXT BOOL
-  "Use Boost.Context for user-level thread context switching."
+  PIKA_WITH_BOOST_CONTEXT BOOL "Use Boost.Context for user-level thread context switching."
   ${__use_generic_coroutine_context} ADVANCED
 )
 
-# ##############################################################################
+# ##################################################################################################
 # Check for misc system headers
-# ##############################################################################
+# ##################################################################################################
 
 pika_check_for_unistd_h(DEFINITIONS PIKA_HAVE_UNISTD_H)
 
 if(NOT WIN32)
-  # ############################################################################
+  # ################################################################################################
   # Macro definitions for system headers
-  # ############################################################################
+  # ################################################################################################
   add_definitions(-D_GNU_SOURCE)
 
-  # ############################################################################
+  # ################################################################################################
   # System libraries
-  # ############################################################################
+  # ################################################################################################
   if(NOT MSVC)
     if(PIKA_CXX11_STD_ATOMIC_LIBRARIES)
-      target_link_libraries(
-        pika_base_libraries INTERFACE ${PIKA_CXX11_STD_ATOMIC_LIBRARIES}
-      )
+      target_link_libraries(pika_base_libraries INTERFACE ${PIKA_CXX11_STD_ATOMIC_LIBRARIES})
     endif()
   endif()
 
@@ -1137,17 +1042,14 @@ if(WIN32)
     # even VS2017 has an ICE when compiling with -Ob2
     pika_add_target_compile_option(-Ob1 PUBLIC CONFIGURATIONS Release)
 
-    # VS2012 and above has a special flag for improving the debug experience by
-    # adding more symbol information to the build (-d2Zi)
+    # VS2012 and above has a special flag for improving the debug experience by adding more symbol
+    # information to the build (-d2Zi)
     pika_add_target_compile_option(-d2Zi+ PUBLIC CONFIGURATIONS RelWithDebInfo)
 
-    # VS2013 and above know how to do link time constant data segment folding
-    # VS2013 update 2 and above know how to remove debug information for
-    # non-referenced functions and data (-Zc:inline)
+    # VS2013 and above know how to do link time constant data segment folding VS2013 update 2 and
+    # above know how to remove debug information for non-referenced functions and data (-Zc:inline)
     pika_add_target_compile_option(-Zc:inline PUBLIC)
-    pika_add_target_compile_option(
-      -Gw PUBLIC CONFIGURATIONS Release RelWithDebInfo MinSizeRel
-    )
+    pika_add_target_compile_option(-Gw PUBLIC CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
     pika_add_target_compile_option(-Zo PUBLIC CONFIGURATIONS RelWithDebInfo)
 
     # Exceptions
@@ -1156,21 +1058,19 @@ if(WIN32)
       # assume conforming (throwing) operator new implementations
       pika_add_target_compile_option(-Zc:throwingNew PUBLIC)
 
-      # enable faster linking (requires VS2015 Update1) disabled for now as this
-      # flag crashes debugger pika_remove_link_flag(/debug CONFIGURATIONS Debug)
+      # enable faster linking (requires VS2015 Update1) disabled for now as this flag crashes
+      # debugger pika_remove_link_flag(/debug CONFIGURATIONS Debug)
       # pika_add_link_flag(/debug:fastlink CONFIGURATIONS Debug)
 
-      # Update 2 requires to set _ENABLE_ATOMIC_ALIGNMENT_FIX for it to compile
-      # atomics
+      # Update 2 requires to set _ENABLE_ATOMIC_ALIGNMENT_FIX for it to compile atomics
       pika_add_config_cond_define(_ENABLE_ATOMIC_ALIGNMENT_FIX)
 
-      # Update 3 allows to flag rvalue misuses and enforces strict string const-
-      # qualification conformance
+      # Update 3 allows to flag rvalue misuses and enforces strict string const- qualification
+      # conformance
       pika_add_target_compile_option(-Zc:rvalueCast PUBLIC)
       pika_add_target_compile_option(-Zc:strictStrings PUBLIC)
 
-      # Update 8 requires to set _ENABLE_EXTENDED_ALIGNED_STORAGE for it to
-      # compile atomics
+      # Update 8 requires to set _ENABLE_EXTENDED_ALIGNED_STORAGE for it to compile atomics
       pika_add_config_cond_define(_ENABLE_EXTENDED_ALIGNED_STORAGE)
 
       # Make sure that __cplusplus is properly defined
@@ -1200,9 +1100,9 @@ if(WIN32)
 
   target_link_libraries(pika_base_libraries INTERFACE psapi shlwapi)
 
-  # ############################################################################
+  # ################################################################################################
   # Macro definitions for system headers
-  # ############################################################################
+  # ################################################################################################
   add_definitions(-D_WINDOWS)
   add_definitions(-D_WIN32)
   pika_add_config_cond_define(_WIN32_WINNT 0x0602)
@@ -1215,9 +1115,9 @@ if(WIN32)
   pika_add_config_cond_define(_CRT_NON_CONFORMING_SWPRINTFS)
   pika_add_config_cond_define(_SILENCE_FPOS_SEEKPOS_DEPRECATION_WARNING)
 
-  # ############################################################################
+  # ################################################################################################
   # Boost
-  # ############################################################################
+  # ################################################################################################
 
   pika_add_config_cond_define(BOOST_USE_WINDOWS_H)
   if(NOT CMAKE_CL_64)
@@ -1234,12 +1134,11 @@ if(PIKA_WITH_COMPILER_WARNINGS)
   if(MSVC) # Adding special warning settings for the MSVC compiler ...
     pika_add_compile_flag(-W3)
 
-    # MSVC2012/2013 are overeager to report 'qualifier applied to function type
-    # has no meaning; ignored'
+    # MSVC2012/2013 are overeager to report 'qualifier applied to function type has no meaning;
+    # ignored'
     pika_add_compile_flag(-wd4180)
 
-    # Boost.Lockfree triggers 'warning C4307: '+' : integral constant overflow'
-    # which is benign
+    # Boost.Lockfree triggers 'warning C4307: '+' : integral constant overflow' which is benign
     pika_add_compile_flag(-wd4307)
 
     # object allocated on the heap may not be aligned
@@ -1251,9 +1150,9 @@ if(PIKA_WITH_COMPILER_WARNINGS)
     # 'int': forcing value to bool 'true' or 'false' (performance warning)
     pika_add_compile_flag(-wd4800)
 
-    # vcpkg enables the /utf-8 option which causes (benign) warnings in the
-    # Spirit headers: The file contains a character starting at offset ... that
-    # is illegal in the current source character set
+    # vcpkg enables the /utf-8 option which causes (benign) warnings in the Spirit headers: The file
+    # contains a character starting at offset ... that is illegal in the current source character
+    # set
     pika_add_compile_flag(-wd4828)
 
   else() # Trial and error approach for any other compiler ...
@@ -1265,12 +1164,11 @@ if(PIKA_WITH_COMPILER_WARNINGS)
     pika_add_compile_flag_if_available(-Wno-attributes)
     pika_add_compile_flag_if_available(-Wno-cast-align)
 
-    # We do not in general guarantee ABI compatibility between C++ standards, so
-    # we ignore this warning
+    # We do not in general guarantee ABI compatibility between C++ standards, so we ignore this
+    # warning
     pika_add_compile_flag_if_available(-Wno-noexcept-type)
 
-    # Be extra strict about format checks Boost.Logging is built on fprintf,
-    # sadly
+    # Be extra strict about format checks Boost.Logging is built on fprintf, sadly
     pika_add_compile_flag_if_available(-Wformat=2)
     pika_add_compile_flag_if_available(-Wno-format-nonliteral)
 
@@ -1303,9 +1201,7 @@ if(PIKA_WITH_STDEXEC AND CMAKE_COMPILER_IS_GNUCXX)
   pika_add_compile_flag_if_available(-Wno-non-template-friend)
 endif()
 
-if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION
-                                VERSION_GREATER_EQUAL 12.0
-)
+if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 12.0)
   pika_add_compile_flag_if_available(-Wno-interference-size)
 endif()
 
@@ -1334,8 +1230,7 @@ else()
 
   # VLAs are a GNU extensions that we forbid as they are not supported on MSVC
   pika_add_compile_flag_if_available(-Werror=vla)
-  # No return statement in a non-void function can lead to garbage return values
-  # in GCC.
+  # No return statement in a non-void function can lead to garbage return values in GCC.
   pika_add_compile_flag_if_available(-Werror=return-type)
 
   # We get false positives all over the place with this.
@@ -1352,8 +1247,8 @@ else()
   # Silence warning about __sync_fetch_and_nand changing semantics
   pika_add_compile_flag_if_available(-Wno-sync-nand)
 
-  # Silence warnings about deleting polymorphic objects with non-virtual dtors.
-  # These come from within Boost.
+  # Silence warnings about deleting polymorphic objects with non-virtual dtors. These come from
+  # within Boost.
   if(CMAKE_COMPILER_IS_GNUCXX)
     pika_add_compile_flag_if_available(-Wno-delete-non-virtual-dtor)
   endif()
@@ -1384,8 +1279,7 @@ else()
   endif()
 
   if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
-    # Disable the following warnings: #1170: invalid redeclaration of nested
-    # class
+    # Disable the following warnings: #1170: invalid redeclaration of nested class
     pika_add_compile_flag_if_available(-wd1170)
     # #858: type qualifier on return type is meaningless
     pika_add_compile_flag_if_available(-wd858)
@@ -1393,8 +1287,7 @@ else()
     pika_add_compile_flag_if_available(-wd1098)
     # #488: template parameter not used in declaring the parameter type
     pika_add_compile_flag_if_available(-wd488)
-    # #2203: cast discards qualifiers from target type (needed for mvapich2 mpi
-    # header)
+    # #2203: cast discards qualifiers from target type (needed for mvapich2 mpi header)
     pika_add_compile_flag_if_available(-wd2203)
     # #2536: cannot specify explicit initializer for arrays
     pika_add_compile_flag_if_available(-wd2536)
@@ -1412,14 +1305,12 @@ else()
      OR "${__target_arch}" STREQUAL "ia64"
   )
 
-    # rdtsc is an x86 instruction that reads the value of a CPU time stamp
-    # counter. rdtscp is an extension to rdtsc. The difference is that rdtscp is
-    # a serializing instruction.
+    # rdtsc is an x86 instruction that reads the value of a CPU time stamp counter. rdtscp is an
+    # extension to rdtsc. The difference is that rdtscp is a serializing instruction.
     pika_cpuid("rdtsc" PIKA_WITH_RDTSC DEFINITIONS PIKA_HAVE_RDTSC)
 
-    # One can not assume if RDTSCP is available on the hardware of the build
-    # infrastructure, that it will be available on all potential target
-    # hardware, see Issue  #3575
+    # One can not assume if RDTSCP is available on the hardware of the build infrastructure, that it
+    # will be available on all potential target hardware, see Issue  #3575
     if(NOT ${PIKA_WITH_BUILD_BINARY_PACKAGE})
 
       # XeonPhi's do not support RDTSCP
@@ -1462,20 +1353,19 @@ set(PIKA_WITH_TARGET_ARCHITECTURE
 # Compatibility with using Boost.Iterator traversal tags
 pika_option(
   PIKA_WITH_BOOST_ITERATOR_TRAVERSAL_TAG_COMPATIBILITY BOOL
-  "Enable Boost.Iterator traversal tag compatibility. (default: OFF)" OFF
-  ADVANCED CATEGORY "Generic"
+  "Enable Boost.Iterator traversal tag compatibility. (default: OFF)" OFF ADVANCED
+  CATEGORY "Generic"
 )
 if(PIKA_WITH_BOOST_ITERATOR_TRAVERSAL_TAG_COMPATIBILITY)
   pika_add_config_define_namespace(
-    DEFINE PIKA_HAVE_BOOST_ITERATOR_TRAVERSAL_TAG_COMPATIBILITY
-    NAMESPACE ITERATOR_SUPPORT
+    DEFINE PIKA_HAVE_BOOST_ITERATOR_TRAVERSAL_TAG_COMPATIBILITY NAMESPACE ITERATOR_SUPPORT
   )
 endif()
 
-# ##############################################################################
-# Find Our dependencies: These are all dependencies needed to build the core
-# library. Dependencies that are only needed by plugins, examples or tests
-# should be found separately in the appropriate subdirectory.
+# ##################################################################################################
+# Find Our dependencies: These are all dependencies needed to build the core library. Dependencies
+# that are only needed by plugins, examples or tests should be found separately in the appropriate
+# subdirectory.
 
 include(pika_setup_threads)
 include(pika_setup_boost)
@@ -1496,22 +1386,20 @@ if(PIKA_WITH_VIM_YCM)
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 endif()
 
-# ##############################################################################
-# Check Build Options based on the found dependencies. We also check for errors
-# with incompatible options with the currently selected platform.
+# ##################################################################################################
+# Check Build Options based on the found dependencies. We also check for errors with incompatible
+# options with the currently selected platform.
 #
 
 if(PIKA_WITH_BOOST_CONTEXT)
   # Check if we can use generic coroutine contexts without any problems
   if(NOT Boost_CONTEXT_FOUND)
-    pika_error(
-      "The usage of Boost.Context was selected but Boost.Context was not found."
-    )
+    pika_error("The usage of Boost.Context was selected but Boost.Context was not found.")
   endif()
   pika_add_config_define(PIKA_HAVE_BOOST_CONTEXT)
 endif()
 
-# ##############################################################################
+# ##################################################################################################
 
 # Note: on windows systems the ':' will be converted to a ';' at runtime
 pika_add_config_cond_define(
@@ -1519,24 +1407,24 @@ pika_add_config_cond_define(
   "\"/${CMAKE_INSTALL_LIBDIR}/pika:/${CMAKE_INSTALL_BINDIR}/pika:/lib/pika:/bin/pika\""
 )
 
-# ##############################################################################
+# ##################################################################################################
 # search path configuration
-# ##############################################################################
+# ##################################################################################################
 if(PIKA_WITH_FULL_RPATH)
   include(pika_set_full_rpath)
 endif()
 
-# ##############################################################################
+# ##################################################################################################
 # Git commit detection
-# ##############################################################################
+# ##################################################################################################
 include(pika_git_commit)
 pika_add_config_define(PIKA_HAVE_GIT_COMMIT "\"${PIKA_WITH_GIT_COMMIT}\"")
 
 include(pika_set_output_paths)
 
-# ##############################################################################
+# ##################################################################################################
 # Add custom targets for tests
-# ##############################################################################
+# ##################################################################################################
 if(PIKA_WITH_TESTS)
   pika_add_pseudo_target(tests)
   if(PIKA_WITH_TESTS_UNIT)
@@ -1570,28 +1458,28 @@ if(PIKA_WITH_EXAMPLES)
   pika_add_pseudo_target(examples)
 endif()
 
-# ##############################################################################
+# ##################################################################################################
 # Debug library postfix
-# ##############################################################################
+# ##################################################################################################
 set(CMAKE_DEBUG_POSTFIX "d")
 set(PIKA_DEBUG_POSTFIX "d")
 
-# ##############################################################################
+# ##################################################################################################
 # Add libraries
-# ##############################################################################
+# ##################################################################################################
 add_subdirectory(libs)
 
-# ##############################################################################
+# ##################################################################################################
 # Target specification
-# ##############################################################################
+# ##################################################################################################
 if(PIKA_WITH_TOOLS OR PIKA_WITH_TESTS_BENCHMARKS)
   pika_add_pseudo_target(tools)
   add_subdirectory(tools)
 endif()
 
-# ##############################################################################
+# ##################################################################################################
 # Tests
-# ##############################################################################
+# ##################################################################################################
 if(PIKA_WITH_TESTS)
   add_subdirectory(tests)
 endif()
@@ -1676,31 +1564,23 @@ if(PIKA_WITH_PRECOMPILED_HEADERS)
     list(APPEND system_precompiled_headers <execution>)
   endif()
 
-  set(system_precompiled_headers_dependencies
-      pika_dependencies_boost pika_private_flags pika_public_flags
+  set(system_precompiled_headers_dependencies pika_dependencies_boost pika_private_flags
+                                              pika_public_flags
   )
 
   target_link_libraries(
-    pika_precompiled_headers
-    PRIVATE pika_public_flags pika_private_flags pika_base_libraries
-            ${system_precompiled_headers_dependencies}
+    pika_precompiled_headers PRIVATE pika_public_flags pika_private_flags pika_base_libraries
+                                     ${system_precompiled_headers_dependencies}
   )
-  set_target_properties(
-    pika_precompiled_headers PROPERTIES POSITION_INDEPENDENT_CODE ON
-  )
-  target_precompile_headers(
-    pika_precompiled_headers PRIVATE ${system_precompiled_headers}
-  )
+  set_target_properties(pika_precompiled_headers PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  target_precompile_headers(pika_precompiled_headers PRIVATE ${system_precompiled_headers})
 
-  # Headers that should be precompiled for things depending on pika
-  # (executables, libraries).
+  # Headers that should be precompiled for things depending on pika (executables, libraries).
   set(pika_precompiled_headers_modules ${PIKA_ENABLED_MODULES})
-  # The init_runtime module cannot be precompiled because it uses macros that
-  # can depend on the application (PIKA_PREFIX and
-  # PIKA_APPLICATION_NAME_DEFAULT).
+  # The init_runtime module cannot be precompiled because it uses macros that can depend on the
+  # application (PIKA_PREFIX and PIKA_APPLICATION_NAME_DEFAULT).
   list(REMOVE_ITEM pika_precompiled_headers_modules init_runtime)
-  # config, filesystem, version, and the include modules don't have pika/module
-  # headers.
+  # config, filesystem, version, and the include modules don't have pika/module headers.
   list(
     REMOVE_ITEM
     pika_precompiled_headers_modules
@@ -1719,9 +1599,9 @@ if(PIKA_WITH_PRECOMPILED_HEADERS)
   )
 endif()
 
-# ##############################################################################
+# ##################################################################################################
 # installation instructions
-# ##############################################################################
+# ##################################################################################################
 # Install all pika header that have been configured using various CMake options
 install(
   DIRECTORY "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/pika/"
@@ -1752,20 +1632,15 @@ install(
 
 # Install pika-bind script
 configure_file(
-  ${PROJECT_SOURCE_DIR}/scripts/pika-bind.sh.in
-  ${PROJECT_BINARY_DIR}/scripts/pika-bind @ONLY
+  ${PROJECT_SOURCE_DIR}/scripts/pika-bind.sh.in ${PROJECT_BINARY_DIR}/scripts/pika-bind @ONLY
 )
 
-install(PROGRAMS ${PROJECT_BINARY_DIR}/scripts/pika-bind
-        DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
+install(PROGRAMS ${PROJECT_BINARY_DIR}/scripts/pika-bind DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 if(PIKA_WITH_VIM_YCM)
   set(build_dir_file ${PROJECT_BINARY_DIR}/.ycm_extra_conf.py)
   set(source_dir_file ${PROJECT_SOURCE_DIR}/.ycm_extra_conf.py)
-  configure_file(
-    ${PROJECT_SOURCE_DIR}/tools/vim/.ycm_extra_conf.py ${build_dir_file} @ONLY
-  )
+  configure_file(${PROJECT_SOURCE_DIR}/tools/vim/.ycm_extra_conf.py ${build_dir_file} @ONLY)
   add_custom_target(
     configure_ycm
     COMMAND ${CMAKE_COMMAND} -E copy ${build_dir_file} ${source_dir_file}
@@ -1777,19 +1652,16 @@ if(PIKA_WITH_VIM_YCM)
   )
 endif()
 
-# ##############################################################################
+# ##################################################################################################
 # Add rpm packaging
 
-pika_option(
-  PIKA_WITH_RPM BOOL "Enable or disable the generation of rpm packages" OFF
-  ADVANCED
-)
+pika_option(PIKA_WITH_RPM BOOL "Enable or disable the generation of rpm packages" OFF ADVANCED)
 
 if(PIKA_WITH_RPM)
   add_subdirectory(cmake/packaging/rpm)
 endif()
 
-# ##############################################################################
+# ##################################################################################################
 # print overall configuration summary
 include(pika_print_summary)
 pika_create_configuration_summary("Configuration summary:\n--" "pika")
@@ -1805,12 +1677,12 @@ install(
 )
 pika_export_internal_targets(pika_base_libraries)
 
-# ##############################################################################
-# store cache vars and their values in order for them to be forwarded to the
-# projects (needs to be before the PIKA_GeneratePackage call)
+# ##################################################################################################
+# store cache vars and their values in order for them to be forwarded to the projects (needs to be
+# before the PIKA_GeneratePackage call)
 include(pika_forward_cache_variables)
 
-# ##############################################################################
+# ##################################################################################################
 # External build system support.
 include(pika_generate_package)
 

@@ -12,9 +12,7 @@ function(pika_add_config_define definition)
   set(Args ${ARGN})
   list(LENGTH Args ArgsLen)
   if(ArgsLen GREATER 0)
-    set_property(
-      GLOBAL APPEND PROPERTY PIKA_CONFIG_DEFINITIONS "${definition} ${ARGN}"
-    )
+    set_property(GLOBAL APPEND PROPERTY PIKA_CONFIG_DEFINITIONS "${definition} ${ARGN}")
   else()
     set_property(GLOBAL APPEND PROPERTY PIKA_CONFIG_DEFINITIONS "${definition}")
   endif()
@@ -27,37 +25,28 @@ function(pika_add_config_cond_define definition)
   set(Args ${ARGN})
   list(LENGTH Args ArgsLen)
   if(ArgsLen GREATER 0)
-    set_property(
-      GLOBAL APPEND PROPERTY PIKA_CONFIG_COND_DEFINITIONS
-                             "${definition} ${ARGN}"
-    )
+    set_property(GLOBAL APPEND PROPERTY PIKA_CONFIG_COND_DEFINITIONS "${definition} ${ARGN}")
   else()
-    set_property(
-      GLOBAL APPEND PROPERTY PIKA_CONFIG_COND_DEFINITIONS "${definition}"
-    )
+    set_property(GLOBAL APPEND PROPERTY PIKA_CONFIG_COND_DEFINITIONS "${definition}")
   endif()
 
 endfunction()
 
 # ---------------------------------------------------------------------
-# Function to add config defines to a list that depends on a namespace variable
-# #defines that match the namespace can later be written out to a file
+# Function to add config defines to a list that depends on a namespace variable #defines that match
+# the namespace can later be written out to a file
 # ---------------------------------------------------------------------
 function(pika_add_config_define_namespace)
   set(options)
   set(one_value_args DEFINE NAMESPACE)
   set(multi_value_args VALUE)
-  cmake_parse_arguments(
-    OPTION "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
-  )
+  cmake_parse_arguments(OPTION "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
   set(DEF_VAR PIKA_CONFIG_DEFINITIONS_${OPTION_NAMESPACE})
 
   # to avoid extra trailing spaces (no value), use an if check
   if(OPTION_VALUE)
-    set_property(
-      GLOBAL APPEND PROPERTY ${DEF_VAR} "${OPTION_DEFINE} ${OPTION_VALUE}"
-    )
+    set_property(GLOBAL APPEND PROPERTY ${DEF_VAR} "${OPTION_DEFINE} ${OPTION_VALUE}")
   else()
     set_property(GLOBAL APPEND PROPERTY ${DEF_VAR} "${OPTION_DEFINE}")
   endif()
@@ -67,17 +56,13 @@ endfunction()
 function(pika_add_config_cond_define_namespace)
   set(one_value_args DEFINE NAMESPACE)
   set(multi_value_args VALUE)
-  cmake_parse_arguments(
-    OPTION "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
-  )
+  cmake_parse_arguments(OPTION "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
   set(DEF_VAR PIKA_CONFIG_COND_DEFINITIONS_${OPTION_NAMESPACE})
 
   # to avoid extra trailing spaces (no value), use an if check
   if(OPTION_VALUE)
-    set_property(
-      GLOBAL APPEND PROPERTY ${DEF_VAR} "${OPTION_DEFINE} ${OPTION_VALUE}"
-    )
+    set_property(GLOBAL APPEND PROPERTY ${DEF_VAR} "${OPTION_DEFINE} ${OPTION_VALUE}")
   else()
     set_property(GLOBAL APPEND PROPERTY ${DEF_VAR} "${OPTION_DEFINE}")
   endif()
@@ -85,30 +70,22 @@ function(pika_add_config_cond_define_namespace)
 endfunction()
 
 # ---------------------------------------------------------------------
-# Function to write variables out from a global var that was set using the
-# config_define functions into a config file
+# Function to write variables out from a global var that was set using the config_define functions
+# into a config file
 # ---------------------------------------------------------------------
 function(pika_write_config_defines_file)
   set(options)
   set(one_value_args TEMPLATE NAMESPACE FILENAME)
   set(multi_value_args)
-  cmake_parse_arguments(
-    OPTION "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
-  )
+  cmake_parse_arguments(OPTION "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
   if(${OPTION_NAMESPACE} STREQUAL "default")
     get_property(DEFINITIONS_VAR GLOBAL PROPERTY PIKA_CONFIG_DEFINITIONS)
-    get_property(
-      COND_DEFINITIONS_VAR GLOBAL PROPERTY PIKA_CONFIG_COND_DEFINITIONS
-    )
+    get_property(COND_DEFINITIONS_VAR GLOBAL PROPERTY PIKA_CONFIG_COND_DEFINITIONS)
   else()
+    get_property(DEFINITIONS_VAR GLOBAL PROPERTY PIKA_CONFIG_DEFINITIONS_${OPTION_NAMESPACE})
     get_property(
-      DEFINITIONS_VAR GLOBAL
-      PROPERTY PIKA_CONFIG_DEFINITIONS_${OPTION_NAMESPACE}
-    )
-    get_property(
-      COND_DEFINITIONS_VAR GLOBAL
-      PROPERTY PIKA_CONFIG_COND_DEFINITIONS_${OPTION_NAMESPACE}
+      COND_DEFINITIONS_VAR GLOBAL PROPERTY PIKA_CONFIG_COND_DEFINITIONS_${OPTION_NAMESPACE}
     )
   endif()
 
@@ -171,9 +148,7 @@ function(pika_write_config_defines_file)
         "\n"
         "#pragma once"
     )
-    set(TEMP_FILENAME
-        "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${NAMESPACE_UPPER}"
-    )
+    set(TEMP_FILENAME "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${NAMESPACE_UPPER}")
     file(WRITE ${TEMP_FILENAME} ${PREAMBLE} ${pika_config_defines} "\n")
     configure_file("${TEMP_FILENAME}" "${OPTION_FILENAME}" COPYONLY)
     file(REMOVE "${TEMP_FILENAME}")

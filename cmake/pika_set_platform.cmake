@@ -10,16 +10,14 @@ set(PIKA_PLATFORMS_UC "NATIVE;ANDROID;XEONPHI;BLUEGENEQ")
 if(NOT PIKA_PLATFORM)
   set(PIKA_PLATFORM
       "native"
-      CACHE
-        STRING
-        "Sets special compilation flags for specific platforms. ${PIKA_PLATFORM_CHOICES}"
+      CACHE STRING
+            "Sets special compilation flags for specific platforms. ${PIKA_PLATFORM_CHOICES}"
   )
 else()
   set(PIKA_PLATFORM
       "${PIKA_PLATFORM}"
-      CACHE
-        STRING
-        "Sets special compilation flags for specific platforms. ${PIKA_PLATFORM_CHOICES}"
+      CACHE STRING
+            "Sets special compilation flags for specific platforms. ${PIKA_PLATFORM_CHOICES}"
   )
 endif()
 
@@ -28,10 +26,8 @@ if(NOT PIKA_PLATFORM STREQUAL "")
 else()
   set(PIKA_PLATFORM
       "native"
-      CACHE
-        STRING
-        "Sets special compilation flags for specific platforms. ${PIKA_PLATFORM_CHOICES}"
-        FORCE
+      CACHE STRING
+            "Sets special compilation flags for specific platforms. ${PIKA_PLATFORM_CHOICES}" FORCE
   )
   set(PIKA_PLATFORM_UC "NATIVE")
 endif()

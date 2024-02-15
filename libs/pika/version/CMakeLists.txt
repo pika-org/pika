@@ -20,6 +20,4 @@ pika_add_module(
   MODULE_DEPENDENCIES pika_config pika_prefix
 )
 
-target_include_directories(
-  pika_version PRIVATE $<BUILD_INTERFACE:${PIKA_BINARY_DIR}>
-)
+target_include_directories(pika_version PRIVATE $<BUILD_INTERFACE:${PIKA_BINARY_DIR}>)

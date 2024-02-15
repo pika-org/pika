@@ -39,9 +39,7 @@ foreach(test ${tests})
     FOLDER "Tests/Unit/Modules/IteratorSupport"
   )
 
-  target_link_libraries(
-    ${test}_test PRIVATE pika_iterator_support_test_utilities
-  )
+  target_link_libraries(${test}_test PRIVATE pika_iterator_support_test_utilities)
 
   pika_add_unit_test("modules.iterator_support" ${test} ${${test}_PARAMETERS})
 endforeach()

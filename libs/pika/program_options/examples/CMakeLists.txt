@@ -22,15 +22,11 @@ set(disabled_tests)
 
 if(PIKA_WITH_EXAMPLES)
   pika_add_pseudo_target(examples.modules.program_options)
-  pika_add_pseudo_dependencies(
-    examples.modules examples.modules.program_options
-  )
+  pika_add_pseudo_dependencies(examples.modules examples.modules.program_options)
 
   if(PIKA_WITH_TESTS AND PIKA_WITH_TESTS_EXAMPLES)
     pika_add_pseudo_target(tests.examples.modules.program_options)
-    pika_add_pseudo_dependencies(
-      tests.examples.modules tests.examples.modules.program_options
-    )
+    pika_add_pseudo_dependencies(tests.examples.modules tests.examples.modules.program_options)
   endif()
 
   foreach(example ${examples})
@@ -57,9 +53,7 @@ if(PIKA_WITH_EXAMPLES)
        AND PIKA_WITH_TESTS_EXAMPLES
        AND NOT ("${example_program}" IN_LIST disabled_tests)
     )
-      pika_add_example_test(
-        "modules.program_options" ${example} ${${example}_PARAMETERS} VALGRIND
-      )
+      pika_add_example_test("modules.program_options" ${example} ${${example}_PARAMETERS} VALGRIND)
     endif()
 
   endforeach()

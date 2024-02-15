@@ -39,7 +39,7 @@ if(NOT TARGET pika_dependencies_allocator)
 
   if(NOT PIKA_WITH_MALLOC_DEFAULT)
 
-    # ##########################################################################
+    # ##############################################################################################
     # TCMALLOC
     if("${PIKA_WITH_MALLOC_UPPER}" STREQUAL "TCMALLOC")
       find_package(TCMalloc)
@@ -47,19 +47,15 @@ if(NOT TARGET pika_dependencies_allocator)
         pika_error(${allocator_error})
       endif()
 
-      target_link_libraries(
-        pika_dependencies_allocator INTERFACE ${TCMALLOC_LIBRARIES}
-      )
+      target_link_libraries(pika_dependencies_allocator INTERFACE ${TCMALLOC_LIBRARIES})
 
       if(MSVC)
-        target_compile_options(
-          pika_dependencies_allocator INTERFACE /INCLUDE:__tcmalloc
-        )
+        target_compile_options(pika_dependencies_allocator INTERFACE /INCLUDE:__tcmalloc)
       endif()
       set(_use_custom_allocator TRUE)
     endif()
 
-    # ##########################################################################
+    # ##############################################################################################
     # JEMALLOC
     if("${PIKA_WITH_MALLOC_UPPER}" STREQUAL "JEMALLOC")
       find_package(Jemalloc)
@@ -67,15 +63,13 @@ if(NOT TARGET pika_dependencies_allocator)
         pika_error(${allocator_error})
       endif()
       target_include_directories(
-        pika_dependencies_allocator
-        INTERFACE ${JEMALLOC_INCLUDE_DIR} ${JEMALLOC_ADDITIONAL_INCLUDE_DIR}
+        pika_dependencies_allocator INTERFACE ${JEMALLOC_INCLUDE_DIR}
+                                              ${JEMALLOC_ADDITIONAL_INCLUDE_DIR}
       )
-      target_link_libraries(
-        pika_dependencies_allocator INTERFACE ${JEMALLOC_LIBRARIES}
-      )
+      target_link_libraries(pika_dependencies_allocator INTERFACE ${JEMALLOC_LIBRARIES})
     endif()
 
-    # ##########################################################################
+    # ##############################################################################################
     # MIMALLOC
     if("${PIKA_WITH_MALLOC_UPPER}" STREQUAL "MIMALLOC")
       find_package(mimalloc)
@@ -85,9 +79,7 @@ if(NOT TARGET pika_dependencies_allocator)
       target_link_libraries(pika_dependencies_allocator INTERFACE mimalloc)
       set(pika_MALLOC_LIBRARY mimalloc)
       if(MSVC)
-        target_compile_options(
-          pika_dependencies_allocator INTERFACE /INCLUDE:mi_version
-        )
+        target_compile_options(pika_dependencies_allocator INTERFACE /INCLUDE:mi_version)
       endif()
       set(_use_custom_allocator TRUE)
 
@@ -96,7 +88,7 @@ if(NOT TARGET pika_dependencies_allocator)
       )
     endif()
 
-    # ##########################################################################
+    # ##############################################################################################
     # TBBMALLOC
     if("${PIKA_WITH_MALLOC_UPPER}" STREQUAL "TBBMALLOC")
       find_package(TBBmalloc)
@@ -104,13 +96,10 @@ if(NOT TARGET pika_dependencies_allocator)
         pika_error(${allocator_error})
       endif()
       if(MSVC)
-        target_compile_options(
-          pika_dependencies_allocator INTERFACE /INCLUDE:__TBB_malloc_proxy
-        )
+        target_compile_options(pika_dependencies_allocator INTERFACE /INCLUDE:__TBB_malloc_proxy)
       endif()
       target_link_libraries(
-        pika_dependencies_allocator INTERFACE ${TBBMALLOC_LIBRARY}
-                                              ${TBBMALLOC_PROXY_LIBRARY}
+        pika_dependencies_allocator INTERFACE ${TBBMALLOC_LIBRARY} ${TBBMALLOC_PROXY_LIBRARY}
       )
     endif()
 
@@ -156,9 +145,7 @@ if(NOT TARGET pika_dependencies_allocator)
       if(NOT ("${PIKA_WITH_JEMALLOC_PREFIX}" STREQUAL "<none>")
          AND NOT ("${PIKA_WITH_JEMALLOC_PREFIX}x" STREQUAL "x")
       )
-        pika_add_config_define(
-          PIKA_HAVE_JEMALLOC_PREFIX ${PIKA_WITH_JEMALLOC_PREFIX}
-        )
+        pika_add_config_define(PIKA_HAVE_JEMALLOC_PREFIX ${PIKA_WITH_JEMALLOC_PREFIX})
       endif()
     endif()
   endif()

@@ -16,17 +16,13 @@ if(PIKA_WITH_TESTS)
 
   if(PIKA_WITH_TESTS_REGRESSIONS)
     pika_add_pseudo_target(tests.regressions.modules.affinity)
-    pika_add_pseudo_dependencies(
-      tests.regressions.modules tests.regressions.modules.affinity
-    )
+    pika_add_pseudo_dependencies(tests.regressions.modules tests.regressions.modules.affinity)
     add_subdirectory(regressions)
   endif()
 
   if(PIKA_WITH_TESTS_BENCHMARKS)
     pika_add_pseudo_target(tests.performance.modules.affinity)
-    pika_add_pseudo_dependencies(
-      tests.performance.modules tests.performance.modules.affinity
-    )
+    pika_add_pseudo_dependencies(tests.performance.modules tests.performance.modules.affinity)
     add_subdirectory(performance)
   endif()
 

@@ -26,12 +26,8 @@ function(pika_add_library name)
       OUTPUT_SUFFIX
       INSTALL_SUFFIX
   )
-  set(multi_value_args SOURCES HEADERS AUXILIARY DEPENDENCIES COMPILER_FLAGS
-                       LINK_FLAGS
-  )
-  cmake_parse_arguments(
-    ${name} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
-  )
+  set(multi_value_args SOURCES HEADERS AUXILIARY DEPENDENCIES COMPILER_FLAGS LINK_FLAGS)
+  cmake_parse_arguments(${name} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
   if(${name}_OBJECT AND ${name}_STATIC)
     pika_error(
@@ -43,16 +39,12 @@ function(pika_add_library name)
   if(NOT ${name}_SOURCE_ROOT)
     set(${name}_SOURCE_ROOT ".")
   endif()
-  pika_debug(
-    "add_library.${name}" "${name}_SOURCE_ROOT: ${${name}_SOURCE_ROOT}"
-  )
+  pika_debug("add_library.${name}" "${name}_SOURCE_ROOT: ${${name}_SOURCE_ROOT}")
 
   if(NOT ${name}_HEADER_ROOT)
     set(${name}_HEADER_ROOT ".")
   endif()
-  pika_debug(
-    "add_library.${name}" "${name}_HEADER_ROOT: ${${name}_HEADER_ROOT}"
-  )
+  pika_debug("add_library.${name}" "${name}_HEADER_ROOT: ${${name}_HEADER_ROOT}")
 
   pika_add_library_sources_noglob(${name} SOURCES "${${name}_SOURCES}")
 
@@ -72,16 +64,9 @@ function(pika_add_library name)
     TARGETS ${${name}_HEADERS}
   )
 
-  pika_print_list(
-    "DEBUG" "add_library.${name}" "Sources for ${name}" ${name}_SOURCES
-  )
-  pika_print_list(
-    "DEBUG" "add_library.${name}" "Headers for ${name}" ${name}_HEADERS
-  )
-  pika_print_list(
-    "DEBUG" "add_library.${name}" "Dependencies for ${name}"
-    ${name}_DEPENDENCIES
-  )
+  pika_print_list("DEBUG" "add_library.${name}" "Sources for ${name}" ${name}_SOURCES)
+  pika_print_list("DEBUG" "add_library.${name}" "Headers for ${name}" ${name}_HEADERS)
+  pika_print_list("DEBUG" "add_library.${name}" "Dependencies for ${name}" ${name}_DEPENDENCIES)
 
   set(exclude_from_all)
 
@@ -154,49 +139,45 @@ function(pika_add_library name)
   endif()
 
   add_library(
-    ${name} ${${name}_linktype} ${exclude_from_all} ${${name}_SOURCES}
-            ${${name}_HEADERS} ${${name}_AUXILIARY}
+    ${name} ${${name}_linktype} ${exclude_from_all} ${${name}_SOURCES} ${${name}_HEADERS}
+            ${${name}_AUXILIARY}
   )
 
   if(${name}_OUTPUT_SUFFIX)
     if(MSVC)
       set_target_properties(
         ${name}
-        PROPERTIES
-          RUNTIME_OUTPUT_DIRECTORY_RELEASE
-          "${PIKA_WITH_BINARY_DIR}/Release/bin/${${name}_OUTPUT_SUFFIX}"
-          LIBRARY_OUTPUT_DIRECTORY_RELEASE
-          "${PIKA_WITH_BINARY_DIR}/Release/bin/${${name}_OUTPUT_SUFFIX}"
-          ARCHIVE_OUTPUT_DIRECTORY_RELEASE
-          "${PIKA_WITH_BINARY_DIR}/Release/lib/${${name}_OUTPUT_SUFFIX}"
-          RUNTIME_OUTPUT_DIRECTORY_DEBUG
-          "${PIKA_WITH_BINARY_DIR}/Debug/bin/${${name}_OUTPUT_SUFFIX}"
-          LIBRARY_OUTPUT_DIRECTORY_DEBUG
-          "${PIKA_WITH_BINARY_DIR}/Debug/bin/${${name}_OUTPUT_SUFFIX}"
-          ARCHIVE_OUTPUT_DIRECTORY_DEBUG
-          "${PIKA_WITH_BINARY_DIR}/Debug/lib/${${name}_OUTPUT_SUFFIX}"
-          RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL
-          "${PIKA_WITH_BINARY_DIR}/MinSizeRel/bin/${${name}_OUTPUT_SUFFIX}"
-          LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL
-          "${PIKA_WITH_BINARY_DIR}/MinSizeRel/bin/${${name}_OUTPUT_SUFFIX}"
-          ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL
-          "${PIKA_WITH_BINARY_DIR}/MinSizeRel/lib/${${name}_OUTPUT_SUFFIX}"
-          RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO
-          "${PIKA_WITH_BINARY_DIR}/RelWithDebInfo/bin/${${name}_OUTPUT_SUFFIX}"
-          LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO
-          "${PIKA_WITH_BINARY_DIR}/RelWithDebInfo/bin/${${name}_OUTPUT_SUFFIX}"
-          ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO
-          "${PIKA_WITH_BINARY_DIR}/RelWithDebInfo/lib/${${name}_OUTPUT_SUFFIX}"
+        PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE
+                   "${PIKA_WITH_BINARY_DIR}/Release/bin/${${name}_OUTPUT_SUFFIX}"
+                   LIBRARY_OUTPUT_DIRECTORY_RELEASE
+                   "${PIKA_WITH_BINARY_DIR}/Release/bin/${${name}_OUTPUT_SUFFIX}"
+                   ARCHIVE_OUTPUT_DIRECTORY_RELEASE
+                   "${PIKA_WITH_BINARY_DIR}/Release/lib/${${name}_OUTPUT_SUFFIX}"
+                   RUNTIME_OUTPUT_DIRECTORY_DEBUG
+                   "${PIKA_WITH_BINARY_DIR}/Debug/bin/${${name}_OUTPUT_SUFFIX}"
+                   LIBRARY_OUTPUT_DIRECTORY_DEBUG
+                   "${PIKA_WITH_BINARY_DIR}/Debug/bin/${${name}_OUTPUT_SUFFIX}"
+                   ARCHIVE_OUTPUT_DIRECTORY_DEBUG
+                   "${PIKA_WITH_BINARY_DIR}/Debug/lib/${${name}_OUTPUT_SUFFIX}"
+                   RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL
+                   "${PIKA_WITH_BINARY_DIR}/MinSizeRel/bin/${${name}_OUTPUT_SUFFIX}"
+                   LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL
+                   "${PIKA_WITH_BINARY_DIR}/MinSizeRel/bin/${${name}_OUTPUT_SUFFIX}"
+                   ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL
+                   "${PIKA_WITH_BINARY_DIR}/MinSizeRel/lib/${${name}_OUTPUT_SUFFIX}"
+                   RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO
+                   "${PIKA_WITH_BINARY_DIR}/RelWithDebInfo/bin/${${name}_OUTPUT_SUFFIX}"
+                   LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO
+                   "${PIKA_WITH_BINARY_DIR}/RelWithDebInfo/bin/${${name}_OUTPUT_SUFFIX}"
+                   ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO
+                   "${PIKA_WITH_BINARY_DIR}/RelWithDebInfo/lib/${${name}_OUTPUT_SUFFIX}"
       )
     else()
       set_target_properties(
         ${name}
-        PROPERTIES RUNTIME_OUTPUT_DIRECTORY
-                   "${PIKA_WITH_BINARY_DIR}/bin/${${name}_OUTPUT_SUFFIX}"
-                   LIBRARY_OUTPUT_DIRECTORY
-                   "${PIKA_WITH_BINARY_DIR}/lib/${${name}_OUTPUT_SUFFIX}"
-                   ARCHIVE_OUTPUT_DIRECTORY
-                   "${PIKA_WITH_BINARY_DIR}/lib/${${name}_OUTPUT_SUFFIX}"
+        PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PIKA_WITH_BINARY_DIR}/bin/${${name}_OUTPUT_SUFFIX}"
+                   LIBRARY_OUTPUT_DIRECTORY "${PIKA_WITH_BINARY_DIR}/lib/${${name}_OUTPUT_SUFFIX}"
+                   ARCHIVE_OUTPUT_DIRECTORY "${PIKA_WITH_BINARY_DIR}/lib/${${name}_OUTPUT_SUFFIX}"
       )
     endif()
   endif()

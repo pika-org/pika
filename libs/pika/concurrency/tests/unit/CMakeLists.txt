@@ -20,7 +20,5 @@ foreach(test ${tests})
     FOLDER "Tests/Unit/Modules/Concurrency"
   )
 
-  pika_add_unit_test(
-    "modules.concurrency" ${test} ${${test}_PARAMETERS} VALGRIND
-  )
+  pika_add_unit_test("modules.concurrency" ${test} ${${test}_PARAMETERS} VALGRIND)
 endforeach()

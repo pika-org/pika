@@ -20,13 +20,11 @@ function(pika_add_module libname modulename)
       EXCLUDE_FROM_GLOBAL_HEADER
   )
   cmake_parse_arguments(
-    ${modulename} "${options}" "${one_value_args}" "${multi_value_args}"
-    ${ARGN}
+    ${modulename} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
   )
   if(${modulename}_UNPARSED_ARGUMENTS)
     message(
-      AUTHOR_WARNING
-        "Arguments were not used by the module: ${${modulename}_UNPARSED_ARGUMENTS}"
+      AUTHOR_WARNING "Arguments were not used by the module: ${${modulename}_UNPARSED_ARGUMENTS}"
     )
   endif()
 
@@ -57,31 +55,23 @@ function(pika_add_module libname modulename)
   set(all_headers ${${modulename}_HEADERS})
 
   # Write full path for the sources files
-  list(TRANSFORM ${modulename}_SOURCES PREPEND ${SOURCE_ROOT}/ OUTPUT_VARIABLE
-                                                               sources
-  )
-  list(TRANSFORM ${modulename}_HEADERS PREPEND ${HEADER_ROOT}/ OUTPUT_VARIABLE
-                                                               headers
-  )
+  list(TRANSFORM ${modulename}_SOURCES PREPEND ${SOURCE_ROOT}/ OUTPUT_VARIABLE sources)
+  list(TRANSFORM ${modulename}_HEADERS PREPEND ${HEADER_ROOT}/ OUTPUT_VARIABLE headers)
 
-  # This header generation is disabled for config module specific generated
-  # headers are included
+  # This header generation is disabled for config module specific generated headers are included
   if(${modulename}_GLOBAL_HEADER_GEN)
     if("pika/modules/${modulename}.hpp" IN_LIST all_headers)
       string(
-        CONCAT
-          error_message
-          "Global header generation turned on for module ${modulename} but the "
-          "header \"pika/modules/${modulename}.hpp\" is also listed explicitly as"
-          "a header. Turn off global header generation or remove the "
-          "\"pika/modules/${modulename}.hpp\" file."
+        CONCAT error_message
+               "Global header generation turned on for module ${modulename} but the "
+               "header \"pika/modules/${modulename}.hpp\" is also listed explicitly as"
+               "a header. Turn off global header generation or remove the "
+               "\"pika/modules/${modulename}.hpp\" file."
       )
       pika_error(${error_message})
     endif()
     # Add a global include file that include all module headers
-    set(global_header
-        "${CMAKE_CURRENT_BINARY_DIR}/include/pika/modules/${modulename}.hpp"
-    )
+    set(global_header "${CMAKE_CURRENT_BINARY_DIR}/include/pika/modules/${modulename}.hpp")
     set(module_headers)
     foreach(header_file ${${modulename}_HEADERS})
       # Exclude the files specified
@@ -92,38 +82,28 @@ function(pika_add_module libname modulename)
       endif()
     endforeach(header_file)
     configure_file(
-      "${PROJECT_SOURCE_DIR}/cmake/templates/global_module_header.hpp.in"
-      "${global_header}"
+      "${PROJECT_SOURCE_DIR}/cmake/templates/global_module_header.hpp.in" "${global_header}"
     )
     set(generated_headers ${global_header})
   endif()
 
   # generate configuration header for this module
-  set(config_header
-      "${CMAKE_CURRENT_BINARY_DIR}/include/pika/${modulename}/config/defines.hpp"
-  )
-  pika_write_config_defines_file(
-    NAMESPACE ${modulename_upper} FILENAME ${config_header}
-  )
+  set(config_header "${CMAKE_CURRENT_BINARY_DIR}/include/pika/${modulename}/config/defines.hpp")
+  pika_write_config_defines_file(NAMESPACE ${modulename_upper} FILENAME ${config_header})
   set(generated_headers ${generated_headers} ${config_header})
 
   if(${modulename}_CONFIG_FILES)
     # Version file
-    set(global_config_file
-        ${CMAKE_CURRENT_BINARY_DIR}/include/pika/config/version.hpp
-    )
+    set(global_config_file ${CMAKE_CURRENT_BINARY_DIR}/include/pika/config/version.hpp)
     configure_file(
-      "${CMAKE_CURRENT_SOURCE_DIR}/cmake/templates/config_version.hpp.in"
-      "${global_config_file}" @ONLY
+      "${CMAKE_CURRENT_SOURCE_DIR}/cmake/templates/config_version.hpp.in" "${global_config_file}"
+      @ONLY
     )
     set(generated_headers ${generated_headers} ${global_config_file})
     # Global config defines file (different from the one for each module)
-    set(global_config_file
-        ${CMAKE_CURRENT_BINARY_DIR}/include/pika/config/defines.hpp
-    )
+    set(global_config_file ${CMAKE_CURRENT_BINARY_DIR}/include/pika/config/defines.hpp)
     pika_write_config_defines_file(
-      TEMPLATE
-        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/templates/config_defines.hpp.in"
+      TEMPLATE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/templates/config_defines.hpp.in"
       NAMESPACE default
       FILENAME "${global_config_file}"
     )
@@ -131,12 +111,10 @@ function(pika_add_module libname modulename)
   endif()
 
   # collect zombie generated headers
-  file(GLOB_RECURSE zombie_generated_headers
-       ${CMAKE_CURRENT_BINARY_DIR}/include/*.hpp
+  file(GLOB_RECURSE zombie_generated_headers ${CMAKE_CURRENT_BINARY_DIR}/include/*.hpp
        ${CMAKE_CURRENT_BINARY_DIR}/include_compatibility/*.hpp
   )
-  list(REMOVE_ITEM zombie_generated_headers ${generated_headers}
-       ${compat_headers}
+  list(REMOVE_ITEM zombie_generated_headers ${generated_headers} ${compat_headers}
        ${CMAKE_CURRENT_BINARY_DIR}/include/pika/config/modules_enabled.hpp
   )
   foreach(zombie_header IN LISTS zombie_generated_headers)
@@ -164,10 +142,7 @@ function(pika_add_module libname modulename)
   endif()
 
   # create library modules
-  add_library(
-    pika_${modulename} ${module_library_type} ${sources}
-                       ${${modulename}_OBJECTS}
-  )
+  add_library(pika_${modulename} ${module_library_type} ${sources} ${${modulename}_OBJECTS})
 
   if(PIKA_WITH_CHECK_MODULE_DEPENDENCIES)
     # verify that all dependencies are from the same module category
@@ -188,24 +163,17 @@ function(pika_add_module libname modulename)
   endif()
 
   target_link_libraries(
-    pika_${modulename} ${module_public_keyword}
-    ${${modulename}_MODULE_DEPENDENCIES}
+    pika_${modulename} ${module_public_keyword} ${${modulename}_MODULE_DEPENDENCIES}
   )
-  target_link_libraries(
-    pika_${modulename} ${module_public_keyword} ${${modulename}_DEPENDENCIES}
-  )
+  target_link_libraries(pika_${modulename} ${module_public_keyword} ${${modulename}_DEPENDENCIES})
 
   target_link_libraries(
-    pika_${modulename} ${module_public_keyword} pika_public_flags
-    pika_base_libraries
+    pika_${modulename} ${module_public_keyword} pika_public_flags pika_base_libraries
   )
 
   target_include_directories(
-    pika_${modulename}
-    ${module_public_keyword}
-    $<BUILD_INTERFACE:${HEADER_ROOT}>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
-    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
+    pika_${modulename} ${module_public_keyword} $<BUILD_INTERFACE:${HEADER_ROOT}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include> $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
 
@@ -214,15 +182,11 @@ function(pika_add_module libname modulename)
   endif()
 
   if(PIKA_WITH_PRECOMPILED_HEADERS)
-    target_precompile_headers(
-      pika_${modulename} REUSE_FROM pika_precompiled_headers
-    )
+    target_precompile_headers(pika_${modulename} REUSE_FROM pika_precompiled_headers)
   endif()
 
   if(NOT module_is_interface_library)
-    target_compile_definitions(
-      pika_${modulename} PRIVATE ${libname_upper}_EXPORTS
-    )
+    target_compile_definitions(pika_${modulename} PRIVATE ${libname_upper}_EXPORTS)
   endif()
 
   pika_add_source_group(
@@ -260,17 +224,16 @@ function(pika_add_module libname modulename)
 
   if(NOT module_is_interface_library)
     set_target_properties(
-      pika_${modulename} PROPERTIES FOLDER "Core/Modules/${libname_cap}"
-                                    POSITION_INDEPENDENT_CODE ON
+      pika_${modulename} PROPERTIES FOLDER "Core/Modules/${libname_cap}" POSITION_INDEPENDENT_CODE
+                                                                         ON
     )
   endif()
 
   if(PIKA_WITH_UNITY_BUILD AND NOT module_is_interface_library)
     set_target_properties(pika_${modulename} PROPERTIES UNITY_BUILD ON)
     set_target_properties(
-      pika_${modulename}
-      PROPERTIES UNITY_BUILD_CODE_BEFORE_INCLUDE
-                 "// NOLINTBEGIN(bugprone-suspicious-include)"
+      pika_${modulename} PROPERTIES UNITY_BUILD_CODE_BEFORE_INCLUDE
+                                    "// NOLINTBEGIN(bugprone-suspicious-include)"
     )
     set_target_properties(
       pika_${modulename} PROPERTIES UNITY_BUILD_CODE_AFTER_INCLUDE
@@ -283,8 +246,7 @@ function(pika_add_module libname modulename)
       pika_${modulename}
       PROPERTIES COMPILE_PDB_NAME_DEBUG pika_${modulename}d
                  COMPILE_PDB_NAME_RELWITHDEBINFO pika_${modulename}
-                 COMPILE_PDB_OUTPUT_DIRECTORY_DEBUG
-                 ${CMAKE_CURRENT_BINARY_DIR}/Debug
+                 COMPILE_PDB_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/Debug
                  COMPILE_PDB_OUTPUT_DIRECTORY_RELWITHDEBINFO
                  ${CMAKE_CURRENT_BINARY_DIR}/RelWithDebInfo
     )
@@ -316,12 +278,8 @@ function(pika_add_module libname modulename)
   # install PDB if needed
   if(MSVC)
     foreach(cfg DEBUG;RELWITHDEBINFO)
-      pika_get_target_property(
-        _pdb_file pika_${modulename} COMPILE_PDB_NAME_${cfg}
-      )
-      pika_get_target_property(
-        _pdb_dir pika_${modulename} COMPILE_PDB_OUTPUT_DIRECTORY_${cfg}
-      )
+      pika_get_target_property(_pdb_file pika_${modulename} COMPILE_PDB_NAME_${cfg})
+      pika_get_target_property(_pdb_dir pika_${modulename} COMPILE_PDB_OUTPUT_DIRECTORY_${cfg})
       install(
         FILES ${_pdb_dir}/${_pdb_file}.pdb
         DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -340,8 +298,6 @@ function(pika_add_module libname modulename)
   endforeach(dir)
 
   include(pika_print_summary)
-  pika_create_configuration_summary(
-    "    Module configuration (${modulename}):" "${modulename}"
-  )
+  pika_create_configuration_summary("    Module configuration (${modulename}):" "${modulename}")
 
 endfunction(pika_add_module)

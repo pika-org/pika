@@ -47,8 +47,7 @@ pika_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${async_cuda_base_sources}
   HEADERS ${async_cuda_base_headers}
-  MODULE_DEPENDENCIES pika_assertion pika_config pika_coroutines pika_debugging
-                      pika_errors
+  MODULE_DEPENDENCIES pika_assertion pika_config pika_coroutines pika_debugging pika_errors
   DEPENDENCIES ${async_cuda_base_extra_deps}
   CMAKE_SUBDIRS examples tests
 )

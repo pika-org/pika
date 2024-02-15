@@ -7,10 +7,8 @@
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(tag_invoke_headers
-    pika/functional/detail/invoke.hpp
-    pika/functional/detail/tag_fallback_invoke.hpp
-    pika/functional/detail/tag_priority_invoke.hpp
-    pika/functional/tag_invoke.hpp
+    pika/functional/detail/invoke.hpp pika/functional/detail/tag_fallback_invoke.hpp
+    pika/functional/detail/tag_priority_invoke.hpp pika/functional/tag_invoke.hpp
 )
 
 set(tag_invoke_sources)

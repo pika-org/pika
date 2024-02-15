@@ -10,9 +10,7 @@ function(pika_add_source_group)
     set(options)
     set(one_value_args NAME CLASS ROOT)
     set(multi_value_args TARGETS)
-    cmake_parse_arguments(
-      GROUP "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
-    )
+    cmake_parse_arguments(GROUP "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
     set(name "")
     if(GROUP_NAME)
@@ -40,10 +38,7 @@ function(pika_add_source_group)
         )
         source_group("${GROUP_CLASS}\\${relpath}" FILES ${target})
       else()
-        pika_debug(
-          "add_source_group.${name}"
-          "Adding ${target} to source group ${relpath}"
-        )
+        pika_debug("add_source_group.${name}" "Adding ${target} to source group ${relpath}")
         source_group("${relpath}" FILES ${target})
       endif()
     endforeach()

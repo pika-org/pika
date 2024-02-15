@@ -27,13 +27,9 @@ function(pika_add_config_test variable)
       DEFINITIONS
       REQUIRED
   )
-  cmake_parse_arguments(
-    ${variable} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
-  )
+  cmake_parse_arguments(${variable} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
-  if(${variable}_CHECK_CXXSTD AND ${variable}_CHECK_CXXSTD GREATER
-                                  PIKA_WITH_CXX_STANDARD
-  )
+  if(${variable}_CHECK_CXXSTD AND ${variable}_CHECK_CXXSTD GREATER PIKA_WITH_CXX_STANDARD)
     if(DEFINED ${variable})
       unset(${variable} CACHE)
       pika_info(
@@ -44,13 +40,11 @@ function(pika_add_config_test variable)
   endif()
 
   set(_run_msg)
-  # Check CMake feature tests if the user didn't override the value of this
-  # variable:
+  # Check CMake feature tests if the user didn't override the value of this variable:
   if(NOT DEFINED ${variable} AND NOT ${variable}_GPU)
     if(${variable}_CMAKECXXFEATURE)
-      # We don't have to run our own feature test if there is a corresponding
-      # cmake feature test and cmake reports the feature is supported on this
-      # platform.
+      # We don't have to run our own feature test if there is a corresponding cmake feature test and
+      # cmake reports the feature is supported on this platform.
       list(FIND CMAKE_CXX_COMPILE_FEATURES ${${variable}_CMAKECXXFEATURE} __pos)
       if(NOT ${__pos} EQUAL -1)
         set(${variable}
@@ -63,9 +57,7 @@ function(pika_add_config_test variable)
   endif()
 
   if(NOT DEFINED ${variable})
-    file(MAKE_DIRECTORY
-         "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/config_tests"
-    )
+    file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/config_tests")
 
     string(TOLOWER "${variable}" variable_lc)
     if(${variable}_FILE)
@@ -86,48 +78,33 @@ function(pika_add_config_test variable)
       endif()
       file(WRITE "${test_source}" "${${variable}_SOURCE}\n")
     endif()
-    set(test_binary
-        ${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/config_tests/${variable_lc}
-    )
+    set(test_binary ${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/config_tests/${variable_lc})
 
     get_directory_property(CONFIG_TEST_INCLUDE_DIRS INCLUDE_DIRECTORIES)
     get_directory_property(CONFIG_TEST_LINK_DIRS LINK_DIRECTORIES)
     set(COMPILE_DEFINITIONS_TMP)
     set(CONFIG_TEST_COMPILE_DEFINITIONS)
     get_directory_property(COMPILE_DEFINITIONS_TMP COMPILE_DEFINITIONS)
-    foreach(def IN LISTS COMPILE_DEFINITIONS_TMP
-                         ${variable}_COMPILE_DEFINITIONS
-    )
-      set(CONFIG_TEST_COMPILE_DEFINITIONS
-          "${CONFIG_TEST_COMPILE_DEFINITIONS} -D${def}"
-      )
+    foreach(def IN LISTS COMPILE_DEFINITIONS_TMP ${variable}_COMPILE_DEFINITIONS)
+      set(CONFIG_TEST_COMPILE_DEFINITIONS "${CONFIG_TEST_COMPILE_DEFINITIONS} -D${def}")
     endforeach()
     get_property(
-      PIKA_TARGET_COMPILE_OPTIONS_PUBLIC_VAR GLOBAL
-      PROPERTY PIKA_TARGET_COMPILE_OPTIONS_PUBLIC
+      PIKA_TARGET_COMPILE_OPTIONS_PUBLIC_VAR GLOBAL PROPERTY PIKA_TARGET_COMPILE_OPTIONS_PUBLIC
     )
     get_property(
-      PIKA_TARGET_COMPILE_OPTIONS_PRIVATE_VAR GLOBAL
-      PROPERTY PIKA_TARGET_COMPILE_OPTIONS_PRIVATE
+      PIKA_TARGET_COMPILE_OPTIONS_PRIVATE_VAR GLOBAL PROPERTY PIKA_TARGET_COMPILE_OPTIONS_PRIVATE
     )
-    set(PIKA_TARGET_COMPILE_OPTIONS_VAR
-        ${PIKA_TARGET_COMPILE_OPTIONS_PUBLIC_VAR}
-        ${PIKA_TARGET_COMPILE_OPTIONS_PRIVATE_VAR}
+    set(PIKA_TARGET_COMPILE_OPTIONS_VAR ${PIKA_TARGET_COMPILE_OPTIONS_PUBLIC_VAR}
+                                        ${PIKA_TARGET_COMPILE_OPTIONS_PRIVATE_VAR}
     )
     foreach(_flag ${PIKA_TARGET_COMPILE_OPTIONS_VAR})
       if(NOT "${_flag}" MATCHES "^\\$.*")
-        set(CONFIG_TEST_COMPILE_DEFINITIONS
-            "${CONFIG_TEST_COMPILE_DEFINITIONS} ${_flag}"
-        )
+        set(CONFIG_TEST_COMPILE_DEFINITIONS "${CONFIG_TEST_COMPILE_DEFINITIONS} ${_flag}")
       endif()
     endforeach()
 
-    set(CONFIG_TEST_INCLUDE_DIRS ${CONFIG_TEST_INCLUDE_DIRS}
-                                 ${${variable}_INCLUDE_DIRECTORIES}
-    )
-    set(CONFIG_TEST_LINK_DIRS ${CONFIG_TEST_LINK_DIRS}
-                              ${${variable}_LINK_DIRECTORIES}
-    )
+    set(CONFIG_TEST_INCLUDE_DIRS ${CONFIG_TEST_INCLUDE_DIRS} ${${variable}_INCLUDE_DIRECTORIES})
+    set(CONFIG_TEST_LINK_DIRS ${CONFIG_TEST_LINK_DIRS} ${${variable}_LINK_DIRECTORIES})
 
     set(CONFIG_TEST_LINK_LIBRARIES ${${variable}_LIBRARIES})
 
@@ -140,9 +117,7 @@ function(pika_add_config_test variable)
 
     if(${variable}_EXECUTE)
       if(NOT CMAKE_CROSSCOMPILING)
-        set(CMAKE_CXX_FLAGS
-            "${CMAKE_CXX_FLAGS} ${additional_cmake_flags} ${${variable}_CXXFLAGS}"
-        )
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${additional_cmake_flags} ${${variable}_CXXFLAGS}")
         # cmake-format: off
         try_run(
           ${variable}_RUN_RESULT ${variable}_COMPILE_RESULT
@@ -175,15 +150,9 @@ function(pika_add_config_test variable)
       if(PIKA_WITH_HIP)
         set(hip_parameters HIP_STANDARD ${CMAKE_HIP_STANDARD})
       endif()
-      set(CMAKE_CXX_FLAGS
-          "${CMAKE_CXX_FLAGS} ${additional_cmake_flags} ${${variable}_CXXFLAGS}"
-      )
-      set(CMAKE_CUDA_FLAGS
-          "${CMAKE_CUDA_FLAGS} ${additional_cmake_flags} ${${variable}_CXXFLAGS}"
-      )
-      set(CMAKE_HIP_FLAGS
-          "${CMAKE_HIP_FLAGS} ${additional_cmake_flags} ${${variable}_CXXFLAGS}"
-      )
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${additional_cmake_flags} ${${variable}_CXXFLAGS}")
+      set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} ${additional_cmake_flags} ${${variable}_CXXFLAGS}")
+      set(CMAKE_HIP_FLAGS "${CMAKE_HIP_FLAGS} ${additional_cmake_flags} ${${variable}_CXXFLAGS}")
       # cmake-format: off
       try_compile(
         ${variable}_RESULT
@@ -242,7 +211,7 @@ function(pika_add_config_test variable)
   endif()
 endfunction()
 
-# ##############################################################################
+# ##################################################################################################
 function(pika_cpuid target variable)
   pika_add_config_test(
     ${variable}
@@ -253,7 +222,7 @@ function(pika_cpuid target variable)
   )
 endfunction()
 
-# ##############################################################################
+# ##################################################################################################
 function(pika_check_for_unistd_h)
   pika_add_config_test(
     PIKA_WITH_UNISTD_H
@@ -262,7 +231,7 @@ function(pika_check_for_unistd_h)
   )
 endfunction()
 
-# ##############################################################################
+# ##################################################################################################
 function(pika_check_for_libfun_std_experimental_optional)
   pika_add_config_test(
     PIKA_WITH_LIBFUN_EXPERIMENTAL_OPTIONAL
@@ -271,16 +240,15 @@ function(pika_check_for_libfun_std_experimental_optional)
   )
 endfunction()
 
-# ##############################################################################
+# ##################################################################################################
 function(pika_check_for_cxx11_std_atomic)
   # Make sure PIKA_HAVE_LIBATOMIC is removed from the cache if necessary
   if(NOT PIKA_WITH_CXX11_ATOMIC)
     unset(PIKA_CXX11_STD_ATOMIC_LIBRARIES CACHE)
   endif()
 
-  # First see if we can build atomics with no -latomics. We make sure to
-  # override REQUIRED, if set, with NOT_REQUIRED so that we can use the fallback
-  # test further down.
+  # First see if we can build atomics with no -latomics. We make sure to override REQUIRED, if set,
+  # with NOT_REQUIRED so that we can use the fallback test further down.
   set(check_not_required)
   if(NOT MSVC)
     set(check_not_required NOT_REQUIRED)
@@ -294,8 +262,8 @@ function(pika_check_for_cxx11_std_atomic)
   )
 
   if(NOT MSVC)
-    # Sometimes linking against libatomic is required, if the platform doesn't
-    # support lock-free atomics. We already know that MSVC works
+    # Sometimes linking against libatomic is required, if the platform doesn't support lock-free
+    # atomics. We already know that MSVC works
     if(NOT PIKA_WITH_CXX11_ATOMIC)
       set(PIKA_CXX11_STD_ATOMIC_LIBRARIES
           atomic
@@ -318,9 +286,8 @@ endfunction()
 
 # Separately check for 128 bit atomics
 function(pika_check_for_cxx11_std_atomic_128bit)
-  # First see if we can build atomics with no -latomics. We make sure to
-  # override REQUIRED, if set, with NOT_REQUIRED so that we can use the fallback
-  # test further down.
+  # First see if we can build atomics with no -latomics. We make sure to override REQUIRED, if set,
+  # with NOT_REQUIRED so that we can use the fallback test further down.
   set(check_not_required)
   if(NOT MSVC)
     set(check_not_required NOT_REQUIRED)
@@ -334,8 +301,8 @@ function(pika_check_for_cxx11_std_atomic_128bit)
   )
 
   if(NOT MSVC)
-    # Sometimes linking against libatomic is required, if the platform doesn't
-    # support lock-free atomics. We already know that MSVC works
+    # Sometimes linking against libatomic is required, if the platform doesn't support lock-free
+    # atomics. We already know that MSVC works
     if(NOT PIKA_WITH_CXX11_ATOMIC_128BIT)
       set(PIKA_CXX11_STD_ATOMIC_LIBRARIES
           atomic
@@ -357,7 +324,7 @@ function(pika_check_for_cxx11_std_atomic_128bit)
   endif()
 endfunction()
 
-# ##############################################################################
+# ##################################################################################################
 function(pika_check_for_cxx11_std_shared_ptr_lwg3018)
   pika_add_config_test(
     PIKA_WITH_CXX11_SHARED_PTR_LWG3018
@@ -366,7 +333,7 @@ function(pika_check_for_cxx11_std_shared_ptr_lwg3018)
   )
 endfunction()
 
-# ##############################################################################
+# ##################################################################################################
 function(pika_check_for_c11_aligned_alloc)
   pika_add_config_test(
     PIKA_WITH_C11_ALIGNED_ALLOC
@@ -383,7 +350,7 @@ function(pika_check_for_cxx17_std_aligned_alloc)
   )
 endfunction()
 
-# ##############################################################################
+# ##################################################################################################
 function(pika_check_for_cxx11_std_quick_exit)
   pika_add_config_test(
     PIKA_WITH_CXX11_STD_QUICK_EXIT
@@ -392,7 +359,7 @@ function(pika_check_for_cxx11_std_quick_exit)
   )
 endfunction()
 
-# ##############################################################################
+# ##################################################################################################
 function(pika_check_for_cxx17_aligned_new)
   pika_add_config_test(
     PIKA_WITH_CXX17_ALIGNED_NEW
@@ -402,7 +369,7 @@ function(pika_check_for_cxx17_aligned_new)
   )
 endfunction()
 
-# ##############################################################################
+# ##################################################################################################
 function(pika_check_for_cxx17_std_transform_scan)
   pika_add_config_test(
     PIKA_WITH_CXX17_STD_TRANSFORM_SCAN_ALGORITHMS
@@ -411,7 +378,7 @@ function(pika_check_for_cxx17_std_transform_scan)
   )
 endfunction()
 
-# ##############################################################################
+# ##################################################################################################
 function(pika_check_for_cxx17_std_scan)
   pika_add_config_test(
     PIKA_WITH_CXX17_STD_SCAN_ALGORITHMS
@@ -420,7 +387,7 @@ function(pika_check_for_cxx17_std_scan)
   )
 endfunction()
 
-# ##############################################################################
+# ##################################################################################################
 function(pika_check_for_cxx17_copy_elision)
   pika_add_config_test(
     PIKA_WITH_CXX17_COPY_ELISION
@@ -429,7 +396,7 @@ function(pika_check_for_cxx17_copy_elision)
   )
 endfunction()
 
-# ##############################################################################
+# ##################################################################################################
 function(pika_check_for_cxx17_memory_resource)
   pika_add_config_test(
     PIKA_WITH_CXX17_MEMORY_RESOURCE
@@ -438,7 +405,7 @@ function(pika_check_for_cxx17_memory_resource)
   )
 endfunction()
 
-# ##############################################################################
+# ##################################################################################################
 function(pika_check_for_cxx20_no_unique_address_attribute)
   pika_add_config_test(
     PIKA_WITH_CXX20_NO_UNIQUE_ADDRESS_ATTRIBUTE
@@ -447,7 +414,7 @@ function(pika_check_for_cxx20_no_unique_address_attribute)
   )
 endfunction()
 
-# ##############################################################################
+# ##################################################################################################
 function(pika_check_for_cxx20_std_disable_sized_sentinel_for)
   pika_add_config_test(
     PIKA_WITH_CXX20_STD_DISABLE_SIZED_SENTINEL_FOR
@@ -456,7 +423,7 @@ function(pika_check_for_cxx20_std_disable_sized_sentinel_for)
   )
 endfunction()
 
-# ##############################################################################
+# ##################################################################################################
 function(pika_check_for_cxx20_trivial_virtual_destructor)
   pika_add_config_test(
     PIKA_WITH_CXX20_TRIVIAL_VIRTUAL_DESTRUCTOR
@@ -465,7 +432,7 @@ function(pika_check_for_cxx20_trivial_virtual_destructor)
   )
 endfunction()
 
-# ##############################################################################
+# ##################################################################################################
 function(pika_check_for_cxx23_static_call_operator)
   pika_add_config_test(
     PIKA_WITH_CXX23_STATIC_CALL_OPERATOR
@@ -474,7 +441,7 @@ function(pika_check_for_cxx23_static_call_operator)
   )
 endfunction()
 
-# ##############################################################################
+# ##################################################################################################
 function(pika_check_for_cxx23_static_call_operator_gpu)
   if(PIKA_WITH_GPU_SUPPORT)
     set(static_call_operator_test_extension "cpp")
@@ -491,15 +458,13 @@ function(pika_check_for_cxx23_static_call_operator_gpu)
 
     pika_add_config_test(
       PIKA_WITH_CXX23_STATIC_CALL_OPERATOR_GPU
-      SOURCE
-        cmake/tests/cxx23_static_call_operator.${static_call_operator_test_extension}
-        GPU
+      SOURCE cmake/tests/cxx23_static_call_operator.${static_call_operator_test_extension} GPU
       FILE ${ARGN}
     )
   endif()
 endfunction()
 
-# ##############################################################################
+# ##################################################################################################
 function(pika_check_for_cxx_lambda_capture_decltype)
   pika_add_config_test(
     PIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE

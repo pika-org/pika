@@ -4,9 +4,7 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(tests standalone_thread_pool_scheduler std_thread_scheduler
-          thread_pool_scheduler
-)
+set(tests standalone_thread_pool_scheduler std_thread_scheduler thread_pool_scheduler)
 
 set(std_thread_scheduler_PARAMETERS VALGRIND)
 
@@ -25,7 +23,5 @@ foreach(test ${tests})
     FOLDER ${folder_name}
   )
 
-  pika_add_unit_test(
-    "modules.executors" ${test} ${${test}_PARAMETERS} THREADS 4
-  )
+  pika_add_unit_test("modules.executors" ${test} ${${test}_PARAMETERS} THREADS 4)
 endforeach()

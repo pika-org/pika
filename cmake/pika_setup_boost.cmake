@@ -7,8 +7,8 @@
 
 # In case find_package(pika) is called multiple times
 if(NOT TARGET pika_dependencies_boost)
-  # We first try to find the required minimum set of Boost libraries. This will
-  # also give us the version of the found boost installation
+  # We first try to find the required minimum set of Boost libraries. This will also give us the
+  # version of the found boost installation
 
   # Add additional version to recognize
   # cmake-format: off
@@ -46,15 +46,10 @@ if(NOT TARGET pika_dependencies_boost)
 
   list(REMOVE_DUPLICATES __boost_libraries)
 
-  find_package(
-    Boost ${Boost_MINIMUM_VERSION} MODULE REQUIRED
-    COMPONENTS ${__boost_libraries}
-  )
+  find_package(Boost ${Boost_MINIMUM_VERSION} MODULE REQUIRED COMPONENTS ${__boost_libraries})
 
   if(NOT Boost_FOUND)
-    pika_error(
-      "Could not find Boost. Please set BOOST_ROOT to point to your Boost installation."
-    )
+    pika_error("Could not find Boost. Please set BOOST_ROOT to point to your Boost installation.")
   endif()
 
   # We are assuming that there is only one Boost Root
@@ -68,15 +63,12 @@ if(NOT TARGET pika_dependencies_boost)
 
   target_link_libraries(pika_dependencies_boost INTERFACE Boost::boost)
   foreach(__boost_library ${__boost_libraries})
-    target_link_libraries(
-      pika_dependencies_boost INTERFACE Boost::${__boost_library}
-    )
+    target_link_libraries(pika_dependencies_boost INTERFACE Boost::${__boost_library})
   endforeach()
 
   if(PIKA_WITH_HIP AND Boost_VERSION VERSION_LESS 1.78)
     target_compile_definitions(
-      pika_dependencies_boost
-      INTERFACE "BOOST_NOINLINE=__attribute__ ((noinline))"
+      pika_dependencies_boost INTERFACE "BOOST_NOINLINE=__attribute__ ((noinline))"
     )
   endif()
 
@@ -84,9 +76,7 @@ if(NOT TARGET pika_dependencies_boost)
      AND "${CMAKE_CUDA_COMPILER_ID}" STREQUAL "NVIDIA"
      AND PIKA_WITH_CXX_STANDARD GREATER_EQUAL 20
   )
-    target_compile_definitions(
-      pika_dependencies_boost INTERFACE BOOST_DISABLE_CURRENT_LOCATION
-    )
+    target_compile_definitions(pika_dependencies_boost INTERFACE BOOST_DISABLE_CURRENT_LOCATION)
   endif()
 
   include(pika_add_definitions)
@@ -96,9 +86,7 @@ if(NOT TARGET pika_dependencies_boost)
     pika_add_config_cond_define(BOOST_ALL_DYN_LINK)
   endif()
   pika_add_config_cond_define(BOOST_BIGINT_HAS_NATIVE_INT64)
-  target_link_libraries(
-    pika_dependencies_boost INTERFACE Boost::disable_autolinking
-  )
+  target_link_libraries(pika_dependencies_boost INTERFACE Boost::disable_autolinking)
 
   if(NOT MSVC)
     pika_add_config_define(PIKA_COROUTINE_NO_SEPARATE_CALL_SITES)

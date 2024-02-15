@@ -5,9 +5,7 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 # Default location is $PIKA_ROOT/libs/memory/include
-set(memory_headers pika/memory/intrusive_ptr.hpp
-                   pika/memory/detail/sp_convertible.hpp
-)
+set(memory_headers pika/memory/intrusive_ptr.hpp pika/memory/detail/sp_convertible.hpp)
 
 # Default location is $PIKA_ROOT/libs/memory/src
 set(memory_sources)

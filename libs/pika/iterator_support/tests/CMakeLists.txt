@@ -9,15 +9,11 @@ include(pika_option)
 
 if(PIKA_WITH_TESTS)
   add_library(pika_iterator_support_test_utilities INTERFACE)
-  target_include_directories(
-    pika_iterator_support_test_utilities INTERFACE include/
-  )
+  target_include_directories(pika_iterator_support_test_utilities INTERFACE include/)
 
   if(PIKA_WITH_TESTS_UNIT)
     pika_add_pseudo_target(tests.unit.modules.iterator_support)
-    pika_add_pseudo_dependencies(
-      tests.unit.modules tests.unit.modules.iterator_support
-    )
+    pika_add_pseudo_dependencies(tests.unit.modules tests.unit.modules.iterator_support)
     add_subdirectory(unit)
   endif()
 

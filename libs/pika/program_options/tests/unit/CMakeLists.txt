@@ -18,8 +18,7 @@ set(tests
     winmain
 )
 
-# nvc++ causes test failures in release mode. This is assumed to be a code
-# generation bug.
+# nvc++ causes test failures in release mode. This is assumed to be a code generation bug.
 if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC")
   list(APPEND tests unicode)
 endif()
@@ -39,7 +38,5 @@ foreach(test ${tests})
     FOLDER ${folder_name}
   )
 
-  pika_add_unit_test(
-    "modules.program_options" ${test} ${${test}_PARAMETERS} VALGRIND
-  )
+  pika_add_unit_test("modules.program_options" ${test} ${${test}_PARAMETERS} VALGRIND)
 endforeach()

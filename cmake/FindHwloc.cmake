@@ -52,9 +52,7 @@ if(NOT TARGET pika_internal::hwloc)
   set(HWLOC_LIBRARIES ${HWLOC_LIBRARY})
   set(HWLOC_INCLUDE_DIRS ${HWLOC_INCLUDE_DIR})
 
-  find_package_handle_standard_args(
-    Hwloc DEFAULT_MSG HWLOC_LIBRARY HWLOC_INCLUDE_DIR
-  )
+  find_package_handle_standard_args(Hwloc DEFAULT_MSG HWLOC_LIBRARY HWLOC_INCLUDE_DIR)
 
   get_property(
     _type
@@ -69,9 +67,7 @@ if(NOT TARGET pika_internal::hwloc)
   endif()
 
   add_library(pika_internal::hwloc INTERFACE IMPORTED)
-  target_include_directories(
-    pika_internal::hwloc SYSTEM INTERFACE ${HWLOC_INCLUDE_DIR}
-  )
+  target_include_directories(pika_internal::hwloc SYSTEM INTERFACE ${HWLOC_INCLUDE_DIR})
   target_link_libraries(pika_internal::hwloc INTERFACE ${HWLOC_LIBRARIES})
 
   mark_as_advanced(HWLOC_ROOT HWLOC_LIBRARY HWLOC_INCLUDE_DIR)

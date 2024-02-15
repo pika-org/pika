@@ -27,12 +27,10 @@ if(NOT PIKA_WITH_SANITIZERS)
 endif()
 
 if(PIKA_WITH_EXAMPLES_OPENMP)
-  list(APPEND benchmarks openmp_homogeneous_timed_task_spawn
-       openmp_parallel_region
-  )
+  list(APPEND benchmarks openmp_homogeneous_timed_task_spawn openmp_parallel_region)
 
-  set(openmp_homogeneous_timed_task_spawn_FLAGS
-      NOLIBS DEPENDENCIES ${boost_library_dependencies} pika
+  set(openmp_homogeneous_timed_task_spawn_FLAGS NOLIBS DEPENDENCIES ${boost_library_dependencies}
+                                                pika
   )
   set(openmp_parallel_region_FLAGS NOLIBS DEPENDENCIES pika)
 endif()
@@ -42,45 +40,36 @@ if(PIKA_WITH_EXAMPLES_QTHREADS)
        qthreads_heterogeneous_timed_task_spawn
   )
 
-  set(qthreads_homogeneous_timed_task_spawn_FLAGS
-      NOLIBS DEPENDENCIES ${boost_library_dependencies} ${QTHREADS_LIBRARIES}
-      pika
+  set(qthreads_homogeneous_timed_task_spawn_FLAGS NOLIBS DEPENDENCIES ${boost_library_dependencies}
+                                                  ${QTHREADS_LIBRARIES} pika
   )
 
   set(qthreads_heterogeneous_timed_task_spawn_FLAGS
-      NOLIBS DEPENDENCIES ${boost_library_dependencies} ${QTHREADS_LIBRARIES}
-      pika
+      NOLIBS DEPENDENCIES ${boost_library_dependencies} ${QTHREADS_LIBRARIES} pika
   )
 
-  set(qthreads_heterogeneous_timed_task_spawn_INCLUDE_DIRECTORIES
-      ${QTHREADS_INCLUDE_DIR}
-  )
+  set(qthreads_heterogeneous_timed_task_spawn_INCLUDE_DIRECTORIES ${QTHREADS_INCLUDE_DIR})
 endif()
 
 if(PIKA_WITH_EXAMPLES_TBB)
   list(APPEND benchmarks tbb_homogeneous_timed_task_spawn)
 
-  set(tbb_homogeneous_timed_task_spawn_FLAGS
-      NOLIBS DEPENDENCIES ${boost_library_dependencies} ${TBB_LIBRARIES} pika
+  set(tbb_homogeneous_timed_task_spawn_FLAGS NOLIBS DEPENDENCIES ${boost_library_dependencies}
+                                             ${TBB_LIBRARIES} pika
   )
 
   set(tbb_homogeneous_timed_task_spawn_INCLUDE_DIRECTORIES ${TBB_INCLUDE_DIR})
 endif()
 
 set(delay_baseline_FLAGS NOLIBS DEPENDENCIES ${boost_library_dependencies} pika)
-set(delay_baseline_threaded_FLAGS DEPENDENCIES ${boost_library_dependencies}
-                                  pika
-)
-set(print_heterogeneous_payloads_FLAGS NOLIBS DEPENDENCIES
-                                       ${boost_library_dependencies} pika
-)
+set(delay_baseline_threaded_FLAGS DEPENDENCIES ${boost_library_dependencies} pika)
+set(print_heterogeneous_payloads_FLAGS NOLIBS DEPENDENCIES ${boost_library_dependencies} pika)
 set(resume_suspend_FLAGS DEPENDENCIES pika_timing)
 
 set(task_overhead_PARAMETERS THREADS 4)
 set(task_overhead_report_PARAMETERS THREADS 4)
 
-# These tests do not run on pika threads, so we don't want to pass pika params
-# into them
+# These tests do not run on pika threads, so we don't want to pass pika params into them
 set(delay_baseline_PARAMETERS NO_PIKA_MAIN)
 set(delay_baseline_threaded_PARAMETERS NO_PIKA_MAIN)
 set(function_object_wrapper_overhead_PARAMETERS NO_PIKA_MAIN)
@@ -111,9 +100,7 @@ foreach(benchmark ${benchmarks})
     FOLDER "Benchmarks"
   )
 
-  target_include_directories(
-    ${benchmark}_test SYSTEM PRIVATE ${${benchmark}_INCLUDE_DIRECTORIES}
-  )
+  target_include_directories(${benchmark}_test SYSTEM PRIVATE ${${benchmark}_INCLUDE_DIRECTORIES})
   target_link_libraries(${benchmark}_test PRIVATE ${${benchmark}_LIBRARIES})
 
   if(NOT "${${benchmark}_PARAMETERS}" MATCHES NO_PIKA_MAIN)
@@ -124,23 +111,15 @@ endforeach()
 
 if(PIKA_WITH_EXAMPLES_OPENMP)
   set_target_properties(
-    openmp_homogeneous_timed_task_spawn_test PROPERTIES COMPILE_FLAGS
-                                                        ${OpenMP_CXX_FLAGS}
+    openmp_homogeneous_timed_task_spawn_test PROPERTIES COMPILE_FLAGS ${OpenMP_CXX_FLAGS}
   )
   set_target_properties(
-    openmp_homogeneous_timed_task_spawn_test PROPERTIES LINK_FLAGS
-                                                        ${OpenMP_CXX_FLAGS}
+    openmp_homogeneous_timed_task_spawn_test PROPERTIES LINK_FLAGS ${OpenMP_CXX_FLAGS}
   )
-  set_target_properties(
-    openmp_parallel_region_test PROPERTIES COMPILE_FLAGS ${OpenMP_CXX_FLAGS}
-  )
-  set_target_properties(
-    openmp_parallel_region_test PROPERTIES LINK_FLAGS ${OpenMP_CXX_FLAGS}
-  )
+  set_target_properties(openmp_parallel_region_test PROPERTIES COMPILE_FLAGS ${OpenMP_CXX_FLAGS})
+  set_target_properties(openmp_parallel_region_test PROPERTIES LINK_FLAGS ${OpenMP_CXX_FLAGS})
 endif()
 
 pika_add_pseudo_target(tests.performance.local.htts_v2)
 add_subdirectory(htts_v2)
-pika_add_pseudo_dependencies(
-  tests.performance.local tests.performance.local.htts_v2
-)
+pika_add_pseudo_dependencies(tests.performance.local tests.performance.local.htts_v2)

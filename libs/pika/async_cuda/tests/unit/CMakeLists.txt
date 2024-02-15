@@ -43,7 +43,5 @@ foreach(test ${tests})
     FOLDER "Tests/Unit/Modules/AsyncCuda"
   )
 
-  pika_add_unit_test(
-    "modules.async_cuda" ${test} ${${test}_PARAMETERS} RUN_SERIAL
-  )
+  pika_add_unit_test("modules.async_cuda" ${test} ${${test}_PARAMETERS} RUN_SERIAL)
 endforeach()

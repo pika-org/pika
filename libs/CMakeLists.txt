@@ -14,8 +14,7 @@ if(PIKA_WITH_EXAMPLES)
   pika_add_pseudo_dependencies(examples examples.modules)
 endif()
 
-# add test pseudo targets needed for modules
-# pika_warn("PIKA_WITH_TESTS=${PIKA_WITH_TESTS}")
+# add test pseudo targets needed for modules pika_warn("PIKA_WITH_TESTS=${PIKA_WITH_TESTS}")
 if(PIKA_WITH_TESTS)
   if(PIKA_WITH_TESTS_UNIT)
     pika_add_pseudo_target(tests.unit.modules)
@@ -43,8 +42,8 @@ if(PIKA_WITH_TESTS)
   endif()
 endif()
 
-# Generate a file that lists all enabled modules for checks that might be
-# optional based on the presence of a module or not
+# Generate a file that lists all enabled modules for checks that might be optional based on the
+# presence of a module or not
 set(MODULE_ENABLED_MODULE_DEFINES)
 
 # variables needed for config_strings_modules.hpp
@@ -53,9 +52,7 @@ set(CONFIG_STRINGS_MODULES_ENTRIES)
 
 if(MSVC AND MSVC14)
   # add natvis files to solution
-  pika_add_library_sources(
-    pika_natvis_files GLOB GLOBS "${PROJECT_SOURCE_DIR}/tools/VS/*.natvis"
-  )
+  pika_add_library_sources(pika_natvis_files GLOB GLOBS "${PROJECT_SOURCE_DIR}/tools/VS/*.natvis")
   source_group("Natvis Files" FILES ${pika_natvis_files_SOURCES})
 endif()
 
@@ -94,8 +91,7 @@ endforeach()
 
 configure_file(
   "${PROJECT_SOURCE_DIR}/cmake/templates/modules_enabled.hpp.in"
-  "${PROJECT_BINARY_DIR}/libs/pika/config/include/pika/config/modules_enabled.hpp"
-  @ONLY
+  "${PROJECT_BINARY_DIR}/libs/pika/config/include/pika/config/modules_enabled.hpp" @ONLY
 )
 
 if(MSVC AND PIKA_WITH_SWAP_CONTEXT_EMULATION)

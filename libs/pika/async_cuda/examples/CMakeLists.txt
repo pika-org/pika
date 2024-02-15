@@ -9,8 +9,6 @@ if(PIKA_WITH_EXAMPLES)
   pika_add_pseudo_dependencies(examples.modules examples.modules.async_cuda)
   if(PIKA_WITH_TESTS AND PIKA_WITH_TESTS_EXAMPLES)
     pika_add_pseudo_target(tests.examples.modules.async_cuda)
-    pika_add_pseudo_dependencies(
-      tests.examples.modules tests.examples.modules.async_cuda
-    )
+    pika_add_pseudo_dependencies(tests.examples.modules tests.examples.modules.async_cuda)
   endif()
 endif()

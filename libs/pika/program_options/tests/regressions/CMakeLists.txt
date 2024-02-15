@@ -4,9 +4,7 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(tests command_line_arguments_706 commandline_options_1437
-          command_line_required_arguments_2990
-)
+set(tests command_line_arguments_706 commandline_options_1437 command_line_required_arguments_2990)
 
 set(commandline_options_1437_PARAMETERS THREADS 2)
 
@@ -25,7 +23,5 @@ foreach(test ${tests})
     FOLDER ${folder_name}
   )
 
-  pika_add_regression_test(
-    "modules.program_options" ${test} ${${test}_PARAMETERS} VALGRIND
-  )
+  pika_add_regression_test("modules.program_options" ${test} ${${test}_PARAMETERS} VALGRIND)
 endforeach()

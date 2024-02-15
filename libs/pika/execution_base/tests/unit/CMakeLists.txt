@@ -5,8 +5,8 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(tests any_sender basic_operation_state basic_receiver basic_sender
-          basic_schedule execution_context
+set(tests any_sender basic_operation_state basic_receiver basic_sender basic_schedule
+          execution_context
 )
 
 foreach(test ${tests})
@@ -24,7 +24,5 @@ foreach(test ${tests})
 
   target_link_libraries(${test}_test PRIVATE pika_execution_test_utilities)
 
-  pika_add_unit_test(
-    "modules.execution_base" ${test} ${${test}_PARAMETERS} VALGRIND
-  )
+  pika_add_unit_test("modules.execution_base" ${test} ${${test}_PARAMETERS} VALGRIND)
 endforeach()

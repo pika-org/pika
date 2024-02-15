@@ -5,10 +5,8 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 set(allocator_support_headers
-    pika/allocator_support/aligned_allocator.hpp
-    pika/allocator_support/allocator_deleter.hpp
-    pika/allocator_support/internal_allocator.hpp
-    pika/allocator_support/traits/is_allocator.hpp
+    pika/allocator_support/aligned_allocator.hpp pika/allocator_support/allocator_deleter.hpp
+    pika/allocator_support/internal_allocator.hpp pika/allocator_support/traits/is_allocator.hpp
 )
 
 set(allocator_support_sources)

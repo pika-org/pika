@@ -8,33 +8,24 @@
 include(CMakeDependentOption)
 include(CMakeParseArguments)
 
-set(PIKA_OPTION_CATEGORIES "Generic" "Build Targets" "Thread Manager"
-                           "Profiling" "Debugging"
-)
+set(PIKA_OPTION_CATEGORIES "Generic" "Build Targets" "Thread Manager" "Profiling" "Debugging")
 
 macro(pika_option option type description default)
   set(options ADVANCED)
   set(one_value_args CATEGORY DEPENDS)
   set(multi_value_args STRINGS)
-  cmake_parse_arguments(
-    PIKA_OPTION "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
-  )
+  cmake_parse_arguments(PIKA_OPTION "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
   if("${type}" STREQUAL "BOOL")
     # Use regular CMake options for booleans
     if(NOT PIKA_OPTION_DEPENDS)
       option("${option}" "${description}" "${default}")
     else()
-      cmake_dependent_option(
-        "${option}" "${description}" "${default}" "${PIKA_OPTION_DEPENDS}" OFF
-      )
+      cmake_dependent_option("${option}" "${description}" "${default}" "${PIKA_OPTION_DEPENDS}" OFF)
     endif()
   else()
     if(PIKA_OPTION_DEPENDS)
-      message(
-        FATAL_ERROR
-          "pika_option DEPENDS keyword can only be used with BOOL options"
-      )
+      message(FATAL_ERROR "pika_option DEPENDS keyword can only be used with BOOL options")
     endif()
     # Use custom cache variables for other types
     if(NOT DEFINED ${option})
@@ -65,14 +56,9 @@ macro(pika_option option type description default)
 
     if(PIKA_OPTION_STRINGS)
       if("${type}" STREQUAL "STRING")
-        set_property(
-          CACHE "${option}" PROPERTY STRINGS "${PIKA_OPTION_STRINGS}"
-        )
+        set_property(CACHE "${option}" PROPERTY STRINGS "${PIKA_OPTION_STRINGS}")
       else()
-        message(
-          FATAL_ERROR
-            "pika_option(): STRINGS can only be used if type is STRING !"
-        )
+        message(FATAL_ERROR "pika_option(): STRINGS can only be used if type is STRING !")
       endif()
     endif()
   endif()

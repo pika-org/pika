@@ -48,9 +48,7 @@ endif()
 set(TCMALLOC_LIBRARIES ${TCMALLOC_LIBRARY})
 set(TCMALLOC_INCLUDE_DIRS ${TCMALLOC_INCLUDE_DIR})
 
-find_package_handle_standard_args(
-  TCMalloc DEFAULT_MSG TCMALLOC_LIBRARY TCMALLOC_INCLUDE_DIR
-)
+find_package_handle_standard_args(TCMalloc DEFAULT_MSG TCMALLOC_LIBRARY TCMALLOC_INCLUDE_DIR)
 
 get_property(
   _type

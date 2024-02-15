@@ -7,9 +7,7 @@
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Default location is $PIKA_ROOT/libs/itt_notify/include
-set(itt_notify_headers pika/modules/itt_notify.hpp
-                       pika/itt_notify/thread_name.hpp
-)
+set(itt_notify_headers pika/modules/itt_notify.hpp pika/itt_notify/thread_name.hpp)
 
 set(itt_notify_sources itt_notify.cpp thread_name.cpp)
 

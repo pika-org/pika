@@ -24,8 +24,7 @@ foreach(example_program ${example_programs})
 
   if(PIKA_WITH_TESTS AND PIKA_WITH_TESTS_EXAMPLES)
     pika_add_example_test(
-      "future_reduce" ${example_program} ${${example_program}_PARAMETERS}
-      VALGRIND
+      "future_reduce" ${example_program} ${${example_program}_PARAMETERS} VALGRIND
     )
   endif()
 endforeach()

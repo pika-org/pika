@@ -24,8 +24,7 @@ find_path(
 )
 
 if(MSVC)
-  # MSVC needs additional header files provided by jemalloc to compensate for
-  # missing posix headers
+  # MSVC needs additional header files provided by jemalloc to compensate for missing posix headers
   find_path(
     JEMALLOC_ADDITIONAL_INCLUDE_DIR msvc_compat/strings.h
     HINTS ${JEMALLOC_ROOT}
@@ -75,9 +74,7 @@ endif()
 set(JEMALLOC_LIBRARIES ${JEMALLOC_LIBRARY})
 set(JEMALLOC_INCLUDE_DIRS ${JEMALLOC_INCLUDE_DIR})
 
-find_package_handle_standard_args(
-  Jemalloc DEFAULT_MSG JEMALLOC_LIBRARY JEMALLOC_INCLUDE_DIR
-)
+find_package_handle_standard_args(Jemalloc DEFAULT_MSG JEMALLOC_LIBRARY JEMALLOC_INCLUDE_DIR)
 
 get_property(
   _type

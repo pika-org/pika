@@ -32,9 +32,7 @@ function(
     )
   endif()
   if(CMAKE_SYSROOT)
-    set(ADDITIONAL_CMAKE_OPTIONS ${ADDITIONAL_CMAKE_OPTIONS}
-                                 -DCMAKE_SYSROOT=${CMAKE_SYSROOT}
-    )
+    set(ADDITIONAL_CMAKE_OPTIONS ${ADDITIONAL_CMAKE_OPTIONS} -DCMAKE_SYSROOT=${CMAKE_SYSROOT})
   endif()
   if(NOT MSVC)
     set(ADDITIONAL_CMAKE_OPTIONS ${ADDITIONAL_CMAKE_OPTIONS}
@@ -53,16 +51,13 @@ function(
   add_test(
     NAME "${category}.${name}"
     COMMAND
-      "${CMAKE_CTEST_COMMAND}" --build-and-test "${test_dir}" "${build_dir}"
-      --build-generator "${CMAKE_GENERATOR}" --build-noclean --build-options
-      -Dpika_DIR=${pika_dir} ${ADDITIONAL_CMAKE_OPTIONS}
-      -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS_SAFE}
+      "${CMAKE_CTEST_COMMAND}" --build-and-test "${test_dir}" "${build_dir}" --build-generator
+      "${CMAKE_GENERATOR}" --build-noclean --build-options -Dpika_DIR=${pika_dir}
+      ${ADDITIONAL_CMAKE_OPTIONS} -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS_SAFE}
       -DCMAKE_BUILD_TYPE=${build_type} ${cmake_cuda_compiler} --test-command
       "${CMAKE_CTEST_COMMAND}" --output-on-failure
   )
-  set_tests_properties(
-    "${category}.${name}" PROPERTIES LABELS "STANDALONE_TESTS"
-  )
+  set_tests_properties("${category}.${name}" PROPERTIES LABELS "STANDALONE_TESTS")
 
 endfunction()
 
@@ -70,9 +65,9 @@ if(MSVC)
   set(build_types ${CMAKE_BUILD_TYPE})
 else()
   set(build_types Debug Release RelWithDebInfo)
-  # lld (which HIP uses) does not support the -Os flags in older versions. We do
-  # not attempt to detect the linker in the general case, but disable the
-  # MinSizeRel test here since we know that HIP only uses lld.
+  # lld (which HIP uses) does not support the -Os flags in older versions. We do not attempt to
+  # detect the linker in the general case, but disable the MinSizeRel test here since we know that
+  # HIP only uses lld.
   if(NOT PIKA_WITH_HIP OR (HIP_VERSION VERSION_GREATER_EQUAL "4.0.0"))
     list(APPEND build_types MinSizeRel)
   endif()
@@ -84,14 +79,12 @@ if(NOT MSVC)
 
     pika_create_cmake_test(
       tests.unit.build cmake_${build_type_lc}_build_dir_test FALSE
-      "${PROJECT_BINARY_DIR}/lib/cmake/pika" ${build_type}
-      "examples/hello_world_standalone"
+      "${PROJECT_BINARY_DIR}/lib/cmake/pika" ${build_type} "examples/hello_world_standalone"
     )
 
     pika_create_cmake_test(
       tests.unit.build cmake_${build_type_lc}_install_dir_test TRUE
-      "${CMAKE_INSTALL_FULL_LIBDIR}/cmake/pika" ${build_type}
-      "examples/hello_world_standalone"
+      "${CMAKE_INSTALL_FULL_LIBDIR}/cmake/pika" ${build_type} "examples/hello_world_standalone"
     )
   endforeach()
 endif()

@@ -25,6 +25,5 @@ foreach(test ${tests})
 endforeach()
 
 set_tests_properties(
-  tests.unit.modules.assertion.assert_fail PROPERTIES WILL_FAIL
-                                                      $<$<CONFIG:Debug>:true>
+  tests.unit.modules.assertion.assert_fail PROPERTIES WILL_FAIL $<$<CONFIG:Debug>:true>
 )

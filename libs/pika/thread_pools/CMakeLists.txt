@@ -8,8 +8,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(thread_pools_headers
     pika/thread_pools/detail/scoped_background_timer.hpp
-    pika/thread_pools/scheduled_thread_pool.hpp
-    pika/thread_pools/scheduled_thread_pool_impl.hpp
+    pika/thread_pools/scheduled_thread_pool.hpp pika/thread_pools/scheduled_thread_pool_impl.hpp
     pika/thread_pools/scheduling_loop.hpp
 )
 

@@ -13,8 +13,7 @@ if(NOT TARGET pika_internal::apex)
 
   find_path(
     APEX_INCLUDE_DIR task_wrapper.hpp
-    HINTS ENV APEX_ROOT ${PIKA_APEX_ROOT} ${PC_APEX_INCLUDEDIR}
-          ${PC_APEX_INCLUDE_DIRS}
+    HINTS ENV APEX_ROOT ${PIKA_APEX_ROOT} ${PC_APEX_INCLUDEDIR} ${PC_APEX_INCLUDE_DIRS}
     PATH_SUFFIXES include
   )
 
@@ -46,9 +45,7 @@ if(NOT TARGET pika_internal::apex)
   set(APEX_LIBRARIES ${APEX_LIBRARY})
   set(APEX_INCLUDE_DIRS ${APEX_INCLUDE_DIR})
 
-  find_package_handle_standard_args(
-    APEX DEFAULT_MSG APEX_LIBRARY APEX_INCLUDE_DIR
-  )
+  find_package_handle_standard_args(APEX DEFAULT_MSG APEX_LIBRARY APEX_INCLUDE_DIR)
 
   get_property(
     _type
@@ -63,9 +60,7 @@ if(NOT TARGET pika_internal::apex)
   endif()
 
   add_library(pika_internal::apex INTERFACE IMPORTED)
-  target_include_directories(
-    pika_internal::apex SYSTEM INTERFACE ${APEX_INCLUDE_DIR}
-  )
+  target_include_directories(pika_internal::apex SYSTEM INTERFACE ${APEX_INCLUDE_DIR})
   target_link_libraries(pika_internal::apex INTERFACE ${APEX_LIBRARIES})
 
   mark_as_advanced(APEX_ROOT APEX_LIBRARY APEX_INCLUDE_DIR)

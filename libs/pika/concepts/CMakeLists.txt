@@ -4,8 +4,8 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(concepts_headers pika/concepts/concepts.hpp
-                     pika/concepts/has_member_xxx.hpp pika/concepts/has_xxx.hpp
+set(concepts_headers pika/concepts/concepts.hpp pika/concepts/has_member_xxx.hpp
+                     pika/concepts/has_xxx.hpp
 )
 
 set(concepts_sources)

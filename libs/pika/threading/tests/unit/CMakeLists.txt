@@ -60,20 +60,18 @@ foreach(test ${threading_tests})
 endforeach()
 
 set_tests_properties(
-  tests.unit.modules.threading.stop_token_race2
-  PROPERTIES PASS_REGULAR_EXPRESSION "std::terminate called\n"
+  tests.unit.modules.threading.stop_token_race2 PROPERTIES PASS_REGULAR_EXPRESSION
+                                                           "std::terminate called\n"
 )
 
 if(PIKA_WITH_THREAD_STACKOVERFLOW_DETECTION)
   set_tests_properties(
     tests.unit.threads.thread_stacksize_overflow
-    PROPERTIES PASS_REGULAR_EXPRESSION
-               "Stack overflow in coroutine at address 0x[0-9a-fA-F]*"
+    PROPERTIES PASS_REGULAR_EXPRESSION "Stack overflow in coroutine at address 0x[0-9a-fA-F]*"
   )
 
   set_tests_properties(
     tests.unit.threads.thread_stacksize_overflow_v2
-    PROPERTIES PASS_REGULAR_EXPRESSION
-               "Stack overflow in coroutine at address 0x[0-9a-fA-F]*"
+    PROPERTIES PASS_REGULAR_EXPRESSION "Stack overflow in coroutine at address 0x[0-9a-fA-F]*"
   )
 endif()

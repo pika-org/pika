@@ -19,8 +19,7 @@ if(NOT TARGET pika_internal::amplifier)
   find_library(
     AMPLIFIER_LIBRARY
     NAMES ittnotify libittnotify
-    HINTS ${AMPLIFIER_ROOT} ENV AMPLIFIER_ROOT ${PC_AMPLIFIER_LIBDIR}
-          ${PC_AMPLIFIER_LIBRARY_DIRS}
+    HINTS ${AMPLIFIER_ROOT} ENV AMPLIFIER_ROOT ${PC_AMPLIFIER_LIBDIR} ${PC_AMPLIFIER_LIBRARY_DIRS}
     PATH_SUFFIXES lib lib64
   )
 
@@ -38,9 +37,7 @@ if(NOT TARGET pika_internal::amplifier)
   set(AMPLIFIER_LIBRARIES ${AMPLIFIER_LIBRARY})
   set(AMPLIFIER_INCLUDE_DIRS ${AMPLIFIER_INCLUDE_DIR})
 
-  find_package_handle_standard_args(
-    Amplifier DEFAULT_MSG AMPLIFIER_LIBRARY AMPLIFIER_INCLUDE_DIR
-  )
+  find_package_handle_standard_args(Amplifier DEFAULT_MSG AMPLIFIER_LIBRARY AMPLIFIER_INCLUDE_DIR)
 
   get_property(
     _type
@@ -57,10 +54,6 @@ if(NOT TARGET pika_internal::amplifier)
   mark_as_advanced(AMPLIFIER_ROOT AMPLIFIER_LIBRARY AMPLIFIER_INCLUDE_DIR)
 
   add_library(pika_internal::amplifier INTERFACE IMPORTED)
-  target_include_directories(
-    pika_internal::amplifier SYSTEM INTERFACE ${AMPLIFIER_INCLUDE_DIR}
-  )
-  target_link_libraries(
-    pika_internal::amplifier INTERFACE ${AMPLIFIER_LIBRARIES}
-  )
+  target_include_directories(pika_internal::amplifier SYSTEM INTERFACE ${AMPLIFIER_INCLUDE_DIR})
+  target_link_libraries(pika_internal::amplifier INTERFACE ${AMPLIFIER_LIBRARIES})
 endif()

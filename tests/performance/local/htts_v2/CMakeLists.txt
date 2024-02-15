@@ -36,23 +36,18 @@ foreach(benchmark ${benchmarks})
     FOLDER "Benchmarks/HTTS v2"
   )
 
-  target_include_directories(
-    ${benchmark} SYSTEM PRIVATE ${${benchmark}_INCLUDE_DIRECTORIES}
-  )
+  target_include_directories(${benchmark} SYSTEM PRIVATE ${${benchmark}_INCLUDE_DIRECTORIES})
 
   # add a custom target for this example
   pika_add_pseudo_target(tests.performance.local.htts_v2.${benchmark})
 
   # make pseudo-targets depend on master pseudo-target
   pika_add_pseudo_dependencies(
-    tests.performance.local.htts_v2
-    tests.performance.local.htts_v2.${benchmark}
+    tests.performance.local.htts_v2 tests.performance.local.htts_v2.${benchmark}
   )
 
   # add dependencies to pseudo-target
-  pika_add_pseudo_dependencies(
-    tests.performance.local.htts_v2.${benchmark} ${benchmark}
-  )
+  pika_add_pseudo_dependencies(tests.performance.local.htts_v2.${benchmark} ${benchmark})
 endforeach()
 
 if(PIKA_WITH_EXAMPLES_OPENMP)

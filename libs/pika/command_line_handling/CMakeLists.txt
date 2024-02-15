@@ -15,9 +15,8 @@ set(command_line_handling_headers
     pika/command_line_handling/parse_command_line.hpp
 )
 
-set(command_line_handling_sources
-    command_line_handling.cpp late_command_line_handling.cpp
-    parse_command_line.cpp
+set(command_line_handling_sources command_line_handling.cpp late_command_line_handling.cpp
+                                  parse_command_line.cpp
 )
 
 include(pika_add_module)

@@ -8,8 +8,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Default location is $PIKA_ROOT/libs/executors/include
 set(executors_headers
-    pika/executors/std_thread_scheduler.hpp
-    pika/executors/thread_pool_scheduler.hpp
+    pika/executors/std_thread_scheduler.hpp pika/executors/thread_pool_scheduler.hpp
     pika/executors/thread_pool_scheduler_bulk.hpp
 )
 

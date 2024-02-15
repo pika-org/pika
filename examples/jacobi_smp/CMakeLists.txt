@@ -15,34 +15,28 @@ set(jacobi_nonuniform_pika_PARAMETERS THREADS 4)
 set(jacobi_pika_sources jacobi.cpp)
 set(jacobi_nonuniform_pika_sources jacobi_nonuniform.cpp)
 
-set(disabled_tests
-    # Disabled because requires external input data. TODO: Download data when
+set(disabled_tests # Disabled because requires external input data. TODO: Download data when
     # running test.
     jacobi_nonuniform_pika
 )
 
 if(PIKA_WITH_EXAMPLES_OPENMP)
-  set(jacobi_smp_applications
-      ${jacobi_smp_applications} jacobi_omp_static jacobi_omp_dynamic
-      jacobi_nonuniform_omp_static jacobi_nonuniform_omp_dynamic
+  set(jacobi_smp_applications ${jacobi_smp_applications} jacobi_omp_static jacobi_omp_dynamic
+                              jacobi_nonuniform_omp_static jacobi_nonuniform_omp_dynamic
   )
   set(jacobi_omp_static_sources jacobi.cpp)
   set(jacobi_omp_dynamic_sources jacobi.cpp)
   set(jacobi_nonuniform_omp_static_sources jacobi_nonuniform.cpp)
   set(jacobi_nonuniform_omp_dynamic_sources jacobi_nonuniform.cpp)
 
-  set(disabled_tests ${disabled_tests} jacobi_nonuniform_omp_static
-                     jacobi_nonuniform_omp_dynamic
-  )
+  set(disabled_tests ${disabled_tests} jacobi_nonuniform_omp_static jacobi_nonuniform_omp_dynamic)
 endif()
 
 set(jacobi_pika_sources jacobi.cpp)
 set(jacobi_nonuniform_pika_sources jacobi_nonuniform.cpp)
 
 foreach(jacobi_smp_application ${jacobi_smp_applications})
-  set(sources ${${jacobi_smp_application}_sources}
-              ${jacobi_smp_application}.cpp
-  )
+  set(sources ${${jacobi_smp_application}_sources} ${jacobi_smp_application}.cpp)
 
   source_group("Source Files" FILES ${sources})
 
@@ -60,56 +54,37 @@ foreach(jacobi_smp_application ${jacobi_smp_applications})
      AND NOT ("${jacobi_smp_application}" IN_LIST disabled_tests)
   )
     pika_add_example_test(
-      "jacobi_smp" ${jacobi_smp_application}
-      ${${jacobi_smp_application}_PARAMETERS} VALGRIND
+      "jacobi_smp" ${jacobi_smp_application} ${${jacobi_smp_application}_PARAMETERS} VALGRIND
     )
   endif()
 endforeach()
 
 if(PIKA_WITH_EXAMPLES_OPENMP)
+  set_target_properties(jacobi_omp_static PROPERTIES COMPILE_DEFINITIONS JACOBI_SMP_NO_pika)
   set_target_properties(
-    jacobi_omp_static PROPERTIES COMPILE_DEFINITIONS JACOBI_SMP_NO_pika
+    jacobi_omp_static PROPERTIES COMPILE_FLAGS "${OpenMP_CXX_FLAGS} -DOPENMP_GRID"
   )
+  set_target_properties(jacobi_omp_static PROPERTIES LINK_FLAGS "${OpenMP_CXX_FLAGS}")
+
+  set_target_properties(jacobi_omp_dynamic PROPERTIES COMPILE_DEFINITIONS JACOBI_SMP_NO_pika)
   set_target_properties(
-    jacobi_omp_static PROPERTIES COMPILE_FLAGS
-                                 "${OpenMP_CXX_FLAGS} -DOPENMP_GRID"
+    jacobi_omp_dynamic PROPERTIES COMPILE_FLAGS "${OpenMP_CXX_FLAGS} -DOPENMP_GRID"
   )
-  set_target_properties(
-    jacobi_omp_static PROPERTIES LINK_FLAGS "${OpenMP_CXX_FLAGS}"
-  )
+  set_target_properties(jacobi_omp_dynamic PROPERTIES LINK_FLAGS "${OpenMP_CXX_FLAGS}")
 
   set_target_properties(
-    jacobi_omp_dynamic PROPERTIES COMPILE_DEFINITIONS JACOBI_SMP_NO_pika
+    jacobi_nonuniform_omp_static PROPERTIES COMPILE_DEFINITIONS JACOBI_SMP_NO_pika
   )
   set_target_properties(
-    jacobi_omp_dynamic PROPERTIES COMPILE_FLAGS
-                                  "${OpenMP_CXX_FLAGS} -DOPENMP_GRID"
+    jacobi_nonuniform_omp_static PROPERTIES COMPILE_FLAGS "${OpenMP_CXX_FLAGS} -DOPENMP_GRID"
   )
-  set_target_properties(
-    jacobi_omp_dynamic PROPERTIES LINK_FLAGS "${OpenMP_CXX_FLAGS}"
-  )
+  set_target_properties(jacobi_nonuniform_omp_static PROPERTIES LINK_FLAGS "${OpenMP_CXX_FLAGS}")
 
   set_target_properties(
-    jacobi_nonuniform_omp_static PROPERTIES COMPILE_DEFINITIONS
-                                            JACOBI_SMP_NO_pika
+    jacobi_nonuniform_omp_dynamic PROPERTIES COMPILE_DEFINITIONS JACOBI_SMP_NO_pika
   )
   set_target_properties(
-    jacobi_nonuniform_omp_static PROPERTIES COMPILE_FLAGS
-                                            "${OpenMP_CXX_FLAGS} -DOPENMP_GRID"
+    jacobi_nonuniform_omp_dynamic PROPERTIES COMPILE_FLAGS "${OpenMP_CXX_FLAGS} -DOPENMP_GRID"
   )
-  set_target_properties(
-    jacobi_nonuniform_omp_static PROPERTIES LINK_FLAGS "${OpenMP_CXX_FLAGS}"
-  )
-
-  set_target_properties(
-    jacobi_nonuniform_omp_dynamic PROPERTIES COMPILE_DEFINITIONS
-                                             JACOBI_SMP_NO_pika
-  )
-  set_target_properties(
-    jacobi_nonuniform_omp_dynamic
-    PROPERTIES COMPILE_FLAGS "${OpenMP_CXX_FLAGS} -DOPENMP_GRID"
-  )
-  set_target_properties(
-    jacobi_nonuniform_omp_dynamic PROPERTIES LINK_FLAGS "${OpenMP_CXX_FLAGS}"
-  )
+  set_target_properties(jacobi_nonuniform_omp_dynamic PROPERTIES LINK_FLAGS "${OpenMP_CXX_FLAGS}")
 endif()
