@@ -214,6 +214,7 @@ namespace pika::threads::detail {
         /// Only cleans up terminated tasks belonging to this thread
         bool cleanup_terminated(bool delete_all) override
         {
+#ifdef PIKA_HAVE_THREAD_STACK_MMAP
             using namespace pika::debug::detail;
             static auto cleanup = spq_deb<3>.make_timer(1, str<>("Cleanup"), "Global version");
             PIKA_DETAIL_DP(spq_deb<3>, timed(cleanup));
@@ -249,13 +250,22 @@ namespace pika::threads::detail {
             return numa_holder_[domain_num]
                 .thread_queue(static_cast<std::size_t>(q_index))
                 ->cleanup_terminated(local_num, delete_all);
+#else
+            PIKA_UNUSED(delete_all);
+            return true;
+#endif
         }
 
         // ------------------------------------------------------------
         /// Generic cleanup function called by scheduling loop
         bool cleanup_terminated(std::size_t /* thread_num */, bool delete_all) override
         {
+#ifdef PIKA_HAVE_THREAD_STACK_MMAP
             return cleanup_terminated(delete_all);
+#else
+            PIKA_UNUSED(delete_all);
+            return true;
+#endif
         }
 
         // ------------------------------------------------------------
