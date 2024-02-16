@@ -5,7 +5,7 @@
 # file BOOST_LICENSE_1_0.rst or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 include:
-  - local: '.gitlab/pipelines_on_push.yml'
-  - local: '.gitlab/pipelines_on_merge.yml'
-    rules:
-      - if: $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^gh-readonly-queue/ || $CI_COMMIT_BRANCH =~ /^release/
+  - local: '.gitlab/includes/gcc13_pipeline.yml'
+  - local: '.gitlab/includes/clang14_cuda11_pipeline.yml'
+  - local: '.gitlab/includes/performance_gcc13_pipeline.yml'
+  - local: '.gitlab/includes/gcc12_hip5_pipeline.yml'
