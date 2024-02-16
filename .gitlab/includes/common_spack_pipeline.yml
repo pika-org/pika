@@ -10,15 +10,16 @@ include:
 variables:
   SPACK_COMMIT: 6cfcbc01679ebabe640f4462c8fc07626a543015
 
-base_spack_image:
+.base_spack_image:
   stage: spack_base
   timeout: 2 hours
-  extends: .container-builder
   before_script:
     - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
     - export CONFIG_TAG=`echo $DOCKERFILE_SHA-$BASE_IMAGE-$SPACK_COMMIT | sha256sum - | head -c 16`
-    - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/pika-spack-base:$CONFIG_TAG
-    - echo -e "BASE_IMAGE=$PERSIST_IMAGE_NAME" >> base.env
+    - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/$ARCH/pika-spack-base:$CONFIG_TAG
+    - arch_upper=`echo $ARCH | tr '[:lower:]' '[:upper:]'`
+    - echo -e "CONFIG_TAG=$CONFIG_TAG" >> base.env
+    - echo -e "BASE_IMAGE_$arch_upper=$PERSIST_IMAGE_NAME" >> base.env
   variables:
     BASE_IMAGE: docker.io/ubuntu:22.04
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_base
@@ -27,11 +28,28 @@ base_spack_image:
     reports:
       dotenv: base.env
 
+base_spack_image_aarch64:
+  extends: [.container-builder-cscs-gh200, .base_spack_image]
+base_spack_image_x86_64:
+  extends: [.container-builder-cscs-zen2, .base_spack_image]
+
+make_multiarch_image:
+  stage: spack_base
+  needs: [base_spack_image_aarch64, base_spack_image_x86_64]
+  extends: .make-multiarch-image
+  after_script:
+    - echo -e "BASE_IMAGE=$PERSIST_IMAGE_NAME" >> multiarch.env
+  variables:
+    PERSIST_IMAGE_NAME: $CSCS_REGISTRY_PATH/pika-spack-base:${CONFIG_TAG}
+    PERSIST_IMAGE_NAME_AARCH64: $BASE_IMAGE_AARCH64
+    PERSIST_IMAGE_NAME_X86_64: $BASE_IMAGE_X86_64
+  artifacts:
+    reports:
+      dotenv: multiarch.env
+
 .compiler_image_template:
   stage: spack_compiler
-  needs: [base_spack_image]
-  extends:
-    - .container-builder
+  needs: [make_multiarch_image]
   before_script:
     - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
     - compiler=${COMPILER}${NVHPC_COMPILER:+-}${NVHPC_COMPILER}
@@ -47,10 +65,14 @@ base_spack_image:
     reports:
       dotenv: compiler.env
 
+.compiler_image_template_santis:
+  extends: [.container-builder-cscs-gh200, .compiler_image_template]
+
+.compiler_image_template_rosa:
+  extends: [.container-builder-cscs-zen2, .compiler_image_template]
+
 .dependencies_image_template:
   stage: spack_dependencies
-  extends:
-    - .container-builder
   before_script:
     - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
     - CONFIG_TAG=`echo $DOCKERFILE_SHA-$BASE_IMAGE-$SPACK_SPEC | sha256sum - | head -c 16`
@@ -64,6 +86,12 @@ base_spack_image:
     reports:
       dotenv: dependencies.env
 
+.dependencies_image_template_santis:
+  extends: [.container-builder-cscs-gh200, .dependencies_image_template]
+
+.dependencies_image_template_rosa:
+  extends: [.container-builder-cscs-zen2, .dependencies_image_template]
+
 .parallel_build_types:
   parallel:
     matrix:
@@ -76,7 +104,6 @@ base_spack_image:
 .build_template:
   stage: build
   extends:
-    - .container-builder
     - .build_variables_common
     - .cmake_variables_common
     - .parallel_build_types
@@ -92,6 +119,12 @@ base_spack_image:
   artifacts:
     reports:
       dotenv: "$DOTENV_FILE"
+
+.build_template_santis:
+  extends: [.container-builder-cscs-gh200, .build_template]
+
+.build_template_rosa:
+  extends: [.container-builder-cscs-zen2, .build_template]
 
 .test_template:
   extends:

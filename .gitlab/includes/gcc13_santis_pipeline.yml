@@ -22,20 +22,17 @@ include:
 gcc13_santis_spack_compiler_image:
   extends:
     - .variables_gcc13_santis_config
-    - .compiler_image_template
-    - .container-builder-cscs-gh200
+    - .compiler_image_template_santis
 
 gcc13_santis_spack_image:
   needs: [gcc13_santis_spack_compiler_image]
   extends:
     - .variables_gcc13_santis_config
-    - .dependencies_image_template
-    - .container-builder-cscs-gh200
+    - .dependencies_image_template_santis
 
 gcc13_santis_build:
   needs: [gcc13_santis_spack_image]
   extends:
     - .variables_gcc13_santis_config
-    - .build_template
-    - .container-builder-cscs-gh200
+    - .build_template_santis
   allow_failure: true
