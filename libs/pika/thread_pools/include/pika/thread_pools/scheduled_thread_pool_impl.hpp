@@ -456,7 +456,7 @@ namespace pika::threads::detail {
                 [[maybe_unused]] pika::threads::coroutines::detail::prepare_main_thread main_thread;
 
                 // run main Scheduler loop until terminated
-                scheduling_counter_data& counter_data = counter_data_[thread_num];
+                scheduling_counter_data& counter_data = counter_data_[thread_num].data_;
 
                 scheduling_counters counters(counter_data.executed_threads_,
                     counter_data.executed_thread_phases_, counter_data.tfunc_times_,
@@ -513,7 +513,8 @@ namespace pika::threads::detail {
 
         LTM_(info).format(
             "thread_func: {} thread_num: {}, ending OS thread, executed {} pika threads",
-            id_.name(), global_thread_num, counter_data_[global_thread_num].executed_threads_);
+            id_.name(), global_thread_num,
+            counter_data_[global_thread_num].data_.executed_threads_);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -569,14 +570,17 @@ namespace pika::threads::detail {
     OutIter
     copy_projected(InIter first, InIter last, OutIter dest, ProjSrc&& srcproj, ProjDest&& destproj)
     {
-        while (first != last) { PIKA_INVOKE(destproj, *dest++) = PIKA_INVOKE(srcproj, *first++); }
+        while (first != last)
+        {
+            PIKA_INVOKE(destproj, (dest++)->data_) = PIKA_INVOKE(srcproj, (first++)->data_);
+        }
         return dest;
     }
 
     template <typename InIter, typename T, typename Proj>
     T accumulate_projected(InIter first, InIter last, T init, Proj&& proj)
     {
-        while (first != last) { init = PIKA_MOVE(init) + PIKA_INVOKE(proj, *first++); }
+        while (first != last) { init = PIKA_MOVE(init) + PIKA_INVOKE(proj, (first++)->data_); }
         return init;
     }
 
@@ -589,10 +593,10 @@ namespace pika::threads::detail {
 
         if (num != std::size_t(-1))
         {
-            executed_threads = counter_data_[num].executed_threads_;
-            reset_executed_threads = counter_data_[num].reset_executed_threads_;
+            executed_threads = counter_data_[num].data_.executed_threads_;
+            reset_executed_threads = counter_data_[num].data_.reset_executed_threads_;
 
-            if (reset) counter_data_[num].reset_executed_threads_ = executed_threads;
+            if (reset) counter_data_[num].data_.reset_executed_threads_ = executed_threads;
         }
         else
         {
@@ -644,10 +648,10 @@ namespace pika::threads::detail {
 
         if (num != std::size_t(-1))
         {
-            executed_phases = counter_data_[num].executed_thread_phases_;
-            reset_executed_phases = counter_data_[num].reset_executed_thread_phases_;
+            executed_phases = counter_data_[num].data_.executed_thread_phases_;
+            reset_executed_phases = counter_data_[num].data_.reset_executed_thread_phases_;
 
-            if (reset) counter_data_[num].reset_executed_thread_phases_ = executed_phases;
+            if (reset) counter_data_[num].data_.reset_executed_thread_phases_ = executed_phases;
         }
         else
         {
@@ -681,16 +685,16 @@ namespace pika::threads::detail {
 
         if (num != std::size_t(-1))
         {
-            exec_total = counter_data_[num].exec_times_;
-            num_phases = counter_data_[num].executed_thread_phases_;
+            exec_total = counter_data_[num].data_.exec_times_;
+            num_phases = counter_data_[num].data_.executed_thread_phases_;
 
-            reset_exec_total = counter_data_[num].reset_thread_phase_duration_times_;
-            reset_num_phases = counter_data_[num].reset_thread_phase_duration_;
+            reset_exec_total = counter_data_[num].data_.reset_thread_phase_duration_times_;
+            reset_num_phases = counter_data_[num].data_.reset_thread_phase_duration_;
 
             if (reset)
             {
-                counter_data_[num].reset_thread_phase_duration_ = num_phases;
-                counter_data_[num].reset_thread_phase_duration_times_ = exec_total;
+                counter_data_[num].data_.reset_thread_phase_duration_ = num_phases;
+                counter_data_[num].data_.reset_thread_phase_duration_times_ = exec_total;
             }
         }
         else
@@ -735,16 +739,16 @@ namespace pika::threads::detail {
 
         if (num != std::size_t(-1))
         {
-            exec_total = counter_data_[num].exec_times_;
-            num_threads = counter_data_[num].executed_threads_;
+            exec_total = counter_data_[num].data_.exec_times_;
+            num_threads = counter_data_[num].data_.executed_threads_;
 
-            reset_exec_total = counter_data_[num].reset_thread_duration_times_;
-            reset_num_threads = counter_data_[num].reset_thread_duration_;
+            reset_exec_total = counter_data_[num].data_.reset_thread_duration_times_;
+            reset_num_threads = counter_data_[num].data_.reset_thread_duration_;
 
             if (reset)
             {
-                counter_data_[num].reset_thread_duration_ = num_threads;
-                counter_data_[num].reset_thread_duration_times_ = exec_total;
+                counter_data_[num].data_.reset_thread_duration_ = num_threads;
+                counter_data_[num].data_.reset_thread_duration_times_ = exec_total;
             }
         }
         else
@@ -793,19 +797,19 @@ namespace pika::threads::detail {
 
         if (num != std::size_t(-1))
         {
-            exec_total = counter_data_[num].exec_times_;
-            tfunc_total = counter_data_[num].tfunc_times_;
-            num_phases = counter_data_[num].executed_thread_phases_;
+            exec_total = counter_data_[num].data_.exec_times_;
+            tfunc_total = counter_data_[num].data_.tfunc_times_;
+            num_phases = counter_data_[num].data_.executed_thread_phases_;
 
-            reset_exec_total = counter_data_[num].reset_thread_phase_overhead_times_;
-            reset_tfunc_total = counter_data_[num].reset_thread_phase_overhead_times_total_;
-            reset_num_phases = counter_data_[num].reset_thread_phase_overhead_;
+            reset_exec_total = counter_data_[num].data_.reset_thread_phase_overhead_times_;
+            reset_tfunc_total = counter_data_[num].data_.reset_thread_phase_overhead_times_total_;
+            reset_num_phases = counter_data_[num].data_.reset_thread_phase_overhead_;
 
             if (reset)
             {
-                counter_data_[num].reset_thread_phase_overhead_times_ = exec_total;
-                counter_data_[num].reset_thread_phase_overhead_times_total_ = tfunc_total;
-                counter_data_[num].reset_thread_phase_overhead_ = num_phases;
+                counter_data_[num].data_.reset_thread_phase_overhead_times_ = exec_total;
+                counter_data_[num].data_.reset_thread_phase_overhead_times_total_ = tfunc_total;
+                counter_data_[num].data_.reset_thread_phase_overhead_ = num_phases;
             }
         }
         else
@@ -869,19 +873,19 @@ namespace pika::threads::detail {
 
         if (num != std::size_t(-1))
         {
-            exec_total = counter_data_[num].exec_times_;
-            tfunc_total = counter_data_[num].tfunc_times_;
-            num_threads = counter_data_[num].executed_threads_;
+            exec_total = counter_data_[num].data_.exec_times_;
+            tfunc_total = counter_data_[num].data_.tfunc_times_;
+            num_threads = counter_data_[num].data_.executed_threads_;
 
-            reset_exec_total = counter_data_[num].reset_thread_overhead_times_;
-            reset_tfunc_total = counter_data_[num].reset_thread_overhead_times_total_;
-            reset_num_threads = counter_data_[num].reset_thread_overhead_;
+            reset_exec_total = counter_data_[num].data_.reset_thread_overhead_times_;
+            reset_tfunc_total = counter_data_[num].data_.reset_thread_overhead_times_total_;
+            reset_num_threads = counter_data_[num].data_.reset_thread_overhead_;
 
             if (reset)
             {
-                counter_data_[num].reset_thread_overhead_times_ = exec_total;
-                counter_data_[num].reset_thread_overhead_times_total_ = tfunc_total;
-                counter_data_[num].reset_thread_overhead_ = num_threads;
+                counter_data_[num].data_.reset_thread_overhead_times_ = exec_total;
+                counter_data_[num].data_.reset_thread_overhead_times_total_ = tfunc_total;
+                counter_data_[num].data_.reset_thread_overhead_ = num_threads;
             }
         }
         else
@@ -940,10 +944,10 @@ namespace pika::threads::detail {
 
         if (num != std::size_t(-1))
         {
-            exec_total = counter_data_[num].exec_times_;
-            reset_exec_total = counter_data_[num].reset_cumulative_thread_duration_;
+            exec_total = counter_data_[num].data_.exec_times_;
+            reset_exec_total = counter_data_[num].data_.reset_cumulative_thread_duration_;
 
-            if (reset) { counter_data_[num].reset_cumulative_thread_duration_ = exec_total; }
+            if (reset) { counter_data_[num].data_.reset_cumulative_thread_duration_ = exec_total; }
         }
         else
         {
@@ -978,16 +982,16 @@ namespace pika::threads::detail {
 
         if (num != std::size_t(-1))
         {
-            exec_total = counter_data_[num].exec_times_;
-            tfunc_total = counter_data_[num].tfunc_times_;
+            exec_total = counter_data_[num].data_.exec_times_;
+            tfunc_total = counter_data_[num].data_.tfunc_times_;
 
-            reset_exec_total = counter_data_[num].reset_cumulative_thread_overhead_;
-            reset_tfunc_total = counter_data_[num].reset_cumulative_thread_overhead_total_;
+            reset_exec_total = counter_data_[num].data_.reset_cumulative_thread_overhead_;
+            reset_tfunc_total = counter_data_[num].data_.reset_cumulative_thread_overhead_total_;
 
             if (reset)
             {
-                counter_data_[num].reset_cumulative_thread_overhead_ = exec_total;
-                counter_data_[num].reset_cumulative_thread_overhead_total_ = tfunc_total;
+                counter_data_[num].data_.reset_cumulative_thread_overhead_ = exec_total;
+                counter_data_[num].data_.reset_cumulative_thread_overhead_total_ = tfunc_total;
             }
         }
         else
@@ -1034,10 +1038,10 @@ namespace pika::threads::detail {
 
         if (num != std::size_t(-1))
         {
-            tfunc_total = counter_data_[num].tfunc_times_;
-            reset_tfunc_total = counter_data_[num].reset_tfunc_times_;
+            tfunc_total = counter_data_[num].data_.tfunc_times_;
+            reset_tfunc_total = counter_data_[num].data_.reset_tfunc_times_;
 
-            if (reset) counter_data_[num].reset_tfunc_times_ = tfunc_total;
+            if (reset) counter_data_[num].data_.reset_tfunc_times_ = tfunc_total;
         }
         else
         {
@@ -1194,15 +1198,15 @@ namespace pika::threads::detail {
     {
         if (num == std::size_t(-1)) return avg_idle_rate_all(reset);
 
-        std::int64_t exec_time = counter_data_[num].exec_times_;
-        std::int64_t tfunc_time = counter_data_[num].tfunc_times_;
-        std::int64_t reset_exec_time = counter_data_[num].reset_idle_rate_time_;
-        std::int64_t reset_tfunc_time = counter_data_[num].reset_idle_rate_time_total_;
+        std::int64_t exec_time = counter_data_[num].data_.exec_times_;
+        std::int64_t tfunc_time = counter_data_[num].data_.tfunc_times_;
+        std::int64_t reset_exec_time = counter_data_[num].data_.reset_idle_rate_time_;
+        std::int64_t reset_tfunc_time = counter_data_[num].data_.reset_idle_rate_time_total_;
 
         if (reset)
         {
-            counter_data_[num].reset_idle_rate_time_ = exec_time;
-            counter_data_[num].reset_idle_rate_time_total_ = tfunc_time;
+            counter_data_[num].data_.reset_idle_rate_time_ = exec_time;
+            counter_data_[num].data_.reset_idle_rate_time_total_ = tfunc_time;
         }
 
         PIKA_ASSERT(exec_time >= reset_exec_time);
@@ -1230,7 +1234,7 @@ namespace pika::threads::detail {
             return accumulate_projected(counter_data_.begin(), counter_data_.end(), std::int64_t(0),
                 &scheduling_counter_data::idle_loop_counts_);
         }
-        return counter_data_[num].idle_loop_counts_;
+        return counter_data_[num].data_.idle_loop_counts_;
     }
 
     template <typename Scheduler>
@@ -1242,7 +1246,7 @@ namespace pika::threads::detail {
             return accumulate_projected(counter_data_.begin(), counter_data_.end(), std::int64_t(0),
                 &scheduling_counter_data::busy_loop_counts_);
         }
-        return counter_data_[num].busy_loop_counts_;
+        return counter_data_[num].data_.busy_loop_counts_;
     }
 
     template <typename Scheduler>
@@ -1261,7 +1265,7 @@ namespace pika::threads::detail {
         std::size_t i = 0;
         for (auto const& data : counter_data_)
         {
-            if (!data.tasks_active_ && sched_->Scheduler::is_core_idle(i)) { ++count; }
+            if (!data.data_.tasks_active_ && sched_->Scheduler::is_core_idle(i)) { ++count; }
             ++i;
         }
         return count;
@@ -1273,7 +1277,7 @@ namespace pika::threads::detail {
         std::size_t i = 0;
         for (auto const& data : counter_data_)
         {
-            if (!data.tasks_active_ && sched_->Scheduler::is_core_idle(i)) { set(mask, i); }
+            if (!data.data_.tasks_active_ && sched_->Scheduler::is_core_idle(i)) { set(mask, i); }
             ++i;
         }
     }
