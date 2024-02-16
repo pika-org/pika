@@ -11,7 +11,7 @@ hwloc_version="2.2.0"
 spack_compiler="clang@${clang_version}"
 spack_arch="cray-cnl7-broadwell"
 
-spack_spec="pika@main arch=${spack_arch} %${spack_compiler} malloc=jemalloc cxxstd=${cxx_std} ^boost@${boost_version} ^hwloc@${hwloc_version}"
+spack_spec="pika@main arch=${spack_arch} %${spack_compiler} malloc=mimalloc cxxstd=${cxx_std} ^boost@${boost_version} ^hwloc@${hwloc_version}"
 
 configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${cxx_std}"
-configure_extra_options+=" -DPIKA_WITH_MALLOC=jemalloc"
+configure_extra_options+=" -DPIKA_WITH_MALLOC=mimalloc"
