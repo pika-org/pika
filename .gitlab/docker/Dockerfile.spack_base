@@ -42,4 +42,4 @@ RUN mkdir -p $SPACK_ROOT \
 
 ENV PATH $SPACK_ROOT/bin:/root/.local/bin:$PATH
 
-RUN spack external find --scope site && spack compiler find --scope site
+RUN spack external find --exclude python --scope site && spack compiler find --scope site
