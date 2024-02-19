@@ -10,12 +10,12 @@ include:
 
 .variables_nvhpc23_9_config:
   variables:
-    ARCH: linux-ubuntu22.04-zen3
+    SPACK_ARCH: linux-ubuntu22.04-zen3
     COMPILER: gcc@12.1.0
     NVHPC_COMPILER: nvhpc@23.9
     CXXSTD: 20
     GPU_TARGET: '80'
-    SPACK_SPEC: "pika@main arch=$ARCH %${NVHPC_COMPILER} +stdexec +mpi +cuda cuda_arch=${GPU_TARGET} \
+    SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${NVHPC_COMPILER} +stdexec +mpi +cuda cuda_arch=${GPU_TARGET} \
                  malloc=system cxxstd=$CXXSTD ^boost@1.78.0%${NVHPC_COMPILER} ^hwloc@2.7.0 \
                  ^stdexec@git.nvhpc-23.09.rc4=main ^cuda@11.8%${NVHPC_COMPILER} \
                  ^whip%${NVHPC_COMPILER}"

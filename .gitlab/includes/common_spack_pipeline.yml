@@ -36,13 +36,13 @@ base_spack_image:
     - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
     - compiler=${COMPILER}${NVHPC_COMPILER:+-}${NVHPC_COMPILER}
     - compiler=${compiler//@/-}
-    - CONFIG_TAG=`echo $DOCKERFILE_SHA-$ARCH-$BASE_IMAGE-$compiler | sha256sum - | head -c 16`
+    - CONFIG_TAG=`echo $DOCKERFILE_SHA-$SPACK_ARCH-$BASE_IMAGE-$compiler | sha256sum - | head -c 16`
     - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/base/pika-$compiler:$CONFIG_TAG
     - echo -e "compiler=$compiler" >> compiler.env
     - echo -e "BASE_IMAGE=$PERSIST_IMAGE_NAME" >> compiler.env
   variables:
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_compiler
-    DOCKER_BUILD_ARGS: '["BASE_IMAGE","ARCH","COMPILER","NVHPC_COMPILER"]'
+    DOCKER_BUILD_ARGS: '["BASE_IMAGE","SPACK_ARCH","COMPILER","NVHPC_COMPILER"]'
   artifacts:
     reports:
       dotenv: compiler.env

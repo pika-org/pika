@@ -10,10 +10,10 @@ include:
 
 .variables_clang11_config:
   variables:
-    ARCH: linux-ubuntu22.04-broadwell
+    SPACK_ARCH: linux-ubuntu22.04-broadwell
     COMPILER: clang@11.0.1
     CXXSTD: 17
-    SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD ^boost@1.72.0 \
+    SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD ^boost@1.72.0 \
                  ^hwloc@1.11.11"
     CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_MAX_CPU_COUNT=256 \
                   -DPIKA_WITH_MALLOC=system -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"

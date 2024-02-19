@@ -113,7 +113,7 @@ function create_metadata_file {
     # Build configuration section
     json_add_from_env \
         "${metadata_file}" "build_configuration" \
-        ARCH \
+        SPACK_ARCH \
         BUILD_TYPE \
         CMAKE_COMMON_FLAGS \
         CMAKE_FLAGS \
