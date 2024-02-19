@@ -21,7 +21,7 @@ set(example_programs
 set(customize_async_PARAMETERS THREADS 4)
 set(enumerate_threads_PARAMETERS THREADS 4)
 set(event_synchronization_PARAMETERS THREADS 4)
-set(hello_world_PARAMETERS THREADS 4 VALGRIND)
+set(hello_world_PARAMETERS THREADS 4)
 set(timed_futures_PARAMETERS THREADS 4)
 
 foreach(example_program ${example_programs})
@@ -43,7 +43,7 @@ foreach(example_program ${example_programs})
      AND PIKA_WITH_TESTS_EXAMPLES
      AND NOT ("${example_program}" IN_LIST disabled_tests)
   )
-    pika_add_example_test("quickstart" ${example_program} ${${example_program}_PARAMETERS} VALGRIND)
+    pika_add_example_test("quickstart" ${example_program} ${${example_program}_PARAMETERS})
   endif()
 
 endforeach()

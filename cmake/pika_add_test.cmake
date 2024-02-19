@@ -9,7 +9,7 @@ if(PIKA_WITH_TESTS_VALGRIND)
 endif()
 
 function(pika_add_test category name)
-  set(options FAILURE_EXPECTED RUN_SERIAL TESTING PERFORMANCE_TESTING VALGRIND)
+  set(options FAILURE_EXPECTED RUN_SERIAL TESTING PERFORMANCE_TESTING)
   set(one_value_args EXECUTABLE RANKS THREADS TIMEOUT RUNWRAPPER)
   set(multi_value_args ARGS)
   cmake_parse_arguments(${name} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
@@ -92,9 +92,6 @@ function(pika_add_test category name)
   endif()
   if(${name}_FAILURE_EXPECTED)
     set_tests_properties("${_full_name}" PROPERTIES WILL_FAIL TRUE)
-  endif()
-  if(${${name}_VALGRIND})
-    set_tests_properties(${_full_name} PROPERTIES LABELS "VALGRIND")
   endif()
 
   # Only real tests, i.e. executables ending in _test, link to pika_testing

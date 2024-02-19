@@ -54,7 +54,7 @@ foreach(jacobi_smp_application ${jacobi_smp_applications})
      AND NOT ("${jacobi_smp_application}" IN_LIST disabled_tests)
   )
     pika_add_example_test(
-      "jacobi_smp" ${jacobi_smp_application} ${${jacobi_smp_application}_PARAMETERS} VALGRIND
+      "jacobi_smp" ${jacobi_smp_application} ${${jacobi_smp_application}_PARAMETERS}
     )
   endif()
 endforeach()

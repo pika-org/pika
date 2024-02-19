@@ -22,5 +22,5 @@ foreach(test ${tests})
     FOLDER "Tests/Regressions/Modules/CommandLineHandling"
   )
 
-  pika_add_regression_test("modules.command_line_handling" ${test} ${${test}_PARAMETERS} VALGRIND)
+  pika_add_regression_test("modules.command_line_handling" ${test} ${${test}_PARAMETERS})
 endforeach()

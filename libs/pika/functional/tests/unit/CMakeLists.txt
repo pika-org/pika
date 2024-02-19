@@ -42,7 +42,7 @@ foreach(test ${function_tests})
     FOLDER "Tests/Unit/Modules/Functional"
   )
 
-  pika_add_unit_test("modules.functional" ${test} VALGRIND)
+  pika_add_unit_test("modules.functional" ${test})
 
 endforeach()
 

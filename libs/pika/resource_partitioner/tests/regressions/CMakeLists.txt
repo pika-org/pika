@@ -19,6 +19,6 @@ foreach(test ${tests})
     FOLDER "Tests/Regressions/Modules/ResourcePartitioner/"
   )
 
-  pika_add_regression_test("modules.resource_partitioner" ${test} ${${test}_PARAMETERS} VALGRIND)
+  pika_add_regression_test("modules.resource_partitioner" ${test} ${${test}_PARAMETERS})
 
 endforeach()
