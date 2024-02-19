@@ -19,11 +19,8 @@
 # include <pika/execution_base/operation_state.hpp>
 # include <pika/execution_base/sender.hpp>
 # include <pika/functional/detail/tag_fallback_invoke.hpp>
-# include <pika/memory/intrusive_ptr.hpp>
-# include <pika/thread_support/atomic_count.hpp>
 # include <pika/type_support/unused.hpp>
 
-# include <atomic>
 # include <cstddef>
 # include <exception>
 # include <memory>
@@ -36,18 +33,20 @@ namespace pika::start_detached_detail {
     {
         struct start_detached_receiver
         {
-            pika::intrusive_ptr<operation_state_holder> op_state;
+            operation_state_holder& op_state;
 
             template <typename Error>
 # if !defined(__NVCC__)
             [[noreturn]]
 # endif
             friend void tag_invoke(pika::execution::experimental::set_error_t,
-                start_detached_receiver&&, Error&& error) noexcept
+                start_detached_receiver&& r, Error error) noexcept
             {
+                r.op_state.release();
+
                 if constexpr (std::is_same_v<std::decay_t<Error>, std::exception_ptr>)
                 {
-                    std::rethrow_exception(PIKA_FORWARD(Error, error));
+                    std::rethrow_exception(PIKA_MOVE(error));
                 }
 
                 PIKA_ASSERT_MSG(false,
@@ -60,14 +59,14 @@ namespace pika::start_detached_detail {
             friend void tag_invoke(
                 pika::execution::experimental::set_stopped_t, start_detached_receiver&& r) noexcept
             {
-                r.op_state.reset();
+                r.op_state.release();
             };
 
             template <typename... Ts>
             friend void tag_invoke(pika::execution::experimental::set_value_t,
                 start_detached_receiver&& r, Ts&&...) noexcept
             {
-                r.op_state.reset();
+                r.op_state.release();
             }
         };
 
@@ -75,7 +74,6 @@ namespace pika::start_detached_detail {
         using allocator_type = typename std::allocator_traits<Allocator>::template rebind_alloc<
             operation_state_holder>;
         PIKA_NO_UNIQUE_ADDRESS allocator_type alloc;
-        pika::detail::atomic_count count{0};
 
         using operation_state_type =
             pika::execution::experimental::connect_result_t<Sender, start_detached_receiver>;
@@ -88,22 +86,16 @@ namespace pika::start_detached_detail {
         explicit operation_state_holder(Sender_&& sender, allocator_type const& alloc)
           : alloc(alloc)
           , op_state(pika::execution::experimental::connect(
-                PIKA_FORWARD(Sender_, sender), start_detached_receiver{this}))
+                PIKA_FORWARD(Sender_, sender), start_detached_receiver{*this}))
         {
             pika::execution::experimental::start(op_state);
         }
 
-    private:
-        friend void intrusive_ptr_add_ref(operation_state_holder* p) { ++p->count; }
-
-        friend void intrusive_ptr_release(operation_state_holder* p)
+        void release() noexcept
         {
-            if (--p->count == 0)
-            {
-                allocator_type other_alloc(p->alloc);
-                std::allocator_traits<allocator_type>::destroy(other_alloc, p);
-                std::allocator_traits<allocator_type>::deallocate(other_alloc, p, 1);
-            }
+            allocator_type other_alloc(alloc);
+            std::allocator_traits<allocator_type>::destroy(other_alloc, this);
+            std::allocator_traits<allocator_type>::deallocate(other_alloc, this, 1);
         }
     };
 }    // namespace pika::start_detached_detail
