@@ -5,6 +5,7 @@
     Distributed under the Boost Software License, Version 1.0. (See accompanying
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+|zenodo|
 |circleci_status|
 |github_actions_linux_debug_status|
 |github_actions_linux_hip_status|
@@ -22,6 +23,10 @@ senders/receivers (as proposed in `P2300 <https://wg21.link/p2300>`_) for CPU
 thread pools, MPI, and CUDA.
 
 To get started using pika see the `documentation <https://pikacpp.org>`_.
+
+.. |zenodo| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.10579225.svg
+     :target: https://doi.org/10.5281/zenodo.10579225
+     :alt: Zenodo
 
 .. |circleci_status| image:: https://circleci.com/gh/pika-org/pika/tree/main.svg?style=svg
      :target: https://circleci.com/gh/pika-org/pika/tree/main
