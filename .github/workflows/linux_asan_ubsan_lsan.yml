@@ -66,4 +66,17 @@ jobs:
             cd build
             ctest \
               --timeout 300 \
-              --output-on-failure
+              --output-on-failure \
+              -E "$(${GITHUB_WORKSPACE}/.github/blacklist_to_ctest_regex.sh ${GITHUB_WORKSPACE}/.github/workflows/linux_asan_ubsan_lsan_blacklist.txt)"
+      - name: Test blacklisted tests
+        if: always()
+        continue-on-error: true
+        shell: bash
+        run: |
+            export ASAN_OPTIONS=fast_unwind_on_malloc=0:strict_string_checks=1:detect_leaks=1:detect_stack_use_after_return=0:check_initialization_order=1:strict_init_order=1:suppressions=$PWD/tools/asan.supp
+            export UBSAN_OPTIONS=print_stacktrace=1:suppressions=$PWD/tools/ubsan.supp
+            cd build
+            ctest \
+              --timeout 300 \
+              --output-on-failure \
+              -R "$(${GITHUB_WORKSPACE}/.github/blacklist_to_ctest_regex.sh ${GITHUB_WORKSPACE}/.github/workflows/linux_asan_ubsan_lsan_blacklist.txt)"
