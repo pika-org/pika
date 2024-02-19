@@ -5,7 +5,6 @@
     Distributed under the Boost Software License, Version 1.0. (See accompanying
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-|bors_enabled|
 |circleci_status|
 |github_actions_linux_debug_status|
 |github_actions_linux_hip_status|
@@ -23,10 +22,6 @@ senders/receivers (as proposed in `P2300 <https://wg21.link/p2300>`_) for CPU
 thread pools, MPI, and CUDA.
 
 To get started using pika see the `documentation <https://pikacpp.org>`_.
-
-.. |bors_enabled| image:: https://bors.tech/images/badge_small.svg
-     :target: https://app.bors.tech/repositories/41470
-     :alt: Bors enabled
 
 .. |circleci_status| image:: https://circleci.com/gh/pika-org/pika/tree/main.svg?style=svg
      :target: https://circleci.com/gh/pika-org/pika/tree/main
