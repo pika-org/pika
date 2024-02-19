@@ -26,13 +26,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
-#if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
-    using default_static_priority_queue_scheduler_terminated_queue = lockfree_lifo;
-#else
-    using default_static_priority_queue_scheduler_terminated_queue = lockfree_fifo;
-#endif
-
-    ///////////////////////////////////////////////////////////////////////////
     /// The static_priority_queue_scheduler maintains exactly one queue of work
     /// items (threads) per OS thread, where this OS thread pulls its next work
     /// from. Additionally it maintains separate queues: several for high
@@ -42,8 +35,7 @@ namespace pika::threads::detail {
     /// OS thread whenever no other work is available.
     /// This scheduler does not do any work stealing.
     template <typename Mutex = std::mutex, typename PendingQueuing = lockfree_fifo,
-        typename StagedQueuing = lockfree_fifo,
-        typename TerminatedQueuing = default_static_priority_queue_scheduler_terminated_queue>
+        typename StagedQueuing = lockfree_fifo, typename TerminatedQueuing = lockfree_fifo>
     class PIKA_EXPORT static_priority_queue_scheduler
       : public local_priority_queue_scheduler<Mutex, PendingQueuing, StagedQueuing,
             TerminatedQueuing>
