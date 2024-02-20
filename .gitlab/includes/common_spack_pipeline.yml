@@ -8,7 +8,7 @@ include:
   - local: '.gitlab/includes/common_pipeline.yml'
 
 variables:
-  SPACK_COMMIT: 7d4dcd52d96b593fb5e1557794ad57a7c5eb2304
+  SPACK_COMMIT: 6cfcbc01679ebabe640f4462c8fc07626a543015
 
 base_spack_image:
   stage: spack_base
