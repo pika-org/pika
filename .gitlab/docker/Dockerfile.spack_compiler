@@ -9,17 +9,28 @@ SHELL ["/bin/bash", "-c"]
 RUN spack config --scope site add concretizer:targets:host_compatible:false && \
     spack config --scope site add config:deprecated:true
 
-# Install compiler if not already installed
-ARG ARCH
+# Install compiler if not already installed, modify packages.yaml to require spack compilers
+ARG SPACK_ARCH
 ARG COMPILER
+ARG NVHPC_COMPILER
 RUN spack compiler info $COMPILER > /dev/null 2> /dev/null; compiler_missing=$?; \
     export spack_compiler=${COMPILER/clang/llvm} && \
     if [[ $spack_compiler =~ llvm ]]; then \
         export spack_compiler="$spack_compiler~gold"; \
     fi && \
     if [[ $compiler_missing != 0 ]]; then \
-        spack install $spack_compiler arch=$ARCH && \
+        spack install $spack_compiler arch=$SPACK_ARCH && \
         spack compiler add --scope site $(spack location -i $spack_compiler) && \
+        \
+        printf "  all:\n    require:\n    - one_of: [\"%%${COMPILER}\"${NVHPC_COMPILER:+,\"%%}${NVHPC_COMPILER}${NVHPC_COMPILER:+\"}]" \
+            >> $SPACK_ROOT/etc/spack/packages.yaml && \
+        \
+        if [[ ! -z "$NVHPC_COMPILER" ]]; then \
+            nvhpc_version=${NVHPC_COMPILER#nvhpc@} && \
+            spack install $NVHPC_COMPILER%$spack_compiler arch=$SPACK_ARCH && \
+            spack compiler add --scope site \
+                $(spack location -i $NVHPC_COMPILER)/Linux_x86_64/$nvhpc_version/compilers/bin; \
+        fi && \
         spack clean --all; \
     fi
 

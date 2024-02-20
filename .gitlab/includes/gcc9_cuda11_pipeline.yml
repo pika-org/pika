@@ -10,10 +10,10 @@ include:
 
 .variables_gcc9_cuda11_config:
   variables:
-    ARCH: linux-ubuntu22.04-broadwell
+    SPACK_ARCH: linux-ubuntu22.04-broadwell
     COMPILER: gcc@9.3.0
     CXXSTD: 17
-    SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} +cuda malloc=system cxxstd=$CXXSTD \
+    SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} +cuda malloc=system cxxstd=$CXXSTD \
                  ^boost@1.75.0 ^hwloc@2.0.3 ^cuda@11.2.0 ^fmt@9"
     CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_CUDA=ON -DPIKA_WITH_MALLOC=system \
                   -DPIKA_WITH_EXAMPLES_OPENMP=ON"

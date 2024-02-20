@@ -10,10 +10,10 @@ include:
 
 .variables_gcc13_config:
   variables:
-    ARCH: linux-ubuntu22.04-broadwell
+    SPACK_ARCH: linux-ubuntu22.04-broadwell
     COMPILER: gcc@13.1.0
     CXXSTD: 20
-    SPACK_SPEC: "pika@main arch=$ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD +stdexec \
+    SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD +stdexec \
                  ^boost@1.82.0 ^hwloc@2.9.1 \
                  ^stdexec@git.nvhpc-23.09.rc4=main"
     CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_MALLOC=system \

@@ -22,7 +22,7 @@ RUN spack -e pika_ci config add "config:flags:keep_werror:all" && \
     --target all tests examples install"
 
 # Run compile only tests and tests.unit.build, submit ctest metrics to elastic
-ARG ARCH
+ARG SPACK_ARCH
 ARG BUILD_TYPE
 ARG CI_COMMIT_AUTHOR
 ARG CI_COMMIT_BRANCH

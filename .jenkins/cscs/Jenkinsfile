@@ -42,7 +42,7 @@ pipeline {
                 axes {
                     axis {
                         name 'configuration_name'
-                        values 'cce', 'nvhpc'
+                        values 'cce'
                     }
                     axis {
                          name 'build_type'
