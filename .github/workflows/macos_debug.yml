@@ -14,9 +14,6 @@ on:
       # Development and release branches
       - main
       - release**
-      # Bors branches
-      - trying
-      - staging
 
 jobs:
   build_and_test:
