@@ -25,6 +25,6 @@ foreach(test ${tests})
   )
 
   target_link_libraries(${test}_test PRIVATE ${${test}_LIBRARIES})
-  pika_add_regression_test("modules.synchronization" ${test} ${${test}_PARAMETERS} VALGRIND)
+  pika_add_regression_test("modules.synchronization" ${test} ${${test}_PARAMETERS})
 
 endforeach()

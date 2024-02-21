@@ -21,5 +21,5 @@ foreach(test ${tests})
     FOLDER ${folder_name}
   )
 
-  pika_add_regression_test("modules.threading_base" ${test} ${${test}_PARAMETERS} VALGRIND)
+  pika_add_regression_test("modules.threading_base" ${test} ${${test}_PARAMETERS})
 endforeach()

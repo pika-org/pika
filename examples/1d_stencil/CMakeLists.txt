@@ -31,7 +31,7 @@ foreach(example_program ${example_programs})
   pika_add_example_target_dependencies("1d_stencil" ${example_program})
 
   if(PIKA_WITH_TESTS AND PIKA_WITH_TESTS_EXAMPLES)
-    pika_add_example_test("1d_stencil" ${example_program} ${${example_program}_PARAMETERS} VALGRIND)
+    pika_add_example_test("1d_stencil" ${example_program} ${${example_program}_PARAMETERS})
   endif()
 
 endforeach()

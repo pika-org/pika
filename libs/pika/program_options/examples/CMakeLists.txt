@@ -53,7 +53,7 @@ if(PIKA_WITH_EXAMPLES)
        AND PIKA_WITH_TESTS_EXAMPLES
        AND NOT ("${example_program}" IN_LIST disabled_tests)
     )
-      pika_add_example_test("modules.program_options" ${example} ${${example}_PARAMETERS} VALGRIND)
+      pika_add_example_test("modules.program_options" ${example} ${${example}_PARAMETERS})
     endif()
 
   endforeach()

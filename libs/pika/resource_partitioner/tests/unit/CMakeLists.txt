@@ -55,6 +55,6 @@ foreach(test ${tests})
     FOLDER "Tests/Unit/Modules/ResourcePartitioner/"
   )
 
-  pika_add_unit_test("modules.resource_partitioner" ${test} ${${test}_PARAMETERS} VALGRIND)
+  pika_add_unit_test("modules.resource_partitioner" ${test} ${${test}_PARAMETERS})
 
 endforeach()

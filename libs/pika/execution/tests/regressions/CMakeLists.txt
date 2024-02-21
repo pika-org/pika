@@ -19,5 +19,5 @@ foreach(test ${tests})
     FOLDER "Tests/Regressions/Modules/Execution"
   )
 
-  pika_add_regression_test("modules.execution" ${test} ${${test}_PARAMETERS} THREADS 4 VALGRIND)
+  pika_add_regression_test("modules.execution" ${test} ${${test}_PARAMETERS} THREADS 4)
 endforeach()

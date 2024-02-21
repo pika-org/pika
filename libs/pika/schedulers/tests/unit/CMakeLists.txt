@@ -20,5 +20,5 @@ foreach(test ${tests})
     FOLDER "Tests/Unit/Modules/Schedulers"
   )
 
-  pika_add_unit_test("modules.schedulers" ${test} ${${test}_PARAMETERS} VALGRIND)
+  pika_add_unit_test("modules.schedulers" ${test} ${${test}_PARAMETERS})
 endforeach()

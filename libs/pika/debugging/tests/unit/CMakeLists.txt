@@ -23,5 +23,5 @@ foreach(test ${tests})
     DEPENDENCIES pika
   )
 
-  pika_add_unit_test("modules.debugging" ${test} VALGRIND)
+  pika_add_unit_test("modules.debugging" ${test})
 endforeach()

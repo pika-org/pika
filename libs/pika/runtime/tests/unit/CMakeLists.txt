@@ -21,7 +21,7 @@ foreach(test ${tests})
     FOLDER "Tests/Unit/Modules/Runtime"
   )
 
-  pika_add_unit_test("modules.runtime" ${test} ${${test}_PARAMETERS} VALGRIND)
+  pika_add_unit_test("modules.runtime" ${test} ${${test}_PARAMETERS})
 endforeach()
 
 if(APPLE)

@@ -25,8 +25,6 @@ foreach(benchmark ${benchmarks})
   )
 
   # add a custom target for this benchmark
-  pika_add_performance_test(
-    "modules.synchronization" ${benchmark} ${${benchmark}_PARAMETERS} VALGRIND
-  )
+  pika_add_performance_test("modules.synchronization" ${benchmark} ${${benchmark}_PARAMETERS})
 
 endforeach()

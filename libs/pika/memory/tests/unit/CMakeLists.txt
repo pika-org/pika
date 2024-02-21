@@ -19,5 +19,5 @@ foreach(test ${tests})
     FOLDER "Tests/Unit/Modules/Memory"
   )
 
-  pika_add_unit_test("modules.memory" ${test} VALGRIND)
+  pika_add_unit_test("modules.memory" ${test})
 endforeach()

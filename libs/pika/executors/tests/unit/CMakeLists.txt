@@ -6,8 +6,6 @@
 
 set(tests standalone_thread_pool_scheduler std_thread_scheduler thread_pool_scheduler)
 
-set(std_thread_scheduler_PARAMETERS VALGRIND)
-
 foreach(test ${tests})
   set(sources ${test}.cpp)
 

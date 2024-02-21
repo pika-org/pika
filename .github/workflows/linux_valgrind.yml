@@ -58,41 +58,14 @@ jobs:
                 -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=On
       - name: Build
         shell: bash
-        working-directory: build
         run: |
-            ninja \
-              tests.examples \
-              tests.regressions.modules.coroutines \
-              tests.unit.modules.assertion \
-              tests.{regressions,unit}.modules.command_line_handling \
-              tests.unit.modules.concurrency \
-              tests.unit.modules.datastructures \
-              tests.unit.modules.debugging \
-              tests.unit.modules.errors \
-              tests.{regressions,unit}.modules.execution \
-              tests.unit.modules.execution_base \
-              tests.{regressions,unit}.modules.functional \
-              tests.unit.modules.init_runtime \
-              tests.unit.modules.memory \
-              tests.{examples,regressions,unit}.modules.program_options \
-              tests.unit.modules.properties \
-              tests.{regressions,unit}.modules.resource_partitioner \
-              tests.unit.modules.runtime \
-              tests.unit.modules.schedulers \
-              tests.unit.modules.string_util \
-              tests.{performance,regressions,unit}.modules.synchronization \
-              tests.unit.modules.tag_invoke \
-              tests.unit.modules.thread_manager \
-              tests.unit.modules.threading \
-              tests.{regressions,unit}.modules.threading_base \
-              tests.unit.modules.topology \
-              std_thread_scheduler_test
+            cmake --build build --target examples
+            cmake --build build --target tests
       - name: Test
         shell: bash
         run: |
             cd build
             ctest \
               -j $(nproc) \
-              -L VALGRIND \
               --timeout 300 \
               --output-on-failure
