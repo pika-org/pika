@@ -264,7 +264,7 @@ namespace pika::split_tuple_detail {
                 // the vector must see predecessor_done = true after
                 // taking the lock in their threads and will not add
                 // continuations to the vector.
-                std::unique_lock<mutex_type> l{mtx};
+                std::lock_guard<mutex_type> l{mtx};
             }
 
             if (!continuations.empty())
