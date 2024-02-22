@@ -337,6 +337,15 @@ void test_unstarted()
 #endif
 }
 
+void test_any_sender()
+{
+    check_exception(expect_exception::no,
+        [] { tt::sync_wait(ex::unique_any_sender(ex::require_started(void_sender{}))); });
+
+    check_exception(expect_exception::no,
+        [] { tt::sync_wait(ex::any_sender(ex::require_started(void_sender{}))); });
+}
+
 int main()
 {
     test_basics();
@@ -347,6 +356,7 @@ int main()
     test_exception(exception_test_mode::no_discard);
     test_exception(exception_test_mode::discard);
     test_unstarted();
+    test_any_sender();
 
     return 0;
 }
