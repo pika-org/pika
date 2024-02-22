@@ -318,7 +318,8 @@ namespace pika::threads::detail {
             bool tasks_active_;
         };
 
-        std::vector<scheduling_counter_data> counter_data_;
+        std::vector<pika::concurrency::detail::cache_aligned_data<scheduling_counter_data>>
+            counter_data_;
 
         std::atomic<long> thread_count_;
 
