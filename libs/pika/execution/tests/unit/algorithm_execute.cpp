@@ -10,6 +10,7 @@
 #include <cstddef>
 #include <exception>
 #include <type_traits>
+#include <utility>
 
 static std::size_t friend_tag_invoke_schedule_calls = 0;
 static std::size_t tag_invoke_execute_calls = 0;
@@ -28,17 +29,22 @@ struct sender
     using completion_signatures = pika::execution::experimental::completion_signatures<
         pika::execution::experimental::set_value_t()>;
 
+    template <typename R>
     struct operation_state
     {
-        friend void tag_invoke(
-            pika::execution::experimental::start_t, operation_state&) noexcept {};
+        std::decay_t<R> receiver;
+
+        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
+        {
+            pika::execution::experimental::set_value(std::move(os.receiver));
+        };
     };
 
     template <typename R>
-    friend operation_state
-    tag_invoke(pika::execution::experimental::connect_t, sender&&, R&&) noexcept
+    friend operation_state<R>
+    tag_invoke(pika::execution::experimental::connect_t, sender&&, R&& receiver) noexcept
     {
-        return {};
+        return {std::forward<R>(receiver)};
     }
 
     struct env
