@@ -53,6 +53,10 @@
 # include <unistd.h>
 #endif
 
+#if defined(PIKA_HAVE_ADDRESS_SANITIZER)
+# include <sanitizer/asan_interface.h>
+#endif
+
 #if defined(__FreeBSD__) ||                                                                        \
     (defined(_XOPEN_UNIX) && defined(_XOPEN_VERSION) && _XOPEN_VERSION >= 500) ||                  \
     defined(__bgq__) || defined(__powerpc__) || defined(__s390x__)
@@ -184,6 +188,27 @@ namespace pika::threads::coroutines {
             ucontext_context_impl_base() { PIKA_COROUTINE_CREATE_CONTEXT(m_ctx); }
             ~ucontext_context_impl_base() { PIKA_COROUTINE_DESTROY_CONTEXT(m_ctx); }
 
+# if defined(PIKA_HAVE_ADDRESS_SANITIZER)
+            void start_switch_fiber(void** fake_stack)
+            {
+                __sanitizer_start_switch_fiber(fake_stack, asan_stack_bottom, asan_stack_size);
+            }
+            void start_yield_fiber(void** fake_stack, ucontext_context_impl_base& caller)
+            {
+                __sanitizer_start_switch_fiber(
+                    fake_stack, caller.asan_stack_bottom, caller.asan_stack_size);
+            }
+            void finish_yield_fiber(void* fake_stack)
+            {
+                __sanitizer_finish_switch_fiber(fake_stack, &asan_stack_bottom, &asan_stack_size);
+            }
+            void finish_switch_fiber(void* fake_stack, ucontext_context_impl_base& caller)
+            {
+                __sanitizer_finish_switch_fiber(
+                    fake_stack, &caller.asan_stack_bottom, &caller.asan_stack_size);
+            }
+# endif
+
         private:
             /// Free function. Saves the current context in @p from
             /// and restores the context in @p to.
@@ -196,6 +221,13 @@ namespace pika::threads::coroutines {
 
         protected:
             PIKA_COROUTINE_DECLARE_CONTEXT(m_ctx);
+
+# if defined(PIKA_HAVE_ADDRESS_SANITIZER)
+        public:
+            void* asan_fake_stack = nullptr;
+            void const* asan_stack_bottom = nullptr;
+            std::size_t asan_stack_size = 0;
+# endif
         };
 
         template <typename CoroutineImpl>
@@ -231,7 +263,11 @@ namespace pika::threads::coroutines {
 
                 PIKA_ASSERT(error == 0);
 
-# if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION)
+# if defined(PIKA_HAVE_ADDRESS_SANITIZER)
+                asan_stack_size = m_stack_size;
+                asan_stack_bottom = const_cast<const void*>(m_stack);
+# endif
+# if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) && !defined(PIKA_HAVE_ADDRESS_SANITIZER)
                 // concept inspired by the following links:
                 //
                 // https://rethinkdb.com/blog/handling-stack-overflow-on-custom-stacks/
@@ -252,7 +288,7 @@ namespace pika::threads::coroutines {
 # endif
             }
 
-# if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION)
+# if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) && !defined(PIKA_HAVE_ADDRESS_SANITIZER)
 
             // heuristic value 1 kilobyte
             //
@@ -298,7 +334,7 @@ namespace pika::threads::coroutines {
             {
                 if (m_stack) free_stack(m_stack, m_stack_size);
 
-# if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION)
+# if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) && !defined(PIKA_HAVE_ADDRESS_SANITIZER)
                 free(segv_stack.ss_sp);
 # endif
             }
@@ -340,6 +376,11 @@ namespace pika::threads::coroutines {
                     [[maybe_unused]] int error = PIKA_COROUTINE_MAKE_CONTEXT(
                         &m_ctx, m_stack, m_stack_size, funp_, this, nullptr);
                     PIKA_ASSERT(error == 0);
+
+# if defined(PIKA_HAVE_ADDRESS_SANITIZER)
+                    asan_stack_size = m_stack_size;
+                    asan_stack_bottom = const_cast<const void*>(m_stack);
+# endif
                 }
             }
 
@@ -387,7 +428,7 @@ namespace pika::threads::coroutines {
             void* m_stack;
             void (*funp_)(void*);
 
-# if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION)
+# if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) && !defined(PIKA_HAVE_ADDRESS_SANITIZER)
             struct sigaction action;
             stack_t segv_stack;
 # endif
