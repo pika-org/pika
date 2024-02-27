@@ -29,7 +29,7 @@ if(PIKA_WITH_THREAD_STACKOVERFLOW_DETECTION)
   set(threading_tests ${threading_tests} thread_stacksize_overflow_v2)
 endif()
 
-set(condition_variable2_PARAMETERS THREADS 4)
+set(condition_variable2_PARAMETERS THREADS 4 COST 20)
 set(condition_variable3_PARAMETERS THREADS 4)
 set(condition_variable4_PARAMETERS THREADS 4)
 set(condition_variable_race_PARAMETERS THREADS 4)
