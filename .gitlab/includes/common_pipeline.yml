@@ -35,11 +35,11 @@ variables:
     SLURM_JOB_NUM_NODES: 1
     SLURM_NTASKS: 1
 
-.test_common_mc:
+.test_common_eiger_mc:
   stage: test
   extends:
     - .test_common
-    - .container-runner-daint-mc
+    - .container-runner-eiger-mc-f7t
   variables:
     SLURM_PARTITION: normal
 

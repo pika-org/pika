@@ -19,7 +19,7 @@ clang14_debug_build_pika-ci-image:
 
 clang14_debug_test_pika-ci-image:
   stage: test
-  extends: .test_common_mc
+  extends: .test_common_eiger_mc
   needs:
     - clang14_debug_build_pika-ci-image
   image: $CSCS_REGISTRY_PATH/pika-debug-cpu-clang14:$CI_COMMIT_SHORT_SHA
