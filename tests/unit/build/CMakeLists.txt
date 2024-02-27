@@ -57,7 +57,7 @@ function(
       -DCMAKE_BUILD_TYPE=${build_type} ${cmake_cuda_compiler} --test-command
       "${CMAKE_CTEST_COMMAND}" --output-on-failure
   )
-  set_tests_properties("${category}.${name}" PROPERTIES LABELS "STANDALONE_TESTS")
+  set_tests_properties("${category}.${name}" PROPERTIES LABELS "STANDALONE_TESTS" COST 10)
 
 endfunction()
 
