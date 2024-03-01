@@ -19,7 +19,7 @@ void enumerate_threads(std::size_t num_custom_threads)
 {
     std::size_t counts[std::size_t(pika::os_thread_type::custom_thread) + 1] = {0};
 
-    bool result = pika::enumerate_os_threads([&counts](pika::os_thread_data const& data) {
+    bool result = pika::detail::enumerate_os_threads([&counts](pika::os_thread_data const& data) {
         if (data.type_ != pika::os_thread_type::unknown)
         {
             PIKA_TEST(std::size_t(data.type_) <= std::size_t(pika::os_thread_type::custom_thread));
@@ -42,12 +42,12 @@ int pika_main()
 {
     enumerate_threads(0);
 
-    auto* rt = pika::get_runtime_ptr();
+    auto* rt = pika::detail::get_runtime_ptr();
 
     std::thread t([rt]() {
-        pika::register_thread(rt, "custom");
+        pika::detail::register_thread(rt, "custom");
         enumerate_threads(1);
-        pika::unregister_thread(rt);
+        pika::detail::unregister_thread(rt);
     });
     t.join();
 

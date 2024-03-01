@@ -853,7 +853,7 @@ namespace pika::threads::detail {
                 {
                     threads::detail::get_thread_id_data(*it)->set_state(
                         threads::detail::thread_schedule_state::pending,
-                        threads::detail::thread_restart_state::abort);
+                        pika::threads::detail::thread_restart_state::abort);
                     // np queue always exists so use that as priority doesn't matter
                     np_queue_->schedule_work(*it, true);
                 }

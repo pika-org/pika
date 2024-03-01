@@ -74,7 +74,7 @@ namespace pika::debug::detail {
                 os << hex<12, std::uintptr_t>(reinterpret_cast<std::uintptr_t>(dummy)) << " ";
             }
             const char* pool = "--------";
-            auto tid = threads::detail::get_self_id();
+            auto tid = pika::threads::detail::get_self_id();
             if (tid != threads::detail::invalid_thread_id)
             {
                 auto* p = get_thread_id_data(tid)->get_scheduler_base()->get_parent_pool();

@@ -307,9 +307,9 @@ namespace pika::this_thread {
     ///
     /// If the suspension was aborted, this function will throw a
     /// \a yield_aborted exception.
-    threads::detail::thread_restart_state suspend(threads::detail::thread_schedule_state state,
-        threads::detail::thread_id_type nextid, detail::thread_description const& description,
-        error_code& ec)
+    pika::threads::detail::thread_restart_state suspend(
+        threads::detail::thread_schedule_state state, threads::detail::thread_id_type nextid,
+        detail::thread_description const& description, error_code& ec)
     {
         // let the thread manager do other things while waiting
         threads::detail::thread_self& self = threads::detail::get_self();
@@ -319,10 +319,10 @@ namespace pika::this_thread {
 
         // handle interruption, if needed
         threads::detail::interruption_point(id.noref(), ec);
-        if (ec) return threads::detail::thread_restart_state::unknown;
+        if (ec) return pika::threads::detail::thread_restart_state::unknown;
 
-        threads::detail::thread_restart_state statex =
-            threads::detail::thread_restart_state::unknown;
+        pika::threads::detail::thread_restart_state statex =
+            pika::threads::detail::thread_restart_state::unknown;
 
         {
             // verify that there are no more registered locks for this OS-thread
@@ -356,10 +356,10 @@ namespace pika::this_thread {
 
         // handle interruption, if needed
         threads::detail::interruption_point(id.noref(), ec);
-        if (ec) return threads::detail::thread_restart_state::unknown;
+        if (ec) return pika::threads::detail::thread_restart_state::unknown;
 
         // handle interrupt and abort
-        if (statex == threads::detail::thread_restart_state::abort)
+        if (statex == pika::threads::detail::thread_restart_state::abort)
         {
             PIKA_THROWS_IF(ec, pika::error::yield_aborted, "suspend",
                 "thread({}, {}) aborted (yield returned wait_abort)", id.noref(),
@@ -371,9 +371,9 @@ namespace pika::this_thread {
         return statex;
     }
 
-    threads::detail::thread_restart_state suspend(pika::chrono::steady_time_point const& abs_time,
-        threads::detail::thread_id_type nextid, detail::thread_description const& description,
-        error_code& ec)
+    pika::threads::detail::thread_restart_state suspend(
+        pika::chrono::steady_time_point const& abs_time, threads::detail::thread_id_type nextid,
+        detail::thread_description const& description, error_code& ec)
     {
         // schedule a thread waking us up at_time
         threads::detail::thread_self& self = threads::detail::get_self();
@@ -383,11 +383,11 @@ namespace pika::this_thread {
 
         // handle interruption, if needed
         threads::detail::interruption_point(id.noref(), ec);
-        if (ec) return threads::detail::thread_restart_state::unknown;
+        if (ec) return pika::threads::detail::thread_restart_state::unknown;
 
         // let the thread manager do other things while waiting
-        threads::detail::thread_restart_state statex =
-            threads::detail::thread_restart_state::unknown;
+        pika::threads::detail::thread_restart_state statex =
+            pika::threads::detail::thread_restart_state::unknown;
 
         {
 #ifdef PIKA_HAVE_VERIFY_LOCKS
@@ -406,9 +406,9 @@ namespace pika::this_thread {
             threads::detail::thread_id_ref_type timer_id =
                 threads::detail::set_thread_state(id.noref(), abs_time, &timer_started,
                     threads::detail::thread_schedule_state::pending,
-                    threads::detail::thread_restart_state::timeout,
+                    pika::threads::detail::thread_restart_state::timeout,
                     execution::thread_priority::boost, true, ec);
-            if (ec) return threads::detail::thread_restart_state::unknown;
+            if (ec) return pika::threads::detail::thread_restart_state::unknown;
 
             // We might need to dispatch 'nextid' to it's correct scheduler
             // only if our current scheduler is the same, we should yield the id
@@ -428,26 +428,26 @@ namespace pika::this_thread {
                     threads::detail::thread_schedule_state::suspended, PIKA_MOVE(nextid)));
             }
 
-            if (statex != threads::detail::thread_restart_state::timeout)
+            if (statex != pika::threads::detail::thread_restart_state::timeout)
             {
-                PIKA_ASSERT(statex == threads::detail::thread_restart_state::abort ||
-                    statex == threads::detail::thread_restart_state::signaled);
+                PIKA_ASSERT(statex == pika::threads::detail::thread_restart_state::abort ||
+                    statex == pika::threads::detail::thread_restart_state::signaled);
                 error_code ec1(throwmode::lightweight);    // do not throw
                 pika::util::yield_while(
                     [&timer_started]() { return !timer_started.load(); }, "set_thread_state_timed");
                 threads::detail::set_thread_state(timer_id.noref(),
                     threads::detail::thread_schedule_state::pending,
-                    threads::detail::thread_restart_state::abort, execution::thread_priority::boost,
-                    true, ec1);
+                    pika::threads::detail::thread_restart_state::abort,
+                    execution::thread_priority::boost, true, ec1);
             }
         }
 
         // handle interruption, if needed
         threads::detail::interruption_point(id.noref(), ec);
-        if (ec) return threads::detail::thread_restart_state::unknown;
+        if (ec) return pika::threads::detail::thread_restart_state::unknown;
 
         // handle interrupt and abort
-        if (statex == threads::detail::thread_restart_state::abort)
+        if (statex == pika::threads::detail::thread_restart_state::abort)
         {
             PIKA_THROWS_IF(ec, pika::error::yield_aborted, "suspend_at",
                 "thread({}, {}) aborted (yield returned wait_abort)", id.noref(),

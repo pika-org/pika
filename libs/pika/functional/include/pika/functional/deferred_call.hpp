@@ -135,9 +135,9 @@ namespace pika::util::detail {
 namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     template <typename F, typename... Ts>
-    struct get_function_address<util::detail::deferred<F, Ts...>>
+    struct get_function_address<pika::util::detail::deferred<F, Ts...>>
     {
-        static constexpr std::size_t call(util::detail::deferred<F, Ts...> const& f) noexcept
+        static constexpr std::size_t call(pika::util::detail::deferred<F, Ts...> const& f) noexcept
         {
             return f.get_function_address();
         }
@@ -145,9 +145,9 @@ namespace pika::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename F, typename... Ts>
-    struct get_function_annotation<util::detail::deferred<F, Ts...>>
+    struct get_function_annotation<pika::util::detail::deferred<F, Ts...>>
     {
-        static constexpr char const* call(util::detail::deferred<F, Ts...> const& f) noexcept
+        static constexpr char const* call(pika::util::detail::deferred<F, Ts...> const& f) noexcept
         {
             return f.get_function_annotation();
         }
@@ -155,9 +155,10 @@ namespace pika::detail {
 
 # if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
     template <typename F, typename... Ts>
-    struct get_function_annotation_itt<util::detail::deferred<F, Ts...>>
+    struct get_function_annotation_itt<pika::util::detail::deferred<F, Ts...>>
     {
-        static util::itt::string_handle call(util::detail::deferred<F, Ts...> const& f) noexcept
+        static util::itt::string_handle call(
+            pika::util::detail::deferred<F, Ts...> const& f) noexcept
         {
             return f.get_function_annotation_itt();
         }

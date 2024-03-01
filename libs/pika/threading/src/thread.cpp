@@ -97,7 +97,7 @@ namespace pika {
 
     static void run_thread_exit_callbacks()
     {
-        threads::detail::thread_id_type id = threads::detail::get_self_id();
+        threads::detail::thread_id_type id = pika::threads::detail::get_self_id();
         if (id == threads::detail::invalid_thread_id)
         {
             PIKA_THROW_EXCEPTION(pika::error::null_thread_id, "run_thread_exit_callbacks",
@@ -191,7 +191,7 @@ namespace pika {
                 "trying to join a non joinable thread");
         }
 
-        native_handle_type this_id = threads::detail::get_self_id();
+        native_handle_type this_id = pika::threads::detail::get_self_id();
         if (this_id == id_)
         {
             l.unlock();
@@ -276,7 +276,7 @@ namespace pika {
         bool interruption_requested()
         {
             return threads::detail::get_thread_interruption_requested(
-                threads::detail::get_self_id());
+                pika::threads::detail::get_self_id());
         }
 
         void interrupt()
@@ -307,7 +307,7 @@ namespace pika {
             if (interruption_was_enabled_)
             {
                 interruption_was_enabled_ = threads::detail::set_thread_interruption_enabled(
-                    threads::detail::get_self_id(), false);
+                    pika::threads::detail::get_self_id(), false);
             }
         }
 
@@ -317,7 +317,7 @@ namespace pika {
             if (p)
             {
                 threads::detail::set_thread_interruption_enabled(
-                    threads::detail::get_self_id(), interruption_was_enabled_);
+                    pika::threads::detail::get_self_id(), interruption_was_enabled_);
             }
         }
 
@@ -328,7 +328,7 @@ namespace pika {
             if (!interruption_was_enabled_)
             {
                 interruption_was_enabled_ = threads::detail::set_thread_interruption_enabled(
-                    threads::detail::get_self_id(), true);
+                    pika::threads::detail::get_self_id(), true);
             }
         }
 
@@ -338,7 +338,7 @@ namespace pika {
             if (p)
             {
                 threads::detail::set_thread_interruption_enabled(
-                    threads::detail::get_self_id(), interruption_was_enabled_);
+                    pika::threads::detail::get_self_id(), interruption_was_enabled_);
             }
         }
     }    // namespace this_thread

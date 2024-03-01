@@ -235,7 +235,7 @@ namespace pika::util {
     }
 
     bool thread_mapper::enumerate_os_threads(
-        util::detail::function<bool(os_thread_data const&)> const& f) const
+        pika::util::detail::function<bool(os_thread_data const&)> const& f) const
     {
         std::lock_guard<mutex_type> m(mtx_);
         for (auto const& tinfo : thread_map_)

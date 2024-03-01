@@ -53,7 +53,7 @@ namespace pika::detail {
             if (nullptr != self)
             {
                 // called from inside a pika thread
-                threads::detail::thread_id_type id = threads::detail::get_self_id();
+                threads::detail::thread_id_type id = pika::threads::detail::get_self_id();
                 if (id != threads::detail::invalid_thread_id)
                 {
                     std::ptrdiff_t value = reinterpret_cast<std::ptrdiff_t>(id.get());

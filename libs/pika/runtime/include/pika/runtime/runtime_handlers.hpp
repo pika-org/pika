@@ -23,7 +23,7 @@ namespace pika::detail {
     PIKA_EXPORT void registered_locks_error_handler();
     PIKA_EXPORT bool register_locks_predicate();
 #endif
-    PIKA_EXPORT threads::detail::thread_pool_base* get_default_pool();
-    PIKA_EXPORT threads::detail::mask_cref_type get_pu_mask(
-        threads::detail::topology& topo, std::size_t thread_num);
+    PIKA_EXPORT pika::threads::detail::thread_pool_base* get_default_pool();
+    PIKA_EXPORT pika::threads::detail::mask_cref_type get_pu_mask(
+        pika::threads::detail::topology& topo, std::size_t thread_num);
 }    // namespace pika::detail

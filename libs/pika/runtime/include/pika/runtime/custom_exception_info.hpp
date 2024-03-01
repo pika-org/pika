@@ -112,7 +112,7 @@ namespace pika::detail {
     /// \brief Extract the diagnostic information embedded in the given
     /// exception and return a string holding a formatted message.
     ///
-    /// The function \a pika::diagnostic_information can be used to extract all
+    /// The function \a pika::detail::diagnostic_information can be used to extract all
     /// diagnostic information stored in the given exception instance as a
     /// formatted string. This simplifies debug output as it composes the
     /// diagnostics into one, easy to use function call. This includes
@@ -179,7 +179,7 @@ namespace pika::detail {
     ///
     /// \throws     std#bad_alloc (if one of the required allocations fails)
     ///
-    /// \see        \a pika::diagnostic_information()
+    /// \see        \a pika::detail::diagnostic_information()
     ///             \a pika::get_error_process_id(), \a pika::get_error_function_name(),
     ///             \a pika::get_error_file_name(), \a pika::get_error_line_number(),
     ///             \a pika::get_error_os_thread(), \a pika::get_error_thread_id(),
@@ -219,7 +219,7 @@ namespace pika::detail {
     ///
     /// \throws     nothing
     ///
-    /// \see        \a pika::diagnostic_information(), \a pika::get_error_host_name(),
+    /// \see        \a pika::detail::diagnostic_information(), \a pika::get_error_host_name(),
     ///             \a pika::get_error_function_name(),
     ///             \a pika::get_error_file_name(), \a pika::get_error_line_number(),
     ///             \a pika::get_error_os_thread(), \a pika::get_error_thread_id(),
@@ -259,7 +259,7 @@ namespace pika::detail {
     ///
     /// \throws     std#bad_alloc (if one of the required allocations fails)
     ///
-    /// \see        \a pika::diagnostic_information(), \a pika::get_error_host_name(),
+    /// \see        \a pika::detail::diagnostic_information(), \a pika::get_error_host_name(),
     ///             \a pika::get_error_process_id(), \a pika::get_error_function_name(),
     ///             \a pika::get_error_file_name(), \a pika::get_error_line_number(),
     ///             \a pika::get_error_os_thread(), \a pika::get_error_thread_id(),
@@ -299,7 +299,7 @@ namespace pika::detail {
     ///
     /// \throws     std#bad_alloc (if one of the required allocations fails)
     ///
-    /// \see        \a pika::diagnostic_information(), \a pika::get_error_host_name(),
+    /// \see        \a pika::detail::diagnostic_information(), \a pika::get_error_host_name(),
     ///             \a pika::get_error_process_id(), \a pika::get_error_function_name(),
     ///             \a pika::get_error_file_name(), \a pika::get_error_line_number(),
     ///             \a pika::get_error_os_thread(), \a pika::get_error_thread_id(),
@@ -338,19 +338,18 @@ namespace pika::detail {
     ///             \a pika::error_code, \a std::exception, or
     ///             \a std::exception_ptr.
     ///
-    get_error_state    /// \throws     nothing
-        ///
-        /// \see        \a pika::diagnostic_information(), \a pika::get_error_host_name(),
-        ///             \a pika::get_error_process_id(), \a pika::get_error_function_name(),
-        ///             \a pika::get_error_file_name(), \a pika::get_error_line_number(),
-        ///             \a pika::get_error_thread_id(),
-        ///             \a pika::get_error_thread_description(), \a pika::get_error(),
-        ///             \a pika::get_error_backtrace(), \a pika::get_error_env(),
-        ///             \a pika::get_error_what(), \a pika::get_error_config(),
-        ///             \a pika::get_error_state()
-        ///
-        PIKA_EXPORT std::size_t
-        get_error_os_thread(pika::exception_info const& xi);
+    /// \throws     nothing
+    ///
+    /// \see        \a pika::detail::diagnostic_information(), \a pika::get_error_host_name(),
+    ///             \a pika::get_error_process_id(), \a pika::get_error_function_name(),
+    ///             \a pika::get_error_file_name(), \a pika::get_error_line_number(),
+    ///             \a pika::get_error_thread_id(),
+    ///             \a pika::get_error_thread_description(), \a pika::get_error(),
+    ///             \a pika::get_error_backtrace(), \a pika::get_error_env(),
+    ///             \a pika::get_error_what(), \a pika::get_error_config(),
+    ///             \a pika::get_error_state()
+    ///
+    PIKA_EXPORT std::size_t get_error_os_thread(pika::exception_info const& xi);
 
     /// \cond NOINTERNAL
     template <typename E>
@@ -383,7 +382,7 @@ namespace pika::detail {
     ///
     /// \throws     nothing
     ///
-    /// \see        \a pika::diagnostic_information(), \a pika::get_error_host_name(),
+    /// \see        \a pika::detail::diagnostic_information(), \a pika::get_error_host_name(),
     ///             \a pika::get_error_process_id(), \a pika::get_error_function_name(),
     ///             \a pika::get_error_file_name(), \a pika::get_error_line_number(),
     ///             \a pika::get_error_os_thread()
@@ -425,7 +424,7 @@ namespace pika::detail {
     ///
     /// \throws     std#bad_alloc (if one of the required allocations fails)
     ///
-    /// \see        \a pika::diagnostic_information(), \a pika::get_error_host_name(),
+    /// \see        \a pika::detail::diagnostic_information(), \a pika::get_error_host_name(),
     ///             \a pika::get_error_process_id(), \a pika::get_error_function_name(),
     ///             \a pika::get_error_file_name(), \a pika::get_error_line_number(),
     ///             \a pika::get_error_os_thread(), \a pika::get_error_thread_id(),
@@ -466,7 +465,7 @@ namespace pika::detail {
     ///
     /// \throws     std#bad_alloc (if one of the required allocations fails)
     ///
-    /// \see        \a pika::diagnostic_information(), \a pika::get_error_host_name(),
+    /// \see        \a pika::detail::diagnostic_information(), \a pika::get_error_host_name(),
     ///             \a pika::get_error_process_id(), \a pika::get_error_function_name(),
     ///             \a pika::get_error_file_name(), \a pika::get_error_line_number(),
     ///             \a pika::get_error_os_thread(), \a pika::get_error_thread_id(),
@@ -506,7 +505,7 @@ namespace pika::detail {
     ///
     /// \throws     std#bad_alloc (if one of the required allocations fails)
     ///
-    /// \see        \a pika::diagnostic_information(), \a pika::get_error_host_name(),
+    /// \see        \a pika::detail::diagnostic_information(), \a pika::get_error_host_name(),
     ///             \a pika::get_error_process_id(), \a pika::get_error_function_name(),
     ///             \a pika::get_error_file_name(), \a pika::get_error_line_number(),
     ///             \a pika::get_error_os_thread(), \a pika::get_error_thread_id(),

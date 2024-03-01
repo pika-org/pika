@@ -103,7 +103,7 @@ int pika_main(/*pika::program_options::variables_map& vm*/)
     // print partition characteristics
     std::cout << "\n\n[pika_main] print thread-manager pools : "
               << "\n";
-    pika::get_runtime().get_thread_manager().print_pools(std::cout);
+    pika::detail::get_runtime().get_thread_manager().print_pools(std::cout);
 
     // print system characteristics
     print_system_characteristics();

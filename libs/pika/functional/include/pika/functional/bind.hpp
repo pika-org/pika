@@ -205,16 +205,16 @@ namespace pika::util::detail {
 
 namespace pika::detail {
     template <typename F, typename... Ts>
-    struct is_bind_expression<util::detail::bound<F, Ts...>> : std::true_type
+    struct is_bind_expression<pika::util::detail::bound<F, Ts...>> : std::true_type
     {
     };
 
     ///////////////////////////////////////////////////////////////////////////
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
     template <typename F, typename... Ts>
-    struct get_function_address<util::detail::bound<F, Ts...>>
+    struct get_function_address<pika::util::detail::bound<F, Ts...>>
     {
-        static constexpr std::size_t call(util::detail::bound<F, Ts...> const& f) noexcept
+        static constexpr std::size_t call(pika::util::detail::bound<F, Ts...> const& f) noexcept
         {
             return f.get_function_address();
         }
@@ -222,9 +222,9 @@ namespace pika::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename F, typename... Ts>
-    struct get_function_annotation<util::detail::bound<F, Ts...>>
+    struct get_function_annotation<pika::util::detail::bound<F, Ts...>>
     {
-        static constexpr char const* call(util::detail::bound<F, Ts...> const& f) noexcept
+        static constexpr char const* call(pika::util::detail::bound<F, Ts...> const& f) noexcept
         {
             return f.get_function_annotation();
         }
@@ -232,9 +232,9 @@ namespace pika::detail {
 
 # if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
     template <typename F, typename... Ts>
-    struct get_function_annotation_itt<util::detail::bound<F, Ts...>>
+    struct get_function_annotation_itt<pika::util::detail::bound<F, Ts...>>
     {
-        static util::itt::string_handle call(util::detail::bound<F, Ts...> const& f) noexcept
+        static util::itt::string_handle call(pika::util::detail::bound<F, Ts...> const& f) noexcept
         {
             return f.get_function_annotation_itt();
         }

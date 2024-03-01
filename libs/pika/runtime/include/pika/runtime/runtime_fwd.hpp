@@ -55,10 +55,10 @@ namespace pika::detail {
 
     /// Enumerate all OS threads that have registered with the runtime.
     PIKA_EXPORT bool enumerate_os_threads(
-        util::detail::function<bool(os_thread_data const&)> const& f);
+        pika::util::detail::function<bool(os_thread_data const&)> const& f);
 
     /// Register a function to be called during system shutdown
-    PIKA_EXPORT bool register_on_exit(util::detail::function<void()> const&);
+    PIKA_EXPORT bool register_on_exit(pika::util::detail::function<void()> const&);
 
     ///////////////////////////////////////////////////////////////////////////
     PIKA_EXPORT pika::util::runtime_configuration const& get_config();
@@ -138,7 +138,7 @@ namespace pika::detail {
     PIKA_EXPORT void remove_scheduler_mode(threads::scheduler_mode to_remove);
 
     /// Get the global topology instance
-    PIKA_EXPORT threads::detail::topology const& get_topology();
+    PIKA_EXPORT pika::threads::detail::topology const& get_topology();
     /// \endcond
 
     PIKA_EXPORT void on_exit() noexcept;

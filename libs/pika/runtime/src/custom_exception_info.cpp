@@ -114,7 +114,7 @@ namespace pika::detail {
                 thread_info = true;
             }
 
-            std::string thread_name = pika::get_thread_name();
+            std::string thread_name = pika::detail::get_thread_name();
             if (!thread_info)
                 strm << thread_prefix;
             else
@@ -160,7 +160,7 @@ namespace pika::detail {
     {
         if (!expect_exception_flag.load(std::memory_order_relaxed))
         {
-            pika::util::may_attach_debugger("exception");
+            pika::detail::may_attach_debugger("exception");
         }
     }
 
@@ -346,13 +346,14 @@ namespace pika::detail {
 
         std::string state_name("not running");
         std::string hostname;
-        pika::runtime* rt = get_runtime_ptr();
+        runtime* rt = get_runtime_ptr();
         if (rt)
         {
-            runtime_state rts_state = rt->get_state();
+            pika::runtime_state rts_state = rt->get_state();
             state_name = pika::detail::get_runtime_state_name(rts_state);
 
-            if (rts_state >= runtime_state::initialized && rts_state < runtime_state::stopped)
+            if (rts_state >= pika::runtime_state::initialized &&
+                rts_state < pika::runtime_state::stopped)
             {
                 hostname = pika::debug::detail::hostname_print_helper{}.get_hostname();
             }
@@ -363,16 +364,17 @@ namespace pika::detail {
         error_code ec(throwmode::lightweight);
 
         std::size_t shepherd = std::size_t(-1);
-        threads::detail::thread_id_type thread_id;
+        pika::threads::detail::thread_id_type thread_id;
         detail::thread_description thread_name;
 
-        threads::detail::thread_self* self = threads::detail::get_self_ptr();
+        pika::threads::detail::thread_self* self = pika::threads::detail::get_self_ptr();
         if (nullptr != self)
         {
-            if (thread_manager_is(runtime_state::running)) shepherd = pika::get_worker_thread_num();
+            if (thread_manager_is(pika::runtime_state::running))
+                shepherd = pika::get_worker_thread_num();
 
-            thread_id = threads::detail::get_self_id();
-            thread_name = threads::detail::get_thread_description(thread_id);
+            thread_id = pika::threads::detail::get_self_id();
+            thread_name = pika::threads::detail::get_thread_description(thread_id);
         }
 
         std::string env(pika::detail::get_execution_environment());

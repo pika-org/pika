@@ -119,13 +119,13 @@ namespace pika {
             // before the outer to avoid deadlock (fixes issue #3608)
             std::lock_guard<std::unique_lock<mutex_type>> unlock_next(l, std::adopt_lock);
 
-            threads::detail::thread_restart_state const reason =
+            pika::threads::detail::thread_restart_state const reason =
                 data->cond_.wait_until(l, abs_time, ec);
 
             if (ec) return cv_status::error;
 
             // if the timer has hit, the waiting period timed out
-            return (reason == threads::detail::thread_restart_state::timeout) ?    //-V110
+            return (reason == pika::threads::detail::thread_restart_state::timeout) ?    //-V110
                 cv_status::timeout :
                 cv_status::no_timeout;
         }
@@ -250,13 +250,13 @@ namespace pika {
             // before the outer to avoid deadlock (fixes issue #3608)
             std::lock_guard<std::unique_lock<mutex_type>> unlock_next(l, std::adopt_lock);
 
-            threads::detail::thread_restart_state const reason =
+            pika::threads::detail::thread_restart_state const reason =
                 data->cond_.wait_until(l, abs_time, ec);
 
             if (ec) return cv_status::error;
 
             // if the timer has hit, the waiting period timed out
-            return (reason == threads::detail::thread_restart_state::timeout) ?    //-V110
+            return (reason == pika::threads::detail::thread_restart_state::timeout) ?    //-V110
                 cv_status::timeout :
                 cv_status::no_timeout;
         }
@@ -361,12 +361,13 @@ namespace pika {
                     // before the outer to avoid deadlock (fixes issue #3608)
                     std::lock_guard<std::unique_lock<mutex_type>> unlock_next(l, std::adopt_lock);
 
-                    threads::detail::thread_restart_state const reason =
+                    pika::threads::detail::thread_restart_state const reason =
                         data->cond_.wait_until(l, abs_time, ec);
 
                     if (ec) return false;
 
-                    should_stop = (reason == threads::detail::thread_restart_state::timeout) ||
+                    should_stop =
+                        (reason == pika::threads::detail::thread_restart_state::timeout) ||
                         stoken.stop_requested();
                 }
 

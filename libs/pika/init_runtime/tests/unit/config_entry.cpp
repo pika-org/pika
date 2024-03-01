@@ -15,11 +15,11 @@
 
 void test_get_entry()
 {
-    std::string val = pika::get_config_entry("pika.pu_step", "42");
+    std::string val = pika::detail::get_config_entry("pika.pu_step", "42");
     PIKA_TEST(!val.empty());
     PIKA_TEST_EQ(pika::detail::from_string<int>(val), 1);
 
-    val = pika::get_config_entry("pika.pu_step", 42);
+    val = pika::detail::get_config_entry("pika.pu_step", 42);
     PIKA_TEST(!val.empty());
     PIKA_TEST_EQ(pika::detail::from_string<int>(val), 1);
 }
@@ -37,18 +37,18 @@ void config_entry_callback(std::string const& key, std::string const& val)
 
 void test_set_entry()
 {
-    std::string val = pika::get_config_entry("pika.config.entry.test", "");
+    std::string val = pika::detail::get_config_entry("pika.config.entry.test", "");
     PIKA_TEST(val.empty());
 
-    pika::set_config_entry("pika.config.entry.test", "test");
-    val = pika::get_config_entry("pika.config.entry.test", "");
+    pika::detail::set_config_entry("pika.config.entry.test", "test");
+    val = pika::detail::get_config_entry("pika.config.entry.test", "");
     PIKA_TEST(!val.empty());
     PIKA_TEST_EQ(val, std::string("test"));
 
-    pika::set_config_entry_callback("pika.config.entry.test", &config_entry_callback);
+    pika::detail::set_config_entry_callback("pika.config.entry.test", &config_entry_callback);
 
-    pika::set_config_entry("pika.config.entry.test", "test1");
-    val = pika::get_config_entry("pika.config.entry.test", "");
+    pika::detail::set_config_entry("pika.config.entry.test", "test1");
+    val = pika::detail::get_config_entry("pika.config.entry.test", "");
     PIKA_TEST(!val.empty());
     PIKA_TEST_EQ(val, std::string("test1"));
 

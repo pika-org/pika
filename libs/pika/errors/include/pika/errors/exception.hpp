@@ -313,7 +313,7 @@ namespace pika {
     ///
     /// \throws     std#bad_alloc (if one of the required allocations fails)
     ///
-    /// \see        \a pika::diagnostic_information(), \a pika::get_error_host_name(),
+    /// \see        \a pika::detail::diagnostic_information(), \a pika::get_error_host_name(),
     ///             \a pika::get_error_process_id(), \a pika::get_error_function_name(),
     ///             \a pika::get_error_file_name(), \a pika::get_error_line_number(),
     ///             \a pika::get_error_os_thread(), \a pika::get_error_thread_id(),
@@ -360,7 +360,7 @@ namespace pika {
     ///
     /// \throws     nothing
     ///
-    /// \see        \a pika::diagnostic_information(), \a pika::get_error_host_name(),
+    /// \see        \a pika::detail::diagnostic_information(), \a pika::get_error_host_name(),
     ///             \a pika::get_error_process_id(), \a pika::get_error_function_name(),
     ///             \a pika::get_error_file_name(), \a pika::get_error_line_number(),
     ///             \a pika::get_error_os_thread(), \a pika::get_error_thread_id(),
@@ -397,7 +397,7 @@ namespace pika {
     ///
     /// \throws     std#bad_alloc (if one of the required allocations fails)
     ///
-    /// \see        \a pika::diagnostic_information(), \a pika::get_error_host_name(),
+    /// \see        \a pika::detail::diagnostic_information(), \a pika::get_error_host_name(),
     ///             \a pika::get_error_process_id()
     ///             \a pika::get_error_file_name(), \a pika::get_error_line_number(),
     ///             \a pika::get_error_os_thread(), \a pika::get_error_thread_id(),
@@ -439,7 +439,7 @@ namespace pika {
     ///
     /// \throws     std#bad_alloc (if one of the required allocations fails)
     ///
-    /// \see        \a pika::diagnostic_information(), \a pika::get_error_host_name(),
+    /// \see        \a pika::detail::diagnostic_information(), \a pika::get_error_host_name(),
     ///             \a pika::get_error_process_id(), \a pika::get_error_function_name(),
     ///             \a pika::get_error_line_number(),
     ///             \a pika::get_error_os_thread(), \a pika::get_error_thread_id(),
@@ -480,7 +480,7 @@ namespace pika {
     ///
     /// \throws     nothing
     ///
-    /// \see        \a pika::diagnostic_information(), \a pika::get_error_host_name(),
+    /// \see        \a pika::detail::diagnostic_information(), \a pika::get_error_host_name(),
     ///             \a pika::get_error_process_id(), \a pika::get_error_function_name(),
     ///             \a pika::get_error_file_name()
     ///             \a pika::get_error_os_thread(), \a pika::get_error_thread_id(),

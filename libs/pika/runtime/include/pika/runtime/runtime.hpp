@@ -54,7 +54,7 @@ namespace pika::detail {
     public:
         /// Generate a new notification policy instance for the given thread
         /// name prefix
-        using notification_policy_type = threads::callback_notifier;
+        using notification_policy_type = pika::threads::callback_notifier;
         virtual notification_policy_type get_notification_policy(
             char const* prefix, os_thread_type type);
 
@@ -84,7 +84,7 @@ namespace pika::detail {
         virtual ~runtime();
 
         /// \brief Manage list of functions to call on exit
-        void on_exit(util::detail::function<void()> const& f);
+        void on_exit(pika::util::detail::function<void()> const& f);
 
         /// \brief Manage runtime 'stopped' state
         void starting();
@@ -106,9 +106,9 @@ namespace pika::detail {
         static std::uint64_t get_system_uptime();
 
         /// \brief Return a reference to the internal PAPI thread manager
-        util::thread_mapper& get_thread_mapper();
+        pika::util::thread_mapper& get_thread_mapper();
 
-        threads::detail::topology const& get_topology() const;
+        pika::threads::detail::topology const& get_topology() const;
 
         /// \brief Run the pika runtime system, use the given function for the
         ///        main \a thread and block waiting for all threads to
@@ -132,7 +132,7 @@ namespace pika::detail {
         /// \returns          This function will return the value as returned
         ///                   as the result of the invocation of the function
         ///                   object given by the parameter \p func.
-        virtual int run(util::detail::function<pika_main_function_type> const& func);
+        virtual int run(pika::util::detail::function<pika_main_function_type> const& func);
 
         /// \brief Run the pika runtime system, initially use the given number
         ///        of (OS) threads in the thread-manager and block waiting for
@@ -162,8 +162,8 @@ namespace pika::detail {
         ///                   return the value as returned as the result of the
         ///                   invocation of the function object given by the
         ///                   parameter \p func. Otherwise it will return zero.
-        virtual int start(
-            util::detail::function<pika_main_function_type> const& func, bool blocking = false);
+        virtual int start(pika::util::detail::function<pika_main_function_type> const& func,
+            bool blocking = false);
 
         /// \brief Start the runtime system
         ///
@@ -325,7 +325,7 @@ namespace pika::detail {
 
         /// Enumerate all OS threads that have registered with the runtime.
         virtual bool enumerate_os_threads(
-            util::detail::function<bool(os_thread_data const&)> const& f) const;
+            pika::util::detail::function<bool(os_thread_data const&)> const& f) const;
 
         notification_policy_type::on_startstop_type on_start_func() const;
         notification_policy_type::on_startstop_type on_stop_func() const;
@@ -351,14 +351,14 @@ namespace pika::detail {
         void init_global_data();
         void deinit_global_data();
 
-        threads::detail::thread_result_type run_helper(
-            util::detail::function<runtime::pika_main_function_type> const& func, int& result,
+        pika::threads::detail::thread_result_type run_helper(
+            pika::util::detail::function<runtime::pika_main_function_type> const& func, int& result,
             bool call_startup_functions);
 
         void wait_helper(std::mutex& mtx, std::condition_variable& cond, bool& running);
 
         // list of functions to call on exit
-        using on_exit_type = std::vector<util::detail::function<void()>>;
+        using on_exit_type = std::vector<pika::util::detail::function<void()>>;
         on_exit_type on_exit_functions_;
         mutable std::mutex mtx_;
 
@@ -369,10 +369,10 @@ namespace pika::detail {
 
         // certain components (such as PAPI) require all threads to be
         // registered with the library
-        std::unique_ptr<util::thread_mapper> thread_support_;
+        std::unique_ptr<pika::util::thread_mapper> thread_support_;
 
         // topology and affinity data
-        threads::detail::topology& topology_;
+        pika::threads::detail::topology& topology_;
 
         std::atomic<runtime_state> state_;
 
