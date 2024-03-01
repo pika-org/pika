@@ -24,14 +24,4 @@ namespace pika::detail {
         }
         return (rt->get_thread_manager().status() == st);
     }
-    bool thread_manager_is_at_least(runtime_state st)
-    {
-        pika::runtime* rt = get_runtime_ptr();
-        if (nullptr == rt)
-        {
-            // we're probably either starting or stopping
-            return false;
-        }
-        return (rt->get_thread_manager().status() >= st);
-    }
 }    // namespace pika::detail
