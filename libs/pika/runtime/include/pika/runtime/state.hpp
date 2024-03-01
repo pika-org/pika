@@ -12,9 +12,8 @@
 #include <pika/runtime/state.hpp>
 #include <pika/threading_base/scheduler_state.hpp>
 
-namespace pika::threads {
-
+namespace pika::detail {
     // return whether thread manager is in the state described by 'mask'
     PIKA_EXPORT bool thread_manager_is(runtime_state st);
     PIKA_EXPORT bool thread_manager_is_at_least(runtime_state st);
-}    // namespace pika::threads
+}    // namespace pika::detail

@@ -22,97 +22,91 @@
 #include <pika/config/warnings_prefix.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika {
-    /// \cond NODETAIL
-    namespace detail {
-        ///////////////////////////////////////////////////////////////////////
-        // Stores the information about the hostname of the process the exception
-        // has been raised on. This information will show up in error messages
-        // under the [hostname] tag.
-        PIKA_DEFINE_ERROR_INFO(throw_hostname, std::string);
+namespace pika::detail {
+    ///////////////////////////////////////////////////////////////////////
+    // Stores the information about the hostname of the process the exception
+    // has been raised on. This information will show up in error messages
+    // under the [hostname] tag.
+    PIKA_DEFINE_ERROR_INFO(throw_hostname, std::string);
 
-        // Stores the information about the pid of the OS process the exception
-        // has been raised on. This information will show up in error messages
-        // under the [pid] tag.
-        PIKA_DEFINE_ERROR_INFO(throw_pid, std::int64_t);
+    // Stores the information about the pid of the OS process the exception
+    // has been raised on. This information will show up in error messages
+    // under the [pid] tag.
+    PIKA_DEFINE_ERROR_INFO(throw_pid, std::int64_t);
 
-        // Stores the information about the shepherd thread the exception has been
-        // raised on. This information will show up in error messages under the
-        // [shepherd] tag.
-        PIKA_DEFINE_ERROR_INFO(throw_shepherd, std::size_t);
+    // Stores the information about the shepherd thread the exception has been
+    // raised on. This information will show up in error messages under the
+    // [shepherd] tag.
+    PIKA_DEFINE_ERROR_INFO(throw_shepherd, std::size_t);
 
-        // Stores the information about the pika thread the exception has been
-        // raised on. This information will show up in error messages under the
-        // [thread_id] tag.
-        PIKA_DEFINE_ERROR_INFO(throw_thread_id, std::size_t);
+    // Stores the information about the pika thread the exception has been
+    // raised on. This information will show up in error messages under the
+    // [thread_id] tag.
+    PIKA_DEFINE_ERROR_INFO(throw_thread_id, std::size_t);
 
-        // Stores the information about the pika thread name the exception has been
-        // raised on. This information will show up in error messages under the
-        // [thread_name] tag.
-        PIKA_DEFINE_ERROR_INFO(throw_thread_name, std::string);
+    // Stores the information about the pika thread name the exception has been
+    // raised on. This information will show up in error messages under the
+    // [thread_name] tag.
+    PIKA_DEFINE_ERROR_INFO(throw_thread_name, std::string);
 
-        // Stores the information about the stack backtrace at the point the
-        // exception has been raised at. This information will show up in error
-        // messages under the [stack_trace] tag.
-        PIKA_DEFINE_ERROR_INFO(throw_stacktrace, std::string);
+    // Stores the information about the stack backtrace at the point the
+    // exception has been raised at. This information will show up in error
+    // messages under the [stack_trace] tag.
+    PIKA_DEFINE_ERROR_INFO(throw_stacktrace, std::string);
 
-        // Stores the full execution environment of the process the exception
-        // has been raised in. This information will show up in error messages
-        // under the [env] tag.
-        PIKA_DEFINE_ERROR_INFO(throw_env, std::string);
+    // Stores the full execution environment of the process the exception
+    // has been raised in. This information will show up in error messages
+    // under the [env] tag.
+    PIKA_DEFINE_ERROR_INFO(throw_env, std::string);
 
-        // Stores the full pika configuration information of the process the
-        // exception has been raised in. This information will show up in error
-        // messages under the [config] tag.
-        PIKA_DEFINE_ERROR_INFO(throw_config, std::string);
+    // Stores the full pika configuration information of the process the
+    // exception has been raised in. This information will show up in error
+    // messages under the [config] tag.
+    PIKA_DEFINE_ERROR_INFO(throw_config, std::string);
 
-        // Stores the current runtime state. This information will show up in
-        // error messages under the [state] tag.
-        PIKA_DEFINE_ERROR_INFO(throw_state, std::string);
+    // Stores the current runtime state. This information will show up in
+    // error messages under the [state] tag.
+    PIKA_DEFINE_ERROR_INFO(throw_state, std::string);
 
-        // Stores additional auxiliary information (such as information about
-        // the current parcel). This information will show up in error messages
-        // under the [auxinfo] tag.
-        PIKA_DEFINE_ERROR_INFO(throw_auxinfo, std::string);
+    // Stores additional auxiliary information (such as information about
+    // the current parcel). This information will show up in error messages
+    // under the [auxinfo] tag.
+    PIKA_DEFINE_ERROR_INFO(throw_auxinfo, std::string);
 
-        // Portably extract the current execution environment
-        PIKA_EXPORT std::string get_execution_environment();
+    // Portably extract the current execution environment
+    PIKA_EXPORT std::string get_execution_environment();
 
-        // Report an early or late exception and locally abort execution. There
-        // isn't anything more we could do.
-        [[noreturn]] PIKA_EXPORT void report_exception_and_terminate(std::exception const&);
-        [[noreturn]] PIKA_EXPORT void report_exception_and_terminate(std::exception_ptr const&);
-        [[noreturn]] PIKA_EXPORT void report_exception_and_terminate(pika::exception const&);
+    // Report an early or late exception and locally abort execution. There
+    // isn't anything more we could do.
+    [[noreturn]] PIKA_EXPORT void report_exception_and_terminate(std::exception const&);
+    [[noreturn]] PIKA_EXPORT void report_exception_and_terminate(std::exception_ptr const&);
+    [[noreturn]] PIKA_EXPORT void report_exception_and_terminate(pika::exception const&);
 
-        // Report an early or late exception and locally exit execution. There
-        // isn't anything more we could do. The exception will be re-thrown
-        // from pika::init
-        PIKA_EXPORT void report_exception_and_continue(std::exception const&);
-        PIKA_EXPORT void report_exception_and_continue(std::exception_ptr const&);
-        PIKA_EXPORT void report_exception_and_continue(pika::exception const&);
+    // Report an early or late exception and locally exit execution. There
+    // isn't anything more we could do. The exception will be re-thrown
+    // from pika::init
+    PIKA_EXPORT void report_exception_and_continue(std::exception const&);
+    PIKA_EXPORT void report_exception_and_continue(std::exception_ptr const&);
+    PIKA_EXPORT void report_exception_and_continue(pika::exception const&);
 
-        PIKA_EXPORT pika::exception_info construct_exception_info(std::string const& func,
-            std::string const& file, long line, std::string const& back_trace, std::uint32_t node,
-            std::string const& hostname, std::int64_t pid, std::size_t shepherd,
-            std::size_t thread_id, std::string const& thread_name, std::string const& env,
-            std::string const& config, std::string const& state_name, std::string const& auxinfo);
+    PIKA_EXPORT pika::exception_info construct_exception_info(std::string const& func,
+        std::string const& file, long line, std::string const& back_trace, std::uint32_t node,
+        std::string const& hostname, std::int64_t pid, std::size_t shepherd, std::size_t thread_id,
+        std::string const& thread_name, std::string const& env, std::string const& config,
+        std::string const& state_name, std::string const& auxinfo);
 
-        template <typename Exception>
-        PIKA_EXPORT std::exception_ptr
-        construct_exception(Exception const& e, pika::exception_info info);
+    template <typename Exception>
+    PIKA_EXPORT std::exception_ptr
+    construct_exception(Exception const& e, pika::exception_info info);
 
-        PIKA_EXPORT void pre_exception_handler();
+    PIKA_EXPORT void pre_exception_handler();
 
-        using get_full_build_string_type = pika::util::detail::function<std::string()>;
-        PIKA_EXPORT void set_get_full_build_string(get_full_build_string_type f);
-        PIKA_EXPORT std::string get_full_build_string();
-    }    // namespace detail
+    using get_full_build_string_type = pika::util::detail::function<std::string()>;
+    PIKA_EXPORT void set_get_full_build_string(get_full_build_string_type f);
+    PIKA_EXPORT std::string get_full_build_string();
 
-    namespace detail {
-        PIKA_EXPORT pika::exception_info custom_exception_info(std::string const& func,
-            std::string const& file, long line, std::string const& auxinfo);
-    }
-    /// \endcond
+    PIKA_EXPORT pika::exception_info custom_exception_info(
+        std::string const& func, std::string const& file, long line, std::string const& auxinfo);
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief Extract the diagnostic information embedded in the given
@@ -344,18 +338,19 @@ namespace pika {
     ///             \a pika::error_code, \a std::exception, or
     ///             \a std::exception_ptr.
     ///
-    /// \throws     nothing
-    ///
-    /// \see        \a pika::diagnostic_information(), \a pika::get_error_host_name(),
-    ///             \a pika::get_error_process_id(), \a pika::get_error_function_name(),
-    ///             \a pika::get_error_file_name(), \a pika::get_error_line_number(),
-    ///             \a pika::get_error_thread_id(),
-    ///             \a pika::get_error_thread_description(), \a pika::get_error(),
-    ///             \a pika::get_error_backtrace(), \a pika::get_error_env(),
-    ///             \a pika::get_error_what(), \a pika::get_error_config(),
-    ///             \a pika::get_error_state()
-    ///
-    PIKA_EXPORT std::size_t get_error_os_thread(pika::exception_info const& xi);
+    get_error_state    /// \throws     nothing
+        ///
+        /// \see        \a pika::diagnostic_information(), \a pika::get_error_host_name(),
+        ///             \a pika::get_error_process_id(), \a pika::get_error_function_name(),
+        ///             \a pika::get_error_file_name(), \a pika::get_error_line_number(),
+        ///             \a pika::get_error_thread_id(),
+        ///             \a pika::get_error_thread_description(), \a pika::get_error(),
+        ///             \a pika::get_error_backtrace(), \a pika::get_error_env(),
+        ///             \a pika::get_error_what(), \a pika::get_error_config(),
+        ///             \a pika::get_error_state()
+        ///
+        PIKA_EXPORT std::size_t
+        get_error_os_thread(pika::exception_info const& xi);
 
     /// \cond NOINTERNAL
     template <typename E>
@@ -540,7 +535,7 @@ namespace pika {
     PIKA_EXPORT bool expect_exception(bool flag = true);
     /// \endcond
 
-}    // namespace pika
+}    // namespace pika::detail
 
 #include <pika/modules/errors.hpp>
 

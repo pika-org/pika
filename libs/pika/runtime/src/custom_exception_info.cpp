@@ -50,7 +50,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika {
+namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     // For testing purposes we sometime expect to see exceptions, allow those
     // to go through without attaching a debugger.
@@ -155,253 +155,240 @@ namespace pika {
 
         return strm.str();
     }
-}    // namespace pika
 
-namespace pika {
-    namespace detail {
-        void pre_exception_handler()
+    void pre_exception_handler()
+    {
+        if (!expect_exception_flag.load(std::memory_order_relaxed))
         {
-            if (!expect_exception_flag.load(std::memory_order_relaxed))
-            {
-                pika::util::may_attach_debugger("exception");
-            }
+            pika::util::may_attach_debugger("exception");
+        }
+    }
+
+    static get_full_build_string_type get_full_build_string_f;
+
+    void set_get_full_build_string(get_full_build_string_type f) { get_full_build_string_f = f; }
+
+    std::string get_full_build_string()
+    {
+        if (detail::get_full_build_string_f) { return detail::get_full_build_string_f(); }
+        else { return pika::full_build_string(); }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // report an early or late exception and abort
+    void report_exception_and_continue(std::exception const& e)
+    {
+        pre_exception_handler();
+
+        std::cerr << e.what() << std::endl;
+    }
+
+    void report_exception_and_continue(std::exception_ptr const& e)
+    {
+        pre_exception_handler();
+
+        std::cerr << diagnostic_information(e) << std::endl;
+    }
+
+    void report_exception_and_continue(pika::exception const& e)
+    {
+        pre_exception_handler();
+
+        std::cerr << diagnostic_information(e) << std::endl;
+    }
+
+    void report_exception_and_terminate(std::exception const& e)
+    {
+        report_exception_and_continue(e);
+        std::abort();
+    }
+
+    void report_exception_and_terminate(std::exception_ptr const& e)
+    {
+        report_exception_and_continue(e);
+        std::abort();
+    }
+
+    void report_exception_and_terminate(pika::exception const& e)
+    {
+        report_exception_and_continue(e);
+        std::abort();
+    }
+
+    pika::exception_info construct_exception_info(std::string const& func, std::string const& file,
+        long line, std::string const& back_trace, std::string const& hostname, std::int64_t pid,
+        std::size_t shepherd, std::size_t thread_id, std::string const& thread_name,
+        std::string const& env, std::string const& config, std::string const& state_name,
+        std::string const& auxinfo)
+    {
+        return pika::exception_info().set(pika::detail::throw_stacktrace(back_trace),
+            pika::detail::throw_hostname(hostname), pika::detail::throw_pid(pid),
+            pika::detail::throw_shepherd(shepherd), pika::detail::throw_thread_id(thread_id),
+            pika::detail::throw_thread_name(thread_name), pika::detail::throw_function(func),
+            pika::detail::throw_file(file), pika::detail::throw_line(line),
+            pika::detail::throw_env(env), pika::detail::throw_config(config),
+            pika::detail::throw_state(state_name), pika::detail::throw_auxinfo(auxinfo));
+    }
+
+    template <typename Exception>
+    std::exception_ptr construct_exception(Exception const& e, pika::exception_info info)
+    {
+        // create a std::exception_ptr object encapsulating the Exception to
+        // be thrown and annotate it with all the local information we have
+        try
+        {
+            throw_with_info(e, std::move(info));
+        }
+        catch (...)
+        {
+            return std::current_exception();
         }
 
-        static get_full_build_string_type get_full_build_string_f;
+        // need this return to silence a warning with icc
+        PIKA_ASSERT(false);    // -V779
+        return std::exception_ptr();
+    }
 
-        void set_get_full_build_string(get_full_build_string_type f)
+    template PIKA_EXPORT std::exception_ptr construct_exception(
+        pika::exception const&, pika::exception_info info);
+    template PIKA_EXPORT std::exception_ptr construct_exception(
+        std::system_error const&, pika::exception_info info);
+    template PIKA_EXPORT std::exception_ptr construct_exception(
+        std::exception const&, pika::exception_info info);
+    template PIKA_EXPORT std::exception_ptr construct_exception(
+        pika::detail::std_exception const&, pika::exception_info info);
+    template PIKA_EXPORT std::exception_ptr construct_exception(
+        std::bad_exception const&, pika::exception_info info);
+    template PIKA_EXPORT std::exception_ptr construct_exception(
+        pika::detail::bad_exception const&, pika::exception_info info);
+    template PIKA_EXPORT std::exception_ptr construct_exception(
+        std::bad_typeid const&, pika::exception_info info);
+    template PIKA_EXPORT std::exception_ptr construct_exception(
+        pika::detail::bad_typeid const&, pika::exception_info info);
+    template PIKA_EXPORT std::exception_ptr construct_exception(
+        std::bad_cast const&, pika::exception_info info);
+    template PIKA_EXPORT std::exception_ptr construct_exception(
+        pika::detail::bad_cast const&, pika::exception_info info);
+    template PIKA_EXPORT std::exception_ptr construct_exception(
+        std::bad_alloc const&, pika::exception_info info);
+    template PIKA_EXPORT std::exception_ptr construct_exception(
+        pika::detail::bad_alloc const&, pika::exception_info info);
+    template PIKA_EXPORT std::exception_ptr construct_exception(
+        std::logic_error const&, pika::exception_info info);
+    template PIKA_EXPORT std::exception_ptr construct_exception(
+        std::runtime_error const&, pika::exception_info info);
+    template PIKA_EXPORT std::exception_ptr construct_exception(
+        std::out_of_range const&, pika::exception_info info);
+    template PIKA_EXPORT std::exception_ptr construct_exception(
+        std::invalid_argument const&, pika::exception_info info);
+
+    ///////////////////////////////////////////////////////////////////////////
+    //  Figure out the size of the given environment
+    inline std::size_t get_arraylen(char** array)
+    {
+        std::size_t count = 0;
+        if (nullptr != array)
         {
-            get_full_build_string_f = f;
+            while (nullptr != array[count]) ++count;    // simply count the environment strings
         }
+        return count;
+    }
 
-        std::string get_full_build_string()
-        {
-            if (detail::get_full_build_string_f) { return detail::get_full_build_string_f(); }
-            else { return pika::full_build_string(); }
-        }
-
-        ///////////////////////////////////////////////////////////////////////////
-        // report an early or late exception and abort
-        void report_exception_and_continue(std::exception const& e)
-        {
-            pre_exception_handler();
-
-            std::cerr << e.what() << std::endl;
-        }
-
-        void report_exception_and_continue(std::exception_ptr const& e)
-        {
-            pre_exception_handler();
-
-            std::cerr << diagnostic_information(e) << std::endl;
-        }
-
-        void report_exception_and_continue(pika::exception const& e)
-        {
-            pre_exception_handler();
-
-            std::cerr << diagnostic_information(e) << std::endl;
-        }
-
-        void report_exception_and_terminate(std::exception const& e)
-        {
-            report_exception_and_continue(e);
-            std::abort();
-        }
-
-        void report_exception_and_terminate(std::exception_ptr const& e)
-        {
-            report_exception_and_continue(e);
-            std::abort();
-        }
-
-        void report_exception_and_terminate(pika::exception const& e)
-        {
-            report_exception_and_continue(e);
-            std::abort();
-        }
-
-        pika::exception_info construct_exception_info(std::string const& func,
-            std::string const& file, long line, std::string const& back_trace,
-            std::string const& hostname, std::int64_t pid, std::size_t shepherd,
-            std::size_t thread_id, std::string const& thread_name, std::string const& env,
-            std::string const& config, std::string const& state_name, std::string const& auxinfo)
-        {
-            return pika::exception_info().set(pika::detail::throw_stacktrace(back_trace),
-                pika::detail::throw_hostname(hostname), pika::detail::throw_pid(pid),
-                pika::detail::throw_shepherd(shepherd), pika::detail::throw_thread_id(thread_id),
-                pika::detail::throw_thread_name(thread_name), pika::detail::throw_function(func),
-                pika::detail::throw_file(file), pika::detail::throw_line(line),
-                pika::detail::throw_env(env), pika::detail::throw_config(config),
-                pika::detail::throw_state(state_name), pika::detail::throw_auxinfo(auxinfo));
-        }
-
-        template <typename Exception>
-        std::exception_ptr construct_exception(Exception const& e, pika::exception_info info)
-        {
-            // create a std::exception_ptr object encapsulating the Exception to
-            // be thrown and annotate it with all the local information we have
-            try
-            {
-                throw_with_info(e, std::move(info));
-            }
-            catch (...)
-            {
-                return std::current_exception();
-            }
-
-            // need this return to silence a warning with icc
-            PIKA_ASSERT(false);    // -V779
-            return std::exception_ptr();
-        }
-
-        template PIKA_EXPORT std::exception_ptr construct_exception(
-            pika::exception const&, pika::exception_info info);
-        template PIKA_EXPORT std::exception_ptr construct_exception(
-            std::system_error const&, pika::exception_info info);
-        template PIKA_EXPORT std::exception_ptr construct_exception(
-            std::exception const&, pika::exception_info info);
-        template PIKA_EXPORT std::exception_ptr construct_exception(
-            pika::detail::std_exception const&, pika::exception_info info);
-        template PIKA_EXPORT std::exception_ptr construct_exception(
-            std::bad_exception const&, pika::exception_info info);
-        template PIKA_EXPORT std::exception_ptr construct_exception(
-            pika::detail::bad_exception const&, pika::exception_info info);
-        template PIKA_EXPORT std::exception_ptr construct_exception(
-            std::bad_typeid const&, pika::exception_info info);
-        template PIKA_EXPORT std::exception_ptr construct_exception(
-            pika::detail::bad_typeid const&, pika::exception_info info);
-        template PIKA_EXPORT std::exception_ptr construct_exception(
-            std::bad_cast const&, pika::exception_info info);
-        template PIKA_EXPORT std::exception_ptr construct_exception(
-            pika::detail::bad_cast const&, pika::exception_info info);
-        template PIKA_EXPORT std::exception_ptr construct_exception(
-            std::bad_alloc const&, pika::exception_info info);
-        template PIKA_EXPORT std::exception_ptr construct_exception(
-            pika::detail::bad_alloc const&, pika::exception_info info);
-        template PIKA_EXPORT std::exception_ptr construct_exception(
-            std::logic_error const&, pika::exception_info info);
-        template PIKA_EXPORT std::exception_ptr construct_exception(
-            std::runtime_error const&, pika::exception_info info);
-        template PIKA_EXPORT std::exception_ptr construct_exception(
-            std::out_of_range const&, pika::exception_info info);
-        template PIKA_EXPORT std::exception_ptr construct_exception(
-            std::invalid_argument const&, pika::exception_info info);
-
-        ///////////////////////////////////////////////////////////////////////////
-        //  Figure out the size of the given environment
-        inline std::size_t get_arraylen(char** array)
-        {
-            std::size_t count = 0;
-            if (nullptr != array)
-            {
-                while (nullptr != array[count]) ++count;    // simply count the environment strings
-            }
-            return count;
-        }
-
-        std::string get_execution_environment()
-        {
-            std::vector<std::string> env;
+    std::string get_execution_environment()
+    {
+        std::vector<std::string> env;
 
 #if defined(PIKA_WINDOWS)
-            std::size_t len = get_arraylen(_environ);
-            env.reserve(len);
-            std::copy(&_environ[0], &_environ[len], std::back_inserter(env));
+        std::size_t len = get_arraylen(_environ);
+        env.reserve(len);
+        std::copy(&_environ[0], &_environ[len], std::back_inserter(env));
 #elif defined(linux) || defined(__linux) || defined(__linux__) || defined(__AIX__)
-            std::size_t len = get_arraylen(environ);
-            env.reserve(len);
-            std::copy(&environ[0], &environ[len], std::back_inserter(env));
+        std::size_t len = get_arraylen(environ);
+        env.reserve(len);
+        std::copy(&environ[0], &environ[len], std::back_inserter(env));
 #elif defined(__FreeBSD__)
-            std::size_t len = get_arraylen(freebsd_environ);
-            env.reserve(len);
-            std::copy(&freebsd_environ[0], &freebsd_environ[len], std::back_inserter(env));
+        std::size_t len = get_arraylen(freebsd_environ);
+        env.reserve(len);
+        std::copy(&freebsd_environ[0], &freebsd_environ[len], std::back_inserter(env));
 #elif defined(__APPLE__)
-            std::size_t len = get_arraylen(environ);
-            env.reserve(len);
-            std::copy(&environ[0], &environ[len], std::back_inserter(env));
+        std::size_t len = get_arraylen(environ);
+        env.reserve(len);
+        std::copy(&environ[0], &environ[len], std::back_inserter(env));
 #else
 # error "Don't know, how to access the execution environment on this platform"
 #endif
 
-            std::sort(env.begin(), env.end());
+        std::sort(env.begin(), env.end());
 
-            static constexpr char const* ignored_env_patterns[] = {"DOCKER", "GITHUB_TOKEN"};
-            std::string retval = fmt::format("{} entries:\n", env.size());
-            for (std::string const& s : env)
-            {
-                if (std::all_of(std::begin(ignored_env_patterns), std::end(ignored_env_patterns),
-                        [&s](auto const e) { return s.find(e) == std::string::npos; }))
-                {
-                    retval += "  " + s + "\n";
-                }
-            }
-            return retval;
-        }
-    }    // namespace detail
-
-    namespace detail {
-        pika::exception_info custom_exception_info(
-            std::string const& func, std::string const& file, long line, std::string const& auxinfo)
+        static constexpr char const* ignored_env_patterns[] = {"DOCKER", "GITHUB_TOKEN"};
+        std::string retval = fmt::format("{} entries:\n", env.size());
+        for (std::string const& s : env)
         {
-            std::int64_t pid = ::getpid();
-
-            std::size_t const trace_depth = detail::from_string<std::size_t>(
-                get_config_entry("pika.trace_depth", PIKA_HAVE_THREAD_BACKTRACE_DEPTH));
-
-            pika::debug::detail::backtrace bt(trace_depth);
-            std::string back_trace = bt.trace();
-
-            std::string state_name("not running");
-            std::string hostname;
-            pika::runtime* rt = get_runtime_ptr();
-            if (rt)
+            if (std::all_of(std::begin(ignored_env_patterns), std::end(ignored_env_patterns),
+                    [&s](auto const e) { return s.find(e) == std::string::npos; }))
             {
-                runtime_state rts_state = rt->get_state();
-                state_name = pika::detail::get_runtime_state_name(rts_state);
-
-                if (rts_state >= runtime_state::initialized && rts_state < runtime_state::stopped)
-                {
-                    hostname = pika::debug::detail::hostname_print_helper{}.get_hostname();
-                }
+                retval += "  " + s + "\n";
             }
-
-            // if this is not a pika thread we do not need to query neither for
-            // the shepherd thread nor for the thread id
-            error_code ec(throwmode::lightweight);
-
-            std::size_t shepherd = std::size_t(-1);
-            threads::detail::thread_id_type thread_id;
-            detail::thread_description thread_name;
-
-            threads::detail::thread_self* self = threads::detail::get_self_ptr();
-            if (nullptr != self)
-            {
-                if (threads::thread_manager_is(runtime_state::running))
-                    shepherd = pika::get_worker_thread_num();
-
-                thread_id = threads::detail::get_self_id();
-                thread_name = threads::detail::get_thread_description(thread_id);
-            }
-
-            std::string env(pika::detail::get_execution_environment());
-            std::string config(pika::configuration_string());
-
-            return pika::exception_info().set(pika::detail::throw_stacktrace(back_trace),
-                pika::detail::throw_hostname(hostname), pika::detail::throw_pid(pid),
-                pika::detail::throw_shepherd(shepherd),
-                pika::detail::throw_thread_id(reinterpret_cast<std::size_t>(thread_id.get())),
-                pika::detail::throw_thread_name(detail::as_string(thread_name)),
-                pika::detail::throw_function(func), pika::detail::throw_file(file),
-                pika::detail::throw_line(line), pika::detail::throw_env(env),
-                pika::detail::throw_config(config), pika::detail::throw_state(state_name),
-                pika::detail::throw_auxinfo(auxinfo));
         }
-    }    // namespace detail
-}    // namespace pika
+        return retval;
+    }
 
-///////////////////////////////////////////////////////////////////////////////
-namespace pika {
+    pika::exception_info custom_exception_info(
+        std::string const& func, std::string const& file, long line, std::string const& auxinfo)
+    {
+        std::int64_t pid = ::getpid();
+
+        std::size_t const trace_depth = detail::from_string<std::size_t>(
+            get_config_entry("pika.trace_depth", PIKA_HAVE_THREAD_BACKTRACE_DEPTH));
+
+        pika::debug::detail::backtrace bt(trace_depth);
+        std::string back_trace = bt.trace();
+
+        std::string state_name("not running");
+        std::string hostname;
+        pika::runtime* rt = get_runtime_ptr();
+        if (rt)
+        {
+            runtime_state rts_state = rt->get_state();
+            state_name = pika::detail::get_runtime_state_name(rts_state);
+
+            if (rts_state >= runtime_state::initialized && rts_state < runtime_state::stopped)
+            {
+                hostname = pika::debug::detail::hostname_print_helper{}.get_hostname();
+            }
+        }
+
+        // if this is not a pika thread we do not need to query neither for
+        // the shepherd thread nor for the thread id
+        error_code ec(throwmode::lightweight);
+
+        std::size_t shepherd = std::size_t(-1);
+        threads::detail::thread_id_type thread_id;
+        detail::thread_description thread_name;
+
+        threads::detail::thread_self* self = threads::detail::get_self_ptr();
+        if (nullptr != self)
+        {
+            if (thread_manager_is(runtime_state::running)) shepherd = pika::get_worker_thread_num();
+
+            thread_id = threads::detail::get_self_id();
+            thread_name = threads::detail::get_thread_description(thread_id);
+        }
+
+        std::string env(pika::detail::get_execution_environment());
+        std::string config(pika::configuration_string());
+
+        return pika::exception_info().set(pika::detail::throw_stacktrace(back_trace),
+            pika::detail::throw_hostname(hostname), pika::detail::throw_pid(pid),
+            pika::detail::throw_shepherd(shepherd),
+            pika::detail::throw_thread_id(reinterpret_cast<std::size_t>(thread_id.get())),
+            pika::detail::throw_thread_name(detail::as_string(thread_name)),
+            pika::detail::throw_function(func), pika::detail::throw_file(file),
+            pika::detail::throw_line(line), pika::detail::throw_env(env),
+            pika::detail::throw_config(config), pika::detail::throw_state(state_name),
+            pika::detail::throw_auxinfo(auxinfo));
+    }
+
     /// Return the host-name of the process where the exception was thrown.
     std::string get_error_host_name(pika::exception_info const& xi)
     {
@@ -482,4 +469,4 @@ namespace pika {
         if (state_info && !state_info->empty()) return *state_info;
         return std::string();
     }
-}    // namespace pika
+}    // namespace pika::detail

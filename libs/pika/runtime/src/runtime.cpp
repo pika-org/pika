@@ -77,7 +77,7 @@
 // system signals
 #if defined(PIKA_WINDOWS)
 
-namespace pika {
+namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     void handle_termination(char const* reason)
     {
@@ -124,7 +124,7 @@ namespace pika {
         }
         return FALSE;
     }
-}    // namespace pika
+}    // namespace pika::detail
 
 #else
 
@@ -132,7 +132,7 @@ namespace pika {
 # include <stdlib.h>
 # include <string.h>
 
-namespace pika {
+namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     [[noreturn]] PIKA_EXPORT void termination_handler(int signum)
     {
@@ -163,12 +163,12 @@ namespace pika {
         }
         std::abort();
     }
-}    // namespace pika
+}    // namespace pika::detail
 
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika {
+namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     PIKA_EXPORT void PIKA_CDECL new_handler()
     {
@@ -177,19 +177,17 @@ namespace pika {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    namespace detail {
-        // Sometimes the pika library gets simply unloaded as a result of some
-        // extreme error handling. Avoid hangs in the end by setting a flag.
-        static bool exit_called = false;
+    // Sometimes the pika library gets simply unloaded as a result of some
+    // extreme error handling. Avoid hangs in the end by setting a flag.
+    static bool exit_called = false;
 
-        void on_exit() noexcept { exit_called = true; }
+    void on_exit() noexcept { exit_called = true; }
 
-        void on_abort(int) noexcept
-        {
-            exit_called = true;
-            std::exit(-1);
-        }
-    }    // namespace detail
+    void on_abort(int) noexcept
+    {
+        exit_called = true;
+        std::exit(-1);
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     void set_signal_handlers()
@@ -236,14 +234,12 @@ namespace pika {
         };
     }
 
-    namespace detail {
-        char const* get_runtime_state_name(runtime_state st)
-        {
-            if (st < runtime_state::invalid || st >= runtime_state::last_valid_runtime)
-                return "invalid (value out of bounds)";
-            return strings::runtime_state_names[static_cast<std::int8_t>(st) + 1];
-        }
-    }    // namespace detail
+    char const* get_runtime_state_name(runtime_state st)
+    {
+        if (st < runtime_state::invalid || st >= runtime_state::last_valid_runtime)
+            return "invalid (value out of bounds)";
+        return strings::runtime_state_names[static_cast<std::int8_t>(st) + 1];
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     threads::callback_notifier::on_startstop_type global_on_start_func;
@@ -606,7 +602,7 @@ namespace pika {
     void report_error(std::size_t num_thread, std::exception_ptr const& e)
     {
         // Early and late exceptions
-        if (!threads::thread_manager_is(runtime_state::running))
+        if (!thread_manager_is(runtime_state::running))
         {
             pika::runtime* rt = pika::get_runtime_ptr();
             if (rt)
@@ -622,7 +618,7 @@ namespace pika {
     void report_error(std::exception_ptr const& e)
     {
         // Early and late exceptions
-        if (!threads::thread_manager_is(runtime_state::running))
+        if (!thread_manager_is(runtime_state::running))
         {
             pika::runtime* rt = pika::get_runtime_ptr();
             if (rt)
@@ -691,40 +687,38 @@ namespace pika {
         }
     }
 
-    namespace detail {
-        ///////////////////////////////////////////////////////////////////////////
-        // retrieve the command line arguments
-        void retrieve_commandline_arguments(
-            pika::program_options::options_description const& app_options,
-            pika::program_options::variables_map& vm)
-        {
-            // The command line for this application instance is available from
-            // this configuration section:
-            //
-            //     [pika]
-            //     cmd_line=....
-            //
-            std::string cmdline;
+    ///////////////////////////////////////////////////////////////////////////
+    // retrieve the command line arguments
+    void retrieve_commandline_arguments(
+        pika::program_options::options_description const& app_options,
+        pika::program_options::variables_map& vm)
+    {
+        // The command line for this application instance is available from
+        // this configuration section:
+        //
+        //     [pika]
+        //     cmd_line=....
+        //
+        std::string cmdline;
 
-            pika::detail::section& cfg = pika::get_runtime().get_config();
-            if (cfg.has_entry("pika.cmd_line")) cmdline = cfg.get_entry("pika.cmd_line");
+        pika::detail::section& cfg = pika::get_runtime().get_config();
+        if (cfg.has_entry("pika.cmd_line")) cmdline = cfg.get_entry("pika.cmd_line");
 
-            parse_commandline(
-                cfg, app_options, cmdline, vm, commandline_error_mode::allow_unregistered);
-        }
+        parse_commandline(
+            cfg, app_options, cmdline, vm, commandline_error_mode::allow_unregistered);
+    }
 
-        ///////////////////////////////////////////////////////////////////////////
-        // retrieve the command line arguments
-        void retrieve_commandline_arguments(
-            std::string const& appname, pika::program_options::variables_map& vm)
-        {
-            using pika::program_options::options_description;
+    ///////////////////////////////////////////////////////////////////////////
+    // retrieve the command line arguments
+    void retrieve_commandline_arguments(
+        std::string const& appname, pika::program_options::variables_map& vm)
+    {
+        using pika::program_options::options_description;
 
-            options_description desc_commandline("Usage: " + appname + " [options]");
+        options_description desc_commandline("Usage: " + appname + " [options]");
 
-            retrieve_commandline_arguments(desc_commandline, vm);
-        }
-    }    // namespace detail
+        retrieve_commandline_arguments(desc_commandline, vm);
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     std::size_t get_os_thread_count()
@@ -788,7 +782,7 @@ namespace pika {
         runtime* rt = get_runtime_ptr();
         return nullptr != rt ? rt->get_state() < runtime_state::startup : true;
     }
-}    // namespace pika
+}    // namespace pika::detail
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::threads {
@@ -841,26 +835,24 @@ namespace pika::threads {
 }    // namespace pika::threads
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika {
+namespace pika::detail {
     std::uint64_t get_system_uptime() { return runtime::get_system_uptime(); }
 
     pika::util::runtime_configuration const& get_config() { return get_runtime().get_config(); }
-}    // namespace pika
+}    // namespace pika::detail
 
 #if defined(_WIN64) && defined(PIKA_DEBUG) && !defined(PIKA_HAVE_FIBER_BASED_COROUTINES)
 # include <io.h>
 #endif
 
-namespace pika {
-    namespace detail {
-        ///////////////////////////////////////////////////////////////////////
-        // There is no need to protect these global from thread concurrent
-        // access as they are access during early startup only.
-        std::list<startup_function_type> global_pre_startup_functions;
-        std::list<startup_function_type> global_startup_functions;
-        std::list<shutdown_function_type> global_pre_shutdown_functions;
-        std::list<shutdown_function_type> global_shutdown_functions;
-    }    // namespace detail
+namespace pika::detail {
+    ///////////////////////////////////////////////////////////////////////
+    // There is no need to protect these global from thread concurrent
+    // access as they are access during early startup only.
+    std::list<startup_function_type> global_pre_startup_functions;
+    std::list<startup_function_type> global_startup_functions;
+    std::list<shutdown_function_type> global_pre_shutdown_functions;
+    std::list<shutdown_function_type> global_shutdown_functions;
 
     ///////////////////////////////////////////////////////////////////////////
     void register_pre_startup_function(startup_function_type f)
@@ -953,72 +945,69 @@ namespace pika {
         }
     }
 
-    namespace detail {
-        void handle_print_bind(std::size_t num_threads)
+    void handle_print_bind(std::size_t num_threads)
+    {
+        threads::detail::topology& top = threads::detail::get_topology();
+        auto const& rp = pika::resource::get_partitioner();
+        auto const& tm = get_runtime().get_thread_manager();
+
         {
-            threads::detail::topology& top = threads::detail::get_topology();
-            auto const& rp = pika::resource::get_partitioner();
-            auto const& tm = get_runtime().get_thread_manager();
+            // make sure all output is kept together
+            std::ostringstream strm;
 
-            {
-                // make sure all output is kept together
-                std::ostringstream strm;
-
-                strm << std::string(79, '*') << '\n';
+            strm << std::string(79, '*') << '\n';
 
 #if defined(PIKA_HAVE_MPI)
-                int mpi_initialized = 0;
-                if (MPI_Initialized(&mpi_initialized) == MPI_SUCCESS && mpi_initialized)
+            int mpi_initialized = 0;
+            if (MPI_Initialized(&mpi_initialized) == MPI_SUCCESS && mpi_initialized)
+            {
+                int rank = 0;
+                if (MPI_Comm_rank(MPI_COMM_WORLD, &rank) == MPI_SUCCESS)
                 {
-                    int rank = 0;
-                    if (MPI_Comm_rank(MPI_COMM_WORLD, &rank) == MPI_SUCCESS)
-                    {
-                        strm << "MPI rank: " << rank << '\n';
-                    }
+                    strm << "MPI rank: " << rank << '\n';
                 }
+            }
 #endif
 
-                for (std::size_t i = 0; i != num_threads; ++i)
+            for (std::size_t i = 0; i != num_threads; ++i)
+            {
+                // print the mask for the current PU
+                threads::detail::mask_cref_type pu_mask = rp.get_pu_mask(i);
+
+                std::string pool_name = tm.get_pool(i).get_pool_name();
+                top.print_affinity_mask(strm, i, pu_mask, pool_name);
+
+                // Make sure the mask does not contradict the CPU bindings
+                // returned by the system (see #973: Would like option to
+                // report HWLOC bindings).
+                error_code ec(throwmode::lightweight);
+                std::thread& blob = tm.get_os_thread_handle(i);
+                threads::detail::mask_type boundcpu = top.get_cpubind_mask(blob, ec);
+
+                // Empty masks are equivalent to full masks, so we first
+                // transform possible empty masks to full masks.
+                threads::detail::mask_type boundcpu_never_empty =
+                    !threads::detail::any(boundcpu) ? ~boundcpu : boundcpu;
+                threads::detail::mask_type pu_mask_never_empty =
+                    !threads::detail::any(pu_mask) ? ~pu_mask : pu_mask;
+
+                // The masks reported by pika must be the same as the ones
+                // reported from HWLOC.
+                if (!ec &&
+                    !threads::detail::equal(boundcpu_never_empty, pu_mask_never_empty, num_threads))
                 {
-                    // print the mask for the current PU
-                    threads::detail::mask_cref_type pu_mask = rp.get_pu_mask(i);
-
-                    std::string pool_name = tm.get_pool(i).get_pool_name();
-                    top.print_affinity_mask(strm, i, pu_mask, pool_name);
-
-                    // Make sure the mask does not contradict the CPU bindings
-                    // returned by the system (see #973: Would like option to
-                    // report HWLOC bindings).
-                    error_code ec(throwmode::lightweight);
-                    std::thread& blob = tm.get_os_thread_handle(i);
-                    threads::detail::mask_type boundcpu = top.get_cpubind_mask(blob, ec);
-
-                    // Empty masks are equivalent to full masks, so we first
-                    // transform possible empty masks to full masks.
-                    threads::detail::mask_type boundcpu_never_empty =
-                        !threads::detail::any(boundcpu) ? ~boundcpu : boundcpu;
-                    threads::detail::mask_type pu_mask_never_empty =
-                        !threads::detail::any(pu_mask) ? ~pu_mask : pu_mask;
-
-                    // The masks reported by pika must be the same as the ones
-                    // reported from HWLOC.
-                    if (!ec &&
-                        !threads::detail::equal(
-                            boundcpu_never_empty, pu_mask_never_empty, num_threads))
-                    {
-                        std::string boundcpu_str = threads::detail::to_string(boundcpu_never_empty);
-                        std::string pu_mask_str = threads::detail::to_string(pu_mask_never_empty);
-                        PIKA_THROW_EXCEPTION(pika::error::invalid_status, "handle_print_bind",
-                            "unexpected mismatch between binding reported from HWLOC({}) and "
-                            "pika({}) on thread {}",
-                            boundcpu_str, pu_mask_str, i);
-                    }
+                    std::string boundcpu_str = threads::detail::to_string(boundcpu_never_empty);
+                    std::string pu_mask_str = threads::detail::to_string(pu_mask_never_empty);
+                    PIKA_THROW_EXCEPTION(pika::error::invalid_status, "handle_print_bind",
+                        "unexpected mismatch between binding reported from HWLOC({}) and "
+                        "pika({}) on thread {}",
+                        boundcpu_str, pu_mask_str, i);
                 }
-
-                std::cout << strm.str();
             }
+
+            std::cout << strm.str();
         }
-    }    // namespace detail
+    }
 
     threads::detail::thread_result_type runtime::run_helper(
         util::detail::function<runtime::pika_main_function_type> const& func, int& result,
@@ -1355,7 +1344,7 @@ namespace pika {
         if (on_error_func_) { report_exception = on_error_func_(num_thread, e); }
 
         // Early and late exceptions, errors outside of pika-threads
-        if (!threads::detail::get_self_ptr() || !threads::thread_manager_is(runtime_state::running))
+        if (!threads::detail::get_self_ptr() || !thread_manager_is(runtime_state::running))
         {
             // report the error to the local console
             if (report_exception) { detail::report_exception_and_continue(e); }
@@ -1646,6 +1635,8 @@ namespace pika {
             return execution::detail::get_stack_size_enum_name(size_enum);
         }
     }    // namespace threads
+}    // namespace pika::detail
 
+namespace pika {
     bool is_runtime_initialized() noexcept { return get_runtime_ptr() != nullptr; }
 }    // namespace pika

@@ -38,16 +38,15 @@
 #include <pika/config/warnings_prefix.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika {
-    namespace detail {
-        ///////////////////////////////////////////////////////////////////////
-        // There is no need to protect these global from thread concurrent
-        // access as they are access during early startup only.
-        extern std::list<startup_function_type> global_pre_startup_functions;
-        extern std::list<startup_function_type> global_startup_functions;
-        extern std::list<shutdown_function_type> global_pre_shutdown_functions;
-        extern std::list<shutdown_function_type> global_shutdown_functions;
-    }    // namespace detail
+namespace pika::detail {
+
+    ///////////////////////////////////////////////////////////////////////
+    // There is no need to protect these global from thread concurrent
+    // access as they are access during early startup only.
+    extern std::list<startup_function_type> global_pre_startup_functions;
+    extern std::list<startup_function_type> global_startup_functions;
+    extern std::list<shutdown_function_type> global_pre_shutdown_functions;
+    extern std::list<shutdown_function_type> global_shutdown_functions;
 
     ///////////////////////////////////////////////////////////////////////////
     class PIKA_EXPORT runtime
@@ -429,9 +428,7 @@ namespace pika {
 
     PIKA_EXPORT void set_signal_handlers();
 
-    namespace detail {
-        PIKA_EXPORT char const* get_runtime_state_name(pika::runtime_state st);
-    }
+    PIKA_EXPORT char const* get_runtime_state_name(pika::runtime_state st);
 
     namespace util {
         ///////////////////////////////////////////////////////////////////////////
@@ -468,6 +465,9 @@ namespace pika {
         PIKA_EXPORT std::ptrdiff_t get_stack_size(execution::thread_stacksize);
     }    // namespace threads
 
+}    // namespace pika::detail
+
+namespace pika {
     /// Returns true when the runtime is initialized, false otherwise.
     ///
     /// Returns true while in a @ref pika::init call, or between calls of @ref pika::start and @ref

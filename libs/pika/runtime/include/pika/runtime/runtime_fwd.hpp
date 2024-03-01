@@ -38,9 +38,7 @@ namespace pika::detail {
     /// specific) runtime instance.
     PIKA_EXPORT runtime& get_runtime();
     PIKA_EXPORT runtime*& get_runtime_ptr();
-}    // namespace pika::detail
 
-namespace pika {
     /// Register the current kernel thread with pika, this should be done once
     /// for each external OS-thread intended to invoke pika functionality.
     /// Calling this function more than once will return false.
@@ -135,29 +133,24 @@ namespace pika {
     /// runtime system is active, it will return zero.
     PIKA_EXPORT std::uint64_t get_system_uptime();
 
-    namespace threads {
+    /// \cond NOINTERNAL
+    /// Reset internal (round robin) thread distribution scheme
+    PIKA_EXPORT void reset_thread_distribution();
 
-        /// \cond NOINTERNAL
-        /// Reset internal (round robin) thread distribution scheme
-        PIKA_EXPORT void reset_thread_distribution();
+    /// Set the new scheduler mode
+    PIKA_EXPORT void set_scheduler_mode(threads::scheduler_mode new_mode);
 
-        /// Set the new scheduler mode
-        PIKA_EXPORT void set_scheduler_mode(threads::scheduler_mode new_mode);
+    /// Add the given flags to the scheduler mode
+    PIKA_EXPORT void add_scheduler_mode(threads::scheduler_mode to_add);
 
-        /// Add the given flags to the scheduler mode
-        PIKA_EXPORT void add_scheduler_mode(threads::scheduler_mode to_add);
+    /// Remove the given flags from the scheduler mode
+    PIKA_EXPORT void remove_scheduler_mode(threads::scheduler_mode to_remove);
 
-        /// Remove the given flags from the scheduler mode
-        PIKA_EXPORT void remove_scheduler_mode(threads::scheduler_mode to_remove);
+    /// Get the global topology instance
+    PIKA_EXPORT threads::detail::topology const& get_topology();
+    /// \endcond
 
-        /// Get the global topology instance
-        PIKA_EXPORT detail::topology const& get_topology();
-        /// \endcond
-    }    // namespace threads
-
-    namespace detail {
-        PIKA_EXPORT void on_exit() noexcept;
-        PIKA_EXPORT void on_abort(int signal) noexcept;
-        PIKA_EXPORT void handle_print_bind(std::size_t num_threads);
-    }    // namespace detail
-}    // namespace pika
+    PIKA_EXPORT void on_exit() noexcept;
+    PIKA_EXPORT void on_abort(int signal) noexcept;
+    PIKA_EXPORT void handle_print_bind(std::size_t num_threads);
+}    // namespace pika::detail
