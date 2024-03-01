@@ -791,16 +791,6 @@ namespace pika {
 }    // namespace pika
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika::util {
-    std::string expand(std::string const& in) { return get_runtime().get_config().expand(in); }
-
-    void expand(std::string& in)
-    {
-        get_runtime().get_config().expand(in, std::string::size_type(-1));
-    }
-}    // namespace pika::util
-
-///////////////////////////////////////////////////////////////////////////////
 namespace pika::threads {
 
     // shortcut for runtime_configuration::get_default_stack_size

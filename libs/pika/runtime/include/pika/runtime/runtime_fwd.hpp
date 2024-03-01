@@ -62,15 +62,6 @@ namespace pika {
     /// Register a function to be called during system shutdown
     PIKA_EXPORT bool register_on_exit(util::detail::function<void()> const&);
 
-    /// \cond NOINTERNAL
-    namespace util {
-        /// \brief Expand INI variables in a string
-        PIKA_EXPORT std::string expand(std::string const& expand);
-
-        /// \brief Expand INI variables in a string
-        PIKA_EXPORT void expand(std::string& expand);
-    }    // namespace util
-
     ///////////////////////////////////////////////////////////////////////////
     PIKA_EXPORT pika::util::runtime_configuration const& get_config();
 
