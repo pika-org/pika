@@ -50,10 +50,6 @@ namespace pika {
     PIKA_EXPORT bool enumerate_os_threads(
         util::detail::function<bool(os_thread_data const&)> const& f);
 
-    /// Return the runtime instance number associated with the runtime instance
-    /// the current thread is running in.
-    PIKA_EXPORT std::size_t get_runtime_instance_number();
-
     /// Register a function to be called during system shutdown
     PIKA_EXPORT bool register_on_exit(util::detail::function<void()> const&);
 

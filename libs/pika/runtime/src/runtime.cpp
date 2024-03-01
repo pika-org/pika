@@ -645,12 +645,6 @@ namespace pika {
         return true;
     }
 
-    std::size_t get_runtime_instance_number()
-    {
-        runtime* rt = get_runtime_ptr();
-        return (nullptr == rt) ? 0 : rt->get_instance_number();
-    }
-
     ///////////////////////////////////////////////////////////////////////////
     std::string get_config_entry(std::string const& key, std::string const& dflt)
     {
