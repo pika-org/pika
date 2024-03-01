@@ -14,7 +14,6 @@
 #include <pika/modules/errors.hpp>
 #include <pika/modules/runtime_configuration.hpp>
 #include <pika/runtime/config_entry.hpp>
-#include <pika/runtime/detail/runtime_fwd.hpp>
 #include <pika/runtime/get_os_thread_count.hpp>
 #include <pika/runtime/get_thread_name.hpp>
 #include <pika/runtime/get_worker_thread_num.hpp>
@@ -30,6 +29,16 @@
 #include <cstddef>
 #include <cstdint>
 #include <string>
+
+namespace pika::detail {
+
+    class PIKA_EXPORT runtime;
+
+    /// The function \a get_runtime returns a reference to the (thread
+    /// specific) runtime instance.
+    PIKA_EXPORT runtime& get_runtime();
+    PIKA_EXPORT runtime*& get_runtime_ptr();
+}    // namespace pika::detail
 
 namespace pika {
     /// Register the current kernel thread with pika, this should be done once
