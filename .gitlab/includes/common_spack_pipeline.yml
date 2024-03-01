@@ -28,14 +28,19 @@ variables:
     reports:
       dotenv: base.env
 
+# We allow failure since santis is unstable
 base_spack_image_aarch64:
   extends: [.container-builder-cscs-gh200, .base_spack_image]
+  allow_failure: true
 base_spack_image_x86_64:
   extends: [.container-builder-cscs-zen2, .base_spack_image]
 
 make_multiarch_image:
   stage: spack_base
-  needs: [base_spack_image_aarch64, base_spack_image_x86_64]
+  needs:
+    - job: base_spack_image_aarch64
+      optional: true
+    - job: base_spack_image_x86_64
   extends: .make-multiarch-image
   after_script:
     - echo -e "BASE_IMAGE=$PERSIST_IMAGE_NAME" >> multiarch.env
