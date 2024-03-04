@@ -14,9 +14,11 @@ tests.unit.modules.synchronization.counting_semaphore
 tests.unit.modules.threading.condition_variable3
 tests.unit.modules.threading.condition_variable4
 tests.unit.modules.threading.condition_variable_race
+tests.unit.modules.threading.jthread1
 tests.unit.modules.threading.jthread2
 tests.unit.modules.threading.stop_token_cb1
 tests.unit.modules.threading.stop_token_race
 tests.unit.modules.threading.thread
 tests.unit.modules.threading.thread_id
 tests.unit.modules.threading.thread_launching
+tests.unit.modules.threading.thread_mf
