@@ -185,7 +185,7 @@ namespace pika::cuda::experimental::detail {
             }
 
             using pika::threads::detail::polling_status;
-            return event_callback_vector.empty() ? polling_status::idle : polling_status::busy;
+            return get_number_of_active_events() == 0 ? polling_status::idle : polling_status::busy;
         }
 
         void add_to_event_callback_queue(event_callback_function_type&& f, whip::stream_t stream)
@@ -227,7 +227,10 @@ namespace pika::cuda::experimental::detail {
             return event_callback_queue.size_approx();
         }
 
-        std::size_t get_number_of_active_events() const noexcept { return active_events_counter; }
+        std::size_t get_number_of_active_events() const noexcept
+        {
+            return active_events_counter.load(std::memory_order_relaxed);
+        }
 
         void add_to_event_callback_vector(event_callback&& continuation)
         {
