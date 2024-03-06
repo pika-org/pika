@@ -31,12 +31,24 @@
 #include <type_traits>
 #include <utility>
 
+// We only make the choice of mode available when not using stdexec and if not
+// using older versions of GCC. stdexec's sender concepts require nothrow
+// destructibility, which is not satisfied by throw_on_unstarted.  With stdexec
+// enabled, an unstarted sender will always terminate. Older versions of GCC
+// don't handle the noexcept(false) destructor correctly and fail at runtime.
+#if !(defined(PIKA_HAVE_STDEXEC) || (defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION < 100000))
+# define PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE
+#endif
+
+#if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
+# define PIKA_DETAIL_REQUIRE_STARTED_NOEXCEPT noexcept(false)
+#else
+# define PIKA_DETAIL_REQUIRE_STARTED_NOEXCEPT noexcept
+#endif
+
 namespace pika {
-#if !defined(PIKA_HAVE_STDEXEC)
+#if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
     namespace execution::experimental {
-        // We only make the choice of mode available when not using stdexec. stdexec's sender
-        // concepts require nothrow destructibility, which is not satisfied by throw_on_unstarted.
-        // With stdexec enabled, an unstarted sender will always terminate.
         enum class require_started_mode
         {
             terminate_on_unstarted,
@@ -46,11 +58,7 @@ namespace pika {
 #endif
 
     namespace require_started_detail {
-#if defined(PIKA_HAVE_STDEXEC)
-# define PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(f, message)                           \
-     fmt::print(std::cerr, "{}: {}\n", f, message);                                                \
-     std::terminate();
-#else
+#if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
         using pika::execution::experimental::require_started_mode;
 
 # define PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(mode, f, message)                     \
@@ -67,6 +75,10 @@ namespace pika {
              break;                                                                                \
          }                                                                                         \
      }
+#else
+# define PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(f, message)                           \
+     fmt::print(std::cerr, "{}: {}\n", f, message);                                                \
+     std::terminate();
 #endif
 
         template <typename OpState>
@@ -137,14 +149,14 @@ namespace pika {
 
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
             std::optional<operation_state_type> op_state{std::nullopt};
-#if !defined(PIKA_HAVE_STDEXEC)
+#if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
             require_started_mode mode{require_started_mode::terminate_on_unstarted};
 #endif
             bool started{false};
 
             template <typename Receiver_>
             require_started_op_state_type(std::decay_t<Sender> sender, Receiver_&& receiver
-#if !defined(PIKA_HAVE_STDEXEC)
+#if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
                 ,
                 require_started_mode mode
 #endif
@@ -154,27 +166,24 @@ namespace pika {
                   return pika::execution::experimental::connect(PIKA_MOVE(sender),
                       require_started_receiver<require_started_op_state_type>{this});
               }))
-#if !defined(PIKA_HAVE_STDEXEC)
+#if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
               , mode(mode)
 #endif
             {
             }
 
-            ~require_started_op_state_type()
-#if !defined(PIKA_HAVE_STDEXEC)
-                noexcept(false)
-#endif
+            ~require_started_op_state_type() PIKA_DETAIL_REQUIRE_STARTED_NOEXCEPT
             {
                 if (!started)
                 {
                     op_state.reset();
 
-#if defined(PIKA_HAVE_STDEXEC)
-                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(
+#if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
+                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(mode,
                         "pika::execution::experimental::~require_started_operation_state",
                         "The operation state of a require_started sender was never started");
 #else
-                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(mode,
+                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(
                         "pika::execution::experimental::~require_started_operation_state",
                         "The operation state of a require_started sender was never started");
 #endif
@@ -213,7 +222,7 @@ namespace pika {
             using is_sender = void;
 
             std::optional<std::decay_t<Sender>> sender{std::nullopt};
-#if !defined(PIKA_HAVE_STDEXEC)
+#if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
             require_started_mode mode{require_started_mode::terminate_on_unstarted};
 #endif
             mutable bool connected{false};
@@ -238,13 +247,13 @@ namespace pika {
                 typename Enable = std::enable_if_t<
                     !std::is_same_v<std::decay_t<Sender_>, require_started_sender_type>>>
             explicit require_started_sender_type(Sender_&& sender
-#if !defined(PIKA_HAVE_STDEXEC)
+#if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
                 ,
                 require_started_mode mode = require_started_mode::terminate_on_unstarted
 #endif
                 )
               : sender(PIKA_FORWARD(Sender_, sender))
-#if !defined(PIKA_HAVE_STDEXEC)
+#if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
               , mode(mode)
 #endif
             {
@@ -252,32 +261,28 @@ namespace pika {
 
             require_started_sender_type(require_started_sender_type&& other) noexcept
               : sender(std::exchange(other.sender, std::nullopt))
-#if !defined(PIKA_HAVE_STDEXEC)
+#if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
               , mode(other.mode)
 #endif
               , connected(other.connected)
             {
             }
 
-            require_started_sender_type& operator=(require_started_sender_type&& other)
-#if defined(PIKA_HAVE_STDEXEC)
-                noexcept
-#else
-                noexcept(false)
-#endif
+            require_started_sender_type& operator=(
+                require_started_sender_type&& other) PIKA_DETAIL_REQUIRE_STARTED_NOEXCEPT
             {
                 if (sender.has_value() && !connected)
                 {
                     sender.reset();
 
-#if defined(PIKA_HAVE_STDEXEC)
-                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(
+#if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
+                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(mode,
                         "pika::execution::experimental::require_started_sender::operator=(require_"
                         "started_sender&&)",
                         "Assigning to a require_started sender that was never started, the target "
                         "would be discarded");
 #else
-                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(mode,
+                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(
                         "pika::execution::experimental::require_started_sender::operator=(require_"
                         "started_sender&&)",
                         "Assigning to a require_started sender that was never started, the target "
@@ -286,7 +291,7 @@ namespace pika {
                 }
 
                 sender = std::exchange(other.sender, std::nullopt);
-#if !defined(PIKA_HAVE_STDEXEC)
+#if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
                 mode = other.mode;
 #endif
                 connected = other.connected;
@@ -296,7 +301,7 @@ namespace pika {
 
             require_started_sender_type(require_started_sender_type const& other)
               : sender(other.sender)
-#if !defined(PIKA_HAVE_STDEXEC)
+#if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
               , mode(other.mode)
 #endif
               , connected(false)
@@ -309,14 +314,14 @@ namespace pika {
                 {
                     sender.reset();
 
-#if defined(PIKA_HAVE_STDEXEC)
-                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(
+#if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
+                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(mode,
                         "pika::execution::experimental::require_started_sender::operator=(require_"
                         "started_sender const&)",
                         "Assigning to a require_started sender that was never started, the target "
                         "would be discarded");
 #else
-                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(mode,
+                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(
                         "pika::execution::experimental::require_started_sender::operator=(require_"
                         "started_sender const&)",
                         "Assigning to a require_started sender that was never started, the target "
@@ -325,7 +330,7 @@ namespace pika {
                 }
 
                 sender = other.sender;
-#if !defined(PIKA_HAVE_STDEXEC)
+#if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
                 mode = other.mode;
 #endif
                 connected = false;
@@ -333,21 +338,18 @@ namespace pika {
                 return *this;
             }
 
-            ~require_started_sender_type()
-#if !defined(PIKA_HAVE_STDEXEC)
-                noexcept(false)
-#endif
+            ~require_started_sender_type() PIKA_DETAIL_REQUIRE_STARTED_NOEXCEPT
             {
                 if (sender.has_value() && !connected)
                 {
                     sender.reset();
 
-#if defined(PIKA_HAVE_STDEXEC)
-                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(
+#if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
+                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(mode,
                         "pika::execution::experimental::~require_started_sender",
                         "A require_started sender was never started");
 #else
-                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(mode,
+                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(
                         "pika::execution::experimental::~require_started_sender",
                         "A require_started sender was never started");
 #endif
@@ -361,12 +363,12 @@ namespace pika {
             {
                 if (!s.sender.has_value())
                 {
-#if defined(PIKA_HAVE_STDEXEC)
-                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(
+#if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
+                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(s.mode,
                         "pika::execution::experimental::connect(require_started_sender&&)",
                         "Trying to connect an empty require_started sender");
 #else
-                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(s.mode,
+                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(
                         "pika::execution::experimental::connect(require_started_sender&&)",
                         "Trying to connect an empty require_started sender");
 #endif
@@ -377,7 +379,7 @@ namespace pika {
                 {
                     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
                     *std::exchange(s.sender, std::nullopt), PIKA_FORWARD(Receiver, receiver)
-#if !defined(PIKA_HAVE_STDEXEC)
+#if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
                                                                 ,
                         s.mode
 #endif
@@ -391,12 +393,12 @@ namespace pika {
             {
                 if (!s.sender.has_value())
                 {
-#if defined(PIKA_HAVE_STDEXEC)
-                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(
+#if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
+                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(s.mode,
                         "pika::execution::experimental::connect(require_started_sender const&)",
                         "Trying to connect an empty require_started sender");
 #else
-                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(s.mode,
+                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(
                         "pika::execution::experimental::connect(require_started_sender const&)",
                         "Trying to connect an empty require_started sender");
 #endif
@@ -406,7 +408,7 @@ namespace pika {
                 return
                 {
                     *s.sender, PIKA_FORWARD(Receiver, receiver)
-#if !defined(PIKA_HAVE_STDEXEC)
+#if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
                                    ,
                         s.mode
 #endif
@@ -414,7 +416,7 @@ namespace pika {
             }
 
             void discard() noexcept { connected = true; }
-#if !defined(PIKA_HAVE_STDEXEC)
+#if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
             void set_mode(require_started_mode mode) noexcept { this->mode = mode; }
 #endif
         };
@@ -422,13 +424,13 @@ namespace pika {
 #undef PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER
     }    // namespace require_started_detail
 
-#if defined(PIKA_HAVE_STDEXEC)
-# define PIKA_DETAIL_REQUIRE_STARTED_MODE_PARAMETER
-# define PIKA_DETAIL_REQUIRE_STARTED_MODE_ARGUMENT
-#else
+#if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
 # define PIKA_DETAIL_REQUIRE_STARTED_MODE_PARAMETER                                                \
      , require_started_mode mode = require_started_mode::terminate_on_unstarted
 # define PIKA_DETAIL_REQUIRE_STARTED_MODE_ARGUMENT , mode
+#else
+# define PIKA_DETAIL_REQUIRE_STARTED_MODE_PARAMETER
+# define PIKA_DETAIL_REQUIRE_STARTED_MODE_ARGUMENT
 #endif
 
     namespace execution::experimental {

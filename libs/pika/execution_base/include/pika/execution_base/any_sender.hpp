@@ -138,7 +138,7 @@ namespace pika::detail {
 
         void reset_vtable() { object = const_cast<base_type*>(get_empty_vtable<base_type>()); }
 
-        void release()
+        void release() noexcept
         {
             PIKA_ASSERT(!empty());
 
@@ -213,7 +213,7 @@ namespace pika::detail {
     public:
         movable_sbo_storage() = default;
 
-        ~movable_sbo_storage()
+        ~movable_sbo_storage() noexcept
         {
             if (!empty()) { release(); }
         }
@@ -339,6 +339,7 @@ namespace pika::detail {
         using storage_base_type::store;
 
         copyable_sbo_storage() = default;
+        ~copyable_sbo_storage() noexcept = default;
         copyable_sbo_storage(copyable_sbo_storage&&) = default;
         copyable_sbo_storage& operator=(copyable_sbo_storage&&) = default;
 
@@ -363,7 +364,7 @@ namespace pika::detail {
 namespace pika::execution::experimental::detail {
     struct any_operation_state_base
     {
-        virtual ~any_operation_state_base() = default;
+        virtual ~any_operation_state_base() noexcept = default;
         virtual bool empty() const noexcept { return false; }
         virtual void start() & noexcept = 0;
     };
@@ -395,6 +396,7 @@ namespace pika::execution::experimental::detail {
                 PIKA_FORWARD(Sender_, sender), PIKA_FORWARD(Receiver_, receiver)))
         {
         }
+        ~any_operation_state_impl() noexcept = default;
 
         void start() & noexcept override { pika::execution::experimental::start(operation_state); }
     };
@@ -416,7 +418,7 @@ namespace pika::execution::experimental::detail {
                 PIKA_FORWARD(Sender, sender), PIKA_FORWARD(Receiver, receiver));
         }
 
-        ~any_operation_state() = default;
+        ~any_operation_state() noexcept = default;
         any_operation_state(any_operation_state&&) = delete;
         any_operation_state(any_operation_state const&) = delete;
         any_operation_state& operator=(any_operation_state&&) = delete;
@@ -587,7 +589,7 @@ namespace pika::execution::experimental::detail {
     template <typename... Ts>
     struct unique_any_sender_base
     {
-        virtual ~unique_any_sender_base() = default;
+        virtual ~unique_any_sender_base() noexcept = default;
         virtual void move_into(void* p) = 0;
         virtual any_operation_state connect(any_receiver<Ts...>&& receiver) && = 0;
         virtual bool empty() const noexcept { return false; }
@@ -650,6 +652,8 @@ namespace pika::execution::experimental::detail {
         {
         }
 
+        ~unique_any_sender_impl() noexcept = default;
+
         void move_into(void* p) override { new (p) unique_any_sender_impl(PIKA_MOVE(sender)); }
 
         any_operation_state connect(any_receiver<Ts...>&& receiver) && override
@@ -669,6 +673,8 @@ namespace pika::execution::experimental::detail {
           : sender(PIKA_FORWARD(Sender_, sender))
         {
         }
+
+        ~any_sender_impl() noexcept = default;
 
         void move_into(void* p) override { new (p) any_sender_impl(PIKA_MOVE(sender)); }
 
@@ -751,7 +757,7 @@ namespace pika::execution::experimental {
             return *this;
         }
 
-        ~unique_any_sender() = default;
+        ~unique_any_sender() noexcept = default;
         unique_any_sender(unique_any_sender&&) = default;
         unique_any_sender(unique_any_sender const&) = delete;
         unique_any_sender& operator=(unique_any_sender&&) = default;
@@ -869,7 +875,7 @@ namespace pika::execution::experimental {
             return *this;
         }
 
-        ~any_sender() = default;
+        ~any_sender() noexcept = default;
         any_sender(any_sender&&) = default;
         any_sender(any_sender const&) = default;
         any_sender& operator=(any_sender&&) = default;
