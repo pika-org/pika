@@ -4,6 +4,20 @@
 <!--- Distributed under the Boost Software License, Version 1.0. (See accompanying -->
 <!--- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 
+## 0.23.0 (2024-03-07)
+
+### New features
+
+- Further improved performance, particularly on ARM64 systems. ([#1023](https://github.com/pika-org/pika/pull/1023), [#1033](https://github.com/pika-org/pika/pull/1033), [#1035](https://github.com/pika-org/pika/pull/1035), [#1041](https://github.com/pika-org/pika/pull/1041))
+- Allow compilation on ARM systems with address sanitizer enabled. ([#1045](https://github.com/pika-org/pika/pull/1045))
+
+### Breaking changes
+
+### Bugfixes
+
+- Allow the use of the `require_started` sender adaptor with `unique_any_sender` and `any_sender`. ([#1044](https://github.com/pika-org/pika/pull/1044))
+- Fix a data race in CUDA/HIP event polling. ([#1051](https://github.com/pika-org/pika/pull/1051))
+
 ## 0.22.2 (2024-02-09)
 
 ### Bugfixes
