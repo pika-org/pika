@@ -21,19 +21,19 @@ include:
 gcc10_apex_spack_compiler_image:
   extends:
     - .variables_gcc10_apex_config
-    - .compiler_image_template
+    - .compiler_image_template_rosa
 
 gcc10_apex_spack_image:
   needs: [gcc10_apex_spack_compiler_image]
   extends:
     - .variables_gcc10_apex_config
-    - .dependencies_image_template
+    - .dependencies_image_template_rosa
 
 gcc10_apex_build:
   needs: [gcc10_apex_spack_image]
   extends:
     - .variables_gcc10_apex_config
-    - .build_template
+    - .build_template_rosa
 
 .gcc10_apex_test_commmon:
   needs: [gcc10_apex_build]

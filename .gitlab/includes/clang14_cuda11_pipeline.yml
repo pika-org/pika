@@ -23,19 +23,19 @@ include:
 clang14_cuda11_spack_compiler_image:
   extends:
     - .variables_clang14_cuda11_config
-    - .compiler_image_template
+    - .compiler_image_template_rosa
 
 clang14_cuda11_spack_image:
   needs: [clang14_cuda11_spack_compiler_image]
   extends:
     - .variables_clang14_cuda11_config
-    - .dependencies_image_template
+    - .dependencies_image_template_rosa
 
 clang14_cuda11_build:
   needs: [clang14_cuda11_spack_image]
   extends:
     - .variables_clang14_cuda11_config
-    - .build_template
+    - .build_template_rosa
 
 .clang14_cuda11_test_commmon:
   needs: [clang14_cuda11_build]

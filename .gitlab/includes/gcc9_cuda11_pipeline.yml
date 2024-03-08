@@ -21,19 +21,19 @@ include:
 gcc9_cuda11_spack_compiler_image:
   extends:
     - .variables_gcc9_cuda11_config
-    - .compiler_image_template
+    - .compiler_image_template_rosa
 
 gcc9_cuda11_spack_image:
   needs: [gcc9_cuda11_spack_compiler_image]
   extends:
     - .variables_gcc9_cuda11_config
-    - .dependencies_image_template
+    - .dependencies_image_template_rosa
 
 gcc9_cuda11_build:
   needs: [gcc9_cuda11_spack_image]
   extends:
     - .variables_gcc9_cuda11_config
-    - .build_template
+    - .build_template_rosa
 
 .gcc9_cuda11_test_commmon:
   needs: [gcc9_cuda11_build]

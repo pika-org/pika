@@ -25,19 +25,19 @@ include:
 nvhpc23_9_spack_compiler_image:
   extends:
     - .variables_nvhpc23_9_config
-    - .compiler_image_template
+    - .compiler_image_template_rosa
 
 nvhpc23_9_spack_image:
   needs: [nvhpc23_9_spack_compiler_image]
   extends:
     - .variables_nvhpc23_9_config
-    - .dependencies_image_template
+    - .dependencies_image_template_rosa
 
 nvhpc23_9_build:
   needs: [nvhpc23_9_spack_image]
   extends:
     - .variables_nvhpc23_9_config
-    - .build_template
+    - .build_template_rosa
 
 .nvhpc23_9_test_commmon:
   needs: [nvhpc23_9_build]

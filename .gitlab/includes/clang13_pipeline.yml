@@ -23,19 +23,19 @@ include:
 clang13_spack_compiler_image:
   extends:
     - .variables_clang13_config
-    - .compiler_image_template
+    - .compiler_image_template_rosa
 
 clang13_spack_image:
   needs: [clang13_spack_compiler_image]
   extends:
     - .variables_clang13_config
-    - .dependencies_image_template
+    - .dependencies_image_template_rosa
 
 clang13_build:
   needs: [clang13_spack_image]
   extends:
     - .variables_clang13_config
-    - .build_template
+    - .build_template_rosa
 
 .clang13_test_commmon:
   needs: [clang13_build]
