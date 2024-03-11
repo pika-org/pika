@@ -16,7 +16,7 @@ include:
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD +stdexec \
                  ^boost@1.82.0 ^hwloc@2.9.1 \
                  ^stdexec@git.nvhpc-23.09.rc4=main"
-    CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_MALLOC=system \
+    CMAKE_FLAGS: "-DCMAKE_CXX_FLAGS=-D_GLIBCXX_DEBUG -DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_MALLOC=system \
                   -DPIKA_WITH_STDEXEC=ON -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
 
 gcc13_spack_compiler_image:
