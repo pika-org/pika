@@ -24,10 +24,17 @@ namespace pika::cuda::experimental {
       : num_streams_per_thread(num_streams_per_thread)
       , concurrency(pika::get_runtime_ptr() ? pika::get_num_worker_threads() :
                                               pika::threads::detail::hardware_concurrency())
-      , streams(num_streams_per_thread * concurrency, cuda_stream{device, priority, flags})
+      , streams()
       , active_stream_indices(concurrency, {0})
     {
         PIKA_ASSERT(num_streams_per_thread > 0);
+
+        std::size_t const num_streams = num_streams_per_thread * concurrency;
+        streams.reserve(num_streams);
+        for (std::size_t i = 0; i < num_streams; ++i)
+        {
+            streams.emplace_back(device, priority, flags);
+        }
     }
 
     cuda_stream const& cuda_pool::streams_holder::get_next_stream()
@@ -44,11 +51,18 @@ namespace pika::cuda::experimental {
     cuda_pool::cublas_handles_holder::cublas_handles_holder()
       : concurrency(pika::get_runtime_ptr() ? pika::get_num_worker_threads() :
                                               pika::threads::detail::hardware_concurrency())
-      , unsynchronized_handles(concurrency, cublas_handle{})
+      , unsynchronized_handles()
       , synchronized_handle_index{0}
-      , synchronized_handles(concurrency, cublas_handle{})
+      , synchronized_handles()
       , handle_mutexes(concurrency)
     {
+        unsynchronized_handles.reserve(concurrency);
+        synchronized_handles.reserve(concurrency);
+        for (std::size_t i = 0; i < concurrency; ++i)
+        {
+            unsynchronized_handles.emplace_back();
+            synchronized_handles.emplace_back();
+        }
     }
 
     locked_cublas_handle::locked_cublas_handle(
@@ -93,11 +107,18 @@ namespace pika::cuda::experimental {
     cuda_pool::cusolver_handles_holder::cusolver_handles_holder()
       : concurrency(pika::get_runtime_ptr() ? pika::get_num_worker_threads() :
                                               pika::threads::detail::hardware_concurrency())
-      , unsynchronized_handles(concurrency, cusolver_handle{})
+      , unsynchronized_handles()
       , synchronized_handle_index{0}
-      , synchronized_handles(concurrency, cusolver_handle{})
+      , synchronized_handles()
       , handle_mutexes(concurrency)
     {
+        unsynchronized_handles.reserve(concurrency);
+        synchronized_handles.reserve(concurrency);
+        for (std::size_t i = 0; i < concurrency; ++i)
+        {
+            unsynchronized_handles.emplace_back();
+            synchronized_handles.emplace_back();
+        }
     }
 
     locked_cusolver_handle::locked_cusolver_handle(
