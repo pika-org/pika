@@ -202,41 +202,10 @@ namespace pika::execution::experimental {
         };
     }    // namespace detail
 
-    namespace detail {
-        template <typename S, typename R, typename Enable = void>
-        struct has_member_connect : std::false_type
-        {
-        };
-
-        template <typename S, typename R>
-        struct has_member_connect<S, R,
-            std::void_t<decltype(std::declval<S>().connect(std::declval<R>()))>> : std::true_type
-        {
-        };
-    }    // namespace detail
-
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE
     struct connect_t : pika::functional::detail::tag<connect_t>
     {
     } connect{};
-
-    namespace detail {
-        template <typename S, typename R, typename Enable = void>
-        struct connect_result_helper
-        {
-            struct dummy_operation_state
-            {
-            };
-            using type = dummy_operation_state;
-        };
-
-        template <typename S, typename R>
-        struct connect_result_helper<S, R,
-            std::enable_if_t<std::is_invocable<connect_t, S, R>::value>>
-          : std::invoke_result<connect_t, S, R>
-        {
-        };
-    }    // namespace detail
 
     namespace detail {
         template <typename F, typename E>
@@ -253,19 +222,6 @@ namespace pika::execution::experimental {
             }
 
             void set_stopped() noexcept {}
-        };
-    }    // namespace detail
-
-    namespace detail {
-        template <typename S, typename Enable = void>
-        struct has_member_schedule : std::false_type
-        {
-        };
-
-        template <typename S>
-        struct has_member_schedule<S, std::void_t<decltype(std::declval<S>().schedule())>>
-          : std::true_type
-        {
         };
     }    // namespace detail
 
