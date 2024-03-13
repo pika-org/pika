@@ -17,6 +17,7 @@
 # include <pika/execution_base/receiver.hpp>
 # include <pika/execution_base/sender.hpp>
 # include <pika/functional/bind_front.hpp>
+# include <pika/functional/detail/invoke_result_plain_function.hpp>
 # include <pika/functional/detail/tag_fallback_invoke.hpp>
 # include <pika/type_support/detail/with_result_of.hpp>
 # include <pika/type_support/pack.hpp>
@@ -56,7 +57,8 @@ namespace pika::schedule_from_detail {
                 Variant>;
 
         using scheduler_sender_type =
-            std::invoke_result_t<pika::execution::experimental::schedule_t, Scheduler>;
+            pika::detail::invoke_result_plain_function_t<pika::execution::experimental::schedule_t,
+                Scheduler>;
         template <template <typename...> class Variant>
         using scheduler_sender_error_types = typename pika::execution::experimental::sender_traits<
             scheduler_sender_type>::template error_types<Variant>;
@@ -125,7 +127,8 @@ namespace pika::schedule_from_detail {
             sender_operation_state_type sender_os;
 
             using scheduler_operation_state_type = pika::execution::experimental::connect_result_t<
-                std::invoke_result_t<pika::execution::experimental::schedule_t, Scheduler>,
+                pika::detail::invoke_result_plain_function_t<
+                    pika::execution::experimental::schedule_t, Scheduler>,
                 scheduler_sender_receiver>;
             std::optional<scheduler_operation_state_type> scheduler_op_state;
 

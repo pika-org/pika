@@ -10,6 +10,7 @@
 #if defined(PIKA_HAVE_STDEXEC)
 # include <pika/execution_base/sender.hpp>
 # include <pika/execution_base/stdexec_forward.hpp>
+# include <pika/functional/detail/invoke_result_plain_function.hpp>
 # include <pika/functional/tag_invoke.hpp>
 
 namespace pika::execution::experimental::detail {
@@ -20,9 +21,9 @@ namespace pika::execution::experimental::detail {
 
     template <typename CPO, typename Sender>
     struct has_completion_scheduler_impl<true, CPO, Sender>
-      : pika::execution::experimental::is_scheduler<
-            std::invoke_result_t<get_completion_scheduler_t<CPO>,
-                std::invoke_result_t<get_env_t, std::decay_t<Sender> const&>>>
+      : pika::execution::experimental::is_scheduler<pika::detail::invoke_result_plain_function_t<
+            get_completion_scheduler_t<CPO>,
+            pika::detail::invoke_result_plain_function_t<get_env_t, std::decay_t<Sender> const&>>>
     {
     };
 
@@ -30,7 +31,8 @@ namespace pika::execution::experimental::detail {
     struct has_completion_scheduler
       : has_completion_scheduler_impl<
             pika::functional::detail::is_tag_invocable_v<get_completion_scheduler_t<CPO>,
-                std::invoke_result_t<get_env_t, std::decay_t<Sender> const&>>,
+                pika::detail::invoke_result_plain_function_t<get_env_t,
+                    std::decay_t<Sender> const&>>,
             CPO, Sender>
     {
     };
@@ -64,16 +66,17 @@ namespace pika::execution::experimental {
         template <typename CPO, typename Sender>
         struct has_completion_scheduler_impl<true, CPO, Sender>
           : pika::execution::experimental::is_scheduler<
-                std::invoke_result_t<get_completion_scheduler_t<CPO>,
-                    std::invoke_result_t<get_env_t, std::decay_t<Sender> const&>>>
+                pika::detail::invoke_result_plain_function_t<get_completion_scheduler_t<CPO>,
+                    pika::detail::invoke_result_plain_function_t<get_env_t,
+                        std::decay_t<Sender> const&>>>
         {
         };
 
         template <typename CPO, typename Sender>
         struct has_completion_scheduler
-          : has_completion_scheduler_impl<
-                std::is_invocable_v<get_completion_scheduler_t<CPO>,
-                    std::invoke_result_t<get_env_t, std::decay_t<Sender> const&>>,
+          : has_completion_scheduler_impl<std::is_invocable_v<get_completion_scheduler_t<CPO>,
+                                              pika::detail::invoke_result_plain_function_t<
+                                                  get_env_t, std::decay_t<Sender> const&>>,
                 CPO, Sender>
         {
         };
@@ -93,10 +96,10 @@ namespace pika::execution::experimental {
             Ts...>
           : std::integral_constant<bool,
                 std::is_invocable_v<AlgorithmCPO,
-                    std::invoke_result_t<
+                    pika::detail::invoke_result_plain_function_t<
                         pika::execution::experimental::get_completion_scheduler_t<ReceiverCPO>,
-                        std::invoke_result_t<pika::execution::experimental::get_env_t,
-                            std::decay_t<Sender> const&>>,
+                        pika::detail::invoke_result_plain_function_t<
+                            pika::execution::experimental::get_env_t, std::decay_t<Sender> const&>>,
                     Sender, Ts...>>
         {
         };
