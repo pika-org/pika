@@ -30,6 +30,14 @@ See
 
 for available options.
 
+pika is currently available in the following repositories.
+
+.. |repology| image:: https://repology.org/badge/vertical-allrepos/pika-concurrency-library.svg
+     :target: https://repology.org/project/pika-concurrency-library/versions
+     :alt: Packaging status
+
+|repology|
+
 Manual installation
 -------------------
 
