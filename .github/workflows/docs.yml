@@ -34,7 +34,7 @@ jobs:
                 --allow-remove-essential \
                 --allow-change-held-packages \
                 doxygen python3 python3-pip
-            pip install breathe sphinx sphinx-material
+            pip install breathe recommonmark sphinx sphinx-material
       - name: Build documentation
         run: |
             export PIKA_DOCS_DOXYGEN_OUTPUT_DIRECTORY=$PWD/build/docs/doxygen

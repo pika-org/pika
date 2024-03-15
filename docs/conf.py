@@ -15,7 +15,7 @@ version = ""
 release = version
 
 # General sphinx settings
-extensions = ["breathe"]
+extensions = ["breathe", "recommonmark"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 source_suffix = [".rst"]
 language = "English"
@@ -60,6 +60,7 @@ html_theme_options = {
         {"href": "index", "internal": True, "title": "Overview"},
         {"href": "usage", "internal": True, "title": "Usage"},
         {"href": "api", "internal": True, "title": "API reference"},
+        {"href": "changelog", "internal": True, "title": "Changelog"},
     ],
     "heroes": {
         "index": "Concurrency and parallelism built on C++ std::execution",
