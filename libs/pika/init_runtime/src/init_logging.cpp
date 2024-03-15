@@ -270,7 +270,6 @@ namespace pika::detail {
         writer.set_formatter("pikaphase", thread_phase());
         writer.set_formatter("pikaparent", parent_thread_id());
         writer.set_formatter("pikaparentphase", parent_thread_phase());
-        writer.set_formatter("parentloc", parent_thread_locality());
         writer.set_formatter("pikacomponent", dummy_thread_component_id());
     }
 
