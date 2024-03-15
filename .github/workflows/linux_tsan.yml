@@ -20,7 +20,10 @@ jobs:
   build:
     name: github/linux/sanitizers/thread
     runs-on: ubuntu-latest
-    container: pikaorg/pika-ci-base:22
+    container:
+      image: pikaorg/pika-ci-base:22
+      # --privileged is enabled for sysctl further down.
+      options: --privileged
 
     steps:
       - uses: actions/checkout@v4
@@ -61,6 +64,13 @@ jobs:
         if: always()
         shell: bash
         run: |
+            # Newer GitHub actions runners increased the number of bits used for address space
+            # layout randomization to a higher number such that thread sanitizer breaks. Newer
+            # versions of LLVM (17 and newer) should fix this again.
+            # https://github.com/google/sanitizers/issues/1716
+            # https://github.com/actions/runner-images/issues/9491
+            sysctl --write vm.mmap_rnd_bits=28
+
             export TSAN_OPTIONS=suppressions=$PWD/tools/tsan.supp
             cd build
             ctest \
@@ -72,6 +82,9 @@ jobs:
         continue-on-error: true
         shell: bash
         run: |
+            # See above.
+            sysctl --write vm.mmap_rnd_bits=28
+
             export TSAN_OPTIONS=suppressions=$PWD/tools/tsan.supp
             cd build
             ctest \

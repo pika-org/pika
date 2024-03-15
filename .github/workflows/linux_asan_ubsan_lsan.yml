@@ -20,7 +20,10 @@ jobs:
   build:
     name: github/linux/sanitizers/address-undefined-leak
     runs-on: ubuntu-latest
-    container: pikaorg/pika-ci-base:22
+    container:
+      image: pikaorg/pika-ci-base:22
+      # --privileged is enabled for sysctl further down.
+      options: --privileged
 
     steps:
       - uses: actions/checkout@v4
@@ -61,6 +64,13 @@ jobs:
         if: always()
         shell: bash
         run: |
+            # Newer GitHub actions runners increased the number of bits used for address space
+            # layout randomization to a higher number such that thread sanitizer breaks. Newer
+            # versions of LLVM (17 and newer) should fix this again.
+            # https://github.com/google/sanitizers/issues/1716
+            # https://github.com/actions/runner-images/issues/9491
+            sysctl --write vm.mmap_rnd_bits=28
+
             export ASAN_OPTIONS=fast_unwind_on_malloc=0:strict_string_checks=1:detect_leaks=1:detect_stack_use_after_return=0:check_initialization_order=1:strict_init_order=1:suppressions=$PWD/tools/asan.supp
             export UBSAN_OPTIONS=print_stacktrace=1:suppressions=$PWD/tools/ubsan.supp
             cd build
@@ -73,6 +83,9 @@ jobs:
         continue-on-error: true
         shell: bash
         run: |
+            # See above.
+            sysctl --write vm.mmap_rnd_bits=28
+
             export ASAN_OPTIONS=fast_unwind_on_malloc=0:strict_string_checks=1:detect_leaks=1:detect_stack_use_after_return=0:check_initialization_order=1:strict_init_order=1:suppressions=$PWD/tools/asan.supp
             export UBSAN_OPTIONS=print_stacktrace=1:suppressions=$PWD/tools/ubsan.supp
             cd build
