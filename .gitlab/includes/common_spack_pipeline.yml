@@ -11,7 +11,6 @@ variables:
   SPACK_COMMIT: 6cfcbc01679ebabe640f4462c8fc07626a543015
 
 .base_spack_image:
-  stage: spack_base
   timeout: 2 hours
   before_script:
     - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
@@ -36,7 +35,6 @@ base_spack_image_x86_64:
   extends: [.container-builder-cscs-zen2, .base_spack_image]
 
 make_multiarch_image:
-  stage: spack_base
   needs:
     - job: base_spack_image_aarch64
       optional: true
@@ -53,7 +51,6 @@ make_multiarch_image:
       dotenv: multiarch.env
 
 .compiler_image_template:
-  stage: spack_compiler
   needs: [make_multiarch_image]
   before_script:
     - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
@@ -77,7 +74,6 @@ make_multiarch_image:
   extends: [.container-builder-cscs-zen2, .compiler_image_template]
 
 .dependencies_image_template:
-  stage: spack_dependencies
   before_script:
     - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
     - CONFIG_TAG=`echo $DOCKERFILE_SHA-$BASE_IMAGE-$SPACK_SPEC | sha256sum - | head -c 16`
@@ -107,7 +103,6 @@ make_multiarch_image:
     DOTENV_FILE: "build-$BUILD_TYPE.env"
 
 .build_template:
-  stage: build
   extends:
     - .build_variables_common
     - .cmake_variables_common

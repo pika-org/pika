@@ -8,7 +8,6 @@ include:
   - local: '.gitlab/includes/common_pipeline.yml'
 
 clang14_debug_build_pika-ci-image:
-  stage: build
   extends: .container-builder
   needs: []   # To clear the dotenv artifacts
   variables:
@@ -18,7 +17,6 @@ clang14_debug_build_pika-ci-image:
     PERSIST_IMAGE_NAME: $CSCS_REGISTRY_PATH/pika-debug-cpu-clang14:$CI_COMMIT_SHORT_SHA
 
 clang14_debug_test_pika-ci-image:
-  stage: test
   extends: .test_common_daint_mc
   needs:
     - clang14_debug_build_pika-ci-image
