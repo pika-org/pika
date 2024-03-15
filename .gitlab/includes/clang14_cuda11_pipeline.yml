@@ -10,7 +10,7 @@ include:
 
 .variables_clang14_cuda11_config:
   variables:
-    SPACK_ARCH: linux-ubuntu22.04-zen3
+    SPACK_ARCH: linux-ubuntu22.04-haswell
     COMPILER: clang@14.0.6
     CXXSTD: 17
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} +cuda malloc=system cxxstd=$CXXSTD \
@@ -41,7 +41,7 @@ clang14_cuda11_build:
   needs: [clang14_cuda11_build]
   extends:
     - .variables_clang14_cuda11_config
-    - .test_common_gpu_clariden_cuda
+    - .test_common_gpu_daint_cuda
     - .test_template
 
 clang14_cuda11_test_release:

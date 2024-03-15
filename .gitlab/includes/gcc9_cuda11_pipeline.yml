@@ -10,7 +10,7 @@ include:
 
 .variables_gcc9_cuda11_config:
   variables:
-    SPACK_ARCH: linux-ubuntu22.04-broadwell
+    SPACK_ARCH: linux-ubuntu22.04-haswell
     COMPILER: gcc@9.3.0
     CXXSTD: 17
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} +cuda malloc=system cxxstd=$CXXSTD \
@@ -39,7 +39,7 @@ gcc9_cuda11_build:
   needs: [gcc9_cuda11_build]
   extends:
     - .variables_gcc9_cuda11_config
-    - .test_common_gpu_clariden_cuda
+    - .test_common_gpu_daint_cuda
     - .test_template
 
 gcc9_cuda11_test_release:
