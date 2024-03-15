@@ -8,4 +8,4 @@ include:
   - local: '.gitlab/includes/gcc13_pipeline.yml'
   - local: '.gitlab/includes/clang14_cuda11_pipeline.yml'
   - local: '.gitlab/includes/performance_gcc13_pipeline.yml'
-  - local: '.gitlab/includes/gcc12_hip5_pipeline.yml'
+  #- local: '.gitlab/includes/gcc12_hip5_pipeline.yml' # Commented until end of maintenance 5th may
