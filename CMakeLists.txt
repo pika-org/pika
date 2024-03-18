@@ -66,9 +66,6 @@ include(GNUInstallDirs)
 include(pika_utils)
 
 # explicitly set certain policies
-pika_set_cmake_policy(CMP0042 NEW)
-pika_set_cmake_policy(CMP0060 NEW)
-pika_set_cmake_policy(CMP0074 NEW)
 pika_set_cmake_policy(CMP0144 NEW)
 
 # We save the passed compiler flag to a special variable. This is needed for our build system unit
