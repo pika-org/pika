@@ -1,8 +1,6 @@
 ---
 exclude_paths:
   - "tools/perftests_ci/**"
-  - ".jenkins/cscs-ault/env-*.sh"
-  - ".jenkins/cscs-ault/config-*.sh"
   - ".jenkins/cscs/env-*.sh"
   - ".jenkins/cscs/config-*.sh"
   - ".jenkins/cscs-perftests/env-*.sh"
