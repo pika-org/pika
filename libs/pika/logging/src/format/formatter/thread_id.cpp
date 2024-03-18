@@ -18,7 +18,6 @@
 
 #include <pika/config.hpp>
 
-#include <fmt/core.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <fmt/printf.h>
