@@ -255,7 +255,7 @@ template <>
 struct fmt::formatter<pika::detail::thread_description> : fmt::formatter<std::string>
 {
     template <typename FormatContext>
-    auto format(pika::detail::thread_description const& desc, FormatContext& ctx)
+    auto format(pika::detail::thread_description const& desc, FormatContext& ctx) const
     {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
         if (desc.kind() == pika::detail::thread_description::data_type_description)

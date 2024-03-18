@@ -176,7 +176,7 @@ template <>
 struct fmt::formatter<pika::cuda::experimental::cuda_pool> : fmt::formatter<std::string>
 {
     template <typename FormatContext>
-    auto format(pika::cuda::experimental::cuda_pool const& pool, FormatContext& ctx)
+    auto format(pika::cuda::experimental::cuda_pool const& pool, FormatContext& ctx) const
     {
         bool valid{pool.data};
         auto high_priority_streams =

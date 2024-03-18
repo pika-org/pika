@@ -60,7 +60,7 @@ template <>
 struct fmt::formatter<pika::cuda::experimental::cublas_handle> : fmt::formatter<std::string>
 {
     template <typename FormatContext>
-    auto format(pika::cuda::experimental::cublas_handle const& handle, FormatContext& ctx)
+    auto format(pika::cuda::experimental::cublas_handle const& handle, FormatContext& ctx) const
     {
         return fmt::formatter<std::string>::format(
             fmt::format("cublas_handle({})", fmt::ptr(handle.get())), ctx);

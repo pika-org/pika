@@ -96,7 +96,7 @@ template <>
 struct fmt::formatter<pika::execution::detail::agent_ref> : fmt::formatter<std::string>
 {
     template <typename FormatContext>
-    auto format(pika::execution::detail::agent_ref const& a, FormatContext& ctx)
+    auto format(pika::execution::detail::agent_ref const& a, FormatContext& ctx) const
     {
         return fmt::formatter<std::string>::format(pika::execution::detail::format(a), ctx);
     }
