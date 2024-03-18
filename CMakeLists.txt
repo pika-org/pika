@@ -66,7 +66,6 @@ include(GNUInstallDirs)
 include(pika_utils)
 
 # explicitly set certain policies
-cmake_policy(VERSION 3.18)
 pika_set_cmake_policy(CMP0042 NEW)
 pika_set_cmake_policy(CMP0060 NEW)
 pika_set_cmake_policy(CMP0074 NEW)
