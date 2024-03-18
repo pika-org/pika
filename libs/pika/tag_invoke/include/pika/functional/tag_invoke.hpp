@@ -98,6 +98,7 @@ namespace pika::functional::detail {
 #else
 
 # include <pika/config.hpp>
+# include <pika/type_support/type_identity.hpp>
 
 # include <type_traits>
 # include <utility>
@@ -185,10 +186,11 @@ namespace pika::functional::detail {
         is_nothrow_tag_invocable<Tag, Args...>::value;
 
     template <typename Tag, typename... Args>
-    using tag_invoke_result = std::invoke_result<decltype(tag_invoke_ns::tag_invoke), Tag, Args...>;
+    using tag_invoke_result_t =
+        decltype(tag_invoke_ns::tag_invoke(std::declval<Tag>(), std::declval<Args>()...));
 
     template <typename Tag, typename... Args>
-    using tag_invoke_result_t = typename tag_invoke_result<Tag, Args...>::type;
+    using tag_invoke_result = pika::detail::type_identity<tag_invoke_result_t<Tag, Args...>>;
 
     ///////////////////////////////////////////////////////////////////////////////
     namespace tag_base_ns {
