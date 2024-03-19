@@ -5,7 +5,9 @@
 # file BOOST_LICENSE_1_0.rst or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 include:
-  - local: '.gitlab/includes/gcc13_pipeline.yml'
-  - local: '.gitlab/includes/clang14_cuda11_pipeline.yml'
-  - local: '.gitlab/includes/performance_gcc13_pipeline.yml'
+  # TODO: Uncomment other pipelines and remove nvhpc from this file.
+  - local: '.gitlab/includes/nvhpc23_9_pipeline.yml'
+  # - local: '.gitlab/includes/gcc13_pipeline.yml'
+  # - local: '.gitlab/includes/clang14_cuda11_pipeline.yml'
+  # - local: '.gitlab/includes/performance_gcc13_pipeline.yml'
   #- local: '.gitlab/includes/gcc12_hip5_pipeline.yml' # Commented until end of maintenance 5th may
