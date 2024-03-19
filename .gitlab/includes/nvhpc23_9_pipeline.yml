@@ -41,17 +41,19 @@ nvhpc23_9_build:
     - .variables_nvhpc23_9_config
     - .build_template_rosa
 
-.nvhpc23_9_test_commmon:
-  needs: [nvhpc23_9_build]
-  extends:
-    - .variables_nvhpc23_9_config
-    - .test_common_gpu_daint_cuda
-    - .test_template
-
-nvhpc23_9_test_release:
-  extends: [.nvhpc23_9_test_commmon]
-  image: $PERSIST_IMAGE_NAME_RELEASE
-
-nvhpc23_9_test_debug:
-  extends: [.nvhpc23_9_test_commmon]
-  image: $PERSIST_IMAGE_NAME_DEBUG
+# The test step is disabled until maintenance is over. Pulling the image on compute nodes is too
+# slow, and the image is too big.
+# .nvhpc23_9_test_commmon:
+#   needs: [nvhpc23_9_build]
+#   extends:
+#     - .variables_nvhpc23_9_config
+#     - .test_common_gpu_daint_cuda
+#     - .test_template
+#
+# nvhpc23_9_test_release:
+#   extends: [.nvhpc23_9_test_commmon]
+#   image: $PERSIST_IMAGE_NAME_RELEASE
+#
+# nvhpc23_9_test_debug:
+#   extends: [.nvhpc23_9_test_commmon]
+#   image: $PERSIST_IMAGE_NAME_DEBUG
