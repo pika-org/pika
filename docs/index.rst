@@ -58,3 +58,4 @@ Pick your favourite meaning from the following:
 
    usage
    api
+   changelog

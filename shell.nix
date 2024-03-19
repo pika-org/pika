@@ -21,6 +21,7 @@ pkgs.mkShell.override { stdenv = pkgs.gcc11Stdenv; } {
     python311Packages.breathe
     python311Packages.sphinx
     python311Packages.sphinx-material
+    python311Packages.recommonmark
   ];
 
   hardeningDisable = [ "fortify" ];

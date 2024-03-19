@@ -19,7 +19,7 @@ pika follows `Semantic Versioning <https://semver.org>`_.
    release. For patch releases: check out the corresponding
    ``release-major.minor.X`` branch.
 
-#. Write release notes in ``CHANGELOG.md``. Check for issues and pull requests
+#. Write release notes in ``docs/changelog.md``. Check for issues and pull requests
    for the release on the
    `pika planning board <https://github.com/orgs/pika-org/projects/1>`_. Check
    for items that do not have a release associated to them on the `Done` view.
@@ -50,7 +50,7 @@ pika follows `Semantic Versioning <https://semver.org>`_.
 
 #. Change ``PIKA_VERSION_TAG`` in ``CMakeLists.txt`` to an empty string.
 
-#. Add the release date to the caption of the current ``CHANGELOG.md`` section
+#. Add the release date to the caption of the current ``docs/changelog.md`` section
    and change the value of ``PIKA_VERSION_DATE`` in ``CMakeLists.txt``.
 
 #. Create a release on GitHub using the script ``tools/roll_release.sh``. This

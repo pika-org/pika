@@ -31,7 +31,7 @@ if ! [[ "$CURRENT_BRANCH" =~ ^release-[0-9]+\.[0-9]+\.X$ ]]; then
     exit 1
 fi
 
-changelog_path="CHANGELOG.md"
+changelog_path="docs/changelog.md"
 
 if [ -z "${VERSION_TAG}" ]; then
     echo "You are about to tag and create a final release on GitHub."
@@ -66,7 +66,7 @@ else
     echo "If you intended to make a final release, remove the tag in the main CMakeLists.txt first."
 fi
 
-# Extract the changelog for this version from CHANGELOG.md
+# Extract the changelog for this version
 VERSION_DESCRIPTION=$(
     # Find the correct heading and print everything from there to the end of the file
     awk "/^## ${VERSION_FULL_NOTAG}/,EOF" ${changelog_path} |
