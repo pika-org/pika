@@ -10,17 +10,18 @@ include:
 
 .variables_nvhpc23_9_config:
   variables:
-    SPACK_ARCH: linux-ubuntu22.04-zen3
+    SPACK_ARCH: linux-ubuntu22.04-haswell
     COMPILER: gcc@12.1.0
     NVHPC_COMPILER: nvhpc@23.9
     CXXSTD: 20
-    GPU_TARGET: '80'
+    GPU_TARGET: '60'
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${NVHPC_COMPILER} +stdexec +mpi +cuda cuda_arch=${GPU_TARGET} \
                  malloc=system cxxstd=$CXXSTD ^boost@1.78.0%${NVHPC_COMPILER} ^hwloc@2.7.0 \
                  ^stdexec@git.nvhpc-23.09.rc4=main ^cuda@11.8%${NVHPC_COMPILER} \
                  ^whip%${NVHPC_COMPILER}"
     CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_CUDA=ON -DPIKA_WITH_MALLOC=system \
                   -DPIKA_WITH_MPI=ON -DCMAKE_CUDA_ARCHITECTURES=$GPU_TARGET -DPIKA_WITH_STDEXEC=ON"
+    PULL_ON_HOST_MACHINE: "YES"
 
 nvhpc23_9_spack_compiler_image:
   extends:
@@ -34,22 +35,25 @@ nvhpc23_9_spack_image:
     - .dependencies_image_template_rosa
 
 nvhpc23_9_build:
+  timeout: 2 hours
   needs: [nvhpc23_9_spack_image]
   extends:
     - .variables_nvhpc23_9_config
     - .build_template_rosa
 
-.nvhpc23_9_test_commmon:
-  needs: [nvhpc23_9_build]
-  extends:
-    - .variables_nvhpc23_9_config
-    - .test_common_gpu_clariden_cuda
-    - .test_template
-
-nvhpc23_9_test_release:
-  extends: [.nvhpc23_9_test_commmon]
-  image: $PERSIST_IMAGE_NAME_RELEASE
-
-nvhpc23_9_test_debug:
-  extends: [.nvhpc23_9_test_commmon]
-  image: $PERSIST_IMAGE_NAME_DEBUG
+# The test step is disabled until maintenance is over. Pulling the image on compute nodes is too
+# slow, and the image is too big.
+# .nvhpc23_9_test_commmon:
+#   needs: [nvhpc23_9_build]
+#   extends:
+#     - .variables_nvhpc23_9_config
+#     - .test_common_gpu_daint_cuda
+#     - .test_template
+#
+# nvhpc23_9_test_release:
+#   extends: [.nvhpc23_9_test_commmon]
+#   image: $PERSIST_IMAGE_NAME_RELEASE
+#
+# nvhpc23_9_test_debug:
+#   extends: [.nvhpc23_9_test_commmon]
+#   image: $PERSIST_IMAGE_NAME_DEBUG
