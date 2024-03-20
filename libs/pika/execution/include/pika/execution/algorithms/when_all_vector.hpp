@@ -256,7 +256,13 @@ namespace pika::when_all_vector_detail {
                 {
                     op_states[i].emplace(pika::detail::with_result_of([&]() {
                         return pika::execution::experimental::connect(
-                            PIKA_MOVE(sender), when_all_vector_receiver{*this, i});
+#if defined(__NVCC__) && defined(PIKA_CUDA_VERSION) && (PIKA_CUDA_VERSION >= 1204)
+                            std::move(sender)
+#else
+                            PIKA_MOVE(sender)
+#endif
+                                ,
+                            when_all_vector_receiver{*this, i});
                     }));
                     ++i;
                 }
@@ -286,8 +292,15 @@ namespace pika::when_all_vector_detail {
                             for (auto&& t : ts)
                             {
                                 PIKA_ASSERT(t.has_value());
-                                // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-                                values.push_back(PIKA_MOVE(*t));
+                                values.push_back(
+#if defined(__NVCC__) && defined(PIKA_CUDA_VERSION) && (PIKA_CUDA_VERSION >= 1204)
+                                    // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+                                    std::move(*t)
+#else
+                                    // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+                                    PIKA_MOVE(*t)
+#endif
+                                );
                             }
                             pika::execution::experimental::set_value(
                                 PIKA_MOVE(receiver), PIKA_MOVE(values));
