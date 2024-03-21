@@ -8,27 +8,28 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Default location is $PIKA_ROOT/libs/functional/include
 set(functional_headers
+    pika/functional/bind.hpp
+    pika/functional/bind_back.hpp
+    pika/functional/bind_front.hpp
     pika/functional/deferred_call.hpp
     pika/functional/detail/basic_function.hpp
     pika/functional/detail/empty_function.hpp
     pika/functional/detail/function_registration.hpp
+    pika/functional/detail/invoke_result_plain_function.hpp
     pika/functional/detail/reset_function.hpp
     pika/functional/detail/vtable/callable_vtable.hpp
     pika/functional/detail/vtable/copyable_vtable.hpp
     pika/functional/detail/vtable/function_vtable.hpp
     pika/functional/detail/vtable/vtable.hpp
-    pika/functional/bind.hpp
-    pika/functional/bind_back.hpp
-    pika/functional/bind_front.hpp
     pika/functional/first_argument.hpp
     pika/functional/function.hpp
     pika/functional/invoke.hpp
     pika/functional/one_shot.hpp
-    pika/functional/unique_function.hpp
     pika/functional/traits/get_function_address.hpp
     pika/functional/traits/get_function_annotation.hpp
     pika/functional/traits/is_action.hpp
     pika/functional/traits/is_bind_expression.hpp
+    pika/functional/unique_function.hpp
 )
 
 # Default location is $PIKA_ROOT/libs/functional/src
