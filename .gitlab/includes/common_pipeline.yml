@@ -7,13 +7,6 @@
 include:
   - remote: 'https://gitlab.com/cscs-ci/recipes/-/raw/master/templates/v2/.ci-ext.yml'
 
-stages:
-  - spack_base
-  - spack_compiler
-  - spack_dependencies
-  - build
-  - test
-
 variables:
   SOURCE_DIR: /pika/source
   BUILD_DIR: /pika/build
@@ -36,7 +29,6 @@ variables:
     SLURM_NTASKS: 1
 
 .test_common_daint_mc:
-  stage: test
   extends:
     - .test_common
     - .container-runner-daint-mc
@@ -44,7 +36,6 @@ variables:
     SLURM_PARTITION: normal
 
 .test_common_eiger_mc:
-  stage: test
   extends:
     - .test_common
     - .container-runner-eiger-mc-f7t
