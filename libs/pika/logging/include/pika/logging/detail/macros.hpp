@@ -143,18 +143,19 @@ PIKA_DEFINE_LOG(g_l, logger_type)
 
 // TODO: Return ptr directly? Return reference?
 #define PIKA_DETAIL_DECLARE_SPDLOG(name)                                                           \
- std::shared_ptr<spdlog::logger> get_##name##_logger() noexcept;
+    std::shared_ptr<spdlog::logger> get_##name##_logger() noexcept;
+
 #define PIKA_DETAIL_DEFINE_SPDLOG(name, loglevel)                                                  \
- std::shared_ptr<spdlog::logger> get_##name##_logger() noexcept                                    \
- {                                                                                                 \
-  static auto logger = []() {                                                                      \
-auto logger =                                                                                         \
- std::make_shared<spdlog::logger>(#name, std::make_shared<spdlog::sinks::stdout_color_sink_mt>()); \
-logger->set_level(spdlog::level::loglevel);                                                           \
-return logger;                                                                                        \
-  }();                                                                                             \
-  return logger;                                                                                   \
- }
+    std::shared_ptr<spdlog::logger> get_##name##_logger() noexcept                                 \
+    {                                                                                              \
+        static auto logger = []() {                                                                \
+            auto logger = std::make_shared<spdlog::logger>(                                        \
+                #name, std::make_shared<spdlog::sinks::stdout_color_sink_mt>());                   \
+            logger->set_level(spdlog::level::loglevel);                                            \
+            return logger;                                                                         \
+        }();                                                                                       \
+        return logger;                                                                             \
+    }
 
 ////////////////////////////////////////////////////////////////////////////
 // Messages that were logged before initializing the log
@@ -169,8 +170,8 @@ return logger;                                                                  
     PIKA_LOG_USE_LOG(NAME, LEVEL).format(FORMAT, __VA_ARGS__)
 
 #define PIKA_DETAIL_SPDLOG(name, loglevel, ...)                                                    \
- if (::pika::util::get_##name##_logger()->level() <= spdlog::level::loglevel)                      \
- {                                                                                                 \
-  ::pika::util::get_##name##_logger()->loglevel(__VA_ARGS__);                                      \
- }
+    if (::pika::util::get_##name##_logger()->level() <= spdlog::level::loglevel)                   \
+    {                                                                                              \
+        ::pika::util::get_##name##_logger()->log(spdlog::level::loglevel, __VA_ARGS__);            \
+    }
 }    // namespace pika::util::logging

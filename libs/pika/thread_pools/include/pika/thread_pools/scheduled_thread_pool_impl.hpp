@@ -202,7 +202,7 @@ namespace pika::threads::detail {
     template <typename Lock>
     void scheduled_thread_pool<Scheduler>::stop_locked(Lock& l, bool blocking)
     {
-        LTM_(info).format("stop: {} blocking({})", id_.name(), blocking);
+        LTM_(info, "stop: {} blocking({})", id_.name(), blocking);
 
         if (!threads_.empty())
         {
@@ -227,11 +227,11 @@ namespace pika::threads::detail {
                     if (!threads_[i].joinable()) continue;
 
                     // make sure no OS thread is waiting
-                    LTM_(info).format("stop: {} notify_all", id_.name());
+                    LTM_(info, "stop: {} notify_all", id_.name());
 
                     sched_->Scheduler::do_some_work(std::size_t(-1));
 
-                    LTM_(info).format("stop: {} join:{}", id_.name(), i);
+                    LTM_(info, "stop: {} join:{}", id_.name(), i);
 
                     {
                         // unlock the lock while joining
@@ -257,9 +257,9 @@ namespace pika::threads::detail {
     {
         PIKA_ASSERT(l.owns_lock());
 
-        LTM_(info).format("run: {} number of processing units available: {}", id_.name(),
+        LTM_(info, "run: {} number of processing units available: {}", id_.name(),
             threads::detail::hardware_concurrency());
-        LTM_(info).format("run: {} creating {} OS thread(s)", id_.name(), pool_threads);
+        LTM_(info, "run: {} creating {} OS thread(s)", id_.name(), pool_threads);
 
         if (0 == pool_threads)
         {
@@ -274,7 +274,7 @@ namespace pika::threads::detail {
         init_perf_counter_data(pool_threads);
         this->init_pool_time_scale();
 
-        LTM_(info).format("run: {} timestamp_scale: {}", id_.name(), timestamp_scale_);
+        LTM_(info, "run: {} timestamp_scale: {}", id_.name(), timestamp_scale_);
 
         // run threads and wait for initialization to complete
         std::size_t thread_num = 0;
@@ -296,8 +296,9 @@ namespace pika::threads::detail {
                 // get_pu_mask expects index according to ordering of masks
                 // in affinity_data::affinity_masks_
                 // which is in order of occupied PU
-                LTM_(info).format("run: {} create OS thread {}: will run on processing units "
-                                  "within this mask: {}",
+                LTM_(info,
+                    "run: {} create OS thread {}: will run on processing units "
+                    "within this mask: {}",
                     id_.name(), global_thread_num, pika::threads::detail::to_string(mask));
 
                 // create a new thread
@@ -311,7 +312,7 @@ namespace pika::threads::detail {
         }
         catch (std::exception const& e)
         {
-            LTM_(always).format("run: {} failed with: {}", id_.name(), e.what());
+            LTM_(critical, "run: {} failed with: {}", id_.name(), e.what());
 
             // trigger the barrier
             pool_threads -= (thread_num + 1);
@@ -323,7 +324,7 @@ namespace pika::threads::detail {
             return false;
         }
 
-        LTM_(info).format("run: {} running", id_.name());
+        LTM_(info, "run: {} running", id_.name());
         return true;
     }
 
@@ -404,14 +405,14 @@ namespace pika::threads::detail {
             topo.set_thread_affinity_mask(mask, ec);
             if (ec)
             {
-                LTM_(warning).format(
+                LTM_(warn,
                     "thread_func: {} setting thread affinity on OS thread {} failed with: {}",
                     id_.name(), global_thread_num, ec.get_message());
             }
         }
         else
         {
-            LTM_(debug).format(
+            LTM_(debug,
                 "thread_func: {} setting thread affinity on OS thread {} was explicitly disabled.",
                 id_.name(), global_thread_num);
         }
@@ -425,7 +426,7 @@ namespace pika::threads::detail {
             topo.reduce_thread_priority(ec);
             if (ec)
             {
-                LTM_(warning).format(
+                LTM_(warn,
                     "thread_func: {} reducing thread priority on OS thread {} failed with: {}",
                     id_.name(), global_thread_num, ec.get_message());
             }
@@ -444,7 +445,7 @@ namespace pika::threads::detail {
         // wait for all threads to start up before before starting pika work
         startup->wait();
 
-        LTM_(info).format("thread_func: {} starting OS thread: {}", id_.name(), thread_num);
+        LTM_(info, "thread_func: {} starting OS thread: {}", id_.name(), thread_num);
 
         try
         {
@@ -511,8 +512,7 @@ namespace pika::threads::detail {
             return;
         }
 
-        LTM_(info).format(
-            "thread_func: {} thread_num: {}, ending OS thread, executed {} pika threads",
+        LTM_(info, "thread_func: {} thread_num: {}, ending OS thread, executed {} pika threads",
             id_.name(), global_thread_num,
             counter_data_[global_thread_num].data_.executed_threads_);
     }

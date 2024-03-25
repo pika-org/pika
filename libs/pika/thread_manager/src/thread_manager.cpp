@@ -842,13 +842,13 @@ namespace pika::threads::detail {
             if (sched) sched->set_all_states(runtime_state::running);
         }
 
-        LTM_(info).format("run: running");
+        LTM_(info, "run: running");
         return true;
     }
 
     void thread_manager::stop(bool blocking)
     {
-        LTM_(info).format("stop: blocking({})", blocking ? "true" : "false");
+        LTM_(info, "stop: blocking({})", blocking ? "true" : "false");
 
         std::unique_lock<mutex_type> lk(mtx_);
         for (auto& pool_iter : pools_) { pool_iter->stop(lk, blocking); }

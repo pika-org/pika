@@ -272,15 +272,16 @@ namespace pika::threads::detail {
             PIKA_ASSERT(num_thread < queue_size);
             queues_[num_thread]->create_thread(data, id, ec);
 
-            LTM_(debug)
-                .format("local_queue_scheduler::create_thread: pool({}), scheduler({}), "
-                        "worker_thread({}), thread({})",
-                    *this->get_parent_pool(), *this, num_thread,
-                    id ? *id : threads::detail::invalid_thread_id)
-#ifdef PIKA_HAVE_THREAD_DESCRIPTION
-                .format(", description({})", data.description)
-#endif
-                ;
+            // TODO
+            //             LTM_(debug)
+            //                 .format("local_queue_scheduler::create_thread: pool({}), scheduler({}), "
+            //                         "worker_thread({}), thread({})",
+            //                     *this->get_parent_pool(), *this, num_thread,
+            //                     id ? *id : threads::detail::invalid_thread_id)
+            // #ifdef PIKA_HAVE_THREAD_DESCRIPTION
+            //                 .format(", description({})", data.description)
+            // #endif
+            //                 ;
         }
 
         /// Return the next thread to be executed, return false if none is
@@ -427,8 +428,9 @@ namespace pika::threads::detail {
 
             PIKA_ASSERT(num_thread < queues_.size());
 
-            LTM_(debug).format("local_queue_scheduler::schedule_thread: pool({}), scheduler({}), "
-                               "worker_thread({}), thread({}), description({})",
+            LTM_(debug,
+                "local_queue_scheduler::schedule_thread: pool({}), scheduler({}), "
+                "worker_thread({}), thread({}), description({})",
                 *this->get_parent_pool(), *this, num_thread,
                 get_thread_id_data(thrd)->get_thread_id(),
                 get_thread_id_data(thrd)->get_description());
@@ -750,8 +752,9 @@ namespace pika::threads::detail {
                 {
                     if (running)
                     {
-                        LTM_(warning).format("pool({}), scheduler({}), queue({}): no new work "
-                                             "available, are we deadlocked?",
+                        LTM_(warn,
+                            "pool({}), scheduler({}), queue({}): no new work "
+                            "available, are we deadlocked?",
                             *this->get_parent_pool(), *this, num_thread);
                     }
                     else

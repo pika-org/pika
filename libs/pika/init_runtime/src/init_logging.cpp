@@ -11,6 +11,7 @@
 #include <pika/init_runtime/detail/init_logging.hpp>
 #include <pika/runtime/get_worker_thread_num.hpp>
 #include <pika/runtime_configuration/runtime_configuration.hpp>
+#include <pika/string_util/from_string.hpp>
 #include <pika/threading_base/thread_data.hpp>
 
 #include <fmt/ostream.h>
@@ -415,15 +416,25 @@ namespace pika::detail {
         init_debuglog_log(ini);
 
         // TODO: Print filename and function by default
+        // TODO: Host name
         auto formatter = std::make_unique<spdlog::pattern_formatter>();
-        formatter->add_flag<pika_thread_id_formatter_flag>('k');        // TODO: What letter?
-        formatter->add_flag<pika_parent_thread_id_formatter_flag>('q');        // TODO: What letter?
-        formatter->add_flag<pika_worker_thread_formatter_flag>('w');    // TODO: What letter?
+        formatter->add_flag<pika_thread_id_formatter_flag>('k');           // TODO: What letter?
+        formatter->add_flag<pika_parent_thread_id_formatter_flag>('q');    // TODO: What letter?
+        formatter->add_flag<pika_worker_thread_formatter_flag>('w');       // TODO: What letter?
         // TODO: If MPI enabled
         //formatter->add_flag<pika_worker_thread_formatter_flag>('?');    // TODO: What letter?
-        formatter->set_pattern(
-            "[%Y-%m-%d %H:%M:%S.%F] [%n] [pid:%P] [tid:%t] [parent:%q] [task:%k] [pool:%w] [%l] %v");
+        formatter->set_pattern("[%Y-%m-%d %H:%M:%S.%F] [%n] [%-8l] [TODO:hostname] [TODO:MPI rank] [pid:%P] [tid:%t] [parent:%q] "
+                               "[task:%k] [pool:%w] %v");
         pika::util::get_pika_logger()->set_formatter(std::move(formatter));
+
+        auto settings = get_log_settings(ini, "pika.logging");
+        auto lvl = spdlog::level::off;
+        std::cerr << "settings.level_: " << settings.level_ << "\n";
+        if (!settings.level_.empty())
+        {
+            lvl = pika::util::detail::get_spdlog_level(settings.level_);
+        }
+        pika::util::get_pika_logger()->set_level(lvl);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -456,9 +467,7 @@ namespace pika::detail {
         switch (dest)
         {
         case destination_pika: detail::init_pika_log(lvl, logdest, logformat); break;
-
         case destination_timing: detail::init_debuglog_log(lvl, logdest, logformat); break;
-
         case destination_debuglog: detail::init_debuglog_log(lvl, logdest, logformat); break;
         }
     }

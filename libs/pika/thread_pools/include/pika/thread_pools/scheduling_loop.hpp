@@ -40,21 +40,24 @@ namespace pika::threads::detail {
         thread_id_ref_type const& thrd, thread_schedule_state const old_state,
         thread_schedule_state const new_state)
     {
-        LTM_(debug).format(
-            "scheduling_loop state change: pool({}), scheduler({}), worker_thread({}), thread({}), "
-            "description({}), old state({}), new state({})",
-            *scheduler.get_parent_pool(), scheduler, num_thread, thrd,
-            get_thread_id_data(thrd)->get_description(), get_thread_state_name(old_state),
-            get_thread_state_name(new_state));
+        // TODO
+        // LTM_(debug,
+        //     "scheduling_loop state change: pool({}), scheduler({}), worker_thread({}), thread({}), "
+        //     "description({}), old state({}), new state({})",
+        //     *scheduler.get_parent_pool(), scheduler, num_thread, thrd,
+        //     get_thread_id_data(thrd)->get_description(), get_thread_state_name(old_state),
+        //     get_thread_state_name(new_state));
     }
 
     inline void write_state_log_warning(scheduler_base const& scheduler, std::size_t num_thread,
         thread_id_ref_type const& thrd, thread_schedule_state state, char const* info)
     {
-        LTM_(warning).format("scheduling_loop state change failed: pool({}), scheduler({}), worker "
-                             "thread ({}), thread({}), description({}), state({}), {}",
-            *scheduler.get_parent_pool(), scheduler, num_thread, thrd,
-            get_thread_id_data(thrd)->get_description(), get_thread_state_name(state), info);
+        // TODO
+        // LTM_(warn,
+        //     "scheduling_loop state change failed: pool({}), scheduler({}), worker "
+        //     "thread ({}), thread({}), description({}), state({}), {}",
+        //     *scheduler.get_parent_pool(), scheduler, num_thread, thrd,
+        //     get_thread_id_data(thrd)->get_description(), get_thread_state_name(state), info);
     }
 
     ///////////////////////////////////////////////////////////////////////
@@ -562,8 +565,9 @@ namespace pika::threads::detail {
                 else if (PIKA_UNLIKELY(thread_schedule_state::active == state_val))
                 {
                     auto* thrdptr = get_thread_id_data(thrd);
-                    LTM_(warning).format("pool({}), scheduler({}), worker_thread({}), thread({}), "
-                                         "description({}), rescheduling",
+                    LTM_(warn,
+                        "pool({}), scheduler({}), worker_thread({}), thread({}), "
+                        "description({}), rescheduling",
                         *scheduler.get_parent_pool(), scheduler, num_thread,
                         thrdptr->get_thread_id(), thrdptr->get_description());
 

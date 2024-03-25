@@ -17,7 +17,7 @@ namespace pika::threads::detail {
 
     thread_data_stackful::~thread_data_stackful()
     {
-        LTM_(debug).format("~thread_data_stackful({}), description({}), phase({})", fmt::ptr(this),
+        LTM_(debug, "~thread_data_stackful({}), description({}), phase({})", fmt::ptr(this),
             this->get_description(), this->get_thread_phase());
     }
 }    // namespace pika::threads::detail

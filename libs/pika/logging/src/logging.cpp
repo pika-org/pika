@@ -7,16 +7,16 @@
 
 #include <pika/config.hpp>
 
-# include <pika/detail/filesystem.hpp>
-# include <pika/modules/logging.hpp>
-# include <pika/string_util/from_string.hpp>
+#include <pika/detail/filesystem.hpp>
+#include <pika/modules/logging.hpp>
+#include <pika/string_util/from_string.hpp>
 
-# include <cstddef>
-# include <cstdint>
-# include <cstdlib>
-# include <string>
-# include <utility>
-# include <vector>
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
+#include <string>
+#include <utility>
+#include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::util {
@@ -53,11 +53,37 @@ namespace pika::util {
                 return pika::util::logging::level::disable_all;
             }
         }
+
+        spdlog::level::level_enum get_spdlog_level(std::string const& env)
+        {
+            try
+            {
+                int env_val = pika::detail::from_string<int>(env);
+                if (env_val < 0) { return spdlog::level::off; }
+
+                switch (env_val)
+                {
+                    // TODO: Don't invert the log levels
+                case 0: return spdlog::level::off;
+                case 1: return spdlog::level::critical;
+                case 2: return spdlog::level::err;
+                case 3: return spdlog::level::warn;
+                case 4: return spdlog::level::info;
+                case 5: return spdlog::level::debug;
+                default: break;
+                }
+                return spdlog::level::trace;
+            }
+            catch (pika::detail::bad_lexical_cast const&)
+            {
+                return spdlog::level::off;
+            }
+        }
     }    // namespace detail
 }    // namespace pika::util
 
 ///////////////////////////////////////////////////////////////////////////////
-# include <pika/logging/detail/logger.hpp>
+#include <pika/logging/detail/logger.hpp>
 
 namespace pika::util::logging {
 
