@@ -381,7 +381,7 @@ template <>
 struct fmt::formatter<pika::threads::detail::scheduler_base> : fmt::formatter<std::string>
 {
     template <typename FormatContext>
-    auto format(pika::threads::detail::scheduler_base const& scheduler, FormatContext& ctx)
+    auto format(pika::threads::detail::scheduler_base const& scheduler, FormatContext& ctx) const
     {
         return fmt::formatter<std::string>::format(
             fmt::format(

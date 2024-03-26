@@ -1340,7 +1340,7 @@ struct fmt::formatter<pika::threads::detail::shared_priority_queue_scheduler<Mut
   : fmt::formatter<pika::threads::detail::scheduler_base>
 {
     template <typename FormatContext>
-    auto format(pika::threads::detail::scheduler_base const& scheduler, FormatContext& ctx)
+    auto format(pika::threads::detail::scheduler_base const& scheduler, FormatContext& ctx) const
     {
         return fmt::formatter<pika::threads::detail::scheduler_base>::format(scheduler, ctx);
     }

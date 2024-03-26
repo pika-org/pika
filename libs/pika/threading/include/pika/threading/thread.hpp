@@ -266,7 +266,7 @@ template <>
 struct fmt::formatter<pika::thread::id> : fmt::formatter<pika::threads::detail::thread_id>
 {
     template <typename FormatContext>
-    auto format(pika::thread::id const& id, FormatContext& ctx)
+    auto format(pika::thread::id const& id, FormatContext& ctx) const
     {
         return fmt::formatter<pika::threads::detail::thread_id>::format(id.native_handle(), ctx);
     }

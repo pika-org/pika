@@ -320,7 +320,7 @@ template <typename T>
 struct fmt::formatter<pika::memory::intrusive_ptr<T>> : fmt::formatter<void*>
 {
     template <typename FormatContext>
-    auto format(pika::memory::intrusive_ptr<T> p, FormatContext& ctx)
+    auto format(pika::memory::intrusive_ptr<T> p, FormatContext& ctx) const
     {
         return fmt::formatter<void*>::format(static_cast<void*>(p.get()), ctx);
     }

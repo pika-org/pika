@@ -244,7 +244,7 @@ template <>
 struct fmt::formatter<pika::threads::detail::thread_schedule_state> : fmt::formatter<char const*>
 {
     template <typename FormatContext>
-    auto format(pika::threads::detail::thread_schedule_state const& t, FormatContext& ctx)
+    auto format(pika::threads::detail::thread_schedule_state const& t, FormatContext& ctx) const
     {
         return fmt::formatter<char const*>::format(
             pika::threads::detail::get_thread_state_name(t), ctx);
@@ -255,7 +255,7 @@ template <>
 struct fmt::formatter<pika::threads::detail::thread_restart_state> : fmt::formatter<char const*>
 {
     template <typename FormatContext>
-    auto format(pika::threads::detail::thread_restart_state const& t, FormatContext& ctx)
+    auto format(pika::threads::detail::thread_restart_state const& t, FormatContext& ctx) const
     {
         return fmt::formatter<char const*>::format(
             pika::threads::detail::get_thread_state_ex_name(t), ctx);
@@ -266,7 +266,7 @@ template <>
 struct fmt::formatter<pika::execution::thread_priority> : fmt::formatter<char const*>
 {
     template <typename FormatContext>
-    auto format(pika::execution::thread_priority const& t, FormatContext& ctx)
+    auto format(pika::execution::thread_priority const& t, FormatContext& ctx) const
     {
         return fmt::formatter<char const*>::format(
             pika::execution::detail::get_thread_priority_name(t), ctx);
@@ -277,7 +277,7 @@ template <>
 struct fmt::formatter<pika::execution::thread_stacksize> : fmt::formatter<char const*>
 {
     template <typename FormatContext>
-    auto format(pika::execution::thread_stacksize const& t, FormatContext& ctx)
+    auto format(pika::execution::thread_stacksize const& t, FormatContext& ctx) const
     {
         return fmt::formatter<char const*>::format(
             pika::execution::detail::get_stack_size_enum_name(t), ctx);

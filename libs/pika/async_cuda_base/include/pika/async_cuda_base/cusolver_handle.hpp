@@ -60,7 +60,7 @@ template <>
 struct fmt::formatter<pika::cuda::experimental::cusolver_handle> : fmt::formatter<std::string>
 {
     template <typename FormatContext>
-    auto format(pika::cuda::experimental::cusolver_handle const& handle, FormatContext& ctx)
+    auto format(pika::cuda::experimental::cusolver_handle const& handle, FormatContext& ctx) const
     {
         return fmt::formatter<std::string>::format(
             fmt::format("cusolver_handle({})", fmt::ptr(handle.get())), ctx);
