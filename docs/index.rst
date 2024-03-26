@@ -36,6 +36,13 @@ The example above should output something like:
    Is this pi: 3.14?
    The result is 785942.2826
 
+Getting help
+============
+
+Please report issues on `GitHub <https://github.com/pika-org/pika/issues>`_. General questions and
+discussions can be asked on `GitHub discussions <https://github.com/pika-org/pika/discussions>`_ or
+on the `pika matrix space <https://matrix.to/#/#pika-org:matrix.org>`_.
+
 Acknowledgements
 ================
 
