@@ -11,7 +11,7 @@ clang14_debug_build_pika-ci-image:
   extends: .container-builder
   needs: []   # To clear the dotenv artifacts
   variables:
-    BASE_IMAGE: docker.io/pikaorg/pika-ci-base:22
+    BASE_IMAGE: docker.io/pikaorg/pika-ci-base:23
     DOCKERFILE: .gitlab/docker/Dockerfile.dockerhub_build
     DOCKER_BUILD_ARGS: '["BASE_IMAGE","BUILD_DIR","SOURCE_DIR"]'
     PERSIST_IMAGE_NAME: $CSCS_REGISTRY_PATH/pika-debug-cpu-clang14:$CI_COMMIT_SHORT_SHA

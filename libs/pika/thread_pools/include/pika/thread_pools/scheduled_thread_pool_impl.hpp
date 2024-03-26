@@ -394,26 +394,21 @@ namespace pika::threads::detail {
         topology const& topo = get_topology();
 
         // Set the affinity for the current thread.
-        threads::detail::mask_cref_type mask = affinity_data_.get_pu_mask(topo, global_thread_num);
+        threads::detail::mask_type mask = affinity_data_.get_pu_mask(topo, global_thread_num);
+
+        // If the mask is empty (signaling no binding) we set a full mask anyway, because the whole
+        // process may have a non-full mask set which is inherited by this thread.
+        if (!any(mask)) { mask = ~mask; }
 
         if (LPIKA_ENABLED(debug)) topo.write_to_log();
 
         error_code ec(throwmode::lightweight);
-        if (any(mask))
+        topo.set_thread_affinity_mask(mask, ec);
+        if (ec)
         {
-            topo.set_thread_affinity_mask(mask, ec);
-            if (ec)
-            {
-                LTM_(warning).format(
-                    "thread_func: {} setting thread affinity on OS thread {} failed with: {}",
-                    id_.name(), global_thread_num, ec.get_message());
-            }
-        }
-        else
-        {
-            LTM_(debug).format(
-                "thread_func: {} setting thread affinity on OS thread {} was explicitly disabled.",
-                id_.name(), global_thread_num);
+            LTM_(warning).format(
+                "thread_func: {} setting thread affinity on OS thread {} failed with: {}",
+                id_.name(), global_thread_num, ec.get_message());
         }
 
         // Setting priority of worker threads to a lower priority, this
