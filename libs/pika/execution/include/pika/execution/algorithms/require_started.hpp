@@ -20,7 +20,11 @@
 #include <pika/type_support/detail/with_result_of.hpp>
 #include <pika/type_support/pack.hpp>
 
-#include <fmt/core.h>
+#if __has_include(<fmt/base.h>)
+# include <fmt/base.h>
+#else
+# include <fmt/core.h>
+#endif
 #include <fmt/ostream.h>
 #include <fmt/printf.h>
 
