@@ -10,7 +10,9 @@ set(resume_suspended_same_thread_PARAMETERS THREADS 2)
 
 if(PIKA_WITH_APEX)
   list(APPEND tests annotation_check_senders)
-  set(annotation_check_senders_PARAMETERS THREADS 2)
+  set(annotation_check_senders_PARAMETERS THREADS 2 WRAPPER
+                                          "${PROJECT_SOURCE_DIR}/tools/sort-output.sh"
+  )
 endif()
 
 foreach(test ${tests})
