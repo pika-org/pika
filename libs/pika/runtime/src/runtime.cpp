@@ -1602,19 +1602,6 @@ namespace pika::detail {
         return get_runtime().get_notification_policy(prefix, os_thread_type::worker_thread);
     }
 
-    std::size_t get_num_worker_threads()
-    {
-        runtime* rt = get_runtime_ptr();
-        if (nullptr == rt)
-        {
-            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::get_num_worker_threads",
-                "the runtime system has not been initialized yet");
-            return std::size_t(0);
-        }
-
-        return rt->get_num_worker_threads();
-    }
-
     namespace threads {
         char const* get_stack_size_name(std::ptrdiff_t size)
         {
@@ -1639,4 +1626,18 @@ namespace pika::detail {
 
 namespace pika {
     bool is_runtime_initialized() noexcept { return get_runtime_ptr() != nullptr; }
+
+    std::size_t get_num_worker_threads()
+    {
+        runtime* rt = get_runtime_ptr();
+        if (nullptr == rt)
+        {
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::get_num_worker_threads",
+                "the runtime system has not been initialized yet");
+            return std::size_t(0);
+        }
+
+        return rt->get_num_worker_threads();
+    }
+
 }    // namespace pika

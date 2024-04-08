@@ -117,15 +117,6 @@ namespace pika::detail {
     PIKA_EXPORT bool is_stopped_or_shutting_down();
 
     ///////////////////////////////////////////////////////////////////////////
-    /// \brief Return the number of worker OS- threads used to execute pika
-    ///        threads
-    ///
-    /// This function returns the number of OS-threads used to execute pika
-    /// threads. If the function is called while no pika runtime system is active,
-    /// it will return zero.
-    PIKA_EXPORT std::size_t get_num_worker_threads();
-
-    ///////////////////////////////////////////////////////////////////////////
     /// \brief Return the system uptime measure on the thread executing this call.
     ///
     /// This function returns the system uptime measured in nanoseconds for the
@@ -154,3 +145,14 @@ namespace pika::detail {
     PIKA_EXPORT void on_abort(int signal) noexcept;
     PIKA_EXPORT void handle_print_bind(std::size_t num_threads);
 }    // namespace pika::detail
+
+namespace pika {
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief Return the number of worker OS- threads used to execute pika
+    ///        threads
+    ///
+    /// This function returns the number of OS-threads used to execute pika
+    /// threads. If the function is called while no pika runtime system is active,
+    /// it will return zero.
+    PIKA_EXPORT std::size_t get_num_worker_threads();
+}    // namespace pika
