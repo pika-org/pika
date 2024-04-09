@@ -14,7 +14,6 @@ set(runtime_headers
     pika/runtime/get_os_thread_count.hpp
     pika/runtime/get_thread_name.hpp
     pika/runtime/get_worker_thread_num.hpp
-    pika/runtime/os_thread_type.hpp
     pika/runtime/report_error.hpp
     pika/runtime/runtime_handlers.hpp
     pika/runtime/runtime.hpp
@@ -30,7 +29,6 @@ set(runtime_headers
 set(runtime_sources
     custom_exception_info.cpp
     debugging.cpp
-    os_thread_type.cpp
     runtime_handlers.cpp
     runtime.cpp
     state.cpp
