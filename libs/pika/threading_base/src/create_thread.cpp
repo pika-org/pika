@@ -80,7 +80,7 @@ namespace pika::threads::detail {
 
         // NOLINTNEXTLINE(bugprone-branch-clone)
         // TODO
-        //         LTM_(info,
+        //         PIKA_LTM_(info,
         //             "create_thread: pool({}), scheduler({}), thread({}), initial_state({}), "
         //             "run_now({})",
         //             *scheduler->get_parent_pool(), *scheduler, id,

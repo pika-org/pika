@@ -31,7 +31,7 @@ namespace pika::detail {
     {
         if (!queue_.empty())
         {
-            LERR_(err, "~condition_variable: queue is not empty, aborting threads");
+            PIKA_LERR_(err, "~condition_variable: queue is not empty, aborting threads");
 
             pika::no_mutex no_mtx;
             std::unique_lock<pika::no_mutex> lock(no_mtx);
@@ -193,11 +193,11 @@ namespace pika::detail {
 
                 if (PIKA_UNLIKELY(!ctx))
                 {
-                    LERR_(err, "condition_variable::abort_all: null thread id encountered");
+                    PIKA_LERR_(err, "condition_variable::abort_all: null thread id encountered");
                     continue;
                 }
 
-                LERR_(err, "condition_variable::abort_all: pending thread: {}", ctx);
+                PIKA_LERR_(err, "condition_variable::abort_all: pending thread: {}", ctx);
 
                 // unlock while notifying thread as this can suspend
                 ::pika::detail::unlock_guard<std::unique_lock<Mutex>> unlock(lock);

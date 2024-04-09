@@ -25,11 +25,11 @@ namespace pika {
 
 ////////////////////////////////////////////////////////////////////////////////
 // specific logging
-#define LTM_(loglevel, ...) PIKA_DETAIL_LOG_PIKA(loglevel, __VA_ARGS__)  /* thread manager */
-#define LRT_(loglevel, ...) PIKA_DETAIL_LOG_PIKA(loglevel, __VA_ARGS__)  /* runtime support */
-#define LERR_(loglevel, ...) PIKA_DETAIL_LOG_PIKA(loglevel, __VA_ARGS__) /* exceptions */
-#define LLCO_(loglevel, ...) PIKA_DETAIL_LOG_PIKA(loglevel, __VA_ARGS__) /* lcos */
-#define LBT_(loglevel, ...) PIKA_DETAIL_LOG_PIKA(loglevel, __VA_ARGS__)  /* bootstrap */
+#define PIKA_LTM_(loglevel, ...) PIKA_DETAIL_LOG_PIKA(loglevel, __VA_ARGS__)  /* thread manager */
+#define PIKA_LRT_(loglevel, ...) PIKA_DETAIL_LOG_PIKA(loglevel, __VA_ARGS__)  /* runtime support */
+#define PIKA_LERR_(loglevel, ...) PIKA_DETAIL_LOG_PIKA(loglevel, __VA_ARGS__) /* exceptions */
+#define PIKA_LLCO_(loglevel, ...) PIKA_DETAIL_LOG_PIKA(loglevel, __VA_ARGS__) /* lcos */
+#define PIKA_LBT_(loglevel, ...) PIKA_DETAIL_LOG_PIKA(loglevel, __VA_ARGS__)  /* bootstrap */
 #define PIKA_DETAIL_LOG_PIKA_TM(loglevel, format_string, ...)                                      \
     PIKA_DETAIL_LOG_PIKA(loglevel, " [TM] " format_string, __VA_ARGS__)
 
@@ -101,7 +101,7 @@ template <typename T>
 bootstrap_logging const& operator<<(bootstrap_logging const& l, T const& t)
 {
     // NOLINTNEXTLINE(bugprone-branch-clone)
-    LBT_(info, "{}", t);
+    PIKA_LBT_(info, "{}", t);
     LPROGRESS_ << t;
     return l;
 }

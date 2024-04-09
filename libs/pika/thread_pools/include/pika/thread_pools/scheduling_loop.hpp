@@ -41,7 +41,7 @@ namespace pika::threads::detail {
         thread_schedule_state const new_state)
     {
         // TODO
-        // LTM_(debug,
+        // PIKA_LTM_(debug,
         //     "scheduling_loop state change: pool({}), scheduler({}), worker_thread({}), thread({}), "
         //     "description({}), old state({}), new state({})",
         //     *scheduler.get_parent_pool(), scheduler, num_thread, thrd,
@@ -53,7 +53,7 @@ namespace pika::threads::detail {
         thread_id_ref_type const& thrd, thread_schedule_state state, char const* info)
     {
         // TODO
-        // LTM_(warn,
+        // PIKA_LTM_(warn,
         //     "scheduling_loop state change failed: pool({}), scheduler({}), worker "
         //     "thread ({}), thread({}), description({}), state({}), {}",
         //     *scheduler.get_parent_pool(), scheduler, num_thread, thrd,
@@ -565,7 +565,7 @@ namespace pika::threads::detail {
                 else if (PIKA_UNLIKELY(thread_schedule_state::active == state_val))
                 {
                     auto* thrdptr = get_thread_id_data(thrd);
-                    LTM_(warn,
+                    PIKA_LTM_(warn,
                         "pool({}), scheduler({}), worker_thread({}), thread({}), "
                         "description({}), rescheduling",
                         *scheduler.get_parent_pool(), scheduler, num_thread,

@@ -356,11 +356,11 @@ namespace pika {
 
     runtime::~runtime()
     {
-        LRT_(debug, "~runtime(entering)");
+        PIKA_LRT_(debug, "~runtime(entering)");
 
         // stop all services
         thread_manager_->stop();
-        LRT_(debug, "~runtime(finished)");
+        PIKA_LRT_(debug, "~runtime(finished)");
 
         LPROGRESS_;
 
@@ -1135,7 +1135,7 @@ namespace pika {
         detail::external_timer::init(nullptr, 0, 1);
 #endif
 
-        LRT_(info, "cmd_line: {}", get_config().get_cmd_line());
+        PIKA_LRT_(info, "cmd_line: {}", get_config().get_cmd_line());
 
         lbt_ << "(1st stage) runtime::start";
 
@@ -1200,9 +1200,9 @@ namespace pika {
     void runtime::wait_finalize()
     {
         std::unique_lock<std::mutex> l(mtx_);
-        LRT_(info, "runtime: about to enter wait state");
+        PIKA_LRT_(info, "runtime: about to enter wait state");
         wait_condition_.wait(l, [&] { return stop_done_; });
-        LRT_(info, "runtime: exiting wait state");
+        PIKA_LRT_(info, "runtime: exiting wait state");
     }
 
     void runtime::wait_helper(std::mutex& mtx, std::condition_variable& cond, bool& running)
@@ -1231,7 +1231,7 @@ namespace pika {
 
     int runtime::wait()
     {
-        LRT_(info, "runtime: about to enter wait state");
+        PIKA_LRT_(info, "runtime: about to enter wait state");
 
         // start the wait_helper in a separate thread
         std::mutex mtx;
@@ -1252,7 +1252,7 @@ namespace pika {
 
         thread_manager_->wait();
 
-        LRT_(info, "runtime: exiting wait state");
+        PIKA_LRT_(info, "runtime: exiting wait state");
         return result_;
     }
 
@@ -1260,7 +1260,7 @@ namespace pika {
     // First half of termination process: stop thread manager,
     void runtime::stop(bool blocking)
     {
-        LRT_(warn, "runtime: about to stop services");
+        PIKA_LRT_(warn, "runtime: about to stop services");
 
         call_shutdown_functions(true);
 
@@ -1299,7 +1299,7 @@ namespace pika {
             // this disables all logging from the main thread
             deinit_tss_helper("main-thread", 0);
 
-            LRT_(info, "runtime: stopped all services");
+            PIKA_LRT_(info, "runtime: stopped all services");
         }
 
         call_shutdown_functions(false);
@@ -1316,7 +1316,7 @@ namespace pika {
         // this disables all logging from the main thread
         deinit_tss_helper("main-thread", 0);
 
-        LRT_(info, "runtime: stopped all services");
+        PIKA_LRT_(info, "runtime: stopped all services");
 
         std::lock_guard<std::mutex> l(mtx);
         cond.notify_all();    // we're done now
@@ -1324,7 +1324,7 @@ namespace pika {
 
     void runtime::suspend()
     {
-        LRT_(info, "runtime: about to suspend runtime");
+        PIKA_LRT_(info, "runtime: about to suspend runtime");
 
         if (state_.load() == runtime_state::sleeping) { return; }
 
@@ -1341,7 +1341,7 @@ namespace pika {
 
     void runtime::resume()
     {
-        LRT_(info, "runtime: about to resume runtime");
+        PIKA_LRT_(info, "runtime: about to resume runtime");
 
         if (state_.load() == runtime_state::running) { return; }
 

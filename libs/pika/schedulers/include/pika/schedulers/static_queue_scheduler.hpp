@@ -116,7 +116,7 @@ namespace pika::threads::detail {
 
                 if (PIKA_UNLIKELY(suspended_only))
                 {
-                    LTM_(warn, "queue({}): no new work available, are we deadlocked?",
+                    PIKA_LTM_(warn, "queue({}): no new work available, are we deadlocked?",
                         num_thread);
                 }
             }

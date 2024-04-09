@@ -66,7 +66,7 @@ namespace pika::threads::detail {
                 {
                     if (running)
                     {
-                        LTM_(warn,
+                        PIKA_LTM_(warn,
                             "Listing suspended threads while queue ({}) is empty:", num_thread);
                     }
                     else
@@ -81,7 +81,7 @@ namespace pika::threads::detail {
                 if (running)
                 {
                     // TODO
-                    //                     LTM_(warn)
+                    //                     PIKA_LTM_(warn)
                     //                         .format("queue({}): {}({}.{:02x})", num_thread,
                     //                             get_thread_state_name(state), *it, thrd->get_thread_phase())
                     // # ifdef PIKA_HAVE_THREAD_PARENT_REFERENCE

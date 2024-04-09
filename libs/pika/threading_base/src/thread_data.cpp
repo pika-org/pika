@@ -57,7 +57,7 @@ namespace pika::threads::detail {
       , stacksize_enum_(init_data.stacksize)
       , queue_(queue)
     {
-        LTM_(debug, "thread::thread({}), description({})", fmt::ptr(this), get_description());
+        PIKA_LTM_(debug, "thread::thread({}), description({})", fmt::ptr(this), get_description());
 
         PIKA_ASSERT(stacksize_enum_ != execution::thread_stacksize::current);
 
@@ -81,13 +81,13 @@ namespace pika::threads::detail {
 
     thread_data::~thread_data()
     {
-        LTM_(debug, "thread_data::~thread_data({})", fmt::ptr(this));
+        PIKA_LTM_(debug, "thread_data::~thread_data({})", fmt::ptr(this));
         free_thread_exit_callbacks();
     }
 
     void thread_data::destroy_thread()
     {
-        LTM_(debug, "thread_data::destroy_thread({}), description({}), phase({})", fmt::ptr(this),
+        PIKA_LTM_(debug, "thread_data::destroy_thread({}), description({}), phase({})", fmt::ptr(this),
             this->get_description(), this->get_thread_phase());
 
         get_scheduler_base()->destroy_thread(this);
@@ -160,7 +160,7 @@ namespace pika::threads::detail {
 
     void thread_data::rebind_base(thread_init_data& init_data)
     {
-        LTM_(debug, "thread_data::rebind_base({}), description({}), phase({}), rebind",
+        PIKA_LTM_(debug, "thread_data::rebind_base({}), description({}), phase({}), rebind",
             fmt::ptr(this), get_description(), get_thread_phase());
 
         free_thread_exit_callbacks();
@@ -196,7 +196,7 @@ namespace pika::threads::detail {
         PIKA_ASSERT(stacksize_ == get_stack_size());
         PIKA_ASSERT(stacksize_ != 0);
 
-        LTM_(debug, "thread::thread({}), description({}), rebind", fmt::ptr(this),
+        PIKA_LTM_(debug, "thread::thread({}), description({}), rebind", fmt::ptr(this),
             get_description());
 
 #ifdef PIKA_HAVE_THREAD_PARENT_REFERENCE
