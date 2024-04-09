@@ -12,7 +12,6 @@ namespace pika {
     enum logging_destination
     {
         destination_pika = 0,
-        destination_debuglog = 1
     };
 }    // namespace pika
 
@@ -39,17 +38,6 @@ namespace pika::util {
     PIKA_EXPORT PIKA_DETAIL_DECLARE_SPDLOG(pika)
 #define LPIKA_ENABLED(loglevel) PIKA_DETAIL_SPDLOG_ENABLED(pika, loglevel)
 #define PIKA_DETAIL_LOG_PIKA(loglevel, ...) PIKA_DETAIL_SPDLOG(pika, loglevel, __VA_ARGS__)
-
-        ////////////////////////////////////////////////////////////////////////
-        // special debug logging channel
-        PIKA_EXPORT PIKA_DECLARE_LOG(debuglog)
-
-#define LDEB_                                                                                      \
-    PIKA_LOG_FORMAT(pika::util::debuglog, ::pika::util::logging::level::error, "{:>10} ",          \
-        ::pika::util::logging::level::error) /**/
-
-#define LDEB_ENABLED                                                                               \
-    pika::util::debuglog_logger()->is_enabled(::pika::util::logging::level::error) /**/
 
         ////////////////////////////////////////////////////////////////////////
         // errors are logged in a special manner (always to cerr and additionally,

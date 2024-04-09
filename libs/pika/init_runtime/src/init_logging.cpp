@@ -300,23 +300,9 @@ namespace pika::detail {
         // TODO
     }
 
-    ///////////////////////////////////////////////////////////////////////
-    // initialize logging for application
-    void init_debuglog_log(
-        pika::util::logging::level lvl, std::string logdest, std::string logformat)
-    {
-        // TODO
-    }
-
-    void init_debuglog_log(pika::util::runtime_configuration& ini)
-    {
-        // TODO
-    }
-
     void init_logging(pika::util::runtime_configuration& ini)
     {
         init_pika_log(ini);
-        init_debuglog_log(ini);
 
         // TODO: Print filename and function by default
         auto formatter = std::make_unique<spdlog::pattern_formatter>();
@@ -347,11 +333,6 @@ namespace pika::detail {
             // TODO
             // pika::util::pika_logger()->set_enabled(pika::util::logging::level::disable_all);
             break;
-
-        case destination_debuglog:
-            // TODO
-            // pika::util::debuglog_logger()->set_enabled(pika::util::logging::level::disable_all);
-            break;
         }
     }
 
@@ -366,7 +347,6 @@ namespace pika::detail {
         switch (dest)
         {
         case destination_pika: /* TODO detail::init_pika_log(lvl, logdest, logformat); */ break;
-        case destination_debuglog: /* TODO detail::init_debuglog_log(lvl, logdest, logformat); */ break;
         }
     }
 }    // namespace pika::detail
