@@ -23,12 +23,13 @@ pika_add_module(
   HEADERS ${init_runtime_headers}
   MODULE_DEPENDENCIES
     pika_command_line_handling
-    pika_program_options
-    pika_runtime
+    pika_debugging
     pika_errors
     pika_filesystem
     pika_lock_registration
     pika_logging
+    pika_program_options
+    pika_runtime
     pika_schedulers
     pika_threading_base
     pika_timing

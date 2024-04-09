@@ -8,6 +8,7 @@
 #include <pika/config.hpp>
 
 #include <pika/assert.hpp>
+#include <pika/debugging/print.hpp>
 #include <pika/init_runtime/detail/init_logging.hpp>
 #include <pika/runtime/get_worker_thread_num.hpp>
 #include <pika/runtime_configuration/runtime_configuration.hpp>
@@ -32,18 +33,12 @@ namespace pika::detail {
         void format(
             const spdlog::details::log_msg&, const std::tm&, spdlog::memory_buf_t& dest) override
         {
-            auto id = threads::detail::get_self_id();
+            const auto id = threads::detail::get_self_id();
             if (id != threads::detail::invalid_thread_id)
             {
-                std::ptrdiff_t value = reinterpret_cast<std::ptrdiff_t>(id.get());
-                std::string s = fmt::format("{:016x}", value);
-                dest.append(s.data(), s.data() + s.size());
+                dest.append(fmt::format("{:016x}", reinterpret_cast<std::ptrdiff_t>(id.get())));
             }
-            else
-            {
-                static constexpr std::string_view invalid_id = "----";
-                dest.append(invalid_id.data(), invalid_id.data() + invalid_id.size());
-            }
+            else { dest.append(std::string_view("----")); }
         }
 
         std::unique_ptr<custom_flag_formatter> clone() const override
@@ -61,15 +56,9 @@ namespace pika::detail {
             auto id = threads::detail::get_parent_id();
             if (id != nullptr)
             {
-                std::ptrdiff_t value = reinterpret_cast<std::ptrdiff_t>(id.get());
-                std::string s = fmt::format("{:016x}", value);
-                dest.append(s.data(), s.data() + s.size());
+                dest.append(fmt::format("{:016x}", reinterpret_cast<std::ptrdiff_t>(id.get())));
             }
-            else
-            {
-                static constexpr std::string_view invalid_id = "----";
-                dest.append(invalid_id.data(), invalid_id.data() + invalid_id.size());
-            }
+            else { dest.append(std::string_view("----")); }
         }
 
         std::unique_ptr<custom_flag_formatter> clone() const override
@@ -80,13 +69,21 @@ namespace pika::detail {
 
     class pika_worker_thread_formatter_flag : public spdlog::custom_flag_formatter
     {
+        static void format_id(spdlog::memory_buf_t& dest, std::size_t i)
+        {
+            if (i != std::size_t(-1)) { dest.append(fmt::format("{:04x}", i)); }
+            else { dest.append(std::string_view("----")); }
+        }
+
     public:
         void format(
             const spdlog::details::log_msg&, const std::tm&, spdlog::memory_buf_t& dest) override
         {
-            std::string s = fmt::format("{:016x}/{:016x}/{:016x}", pika::get_thread_pool_num(),
-                pika::get_worker_thread_num(), pika::get_local_worker_thread_num());
-            dest.append(s.data(), s.data() + s.size());
+            format_id(dest, pika::get_thread_pool_num());
+            dest.append(std::string_view("/"));
+            format_id(dest, pika::get_worker_thread_num());
+            dest.append(std::string_view("/"));
+            format_id(dest, pika::get_local_worker_thread_num());
         }
 
         std::unique_ptr<custom_flag_formatter> clone() const override
@@ -95,25 +92,22 @@ namespace pika::detail {
         }
     };
 
-    // TODO: If MPI enabled
-    // class mpi_rank_formatter_flag : public spdlog::custom_flag_formatter
-    // {
-    // public:
-    //     void format(
-    //         const spdlog::details::log_msg&, const std::tm&, spdlog::memory_buf_t& dest) override
-    //     {
-    //         // TODO: If MPI initialized
-    //         int rank;
-    //         MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    //         std::string s = fmt::format(" [mpi:{:08x}]", rank);
-    //         dest.append(s.data(), s.data() + s.size());
-    //     }
+    class hostname_formatter_flag : public spdlog::custom_flag_formatter
+    {
+    public:
+        void format(
+            const spdlog::details::log_msg&, const std::tm&, spdlog::memory_buf_t& dest) override
+        {
+            static std::string_view hostname_str =
+                PIKA_DETAIL_NS_DEBUG::hostname_print_helper{}.get_hostname();
+            dest.append(hostname_str);
+        }
 
-    //     std::unique_ptr<custom_flag_formatter> clone() const override
-    //     {
-    //         return spdlog::details::make_unique<mpi_rank_formatter_flag>();
-    //     }
-    // };
+        std::unique_ptr<custom_flag_formatter> clone() const override
+        {
+            return spdlog::details::make_unique<hostname_formatter_flag>();
+        }
+    };
 
     using logger_writer_type = pika::util::logging::writer::named_write;
 
@@ -421,10 +415,9 @@ namespace pika::detail {
         formatter->add_flag<pika_thread_id_formatter_flag>('k');           // TODO: What letter?
         formatter->add_flag<pika_parent_thread_id_formatter_flag>('q');    // TODO: What letter?
         formatter->add_flag<pika_worker_thread_formatter_flag>('w');       // TODO: What letter?
-        // TODO: If MPI enabled
-        //formatter->add_flag<pika_worker_thread_formatter_flag>('?');    // TODO: What letter?
-        formatter->set_pattern("[%Y-%m-%d %H:%M:%S.%F] [%n] [%-8l] [TODO:hostname] [TODO:MPI rank] [pid:%P] [tid:%t] [parent:%q] "
-                               "[task:%k] [pool:%w] %v");
+        formatter->add_flag<hostname_formatter_flag>('j');                 // TODO: What letter?
+        formatter->set_pattern("[%Y-%m-%d %H:%M:%S.%F] [%n] [%-8l] [host:%j] [pid:%P] [tid:%t] "
+                               "[pool:%w] [parent:%q] [task:%k] %v");
         pika::util::get_pika_logger()->set_formatter(std::move(formatter));
 
         auto settings = get_log_settings(ini, "pika.logging");
