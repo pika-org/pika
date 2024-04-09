@@ -39,13 +39,13 @@ namespace pika { namespace util {
                 char* env = std::getenv(tok.c_str());
                 if (env)
                 {
-                    PIKA_LBT_(debug) << "Found MPI environment variable: " << tok << "="
-                                << std::string(env) << ", enabling MPI support\n";
+                    PIKA_LOG(debug, "Found MPI environment variable: {} = {}, enabling MPI support",
+                        tok, std::string(env));
                     return true;
                 }
             }
 
-            PIKA_LBT_(info) << "No known MPI environment variable found, disabling MPI support\n";
+            PIKA_LOG(info, "No known MPI environment variable found, disabling MPI support");
             return false;
 #endif
         }

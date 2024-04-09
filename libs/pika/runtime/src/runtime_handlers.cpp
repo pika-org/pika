@@ -77,13 +77,13 @@ namespace pika::detail {
         {
             if (back_trace.empty())
             {
-                PIKA_LERR_(debug,
+                PIKA_LOG(debug,
                     "suspending thread while at least one lock is being held "
                     "(stack backtrace was disabled at compile time)");
             }
             else
             {
-                PIKA_LERR_(debug,
+                PIKA_LOG(debug,
                     "suspending thread while at least one lock is being held, stack backtrace: {}",
                     back_trace);
             }

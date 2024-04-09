@@ -17,7 +17,7 @@ namespace pika::threads::detail {
 
     thread_data_stackless::~thread_data_stackless()
     {
-        PIKA_LTM_(debug, "~thread_data_stackless({}), description({}), phase({})", fmt::ptr(this),
+        PIKA_LOG(debug, "~thread_data_stackless({}), description({}), phase({})", fmt::ptr(this),
             this->get_description(), this->get_thread_phase());
     }
 }    // namespace pika::threads::detail

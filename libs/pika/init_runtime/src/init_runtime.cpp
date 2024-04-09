@@ -319,18 +319,18 @@ namespace pika {
             rp.configure_pools();
 
 #if defined(PIKA_HAVE_HIP)
-            PIKA_LRT_(info, "run_local: initialize HIP");
+            PIKA_LOG(info, "run_local: initialize HIP");
             whip::check_error(hipInit(0));
 #endif
 
             // Initialize and start the pika runtime.
-            PIKA_LRT_(info, "run_local: create runtime");
+            PIKA_LOG(info, "run_local: create runtime");
 
             // Build and configure this runtime instance.
             std::unique_ptr<pika::runtime> rt;
 
             // Command line handling should have updated this by now.
-            PIKA_LRT_(info, "creating local runtime");
+            PIKA_LOG(info, "creating local runtime");
             rt.reset(new pika::runtime(cmdline.rtcfg_, true));
 
             return run_or_start(blocking, PIKA_MOVE(rt), cmdline, PIKA_MOVE(params.startup),

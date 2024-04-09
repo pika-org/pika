@@ -31,7 +31,7 @@ namespace pika::detail {
             catch (...)
             {
                 val = def;
-                PIKA_LERR_(error) << "get_env_var_as - invalid" << s << val;
+                PIKA_LOG(error) << "get_env_var_as - invalid" << s << val;
             }
             LDEB_ << "get_env_var_as " << s << val;
         }

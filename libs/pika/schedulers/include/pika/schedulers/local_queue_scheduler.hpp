@@ -273,7 +273,7 @@ namespace pika::threads::detail {
             queues_[num_thread]->create_thread(data, id, ec);
 
             // TODO
-            //             PIKA_LTM_(debug)
+            //             PIKA_LOG(debug)
             //                 .format("local_queue_scheduler::create_thread: pool({}), scheduler({}), "
             //                         "worker_thread({}), thread({})",
             //                     *this->get_parent_pool(), *this, num_thread,
@@ -428,7 +428,7 @@ namespace pika::threads::detail {
 
             PIKA_ASSERT(num_thread < queues_.size());
 
-            PIKA_LTM_(debug,
+            PIKA_LOG(debug,
                 "local_queue_scheduler::schedule_thread: pool({}), scheduler({}), "
                 "worker_thread({}), thread({}), description({})",
                 *this->get_parent_pool(), *this, num_thread,
@@ -752,7 +752,7 @@ namespace pika::threads::detail {
                 {
                     if (running)
                     {
-                        PIKA_LTM_(warn,
+                        PIKA_LOG(warn,
                             "pool({}), scheduler({}), queue({}): no new work "
                             "available, are we deadlocked?",
                             *this->get_parent_pool(), *this, num_thread);
