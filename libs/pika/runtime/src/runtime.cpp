@@ -568,7 +568,7 @@ namespace pika::detail {
     bool register_thread(runtime* rt, char const* name, error_code& ec)
     {
         PIKA_ASSERT(rt);
-        return rt->register_thread(name, 0, true, ec);
+        return rt->register_thread(name, 0, ec);
     }
 
     // Unregister the thread from pika, this should be done once in
@@ -1086,7 +1086,7 @@ namespace pika::detail {
         // Register this thread with the runtime system to allow calling
         // certain pika functionality from the main thread. Also calls
         // registered startup callbacks.
-        init_tss_helper("main-thread", 0, 0, "", "", false);
+        init_tss_helper("main-thread", 0, 0, "", "");
 
         // start the thread manager
         thread_manager_->run();
@@ -1397,7 +1397,7 @@ namespace pika::detail {
         notification_policy_type notifier;
 
         notifier.add_on_start_thread_callback(pika::util::detail::bind(
-            &runtime::init_tss_helper, this, prefix, _1, _2, _3, _4, false));
+            &runtime::init_tss_helper, this, prefix, _1, _2, _3, _4));
         notifier.add_on_stop_thread_callback(
             pika::util::detail::bind(&runtime::deinit_tss_helper, this, prefix, _1));
         notifier.set_on_error_callback(pika::util::detail::bind(
@@ -1407,18 +1407,15 @@ namespace pika::detail {
     }
 
     void runtime::init_tss_helper(char const* context, std::size_t local_thread_num,
-        std::size_t global_thread_num, char const* pool_name, char const* postfix,
-        bool service_thread)
+        std::size_t global_thread_num, char const* pool_name, char const* postfix)
     {
         error_code ec(throwmode::lightweight);
-        return init_tss_ex(
-            context, local_thread_num, global_thread_num, pool_name, postfix, service_thread, ec);
+        return init_tss_ex(context, local_thread_num, global_thread_num, pool_name, postfix);
     }
 
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     void runtime::init_tss_ex(char const* context, std::size_t local_thread_num,
-        std::size_t global_thread_num, char const* pool_name, char const* postfix,
-        bool service_thread, error_code& ec)
+        std::size_t global_thread_num, char const* pool_name, char const* postfix)
     // NOLINTEND(bugprone-easily-swappable-parameters)
     {
         std::ostringstream fullname;
@@ -1459,35 +1456,6 @@ namespace pika::detail {
             on_start_func_(local_thread_num, global_thread_num, pool_name, context);
         }
 
-        // if this is a service thread, set its service affinity
-        if (service_thread)
-        {
-            // FIXME: We don't set the affinity of the service threads on BG/Q,
-            // as this is causing a hang (needs to be investigated)
-#if !defined(__bgq__)
-            pika::threads::detail::mask_cref_type used_processing_units =
-                thread_manager_->get_used_processing_units();
-
-            // --pika:bind=none  should disable all affinity definitions
-            if (pika::threads::detail::any(used_processing_units))
-            {
-                this->topology_.set_thread_affinity_mask(
-                    this->topology_.get_service_affinity_mask(used_processing_units), ec);
-
-                // comment this out for now as on CircleCI this is causing
-                // unending grief
-                // if (ec)
-                // {
-                //     PIKA_THROW_EXCEPTION(pika::error::kernel_error,
-                //         "runtime::init_tss_ex",
-                //         "failed to set thread affinity mask ({}) for service "
-                //         "thread: {}",
-                //         pika::threads::detail::to_string(used_processing_units),
-                //         detail::thread_name());
-                // }
-            }
-#endif
-        }
     }
 
     void runtime::deinit_tss_helper(char const* context, std::size_t global_thread_num)
@@ -1527,13 +1495,12 @@ namespace pika::detail {
 
     /// Register an external OS-thread with pika
     bool runtime::register_thread(
-        char const* name, std::size_t global_thread_num, bool service_thread, error_code& ec)
+        char const* name, std::size_t global_thread_num, error_code& ec)
     {
         std::string thread_name(name);
         thread_name += "-thread";
 
-        init_tss_ex(thread_name.c_str(), global_thread_num, global_thread_num, "", nullptr,
-            service_thread, ec);
+        init_tss_ex(thread_name.c_str(), global_thread_num, global_thread_num, "", nullptr);
 
         return !ec ? true : false;
     }

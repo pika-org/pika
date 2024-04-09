@@ -276,12 +276,6 @@ namespace pika::detail {
         /// \param num              [in] The sequence number to use for thread
         ///                         registration. The default for this parameter
         ///                         is zero.
-        /// \param service_thread   [in] The thread should be registered as a
-        ///                         service thread. The default for this parameter
-        ///                         is 'true'. Any service threads will be pinned
-        ///                         to cores not currently used by any of the pika
-        ///                         worker threads.
-        ///
         /// \note The function will compose a thread name of the form
         ///       '<name>-thread#<num>' which is used to register the thread. It
         ///       is the user's responsibility to ensure that each (composed)
@@ -297,7 +291,7 @@ namespace pika::detail {
         ///          succeeded or not.
         ///
         virtual bool register_thread(char const* name, std::size_t num = 0,
-            bool service_thread = true, error_code& ec = throws);
+            error_code& ec = throws);
 
         /// \brief Unregister an external OS-thread with pika
         ///
@@ -385,12 +379,10 @@ namespace pika::detail {
         void deinit_tss_helper(char const* context, std::size_t num);
 
         void init_tss_ex(char const* context, std::size_t local_thread_num,
-            std::size_t global_thread_num, char const* pool_name, char const* postfix,
-            bool service_thread, error_code& ec);
+            std::size_t global_thread_num, char const* pool_name, char const* postfix);
 
         void init_tss_helper(char const* context, std::size_t local_thread_num,
-            std::size_t global_thread_num, char const* pool_name, char const* postfix,
-            bool service_thread);
+            std::size_t global_thread_num, char const* pool_name, char const* postfix);
 
         void notify_finalize();
         void wait_finalize();
