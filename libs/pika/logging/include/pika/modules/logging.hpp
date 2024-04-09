@@ -36,17 +36,8 @@ namespace pika::util {
     }    // namespace detail
 
     ////////////////////////////////////////////////////////////////////////
-    PIKA_EXPORT PIKA_DECLARE_LOG(pika)
-
-#define LPIKA_(lvl, cat)                                                                           \
-    PIKA_LOG_FORMAT(pika::util::pika, ::pika::util::logging::level::lvl, "{:>10}{}",               \
-        ::pika::util::logging::level::lvl, (cat)) /**/
-
-#define LPIKA_ENABLED(lvl)                                                                         \
-    pika::util::pika_logger()->is_enabled(::pika::util::logging::level::lvl) /**/
-
-        PIKA_EXPORT PIKA_DETAIL_DECLARE_SPDLOG(pika)
-
+    PIKA_EXPORT PIKA_DETAIL_DECLARE_SPDLOG(pika)
+#define LPIKA_ENABLED(loglevel) PIKA_DETAIL_SPDLOG_ENABLED(pika, loglevel)
 #define PIKA_DETAIL_LOG_PIKA(loglevel, ...) PIKA_DETAIL_SPDLOG(pika, loglevel, __VA_ARGS__)
 
         ////////////////////////////////////////////////////////////////////////

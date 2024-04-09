@@ -174,4 +174,7 @@ PIKA_DEFINE_LOG(g_l, logger_type)
     {                                                                                              \
         ::pika::util::get_##name##_logger()->log(spdlog::level::loglevel, __VA_ARGS__);            \
     }
+
+#define PIKA_DETAIL_SPDLOG_ENABLED(name, loglevel)                                                 \
+    (::pika::util::get_##name##_logger()->level() <= spdlog::level::loglevel)
 }    // namespace pika::util::logging

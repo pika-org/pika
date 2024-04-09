@@ -292,50 +292,12 @@ namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////
     void init_pika_log(pika::util::logging::level lvl, std::string logdest, std::string logformat)
     {
-        logger_writer_type& writer = pika::util::pika_logger()->writer();
-        logger_writer_type& error_writer = pika::util::pika_error_logger()->writer();
-
-        if (logdest.empty())    // ensure minimal defaults
-            logdest = "cerr";
-
-        if (logformat.empty()) logformat = "|\\n";
-
-        if (pika::util::logging::level::disable_all != lvl)
-        {
-            writer.write(logformat, logdest);
-            define_formatters(writer);
-
-            pika::util::pika_logger()->mark_as_initialized();
-            pika::util::pika_logger()->set_enabled(lvl);
-
-            // errors are logged to the given destination and to cerr
-            if (logdest != "cerr") error_writer.write(logformat, logdest + " cerr");
-            define_formatters(error_writer);
-
-            pika::util::pika_error_logger()->mark_as_initialized();
-            pika::util::pika_error_logger()->set_enabled(lvl);
-        }
-        else
-        {
-            // errors are always logged to cerr
-            error_writer.write(logformat, "cerr");
-
-            define_formatters(error_writer);
-
-            pika::util::pika_error_logger()->mark_as_initialized();
-            pika::util::pika_error_logger()->set_enabled(pika::util::logging::level::fatal);
-        }
+        // TODO
     }
 
     void init_pika_log(pika::util::runtime_configuration& ini)
     {
-        auto settings = get_log_settings(ini, "pika.logging");
-
-        auto lvl = pika::util::logging::level::disable_all;
-        if (!settings.level_.empty())
-            lvl = pika::util::detail::get_log_level(settings.level_, true);
-
-        init_pika_log(lvl, PIKA_MOVE(settings.dest_), PIKA_MOVE(settings.format_));
+        // TODO
     }
 
     ///////////////////////////////////////////////////////////////////////
@@ -343,32 +305,12 @@ namespace pika::detail {
     void init_debuglog_log(
         pika::util::logging::level lvl, std::string logdest, std::string logformat)
     {
-        if (pika::util::logging::level::disable_all != lvl)
-        {
-            logger_writer_type& writer = pika::util::debuglog_logger()->writer();
-
-            if (logdest.empty())    // ensure minimal defaults
-                logdest = "cerr";
-
-            if (logformat.empty()) logformat = "|\\n";
-
-            writer.write(logformat, logdest);
-            define_formatters(writer);
-
-            pika::util::debuglog_logger()->mark_as_initialized();
-        }
-        pika::util::debuglog_logger()->set_enabled(lvl);
+        // TODO
     }
 
     void init_debuglog_log(pika::util::runtime_configuration& ini)
     {
-        auto settings = get_log_settings(ini, "pika.logging.debuglog");
-
-        auto lvl = pika::util::logging::level::disable_all;
-        if (!settings.level_.empty())
-            lvl = pika::util::detail::get_log_level(settings.level_, true);
-
-        init_debuglog_log(lvl, PIKA_MOVE(settings.dest_), PIKA_MOVE(settings.format_));
+        // TODO
     }
 
     void init_logging(pika::util::runtime_configuration& ini)
@@ -377,7 +319,6 @@ namespace pika::detail {
         init_debuglog_log(ini);
 
         // TODO: Print filename and function by default
-        // TODO: Host name
         auto formatter = std::make_unique<spdlog::pattern_formatter>();
         formatter->add_flag<pika_thread_id_formatter_flag>('k');           // TODO: What letter?
         formatter->add_flag<pika_parent_thread_id_formatter_flag>('q');    // TODO: What letter?
@@ -403,11 +344,13 @@ namespace pika::detail {
         switch (dest)
         {
         case destination_pika:
-            pika::util::pika_logger()->set_enabled(pika::util::logging::level::disable_all);
+            // TODO
+            // pika::util::pika_logger()->set_enabled(pika::util::logging::level::disable_all);
             break;
 
         case destination_debuglog:
-            pika::util::debuglog_logger()->set_enabled(pika::util::logging::level::disable_all);
+            // TODO
+            // pika::util::debuglog_logger()->set_enabled(pika::util::logging::level::disable_all);
             break;
         }
     }
@@ -422,8 +365,8 @@ namespace pika::detail {
 
         switch (dest)
         {
-        case destination_pika: detail::init_pika_log(lvl, logdest, logformat); break;
-        case destination_debuglog: detail::init_debuglog_log(lvl, logdest, logformat); break;
+        case destination_pika: /* TODO detail::init_pika_log(lvl, logdest, logformat); */ break;
+        case destination_debuglog: /* TODO detail::init_debuglog_log(lvl, logdest, logformat); */ break;
         }
     }
 }    // namespace pika::detail
