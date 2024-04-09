@@ -53,25 +53,3 @@ namespace pika::resource {
     /// Return true if the pool with the given index exists
     PIKA_EXPORT bool pool_exists(std::size_t pool_index);
 }    // namespace pika::resource
-
-namespace pika::threads {
-    /// The function \a get_idle_core_count returns the number of currently
-    /// idling threads (cores).
-    PIKA_EXPORT std::int64_t get_idle_core_count();
-
-    /// The function \a get_idle_core_mask returns a bit-mask representing the
-    /// currently idling threads (cores).
-    PIKA_EXPORT detail::mask_type get_idle_core_mask();
-
-    /// The function \a enumerate_threads will invoke the given function \a f
-    /// for each thread with a matching thread state.
-    ///
-    /// \param f        [in] The function which should be called for each
-    ///                 matching thread. Returning 'false' from this function
-    ///                 will stop the enumeration process.
-    /// \param state    [in] This specifies the thread-state for which the
-    ///                 threads should be enumerated.
-    PIKA_EXPORT bool enumerate_threads(
-        pika::util::detail::function<bool(detail::thread_id_type)> const& f,
-        detail::thread_schedule_state state = detail::thread_schedule_state::unknown);
-}    // namespace pika::threads

@@ -65,21 +65,3 @@ namespace pika::resource {
         return pika::detail::get_runtime().get_thread_manager().pool_exists(pool_index);
     }
 }    // namespace pika::resource
-
-namespace pika::threads {
-    std::int64_t get_idle_core_count()
-    {
-        return pika::detail::get_runtime().get_thread_manager().get_idle_core_count();
-    }
-
-    detail::mask_type get_idle_core_mask()
-    {
-        return pika::detail::get_runtime().get_thread_manager().get_idle_core_mask();
-    }
-
-    bool enumerate_threads(pika::util::detail::function<bool(detail::thread_id_type)> const& f,
-        detail::thread_schedule_state state)
-    {
-        return pika::detail::get_runtime().get_thread_manager().enumerate_threads(f, state);
-    }
-}    // namespace pika::threads
