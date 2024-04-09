@@ -266,8 +266,6 @@ namespace pika {
       , stop_called_(false)
       , stop_done_(false)
     {
-        LPROGRESS_;
-
         // set notification policies only after the object was completely
         // initialized
         runtime::set_notification_policies(
@@ -295,8 +293,6 @@ namespace pika {
       , stop_done_(false)
     {
         init_global_data();
-
-        LPROGRESS_;
     }
 
     void runtime::set_notification_policies(notification_policy_type&& notifier)
@@ -308,8 +304,6 @@ namespace pika {
 
     void runtime::init()
     {
-        LPROGRESS_;
-
         try
         {
             // now create all thread_manager pools
@@ -362,8 +356,6 @@ namespace pika {
         thread_manager_->stop();
         PIKA_LRT_(debug, "~runtime(finished)");
 
-        LPROGRESS_;
-
         // allow to reuse instance number if this was the only instance
         if (0 == instance_number_counter_) --instance_number_counter_;
 
@@ -409,7 +401,7 @@ namespace pika {
 
     void runtime::set_state(runtime_state s)
     {
-        LPROGRESS_ << pika::detail::get_runtime_state_name(s);
+        PIKA_LRT_(info, "{}", pika::detail::get_runtime_state_name(s));
         state_.store(s);
     }
 
@@ -1260,7 +1252,7 @@ namespace pika {
     // First half of termination process: stop thread manager,
     void runtime::stop(bool blocking)
     {
-        PIKA_LRT_(warn, "runtime: about to stop services");
+        PIKA_LRT_(info, "runtime: about to stop services");
 
         call_shutdown_functions(true);
 

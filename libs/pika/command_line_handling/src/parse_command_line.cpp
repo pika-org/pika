@@ -358,9 +358,6 @@ namespace pika::detail {
             ("pika:debug-pika-log", value<std::string>()->implicit_value("cout"),
               "enable all messages on the pika log channel and send all "
               "pika logs to the target destination")
-            ("pika:debug-timing-log", value<std::string>()->implicit_value("cout"),
-              "enable all messages on the timing log channel and send all "
-              "timing logs to the target destination")
 #if defined(_POSIX_VERSION) || defined(PIKA_WINDOWS)
             ("pika:attach-debugger",
                 value<std::string>()->implicit_value("startup"),

@@ -564,13 +564,6 @@ namespace pika::detail {
             ini_config.emplace_back("pika.logging.level=5");
         }
 
-        if (vm.count("pika:debug-timing-log"))
-        {
-            ini_config.emplace_back("pika.logging.timing.destination=" +
-                detail::convert_to_log_file(vm["pika:debug-timing-log"].as<std::string>()));
-            ini_config.emplace_back("pika.logging.timing.level=1");
-        }
-
         if (vm.count("pika:debug-app-log"))
         {
             ini_config.emplace_back("pika.logging.application.destination=" +

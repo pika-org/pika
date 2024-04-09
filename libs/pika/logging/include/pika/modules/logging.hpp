@@ -12,8 +12,7 @@ namespace pika {
     enum logging_destination
     {
         destination_pika = 0,
-        destination_timing = 1,
-        destination_debuglog = 2
+        destination_debuglog = 1
     };
 }    // namespace pika
 
@@ -28,7 +27,6 @@ namespace pika {
 #define PIKA_LTM_(loglevel, ...) PIKA_DETAIL_LOG_PIKA(loglevel, __VA_ARGS__)  /* thread manager */
 #define PIKA_LRT_(loglevel, ...) PIKA_DETAIL_LOG_PIKA(loglevel, __VA_ARGS__)  /* runtime support */
 #define PIKA_LERR_(loglevel, ...) PIKA_DETAIL_LOG_PIKA(loglevel, __VA_ARGS__) /* exceptions */
-#define PIKA_LLCO_(loglevel, ...) PIKA_DETAIL_LOG_PIKA(loglevel, __VA_ARGS__) /* lcos */
 #define PIKA_LBT_(loglevel, ...) PIKA_DETAIL_LOG_PIKA(loglevel, __VA_ARGS__)  /* bootstrap */
 #define PIKA_DETAIL_LOG_PIKA_TM(loglevel, format_string, ...)                                      \
     PIKA_DETAIL_LOG_PIKA(loglevel, " [TM] " format_string, __VA_ARGS__)
@@ -44,20 +42,7 @@ namespace pika::util {
     }    // namespace detail
 
     ////////////////////////////////////////////////////////////////////////
-    PIKA_EXPORT PIKA_DECLARE_LOG(timing)
-
-#define LTIM_(lvl)                                                                                 \
-    PIKA_LOG_FORMAT(pika::util::timing, ::pika::util::logging::level::lvl, "{:>10} ",              \
-        ::pika::util::logging::level::lvl) /**/
-#define LPROGRESS_                                                                                 \
-    PIKA_LOG_FORMAT(pika::util::timing, ::pika::util::logging::level::fatal, " {}:{} {} ",         \
-        __FILE__, __LINE__, PIKA_ASSERT_CURRENT_FUNCTION) /**/
-
-#define LTIM_ENABLED(lvl)                                                                          \
-    pika::util::timing_logger()->is_enabled(::pika::util::logging::level::lvl) /**/
-
-        ////////////////////////////////////////////////////////////////////////
-        PIKA_EXPORT PIKA_DECLARE_LOG(pika)
+    PIKA_EXPORT PIKA_DECLARE_LOG(pika)
 
 #define LPIKA_(lvl, cat)                                                                           \
     PIKA_LOG_FORMAT(pika::util::pika, ::pika::util::logging::level::lvl, "{:>10}{}",               \
@@ -66,7 +51,7 @@ namespace pika::util {
 #define LPIKA_ENABLED(lvl)                                                                         \
     pika::util::pika_logger()->is_enabled(::pika::util::logging::level::lvl) /**/
 
-            PIKA_EXPORT PIKA_DETAIL_DECLARE_SPDLOG(pika)
+        PIKA_EXPORT PIKA_DETAIL_DECLARE_SPDLOG(pika)
 
 #define PIKA_DETAIL_LOG_PIKA(loglevel, ...) PIKA_DETAIL_SPDLOG(pika, loglevel, __VA_ARGS__)
 
@@ -102,7 +87,6 @@ bootstrap_logging const& operator<<(bootstrap_logging const& l, T const& t)
 {
     // NOLINTNEXTLINE(bugprone-branch-clone)
     PIKA_LBT_(info, "{}", t);
-    LPROGRESS_ << t;
     return l;
 }
 

@@ -25,7 +25,6 @@ namespace pika::util {
     PIKA_DEFINE_LOG(pika, disable_all)
     PIKA_DETAIL_DEFINE_SPDLOG(pika, off)
     PIKA_DEFINE_LOG(pika_error, fatal)
-    PIKA_DEFINE_LOG(timing, disable_all)
 
     namespace detail {
         pika::util::logging::level get_log_level(std::string const& env, bool allow_always)

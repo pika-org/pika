@@ -290,38 +290,6 @@ namespace pika::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////
-    // initialize logging for performance measurements
-    void init_timing_log(pika::util::logging::level lvl, std::string logdest, std::string logformat)
-    {
-        if (pika::util::logging::level::disable_all != lvl)
-        {
-            logger_writer_type& writer = pika::util::timing_logger()->writer();
-
-            if (logdest.empty())    // ensure minimal defaults
-                logdest = "cerr";
-
-            if (logformat.empty()) logformat = "|\\n";
-
-            writer.write(logformat, logdest);
-            define_formatters(writer);
-
-            pika::util::timing_logger()->mark_as_initialized();
-        }
-        pika::util::timing_logger()->set_enabled(lvl);
-    }
-
-    void init_timing_log(pika::util::runtime_configuration& ini)
-    {
-        auto settings = get_log_settings(ini, "pika.logging.timing");
-
-        auto lvl = pika::util::logging::level::disable_all;
-        if (!settings.level_.empty())
-            lvl = pika::util::detail::get_log_level(settings.level_, true);
-
-        init_timing_log(lvl, PIKA_MOVE(settings.dest_), PIKA_MOVE(settings.format_));
-    }
-
-    ///////////////////////////////////////////////////////////////////////
     void init_pika_log(pika::util::logging::level lvl, std::string logdest, std::string logformat)
     {
         logger_writer_type& writer = pika::util::pika_logger()->writer();
@@ -405,7 +373,6 @@ namespace pika::detail {
 
     void init_logging(pika::util::runtime_configuration& ini)
     {
-        init_timing_log(ini);
         init_pika_log(ini);
         init_debuglog_log(ini);
 
@@ -439,10 +406,6 @@ namespace pika::detail {
             pika::util::pika_logger()->set_enabled(pika::util::logging::level::disable_all);
             break;
 
-        case destination_timing:
-            pika::util::timing_logger()->set_enabled(pika::util::logging::level::disable_all);
-            break;
-
         case destination_debuglog:
             pika::util::debuglog_logger()->set_enabled(pika::util::logging::level::disable_all);
             break;
@@ -460,7 +423,6 @@ namespace pika::detail {
         switch (dest)
         {
         case destination_pika: detail::init_pika_log(lvl, logdest, logformat); break;
-        case destination_timing: detail::init_debuglog_log(lvl, logdest, logformat); break;
         case destination_debuglog: detail::init_debuglog_log(lvl, logdest, logformat); break;
         }
     }
