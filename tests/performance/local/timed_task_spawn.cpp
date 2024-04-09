@@ -50,8 +50,8 @@ using pika::threads::detail::make_thread_function_nullary;
 using pika::threads::detail::register_work;
 using pika::threads::detail::thread_init_data;
 
+using pika::detail::get_runtime;
 using pika::this_thread::suspend;
-using pika::threads::get_thread_count;
 
 using pika::chrono::detail::high_resolution_timer;
 
@@ -153,12 +153,14 @@ void print_results(std::uint64_t cores, double walltime, double warmup_estimate,
 ///////////////////////////////////////////////////////////////////////////////
 void wait_for_tasks(pika::barrier& finished, std::uint64_t suspended_tasks)
 {
-    std::uint64_t const pending_count = get_thread_count(pika::execution::thread_priority::normal,
+    std::uint64_t const pending_count = get_runtime().get_thread_manager().get_thread_count(
+        pika::execution::thread_priority::normal,
         pika::threads::detail::thread_schedule_state::pending);
 
     if (pending_count == 0)
     {
-        std::uint64_t const all_count = get_thread_count(pika::execution::thread_priority::normal);
+        std::uint64_t const all_count = get_runtime().get_thread_manager().get_thread_count(
+            pika::execution::thread_priority::normal);
 
         if (all_count != suspended_tasks + 1)
         {
