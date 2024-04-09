@@ -28,15 +28,4 @@ namespace pika {
     /// Return a human-readable name representing one of the kernel thread types
     PIKA_EXPORT std::string get_os_thread_type_name(os_thread_type type);
 
-    ///////////////////////////////////////////////////////////////////////////
-    /// Registration data for kernel threads that is maintained by the runtime
-    /// internally
-    struct os_thread_data
-    {
-        std::string label_;              ///< name used for thread registration
-        std::thread::id id_;             ///< thread id of corresponding kernel thread
-        std::uint64_t native_handle_;    ///< the threads native handle
-        os_thread_type type_;            ///< pika thread type
-    };
-
 }    // namespace pika

@@ -22,14 +22,12 @@
 #include <pika/runtime/config_entry.hpp>
 #include <pika/runtime/custom_exception_info.hpp>
 #include <pika/runtime/debugging.hpp>
-#include <pika/runtime/os_thread_type.hpp>
 #include <pika/runtime/runtime.hpp>
 #include <pika/runtime/runtime_fwd.hpp>
 #include <pika/runtime/shutdown_function.hpp>
 #include <pika/runtime/startup_function.hpp>
 #include <pika/runtime/state.hpp>
 #include <pika/runtime/thread_hooks.hpp>
-#include <pika/runtime/thread_mapper.hpp>
 #include <pika/string_util/from_string.hpp>
 #include <pika/thread_support/set_thread_name.hpp>
 #include <pika/threading_base/external_timer.hpp>
@@ -250,7 +248,6 @@ namespace pika::detail {
     runtime::runtime(pika::util::runtime_configuration& rtcfg, bool initialize)
       : rtcfg_(rtcfg)
       , instance_number_(++instance_number_counter_)
-      , thread_support_(new pika::util::thread_mapper)
       , topology_(resource::get_partitioner().get_topology())
       , state_(pika::runtime_state::invalid)
       , on_start_func_(global_on_start_func)
@@ -266,8 +263,7 @@ namespace pika::detail {
 
         // set notification policies only after the object was completely
         // initialized
-        runtime::set_notification_policies(
-            runtime::get_notification_policy("worker-thread", os_thread_type::worker_thread));
+        runtime::set_notification_policies(runtime::get_notification_policy("worker-thread"));
 
         init_global_data();
 
@@ -278,7 +274,6 @@ namespace pika::detail {
     runtime::runtime(pika::util::runtime_configuration& rtcfg)
       : rtcfg_(rtcfg)
       , instance_number_(++instance_number_counter_)
-      , thread_support_(new pika::util::thread_mapper)
       , topology_(resource::get_partitioner().get_topology())
       , state_(pika::runtime_state::invalid)
       , on_start_func_(global_on_start_func)
@@ -582,20 +577,6 @@ namespace pika::detail {
     {
         PIKA_ASSERT(rt);
         rt->unregister_thread();
-    }
-
-    // Access data for a given OS thread that was previously registered by
-    // \a register_thread. This function must be called from a thread that was
-    // previously registered with the runtime.
-    os_thread_data get_os_thread_data(std::string const& label)
-    {
-        return get_runtime().get_os_thread_data(label);
-    }
-
-    /// Enumerate all OS threads that have registered with the runtime.
-    bool enumerate_os_threads(pika::util::detail::function<bool(os_thread_data const&)> const& f)
-    {
-        return get_runtime().enumerate_os_threads(f);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -1105,7 +1086,7 @@ namespace pika::detail {
         // Register this thread with the runtime system to allow calling
         // certain pika functionality from the main thread. Also calls
         // registered startup callbacks.
-        init_tss_helper("main-thread", os_thread_type::main_thread, 0, 0, "", "", false);
+        init_tss_helper("main-thread", 0, 0, "", "", false);
 
         // start the thread manager
         thread_manager_->run();
@@ -1403,11 +1384,8 @@ namespace pika::detail {
         return result;
     }
 
-    pika::util::thread_mapper& runtime::get_thread_mapper() { return *thread_support_; }
-
     ///////////////////////////////////////////////////////////////////////////
-    pika::threads::callback_notifier runtime::get_notification_policy(
-        char const* prefix, os_thread_type type)
+    pika::threads::callback_notifier runtime::get_notification_policy(char const* prefix)
     {
         using report_error_t = bool (runtime::*)(std::size_t, std::exception_ptr const&, bool);
 
@@ -1419,7 +1397,7 @@ namespace pika::detail {
         notification_policy_type notifier;
 
         notifier.add_on_start_thread_callback(pika::util::detail::bind(
-            &runtime::init_tss_helper, this, prefix, type, _1, _2, _3, _4, false));
+            &runtime::init_tss_helper, this, prefix, _1, _2, _3, _4, false));
         notifier.add_on_stop_thread_callback(
             pika::util::detail::bind(&runtime::deinit_tss_helper, this, prefix, _1));
         notifier.set_on_error_callback(pika::util::detail::bind(
@@ -1428,19 +1406,19 @@ namespace pika::detail {
         return notifier;
     }
 
-    void runtime::init_tss_helper(char const* context, os_thread_type type,
-        std::size_t local_thread_num, std::size_t global_thread_num, char const* pool_name,
-        char const* postfix, bool service_thread)
+    void runtime::init_tss_helper(char const* context, std::size_t local_thread_num,
+        std::size_t global_thread_num, char const* pool_name, char const* postfix,
+        bool service_thread)
     {
         error_code ec(throwmode::lightweight);
-        return init_tss_ex(context, type, local_thread_num, global_thread_num, pool_name, postfix,
-            service_thread, ec);
+        return init_tss_ex(
+            context, local_thread_num, global_thread_num, pool_name, postfix, service_thread, ec);
     }
 
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-    void runtime::init_tss_ex(char const* context, os_thread_type type,
-        std::size_t local_thread_num, std::size_t global_thread_num, char const* pool_name,
-        char const* postfix, bool service_thread, error_code& ec)
+    void runtime::init_tss_ex(char const* context, std::size_t local_thread_num,
+        std::size_t global_thread_num, char const* pool_name, char const* postfix,
+        bool service_thread, error_code& ec)
     // NOLINTEND(bugprone-easily-swappable-parameters)
     {
         std::ostringstream fullname;
@@ -1460,9 +1438,6 @@ namespace pika::detail {
         detail::thread_name() = PIKA_MOVE(fullname).str();
 
         char const* name = detail::thread_name().c_str();
-
-        // initialize thread mapping for external libraries (i.e. PAPI)
-        thread_support_->register_thread(name, type);
 
         // register this thread with any possibly active Intel tool
         PIKA_ITT_THREAD_SET_NAME(name);
@@ -1522,9 +1497,6 @@ namespace pika::detail {
         // call thread-specific user-supplied on_stop handler
         if (on_stop_func_) { on_stop_func_(global_thread_num, global_thread_num, "", context); }
 
-        // reset PAPI support
-        thread_support_->unregister_thread();
-
         // reset thread local storage
         detail::thread_name().clear();
     }
@@ -1560,8 +1532,8 @@ namespace pika::detail {
         std::string thread_name(name);
         thread_name += "-thread";
 
-        init_tss_ex(thread_name.c_str(), os_thread_type::custom_thread, global_thread_num,
-            global_thread_num, "", nullptr, service_thread, ec);
+        init_tss_ex(thread_name.c_str(), global_thread_num, global_thread_num, "", nullptr,
+            service_thread, ec);
 
         return !ec ? true : false;
     }
@@ -1573,25 +1545,10 @@ namespace pika::detail {
         return true;
     }
 
-    // Access data for a given OS thread that was previously registered by
-    // \a register_thread. This function must be called from a thread that was
-    // previously registered with the runtime.
-    os_thread_data runtime::get_os_thread_data(std::string const& label) const
-    {
-        return thread_support_->get_os_thread_data(label);
-    }
-
-    /// Enumerate all OS threads that have registered with the runtime.
-    bool runtime::enumerate_os_threads(
-        pika::util::detail::function<bool(os_thread_data const&)> const& f) const
-    {
-        return thread_support_->enumerate_os_threads(f);
-    }
-
     ///////////////////////////////////////////////////////////////////////////
     pika::threads::callback_notifier get_notification_policy(char const* prefix)
     {
-        return get_runtime().get_notification_policy(prefix, os_thread_type::worker_thread);
+        return get_runtime().get_notification_policy(prefix);
     }
 
     namespace threads {

@@ -23,7 +23,6 @@ set(runtime_headers
     pika/runtime/shutdown_function.hpp
     pika/runtime/startup_function.hpp
     pika/runtime/thread_hooks.hpp
-    pika/runtime/thread_mapper.hpp
     pika/runtime/thread_pool_helpers.hpp
     pika/runtime/thread_stacktrace.hpp
 )
@@ -35,7 +34,6 @@ set(runtime_sources
     runtime_handlers.cpp
     runtime.cpp
     state.cpp
-    thread_mapper.cpp
     thread_pool_helpers.cpp
     thread_stacktrace.cpp
 )

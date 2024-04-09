@@ -12,13 +12,11 @@
 #include <pika/modules/program_options.hpp>
 #include <pika/modules/thread_manager.hpp>
 #include <pika/modules/topology.hpp>
-#include <pika/runtime/os_thread_type.hpp>
 #include <pika/runtime/runtime_fwd.hpp>
 #include <pika/runtime/shutdown_function.hpp>
 #include <pika/runtime/startup_function.hpp>
 #include <pika/runtime/state.hpp>
 #include <pika/runtime/thread_hooks.hpp>
-#include <pika/runtime/thread_mapper.hpp>
 #include <pika/runtime_configuration/runtime_configuration.hpp>
 #include <pika/threading_base/callback_notifier.hpp>
 
@@ -55,8 +53,7 @@ namespace pika::detail {
         /// Generate a new notification policy instance for the given thread
         /// name prefix
         using notification_policy_type = pika::threads::callback_notifier;
-        virtual notification_policy_type get_notification_policy(
-            char const* prefix, os_thread_type type);
+        virtual notification_policy_type get_notification_policy(char const* prefix);
 
         runtime_state get_state() const;
         void set_state(runtime_state s);
@@ -104,9 +101,6 @@ namespace pika::detail {
 
         /// \brief Return the system uptime measure on the thread executing this call
         static std::uint64_t get_system_uptime();
-
-        /// \brief Return a reference to the internal PAPI thread manager
-        pika::util::thread_mapper& get_thread_mapper();
 
         pika::threads::detail::topology const& get_topology() const;
 
@@ -319,14 +313,6 @@ namespace pika::detail {
         ///
         virtual bool unregister_thread();
 
-        /// Access data for a given OS thread that was previously registered by
-        /// \a register_thread.
-        virtual os_thread_data get_os_thread_data(std::string const& label) const;
-
-        /// Enumerate all OS threads that have registered with the runtime.
-        virtual bool enumerate_os_threads(
-            pika::util::detail::function<bool(os_thread_data const&)> const& f) const;
-
         notification_policy_type::on_startstop_type on_start_func() const;
         notification_policy_type::on_startstop_type on_stop_func() const;
         notification_policy_type::on_error_type on_error_func() const;
@@ -367,10 +353,6 @@ namespace pika::detail {
         long instance_number_;
         static std::atomic<int> instance_number_counter_;
 
-        // certain components (such as PAPI) require all threads to be
-        // registered with the library
-        std::unique_ptr<pika::util::thread_mapper> thread_support_;
-
         // topology and affinity data
         pika::threads::detail::topology& topology_;
 
@@ -402,11 +384,11 @@ namespace pika::detail {
 
         void deinit_tss_helper(char const* context, std::size_t num);
 
-        void init_tss_ex(char const* context, os_thread_type type, std::size_t local_thread_num,
+        void init_tss_ex(char const* context, std::size_t local_thread_num,
             std::size_t global_thread_num, char const* pool_name, char const* postfix,
             bool service_thread, error_code& ec);
 
-        void init_tss_helper(char const* context, os_thread_type type, std::size_t local_thread_num,
+        void init_tss_helper(char const* context, std::size_t local_thread_num,
             std::size_t global_thread_num, char const* pool_name, char const* postfix,
             bool service_thread);
 
