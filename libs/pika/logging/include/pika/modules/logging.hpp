@@ -48,19 +48,3 @@ namespace pika::util {
     PIKA_LOG_FORMAT(pika::util::pika_error, ::pika::util::logging::level::fatal, "{:>10} [ERR] ",  \
         ::pika::util::logging::level::fatal) /**/
 }    // namespace pika::util
-
-// helper type to forward logging during bootstrap to two destinations
-struct bootstrap_logging
-{
-    constexpr bootstrap_logging() {}
-};
-
-template <typename T>
-bootstrap_logging const& operator<<(bootstrap_logging const& l, T const& t)
-{
-    // NOLINTNEXTLINE(bugprone-branch-clone)
-    PIKA_LOG(info, "{}", t);
-    return l;
-}
-
-constexpr bootstrap_logging lbt_;
