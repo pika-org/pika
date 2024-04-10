@@ -172,7 +172,9 @@ PIKA_DEFINE_LOG(g_l, logger_type)
 #define PIKA_DETAIL_SPDLOG(name, loglevel, ...)                                                    \
     if (::pika::util::get_##name##_logger()->level() <= spdlog::level::loglevel)                   \
     {                                                                                              \
-        ::pika::util::get_##name##_logger()->log(spdlog::level::loglevel, __VA_ARGS__);            \
+        ::pika::util::get_##name##_logger()->log(                                                  \
+            spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, spdlog::level::loglevel,      \
+            __VA_ARGS__);                                                                          \
     }
 
 #define PIKA_DETAIL_SPDLOG_ENABLED(name, loglevel)                                                 \

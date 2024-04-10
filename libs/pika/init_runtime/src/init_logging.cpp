@@ -304,14 +304,13 @@ namespace pika::detail {
     {
         init_pika_log(ini);
 
-        // TODO: Print filename and function by default
         auto formatter = std::make_unique<spdlog::pattern_formatter>();
         formatter->add_flag<pika_thread_id_formatter_flag>('k');           // TODO: What letter?
         formatter->add_flag<pika_parent_thread_id_formatter_flag>('q');    // TODO: What letter?
         formatter->add_flag<pika_worker_thread_formatter_flag>('w');       // TODO: What letter?
         formatter->add_flag<hostname_formatter_flag>('j');                 // TODO: What letter?
         formatter->set_pattern("[%Y-%m-%d %H:%M:%S.%F] [%n] [%-8l] [host:%j] [pid:%P] [tid:%t] "
-                               "[pool:%w] [parent:%q] [task:%k] %v");
+                               "[pool:%w] [parent:%q] [task:%k] [%s:%#:%!] %v");
         pika::util::get_pika_logger()->set_formatter(std::move(formatter));
 
         auto settings = get_log_settings(ini, "pika.logging");
