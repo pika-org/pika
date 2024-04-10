@@ -247,7 +247,6 @@ namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     runtime::runtime(pika::util::runtime_configuration& rtcfg, bool initialize)
       : rtcfg_(rtcfg)
-      , instance_number_(++instance_number_counter_)
       , topology_(resource::get_partitioner().get_topology())
       , state_(pika::runtime_state::invalid)
       , on_start_func_(global_on_start_func)
@@ -273,7 +272,6 @@ namespace pika::detail {
     // this constructor is called by the distributed runtime only
     runtime::runtime(pika::util::runtime_configuration& rtcfg)
       : rtcfg_(rtcfg)
-      , instance_number_(++instance_number_counter_)
       , topology_(resource::get_partitioner().get_topology())
       , state_(pika::runtime_state::invalid)
       , on_start_func_(global_on_start_func)
@@ -355,9 +353,6 @@ namespace pika::detail {
 
         LPROGRESS_;
 
-        // allow to reuse instance number if this was the only instance
-        if (0 == instance_number_counter_) --instance_number_counter_;
-
         resource::detail::delete_partitioner();
 
 #if defined(PIKA_HAVE_GPU_SUPPORT)
@@ -389,11 +384,6 @@ namespace pika::detail {
 
     pika::util::runtime_configuration const& runtime::get_config() const { return rtcfg_; }
 
-    std::size_t runtime::get_instance_number() const
-    {
-        return static_cast<std::size_t>(instance_number_);
-    }
-
     pika::runtime_state runtime::get_state() const { return state_.load(); }
 
     pika::threads::detail::topology const& runtime::get_topology() const { return topology_; }
@@ -403,9 +393,6 @@ namespace pika::detail {
         LPROGRESS_ << pika::detail::get_runtime_state_name(s);
         state_.store(s);
     }
-
-    ///////////////////////////////////////////////////////////////////////////
-    std::atomic<int> runtime::instance_number_counter_(-1);
 
     ///////////////////////////////////////////////////////////////////////////
     namespace {
@@ -1396,8 +1383,8 @@ namespace pika::detail {
 
         notification_policy_type notifier;
 
-        notifier.add_on_start_thread_callback(pika::util::detail::bind(
-            &runtime::init_tss_helper, this, prefix, _1, _2, _3, _4));
+        notifier.add_on_start_thread_callback(
+            pika::util::detail::bind(&runtime::init_tss_helper, this, prefix, _1, _2, _3, _4));
         notifier.add_on_stop_thread_callback(
             pika::util::detail::bind(&runtime::deinit_tss_helper, this, prefix, _1));
         notifier.set_on_error_callback(pika::util::detail::bind(
@@ -1455,7 +1442,6 @@ namespace pika::detail {
         {
             on_start_func_(local_thread_num, global_thread_num, pool_name, context);
         }
-
     }
 
     void runtime::deinit_tss_helper(char const* context, std::size_t global_thread_num)
@@ -1494,8 +1480,7 @@ namespace pika::detail {
     }
 
     /// Register an external OS-thread with pika
-    bool runtime::register_thread(
-        char const* name, std::size_t global_thread_num, error_code& ec)
+    bool runtime::register_thread(char const* name, std::size_t global_thread_num, error_code& ec)
     {
         std::string thread_name(name);
         thread_name += "-thread";

@@ -30,7 +30,7 @@ void print_system_characteristics()
     // -------------------------------------- //
 
     //! -------------------------------------- runtime
-    std::cout << "[Runtime], instance number " << rt->get_instance_number() << "\n"
+    std::cout << "[Runtime] instance "
               << "called by thread named     " << pika::detail::get_thread_name() << "\n\n";
 
     //! -------------------------------------- thread_manager

@@ -97,8 +97,6 @@ namespace pika::detail {
 
         pika::util::runtime_configuration const& get_config() const;
 
-        std::size_t get_instance_number() const;
-
         /// \brief Return the system uptime measure on the thread executing this call
         static std::uint64_t get_system_uptime();
 
@@ -290,8 +288,8 @@ namespace pika::detail {
         /// \returns This function will return whether the requested operation
         ///          succeeded or not.
         ///
-        virtual bool register_thread(char const* name, std::size_t num = 0,
-            error_code& ec = throws);
+        virtual bool register_thread(
+            char const* name, std::size_t num = 0, error_code& ec = throws);
 
         /// \brief Unregister an external OS-thread with pika
         ///
@@ -343,9 +341,6 @@ namespace pika::detail {
         mutable std::mutex mtx_;
 
         pika::util::runtime_configuration rtcfg_;
-
-        long instance_number_;
-        static std::atomic<int> instance_number_counter_;
 
         // topology and affinity data
         pika::threads::detail::topology& topology_;
