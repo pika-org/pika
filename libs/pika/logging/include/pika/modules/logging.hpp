@@ -38,9 +38,4 @@ namespace pika::util {
     PIKA_EXPORT PIKA_DETAIL_DECLARE_SPDLOG(pika)
 #define LPIKA_ENABLED(loglevel) PIKA_DETAIL_SPDLOG_ENABLED(pika, loglevel)
 #define PIKA_DETAIL_LOG_PIKA(loglevel, ...) PIKA_DETAIL_SPDLOG(pika, loglevel, __VA_ARGS__)
-
-        ////////////////////////////////////////////////////////////////////////
-        // errors are logged in a special manner (always to cerr and additionally,
-        // if enabled to 'normal' logging destination as well)
-        PIKA_EXPORT PIKA_DECLARE_LOG(pika_error)
 }    // namespace pika::util
