@@ -43,8 +43,4 @@ namespace pika::util {
         // errors are logged in a special manner (always to cerr and additionally,
         // if enabled to 'normal' logging destination as well)
         PIKA_EXPORT PIKA_DECLARE_LOG(pika_error)
-
-#define LFATAL_                                                                                    \
-    PIKA_LOG_FORMAT(pika::util::pika_error, ::pika::util::logging::level::fatal, "{:>10} [ERR] ",  \
-        ::pika::util::logging::level::fatal) /**/
 }    // namespace pika::util

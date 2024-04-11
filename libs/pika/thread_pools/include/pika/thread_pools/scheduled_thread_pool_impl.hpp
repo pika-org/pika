@@ -480,8 +480,9 @@ namespace pika::threads::detail {
             }
             catch (pika::exception const& e)
             {
-                LFATAL_.format("thread_func: {} thread_num:{} : caught pika::exception: {}, "
-                               "aborted thread execution",
+                PIKA_LOG(critical,
+                    "thread_func: {} thread_num:{} : caught pika::exception: {}, "
+                    "aborted thread execution",
                     id_.name(), global_thread_num, e.what());
 
                 report_error(global_thread_num, std::current_exception());
@@ -489,8 +490,9 @@ namespace pika::threads::detail {
             }
             catch (std::system_error const& e)
             {
-                LFATAL_.format("thread_func: {} thread_num:{} : caught std::system_error: {}, "
-                               "aborted thread execution",
+                PIKA_LOG(critical,
+                    "thread_func: {} thread_num:{} : caught std::system_error: {}, "
+                    "aborted thread execution",
                     id_.name(), global_thread_num, e.what());
 
                 report_error(global_thread_num, std::current_exception());
@@ -504,8 +506,9 @@ namespace pika::threads::detail {
         }
         catch (...)
         {
-            LFATAL_.format("thread_func: {} thread_num:{} : caught unexpected exception, aborted "
-                           "thread execution",
+            PIKA_LOG(critical,
+                "thread_func: {} thread_num:{} : caught unexpected exception, aborted "
+                "thread execution",
                 id_.name(), global_thread_num);
 
             report_error(global_thread_num, std::current_exception());
