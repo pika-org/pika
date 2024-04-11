@@ -241,7 +241,7 @@ if(PIKA_WITH_PRECOMPILED_HEADERS)
   set(PIKA_WITH_PRECOMPILED_HEADERS_INTERNAL ON)
   # Only create the targets here. They will be set up later once all modules are known.
   add_library(pika_precompiled_headers OBJECT libs/src/dummy.cpp)
-  add_executable(pika_exe_precompiled_headers libs/src/dummy.cpp)
+  add_executable(pika_exe_precompiled_headers libs/src/dummy_main.cpp)
 
   set_target_properties(pika_precompiled_headers PROPERTIES FOLDER "Core")
   set_target_properties(pika_exe_precompiled_headers PROPERTIES FOLDER "Core")
