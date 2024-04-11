@@ -398,7 +398,7 @@ namespace pika::threads::detail {
 
         // If the mask is empty (signaling no binding) we set a full mask anyway, because the whole
         // process may have a non-full mask set which is inherited by this thread.
-        if (!any(mask)) { mask = ~mask; }
+        if (!any(mask)) { mask = topo.get_machine_affinity_mask(); }
 
         if (LPIKA_ENABLED(debug)) topo.write_to_log();
 
