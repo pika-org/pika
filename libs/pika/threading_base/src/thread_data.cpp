@@ -11,7 +11,7 @@
 #include <pika/functional/function.hpp>
 #include <pika/lock_registration/detail/register_locks.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/logging.hpp>
+#include <pika/logging.hpp>
 #include <pika/thread_support/unlock_guard.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_data.hpp>

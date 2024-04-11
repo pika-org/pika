@@ -6,7 +6,7 @@
 
 #include <pika/config.hpp>
 #include <pika/allocator_support/internal_allocator.hpp>
-#include <pika/modules/logging.hpp>
+#include <pika/logging.hpp>
 #include <pika/threading_base/thread_data.hpp>
 
 #include <fmt/format.h>

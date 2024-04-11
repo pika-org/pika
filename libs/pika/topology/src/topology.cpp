@@ -11,11 +11,13 @@
 
 #include <pika/assert.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/logging.hpp>
+#include <pika/logging.hpp>
 #include <pika/topology/cpu_mask.hpp>
 #include <pika/topology/topology.hpp>
 #include <pika/type_support/unused.hpp>
 #include <pika/util/ios_flags_saver.hpp>
+
+#include <fmt/ostream.h>
 
 #include <cstddef>
 #include <iomanip>

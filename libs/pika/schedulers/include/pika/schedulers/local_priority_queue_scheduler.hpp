@@ -13,7 +13,7 @@
 #include <pika/concurrency/cache_line_data.hpp>
 #include <pika/functional/function.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/logging.hpp>
+#include <pika/logging.hpp>
 #include <pika/schedulers/deadlock_detection.hpp>
 #include <pika/schedulers/lockfree_queue_backends.hpp>
 #include <pika/schedulers/thread_queue.hpp>
@@ -1048,10 +1048,10 @@ namespace pika::threads::detail {
                     }
                     else
                     {
-                        LPIKA_CONSOLE_(pika::util::logging::level::error)
-                            .format("  [TM] pool({}), scheduler({}), worker_thread({}): no new "
-                                    "work available, are we deadlocked?\n",
-                                *this->get_parent_pool(), *this, num_thread);
+                        PIKA_LOG(error,
+                            "  [TM] pool({}), scheduler({}), worker_thread({}): no new "
+                            "work available, are we deadlocked?\n",
+                            *this->get_parent_pool(), *this, num_thread);
                     }
                 }
             }

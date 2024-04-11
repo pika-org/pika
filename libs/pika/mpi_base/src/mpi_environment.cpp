@@ -7,7 +7,7 @@
 
 #include <pika/config.hpp>
 
-#include <pika/modules/logging.hpp>
+#include <pika/logging.hpp>
 #include <pika/modules/mpi_base.hpp>
 #include <pika/modules/runtime_configuration.hpp>
 #include <pika/modules/util.hpp>

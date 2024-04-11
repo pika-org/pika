@@ -10,7 +10,7 @@
 #include <pika/assert.hpp>
 #include <pika/functional/unique_function.hpp>
 #include <pika/modules/itt_notify.hpp>
-#include <pika/modules/logging.hpp>
+#include <pika/logging.hpp>
 #include <pika/threading_base/external_timer.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/scheduler_state.hpp>

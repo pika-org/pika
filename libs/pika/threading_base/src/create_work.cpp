@@ -7,7 +7,7 @@
 #include <pika/config.hpp>
 #include <pika/modules/coroutines.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/logging.hpp>
+#include <pika/logging.hpp>
 #include <pika/threading_base/create_work.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_data.hpp>

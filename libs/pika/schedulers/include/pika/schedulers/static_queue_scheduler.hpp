@@ -10,7 +10,7 @@
 #include <pika/config.hpp>
 
 #include <pika/assert.hpp>
-#include <pika/modules/logging.hpp>
+#include <pika/logging.hpp>
 #include <pika/schedulers/deadlock_detection.hpp>
 #include <pika/schedulers/local_queue_scheduler.hpp>
 #include <pika/schedulers/lockfree_queue_backends.hpp>

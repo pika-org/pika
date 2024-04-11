@@ -7,7 +7,7 @@
 #pragma once
 
 #include <pika/config/export_definitions.hpp>
-#include <pika/modules/logging.hpp>
+#include <pika/logging.hpp>
 
 #include <cstdlib>
 #include <sstream>

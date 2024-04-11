@@ -8,11 +8,7 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/logging/format/named_write.hpp>
-#include <pika/logging/level.hpp>
-#include <pika/logging/manipulator.hpp>
-#include <pika/logging/message.hpp>
-#include <pika/modules/logging.hpp>
+#include <pika/logging.hpp>
 #include <pika/runtime_configuration/runtime_configuration.hpp>
 
 #include <string>
@@ -26,16 +22,12 @@ namespace pika::detail {
         std::string format_;
     };
 
-    PIKA_EXPORT void define_formatters(pika::util::logging::writer::named_write& writer);
     PIKA_EXPORT log_settings get_log_settings(pika::detail::section const&, char const*);
     PIKA_EXPORT void init_logging(pika::util::runtime_configuration& ini);
 
     /// \endcond
 
-    /// Enable logging for given destination
-    PIKA_EXPORT void enable_logging(pika::logging_destination dest, std::string const& lvl = "5",
-        std::string logdest = "", std::string logformat = "");
-
-    /// Disable all logging for the given destination
-    PIKA_EXPORT void disable_logging(pika::logging_destination dest);
+    PIKA_EXPORT void enable_logging(
+        std::string const& lvl = "5", std::string logdest = "", std::string logformat = "");
+    PIKA_EXPORT void disable_logging();
 }    // namespace pika::detail
