@@ -71,7 +71,7 @@ namespace pika::threads::detail {
                     }
                     else
                     {
-                        PIKA_LOG(warning,
+                        PIKA_LOG(warn,
                             "  [TM] Listing suspended threads while queue ({}) is empty:\n",
                             num_thread);
                     }
@@ -80,24 +80,17 @@ namespace pika::threads::detail {
 
                 if (running)
                 {
-                    // TODO
-                    //                     PIKA_LOG(warn)
-                    //                         .format("queue({}): {}({}.{:02x})", num_thread,
-                    //                             get_thread_state_name(state), *it, thrd->get_thread_phase())
-                    // # ifdef PIKA_HAVE_THREAD_PARENT_REFERENCE
-                    //                         .format(" P{}", thrd->get_parent_thread_id())
-                    // # endif
-                    //                         .format(": {}: {}", thrd->get_description(), thrd->get_lco_description());
+                    PIKA_LOG(warn, "queue({}): {}({}.{:02x}) P{}: {}: {}", num_thread,
+                        get_thread_state_name(state), *it, thrd->get_thread_phase(),
+                        thrd->get_parent_thread_id(), , thrd->get_description(),
+                        thrd->get_lco_description());
                 }
                 else
                 {
-                    // TODO
-                    //                     PIKA_LOG(warning, "queue({}): {}({}.{:02x})", num_thread,
-                    //                         get_thread_state_name(state), *it, thrd->get_thread_phase())
-                    // # ifdef PIKA_HAVE_THREAD_PARENT_REFERENCE
-                    //                         .format(" P{}", thrd->get_parent_thread_id())
-                    // # endif
-                    //                         .format(": {}: {}", thrd->get_description(), thrd->get_lco_description());
+                    PIKA_LOG(warn, "queue({}): {}({}.{:02x}) P{}: {}: {}", num_thread,
+                        get_thread_state_name(state), *it, thrd->get_thread_phase(),
+                        thrd->get_parent_thread_id(), thrd->get_description(),
+                        thrd->get_lco_description());
                 }
                 thrd->set_marked_state(state);
 

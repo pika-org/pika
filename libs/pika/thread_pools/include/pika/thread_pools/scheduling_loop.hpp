@@ -9,8 +9,8 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/functional/unique_function.hpp>
-#include <pika/modules/itt_notify.hpp>
 #include <pika/logging.hpp>
+#include <pika/modules/itt_notify.hpp>
 #include <pika/threading_base/external_timer.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/scheduler_state.hpp>
@@ -40,24 +40,22 @@ namespace pika::threads::detail {
         thread_id_ref_type const& thrd, thread_schedule_state const old_state,
         thread_schedule_state const new_state)
     {
-        // TODO
-        // PIKA_LOG(debug,
-        //     "scheduling_loop state change: pool({}), scheduler({}), worker_thread({}), thread({}), "
-        //     "description({}), old state({}), new state({})",
-        //     *scheduler.get_parent_pool(), scheduler, num_thread, thrd,
-        //     get_thread_id_data(thrd)->get_description(), get_thread_state_name(old_state),
-        //     get_thread_state_name(new_state));
+        PIKA_LOG(debug,
+            "scheduling_loop state change: pool({}), scheduler({}), worker_thread({}), thread({}), "
+            "description({}), old state({}), new state({})",
+            *scheduler.get_parent_pool(), scheduler, num_thread, thrd,
+            get_thread_id_data(thrd)->get_description(), get_thread_state_name(old_state),
+            get_thread_state_name(new_state));
     }
 
     inline void write_state_log_warning(scheduler_base const& scheduler, std::size_t num_thread,
         thread_id_ref_type const& thrd, thread_schedule_state state, char const* info)
     {
-        // TODO
-        // PIKA_LOG(warn,
-        //     "scheduling_loop state change failed: pool({}), scheduler({}), worker "
-        //     "thread ({}), thread({}), description({}), state({}), {}",
-        //     *scheduler.get_parent_pool(), scheduler, num_thread, thrd,
-        //     get_thread_id_data(thrd)->get_description(), get_thread_state_name(state), info);
+        PIKA_LOG(warn,
+            "scheduling_loop state change failed: pool({}), scheduler({}), worker "
+            "thread ({}), thread({}), description({}), state({}), {}",
+            *scheduler.get_parent_pool(), scheduler, num_thread, thrd,
+            get_thread_id_data(thrd)->get_description(), get_thread_state_name(state), info);
     }
 
     ///////////////////////////////////////////////////////////////////////

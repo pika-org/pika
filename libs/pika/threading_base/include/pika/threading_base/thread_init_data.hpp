@@ -139,6 +139,15 @@ namespace pika::threads::detail {
             }
         }
 
+#if defined(PIKA_HAVE_THREAD_DESCRIPTION)
+        ::pika::detail::thread_description get_description() const { return description; }
+#else
+        ::pika::detail::thread_description get_description() const
+        {
+            return ::pika::detail::thread_description("<unknown>");
+        }
+#endif
+
         thread_function_type func;
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)

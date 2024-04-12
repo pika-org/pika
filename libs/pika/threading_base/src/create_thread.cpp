@@ -78,17 +78,11 @@ namespace pika::threads::detail {
         // create the new thread
         scheduler->create_thread(data, &id, ec);
 
-        // NOLINTNEXTLINE(bugprone-branch-clone)
-        // TODO
-        //         PIKA_LOG(info,
-        //             "create_thread: pool({}), scheduler({}), thread({}), initial_state({}), "
-        //             "run_now({})",
-        //             *scheduler->get_parent_pool(), *scheduler, id,
-        //             get_thread_state_name(data.initial_state), data.run_now)
-        // #ifdef PIKA_HAVE_THREAD_DESCRIPTION
-        //             .format(", description({})", data.description)
-        // #endif
-        //             ;
+        PIKA_LOG(info,
+            "create_thread: pool({}), scheduler({}), thread({}), initial_state({}), run_now({}), "
+            "description({})",
+            *scheduler->get_parent_pool(), *scheduler, id,
+            get_thread_state_name(data.initial_state), data.run_now, data.description);
 
         // NOTE: Don't care if the hint is a NUMA hint, just want to wake up a
         // thread.

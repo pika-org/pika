@@ -18,7 +18,7 @@
 #include <pika/execution_base/this_thread.hpp>
 #include <pika/functional/function.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/logging.hpp>
+#include <pika/logging.hpp>
 #include <pika/modules/memory.hpp>
 #include <pika/thread_support/atomic_count.hpp>
 #include <pika/threading_base/thread_description.hpp>

@@ -11,8 +11,8 @@
 #include <pika/affinity/affinity_data.hpp>
 #include <pika/assert.hpp>
 #include <pika/functional/function.hpp>
-#include <pika/modules/errors.hpp>
 #include <pika/logging.hpp>
+#include <pika/modules/errors.hpp>
 #include <pika/schedulers/deadlock_detection.hpp>
 #include <pika/schedulers/lockfree_queue_backends.hpp>
 #include <pika/schedulers/thread_queue.hpp>
@@ -272,16 +272,11 @@ namespace pika::threads::detail {
             PIKA_ASSERT(num_thread < queue_size);
             queues_[num_thread]->create_thread(data, id, ec);
 
-            // TODO
-            //             PIKA_LOG(debug)
-            //                 .format("local_queue_scheduler::create_thread: pool({}), scheduler({}), "
-            //                         "worker_thread({}), thread({})",
-            //                     *this->get_parent_pool(), *this, num_thread,
-            //                     id ? *id : threads::detail::invalid_thread_id)
-            // #ifdef PIKA_HAVE_THREAD_DESCRIPTION
-            //                 .format(", description({})", data.description)
-            // #endif
-            //                 ;
+            PIKA_LOG(debug,
+                "local_queue_scheduler::create_thread: pool({}), scheduler({}), "
+                "worker_thread({}), thread({}), description({})",
+                *this->get_parent_pool(), *this, num_thread,
+                id ? *id : threads::detail::invalid_thread_id, data.description);
         }
 
         /// Return the next thread to be executed, return false if none is
@@ -759,7 +754,7 @@ namespace pika::threads::detail {
                     }
                     else
                     {
-                        PIKA_LOG(warning,
+                        PIKA_LOG(warn,
                             "  [TM] pool({}), scheduler({}), queue({}): no new work "
                             "available, are we deadlocked?\n",
                             *this->get_parent_pool(), *this, num_thread);
