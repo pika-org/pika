@@ -72,8 +72,8 @@ namespace pika::detail {
             {
                 mtx.lock();
                 locking_context.exchange(ctx);
-                util::ignore_lock(&mtx);
-                util::register_lock(this);
+                pika::util::ignore_lock(&mtx);
+                pika::util::register_lock(this);
                 recursion_count.store(1);
             }
         }
@@ -88,8 +88,8 @@ namespace pika::detail {
             if (0 == --recursion_count)
             {
                 locking_context.exchange(pika::execution::detail::agent_ref());
-                util::unregister_lock(this);
-                util::reset_ignored(&mtx);
+                pika::util::unregister_lock(this);
+                pika::util::reset_ignored(&mtx);
                 mtx.unlock();
             }
         }
@@ -99,7 +99,7 @@ namespace pika::detail {
         {
             if (locking_context.load(std::memory_order_acquire) == current_context)
             {
-                if (++recursion_count == 1) util::register_lock(this);
+                if (++recursion_count == 1) pika::util::register_lock(this);
                 return true;
             }
             return false;
@@ -110,8 +110,8 @@ namespace pika::detail {
             if (mtx.try_lock())
             {
                 locking_context.exchange(current_context);
-                util::ignore_lock(&mtx);
-                util::register_lock(this);
+                pika::util::ignore_lock(&mtx);
+                pika::util::register_lock(this);
                 recursion_count.store(1);
                 return true;
             }

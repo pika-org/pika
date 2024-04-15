@@ -457,7 +457,7 @@ int pika_main(variables_map& vm)
     if (suspended_tasks != 0)
     {
         // Force termination of all suspended tasks.
-        pika::get_runtime().get_thread_manager().abort_all_suspended_threads();
+        pika::detail::get_runtime().get_thread_manager().abort_all_suspended_threads();
     }
     pika::finalize();
     return EXIT_SUCCESS;

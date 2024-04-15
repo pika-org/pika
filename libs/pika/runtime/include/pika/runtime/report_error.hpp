@@ -13,10 +13,10 @@
 #include <cstddef>
 #include <exception>
 
-namespace pika {
+namespace pika::detail {
     /// The function report_error reports the given exception to the console
     PIKA_EXPORT void report_error(std::size_t num_thread, std::exception_ptr const& e);
 
     /// The function report_error reports the given exception to the console
     PIKA_EXPORT void report_error(std::exception_ptr const& e);
-}    // namespace pika
+}    // namespace pika::detail

@@ -13,7 +13,7 @@
 #include <cstddef>
 
 namespace pika::detail {
-    int handle_late_commandline_options(util::runtime_configuration& ini,
+    int handle_late_commandline_options(pika::util::runtime_configuration& ini,
         pika::program_options::options_description const& options,
         void (*handle_print_bind)(std::size_t));
 }    // namespace pika::detail

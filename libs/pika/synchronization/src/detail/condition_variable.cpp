@@ -127,7 +127,7 @@ namespace pika::detail {
         abort_all<mutex_type>(PIKA_MOVE(lock));
     }
 
-    threads::detail::thread_restart_state condition_variable::wait(
+    pika::threads::detail::thread_restart_state condition_variable::wait(
         std::unique_lock<mutex_type>& lock, char const* /* description */, error_code& /* ec */)
     {
         PIKA_ASSERT(lock.owns_lock());
@@ -144,11 +144,11 @@ namespace pika::detail {
             this_ctx.suspend();
         }
 
-        return f.ctx_ ? threads::detail::thread_restart_state::timeout :
-                        threads::detail::thread_restart_state::signaled;
+        return f.ctx_ ? pika::threads::detail::thread_restart_state::timeout :
+                        pika::threads::detail::thread_restart_state::signaled;
     }
 
-    threads::detail::thread_restart_state condition_variable::wait_until(
+    pika::threads::detail::thread_restart_state condition_variable::wait_until(
         std::unique_lock<mutex_type>& lock, pika::chrono::steady_time_point const& abs_time,
         char const* /* description */, error_code& /* ec */)
     {
@@ -166,8 +166,8 @@ namespace pika::detail {
             this_ctx.sleep_until(abs_time.value());
         }
 
-        return f.ctx_ ? threads::detail::thread_restart_state::timeout :
-                        threads::detail::thread_restart_state::signaled;
+        return f.ctx_ ? pika::threads::detail::thread_restart_state::timeout :
+                        pika::threads::detail::thread_restart_state::signaled;
     }
 
     template <typename Mutex>

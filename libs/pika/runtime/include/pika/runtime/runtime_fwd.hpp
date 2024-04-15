@@ -14,7 +14,6 @@
 #include <pika/modules/errors.hpp>
 #include <pika/modules/runtime_configuration.hpp>
 #include <pika/runtime/config_entry.hpp>
-#include <pika/runtime/detail/runtime_fwd.hpp>
 #include <pika/runtime/get_os_thread_count.hpp>
 #include <pika/runtime/get_thread_name.hpp>
 #include <pika/runtime/get_worker_thread_num.hpp>
@@ -31,7 +30,15 @@
 #include <cstdint>
 #include <string>
 
-namespace pika {
+namespace pika::detail {
+
+    class PIKA_EXPORT runtime;
+
+    /// The function \a get_runtime returns a reference to the (thread
+    /// specific) runtime instance.
+    PIKA_EXPORT runtime& get_runtime();
+    PIKA_EXPORT runtime*& get_runtime_ptr();
+
     /// Register the current kernel thread with pika, this should be done once
     /// for each external OS-thread intended to invoke pika functionality.
     /// Calling this function more than once will return false.
@@ -48,23 +55,10 @@ namespace pika {
 
     /// Enumerate all OS threads that have registered with the runtime.
     PIKA_EXPORT bool enumerate_os_threads(
-        util::detail::function<bool(os_thread_data const&)> const& f);
-
-    /// Return the runtime instance number associated with the runtime instance
-    /// the current thread is running in.
-    PIKA_EXPORT std::size_t get_runtime_instance_number();
+        pika::util::detail::function<bool(os_thread_data const&)> const& f);
 
     /// Register a function to be called during system shutdown
-    PIKA_EXPORT bool register_on_exit(util::detail::function<void()> const&);
-
-    /// \cond NOINTERNAL
-    namespace util {
-        /// \brief Expand INI variables in a string
-        PIKA_EXPORT std::string expand(std::string const& expand);
-
-        /// \brief Expand INI variables in a string
-        PIKA_EXPORT void expand(std::string& expand);
-    }    // namespace util
+    PIKA_EXPORT bool register_on_exit(pika::util::detail::function<void()> const&);
 
     ///////////////////////////////////////////////////////////////////////////
     PIKA_EXPORT pika::util::runtime_configuration const& get_config();
@@ -123,15 +117,6 @@ namespace pika {
     PIKA_EXPORT bool is_stopped_or_shutting_down();
 
     ///////////////////////////////////////////////////////////////////////////
-    /// \brief Return the number of worker OS- threads used to execute pika
-    ///        threads
-    ///
-    /// This function returns the number of OS-threads used to execute pika
-    /// threads. If the function is called while no pika runtime system is active,
-    /// it will return zero.
-    PIKA_EXPORT std::size_t get_num_worker_threads();
-
-    ///////////////////////////////////////////////////////////////////////////
     /// \brief Return the system uptime measure on the thread executing this call.
     ///
     /// This function returns the system uptime measured in nanoseconds for the
@@ -139,35 +124,35 @@ namespace pika {
     /// runtime system is active, it will return zero.
     PIKA_EXPORT std::uint64_t get_system_uptime();
 
-    namespace threads {
+    /// \cond NOINTERNAL
+    /// Reset internal (round robin) thread distribution scheme
+    PIKA_EXPORT void reset_thread_distribution();
 
-        /// \cond NOINTERNAL
-        // The function get_thread_manager returns a reference to the
-        // current thread manager.
-        PIKA_EXPORT detail::thread_manager& get_thread_manager();
-        /// \endcond
+    /// Set the new scheduler mode
+    PIKA_EXPORT void set_scheduler_mode(threads::scheduler_mode new_mode);
 
-        /// \cond NOINTERNAL
-        /// Reset internal (round robin) thread distribution scheme
-        PIKA_EXPORT void reset_thread_distribution();
+    /// Add the given flags to the scheduler mode
+    PIKA_EXPORT void add_scheduler_mode(threads::scheduler_mode to_add);
 
-        /// Set the new scheduler mode
-        PIKA_EXPORT void set_scheduler_mode(threads::scheduler_mode new_mode);
+    /// Remove the given flags from the scheduler mode
+    PIKA_EXPORT void remove_scheduler_mode(threads::scheduler_mode to_remove);
 
-        /// Add the given flags to the scheduler mode
-        PIKA_EXPORT void add_scheduler_mode(threads::scheduler_mode to_add);
+    /// Get the global topology instance
+    PIKA_EXPORT pika::threads::detail::topology const& get_topology();
+    /// \endcond
 
-        /// Remove the given flags from the scheduler mode
-        PIKA_EXPORT void remove_scheduler_mode(threads::scheduler_mode to_remove);
+    PIKA_EXPORT void on_exit() noexcept;
+    PIKA_EXPORT void on_abort(int signal) noexcept;
+    PIKA_EXPORT void handle_print_bind(std::size_t num_threads);
+}    // namespace pika::detail
 
-        /// Get the global topology instance
-        PIKA_EXPORT detail::topology const& get_topology();
-        /// \endcond
-    }    // namespace threads
-
-    namespace detail {
-        PIKA_EXPORT void on_exit() noexcept;
-        PIKA_EXPORT void on_abort(int signal) noexcept;
-        PIKA_EXPORT void handle_print_bind(std::size_t num_threads);
-    }    // namespace detail
+namespace pika {
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief Return the number of worker OS- threads used to execute pika
+    ///        threads
+    ///
+    /// This function returns the number of OS-threads used to execute pika
+    /// threads. If the function is called while no pika runtime system is active,
+    /// it will return zero.
+    PIKA_EXPORT std::size_t get_num_worker_threads();
 }    // namespace pika

@@ -77,7 +77,7 @@
 // system signals
 #if defined(PIKA_WINDOWS)
 
-namespace pika {
+namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     void handle_termination(char const* reason)
     {
@@ -124,7 +124,7 @@ namespace pika {
         }
         return FALSE;
     }
-}    // namespace pika
+}    // namespace pika::detail
 
 #else
 
@@ -132,7 +132,7 @@ namespace pika {
 # include <stdlib.h>
 # include <string.h>
 
-namespace pika {
+namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     [[noreturn]] PIKA_EXPORT void termination_handler(int signum)
     {
@@ -163,12 +163,12 @@ namespace pika {
         }
         std::abort();
     }
-}    // namespace pika
+}    // namespace pika::detail
 
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika {
+namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     PIKA_EXPORT void PIKA_CDECL new_handler()
     {
@@ -177,29 +177,27 @@ namespace pika {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    namespace detail {
-        // Sometimes the pika library gets simply unloaded as a result of some
-        // extreme error handling. Avoid hangs in the end by setting a flag.
-        static bool exit_called = false;
+    // Sometimes the pika library gets simply unloaded as a result of some
+    // extreme error handling. Avoid hangs in the end by setting a flag.
+    static bool exit_called = false;
 
-        void on_exit() noexcept { exit_called = true; }
+    void on_exit() noexcept { exit_called = true; }
 
-        void on_abort(int) noexcept
-        {
-            exit_called = true;
-            std::exit(-1);
-        }
-    }    // namespace detail
+    void on_abort(int) noexcept
+    {
+        exit_called = true;
+        std::exit(-1);
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     void set_signal_handlers()
     {
 #if defined(PIKA_WINDOWS)
         // Set console control handler to allow server to be stopped.
-        SetConsoleCtrlHandler(pika::termination_handler, TRUE);
+        SetConsoleCtrlHandler(pika::detail::termination_handler, TRUE);
 #else
         struct sigaction new_action;
-        new_action.sa_handler = pika::termination_handler;
+        new_action.sa_handler = pika::detail::termination_handler;
         sigemptyset(&new_action.sa_mask);
         new_action.sa_flags = 0;
 
@@ -212,7 +210,7 @@ namespace pika {
         sigaction(SIGSYS, &new_action, nullptr);     // Bad syscall
 #endif
 
-        std::set_new_handler(pika::new_handler);
+        std::set_new_handler(pika::detail::new_handler);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -236,27 +234,25 @@ namespace pika {
         };
     }
 
-    namespace detail {
-        char const* get_runtime_state_name(runtime_state st)
-        {
-            if (st < runtime_state::invalid || st >= runtime_state::last_valid_runtime)
-                return "invalid (value out of bounds)";
-            return strings::runtime_state_names[static_cast<std::int8_t>(st) + 1];
-        }
-    }    // namespace detail
+    char const* get_runtime_state_name(pika::runtime_state st)
+    {
+        if (st < pika::runtime_state::invalid || st >= pika::runtime_state::last_valid_runtime)
+            return "invalid (value out of bounds)";
+        return strings::runtime_state_names[static_cast<std::int8_t>(st) + 1];
+    }
 
     ///////////////////////////////////////////////////////////////////////////
-    threads::callback_notifier::on_startstop_type global_on_start_func;
-    threads::callback_notifier::on_startstop_type global_on_stop_func;
-    threads::callback_notifier::on_error_type global_on_error_func;
+    pika::threads::callback_notifier::on_startstop_type global_on_start_func;
+    pika::threads::callback_notifier::on_startstop_type global_on_stop_func;
+    pika::threads::callback_notifier::on_error_type global_on_error_func;
 
     ///////////////////////////////////////////////////////////////////////////
     runtime::runtime(pika::util::runtime_configuration& rtcfg, bool initialize)
       : rtcfg_(rtcfg)
       , instance_number_(++instance_number_counter_)
-      , thread_support_(new util::thread_mapper)
+      , thread_support_(new pika::util::thread_mapper)
       , topology_(resource::get_partitioner().get_topology())
-      , state_(runtime_state::invalid)
+      , state_(pika::runtime_state::invalid)
       , on_start_func_(global_on_start_func)
       , on_stop_func_(global_on_stop_func)
       , on_error_func_(global_on_error_func)
@@ -282,9 +278,9 @@ namespace pika {
     runtime::runtime(pika::util::runtime_configuration& rtcfg)
       : rtcfg_(rtcfg)
       , instance_number_(++instance_number_counter_)
-      , thread_support_(new util::thread_mapper)
+      , thread_support_(new pika::util::thread_mapper)
       , topology_(resource::get_partitioner().get_topology())
-      , state_(runtime_state::invalid)
+      , state_(pika::runtime_state::invalid)
       , on_start_func_(global_on_start_func)
       , on_stop_func_(global_on_stop_func)
       , on_error_func_(global_on_error_func)
@@ -351,7 +347,7 @@ namespace pika {
         }
 
         // set state to initialized
-        set_state(runtime_state::initialized);
+        set_state(pika::runtime_state::initialized);
     }
 
     runtime::~runtime()
@@ -374,25 +370,25 @@ namespace pika {
 #endif
     }
 
-    void runtime::on_exit(util::detail::function<void()> const& f)
+    void runtime::on_exit(pika::util::detail::function<void()> const& f)
     {
         std::lock_guard<std::mutex> l(mtx_);
         on_exit_functions_.push_back(f);
     }
 
-    void runtime::starting() { state_.store(runtime_state::pre_main); }
+    void runtime::starting() { state_.store(pika::runtime_state::pre_main); }
 
     void runtime::stopping()
     {
-        state_.store(runtime_state::stopped);
+        state_.store(pika::runtime_state::stopped);
 
-        using value_type = util::detail::function<void()>;
+        using value_type = pika::util::detail::function<void()>;
 
         std::lock_guard<std::mutex> l(mtx_);
         for (value_type const& f : on_exit_functions_) f();
     }
 
-    bool runtime::stopped() const { return state_.load() == runtime_state::stopped; }
+    bool runtime::stopped() const { return state_.load() == pika::runtime_state::stopped; }
 
     pika::util::runtime_configuration& runtime::get_config() { return rtcfg_; }
 
@@ -403,11 +399,11 @@ namespace pika {
         return static_cast<std::size_t>(instance_number_);
     }
 
-    runtime_state runtime::get_state() const { return state_.load(); }
+    pika::runtime_state runtime::get_state() const { return state_.load(); }
 
-    threads::detail::topology const& runtime::get_topology() const { return topology_; }
+    pika::threads::detail::topology const& runtime::get_topology() const { return topology_; }
 
-    void runtime::set_state(runtime_state s)
+    void runtime::set_state(pika::runtime_state s)
     {
         LPROGRESS_ << pika::detail::get_runtime_state_name(s);
         state_.store(s);
@@ -430,7 +426,7 @@ namespace pika {
     {
         runtime*& runtime_ = get_runtime_ptr();
         PIKA_ASSERT(!runtime_);
-        PIKA_ASSERT(nullptr == threads::detail::thread_self::get_self());
+        PIKA_ASSERT(nullptr == pika::threads::detail::thread_self::get_self());
 
         runtime_ = this;
         runtime_uptime() = std::chrono::high_resolution_clock::now();
@@ -450,41 +446,41 @@ namespace pika {
         return diff < 0LL ? 0ULL : static_cast<std::uint64_t>(diff);
     }
 
-    threads::callback_notifier::on_startstop_type runtime::on_start_func() const
+    pika::threads::callback_notifier::on_startstop_type runtime::on_start_func() const
     {
         return on_start_func_;
     }
 
-    threads::callback_notifier::on_startstop_type runtime::on_stop_func() const
+    pika::threads::callback_notifier::on_startstop_type runtime::on_stop_func() const
     {
         return on_stop_func_;
     }
 
-    threads::callback_notifier::on_error_type runtime::on_error_func() const
+    pika::threads::callback_notifier::on_error_type runtime::on_error_func() const
     {
         return on_error_func_;
     }
 
-    threads::callback_notifier::on_startstop_type runtime::on_start_func(
-        threads::callback_notifier::on_startstop_type&& f)
+    pika::threads::callback_notifier::on_startstop_type runtime::on_start_func(
+        pika::threads::callback_notifier::on_startstop_type&& f)
     {
-        threads::callback_notifier::on_startstop_type newf = PIKA_MOVE(f);
+        pika::threads::callback_notifier::on_startstop_type newf = PIKA_MOVE(f);
         std::swap(on_start_func_, newf);
         return newf;
     }
 
-    threads::callback_notifier::on_startstop_type runtime::on_stop_func(
-        threads::callback_notifier::on_startstop_type&& f)
+    pika::threads::callback_notifier::on_startstop_type runtime::on_stop_func(
+        pika::threads::callback_notifier::on_startstop_type&& f)
     {
-        threads::callback_notifier::on_startstop_type newf = PIKA_MOVE(f);
+        pika::threads::callback_notifier::on_startstop_type newf = PIKA_MOVE(f);
         std::swap(on_stop_func_, newf);
         return newf;
     }
 
-    threads::callback_notifier::on_error_type runtime::on_error_func(
-        threads::callback_notifier::on_error_type&& f)
+    pika::threads::callback_notifier::on_error_type runtime::on_error_func(
+        pika::threads::callback_notifier::on_error_type&& f)
     {
-        threads::callback_notifier::on_error_type newf = PIKA_MOVE(f);
+        pika::threads::callback_notifier::on_error_type newf = PIKA_MOVE(f);
         std::swap(on_error_func_, newf);
         return newf;
     }
@@ -496,56 +492,56 @@ namespace pika {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    threads::callback_notifier::on_startstop_type get_thread_on_start_func()
+    pika::threads::callback_notifier::on_startstop_type get_thread_on_start_func()
     {
         runtime* rt = get_runtime_ptr();
         if (nullptr != rt) { return rt->on_start_func(); }
         else { return global_on_start_func; }
     }
 
-    threads::callback_notifier::on_startstop_type get_thread_on_stop_func()
+    pika::threads::callback_notifier::on_startstop_type get_thread_on_stop_func()
     {
         runtime* rt = get_runtime_ptr();
         if (nullptr != rt) { return rt->on_stop_func(); }
         else { return global_on_stop_func; }
     }
 
-    threads::callback_notifier::on_error_type get_thread_on_error_func()
+    pika::threads::callback_notifier::on_error_type get_thread_on_error_func()
     {
         runtime* rt = get_runtime_ptr();
         if (nullptr != rt) { return rt->on_error_func(); }
         else { return global_on_error_func; }
     }
 
-    threads::callback_notifier::on_startstop_type register_thread_on_start_func(
-        threads::callback_notifier::on_startstop_type&& f)
+    pika::threads::callback_notifier::on_startstop_type register_thread_on_start_func(
+        pika::threads::callback_notifier::on_startstop_type&& f)
     {
         runtime* rt = get_runtime_ptr();
         if (nullptr != rt) { return rt->on_start_func(PIKA_MOVE(f)); }
 
-        threads::callback_notifier::on_startstop_type newf = PIKA_MOVE(f);
+        pika::threads::callback_notifier::on_startstop_type newf = PIKA_MOVE(f);
         std::swap(global_on_start_func, newf);
         return newf;
     }
 
-    threads::callback_notifier::on_startstop_type register_thread_on_stop_func(
-        threads::callback_notifier::on_startstop_type&& f)
+    pika::threads::callback_notifier::on_startstop_type register_thread_on_stop_func(
+        pika::threads::callback_notifier::on_startstop_type&& f)
     {
         runtime* rt = get_runtime_ptr();
         if (nullptr != rt) { return rt->on_stop_func(PIKA_MOVE(f)); }
 
-        threads::callback_notifier::on_startstop_type newf = PIKA_MOVE(f);
+        pika::threads::callback_notifier::on_startstop_type newf = PIKA_MOVE(f);
         std::swap(global_on_stop_func, newf);
         return newf;
     }
 
-    threads::callback_notifier::on_error_type register_thread_on_error_func(
-        threads::callback_notifier::on_error_type&& f)
+    pika::threads::callback_notifier::on_error_type register_thread_on_error_func(
+        pika::threads::callback_notifier::on_error_type&& f)
     {
         runtime* rt = get_runtime_ptr();
         if (nullptr != rt) { return rt->on_error_func(PIKA_MOVE(f)); }
 
-        threads::callback_notifier::on_error_type newf = PIKA_MOVE(f);
+        pika::threads::callback_notifier::on_error_type newf = PIKA_MOVE(f);
         std::swap(global_on_error_func, newf);
         return newf;
     }
@@ -597,7 +593,7 @@ namespace pika {
     }
 
     /// Enumerate all OS threads that have registered with the runtime.
-    bool enumerate_os_threads(util::detail::function<bool(os_thread_data const&)> const& f)
+    bool enumerate_os_threads(pika::util::detail::function<bool(os_thread_data const&)> const& f)
     {
         return get_runtime().enumerate_os_threads(f);
     }
@@ -606,9 +602,9 @@ namespace pika {
     void report_error(std::size_t num_thread, std::exception_ptr const& e)
     {
         // Early and late exceptions
-        if (!threads::thread_manager_is(runtime_state::running))
+        if (!thread_manager_is(pika::runtime_state::running))
         {
-            pika::runtime* rt = pika::get_runtime_ptr();
+            pika::detail::runtime* rt = pika::detail::get_runtime_ptr();
             if (rt)
                 rt->report_error(num_thread, e);
             else
@@ -622,9 +618,9 @@ namespace pika {
     void report_error(std::exception_ptr const& e)
     {
         // Early and late exceptions
-        if (!threads::thread_manager_is(runtime_state::running))
+        if (!thread_manager_is(pika::runtime_state::running))
         {
-            pika::runtime* rt = pika::get_runtime_ptr();
+            pika::detail::runtime* rt = pika::detail::get_runtime_ptr();
             if (rt)
                 rt->report_error(std::size_t(-1), e);
             else
@@ -636,19 +632,13 @@ namespace pika {
         get_runtime().get_thread_manager().report_error(num_thread, e);
     }
 
-    bool register_on_exit(util::detail::function<void()> const& f)
+    bool register_on_exit(pika::util::detail::function<void()> const& f)
     {
         runtime* rt = get_runtime_ptr();
         if (nullptr == rt) return false;
 
         rt->on_exit(f);
         return true;
-    }
-
-    std::size_t get_runtime_instance_number()
-    {
-        runtime* rt = get_runtime_ptr();
-        return (nullptr == rt) ? 0 : rt->get_instance_number();
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -688,7 +678,7 @@ namespace pika {
     }
 
     void set_config_entry_callback(std::string const& key,
-        util::detail::function<void(std::string const&, std::string const&)> const& callback)
+        pika::util::detail::function<void(std::string const&, std::string const&)> const& callback)
     {
         if (get_runtime_ptr() != nullptr)
         {
@@ -697,59 +687,44 @@ namespace pika {
         }
     }
 
-    namespace detail {
-        ///////////////////////////////////////////////////////////////////////////
-        // retrieve the command line arguments
-        void retrieve_commandline_arguments(
-            pika::program_options::options_description const& app_options,
-            pika::program_options::variables_map& vm)
-        {
-            // The command line for this application instance is available from
-            // this configuration section:
-            //
-            //     [pika]
-            //     cmd_line=....
-            //
-            std::string cmdline;
+    ///////////////////////////////////////////////////////////////////////////
+    // retrieve the command line arguments
+    void retrieve_commandline_arguments(
+        pika::program_options::options_description const& app_options,
+        pika::program_options::variables_map& vm)
+    {
+        // The command line for this application instance is available from
+        // this configuration section:
+        //
+        //     [pika]
+        //     cmd_line=....
+        //
+        std::string cmdline;
 
-            pika::detail::section& cfg = pika::get_runtime().get_config();
-            if (cfg.has_entry("pika.cmd_line")) cmdline = cfg.get_entry("pika.cmd_line");
+        pika::detail::section& cfg = pika::detail::get_runtime().get_config();
+        if (cfg.has_entry("pika.cmd_line")) cmdline = cfg.get_entry("pika.cmd_line");
 
-            parse_commandline(
-                cfg, app_options, cmdline, vm, commandline_error_mode::allow_unregistered);
-        }
-
-        ///////////////////////////////////////////////////////////////////////////
-        // retrieve the command line arguments
-        void retrieve_commandline_arguments(
-            std::string const& appname, pika::program_options::variables_map& vm)
-        {
-            using pika::program_options::options_description;
-
-            options_description desc_commandline("Usage: " + appname + " [options]");
-
-            retrieve_commandline_arguments(desc_commandline, vm);
-        }
-    }    // namespace detail
+        parse_commandline(
+            cfg, app_options, cmdline, vm, commandline_error_mode::allow_unregistered);
+    }
 
     ///////////////////////////////////////////////////////////////////////////
-    std::size_t get_os_thread_count()
+    // retrieve the command line arguments
+    void retrieve_commandline_arguments(
+        std::string const& appname, pika::program_options::variables_map& vm)
     {
-        runtime* rt = get_runtime_ptr();
-        if (nullptr == rt)
-        {
-            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::get_os_thread_count()",
-                "the runtime system has not been initialized yet");
-            return std::size_t(0);
-        }
-        return rt->get_config().get_os_thread_count();
+        using pika::program_options::options_description;
+
+        options_description desc_commandline("Usage: " + appname + " [options]");
+
+        retrieve_commandline_arguments(desc_commandline, vm);
     }
 
     ///////////////////////////////////////////////////////////////////////////
     bool is_running()
     {
         runtime* rt = get_runtime_ptr();
-        if (nullptr != rt) return rt->get_state() == runtime_state::running;
+        if (nullptr != rt) return rt->get_state() == pika::runtime_state::running;
         return false;
     }
 
@@ -758,7 +733,7 @@ namespace pika {
         if (!detail::exit_called)
         {
             runtime* rt = get_runtime_ptr();
-            if (nullptr != rt) return rt->get_state() == runtime_state::stopped;
+            if (nullptr != rt) return rt->get_state() == pika::runtime_state::stopped;
         }
         return true;    // assume stopped
     }
@@ -768,8 +743,8 @@ namespace pika {
         runtime* rt = get_runtime_ptr();
         if (!detail::exit_called && nullptr != rt)
         {
-            runtime_state st = rt->get_state();
-            return st >= runtime_state::shutdown;
+            pika::runtime_state st = rt->get_state();
+            return st >= pika::runtime_state::shutdown;
         }
         return true;    // assume stopped
     }
@@ -786,68 +761,57 @@ namespace pika {
     bool is_starting()
     {
         runtime* rt = get_runtime_ptr();
-        return nullptr != rt ? rt->get_state() <= runtime_state::startup : true;
+        return nullptr != rt ? rt->get_state() <= pika::runtime_state::startup : true;
     }
 
     bool is_pre_startup()
     {
         runtime* rt = get_runtime_ptr();
-        return nullptr != rt ? rt->get_state() < runtime_state::startup : true;
+        return nullptr != rt ? rt->get_state() < pika::runtime_state::startup : true;
     }
-}    // namespace pika
-
-///////////////////////////////////////////////////////////////////////////////
-namespace pika::util {
-    std::string expand(std::string const& in) { return get_runtime().get_config().expand(in); }
-
-    void expand(std::string& in)
-    {
-        get_runtime().get_config().expand(in, std::string::size_type(-1));
-    }
-}    // namespace pika::util
+}    // namespace pika::detail
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::threads {
-    detail::thread_manager& get_thread_manager() { return get_runtime().get_thread_manager(); }
 
     // shortcut for runtime_configuration::get_default_stack_size
     std::ptrdiff_t get_default_stack_size()
     {
-        return get_runtime().get_config().get_default_stack_size();
+        return pika::detail::get_runtime().get_config().get_default_stack_size();
     }
 
     // shortcut for runtime_configuration::get_stack_size
     std::ptrdiff_t get_stack_size(execution::thread_stacksize stacksize)
     {
         if (stacksize == execution::thread_stacksize::current)
-            return threads::detail::get_self_stacksize();
+            return pika::threads::detail::get_self_stacksize();
 
-        return get_runtime().get_config().get_stack_size(stacksize);
+        return pika::detail::get_runtime().get_config().get_stack_size(stacksize);
     }
 
     void reset_thread_distribution()
     {
-        get_runtime().get_thread_manager().reset_thread_distribution();
+        pika::detail::get_runtime().get_thread_manager().reset_thread_distribution();
     }
 
     void set_scheduler_mode(threads::scheduler_mode m)
     {
-        get_runtime().get_thread_manager().set_scheduler_mode(m);
+        pika::detail::get_runtime().get_thread_manager().set_scheduler_mode(m);
     }
 
     void add_scheduler_mode(threads::scheduler_mode m)
     {
-        get_runtime().get_thread_manager().add_scheduler_mode(m);
+        pika::detail::get_runtime().get_thread_manager().add_scheduler_mode(m);
     }
 
     void remove_scheduler_mode(threads::scheduler_mode m)
     {
-        get_runtime().get_thread_manager().remove_scheduler_mode(m);
+        pika::detail::get_runtime().get_thread_manager().remove_scheduler_mode(m);
     }
 
     detail::topology const& get_topology()
     {
-        pika::runtime* rt = pika::get_runtime_ptr();
+        pika::detail::runtime* rt = pika::detail::get_runtime_ptr();
         if (rt == nullptr)
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::threads::get_topology",
@@ -858,26 +822,24 @@ namespace pika::threads {
 }    // namespace pika::threads
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika {
+namespace pika::detail {
     std::uint64_t get_system_uptime() { return runtime::get_system_uptime(); }
 
     pika::util::runtime_configuration const& get_config() { return get_runtime().get_config(); }
-}    // namespace pika
+}    // namespace pika::detail
 
 #if defined(_WIN64) && defined(PIKA_DEBUG) && !defined(PIKA_HAVE_FIBER_BASED_COROUTINES)
 # include <io.h>
 #endif
 
-namespace pika {
-    namespace detail {
-        ///////////////////////////////////////////////////////////////////////
-        // There is no need to protect these global from thread concurrent
-        // access as they are access during early startup only.
-        std::list<startup_function_type> global_pre_startup_functions;
-        std::list<startup_function_type> global_startup_functions;
-        std::list<shutdown_function_type> global_pre_shutdown_functions;
-        std::list<shutdown_function_type> global_shutdown_functions;
-    }    // namespace detail
+namespace pika::detail {
+    ///////////////////////////////////////////////////////////////////////
+    // There is no need to protect these global from thread concurrent
+    // access as they are access during early startup only.
+    std::list<startup_function_type> global_pre_startup_functions;
+    std::list<startup_function_type> global_startup_functions;
+    std::list<shutdown_function_type> global_pre_shutdown_functions;
+    std::list<shutdown_function_type> global_shutdown_functions;
 
     ///////////////////////////////////////////////////////////////////////////
     void register_pre_startup_function(startup_function_type f)
@@ -885,7 +847,7 @@ namespace pika {
         runtime* rt = get_runtime_ptr();
         if (nullptr != rt)
         {
-            if (rt->get_state() > runtime_state::pre_startup)
+            if (rt->get_state() > pika::runtime_state::pre_startup)
             {
                 PIKA_THROW_EXCEPTION(pika::error::invalid_status, "register_pre_startup_function",
                     "Too late to register a new pre-startup function.");
@@ -901,7 +863,7 @@ namespace pika {
         runtime* rt = get_runtime_ptr();
         if (nullptr != rt)
         {
-            if (rt->get_state() > runtime_state::startup)
+            if (rt->get_state() > pika::runtime_state::startup)
             {
                 PIKA_THROW_EXCEPTION(pika::error::invalid_status, "register_startup_function",
                     "Too late to register a new startup function.");
@@ -917,7 +879,7 @@ namespace pika {
         runtime* rt = get_runtime_ptr();
         if (nullptr != rt)
         {
-            if (rt->get_state() > runtime_state::pre_shutdown)
+            if (rt->get_state() > pika::runtime_state::pre_shutdown)
             {
                 PIKA_THROW_EXCEPTION(pika::error::invalid_status, "register_pre_shutdown_function",
                     "Too late to register a new pre-shutdown function.");
@@ -933,7 +895,7 @@ namespace pika {
         runtime* rt = get_runtime_ptr();
         if (nullptr != rt)
         {
-            if (rt->get_state() > runtime_state::shutdown)
+            if (rt->get_state() > pika::runtime_state::shutdown)
             {
                 PIKA_THROW_EXCEPTION(pika::error::invalid_status, "register_shutdown_function",
                     "Too late to register a new shutdown function.");
@@ -948,12 +910,12 @@ namespace pika {
     {
         if (pre_startup)
         {
-            set_state(runtime_state::pre_startup);
+            set_state(pika::runtime_state::pre_startup);
             for (startup_function_type& f : pre_startup_functions_) { f(); }
         }
         else
         {
-            set_state(runtime_state::startup);
+            set_state(pika::runtime_state::startup);
             for (startup_function_type& f : startup_functions_) { f(); }
         }
     }
@@ -970,75 +932,74 @@ namespace pika {
         }
     }
 
-    namespace detail {
-        void handle_print_bind(std::size_t num_threads)
+    void handle_print_bind(std::size_t num_threads)
+    {
+        pika::threads::detail::topology& top = pika::threads::detail::get_topology();
+        auto const& rp = pika::resource::get_partitioner();
+        auto const& tm = get_runtime().get_thread_manager();
+
         {
-            threads::detail::topology& top = threads::detail::get_topology();
-            auto const& rp = pika::resource::get_partitioner();
-            auto const& tm = get_runtime().get_thread_manager();
+            // make sure all output is kept together
+            std::ostringstream strm;
 
-            {
-                // make sure all output is kept together
-                std::ostringstream strm;
-
-                strm << std::string(79, '*') << '\n';
+            strm << std::string(79, '*') << '\n';
 
 #if defined(PIKA_HAVE_MPI)
-                int mpi_initialized = 0;
-                if (MPI_Initialized(&mpi_initialized) == MPI_SUCCESS && mpi_initialized)
+            int mpi_initialized = 0;
+            if (MPI_Initialized(&mpi_initialized) == MPI_SUCCESS && mpi_initialized)
+            {
+                int rank = 0;
+                if (MPI_Comm_rank(MPI_COMM_WORLD, &rank) == MPI_SUCCESS)
                 {
-                    int rank = 0;
-                    if (MPI_Comm_rank(MPI_COMM_WORLD, &rank) == MPI_SUCCESS)
-                    {
-                        strm << "MPI rank: " << rank << '\n';
-                    }
+                    strm << "MPI rank: " << rank << '\n';
                 }
+            }
 #endif
 
-                for (std::size_t i = 0; i != num_threads; ++i)
+            for (std::size_t i = 0; i != num_threads; ++i)
+            {
+                // print the mask for the current PU
+                pika::threads::detail::mask_cref_type pu_mask = rp.get_pu_mask(i);
+
+                std::string pool_name = tm.get_pool(i).get_pool_name();
+                top.print_affinity_mask(strm, i, pu_mask, pool_name);
+
+                // Make sure the mask does not contradict the CPU bindings
+                // returned by the system (see #973: Would like option to
+                // report HWLOC bindings).
+                error_code ec(throwmode::lightweight);
+                std::thread& blob = tm.get_os_thread_handle(i);
+                pika::threads::detail::mask_type boundcpu = top.get_cpubind_mask(blob, ec);
+
+                // Empty masks are equivalent to full masks, so we first
+                // transform possible empty masks to full masks.
+                pika::threads::detail::mask_type boundcpu_never_empty =
+                    !pika::threads::detail::any(boundcpu) ? ~boundcpu : boundcpu;
+                pika::threads::detail::mask_type pu_mask_never_empty =
+                    !pika::threads::detail::any(pu_mask) ? ~pu_mask : pu_mask;
+
+                // The masks reported by pika must be the same as the ones
+                // reported from HWLOC.
+                if (!ec &&
+                    !pika::threads::detail::equal(
+                        boundcpu_never_empty, pu_mask_never_empty, num_threads))
                 {
-                    // print the mask for the current PU
-                    threads::detail::mask_cref_type pu_mask = rp.get_pu_mask(i);
-
-                    std::string pool_name = tm.get_pool(i).get_pool_name();
-                    top.print_affinity_mask(strm, i, pu_mask, pool_name);
-
-                    // Make sure the mask does not contradict the CPU bindings
-                    // returned by the system (see #973: Would like option to
-                    // report HWLOC bindings).
-                    error_code ec(throwmode::lightweight);
-                    std::thread& blob = tm.get_os_thread_handle(i);
-                    threads::detail::mask_type boundcpu = top.get_cpubind_mask(blob, ec);
-
-                    // Empty masks are equivalent to full masks, so we first
-                    // transform possible empty masks to full masks.
-                    threads::detail::mask_type boundcpu_never_empty =
-                        !threads::detail::any(boundcpu) ? ~boundcpu : boundcpu;
-                    threads::detail::mask_type pu_mask_never_empty =
-                        !threads::detail::any(pu_mask) ? ~pu_mask : pu_mask;
-
-                    // The masks reported by pika must be the same as the ones
-                    // reported from HWLOC.
-                    if (!ec &&
-                        !threads::detail::equal(
-                            boundcpu_never_empty, pu_mask_never_empty, num_threads))
-                    {
-                        std::string boundcpu_str = threads::detail::to_string(boundcpu_never_empty);
-                        std::string pu_mask_str = threads::detail::to_string(pu_mask_never_empty);
-                        PIKA_THROW_EXCEPTION(pika::error::invalid_status, "handle_print_bind",
-                            "unexpected mismatch between binding reported from HWLOC({}) and "
-                            "pika({}) on thread {}",
-                            boundcpu_str, pu_mask_str, i);
-                    }
+                    std::string boundcpu_str =
+                        pika::threads::detail::to_string(boundcpu_never_empty);
+                    std::string pu_mask_str = pika::threads::detail::to_string(pu_mask_never_empty);
+                    PIKA_THROW_EXCEPTION(pika::error::invalid_status, "handle_print_bind",
+                        "unexpected mismatch between binding reported from HWLOC({}) and "
+                        "pika({}) on thread {}",
+                        boundcpu_str, pu_mask_str, i);
                 }
-
-                std::cout << strm.str();
             }
-        }
-    }    // namespace detail
 
-    threads::detail::thread_result_type runtime::run_helper(
-        util::detail::function<runtime::pika_main_function_type> const& func, int& result,
+            std::cout << strm.str();
+        }
+    }
+
+    pika::threads::detail::thread_result_type runtime::run_helper(
+        pika::util::detail::function<runtime::pika_main_function_type> const& func, int& result,
         bool call_startup)
     {
         bool caught_exception = false;
@@ -1052,12 +1013,12 @@ namespace pika {
                 {
                     lbt_ << "runtime::run_helper: bootstrap aborted, bailing out";
 
-                    set_state(runtime_state::running);
+                    set_state(pika::runtime_state::running);
                     finalize();
 
-                    return threads::detail::thread_result_type(
-                        threads::detail::thread_schedule_state::terminated,
-                        threads::detail::invalid_thread_id);
+                    return pika::threads::detail::thread_result_type(
+                        pika::threads::detail::thread_schedule_state::terminated,
+                        pika::threads::detail::invalid_thread_id);
                 }
             }
 
@@ -1071,7 +1032,7 @@ namespace pika {
             }
 
             lbt_ << "(4th stage) runtime::run_helper: bootstrap complete";
-            set_state(runtime_state::running);
+            set_state(pika::runtime_state::running);
 
             // Now, execute the user supplied thread function (pika_main)
             if (!!func)
@@ -1079,8 +1040,8 @@ namespace pika {
                 lbt_ << "(last stage) runtime::run_helper: about to invoke pika_main";
 
                 // Change our thread description, as we're about to call pika_main
-                threads::detail::set_thread_description(
-                    threads::detail::get_self_id(), "pika_main");
+                pika::threads::detail::set_thread_description(
+                    pika::threads::detail::get_self_id(), "pika_main");
 
                 // Call pika_main
                 result = func();
@@ -1117,11 +1078,13 @@ namespace pika {
             finalize();    // make sure the application exits
         }
 
-        return threads::detail::thread_result_type(
-            threads::detail::thread_schedule_state::terminated, threads::detail::invalid_thread_id);
+        return pika::threads::detail::thread_result_type(
+            pika::threads::detail::thread_schedule_state::terminated,
+            pika::threads::detail::invalid_thread_id);
     }
 
-    int runtime::start(util::detail::function<pika_main_function_type> const& func, bool blocking)
+    int runtime::start(
+        pika::util::detail::function<pika_main_function_type> const& func, bool blocking)
     {
 #if defined(_WIN64) && defined(PIKA_DEBUG) && !defined(PIKA_HAVE_FIBER_BASED_COROUTINES)
         // needs to be called to avoid problems at system startup
@@ -1153,13 +1116,13 @@ namespace pika {
         // register the given main function with the thread manager
         lbt_ << "(1st stage) runtime::start: launching run_helper pika thread";
 
-        threads::detail::thread_init_data data(
-            util::detail::bind(&runtime::run_helper, this, func, std::ref(result_), true),
+        pika::threads::detail::thread_init_data data(
+            pika::util::detail::bind(&runtime::run_helper, this, func, std::ref(result_), true),
             "run_helper", execution::thread_priority::normal, execution::thread_schedule_hint(0),
             execution::thread_stacksize::large);
 
         this->runtime::starting();
-        threads::detail::thread_id_ref_type id = threads::detail::invalid_thread_id;
+        pika::threads::detail::thread_id_ref_type id = pika::threads::detail::invalid_thread_id;
         thread_manager_->register_thread(data, id);
 
         // }}}
@@ -1171,9 +1134,9 @@ namespace pika {
         }
         else
         {
-            // wait for at least runtime_state::running
-            util::yield_while(
-                [this]() { return get_state() < runtime_state::running; }, "runtime::start");
+            // wait for at least pika::runtime_state::running
+            pika::util::yield_while(
+                [this]() { return get_state() < pika::runtime_state::running; }, "runtime::start");
         }
 
         return 0;    // return zero as we don't know the outcome of pika_main yet
@@ -1181,7 +1144,7 @@ namespace pika {
 
     int runtime::start(bool blocking)
     {
-        util::detail::function<pika_main_function_type> empty_main;
+        pika::util::detail::function<pika_main_function_type> empty_main;
         return start(empty_main, blocking);
     }
 
@@ -1238,7 +1201,7 @@ namespace pika {
         std::condition_variable cond;
         bool running = false;
 
-        std::thread t(util::detail::bind(
+        std::thread t(pika::util::detail::bind(
             &runtime::wait_helper, this, std::ref(mtx), std::ref(cond), std::ref(running)));
 
         // wait for the thread to run
@@ -1274,7 +1237,7 @@ namespace pika {
         detail::external_timer::finalize();
 #endif
 
-        if (threads::detail::get_self_ptr())
+        if (pika::threads::detail::get_self_ptr())
         {
             // schedule task on separate thread to execute stop_helper() below
             // this is necessary as this function (stop()) might have been called
@@ -1284,7 +1247,7 @@ namespace pika {
             std::condition_variable cond;
             std::unique_lock<std::mutex> l(mtx);
 
-            std::thread t(util::detail::bind(
+            std::thread t(pika::util::detail::bind(
                 &runtime::stop_helper, this, blocking, std::ref(cond), std::ref(mtx)));
             cond.wait(l);
 
@@ -1326,9 +1289,9 @@ namespace pika {
     {
         LRT_(info).format("runtime: about to suspend runtime");
 
-        if (state_.load() == runtime_state::sleeping) { return; }
+        if (state_.load() == pika::runtime_state::sleeping) { return; }
 
-        if (state_.load() != runtime_state::running)
+        if (state_.load() != pika::runtime_state::running)
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status, "runtime::suspend",
                 "Can only suspend runtime from running state");
@@ -1336,16 +1299,16 @@ namespace pika {
 
         thread_manager_->suspend();
 
-        set_state(runtime_state::sleeping);
+        set_state(pika::runtime_state::sleeping);
     }
 
     void runtime::resume()
     {
         LRT_(info).format("runtime: about to resume runtime");
 
-        if (state_.load() == runtime_state::running) { return; }
+        if (state_.load() == pika::runtime_state::running) { return; }
 
-        if (state_.load() != runtime_state::sleeping)
+        if (state_.load() != pika::runtime_state::sleeping)
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status, "runtime::resume",
                 "Can only resume runtime from suspended state");
@@ -1353,7 +1316,7 @@ namespace pika {
 
         thread_manager_->resume();
 
-        set_state(runtime_state::running);
+        set_state(pika::runtime_state::running);
     }
 
     void runtime::finalize() { notify_finalize(); }
@@ -1372,7 +1335,8 @@ namespace pika {
         if (on_error_func_) { report_exception = on_error_func_(num_thread, e); }
 
         // Early and late exceptions, errors outside of pika-threads
-        if (!threads::detail::get_self_ptr() || !threads::thread_manager_is(runtime_state::running))
+        if (!pika::threads::detail::get_self_ptr() ||
+            !thread_manager_is(pika::runtime_state::running))
         {
             // report the error to the local console
             if (report_exception) { detail::report_exception_and_continue(e); }
@@ -1399,7 +1363,7 @@ namespace pika {
 
     void runtime::rethrow_exception()
     {
-        if (state_.load() > runtime_state::running)
+        if (state_.load() > pika::runtime_state::running)
         {
             std::lock_guard<std::mutex> l(mtx_);
             if (exception_)
@@ -1412,7 +1376,7 @@ namespace pika {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    int runtime::run(util::detail::function<pika_main_function_type> const& func)
+    int runtime::run(pika::util::detail::function<pika_main_function_type> const& func)
     {
         // start the main thread function
         start(func);
@@ -1439,10 +1403,10 @@ namespace pika {
         return result;
     }
 
-    util::thread_mapper& runtime::get_thread_mapper() { return *thread_support_; }
+    pika::util::thread_mapper& runtime::get_thread_mapper() { return *thread_support_; }
 
     ///////////////////////////////////////////////////////////////////////////
-    threads::callback_notifier runtime::get_notification_policy(
+    pika::threads::callback_notifier runtime::get_notification_policy(
         char const* prefix, os_thread_type type)
     {
         using report_error_t = bool (runtime::*)(std::size_t, std::exception_ptr const&, bool);
@@ -1454,11 +1418,11 @@ namespace pika {
 
         notification_policy_type notifier;
 
-        notifier.add_on_start_thread_callback(util::detail::bind(
+        notifier.add_on_start_thread_callback(pika::util::detail::bind(
             &runtime::init_tss_helper, this, prefix, type, _1, _2, _3, _4, false));
         notifier.add_on_stop_thread_callback(
-            util::detail::bind(&runtime::deinit_tss_helper, this, prefix, _1));
-        notifier.set_on_error_callback(util::detail::bind(
+            pika::util::detail::bind(&runtime::deinit_tss_helper, this, prefix, _1));
+        notifier.set_on_error_callback(pika::util::detail::bind(
             static_cast<report_error_t>(&runtime::report_error), this, _1, _2, true));
 
         return notifier;
@@ -1526,11 +1490,11 @@ namespace pika {
             // FIXME: We don't set the affinity of the service threads on BG/Q,
             // as this is causing a hang (needs to be investigated)
 #if !defined(__bgq__)
-            threads::detail::mask_cref_type used_processing_units =
+            pika::threads::detail::mask_cref_type used_processing_units =
                 thread_manager_->get_used_processing_units();
 
             // --pika:bind=none  should disable all affinity definitions
-            if (threads::detail::any(used_processing_units))
+            if (pika::threads::detail::any(used_processing_units))
             {
                 this->topology_.set_thread_affinity_mask(
                     this->topology_.get_service_affinity_mask(used_processing_units), ec);
@@ -1553,7 +1517,7 @@ namespace pika {
 
     void runtime::deinit_tss_helper(char const* context, std::size_t global_thread_num)
     {
-        threads::detail::reset_continuation_recursion_count();
+        pika::threads::detail::reset_continuation_recursion_count();
 
         // call thread-specific user-supplied on_stop handler
         if (on_stop_func_) { on_stop_func_(global_thread_num, global_thread_num, "", context); }
@@ -1619,28 +1583,15 @@ namespace pika {
 
     /// Enumerate all OS threads that have registered with the runtime.
     bool runtime::enumerate_os_threads(
-        util::detail::function<bool(os_thread_data const&)> const& f) const
+        pika::util::detail::function<bool(os_thread_data const&)> const& f) const
     {
         return thread_support_->enumerate_os_threads(f);
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    threads::callback_notifier get_notification_policy(char const* prefix)
+    pika::threads::callback_notifier get_notification_policy(char const* prefix)
     {
         return get_runtime().get_notification_policy(prefix, os_thread_type::worker_thread);
-    }
-
-    std::size_t get_num_worker_threads()
-    {
-        runtime* rt = get_runtime_ptr();
-        if (nullptr == rt)
-        {
-            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::get_num_worker_threads",
-                "the runtime system has not been initialized yet");
-            return std::size_t(0);
-        }
-
-        return rt->get_num_worker_threads();
     }
 
     namespace threads {
@@ -1648,7 +1599,7 @@ namespace pika {
         {
             execution::thread_stacksize size_enum = execution::thread_stacksize::unknown;
 
-            pika::util::runtime_configuration const& rtcfg = pika::get_config();
+            pika::util::runtime_configuration const& rtcfg = pika::detail::get_config();
             if (rtcfg.get_stack_size(execution::thread_stacksize::small_) == size)
                 size_enum = execution::thread_stacksize::small_;
             else if (rtcfg.get_stack_size(execution::thread_stacksize::medium) == size)
@@ -1663,6 +1614,35 @@ namespace pika {
             return execution::detail::get_stack_size_enum_name(size_enum);
         }
     }    // namespace threads
+}    // namespace pika::detail
 
-    bool is_runtime_initialized() noexcept { return get_runtime_ptr() != nullptr; }
+namespace pika {
+    bool is_runtime_initialized() noexcept { return pika::detail::get_runtime_ptr() != nullptr; }
+
+    std::size_t get_num_worker_threads()
+    {
+        pika::detail::runtime* rt = pika::detail::get_runtime_ptr();
+        if (nullptr == rt)
+        {
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::get_num_worker_threads",
+                "the runtime system has not been initialized yet");
+            return std::size_t(0);
+        }
+
+        return rt->get_num_worker_threads();
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    std::size_t get_os_thread_count()
+    {
+        pika::detail::runtime* rt = pika::detail::get_runtime_ptr();
+        if (nullptr == rt)
+        {
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::get_os_thread_count()",
+                "the runtime system has not been initialized yet");
+            return std::size_t(0);
+        }
+        return rt->get_config().get_os_thread_count();
+    }
+
 }    // namespace pika

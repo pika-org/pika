@@ -53,7 +53,7 @@ namespace pika {
                 typename std::enable_if<!std::is_same<std::decay_t<F>, thread>::value>::type>
         explicit thread(F&& f)
         {
-            auto thrd_data = threads::detail::get_self_id_data();
+            auto thrd_data = pika::threads::detail::get_self_id_data();
             PIKA_ASSERT(thrd_data);
             start_thread(thrd_data->get_scheduler_base()->get_parent_pool(),
                 util::detail::deferred_call(PIKA_FORWARD(F, f)));
@@ -62,7 +62,7 @@ namespace pika {
         template <typename F, typename... Ts>
         explicit thread(F&& f, Ts&&... vs)
         {
-            auto thrd_data = threads::detail::get_self_id_data();
+            auto thrd_data = pika::threads::detail::get_self_id_data();
             PIKA_ASSERT(thrd_data);
             start_thread(thrd_data->get_scheduler_base()->get_parent_pool(),
                 util::detail::deferred_call(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...));

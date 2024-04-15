@@ -22,8 +22,8 @@ namespace pika::cuda::experimental {
     cuda_pool::streams_holder::streams_holder(int device, std::size_t num_streams_per_thread,
         pika::execution::thread_priority priority, unsigned int flags)
       : num_streams_per_thread(num_streams_per_thread)
-      , concurrency(pika::get_runtime_ptr() ? pika::get_num_worker_threads() :
-                                              pika::threads::detail::hardware_concurrency())
+      , concurrency(pika::detail::get_runtime_ptr() ? pika::get_num_worker_threads() :
+                                                      pika::threads::detail::hardware_concurrency())
       , streams()
       , active_stream_indices(concurrency, {0})
     {
@@ -49,8 +49,8 @@ namespace pika::cuda::experimental {
     }
 
     cuda_pool::cublas_handles_holder::cublas_handles_holder()
-      : concurrency(pika::get_runtime_ptr() ? pika::get_num_worker_threads() :
-                                              pika::threads::detail::hardware_concurrency())
+      : concurrency(pika::detail::get_runtime_ptr() ? pika::get_num_worker_threads() :
+                                                      pika::threads::detail::hardware_concurrency())
       , unsynchronized_handles()
       , synchronized_handle_index{0}
       , synchronized_handles()
@@ -105,8 +105,8 @@ namespace pika::cuda::experimental {
     }
 
     cuda_pool::cusolver_handles_holder::cusolver_handles_holder()
-      : concurrency(pika::get_runtime_ptr() ? pika::get_num_worker_threads() :
-                                              pika::threads::detail::hardware_concurrency())
+      : concurrency(pika::detail::get_runtime_ptr() ? pika::get_num_worker_threads() :
+                                                      pika::threads::detail::hardware_concurrency())
       , unsynchronized_handles()
       , synchronized_handle_index{0}
       , synchronized_handles()

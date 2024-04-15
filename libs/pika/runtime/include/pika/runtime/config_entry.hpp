@@ -13,7 +13,7 @@
 #include <cstdlib>
 #include <string>
 
-namespace pika {
+namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     /// Retrieve the string value of a configuration entry given by \p key.
     PIKA_EXPORT std::string get_config_entry(std::string const& key, std::string const& dflt);
@@ -27,5 +27,5 @@ namespace pika {
 
     /// Set the string value of a configuration entry given by \p key.
     PIKA_EXPORT void set_config_entry_callback(std::string const& key,
-        util::detail::function<void(std::string const&, std::string const&)> const& callback);
-}    // namespace pika
+        pika::util::detail::function<void(std::string const&, std::string const&)> const& callback);
+}    // namespace pika::detail

@@ -34,7 +34,7 @@ namespace pika::threads::coroutines::detail {
         {
             // stackless coroutines don't support suspension
             PIKA_ASSERT(false);
-            return threads::detail::thread_restart_state::abort;
+            return pika::threads::detail::thread_restart_state::abort;
         }
 
         thread_id_type get_thread_id() const override

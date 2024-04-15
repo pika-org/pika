@@ -20,7 +20,7 @@ std::atomic<bool> invoked_callback(false);
 void config_entry_callback()
 {
     // this used to cause a deadlock in the config registry
-    std::string val = pika::get_config_entry("pika.config.entry.test", "");
+    std::string val = pika::detail::get_config_entry("pika.config.entry.test", "");
     PIKA_TEST_EQ(val, std::string("test1"));
 
     PIKA_TEST(!invoked_callback.load());
@@ -29,21 +29,21 @@ void config_entry_callback()
 
 int pika_main()
 {
-    std::string val = pika::get_config_entry("pika.config.entry.test", "");
+    std::string val = pika::detail::get_config_entry("pika.config.entry.test", "");
     PIKA_TEST(val.empty());
 
-    pika::set_config_entry("pika.config.entry.test", "test");
-    val = pika::get_config_entry("pika.config.entry.test", "");
+    pika::detail::set_config_entry("pika.config.entry.test", "test");
+    val = pika::detail::get_config_entry("pika.config.entry.test", "");
     PIKA_TEST(!val.empty());
     PIKA_TEST_EQ(val, std::string("test"));
 
-    pika::set_config_entry_callback(
+    pika::detail::set_config_entry_callback(
         "pika.config.entry.test", pika::util::detail::bind(&config_entry_callback));
 
-    pika::set_config_entry("pika.config.entry.test", "test1");
+    pika::detail::set_config_entry("pika.config.entry.test", "test1");
     PIKA_TEST(invoked_callback.load());
 
-    val = pika::get_config_entry("pika.config.entry.test", "");
+    val = pika::detail::get_config_entry("pika.config.entry.test", "");
     PIKA_TEST(!val.empty());
     PIKA_TEST_EQ(val, std::string("test1"));
 

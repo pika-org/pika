@@ -32,7 +32,7 @@ int pika_main()
 
 int main(int argc, char* argv[])
 {
-    auto on_stop = pika::register_thread_on_error_func(&on_thread_error);
+    auto on_stop = pika::detail::register_thread_on_error_func(&on_thread_error);
     PIKA_TEST(on_stop.empty());
 
     bool caught_exception = false;

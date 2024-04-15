@@ -38,16 +38,15 @@
 #include <pika/config/warnings_prefix.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika {
-    namespace detail {
-        ///////////////////////////////////////////////////////////////////////
-        // There is no need to protect these global from thread concurrent
-        // access as they are access during early startup only.
-        extern std::list<startup_function_type> global_pre_startup_functions;
-        extern std::list<startup_function_type> global_startup_functions;
-        extern std::list<shutdown_function_type> global_pre_shutdown_functions;
-        extern std::list<shutdown_function_type> global_shutdown_functions;
-    }    // namespace detail
+namespace pika::detail {
+
+    ///////////////////////////////////////////////////////////////////////
+    // There is no need to protect these global from thread concurrent
+    // access as they are accessed during early startup only.
+    extern std::list<startup_function_type> global_pre_startup_functions;
+    extern std::list<startup_function_type> global_startup_functions;
+    extern std::list<shutdown_function_type> global_pre_shutdown_functions;
+    extern std::list<shutdown_function_type> global_shutdown_functions;
 
     ///////////////////////////////////////////////////////////////////////////
     class PIKA_EXPORT runtime
@@ -55,7 +54,7 @@ namespace pika {
     public:
         /// Generate a new notification policy instance for the given thread
         /// name prefix
-        using notification_policy_type = threads::callback_notifier;
+        using notification_policy_type = pika::threads::callback_notifier;
         virtual notification_policy_type get_notification_policy(
             char const* prefix, os_thread_type type);
 
@@ -85,7 +84,7 @@ namespace pika {
         virtual ~runtime();
 
         /// \brief Manage list of functions to call on exit
-        void on_exit(util::detail::function<void()> const& f);
+        void on_exit(pika::util::detail::function<void()> const& f);
 
         /// \brief Manage runtime 'stopped' state
         void starting();
@@ -107,9 +106,9 @@ namespace pika {
         static std::uint64_t get_system_uptime();
 
         /// \brief Return a reference to the internal PAPI thread manager
-        util::thread_mapper& get_thread_mapper();
+        pika::util::thread_mapper& get_thread_mapper();
 
-        threads::detail::topology const& get_topology() const;
+        pika::threads::detail::topology const& get_topology() const;
 
         /// \brief Run the pika runtime system, use the given function for the
         ///        main \a thread and block waiting for all threads to
@@ -133,7 +132,7 @@ namespace pika {
         /// \returns          This function will return the value as returned
         ///                   as the result of the invocation of the function
         ///                   object given by the parameter \p func.
-        virtual int run(util::detail::function<pika_main_function_type> const& func);
+        virtual int run(pika::util::detail::function<pika_main_function_type> const& func);
 
         /// \brief Run the pika runtime system, initially use the given number
         ///        of (OS) threads in the thread-manager and block waiting for
@@ -163,8 +162,8 @@ namespace pika {
         ///                   return the value as returned as the result of the
         ///                   invocation of the function object given by the
         ///                   parameter \p func. Otherwise it will return zero.
-        virtual int start(
-            util::detail::function<pika_main_function_type> const& func, bool blocking = false);
+        virtual int start(pika::util::detail::function<pika_main_function_type> const& func,
+            bool blocking = false);
 
         /// \brief Start the runtime system
         ///
@@ -326,7 +325,7 @@ namespace pika {
 
         /// Enumerate all OS threads that have registered with the runtime.
         virtual bool enumerate_os_threads(
-            util::detail::function<bool(os_thread_data const&)> const& f) const;
+            pika::util::detail::function<bool(os_thread_data const&)> const& f) const;
 
         notification_policy_type::on_startstop_type on_start_func() const;
         notification_policy_type::on_startstop_type on_stop_func() const;
@@ -352,14 +351,14 @@ namespace pika {
         void init_global_data();
         void deinit_global_data();
 
-        threads::detail::thread_result_type run_helper(
-            util::detail::function<runtime::pika_main_function_type> const& func, int& result,
+        pika::threads::detail::thread_result_type run_helper(
+            pika::util::detail::function<runtime::pika_main_function_type> const& func, int& result,
             bool call_startup_functions);
 
         void wait_helper(std::mutex& mtx, std::condition_variable& cond, bool& running);
 
         // list of functions to call on exit
-        using on_exit_type = std::vector<util::detail::function<void()>>;
+        using on_exit_type = std::vector<pika::util::detail::function<void()>>;
         on_exit_type on_exit_functions_;
         mutable std::mutex mtx_;
 
@@ -370,10 +369,10 @@ namespace pika {
 
         // certain components (such as PAPI) require all threads to be
         // registered with the library
-        std::unique_ptr<util::thread_mapper> thread_support_;
+        std::unique_ptr<pika::util::thread_mapper> thread_support_;
 
         // topology and affinity data
-        threads::detail::topology& topology_;
+        pika::threads::detail::topology& topology_;
 
         std::atomic<runtime_state> state_;
 
@@ -429,9 +428,7 @@ namespace pika {
 
     PIKA_EXPORT void set_signal_handlers();
 
-    namespace detail {
-        PIKA_EXPORT char const* get_runtime_state_name(pika::runtime_state st);
-    }
+    PIKA_EXPORT char const* get_runtime_state_name(pika::runtime_state st);
 
     namespace util {
         ///////////////////////////////////////////////////////////////////////////
@@ -468,6 +465,9 @@ namespace pika {
         PIKA_EXPORT std::ptrdiff_t get_stack_size(execution::thread_stacksize);
     }    // namespace threads
 
+}    // namespace pika::detail
+
+namespace pika {
     /// Returns true when the runtime is initialized, false otherwise.
     ///
     /// Returns true while in a @ref pika::init call, or between calls of @ref pika::start and @ref
