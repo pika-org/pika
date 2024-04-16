@@ -33,12 +33,7 @@ namespace pika::detail {
         void format(
             const spdlog::details::log_msg&, const std::tm&, spdlog::memory_buf_t& dest) override
         {
-            const auto id = threads::detail::get_self_id();
-            if (id != threads::detail::invalid_thread_id)
-            {
-                dest.append(fmt::format("{:016x}", reinterpret_cast<std::ptrdiff_t>(id.get())));
-            }
-            else { dest.append(std::string_view("----")); }
+            dest.append(fmt::format("{}", threads::detail::get_self_id()));
         }
 
         std::unique_ptr<custom_flag_formatter> clone() const override
@@ -53,12 +48,7 @@ namespace pika::detail {
         void format(
             const spdlog::details::log_msg&, const std::tm&, spdlog::memory_buf_t& dest) override
         {
-            auto id = threads::detail::get_parent_id();
-            if (id != nullptr)
-            {
-                dest.append(fmt::format("{:016x}", reinterpret_cast<std::ptrdiff_t>(id.get())));
-            }
-            else { dest.append(std::string_view("----")); }
+            dest.append(fmt::format("{}", threads::detail::get_parent_id()));
         }
 
         std::unique_ptr<custom_flag_formatter> clone() const override
