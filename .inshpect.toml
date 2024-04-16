@@ -355,4 +355,5 @@ patterns = [
     { pattern = '\bfmt::format_to\b', include = 'fmt/format.h' },
     { pattern = '\bfmt::ptr\b', include = 'fmt/format.h' },
     { pattern = '\bfmt::print\b', include = 'fmt/printf.h' },
+    { pattern = '\bfmt::streamed\b', include = 'fmt/ostream.h' },
 ]
