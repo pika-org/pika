@@ -44,9 +44,9 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # Build all of pika
 # ##################################################################################################
 set(PIKA_VERSION_MAJOR 0)
-set(PIKA_VERSION_MINOR 23)
+set(PIKA_VERSION_MINOR 24)
 set(PIKA_VERSION_PATCH 0)
-set(PIKA_VERSION_DATE 20240307)
+set(PIKA_VERSION_DATE 20240412)
 set(PIKA_VERSION_TAG "-trunk")
 
 set(PIKA_VERSION "${PIKA_VERSION_MAJOR}.${PIKA_VERSION_MINOR}.${PIKA_VERSION_PATCH}")
@@ -66,10 +66,6 @@ include(GNUInstallDirs)
 include(pika_utils)
 
 # explicitly set certain policies
-cmake_policy(VERSION 3.18)
-pika_set_cmake_policy(CMP0042 NEW)
-pika_set_cmake_policy(CMP0060 NEW)
-pika_set_cmake_policy(CMP0074 NEW)
 pika_set_cmake_policy(CMP0144 NEW)
 
 # We save the passed compiler flag to a special variable. This is needed for our build system unit
@@ -239,7 +235,7 @@ if(PIKA_WITH_PRECOMPILED_HEADERS)
   set(PIKA_WITH_PRECOMPILED_HEADERS_INTERNAL ON)
   # Only create the targets here. They will be set up later once all modules are known.
   add_library(pika_precompiled_headers OBJECT libs/src/dummy.cpp)
-  add_executable(pika_exe_precompiled_headers libs/src/dummy.cpp)
+  add_executable(pika_exe_precompiled_headers libs/src/dummy_main.cpp)
 
   set_target_properties(pika_precompiled_headers PROPERTIES FOLDER "Core")
   set_target_properties(pika_exe_precompiled_headers PROPERTIES FOLDER "Core")

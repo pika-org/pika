@@ -873,7 +873,7 @@ namespace pika::threads::detail {
                 if (thrd->get_state().state() == threads::detail::thread_schedule_state::suspended)
                 {
                     thrd->set_state(threads::detail::thread_schedule_state::pending,
-                        threads::detail::thread_restart_state::abort);
+                        pika::threads::detail::thread_restart_state::abort);
 
                     // thread holds self-reference
                     PIKA_ASSERT(thrd->count_ > 1);

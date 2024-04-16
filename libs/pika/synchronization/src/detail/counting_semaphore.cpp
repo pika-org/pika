@@ -43,7 +43,7 @@ namespace pika::detail {
         {
             // return false if unblocked by timeout expiring
             if (cond_.wait_until(l, abs_time, "counting_semaphore::wait_until") !=
-                threads::detail::thread_restart_state::unknown)
+                pika::threads::detail::thread_restart_state::unknown)
             {
                 return false;
             }

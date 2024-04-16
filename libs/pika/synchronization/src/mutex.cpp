@@ -39,7 +39,7 @@ namespace pika {
         PIKA_ITT_SYNC_PREPARE(this);
         std::unique_lock<mutex_type> l(mtx_);
 
-        threads::detail::thread_id_type self_id = threads::detail::get_self_id();
+        threads::detail::thread_id_type self_id = pika::threads::detail::get_self_id();
         if (owner_id_ == self_id)
         {
             PIKA_ITT_SYNC_CANCEL(this);
@@ -77,7 +77,7 @@ namespace pika {
             return false;
         }
 
-        threads::detail::thread_id_type self_id = threads::detail::get_self_id();
+        threads::detail::thread_id_type self_id = pika::threads::detail::get_self_id();
         util::register_lock(this);
         PIKA_ITT_SYNC_ACQUIRED(this);
         owner_id_ = self_id;
@@ -93,7 +93,7 @@ namespace pika {
         util::unregister_lock(this);
         std::unique_lock<mutex_type> l(mtx_);
 
-        threads::detail::thread_id_type self_id = threads::detail::get_self_id();
+        threads::detail::thread_id_type self_id = pika::threads::detail::get_self_id();
         if (PIKA_UNLIKELY(owner_id_ != self_id))
         {
             l.unlock();
@@ -128,17 +128,18 @@ namespace pika {
         PIKA_ITT_SYNC_PREPARE(this);
         std::unique_lock<mutex_type> l(mtx_);
 
-        threads::detail::thread_id_type self_id = threads::detail::get_self_id();
+        threads::detail::thread_id_type self_id = pika::threads::detail::get_self_id();
         if (owner_id_ != threads::detail::invalid_thread_id)
         {
-            threads::detail::thread_restart_state const reason = cond_.wait_until(l, abs_time, ec);
+            pika::threads::detail::thread_restart_state const reason =
+                cond_.wait_until(l, abs_time, ec);
             if (ec)
             {
                 PIKA_ITT_SYNC_CANCEL(this);
                 return false;
             }
 
-            if (reason == threads::detail::thread_restart_state::timeout)    //-V110
+            if (reason == pika::threads::detail::thread_restart_state::timeout)    //-V110
             {
                 PIKA_ITT_SYNC_CANCEL(this);
                 return false;

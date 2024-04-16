@@ -21,7 +21,7 @@ jobs:
     name: github/linux/sanitizers/address-undefined-leak
     runs-on: ubuntu-latest
     container:
-      image: pikaorg/pika-ci-base:22
+      image: pikaorg/pika-ci-base:23
       # --privileged is enabled for sysctl further down.
       options: --privileged
 

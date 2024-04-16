@@ -20,7 +20,7 @@ void print_system_characteristics()
     //      I can query                       //
     // -------------------------------------- //
 
-    pika::runtime* rt = pika::get_runtime_ptr();
+    pika::detail::runtime* rt = pika::detail::get_runtime_ptr();
     pika::util::runtime_configuration cfg = rt->get_config();
     const pika::threads::detail::topology& topo = rt->get_topology();
 
@@ -31,7 +31,7 @@ void print_system_characteristics()
 
     //! -------------------------------------- runtime
     std::cout << "[Runtime], instance number " << rt->get_instance_number() << "\n"
-              << "called by thread named     " << pika::get_thread_name() << "\n\n";
+              << "called by thread named     " << pika::detail::get_thread_name() << "\n\n";
 
     //! -------------------------------------- thread_manager
     std::cout << "[Thread manager]\n"

@@ -45,46 +45,52 @@ namespace pika::resource {
         return get_partitioner().get_pool_name(pool_index);
     }
 
-    threads::detail::thread_pool_base& get_thread_pool(std::string const& pool_name)
+    pika::threads::detail::thread_pool_base& get_thread_pool(std::string const& pool_name)
     {
-        return get_runtime().get_thread_manager().get_pool(pool_name);
+        return pika::detail::get_runtime().get_thread_manager().get_pool(pool_name);
     }
 
-    threads::detail::thread_pool_base& get_thread_pool(std::size_t pool_index)
+    pika::threads::detail::thread_pool_base& get_thread_pool(std::size_t pool_index)
     {
         return get_thread_pool(get_pool_name(pool_index));
     }
 
     bool pool_exists(std::string const& pool_name)
     {
-        return get_runtime().get_thread_manager().pool_exists(pool_name);
+        return pika::detail::get_runtime().get_thread_manager().pool_exists(pool_name);
     }
 
     bool pool_exists(std::size_t pool_index)
     {
-        return get_runtime().get_thread_manager().pool_exists(pool_index);
+        return pika::detail::get_runtime().get_thread_manager().pool_exists(pool_index);
     }
 }    // namespace pika::resource
 
 namespace pika::threads {
     std::int64_t get_thread_count(detail::thread_schedule_state state)
     {
-        return get_thread_manager().get_thread_count(state);
+        return pika::detail::get_runtime().get_thread_manager().get_thread_count(state);
     }
 
     std::int64_t get_thread_count(
         execution::thread_priority priority, detail::thread_schedule_state state)
     {
-        return get_thread_manager().get_thread_count(state, priority);
+        return pika::detail::get_runtime().get_thread_manager().get_thread_count(state, priority);
     }
 
-    std::int64_t get_idle_core_count() { return get_thread_manager().get_idle_core_count(); }
+    std::int64_t get_idle_core_count()
+    {
+        return pika::detail::get_runtime().get_thread_manager().get_idle_core_count();
+    }
 
-    detail::mask_type get_idle_core_mask() { return get_thread_manager().get_idle_core_mask(); }
+    detail::mask_type get_idle_core_mask()
+    {
+        return pika::detail::get_runtime().get_thread_manager().get_idle_core_mask();
+    }
 
-    bool enumerate_threads(util::detail::function<bool(detail::thread_id_type)> const& f,
+    bool enumerate_threads(pika::util::detail::function<bool(detail::thread_id_type)> const& f,
         detail::thread_schedule_state state)
     {
-        return get_thread_manager().enumerate_threads(f, state);
+        return pika::detail::get_runtime().get_thread_manager().enumerate_threads(f, state);
     }
 }    // namespace pika::threads

@@ -13,7 +13,7 @@
 
 #include <string>
 
-namespace pika {
+namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     /// \brief Return the name of the calling thread.
     ///
@@ -21,4 +21,4 @@ namespace pika {
     /// identifies the thread in the context of pika. If the function is called
     /// while no pika runtime system is active, the result will be "<unknown>".
     PIKA_EXPORT std::string get_thread_name();
-}    // namespace pika
+}    // namespace pika::detail

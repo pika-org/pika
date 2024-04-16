@@ -107,33 +107,33 @@ namespace pika::detail {
 
         PIKA_EXPORT void abort_all(std::unique_lock<mutex_type> lock);
 
-        PIKA_EXPORT threads::detail::thread_restart_state wait(
+        PIKA_EXPORT pika::threads::detail::thread_restart_state wait(
             std::unique_lock<mutex_type>& lock, char const* description, error_code& ec = throws);
 
-        threads::detail::thread_restart_state wait(
+        pika::threads::detail::thread_restart_state wait(
             std::unique_lock<mutex_type>& lock, error_code& ec = throws)
         {
             return wait(lock, "condition_variable::wait", ec);
         }
 
-        PIKA_EXPORT threads::detail::thread_restart_state wait_until(
+        PIKA_EXPORT pika::threads::detail::thread_restart_state wait_until(
             std::unique_lock<mutex_type>& lock, pika::chrono::steady_time_point const& abs_time,
             char const* description, error_code& ec = throws);
 
-        threads::detail::thread_restart_state wait_until(std::unique_lock<mutex_type>& lock,
+        pika::threads::detail::thread_restart_state wait_until(std::unique_lock<mutex_type>& lock,
             pika::chrono::steady_time_point const& abs_time, error_code& ec = throws)
         {
             return wait_until(lock, abs_time, "condition_variable::wait_until", ec);
         }
 
-        threads::detail::thread_restart_state wait_for(std::unique_lock<mutex_type>& lock,
+        pika::threads::detail::thread_restart_state wait_for(std::unique_lock<mutex_type>& lock,
             pika::chrono::steady_duration const& rel_time, char const* description,
             error_code& ec = throws)
         {
             return wait_until(lock, rel_time.from_now(), description, ec);
         }
 
-        threads::detail::thread_restart_state wait_for(std::unique_lock<mutex_type>& lock,
+        pika::threads::detail::thread_restart_state wait_for(std::unique_lock<mutex_type>& lock,
             pika::chrono::steady_duration const& rel_time, error_code& ec = throws)
         {
             return wait_until(lock, rel_time.from_now(), "condition_variable::wait_for", ec);

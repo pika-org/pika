@@ -4,10 +4,9 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(tests process_mask_flag runtime_initialized thread_mapper)
+set(tests process_mask_flag runtime_initialized)
 
 set(process_mask_flag_PARAMETERS THREADS 2 RUN_SERIAL)
-set(thread_mapper_PARAMETERS THREADS 4)
 
 foreach(test ${tests})
   set(sources ${test}.cpp)

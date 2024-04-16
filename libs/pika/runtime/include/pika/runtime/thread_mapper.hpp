@@ -36,7 +36,7 @@ namespace pika::util {
     namespace detail {
 
         // type for callback function invoked when thread is unregistered
-        using thread_mapper_callback_type = util::detail::function<bool(std::uint32_t)>;
+        using thread_mapper_callback_type = pika::util::detail::function<bool(std::uint32_t)>;
 
         // thread-specific data
         class PIKA_EXPORT os_thread_data
@@ -46,7 +46,7 @@ namespace pika::util {
             os_thread_data(std::string const& label, os_thread_type type);
 
         protected:
-            friend class util::thread_mapper;
+            friend class pika::util::thread_mapper;
 
             void invalidate();
             bool is_valid() const;
@@ -133,7 +133,7 @@ namespace pika::util {
 
         // enumerate all registered OS threads
         bool enumerate_os_threads(
-            util::detail::function<bool(os_thread_data const&)> const& f) const;
+            pika::util::detail::function<bool(os_thread_data const&)> const& f) const;
 
         // retrieve all data stored for a given thread
         os_thread_data get_os_thread_data(std::string const& label) const;

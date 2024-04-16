@@ -19,7 +19,7 @@ jobs:
   build_and_test:
     name: github/macos/debug
     if: ${{ github.event_name == 'merge_group' }}
-    runs-on: macos-latest
+    runs-on: macos-12
 
     steps:
       - name: Install dependencies
@@ -31,6 +31,7 @@ jobs:
           rm /usr/local/bin/python3*
 
           export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
+          brew pin xcbeautify
           brew upgrade
           brew update
           brew install boost cmake fmt hwloc ninja

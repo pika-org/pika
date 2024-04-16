@@ -72,7 +72,7 @@ template <>
 struct fmt::formatter<pika::cuda::experimental::cuda_stream> : fmt::formatter<std::string>
 {
     template <typename FormatContext>
-    auto format(pika::cuda::experimental::cuda_stream const& stream, FormatContext& ctx)
+    auto format(pika::cuda::experimental::cuda_stream const& stream, FormatContext& ctx) const
     {
         return fmt::formatter<std::string>::format(
             fmt::format("cuda_stream({})", fmt::ptr(stream.get())), ctx);

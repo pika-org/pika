@@ -60,7 +60,7 @@ int pika_main()
     PIKA_TEST_EQ(std::size_t(0), pika::resource::get_pool_index("pool-0"));
 
     // print partition characteristics
-    pika::threads::get_thread_manager().print_pools(std::cout);
+    pika::detail::get_runtime().get_thread_manager().print_pools(std::cout);
 
     auto const sched = pika::threads::detail::get_self_id_data()->get_scheduler_base();
     if (std::string("core-shared_priority_queue_scheduler") == sched->get_description())

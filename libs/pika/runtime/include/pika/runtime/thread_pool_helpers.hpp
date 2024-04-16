@@ -41,10 +41,11 @@ namespace pika::resource {
     PIKA_EXPORT std::string const& get_pool_name(std::size_t pool_index);
 
     /// Return the name of the pool given its name
-    PIKA_EXPORT threads::detail::thread_pool_base& get_thread_pool(std::string const& pool_name);
+    PIKA_EXPORT pika::threads::detail::thread_pool_base& get_thread_pool(
+        std::string const& pool_name);
 
     /// Return the thread pool given its internal index
-    PIKA_EXPORT threads::detail::thread_pool_base& get_thread_pool(std::size_t pool_index);
+    PIKA_EXPORT pika::threads::detail::thread_pool_base& get_thread_pool(std::size_t pool_index);
 
     /// Return true if the pool with the given name exists
     PIKA_EXPORT bool pool_exists(std::string const& pool_name);
@@ -99,6 +100,6 @@ namespace pika::threads {
     /// \param state    [in] This specifies the thread-state for which the
     ///                 threads should be enumerated.
     PIKA_EXPORT bool enumerate_threads(
-        util::detail::function<bool(detail::thread_id_type)> const& f,
+        pika::util::detail::function<bool(detail::thread_id_type)> const& f,
         detail::thread_schedule_state state = detail::thread_schedule_state::unknown);
 }    // namespace pika::threads

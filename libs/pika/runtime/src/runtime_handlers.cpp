@@ -58,11 +58,11 @@ namespace pika::detail {
         if (!msg.empty()) { strm << " (" << msg << ")"; }
 
         pika::exception e(pika::error::assertion_failure, strm.str());
-        std::cerr << pika::diagnostic_information(pika::detail::get_exception(
+        std::cerr << pika::detail::diagnostic_information(pika::detail::get_exception(
                          e, loc.function_name, loc.file_name, loc.line_number))
                   << std::endl;
 
-        pika::util::may_attach_debugger("exception");
+        pika::detail::may_attach_debugger("exception");
 
         std::abort();
     }
@@ -105,12 +105,12 @@ namespace pika::detail {
         }
     }
 
-    bool register_locks_predicate() { return threads::detail::get_self_ptr() != nullptr; }
+    bool register_locks_predicate() { return pika::threads::detail::get_self_ptr() != nullptr; }
 #endif
 
-    threads::detail::thread_pool_base* get_default_pool()
+    pika::threads::detail::thread_pool_base* get_default_pool()
     {
-        pika::runtime* rt = get_runtime_ptr();
+        pika::detail::runtime* rt = get_runtime_ptr();
         if (rt == nullptr)
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::detail::get_default_pool",
@@ -120,8 +120,8 @@ namespace pika::detail {
         return &rt->get_thread_manager().default_pool();
     }
 
-    threads::detail::mask_cref_type get_pu_mask(
-        threads::detail::topology& /* topo */, std::size_t thread_num)
+    pika::threads::detail::mask_cref_type get_pu_mask(
+        pika::threads::detail::topology& /* topo */, std::size_t thread_num)
     {
         auto& rp = pika::resource::get_partitioner();
         return rp.get_pu_mask(thread_num);

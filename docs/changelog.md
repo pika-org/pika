@@ -6,6 +6,21 @@
 
 # Changelog
 
+## 0.24.0 (2024-04-12)
+
+### New features
+
+- Avoid unnecessary copies of CUDA streams and handles to improve profiling appearance. ([#1056](https://github.com/pika-org/pika/pull/1056))
+- Avoid use of `std::invoke_result` in `tag_invoke_result` variants to improve compilation times. ([#1058](https://github.com/pika-org/pika/pull/1058), [#1060](https://github.com/pika-org/pika/pull/1060))
+
+### Breaking changes
+
+### Bugfixes
+
+- Fix use of `--pika:print-bind` with `--pika:bind=none`. ([#1082](https://github.com/pika-org/pika/pull/1082), [#1087](https://github.com/pika-org/pika/pull/1087))
+- Work around compilation issue with CUDA 12.4. ([#1084](https://github.com/pika-org/pika/pull/1084))
+- Make sure `main` is never defined in `libpika.so`. ([#1088](https://github.com/pika-org/pika/pull/1088))
+
 ## 0.23.0 (2024-03-07)
 
 ### New features

@@ -32,7 +32,7 @@ void run_with_large_stack()
     std::fill(large_array, &large_array[array_size], '\0');
 
     std::cout << "This thread runs with a "
-              << pika::threads::get_stack_size_name(pika::this_thread::get_stack_size())
+              << pika::detail::threads::get_stack_size_name(pika::this_thread::get_stack_size())
               << " stack and "
               << pika::execution::detail::get_thread_priority_name(
                      pika::this_thread::get_priority())

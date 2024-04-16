@@ -349,7 +349,7 @@ template <>
 struct fmt::formatter<pika::threads::detail::thread_id> : fmt::formatter<void*>
 {
     template <typename FormatContext>
-    auto format(pika::threads::detail::thread_id id, FormatContext& ctx)
+    auto format(pika::threads::detail::thread_id id, FormatContext& ctx) const
     {
         return fmt::formatter<void*>::format(static_cast<void*>(id.get()), ctx);
     }
@@ -359,7 +359,7 @@ template <>
 struct fmt::formatter<pika::threads::detail::thread_id_ref> : fmt::formatter<void*>
 {
     template <typename FormatContext>
-    auto format(pika::threads::detail::thread_id_ref id, FormatContext& ctx)
+    auto format(pika::threads::detail::thread_id_ref id, FormatContext& ctx) const
     {
         return fmt::formatter<void*>::format(static_cast<void*>(id.noref().get()), ctx);
     }

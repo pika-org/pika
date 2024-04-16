@@ -365,12 +365,12 @@ namespace pika::threads::detail {
             explicit scoped_thread_priority(pika::execution::thread_priority new_p)
               : old_priority_{threads::detail::get_self_id_data()->get_priority()}
             {
-                threads::detail::get_self_id_data()->set_priority(new_p);
+                pika::threads::detail::get_self_id_data()->set_priority(new_p);
             }
 
             ~scoped_thread_priority()
             {
-                threads::detail::get_self_id_data()->set_priority(old_priority_);
+                pika::threads::detail::get_self_id_data()->set_priority(old_priority_);
             }
 
             scoped_thread_priority(scoped_thread_priority&&) = delete;

@@ -418,7 +418,7 @@ namespace pika::this_thread {
     ///         running, it will throw an \a pika#exception with an error code of
     ///         \a pika#invalid_status.
     ///
-    PIKA_EXPORT threads::detail::thread_restart_state suspend(
+    PIKA_EXPORT pika::threads::detail::thread_restart_state suspend(
         threads::detail::thread_schedule_state state, threads::detail::thread_id_type id,
         detail::thread_description const& description = detail::thread_description(
             "this_thread::suspend"),
@@ -440,7 +440,7 @@ namespace pika::this_thread {
     ///         running, it will throw an \a pika#exception with an error code of
     ///         \a pika#invalid_status.
     ///
-    inline threads::detail::thread_restart_state suspend(
+    inline pika::threads::detail::thread_restart_state suspend(
         threads::detail::thread_schedule_state state =
             threads::detail::thread_schedule_state::pending,
         detail::thread_description const& description = detail::thread_description(
@@ -467,7 +467,7 @@ namespace pika::this_thread {
     ///         running, it will throw an \a pika#exception with an error code of
     ///         \a pika#invalid_status.
     ///
-    PIKA_EXPORT threads::detail::thread_restart_state suspend(
+    PIKA_EXPORT pika::threads::detail::thread_restart_state suspend(
         pika::chrono::steady_time_point const& abs_time, threads::detail::thread_id_type id,
         detail::thread_description const& description = detail::thread_description(
             "this_thread::suspend"),
@@ -490,7 +490,7 @@ namespace pika::this_thread {
     ///         running, it will throw an \a pika#exception with an error code of
     ///         \a pika#invalid_status.
     ///
-    inline threads::detail::thread_restart_state suspend(
+    inline pika::threads::detail::thread_restart_state suspend(
         pika::chrono::steady_time_point const& abs_time,
         detail::thread_description const& description = detail::thread_description(
             "this_thread::suspend"),
@@ -516,7 +516,7 @@ namespace pika::this_thread {
     ///         running, it will throw an \a pika#exception with an error code of
     ///         \a pika#invalid_status.
     ///
-    inline threads::detail::thread_restart_state suspend(
+    inline pika::threads::detail::thread_restart_state suspend(
         pika::chrono::steady_duration const& rel_time,
         detail::thread_description const& description = detail::thread_description(
             "this_thread::suspend"),
@@ -542,7 +542,7 @@ namespace pika::this_thread {
     ///         running, it will throw an \a pika#exception with an error code of
     ///         \a pika#invalid_status.
     ///
-    inline threads::detail::thread_restart_state suspend(
+    inline pika::threads::detail::thread_restart_state suspend(
         pika::chrono::steady_duration const& rel_time, threads::detail::thread_id_type const& id,
         detail::thread_description const& description = detail::thread_description(
             "this_thread::suspend"),
@@ -568,7 +568,7 @@ namespace pika::this_thread {
     ///         running, it will throw an \a pika#exception with an error code of
     ///         \a pika#invalid_status.
     ///
-    inline threads::detail::thread_restart_state suspend(std::uint64_t ms,
+    inline pika::threads::detail::thread_restart_state suspend(std::uint64_t ms,
         detail::thread_description const& description = detail::thread_description(
             "this_thread::suspend"),
         error_code& ec = throws)

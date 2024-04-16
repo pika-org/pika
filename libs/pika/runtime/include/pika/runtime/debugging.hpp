@@ -10,8 +10,8 @@
 #include <pika/config.hpp>
 #include <string>
 
-namespace pika::util {
+namespace pika::detail {
     /// Attaches a debugger if \c category is equal to the configuration entry
     /// pika.attach-debugger.
     void PIKA_EXPORT may_attach_debugger(std::string const& category);
-}    // namespace pika::util
+}    // namespace pika::detail

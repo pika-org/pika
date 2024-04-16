@@ -389,7 +389,8 @@ template <>
 struct fmt::formatter<pika::threads::detail::thread_pool_base> : fmt::formatter<std::string>
 {
     template <typename FormatContext>
-    auto format(pika::threads::detail::thread_pool_base const& thread_pool, FormatContext& ctx)
+    auto
+    format(pika::threads::detail::thread_pool_base const& thread_pool, FormatContext& ctx) const
     {
         auto id = thread_pool.get_pool_id();
         return fmt::formatter<std::string>::format(

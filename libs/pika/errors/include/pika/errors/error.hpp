@@ -167,7 +167,7 @@ template <>
 struct fmt::formatter<pika::error> : fmt::formatter<std::string>
 {
     template <typename FormatContext>
-    auto format(pika::error e, FormatContext& ctx)
+    auto format(pika::error e, FormatContext& ctx) const
     {
         int e_int = static_cast<int>(e);
         if (e_int >= static_cast<int>(pika::error::success) &&
