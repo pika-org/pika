@@ -198,18 +198,4 @@ namespace pika::detail {
         if (!settings.level_.empty()) { lvl = get_spdlog_level(settings.level_); }
         get_pika_logger()->set_level(lvl);
     }
-
-    void disable_logging()
-    {
-        // TODO
-    }
-
-    // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-    void enable_logging(std::string const& level, std::string logdest, std::string logformat)
-    // NOLINTEND(bugprone-easily-swappable-parameters)
-    {
-        // TODO
-        auto lvl = spdlog::level::warn;
-        if (!level.empty()) { lvl = get_spdlog_level(level); }
-    }
 }    // namespace pika::detail
