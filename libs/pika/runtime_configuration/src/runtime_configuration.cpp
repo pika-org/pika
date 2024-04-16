@@ -230,7 +230,7 @@ namespace pika::util {
             "level = ${PIKA_LOG_LEVEL:3}",
             "destination = ${PIKA_LOG_DESTINATION:cerr}",
             "format = ${PIKA_LOG_FORMAT:"
-            "[%Y-%m-%d %H:%M:%S.%F] [%n] [%l] [host:%j] [pid:%P] [tid:%t] "
+            "[%Y-%m-%d %H:%M:%S.%F] [%n] [%^%l%$] [host:%j] [pid:%P] [tid:%t] "
             "[pool:%w] [parent:%q] [task:%k] [%s:%#:%!] %v"
             "}",
         };

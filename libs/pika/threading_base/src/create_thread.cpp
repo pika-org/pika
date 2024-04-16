@@ -5,9 +5,9 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
+#include <pika/logging.hpp>
 #include <pika/modules/coroutines.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/logging.hpp>
 #include <pika/threading_base/create_thread.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_data.hpp>
