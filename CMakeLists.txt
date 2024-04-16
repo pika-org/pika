@@ -813,7 +813,7 @@ pika_option(
 
 pika_option(
   PIKA_WITH_TESTS_DEBUG_LOG BOOL
-  "Turn on debug logs (--pika:debug-pika-log) for tests (default: OFF)" OFF
+  "Turn on debug logs for tests (default: OFF)" OFF
   CATEGORY "Debugging"
   ADVANCED
 )

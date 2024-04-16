@@ -81,7 +81,7 @@ namespace pika::detail {
         void handle_arguments(detail::manage_config& cfgmap,
             pika::program_options::variables_map& vm, std::vector<std::string>& ini_config);
 
-        void enable_logging_settings(
+        void update_logging_settings(
             pika::program_options::variables_map& vm, std::vector<std::string>& ini_config);
 
         void store_command_line(int argc, const char* const* argv);

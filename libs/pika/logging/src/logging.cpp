@@ -9,39 +9,47 @@
 #include <pika/logging.hpp>
 #include <pika/string_util/from_string.hpp>
 
-#include <cstddef>
-#include <cstdint>
-#include <cstdlib>
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
+#include <spdlog/common.h>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+
+#include <iostream>
+#include <memory>
 #include <string>
-#include <utility>
-#include <vector>
+#include <type_traits>
 
 namespace pika::detail {
-    PIKA_DETAIL_DEFINE_SPDLOG(pika, off)
+    PIKA_DETAIL_DEFINE_SPDLOG(pika, warn)
 
     spdlog::level::level_enum get_spdlog_level(std::string const& env)
     {
         try
         {
-            int env_val = pika::detail::from_string<int>(env);
-            if (env_val < 0) { return spdlog::level::off; }
-
-            switch (env_val)
-            {
-                // TODO: Don't invert the log levels
-            case 0: return spdlog::level::off;
-            case 1: return spdlog::level::critical;
-            case 2: return spdlog::level::err;
-            case 3: return spdlog::level::warn;
-            case 4: return spdlog::level::info;
-            case 5: return spdlog::level::debug;
-            default: break;
-            }
-            return spdlog::level::trace;
+            return static_cast<spdlog::level::level_enum>(
+                pika::detail::from_string<std::underlying_type_t<spdlog::level::level_enum>>(env));
         }
         catch (pika::detail::bad_lexical_cast const&)
         {
-            return spdlog::level::off;
+            fmt::print(std::cerr,
+                "pika given invalid log level: \"{}\". Using default level instead {} (warn). "
+                "Valid values are {} (trace) to {} (off).\n",
+                env, SPDLOG_LEVEL_WARN, SPDLOG_LEVEL_TRACE, SPDLOG_LEVEL_OFF);
+            return spdlog::level::warn;
         }
+    }
+
+    std::shared_ptr<spdlog::sinks::sink> get_spdlog_sink(std::string const& env)
+    {
+        if (env.empty())
+        {
+            fmt::print(
+                std::cerr, "pika given empty log destination. Using default instead (cerr).\n");
+        }
+        else if (env == "cout") { return std::make_shared<spdlog::sinks::stdout_color_sink_mt>(); }
+        else if (env == "cerr") { return std::make_shared<spdlog::sinks::stderr_color_sink_mt>(); }
+        return std::make_shared<spdlog::sinks::basic_file_sink_mt>(env);
     }
 }    // namespace pika::detail

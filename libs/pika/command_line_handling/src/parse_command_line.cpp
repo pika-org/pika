@@ -12,6 +12,8 @@
 #include <pika/program_options/variables_map.hpp>
 #include <pika/string_util/from_string.hpp>
 
+#include <fmt/format.h>
+
 #include <any>
 #include <cctype>
 #include <cstddef>
@@ -349,15 +351,21 @@ namespace pika::detail {
             ("pika:exit", "exit after configuring the runtime")
         ;
 
+        static std::string log_level_description = fmt::format(
+            "set log level, allowed values are {} (trace) to {} (off) (default: {} (warn))",
+            SPDLOG_LEVEL_TRACE, SPDLOG_LEVEL_OFF, SPDLOG_LEVEL_WARN);
+
         options_description debugging_options("pika debugging options");
         debugging_options.add_options()
             ("pika:dump-config-initial", "print the initial runtime configuration")
             ("pika:dump-config", "print the final runtime configuration")
             // enable debug output from command line handling
             ("pika:debug-clp", "debug command line processing")
-            ("pika:debug-pika-log", value<std::string>()->implicit_value("cout"),
-              "enable all messages on the pika log channel and send all "
-              "pika logs to the target destination")
+            ("pika:log-destination", value<std::string>(),
+              "set log destination (default: cerr)")
+            ("pika:log-level", value<std::underlying_type_t<spdlog::level::level_enum>>(),
+                log_level_description.c_str())
+            ("pika:log-format", value<std::string>(), "set log format string")
 #if defined(_POSIX_VERSION) || defined(PIKA_WINDOWS)
             ("pika:attach-debugger",
                 value<std::string>()->implicit_value("startup"),

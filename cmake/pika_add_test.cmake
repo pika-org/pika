@@ -54,7 +54,8 @@ function(pika_add_test category name)
 
   set(args "--pika:threads=${${name}_THREADS}")
   if(PIKA_WITH_TESTS_DEBUG_LOG)
-    set(args ${args} "--pika:debug-pika-log=${PIKA_WITH_TESTS_DEBUG_LOG_DESTINATION}")
+    set(args ${args} "--pika:log-destination=${PIKA_WITH_TESTS_DEBUG_LOG_DESTINATION}")
+    set(args ${args} "--pika:log-level=0")
   endif()
 
   if(PIKA_WITH_PARALLEL_TESTS_BIND_NONE

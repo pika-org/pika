@@ -226,21 +226,13 @@ namespace pika::util {
     void runtime_configuration::pre_initialize_logging_ini()
     {
         std::vector<std::string> lines = {
-        // clang-format off
-#define PIKA_TIMEFORMAT "$hh:$mm.$ss.$mili"
-#define PIKA_LOGFORMAT "(T%pikathread%.%pikaphase%) "
-
-            // general logging
-            "[pika.logging]",
-            "level = ${PIKA_LOGLEVEL:0}",
-            "destination = ${PIKA_LOGDESTINATION:cerr}",
-            "format = ${PIKA_LOGFORMAT:" PIKA_LOGFORMAT
-                "P%parentloc%/%pikaparent%.%pikaparentphase% %time%("
-                PIKA_TIMEFORMAT ") [%idx%]|\\n}",
-
-#undef PIKA_TIMEFORMAT
-#undef PIKA_LOGFORMAT
-            // clang-format on
+            "[pika.log]",
+            "level = ${PIKA_LOG_LEVEL:3}",
+            "destination = ${PIKA_LOG_DESTINATION:cerr}",
+            "format = ${PIKA_LOG_FORMAT:"
+            "[%Y-%m-%d %H:%M:%S.%F] [%n] [%l] [host:%j] [pid:%P] [tid:%t] "
+            "[pool:%w] [parent:%q] [task:%k] [%s:%#:%!] %v"
+            "}",
         };
 
         // don't overload user overrides

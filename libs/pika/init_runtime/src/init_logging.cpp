@@ -109,48 +109,6 @@ namespace pika::detail {
         }
     };
 
-    // unescape config entry
-    std::string unescape(std::string const& value)
-    {
-        std::string result;
-        std::string::size_type pos = 0;
-        std::string::size_type pos1 = value.find_first_of('\\', 0);
-        if (std::string::npos != pos1)
-        {
-            do {
-                switch (value[pos1 + 1])
-                {
-                case '\\':
-                case '\"':
-                case '?':
-                    result = result + value.substr(pos, pos1 - pos);
-                    pos1 = value.find_first_of('\\', (pos = pos1 + 1) + 1);
-                    break;
-
-                case 'n':
-                    result = result + value.substr(pos, pos1 - pos) + "\n";
-                    pos1 = value.find_first_of('\\', pos = pos1 + 1);
-                    ++pos;
-                    break;
-
-                default:
-                    result = result + value.substr(pos, pos1 - pos + 1);
-                    pos1 = value.find_first_of('\\', pos = pos1 + 1);
-                }
-
-            } while (pos1 != std::string::npos);
-            result = result + value.substr(pos);
-        }
-        else
-        {
-            // the string doesn't contain any escaped character sequences
-            result = value;
-        }
-        return result;
-    }
-
-    static std::string empty_string;
-
     log_settings get_log_settings(section const& ini, char const* sec)
     {
         log_settings result;
@@ -159,43 +117,32 @@ namespace pika::detail {
             section const* logini = ini.get_section(sec);
             PIKA_ASSERT(nullptr != logini);
 
-            result.level_ = logini->get_entry("level", empty_string);
-            if (!result.level_.empty())
-            {
-                result.dest_ = logini->get_entry("destination", empty_string);
-                result.format_ = unescape(logini->get_entry("format", empty_string));
-            }
+            result.level_ = logini->get_entry("level", "");
+            result.dest_ = logini->get_entry("destination", "");
+            result.format_ = logini->get_entry("format", "");
         }
         return result;
     }
 
-    void init_pika_log(spdlog::level::level_enum lvl, std::string logdest, std::string logformat)
-    {
-        // TODO
-    }
-
-    void init_pika_log(pika::util::runtime_configuration& ini)
-    {
-        // TODO
-    }
-
     void init_logging(pika::util::runtime_configuration& ini)
     {
-        init_pika_log(ini);
+        auto settings = get_log_settings(ini, "pika.log");
 
+        // Set log destination
+        auto& sinks = get_pika_logger()->sinks();
+        sinks.clear();
+        sinks.push_back(get_spdlog_sink(settings.dest_));
+
+        // Set log pattern
         auto formatter = std::make_unique<spdlog::pattern_formatter>();
-        formatter->add_flag<pika_thread_id_formatter_flag>('k');           // TODO: What letter?
-        formatter->add_flag<pika_parent_thread_id_formatter_flag>('q');    // TODO: What letter?
-        formatter->add_flag<pika_worker_thread_formatter_flag>('w');       // TODO: What letter?
-        formatter->add_flag<hostname_formatter_flag>('j');                 // TODO: What letter?
-        formatter->set_pattern("[%Y-%m-%d %H:%M:%S.%F] [%n] [%-8l] [host:%j] [pid:%P] [tid:%t] "
-                               "[pool:%w] [parent:%q] [task:%k] [%s:%#:%!] %v");
+        formatter->add_flag<pika_thread_id_formatter_flag>('k');
+        formatter->add_flag<pika_parent_thread_id_formatter_flag>('q');
+        formatter->add_flag<pika_worker_thread_formatter_flag>('w');
+        formatter->add_flag<hostname_formatter_flag>('j');
+        formatter->set_pattern(settings.format_);
         get_pika_logger()->set_formatter(std::move(formatter));
 
-        auto settings = get_log_settings(ini, "pika.logging");
-        auto lvl = spdlog::level::off;
-        std::cerr << "settings.level_: " << settings.level_ << "\n";
-        if (!settings.level_.empty()) { lvl = get_spdlog_level(settings.level_); }
-        get_pika_logger()->set_level(lvl);
+        // Set log level
+        get_pika_logger()->set_level(get_spdlog_level(settings.level_));
     }
 }    // namespace pika::detail
