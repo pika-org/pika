@@ -19,7 +19,7 @@ jobs:
   build:
     name: github/linux/valgrind
     runs-on: ubuntu-latest
-    container: pikaorg/pika-ci-base:23
+    container: pikaorg/pika-ci-base:24
 
     strategy:
       matrix:

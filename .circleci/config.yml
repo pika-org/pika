@@ -21,7 +21,7 @@ setup_arm64_machine: &setup_arm64_machine
 
 docker_default: &docker_default
   docker:
-    - image: pikaorg/pika-ci-base:23
+    - image: pikaorg/pika-ci-base:24
 
 defaults: &defaults
   <<: *working_dir_default
@@ -515,6 +515,7 @@ jobs:
               ninja-build \
               libboost-context-dev \
               libhwloc-dev \
+              libspdlog-dev \
               mpi-default-dev \
               xsltproc
             git clone --branch 9.1.0 --single-branch --depth 1 \
