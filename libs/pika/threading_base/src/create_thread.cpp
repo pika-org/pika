@@ -82,7 +82,7 @@ namespace pika::threads::detail {
             "create_thread: pool({}), scheduler({}), thread({}), initial_state({}), run_now({}), "
             "description({})",
             *scheduler->get_parent_pool(), *scheduler, id,
-            get_thread_state_name(data.initial_state), data.run_now, data.description);
+            get_thread_state_name(data.initial_state), data.run_now, data.get_description());
 
         // NOTE: Don't care if the hint is a NUMA hint, just want to wake up a
         // thread.
