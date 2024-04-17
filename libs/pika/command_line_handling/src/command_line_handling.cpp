@@ -556,7 +556,8 @@ namespace pika::detail {
         if (vm.count("pika:log-level"))
         {
             ini_config.emplace_back("pika.log.level=" +
-                vm["pika:log-level"].as<std::underlying_type_t<spdlog::level::level_enum>>());
+                std::to_string(
+                    vm["pika:log-level"].as<std::underlying_type_t<spdlog::level::level_enum>>()));
         }
 
         if (vm.count("pika:log-format"))
