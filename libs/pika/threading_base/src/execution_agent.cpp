@@ -185,6 +185,6 @@ namespace pika::threads::detail {
             execution::thread_priority::normal,
             execution::thread_schedule_hint{
                 static_cast<std::int16_t>(get_thread_id_data(thrd)->get_last_worker_thread_num())},
-            false);
+            true);
     }
 }    // namespace pika::threads::detail
