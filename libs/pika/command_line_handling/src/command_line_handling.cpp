@@ -562,8 +562,7 @@ namespace pika::detail {
 
         if (vm.count("pika:log-format"))
         {
-            ini_config.emplace_back(
-                "pika.log.format=" + vm["pika:log-format"].as<std::string>());
+            ini_config.emplace_back("pika.log.format=" + vm["pika:log-format"].as<std::string>());
         }
     }
 
