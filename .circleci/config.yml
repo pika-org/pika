@@ -515,7 +515,6 @@ jobs:
               ninja-build \
               libboost-context-dev \
               libhwloc-dev \
-              libspdlog-dev \
               mpi-default-dev \
               xsltproc
             git clone --branch 9.1.0 --single-branch --depth 1 \
@@ -526,11 +525,23 @@ jobs:
                 -DBUILD_SHARED_LIBS=ON \
                 -DCMAKE_INSTALL_PREFIX=$HOME/project/install/fmt . && \
               ninja install)
+            export CMAKE_PREFIX_PATH=$HOME/project/install/fmt:${CMAKE_PREFIX_PATH}
+            git clone --branch v1.9.2 --single-branch --depth 1 \
+              https://github.com/gabime/spdlog.git
+            (cd spdlog && \
+              cmake \
+                -GNinja \
+                -DSPDLOG_BUILD_SHARED=ON \
+                -DSPDLOG_FMT_EXTERNAL=ON \
+                -DSPDLOG_BUILD_EXAMPLE=OFF \
+                -DSPDLOG_BUILD_TESTS=OFF \
+                -DCMAKE_INSTALL_PREFIX=$HOME/project/install/spdlog . && \
+              ninja install)
             mkdir build
       - run:
           name: Configuring pika Arm64
           command: |
-            export CMAKE_PREFIX_PATH=$HOME/project/install/fmt:${CMAKE_PREFIX_PATH}
+            export CMAKE_PREFIX_PATH=$HOME/project/install/spdlog:$HOME/project/install/fmt:${CMAKE_PREFIX_PATH}
             cmake \
                 ./pika \
                 -Bbuild \
@@ -564,14 +575,14 @@ jobs:
       - run:
           name: Building tests Arm64
           command: |
-            export CMAKE_PREFIX_PATH=$HOME/project/install/fmt:${CMAKE_PREFIX_PATH}
+            export CMAKE_PREFIX_PATH=$HOME/project/install/spdlog:$HOME/project/install/fmt:${CMAKE_PREFIX_PATH}
             cd build
             ninja -k 0 tests
       - run:
           name: Running tests Arm64
           when: always
           command: |
-            export CMAKE_PREFIX_PATH=$HOME/project/install/fmt:${CMAKE_PREFIX_PATH}
+            export CMAKE_PREFIX_PATH=$HOME/project/install/spdlog:$HOME/project/install/fmt:${CMAKE_PREFIX_PATH}
             cd build
             ulimit -c unlimited
             ctest \
