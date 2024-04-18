@@ -10,7 +10,6 @@
 #include <pika/lock_registration/detail/register_locks.hpp>
 #include <pika/modules/debugging.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/logging.hpp>
 #include <pika/modules/thread_manager.hpp>
 #include <pika/modules/threading.hpp>
 #include <pika/runtime/config_entry.hpp>
