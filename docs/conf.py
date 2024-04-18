@@ -32,6 +32,7 @@ breathe_domain_by_extension = {
 breathe_default_members = ("members",)
 breathe_show_include = False
 
+show_warning_types = True
 # https://github.com/sphinx-doc/sphinx/issues/12300
 suppress_warnings = ["config.cache"]
 
