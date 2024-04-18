@@ -16,7 +16,6 @@
 #include <string>
 
 namespace pika::detail {
-// TODO: Return ptr directly? Return reference?
 #define PIKA_DETAIL_DECLARE_SPDLOG(name)                                                           \
     std::shared_ptr<spdlog::logger> get_##name##_logger() noexcept;
 
