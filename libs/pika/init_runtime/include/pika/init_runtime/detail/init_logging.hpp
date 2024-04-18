@@ -14,14 +14,5 @@
 #include <string>
 
 namespace pika::detail {
-    /// \cond NOINTERNAL
-    struct log_settings
-    {
-        std::string level_;
-        std::string dest_;
-        std::string format_;
-    };
-
     PIKA_EXPORT void init_logging(pika::util::runtime_configuration& ini);
-    /// \endcond
 }    // namespace pika::detail

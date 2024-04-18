@@ -99,6 +99,13 @@ namespace pika::detail {
         }
     };
 
+    struct log_settings
+    {
+        std::string level_;
+        std::string dest_;
+        std::string format_;
+    };
+
     static log_settings get_log_settings(section const& ini, char const* sec)
     {
         log_settings result;
