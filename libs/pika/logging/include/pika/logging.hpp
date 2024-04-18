@@ -43,9 +43,8 @@ namespace pika::detail {
     (::pika::detail::get_##name##_logger()->level() <= spdlog::level::loglevel)
 }    // namespace pika::detail
 
-#define PIKA_LOG(loglevel, ...) PIKA_DETAIL_LOG_PIKA(loglevel, __VA_ARGS__)
+#define PIKA_LOG(loglevel, ...) PIKA_DETAIL_SPDLOG(pika, loglevel, __VA_ARGS__)
 #define LPIKA_ENABLED(loglevel) PIKA_DETAIL_SPDLOG_ENABLED(pika, loglevel)
-#define PIKA_DETAIL_LOG_PIKA(loglevel, ...) PIKA_DETAIL_SPDLOG(pika, loglevel, __VA_ARGS__)
 
 namespace pika::detail {
     PIKA_EXPORT spdlog::level::level_enum get_spdlog_level(std::string const& env);
