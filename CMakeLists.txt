@@ -1578,6 +1578,7 @@ if(PIKA_WITH_PRECOMPILED_HEADERS)
     config
     filesystem
     include
+    logging
     version
   )
   list(TRANSFORM pika_precompiled_headers_modules PREPEND "<pika/modules/")
