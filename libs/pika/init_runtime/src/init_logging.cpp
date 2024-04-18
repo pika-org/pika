@@ -24,16 +24,31 @@
 #include <ctime>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 namespace pika::detail {
+    static void spdlog_format_thread_id(pika::threads::detail::thread_id_type const id,
+        const spdlog::details::log_msg&, const std::tm&, spdlog::memory_buf_t& dest)
+    {
+        if (id)
+        {
+            dest.append(fmt::format("{}/{}", id,
+#if defined(PIKA_HAVE_THREAD_DESCRIPTION)
+                id ? get_thread_id_data(id)->get_description() :
+#endif
+                     "----"));
+        }
+        else { dest.append(std::string_view("----/----")); }
+    }
+
     class pika_thread_id_formatter_flag : public spdlog::custom_flag_formatter
     {
     public:
-        void format(
-            const spdlog::details::log_msg&, const std::tm&, spdlog::memory_buf_t& dest) override
+        void format(const spdlog::details::log_msg& m, const std::tm& t,
+            spdlog::memory_buf_t& dest) override
         {
-            dest.append(fmt::format("{}", threads::detail::get_self_id()));
+            spdlog_format_thread_id(threads::detail::get_self_id(), m, t, dest);
         }
 
         std::unique_ptr<custom_flag_formatter> clone() const override
@@ -45,10 +60,10 @@ namespace pika::detail {
     class pika_parent_thread_id_formatter_flag : public spdlog::custom_flag_formatter
     {
     public:
-        void format(
-            const spdlog::details::log_msg&, const std::tm&, spdlog::memory_buf_t& dest) override
+        void format(const spdlog::details::log_msg& m, const std::tm& t,
+            spdlog::memory_buf_t& dest) override
         {
-            dest.append(fmt::format("{}", threads::detail::get_parent_id()));
+            spdlog_format_thread_id(threads::detail::get_parent_id(), m, t, dest);
         }
 
         std::unique_ptr<custom_flag_formatter> clone() const override
