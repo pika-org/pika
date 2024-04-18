@@ -1015,7 +1015,7 @@ namespace pika::threads::detail {
 
 #ifdef PIKA_HAVE_THREAD_DEADLOCK_DETECTION
             // no new work is available, are we deadlocked?
-            if (PIKA_UNLIKELY(get_deadlock_detection_enabled() && PIKA_LOG_ENABLED(error)))
+            if (PIKA_UNLIKELY(get_deadlock_detection_enabled() && PIKA_LOG_ENABLED(err)))
             {
                 bool suspended_only = true;
 
@@ -1029,14 +1029,14 @@ namespace pika::threads::detail {
                 {
                     if (running)
                     {
-                        PIKA_LOG(error,
+                        PIKA_LOG(err,
                             "pool({}), scheduler({}), worker_thread({}): no new "
                             "work available, are we deadlocked?",
                             *this->get_parent_pool(), *this, num_thread);
                     }
                     else
                     {
-                        PIKA_LOG(error,
+                        PIKA_LOG(err,
                             "  [TM] pool({}), scheduler({}), worker_thread({}): no new "
                             "work available, are we deadlocked?\n",
                             *this->get_parent_pool(), *this, num_thread);

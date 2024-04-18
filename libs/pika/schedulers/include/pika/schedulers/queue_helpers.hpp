@@ -82,7 +82,7 @@ namespace pika::threads::detail {
                 {
                     PIKA_LOG(warn, "queue({}): {}({}.{:02x}) P{}: {}: {}", num_thread,
                         get_thread_state_name(state), *it, thrd->get_thread_phase(),
-                        thrd->get_parent_thread_id(), , thrd->get_description(),
+                        thrd->get_parent_thread_id(), thrd->get_description(),
                         thrd->get_lco_description());
                 }
                 else
