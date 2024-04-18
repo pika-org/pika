@@ -8,7 +8,6 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/logging.hpp>
 #include <pika/runtime_configuration/runtime_configuration.hpp>
 
 #include <string>
