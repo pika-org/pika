@@ -401,7 +401,7 @@ namespace pika::threads::detail {
         // process may have a non-full mask set which is inherited by this thread.
         if (!any(mask)) { mask = topo.get_machine_affinity_mask(); }
 
-        if (LPIKA_ENABLED(debug)) topo.write_to_log();
+        if (PIKA_LOG_ENABLED(debug)) topo.write_to_log();
 
         error_code ec(throwmode::lightweight);
         topo.set_thread_affinity_mask(mask, ec);
