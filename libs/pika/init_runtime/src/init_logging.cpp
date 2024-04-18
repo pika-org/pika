@@ -126,7 +126,7 @@ namespace pika::detail {
         auto settings = get_log_settings(ini, "pika.log");
 
         // Set log destination
-        auto& sinks = get_pika_logger()->sinks();
+        auto& sinks = get_pika_logger().sinks();
         sinks.clear();
         sinks.push_back(get_spdlog_sink(settings.dest_));
 
@@ -137,9 +137,9 @@ namespace pika::detail {
         formatter->add_flag<pika_worker_thread_formatter_flag>('w');
         formatter->add_flag<hostname_formatter_flag>('j');
         formatter->set_pattern(settings.format_);
-        get_pika_logger()->set_formatter(std::move(formatter));
+        get_pika_logger().set_formatter(std::move(formatter));
 
         // Set log level
-        get_pika_logger()->set_level(get_spdlog_level(settings.level_));
+        get_pika_logger().set_level(get_spdlog_level(settings.level_));
     }
 }    // namespace pika::detail

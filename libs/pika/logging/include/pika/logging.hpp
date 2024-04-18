@@ -16,11 +16,10 @@
 #include <string>
 
 namespace pika::detail {
-#define PIKA_DETAIL_DECLARE_SPDLOG(name)                                                           \
-    std::shared_ptr<spdlog::logger> get_##name##_logger() noexcept;
+#define PIKA_DETAIL_DECLARE_SPDLOG(name) spdlog::logger& get_##name##_logger() noexcept;
 
 #define PIKA_DETAIL_DEFINE_SPDLOG(name, loglevel)                                                  \
-    std::shared_ptr<spdlog::logger> get_##name##_logger() noexcept                                 \
+    spdlog::logger& get_##name##_logger() noexcept                                                 \
     {                                                                                              \
         static auto logger = []() {                                                                \
             auto logger = std::make_shared<spdlog::logger>(                                        \
@@ -28,19 +27,20 @@ namespace pika::detail {
             logger->set_level(spdlog::level::loglevel);                                            \
             return logger;                                                                         \
         }();                                                                                       \
-        return logger;                                                                             \
+        static auto& logger_ref = *logger;                                                         \
+        return logger_ref;                                                                         \
     }
 
 #define PIKA_DETAIL_SPDLOG(name, loglevel, ...)                                                    \
-    if (::pika::detail::get_##name##_logger()->level() <= spdlog::level::loglevel)                 \
+    if (::pika::detail::get_##name##_logger().level() <= spdlog::level::loglevel)                  \
     {                                                                                              \
-        ::pika::detail::get_##name##_logger()->log(                                                \
+        ::pika::detail::get_##name##_logger().log(                                                 \
             spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, spdlog::level::loglevel,      \
             __VA_ARGS__);                                                                          \
     }
 
 #define PIKA_DETAIL_SPDLOG_ENABLED(name, loglevel)                                                 \
-    (::pika::detail::get_##name##_logger()->level() <= spdlog::level::loglevel)
+    (::pika::detail::get_##name##_logger().level() <= spdlog::level::loglevel)
 }    // namespace pika::detail
 
 #define PIKA_LOG(loglevel, ...) PIKA_DETAIL_SPDLOG(pika, loglevel, __VA_ARGS__)
