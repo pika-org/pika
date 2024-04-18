@@ -12,7 +12,6 @@
 #include <pika/threading_base/print.hpp>
 #include <pika/threading_base/thread_data.hpp>
 //
-#include <pika/logging.hpp>
 #include <pika/thread_support/unlock_guard.hpp>
 #include <pika/type_support/unused.hpp>
 //
