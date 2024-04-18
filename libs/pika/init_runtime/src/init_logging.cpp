@@ -99,7 +99,7 @@ namespace pika::detail {
         }
     };
 
-    log_settings get_log_settings(section const& ini, char const* sec)
+    static log_settings get_log_settings(section const& ini, char const* sec)
     {
         log_settings result;
         if (ini.has_section(sec))

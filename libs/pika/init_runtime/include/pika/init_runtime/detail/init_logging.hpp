@@ -22,7 +22,6 @@ namespace pika::detail {
         std::string format_;
     };
 
-    PIKA_EXPORT log_settings get_log_settings(pika::detail::section const&, char const*);
     PIKA_EXPORT void init_logging(pika::util::runtime_configuration& ini);
     /// \endcond
 }    // namespace pika::detail
