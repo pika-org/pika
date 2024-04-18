@@ -161,10 +161,7 @@ void test_callback_concurrent_unregister_other_thread()
         cb1_called = true;
     };
 
-    pika::thread t{[&] {
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        opt_cb.emplace(stok, std::ref(cb1));
-    }};
+    pika::thread t{[&] { opt_cb.emplace(stok, std::ref(cb1)); }};
 
     // request stop
     ssrc.request_stop();
