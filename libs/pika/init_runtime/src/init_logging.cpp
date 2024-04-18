@@ -15,17 +15,16 @@
 #include <pika/string_util/from_string.hpp>
 #include <pika/threading_base/thread_data.hpp>
 
+#include <fmt/format.h>
 #include <fmt/ostream.h>
-#include <fmt/printf.h>
 #include <spdlog/pattern_formatter.h>
 #include <spdlog/spdlog.h>
 
 #include <cstddef>
-#include <cstdint>
-#include <cstdlib>
 #include <ctime>
-#include <iostream>
+#include <memory>
 #include <string>
+#include <utility>
 
 namespace pika::detail {
     class pika_thread_id_formatter_flag : public spdlog::custom_flag_formatter
