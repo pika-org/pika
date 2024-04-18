@@ -5,9 +5,9 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
+#include <pika/logging.hpp>
 #include <pika/modules/coroutines.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/logging.hpp>
 #include <pika/threading_base/create_work.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_data.hpp>
@@ -42,13 +42,11 @@ namespace pika::threads::detail {
         }
 #endif
 
-        PIKA_LOG(info, "create_work: pool({}), scheduler({}), initial_state({}), thread_priority({})",
+        PIKA_LOG(info,
+            "create_work: pool({}), scheduler({}), initial_state({}), thread_priority({}), "
+            "description({})",
             *scheduler->get_parent_pool(), *scheduler, get_thread_state_name(data.initial_state),
-            execution::detail::get_thread_priority_name(data.priority))
-// #ifdef PIKA_HAVE_THREAD_DESCRIPTION
-//             .format(", description({})", data.description)
-// #endif
-            ;
+            execution::detail::get_thread_priority_name(data.priority), data.get_description());
 
         thread_self* self = get_self_ptr();
 
