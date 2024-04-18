@@ -483,7 +483,8 @@ namespace pika::threads::detail {
                 PIKA_LOG(debug,
                     "local_priority_queue_scheduler::create_thread, low priority queue: "
                     "pool({}), scheduler({}), thread({}), priority({}), description({})",
-                    *this->get_parent_pool(), *this, data.get_description());
+                    *this->get_parent_pool(), *this, id ? *id : threads::detail::invalid_thread_id,
+                    data.priority, data.get_description());
 
                 return;
             }
