@@ -24,10 +24,5 @@ namespace pika::detail {
 
     PIKA_EXPORT log_settings get_log_settings(pika::detail::section const&, char const*);
     PIKA_EXPORT void init_logging(pika::util::runtime_configuration& ini);
-
     /// \endcond
-
-    PIKA_EXPORT void enable_logging(
-        std::string const& lvl = "5", std::string logdest = "", std::string logformat = "");
-    PIKA_EXPORT void disable_logging();
 }    // namespace pika::detail
