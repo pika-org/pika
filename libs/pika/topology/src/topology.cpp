@@ -10,8 +10,8 @@
 #include <pika/topology/config/defines.hpp>
 
 #include <pika/assert.hpp>
-#include <pika/modules/errors.hpp>
 #include <pika/logging.hpp>
+#include <pika/modules/errors.hpp>
 #include <pika/topology/cpu_mask.hpp>
 #include <pika/topology/topology.hpp>
 #include <pika/type_support/unused.hpp>

@@ -16,8 +16,8 @@
 #include <pika/functional/bind.hpp>
 #include <pika/functional/function.hpp>
 #include <pika/itt_notify/thread_name.hpp>
-#include <pika/modules/errors.hpp>
 #include <pika/logging.hpp>
+#include <pika/modules/errors.hpp>
 #include <pika/modules/thread_manager.hpp>
 #include <pika/runtime/config_entry.hpp>
 #include <pika/runtime/custom_exception_info.hpp>

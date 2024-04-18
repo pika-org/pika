@@ -8,8 +8,8 @@
 #include <pika/assert.hpp>
 #include <pika/coroutines/coroutine.hpp>
 #include <pika/functional/bind.hpp>
-#include <pika/modules/errors.hpp>
 #include <pika/logging.hpp>
+#include <pika/modules/errors.hpp>
 #include <pika/threading_base/create_work.hpp>
 #include <pika/threading_base/register_thread.hpp>
 #include <pika/threading_base/set_thread_state.hpp>

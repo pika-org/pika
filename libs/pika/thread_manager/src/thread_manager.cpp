@@ -11,8 +11,8 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/execution_base/this_thread.hpp>
-#include <pika/modules/errors.hpp>
 #include <pika/logging.hpp>
+#include <pika/modules/errors.hpp>
 #include <pika/modules/schedulers.hpp>
 #include <pika/modules/thread_manager.hpp>
 #include <pika/resource_partitioner/detail/partitioner.hpp>

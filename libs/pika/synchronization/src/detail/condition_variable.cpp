@@ -7,8 +7,8 @@
 
 #include <pika/assert.hpp>
 #include <pika/execution_base/this_thread.hpp>
-#include <pika/modules/errors.hpp>
 #include <pika/logging.hpp>
+#include <pika/modules/errors.hpp>
 #include <pika/modules/memory.hpp>
 #include <pika/synchronization/detail/condition_variable.hpp>
 #include <pika/synchronization/no_mutex.hpp>

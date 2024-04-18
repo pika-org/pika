@@ -17,8 +17,8 @@
 #include <pika/init_runtime/detail/init_logging.hpp>
 #include <pika/init_runtime/init_runtime.hpp>
 #include <pika/lock_registration/detail/register_locks.hpp>
-#include <pika/modules/errors.hpp>
 #include <pika/logging.hpp>
+#include <pika/modules/errors.hpp>
 #include <pika/modules/schedulers.hpp>
 #include <pika/modules/timing.hpp>
 #include <pika/program_options/parsers.hpp>

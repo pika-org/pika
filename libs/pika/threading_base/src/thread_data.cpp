@@ -10,8 +10,8 @@
 #include <pika/coroutines/detail/coroutine_accessor.hpp>
 #include <pika/functional/function.hpp>
 #include <pika/lock_registration/detail/register_locks.hpp>
-#include <pika/modules/errors.hpp>
 #include <pika/logging.hpp>
+#include <pika/modules/errors.hpp>
 #include <pika/thread_support/unlock_guard.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_data.hpp>
@@ -87,8 +87,8 @@ namespace pika::threads::detail {
 
     void thread_data::destroy_thread()
     {
-        PIKA_LOG(debug, "thread_data::destroy_thread({}), description({}), phase({})", fmt::ptr(this),
-            this->get_description(), this->get_thread_phase());
+        PIKA_LOG(debug, "thread_data::destroy_thread({}), description({}), phase({})",
+            fmt::ptr(this), this->get_description(), this->get_thread_phase());
 
         get_scheduler_base()->destroy_thread(this);
     }
