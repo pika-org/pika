@@ -495,7 +495,8 @@ namespace pika::threads::detail {
                 "local_priority_queue_scheduler::create_thread normal priority queue: pool({}), "
                 "scheduler({}), worker_thread({}), thread({}), priority({}), description({})",
                 *this->get_parent_pool(), *this, num_thread,
-                id ? *id : threads::detail::invalid_thread_id, data.priority, data.get_description());
+                id ? *id : threads::detail::invalid_thread_id, data.priority,
+                data.get_description());
         }
 
         /// Return the next thread to be executed, return false if none is
