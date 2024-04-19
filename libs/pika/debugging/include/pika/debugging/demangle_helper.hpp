@@ -16,17 +16,19 @@
 // gcc and clang both provide this header
 #if __has_include(<cxxabi.h>)
 # include <cxxabi.h>
-using cxxabi_supported__ = std::true_type;
+namespace pika::debug::detail {
+    using cxxabi_supported__ = std::true_type;
+    using abi::__cxa_demangle;
+}    // namespace pika::debug::detail
 #else
-using cxxabi_supported__ = std::false_type;
-// create some dummy function to make the compiler happy in the true_type instantiation
-namespace abi {
+namespace pika::debug::detail {
+    using cxxabi_supported__ = std::false_type;
     template <typename... Ts>
     char* __cxa_demangle(Ts... ts)
     {
         return nullptr;
     }
-}    // namespace abi
+}    // namespace pika::debug::detail
 #endif
 
 // --------------------------------------------------------------------
@@ -43,7 +45,7 @@ namespace pika::debug::detail {
     struct demangle_helper<T, std::true_type>
     {
         demangle_helper()
-          : demangled_{abi::__cxa_demangle(typeid(T).name(), nullptr, nullptr, nullptr), std::free}
+          : demangled_{__cxa_demangle(typeid(T).name(), nullptr, nullptr, nullptr), std::free}
         {
         }
 
