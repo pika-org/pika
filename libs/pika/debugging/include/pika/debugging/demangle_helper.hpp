@@ -10,6 +10,7 @@
 #include <pika/config.hpp>
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <typeinfo>
 
 // gcc and clang both provide this header
