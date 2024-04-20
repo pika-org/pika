@@ -145,7 +145,7 @@ namespace pika::mpi::experimental::detail {
     template <typename OperationState>
     void resume_request_callback(MPI_Request request, OperationState& op_state)
     {
-        op_state.completed = false;
+        PIKA_ASSERT(op_state.completed == false);
         detail::add_request_callback(
             [&op_state](int status) mutable {
                 PIKA_DETAIL_DP(mpi_tran<5>,
