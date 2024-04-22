@@ -36,6 +36,8 @@ struct scheduler_schedule_from
 
     struct sender
     {
+        using is_sender = void;
+
         std::reference_wrapper<std::atomic<bool>> schedule_called;
         std::reference_wrapper<std::atomic<bool>> execute_called;
         std::reference_wrapper<std::atomic<bool>> tag_invoke_overload_called;
@@ -76,6 +78,24 @@ struct scheduler_schedule_from
         {
             return {s.schedule_called, s.execute_called, s.tag_invoke_overload_called};
         }
+
+        struct env
+        {
+            std::reference_wrapper<std::atomic<bool>> schedule_called;
+            std::reference_wrapper<std::atomic<bool>> execute_called;
+            std::reference_wrapper<std::atomic<bool>> tag_invoke_overload_called;
+
+            friend scheduler_schedule_from tag_invoke(
+                ex::get_completion_scheduler_t<ex::set_value_t>, env const& e) noexcept
+            {
+                return {e.schedule_called, e.execute_called, e.tag_invoke_overload_called};
+            }
+        };
+
+        friend env tag_invoke(ex::get_env_t, sender const& s) noexcept
+        {
+            return {s.schedule_called, s.execute_called, s.tag_invoke_overload_called};
+        }
     };
 
     friend sender tag_invoke(pika::execution::experimental::schedule_t, scheduler_schedule_from s)
@@ -113,6 +133,8 @@ struct scheduler_transfer
 
     struct sender
     {
+        using is_sender = void;
+
         std::reference_wrapper<std::atomic<bool>> schedule_called;
         std::reference_wrapper<std::atomic<bool>> execute_called;
         std::reference_wrapper<std::atomic<bool>> tag_invoke_overload_called;
@@ -150,6 +172,24 @@ struct scheduler_transfer
             pika::execution::experimental::get_completion_scheduler_t<
                 pika::execution::experimental::set_value_t>,
             sender const& s) noexcept
+        {
+            return {s.schedule_called, s.execute_called, s.tag_invoke_overload_called};
+        }
+
+        struct env
+        {
+            std::reference_wrapper<std::atomic<bool>> schedule_called;
+            std::reference_wrapper<std::atomic<bool>> execute_called;
+            std::reference_wrapper<std::atomic<bool>> tag_invoke_overload_called;
+
+            friend scheduler_transfer tag_invoke(
+                ex::get_completion_scheduler_t<ex::set_value_t>, env const& e) noexcept
+            {
+                return {e.schedule_called, e.execute_called, e.tag_invoke_overload_called};
+            }
+        };
+
+        friend env tag_invoke(ex::get_env_t, sender const& s) noexcept
         {
             return {s.schedule_called, s.execute_called, s.tag_invoke_overload_called};
         }

@@ -49,6 +49,8 @@ void test_execute()
 
 struct check_context_receiver
 {
+    using is_receiver = void;
+
     std::thread::id parent_id;
     std::mutex& mtx;
     std::condition_variable& cond;
@@ -208,6 +210,8 @@ void test_sender_receiver_then_arguments()
 template <typename F>
 struct callback_receiver
 {
+    using is_receiver = void;
+
     std::decay_t<F> f;
     std::mutex& mtx;
     std::condition_variable& cond;

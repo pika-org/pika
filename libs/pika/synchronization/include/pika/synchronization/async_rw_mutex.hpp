@@ -393,6 +393,8 @@ namespace pika::execution::experimental {
         template <async_rw_mutex_access_type AccessType>
         struct sender
         {
+            using is_sender = void;
+
             shared_state_weak_ptr_type prev_state;
             shared_state_ptr_type state;
 
@@ -583,6 +585,8 @@ namespace pika::execution::experimental {
         template <async_rw_mutex_access_type AccessType>
         struct sender
         {
+            using is_sender = void;
+
             shared_state_weak_ptr_type prev_state;
             shared_state_ptr_type state;
 

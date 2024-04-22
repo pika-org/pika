@@ -41,6 +41,8 @@ struct custom_type_non_copyable
 template <typename... Ts>
 struct non_copyable_sender
 {
+    using is_sender = void;
+
     std::tuple<std::decay_t<Ts>...> ts;
 
     template <template <class...> class Tuple, template <class...> class Variant>
@@ -97,6 +99,8 @@ struct non_copyable_sender
 template <typename... Ts>
 struct sender
 {
+    using is_sender = void;
+
     std::tuple<std::decay_t<Ts>...> ts;
 
     template <template <class...> class Tuple, template <class...> class Variant>
@@ -209,6 +213,8 @@ struct large_sender : sender<Ts...>
 
 struct error_receiver
 {
+    using is_receiver = void;
+
     std::atomic<bool>& set_error_called;
 
     friend void tag_invoke(pika::execution::experimental::set_error_t, error_receiver&& r,
