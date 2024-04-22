@@ -18,13 +18,13 @@
 # include <cxxabi.h>
 namespace pika::debug::detail {
     using cxxabi_supported__ = std::true_type;
-    using abi::__cxa_demangle;
+    constexpr auto demangle = abi::__cxa_demangle;
 }    // namespace pika::debug::detail
 #else
 namespace pika::debug::detail {
     using cxxabi_supported__ = std::false_type;
     template <typename... Ts>
-    char* __cxa_demangle(Ts... ts)
+    char* demangle(Ts... ts)
     {
         return nullptr;
     }
@@ -45,7 +45,7 @@ namespace pika::debug::detail {
     struct demangle_helper<T, std::true_type>
     {
         demangle_helper()
-          : demangled_{__cxa_demangle(typeid(T).name(), nullptr, nullptr, nullptr), std::free}
+          : demangled_{demangle(typeid(T).name(), nullptr, nullptr, nullptr), std::free}
         {
         }
 
