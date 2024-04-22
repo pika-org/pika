@@ -38,6 +38,12 @@ namespace pika::execution::experimental {
         static constexpr bool value = is_sender_to_v<Sender, Receiver>;
     };
 }    // namespace pika::execution::experimental
+
+# if defined(PIKA_HAVE_STDEXEC_SENDER_RECEIVER_CONCEPTS)
+#  define PIKA_STDEXEC_SENDER_CONCEPT                                                              \
+      using is_sender = void;                                                                      \
+      using sender_concept = stdexec::sender_t;
+# endif
 #else
 # include <pika/config/constexpr.hpp>
 # include <pika/execution_base/operation_state.hpp>
@@ -427,3 +433,7 @@ namespace pika::execution::detail {
     {
     };
 }    // namespace pika::execution::detail
+
+#if !defined(PIKA_STDEXEC_SENDER_CONCEPT)
+# define PIKA_STDEXEC_SENDER_CONCEPT using is_sender = void;
+#endif

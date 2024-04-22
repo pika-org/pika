@@ -36,7 +36,7 @@ struct scheduler_schedule_from
 
     struct sender
     {
-        using is_sender = void;
+        PIKA_STDEXEC_SENDER_CONCEPT
 
         std::reference_wrapper<std::atomic<bool>> schedule_called;
         std::reference_wrapper<std::atomic<bool>> execute_called;
@@ -133,7 +133,7 @@ struct scheduler_transfer
 
     struct sender
     {
-        using is_sender = void;
+        PIKA_STDEXEC_SENDER_CONCEPT
 
         std::reference_wrapper<std::atomic<bool>> schedule_called;
         std::reference_wrapper<std::atomic<bool>> execute_called;

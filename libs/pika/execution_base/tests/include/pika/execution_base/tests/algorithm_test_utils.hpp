@@ -20,7 +20,7 @@
 
 struct void_sender
 {
-    using is_sender = void;
+    PIKA_STDEXEC_SENDER_CONCEPT
 
     template <template <typename...> class Tuple, template <typename...> class Variant>
     using value_types = Variant<Tuple<>>;
@@ -54,7 +54,7 @@ struct void_sender
 template <typename... Ts>
 struct error_sender
 {
-    using is_sender = void;
+    PIKA_STDEXEC_SENDER_CONCEPT
 
     template <template <typename...> class Tuple, template <typename...> class Variant>
     using value_types = Variant<Tuple<Ts...>>;
@@ -96,7 +96,7 @@ struct error_sender
 template <typename... Ts>
 struct const_reference_error_sender
 {
-    using is_sender = void;
+    PIKA_STDEXEC_SENDER_CONCEPT
 
     template <template <class...> class Tuple, template <class...> class Variant>
     using value_types = Variant<Tuple<Ts...>>;
@@ -132,7 +132,7 @@ struct const_reference_error_sender
 template <typename F>
 struct callback_receiver
 {
-    using is_receiver = void;
+    PIKA_STDEXEC_RECEIVER_CONCEPT
 
     std::decay_t<F> f;
     std::atomic<bool>& set_value_called;
@@ -169,7 +169,7 @@ struct callback_receiver
 template <typename F>
 struct error_callback_receiver
 {
-    using is_receiver = void;
+    PIKA_STDEXEC_RECEIVER_CONCEPT
 
     std::decay_t<F> f;
     std::atomic<bool>& set_error_called;
@@ -233,7 +233,7 @@ void check_exception_ptr(std::exception_ptr eptr)
 
 struct custom_sender_tag_invoke
 {
-    using is_sender = void;
+    PIKA_STDEXEC_SENDER_CONCEPT
 
     std::atomic<bool>& tag_invoke_overload_called;
 
@@ -264,7 +264,7 @@ struct custom_sender_tag_invoke
 
 struct custom_sender
 {
-    using is_sender = void;
+    PIKA_STDEXEC_SENDER_CONCEPT
 
     std::atomic<bool>& start_called;
     std::atomic<bool>& connect_called;
@@ -305,7 +305,7 @@ struct custom_sender
 template <typename T>
 struct custom_typed_sender
 {
-    using is_sender = void;
+    PIKA_STDEXEC_SENDER_CONCEPT
 
     std::decay_t<T> x;
 
@@ -357,7 +357,7 @@ struct custom_sender2 : custom_sender
 template <typename T>
 struct const_reference_sender
 {
-    using is_sender = void;
+    PIKA_STDEXEC_SENDER_CONCEPT
 
     std::reference_wrapper<std::decay_t<T>> x;
 
@@ -452,7 +452,7 @@ struct scheduler
 
     struct sender
     {
-        using is_sender = void;
+        PIKA_STDEXEC_SENDER_CONCEPT
 
         std::reference_wrapper<std::atomic<bool>> schedule_called;
         std::reference_wrapper<std::atomic<bool>> execute_called;
@@ -533,7 +533,7 @@ struct scheduler2
 
     struct sender
     {
-        using is_sender = void;
+        PIKA_STDEXEC_SENDER_CONCEPT
 
         std::reference_wrapper<std::atomic<bool>> schedule_called;
         std::reference_wrapper<std::atomic<bool>> execute_called;
@@ -637,7 +637,7 @@ namespace my_namespace {
     {
         struct sender
         {
-            using is_sender = void;
+            PIKA_STDEXEC_SENDER_CONCEPT
 
             template <template <class...> class Tuple, template <class...> class Variant>
             using value_types = Variant<Tuple<>>;
@@ -706,7 +706,7 @@ namespace my_namespace {
     template <typename... Ts>
     struct my_sender
     {
-        using is_sender = void;
+        PIKA_STDEXEC_SENDER_CONCEPT
 
         template <template <typename...> class Tuple, template <typename...> class Variant>
         using value_types = Variant<Tuple<Ts...>>;

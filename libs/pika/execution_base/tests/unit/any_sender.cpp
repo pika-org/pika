@@ -41,7 +41,7 @@ struct custom_type_non_copyable
 template <typename... Ts>
 struct non_copyable_sender
 {
-    using is_sender = void;
+    PIKA_STDEXEC_SENDER_CONCEPT
 
     std::tuple<std::decay_t<Ts>...> ts;
 
@@ -99,7 +99,7 @@ struct non_copyable_sender
 template <typename... Ts>
 struct sender
 {
-    using is_sender = void;
+    PIKA_STDEXEC_SENDER_CONCEPT
 
     std::tuple<std::decay_t<Ts>...> ts;
 
@@ -213,7 +213,7 @@ struct large_sender : sender<Ts...>
 
 struct error_receiver
 {
-    using is_receiver = void;
+    PIKA_STDEXEC_RECEIVER_CONCEPT
 
     std::atomic<bool>& set_error_called;
 

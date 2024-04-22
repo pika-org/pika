@@ -5,6 +5,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/execution/algorithms/execute.hpp>
+#include <pika/execution_base/sender.hpp>
 #include <pika/testing.hpp>
 
 #include <cstddef>
@@ -18,7 +19,7 @@ static std::size_t tag_invoke_execute_calls = 0;
 template <typename Scheduler>
 struct sender
 {
-    using is_sender = void;
+    PIKA_STDEXEC_SENDER_CONCEPT
 
     template <template <class...> class Tuple, template <class...> class Variant>
     using value_types = Variant<Tuple<>>;

@@ -472,3 +472,12 @@ function(pika_check_for_cxx_lambda_capture_decltype)
     FILE ${ARGN}
   )
 endfunction()
+
+# ##################################################################################################
+function(pika_check_for_stdexec_sender_receiver_concepts)
+  pika_add_config_test(
+    PIKA_WITH_STDEXEC_SENDER_RECEIVER_CONCEPTS
+    SOURCE cmake/tests/stdexec_sender_receiver_concepts.cpp
+    FILE ${ARGN}
+  )
+endfunction()

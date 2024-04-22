@@ -56,7 +56,7 @@ void test_execute()
 
 struct check_context_receiver
 {
-    using is_receiver = void;
+    PIKA_STDEXEC_RECEIVER_CONCEPT
 
     pika::thread::id parent_id;
     pika::mutex& mtx;
@@ -218,7 +218,7 @@ void test_sender_receiver_then_arguments()
 template <typename F>
 struct callback_receiver
 {
-    using is_receiver = void;
+    PIKA_STDEXEC_RECEIVER_CONCEPT
 
     std::decay_t<F> f;
     pika::mutex& mtx;
