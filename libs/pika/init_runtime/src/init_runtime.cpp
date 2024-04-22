@@ -31,6 +31,7 @@
 #include <pika/runtime/runtime_handlers.hpp>
 #include <pika/runtime/shutdown_function.hpp>
 #include <pika/runtime/startup_function.hpp>
+#include <pika/schedulers/deadlock_detection.hpp>
 #include <pika/string_util/classification.hpp>
 #include <pika/string_util/split.hpp>
 #include <pika/threading/thread.hpp>
@@ -123,7 +124,7 @@ namespace pika {
             else { pika::util::disable_lock_detection(); }
 #endif
 #ifdef PIKA_HAVE_THREAD_DEADLOCK_DETECTION
-            threads::detail::set_deadlock_detection_enabled(
+            pika::threads::detail::set_deadlock_detection_enabled(
                 cmdline.rtcfg_.enable_deadlock_detection());
 #endif
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
