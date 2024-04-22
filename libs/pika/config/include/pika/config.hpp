@@ -54,12 +54,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 /// By default, enable minimal thread deadlock detection in debug builds only.
 #if !defined(PIKA_SPINLOCK_DEADLOCK_DETECTION_LIMIT)
-#  define PIKA_SPINLOCK_DEADLOCK_DETECTION_LIMIT 10000000
+#  define PIKA_SPINLOCK_DEADLOCK_DETECTION_LIMIT 1000000
 #endif
 
 /// Print a warning about potential deadlocks after this many iterations.
 #if !defined(PIKA_SPINLOCK_DEADLOCK_WARNING_LIMIT)
-#  define PIKA_SPINLOCK_DEADLOCK_WARNING_LIMIT 1000000
+#  define PIKA_SPINLOCK_DEADLOCK_WARNING_LIMIT 10000
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
