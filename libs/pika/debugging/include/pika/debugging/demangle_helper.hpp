@@ -24,7 +24,7 @@ namespace pika::debug::detail {
 namespace pika::debug::detail {
     using cxxabi_supported__ = std::false_type;
     template <typename... Ts>
-    char* demangle(Ts... ts)
+    constexpr char* demangle(Ts... ts)
     {
         return nullptr;
     }
@@ -52,7 +52,8 @@ namespace pika::debug::detail {
         char const* type_id() const { return demangled_ ? demangled_.get() : typeid(T).name(); }
 
     private:
-        std::unique_ptr<char, decltype(&std::free)> demangled_;
+        // would prefer decltype(&std::free) here but clang overloads it for host/device code
+        std::unique_ptr<char, void (*)(void*)> demangled_;
     };
 
     template <typename T>
