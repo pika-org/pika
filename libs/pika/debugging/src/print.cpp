@@ -252,6 +252,20 @@ namespace PIKA_DETAIL_NS_DEBUG {
         return hostname_;
     }
 
+    char const* hostname_print_helper::get_hostname() const
+    {
+        static bool initialized = false;
+        static char hostname_[20] = {'\0'};
+        if (!initialized)
+        {
+            initialized = true;
+#if !defined(__FreeBSD__)
+            gethostname(hostname_, std::size_t(12));
+#endif
+        }
+        return hostname_;
+    }
+
     int hostname_print_helper::guess_rank() const
     {
 #if defined(__FreeBSD__)

@@ -103,9 +103,16 @@ namespace pika::detail {
         void format(
             const spdlog::details::log_msg&, const std::tm&, spdlog::memory_buf_t& dest) override
         {
-            static std::string_view hostname_str =
-                PIKA_DETAIL_NS_DEBUG::hostname_print_helper{}.get_hostname_and_rank();
+            static PIKA_DETAIL_NS_DEBUG::hostname_print_helper helper{};
+            static std::string_view hostname_str = helper.get_hostname();
             dest.append(hostname_str);
+
+            if (int rank = helper.guess_rank(); rank != -1)
+            {
+                dest.append(hostname_str);
+                dest.append(fmt::format("/{}", rank));
+            }
+            else { dest.append(std::string_view("/----")); }
         }
 
         std::unique_ptr<custom_flag_formatter> clone() const override

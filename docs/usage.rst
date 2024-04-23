@@ -208,14 +208,15 @@ pika will by default print messages in the following format:
 
 .. code-block::
 
-   [2024-04-18 13:45:07.095279283] [pika] [info] [host:machine(-1)] [pid:2786603] [tid:2786607] [pool:0000/0003/0003] [parent:----/----] [task:0x7fa6a4077cf0/pika_main] [set_thread_state.cpp:205:set_thread_state] set_thread_state: thread(0x7fa6a802c8d0), description(<unknown>), new state(pending), old state(suspended)
+   [2024-04-18 13:45:07.095279283] [pika] [info] [host:machine/----] [pid:2786603] [tid:2786607] [pool:0000/0003/0003] [parent:----/----] [task:0x7fa6a4077cf0/pika_main] [set_thread_state.cpp:205:set_thread_state] set_thread_state: thread(0x7fa6a802c8d0), description(<unknown>), new state(pending), old state(suspended)
 
 The fields are as follows:
 
 - ``[2024-04-18 13:45:07.095279283]``: The timestamp of the message.
 - ``[pika]``: An identifier present in all pika's logs.
 - ``[info]``: The severity level of the message.
-- ``[host:machine(-1)]``: The hostname and the MPI rank of the process (``-1`` if MPI is disabled).
+- ``[host:machine/----]``: The hostname and the MPI rank of the process (``----`` if MPI is
+  disabled).
 - ``[pid:2786603]``: The process id as reported by the operating system.
 - ``[tid:2786607]``: The thread id as reported by the operating system.
 - ``[pool:0000/0003/0003]``: The pika thread pool and worker thread ids: the first component is the
