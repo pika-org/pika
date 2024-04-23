@@ -104,7 +104,7 @@ namespace pika::detail {
             const spdlog::details::log_msg&, const std::tm&, spdlog::memory_buf_t& dest) override
         {
             static std::string_view hostname_str =
-                PIKA_DETAIL_NS_DEBUG::hostname_print_helper{}.get_hostname();
+                PIKA_DETAIL_NS_DEBUG::hostname_print_helper{}.get_hostname_and_rank();
             dest.append(hostname_str);
         }
 

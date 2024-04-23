@@ -354,7 +354,7 @@ namespace pika::detail {
             if (rts_state >= pika::runtime_state::initialized &&
                 rts_state < pika::runtime_state::stopped)
             {
-                hostname = pika::debug::detail::hostname_print_helper{}.get_hostname();
+                hostname = pika::debug::detail::hostname_print_helper{}.get_hostname_and_rank();
             }
         }
 

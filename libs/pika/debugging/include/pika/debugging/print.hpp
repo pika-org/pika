@@ -279,7 +279,7 @@ namespace PIKA_DETAIL_NS_DEBUG {
     // ------------------------------------------------------------------
     struct hostname_print_helper
     {
-        PIKA_EXPORT char const* get_hostname() const;
+        PIKA_EXPORT char const* get_hostname_and_rank() const;
         PIKA_EXPORT int guess_rank() const;
 
         PIKA_EXPORT friend std::ostream& operator<<(
