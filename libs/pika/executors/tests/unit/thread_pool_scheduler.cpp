@@ -1359,9 +1359,9 @@ void test_completion_scheduler()
     }
 
     {
-        auto sender =
-            ex::bulk(ex::then(ex::transfer_just(ex::thread_pool_scheduler{}, 42), [](int) {}), 10,
-                [](int, int) {});
+        auto sender = ex::bulk(
+            ex::then(ex::transfer_just(ex::thread_pool_scheduler{}, 42), [](int x) { return x; }),
+            10, [](int, int) {});
         auto completion_scheduler =
             ex::get_completion_scheduler<ex::set_value_t>(ex::get_env(sender));
         static_assert(
