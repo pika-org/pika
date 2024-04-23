@@ -633,6 +633,16 @@ namespace my_namespace {
         void operator()(std::exception_ptr) const {}
     };
 
+    struct my_let_value_type
+    {
+        auto operator()() const { return pika::execution::experimental::just(); }
+    };
+
+    struct my_let_error_type
+    {
+        auto operator()(std::exception_ptr) const { return pika::execution::experimental::just(); }
+    };
+
     struct my_scheduler
     {
         struct sender
