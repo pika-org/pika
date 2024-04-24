@@ -68,18 +68,13 @@ namespace pika::mpi::experimental::detail {
     // return a scheduler on the mpi pool, with or without stack
     inline auto mpi_pool_scheduler(execution::thread_priority p, bool stack = true)
     {
-        if (stack)
+        ex::thread_pool_scheduler sched{&resource::get_thread_pool(get_pool_name())};
+        if (!stack)
         {
-            return ex::with_priority(
-                ex::thread_pool_scheduler{&resource::get_thread_pool(get_pool_name())}, p);
+            sched = ex::with_stacksize(std::move(sched), execution::thread_stacksize::nostack);
         }
-        else
-        {
-            return ex::with_stacksize(
-                ex::with_priority(
-                    ex::thread_pool_scheduler{&resource::get_thread_pool(get_pool_name())}, p),
-                execution::thread_stacksize::nostack);
-        }
+        sched = ex::with_priority(std::move(sched), p);
+        return sched;
     }
 
     // -----------------------------------------------------------------

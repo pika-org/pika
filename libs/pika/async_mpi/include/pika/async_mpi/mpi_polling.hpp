@@ -104,28 +104,28 @@ namespace pika::mpi::experimental {
         enum class handler_mode : std::uint32_t
         {
             /// enable the use of a dedicated pool for polling mpi messages.
-            use_pool = 0x01,
+            use_pool = 0b0000'0001,    // 1
 
             /// this bit enables the inline invocation of the mpi request, when set
             /// the calling thread performs the mpi operation, when unset, a transfer
             /// is made so that the invocation happens on a new task that
             /// would normally be on a dedicated pool if/when it exists
-            request_inline = 0x02,
+            request_inline = 0b0000'0010,    // 2
 
             /// this bit enables the inline execution of the completion handler for the
             /// request, when unset a transfer is made to move the completion handler
             /// from the polling thread onto a new one
-            completion_inline = 0x04,
+            completion_inline = 0b0000'0100,    // 4
 
             /// this bit enables the use of a high priority task flag
             /// 1) requests are boosted to high priority if they are passed the the mpi-pool
             ///    to ensure they execute before other polling tasks (reduce latency)
             /// 2) completions are boosted to high priority when sent to the main thread pool
             ///    so that the continuation is executed as quickly as possible
-            high_priority = 0x08,
+            high_priority = 0b0000'1000,    // 8
 
             /// 3 bits control the handler method,
-            method_mask = 0x70,
+            method_mask = 0b0111'0000,    // 70
 
             /// Methods supported for dispatching continuations:
             ///
@@ -144,18 +144,18 @@ namespace pika::mpi::experimental {
             ///
             /// * unspecified : reserved for development purposes or for customization by an
             /// application using pika
-            yield_while = 0x00,       // 00 ... 15
-            suspend_resume = 0x10,    // 16 ... 31
-            new_task = 0x20,          // 32 ... 47
-            continuation = 0x30,      // 48 ... 63
-            unspecified = 0x40,       // 64
+            yield_while = 0b0000'0000,       // 0x00, 00 ... 15
+            suspend_resume = 0b0001'0000,    // 0x10, 16 ... 31
+            new_task = 0b0010'0000,          // 0x20, 32 ... 47
+            continuation = 0b0011'0000,      // 0x30, 48 ... 63
+            unspecified = 0b0100'0000,       // 0x40, 64 ...
 
             /// Default flags are to invoke inline, but transfer completion using a dedicated pool
             default_mode = use_pool | request_inline | high_priority | new_task,
         };
 
         /// 2 bits define continuation mode
-        inline handler_mode get_handler_mode(int flags)
+        inline handler_mode get_handler_mode(std::underlying_type_t<handler_mode> flags)
         {
             return static_cast<handler_mode>(
                 flags & detail::to_underlying(handler_mode::method_mask));
