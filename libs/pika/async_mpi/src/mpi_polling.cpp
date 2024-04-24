@@ -46,15 +46,12 @@ namespace pika::mpi::experimental {
         template <int Level>
         static debug::detail::print_threshold<Level, 0> mpi_debug("MPIPOLL");
 
-        constexpr std::uint32_t max_mpi_streams = detail::to_underlying(stream_type::max_stream);
         constexpr std::uint32_t max_poll_requests = 32;
 
         // -----------------------------------------------------------------
-        /// Queries an environment variable to get/override a default value for
-        /// the number of messages allowed 'in flight' before we throttle a
-        /// thread trying to send more data
-        void init_throttling_default();
+        /// Get the default value for number of requests to poll for in calls to MPI_Test etc
         std::size_t get_polling_default();
+        /// Get the default mode for completions/transfers of MPI requests to from pools
         std::size_t get_completion_mode_default();
 
         // -----------------------------------------------------------------
@@ -67,16 +64,6 @@ namespace pika::mpi::experimental {
         };
 
         // -----------------------------------------------------------------
-        /// To enable independent throttling of sends/receives/other
-        /// we maintain several "queues" which have their own condition
-        /// variables for suspension
-        struct mpi_stream
-        {
-            std::int32_t limit_;
-            const char* name_;
-            std::shared_ptr<semaphore_type> semaphore_;
-        };
-
         struct mpi_callback_info
         {
             request_callback_function_type cb_;
@@ -104,24 +91,6 @@ namespace pika::mpi::experimental {
         // -----------------------------------------------------------------
         /// Spinlock is used as it can be called by OS threads or pika tasks
         using mutex_type = pika::detail::spinlock;
-
-        PIKA_EXPORT const char* stream_name(stream_type s)
-        {
-            switch (s)
-            {
-            case stream_type::automatic: return "auto"; break;
-            case stream_type::send_1: return "send_1"; break;
-            case stream_type::send_2: return "send_2"; break;
-            case stream_type::receive_1: return "recv_1"; break;
-            case stream_type::receive_2: return "recv_2"; break;
-            case stream_type::collective_1: return "coll_1"; break;
-            case stream_type::collective_2: return "coll_2"; break;
-            case stream_type::user_1: return "user_1"; break;
-            case stream_type::user_2: return "user_2"; break;
-            case stream_type::max_stream: return "smax"; break;
-            default: return "error";
-            }
-        }
 
         // -----------------------------------------------------------------
         /// a convenience structure to hold state vars in one place
@@ -159,46 +128,16 @@ namespace pika::mpi::experimental {
             // though poll may also be called directly by a user task.
             // we use a spinlock for both cases
             mutex_type polling_vector_mtx_;
-
-            // streams used when throttling mpi traffic,
-            std::array<mpi_stream, max_mpi_streams> default_queues_;
-        };
-
-        struct initializer
-        {
-            initializer() { /*init_throttling_default();*/ }
         };
 
         /// a single instance of all the mpi variables initialized once at startup
         static mpi_data mpi_data_;
-
-        void init_stream(stream_type s, std::int32_t limit)
-        {
-            mpi_stream& stream = mpi_data_.default_queues_[detail::to_underlying(s)];
-            stream.semaphore_ = std::make_shared<semaphore_type>(limit);
-            stream.name_ = stream_name(s);
-            stream.limit_ = limit;
-            PIKA_DETAIL_DP(mpi_debug<3>, debug(str<>("init stream"), stream.name_, dec<5>(limit)));
-        }
-
-        std::shared_ptr<semaphore_type> get_semaphore(stream_type s)
-        {
-            mpi_stream& stream = mpi_data_.default_queues_[detail::to_underlying(s)];
-            PIKA_DETAIL_DP(mpi_debug<3>,
-                debug(str<>("get stream"), stream.name_, dec<5>(stream.semaphore_.use_count())));
-            return stream.semaphore_;
-        }
 
         // default transfer mode for mpi continuations
         static std::size_t task_completion_flags_ = get_completion_mode_default();
 
         static std::string polling_pool_name_ = "polling";
         static bool pool_exists_ = false;
-
-        inline mpi_stream& get_stream_ref(stream_type stream)
-        {
-            return mpi_data_.default_queues_[detail::to_underlying(stream)];
-        }
 
         // stream operator to display debug mpi_data
         PIKA_EXPORT std::ostream& operator<<(std::ostream& os, mpi_data const& info)
@@ -213,18 +152,6 @@ namespace pika::mpi::experimental {
                << " in_flight " << dec<4>(info.all_in_flight_)
                << " vec_cb "    << dec<4>(info.callbacks_.size())
                << " vec_rq "    << dec<4>(info.requests_.size());
-            // clang-format on
-            return os;
-        }
-
-        // stream operator to display debug mpi_stream
-        PIKA_EXPORT std::ostream& operator<<(std::ostream& os, mpi_stream const& stream)
-        {
-            using namespace pika::debug::detail;
-            // clang-format off
-            os
-               <<  "stream "    << stream.name_
-               << " limit "     << dec<4>(stream.limit_);
             // clang-format on
             return os;
         }
@@ -246,28 +173,6 @@ namespace pika::mpi::experimental {
             std::vector<MPI_Request>& vec = mpi_data_.requests_;
             return std::count_if(
                 vec.begin(), vec.end(), [](MPI_Request r) { return r == MPI_REQUEST_NULL; });
-        }
-
-        // -----------------------------------------------------------------
-        void init_throttling_default()
-        {
-            // if the global throttling var is set, set all streams
-            std::uint32_t def = std::uint32_t(-1);    // unlimited
-            std::uint32_t val =
-                pika::detail::get_env_var_as<std::uint32_t>("PIKA_MPI_MSG_THROTTLE", def);
-            for (size_t i = 0; i < mpi_data_.default_queues_.size(); ++i)
-            {
-                detail::init_stream(stream_type(i), val);
-            }
-            // check env settings for individual streams
-            for (size_t i = 0; i < mpi_data_.default_queues_.size(); ++i)
-            {
-                std::string str =
-                    "PIKA_MPI_MSG_THROTTLE_" + std::string(stream_name(stream_type(i)));
-                pika::detail::to_upper(str);
-                val = pika::detail::get_env_var_as<std::uint32_t>(str.c_str(), def);
-                if (val != def) { detail::init_stream(stream_type(i), val); }
-            }
         }
 
         // -----------------------------------------------------------------
@@ -722,34 +627,6 @@ namespace pika::mpi::experimental {
     size_t get_work_count()
     {
         return detail::mpi_data_.active_requests_size_ + detail::mpi_data_.request_queue_size_;
-    }
-
-    // -------------------------------------------------------------
-    void set_max_requests_in_flight(std::uint32_t N, std::optional<stream_type> s)
-    {
-        if (!s)
-        {
-            // start from 1
-            for (size_t i = 1; i < detail::mpi_data_.default_queues_.size(); ++i)
-            {
-                std::cout << "Here 1" << std::endl;
-                detail::init_stream(stream_type(i), N);
-            }
-        }
-        else
-        {
-            PIKA_ASSERT(
-                detail::to_underlying(s.value()) <= detail::mpi_data_.default_queues_.size());
-            detail::init_stream(s.value(), N);
-        }
-    }
-
-    // -------------------------------------------------------------
-    std::uint32_t get_max_requests_in_flight(std::optional<stream_type> s)
-    {
-        if (!s) { return detail::mpi_data_.default_queues_[0].limit_; }
-        PIKA_ASSERT(detail::to_underlying(s.value()) <= detail::mpi_data_.default_queues_.size());
-        return detail::get_stream_ref(s.value()).limit_;
     }
 
     // -------------------------------------------------------------

@@ -41,29 +41,12 @@ namespace pika::mpi::experimental {
     enum pool_create_mode
     {
         pika_decides = 0,
-        pika_decides_unoptimized,
         force_create,
         force_no_create,
     };
 
-    enum class stream_type : std::uint32_t
-    {
-        automatic = 0,
-        send_1,
-        send_2,
-        receive_1,
-        receive_2,
-        collective_1,
-        collective_2,
-        user_1,
-        user_2,
-        max_stream
-    };
-
     namespace detail {
         using request_callback_function_type = pika::util::detail::unique_function<void(int)>;
-
-        const char* stream_name(stream_type s);
 
         // -----------------------------------------------------------------
         /// Adds an mpi request to the internal queues for polling/handling
@@ -89,14 +72,6 @@ namespace pika::mpi::experimental {
 
         /// utility function to avoid duplication in eager check locations
         PIKA_EXPORT bool poll_request(MPI_Request /*req*/);
-
-        // -----------------------------------------------------------------
-        /// code related to throttling of mpi streams, currently unused
-        using semaphore_type = pika::counting_semaphore<>;
-        //
-        PIKA_EXPORT std::shared_ptr<semaphore_type> get_semaphore(stream_type /*s*/);
-
-        inline constexpr bool throttling_enabled = false;
 
         // -----------------------------------------------------------------
         // handling of requests and continuations
@@ -205,27 +180,6 @@ namespace pika::mpi::experimental {
         PIKA_EXPORT int comm_world_size();
 
     }    // namespace detail
-
-    // -----------------------------------------------------------------
-    /// Set the number of messages above which throttling will be applied
-    /// when invoking an MPI function on a given stream.
-    /// If the number of messages in flight exceeds the amount specified,
-    /// then any thread attempting to invoke an MPI function on that stream
-    /// that generates an MPI_Request will be suspended.
-    /// This should be used with great caution as setting it too low can
-    /// cause deadlocks. The default value is size_t(-1) - i.e. unlimited
-    /// The value can be set using an environment variable as follows
-    /// PIKA_MPI_MSG_THROTTLE=64
-    /// but user code setting it will override any default or env value
-    /// If the optional stream param is not specified, then all streams
-    /// are set with the same limit
-    PIKA_EXPORT void set_max_requests_in_flight(
-        std::uint32_t, std::optional<stream_type> = std::nullopt);
-
-    /// Query the current value of the throttling threshold for the stream
-    /// if the optional stream param is not specified, then the
-    /// automatic/default stream value is returned
-    PIKA_EXPORT std::uint32_t get_max_requests_in_flight(std::optional<stream_type> = std::nullopt);
 
     /// return the total number of mpi requests currently in queues
     /// This number is an estimate as new work might be created/added during the call

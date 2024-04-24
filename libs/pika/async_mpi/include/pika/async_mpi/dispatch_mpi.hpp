@@ -56,7 +56,6 @@ namespace pika::mpi::experimental::detail {
 
         std::decay_t<Sender> sender;
         std::decay_t<F> f;
-        stream_type stream;
 
 #if defined(PIKA_HAVE_STDEXEC)
 
@@ -84,7 +83,6 @@ namespace pika::mpi::experimental::detail {
         {
             std::decay_t<Receiver> receiver;
             std::decay_t<F> f;
-            stream_type stream_;
 
             // -----------------------------------------------------------------
             // The mpi_receiver receives inputs from the previous sender,
@@ -121,9 +119,8 @@ namespace pika::mpi::experimental::detail {
                         [&]() mutable {
                             using invoke_result_type = mpi_request_invoke_result_t<F, Ts...>;
 
-                            PIKA_DETAIL_DP(mpi_tran<5>,
-                                debug(str<>("dispatch_mpi_recv"), "set_value_t", "stream",
-                                    detail::stream_name(r.op_state.stream_)));
+                            PIKA_DETAIL_DP(
+                                mpi_tran<5>, debug(str<>("dispatch_mpi_recv"), "set_value_t"));
 #ifdef PIKA_HAVE_APEX
                             apex::scoped_timer apex_post("pika::mpi::post");
 #endif
@@ -141,8 +138,7 @@ namespace pika::mpi::experimental::detail {
                                 status = PIKA_INVOKE(PIKA_MOVE(r.op_state.f), ts..., &request);
                             }
                             PIKA_DETAIL_DP(mpi_tran<7>,
-                                debug(str<>("dispatch_mpi_recv"), "invoke mpi",
-                                    detail::stream_name(r.op_state.stream_), ptr(request)));
+                                debug(str<>("dispatch_mpi_recv"), "invoke mpi", ptr(request)));
 
                             PIKA_ASSERT_MSG(request != MPI_REQUEST_NULL,
                                 "MPI_REQUEST_NULL returned from mpi invocation");
@@ -163,8 +159,8 @@ namespace pika::mpi::experimental::detail {
                                 apex::scoped_timer apex_invoke("pika::mpi::trigger");
 #endif
                                 PIKA_DETAIL_DP(mpi_tran<7>,
-                                    debug(str<>("dispatch_mpi_recv"), "eager poll ok",
-                                        detail::stream_name(r.op_state.stream_), ptr(request)));
+                                    debug(
+                                        str<>("dispatch_mpi_recv"), "eager poll ok", ptr(request)));
                                 // calls set_value(request), or set_error(mpi_exception(status))
                                 set_value_error_helper(
                                     status, PIKA_MOVE(r.op_state.receiver), MPI_REQUEST_NULL);
@@ -198,14 +194,12 @@ namespace pika::mpi::experimental::detail {
             };
 
             template <typename Receiver_, typename F_, typename Sender_>
-            operation_state(Receiver_&& receiver, F_&& f, Sender_&& sender, stream_type s)
+            operation_state(Receiver_&& receiver, F_&& f, Sender_&& sender)
               : receiver(PIKA_FORWARD(Receiver_, receiver))
               , f(PIKA_FORWARD(F_, f))
-              , stream_{s}
               , op_state(ex::connect(PIKA_FORWARD(Sender_, sender), dispatch_mpi_receiver{*this}))
             {
-                PIKA_DETAIL_DP(
-                    mpi_tran<5>, debug(str<>("operation_state"), "stream", detail::stream_name(s)));
+                PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("operation_state")));
             }
 
             friend constexpr auto tag_invoke(ex::start_t, operation_state& os) noexcept
@@ -218,8 +212,7 @@ namespace pika::mpi::experimental::detail {
         friend constexpr auto
         tag_invoke(ex::connect_t, dispatch_mpi_sender_type const& s, Receiver&& receiver)
         {
-            return operation_state<Receiver>(
-                PIKA_FORWARD(Receiver, receiver), s.f, s.sender, s.stream);
+            return operation_state<Receiver>(PIKA_FORWARD(Receiver, receiver), s.f, s.sender);
         }
 
         template <typename Receiver>
@@ -227,7 +220,7 @@ namespace pika::mpi::experimental::detail {
         tag_invoke(ex::connect_t, dispatch_mpi_sender_type&& s, Receiver&& receiver)
         {
             return operation_state<Receiver>(
-                PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.f), PIKA_MOVE(s.sender), s.stream);
+                PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.f), PIKA_MOVE(s.sender));
         }
     };
 
@@ -242,19 +235,18 @@ namespace pika::mpi::experimental {
             PIKA_CONCEPT_REQUIRES_(
                 pika::execution::experimental::is_sender_v<std::decay_t<Sender>>)>
         friend constexpr PIKA_FORCEINLINE auto
-        tag_fallback_invoke(dispatch_mpi_t, Sender&& sender, F&& f, stream_type s)
+        tag_fallback_invoke(dispatch_mpi_t, Sender&& sender, F&& f)
         {
             auto snd1 = detail::dispatch_mpi_sender<Sender, F>{
-                PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), s};
+                PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f)};
             return pika::execution::experimental::make_unique_any_sender(std::move(snd1));
         }
 
         template <typename F>
-        friend constexpr PIKA_FORCEINLINE auto
-        tag_fallback_invoke(dispatch_mpi_t, F&& f, stream_type s)
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(dispatch_mpi_t, F&& f)
         {
             return pika::execution::experimental::detail::partial_algorithm<dispatch_mpi_t, F>{
-                PIKA_FORWARD(F, f), s};
+                PIKA_FORWARD(F, f)};
         }
 
     } dispatch_mpi{};

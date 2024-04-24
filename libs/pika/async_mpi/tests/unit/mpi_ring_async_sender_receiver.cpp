@@ -344,12 +344,8 @@ int pika_main(pika::program_options::variables_map& vm)
     const std::uint32_t num_rounds = vm["rounds"].as<std::uint32_t>();
     output = vm.count("output") != 0;
     //
-    auto in_flight = mpix::get_max_requests_in_flight();
-    if (vm.count("in-flight-limit"))
-    {
-        in_flight = vm["in-flight-limit"].as<std::uint32_t>();
-        //mpix::set_max_requests_in_flight(in_flight, mpix::stream_type::user_1);
-    }
+    std::uint32_t in_flight = 65536;
+    if (vm.count("in-flight-limit")) { in_flight = vm["in-flight-limit"].as<std::uint32_t>(); }
     limiter = std::make_unique<pika::counting_semaphore<>>(in_flight);
 
     mpi_poll_size = vm["mpi-polling-size"].as<std::uint32_t>();
@@ -460,10 +456,6 @@ void init_resource_partitioner_handler(
 {
     // Don't create an MPI pool if the user disabled it
     auto pool_mode = mpix::pool_create_mode::pika_decides;
-    if (vm["one-rank-consistent"].as<bool>())
-    {
-        pool_mode = mpix::pool_create_mode::pika_decides_unoptimized;
-    }
     if (vm["no-mpi-pool"].as<bool>()) { pool_mode = mpix::pool_create_mode::force_no_create; }
 
     msr_deb<2>.debug(str<>("init RP"), "create_pool");
@@ -503,8 +495,8 @@ int main(int argc, char* argv[])
     cmdline.add_options()("no-mpi-pool", pika::program_options::bool_switch(),
         "Disable the MPI pool.");
 
-    cmdline.add_options()("one-rank-consistent", pika::program_options::bool_switch(),
-        "Use an mpi pool even on one rank if the mode flags expect it");
+    // cmdline.add_options()("one-rank-consistent", pika::program_options::bool_switch(),
+    //     "Use an mpi pool even on one rank if the mode flags expect it");
 
     cmdline.add_options()("mpi-polling-size",
         pika::program_options::value<std::uint32_t>()->default_value(16),
