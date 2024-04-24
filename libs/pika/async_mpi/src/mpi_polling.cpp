@@ -20,6 +20,7 @@
 #include <pika/synchronization/condition_variable.hpp>
 #include <pika/synchronization/mutex.hpp>
 #include <pika/threading_base/detail/global_activity_count.hpp>
+#include <pika/type_support/to_underlying.hpp>
 //
 #include <array>
 #include <atomic>
