@@ -142,10 +142,6 @@ namespace pika::mpi::experimental {
             ///
             /// * continuation : the polling thread will call the continuation directly
             ///
-            /// * mpix_continuation : the continuation of the mpi_request is passed into the mpi
-            /// library using mpix extensions and is triggered by the polling thread directly
-            /// by the mpi library (during MPI_Test)
-            ///
             /// * unspecified : reserved for development purposes or for customization by an
             /// application using pika
             yield_while = 0x00,       // 00 ... 15
