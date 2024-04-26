@@ -46,7 +46,6 @@ namespace pika::mpi::experimental {
             transform_mpi_t, Sender&& sender, F&& f, stream_type s = stream_type::automatic)
         {
             using namespace pika::mpi::experimental::detail;
-            using namespace pika::debug::detail;
             PIKA_DETAIL_DP(mpi_tran<5>,
                 debug(str<>("transform_mpi_t"), "tag_fallback_invoke", "stream",
                     detail::stream_name(s)));

@@ -119,7 +119,6 @@ namespace pika::mpi::experimental::detail {
                 {
                     pika::detail::try_catch_exception_ptr(
                         [&]() mutable {
-                            using namespace pika::debug::detail;
                             using invoke_result_type = mpi_request_invoke_result_t<F, Ts...>;
 
                             PIKA_DETAIL_DP(mpi_tran<5>,
@@ -205,7 +204,6 @@ namespace pika::mpi::experimental::detail {
               , stream_{s}
               , op_state(ex::connect(PIKA_FORWARD(Sender_, sender), dispatch_mpi_receiver{*this}))
             {
-                using namespace pika::debug::detail;
                 PIKA_DETAIL_DP(
                     mpi_tran<5>, debug(str<>("operation_state"), "stream", detail::stream_name(s)));
             }
