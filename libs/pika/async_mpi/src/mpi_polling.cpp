@@ -726,33 +726,16 @@ namespace pika::mpi::experimental {
     // initialize the pika::mpi background request handler
     // All ranks should call this function,
     // but only one thread per rank needs to do so
-    void init(bool init_mpi, bool init_errorhandler, pool_create_mode pool_mode)
+    void init(bool init_mpi, bool init_errorhandler, pool_create_mode /*pool_mode*/)
     {
         // don't allow polling code to run until init has completed
         std::lock_guard<detail::mutex_type> lk(detail::mpi_data_.polling_vector_mtx_);
-
-        // --------------------------------------
-        // fetch completion handling and polling mode/flags
-        auto mode = get_completion_mode();
 
         // --------------------------------------
         // the user has asked us to call mpi_init
         if (init_mpi)
         {
             int provided, required = MPI_THREAD_MULTIPLE;
-            if ((mode & detail::to_underlying(detail::handler_mode::use_pool)) &&
-                !(mode & detail::to_underlying(detail::handler_mode::request_inline)) /*&&
-                !(mode & detail::to_underlying(detail::handler_mode::completion_inline))*/)
-            {
-                // when a dedicated pool is used (1 thread), and all requests are transferred to the pool, we can use MPI_THREAD_SINGLE
-                // std::int32_t ranks = pika::detail::get_env_var_as<std::int32_t>("OMPI_WORLD_SIZE", -1);
-                // if the mpi thread pool is disabled, then we can't use single threaded
-                if (pool_mode == pool_create_mode::pika_decides)
-                {
-                    // required = MPI_THREAD_SINGLE;
-                    // PIKA_DETAIL_DP(detail::mpi_debug<0>, debug(str<>("MPI_THREAD_SINGLE")));
-                }
-            }
             pika::util::mpi_environment::init(nullptr, nullptr, required, required, provided);
             MPI_Comm_rank(MPI_COMM_WORLD, &detail::mpi_data_.rank_);
             MPI_Comm_size(MPI_COMM_WORLD, &detail::mpi_data_.size_);
