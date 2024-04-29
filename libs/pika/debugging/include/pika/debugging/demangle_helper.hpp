@@ -17,12 +17,12 @@
 #if __has_include(<cxxabi.h>)
 # include <cxxabi.h>
 namespace pika::debug::detail {
-    using cxxabi_supported__ = std::true_type;
+    using support_cxxabi = std::true_type;
     constexpr auto demangle = abi::__cxa_demangle;
 }    // namespace pika::debug::detail
 #else
 namespace pika::debug::detail {
-    using cxxabi_supported__ = std::false_type;
+    using support_cxxabi = std::false_type;
     template <typename... Ts>
     constexpr char* demangle(Ts... ts)
     {
@@ -57,7 +57,7 @@ namespace pika::debug::detail {
     };
 
     template <typename T>
-    using cxx_type_id = demangle_helper<T, cxxabi_supported__>;
+    using cxx_type_id = demangle_helper<T, support_cxxabi>;
 }    // namespace pika::debug::detail
 
 // --------------------------------------------------------------------
