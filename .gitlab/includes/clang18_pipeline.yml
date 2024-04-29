@@ -1,0 +1,51 @@
+# Copyright (c) 2024 ETH Zurich
+#
+# SPDX-License-Identifier: BSL-1.0
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file BOOST_LICENSE_1_0.rst or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+include:
+  - local: '.gitlab/includes/common_pipeline.yml'
+  - local: '.gitlab/includes/common_spack_pipeline.yml'
+
+.variables_clang18_config:
+  variables:
+    SPACK_ARCH: linux-ubuntu22.04-zen2
+    COMPILER: clang@18.1.1
+    CXXSTD: 23
+    SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD ^boost@1.84.0 \
+                 ^hwloc@2.9.1"
+    CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_MALLOC=system
+                  -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
+
+clang18_spack_compiler_image:
+  extends:
+    - .variables_clang18_config
+    - .compiler_image_template_rosa
+
+clang18_spack_image:
+  needs: [clang18_spack_compiler_image]
+  extends:
+    - .variables_clang18_config
+    - .dependencies_image_template_rosa
+
+clang18_build:
+  needs: [clang18_spack_image]
+  extends:
+    - .variables_clang18_config
+    - .build_template_rosa
+
+.clang18_test_commmon:
+  needs: [clang18_build]
+  extends:
+    - .variables_clang18_config
+    - .test_common_eiger_mc
+    - .test_template
+
+clang18_test_release:
+  extends: [.clang18_test_commmon]
+  image: $PERSIST_IMAGE_NAME_RELEASE
+
+clang18_test_debug:
+  extends: [.clang18_test_commmon]
+  image: $PERSIST_IMAGE_NAME_DEBUG
