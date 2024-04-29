@@ -16,7 +16,7 @@ setup_x86_large: &setup_x86_large
 
 setup_arm64_machine: &setup_arm64_machine
   machine:
-    image: ubuntu-2004:current
+    image: ubuntu-2204:current
   resource_class: arm.large
 
 docker_default: &docker_default
@@ -499,19 +499,12 @@ jobs:
           command: |
             # Check architecture = arm
             uname -m
-            # Install CMake
-            wget -q https://cmake.org/files/v3.22/cmake-3.22.6-linux-aarch64.tar.gz \
-              -O cmake.tar.gz && echo \
-              "79be85d3e76565faacd60695cee11d030f7e7dd8691476144fa25eb93dbd0397  cmake.tar.gz" \
-              | sha256sum --check --status && \
-              sudo tar --strip-components=1 -C /usr/local -xf cmake.tar.gz && \
-              rm cmake.tar.gz
-            cmake --version
             # Install pika dependencies
             sudo apt update
             sudo apt install --allow-downgrades \
               --allow-remove-essential --allow-change-held-packages \
               clang \
+              cmake \
               ninja-build \
               libboost-context-dev \
               libhwloc-dev \
@@ -589,7 +582,6 @@ jobs:
               -j2 \
               --timeout 500 \
               -T test \
-              -E "tests.unit.modules.threading.condition_variable2" \
               --no-compress-output \
               --output-on-failure
       - run:

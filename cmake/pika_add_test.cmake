@@ -9,8 +9,8 @@ if(PIKA_WITH_TESTS_VALGRIND)
 endif()
 
 function(pika_add_test category name)
-  set(options FAILURE_EXPECTED RUN_SERIAL TESTING PERFORMANCE_TESTING)
-  set(one_value_args COST EXECUTABLE RANKS THREADS TIMEOUT RUNWRAPPER)
+  set(options FAILURE_EXPECTED RUN_SERIAL TESTING PERFORMANCE_TESTING MPIWRAPPER)
+  set(one_value_args COST EXECUTABLE RANKS THREADS TIMEOUT WRAPPER)
   set(multi_value_args ARGS)
   cmake_parse_arguments(${name} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
@@ -60,7 +60,7 @@ function(pika_add_test category name)
 
   if(PIKA_WITH_PARALLEL_TESTS_BIND_NONE
      AND NOT run_serial
-     AND NOT "${name}_RUNWRAPPER"
+     AND NOT "${name}_MPIWRAPPER"
   )
     set(args ${args} "--pika:bind=none")
   endif()
@@ -71,7 +71,11 @@ function(pika_add_test category name)
 
   set(cmd ${_exe})
 
-  if(${name}_RUNWRAPPER)
+  if(${name}_WRAPPER)
+    list(PREPEND cmd "${${name}_WRAPPER}" ${_preflags_list_})
+  endif()
+
+  if(${name}_MPIWRAPPER)
     set(_preflags_list_ ${MPIEXEC_PREFLAGS})
     separate_arguments(_preflags_list_)
     list(PREPEND cmd "${MPIEXEC_EXECUTABLE}" "${MPIEXEC_NUMPROC_FLAG}" "${${name}_RANKS}"

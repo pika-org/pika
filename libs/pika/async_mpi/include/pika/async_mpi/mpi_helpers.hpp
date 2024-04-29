@@ -34,9 +34,8 @@ namespace pika::mpi::experimental::detail {
 
     // -----------------------------------------------------------------
     // by convention the title is 7 chars (for alignment)
-    using namespace pika::debug::detail;
     template <int Level>
-    inline constexpr print_threshold<Level, 0> mpi_tran("MPITRAN");
+    inline constexpr debug::detail::print_threshold<Level, 0> mpi_tran("MPITRAN");
 
     namespace ex = pika::execution::experimental;
 
@@ -118,7 +117,6 @@ namespace pika::mpi::experimental::detail {
     {
         detail::add_request_callback(
             [&op_state](int status) mutable {
-                using namespace pika::debug::detail;
                 PIKA_DETAIL_DP(mpi_tran<5>,
                     debug(str<>(
                         "callback_void") /*, "stream", detail::stream_name(op_state.stream)*/));
@@ -135,7 +133,6 @@ namespace pika::mpi::experimental::detail {
     {
         detail::add_request_callback(
             [&op_state](int status) mutable {
-                using namespace pika::debug::detail;
                 PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("callback_nonvoid")));
                 PIKA_ASSERT(std::holds_alternative<Result>(op_state.result));
                 set_value_error_helper(status, PIKA_MOVE(op_state.receiver),
@@ -153,7 +150,6 @@ namespace pika::mpi::experimental::detail {
         op_state.completed = false;
         detail::add_request_callback(
             [&op_state](int status) mutable {
-                using namespace pika::debug::detail;
                 PIKA_DETAIL_DP(mpi_tran<5>,
                     debug(str<>("callback_void_suspend_resume"), "status", status
                         /*, "stream", detail::stream_name(op_state.stream)*/));
@@ -176,7 +172,6 @@ namespace pika::mpi::experimental::detail {
     {
         detail::add_request_callback(
             [receiver = PIKA_MOVE(receiver)](int status) mutable {
-                using namespace pika::debug::detail;
                 PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("schedule_task_callback")));
                 if (status != MPI_SUCCESS)
                 {
