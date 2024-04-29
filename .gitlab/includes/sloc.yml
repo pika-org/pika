@@ -16,7 +16,7 @@ sloc_base_image:
   before_script:
     - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
     - export CONFIG_TAG=`echo $DOCKERFILE_SHA-$BASE_IMAGE | sha256sum - | head -c 16`
-    - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/$ARCH/pika-sloc:$CONFIG_TAG
+    - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/$ARCH/public/pika-sloc:$CONFIG_TAG
     - echo -e "CONFIG_TAG=$CONFIG_TAG" >> sloc_base.env
     - echo -e "BASE_IMAGE=$PERSIST_IMAGE_NAME" >> sloc_base.env
   artifacts:
