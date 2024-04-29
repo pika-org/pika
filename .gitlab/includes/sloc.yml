@@ -25,7 +25,7 @@ sloc_base_image:
 
 sloc:
   needs: [sloc_base_image]
-  extends: [.container-runner-eiger-mc-f7t]
+  extends: [.container-runner-lightweight-zen2]
   image: $BASE_IMAGE
   variables:
     GIT_STRATEGY: fetch
