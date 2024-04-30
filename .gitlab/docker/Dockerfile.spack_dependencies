@@ -7,5 +7,4 @@ ENV spack_spec $SPACK_SPEC
 RUN echo $spack_spec && \
     spack env create pika_ci && \
     spack -e pika_ci add $spack_spec && \
-    spack -e pika_ci install --fail-fast --only dependencies $spack_spec && \
-    spack -e pika_ci clean --all
+    spack -e pika_ci install -j2 --fail-fast re2c
