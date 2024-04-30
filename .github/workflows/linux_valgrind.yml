@@ -45,6 +45,7 @@ jobs:
                 -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
                 -DCMAKE_CXX_FLAGS="-gdwarf-4" \
                 -DPIKA_WITH_MALLOC=system \
+                -DPIKA_WITH_MPI=ON \
                 -DPIKA_WITH_EXAMPLES=ON \
                 -DPIKA_WITH_TESTS=ON \
                 -DPIKA_WITH_TESTS_EXAMPLES=ON \
@@ -64,6 +65,11 @@ jobs:
       - name: Test
         shell: bash
         run: |
+            # We are certain that we want to run mpiexec as root despite warnings as that is the
+            # only user available in the container. Mistakes will only affect the current step.
+            export OMPI_ALLOW_RUN_AS_ROOT=1
+            export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
+
             cd build
             ctest \
               -j $(nproc) \
