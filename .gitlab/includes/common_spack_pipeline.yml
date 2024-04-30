@@ -8,7 +8,7 @@ include:
   - local: '.gitlab/includes/common_pipeline.yml'
 
 variables:
-  SPACK_COMMIT: 8b106416c05f5e9d9ebe18db66babda9f0fac358
+  SPACK_COMMIT: d946c37cbb7a41acbb2b34fc98078acc96533705
 .base_spack_image:
   timeout: 2 hours
   before_script:
