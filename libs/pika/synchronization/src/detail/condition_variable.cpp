@@ -56,7 +56,7 @@ namespace pika::detail {
 
     // Return false if no more threads are waiting (returns true if queue
     // is non-empty).
-    bool condition_variable::notify_one(std::unique_lock<mutex_type> lock,
+    bool condition_variable::notify_one([[maybe_unused]] std::unique_lock<mutex_type> lock,
         execution::thread_priority /* priority */, error_code& ec)
     {
         PIKA_ASSERT(lock.owns_lock());
@@ -79,10 +79,7 @@ namespace pika::detail {
             }
 
             bool not_empty = !queue_.empty();
-            lock.unlock();
-
             ctx.resume();
-
             return not_empty;
         }
 
@@ -91,7 +88,7 @@ namespace pika::detail {
         return false;
     }
 
-    void condition_variable::notify_all(std::unique_lock<mutex_type> lock,
+    void condition_variable::notify_all([[maybe_unused]] std::unique_lock<mutex_type> lock,
         execution::thread_priority /* priority */, error_code& ec)
     {
         PIKA_ASSERT(lock.owns_lock());
@@ -110,10 +107,6 @@ namespace pika::detail {
             auto ctx = qe.ctx_;
             qe.ctx_.reset();
             queue.pop_front();
-
-            // Resume without holding lock (since resuming may yield, waiting for thread to be
-            // inactive)
-            pika::detail::unlock_guard<std::unique_lock<mutex_type>> ul(lock);
             ctx.resume();
         }
 
