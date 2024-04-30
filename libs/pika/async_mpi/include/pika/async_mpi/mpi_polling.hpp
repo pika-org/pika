@@ -17,6 +17,7 @@
 #include <pika/mpi_base/mpi.hpp>
 #include <pika/runtime/thread_pool_helpers.hpp>
 #include <pika/synchronization/counting_semaphore.hpp>
+#include <pika/type_support/to_underlying.hpp>
 
 #include <atomic>
 #include <cstddef>
@@ -27,14 +28,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-
-namespace pika::mpi::experimental::detail {
-    template <typename E>
-    constexpr std::underlying_type_t<E> to_underlying(E e) noexcept
-    {
-        return static_cast<std::underlying_type_t<E>>(e);
-    }
-}    // namespace pika::mpi::experimental::detail
 
 namespace pika::mpi::experimental {
 
@@ -133,33 +126,35 @@ namespace pika::mpi::experimental {
         inline handler_mode get_handler_mode(std::underlying_type_t<handler_mode> flags)
         {
             return static_cast<handler_mode>(
-                flags & detail::to_underlying(handler_mode::method_mask));
+                flags & pika::detail::to_underlying(handler_mode::method_mask));
         }
 
         /// 1 bit defines high priority boost mode for pool transfers
         inline bool use_priority_boost(int mode)
         {
-            return static_cast<bool>((mode & detail::to_underlying(handler_mode::high_priority)) ==
-                detail::to_underlying(handler_mode::high_priority));
+            return static_cast<bool>(
+                (mode & pika::detail::to_underlying(handler_mode::high_priority)) ==
+                pika::detail::to_underlying(handler_mode::high_priority));
         }
         /// 1 bit defines inline or transfer completion
         inline bool use_inline_completion(int mode)
         {
             return static_cast<bool>(
-                (mode & detail::to_underlying(handler_mode::completion_inline)) ==
-                detail::to_underlying(handler_mode::completion_inline));
+                (mode & pika::detail::to_underlying(handler_mode::completion_inline)) ==
+                pika::detail::to_underlying(handler_mode::completion_inline));
         }
         /// 1 bit defines inline or transfer mpi invocation
         inline bool use_inline_request(int mode)
         {
-            return static_cast<bool>((mode & detail::to_underlying(handler_mode::request_inline)) ==
-                detail::to_underlying(handler_mode::request_inline));
+            return static_cast<bool>(
+                (mode & pika::detail::to_underlying(handler_mode::request_inline)) ==
+                pika::detail::to_underlying(handler_mode::request_inline));
         }
         /// 1 bit defines whether we use a pool or not
         inline bool use_pool(int mode)
         {
-            return static_cast<bool>((mode & detail::to_underlying(handler_mode::use_pool)) ==
-                detail::to_underlying(handler_mode::use_pool));
+            return static_cast<bool>((mode & pika::detail::to_underlying(handler_mode::use_pool)) ==
+                pika::detail::to_underlying(handler_mode::use_pool));
         }
 
         /// used for debugging to show mode type in messages, should be removed
