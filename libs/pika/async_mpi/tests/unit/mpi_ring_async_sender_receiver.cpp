@@ -459,7 +459,7 @@ void init_resource_partitioner_handler(
     if (vm["no-mpi-pool"].as<bool>()) { pool_mode = mpix::pool_create_mode::force_no_create; }
 
     msr_deb<2>.debug(str<>("init RP"), "create_pool");
-    mpix::create_pool("", mpix::pool_create_mode::pika_decides);
+    mpix::create_pool("", pool_mode);
 }
 
 //----------------------------------------------------------------------------
