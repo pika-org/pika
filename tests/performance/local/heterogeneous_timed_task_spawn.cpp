@@ -39,8 +39,8 @@ using pika::threads::detail::make_thread_function_nullary;
 using pika::threads::detail::register_work;
 using pika::threads::detail::thread_init_data;
 
+using pika::detail::get_runtime;
 using pika::this_thread::suspend;
-using pika::threads::get_thread_count;
 
 using pika::chrono::detail::high_resolution_timer;
 
@@ -190,7 +190,9 @@ int pika_main(variables_map& vm)
             // should be resumed after most of the null pika-threads have been
             // executed. If we haven't, we just reschedule ourselves again.
             suspend();
-        } while (get_thread_count(pika::execution::thread_priority::normal) > 1);
+        } while (get_runtime().get_thread_manager().get_thread_count(
+                     pika::threads::detail::thread_schedule_state::unknown,
+                     pika::execution::thread_priority::normal) > 1);
 
         ///////////////////////////////////////////////////////////////////////
         // Print the results.

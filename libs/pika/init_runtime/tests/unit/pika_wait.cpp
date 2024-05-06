@@ -17,6 +17,7 @@
 namespace ex = pika::execution::experimental;
 namespace tt = pika::this_thread::experimental;
 
+using pika::detail::get_runtime;
 using pika::threads::detail::thread_schedule_state;
 
 void test_wait()
@@ -30,13 +31,21 @@ void test_wait()
 
     if (pika::threads::detail::get_self_ptr())
     {
-        PIKA_TEST_EQ(pika::threads::get_thread_count(thread_schedule_state::active), 1);
+        PIKA_TEST_EQ(
+            get_runtime().get_thread_manager().get_thread_count(thread_schedule_state::active), 1);
     }
-    else { PIKA_TEST_EQ(pika::threads::get_thread_count(thread_schedule_state::active), 0); }
+    else
+    {
+        PIKA_TEST_EQ(
+            get_runtime().get_thread_manager().get_thread_count(thread_schedule_state::active), 0);
+    }
 
-    PIKA_TEST_EQ(pika::threads::get_thread_count(thread_schedule_state::pending), 0);
-    PIKA_TEST_EQ(pika::threads::get_thread_count(thread_schedule_state::suspended), 0);
-    PIKA_TEST_EQ(pika::threads::get_thread_count(thread_schedule_state::staged), 0);
+    PIKA_TEST_EQ(
+        get_runtime().get_thread_manager().get_thread_count(thread_schedule_state::pending), 0);
+    PIKA_TEST_EQ(
+        get_runtime().get_thread_manager().get_thread_count(thread_schedule_state::suspended), 0);
+    PIKA_TEST_EQ(
+        get_runtime().get_thread_manager().get_thread_count(thread_schedule_state::staged), 0);
 }
 
 int main(int argc, char** argv)

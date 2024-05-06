@@ -24,8 +24,6 @@ using pika::program_options::options_description;
 using pika::program_options::value;
 using pika::program_options::variables_map;
 
-using pika::threads::get_thread_count;
-
 using pika::this_thread::suspend;
 
 using pika::experimental::event;

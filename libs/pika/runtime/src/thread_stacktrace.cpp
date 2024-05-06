@@ -5,6 +5,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
+#include <pika/runtime/runtime.hpp>
 #include <pika/runtime/thread_pool_helpers.hpp>
 #include <pika/runtime/thread_stacktrace.hpp>
 #include <pika/threading_base/thread_data.hpp>
@@ -26,7 +27,7 @@ namespace pika::detail {
     {
         std::vector<pika::threads::detail::thread_id_type> thread_ids_vector;
         //
-        pika::threads::enumerate_threads(
+        pika::detail::get_runtime().get_thread_manager().enumerate_threads(
             [&thread_ids_vector](pika::threads::detail::thread_id_type id) -> bool {
                 thread_ids_vector.push_back(id);
                 return true;    // always continue enumeration
@@ -42,7 +43,7 @@ namespace pika::detail {
     {
         std::vector<pika::threads::detail::thread_data*> thread_data_vector;
         //
-        pika::threads::enumerate_threads(
+        pika::detail::get_runtime().get_thread_manager().enumerate_threads(
             [&thread_data_vector](pika::threads::detail::thread_id_type id) -> bool {
                 pika::threads::detail::thread_data* data = get_thread_id_data(id);
                 thread_data_vector.push_back(data);
