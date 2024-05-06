@@ -17,7 +17,6 @@
 #include <pika/runtime/get_os_thread_count.hpp>
 #include <pika/runtime/get_thread_name.hpp>
 #include <pika/runtime/get_worker_thread_num.hpp>
-#include <pika/runtime/os_thread_type.hpp>
 #include <pika/runtime/report_error.hpp>
 #include <pika/runtime/shutdown_function.hpp>
 #include <pika/runtime/startup_function.hpp>
@@ -47,15 +46,6 @@ namespace pika::detail {
     /// Unregister the thread from pika, this should be done once in
     /// the end before the external thread exists.
     PIKA_EXPORT void unregister_thread(runtime* rt);
-
-    /// Access data for a given OS thread that was previously registered by
-    /// \a register_thread. This function must be called from a thread that was
-    /// previously registered with the runtime.
-    PIKA_EXPORT os_thread_data get_os_thread_data(std::string const& label);
-
-    /// Enumerate all OS threads that have registered with the runtime.
-    PIKA_EXPORT bool enumerate_os_threads(
-        pika::util::detail::function<bool(os_thread_data const&)> const& f);
 
     /// Register a function to be called during system shutdown
     PIKA_EXPORT bool register_on_exit(pika::util::detail::function<void()> const&);

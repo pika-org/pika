@@ -68,6 +68,8 @@ struct non_sender_7
 
 struct receiver
 {
+    PIKA_STDEXEC_RECEIVER_CONCEPT
+
     friend void tag_invoke(ex::set_error_t, receiver&&, std::exception_ptr) noexcept {}
 
     friend void tag_invoke(ex::set_stopped_t, receiver&&) noexcept {}
@@ -84,6 +86,8 @@ struct receiver
 
 struct sender_1
 {
+    PIKA_STDEXEC_SENDER_CONCEPT
+
     template <template <class...> class Tuple, template <class...> class Variant>
     using value_types = Variant<Tuple<int>>;
 
@@ -113,6 +117,8 @@ struct sender_1
 
 struct sender_2
 {
+    PIKA_STDEXEC_SENDER_CONCEPT
+
     template <template <class...> class Tuple, template <class...> class Variant>
     using value_types = Variant<Tuple<int>>;
 
@@ -144,6 +150,8 @@ static std::size_t void_receiver_set_value_calls = 0;
 
 struct void_receiver
 {
+    PIKA_STDEXEC_RECEIVER_CONCEPT
+
     friend void tag_invoke(ex::set_error_t, void_receiver&&, std::exception_ptr) noexcept {}
 
     friend void tag_invoke(ex::set_stopped_t, void_receiver&&) noexcept {}

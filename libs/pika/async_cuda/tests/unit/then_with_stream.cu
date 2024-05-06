@@ -30,6 +30,8 @@ __global__ void dummy_kernel() {}
 template <typename T>
 struct const_reference_cuda_sender
 {
+    PIKA_STDEXEC_SENDER_CONCEPT
+
     std::reference_wrapper<std::decay_t<T>> x;
     cu::cuda_scheduler sched;
 
@@ -86,6 +88,8 @@ struct const_reference_cuda_sender
 
 struct const_reference_error_cuda_sender
 {
+    PIKA_STDEXEC_SENDER_CONCEPT
+
     cu::cuda_scheduler sched;
 
     PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE

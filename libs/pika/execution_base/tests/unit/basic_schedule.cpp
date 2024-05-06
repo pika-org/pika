@@ -21,6 +21,8 @@ static std::size_t tag_invoke_schedule_calls = 0;
 template <typename Scheduler>
 struct sender
 {
+    PIKA_STDEXEC_SENDER_CONCEPT
+
     template <template <class...> class Tuple, template <class...> class Variant>
     using value_types = Variant<Tuple<>>;
 

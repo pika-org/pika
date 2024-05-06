@@ -118,14 +118,16 @@ private:
 
     void wait_for_tasks(pika::barrier<>& finished)
     {
-        std::uint64_t const pending_count =
-            pika::threads::get_thread_count(pika::execution::thread_priority::normal,
-                pika::threads::detail::thread_schedule_state::pending);
+        using pika::detail::get_runtime;
+        std::uint64_t const pending_count = get_runtime().get_thread_manager().get_thread_count(
+            pika::threads::detail::thread_schedule_state::pending,
+            pika::execution::thread_priority::normal);
 
         if (pending_count == 0)
         {
-            std::uint64_t const all_count =
-                pika::threads::get_thread_count(pika::execution::thread_priority::normal);
+            std::uint64_t const all_count = get_runtime().get_thread_manager().get_thread_count(
+                pika::threads::detail::thread_schedule_state::unknown,
+                pika::execution::thread_priority::normal);
 
             if (all_count != 1)
             {

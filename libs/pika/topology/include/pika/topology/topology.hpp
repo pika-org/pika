@@ -119,18 +119,6 @@ namespace pika::threads::detail {
         mask_cref_type get_machine_affinity_mask(error_code& ec = throws) const;
 
         /// \brief Return a bit mask where each set bit corresponds to a
-        ///        processing unit available to the service threads in the
-        ///        application.
-        ///
-        /// \param used_processing_units [in] This is the mask of processing
-        ///                   units which are not available for service threads.
-        /// \param ec         [in,out] this represents the error status on exit,
-        ///                   if this is pre-initialized to \a pika#throws
-        ///                   the function will throw on error instead.
-        mask_type get_service_affinity_mask(
-            mask_cref_type used_processing_units, error_code& ec = throws) const;
-
-        /// \brief Return a bit mask where each set bit corresponds to a
         ///        processing unit available to the given thread inside
         ///        the socket it is running on.
         ///

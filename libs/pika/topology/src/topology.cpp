@@ -135,22 +135,6 @@ namespace pika::threads::detail {
         return os;
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    mask_type topology::get_service_affinity_mask(
-        mask_cref_type used_processing_units, error_code& ec) const
-    {
-        // We bind the service threads to the first NUMA domain. This is useful
-        // as the first NUMA domain is likely to have the PCI controllers etc.
-        mask_cref_type machine_mask = this->get_numa_node_affinity_mask(0, ec);
-        if (ec || !any(machine_mask)) return mask_type();
-
-        if (&ec != &throws) ec = make_success_code();
-
-        mask_type res = ~used_processing_units & machine_mask;
-
-        return (!any(res)) ? machine_mask : res;
-    }
-
     bool topology::reduce_thread_priority(error_code& ec) const
     {
         PIKA_UNUSED(ec);

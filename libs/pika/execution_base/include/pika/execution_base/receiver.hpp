@@ -30,6 +30,12 @@ namespace pika::execution::experimental {
         static constexpr bool value = is_receiver_of_v<Receiver, Completions>;
     };
 }    // namespace pika::execution::experimental
+
+# if defined(PIKA_HAVE_STDEXEC_SENDER_RECEIVER_CONCEPTS)
+#  define PIKA_STDEXEC_RECEIVER_CONCEPT                                                            \
+      using is_receiver = void;                                                                    \
+      using receiver_concept = stdexec::receiver_t;
+# endif
 #else
 # include <pika/config/constexpr.hpp>
 # include <pika/functional/tag_invoke.hpp>
@@ -220,3 +226,7 @@ namespace pika::execution::experimental::detail {
     template <typename CPO>
     inline constexpr bool is_receiver_cpo_v = is_receiver_cpo<CPO>::value;
 }    // namespace pika::execution::experimental::detail
+
+#if !defined(PIKA_STDEXEC_RECEIVER_CONCEPT)
+# define PIKA_STDEXEC_RECEIVER_CONCEPT using is_receiver = void;
+#endif

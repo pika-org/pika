@@ -42,7 +42,7 @@ int pika_main()
     pika::this_thread::yield();
 
     // Enumerate all suspended threads
-    pika::threads::enumerate_threads(
+    pika::detail::get_runtime().get_thread_manager().enumerate_threads(
         [](pika::threads::detail::thread_id_type id) -> bool {
             std::cout << "thread " << pika::thread::id(id) << " is "
                       << pika::threads::detail::get_thread_state_name(

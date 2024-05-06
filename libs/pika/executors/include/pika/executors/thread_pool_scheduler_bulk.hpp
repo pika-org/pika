@@ -88,8 +88,10 @@ namespace pika::thread_pool_bulk_detail {
             using type = pika::util::detail::transform_t<Tuple, std::decay>;
         };
 
+        // PIKA_STDEXEC_SENDER_CONCEPT
+
 #if defined(PIKA_HAVE_STDEXEC)
-        using is_sender = void;
+        PIKA_STDEXEC_SENDER_CONCEPT
 
         template <template <typename...> class Tuple, template <typename...> class Variant>
         using value_types = pika::util::detail::transform_t<
@@ -130,7 +132,7 @@ namespace pika::thread_pool_bulk_detail {
         {
             struct bulk_receiver
             {
-                using is_receiver = void;
+                PIKA_STDEXEC_RECEIVER_CONCEPT
 
                 operation_state* op_state;
 
@@ -496,7 +498,7 @@ namespace pika::thread_pool_bulk_detail {
                 s.scheduler, s.sender, s.shape, s.f, PIKA_FORWARD(Receiver, receiver)};
         }
 
-        friend constexpr auto tag_invoke(
+        friend auto tag_invoke(
             pika::execution::experimental::get_env_t, thread_pool_bulk_sender const& s) noexcept
         {
             return pika::execution::experimental::get_env(s.sender);

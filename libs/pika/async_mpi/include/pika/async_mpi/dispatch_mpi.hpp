@@ -52,7 +52,7 @@ namespace pika::mpi::experimental::detail {
     template <typename Sender, typename F>
     struct dispatch_mpi_sender_impl<Sender, F>::dispatch_mpi_sender_type
     {
-        using is_sender = void;
+        PIKA_STDEXEC_SENDER_CONCEPT
 
         std::decay_t<Sender> sender;
         std::decay_t<F> f;
@@ -89,7 +89,7 @@ namespace pika::mpi::experimental::detail {
             // invokes the mpi call, and sets a callback on the polling handler
             struct dispatch_mpi_receiver
             {
-                using is_receiver = void;
+                PIKA_STDEXEC_RECEIVER_CONCEPT
 
                 operation_state& op_state;
 

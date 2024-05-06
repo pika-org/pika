@@ -51,4 +51,8 @@ function(pika_perform_cxx_feature_tests)
   )
 
   pika_check_for_cxx_lambda_capture_decltype(DEFINITIONS PIKA_HAVE_CXX_LAMBDA_CAPTURE_DECLTYPE)
+
+  pika_check_for_stdexec_sender_receiver_concepts(
+    DEFINITIONS PIKA_HAVE_STDEXEC_SENDER_RECEIVER_CONCEPTS
+  )
 endfunction()

@@ -22,14 +22,12 @@
 #include <pika/runtime/config_entry.hpp>
 #include <pika/runtime/custom_exception_info.hpp>
 #include <pika/runtime/debugging.hpp>
-#include <pika/runtime/os_thread_type.hpp>
 #include <pika/runtime/runtime.hpp>
 #include <pika/runtime/runtime_fwd.hpp>
 #include <pika/runtime/shutdown_function.hpp>
 #include <pika/runtime/startup_function.hpp>
 #include <pika/runtime/state.hpp>
 #include <pika/runtime/thread_hooks.hpp>
-#include <pika/runtime/thread_mapper.hpp>
 #include <pika/string_util/from_string.hpp>
 #include <pika/thread_support/set_thread_name.hpp>
 #include <pika/threading_base/external_timer.hpp>
@@ -249,8 +247,6 @@ namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     runtime::runtime(pika::util::runtime_configuration& rtcfg, bool initialize)
       : rtcfg_(rtcfg)
-      , instance_number_(++instance_number_counter_)
-      , thread_support_(new pika::util::thread_mapper)
       , topology_(resource::get_partitioner().get_topology())
       , state_(pika::runtime_state::invalid)
       , on_start_func_(global_on_start_func)
@@ -264,8 +260,7 @@ namespace pika::detail {
     {
         // set notification policies only after the object was completely
         // initialized
-        runtime::set_notification_policies(
-            runtime::get_notification_policy("worker-thread", os_thread_type::worker_thread));
+        runtime::set_notification_policies(runtime::get_notification_policy("worker-thread"));
 
         init_global_data();
 
@@ -275,8 +270,6 @@ namespace pika::detail {
     // this constructor is called by the distributed runtime only
     runtime::runtime(pika::util::runtime_configuration& rtcfg)
       : rtcfg_(rtcfg)
-      , instance_number_(++instance_number_counter_)
-      , thread_support_(new pika::util::thread_mapper)
       , topology_(resource::get_partitioner().get_topology())
       , state_(pika::runtime_state::invalid)
       , on_start_func_(global_on_start_func)
@@ -352,9 +345,6 @@ namespace pika::detail {
         thread_manager_->stop();
         PIKA_LOG(debug, "~runtime(finished)");
 
-        // allow to reuse instance number if this was the only instance
-        if (0 == instance_number_counter_) --instance_number_counter_;
-
         resource::detail::delete_partitioner();
 
 #if defined(PIKA_HAVE_GPU_SUPPORT)
@@ -386,11 +376,6 @@ namespace pika::detail {
 
     pika::util::runtime_configuration const& runtime::get_config() const { return rtcfg_; }
 
-    std::size_t runtime::get_instance_number() const
-    {
-        return static_cast<std::size_t>(instance_number_);
-    }
-
     pika::runtime_state runtime::get_state() const { return state_.load(); }
 
     pika::threads::detail::topology const& runtime::get_topology() const { return topology_; }
@@ -400,9 +385,6 @@ namespace pika::detail {
         PIKA_LOG(info, "{}", pika::detail::get_runtime_state_name(s));
         state_.store(s);
     }
-
-    ///////////////////////////////////////////////////////////////////////////
-    std::atomic<int> runtime::instance_number_counter_(-1);
 
     ///////////////////////////////////////////////////////////////////////////
     namespace {
@@ -565,7 +547,7 @@ namespace pika::detail {
     bool register_thread(runtime* rt, char const* name, error_code& ec)
     {
         PIKA_ASSERT(rt);
-        return rt->register_thread(name, 0, true, ec);
+        return rt->register_thread(name, 0, ec);
     }
 
     // Unregister the thread from pika, this should be done once in
@@ -574,20 +556,6 @@ namespace pika::detail {
     {
         PIKA_ASSERT(rt);
         rt->unregister_thread();
-    }
-
-    // Access data for a given OS thread that was previously registered by
-    // \a register_thread. This function must be called from a thread that was
-    // previously registered with the runtime.
-    os_thread_data get_os_thread_data(std::string const& label)
-    {
-        return get_runtime().get_os_thread_data(label);
-    }
-
-    /// Enumerate all OS threads that have registered with the runtime.
-    bool enumerate_os_threads(pika::util::detail::function<bool(os_thread_data const&)> const& f)
-    {
-        return get_runtime().enumerate_os_threads(f);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -1097,7 +1065,7 @@ namespace pika::detail {
         // Register this thread with the runtime system to allow calling
         // certain pika functionality from the main thread. Also calls
         // registered startup callbacks.
-        init_tss_helper("main-thread", os_thread_type::main_thread, 0, 0, "", "", false);
+        init_tss_helper("main-thread", 0, 0, "", "");
 
         // start the thread manager
         thread_manager_->run();
@@ -1395,11 +1363,8 @@ namespace pika::detail {
         return result;
     }
 
-    pika::util::thread_mapper& runtime::get_thread_mapper() { return *thread_support_; }
-
     ///////////////////////////////////////////////////////////////////////////
-    pika::threads::callback_notifier runtime::get_notification_policy(
-        char const* prefix, os_thread_type type)
+    pika::threads::callback_notifier runtime::get_notification_policy(char const* prefix)
     {
         using report_error_t = bool (runtime::*)(std::size_t, std::exception_ptr const&, bool);
 
@@ -1410,8 +1375,8 @@ namespace pika::detail {
 
         notification_policy_type notifier;
 
-        notifier.add_on_start_thread_callback(pika::util::detail::bind(
-            &runtime::init_tss_helper, this, prefix, type, _1, _2, _3, _4, false));
+        notifier.add_on_start_thread_callback(
+            pika::util::detail::bind(&runtime::init_tss_helper, this, prefix, _1, _2, _3, _4));
         notifier.add_on_stop_thread_callback(
             pika::util::detail::bind(&runtime::deinit_tss_helper, this, prefix, _1));
         notifier.set_on_error_callback(pika::util::detail::bind(
@@ -1420,19 +1385,16 @@ namespace pika::detail {
         return notifier;
     }
 
-    void runtime::init_tss_helper(char const* context, os_thread_type type,
-        std::size_t local_thread_num, std::size_t global_thread_num, char const* pool_name,
-        char const* postfix, bool service_thread)
+    void runtime::init_tss_helper(char const* context, std::size_t local_thread_num,
+        std::size_t global_thread_num, char const* pool_name, char const* postfix)
     {
         error_code ec(throwmode::lightweight);
-        return init_tss_ex(context, type, local_thread_num, global_thread_num, pool_name, postfix,
-            service_thread, ec);
+        return init_tss_ex(context, local_thread_num, global_thread_num, pool_name, postfix);
     }
 
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-    void runtime::init_tss_ex(char const* context, os_thread_type type,
-        std::size_t local_thread_num, std::size_t global_thread_num, char const* pool_name,
-        char const* postfix, bool service_thread, error_code& ec)
+    void runtime::init_tss_ex(char const* context, std::size_t local_thread_num,
+        std::size_t global_thread_num, char const* pool_name, char const* postfix)
     // NOLINTEND(bugprone-easily-swappable-parameters)
     {
         std::ostringstream fullname;
@@ -1453,9 +1415,6 @@ namespace pika::detail {
 
         char const* name = detail::thread_name().c_str();
 
-        // initialize thread mapping for external libraries (i.e. PAPI)
-        thread_support_->register_thread(name, type);
-
         // register this thread with any possibly active Intel tool
         PIKA_ITT_THREAD_SET_NAME(name);
 
@@ -1475,36 +1434,6 @@ namespace pika::detail {
         {
             on_start_func_(local_thread_num, global_thread_num, pool_name, context);
         }
-
-        // if this is a service thread, set its service affinity
-        if (service_thread)
-        {
-            // FIXME: We don't set the affinity of the service threads on BG/Q,
-            // as this is causing a hang (needs to be investigated)
-#if !defined(__bgq__)
-            pika::threads::detail::mask_cref_type used_processing_units =
-                thread_manager_->get_used_processing_units();
-
-            // --pika:bind=none  should disable all affinity definitions
-            if (pika::threads::detail::any(used_processing_units))
-            {
-                this->topology_.set_thread_affinity_mask(
-                    this->topology_.get_service_affinity_mask(used_processing_units), ec);
-
-                // comment this out for now as on CircleCI this is causing
-                // unending grief
-                // if (ec)
-                // {
-                //     PIKA_THROW_EXCEPTION(pika::error::kernel_error,
-                //         "runtime::init_tss_ex",
-                //         "failed to set thread affinity mask ({}) for service "
-                //         "thread: {}",
-                //         pika::threads::detail::to_string(used_processing_units),
-                //         detail::thread_name());
-                // }
-            }
-#endif
-        }
     }
 
     void runtime::deinit_tss_helper(char const* context, std::size_t global_thread_num)
@@ -1513,9 +1442,6 @@ namespace pika::detail {
 
         // call thread-specific user-supplied on_stop handler
         if (on_stop_func_) { on_stop_func_(global_thread_num, global_thread_num, "", context); }
-
-        // reset PAPI support
-        thread_support_->unregister_thread();
 
         // reset thread local storage
         detail::thread_name().clear();
@@ -1546,14 +1472,12 @@ namespace pika::detail {
     }
 
     /// Register an external OS-thread with pika
-    bool runtime::register_thread(
-        char const* name, std::size_t global_thread_num, bool service_thread, error_code& ec)
+    bool runtime::register_thread(char const* name, std::size_t global_thread_num, error_code& ec)
     {
         std::string thread_name(name);
         thread_name += "-thread";
 
-        init_tss_ex(thread_name.c_str(), os_thread_type::custom_thread, global_thread_num,
-            global_thread_num, "", nullptr, service_thread, ec);
+        init_tss_ex(thread_name.c_str(), global_thread_num, global_thread_num, "", nullptr);
 
         return !ec ? true : false;
     }
@@ -1565,25 +1489,10 @@ namespace pika::detail {
         return true;
     }
 
-    // Access data for a given OS thread that was previously registered by
-    // \a register_thread. This function must be called from a thread that was
-    // previously registered with the runtime.
-    os_thread_data runtime::get_os_thread_data(std::string const& label) const
-    {
-        return thread_support_->get_os_thread_data(label);
-    }
-
-    /// Enumerate all OS threads that have registered with the runtime.
-    bool runtime::enumerate_os_threads(
-        pika::util::detail::function<bool(os_thread_data const&)> const& f) const
-    {
-        return thread_support_->enumerate_os_threads(f);
-    }
-
     ///////////////////////////////////////////////////////////////////////////
     pika::threads::callback_notifier get_notification_policy(char const* prefix)
     {
-        return get_runtime().get_notification_policy(prefix, os_thread_type::worker_thread);
+        return get_runtime().get_notification_policy(prefix);
     }
 
     namespace threads {

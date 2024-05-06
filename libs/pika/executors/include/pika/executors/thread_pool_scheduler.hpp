@@ -179,7 +179,7 @@ namespace pika::execution::experimental {
         template <typename Scheduler>
         struct sender
         {
-            using is_sender = void;
+            PIKA_STDEXEC_SENDER_CONCEPT
 
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Scheduler> scheduler;
 

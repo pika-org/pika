@@ -111,7 +111,7 @@ namespace pika::split_tuple_detail {
 
         struct split_tuple_receiver
         {
-            using is_receiver = void;
+            PIKA_STDEXEC_RECEIVER_CONCEPT
 
             shared_state& state;
 
@@ -371,7 +371,7 @@ namespace pika::split_tuple_detail {
     template <typename Sender, typename Allocator, std::size_t Index>
     struct split_tuple_sender_impl<Sender, Allocator, Index>::split_tuple_sender_type
     {
-        using is_sender = void;
+        PIKA_STDEXEC_SENDER_CONCEPT
 
         using allocator_type = Allocator;
         using shared_state_type = shared_state<Sender, Allocator>;

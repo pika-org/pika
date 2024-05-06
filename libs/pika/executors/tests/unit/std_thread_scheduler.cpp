@@ -49,6 +49,8 @@ void test_execute()
 
 struct check_context_receiver
 {
+    PIKA_STDEXEC_RECEIVER_CONCEPT
+
     std::thread::id parent_id;
     std::mutex& mtx;
     std::condition_variable& cond;
@@ -208,6 +210,8 @@ void test_sender_receiver_then_arguments()
 template <typename F>
 struct callback_receiver
 {
+    PIKA_STDEXEC_RECEIVER_CONCEPT
+
     std::decay_t<F> f;
     std::mutex& mtx;
     std::condition_variable& cond;
@@ -1241,9 +1245,9 @@ void test_completion_scheduler()
     }
 
     {
-        auto sender =
-            ex::bulk(ex::then(ex::transfer_just(ex::std_thread_scheduler{}, 42), [](int) {}), 10,
-                [](int, int) {});
+        auto sender = ex::bulk(
+            ex::then(ex::transfer_just(ex::std_thread_scheduler{}, 42), [](int x) { return x; }),
+            10, [](int, int) {});
         auto completion_scheduler =
             ex::get_completion_scheduler<ex::set_value_t>(ex::get_env(sender));
         static_assert(

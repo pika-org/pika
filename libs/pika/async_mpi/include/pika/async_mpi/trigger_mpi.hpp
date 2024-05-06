@@ -53,7 +53,7 @@ namespace pika::mpi::experimental::detail {
     template <typename Sender>
     struct trigger_mpi_sender_impl<Sender>::trigger_mpi_sender_type
     {
-        using is_sender = void;
+        PIKA_STDEXEC_SENDER_CONCEPT
         std::decay_t<Sender> sender;
         int completion_mode_flags_;
 
@@ -91,7 +91,7 @@ namespace pika::mpi::experimental::detail {
             // invokes the mpi call, and sets a callback on the polling handler
             struct trigger_mpi_receiver
             {
-                using is_receiver = void;
+                PIKA_STDEXEC_RECEIVER_CONCEPT
                 operation_state& op_state;
 
                 template <typename Error>

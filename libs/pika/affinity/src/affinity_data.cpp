@@ -44,7 +44,7 @@ namespace pika::detail {
         threads::detail::resize(no_affinity_, threads::detail::hardware_concurrency());
     }
 
-    affinity_data::~affinity_data() { --instance_number_counter_; }
+    affinity_data::~affinity_data() {}
 
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     void affinity_data::init(std::size_t num_threads, std::size_t max_cores, std::size_t pu_offset,
@@ -285,5 +285,4 @@ namespace pika::detail {
         return (num_pu + offset) % hardware_concurrency;
     }
 
-    std::atomic<int> affinity_data::instance_number_counter_(-1);
 }    // namespace pika::detail

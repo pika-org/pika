@@ -82,7 +82,6 @@ namespace pika::detail {
             no_affinity_;          ///< mask of processing units which have no affinity
         bool use_process_mask_;    ///< use the process CPU mask to limit available PUs
         std::size_t num_pus_needed_;
-        static std::atomic<int> instance_number_counter_;    ///< counter for instance numbers
     };
 }    // namespace pika::detail
 

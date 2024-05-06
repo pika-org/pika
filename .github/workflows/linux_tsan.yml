@@ -21,7 +21,7 @@ jobs:
     name: github/linux/sanitizers/thread
     runs-on: ubuntu-latest
     container:
-      image: pikaorg/pika-ci-base:24
+      image: pikaorg/pika-ci-base:25
       # --privileged is enabled for sysctl further down.
       options: --privileged
 
