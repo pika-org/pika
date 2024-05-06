@@ -5,6 +5,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
+#include <pika/runtime/runtime.hpp>
 #include <pika/runtime/thread_pool_helpers.hpp>
 #include <pika/runtime/thread_stacktrace.hpp>
 #include <pika/threading_base/thread_data.hpp>
