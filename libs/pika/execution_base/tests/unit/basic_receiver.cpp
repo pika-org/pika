@@ -22,6 +22,8 @@ bool value_called = false;
 namespace mylib {
     struct receiver_1
     {
+        PIKA_STDEXEC_RECEIVER_CONCEPT
+
         friend void tag_invoke(ex::set_stopped_t, receiver_1&&) noexcept { done_called = true; }
 
         friend void tag_invoke(ex::set_error_t, receiver_1&&, std::exception_ptr) noexcept
@@ -39,6 +41,8 @@ namespace mylib {
 
     struct receiver_2
     {
+        PIKA_STDEXEC_RECEIVER_CONCEPT
+
         friend void tag_invoke(ex::set_stopped_t, receiver_2&&) noexcept { done_called = true; }
 
         friend void tag_invoke(ex::set_error_t, receiver_2&&, int) noexcept { error_called = true; }
@@ -51,6 +55,8 @@ namespace mylib {
 
     struct receiver_3
     {
+        PIKA_STDEXEC_RECEIVER_CONCEPT
+
         friend void tag_invoke(ex::set_stopped_t, receiver_3&&) noexcept { done_called = true; }
 
         friend void tag_invoke(ex::set_error_t, receiver_3&&, std::exception_ptr) noexcept
@@ -113,6 +119,8 @@ namespace mylib {
 
     struct non_receiver_4
     {
+        PIKA_STDEXEC_RECEIVER_CONCEPT
+
         friend void tag_invoke(ex::set_stopped_t, non_receiver_4&&) noexcept { done_called = true; }
 
         friend void tag_invoke(ex::set_error_t, non_receiver_4&&, std::exception_ptr) noexcept

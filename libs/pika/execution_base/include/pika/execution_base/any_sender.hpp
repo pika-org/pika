@@ -506,8 +506,6 @@ namespace pika::execution::experimental::detail {
     template <typename... Ts>
     class any_receiver
     {
-        using is_receiver = void;
-
         using base_type = detail::any_receiver_base<Ts...>;
         template <typename Receiver>
         using impl_type = detail::any_receiver_impl<Receiver, Ts...>;
@@ -516,6 +514,7 @@ namespace pika::execution::experimental::detail {
         storage_type storage{};
 
     public:
+        PIKA_STDEXEC_RECEIVER_CONCEPT
         template <typename Receiver,
             typename = std::enable_if_t<!std::is_same_v<std::decay_t<Receiver>, any_receiver>>>
         explicit any_receiver(Receiver&& receiver)
@@ -739,7 +738,7 @@ namespace pika::execution::experimental {
         storage_type storage{};
 
     public:
-        using is_sender = void;
+        PIKA_STDEXEC_SENDER_CONCEPT
         unique_any_sender() = default;
 
         template <typename Sender,
@@ -849,7 +848,7 @@ namespace pika::execution::experimental {
         friend unique_any_sender<Ts...>;
 
     public:
-        using is_sender = void;
+        PIKA_STDEXEC_SENDER_CONCEPT
         any_sender() = default;
 
         template <typename Sender,

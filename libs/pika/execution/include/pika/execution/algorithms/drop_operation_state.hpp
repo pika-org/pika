@@ -39,7 +39,7 @@ namespace pika::drop_op_state_detail {
     template <typename OpState>
     struct drop_op_state_receiver_impl<OpState>::drop_op_state_receiver_type
     {
-        using is_receiver = void;
+        PIKA_STDEXEC_RECEIVER_CONCEPT
 
         OpState* op_state = nullptr;
 
@@ -164,7 +164,7 @@ namespace pika::drop_op_state_detail {
     template <typename Sender>
     struct drop_op_state_sender_impl<Sender>::drop_op_state_sender_type
     {
-        using is_sender = void;
+        PIKA_STDEXEC_SENDER_CONCEPT
 
         std::decay_t<Sender> sender;
 

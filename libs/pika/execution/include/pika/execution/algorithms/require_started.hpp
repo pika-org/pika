@@ -98,7 +98,7 @@ namespace pika {
         template <typename OpState>
         struct require_started_receiver_impl<OpState>::require_started_receiver_type
         {
-            using is_receiver = void;
+            PIKA_STDEXEC_RECEIVER_CONCEPT
 
             OpState* op_state = nullptr;
 
@@ -223,7 +223,7 @@ namespace pika {
         template <typename Sender>
         struct require_started_sender_impl<Sender>::require_started_sender_type
         {
-            using is_sender = void;
+            PIKA_STDEXEC_SENDER_CONCEPT
 
             std::optional<std::decay_t<Sender>> sender{std::nullopt};
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)

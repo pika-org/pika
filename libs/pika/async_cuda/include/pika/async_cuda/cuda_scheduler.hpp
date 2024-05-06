@@ -106,7 +106,7 @@ namespace pika::cuda::experimental {
             };
 
         public:
-            using is_sender = void;
+            PIKA_STDEXEC_SENDER_CONCEPT
 
             PIKA_EXPORT explicit cuda_scheduler_sender(cuda_scheduler scheduler);
             cuda_scheduler_sender(cuda_scheduler_sender&&) = default;

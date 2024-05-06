@@ -47,7 +47,7 @@ namespace pika::when_all_vector_detail {
     template <typename Sender>
     struct when_all_vector_sender_impl<Sender>::when_all_vector_sender_type
     {
-        using is_sender = void;
+        PIKA_STDEXEC_SENDER_CONCEPT
 
         using senders_type = std::vector<Sender>;
         senders_type senders;
@@ -143,7 +143,7 @@ namespace pika::when_all_vector_detail {
         {
             struct when_all_vector_receiver
             {
-                using is_receiver = void;
+                PIKA_STDEXEC_RECEIVER_CONCEPT
 
                 operation_state& op_state;
                 std::size_t const i;
