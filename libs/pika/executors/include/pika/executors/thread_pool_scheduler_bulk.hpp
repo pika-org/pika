@@ -498,7 +498,7 @@ namespace pika::thread_pool_bulk_detail {
                 s.scheduler, s.sender, s.shape, s.f, PIKA_FORWARD(Receiver, receiver)};
         }
 
-        friend constexpr auto tag_invoke(
+        friend auto tag_invoke(
             pika::execution::experimental::get_env_t, thread_pool_bulk_sender const& s) noexcept
         {
             return pika::execution::experimental::get_env(s.sender);

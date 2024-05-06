@@ -120,7 +120,7 @@ namespace pika::drop_value_detail {
                 r.sender, drop_value_receiver<Receiver>{PIKA_FORWARD(Receiver, receiver)});
         }
 
-        friend constexpr decltype(auto) tag_invoke(
+        friend decltype(auto) tag_invoke(
             pika::execution::experimental::get_env_t, drop_value_sender_type const& s) noexcept
         {
             return pika::execution::experimental::get_env(s.sender);
