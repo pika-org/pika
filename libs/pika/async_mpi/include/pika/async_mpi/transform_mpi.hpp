@@ -82,27 +82,20 @@ namespace pika::mpi::experimental {
             {
                 return dispatch_mpi_sender<Sender, F>{PIKA_MOVE(sender), PIKA_FORWARD(F, f)} |
                     let_value([=](MPI_Request request) -> unique_any_sender<> {
-                        if (inline_com)
+                        if (inline_com || !pool_exists())
                         {
                             if (request == MPI_REQUEST_NULL)
                                 return just();
                             else
                                 return just(request) | trigger_mpi(mode);
                         }
-                        else if (pool_exists())
+                        else
                         {    // do not transfer if there is no pool
                             if (request == MPI_REQUEST_NULL)
                                 return transfer_just(default_pool_scheduler(p));
                             else
                                 return transfer_just(default_pool_scheduler(p), request) |
                                     trigger_mpi(mode);
-                        }
-                        else
-                        {
-                            if (request == MPI_REQUEST_NULL)
-                                return just();
-                            else
-                                return just(request) | trigger_mpi(mode);
                         }
                     });
             }
