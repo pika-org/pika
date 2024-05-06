@@ -13,6 +13,7 @@
 #include <pika/string_util/from_string.hpp>
 
 #include <fmt/format.h>
+#include <spdlog/spdlog.h>
 
 #include <any>
 #include <cctype>
