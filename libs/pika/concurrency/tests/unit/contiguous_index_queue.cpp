@@ -146,6 +146,8 @@ void test_concurrent(pop_mode m)
     std::uint32_t first = 33;
 #if defined(PIKA_HAVE_VALGRIND)
     std::uint32_t last = 5432;
+#elif defined(_GLIBCXX_DEBUG) && defined(PIKA_DEBUG)
+    std::uint32_t last = 72123;
 #else
     std::uint32_t last = 1372195;
 #endif
