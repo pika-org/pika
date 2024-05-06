@@ -7,27 +7,13 @@
 include:
   - local: '.gitlab/includes/common_pipeline.yml'
 
-sloc_base_image:
-  extends: [.container-builder-cscs-zen2]
-  variables:
-    BASE_IMAGE: docker.io/ubuntu:22.04
-    DOCKERFILE: .gitlab/docker/Dockerfile.sloc_base
-    DOCKER_BUILD_ARGS: '["BASE_IMAGE"]'
-  before_script:
-    - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
-    - export CONFIG_TAG=`echo $DOCKERFILE_SHA-$BASE_IMAGE | sha256sum - | head -c 16`
-    - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/$ARCH/pika-sloc:$CONFIG_TAG
-    - echo -e "CONFIG_TAG=$CONFIG_TAG" >> sloc_base.env
-    - echo -e "BASE_IMAGE=$PERSIST_IMAGE_NAME" >> sloc_base.env
-  artifacts:
-    reports:
-      dotenv: sloc_base.env
-
 sloc:
-  needs: [sloc_base_image]
-  extends: [.container-runner-eiger-mc-f7t]
-  image: $BASE_IMAGE
+  extends: [.container-runner-lightweight-zen2]
+  image: docker.io/ubuntu:22.04
   variables:
     GIT_STRATEGY: fetch
   script:
+    - apt-get update
+    - apt-get -yqq install --no-install-recommends curl jq moreutils npm
+    - npm install --global sloc
     - ${CI_PROJECT_DIR}/.gitlab/scripts/sloc.sh ${CI_PROJECT_DIR}

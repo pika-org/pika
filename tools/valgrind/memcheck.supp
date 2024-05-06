@@ -25,3 +25,21 @@
    fun:_Z17test_command_linev
    fun:main
 }
+
+# OpenMPI
+{
+   ORTE init
+   Memcheck:Leak
+   match-leak-kinds: definite
+   ...
+   fun:orte_init
+}
+
+{
+   ORTE event loop
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:event_base_loop
+}

@@ -82,7 +82,7 @@ namespace pika::mpi::experimental::detail {
             int mode_flags;
             int status;
             // these vars are needed by suspend/resume mode
-            bool completed;
+            bool completed{false};
             pika::detail::spinlock mutex;
             pika::condition_variable cond_var;
 
@@ -120,6 +120,9 @@ namespace pika::mpi::experimental::detail {
 
                     // which polling/testing mode are we using
                     handler_mode mode = get_handler_mode(r.op_state.mode_flags);
+                    execution::thread_priority p = use_priority_boost(r.op_state.mode_flags) ?
+                        execution::thread_priority::boost :
+                        execution::thread_priority::normal;
 
                     PIKA_DETAIL_DP(mpi_tran<5>,
                         debug(str<>("trigger_mpi_recv"), "set_value_t", "req", ptr(request),
@@ -133,7 +136,7 @@ namespace pika::mpi::experimental::detail {
                             case handler_mode::yield_while:
                             {
                                 pika::util::yield_while(
-                                    [&request]() { return !detail::poll_request(request); });
+                                    [request]() { return !detail::poll_request(request); });
 #ifdef PIKA_HAVE_APEX
                                 apex::scoped_timer apex_invoke("pika::mpi::trigger");
 #endif
@@ -146,7 +149,7 @@ namespace pika::mpi::experimental::detail {
                                 // The callback will call set_value/set_error inside a new task
                                 // and execution will continue on that thread
                                 detail::schedule_task_callback(
-                                    request, PIKA_MOVE(r.op_state.receiver));
+                                    request, p, PIKA_MOVE(r.op_state.receiver));
                                 break;
                             }
                             case handler_mode::continuation:
@@ -163,10 +166,10 @@ namespace pika::mpi::experimental::detail {
                                 // the callback will resume _this_ thread
                                 std::unique_lock l{r.op_state.mutex};
                                 resume_request_callback(request, r.op_state);
-                                if (use_HP_completion(r.op_state.mode_flags))
+                                if (use_priority_boost(r.op_state.mode_flags))
                                 {
                                     threads::detail::thread_data::scoped_thread_priority
-                                        set_restore(execution::thread_priority::high);
+                                        set_restore(p);
                                     r.op_state.cond_var.wait(
                                         l, [&]() { return r.op_state.completed; });
                                 }
