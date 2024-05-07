@@ -16,7 +16,8 @@ include:
     CXXSTD: 20
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} malloc=mimalloc cxxstd=$CXXSTD \
                  ^boost@1.83.0 ^hwloc@2.9.1"
-    CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD"
+    CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_TESTS_HEADERS=OFF \
+                 -DPIKA_WITH_COMPILE_ONLY_TESTS=OFF"
 
 performance_gcc13_spack_compiler_image:
   extends:
