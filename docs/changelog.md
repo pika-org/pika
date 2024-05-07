@@ -6,6 +6,22 @@
 
 # Changelog
 
+## 0.25.0 (2024-05-07)
+
+### New features
+
+- The MPI polling functionality has been significantly refactored and optimized. ([#1102](https://github.com/pika-org/pika/pull/1102))
+- pika's senders and receivers now use the newer sender and receiver concepts when defined by stdexec. ([#1105](https://github.com/pika-org/pika/pull/1105))
+
+### Breaking changes
+
+- The pika logging facilities have been refactored to use [spdlog](https://github.com/gabime/spdlog). The new behaviour is described in the pull request and [documentation](https://pikacpp.org/usage.html#logging) ([#1093](https://github.com/pika-org/pika/pull/1093))
+- The runtime module has been cleaned up with many functionalities being removed or moved to the `detail` namespace. ([#826](https://github.com/pika-org/pika/pull/826), [#1091](https://github.com/pika-org/pika/pull/1091))
+
+### Bugfixes
+
+- Builds with the CMake option `PIKA_WITH_THREAD_DEBUG_INFO` enabled have been fixed. ([#1101](https://github.com/pika-org/pika/pull/1101))
+
 ## 0.24.0 (2024-04-12)
 
 ### New features
