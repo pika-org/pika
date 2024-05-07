@@ -10,7 +10,6 @@
 #include <pika/lock_registration/detail/register_locks.hpp>
 #include <pika/modules/debugging.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/logging.hpp>
 #include <pika/modules/thread_manager.hpp>
 #include <pika/modules/threading.hpp>
 #include <pika/runtime/config_entry.hpp>
@@ -355,7 +354,7 @@ namespace pika::detail {
             if (rts_state >= pika::runtime_state::initialized &&
                 rts_state < pika::runtime_state::stopped)
             {
-                hostname = pika::debug::detail::hostname_print_helper{}.get_hostname();
+                hostname = pika::debug::detail::hostname_print_helper{}.get_hostname_and_rank();
             }
         }
 

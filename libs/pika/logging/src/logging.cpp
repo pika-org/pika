@@ -6,80 +6,50 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
+#include <pika/logging.hpp>
+#include <pika/string_util/from_string.hpp>
 
-#if defined(PIKA_HAVE_LOGGING)
-# include <pika/detail/filesystem.hpp>
-# include <pika/modules/logging.hpp>
-# include <pika/string_util/from_string.hpp>
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
+#include <spdlog/common.h>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
-# include <cstddef>
-# include <cstdint>
-# include <cstdlib>
-# include <string>
-# include <utility>
-# include <vector>
+#include <iostream>
+#include <memory>
+#include <string>
+#include <type_traits>
 
-///////////////////////////////////////////////////////////////////////////////
-namespace pika::util {
-    PIKA_DEFINE_LOG(app, disable_all)
-    PIKA_DEFINE_LOG(app_console, disable_all)
-    PIKA_DEFINE_LOG(app_error, fatal)
-    PIKA_DEFINE_LOG(debuglog, disable_all)
-    PIKA_DEFINE_LOG(debuglog_console, disable_all)
-    PIKA_DEFINE_LOG(debuglog_error, fatal)
-    PIKA_DEFINE_LOG(pika, disable_all)
-    PIKA_DEFINE_LOG(pika_console, disable_all)
-    PIKA_DEFINE_LOG(pika_error, fatal)
-    PIKA_DEFINE_LOG(timing, disable_all)
-    PIKA_DEFINE_LOG(timing_console, disable_all)
+namespace pika::detail {
+    PIKA_DETAIL_DEFINE_SPDLOG(pika, warn)
 
-    namespace detail {
-        pika::util::logging::level get_log_level(std::string const& env, bool allow_always)
-        {
-            try
-            {
-                int env_val = pika::detail::from_string<int>(env);
-                if (env_val < 0) return pika::util::logging::level::disable_all;
-
-                switch (env_val)
-                {
-                case 0:
-                    return allow_always ? pika::util::logging::level::always :
-                                          pika::util::logging::level::disable_all;
-                case 1: return pika::util::logging::level::fatal;
-                case 2: return pika::util::logging::level::error;
-                case 3: return pika::util::logging::level::warning;
-                case 4: return pika::util::logging::level::info;
-                default: break;
-                }
-                return pika::util::logging::level::debug;
-            }
-            catch (pika::detail::bad_lexical_cast const&)
-            {
-                return pika::util::logging::level::disable_all;
-            }
-        }
-    }    // namespace detail
-}    // namespace pika::util
-
-///////////////////////////////////////////////////////////////////////////////
-# include <pika/logging/detail/logger.hpp>
-
-namespace pika::util::logging {
-
-    void logger::turn_cache_off()
+    spdlog::level::level_enum get_spdlog_level(std::string const& env)
     {
-        if (m_is_caching_off) return;    // already turned off
-
-        m_is_caching_off = true;
-
-        // dump messages
-        std::vector<message> msgs;
-        std::swap(m_cache, msgs);
-
-        for (auto& msg : msgs) m_writer(msg);
+        try
+        {
+            return static_cast<spdlog::level::level_enum>(
+                pika::detail::from_string<std::underlying_type_t<spdlog::level::level_enum>>(env));
+        }
+        catch (pika::detail::bad_lexical_cast const&)
+        {
+            fmt::print(std::cerr,
+                "pika given invalid log level: \"{}\". Using default level instead {} (warn). "
+                "Valid values are {} (trace) to {} (off).\n",
+                env, SPDLOG_LEVEL_WARN, SPDLOG_LEVEL_TRACE, SPDLOG_LEVEL_OFF);
+            return spdlog::level::warn;
+        }
     }
 
-}    // namespace pika::util::logging
-
-#endif    // PIKA_HAVE_LOGGING
+    std::shared_ptr<spdlog::sinks::sink> get_spdlog_sink(std::string const& env)
+    {
+        if (env.empty())
+        {
+            fmt::print(
+                std::cerr, "pika given empty log destination. Using default instead (cerr).\n");
+        }
+        else if (env == "cout") { return std::make_shared<spdlog::sinks::stdout_color_sink_mt>(); }
+        else if (env == "cerr") { return std::make_shared<spdlog::sinks::stderr_color_sink_mt>(); }
+        return std::make_shared<spdlog::sinks::basic_file_sink_mt>(env);
+    }
+}    // namespace pika::detail

@@ -8,8 +8,8 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/ini/ini.hpp>
+#include <pika/logging.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/logging.hpp>
 #include <pika/prefix/find_prefix.hpp>
 #include <pika/runtime_configuration/init_ini_data.hpp>
 #include <pika/version.hpp>
@@ -60,7 +60,7 @@ namespace pika::util {
 
             if (handle_ini_file(ini, inipath.string()))
             {
-                LBT_(info).format("loaded configuration (${{{}}}): {}", env_var, inipath.string());
+                PIKA_LOG(info, "loaded configuration (${{{}}}): {}", env_var, inipath.string());
                 return true;
             }
         }
@@ -95,7 +95,7 @@ namespace pika::util {
                 std::string path = *it;
                 path += *jt;
                 bool result2 = handle_ini_file(ini, path + "/pika.ini");
-                if (result2) { LBT_(info).format("loaded configuration: {}/pika.ini", path); }
+                if (result2) { PIKA_LOG(info, "loaded configuration: {}/pika.ini", path); }
                 result = result2 || result;
             }
         }
@@ -104,7 +104,7 @@ namespace pika::util {
         std::string cwd = std::filesystem::current_path().string() + "/.pika.ini";
         {
             bool result2 = handle_ini_file(ini, cwd);
-            if (result2) { LBT_(info).format("loaded configuration: {}", cwd); }
+            if (result2) { PIKA_LOG(info, "loaded configuration: {}", cwd); }
             result = result2 || result;
         }
 
@@ -115,7 +115,7 @@ namespace pika::util {
 #if !defined(PIKA_WINDOWS)    // /etc/pika.ini doesn't make sense for Windows
         {
             bool result2 = handle_ini_file(ini, "/etc/pika.ini");
-            if (result2) { LBT_(info).format("loaded configuration: /etc/pika.ini"); }
+            if (result2) { PIKA_LOG(info, "loaded configuration: /etc/pika.ini"); }
             result = result2 || result;
         }
 #endif
@@ -137,7 +137,7 @@ namespace pika::util {
             else
             {
                 bool result2 = handle_ini_file(ini, pika_ini_file);
-                if (result2) { LBT_(info).format("loaded configuration: {}", pika_ini_file); }
+                if (result2) { PIKA_LOG(info, "loaded configuration: {}", pika_ini_file); }
                 return result || result2;
             }
         }
@@ -180,7 +180,7 @@ namespace pika::util {
                     try
                     {
                         ini.merge(dir->path().string());
-                        LBT_(info).format("loaded configuration: {}", dir->path().string());
+                        PIKA_LOG(info, "loaded configuration: {}", dir->path().string());
                     }
                     catch (pika::exception const& /*e*/)
                     {

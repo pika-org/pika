@@ -10,12 +10,14 @@
 #include <pika/topology/config/defines.hpp>
 
 #include <pika/assert.hpp>
+#include <pika/logging.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/logging.hpp>
 #include <pika/topology/cpu_mask.hpp>
 #include <pika/topology/topology.hpp>
 #include <pika/type_support/unused.hpp>
 #include <pika/util/ios_flags_saver.hpp>
+
+#include <fmt/ostream.h>
 
 #include <cstddef>
 #include <iomanip>
@@ -55,34 +57,34 @@
 namespace pika::threads::detail {
     void write_to_log(char const* valuename, std::size_t value)
     {
-        LTM_(debug).format("topology: {}: {}", valuename, value);    //-V128
+        PIKA_LOG(debug, "topology: {}: {}", valuename, value);    //-V128
     }
 
     void write_to_log_mask(char const* valuename, mask_cref_type value)
     {
-        LTM_(debug).format("topology: {}: {}", valuename, pika::threads::detail::to_string(value));
+        PIKA_LOG(debug, "topology: {}: {}", valuename, pika::threads::detail::to_string(value));
     }
 
     void write_to_log(char const* valuename, std::vector<std::size_t> const& values)
     {
-        LTM_(debug).format("topology: {}s, size: {}", valuename, values.size());
+        PIKA_LOG(debug, "topology: {}s, size: {}", valuename, values.size());
 
         std::size_t i = 0;
         for (std::size_t value : values)
         {
-            LTM_(debug).format("topology: {}({}): {}", valuename, i++, value);
+            PIKA_LOG(debug, "topology: {}({}): {}", valuename, i++, value);
         }
     }
 
     void write_to_log_mask(char const* valuename, std::vector<mask_type> const& values)
     {
-        LTM_(debug).format("topology: {}s, size: {}", valuename, values.size());
+        PIKA_LOG(debug, "topology: {}s, size: {}", valuename, values.size());
 
         std::size_t i = 0;
         for (mask_cref_type value : values)
         {
-            LTM_(debug).format(
-                "topology: {}({}): {}", valuename, i++, pika::threads::detail::to_string(value));
+            PIKA_LOG(debug, "topology: {}({}): {}", valuename, i++,
+                pika::threads::detail::to_string(value));
         }
     }
 

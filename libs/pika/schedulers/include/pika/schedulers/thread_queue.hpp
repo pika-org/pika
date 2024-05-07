@@ -245,7 +245,7 @@ namespace pika::threads::detail {
                 schedule_thread(PIKA_MOVE(thrd));
             }
 
-            if (added) { LTM_(debug).format("add_new: added {} tasks to queues", added); }
+            if (added) { PIKA_LOG(debug, "add_new: added {} tasks to queues", added); }
             return added;
         }
 
@@ -978,7 +978,7 @@ namespace pika::threads::detail {
                 {
                     if (new_tasks_count != 0)
                     {
-                        LTM_(debug).format(
+                        PIKA_LOG(debug,
                             "thread_queue::wait_or_add_new: not enough threads to steal from queue "
                             "{} to queue {}, have {} but need at least {}",
                             fmt::ptr(addfrom), fmt::ptr(this), new_tasks_count,

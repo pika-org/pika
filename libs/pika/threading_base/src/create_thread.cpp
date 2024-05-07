@@ -5,9 +5,9 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
+#include <pika/logging.hpp>
 #include <pika/modules/coroutines.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/logging.hpp>
 #include <pika/threading_base/create_thread.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_data.hpp>
@@ -78,16 +78,11 @@ namespace pika::threads::detail {
         // create the new thread
         scheduler->create_thread(data, &id, ec);
 
-        // NOLINTNEXTLINE(bugprone-branch-clone)
-        LTM_(info)
-            .format("create_thread: pool({}), scheduler({}), thread({}), initial_state({}), "
-                    "run_now({})",
-                *scheduler->get_parent_pool(), *scheduler, id,
-                get_thread_state_name(data.initial_state), data.run_now)
-#ifdef PIKA_HAVE_THREAD_DESCRIPTION
-            .format(", description({})", data.description)
-#endif
-            ;
+        PIKA_LOG(info,
+            "create_thread: pool({}), scheduler({}), thread({}), initial_state({}), run_now({}), "
+            "description({})",
+            *scheduler->get_parent_pool(), *scheduler, id,
+            get_thread_state_name(data.initial_state), data.run_now, data.get_description());
 
         // NOTE: Don't care if the hint is a NUMA hint, just want to wake up a
         // thread.

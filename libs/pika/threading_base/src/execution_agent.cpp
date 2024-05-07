@@ -9,7 +9,6 @@
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/errors/throw_exception.hpp>
 #include <pika/lock_registration/detail/register_locks.hpp>
-#include <pika/modules/logging.hpp>
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/threading_base/thread_num_tss.hpp>
 

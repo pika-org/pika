@@ -9,8 +9,8 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/functional/unique_function.hpp>
+#include <pika/logging.hpp>
 #include <pika/modules/itt_notify.hpp>
-#include <pika/modules/logging.hpp>
 #include <pika/threading_base/external_timer.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/scheduler_state.hpp>
@@ -40,7 +40,7 @@ namespace pika::threads::detail {
         thread_id_ref_type const& thrd, thread_schedule_state const old_state,
         thread_schedule_state const new_state)
     {
-        LTM_(debug).format(
+        PIKA_LOG(debug,
             "scheduling_loop state change: pool({}), scheduler({}), worker_thread({}), thread({}), "
             "description({}), old state({}), new state({})",
             *scheduler.get_parent_pool(), scheduler, num_thread, thrd,
@@ -51,8 +51,9 @@ namespace pika::threads::detail {
     inline void write_state_log_warning(scheduler_base const& scheduler, std::size_t num_thread,
         thread_id_ref_type const& thrd, thread_schedule_state state, char const* info)
     {
-        LTM_(warning).format("scheduling_loop state change failed: pool({}), scheduler({}), worker "
-                             "thread ({}), thread({}), description({}), state({}), {}",
+        PIKA_LOG(warn,
+            "scheduling_loop state change failed: pool({}), scheduler({}), worker "
+            "thread ({}), thread({}), description({}), state({}), {}",
             *scheduler.get_parent_pool(), scheduler, num_thread, thrd,
             get_thread_id_data(thrd)->get_description(), get_thread_state_name(state), info);
     }
@@ -562,8 +563,9 @@ namespace pika::threads::detail {
                 else if (PIKA_UNLIKELY(thread_schedule_state::active == state_val))
                 {
                     auto* thrdptr = get_thread_id_data(thrd);
-                    LTM_(warning).format("pool({}), scheduler({}), worker_thread({}), thread({}), "
-                                         "description({}), rescheduling",
+                    PIKA_LOG(warn,
+                        "pool({}), scheduler({}), worker_thread({}), thread({}), "
+                        "description({}), rescheduling",
                         *scheduler.get_parent_pool(), scheduler, num_thread,
                         thrdptr->get_thread_id(), thrdptr->get_description());
 

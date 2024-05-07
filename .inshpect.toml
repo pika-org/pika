@@ -340,6 +340,7 @@ patterns = [
     { pattern = '\bstd::error_(code|condition|category)\b', include = 'system_error' },
     { pattern = '\bstd::system_error\b', include = 'system_error' },
     { pattern = '\bstd::chrono\b', include = 'chrono' },
+    { pattern = '\bstd::tm\b', include = 'ctime' },
     { pattern = '\bpika::intrusive_ptr\b', include = 'pika/memory/intrusive_ptr.hpp' },
     { pattern = '\bpika::detail::from_string\b', include = 'pika/string_util/from_string.hpp' },
     { pattern = '\bpika::detail::to_string\b', include = 'pika/string_util/to_string.hpp' },
@@ -355,4 +356,5 @@ patterns = [
     { pattern = '\bfmt::format_to\b', include = 'fmt/format.h' },
     { pattern = '\bfmt::ptr\b', include = 'fmt/format.h' },
     { pattern = '\bfmt::print\b', include = 'fmt/printf.h' },
+    { pattern = '\bfmt::streamed\b', include = 'fmt/ostream.h' },
 ]

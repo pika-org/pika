@@ -10,7 +10,7 @@
 #include <pika/config.hpp>
 
 #include <pika/assert.hpp>
-#include <pika/modules/logging.hpp>
+#include <pika/logging.hpp>
 #include <pika/schedulers/deadlock_detection.hpp>
 #include <pika/schedulers/local_queue_scheduler.hpp>
 #include <pika/schedulers/lockfree_queue_backends.hpp>
@@ -104,7 +104,7 @@ namespace pika::threads::detail {
 
 #ifdef PIKA_HAVE_THREAD_DEADLOCK_DETECTION
             // no new work is available, are we deadlocked?
-            if (PIKA_UNLIKELY(get_deadlock_detection_enabled() && LPIKA_ENABLED(error)))
+            if (PIKA_UNLIKELY(get_deadlock_detection_enabled() && PIKA_LOG_ENABLED(err)))
             {
                 bool suspended_only = true;
 
@@ -116,8 +116,8 @@ namespace pika::threads::detail {
 
                 if (PIKA_UNLIKELY(suspended_only))
                 {
-                    LTM_(warning).format(
-                        "queue({}): no new work available, are we deadlocked?", num_thread);
+                    PIKA_LOG(
+                        warn, "queue({}): no new work available, are we deadlocked?", num_thread);
                 }
             }
 #else

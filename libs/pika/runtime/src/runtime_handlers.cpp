@@ -10,8 +10,8 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/debugging/backtrace.hpp>
+#include <pika/logging.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/logging.hpp>
 #include <pika/modules/thread_manager.hpp>
 #include <pika/runtime/config_entry.hpp>
 #include <pika/runtime/custom_exception_info.hpp>
@@ -77,12 +77,13 @@ namespace pika::detail {
         {
             if (back_trace.empty())
             {
-                LERR_(debug).format("suspending thread while at least one lock is being held "
-                                    "(stack backtrace was disabled at compile time)");
+                PIKA_LOG(debug,
+                    "suspending thread while at least one lock is being held "
+                    "(stack backtrace was disabled at compile time)");
             }
             else
             {
-                LERR_(debug).format(
+                PIKA_LOG(debug,
                     "suspending thread while at least one lock is being held, stack backtrace: {}",
                     back_trace);
             }

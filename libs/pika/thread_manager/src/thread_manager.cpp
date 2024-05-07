@@ -11,8 +11,8 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/execution_base/this_thread.hpp>
+#include <pika/logging.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/logging.hpp>
 #include <pika/modules/schedulers.hpp>
 #include <pika/modules/thread_manager.hpp>
 #include <pika/resource_partitioner/detail/partitioner.hpp>
@@ -842,13 +842,13 @@ namespace pika::threads::detail {
             if (sched) sched->set_all_states(runtime_state::running);
         }
 
-        LTM_(info).format("run: running");
+        PIKA_LOG(info, "run: running");
         return true;
     }
 
     void thread_manager::stop(bool blocking)
     {
-        LTM_(info).format("stop: blocking({})", blocking ? "true" : "false");
+        PIKA_LOG(info, "stop: blocking({})", blocking ? "true" : "false");
 
         std::unique_lock<mutex_type> lk(mtx_);
         for (auto& pool_iter : pools_) { pool_iter->stop(lk, blocking); }

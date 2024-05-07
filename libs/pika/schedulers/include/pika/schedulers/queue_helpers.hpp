@@ -11,7 +11,7 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/modules/logging.hpp>
+#include <pika/logging.hpp>
 #include <pika/schedulers/deadlock_detection.hpp>
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/threading_base/thread_queue_init_parameters.hpp>
@@ -66,37 +66,31 @@ namespace pika::threads::detail {
                 {
                     if (running)
                     {
-                        LTM_(warning).format(
+                        PIKA_LOG(warn,
                             "Listing suspended threads while queue ({}) is empty:", num_thread);
                     }
                     else
                     {
-                        LPIKA_CONSOLE_(pika::util::logging::level::warning)
-                            .format("  [TM] Listing suspended threads while queue ({}) is empty:\n",
-                                num_thread);
+                        PIKA_LOG(warn,
+                            "  [TM] Listing suspended threads while queue ({}) is empty:\n",
+                            num_thread);
                     }
                     logged_headline = true;
                 }
 
                 if (running)
                 {
-                    LTM_(warning)
-                        .format("queue({}): {}({}.{:02x})", num_thread,
-                            get_thread_state_name(state), *it, thrd->get_thread_phase())
-# ifdef PIKA_HAVE_THREAD_PARENT_REFERENCE
-                        .format(" P{}", thrd->get_parent_thread_id())
-# endif
-                        .format(": {}: {}", thrd->get_description(), thrd->get_lco_description());
+                    PIKA_LOG(warn, "queue({}): {}({}.{:02x}) P{}: {}: {}", num_thread,
+                        get_thread_state_name(state), *it, thrd->get_thread_phase(),
+                        thrd->get_parent_thread_id(), thrd->get_description(),
+                        thrd->get_lco_description());
                 }
                 else
                 {
-                    LPIKA_CONSOLE_(pika::util::logging::level::warning)
-                        .format("queue({}): {}({}.{:02x})", num_thread,
-                            get_thread_state_name(state), *it, thrd->get_thread_phase())
-# ifdef PIKA_HAVE_THREAD_PARENT_REFERENCE
-                        .format(" P{}", thrd->get_parent_thread_id())
-# endif
-                        .format(": {}: {}", thrd->get_description(), thrd->get_lco_description());
+                    PIKA_LOG(warn, "queue({}): {}({}.{:02x}) P{}: {}: {}", num_thread,
+                        get_thread_state_name(state), *it, thrd->get_thread_phase(),
+                        thrd->get_parent_thread_id(), thrd->get_description(),
+                        thrd->get_lco_description());
                 }
                 thrd->set_marked_state(state);
 

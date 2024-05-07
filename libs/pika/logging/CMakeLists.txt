@@ -7,31 +7,10 @@
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Default location is $PIKA_ROOT/libs/logging/include
-set(logging_headers
-    pika/modules/logging.hpp
-    pika/logging/detail/macros.hpp
-    pika/logging/detail/logger.hpp
-    pika/logging/format/destinations.hpp
-    pika/logging/format/formatters.hpp
-    pika/logging/format/named_write.hpp
-    pika/logging/level.hpp
-    pika/logging/logging.hpp
-    pika/logging/manipulator.hpp
-    pika/logging/message.hpp
-)
+set(logging_headers pika/logging.hpp)
 
 # Default location is $PIKA_ROOT/libs/logging/src
-set(logging_sources
-    level.cpp
-    logging.cpp
-    manipulator.cpp
-    format/named_write.cpp
-    format/destination/defaults_destination.cpp
-    format/destination/file.cpp
-    format/formatter/high_precision_time.cpp
-    format/formatter/defaults_formatter.cpp
-    format/formatter/thread_id.cpp
-)
+set(logging_sources logging.cpp)
 
 include(pika_add_module)
 pika_add_module(

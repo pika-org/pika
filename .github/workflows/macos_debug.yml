@@ -34,7 +34,7 @@ jobs:
           brew pin xcbeautify
           brew upgrade
           brew update
-          brew install boost cmake fmt hwloc ninja
+          brew install boost cmake fmt hwloc ninja spdlog
       - uses: actions/checkout@v4
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2

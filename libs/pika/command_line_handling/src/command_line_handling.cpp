@@ -22,9 +22,9 @@
 #include <pika/version.hpp>
 
 #include <boost/tokenizer.hpp>
-
 #include <fmt/ostream.h>
 #include <fmt/printf.h>
+#include <spdlog/common.h>
 
 #include <algorithm>
 #include <cstddef>
@@ -98,18 +98,6 @@ namespace pika::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////
-    std::string convert_to_log_file(std::string const& dest)
-    {
-        if (dest.empty()) return "cout";
-
-        if (dest == "cout" || dest == "cerr" || dest == "console") return dest;
-#if defined(ANDROID) || defined(__ANDROID__)
-        if (dest == "android_log") return dest;
-#endif
-        // everything else is assumed to be a file name
-        return "file(" + dest + ")";
-    }
-
     std::string handle_process_mask(detail::manage_config& cfgmap,
         pika::program_options::variables_map& vm, bool use_process_mask)
     {
@@ -544,7 +532,7 @@ namespace pika::detail {
                 std::to_string(num_high_priority_queues));
         }
 
-        enable_logging_settings(vm, ini_config);
+        update_logging_settings(vm, ini_config);
 
         if (debug_clp)
         {
@@ -556,52 +544,26 @@ namespace pika::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    void command_line_handling::enable_logging_settings(
+    void command_line_handling::update_logging_settings(
         pika::program_options::variables_map& vm, std::vector<std::string>& ini_config)
     {
-#if defined(PIKA_HAVE_LOGGING)
-        if (vm.count("pika:debug-pika-log"))
+        if (vm.count("pika:log-destination"))
         {
-            ini_config.emplace_back("pika.logging.console.destination=" +
-                detail::convert_to_log_file(vm["pika:debug-pika-log"].as<std::string>()));
-            ini_config.emplace_back("pika.logging.destination=" +
-                detail::convert_to_log_file(vm["pika:debug-pika-log"].as<std::string>()));
-            ini_config.emplace_back("pika.logging.console.level=5");
-            ini_config.emplace_back("pika.logging.level=5");
+            ini_config.emplace_back(
+                "pika.log.destination=" + vm["pika:log-destination"].as<std::string>());
         }
 
-        if (vm.count("pika:debug-timing-log"))
+        if (vm.count("pika:log-level"))
         {
-            ini_config.emplace_back("pika.logging.console.timing.destination=" +
-                detail::convert_to_log_file(vm["pika:debug-timing-log"].as<std::string>()));
-            ini_config.emplace_back("pika.logging.timing.destination=" +
-                detail::convert_to_log_file(vm["pika:debug-timing-log"].as<std::string>()));
-            ini_config.emplace_back("pika.logging.console.timing.level=1");
-            ini_config.emplace_back("pika.logging.timing.level=1");
+            ini_config.emplace_back("pika.log.level=" +
+                std::to_string(
+                    vm["pika:log-level"].as<std::underlying_type_t<spdlog::level::level_enum>>()));
         }
 
-        if (vm.count("pika:debug-app-log"))
+        if (vm.count("pika:log-format"))
         {
-            ini_config.emplace_back("pika.logging.console.application.destination=" +
-                detail::convert_to_log_file(vm["pika:debug-app-log"].as<std::string>()));
-            ini_config.emplace_back("pika.logging.application.destination=" +
-                detail::convert_to_log_file(vm["pika:debug-app-log"].as<std::string>()));
-            ini_config.emplace_back("pika.logging.console.application.level=5");
-            ini_config.emplace_back("pika.logging.application.level=5");
+            ini_config.emplace_back("pika.log.format=" + vm["pika:log-format"].as<std::string>());
         }
-#else
-        if (vm.count("pika:debug-pika-log") || vm.count("pika:debug-timing-log") ||
-            vm.count("pika:debug-app-log"))
-        {
-            // clang-format off
-            throw pika::detail::command_line_error(
-                "Command line option error: can't enable logging while it "
-                "was disabled at configuration time. Please re-configure "
-                "pika using the option -DPIKA_WITH_LOGGING=On.");
-            // clang-format on
-        }
-        PIKA_UNUSED(ini_config);
-#endif
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -814,9 +776,9 @@ namespace pika::detail {
             // append ini options from command line
             std::copy(ini_config_.begin(), ini_config_.end(), std::back_inserter(cfg));
 
-            // enable logging if invoked requested from command line
+            // set logging options from command line options
             std::vector<std::string> ini_config_logging;
-            enable_logging_settings(prevm, ini_config_logging);
+            update_logging_settings(prevm, ini_config_logging);
 
             std::copy(
                 ini_config_logging.begin(), ini_config_logging.end(), std::back_inserter(cfg));

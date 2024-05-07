@@ -16,8 +16,8 @@
 #include <pika/functional/bind.hpp>
 #include <pika/functional/function.hpp>
 #include <pika/itt_notify/thread_name.hpp>
+#include <pika/logging.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/logging.hpp>
 #include <pika/modules/thread_manager.hpp>
 #include <pika/runtime/config_entry.hpp>
 #include <pika/runtime/custom_exception_info.hpp>
@@ -258,8 +258,6 @@ namespace pika::detail {
       , stop_called_(false)
       , stop_done_(false)
     {
-        LPROGRESS_;
-
         // set notification policies only after the object was completely
         // initialized
         runtime::set_notification_policies(runtime::get_notification_policy("worker-thread"));
@@ -284,8 +282,6 @@ namespace pika::detail {
       , stop_done_(false)
     {
         init_global_data();
-
-        LPROGRESS_;
     }
 
     void runtime::set_notification_policies(notification_policy_type&& notifier)
@@ -297,8 +293,6 @@ namespace pika::detail {
 
     void runtime::init()
     {
-        LPROGRESS_;
-
         try
         {
             // now create all thread_manager pools
@@ -345,13 +339,11 @@ namespace pika::detail {
 
     runtime::~runtime()
     {
-        LRT_(debug).format("~runtime(entering)");
+        PIKA_LOG(debug, "~runtime(entering)");
 
         // stop all services
         thread_manager_->stop();
-        LRT_(debug).format("~runtime(finished)");
-
-        LPROGRESS_;
+        PIKA_LOG(debug, "~runtime(finished)");
 
         resource::detail::delete_partitioner();
 
@@ -390,7 +382,7 @@ namespace pika::detail {
 
     void runtime::set_state(pika::runtime_state s)
     {
-        LPROGRESS_ << pika::detail::get_runtime_state_name(s);
+        PIKA_LOG(info, "{}", pika::detail::get_runtime_state_name(s));
         state_.store(s);
     }
 
@@ -979,7 +971,7 @@ namespace pika::detail {
                     get_config(), options, &detail::handle_print_bind);
                 if (result)
                 {
-                    lbt_ << "runtime::run_helper: bootstrap aborted, bailing out";
+                    PIKA_LOG(info, "runtime::run_helper: bootstrap aborted, bailing out");
 
                     set_state(pika::runtime_state::running);
                     finalize();
@@ -993,19 +985,19 @@ namespace pika::detail {
             if (call_startup)
             {
                 call_startup_functions(true);
-                lbt_ << "(3rd stage) run_helper: ran pre-startup functions";
+                PIKA_LOG(info, "(3rd stage) run_helper: ran pre-startup functions");
 
                 call_startup_functions(false);
-                lbt_ << "(4th stage) run_helper: ran startup functions";
+                PIKA_LOG(info, "(4th stage) run_helper: ran startup functions");
             }
 
-            lbt_ << "(4th stage) runtime::run_helper: bootstrap complete";
+            PIKA_LOG(info, "(4th stage) runtime::run_helper: bootstrap complete");
             set_state(pika::runtime_state::running);
 
             // Now, execute the user supplied thread function (pika_main)
             if (!!func)
             {
-                lbt_ << "(last stage) runtime::run_helper: about to invoke pika_main";
+                PIKA_LOG(info, "(last stage) runtime::run_helper: about to invoke pika_main");
 
                 // Change our thread description, as we're about to call pika_main
                 pika::threads::detail::set_thread_description(
@@ -1066,9 +1058,9 @@ namespace pika::detail {
         detail::external_timer::init(nullptr, 0, 1);
 #endif
 
-        LRT_(info).format("cmd_line: {}", get_config().get_cmd_line());
+        PIKA_LOG(info, "cmd_line: {}", get_config().get_cmd_line());
 
-        lbt_ << "(1st stage) runtime::start";
+        PIKA_LOG(info, "(1st stage) runtime::start");
 
         // Register this thread with the runtime system to allow calling
         // certain pika functionality from the main thread. Also calls
@@ -1077,12 +1069,12 @@ namespace pika::detail {
 
         // start the thread manager
         thread_manager_->run();
-        lbt_ << "(1st stage) runtime::start: started thread_manager";
+        PIKA_LOG(info, "(1st stage) runtime::start: started thread_manager");
         // }}}
 
         // {{{ launch main
         // register the given main function with the thread manager
-        lbt_ << "(1st stage) runtime::start: launching run_helper pika thread";
+        PIKA_LOG(info, "(1st stage) runtime::start: launching run_helper pika thread");
 
         pika::threads::detail::thread_init_data data(
             pika::util::detail::bind(&runtime::run_helper, this, func, std::ref(result_), true),
@@ -1131,9 +1123,9 @@ namespace pika::detail {
     void runtime::wait_finalize()
     {
         std::unique_lock<std::mutex> l(mtx_);
-        LRT_(info).format("runtime: about to enter wait state");
+        PIKA_LOG(info, "runtime: about to enter wait state");
         wait_condition_.wait(l, [&] { return stop_done_; });
-        LRT_(info).format("runtime: exiting wait state");
+        PIKA_LOG(info, "runtime: exiting wait state");
     }
 
     void runtime::wait_helper(std::mutex& mtx, std::condition_variable& cond, bool& running)
@@ -1162,7 +1154,7 @@ namespace pika::detail {
 
     int runtime::wait()
     {
-        LRT_(info).format("runtime: about to enter wait state");
+        PIKA_LOG(info, "runtime: about to enter wait state");
 
         // start the wait_helper in a separate thread
         std::mutex mtx;
@@ -1183,7 +1175,7 @@ namespace pika::detail {
 
         thread_manager_->wait();
 
-        LRT_(info).format("runtime: exiting wait state");
+        PIKA_LOG(info, "runtime: exiting wait state");
         return result_;
     }
 
@@ -1191,7 +1183,7 @@ namespace pika::detail {
     // First half of termination process: stop thread manager,
     void runtime::stop(bool blocking)
     {
-        LRT_(warning).format("runtime: about to stop services");
+        PIKA_LOG(info, "runtime: about to stop services");
 
         call_shutdown_functions(true);
 
@@ -1230,7 +1222,7 @@ namespace pika::detail {
             // this disables all logging from the main thread
             deinit_tss_helper("main-thread", 0);
 
-            LRT_(info).format("runtime: stopped all services");
+            PIKA_LOG(info, "runtime: stopped all services");
         }
 
         call_shutdown_functions(false);
@@ -1247,7 +1239,7 @@ namespace pika::detail {
         // this disables all logging from the main thread
         deinit_tss_helper("main-thread", 0);
 
-        LRT_(info).format("runtime: stopped all services");
+        PIKA_LOG(info, "runtime: stopped all services");
 
         std::lock_guard<std::mutex> l(mtx);
         cond.notify_all();    // we're done now
@@ -1255,7 +1247,7 @@ namespace pika::detail {
 
     void runtime::suspend()
     {
-        LRT_(info).format("runtime: about to suspend runtime");
+        PIKA_LOG(info, "runtime: about to suspend runtime");
 
         if (state_.load() == pika::runtime_state::sleeping) { return; }
 
@@ -1272,7 +1264,7 @@ namespace pika::detail {
 
     void runtime::resume()
     {
-        LRT_(info).format("runtime: about to resume runtime");
+        PIKA_LOG(info, "runtime: about to resume runtime");
 
         if (state_.load() == pika::runtime_state::running) { return; }
 

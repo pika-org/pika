@@ -7,8 +7,8 @@
 
 #include <pika/assert.hpp>
 #include <pika/execution_base/this_thread.hpp>
+#include <pika/logging.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/logging.hpp>
 #include <pika/modules/memory.hpp>
 #include <pika/synchronization/detail/condition_variable.hpp>
 #include <pika/synchronization/no_mutex.hpp>
@@ -31,7 +31,7 @@ namespace pika::detail {
     {
         if (!queue_.empty())
         {
-            LERR_(fatal).format("~condition_variable: queue is not empty, aborting threads");
+            PIKA_LOG(err, "~condition_variable: queue is not empty, aborting threads");
 
             pika::no_mutex no_mtx;
             std::unique_lock<pika::no_mutex> lock(no_mtx);
@@ -186,12 +186,11 @@ namespace pika::detail {
 
                 if (PIKA_UNLIKELY(!ctx))
                 {
-                    LERR_(fatal).format(
-                        "condition_variable::abort_all: null thread id encountered");
+                    PIKA_LOG(err, "condition_variable::abort_all: null thread id encountered");
                     continue;
                 }
 
-                LERR_(fatal).format("condition_variable::abort_all: pending thread: {}", ctx);
+                PIKA_LOG(err, "condition_variable::abort_all: pending thread: {}", ctx);
 
                 // unlock while notifying thread as this can suspend
                 ::pika::detail::unlock_guard<std::unique_lock<Mutex>> unlock(lock);

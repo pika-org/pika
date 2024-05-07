@@ -235,7 +235,7 @@ namespace PIKA_DETAIL_NS_DEBUG {
     // ------------------------------------------------------------------
     // helper class for printing time since start
     // ------------------------------------------------------------------
-    char const* hostname_print_helper::get_hostname() const
+    char const* hostname_print_helper::get_hostname_and_rank() const
     {
         static bool initialized = false;
         static char hostname_[20] = {'\0'};
@@ -248,6 +248,20 @@ namespace PIKA_DETAIL_NS_DEBUG {
             std::ostringstream temp;
             temp << '(' << std::to_string(guess_rank()) << ')';
             std::strcat(hostname_, temp.str().c_str());
+        }
+        return hostname_;
+    }
+
+    char const* hostname_print_helper::get_hostname() const
+    {
+        static bool initialized = false;
+        static char hostname_[20] = {'\0'};
+        if (!initialized)
+        {
+            initialized = true;
+#if !defined(__FreeBSD__)
+            gethostname(hostname_, std::size_t(12));
+#endif
         }
         return hostname_;
     }
@@ -278,7 +292,7 @@ namespace PIKA_DETAIL_NS_DEBUG {
 
     std::ostream& operator<<(std::ostream& os, hostname_print_helper const& h)
     {
-        os << str<13>(h.get_hostname()) << " ";
+        os << str<13>(h.get_hostname_and_rank()) << " ";
         return os;
     }
 

@@ -180,12 +180,6 @@ if(${PIKA_WITH_MALLOC} STREQUAL "jemalloc")
   )
 endif()
 
-# Logging configuration
-pika_option(PIKA_WITH_LOGGING BOOL "Build pika with logging enabled (default: ON)." ON ADVANCED)
-if(PIKA_WITH_LOGGING)
-  pika_add_config_define(PIKA_HAVE_LOGGING)
-endif()
-
 # Compiler related build options
 pika_option(
   PIKA_WITH_GCC_VERSION_CHECK BOOL "Don't ignore version reported by gcc (default: ON)" ON ADVANCED
@@ -814,8 +808,7 @@ pika_option(
 )
 
 pika_option(
-  PIKA_WITH_TESTS_DEBUG_LOG BOOL
-  "Turn on debug logs (--pika:debug-pika-log) for tests (default: OFF)" OFF
+  PIKA_WITH_TESTS_DEBUG_LOG BOOL "Turn on debug logs for tests (default: OFF)" OFF
   CATEGORY "Debugging"
   ADVANCED
 )
@@ -1366,6 +1359,7 @@ endif()
 include(pika_setup_threads)
 include(pika_setup_boost)
 include(pika_setup_fmt)
+include(pika_setup_spdlog)
 include(pika_setup_allocator)
 include(pika_setup_hwloc)
 include(pika_setup_mpi)
@@ -1584,6 +1578,7 @@ if(PIKA_WITH_PRECOMPILED_HEADERS)
     config
     filesystem
     include
+    logging
     version
   )
   list(TRANSFORM pika_precompiled_headers_modules PREPEND "<pika/modules/")

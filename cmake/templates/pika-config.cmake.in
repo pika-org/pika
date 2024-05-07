@@ -83,6 +83,7 @@ endif()
 include(pika_setup_boost)
 
 include(pika_setup_fmt)
+include(pika_setup_spdlog)
 
 # Hwloc
 set(PIKA_HWLOC_ROOT "@HWLOC_ROOT@")

@@ -7,7 +7,7 @@
 
 #include <pika/config.hpp>
 
-#include <pika/modules/logging.hpp>
+#include <pika/logging.hpp>
 #include <pika/modules/mpi_base.hpp>
 #include <pika/modules/runtime_configuration.hpp>
 #include <pika/modules/util.hpp>
@@ -39,13 +39,13 @@ namespace pika { namespace util {
                 char* env = std::getenv(tok.c_str());
                 if (env)
                 {
-                    LBT_(debug) << "Found MPI environment variable: " << tok << "="
-                                << std::string(env) << ", enabling MPI support\n";
+                    PIKA_LOG(debug, "Found MPI environment variable: {} = {}, enabling MPI support",
+                        tok, std::string(env));
                     return true;
                 }
             }
 
-            LBT_(info) << "No known MPI environment variable found, disabling MPI support\n";
+            PIKA_LOG(info, "No known MPI environment variable found, disabling MPI support");
             return false;
 #endif
         }

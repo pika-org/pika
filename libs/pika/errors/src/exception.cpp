@@ -11,7 +11,7 @@
 #include <pika/errors/error_code.hpp>
 #include <pika/errors/exception.hpp>
 #include <pika/errors/exception_info.hpp>
-#include <pika/modules/logging.hpp>
+#include <pika/logging.hpp>
 
 #if defined(PIKA_WINDOWS)
 # include <process.h>
@@ -42,24 +42,21 @@ namespace pika {
     {
         PIKA_ASSERT((e >= pika::error::success && e < pika::error::last_error) ||
             (detail::error_code_has_system_error(static_cast<int>(e))));
-        if (e != pika::error::success)
-        {
-            LERR_(error).format("created exception: {}", this->what());
-        }
+        if (e != pika::error::success) { PIKA_LOG(err, "created exception: {}", this->what()); }
     }
 
     /// Construct a pika::exception from a std#system_error.
     exception::exception(std::system_error const& e)
       : std::system_error(e)
     {
-        LERR_(error).format("created exception: {}", this->what());
+        PIKA_LOG(err, "created exception: {}", this->what());
     }
 
     /// Construct a pika::exception from a std#system#error_code.
     exception::exception(std::error_code const& e)
       : std::system_error(e)
     {
-        LERR_(error).format("created exception: {}", this->what());
+        PIKA_LOG(err, "created exception: {}", this->what());
     }
 
     /// Construct a pika::exception from a \a pika::error and an error message.
@@ -78,10 +75,7 @@ namespace pika {
     {
         PIKA_ASSERT((e >= pika::error::success && e < pika::error::last_error) ||
             (detail::error_code_has_system_error(static_cast<int>(e))));
-        if (e != pika::error::success)
-        {
-            LERR_(error).format("created exception: {}", this->what());
-        }
+        if (e != pika::error::success) { PIKA_LOG(err, "created exception: {}", this->what()); }
     }
 
     /// Construct a pika::exception from a \a pika::error and an error message.
@@ -100,10 +94,7 @@ namespace pika {
     {
         PIKA_ASSERT((e >= pika::error::success && e < pika::error::last_error) ||
             (detail::error_code_has_system_error(static_cast<int>(e))));
-        if (e != pika::error::success)
-        {
-            LERR_(error).format("created exception: {}", this->what());
-        }
+        if (e != pika::error::success) { PIKA_LOG(err, "created exception: {}", this->what()); }
     }
 
     /// Destruct a pika::exception

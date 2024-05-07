@@ -189,6 +189,62 @@ Since version ``0.20.0``, the ``pika-bind`` helper script is bundled with pika. 
 and then runs the given command. ``pika-bind`` is a more convenient alternative to manually setting ``PIKA_PROCESS_MASK``
 when pika is used together with a runtime that may reset the process mask of the main thread, like OpenMP.
 
+.. _logging:
+
+Logging
+=======
+
+The pika runtime uses `spdlog <https://github.com/gabime/spdlog>`_ for logging. Warnings and more
+severe messages are logged by default. To change the logging level, set the ``PIKA_LOG_LEVEL``
+environment variable to a value between 0 (trace) and 6 (off) (the values correspond to levels in
+spdlog). The log messages are sent to stderr by default. The destination can be changed by setting
+the ``PIKA_LOG_DESTINATION`` environment variable. Supported values are:
+
+- ``cerr``
+- ``cout``
+- any other value is interpreted as a path to a file
+
+pika will by default print messages in the following format:
+
+.. code-block::
+
+   [2024-04-18 13:45:07.095279283] [pika] [info] [host:machine/----] [pid:2786603] [tid:2786607] [pool:0000/0003/0003] [parent:----/----] [task:0x7fa6a4077cf0/pika_main] [set_thread_state.cpp:205:set_thread_state] set_thread_state: thread(0x7fa6a802c8d0), description(<unknown>), new state(pending), old state(suspended)
+
+The fields are as follows:
+
+- ``[2024-04-18 13:45:07.095279283]``: The timestamp of the message.
+- ``[pika]``: An identifier present in all pika's logs.
+- ``[info]``: The severity level of the message.
+- ``[host:machine/----]``: The hostname and the MPI rank of the process (``----`` if MPI is
+  disabled).
+- ``[pid:2786603]``: The process id as reported by the operating system.
+- ``[tid:2786607]``: The thread id as reported by the operating system.
+- ``[pool:0000/0003/0003]``: The pika thread pool and worker thread ids: the first component is the
+  thread pool id, the second is the global worker thread id (unique across all thread pools), and
+  the third is the local worker thread id (unique only within the current thread pool).
+- ``[parent:----/----]``: The id and description of the parent task that spawned the current task.
+- ``[task:0x7fa6a4077cf0/pika_main]``: The id and description of the current task.
+- ``[set_thread_state.cpp:205/set_thread_state]``: The file, line number, and function where the
+  message was logged.
+- The logged message is printed last.
+
+The pool field is ``[pool:----/----/----]`` when a message is logged from a thread that does not
+belong to the pika runtime. The main thread will only have the global thread id set, e.g.
+``[pool:----/0004/----]``.
+
+Task ids and descriptions are logged as ``----/----`` when there is no current or parent task. Task
+descriptions are only printed when enabled with APEX and Tracy support, or with the CMake option
+``PIKA_WITH_THREAD_DEBUG_INFO``.
+
+The log message format can be changed by setting the environment variable ``PIKA_LOG_FORMAT`` to a
+format string supported by spdlog. The custom fields defined by pika can be accessed with the
+following:
+
+- ``%j``: The hostname and MPI rank.
+- ``%w``: The thread pool and worker thread ids.
+- ``%q``: The parent task id and description.
+- ``%k``: The current task id and description.
+
 .. _pika_stdexec:
 
 Relation to std::execution and stdexec

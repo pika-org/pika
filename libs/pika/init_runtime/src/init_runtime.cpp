@@ -17,8 +17,8 @@
 #include <pika/init_runtime/detail/init_logging.hpp>
 #include <pika/init_runtime/init_runtime.hpp>
 #include <pika/lock_registration/detail/register_locks.hpp>
+#include <pika/logging.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/logging.hpp>
 #include <pika/modules/schedulers.hpp>
 #include <pika/modules/timing.hpp>
 #include <pika/program_options/parsers.hpp>
@@ -135,11 +135,7 @@ namespace pika {
             pika::util::detail::set_spinlock_deadlock_warning_limit(
                 cmdline.rtcfg_.get_spinlock_deadlock_warning_limit());
 #endif
-#if defined(PIKA_HAVE_LOGGING)
-            init_logging_local(cmdline.rtcfg_);
-#else
-            warn_if_logging_requested(cmdline.rtcfg_);
-#endif
+            init_logging(cmdline.rtcfg_);
         }
 
         struct dump_config
@@ -192,8 +188,6 @@ namespace pika {
             pika::program_options::variables_map& vm, startup_function_type startup,
             shutdown_function_type shutdown)
         {
-            LPROGRESS_;
-
             add_startup_functions(rt, vm, PIKA_MOVE(startup), PIKA_MOVE(shutdown));
 
             // Run this runtime instance using the given function f.
@@ -208,8 +202,6 @@ namespace pika {
             pika::program_options::variables_map& vm, startup_function_type startup,
             shutdown_function_type shutdown)
         {
-            LPROGRESS_;
-
             add_startup_functions(rt, vm, PIKA_MOVE(startup), PIKA_MOVE(shutdown));
 
             if (!f.empty())
@@ -329,18 +321,18 @@ namespace pika {
             rp.configure_pools();
 
 #if defined(PIKA_HAVE_HIP)
-            LPROGRESS_ << "run_local: initialize HIP";
+            PIKA_LOG(info, "run_local: initialize HIP");
             whip::check_error(hipInit(0));
 #endif
 
             // Initialize and start the pika runtime.
-            LPROGRESS_ << "run_local: create runtime";
+            PIKA_LOG(info, "run_local: create runtime");
 
             // Build and configure this runtime instance.
             std::unique_ptr<pika::detail::runtime> rt;
 
             // Command line handling should have updated this by now.
-            LPROGRESS_ << "creating local runtime";
+            PIKA_LOG(info, "creating local runtime");
             rt.reset(new pika::detail::runtime(cmdline.rtcfg_, true));
 
             return run_or_start(blocking, PIKA_MOVE(rt), cmdline, PIKA_MOVE(params.startup),

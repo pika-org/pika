@@ -7,7 +7,7 @@
 #pragma once
 
 #include <pika/config/export_definitions.hpp>
-#include <pika/modules/logging.hpp>
+#include <pika/logging.hpp>
 
 #include <cstdlib>
 #include <sstream>
@@ -31,9 +31,9 @@ namespace pika::detail {
             catch (...)
             {
                 val = def;
-                LERR_(error) << "get_env_var_as - invalid" << s << val;
+                PIKA_LOG(err, "get_env_var_as - invalid {} {}", s, val);
             }
-            LDEB_ << "get_env_var_as " << s << val;
+            PIKA_LOG(trace, "get_env_var_as {} {}", s, val);
         }
         return val;
     }
