@@ -750,11 +750,11 @@ namespace pika::mpi::experimental {
                 MPI_Comm_rank(MPI_COMM_WORLD, &detail::mpi_data_.rank_);
                 MPI_Comm_size(MPI_COMM_WORLD, &detail::mpi_data_.size_);
             }
-            else { PIKA_DETAIL_DP(detail::mpi_debug<0>, error(str<>("mpi not initialized"))); }
+            else { PIKA_DETAIL_DP(detail::mpi_debug<1>, error(str<>("mpi not initialized"))); }
         }
 
         PIKA_DETAIL_DP(
-            detail::mpi_debug<0>, debug(str<>("pika::mpi::experimental::init"), detail::mpi_data_));
+            detail::mpi_debug<1>, debug(str<>("pika::mpi::experimental::init"), detail::mpi_data_));
 
         // --------------------------------------
         // install error handler (convert mpi errors into exceptoions
