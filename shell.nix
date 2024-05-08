@@ -5,7 +5,7 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 { pkgs ? import <nixpkgs> { } }:
-pkgs.mkShell.override { stdenv = pkgs.gcc11Stdenv; } {
+pkgs.mkShell.override { stdenv = pkgs.gcc13Stdenv; } {
   buildInputs = with pkgs; [
     boost
     ccache
