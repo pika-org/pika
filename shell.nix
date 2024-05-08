@@ -7,11 +7,11 @@
 { pkgs ? import <nixpkgs> { } }:
 pkgs.mkShell.override { stdenv = pkgs.gcc11Stdenv; } {
   buildInputs = with pkgs; [
-    boost177
+    boost
     ccache
     cmake-format
     cmakeCurses
-    fmt_9
+    fmt
     gperftools
     hwloc
     mpich
