@@ -14,5 +14,5 @@
 namespace pika::cuda::experimental::detail {
     using namespace pika::debug::detail;
     template <int Level>
-    static print_threshold<Level, 1> cud_debug("CUDA-EX");
+    static print_threshold<Level, 0> cud_debug("CUDA-EX");
 }    // namespace pika::cuda::experimental::detail
