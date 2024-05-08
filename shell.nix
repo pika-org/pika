@@ -5,18 +5,19 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 { pkgs ? import <nixpkgs> { } }:
-pkgs.mkShell.override { stdenv = pkgs.gcc11Stdenv; } {
+pkgs.mkShell.override { stdenv = pkgs.gcc13Stdenv; } {
   buildInputs = with pkgs; [
-    boost177
+    boost
     ccache
     cmake-format
     cmakeCurses
-    fmt_9
+    fmt
     gperftools
     hwloc
     mpich
     ninja
     pkg-config
+    spdlog
     doxygen
     python311Packages.breathe
     python311Packages.sphinx
