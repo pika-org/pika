@@ -162,11 +162,11 @@ namespace pika::mpi::experimental {
         {
             switch (get_handler_mode(flags))
             {
-            case handler_mode::yield_while: return "yield_while"; break;
-            case handler_mode::new_task: return "new_task"; break;
-            case handler_mode::continuation: return "continuation"; break;
-            case handler_mode::suspend_resume: return "suspend_resume"; break;
-            case handler_mode::unspecified: return "unspecified"; break;
+            case handler_mode::yield_while: return "yield_while";
+            case handler_mode::new_task: return "new_task";
+            case handler_mode::continuation: return "continuation";
+            case handler_mode::suspend_resume: return "suspend_resume";
+            case handler_mode::unspecified: return "unspecified";
             default: return "invalid";
             }
         }
