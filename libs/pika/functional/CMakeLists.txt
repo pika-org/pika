@@ -27,7 +27,6 @@ set(functional_headers
     pika/functional/one_shot.hpp
     pika/functional/traits/get_function_address.hpp
     pika/functional/traits/get_function_annotation.hpp
-    pika/functional/traits/is_action.hpp
     pika/functional/traits/is_bind_expression.hpp
     pika/functional/unique_function.hpp
 )
@@ -41,7 +40,7 @@ pika_add_module(
   GLOBAL_HEADER_GEN ON
   EXCLUDE_FROM_GLOBAL_HEADER
     "pika/functional/traits/get_function_address.hpp"
-    "pika/functional/traits/get_function_annotation.hpp" "pika/functional/traits/is_action.hpp"
+    "pika/functional/traits/get_function_annotation.hpp"
     "pika/functional/traits/is_bind_expression.hpp"
   SOURCES ${functional_sources}
   HEADERS ${functional_headers}
