@@ -46,7 +46,7 @@ namespace pika::split_detail {
     template <typename Receiver>
     struct error_visitor
     {
-        PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
+        std::decay_t<Receiver>& receiver;
 
         template <typename Error>
         void operator()(Error const& error)
@@ -58,7 +58,7 @@ namespace pika::split_detail {
     template <typename Receiver>
     struct value_visitor
     {
-        PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
+        std::decay_t<Receiver>& receiver;
 
         template <typename Ts>
         void operator()(Ts const& ts)
@@ -227,7 +227,7 @@ namespace pika::split_detail {
             template <typename Receiver>
             struct stopped_error_value_visitor
             {
-                PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
+                std::decay_t<Receiver>& receiver;
 
                 [[noreturn]] void operator()(pika::detail::monostate) const { PIKA_UNREACHABLE; }
 
@@ -238,14 +238,12 @@ namespace pika::split_detail {
 
                 void operator()(error_type const& error)
                 {
-                    pika::detail::visit(
-                        error_visitor<Receiver>{PIKA_FORWARD(Receiver, receiver)}, error);
+                    pika::detail::visit(error_visitor<Receiver>{receiver}, error);
                 }
 
                 void operator()(value_type const& ts)
                 {
-                    pika::detail::visit(
-                        value_visitor<Receiver>{PIKA_FORWARD(Receiver, receiver)}, ts);
+                    pika::detail::visit(value_visitor<Receiver>{receiver}, ts);
                 }
             };
 
@@ -316,8 +314,7 @@ namespace pika::split_detail {
                     // We can trigger the continuation directly.
                     // TODO: Should this preserve the scheduler? It does not
                     // if we call set_* inline.
-                    pika::detail::visit(
-                        stopped_error_value_visitor<Receiver>{PIKA_FORWARD(Receiver, receiver)}, v);
+                    pika::detail::visit(stopped_error_value_visitor<Receiver>{receiver}, v);
                 }
                 else
                 {
@@ -333,9 +330,7 @@ namespace pika::split_detail {
                         // release the lock early and call the continuation
                         // directly again.
                         l.unlock();
-                        pika::detail::visit(
-                            stopped_error_value_visitor<Receiver>{PIKA_FORWARD(Receiver, receiver)},
-                            v);
+                        pika::detail::visit(stopped_error_value_visitor<Receiver>{receiver}, v);
                     }
                     else
                     {
@@ -349,7 +344,7 @@ namespace pika::split_detail {
                         continuations.emplace_back(
                             [this, receiver = PIKA_FORWARD(Receiver, receiver)]() mutable {
                                 pika::detail::visit(
-                                    stopped_error_value_visitor<Receiver>{PIKA_MOVE(receiver)}, v);
+                                    stopped_error_value_visitor<Receiver>{receiver}, v);
                             });
                     }
                 }

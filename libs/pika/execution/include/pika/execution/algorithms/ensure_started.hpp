@@ -45,7 +45,7 @@ namespace pika::ensure_started_detail {
     template <typename Receiver>
     struct error_visitor
     {
-        PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
+        std::decay_t<Receiver>& receiver;
 
         template <typename Error>
         void operator()(Error&& error)
@@ -58,7 +58,7 @@ namespace pika::ensure_started_detail {
     template <typename Receiver>
     struct value_visitor
     {
-        PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
+        std::decay_t<Receiver>& receiver;
 
         void operator()(std::monostate) { PIKA_UNREACHABLE; }
 
@@ -216,7 +216,7 @@ namespace pika::ensure_started_detail {
             template <typename Receiver>
             struct stopped_error_value_visitor
             {
-                PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
+                std::decay_t<Receiver>& receiver;
 
                 template <typename T,
                     typename =
@@ -234,8 +234,7 @@ namespace pika::ensure_started_detail {
 
                 void operator()(error_type&& error)
                 {
-                    pika::detail::visit(
-                        error_visitor<Receiver>{PIKA_MOVE(receiver)}, PIKA_MOVE(error));
+                    pika::detail::visit(error_visitor<Receiver>{receiver}, PIKA_MOVE(error));
                 }
 
                 template <typename T,
@@ -244,8 +243,7 @@ namespace pika::ensure_started_detail {
                         std::is_same_v<std::decay_t<T>, value_type>>>
                 void operator()(T&& t)
                 {
-                    pika::detail::visit(
-                        value_visitor<Receiver>{PIKA_MOVE(receiver)}, PIKA_FORWARD(T, t));
+                    pika::detail::visit(value_visitor<Receiver>{receiver}, PIKA_FORWARD(T, t));
                 }
             };
 
@@ -319,8 +317,7 @@ namespace pika::ensure_started_detail {
                     // TODO: Should this preserve the scheduler? It does not
                     // if we call set_* inline.
                     pika::detail::visit(
-                        stopped_error_value_visitor<Receiver>{PIKA_FORWARD(Receiver, receiver)},
-                        PIKA_MOVE(v));
+                        stopped_error_value_visitor<Receiver>{receiver}, PIKA_MOVE(v));
                 }
                 else
                 {
@@ -336,8 +333,7 @@ namespace pika::ensure_started_detail {
                         // directly again.
                         l.unlock();
                         pika::detail::visit(
-                            stopped_error_value_visitor<Receiver>{PIKA_FORWARD(Receiver, receiver)},
-                            PIKA_MOVE(v));
+                            stopped_error_value_visitor<Receiver>{receiver}, PIKA_MOVE(v));
                     }
                     else
                     {
@@ -348,8 +344,7 @@ namespace pika::ensure_started_detail {
                         continuation.emplace(
                             [this, receiver = PIKA_FORWARD(Receiver, receiver)]() mutable {
                                 pika::detail::visit(
-                                    stopped_error_value_visitor<Receiver>{PIKA_MOVE(receiver)},
-                                    PIKA_MOVE(v));
+                                    stopped_error_value_visitor<Receiver>{receiver}, PIKA_MOVE(v));
                             });
                     }
                 }
