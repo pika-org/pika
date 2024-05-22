@@ -152,9 +152,8 @@ namespace pika::mpi::experimental::detail {
                                     std::make_exception_ptr(mpi_exception(status)));
                                 return;
                             }
-
-                            PIKA_DETAIL_DP(mpi_tran<7>, debug(str<>("poll_request"), ptr(request)));
-                            if (0 && poll_request(request))
+                            // early poll just in case the request completed immmediately
+                            if (poll_request(request))
                             {
 #ifdef PIKA_HAVE_APEX
                                 apex::scoped_timer apex_invoke("pika::mpi::trigger");

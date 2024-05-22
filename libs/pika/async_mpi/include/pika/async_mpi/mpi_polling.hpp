@@ -177,13 +177,12 @@ namespace pika::mpi::experimental {
         /// utility : needed by static checks when debugging
         PIKA_EXPORT int comm_world_size();
 
+        /// mpix extensions in openmpi to support mpi continuations
         typedef int(MPIX_Continue_cb_function)(int rc, void* cb_data);
         PIKA_EXPORT void register_mpix_continuation(
             MPI_Request*, MPIX_Continue_cb_function*, void*);
-
+        /// called after each completed continuation to restart/reenable continuation support
         PIKA_EXPORT void restart_mpix();
-        PIKA_EXPORT void complete_mpix();
-
     }    // namespace detail
 
     /// return the total number of mpi requests currently in queues

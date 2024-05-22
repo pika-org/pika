@@ -111,16 +111,16 @@ namespace pika::mpi::experimental::detail {
                 // receive the MPI Request and set a callback to be
                 // triggered when the mpi request completes
                 friend constexpr void tag_invoke(
-                    ex::set_value_t, trigger_mpi_receiver r, MPI_Request req) noexcept
+                    ex::set_value_t, trigger_mpi_receiver r, MPI_Request request) noexcept
                 {
                     // early exit check
-                    if (req == MPI_REQUEST_NULL)
+                    if (request == MPI_REQUEST_NULL)
                     {
                         ex::set_value(PIKA_MOVE(r.op_state.receiver));
                         return;
                     }
 
-                    r.op_state.request = req;
+                    r.op_state.request = request;
 
                     // which polling/testing mode are we using
                     handler_method mode = get_handler_method(r.op_state.mode_flags);
@@ -193,7 +193,7 @@ namespace pika::mpi::experimental::detail {
                             }
                             case handler_method::mpix_continuation:
                             {
-                                PIKA_DETAIL_DP(mpi_tran<0>,
+                                PIKA_DETAIL_DP(mpi_tran<1>,
                                     debug(str<>("MPIX"), "register_mpix_continuation",
                                         ptr(r.op_state.request), ptr(r.op_state.request)));
 
@@ -202,14 +202,14 @@ namespace pika::mpi::experimental::detail {
                                 detail::register_mpix_continuation(
                                     &r.op_state.request, func, &r.op_state);
                                 {
-                                    PIKA_DETAIL_DP(mpi_tran<0>,
+                                    PIKA_DETAIL_DP(mpi_tran<1>,
                                         debug(str<>("MPIX"), "waiting", ptr(r.op_state.request)));
                                     std::unique_lock l{r.op_state.mutex};
                                     r.op_state.cond_var.wait(
                                         l, [&]() { return r.op_state.completed; });
                                 }
 
-                                PIKA_DETAIL_DP(mpi_tran<0>,
+                                PIKA_DETAIL_DP(mpi_tran<1>,
                                     debug(str<>("MPIX"), "woken", ptr(r.op_state.request)));
 
                                 // call set_value/set_error depending on mpi return status
@@ -244,10 +244,7 @@ namespace pika::mpi::experimental::detail {
               , status{MPI_SUCCESS}
               , op_state(ex::connect(PIKA_FORWARD(Sender_, sender), trigger_mpi_receiver{*this}))
             {
-                PIKA_DETAIL_DP(mpi_tran<0>, debug(str<>("create"), request));
             }
-
-            ~operation_state() { PIKA_DETAIL_DP(mpi_tran<0>, debug(str<>("destroy"), request)); }
 
             friend constexpr auto tag_invoke(ex::start_t, operation_state& os) noexcept
             {
