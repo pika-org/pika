@@ -42,7 +42,7 @@ namespace pika::split_tuple_detail {
     template <typename Receiver>
     struct error_visitor
     {
-        PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
+        std::decay_t<Receiver>& receiver;
 
         template <typename Error>
         void operator()(Error const& error)
@@ -210,8 +210,7 @@ namespace pika::split_tuple_detail {
 
             void operator()(error_type const& error)
             {
-                pika::detail::visit(
-                    error_visitor<Receiver>{PIKA_FORWARD(Receiver, receiver)}, error);
+                pika::detail::visit(error_visitor<Receiver>{receiver}, error);
             }
 
             void operator()(value_type& t)
@@ -325,12 +324,11 @@ namespace pika::split_tuple_detail {
                     // to the vector and the vector is not threadsafe in
                     // itself. The continuation will be called later
                     // when set_error/set_stopped/set_value is called.
-                    continuations[Index] = [this,
-                                               receiver =
-                                                   PIKA_FORWARD(Receiver, receiver)]() mutable {
-                        pika::detail::visit(
-                            stopped_error_value_visitor<Index, Receiver>{PIKA_MOVE(receiver)}, v);
-                    };
+                    continuations[Index] =
+                        [this, receiver = PIKA_FORWARD(Receiver, receiver)]() mutable {
+                            pika::detail::visit(
+                                stopped_error_value_visitor<Index, Receiver>{receiver}, v);
+                        };
                 }
             }
         }
