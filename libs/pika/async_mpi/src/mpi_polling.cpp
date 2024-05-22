@@ -727,7 +727,7 @@ namespace pika::mpi::experimental {
     // initialize the pika::mpi background request handler
     // All ranks should call this function,
     // but only one thread per rank needs to do so
-    void init(bool init_mpi, bool init_errorhandler, pool_create_mode /*pool_mode*/)
+    void init(bool init_mpi, bool init_errorhandler)
     {
         // don't allow polling code to run until init has completed
         std::lock_guard<detail::mutex_type> lk(detail::mpi_data_.polling_vector_mtx_);

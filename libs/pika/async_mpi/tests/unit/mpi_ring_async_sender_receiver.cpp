@@ -318,12 +318,12 @@ int call_mpi_irecv(void* buf, int count, MPI_Datatype datatype, int source, int 
 // this is called on a pika thread after the runtime starts up
 int pika_main(pika::program_options::variables_map& vm)
 {
-    // setup polling on default pool, enable exceptions and init mpi internals
+    // Do not initialize mpi (we do that ourselves), do install an error handler
     mpix::init(false, true);
+    // Setup mpi polling on default pool, enable exceptions and init mpi internals
     mpix::register_polling();
     //
     std::int32_t rank, size;
-    //
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 

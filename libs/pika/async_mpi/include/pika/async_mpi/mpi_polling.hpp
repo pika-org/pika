@@ -204,8 +204,7 @@ namespace pika::mpi::experimental {
 
     // initialize the pika::mpi background request handler
     // All ranks should call this function (but only one thread per rank needs to do so)
-    PIKA_EXPORT void init(bool init_mpi = false, bool init_errorhandler = false,
-        pool_create_mode pool_mode = pool_create_mode::pika_decides);
+    PIKA_EXPORT void init(bool init_mpi = false, bool init_errorhandler = false);
 
     // -----------------------------------------------------------------
     PIKA_EXPORT void finalize(std::string const& pool_name = "");
