@@ -715,7 +715,7 @@ namespace pika::mpi::experimental {
     {
         auto mode = get_completion_mode();
         // enable pika polling on the mpi pool if the handling mode needs it
-        if (detail::get_handler_mode(mode) != detail::handler_mode::yield_while)
+        if (detail::get_handler_method(mode) != detail::handler_method::yield_while)
         {
             PIKA_DETAIL_DP(detail::mpi_debug<1>,
                 debug(str<>("enabling polling"), get_pool_name(), detail::mode_string(mode)));

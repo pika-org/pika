@@ -119,7 +119,7 @@ namespace pika::mpi::experimental::detail {
                     }
 
                     // which polling/testing mode are we using
-                    handler_mode mode = get_handler_mode(r.op_state.mode_flags);
+                    handler_method mode = get_handler_method(r.op_state.mode_flags);
                     execution::thread_priority p = use_priority_boost(r.op_state.mode_flags) ?
                         execution::thread_priority::boost :
                         execution::thread_priority::normal;
@@ -133,7 +133,7 @@ namespace pika::mpi::experimental::detail {
                         [&]() mutable {
                             switch (mode)
                             {
-                            case handler_mode::yield_while:
+                            case handler_method::yield_while:
                             {
                                 pika::util::yield_while(
                                     [request]() { return !detail::poll_request(request); });
@@ -144,7 +144,7 @@ namespace pika::mpi::experimental::detail {
                                 ex::set_value(PIKA_MOVE(r.op_state.receiver));
                                 break;
                             }
-                            case handler_mode::new_task:
+                            case handler_method::new_task:
                             {
                                 // The callback will call set_value/set_error inside a new task
                                 // and execution will continue on that thread
@@ -152,14 +152,14 @@ namespace pika::mpi::experimental::detail {
                                     request, p, PIKA_MOVE(r.op_state.receiver));
                                 break;
                             }
-                            case handler_mode::continuation:
+                            case handler_method::continuation:
                             {
                                 // The callback will call set_value/set_error
                                 // execution will continue on the callback thread
                                 detail::set_value_request_callback_void<>(request, r.op_state);
                                 break;
                             }
-                            case handler_mode::suspend_resume:
+                            case handler_method::suspend_resume:
                             {
                                 // suspend is invalid except on a pika thread
                                 PIKA_ASSERT(pika::threads::detail::get_self_id());
