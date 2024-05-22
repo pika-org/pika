@@ -35,7 +35,7 @@ namespace pika::mpi::experimental::detail {
     // -----------------------------------------------------------------
     // by convention the title is 7 chars (for alignment)
     template <int Level>
-    inline constexpr debug::detail::print_threshold<Level, 0> mpi_tran("MPITRAN");
+    inline constexpr debug::detail::print_threshold<Level, 9> mpi_tran("MPITRAN");
 
     namespace ex = pika::execution::experimental;
 
@@ -155,6 +155,23 @@ namespace pika::mpi::experimental::detail {
                 op_state.cond_var.notify_one();
             },
             request);
+    }
+
+    // -----------------------------------------------------------------
+    /// typedef int (MPIX_Continue_cb_function)(int rc, void *cb_data);
+    template <typename OperationState>
+    static int mpix_callback([[maybe_unused]] int rc, void* cb_data)
+    {
+        PIKA_DETAIL_DP(mpi_tran<1>, debug(str<>("MPIX"), "callback triggered"));
+        auto& op_state = *static_cast<OperationState*>(cb_data);
+        // wake up the suspended thread
+        {
+            std::lock_guard lk(op_state.mutex);
+            op_state.completed = true;
+            detail::complete_mpix();
+        }
+        op_state.cond_var.notify_one();
+        return MPI_SUCCESS;
     }
 
     // -----------------------------------------------------------------

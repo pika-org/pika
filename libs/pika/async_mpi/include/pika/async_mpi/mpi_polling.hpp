@@ -112,17 +112,18 @@ namespace pika::mpi::experimental {
             ///
             /// * unspecified : reserved for development purposes or for customization by an
             /// application using pika
-            yield_while = 0b0000'0000,       // 0x00, 00 ... 15
-            suspend_resume = 0b0001'0000,    // 0x10, 16 ... 31
-            new_task = 0b0010'0000,          // 0x20, 32 ... 47
-            continuation = 0b0011'0000,      // 0x30, 48 ... 63
-            unspecified = 0b0100'0000,       // 0x40, 64 ...
+            yield_while = 0b0000'0000,          // 0x00, 00 ... 15
+            suspend_resume = 0b0001'0000,       // 0x10, 16 ... 31
+            new_task = 0b0010'0000,             // 0x20, 32 ... 47
+            continuation = 0b0011'0000,         // 0x30, 48 ... 63
+            mpix_continuation = 0b0100'0000,    // 0x40, 64 ... 79
+            unspecified = 0b0101'0000,          // 0x50, 80 ...
 
             /// Default flags are to invoke inline, but transfer completion using a dedicated pool
             default_mode = use_pool | request_inline | high_priority | new_task,
         };
 
-        /// 2 bits define continuation mode
+        /// 3 bits define continuation mode
         inline handler_method get_handler_method(std::underlying_type_t<handler_method> flags)
         {
             return static_cast<handler_method>(
@@ -167,6 +168,7 @@ namespace pika::mpi::experimental {
             case handler_method::new_task: return "new_task";
             case handler_method::continuation: return "continuation";
             case handler_method::suspend_resume: return "suspend_resume";
+            case handler_method::mpix_continuation: return "mpi_continuation";
             case handler_method::unspecified: return "unspecified";
             default: return "invalid";
             }
@@ -174,6 +176,13 @@ namespace pika::mpi::experimental {
 
         /// utility : needed by static checks when debugging
         PIKA_EXPORT int comm_world_size();
+
+        typedef int(MPIX_Continue_cb_function)(int rc, void* cb_data);
+        PIKA_EXPORT void register_mpix_continuation(
+            MPI_Request*, MPIX_Continue_cb_function*, void*);
+
+        PIKA_EXPORT void restart_mpix();
+        PIKA_EXPORT void complete_mpix();
 
     }    // namespace detail
 
