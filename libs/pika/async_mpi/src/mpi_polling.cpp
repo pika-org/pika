@@ -335,33 +335,42 @@ namespace pika::mpi::experimental {
 #ifdef OMPI_HAVE_MPI_EXT_CONTINUE
         pika::threads::detail::polling_status try_mpix_polling(bool singlethreaded)
         {
+            PIKA_DETAIL_DP(mpi_debug<5>,
+                debug(str<>("mpix check"), ptr(detail::mpi_data_.mpix_continuations_request)));
+
             using pika::threads::detail::polling_status;
-            if (detail::mpi_data_.mpix_continuations_request != MPI_REQUEST_NULL)
+            if (!detail::mpi_data_.mpix_ready_.load(std::memory_order_relaxed))
+                return pika::threads::detail::polling_status::idle;
+            //
+            int flag = 0;
+            if (!singlethreaded)
             {
                 std::unique_lock lk(detail::mpi_data_.mpix_lock, std::try_to_lock);
                 if (!lk.owns_lock()) { return polling_status::busy; }
-
-                int flag = 0;
                 MPIX_RESULT_CHECK(MPI_Test(
                     &detail::mpi_data_.mpix_continuations_request, &flag, MPI_STATUS_IGNORE));
-
-                // for debugging, create a timer : debug info every N seconds
-                static auto mpix_deb =
-                    mpi_debug<1>.make_timer(2, debug::detail::str<>("MPIX"), "poll");
-                PIKA_DETAIL_DP(mpi_debug<1>,
-                    timed(
-                        mpix_deb, ptr(detail::mpi_data_.mpix_continuations_request), "Flag", flag));
-
                 if (flag != 0)
                 {
                     restart_mpix();
                     return pika::threads::detail::polling_status::busy;
                 }
-                else
-                    return pika::threads::detail::polling_status::idle;
             }
-            //
-            throw mpi_exception(0, "Invalid use of mpix polling with NULL request");
+            else
+            {
+                // there should not be a lock here, but the mpix stuff fails without it
+                MPIX_RESULT_CHECK(MPI_Test(
+                    &detail::mpi_data_.mpix_continuations_request, &flag, MPI_STATUS_IGNORE));
+                if (flag != 0)
+                {
+                    restart_mpix();
+                    return pika::threads::detail::polling_status::busy;
+                }
+            }
+            // for debugging, create a timer : debug info every N seconds
+            static auto mpix_deb = mpi_debug<1>.make_timer(2, debug::detail::str<>("MPIX"), "poll");
+            PIKA_DETAIL_DP(mpi_debug<1>,
+                timed(mpix_deb, ptr(detail::mpi_data_.mpix_continuations_request), "Flag", flag));
+
             return polling_status::idle;
         }
 #endif
@@ -855,13 +864,17 @@ namespace pika::mpi::experimental {
         auto mode = get_completion_mode();
         if (detail::get_handler_method(mode) == detail::handler_method::mpix_continuation)
         {
+            // the lock prevents multithreaded polling from accessing the request before it is ready
             std::unique_lock lk(detail::mpi_data_.mpix_lock);
-            MPIX_RESULT_CHECK(MPIX_Continue_init(
-                0, MPI_UNDEFINED, MPI_INFO_NULL, &detail::mpi_data_.mpix_continuations_request));
-            detail::restart_mpix();
+            // the atomic flag prevents lockless version accessing the request before it is ready
+            MPIX_RESULT_CHECK(MPIX_Continue_init(MPIX_CONT_POLL_ONLY, MPI_UNDEFINED, MPI_INFO_NULL,
+                &detail::mpi_data_.mpix_continuations_request));
+
             PIKA_DETAIL_DP(detail::mpi_debug<0>,
                 debug(str<>("MPIX"), "Enable", "Pool", get_pool_name(), "Mode",
                     detail::mode_string(mode), ptr(detail::mpi_data_.mpix_continuations_request)));
+            // it is now safe to use the mpix request, {memory_order = not a critical code path}
+            detail::mpi_data_.mpix_ready_.store(true, std::memory_order_seq_cst);
         }
 #endif
     }
