@@ -15,6 +15,10 @@ set(init_runtime_headers
 
 set(init_runtime_sources init_logging.cpp init_runtime.cpp scoped_finalize.cpp)
 
+if(PIKA_WITH_MPI)
+  list(APPEND init_runtime_additional_module_dependencies pika_mpi_base)
+endif()
+
 include(pika_add_module)
 pika_add_module(
   pika init_runtime
@@ -33,5 +37,6 @@ pika_add_module(
     pika_schedulers
     pika_threading_base
     pika_timing
+    ${init_runtime_additional_module_dependencies}
   CMAKE_SUBDIRS examples tests
 )

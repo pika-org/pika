@@ -15,6 +15,10 @@
 #include <pika/string_util/from_string.hpp>
 #include <pika/threading_base/thread_data.hpp>
 
+#if defined(PIKA_HAVE_MPI)
+# include <pika/mpi_base/mpi.hpp>
+#endif
+
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <spdlog/pattern_formatter.h>
@@ -105,13 +109,25 @@ namespace pika::detail {
         {
             static PIKA_DETAIL_NS_DEBUG::hostname_print_helper helper{};
             static std::string_view hostname_str = helper.get_hostname();
-            dest.append(hostname_str);
 
-            if (int rank = helper.guess_rank(); rank != -1)
-            {
-                dest.append(hostname_str);
-                dest.append(fmt::format("/{}", rank));
-            }
+            if (!hostname_str.empty()) { dest.append(hostname_str); }
+            else { dest.append(std::string_view("----")); }
+
+            static int rank = [&] {
+            // First try to get the rank through MPI
+#if defined(PIKA_HAVE_MPI)
+                int mpi_initialized = 0;
+                if (MPI_Initialized(&mpi_initialized) == MPI_SUCCESS && mpi_initialized)
+                {
+                    int rank = 0;
+                    if (MPI_Comm_rank(MPI_COMM_WORLD, &rank) == MPI_SUCCESS) { return rank; }
+                }
+#endif
+
+                // Otherwise guess based on environment variables
+                return helper.guess_rank();
+            }();
+            if (rank != -1) { dest.append(fmt::format("/{}", rank)); }
             else { dest.append(std::string_view("/----")); }
         }
 
