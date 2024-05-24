@@ -139,8 +139,10 @@ namespace pika::mpi::experimental::detail {
                             {
                             case handler_method::yield_while:
                             {
+                                // yield/while is invalid on a non pika thread
+                                PIKA_ASSERT(pika::threads::detail::get_self_id());
                                 pika::util::yield_while(
-                                    [&r]() { return !detail::poll_request(r.op_state.request); });
+                                    [&r]() { return !poll_request(r.op_state.request); });
 #ifdef PIKA_HAVE_APEX
                                 apex::scoped_timer apex_invoke("pika::mpi::trigger");
 #endif
@@ -148,29 +150,13 @@ namespace pika::mpi::experimental::detail {
                                 ex::set_value(PIKA_MOVE(r.op_state.receiver));
                                 break;
                             }
-                            case handler_method::new_task:
-                            {
-                                // The callback will call set_value/set_error inside a new task
-                                // and execution will continue on that thread
-                                detail::schedule_task_callback(
-                                    r.op_state.request, p, PIKA_MOVE(r.op_state.receiver));
-                                break;
-                            }
-                            case handler_method::continuation:
-                            {
-                                // The callback will call set_value/set_error
-                                // execution will continue on the callback thread
-                                detail::set_value_request_callback_void<>(
-                                    r.op_state.request, r.op_state);
-                                break;
-                            }
                             case handler_method::suspend_resume:
                             {
-                                // suspend is invalid except on a pika thread
+                                // suspend is invalid on a non pika thread
                                 PIKA_ASSERT(pika::threads::detail::get_self_id());
                                 // the callback will resume _this_ thread
                                 std::unique_lock l{r.op_state.mutex};
-                                resume_request_callback(r.op_state.request, r.op_state);
+                                add_suspend_resume_request_callback(r.op_state.request, r.op_state);
                                 if (use_priority_boost(r.op_state.mode_flags))
                                 {
                                     threads::detail::thread_data::scoped_thread_priority
@@ -191,16 +177,29 @@ namespace pika::mpi::experimental::detail {
                                     r.op_state.status, PIKA_MOVE(r.op_state.receiver));
                                 break;
                             }
+                            case handler_method::new_task:
+                            {
+                                // The callback will call set_value/set_error inside a new task
+                                // and execution will continue on that thread
+                                add_new_task_request_callback(
+                                    r.op_state.request, p, PIKA_MOVE(r.op_state.receiver));
+                                break;
+                            }
+                            case handler_method::continuation:
+                            {
+                                // The callback will call set_value/set_error
+                                // execution will continue on the callback thread
+                                add_continuation_request_callback<>(r.op_state.request, r.op_state);
+                                break;
+                            }
                             case handler_method::mpix_continuation:
                             {
                                 PIKA_DETAIL_DP(mpi_tran<1>,
                                     debug(str<>("MPIX"), "register_mpix_continuation",
                                         ptr(r.op_state.request), ptr(r.op_state.request)));
 
-                                MPIX_Continue_cb_function* func =
-                                    &detail::mpix_callback<operation_state>;
-                                detail::register_mpix_continuation(
-                                    &r.op_state.request, func, &r.op_state);
+                                MPIX_Continue_cb_function* func = &mpix_callback<operation_state>;
+                                register_mpix_continuation(&r.op_state.request, func, &r.op_state);
                                 {
                                     PIKA_DETAIL_DP(mpi_tran<1>,
                                         debug(str<>("MPIX"), "waiting", ptr(r.op_state.request)));

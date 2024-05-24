@@ -133,30 +133,22 @@ namespace pika::mpi::experimental {
         /// 1 bit defines high priority boost mode for pool transfers
         inline bool use_priority_boost(int mode)
         {
-            return static_cast<bool>(
-                (mode & pika::detail::to_underlying(handler_method::high_priority)) ==
-                pika::detail::to_underlying(handler_method::high_priority));
+            return (mode & pika::detail::to_underlying(handler_method::high_priority)) != 0;
         }
         /// 1 bit defines inline or transfer completion
         inline bool use_inline_completion(int mode)
         {
-            return static_cast<bool>(
-                (mode & pika::detail::to_underlying(handler_method::completion_inline)) ==
-                pika::detail::to_underlying(handler_method::completion_inline));
+            return (mode & pika::detail::to_underlying(handler_method::completion_inline)) != 0;
         }
         /// 1 bit defines inline or transfer mpi invocation
         inline bool use_inline_request(int mode)
         {
-            return static_cast<bool>(
-                (mode & pika::detail::to_underlying(handler_method::request_inline)) ==
-                pika::detail::to_underlying(handler_method::request_inline));
+            return (mode & pika::detail::to_underlying(handler_method::request_inline)) != 0;
         }
         /// 1 bit defines whether we use a pool or not
         inline bool use_pool(int mode)
         {
-            return static_cast<bool>(
-                (mode & pika::detail::to_underlying(handler_method::use_pool)) ==
-                pika::detail::to_underlying(handler_method::use_pool));
+            return (mode & pika::detail::to_underlying(handler_method::use_pool)) != 0;
         }
 
         /// used for debugging to show mode type in messages, should be removed
@@ -168,7 +160,7 @@ namespace pika::mpi::experimental {
             case handler_method::new_task: return "new_task";
             case handler_method::continuation: return "continuation";
             case handler_method::suspend_resume: return "suspend_resume";
-            case handler_method::mpix_continuation: return "mpi_continuation";
+            case handler_method::mpix_continuation: return "mpix_continuation";
             case handler_method::unspecified: return "unspecified";
             default: return "invalid";
             }
