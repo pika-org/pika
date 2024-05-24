@@ -76,7 +76,7 @@ namespace pika::detail {
     {
         static void format_id(spdlog::memory_buf_t& dest, std::size_t i)
         {
-            if (i != std::size_t(-1)) { dest.append(fmt::format("{:04x}", i)); }
+            if (i != std::size_t(-1)) { dest.append(fmt::format("{:04}", i)); }
             else { dest.append(std::string_view("----")); }
         }
 
