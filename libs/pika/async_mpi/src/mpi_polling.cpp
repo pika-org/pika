@@ -658,9 +658,12 @@ namespace pika::mpi::experimental {
 #if defined(PIKA_DEBUG)
             ++get_register_polling_count();
 #endif
-            PIKA_DETAIL_DP(detail::mpi_debug<0>,
-                debug(str<>("polling_enabled"), "pool =", pool.get_pool_name(), ", mode",
-                    mode_string(get_completion_mode()), get_completion_mode()));
+            if (detail::mpi_data_.rank_ == 0)
+            {
+                PIKA_DETAIL_DP(detail::mpi_debug<1>,
+                    debug(str<>("polling_enabled"), "pool =", pool.get_pool_name(), ", mode",
+                        mode_string(get_completion_mode()), get_completion_mode()));
+            }
             auto* sched = pool.get_scheduler();
             sched->set_mpi_polling_functions(&detail::poll, &get_work_count);
         }
@@ -870,7 +873,7 @@ namespace pika::mpi::experimental {
             MPIX_RESULT_CHECK(MPIX_Continue_init(MPIX_CONT_POLL_ONLY, MPI_UNDEFINED, MPI_INFO_NULL,
                 &detail::mpi_data_.mpix_continuations_request));
 
-            PIKA_DETAIL_DP(detail::mpi_debug<0>,
+            PIKA_DETAIL_DP(detail::mpi_debug<1>,
                 debug(str<>("MPIX"), "Enable", "Pool", get_pool_name(), "Mode",
                     detail::mode_string(mode), ptr(detail::mpi_data_.mpix_continuations_request)));
             // it is now safe to use the mpix request, {memory_order = not a critical code path}
