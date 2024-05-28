@@ -163,16 +163,18 @@ namespace pika::mpi::experimental::detail {
     // handler_method::mpix_continuation
     /// typedef int (MPIX_Continue_cb_function)(int rc, void *cb_data);
     template <typename OperationState>
-    static int mpix_callback([[maybe_unused]] int rc, void* cb_data)
+    int mpix_callback([[maybe_unused]] int rc, void* cb_data)
     {
         PIKA_DETAIL_DP(mpi_tran<1>, debug(str<>("MPIX"), "callback triggered"));
         auto& op_state = *static_cast<OperationState*>(cb_data);
         // wake up the suspended thread
         {
             std::lock_guard lk(op_state.mutex);
+            op_state.status = rc;
             op_state.completed = true;
         }
         op_state.cond_var.notify_one();
+        // tell mpix that we handled it ok, error is passed into set_error in mpi_trigger
         return MPI_SUCCESS;
     }
 

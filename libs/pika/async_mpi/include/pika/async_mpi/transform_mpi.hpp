@@ -81,10 +81,12 @@ namespace pika::mpi::experimental {
                 if (!inline_com)
                 {
                     if (request == MPI_REQUEST_NULL)
+                    {
                         return transfer_just(default_pool_scheduler(p));
+                    }
                     return transfer_just(default_pool_scheduler(p), request) | trigger_mpi(mode);
                 }
-                if (request == MPI_REQUEST_NULL) return just();
+                if (request == MPI_REQUEST_NULL) { return just(); }
                 return just(request) | trigger_mpi(mode);
             };
 

@@ -85,7 +85,7 @@ namespace pika::mpi::experimental::detail {
             bool completed{false};
             pika::detail::spinlock mutex;
             pika::condition_variable cond_var;
-            // MPIX
+            // MPI_EXT_CONTINUE
             MPI_Request request{MPI_REQUEST_NULL};
 
             // -----------------------------------------------------------------
@@ -195,26 +195,27 @@ namespace pika::mpi::experimental::detail {
                             case handler_method::mpix_continuation:
                             {
                                 PIKA_DETAIL_DP(mpi_tran<1>,
-                                    debug(str<>("MPIX"), "register_mpix_continuation",
+                                    debug(str<>("MPI_EXT_CONTINUE"), "register_mpix_continuation",
                                         ptr(r.op_state.request), ptr(r.op_state.request)));
 
                                 MPIX_Continue_cb_function* func = &mpix_callback<operation_state>;
                                 register_mpix_continuation(&r.op_state.request, func, &r.op_state);
                                 {
                                     PIKA_DETAIL_DP(mpi_tran<1>,
-                                        debug(str<>("MPIX"), "waiting", ptr(r.op_state.request)));
+                                        debug(str<>("MPI_EXT_CONTINUE"), "waiting",
+                                            ptr(r.op_state.request)));
                                     std::unique_lock l{r.op_state.mutex};
                                     r.op_state.cond_var.wait(
                                         l, [&]() { return r.op_state.completed; });
                                 }
 
                                 PIKA_DETAIL_DP(mpi_tran<1>,
-                                    debug(str<>("MPIX"), "woken", ptr(r.op_state.request)));
+                                    debug(str<>("MPI_EXT_CONTINUE"), "woken",
+                                        ptr(r.op_state.request)));
 
                                 // call set_value/set_error depending on mpi return status
                                 set_value_error_helper(
-                                    /*r.op_state.status*/ MPI_SUCCESS,
-                                    PIKA_MOVE(r.op_state.receiver));
+                                    r.op_state.status, PIKA_MOVE(r.op_state.receiver));
                                 break;
                             }
                             default: PIKA_UNREACHABLE;

@@ -44,13 +44,11 @@
 #  pragma warning "MPIX Continuations not found in <mpi-ext.h>"
 # endif
 
-# define MPIX_RESULT_CHECK(func)                                                                   \
-     {                                                                                             \
-         int code = func;                                                                          \
-         if (code != MPI_SUCCESS)                                                                  \
-             throw pika::mpi::experimental::mpi_exception(code, "MPIX problem");                   \
-     }    //else { std::cout << "MPIX Success" << std::endl; }
-
+static inline void PIKA_MPI_EXT_CONTINUATION_RESULT_CHECK(int code)
+{
+    if (code != MPI_SUCCESS)
+        throw pika::mpi::experimental::mpi_exception(code, "MPI_EXT_CONTINUATION problem");
+}
 #endif
 
 namespace pika::mpi::experimental {
@@ -347,7 +345,7 @@ namespace pika::mpi::experimental {
             {
                 std::unique_lock lk(detail::mpi_data_.mpix_lock, std::try_to_lock);
                 if (!lk.owns_lock()) { return polling_status::busy; }
-                MPIX_RESULT_CHECK(MPI_Test(
+                PIKA_MPI_EXT_CONTINUATION_RESULT_CHECK(MPI_Test(
                     &detail::mpi_data_.mpix_continuations_request, &flag, MPI_STATUS_IGNORE));
                 if (flag != 0)
                 {
@@ -358,7 +356,7 @@ namespace pika::mpi::experimental {
             else
             {
                 // there should not be a lock here, but the mpix stuff fails without it
-                MPIX_RESULT_CHECK(MPI_Test(
+                PIKA_MPI_EXT_CONTINUATION_RESULT_CHECK(MPI_Test(
                     &detail::mpi_data_.mpix_continuations_request, &flag, MPI_STATUS_IGNORE));
                 if (flag != 0)
                 {
@@ -637,8 +635,7 @@ namespace pika::mpi::experimental {
         {
             // get mpi completion mode settings
             auto mode = get_completion_mode();
-            bool singlethreaded =
-                use_pool(mode) && !use_inline_request(mode) /*&& use_inline_completion(mode)*/;
+            bool singlethreaded = use_pool(mode) && !use_inline_request(mode);
 
 #ifdef OMPI_HAVE_MPI_EXT_CONTINUE
             // if mpi continuations are available, poll here and bypass main routine
@@ -697,10 +694,9 @@ namespace pika::mpi::experimental {
         void register_mpix_continuation(
             MPI_Request* request, MPIX_Continue_cb_function* cb_func, void* op_state)
         {
-            // @TODO we don't strictly need defer complete flag, but for debugging ...
             PIKA_DETAIL_DP(
                 mpi_debug<2>, debug(str<>("MPIX"), "register continuation", ptr(request)));
-            MPIX_RESULT_CHECK(MPIX_Continue(request, cb_func, op_state,
+            PIKA_MPI_EXT_CONTINUATION_RESULT_CHECK(MPIX_Continue(request, cb_func, op_state,
                 /*MPIX_CONT_DEFER_COMPLETE | */ MPIX_CONT_INVOKE_FAILED, MPI_STATUSES_IGNORE,
                 detail::mpi_data_.mpix_continuations_request));
         }
@@ -711,7 +707,8 @@ namespace pika::mpi::experimental {
                 PIKA_DETAIL_DP(mpi_debug<2>,
                     debug(str<>("MPIX"), "MPI_Start",
                         ptr(detail::mpi_data_.mpix_continuations_request)));
-                MPIX_RESULT_CHECK(MPI_Start(&detail::mpi_data_.mpix_continuations_request));
+                PIKA_MPI_EXT_CONTINUATION_RESULT_CHECK(
+                    MPI_Start(&detail::mpi_data_.mpix_continuations_request));
             }
         }
 #else
@@ -870,8 +867,8 @@ namespace pika::mpi::experimental {
             // the lock prevents multithreaded polling from accessing the request before it is ready
             std::unique_lock lk(detail::mpi_data_.mpix_lock);
             // the atomic flag prevents lockless version accessing the request before it is ready
-            MPIX_RESULT_CHECK(MPIX_Continue_init(MPIX_CONT_POLL_ONLY, MPI_UNDEFINED, MPI_INFO_NULL,
-                &detail::mpi_data_.mpix_continuations_request));
+            PIKA_MPI_EXT_CONTINUATION_RESULT_CHECK(MPIX_Continue_init(MPIX_CONT_POLL_ONLY,
+                MPI_UNDEFINED, MPI_INFO_NULL, &detail::mpi_data_.mpix_continuations_request));
 
             PIKA_DETAIL_DP(detail::mpi_debug<1>,
                 debug(str<>("MPIX"), "Enable", "Pool", get_pool_name(), "Mode",
