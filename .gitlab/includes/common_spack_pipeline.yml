@@ -8,13 +8,15 @@ include:
   - local: '.gitlab/includes/common_pipeline.yml'
 
 variables:
-  SPACK_COMMIT: 7f3dd38ccc106142846f29f76b928fa58e0e3164
+  SPACK_COMMIT: develop-2024-05-26
+  SPACK_BUILDCACHE: $SPACK_COMMIT
+  USE_SPACK_BUILDCACHE: true
 
 .base_spack_image:
   timeout: 2 hours
   before_script:
     - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
-    - export CONFIG_TAG=`echo $DOCKERFILE_SHA-$BASE_IMAGE-$SPACK_COMMIT | sha256sum - | head -c 16`
+    - export CONFIG_TAG=`echo $DOCKERFILE_SHA-$BASE_IMAGE-$SPACK_BUILDCACHE-$SPACK_COMMIT-$USE_SPACK_BUILDCACHE | sha256sum - | head -c 16`
     - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/$ARCH/pika-spack-base:$CONFIG_TAG
     - arch_upper=`echo $ARCH | tr '[:lower:]' '[:upper:]'`
     - echo -e "CONFIG_TAG=$CONFIG_TAG" >> base.env
@@ -22,7 +24,7 @@ variables:
   variables:
     BASE_IMAGE: docker.io/ubuntu:22.04
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_base
-    DOCKER_BUILD_ARGS: '["BASE_IMAGE","SPACK_COMMIT"]'
+    DOCKER_BUILD_ARGS: '["BASE_IMAGE","SPACK_BUILDCACHE","SPACK_COMMIT","USE_SPACK_BUILDCACHE"]'
   artifacts:
     reports:
       dotenv: base.env
