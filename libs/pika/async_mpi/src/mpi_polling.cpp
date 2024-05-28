@@ -40,10 +40,9 @@
 
 #if __has_include(<mpi-ext.h>)
 # include <mpi-ext.h>
-# ifndef OMPI_HAVE_MPI_EXT_CONTINUE
-#  pragma warning "MPIX Continuations not found in <mpi-ext.h>"
-# endif
+#endif
 
+#ifdef OMPI_HAVE_MPI_EXT_CONTINUE
 static inline void PIKA_MPI_EXT_CONTINUATION_RESULT_CHECK(int code)
 {
     if (code != MPI_SUCCESS)
