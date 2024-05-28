@@ -859,9 +859,14 @@ namespace pika::mpi::experimental {
         }
 
         // --------------------------------------
-        // if we are using experimental mpix_continuations, setup internals
-#ifdef OMPI_HAVE_MPI_EXT_CONTINUE
         auto mode = get_completion_mode();
+        if (mode >= pika::detail::to_underlying(detail::handler_method::unspecified))
+        {
+            PIKA_THROW_EXCEPTION(
+                pika::error::invalid_status, "Bad completion flags", "invalid completion mode");
+        }
+#ifdef OMPI_HAVE_MPI_EXT_CONTINUE
+        // if we are using experimental mpix_continuations, setup internals
         if (detail::get_handler_method(mode) == detail::handler_method::mpix_continuation)
         {
             // the lock prevents multithreaded polling from accessing the request before it is ready
@@ -875,6 +880,13 @@ namespace pika::mpi::experimental {
                     detail::mode_string(mode), ptr(detail::mpi_data_.mpix_continuations_request)));
             // it is now safe to use the mpix request, {memory_order = not a critical code path}
             detail::mpi_data_.mpix_ready_.store(true, std::memory_order_seq_cst);
+        }
+#else
+        // if selected, but unsupported, throw an error
+        if (detail::get_handler_method(mode) == detail::handler_method::mpix_continuation)
+        {
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "MPI_EXT_CONTINUE",
+                "mpi_ext_continuation not supported, invalid handler method");
         }
 #endif
     }
