@@ -43,11 +43,13 @@
 #endif
 
 #ifdef OMPI_HAVE_MPI_EXT_CONTINUE
-static inline void PIKA_MPI_EXT_CONTINUATION_RESULT_CHECK(int code)
-{
-    if (code != MPI_SUCCESS)
-        throw pika::mpi::experimental::mpi_exception(code, "MPI_EXT_CONTINUATION problem");
-}
+namespace pika::mpi::experimental::detail {
+    static inline void mpi_ext_continuation_result_check(int code)
+    {
+        if (code != MPI_SUCCESS)
+            throw pika::mpi::experimental::mpi_exception(code, "MPI_EXT_CONTINUATION problem");
+    }
+}    // namespace pika::mpi::experimental::detail
 #endif
 
 namespace pika::mpi::experimental {
@@ -344,7 +346,7 @@ namespace pika::mpi::experimental {
             {
                 std::unique_lock lk(detail::mpi_data_.mpix_lock, std::try_to_lock);
                 if (!lk.owns_lock()) { return polling_status::busy; }
-                PIKA_MPI_EXT_CONTINUATION_RESULT_CHECK(MPI_Test(
+                mpi_ext_continuation_result_check(MPI_Test(
                     &detail::mpi_data_.mpix_continuations_request, &flag, MPI_STATUS_IGNORE));
                 if (flag != 0)
                 {
@@ -355,7 +357,7 @@ namespace pika::mpi::experimental {
             else
             {
                 // there should not be a lock here, but the mpix stuff fails without it
-                PIKA_MPI_EXT_CONTINUATION_RESULT_CHECK(MPI_Test(
+                mpi_ext_continuation_result_check(MPI_Test(
                     &detail::mpi_data_.mpix_continuations_request, &flag, MPI_STATUS_IGNORE));
                 if (flag != 0)
                 {
@@ -695,7 +697,7 @@ namespace pika::mpi::experimental {
         {
             PIKA_DETAIL_DP(
                 mpi_debug<2>, debug(str<>("MPIX"), "register continuation", ptr(request)));
-            PIKA_MPI_EXT_CONTINUATION_RESULT_CHECK(MPIX_Continue(request, cb_func, op_state,
+            mpi_ext_continuation_result_check(MPIX_Continue(request, cb_func, op_state,
                 /*MPIX_CONT_DEFER_COMPLETE | */ MPIX_CONT_INVOKE_FAILED, MPI_STATUSES_IGNORE,
                 detail::mpi_data_.mpix_continuations_request));
         }
@@ -706,7 +708,7 @@ namespace pika::mpi::experimental {
                 PIKA_DETAIL_DP(mpi_debug<2>,
                     debug(str<>("MPIX"), "MPI_Start",
                         ptr(detail::mpi_data_.mpix_continuations_request)));
-                PIKA_MPI_EXT_CONTINUATION_RESULT_CHECK(
+                mpi_ext_continuation_result_check(
                     MPI_Start(&detail::mpi_data_.mpix_continuations_request));
             }
         }
@@ -871,7 +873,7 @@ namespace pika::mpi::experimental {
             // the lock prevents multithreaded polling from accessing the request before it is ready
             std::unique_lock lk(detail::mpi_data_.mpix_lock);
             // the atomic flag prevents lockless version accessing the request before it is ready
-            PIKA_MPI_EXT_CONTINUATION_RESULT_CHECK(MPIX_Continue_init(MPIX_CONT_POLL_ONLY,
+            detail::mpi_ext_continuation_result_check(MPIX_Continue_init(MPIX_CONT_POLL_ONLY,
                 MPI_UNDEFINED, MPI_INFO_NULL, &detail::mpi_data_.mpix_continuations_request));
 
             PIKA_DETAIL_DP(detail::mpi_debug<1>,
