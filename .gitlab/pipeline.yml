@@ -7,5 +7,5 @@
 include:
   - local: '.gitlab/pipelines_on_push.yml'
   - local: '.gitlab/pipelines_on_merge.yml'
-    rules:
-      - if: $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^gh-readonly-queue/ || $CI_COMMIT_BRANCH =~ /^release/
+#    rules:
+#      - if: $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^gh-readonly-queue/ || $CI_COMMIT_BRANCH =~ /^release/
