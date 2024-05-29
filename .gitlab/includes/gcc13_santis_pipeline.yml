@@ -38,3 +38,18 @@ gcc13_santis_build:
     - .variables_gcc13_santis_config
     - .build_template_santis
   allow_failure: true
+
+.gcc13_santis_test_commmon:
+  needs: [gcc13_santis_build]
+  extends:
+    - .variables_gcc13_santis_config
+    - .test_common_santis
+    - .test_template
+
+gcc13_santis_test_release:
+  extends: [.gcc13_santis_test_commmon]
+  image: $PERSIST_IMAGE_NAME_RELEASE
+
+gcc13_santis_test_debug:
+  extends: [.gcc13_santis_test_commmon]
+  image: $PERSIST_IMAGE_NAME_DEBUG
