@@ -48,10 +48,10 @@ To get started using pika see the `documentation <https://pikacpp.org>`_.
      :target: https://github.com/pika-org/pika/actions/workflows/macos_debug.yml
      :alt: macOS CI (Debug)
 
-.. |codacy| image:: https://api.codacy.com/project/badge/Grade/e03f57f1c4cd40e7b514e552a723c125
-     :target: https://www.codacy.com/gh/pika-org/pika
+.. |codacy| image:: https://app.codacy.com/project/badge/Grade/e03f57f1c4cd40e7b514e552a723c125
+     :target: https://app.codacy.com/gh/pika-org/pika
      :alt: Codacy
 
-.. |codacy_coverage| image:: https://api.codacy.com/project/badge/Coverage/e03f57f1c4cd40e7b514e552a723c125
-     :target: https://www.codacy.com/gh/pika-org/pika
+.. |codacy_coverage| image:: https://app.codacy.com/project/badge/Coverage/e03f57f1c4cd40e7b514e552a723c125
+     :target: https://app.codacy.com/gh/pika-org/pika
      :alt: Codacy coverage
