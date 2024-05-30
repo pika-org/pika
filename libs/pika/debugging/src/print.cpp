@@ -273,12 +273,13 @@ namespace PIKA_DETAIL_NS_DEBUG {
 #else
         char** env = environ;
 #endif
-        std::vector<std::string> env_strings{"_RANK=", "_NODEID="};
-        for (char** current = env; *current; current++)
+        std::vector<std::string_view> env_strings{"_PROCID=", "_WORLD_RANK=", "_RANK="};
+
+        for (auto s : env_strings)
         {
-            auto e = std::string(*current);
-            for (auto s : env_strings)
+            for (char** current = env; *current; current++)
             {
+                auto e = std::string(*current);
                 auto pos = e.find(s);
                 if (pos != std::string::npos)
                 {
