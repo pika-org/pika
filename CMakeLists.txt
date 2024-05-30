@@ -293,8 +293,6 @@ pika_option(
   CATEGORY "Build Targets"
 )
 
-pika_option(PIKA_WITH_TOOLS BOOL "Build tools (default: OFF)" OFF ADVANCED CATEGORY "Build Targets")
-
 set(PIKA_FULL_RPATH_DEFAULT ON)
 if(APPLE OR WIN32)
   set(PIKA_FULL_RPATH_DEFAULT OFF)
@@ -1394,10 +1392,8 @@ add_subdirectory(libs)
 # ##################################################################################################
 # Target specification
 # ##################################################################################################
-if(PIKA_WITH_TOOLS OR PIKA_WITH_TESTS_BENCHMARKS)
-  pika_add_pseudo_target(tools)
-  add_subdirectory(tools)
-endif()
+pika_add_pseudo_target(tools)
+add_subdirectory(tools)
 
 # ##################################################################################################
 # Tests
