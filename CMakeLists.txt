@@ -1576,15 +1576,6 @@ if(PIKA_WITH_VIM_YCM)
 endif()
 
 # ##################################################################################################
-# Add rpm packaging
-
-pika_option(PIKA_WITH_RPM BOOL "Enable or disable the generation of rpm packages" OFF ADVANCED)
-
-if(PIKA_WITH_RPM)
-  add_subdirectory(cmake/packaging/rpm)
-endif()
-
-# ##################################################################################################
 # print overall configuration summary
 include(pika_print_summary)
 pika_create_configuration_summary("Configuration summary:\n--" "pika")
