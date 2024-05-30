@@ -187,7 +187,7 @@ namespace pika::split_tuple_detail {
         template <std::size_t Index, typename Receiver>
         struct stopped_error_value_visitor
         {
-            PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
+            std::decay_t<Receiver>& receiver;
 
             [[noreturn]] void operator()(pika::detail::monostate) const { PIKA_UNREACHABLE; }
 
@@ -293,9 +293,7 @@ namespace pika::split_tuple_detail {
                 // set_error/set_stopped/set_value has been called and
                 // values/errors have been stored into the shared state.
                 // We can trigger the continuation directly.
-                pika::detail::visit(
-                    stopped_error_value_visitor<Index, Receiver>{PIKA_FORWARD(Receiver, receiver)},
-                    v);
+                pika::detail::visit(stopped_error_value_visitor<Index, Receiver>{receiver}, v);
             }
             else
             {
@@ -311,9 +309,7 @@ namespace pika::split_tuple_detail {
                     // release the lock early and call the continuation
                     // directly again.
                     l.unlock();
-                    pika::detail::visit(stopped_error_value_visitor<Index, Receiver>{PIKA_FORWARD(
-                                            Receiver, receiver)},
-                        v);
+                    pika::detail::visit(stopped_error_value_visitor<Index, Receiver>{receiver}, v);
                 }
                 else
                 {
