@@ -11,6 +11,8 @@
 #include <pika/threading_base/thread_pool_base.hpp>
 #include <pika/threading_base/thread_queue_init_parameters.hpp>
 
+#include <fmt/format.h>
+
 #include <cstddef>
 #include <memory>
 #include <string>
@@ -71,4 +73,19 @@ namespace pika::resource {
         abp_priority_lifo = 6,
         shared_priority = 7,
     };
+
+    namespace detail {
+        PIKA_EXPORT char const* get_scheduling_policy_name(scheduling_policy p) noexcept;
+    }
 }    // namespace pika::resource
+
+template <>
+struct fmt::formatter<pika::resource::scheduling_policy> : fmt::formatter<char const*>
+{
+    template <typename FormatContext>
+    auto format(pika::resource::scheduling_policy p, FormatContext& ctx) const
+    {
+        return fmt::formatter<char const*>::format(
+            pika::resource::detail::get_scheduling_policy_name(p), ctx);
+    }
+};

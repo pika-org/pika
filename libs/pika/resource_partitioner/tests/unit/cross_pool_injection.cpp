@@ -21,6 +21,9 @@
 #include <pika/testing.hpp>
 #include <pika/thread.hpp>
 
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
+
 #include <atomic>
 #include <chrono>
 #include <cstddef>
@@ -245,6 +248,8 @@ void init_resource_partitioner_handler(pika::resource::partitioner& rp,
 
 void test_scheduler(int argc, char* argv[], pika::resource::scheduling_policy scheduler)
 {
+    fmt::print(std::cerr, "Testing scheduler: {}\n", scheduler);
+
     pika::init_params init_args;
     init_args.rp_callback =
         pika::util::detail::bind_back(init_resource_partitioner_handler, scheduler);

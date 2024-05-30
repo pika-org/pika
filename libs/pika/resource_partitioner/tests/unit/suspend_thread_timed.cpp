@@ -17,6 +17,9 @@
 #include <pika/thread.hpp>
 #include <pika/threading_base/scheduler_mode.hpp>
 
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
+
 #include <chrono>
 #include <cstddef>
 #include <cstdlib>
@@ -103,6 +106,8 @@ int pika_main(int argc, char* argv[])
 
 void test_scheduler(int argc, char* argv[], pika::resource::scheduling_policy scheduler)
 {
+    fmt::print(std::cerr, "Testing scheduler: {}\n", scheduler);
+
     pika::init_params init_args;
 
     using ::pika::threads::scheduler_mode;

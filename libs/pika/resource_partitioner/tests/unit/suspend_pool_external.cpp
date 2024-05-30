@@ -16,8 +16,12 @@
 #include <pika/threading_base/thread_helpers.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
 
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
+
 #include <atomic>
 #include <cstddef>
+#include <iostream>
 #include <memory>
 #include <string>
 #include <thread>
@@ -28,6 +32,8 @@ namespace ex = pika::execution::experimental;
 
 void test_scheduler(int argc, char* argv[], pika::resource::scheduling_policy scheduler)
 {
+    fmt::print(std::cerr, "Testing scheduler: {}\n", scheduler);
+
     pika::init_params init_args;
 
     init_args.cfg = {"pika.os_threads=" +
