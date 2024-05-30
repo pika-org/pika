@@ -1235,16 +1235,11 @@ else()
     # extension to rdtsc. The difference is that rdtscp is a serializing instruction.
     pika_cpuid("rdtsc" PIKA_WITH_RDTSC DEFINITIONS PIKA_HAVE_RDTSC)
 
-    # One can not assume if RDTSCP is available on the hardware of the build infrastructure, that it
-    # will be available on all potential target hardware, see Issue  #3575
-    if(NOT ${PIKA_WITH_BUILD_BINARY_PACKAGE})
-
-      # XeonPhi's do not support RDTSCP
-      if(NOT ("${PIKA_PLATFORM_UC}" STREQUAL "XEONPHI"))
-        pika_cpuid("rdtscp" PIKA_WITH_RDTSCP DEFINITIONS PIKA_HAVE_RDTSCP)
-      endif()
-
+    # XeonPhi's do not support RDTSCP
+    if(NOT ("${PIKA_PLATFORM_UC}" STREQUAL "XEONPHI"))
+      pika_cpuid("rdtscp" PIKA_WITH_RDTSCP DEFINITIONS PIKA_HAVE_RDTSCP)
     endif()
+
     if(PIKA_WITH_RDTSC OR PIKA_WITH_RDTSCP)
       set(__has_timestamp_support ON)
     endif()
