@@ -51,4 +51,4 @@ RUN CTEST_XML=$PWD/ctest.xml; \
             --output-on-failure \
             --no-compress-output \
             -R tests \
-            -no-tests=error"
+            --no-tests=error"
