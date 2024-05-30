@@ -509,17 +509,6 @@ if(PIKA_WITH_THREAD_BACKTRACE_ON_SUSPENSION)
 endif()
 
 pika_option(
-  PIKA_WITH_THREAD_TARGET_ADDRESS BOOL
-  "Enable storing target address in thread for NUMA awareness (default: OFF)" OFF
-  CATEGORY "Thread Manager"
-  ADVANCED
-)
-
-if(PIKA_WITH_THREAD_TARGET_ADDRESS)
-  pika_add_config_define(PIKA_HAVE_THREAD_TARGET_ADDRESS)
-endif()
-
-pika_option(
   PIKA_WITH_THREAD_QUEUE_WAITTIME BOOL
   "Enable collecting queue wait times for threads (default: OFF)" OFF
   CATEGORY "Thread Manager"
