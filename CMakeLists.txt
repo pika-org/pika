@@ -181,10 +181,6 @@ if(${PIKA_WITH_MALLOC} STREQUAL "jemalloc")
 endif()
 
 # Compiler related build options
-pika_option(
-  PIKA_WITH_GCC_VERSION_CHECK BOOL "Don't ignore version reported by gcc (default: ON)" ON ADVANCED
-)
-
 pika_option(PIKA_WITH_COMPILER_WARNINGS BOOL "Enable compiler warnings (default: ON)" ON ADVANCED)
 
 pika_option(
@@ -905,54 +901,6 @@ pika_option(
   PIKA_WITH_CHECK_MODULE_DEPENDENCIES BOOL
   "Verify that no modules are cross-referenced from a different module category \
   (default: OFF)" OFF ADVANCED
-)
-
-# Check for compiler compatibility
-#
-
-# Check if the selected compiler versions are supposed to work with our codebase
-if(CMAKE_COMPILER_IS_GNUCXX AND PIKA_WITH_GCC_VERSION_CHECK)
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
-    pika_error(
-      "GCC 9.0 or higher is required. Specify PIKA_WITH_GCC_VERSION_CHECK=OFF to ignore this error."
-    )
-  endif()
-endif()
-
-if(MSVC)
-  if(MSVC_VERSION LESS 1900)
-    pika_error("MSVC x64 2015 or higher is required.")
-  elseif(NOT CMAKE_CL_64)
-    pika_warn(
-      "MSVC (32Bit) will compile but will fail running larger applications because of limitations in the Windows OS."
-    )
-  endif()
-endif()
-
-# Setup platform specific compiler options and check for compatible compilers
-if("${PIKA_PLATFORM_UC}" STREQUAL "NATIVE")
-  pika_info("Compiling with the native toolset")
-elseif("${PIKA_PLATFORM_UC}" STREQUAL "ANDROID")
-  pika_info("Compiling for Android devices")
-elseif("${PIKA_PLATFORM_UC}" STREQUAL "XEONPHI")
-  pika_info("Compiling for Intel Xeon Phi devices")
-  if(NOT ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
-    pika_error("pika on the MIC can only be compiled with the Intel compiler.")
-  endif()
-elseif("${PIKA_PLATFORM_UC}" STREQUAL "BLUEGENEQ")
-  if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    pika_error("pika on the BG/Q can only be compiled with bgclang")
-  endif()
-  pika_info("Compiling for BlueGene/Q")
-endif()
-
-# ##################################################################################################
-# Some special handling of the compilation is need on build infrastructure for generating packages
-# for target architecture, see issue #3575
-
-pika_option(
-  PIKA_WITH_BUILD_BINARY_PACKAGE BOOL
-  "Build pika on the build infrastructure on any LINUX distribution (default: OFF)." OFF ADVANCED
 )
 
 # ##################################################################################################
