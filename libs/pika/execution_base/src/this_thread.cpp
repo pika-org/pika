@@ -13,6 +13,7 @@
 #include <pika/execution_base/context_base.hpp>
 #include <pika/execution_base/detail/spinlock_deadlock_detection.hpp>
 #include <pika/execution_base/this_thread.hpp>
+#include <pika/logging.hpp>
 #include <pika/timing/steady_clock.hpp>
 #include <pika/type_support/unused.hpp>
 
@@ -259,11 +260,11 @@ namespace pika::execution {
                     pika::util::detail::get_spinlock_deadlock_warning_limit();
                 if (k >= deadlock_warning_limit && k % deadlock_warning_limit == 0)
                 {
-                    fmt::print(std::cerr,
+                    PIKA_LOG(warn,
                         "desc: {}. {} already spun {} times "
                         "(pika.spinlock_deadlock_warning_limit={}). This may indicate a deadlock "
                         "in your application or a bug in pika. Stopping after "
-                        "pika.spinlock_deadlock_detection_limit={} iterations.\n",
+                        "pika.spinlock_deadlock_detection_limit={} iterations.",
                         desc, name, k, deadlock_warning_limit, deadlock_detection_limit);
                 }
             }
