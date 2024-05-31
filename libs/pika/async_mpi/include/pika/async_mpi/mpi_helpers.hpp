@@ -134,9 +134,9 @@ namespace pika::mpi::experimental::detail {
                 {
                     // pass the result onto a new task and invoke the continuation
                     auto snd0 = ex::transfer_just(default_pool_scheduler(p)) |
-                        ex::then([receiver = PIKA_MOVE(receiver)]() mutable {
+                        ex::then([receiver = PIKA_FORWARD(Receiver, receiver)]() mutable {
                             PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("set_value")));
-                            ex::set_value(PIKA_FORWARD(Receiver, receiver));
+                            ex::set_value(PIKA_MOVE(receiver));
                         });
                     ex::start_detached(PIKA_MOVE(snd0));
                 }
@@ -160,7 +160,7 @@ namespace pika::mpi::experimental::detail {
     }
 
     // -----------------------------------------------------------------
-    // handler_method::mpix_continuation
+    // handler_method::mpix_continuation - signature is
     /// typedef int (MPIX_Continue_cb_function)(int rc, void *cb_data);
     template <typename OperationState>
     int mpix_callback([[maybe_unused]] int rc, void* cb_data)

@@ -170,7 +170,7 @@ namespace pika::mpi::experimental {
         PIKA_EXPORT int comm_world_size();
 
         /// mpix extensions in openmpi to support mpi continuations
-        typedef int(MPIX_Continue_cb_function)(int rc, void* cb_data);
+        using MPIX_Continue_cb_function = int(int rc, void* cb_data);
         PIKA_EXPORT void register_mpix_continuation(
             MPI_Request*, MPIX_Continue_cb_function*, void*);
         /// called after each completed continuation to restart/re-enable continuation support
