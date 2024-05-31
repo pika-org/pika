@@ -152,7 +152,7 @@ namespace pika::mpi::experimental::detail {
                                     std::make_exception_ptr(mpi_exception(status)));
                                 return;
                             }
-                            // early poll just in case the request completed immmediately
+                            // early poll just in case the request completed immediately
                             if (poll_request(request))
                             {
 #ifdef PIKA_HAVE_APEX

@@ -173,7 +173,7 @@ namespace pika::mpi::experimental {
         typedef int(MPIX_Continue_cb_function)(int rc, void* cb_data);
         PIKA_EXPORT void register_mpix_continuation(
             MPI_Request*, MPIX_Continue_cb_function*, void*);
-        /// called after each completed continuation to restart/reenable continuation support
+        /// called after each completed continuation to restart/re-enable continuation support
         PIKA_EXPORT void restart_mpix();
     }    // namespace detail
 
