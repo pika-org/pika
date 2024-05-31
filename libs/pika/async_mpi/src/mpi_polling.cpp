@@ -147,6 +147,9 @@ namespace pika::mpi::experimental {
             MPI_Request mpix_continuations_request{MPI_REQUEST_NULL};
             std::mutex mpix_lock;
             std::atomic<bool> mpix_ready_{false};
+
+            // optimizations allow/disallow
+            bool optimizations_{false};
         };
 
         /// a single instance of all the mpi variables initialized once at startup
@@ -632,21 +635,27 @@ namespace pika::mpi::experimental {
         }
 
         // -------------------------------------------------------------
+        inline bool singlethreaded(int mode)
+        {
+            return (use_pool(mode) && !use_inline_request(mode));
+        }
+
+        // -------------------------------------------------------------
         pika::threads::detail::polling_status poll()
         {
             // get mpi completion mode settings
             auto mode = get_completion_mode();
-            bool singlethreaded = use_pool(mode) && !use_inline_request(mode);
+            bool single_threaded = singlethreaded(mode);
 
 #ifdef OMPI_HAVE_MPI_EXT_CONTINUE
             // if mpi continuations are available, poll here and bypass main routine
             if (get_handler_method(mode) == handler_method::mpix_continuation)
             {
-                return try_mpix_polling(singlethreaded);
+                return try_mpix_polling(single_threaded);
             }
 #endif
 
-            if (singlethreaded) { return poll_singlethreaded(); }
+            if (single_threaded) { return poll_singlethreaded(); }
             return poll_multithreaded();
         }
 
@@ -819,6 +828,23 @@ namespace pika::mpi::experimental {
         }
     }
 
+    // -------------------------------------------------------------
+    void enable_optimizations(bool enable) { detail::mpi_data_.optimizations_ = enable; }
+
+    // -------------------------------------------------------------
+    // Return the "best" mpi thread mode to use for initialization
+    // if all requests are transferred to the mpi pool, then single threaded is ok
+    int get_preferred_thread_mode()
+    {
+        int required = MPI_THREAD_MULTIPLE;
+        if (detail::singlethreaded(get_completion_mode()) && detail::mpi_data_.optimizations_)
+        {
+            required = MPI_THREAD_SINGLE;
+            PIKA_DETAIL_DP(detail::mpi_debug<0>, debug(str<>("MPI_THREAD_SINGLE"), "overridden"));
+        }
+        return required;
+    }
+
     // -----------------------------------------------------------------
     // initialize the pika::mpi background request handler
     // All ranks should call this function,
@@ -830,6 +856,13 @@ namespace pika::mpi::experimental {
 
         // --------------------------------------
         // the user has asked us to call mpi_init
+        if (init_mpi)
+        {
+            int provided, required = get_preferred_thread_mode();
+            pika::util::mpi_environment::init(nullptr, nullptr, required, required, provided);
+            MPI_Comm_rank(MPI_COMM_WORLD, &detail::mpi_data_.rank_);
+            MPI_Comm_size(MPI_COMM_WORLD, &detail::mpi_data_.size_);
+        }
         if (init_mpi)
         {
             int provided, required = MPI_THREAD_MULTIPLE;

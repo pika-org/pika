@@ -202,6 +202,12 @@ namespace pika::mpi::experimental {
 
     PIKA_EXPORT void register_polling();
 
+    PIKA_EXPORT int get_preferred_thread_mode();
+
+    /// when true pika::mpi can disable the pool, or change the thread mode
+    /// otherwise, the flags passed by the user to completion mode etc are honoured
+    PIKA_EXPORT void enable_optimizations(bool enable);
+
     // initialize the pika::mpi background request handler
     // All ranks should call this function (but only one thread per rank needs to do so)
     PIKA_EXPORT void init(bool init_mpi = false, bool init_errorhandler = false);

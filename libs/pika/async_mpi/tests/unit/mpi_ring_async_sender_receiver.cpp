@@ -458,6 +458,11 @@ void init_resource_partitioner_handler(
     auto pool_mode = mpix::pool_create_mode::pika_decides;
     if (vm["no-mpi-pool"].as<bool>()) { pool_mode = mpix::pool_create_mode::force_no_create; }
 
+    if (vm["mpi-optimizations"].as<bool>()) { mpix::enable_optimizations(true); }
+    else { mpix::enable_optimizations(false); }
+    std::cout << "init_resource_partitioner_handler enable optimizations "
+              << vm["mpi-optimizations"].as<bool>() << std::endl;
+
     msr_deb<2>.debug(str<>("init RP"), "create_pool");
     mpix::create_pool("", pool_mode);
 }
@@ -468,14 +473,6 @@ void init_resource_partitioner_handler(
 // will execute pika_main on a pika thread
 int main(int argc, char* argv[])
 {
-    // Init MPI
-    int provided = MPI_THREAD_MULTIPLE;
-    MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
-    if (provided != MPI_THREAD_MULTIPLE)
-    {
-        std::cout << "Provided MPI is not : MPI_THREAD_MULTIPLE " << provided << std::endl;
-    }
-
     // Configure application-specific options.
     options_description cmdline("usage: " PIKA_APPLICATION_STRING " [options]");
 
@@ -495,9 +492,6 @@ int main(int argc, char* argv[])
     cmdline.add_options()("no-mpi-pool", pika::program_options::bool_switch(),
         "Disable the MPI pool.");
 
-    // cmdline.add_options()("one-rank-consistent", pika::program_options::bool_switch(),
-    //     "Use an mpi pool even on one rank if the mode flags expect it");
-
     cmdline.add_options()("mpi-polling-size",
         pika::program_options::value<std::uint32_t>()->default_value(16),
         "The maximum number of mpi request completions to handle per poll.");
@@ -512,6 +506,9 @@ int main(int argc, char* argv[])
     cmdline.add_options()("standalone",
         "Allow test to run with a single rank (debugging)");
 
+    cmdline.add_options()("mpi-optimizations", pika::program_options::bool_switch(),
+        "do not change pool, or thread level");
+
     cmdline.add_options()("csv", pika::program_options::bool_switch()->default_value(false),
                      "Enable CSV output of values");
 
@@ -519,6 +516,26 @@ int main(int argc, char* argv[])
                      "Info for postprocessing scripts appended to csv output (if enabled)");
     // clang-format on
 
+    // -----------------
+    // process command line options early so we can use them for mpi_init
+    namespace po = pika::program_options;
+    po::variables_map vm;
+    po::store(po::command_line_parser(argc, argv).options(cmdline).allow_unregistered().run(), vm);
+    po::notify(vm);
+
+    if (vm["mpi-optimizations"].as<bool>()) { mpix::enable_optimizations(true); }
+    else { mpix::enable_optimizations(false); }
+
+    // -----------------
+    // Init MPI
+    int provided, preferred = mpix::get_preferred_thread_mode();
+    MPI_Init_thread(&argc, &argv, preferred, &provided);
+    if (provided != preferred)
+    {
+        msr_deb<0>.error(str<>("Caution"), "Provided MPI is not as requested");
+    }
+
+    // -----------------
     // Initialize and run pika.
     pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
@@ -528,6 +545,7 @@ int main(int argc, char* argv[])
     auto result = pika::init(pika_main, argc, argv, init_args);
     PIKA_TEST_EQ(result, 0);
 
+    // -----------------
     // Finalize MPI
     MPI_Finalize();
     return result;
