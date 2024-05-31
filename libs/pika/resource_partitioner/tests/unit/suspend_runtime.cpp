@@ -14,7 +14,11 @@
 #include <pika/testing.hpp>
 #include <pika/thread.hpp>
 
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
+
 #include <cstddef>
+#include <iostream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -23,6 +27,8 @@ namespace ex = pika::execution::experimental;
 
 void test_scheduler(int argc, char* argv[], pika::resource::scheduling_policy scheduler)
 {
+    fmt::print(std::cerr, "Testing scheduler: {}\n", scheduler);
+
     pika::init_params init_args;
 
     init_args.cfg = {"pika.os_threads=" +

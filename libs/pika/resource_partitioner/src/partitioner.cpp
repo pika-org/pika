@@ -213,5 +213,22 @@ namespace pika::resource {
             return ::pika::resource::partitioner(rpmode, rtcfg, affinity_data);
         }
 
+        char const* get_scheduling_policy_name(scheduling_policy p) noexcept
+        {
+            switch (p)
+            {
+            case scheduling_policy::user_defined: return "user_defined";
+            case scheduling_policy::unspecified: return "unspecified";
+            case scheduling_policy::local: return "local";
+            case scheduling_policy::local_priority_fifo: return "local_priority_fifo";
+            case scheduling_policy::local_priority_lifo: return "local_priority_lifo";
+            case scheduling_policy::static_: return "static";
+            case scheduling_policy::static_priority: return "static_priority";
+            case scheduling_policy::abp_priority_fifo: return "abp_priority_fifo";
+            case scheduling_policy::abp_priority_lifo: return "abp_priority_lifo";
+            case scheduling_policy::shared_priority: return "shared_priority";
+            default: return "unknown";
+            }
+        }
     }    // namespace detail
 }    // namespace pika::resource
