@@ -41,6 +41,8 @@ performance_gcc13_release_build:
     - .variables_performance_gcc13_config
     - .test_common_daint_mc
     - .cmake_variables_common
+  variables:
+    SLURM_CPU_FREQ_REQ: "Low"
   needs: [performance_gcc13_release_build]
   script:
     - export MIMALLOC_EAGER_COMMIT_DELAY=0
