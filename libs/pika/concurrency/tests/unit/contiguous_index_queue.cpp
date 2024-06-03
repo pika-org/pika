@@ -13,6 +13,7 @@
 #include <pika/init.hpp>
 #include <pika/program_options.hpp>
 #include <pika/testing.hpp>
+#include <pika/type_support/unused.hpp>
 
 #include <algorithm>
 #include <cstddef>
@@ -202,6 +203,8 @@ void test_concurrent(pop_mode m)
     // this check.
 #if !defined(PIKA_HAVE_VALGRIND) || defined(PIKA_DEBUG)
     PIKA_TEST_LTE(std::size_t(2), num_nonzero_indices_popped);
+#else
+    PIKA_UNUSED(num_nonzero_indices_popped);
 #endif
 }
 
