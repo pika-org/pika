@@ -59,3 +59,8 @@ variables:
   extends:
     - .test_common
     - .container-runner-clariden-mi200
+
+.test_common_santis:
+  extends:
+    - .test_common
+    - .container-runner-santis-gh200
