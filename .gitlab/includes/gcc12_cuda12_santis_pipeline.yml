@@ -8,7 +8,7 @@ include:
   - local: '.gitlab/includes/common_pipeline.yml'
   - local: '.gitlab/includes/common_spack_pipeline.yml'
 
-.variables_gcc12_cuda12_config:
+.variables_gcc12_cuda12_santis_config:
   variables:
     SPACK_ARCH: linux-ubuntu22.04-neoverse_v2
     COMPILER: gcc@12.1.0
@@ -21,34 +21,34 @@ include:
                   -DCMAKE_CUDA_ARCHITECTURES=$GPU_TARGET \
                   -DPIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE=OFF"
 
-gcc12_cuda12_spack_compiler_image:
+gcc12_cuda12_santis_spack_compiler_image:
   extends:
-    - .variables_gcc12_cuda12_config
+    - .variables_gcc12_cuda12_santis_config
     - .compiler_image_template_santis
 
-gcc12_cuda12_spack_image:
-  needs: [gcc12_cuda12_spack_compiler_image]
+gcc12_cuda12_santis_spack_image:
+  needs: [gcc12_cuda12_santis_spack_compiler_image]
   extends:
-    - .variables_gcc12_cuda12_config
+    - .variables_gcc12_cuda12_santis_config
     - .dependencies_image_template_santis
 
-gcc12_cuda12_build:
-  needs: [gcc12_cuda12_spack_image]
+gcc12_cuda12_santis_build:
+  needs: [gcc12_cuda12_santis_spack_image]
   extends:
-    - .variables_gcc12_cuda12_config
+    - .variables_gcc12_cuda12_santis_config
     - .build_template_santis
 
-.gcc12_cuda12_test_commmon:
-  needs: [gcc12_cuda12_build]
+.gcc12_cuda12_santis_test_commmon:
+  needs: [gcc12_cuda12_santis_build]
   extends:
-    - .variables_gcc12_cuda12_config
+    - .variables_gcc12_cuda12_santis_config
     - .test_common_santis
     - .test_template
 
-gcc12_cuda12_test_release:
-  extends: [.gcc12_cuda12_test_commmon]
+gcc12_cuda12_santis_test_release:
+  extends: [.gcc12_cuda12_santis_test_commmon]
   image: $PERSIST_IMAGE_NAME_RELEASE
 
-gcc12_cuda12_test_debug:
-  extends: [.gcc12_cuda12_test_commmon]
+gcc12_cuda12_santis_test_debug:
+  extends: [.gcc12_cuda12_santis_test_commmon]
   image: $PERSIST_IMAGE_NAME_DEBUG

@@ -12,7 +12,7 @@ include:
 #  - local: '.gitlab/includes/gcc10_apex_pipeline.yml'
 #  - local: '.gitlab/includes/gcc11_pipeline.yml'
 #  - local: '.gitlab/includes/gcc12_pipeline.yml'
-  - local: '.gitlab/includes/gcc12_cuda12_pipeline.yml'
+  - local: '.gitlab/includes/gcc12_cuda12_santis_pipeline.yml'
   - local: '.gitlab/includes/gcc13_santis_pipeline.yml'
 #  - local: '.gitlab/includes/clang11_pipeline.yml'
 #  - local: '.gitlab/includes/clang12_pipeline.yml'
