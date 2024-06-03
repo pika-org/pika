@@ -199,12 +199,15 @@ namespace pika::mpi::experimental::detail {
                                         ptr(r.op_state.request), ptr(r.op_state.request)));
 
                                 MPIX_Continue_cb_function* func = &mpix_callback<operation_state>;
-                                register_mpix_continuation(&r.op_state.request, func, &r.op_state);
                                 {
+                                    std::unique_lock l{r.op_state.mutex};
+                                    // make sure registration is done under lock to stop cond_var
+                                    // going out of scope before notification is sent
+                                    register_mpix_continuation(
+                                        &r.op_state.request, func, &r.op_state);
                                     PIKA_DETAIL_DP(mpi_tran<1>,
                                         debug(str<>("MPI_EXT_CONTINUE"), "waiting",
                                             ptr(r.op_state.request)));
-                                    std::unique_lock l{r.op_state.mutex};
                                     r.op_state.cond_var.wait(
                                         l, [&]() { return r.op_state.completed; });
                                 }
