@@ -181,10 +181,6 @@ if(${PIKA_WITH_MALLOC} STREQUAL "jemalloc")
 endif()
 
 # Compiler related build options
-pika_option(
-  PIKA_WITH_GCC_VERSION_CHECK BOOL "Don't ignore version reported by gcc (default: ON)" ON ADVANCED
-)
-
 pika_option(PIKA_WITH_COMPILER_WARNINGS BOOL "Enable compiler warnings (default: ON)" ON ADVANCED)
 
 pika_option(
@@ -296,8 +292,6 @@ pika_option(
   "Create build system support for fail compile tests (default: ON)" ON DEPENDS "PIKA_WITH_TESTS"
   CATEGORY "Build Targets"
 )
-
-pika_option(PIKA_WITH_TOOLS BOOL "Build tools (default: OFF)" OFF ADVANCED CATEGORY "Build Targets")
 
 set(PIKA_FULL_RPATH_DEFAULT ON)
 if(APPLE OR WIN32)
@@ -510,17 +504,6 @@ if(PIKA_WITH_THREAD_BACKTRACE_ON_SUSPENSION)
   if(PIKA_WITH_THREAD_FULLBACKTRACE_ON_SUSPENSION)
     pika_add_config_define(PIKA_HAVE_THREAD_FULLBACKTRACE_ON_SUSPENSION)
   endif()
-endif()
-
-pika_option(
-  PIKA_WITH_THREAD_TARGET_ADDRESS BOOL
-  "Enable storing target address in thread for NUMA awareness (default: OFF)" OFF
-  CATEGORY "Thread Manager"
-  ADVANCED
-)
-
-if(PIKA_WITH_THREAD_TARGET_ADDRESS)
-  pika_add_config_define(PIKA_HAVE_THREAD_TARGET_ADDRESS)
 endif()
 
 pika_option(
@@ -907,54 +890,6 @@ pika_option(
   (default: OFF)" OFF ADVANCED
 )
 
-# Check for compiler compatibility
-#
-
-# Check if the selected compiler versions are supposed to work with our codebase
-if(CMAKE_COMPILER_IS_GNUCXX AND PIKA_WITH_GCC_VERSION_CHECK)
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
-    pika_error(
-      "GCC 9.0 or higher is required. Specify PIKA_WITH_GCC_VERSION_CHECK=OFF to ignore this error."
-    )
-  endif()
-endif()
-
-if(MSVC)
-  if(MSVC_VERSION LESS 1900)
-    pika_error("MSVC x64 2015 or higher is required.")
-  elseif(NOT CMAKE_CL_64)
-    pika_warn(
-      "MSVC (32Bit) will compile but will fail running larger applications because of limitations in the Windows OS."
-    )
-  endif()
-endif()
-
-# Setup platform specific compiler options and check for compatible compilers
-if("${PIKA_PLATFORM_UC}" STREQUAL "NATIVE")
-  pika_info("Compiling with the native toolset")
-elseif("${PIKA_PLATFORM_UC}" STREQUAL "ANDROID")
-  pika_info("Compiling for Android devices")
-elseif("${PIKA_PLATFORM_UC}" STREQUAL "XEONPHI")
-  pika_info("Compiling for Intel Xeon Phi devices")
-  if(NOT ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
-    pika_error("pika on the MIC can only be compiled with the Intel compiler.")
-  endif()
-elseif("${PIKA_PLATFORM_UC}" STREQUAL "BLUEGENEQ")
-  if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    pika_error("pika on the BG/Q can only be compiled with bgclang")
-  endif()
-  pika_info("Compiling for BlueGene/Q")
-endif()
-
-# ##################################################################################################
-# Some special handling of the compilation is need on build infrastructure for generating packages
-# for target architecture, see issue #3575
-
-pika_option(
-  PIKA_WITH_BUILD_BINARY_PACKAGE BOOL
-  "Build pika on the build infrastructure on any LINUX distribution (default: OFF)." OFF ADVANCED
-)
-
 # ##################################################################################################
 # C++ feature tests
 # ##################################################################################################
@@ -1298,16 +1233,11 @@ else()
     # extension to rdtsc. The difference is that rdtscp is a serializing instruction.
     pika_cpuid("rdtsc" PIKA_WITH_RDTSC DEFINITIONS PIKA_HAVE_RDTSC)
 
-    # One can not assume if RDTSCP is available on the hardware of the build infrastructure, that it
-    # will be available on all potential target hardware, see Issue  #3575
-    if(NOT ${PIKA_WITH_BUILD_BINARY_PACKAGE})
-
-      # XeonPhi's do not support RDTSCP
-      if(NOT ("${PIKA_PLATFORM_UC}" STREQUAL "XEONPHI"))
-        pika_cpuid("rdtscp" PIKA_WITH_RDTSCP DEFINITIONS PIKA_HAVE_RDTSCP)
-      endif()
-
+    # XeonPhi's do not support RDTSCP
+    if(NOT ("${PIKA_PLATFORM_UC}" STREQUAL "XEONPHI"))
+      pika_cpuid("rdtscp" PIKA_WITH_RDTSCP DEFINITIONS PIKA_HAVE_RDTSCP)
     endif()
+
     if(PIKA_WITH_RDTSC OR PIKA_WITH_RDTSCP)
       set(__has_timestamp_support ON)
     endif()
@@ -1462,10 +1392,8 @@ add_subdirectory(libs)
 # ##################################################################################################
 # Target specification
 # ##################################################################################################
-if(PIKA_WITH_TOOLS OR PIKA_WITH_TESTS_BENCHMARKS)
-  pika_add_pseudo_target(tools)
-  add_subdirectory(tools)
-endif()
+pika_add_pseudo_target(tools)
+add_subdirectory(tools)
 
 # ##################################################################################################
 # Tests
@@ -1641,15 +1569,6 @@ if(PIKA_WITH_VIM_YCM)
   pika_info(
     "VIM YouCompleteMe: run 'make configure_ycm' to copy config file to source directory and enable support in YCM. To enable automatic loading of configure file, add to your .vimrc option: \"let g:ycm_extra_conf_globlist = ['${PROJECT_SOURCE_DIR}/*']\""
   )
-endif()
-
-# ##################################################################################################
-# Add rpm packaging
-
-pika_option(PIKA_WITH_RPM BOOL "Enable or disable the generation of rpm packages" OFF ADVANCED)
-
-if(PIKA_WITH_RPM)
-  add_subdirectory(cmake/packaging/rpm)
 endif()
 
 # ##################################################################################################

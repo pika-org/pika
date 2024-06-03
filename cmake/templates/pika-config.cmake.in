@@ -11,8 +11,9 @@ cmake_policy(VERSION 3.22)
 # Forward PIKA_* cache variables
 include("${CMAKE_CURRENT_LIST_DIR}/pika_cache_variables.cmake")
 
-# include pika cmake utilities
-include("${CMAKE_CURRENT_LIST_DIR}/pika_macros.cmake")
+# Include pika CMake utilities
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "@PIKA_CMAKE_MODULE_PATH@")
+include(pika_utils)
 
 # include exported targets
 include("${CMAKE_CURRENT_LIST_DIR}/pika_internal_targets.cmake")
@@ -22,6 +23,7 @@ get_filename_component(
   _pika_root_dir "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE
 )
 
+include(pika_set_cmake_policy)
 pika_set_cmake_policy(CMP0144 NEW)
 
 set(PIKA_VERSION_STRING "@PIKA_VERSION@")
@@ -112,10 +114,6 @@ set(PIKA_WITH_MALLOC_DEFAULT @PIKA_WITH_MALLOC@)
 if(NOT PIKA_CMAKE_LOGLEVEL)
   set(PIKA_CMAKE_LOGLEVEL "WARN")
 endif()
-
-pika_check_compiler_compatibility()
-pika_check_boost_compatibility()
-pika_check_allocator_compatibility()
 
 if(NOT DEFINED ${CMAKE_FIND_PACKAGE_NAME}_FOUND)
   set(${CMAKE_FIND_PACKAGE_NAME}_FOUND true)
