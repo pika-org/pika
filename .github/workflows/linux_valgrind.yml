@@ -52,6 +52,8 @@ jobs:
                 -DPIKA_WITH_TESTS_EXTERNAL_BUILD=OFF \
                 -DPIKA_WITH_TESTS_HEADERS=OFF \
                 -DPIKA_WITH_TESTS_MAX_THREADS=$(nproc) \
+                -DPIKA_WITH_COMPILER_WARNINGS=ON \
+                -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON \
                 -DPIKA_WITH_VALGRIND=ON \
                 -DPIKA_WITH_TESTS_VALGRIND=ON \
                 -DPIKA_WITH_TESTS_VALGRIND_OPTIONS="--error-exitcode=1;--leak-check=full;--fair-sched=yes;--gen-suppressions=all;--suppressions=$PWD/tools/valgrind/memcheck.supp" \
