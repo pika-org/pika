@@ -39,7 +39,7 @@ gcc13_build:
     - .variables_gcc13_config
     - .build_template_rosa
 
-.gcc13_test_commmon:
+.gcc13_test_common:
   needs: [gcc13_build]
   extends:
     - .variables_gcc13_config
@@ -47,9 +47,9 @@ gcc13_build:
     - .test_template
 
 gcc13_test_release:
-  extends: [.gcc13_test_commmon]
+  extends: [.gcc13_test_common]
   image: $PERSIST_IMAGE_NAME_RELEASE
 
 gcc13_test_debug:
-  extends: [.gcc13_test_commmon]
+  extends: [.gcc13_test_common]
   image: $PERSIST_IMAGE_NAME_DEBUG

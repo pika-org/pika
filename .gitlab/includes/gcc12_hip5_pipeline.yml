@@ -39,7 +39,7 @@ gcc12_hip5_build:
     - .build_template_rosa
 
 # Disabled until AMD GPU runners come back online
-# .gcc12_hip5_test_commmon:
+# .gcc12_hip5_test_common:
 #   needs: [gcc12_hip5_build]
 #   extends:
 #     - .variables_gcc12_hip5_config
@@ -47,9 +47,9 @@ gcc12_hip5_build:
 #     - .test_template
 
 # gcc12_hip5_test_release:
-#   extends: [.gcc12_hip5_test_commmon]
+#   extends: [.gcc12_hip5_test_common]
 #   image: $PERSIST_IMAGE_NAME_RELEASE
 
 # gcc12_hip5_test_debug:
-#   extends: [.gcc12_hip5_test_commmon]
+#   extends: [.gcc12_hip5_test_common]
 #   image: $PERSIST_IMAGE_NAME_DEBUG
