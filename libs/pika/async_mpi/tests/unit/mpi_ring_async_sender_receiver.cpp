@@ -523,8 +523,7 @@ int main(int argc, char* argv[])
     po::store(po::command_line_parser(argc, argv).options(cmdline).allow_unregistered().run(), vm);
     po::notify(vm);
 
-    if (vm["mpi-optimizations"].as<bool>()) { mpix::enable_optimizations(true); }
-    else { mpix::enable_optimizations(false); }
+    mpix::enable_optimizations(vm["mpi-optimizations"].as<bool>());
 
     // -----------------
     // Init MPI
