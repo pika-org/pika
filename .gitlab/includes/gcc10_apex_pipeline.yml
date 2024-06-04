@@ -35,7 +35,7 @@ gcc10_apex_build:
     - .variables_gcc10_apex_config
     - .build_template_rosa
 
-.gcc10_apex_test_commmon:
+.gcc10_apex_test_common:
   needs: [gcc10_apex_build]
   extends:
     - .variables_gcc10_apex_config
@@ -43,9 +43,9 @@ gcc10_apex_build:
     - .test_template
 
 gcc10_apex_test_release:
-  extends: [.gcc10_apex_test_commmon]
+  extends: [.gcc10_apex_test_common]
   image: $PERSIST_IMAGE_NAME_RELEASE
 
 gcc10_apex_test_debug:
-  extends: [.gcc10_apex_test_commmon]
+  extends: [.gcc10_apex_test_common]
   image: $PERSIST_IMAGE_NAME_DEBUG

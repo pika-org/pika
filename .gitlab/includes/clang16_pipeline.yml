@@ -35,7 +35,7 @@ clang16_build:
     - .variables_clang16_config
     - .build_template_rosa
 
-.clang16_test_commmon:
+.clang16_test_common:
   needs: [clang16_build]
   extends:
     - .variables_clang16_config
@@ -43,9 +43,9 @@ clang16_build:
     - .test_template
 
 clang16_test_release:
-  extends: [.clang16_test_commmon]
+  extends: [.clang16_test_common]
   image: $PERSIST_IMAGE_NAME_RELEASE
 
 clang16_test_debug:
-  extends: [.clang16_test_commmon]
+  extends: [.clang16_test_common]
   image: $PERSIST_IMAGE_NAME_DEBUG

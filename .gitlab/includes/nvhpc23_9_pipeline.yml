@@ -43,7 +43,7 @@ nvhpc23_9_build:
 
 # The test step is disabled until maintenance is over. Pulling the image on compute nodes is too
 # slow, and the image is too big.
-# .nvhpc23_9_test_commmon:
+# .nvhpc23_9_test_common:
 #   needs: [nvhpc23_9_build]
 #   extends:
 #     - .variables_nvhpc23_9_config
@@ -51,9 +51,9 @@ nvhpc23_9_build:
 #     - .test_template
 #
 # nvhpc23_9_test_release:
-#   extends: [.nvhpc23_9_test_commmon]
+#   extends: [.nvhpc23_9_test_common]
 #   image: $PERSIST_IMAGE_NAME_RELEASE
 #
 # nvhpc23_9_test_debug:
-#   extends: [.nvhpc23_9_test_commmon]
+#   extends: [.nvhpc23_9_test_common]
 #   image: $PERSIST_IMAGE_NAME_DEBUG

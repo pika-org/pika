@@ -35,7 +35,7 @@ gcc12_build:
     - .variables_gcc12_config
     - .build_template_rosa
 
-.gcc12_test_commmon:
+.gcc12_test_common:
   needs: [gcc12_build]
   extends:
     - .variables_gcc12_config
@@ -43,9 +43,9 @@ gcc12_build:
     - .test_template
 
 gcc12_test_release:
-  extends: [.gcc12_test_commmon]
+  extends: [.gcc12_test_common]
   image: $PERSIST_IMAGE_NAME_RELEASE
 
 gcc12_test_debug:
-  extends: [.gcc12_test_commmon]
+  extends: [.gcc12_test_common]
   image: $PERSIST_IMAGE_NAME_DEBUG

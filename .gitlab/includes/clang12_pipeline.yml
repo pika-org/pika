@@ -39,7 +39,7 @@ clang12_build:
     - .variables_clang12_config
     - .build_template_rosa
 
-.clang12_test_commmon:
+.clang12_test_common:
   needs: [clang12_build]
   extends:
     - .variables_clang12_config
@@ -47,9 +47,9 @@ clang12_build:
     - .test_template
 
 clang12_test_release:
-  extends: [.clang12_test_commmon]
+  extends: [.clang12_test_common]
   image: $PERSIST_IMAGE_NAME_RELEASE
 
 clang12_test_debug:
-  extends: [.clang12_test_commmon]
+  extends: [.clang12_test_common]
   image: $PERSIST_IMAGE_NAME_DEBUG

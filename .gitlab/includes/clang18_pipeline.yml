@@ -35,7 +35,7 @@ clang18_build:
     - .variables_clang18_config
     - .build_template_rosa
 
-.clang18_test_commmon:
+.clang18_test_common:
   needs: [clang18_build]
   extends:
     - .variables_clang18_config
@@ -43,9 +43,9 @@ clang18_build:
     - .test_template
 
 clang18_test_release:
-  extends: [.clang18_test_commmon]
+  extends: [.clang18_test_common]
   image: $PERSIST_IMAGE_NAME_RELEASE
 
 clang18_test_debug:
-  extends: [.clang18_test_commmon]
+  extends: [.clang18_test_common]
   image: $PERSIST_IMAGE_NAME_DEBUG

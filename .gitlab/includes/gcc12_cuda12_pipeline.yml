@@ -40,7 +40,7 @@ gcc12_cuda12_build:
 
 ## Test step currently commented as the cuda driver is too old on clariden:
 ## https://github.com/pika-org/pika/issues/884
-#.gcc12_cuda12_test_commmon:
+#.gcc12_cuda12_test_common:
 #  needs: [gcc12_cuda12_build]
 #  extends:
 #    - .variables_gcc12_cuda12_config
@@ -48,9 +48,9 @@ gcc12_cuda12_build:
 #    - .test_template
 #
 #gcc12_cuda12_test_release:
-#  extends: [.gcc12_cuda12_test_commmon]
+#  extends: [.gcc12_cuda12_test_common]
 #  image: $PERSIST_IMAGE_NAME_RELEASE
 #
 #gcc12_cuda12_test_debug:
-#  extends: [.gcc12_cuda12_test_commmon]
+#  extends: [.gcc12_cuda12_test_common]
 #  image: $PERSIST_IMAGE_NAME_DEBUG

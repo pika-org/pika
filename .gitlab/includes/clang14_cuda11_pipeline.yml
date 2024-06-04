@@ -39,7 +39,7 @@ clang14_cuda11_build:
     - .variables_clang14_cuda11_config
     - .build_template_rosa
 
-.clang14_cuda11_test_commmon:
+.clang14_cuda11_test_common:
   needs: [clang14_cuda11_build]
   extends:
     - .variables_clang14_cuda11_config
@@ -47,9 +47,9 @@ clang14_cuda11_build:
     - .test_template
 
 clang14_cuda11_test_release:
-  extends: [.clang14_cuda11_test_commmon]
+  extends: [.clang14_cuda11_test_common]
   image: $PERSIST_IMAGE_NAME_RELEASE
 
 clang14_cuda11_test_debug:
-  extends: [.clang14_cuda11_test_commmon]
+  extends: [.clang14_cuda11_test_common]
   image: $PERSIST_IMAGE_NAME_DEBUG
