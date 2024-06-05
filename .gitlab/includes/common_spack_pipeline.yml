@@ -119,3 +119,6 @@ base_spack_image_x86_64:
     - export CTEST_XML=$PWD/ctest.xml
     - trap "${SOURCE_DIR}/.gitlab/scripts/collect_ctest_metrics.sh ${CTEST_XML}" EXIT
     - spack -e pika_ci build-env $spack_spec -- bash -c "ctest --output-junit ${CTEST_XML} --label-exclude COMPILE_ONLY --test-dir ${BUILD_DIR} -j$(($(nproc)/2)) --timeout 120 --output-on-failure --no-compress-output --no-tests=error"
+    - export MIMALLOC_EAGER_COMMIT_DELAY=0
+    - export MIMALLOC_LARGE_OS_PAGES=1
+    - "${SOURCE_DIR}/.gitlab/scripts/run_performance_benchmarks.sh"
