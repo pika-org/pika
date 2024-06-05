@@ -130,6 +130,8 @@ make_multiarch_image:
   extends:
     - .cmake_variables_common
   script:
+    - env
+    - echo $CLUSTER_NAME
     - spack arch
     - export CTEST_XML=$PWD/ctest.xml
     - trap "${SOURCE_DIR}/.gitlab/scripts/collect_ctest_metrics.sh ${CTEST_XML}" EXIT
