@@ -94,6 +94,7 @@ function create_metadata_file {
 
     # System section
     json_add_from_command "${metadata_file}" "system" "hostname"
+    json_add_from_env "${metadata_file}" "system" CLUSTER_NAME
 
     # Slurm section
     json_add_from_env \
