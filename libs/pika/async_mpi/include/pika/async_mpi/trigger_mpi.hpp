@@ -85,6 +85,8 @@ namespace pika::mpi::experimental::detail {
             bool completed{false};
             pika::detail::spinlock mutex;
             pika::condition_variable cond_var;
+            // MPI_EXT_CONTINUE
+            MPI_Request request{MPI_REQUEST_NULL};
 
             // -----------------------------------------------------------------
             // The mpi_receiver receives inputs from the previous sender,
@@ -118,25 +120,29 @@ namespace pika::mpi::experimental::detail {
                         return;
                     }
 
+                    r.op_state.request = request;
+
                     // which polling/testing mode are we using
-                    handler_mode mode = get_handler_mode(r.op_state.mode_flags);
+                    handler_method mode = get_handler_method(r.op_state.mode_flags);
                     execution::thread_priority p = use_priority_boost(r.op_state.mode_flags) ?
                         execution::thread_priority::boost :
                         execution::thread_priority::normal;
 
                     PIKA_DETAIL_DP(mpi_tran<5>,
-                        debug(str<>("trigger_mpi_recv"), "set_value_t", "req", ptr(request),
-                            "flags", bin<8>(r.op_state.mode_flags),
+                        debug(str<>("trigger_mpi_recv"), "set_value_t", "req",
+                            ptr(r.op_state.request), "flags", bin<8>(r.op_state.mode_flags),
                             mode_string(r.op_state.mode_flags)));
 
                     pika::detail::try_catch_exception_ptr(
                         [&]() mutable {
                             switch (mode)
                             {
-                            case handler_mode::yield_while:
+                            case handler_method::yield_while:
                             {
+                                // yield/while is invalid on a non pika thread
+                                PIKA_ASSERT(pika::threads::detail::get_self_id());
                                 pika::util::yield_while(
-                                    [request]() { return !detail::poll_request(request); });
+                                    [&r]() { return !poll_request(r.op_state.request); });
 #ifdef PIKA_HAVE_APEX
                                 apex::scoped_timer apex_invoke("pika::mpi::trigger");
 #endif
@@ -144,28 +150,13 @@ namespace pika::mpi::experimental::detail {
                                 ex::set_value(PIKA_MOVE(r.op_state.receiver));
                                 break;
                             }
-                            case handler_mode::new_task:
+                            case handler_method::suspend_resume:
                             {
-                                // The callback will call set_value/set_error inside a new task
-                                // and execution will continue on that thread
-                                detail::schedule_task_callback(
-                                    request, p, PIKA_MOVE(r.op_state.receiver));
-                                break;
-                            }
-                            case handler_mode::continuation:
-                            {
-                                // The callback will call set_value/set_error
-                                // execution will continue on the callback thread
-                                detail::set_value_request_callback_void<>(request, r.op_state);
-                                break;
-                            }
-                            case handler_mode::suspend_resume:
-                            {
-                                // suspend is invalid except on a pika thread
+                                // suspend is invalid on a non pika thread
                                 PIKA_ASSERT(pika::threads::detail::get_self_id());
                                 // the callback will resume _this_ thread
                                 std::unique_lock l{r.op_state.mutex};
-                                resume_request_callback(request, r.op_state);
+                                add_suspend_resume_request_callback(r.op_state.request, r.op_state);
                                 if (use_priority_boost(r.op_state.mode_flags))
                                 {
                                     threads::detail::thread_data::scoped_thread_priority
@@ -181,6 +172,50 @@ namespace pika::mpi::experimental::detail {
 #ifdef PIKA_HAVE_APEX
                                 apex::scoped_timer apex_invoke("pika::mpi::trigger");
 #endif
+                                // call set_value/set_error depending on mpi return status
+                                set_value_error_helper(
+                                    r.op_state.status, PIKA_MOVE(r.op_state.receiver));
+                                break;
+                            }
+                            case handler_method::new_task:
+                            {
+                                // The callback will call set_value/set_error inside a new task
+                                // and execution will continue on that thread
+                                add_new_task_request_callback(
+                                    r.op_state.request, p, PIKA_MOVE(r.op_state.receiver));
+                                break;
+                            }
+                            case handler_method::continuation:
+                            {
+                                // The callback will call set_value/set_error
+                                // execution will continue on the callback thread
+                                add_continuation_request_callback<>(r.op_state.request, r.op_state);
+                                break;
+                            }
+                            case handler_method::mpix_continuation:
+                            {
+                                PIKA_DETAIL_DP(mpi_tran<1>,
+                                    debug(str<>("MPI_EXT_CONTINUE"), "register_mpix_continuation",
+                                        ptr(r.op_state.request), ptr(r.op_state.request)));
+
+                                MPIX_Continue_cb_function* func = &mpix_callback<operation_state>;
+                                {
+                                    std::unique_lock l{r.op_state.mutex};
+                                    // make sure registration is done under lock to stop cond_var
+                                    // going out of scope before notification is sent
+                                    register_mpix_continuation(
+                                        &r.op_state.request, func, &r.op_state);
+                                    PIKA_DETAIL_DP(mpi_tran<1>,
+                                        debug(str<>("MPI_EXT_CONTINUE"), "waiting",
+                                            ptr(r.op_state.request)));
+                                    r.op_state.cond_var.wait(
+                                        l, [&]() { return r.op_state.completed; });
+                                }
+
+                                PIKA_DETAIL_DP(mpi_tran<1>,
+                                    debug(str<>("MPI_EXT_CONTINUE"), "woken",
+                                        ptr(r.op_state.request)));
+
                                 // call set_value/set_error depending on mpi return status
                                 set_value_error_helper(
                                     r.op_state.status, PIKA_MOVE(r.op_state.receiver));

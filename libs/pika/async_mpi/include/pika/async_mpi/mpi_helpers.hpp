@@ -18,6 +18,7 @@
 #include <pika/execution/algorithms/just.hpp>
 #include <pika/execution/algorithms/then.hpp>
 #include <pika/execution/algorithms/transfer.hpp>
+#include <pika/execution/algorithms/transfer_just.hpp>
 #include <pika/execution_base/any_sender.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
@@ -37,20 +38,8 @@ namespace pika::mpi::experimental::detail {
     template <int Level>
     inline constexpr debug::detail::print_threshold<Level, 0> mpi_tran("MPITRAN");
 
-    namespace ex = pika::execution::experimental;
-
     // -----------------------------------------------------------------
-    template <typename T>
-    struct any_sender_helper
-    {
-        using type = ex::unique_any_sender<T>;
-    };
-
-    template <>
-    struct any_sender_helper<void>
-    {
-        using type = ex::unique_any_sender<>;
-    };
+    namespace ex = pika::execution::experimental;
 
     // -----------------------------------------------------------------
     // is func(Ts..., MPI_Request) invocable
@@ -103,49 +92,17 @@ namespace pika::mpi::experimental::detail {
     }
 
     // -----------------------------------------------------------------
-    // adds a request callback to the mpi polling code which will call
-    // the set_value/set_error helper using the void return signature
-    template <typename OperationState>
-    void set_value_request_callback_void(MPI_Request request, OperationState& op_state)
-    {
-        detail::add_request_callback(
-            [&op_state](int status) mutable {
-                PIKA_DETAIL_DP(mpi_tran<5>,
-                    debug(str<>(
-                        "callback_void") /*, "stream", detail::stream_name(op_state.stream)*/));
-                set_value_error_helper(status, PIKA_MOVE(op_state.receiver));
-            },
-            request);
-    }
-
-    // -----------------------------------------------------------------
-    // adds a request callback to the mpi polling code which will call
-    // the set_value/set_error helper with a valid return value
-    template <typename Result, typename OperationState>
-    void set_value_request_callback_non_void(MPI_Request request, OperationState& op_state)
-    {
-        detail::add_request_callback(
-            [&op_state](int status) mutable {
-                PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("callback_nonvoid")));
-                PIKA_ASSERT(std::holds_alternative<Result>(op_state.result));
-                set_value_error_helper(status, PIKA_MOVE(op_state.receiver),
-                    PIKA_MOVE(std::get<Result>(op_state.result)));
-            },
-            request);
-    }
-
-    // -----------------------------------------------------------------
+    // handler_method::suspend_resume
     // adds a request callback to the mpi polling code which will call
     // notify_one to wake up a suspended task
     template <typename OperationState>
-    void resume_request_callback(MPI_Request request, OperationState& op_state)
+    void add_suspend_resume_request_callback(MPI_Request request, OperationState& op_state)
     {
         PIKA_ASSERT(op_state.completed == false);
         detail::add_request_callback(
             [&op_state](int status) mutable {
-                PIKA_DETAIL_DP(mpi_tran<5>,
-                    debug(str<>("callback_void_suspend_resume"), "status", status
-                        /*, "stream", detail::stream_name(op_state.stream)*/));
+                PIKA_DETAIL_DP(
+                    mpi_tran<5>, debug(str<>("callback_void_suspend_resume"), "status", status));
                 // wake up the suspended thread
                 {
                     std::lock_guard lk(op_state.mutex);
@@ -158,11 +115,12 @@ namespace pika::mpi::experimental::detail {
     }
 
     // -----------------------------------------------------------------
+    // handler_method::new_task
     // adds a request callback to the mpi polling code which will call
     // set_value/error on the receiver
     template <typename Receiver>
-    void
-    schedule_task_callback(MPI_Request request, execution::thread_priority p, Receiver&& receiver)
+    void add_new_task_request_callback(
+        MPI_Request request, execution::thread_priority p, Receiver&& receiver)
     {
         detail::add_request_callback(
             [receiver = PIKA_MOVE(receiver), p](int status) mutable {
@@ -175,16 +133,49 @@ namespace pika::mpi::experimental::detail {
                 else
                 {
                     // pass the result onto a new task and invoke the continuation
-                    auto snd0 = ex::just(status) | ex::transfer(default_pool_scheduler(p)) |
-                        ex::then([receiver = PIKA_MOVE(receiver)](int status) mutable {
-                            PIKA_DETAIL_DP(
-                                mpi_tran<5>, debug(str<>("set_value_error_helper"), status));
-                            set_value_error_helper(status, PIKA_MOVE(receiver));
+                    auto snd0 = ex::transfer_just(default_pool_scheduler(p)) |
+                        ex::then([receiver = PIKA_FORWARD(Receiver, receiver)]() mutable {
+                            PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("set_value")));
+                            ex::set_value(PIKA_MOVE(receiver));
                         });
                     ex::start_detached(PIKA_MOVE(snd0));
                 }
             },
             request);
+    }
+
+    // -----------------------------------------------------------------
+    // handler_method::continuation
+    // adds a request callback to the mpi polling code which will call
+    // the set_value/set_error helper using the void return signature
+    template <typename OperationState>
+    void add_continuation_request_callback(MPI_Request request, OperationState& op_state)
+    {
+        detail::add_request_callback(
+            [&op_state](int status) mutable {
+                PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("callback_void")));
+                set_value_error_helper(status, PIKA_MOVE(op_state.receiver));
+            },
+            request);
+    }
+
+    // -----------------------------------------------------------------
+    // handler_method::mpix_continuation - signature is
+    /// typedef int (MPIX_Continue_cb_function)(int rc, void *cb_data);
+    template <typename OperationState>
+    int mpix_callback([[maybe_unused]] int rc, void* cb_data)
+    {
+        PIKA_DETAIL_DP(mpi_tran<1>, debug(str<>("MPIX"), "callback triggered"));
+        auto& op_state = *static_cast<OperationState*>(cb_data);
+        // wake up the suspended thread
+        {
+            std::lock_guard lk(op_state.mutex);
+            op_state.status = rc;
+            op_state.completed = true;
+        }
+        op_state.cond_var.notify_one();
+        // tell mpix that we handled it ok, error is passed into set_error in mpi_trigger
+        return MPI_SUCCESS;
     }
 
 }    // namespace pika::mpi::experimental::detail

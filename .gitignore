@@ -20,3 +20,4 @@ packages
 /out
 .vs
 /spack-*
+*.user

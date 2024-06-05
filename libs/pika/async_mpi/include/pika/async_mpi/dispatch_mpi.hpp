@@ -152,7 +152,7 @@ namespace pika::mpi::experimental::detail {
                                     std::make_exception_ptr(mpi_exception(status)));
                                 return;
                             }
-
+                            // early poll just in case the request completed immediately
                             if (poll_request(request))
                             {
 #ifdef PIKA_HAVE_APEX
@@ -161,15 +161,9 @@ namespace pika::mpi::experimental::detail {
                                 PIKA_DETAIL_DP(mpi_tran<7>,
                                     debug(
                                         str<>("dispatch_mpi_recv"), "eager poll ok", ptr(request)));
-                                // calls set_value(request), or set_error(mpi_exception(status))
-                                set_value_error_helper(
-                                    status, PIKA_MOVE(r.op_state.receiver), MPI_REQUEST_NULL);
+                                ex::set_value(PIKA_MOVE(r.op_state.receiver), MPI_REQUEST_NULL);
                             }
-                            else
-                            {
-                                set_value_error_helper(
-                                    status, PIKA_MOVE(r.op_state.receiver), request);
-                            }
+                            else { ex::set_value(PIKA_MOVE(r.op_state.receiver), request); }
                         },
                         [&](std::exception_ptr ep) {
                             ex::set_error(PIKA_MOVE(r.op_state.receiver), PIKA_MOVE(ep));

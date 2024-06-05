@@ -69,7 +69,7 @@ namespace pika::mpi::experimental {
         // -----------------------------------------------------------------
         // handling of requests and continuations
         /// flags that control how mpi continuations are handled
-        enum class handler_mode : std::uint32_t
+        enum class handler_method : std::uint32_t
         {
             /// enable the use of a dedicated pool for polling mpi messages.
             use_pool = 0b0000'0001,    // 1
@@ -112,61 +112,56 @@ namespace pika::mpi::experimental {
             ///
             /// * unspecified : reserved for development purposes or for customization by an
             /// application using pika
-            yield_while = 0b0000'0000,       // 0x00, 00 ... 15
-            suspend_resume = 0b0001'0000,    // 0x10, 16 ... 31
-            new_task = 0b0010'0000,          // 0x20, 32 ... 47
-            continuation = 0b0011'0000,      // 0x30, 48 ... 63
-            unspecified = 0b0100'0000,       // 0x40, 64 ...
+            yield_while = 0b0000'0000,          // 0x00, 00 ... 15
+            suspend_resume = 0b0001'0000,       // 0x10, 16 ... 31
+            new_task = 0b0010'0000,             // 0x20, 32 ... 47
+            continuation = 0b0011'0000,         // 0x30, 48 ... 63
+            mpix_continuation = 0b0100'0000,    // 0x40, 64 ... 79
+            unspecified = 0b0101'0000,          // 0x50, 80 ...
 
             /// Default flags are to invoke inline, but transfer completion using a dedicated pool
             default_mode = use_pool | request_inline | high_priority | new_task,
         };
 
-        /// 2 bits define continuation mode
-        inline handler_mode get_handler_mode(std::underlying_type_t<handler_mode> flags)
+        /// 3 bits define continuation mode
+        inline handler_method get_handler_method(std::underlying_type_t<handler_method> flags)
         {
-            return static_cast<handler_mode>(
-                flags & pika::detail::to_underlying(handler_mode::method_mask));
+            return static_cast<handler_method>(
+                flags & pika::detail::to_underlying(handler_method::method_mask));
         }
 
         /// 1 bit defines high priority boost mode for pool transfers
         inline bool use_priority_boost(int mode)
         {
-            return static_cast<bool>(
-                (mode & pika::detail::to_underlying(handler_mode::high_priority)) ==
-                pika::detail::to_underlying(handler_mode::high_priority));
+            return (mode & pika::detail::to_underlying(handler_method::high_priority)) != 0;
         }
         /// 1 bit defines inline or transfer completion
         inline bool use_inline_completion(int mode)
         {
-            return static_cast<bool>(
-                (mode & pika::detail::to_underlying(handler_mode::completion_inline)) ==
-                pika::detail::to_underlying(handler_mode::completion_inline));
+            return (mode & pika::detail::to_underlying(handler_method::completion_inline)) != 0;
         }
         /// 1 bit defines inline or transfer mpi invocation
         inline bool use_inline_request(int mode)
         {
-            return static_cast<bool>(
-                (mode & pika::detail::to_underlying(handler_mode::request_inline)) ==
-                pika::detail::to_underlying(handler_mode::request_inline));
+            return (mode & pika::detail::to_underlying(handler_method::request_inline)) != 0;
         }
         /// 1 bit defines whether we use a pool or not
         inline bool use_pool(int mode)
         {
-            return static_cast<bool>((mode & pika::detail::to_underlying(handler_mode::use_pool)) ==
-                pika::detail::to_underlying(handler_mode::use_pool));
+            return (mode & pika::detail::to_underlying(handler_method::use_pool)) != 0;
         }
 
         /// used for debugging to show mode type in messages, should be removed
         inline const char* mode_string(int flags)
         {
-            switch (get_handler_mode(flags))
+            switch (get_handler_method(flags))
             {
-            case handler_mode::yield_while: return "yield_while";
-            case handler_mode::new_task: return "new_task";
-            case handler_mode::continuation: return "continuation";
-            case handler_mode::suspend_resume: return "suspend_resume";
-            case handler_mode::unspecified: return "unspecified";
+            case handler_method::yield_while: return "yield_while";
+            case handler_method::new_task: return "new_task";
+            case handler_method::continuation: return "continuation";
+            case handler_method::suspend_resume: return "suspend_resume";
+            case handler_method::mpix_continuation: return "mpix_continuation";
+            case handler_method::unspecified: return "unspecified";
             default: return "invalid";
             }
         }
@@ -174,6 +169,12 @@ namespace pika::mpi::experimental {
         /// utility : needed by static checks when debugging
         PIKA_EXPORT int comm_world_size();
 
+        /// mpix extensions in openmpi to support mpi continuations
+        using MPIX_Continue_cb_function = int(int rc, void* cb_data);
+        PIKA_EXPORT void register_mpix_continuation(
+            MPI_Request*, MPIX_Continue_cb_function*, void*);
+        /// called after each completed continuation to restart/re-enable continuation support
+        PIKA_EXPORT void restart_mpix();
     }    // namespace detail
 
     /// return the total number of mpi requests currently in queues
@@ -201,10 +202,15 @@ namespace pika::mpi::experimental {
 
     PIKA_EXPORT void register_polling();
 
+    PIKA_EXPORT int get_preferred_thread_mode();
+
+    /// when true pika::mpi can disable the pool, or change the thread mode
+    /// otherwise, the flags passed by the user to completion mode etc are honoured
+    PIKA_EXPORT void enable_optimizations(bool enable);
+
     // initialize the pika::mpi background request handler
     // All ranks should call this function (but only one thread per rank needs to do so)
-    PIKA_EXPORT void init(bool init_mpi = false, bool init_errorhandler = false,
-        pool_create_mode pool_mode = pool_create_mode::pika_decides);
+    PIKA_EXPORT void init(bool init_mpi = false, bool init_errorhandler = false);
 
     // -----------------------------------------------------------------
     PIKA_EXPORT void finalize(std::string const& pool_name = "");

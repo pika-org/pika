@@ -54,9 +54,8 @@ namespace pika::mpi::experimental {
             using pika::execution::experimental::transfer_just;
             using pika::execution::experimental::unique_any_sender;
 
-            // get the mpi completion mode
+            // get mpi completion mode settings
             auto mode = get_completion_mode();
-
             bool inline_com = use_inline_completion(mode);
             bool inline_req = use_inline_request(mode);
 
@@ -65,10 +64,9 @@ namespace pika::mpi::experimental {
             // the pool should exist if the completion mode needs it
             int cwsize = detail::comm_world_size();
             bool need_pool = (cwsize > 1 && use_pool(mode));
-
             if (pool_exists() != need_pool)
             {
-                PIKA_DETAIL_DP(mpi_tran<1>,
+                PIKA_DETAIL_DP(mpi_tran<0>,
                     error(str<>("transform_mpi"), "mode", mode, "pool_exists()", pool_exists(),
                         "need_pool", need_pool));
             }
@@ -78,48 +76,30 @@ namespace pika::mpi::experimental {
             execution::thread_priority p = use_priority_boost(mode) ?
                 execution::thread_priority::boost :
                 execution::thread_priority::normal;
-            if (inline_req || !pool_exists())
+
+            auto completion_snd = [=](MPI_Request request) -> unique_any_sender<> {
+                if (!inline_com)
+                {
+                    if (request == MPI_REQUEST_NULL)
+                    {
+                        return transfer_just(default_pool_scheduler(p));
+                    }
+                    return transfer_just(default_pool_scheduler(p), request) | trigger_mpi(mode);
+                }
+                if (request == MPI_REQUEST_NULL) { return just(); }
+                return just(request) | trigger_mpi(mode);
+            };
+
+            if (inline_req)
             {
                 return dispatch_mpi_sender<Sender, F>{PIKA_MOVE(sender), PIKA_FORWARD(F, f)} |
-                    let_value([=](MPI_Request request) -> unique_any_sender<> {
-                        if (inline_com || !pool_exists())
-                        {
-                            if (request == MPI_REQUEST_NULL)
-                                return just();
-                            else
-                                return just(request) | trigger_mpi(mode);
-                        }
-                        else
-                        {    // do not transfer if there is no pool
-                            if (request == MPI_REQUEST_NULL)
-                                return transfer_just(default_pool_scheduler(p));
-                            else
-                                return transfer_just(default_pool_scheduler(p), request) |
-                                    trigger_mpi(mode);
-                        }
-                    });
+                    let_value(completion_snd);
             }
             else
             {
                 auto snd0 = PIKA_FORWARD(Sender, sender) | transfer(mpi_pool_scheduler(p));
                 return dispatch_mpi_sender<decltype(snd0), F>{PIKA_MOVE(snd0), PIKA_FORWARD(F, f)} |
-                    let_value([=](MPI_Request request) -> unique_any_sender<> {
-                        if (inline_com)
-                        {
-                            if (request == MPI_REQUEST_NULL)
-                                return just();
-                            else
-                                return just(request) | trigger_mpi(mode);
-                        }
-                        else
-                        {
-                            if (request == MPI_REQUEST_NULL)
-                                return transfer_just(default_pool_scheduler(p));
-                            else
-                                return transfer_just(default_pool_scheduler(p), request) |
-                                    trigger_mpi(mode);
-                        }
-                    });
+                    let_value(completion_snd);
             }
         }
 
