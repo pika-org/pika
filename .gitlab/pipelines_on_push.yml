@@ -10,3 +10,5 @@ include:
   - local: '.gitlab/includes/performance_gcc13_pipeline.yml'
   - local: '.gitlab/includes/gcc12_hip5_pipeline.yml'
   - local: '.gitlab/includes/sloc.yml'
+  # TODO: Temporary
+  - local: '.gitlab/includes/clang18_pipeline.yml'
