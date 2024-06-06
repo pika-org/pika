@@ -101,6 +101,7 @@ base_spack_image_x86_64:
     - CONFIG_TAG=`echo $configuration | sha256sum - | head -c 16`
     - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/pika-$compiler-$build_type-build:$CONFIG_TAG
     - echo -e "PERSIST_IMAGE_NAME_${build_type_upper}=$PERSIST_IMAGE_NAME" >> $DOTENV_FILE
+    - echo -e "BUILD_TYPE=$BUILD_TYPE" >> $DOTENV_FILE
   artifacts:
     reports:
       dotenv: "$DOTENV_FILE"
