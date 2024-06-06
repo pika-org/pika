@@ -47,7 +47,11 @@ struct dec_counter
 
 void threadLoop()
 {
+#if defined(PIKA_HAVE_VALGRIND)
+    unsigned const iterations = 256;
+#else
     unsigned const iterations = 2048;
+#endif
     std::atomic<int> count_down(iterations);
 
     auto f = [&count_down](std::size_t iteration, std::size_t thread_expected) {
