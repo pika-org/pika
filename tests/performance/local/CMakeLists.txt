@@ -9,6 +9,7 @@ set(boost_library_dependencies ${Boost_LIBRARIES})
 
 set(benchmarks
     async_overheads
+    condition_variable_overhead
     coroutines_call_overhead
     delay_baseline
     delay_baseline_threaded
