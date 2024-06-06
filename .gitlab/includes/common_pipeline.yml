@@ -28,34 +28,35 @@ variables:
   variables:
     SLURM_JOB_NUM_NODES: 1
     SLURM_NTASKS: 1
+    SLURM_TIMELIMIT: '00:30:00'
 
 .test_common_daint_mc:
   extends:
-    - .test_common
     - .container-runner-daint-mc
+    - .test_common
   variables:
     SLURM_PARTITION: normal
 
 .test_common_eiger_mc:
   extends:
-    - .test_common
     - .container-runner-eiger-mc-f7t
+    - .test_common
   variables:
     SLURM_PARTITION: normal
 
 .test_common_gpu_daint_cuda:
   extends:
-    - .test_common
     - .container-runner-daint-gpu
+    - .test_common
   variables:
     SLURM_PARTITION: normal
 
 .test_common_gpu_clariden_cuda:
   extends:
-    - .test_common
     - .container-runner-clariden-a100
+    - .test_common
 
 .test_common_gpu_clariden_hip:
   extends:
-    - .test_common
     - .container-runner-clariden-mi200
+    - .test_common
