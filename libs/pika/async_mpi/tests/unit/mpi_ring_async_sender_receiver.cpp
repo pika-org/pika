@@ -308,15 +308,6 @@ struct message_receiver
 };
 
 // ------------------------------------------------------------
-int call_mpi_irecv(void* buf, int count, MPI_Datatype datatype, int source, int tag, MPI_Comm comm,
-    MPI_Request* request)
-{
-    int res = MPI_Irecv(buf, count, datatype, source, tag, comm, request);
-    msr_deb<6>.debug(str<>("MPI_Irecv"), dec<5>(count));
-    return res;
-}
-
-// ------------------------------------------------------------
 // this is called on a pika thread after the runtime starts up
 int pika_main(pika::program_options::variables_map& vm)
 {
