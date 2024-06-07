@@ -8,6 +8,7 @@
 #include <pika/command_line_handling/get_env_var_as.hpp>
 #include <pika/debugging/print.hpp>
 #include <pika/execution.hpp>
+#include <pika/execution_base/this_thread.hpp>
 #include <pika/init.hpp>
 #include <pika/mpi.hpp>
 #include <pika/program_options.hpp>
@@ -416,7 +417,7 @@ int pika_main(pika::program_options::variables_map& vm)
         }
 
         // don't exit until all messages are drained
-        while (counter > 0) { pika::this_thread::yield(); }
+        pika::util::yield_while([&] { return counter > 0; });
         if (output)
         {
             // clang-format off
