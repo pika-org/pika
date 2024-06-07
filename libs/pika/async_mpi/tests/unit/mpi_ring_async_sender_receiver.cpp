@@ -21,6 +21,7 @@
 //
 #include <array>
 #include <atomic>
+#include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <iomanip>
@@ -427,7 +428,7 @@ int pika_main(pika::program_options::variables_map& vm)
         }
 
         // the user queue should always be empty by now since our counter tracks it
-        PIKA_ASSERT(mpix::get_work_count() == 0);
+        PIKA_TEST_EQ(mpix::get_work_count(), static_cast<std::size_t>(0));
 
         double elapsed = t.elapsed();
 
