@@ -459,8 +459,7 @@ void init_resource_partitioner_handler(
     auto pool_mode = mpix::pool_create_mode::pika_decides;
     if (vm["no-mpi-pool"].as<bool>()) { pool_mode = mpix::pool_create_mode::force_no_create; }
 
-    if (vm["mpi-optimizations"].as<bool>()) { mpix::enable_optimizations(true); }
-    else { mpix::enable_optimizations(false); }
+    mpix::enable_optimizations(vm["mpi-optimizations"].as<bool>());
     std::cout << "init_resource_partitioner_handler enable optimizations "
               << vm["mpi-optimizations"].as<bool>() << std::endl;
 
@@ -523,8 +522,6 @@ int main(int argc, char* argv[])
     po::variables_map vm;
     po::store(po::command_line_parser(argc, argv).options(cmdline).allow_unregistered().run(), vm);
     po::notify(vm);
-
-    mpix::enable_optimizations(vm["mpi-optimizations"].as<bool>());
 
     // -----------------
     // Init MPI
