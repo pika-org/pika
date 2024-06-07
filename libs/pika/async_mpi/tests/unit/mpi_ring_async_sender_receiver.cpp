@@ -64,6 +64,7 @@ namespace mpix = pika::mpi::experimental;
 
 static bool output = false;
 static std::uint32_t mpi_poll_size = 16;
+static bool recv_before_send = false;
 std::atomic<std::uint32_t> counter;
 std::unique_ptr<pika::counting_semaphore<>> limiter;
 
@@ -263,46 +264,62 @@ struct message_receiver
         }
         else
         {
-            header hcopy = buf->header_;
+            auto f_send = [&] {
+                header hcopy = buf->header_;
 
-            // origin rank (step==0) receives one more than the other steps/ranks
-            if (buf->header_.step == 0 || (buf->header_.round < (num_rounds - 1)))
-            {
-                msg_info(rank, size, msg_type::recv, buf->header_, "recv_R");
-                // post a receive to handle it when it comes back on the next round
-                // we can reuse the same buffer for the forwarding send and for the receive,
-                // because the send _must_ complete before the receive
-                // even if there is only one rank in the ring
-                message_receiver reclambda(rank, orank, size, tag, num_rounds, message_size, buf);
+                // prepare new send buffer for forwarding message on
+                auto buf2 = get_msg_buffer(hcopy);
+                msg_info(rank, size, msg_type::send, buf2->header_, "send_R");
+                auto tx_snd2 = ex::just(buf2, message_size, MPI_UNSIGNED_CHAR,
+                                   next_rank(rank, size), tag, MPI_COMM_WORLD) |
+                    mpix::transform_mpi(MPI_Isend /*, mpix::stream_type::send_2*/) |
+                    ex::then([buf2 = buf2, rank = rank, size = size](/*int result*/) {
+                        counter--;
+                        msg_info(rank, size, msg_type::send, buf2->header_, "forwarded");
+                        release_msg_buffer(buf2);
+                    });
 
-                // the recursive lambda will handle it
-                auto rx_snd2 = ex::just(buf, message_size, MPI_UNSIGNED_CHAR, prev_rank(rank, size),
-                                   tag, MPI_COMM_WORLD) |
-                    mpix::transform_mpi(MPI_Irecv /*, mpix::stream_type::receive_2*/) |
-                    ex::then(std::move(reclambda));
-                // launch the receive for the msg on the next round
+                // launch the forwarding send for the current round
                 msr_deb<6>.debug(
-                    str<>("start_detached"), "rx_snd2", buf->header_.round, buf->header_.step);
-                ex::start_detached(std::move(rx_snd2));
+                    str<>("start_detached"), "tx_snd2", buf2->header_.round, buf2->header_.step);
+                ex::start_detached(std::move(tx_snd2));
+            };
+
+            auto f_recv = [&] {
+                // origin rank (step==0) receives one more than the other steps/ranks
+                if (buf->header_.step == 0 || (buf->header_.round < (num_rounds - 1)))
+                {
+                    msg_info(rank, size, msg_type::recv, buf->header_, "recv_R");
+                    // post a receive to handle it when it comes back on the next round
+                    // we can reuse the same buffer for the forwarding send and for the receive,
+                    // because the send _must_ complete before the receive
+                    // even if there is only one rank in the ring
+                    message_receiver reclambda(
+                        rank, orank, size, tag, num_rounds, message_size, buf);
+
+                    // the recursive lambda will handle it
+                    auto rx_snd2 = ex::just(buf, message_size, MPI_UNSIGNED_CHAR,
+                                       prev_rank(rank, size), tag, MPI_COMM_WORLD) |
+                        mpix::transform_mpi(MPI_Irecv /*, mpix::stream_type::receive_2*/) |
+                        ex::then(std::move(reclambda));
+                    // launch the receive for the msg on the next round
+                    msr_deb<6>.debug(
+                        str<>("start_detached"), "rx_snd2", buf->header_.round, buf->header_.step);
+                    ex::start_detached(std::move(rx_snd2));
+                }
+                else { release_msg_buffer(buf); }
+            };
+
+            if (recv_before_send)
+            {
+                f_recv();
+                f_send();
             }
-            else { release_msg_buffer(buf); }
-
-            // prepare new send buffer for forwarding message on
-            auto buf2 = get_msg_buffer(hcopy);
-            msg_info(rank, size, msg_type::send, buf2->header_, "send_R");
-            auto tx_snd2 = ex::just(buf2, message_size, MPI_UNSIGNED_CHAR, next_rank(rank, size),
-                               tag, MPI_COMM_WORLD) |
-                mpix::transform_mpi(MPI_Isend /*, mpix::stream_type::send_2*/) |
-                ex::then([buf2 = buf2, rank = rank, size = size](/*int result*/) {
-                    counter--;
-                    msg_info(rank, size, msg_type::send, buf2->header_, "forwarded");
-                    release_msg_buffer(buf2);
-                });
-
-            // launch the forwarding send for the current round
-            msr_deb<6>.debug(
-                str<>("start_detached"), "tx_snd2", buf2->header_.round, buf2->header_.step);
-            ex::start_detached(std::move(tx_snd2));
+            else
+            {
+                f_send();
+                f_recv();
+            }
         }
     }
 };
@@ -336,6 +353,7 @@ int pika_main(pika::program_options::variables_map& vm)
     const std::uint32_t iterations = vm["iterations"].as<std::uint32_t>();
     const std::uint32_t num_rounds = vm["rounds"].as<std::uint32_t>();
     output = vm.count("output") != 0;
+    recv_before_send = vm["recv-before-send"].as<bool>();
     //
     std::uint32_t in_flight = 65536;
     if (vm.count("in-flight-limit")) { in_flight = vm["in-flight-limit"].as<std::uint32_t>(); }
@@ -367,44 +385,61 @@ int pika_main(pika::program_options::variables_map& vm)
             msr_deb<3>.debug(str<>("acquire"), i);
             limiter->acquire();
 
-            // every rank starts a ring send,
-            // on first round - every rank receives a message from all other ranks
-            for (std::uint32_t orank = 0; orank < std::uint32_t(size); orank++)
-            {
-                // post a ring receive for each rank at this iteration
-                // the message is always received from the previous rank
-                // and has the tag associated with the originating rank
+            auto f_send = [&] {
+                // start the ring (first message) message for this iteration/rank
                 std::uint32_t tag =
-                    make_tag(std::uint32_t(orank), std::uint32_t(i), std::uint32_t(size));
-                auto rbuf = get_msg_buffer(header{0, tag, i, 0, 0, orank, message_size});
-                msg_info(rank, size, msg_type::recv, rbuf->header_, "recv");
+                    make_tag(std::uint32_t(rank), std::uint32_t(i), std::uint32_t(size));
+                auto sbuf =
+                    get_msg_buffer(header{0, tag, i, 0, 0, std::uint32_t(rank), message_size});
+                auto send_snd = ex::just(sbuf, message_size, MPI_UNSIGNED_CHAR,
+                                    next_rank(rank, size), tag, MPI_COMM_WORLD) |
+                    mpix::transform_mpi(MPI_Isend /*, mpix::stream_type::send_1*/) |
+                    ex::then([rank, size, sbuf](/*int res*/) {
+                        counter--;
+                        msg_info(rank, size, msg_type::send, sbuf->header_, "sent");
+                        release_msg_buffer(sbuf);
+                    });
+                msg_info(rank, size, msg_type::send, sbuf->header_, "send");
+                msr_deb<6>.debug(str<>("start_detached"), "send_snd", i);
+                ex::start_detached(std::move(send_snd));
+            };
 
-                // a handler for a receive that recursively posts receives and handles them
-                message_receiver reclambda(rank, orank, size, tag, num_rounds, message_size, rbuf);
-                // create chain of senders to make the mpi recv and handle it
-                auto rx_snd1 = ex::just(rbuf, message_size, MPI_UNSIGNED_CHAR,
-                                   prev_rank(rank, size), tag, MPI_COMM_WORLD) |
-                    mpix::transform_mpi(MPI_Irecv /*, mpix::stream_type::receive_1*/) |
-                    ex::then(std::move(reclambda));
-                msr_deb<6>.debug(str<>("start_detached"), "rx_snd1", i, orank);
-                ex::start_detached(std::move(rx_snd1));
+            auto f_recv = [&] {
+                // every rank starts a ring send,
+                // on first round - every rank receives a message from all other ranks
+                for (std::uint32_t orank = 0; orank < std::uint32_t(size); orank++)
+                {
+                    // post a ring receive for each rank at this iteration
+                    // the message is always received from the previous rank
+                    // and has the tag associated with the originating rank
+                    std::uint32_t tag =
+                        make_tag(std::uint32_t(orank), std::uint32_t(i), std::uint32_t(size));
+                    auto rbuf = get_msg_buffer(header{0, tag, i, 0, 0, orank, message_size});
+                    msg_info(rank, size, msg_type::recv, rbuf->header_, "recv");
+
+                    // a handler for a receive that recursively posts receives and handles them
+                    message_receiver reclambda(
+                        rank, orank, size, tag, num_rounds, message_size, rbuf);
+                    // create chain of senders to make the mpi recv and handle it
+                    auto rx_snd1 = ex::just(rbuf, message_size, MPI_UNSIGNED_CHAR,
+                                       prev_rank(rank, size), tag, MPI_COMM_WORLD) |
+                        mpix::transform_mpi(MPI_Irecv /*, mpix::stream_type::receive_1*/) |
+                        ex::then(std::move(reclambda));
+                    msr_deb<6>.debug(str<>("start_detached"), "rx_snd1", i, orank);
+                    ex::start_detached(std::move(rx_snd1));
+                }
+            };
+
+            if (recv_before_send)
+            {
+                f_recv();
+                f_send();
             }
-
-            // start the ring (first message) message for this iteration/rank
-            std::uint32_t tag =
-                make_tag(std::uint32_t(rank), std::uint32_t(i), std::uint32_t(size));
-            auto sbuf = get_msg_buffer(header{0, tag, i, 0, 0, std::uint32_t(rank), message_size});
-            auto send_snd = ex::just(sbuf, message_size, MPI_UNSIGNED_CHAR, next_rank(rank, size),
-                                tag, MPI_COMM_WORLD) |
-                mpix::transform_mpi(MPI_Isend /*, mpix::stream_type::send_1*/) |
-                ex::then([rank, size, sbuf](/*int res*/) {
-                    counter--;
-                    msg_info(rank, size, msg_type::send, sbuf->header_, "sent");
-                    release_msg_buffer(sbuf);
-                });
-            msg_info(rank, size, msg_type::send, sbuf->header_, "send");
-            msr_deb<6>.debug(str<>("start_detached"), "send_snd", i);
-            ex::start_detached(std::move(send_snd));
+            else
+            {
+                f_send();
+                f_recv();
+            }
         }
 
         // don't exit until all messages are drained
@@ -491,6 +526,9 @@ int main(int argc, char* argv[])
     cmdline.add_options()("message-bytes",
         pika::program_options::value<std::uint32_t>()->default_value(64),
         "Specify the buffer size to use for messages (min 16).");
+
+    cmdline.add_options()("recv-before-send", pika::program_options::bool_switch(),
+        "Submit MPI_Irecvs before MPI_Isends instead of other way around.");
 
     cmdline.add_options()("output",
         "Display messages during test");

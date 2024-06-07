@@ -604,11 +604,6 @@ namespace pika::mpi::experimental {
                         debug(
                             str<>("CB invoke"), ptr(mpi_data_.callbacks_[index].request_), status));
 
-                    // Invoke callback (PIKA_MOVE doesn't compile here)
-                    PIKA_INVOKE(std::move(mpi_data_.callbacks_[index].cb_), status);
-
-                    pika::threads::detail::decrement_global_activity_count();
-
                     // Remove the request from our vector to prevent retesting
                     mpi_data_.requests_[index] = MPI_REQUEST_NULL;
 
@@ -616,6 +611,11 @@ namespace pika::mpi::experimental {
                     // if invoked code checks in_flight value
                     --mpi_data_.all_in_flight_;
                     --mpi_data_.active_requests_size_;
+
+                    // Invoke callback (PIKA_MOVE doesn't compile here)
+                    PIKA_INVOKE(std::move(mpi_data_.callbacks_[index].cb_), status);
+
+                    pika::threads::detail::decrement_global_activity_count();
                 }
             } while (event_handled == true);
 
