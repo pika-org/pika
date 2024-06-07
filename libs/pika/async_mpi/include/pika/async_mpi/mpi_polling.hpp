@@ -190,6 +190,7 @@ namespace pika::mpi::experimental {
     // -----------------------------------------------------------------
     /// Get the polling transfer mode for continuations.
     PIKA_EXPORT std::size_t get_completion_mode();
+    PIKA_EXPORT void set_completion_mode(std::size_t mode);
 
     PIKA_EXPORT bool create_pool(
         std::string const& = "", pool_create_mode = pool_create_mode::pika_decides);

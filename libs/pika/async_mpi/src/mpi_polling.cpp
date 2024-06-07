@@ -742,6 +742,7 @@ namespace pika::mpi::experimental {
 
     // -----------------------------------------------------------------
     std::size_t get_completion_mode() { return detail::completion_flags_; }
+    void set_completion_mode(std::size_t mode) { detail::completion_flags_ = mode; }
 
     // -----------------------------------------------------------------
     bool create_pool(std::string const& pool_name, pool_create_mode mode)
