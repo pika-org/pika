@@ -24,8 +24,6 @@
 namespace ex = pika::execution::experimental;
 namespace po = pika::program_options;
 
-std::atomic<int> task_counter{0};
-
 //#define DEBUG(x) std::cout << x << std::endl;
 #define DEBUG(x)
 
@@ -44,10 +42,11 @@ struct task_data
         if (--p->reference_count == 0) delete p;
     }
 };
-using itp = pika::intrusive_ptr<task_data>;
+using task_data_ptr = pika::intrusive_ptr<task_data>;
 
 // ------------------------------------------------
-void function_A(std::uint64_t loops, itp tda, itp tdb)
+void function_A(
+    std::uint64_t loops, std::atomic<int>& task_counter, task_data_ptr tda, task_data_ptr tdb)
 {
     for (std::uint64_t i = 0; i < loops; ++i)
     {
@@ -73,14 +72,14 @@ void function_A(std::uint64_t loops, itp tda, itp tdb)
         // -------------------
         // PONG
         // -------------------
-        // A sleeps until thread B sets pong_ready and wakes us
+        // sleep until thread B notifies us
         {
             std::unique_lock lk2(tda->mtx_);
             tda->cv_.wait(lk2, [tda] { return tda->pong_ready_; });
         }
         DEBUG("A : step 3 complete");
 
-        // now thread B will go to sleep, so wake it up
+        // notify thread B that we are ready
         {
             std::lock_guard lk2(tdb->mtx_);
             tdb->ping_ready_ = false;
@@ -96,7 +95,8 @@ void function_A(std::uint64_t loops, itp tda, itp tdb)
 }
 
 // ------------------------------------------------
-void function_B(std::uint64_t loops, itp tda, itp tdb)
+void function_B(
+    std::uint64_t loops, std::atomic<int>& task_counter, task_data_ptr tda, task_data_ptr tdb)
 {
     for (std::uint64_t i = 0; i < loops; ++i)
     {
@@ -148,29 +148,26 @@ template <typename Scheduler>
 void test_cv(Scheduler&& sched, std::uint64_t loops)
 {
     int N = pika::get_num_worker_threads() / 2;
-    task_counter = 2 * N;
-    for (int n = 0; n < N; n++)
+    std::atomic<int> task_counter{2 * N};
+    for (int i = 0; i < N; i++)
     {
-        itp tda(new task_data);
-        itp tdb(new task_data);
+        task_data_ptr tda(new task_data);
+        task_data_ptr tdb(new task_data);
         // thread A
-        auto s1 = ex::transfer_just(std::forward<Scheduler>(sched), tda, tdb)    //
-            | ex::then([loops](itp tda, itp tdb) {                               //
-                  function_A(loops, tda, tdb);
+        auto s1 = ex::transfer_just(sched, tda, tdb)                         //
+            | ex::then([&, loops](task_data_ptr tda, task_data_ptr tdb) {    //
+                  function_A(loops, task_counter, tda, tdb);
               });
         ex::start_detached(std::move(s1));
         // thread B
-        auto s2 = ex::transfer_just(std::forward<Scheduler>(sched), tda, tdb)    //
-            | ex::then([loops](itp tda, itp tdb) {                               //
-                  function_B(loops, tda, tdb);
+        auto s2 = ex::transfer_just(sched, tda, tdb)                         //
+            | ex::then([&, loops](task_data_ptr tda, task_data_ptr tdb) {    //
+                  function_B(loops, task_counter, tda, tdb);
               });
         ex::start_detached(std::move(s2));
     }
 
-    pika::util::yield_while([&]() {
-        //std::cout << "task_counter :" << task_counter << std::endl;
-        return task_counter > 0;
-    });
+    while (task_counter > 0) { pika::this_thread::yield(); }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -186,9 +183,9 @@ int pika_main(po::variables_map& vm)
     double time_min_s = std::numeric_limits<double>::max();
     double time_max_s = std::numeric_limits<double>::min();
 
-    // always no stack for this test
+    // use a small stack for this test
     auto sched =
-        ex::with_stacksize(ex::thread_pool_scheduler(), pika::execution::thread_stacksize::nostack);
+        ex::with_stacksize(ex::thread_pool_scheduler(), pika::execution::thread_stacksize::minimal);
 
     for (std::uint64_t i = 0; i < repetitions; i++)
     {
@@ -198,14 +195,15 @@ int pika_main(po::variables_map& vm)
         time_avg_s += time_s;
         time_max_s = (std::max)(time_max_s, time_s);
         time_min_s = (std::min)(time_min_s, time_s);
-        fmt::print("iteration {}, time {}\n", i, time_s);
+        if (!perftest_json) { fmt::print("iteration {}, time {}\n", i, time_s); }
     }
 
     time_avg_s /= repetitions;
 
-    double const time_avg_us = time_avg_s * 1e6 / loops;
-    double const time_min_us = time_min_s * 1e6 / loops;
-    double const time_max_us = time_max_s * 1e6 / loops;
+    // use 0.5 as we use 2 wait+notifies on each loop
+    double const time_avg_us = 0.5 * time_avg_s * 1e6 / loops;
+    double const time_min_us = 0.5 * time_min_s * 1e6 / loops;
+    double const time_max_us = 0.5 * time_max_s * 1e6 / loops;
 
     if (perftest_json)
     {
