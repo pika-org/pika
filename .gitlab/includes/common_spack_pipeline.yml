@@ -16,9 +16,10 @@ variables:
     - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
     - export CONFIG_TAG=`echo $DOCKERFILE_SHA-$BASE_IMAGE-$SPACK_COMMIT | sha256sum - | head -c 16`
     - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/$ARCH/pika-spack-base:$CONFIG_TAG
-    - arch_upper=`echo $ARCH | tr '[:lower:]' '[:upper:]'`
+    # - arch_upper=`echo $ARCH | tr '[:lower:]' '[:upper:]'`
     - echo -e "CONFIG_TAG=$CONFIG_TAG" >> base.env
-    - echo -e "BASE_IMAGE_$arch_upper=$PERSIST_IMAGE_NAME" >> base.env
+    # - echo -e "BASE_IMAGE_$arch_upper=$PERSIST_IMAGE_NAME" >> base.env
+    - echo -e "BASE_IMAGE=$PERSIST_IMAGE_NAME" >> base.env
   variables:
     BASE_IMAGE: docker.io/ubuntu:22.04
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_base
@@ -27,31 +28,30 @@ variables:
     reports:
       dotenv: base.env
 
-# We allow failure since santis is unstable
-base_spack_image_aarch64:
-  extends: [.container-builder-cscs-gh200, .base_spack_image]
-  allow_failure: true
+# base_spack_image_aarch64:
+#   extends: [.container-builder-cscs-gh200, .base_spack_image]
 base_spack_image_x86_64:
   extends: [.container-builder-cscs-zen2, .base_spack_image]
 
-make_multiarch_image:
-  needs:
-    - job: base_spack_image_aarch64
-      optional: true
-    - job: base_spack_image_x86_64
-  extends: .make-multiarch-image
-  after_script:
-    - echo -e "BASE_IMAGE=$PERSIST_IMAGE_NAME" >> multiarch.env
-  variables:
-    PERSIST_IMAGE_NAME: $CSCS_REGISTRY_PATH/pika-spack-base:${CONFIG_TAG}
-    PERSIST_IMAGE_NAME_AARCH64: $BASE_IMAGE_AARCH64
-    PERSIST_IMAGE_NAME_X86_64: $BASE_IMAGE_X86_64
-  artifacts:
-    reports:
-      dotenv: multiarch.env
+# make_multiarch_image:
+#   needs:
+#     - job: base_spack_image_aarch64
+#       optional: true
+#     - job: base_spack_image_x86_64
+#   extends: .make-multiarch-image
+#   after_script:
+#     - echo -e "BASE_IMAGE=$PERSIST_IMAGE_NAME" >> multiarch.env
+#   variables:
+#     PERSIST_IMAGE_NAME: $CSCS_REGISTRY_PATH/pika-spack-base:${CONFIG_TAG}
+#     PERSIST_IMAGE_NAME_AARCH64: $BASE_IMAGE_AARCH64
+#     PERSIST_IMAGE_NAME_X86_64: $BASE_IMAGE_X86_64
+#   artifacts:
+#     reports:
+#       dotenv: multiarch.env
 
 .compiler_image_template:
-  needs: [make_multiarch_image]
+  # needs: [make_multiarch_image]
+  needs: [base_spack_image_x86_64]
   before_script:
     - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
     - compiler=${COMPILER}${NVHPC_COMPILER:+-}${NVHPC_COMPILER}
