@@ -35,18 +35,10 @@ struct task_data
     pika::condition_variable cv_;
     bool ping_ready_{false};
     bool pong_ready_{false};
-    //
-    friend void intrusive_ptr_add_ref(task_data* p) { ++p->reference_count; }
-    friend void intrusive_ptr_release(task_data* p)
-    {
-        if (--p->reference_count == 0) delete p;
-    }
 };
-using task_data_ptr = pika::intrusive_ptr<task_data>;
 
 // ------------------------------------------------
-void function_A(
-    std::uint64_t loops, std::atomic<int>& task_counter, task_data_ptr tda, task_data_ptr tdb)
+void function_A(std::uint64_t loops, task_data* tda, task_data* tdb)
 {
     for (std::uint64_t i = 0; i < loops; ++i)
     {
@@ -89,14 +81,10 @@ void function_A(
         tdb->cv_.notify_one();
         DEBUG("A : step 4 complete");
     }
-    //
-    task_counter--;
-    DEBUG("A complete " << task_counter);
 }
 
 // ------------------------------------------------
-void function_B(
-    std::uint64_t loops, std::atomic<int>& task_counter, task_data_ptr tda, task_data_ptr tdb)
+void function_B(std::uint64_t loops, task_data* tda, task_data* tdb)
 {
     for (std::uint64_t i = 0; i < loops; ++i)
     {
@@ -138,9 +126,6 @@ void function_B(
         }
         DEBUG("B : step 4 complete");
     }
-    //
-    task_counter--;
-    DEBUG("B complete " << task_counter);
 }
 
 // ------------------------------------------------
@@ -148,26 +133,29 @@ template <typename Scheduler>
 void test_cv(Scheduler&& sched, std::uint64_t loops)
 {
     int N = pika::get_num_worker_threads() / 2;
-    std::atomic<int> task_counter{2 * N};
+    //
+    std::vector<ex::unique_any_sender<>> senders;
+    std::vector<task_data> task_data_A(N);
+    std::vector<task_data> task_data_B(N);
+    //
     for (int i = 0; i < N; i++)
     {
-        task_data_ptr tda(new task_data);
-        task_data_ptr tdb(new task_data);
         // thread A
-        auto s1 = ex::transfer_just(sched, tda, tdb)                         //
-            | ex::then([&, loops](task_data_ptr tda, task_data_ptr tdb) {    //
-                  function_A(loops, task_counter, tda, tdb);
+        auto s1 = ex::transfer_just(sched, &task_data_A[i], &task_data_B[i])    //
+            | ex::then([&, loops](task_data* tda, task_data* tdb) {             //
+                  function_A(loops, tda, tdb);
               });
-        ex::start_detached(std::move(s1));
+        // ex::start_detached();
+        senders.push_back(std::move(s1));
         // thread B
-        auto s2 = ex::transfer_just(sched, tda, tdb)                         //
-            | ex::then([&, loops](task_data_ptr tda, task_data_ptr tdb) {    //
-                  function_B(loops, task_counter, tda, tdb);
+        auto s2 = ex::transfer_just(sched, &task_data_A[i], &task_data_B[i])    //
+            | ex::then([&, loops](task_data* tda, task_data* tdb) {             //
+                  function_B(loops, tda, tdb);
               });
-        ex::start_detached(std::move(s2));
+        senders.push_back(std::move(s2));
     }
 
-    while (task_counter > 0) { pika::this_thread::yield(); }
+    pika::this_thread::experimental::sync_wait(ex::when_all_vector(std::move(senders)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
