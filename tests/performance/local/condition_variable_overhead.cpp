@@ -20,6 +20,7 @@
 #include <iostream>
 #include <limits>
 #include <utility>
+#include <vector>
 
 namespace ex = pika::execution::experimental;
 namespace po = pika::program_options;
