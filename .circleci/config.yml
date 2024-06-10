@@ -516,6 +516,8 @@ jobs:
               cmake \
                 -GNinja \
                 -DBUILD_SHARED_LIBS=ON \
+                -DFMT_DOC=OFF \
+                -DFMT_TEST=OFF \
                 -DCMAKE_INSTALL_PREFIX=$HOME/project/install/fmt . && \
               ninja install)
             export CMAKE_PREFIX_PATH=$HOME/project/install/fmt:${CMAKE_PREFIX_PATH}
