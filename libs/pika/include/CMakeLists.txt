@@ -18,7 +18,6 @@ set(include_headers
     pika/mutex.hpp
     pika/runtime.hpp
     pika/semaphore.hpp
-    pika/shared_mutex.hpp
     pika/stop_token.hpp
     pika/system_error.hpp
     pika/thread.hpp

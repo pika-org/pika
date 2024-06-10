@@ -91,15 +91,3 @@ if(PIKA_WITH_COMPILE_ONLY_TESTS)
   endforeach()
 
 endif()
-
-# ##################################################################################################
-set(subdirs shared_mutex)
-
-# add sub directories
-foreach(subdir ${subdirs})
-  pika_add_pseudo_target(tests.unit.modules.synchronization.${subdir})
-  add_subdirectory(${subdir})
-  pika_add_pseudo_dependencies(
-    tests.unit.modules.synchronization tests.unit.modules.synchronization.${subdir}
-  )
-endforeach()

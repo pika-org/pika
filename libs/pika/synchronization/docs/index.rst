@@ -23,7 +23,6 @@ the C++ standard ones in |pika| threads:
 * :cpp:class:`pika::no_mutex`
 * :cpp:class:`pika::once_flag`
 * :cpp:class:`pika::recursive_mutex`
-* :cpp:class:`pika::shared_mutex`
 * :cpp:class:`pika::sliding_semaphore`
 * :cpp:class:`pika::detail::spinlock_pool`
 

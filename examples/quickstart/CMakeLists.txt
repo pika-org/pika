@@ -13,8 +13,6 @@ set(example_programs
     hello_world
     latch_example # suffix added to avoid conflict with unit tests
     pipeline1
-    # shared_mutex # Disabled due to unavailable timed suspension timed_wake # Disabled due to
-    # unavailable timed suspension
     use_main_thread
 )
 
