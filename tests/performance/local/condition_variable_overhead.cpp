@@ -30,7 +30,6 @@ namespace po = pika::program_options;
 // ------------------------------------------------
 struct task_data
 {
-    pika::detail::atomic_count reference_count{0};
     pika::detail::spinlock mtx_;
     pika::condition_variable cv_;
     bool ping_ready_{false};
@@ -145,8 +144,8 @@ void test_cv(Scheduler&& sched, std::uint64_t loops)
             | ex::then([&, loops](task_data* tda, task_data* tdb) {             //
                   function_A(loops, tda, tdb);
               });
-        // ex::start_detached();
         senders.push_back(std::move(s1));
+
         // thread B
         auto s2 = ex::transfer_just(sched, &task_data_A[i], &task_data_B[i])    //
             | ex::then([&, loops](task_data* tda, task_data* tdb) {             //
