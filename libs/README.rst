@@ -8,8 +8,7 @@
 This directory holds modularized libraries pika is build upon. Those libraries
 can be seen as independent modules, with clear dependencies and no cycles.
 
-The tool ```create_module_skeleton.py`` can be used to generate a basic
-skeleton. The structure of this skeleton should be as follows:
+The structure of a module should be as follows:
 
 * ``<lib_name>/``
 
@@ -57,6 +56,8 @@ Private headers should be placed under the ``src`` directory. This allows for
 clear separation. The ``cmake`` subdirectory may include additional |cmake|_
 scripts needed to generate the respective build configurations.
 
-Documentation is placed in the ``docs`` folder. A empty skeleton for the index
-is created, which is picked up by the main build system and will be part of the
-generated documentation.
+Documentation is placed in the ``docs`` folder which contains a empty index.rst.
+It is picked up by the main build system and will be part of the generated
+documentation.
+
+Note: each file should include the copyright and the license as this one.
