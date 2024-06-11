@@ -11,6 +11,7 @@
 |github_actions_linux_hip_status|
 |github_actions_linux_sanitizers_status|
 |github_actions_macos_debug_status|
+|cscsci|
 |codacy|
 |codacy_coverage|
 
@@ -47,6 +48,10 @@ To get started using pika see the `documentation <https://pikacpp.org>`_.
 .. |github_actions_macos_debug_status| image:: https://github.com/pika-org/pika/actions/workflows/macos_debug.yml/badge.svg
      :target: https://github.com/pika-org/pika/actions/workflows/macos_debug.yml
      :alt: macOS CI (Debug)
+
+.. |cscsci| image:: https://gitlab.com/cscs-ci/ci-testing/webhook-ci/mirrors/479009878135925/5304355110917878/badges/main/pipeline.svg
+     :target: https://gitlab.com/cscs-ci/ci-testing/webhook-ci/mirrors/479009878135925/5304355110917878/-/commits/main
+     :alt: CSCS CI
 
 .. |codacy| image:: https://app.codacy.com/project/badge/Grade/e03f57f1c4cd40e7b514e552a723c125
      :target: https://app.codacy.com/gh/pika-org/pika
