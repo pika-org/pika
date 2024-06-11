@@ -10,6 +10,7 @@
 |github_actions_linux_debug_status|
 |github_actions_linux_hip_status|
 |github_actions_linux_asan_ubsan_lsan_status|
+|github_actions_linux_tsan_status|
 |github_actions_macos_debug_status|
 |codacy|
 |codacy_coverage|
@@ -42,6 +43,10 @@ To get started using pika see the `documentation <https://pikacpp.org>`_.
 
 .. |github_actions_linux_asan_ubsan_lsan_status| image:: https://github.com/pika-org/pika/actions/workflows/linux_asan_ubsan_lsan.yml/badge.svg
      :target: https://github.com/pika-org/pika/actions/workflows/linux_asan_ubsan_lsan.yml
+     :alt: Linux CI (asan/ubsan/lsan)
+
+.. |github_actions_linux_tsan_status| image:: https://github.com/pika-org/pika/actions/workflows/linux_tsan.yml/badge.svg
+     :target: https://github.com/pika-org/pika/actions/workflows/linux_tsan.yml
      :alt: Linux CI (asan/ubsan/lsan)
 
 .. |github_actions_macos_debug_status| image:: https://github.com/pika-org/pika/actions/workflows/macos_debug.yml/badge.svg
