@@ -42,6 +42,14 @@ Getting help
 Please report issues on `GitHub <https://github.com/pika-org/pika/issues>`_. General questions can
 be asked on `GitHub discussions <https://github.com/pika-org/pika/discussions>`_.
 
+Users of pika
+=============
+
+pika is used in `DLA-Future <https://github.com/eth-cscs/DLA-Future>`_, a distributed linear algebra
+library used in high-performance computing applications.
+
+If you or a project you know is using pika, let us know with an issue or pull request.
+
 Acknowledgements
 ================
 
