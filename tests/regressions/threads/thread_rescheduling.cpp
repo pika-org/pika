@@ -52,7 +52,13 @@ namespace detail {
 ///////////////////////////////////////////////////////////////////////////////
 void change_thread_state(thread_id_type thread)
 {
-    set_thread_state(thread, pika::threads::detail::thread_schedule_state::pending);
+    // Do not allow retrying when the thread is active. This can spawn additional tasks that try to
+    // set the state and these tasks are not tracked by the sync_waits in pika_main. These calls to
+    // set_thread_state can then race against the call to set the state to terminate.
+    constexpr bool retry_on_active = false;
+    set_thread_state(thread, pika::threads::detail::thread_schedule_state::pending,
+        pika::threads::detail::thread_restart_state::signaled,
+        pika::execution::thread_priority::normal, retry_on_active);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
