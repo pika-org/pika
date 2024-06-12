@@ -16,7 +16,7 @@ Usage
 Getting started
 ===============
 
-The recommended way to install pika is through `spack <https://spack.readthedocs.io>`_:
+The recommended way to install pika is through `spack <https://spack.readthedocs.io>`__:
 
 .. code-block:: bash
 
@@ -44,39 +44,39 @@ Manual installation
 If you'd like to build pika manually you will need CMake 3.22.0 or greater and a recent C++ compiler
 supporting C++17:
 
-- `GCC <https://gcc.gnu.org>`_ 9 or greater
-- `clang <https://clang.llvm.org>`_ 11 or greater
+- `GCC <https://gcc.gnu.org>`__ 9 or greater
+- `clang <https://clang.llvm.org>`__ 11 or greater
 
 Additionally, pika depends on:
 
-- `header-only Boost <https://boost.org>`_ 1.71.0 or greater
-- `hwloc <https://www-lb.open-mpi.org/projects/hwloc/>`_ 1.11.5 or greater
-- `fmt <https://fmt.dev/latest/index.html>`_ 9.0.0 or greater
+- `header-only Boost <https://boost.org>`__ 1.71.0 or greater
+- `hwloc <https://www-lb.open-mpi.org/projects/hwloc/>`__ 1.11.5 or greater
+- `fmt <https://fmt.dev/latest/index.html>`__ 9.0.0 or greater
 
 pika optionally depends on:
 
-* `gperftools/tcmalloc <https://github.com/gperftools/gperftools>`_, `jemalloc
-  <http://jemalloc.net/>`_, or `mimalloc <https://github.com/microsoft/mimalloc>`_. It is *highly*
+* `gperftools/tcmalloc <https://github.com/gperftools/gperftools>`__, `jemalloc
+  <http://jemalloc.net/>`__, or `mimalloc <https://github.com/microsoft/mimalloc>`__. It is *highly*
   recommended to use one of these allocators as they perform significantly better than the system
   allocators. You can set the allocator through the CMake variable ``PIKA_WITH_MALLOC``. If you want
   to use the system allocator (e.g. for debugging) you can do so by setting
   ``PIKA_WITH_MALLOC=system``.
-* `CUDA <https://docs.nvidia.com/cuda/>`_ 11.0 or greater. CUDA support can be enabled with
+* `CUDA <https://docs.nvidia.com/cuda/>`__ 11.0 or greater. CUDA support can be enabled with
   ``PIKA_WITH_CUDA=ON``. pika can also be built with nvc++ from the `NVIDIA HPC SDK
-  <https://developer.nvidia.com/hpc-sdk>`_. In the latter case, set ``CMAKE_CXX_COMPILER`` to
+  <https://developer.nvidia.com/hpc-sdk>`__. In the latter case, set ``CMAKE_CXX_COMPILER`` to
   ``nvc++``.
-* `HIP <https://rocmdocs.amd.com/en/latest/index.html>`_ 5.2.0 or greater. HIP support can be
+* `HIP <https://rocmdocs.amd.com/en/latest/index.html>`__ 5.2.0 or greater. HIP support can be
   enabled with ``PIKA_WITH_HIP=ON``.
-* `MPI <https://www.mpi-forum.org/>`_. MPI support can be enabled with ``PIKA_WITH_MPI=ON``.
-* `Boost.Context <https://boost.org>`_ on macOS or exotic platforms which are not supported by the
+* `MPI <https://www.mpi-forum.org/>`__. MPI support can be enabled with ``PIKA_WITH_MPI=ON``.
+* `Boost.Context <https://boost.org>`__ on macOS or exotic platforms which are not supported by the
   default user-level thread implementations in pika. This can be enabled with
   ``PIKA_WITH_BOOST_CONTEXT=ON``.
-* `stdexec <https://github.com/NVIDIA/stdexec>`_. stdexec support can be enabled with
+* `stdexec <https://github.com/NVIDIA/stdexec>`__. stdexec support can be enabled with
   ``PIKA_WITH_STDEXEC=ON`` (currently tested with commit `b39a506096900de4074ee556867a3805bd8351bd
-  <https://github.com/NVIDIA/stdexec/tree/b39a506096900de4074ee556867a3805bd8351bd>`_).  The
+  <https://github.com/NVIDIA/stdexec/tree/b39a506096900de4074ee556867a3805bd8351bd>`__).  The
   integration is experimental. See :ref:`pika_stdexec` for more information about the integration.
 
-If you are using `nix <https://nixos.org>`_ you can also use the ``shell.nix`` file provided at the
+If you are using `nix <https://nixos.org>`__ you can also use the ``shell.nix`` file provided at the
 root of the repository to quickly enter a development environment:
 
 .. code-block:: bash
@@ -112,9 +112,9 @@ of CMake options you can use to customize the installation.
 - ``PIKA_WITH_CUDA``: Enable CUDA support.
 - ``PIKA_WITH_HIP``: Enable HIP support.
 - ``PIKA_WITH_MPI``: Enable MPI support.
-- ``PIKA_WITH_STDEXEC``: Enable `stdexec <https://github.com/NVIDIA/stdexec>`_ support.
-- ``PIKA_WITH_APEX``: Enable `APEX <https://uo-oaciss.github.io/apex>`_ support.
-- ``PIKA_WITH_TRACY``: Enable `Tracy <https://github.com/wolfpld/tracy>`_ support.
+- ``PIKA_WITH_STDEXEC``: Enable `stdexec <https://github.com/NVIDIA/stdexec>`__ support.
+- ``PIKA_WITH_APEX``: Enable `APEX <https://uo-oaciss.github.io/apex>`__ support.
+- ``PIKA_WITH_TRACY``: Enable `Tracy <https://github.com/wolfpld/tracy>`__ support.
 - ``PIKA_WITH_BOOST_CONTEXT``: Use Boost.Context for user-level thread context switching.
 - ``PIKA_WITH_TESTS``: Enable tests. Tests can be built with ``cmake --build . --target tests`` and
   run with ``ctest --output-on-failure``.
@@ -194,7 +194,7 @@ when pika is used together with a runtime that may reset the process mask of the
 Logging
 =======
 
-The pika runtime uses `spdlog <https://github.com/gabime/spdlog>`_ for logging. Warnings and more
+The pika runtime uses `spdlog <https://github.com/gabime/spdlog>`__ for logging. Warnings and more
 severe messages are logged by default. To change the logging level, set the ``PIKA_LOG_LEVEL``
 environment variable to a value between 0 (trace) and 6 (off) (the values correspond to levels in
 spdlog). The log messages are sent to stderr by default. The destination can be changed by setting
@@ -250,7 +250,7 @@ following:
 Relation to std::execution and stdexec
 ======================================
 
-When pika was first created as a fork of `HPX <https://github.com/STEllAR-GROUP/hpx>`_ in 2022
+When pika was first created as a fork of `HPX <https://github.com/STEllAR-GROUP/hpx>`__ in 2022
 stdexec was in its infancy. Because of this, pika contains an implementation of a subset of the
 earlier revisions of P2300. The main differences to stdexec and the proposed facilities are:
 
@@ -258,7 +258,7 @@ earlier revisions of P2300. The main differences to stdexec and the proposed fac
   allows compatibility with slightly older compiler versions and e.g. nvcc.
 - The pika implementation uses ``value_types``, ``error_types``, and ``sends_done`` instead of
   ``completion_signatures`` in sender types, as in the `first 3 revisions of P2300
-  <https://wg21.link/p2300r3>`_.
+  <https://wg21.link/p2300r3>`__.
 - ``pika::this_thread::experimental::sync_wait`` differs from ``std::this_thread::sync_wait``
   in that the former expects the sender to send a single value which is returned directly by
   ``sync_wait``. If no value is sent by the sender, ``sync_wait`` returns ``void``.  Errors in

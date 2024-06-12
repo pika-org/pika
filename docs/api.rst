@@ -11,7 +11,7 @@
 API reference
 =============
 
-pika follows `semver <https://semver.org>`_. pika is currently at a 0.X version which means that
+pika follows `semver <https://semver.org>`__. pika is currently at a 0.X version which means that
 minor versions may break the API. pika gives no guarantees about ABI stability. The ABI may change
 even in patch versions.
 
