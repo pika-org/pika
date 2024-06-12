@@ -270,3 +270,29 @@ but provides otherwise no guarantees of interchangeable functionality. pika only
 of the proposed sender algorithms which is why we recommend that you enable ``PIKA_WITH_STDEXEC``
 whenever possible. We plan to deprecate and remove the P2300 implementation in pika in favour of
 stdexec and/or standard library implementations.
+
+More resources
+==============
+
+.. |stdexec_resources| replace:: list of presentations, blog posts etc. about the ``std::execution`` model
+.. _stdexec_resources: https://github.com/NVIDIA/stdexec#resources
+
+The `P2300 proposal <https://wg21.link/p2300>`__ is the source of truth for ``std::execution``
+functionality. The reference implementation of P2300, stdexec, maintains a |stdexec_resources|_.  In
+addition to the above, other implementations of the ``std::execution`` model exist, with useful
+documentation and examples:
+
+- `HPX <https://hpx-docs.stellar-group.org/latest/html/index.html>`__
+- `libunifex <https://github.com/facebookexperimental/libunifex/blob/main/doc/overview.md>`__
+
+Even though the implementations differ, the concepts are transferable between implementations and
+useful for learning.
+
+pika has been presented at the following events and slides of the presentations are public:
+
+- `CERN Computing seminar in 2022 <https://indico.cern.ch/category/82/>`__: introduction to pika and
+  DLA-Future (`slides <https://indico.cern.ch/event/1194848/>`__)
+- `The SOS-25 workshop in 2023 <https://sos-25.highspeedcomputing.org/home>`__: an overview of use of
+  ``std::execution`` at the Swiss National Supercomputing Centre, covering uses of pika and HPX in
+  DLA-Future, Octo-Tiger, and and Kokkos (`slides
+  <https://drive.google.com/file/d/1rs-iosjFZJzBm1nsVwnhr6qjWbzdRmpc/view>`__)
