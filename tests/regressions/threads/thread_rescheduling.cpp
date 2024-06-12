@@ -149,8 +149,16 @@ int pika_main(variables_map& vm)
         tt::sync_wait(std::move(before));
         tt::sync_wait(std::move(after));
 
-        set_thread_state(thread_id.noref(), pika::threads::detail::thread_schedule_state::pending,
-            pika::threads::detail::thread_restart_state::terminate);
+        // set_thread_state will not change the restart state if the task is already in a pending
+        // state. Even though we wait for the tasks above to finish, the target task may not be
+        // active or suspended yet. Since we want to guarantee that the task terminates, we may have
+        // to retry multiple times until the restart state actually becomes terminate.
+        pika::util::yield_while([&] {
+            auto prev_state = set_thread_state(thread_id.noref(),
+                pika::threads::detail::thread_schedule_state::pending,
+                pika::threads::detail::thread_restart_state::terminate);
+            return prev_state.state() == pika::threads::detail::thread_schedule_state::pending;
+        });
     }
 
     pika::finalize();
