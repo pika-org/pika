@@ -11,6 +11,15 @@
 Developer documentation
 =======================
 
+Contributing
+============
+
+Contributions are always welcome. Before starting work on larger features it's recommended to
+coordinate design ideas through GitHub issues. Existing open issues may sometimes no longer be
+useful, have already been solved, or the notes on solving a particular problem may be outdated.
+Issues that we think are easier for someone new to the project to get started with are `labeled on
+the issue tracker <https://github.com/pika-org/pika/issues/1118>`__.
+
 Building documentation
 ======================
 
