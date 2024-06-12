@@ -58,6 +58,7 @@ def build(
         source_dir = os.path.abspath(os.path.join(script_dir, os.path.pardir))
 
     # env.set_cmake_arg('CMAKE_BUILD_TYPE', build_type.title())
+    env.set_cmake_arg("PYUTILS_CMAKE_INTERPROCEDURAL_OPTIMIZATION", "ON")
     env.set_cmake_arg("PYUTILS_PIKA_WITH_MALLOC", "mimalloc")
     env.set_cmake_arg("PYUTILS_PIKA_WITH_TESTS", "ON")
     env.set_cmake_arg("PYUTILS_PIKA_WITH_TESTS_BENCHMARKS", "ON")
