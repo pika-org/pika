@@ -36,7 +36,7 @@ using pika::threads::detail::make_thread_function_nullary;
 using pika::threads::detail::register_thread;
 using pika::threads::detail::thread_init_data;
 
-using pika::threads::get_thread_phase;
+using pika::threads::detail::get_thread_phase;
 using pika::threads::detail::get_self;
 using pika::threads::detail::get_self_id;
 using pika::threads::detail::set_thread_state;
@@ -50,7 +50,7 @@ using fifo_type = std::vector<value_type>;
 void lock_and_wait(mutex& m, barrier& b0, barrier& b1, value_type& entry, std::size_t /* wait */)
 {
     // Wait for all threads in this iteration to be created.
-    b0.wait();
+    b0.arrive_and_wait();
 
     // keep this thread alive while being suspended
     thread_id_ref_type this_ = get_self_id();
@@ -75,7 +75,7 @@ void lock_and_wait(mutex& m, barrier& b0, barrier& b1, value_type& entry, std::s
     }
 
     // Make pika_main wait for us to finish.
-    b1.wait();
+    b1.arrive_and_wait();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -124,10 +124,10 @@ int pika_main(variables_map& vm)
         }
 
         // Tell all pikathreads that they can start running.
-        b0.wait();
+        b0.arrive_and_wait();
 
         // Wait for all pikathreads to finish.
-        b1.wait();
+        b1.arrive_and_wait();
 
         // {{{ Print results for this iteration.
         for (value_type& entry : pikathreads)
