@@ -1,0 +1,41 @@
+# Copyright (c) 2024 ETH Zurich
+#
+# SPDX-License-Identifier: BSL-1.0
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+name: Linux CI (Coverage upload)
+
+on:
+  workflow_run:
+    workflows: ["Linux CI (Coverage)"]
+    types:
+      - completed
+
+jobs:
+  build:
+    name: github/linux/coverage/upload
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download coverage report from GH artifacts
+        id: download-artifact
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          name: coverage-report
+          workflow: linux_coverage.yml
+          allow_forks: true
+          workflow_conclusion: success
+      - name: Upload coverage report
+        shell: bash
+        working-directory: build
+        run: |
+            curl --output codacy-coverage-reporter-linux --location https://artifacts.codacy.com/bin/codacy-coverage-reporter/13.16.8/codacy-coverage-reporter-linux
+            echo "85d98fccfa4350aa65e709557540c74ca6fea493f690c602a991f8f14d2082d8  codacy-coverage-reporter-linux" | sha256sum --check
+            chmod +x codacy-coverage-reporter-linux
+            ./codacy-coverage-reporter-linux \
+                report \
+                --project-token ${{ secrets.CODACY_PIKA_PROJECT_TOKEN }} \
+                --commit-uuid ${{ github.event.workflow_run.head_sha }} \
+                --language CPP \
+                --coverage-reports lcov.info
