@@ -4,6 +4,7 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#include <pika/assert.hpp>
 #include <pika/barrier.hpp>
 #include <pika/functional/bind.hpp>
 #include <pika/init.hpp>
@@ -87,6 +88,7 @@ int pika_main(variables_map& vm)
     std::size_t mutex_count = 0;
 
     if (vm.count("mutexes")) mutex_count = vm["mutexes"].as<std::size_t>();
+    PIKA_ASSERT(mutex_count != 0);
 
     std::size_t iterations = 0;
 
