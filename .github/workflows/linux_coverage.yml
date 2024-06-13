@@ -10,10 +10,10 @@ on:
   merge_group:
   pull_request:
   push:
-    branches:
-      # Development and release branches
-      - main
-      - release**
+    # branches:
+    #   # Development and release branches
+    #   - main
+    #   - release**
 
 jobs:
   build:
