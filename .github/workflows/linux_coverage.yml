@@ -7,9 +7,13 @@
 name: Linux CI (Coverage)
 
 on:
+  merge_group:
+  pull_request:
   push:
     branches:
+      # Development and release branches
       - main
+      - release**
 
 jobs:
   build:
@@ -54,7 +58,7 @@ jobs:
         continue-on-error: true
         run: |
             ctest -j2 --timeout 120 --output-on-failure
-      - name: Upload coverage report
+      - name: Generate coverage report
         shell: bash
         working-directory: build
         run: |
@@ -65,7 +69,9 @@ jobs:
                 --llvm \
                 --ignore-not-existing \
                 --keep-only "*libs/pika/*/{src,include}/*"
-            bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-                --project-token ${{ secrets.CODACY_PIKA_PROJECT_TOKEN }} \
-                --language CPP \
-                --coverage-reports lcov.info
+      - name: Upload coverage report to GH artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: build/lcov.info
+          if-no-files-found: error
