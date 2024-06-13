@@ -17,7 +17,7 @@ pika_add_module(
   SOURCES ${version_sources}
   HEADERS ${version_headers}
   CMAKE_SUBDIRS tests
-  MODULE_DEPENDENCIES pika_config pika_prefix
+  MODULE_DEPENDENCIES pika_config
 )
 
 target_include_directories(pika_version PRIVATE $<BUILD_INTERFACE:${PIKA_BINARY_DIR}>)

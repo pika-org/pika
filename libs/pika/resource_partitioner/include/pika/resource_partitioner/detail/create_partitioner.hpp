@@ -10,7 +10,6 @@
 #include <pika/functional/bind_back.hpp>
 #include <pika/functional/function.hpp>
 #include <pika/ini/ini.hpp>
-#include <pika/prefix/find_prefix.hpp>
 #include <pika/resource_partitioner/partitioner_fwd.hpp>
 
 #include <cstddef>
