@@ -156,7 +156,7 @@ namespace pika::util {
         {
             std::vector<char> buf(cb);
             sysctl(mib, 4, &buf[0], &cb, nullptr, 0);
-            std::copy(&buf[0], &buf[cb], std::back_inserter(r));
+            std::copy(buf.begin(), buf.end(), std::back_inserter(r));
         }
 
 #else
