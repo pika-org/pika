@@ -28,7 +28,6 @@ jobs:
           workflow_conclusion: success
       - name: Upload coverage report
         shell: bash
-        working-directory: build
         run: |
             curl --output codacy-coverage-reporter-linux --location https://artifacts.codacy.com/bin/codacy-coverage-reporter/13.16.8/codacy-coverage-reporter-linux
             echo "85d98fccfa4350aa65e709557540c74ca6fea493f690c602a991f8f14d2082d8  codacy-coverage-reporter-linux" | sha256sum --check
