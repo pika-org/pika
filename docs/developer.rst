@@ -1,17 +1,65 @@
 ..
-    Copyright (c)      2022 ETH Zurich
-    Copyright (c) 2007-2017 Louisiana State University
+    Copyright (c) 2024 ETH Zurich
 
     SPDX-License-Identifier: BSL-1.0
     Distributed under the Boost Software License, Version 1.0. (See accompanying
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-Release procedure for pika
-==========================
+.. _develop:
 
-The current target is to produce a new (minor) release once a month.
+=======================
+Developer documentation
+=======================
 
-pika follows `Semantic Versioning <https://semver.org>`_.
+Contributing
+============
+
+Contributions are always welcome. Before starting work on larger features it's recommended to
+coordinate design ideas through GitHub issues. Existing open issues may sometimes no longer be
+useful, have already been solved, or the notes on solving a particular problem may be outdated.
+Issues that we think are easier for someone new to the project to get started with are `labeled on
+the issue tracker <https://github.com/pika-org/pika/issues/1118>`__.
+
+Building documentation
+======================
+
+Building pika's documentation requires doxygen, sphinx, as well the sphinx extensions and themes
+listed in ``docs/conf.py``. Building the documentation is not done through CMake as the rest of
+pika. Assuming ``SOURCE_DIR`` is set to the pika source directory, and ``BUILD_DIR`` is set to a
+build directory (e.g. ``$SOURCE_DIR/build``), you first need to export the following environment
+variables for doxygen:
+
+.. code-block:: bash
+
+   export PIKA_DOCS_DOXYGEN_INPUT_ROOT="$SOURCE_DIR"
+   export PIKA_DOCS_DOXYGEN_OUTPUT_DIRECTORY="$BUILD_DIR/doxygen"
+
+Then generate the doxygen XML files using:
+
+.. code-block:: bash
+
+   doxygen "$SOURCE_DIR/docs/Doxyfile"
+
+Finally, build the sphinx documentation using:
+
+.. code-block:: bash
+
+   sphinx-build -W -b html "$SOURCE_DIR/docs" "$BUILD_DIR/docs"
+
+Assuming the build finished without errors, the HTML documentation will now be in
+``$BUILD_DIR/docs`` with the entry point being ``$BUILD_DIR/docs/index.html``.
+
+Doxygen only needs to be rerun if the source code documentation has changed. See the `doxygen
+<https://www.doxygen.nl>`__
+and `sphinx <https://www.sphinx-doc.org>`__ documentation for more information on using the tools.
+
+Release procedure
+=================
+
+The current target is to produce a new (minor) release once a month. See `milestones
+<https://github.com/pika-org/pika/milestones>`__ for the planned dates for the next releases.
+
+pika follows `Semantic Versioning <https://semver.org>`__.
 
 #. For minor and major releases: create and check out a new branch at an
    appropriate point on ``main`` with the name ``release-major.minor.X``.
@@ -21,7 +69,7 @@ pika follows `Semantic Versioning <https://semver.org>`_.
 
 #. Write release notes in ``docs/changelog.md``. Check for issues and pull requests
    for the release on the
-   `pika planning board <https://github.com/orgs/pika-org/projects/1>`_. Check
+   `pika planning board <https://github.com/orgs/pika-org/projects/1>`__. Check
    for items that do not have a release associated to them on the `Done` view.
    Assign them to a release if needed.
 
@@ -67,7 +115,7 @@ pika follows `Semantic Versioning <https://semver.org>`_.
 
 #. Update spack (``https://github.com/spack/spack``).
 
-#. Clean up the `pika planning board <https://github.com/orgs/pika-org/projects/1>`_:
+#. Clean up the `pika planning board <https://github.com/orgs/pika-org/projects/1>`__:
 
    - Move the version-specific views one release forward (e.g. change the name
      and filter of `pika 0.X.0` to `pika 0.<X+1>.0`).

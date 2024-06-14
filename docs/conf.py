@@ -65,6 +65,7 @@ html_theme_options = {
         {"href": "usage", "internal": True, "title": "Usage"},
         {"href": "api", "internal": True, "title": "API reference"},
         {"href": "changelog", "internal": True, "title": "Changelog"},
+        {"href": "developer", "internal": True, "title": "Developer documentation"},
     ],
     "heroes": {
         "index": "Concurrency and parallelism built on C++ std::execution",
