@@ -20,7 +20,7 @@ jobs:
     steps:
       - name: Download coverage report from GH artifacts
         id: download-artifact
-        uses: dawidd6/action-download-artifact@v3
+        uses: dawidd6/action-download-artifact@v6
         with:
           name: coverage-report
           workflow: linux_coverage.yml
