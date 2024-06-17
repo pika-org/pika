@@ -224,6 +224,7 @@ namespace pika::mpi::experimental {
           : pool_name_(pool_name)
         {
             mpi::experimental::init(false, init_errorhandler);
+            mpi::experimental::register_polling();
         }
 
         ~enable_user_polling() { mpi::experimental::finalize(pool_name_); }
