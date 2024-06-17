@@ -287,8 +287,8 @@ namespace pika::threads::detail {
             for (/**/; thread_num != pool_threads; ++thread_num)
             {
                 std::size_t global_thread_num = this->thread_offset_ + thread_num;
-                threads::detail::mask_cref_type mask =
-                    affinity_data_.get_pu_mask(topo, global_thread_num);
+                // threads::detail::mask_cref_type mask =
+                //     affinity_data_.get_pu_mask(topo, global_thread_num);
 
                 // thread_num ordering: 1. threads of default pool
                 //                      2. threads of first special pool

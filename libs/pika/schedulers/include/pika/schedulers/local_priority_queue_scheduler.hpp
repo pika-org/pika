@@ -509,6 +509,8 @@ namespace pika::threads::detail {
             thread_queue_type* this_high_priority_queue = nullptr;
             thread_queue_type* this_queue = queues_[num_thread].data_;
 
+            std::size_t added = 0;
+
             if (num_thread < num_high_priority_queues_)
             {
                 this_high_priority_queue = high_priority_queues_[num_thread].data_;
@@ -517,6 +519,13 @@ namespace pika::threads::detail {
                 this_high_priority_queue->increment_num_pending_accesses();
                 if (result) return true;
                 this_high_priority_queue->increment_num_pending_misses();
+
+                this_high_priority_queue->wait_or_add_new(running, added);
+                if (0 != added) {
+                    this_high_priority_queue->increment_num_pending_accesses();
+                    result = this_high_priority_queue->get_next_thread(thrd);
+                    if (result) return true;
+                }
             }
 
             {
@@ -526,11 +535,12 @@ namespace pika::threads::detail {
                 if (result) return true;
                 this_queue->increment_num_pending_misses();
 
-                bool have_staged =
-                    this_queue->get_staged_queue_length(std::memory_order_relaxed) != 0;
-
-                // Give up, we should have work to convert.
-                if (have_staged) { return false; }
+                this_queue->wait_or_add_new(running, added);
+                if (0 != added) {
+                    this_queue->increment_num_pending_accesses();
+                    result = this_queue->get_next_thread(thrd);
+                    if (result) return true;
+                }
             }
 
             if (!running) { return false; }
@@ -545,20 +555,37 @@ namespace pika::threads::detail {
                     if (idx < num_high_priority_queues_ && num_thread < num_high_priority_queues_)
                     {
                         thread_queue_type* q = high_priority_queues_[idx].data_;
-                        if (q->get_next_thread(thrd, running, true))
-                        {
-                            q->increment_num_stolen_from_pending();
-                            this_high_priority_queue->increment_num_stolen_to_pending();
-                            return true;
-                        }
+                        // if (q->get_next_thread(thrd, running, true))
+                        // {
+                        //     q->increment_num_stolen_from_pending();
+                        //     this_high_priority_queue->increment_num_stolen_to_pending();
+                        //     return true;
+                        // } else {
+                            this_high_priority_queue->wait_or_add_new(true, added, q);
+                            if (0 != added) {
+                              this_high_priority_queue
+                                  ->increment_num_pending_accesses();
+                              bool result =
+                                  this_high_priority_queue->get_next_thread(
+                                      thrd);
+                              if (result) {return true;}
+                            }
+                        // }
                     }
 
-                    if (queues_[idx].data_->get_next_thread(thrd, running, true))
-                    {
-                        queues_[idx].data_->increment_num_stolen_from_pending();
-                        this_queue->increment_num_stolen_to_pending();
-                        return true;
-                    }
+                    // if (queues_[idx].data_->get_next_thread(thrd, running, true))
+                    // {
+                    //     queues_[idx].data_->increment_num_stolen_from_pending();
+                    //     this_queue->increment_num_stolen_to_pending();
+                    //     return true;
+                    // } else {
+                        this_queue->wait_or_add_new(true, added, queues_[idx].data_);
+                        if (0 != added) {
+                            this_queue ->increment_num_pending_accesses();
+                            bool result = this_queue->get_next_thread(thrd);
+                            if (result) {return true;}
+                        }
+                    // }
                 }
             }
 
@@ -566,7 +593,16 @@ namespace pika::threads::detail {
 #else
             PIKA_UNUSED(enable_stealing);
 
-            if (num_thread == num_queues_ - 1) { return low_priority_queue_.get_next_thread(thrd); }
+            if (num_thread == num_queues_ - 1) {
+                if (low_priority_queue_.get_next_thread(thrd)) {
+                    return true;
+                } else {
+                    low_priority_queue_.wait_or_add_new(true, added);
+                    if (added != 0) {
+                        return low_priority_queue_.get_next_thread(thrd);
+                    }
+                }
+            }
 
             return false;
 #endif

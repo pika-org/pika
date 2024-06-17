@@ -20,7 +20,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::util {
 
-#ifdef PIKA_HAVE_VERIFY_LOCKS
+#if 0 // PIKA_HAVE_VERIFY_LOCKS
     ///////////////////////////////////////////////////////////////////////////
     namespace detail {
 
@@ -308,33 +308,33 @@ namespace pika::util {
 
 #else
 
-    bool register_lock(void const*, util::register_lock_data*) { return true; }
+    // bool register_lock(void const*, util::register_lock_data*) { return true; }
 
-    bool unregister_lock(void const*) { return true; }
+    // bool unregister_lock(void const*) { return true; }
 
-    void verify_no_locks() {}
+    // void verify_no_locks() {}
 
-    void force_error_on_lock() {}
+    // void force_error_on_lock() {}
 
-    void enable_lock_detection() {}
+    // void enable_lock_detection() {}
 
-    void disable_lock_detection() {}
+    // void disable_lock_detection() {}
 
-    void trace_depth_lock_detection(std::size_t) {}
+    // void trace_depth_lock_detection(std::size_t) {}
 
-    void ignore_lock(void const* /* lock */) {}
+    // void ignore_lock(void const* /* lock */) {}
 
-    void reset_ignored(void const* /* lock */) {}
+    // void reset_ignored(void const* /* lock */) {}
 
-    void ignore_all_locks() {}
+    // void ignore_all_locks() {}
 
-    void reset_ignored_all() {}
+    // void reset_ignored_all() {}
 
-    std::unique_ptr<held_locks_data> get_held_locks_data()
-    {
-        return std::unique_ptr<held_locks_data>();
-    }
+    // std::unique_ptr<held_locks_data> get_held_locks_data()
+    // {
+    //     return std::unique_ptr<held_locks_data>();
+    // }
 
-    void set_held_locks_data(std::unique_ptr<held_locks_data>&& /* data */) {}
+    // void set_held_locks_data(std::unique_ptr<held_locks_data>&& /* data */) {}
 #endif
 }    // namespace pika::util

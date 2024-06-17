@@ -223,17 +223,17 @@ namespace pika::threads::detail {
 
                 if (PIKA_UNLIKELY(!p.second))
                 {
-                    --addfrom->new_tasks_count_.data_;
+                    addfrom->new_tasks_count_.data_.fetch_sub(1, std::memory_order_release);
                     lk.unlock();
                     PIKA_THROW_EXCEPTION(pika::error::out_of_memory, "thread_queue::add_new",
                         "Couldn't add new thread to the thread map");
                     return 0;
                 }
 
-                ++thread_map_count_;
+                thread_map_count_.fetch_add(1, std::memory_order_acquire);
 
                 // Decrement only after thread_map_count_ has been incremented
-                --addfrom->new_tasks_count_.data_;
+                addfrom->new_tasks_count_.data_.fetch_sub(1, std::memory_order_release);
 
                 // insert the thread into the work-items queue assuming it is
                 // in pending state, thread would go out of scope otherwise
@@ -341,7 +341,7 @@ namespace pika::threads::detail {
                 while (terminated_items_.pop(todelete))
                 {
                     threads::detail::thread_id_type tid(todelete);
-                    --terminated_items_count_;
+                    terminated_items_count_.fetch_sub(1, std::memory_order_release);
 
                     // this thread has to be in this map
                     PIKA_ASSERT(thread_map_.find(tid) != thread_map_.end());
@@ -349,7 +349,7 @@ namespace pika::threads::detail {
                     if (thread_map_.erase(tid) != 0)
                     {
                         recycle_thread(tid);
-                        --thread_map_count_;
+                        thread_map_count_.fetch_sub(1, std::memory_order_release);
                         PIKA_ASSERT(thread_map_count_ >= 0);
                     }
                 }
@@ -369,7 +369,7 @@ namespace pika::threads::detail {
                 while (delete_count && terminated_items_.pop(todelete))
                 {
                     threads::detail::thread_id_type tid(todelete);
-                    --terminated_items_count_;
+                    terminated_items_count_.fetch_sub(1, std::memory_order_release);
 
                     // this thread has to be in this map, except if it has changed
                     // its priority, then it could be elsewhere
@@ -378,7 +378,7 @@ namespace pika::threads::detail {
                     if (thread_map_.erase(tid) != 0)
                     {
                         recycle_thread(tid);
-                        --thread_map_count_;
+                        thread_map_count_.fetch_sub(1, std::memory_order_release);
                         PIKA_ASSERT(thread_map_count_ >= 0);
                     }
                     --delete_count;
@@ -627,7 +627,7 @@ namespace pika::threads::detail {
                             "Couldn't add new thread to the map of threads");
                         return;
                     }
-                    ++thread_map_count_;
+                    thread_map_count_.fetch_add(1, std::memory_order_acquire);
 
                     // this thread has to be in the map now
                     PIKA_ASSERT(thread_map_.find(thrd.noref()) != thread_map_.end());
@@ -667,7 +667,7 @@ namespace pika::threads::detail {
 
             // do not execute the work, but register a task description for
             // later thread creation
-            ++new_tasks_count_.data_;
+            new_tasks_count_.data_.fetch_add(1, std::memory_order_acquire);
 
             task_description* td = task_description_alloc_.allocate(1);
 #ifdef PIKA_HAVE_THREAD_QUEUE_WAITTIME
@@ -682,71 +682,17 @@ namespace pika::threads::detail {
             if (&ec != &throws) ec = make_success_code();
         }
 
-        void move_work_items_from(thread_queue* src, std::int64_t count)
-        {
-            thread_description_ptr trd;
-            while (src->work_items_.pop(trd))
-            {
-                --src->work_items_count_.data_;
-
-#ifdef PIKA_HAVE_THREAD_QUEUE_WAITTIME
-                if (get_maintain_queue_wait_times_enabled())
-                {
-                    std::uint64_t now =
-                        std::chrono::high_resolution_clock::now().time_since_epoch().count();
-                    src->work_items_wait_ += now - trd->waittime;
-                    ++src->work_items_wait_count_;
-                    trd->waittime = now;
-                }
-#endif
-
-                bool finished = count == ++work_items_count_.data_;
-                work_items_.push(trd);
-                if (finished) break;
-            }
-        }
-
-        void move_task_items_from(thread_queue* src, std::int64_t count)
-        {
-            task_description* task = nullptr;
-            while (src->new_tasks_.pop(task))
-            {
-#ifdef PIKA_HAVE_THREAD_QUEUE_WAITTIME
-                if (get_maintain_queue_wait_times_enabled())
-                {
-                    std::int64_t now =
-                        std::chrono::high_resolution_clock::now().time_since_epoch().count();
-                    src->new_tasks_wait_ += now - task->waittime;
-                    ++src->new_tasks_wait_count_;
-                    task->waittime = now;
-                }
-#endif
-
-                bool finish = count == ++new_tasks_count_.data_;
-
-                // Decrement only after the local new_tasks_count_ has
-                // been incremented
-                --src->new_tasks_count_.data_;
-
-                if (new_tasks_.push(task))
-                {
-                    if (finish) break;
-                }
-                else { --new_tasks_count_.data_; }
-            }
-        }
-
         /// Return the next thread to be executed, return false if none is
         /// available
-        bool get_next_thread(threads::detail::thread_id_ref_type& thrd, bool allow_stealing = false,
-            bool steal = false) PIKA_HOT
+        bool get_next_thread(threads::detail::thread_id_ref_type& thrd, [[maybe_unused]] bool allow_stealing = false,
+            [[maybe_unused]] bool steal = false) PIKA_HOT
         {
-            std::int64_t work_items_count = work_items_count_.data_.load(std::memory_order_relaxed);
+            // std::int64_t work_items_count = work_items_count_.data_.load(std::memory_order_relaxed);
 
-            if (allow_stealing && parameters_.min_tasks_to_steal_pending_ > work_items_count)
-            {
-                return false;
-            }
+            // if (allow_stealing && parameters_.min_tasks_to_steal_pending_ > work_items_count)
+            // {
+            //     return false;
+            // }
 
 #ifdef PIKA_HAVE_THREAD_QUEUE_WAITTIME
             thread_description_ptr tdesc;
@@ -769,10 +715,11 @@ namespace pika::threads::detail {
             }
 #else
             thread_description_ptr next_thrd;
-            if (0 != work_items_count && work_items_.pop(next_thrd, steal))
+            if (// 0 != work_items_count &&
+                work_items_.pop(next_thrd, steal))
             {
                 thrd.reset(next_thrd, false);    // do not addref!
-                --work_items_count_.data_;
+                work_items_count_.data_.fetch_sub(1, std::memory_order_release);
                 return true;
             }
 #endif
@@ -782,7 +729,7 @@ namespace pika::threads::detail {
         /// Schedule the passed thread
         void schedule_thread(threads::detail::thread_id_ref_type thrd, bool other_end = false)
         {
-            ++work_items_count_.data_;
+            work_items_count_.data_.fetch_add(1, std::memory_order_acquire);
 #ifdef PIKA_HAVE_THREAD_QUEUE_WAITTIME
             using namespace std::chrono;
             work_items_.push(new thread_description{PIKA_MOVE(thrd),
@@ -805,7 +752,7 @@ namespace pika::threads::detail {
 #ifdef PIKA_HAVE_THREAD_STACK_MMAP
             terminated_items_.push(thrd);
 
-            std::int64_t count = ++terminated_items_count_;
+            std::int64_t count = terminated_items_count_.fetch_add(1, std::memory_order_relaxed) + 1;
             if (count > parameters_.max_terminated_threads_)
             {
                 cleanup_terminated(true);    // clean up all terminated threads
@@ -819,7 +766,7 @@ namespace pika::threads::detail {
                 thread_map_.erase(tid);
             }
 
-            --thread_map_count_;
+            thread_map_count_.fetch_sub(1, std::memory_order_release);
             PIKA_ASSERT(thread_map_count_ >= 0);
             deallocate(thrd);
 #endif

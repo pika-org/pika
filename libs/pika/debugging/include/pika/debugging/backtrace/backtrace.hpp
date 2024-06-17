@@ -38,8 +38,6 @@ namespace pika::debug::detail {
             if (size != 0) frames_.resize(size);
         }
 
-        virtual ~backtrace() noexcept {}
-
         std::size_t stack_size() const { return frames_.size(); }
 
         void* return_address(std::size_t frame_no) const

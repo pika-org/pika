@@ -31,7 +31,7 @@ namespace pika::util {
     // Always provide function exports, which guarantees ABI compatibility of
     // Debug and Release builds.
 
-#if defined(PIKA_HAVE_VERIFY_LOCKS) || defined(PIKA_EXPORTS)
+#if 0 // defined(PIKA_HAVE_VERIFY_LOCKS) || defined(PIKA_EXPORTS)
 
     namespace detail {
 

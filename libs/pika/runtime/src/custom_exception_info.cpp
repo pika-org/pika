@@ -337,11 +337,16 @@ namespace pika::detail {
     {
         std::int64_t pid = ::getpid();
 
+#if defined(PIKA_HAVE_STACKTRACE)
         std::size_t const trace_depth = detail::from_string<std::size_t>(
             get_config_entry("pika.trace_depth", PIKA_HAVE_THREAD_BACKTRACE_DEPTH));
-
         pika::debug::detail::backtrace bt(trace_depth);
-        std::string back_trace = bt.trace();
+#endif
+        std::string back_trace
+#if defined(PIKA_HAVE_STACKTRACE)
+            = bt.trace()
+#endif
+            ;
 
         std::string state_name("not running");
         std::string hostname;

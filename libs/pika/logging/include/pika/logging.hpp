@@ -43,7 +43,7 @@ namespace pika::detail {
     (::pika::detail::get_##name##_logger().level() <= spdlog::level::loglevel)
 }    // namespace pika::detail
 
-#define PIKA_LOG(loglevel, ...) PIKA_DETAIL_SPDLOG(pika, loglevel, __VA_ARGS__)
+#define PIKA_LOG(loglevel, ...)  // PIKA_DETAIL_SPDLOG(pika, loglevel, __VA_ARGS__)
 #define PIKA_LOG_ENABLED(loglevel) PIKA_DETAIL_SPDLOG_ENABLED(pika, loglevel)
 
 namespace pika::detail {

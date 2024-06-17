@@ -82,7 +82,7 @@ namespace pika::threads::detail {
     thread_data::~thread_data()
     {
         PIKA_LOG(debug, "thread_data::~thread_data({})", fmt::ptr(this));
-        free_thread_exit_callbacks();
+        // free_thread_exit_callbacks();
     }
 
     void thread_data::destroy_thread()
@@ -163,7 +163,7 @@ namespace pika::threads::detail {
         PIKA_LOG(debug, "thread_data::rebind_base({}), description({}), phase({}), rebind",
             fmt::ptr(this), get_description(), get_thread_phase());
 
-        free_thread_exit_callbacks();
+        // free_thread_exit_callbacks();
 
         current_state_.store(thread_state(init_data.initial_state, thread_restart_state::signaled));
 

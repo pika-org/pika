@@ -145,8 +145,8 @@ namespace pika::threads::detail {
         // the initial reference count is one by default as each newly
         // created thread will be held alive by the variable returned from
         // the creation function;
-        explicit thread_data_reference_counting(thread_id_addref addref = thread_id_addref::yes)
-          : count_(addref == thread_id_addref::yes)
+        explicit thread_data_reference_counting([[maybe_unused]] thread_id_addref addref = thread_id_addref::yes)
+          // : count_(addref == thread_id_addref::yes)
         {
         }
 
@@ -154,19 +154,21 @@ namespace pika::threads::detail {
         virtual void destroy_thread() = 0;
 
         // reference counting
-        friend void intrusive_ptr_add_ref(thread_data_reference_counting* p) { ++p->count_; }
+        friend void intrusive_ptr_add_ref(thread_data_reference_counting* p) {
+            // ++p->count_;
+        }
 
         friend void intrusive_ptr_release(thread_data_reference_counting* p)
         {
-            PIKA_ASSERT(p->count_ != 0);
-            if (--p->count_ == 0)
-            {
-                // give this object back to the system
-                p->destroy_thread();
-            }
+            // PIKA_ASSERT(p->count_ != 0);
+            // if (--p->count_ == 0)
+            // {
+            //     // give this object back to the system
+            //     p->destroy_thread();
+            // }
         }
 
-        ::pika::detail::atomic_count count_;
+        // ::pika::detail::atomic_count count_;
     };
 
     ///////////////////////////////////////////////////////////////////////////
