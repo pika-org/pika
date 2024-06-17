@@ -905,7 +905,10 @@ namespace pika::mpi::experimental {
         PIKA_DETAIL_DP(detail::mpi_debug<5>,
             debug(str<>("Clearing mode"), detail::mpi_data_, "disable_user_polling"));
 
-        if (pool_name.empty()) { detail::unregister_polling(pika::resource::get_thread_pool(0)); }
+        if (pool_name.empty())
+        {
+            detail::unregister_polling(pika::resource::get_thread_pool(get_pool_name()));
+        }
         else { detail::unregister_polling(pika::resource::get_thread_pool(pool_name)); }
     }
 }    // namespace pika::mpi::experimental
