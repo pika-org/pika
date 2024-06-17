@@ -26,6 +26,7 @@
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/mpi_base/mpi.hpp>
+#include <pika/runtime/runtime.hpp>
 
 #include <exception>
 #include <type_traits>
@@ -54,24 +55,22 @@ namespace pika::mpi::experimental::detail {
         std::invoke_result_t<F, std::add_lvalue_reference_t<std::decay_t<Ts>>..., MPI_Request*>>;
 
     // -----------------------------------------------------------------
-    // return a scheduler on the mpi pool, with or without stack
-    inline auto mpi_pool_scheduler(execution::thread_priority p, bool stack = true)
-    {
-        ex::thread_pool_scheduler sched{&resource::get_thread_pool(get_pool_name())};
-        if (!stack)
-        {
-            sched = ex::with_stacksize(std::move(sched), execution::thread_stacksize::nostack);
-        }
-        sched = ex::with_priority(std::move(sched), p);
-        return sched;
-    }
-
-    // -----------------------------------------------------------------
     // return a scheduler on the default pool with added priority if requested
     inline auto default_pool_scheduler(execution::thread_priority p)
     {
         return ex::with_priority(
-            ex::thread_pool_scheduler{&resource::get_thread_pool("default")}, p);
+            ex::thread_pool_scheduler{
+                &pika::detail::get_runtime_ptr()->get_thread_manager().default_pool()},
+            p);
+    }
+
+    // -----------------------------------------------------------------
+    // return a scheduler on the mpi pool, with or without stack
+    inline auto mpi_pool_scheduler(execution::thread_priority p)
+    {
+        if (!pool_exists()) return default_pool_scheduler(p);
+        return ex::with_priority(
+            ex::thread_pool_scheduler{&resource::get_thread_pool(get_pool_name())}, p);
     }
 
     // -----------------------------------------------------------------
