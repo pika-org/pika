@@ -12,7 +12,6 @@ function(pika_add_library name)
       INTERNAL_FLAGS
       NOLIBS
       NOEXPORT
-      STATIC
       OBJECT
       NONAMEPREFIX
       UNITY_BUILD
@@ -28,13 +27,6 @@ function(pika_add_library name)
   )
   set(multi_value_args SOURCES HEADERS AUXILIARY DEPENDENCIES COMPILER_FLAGS LINK_FLAGS)
   cmake_parse_arguments(${name} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
-
-  if(${name}_OBJECT AND ${name}_STATIC)
-    pika_error(
-      "Trying to create ${name} library with both STATIC and OBJECT.\
- Only one can be used at the same time."
-    )
-  endif()
 
   if(NOT ${name}_SOURCE_ROOT)
     set(${name}_SOURCE_ROOT ".")
@@ -95,7 +87,7 @@ function(pika_add_library name)
     # cmake-format: on
 
     # install PDB if needed
-    if(MSVC AND NOT ${name}_STATIC)
+    if(MSVC AND BUILD_SHARED_LIBS)
       # cmake-format: off
       set(_target_flags
           ${_target_flags}
@@ -112,12 +104,9 @@ function(pika_add_library name)
     set(_target_flags ${_target_flags} NONAMEPREFIX)
   endif()
 
-  if(${name}_STATIC)
-    set(${name}_linktype STATIC)
-  elseif(${name}_OBJECT)
+  set(${name}_linktype)
+  if(${name}_OBJECT)
     set(${name}_linktype OBJECT)
-  else()
-    set(${name}_linktype SHARED)
   endif()
 
   if(PIKA_WITH_HIP)
