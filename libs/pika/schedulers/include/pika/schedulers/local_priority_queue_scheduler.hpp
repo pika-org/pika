@@ -548,7 +548,9 @@ namespace pika::threads::detail {
 #if !defined(PIKA_HAVE_THREAD_SANITIZER)
             if (enable_stealing)
             {
-                for (std::size_t idx : victim_threads_[num_thread].data_)
+                // for (std::size_t idx : victim_threads_[num_thread].data_)
+                std::size_t const idx = std::rand() % num_queues_;
+                if (idx != num_thread)
                 {
                     PIKA_ASSERT(idx != num_thread);
 
