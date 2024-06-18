@@ -833,13 +833,6 @@ namespace pika::mpi::experimental {
             MPI_Comm_rank(MPI_COMM_WORLD, &detail::mpi_data_.rank_);
             MPI_Comm_size(MPI_COMM_WORLD, &detail::mpi_data_.size_);
         }
-        if (init_mpi)
-        {
-            int provided, required = MPI_THREAD_MULTIPLE;
-            pika::util::mpi_environment::init(nullptr, nullptr, required, required, provided);
-            MPI_Comm_rank(MPI_COMM_WORLD, &detail::mpi_data_.rank_);
-            MPI_Comm_size(MPI_COMM_WORLD, &detail::mpi_data_.size_);
-        }
         else
         {
             int is_initialized = 0;
