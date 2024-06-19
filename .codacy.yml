@@ -5,3 +5,5 @@ exclude_paths:
   - ".jenkins/cscs/config-*.sh"
   - ".jenkins/cscs-perftests/env-*.sh"
   - ".jenkins/cscs-perftests/config-*.sh"
+include_paths:
+  - "libs/**"
