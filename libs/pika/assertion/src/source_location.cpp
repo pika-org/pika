@@ -4,9 +4,12 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/assertion/source_location.hpp>
+module;
+// #include <pika/assertion/source_location.hpp>
 
 #include <ostream>
+
+module pika;
 
 namespace pika::detail {
     std::ostream& operator<<(std::ostream& os, source_location const& loc)

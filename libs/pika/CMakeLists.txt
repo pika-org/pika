@@ -8,57 +8,57 @@ include(pika_message)
 
 # cmake-format: off
 set(_pika_modules
-    affinity
-    allocator_support
+    # affinity
+    # allocator_support
     assertion
-    async_base
-    async_cuda
-    async_cuda_base
-    async_mpi
-    command_line_handling
-    concepts
-    concurrency
+    # async_base
+    # async_cuda
+    # async_cuda_base
+    # async_mpi
+    # command_line_handling
+    # concepts
+    # concurrency
     config
-    coroutines
-    datastructures
-    debugging
-    errors
-    execution
-    execution_base
-    executors
-    filesystem
-    functional
-    hashing
-    include
-    ini
-    init_runtime
-    iterator_support
-    itt_notify
-    lock_registration
-    logging
-    memory
-    mpi_base
-    prefix
+    # coroutines
+    # datastructures
+    # debugging
+    # errors
+    # execution
+    # execution_base
+    # executors
+    # filesystem
+    # functional
+    # hashing
+    # include
+    # ini
+    # init_runtime
+    # iterator_support
+    # itt_notify
+    # lock_registration
+    # logging
+    # memory
+    # mpi_base
+    # prefix
     preprocessor
-    program_options
-    properties
-    resource_partitioner
-    runtime_configuration
-    runtime
-    schedulers
-    string_util
-    synchronization
-    tag_invoke
-    thread_pools
-    thread_support
-    threading
-    threading_base
-    thread_manager
-    timing
-    topology
-    type_support
-    util
-    version
+    # program_options
+    # properties
+    # resource_partitioner
+    # runtime_configuration
+    # runtime
+    # schedulers
+    # string_util
+    # synchronization
+    # tag_invoke
+    # thread_pools
+    # thread_support
+    # threading
+    # threading_base
+    # thread_manager
+    # timing
+    # topology
+    # type_support
+    # util
+    # version
 )
 # cmake-format: on
 

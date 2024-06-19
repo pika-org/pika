@@ -18,7 +18,7 @@ set(preprocessor_headers
 )
 
 # Default location is $PIKA_ROOT/libs/preprocessor/src
-set(preprocessor_sources)
+set(preprocessor_sources dummy.cpp)
 
 include(pika_add_module)
 pika_add_module(

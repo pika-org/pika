@@ -14,7 +14,7 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-cmake_minimum_required(VERSION 3.22 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.28 FATAL_ERROR)
 
 # Overrides must go before the project() statement, otherwise they are ignored.
 
@@ -213,6 +213,11 @@ else()
       ON
       CACHE INTERNAL "" FORCE
   )
+endif()
+
+pika_option(PIKA_WITH_MODULE BOOL "Build pika as a module (default: OFF)" OFF ADVANCED)
+if(PIKA_WITH_MODULE)
+  pika_add_config_define(PIKA_HAVE_MODULE)
 endif()
 
 pika_option(
@@ -1599,3 +1604,11 @@ include(pika_generate_package)
 message("")
 message("pika will be installed to ${CMAKE_INSTALL_PREFIX}")
 message("")
+
+if(PIKA_WITH_MODULE)
+  cmake_minimum_required(VERSION 3.28)
+  add_library(foo foo.cpp)
+  target_sources(foo PUBLIC FILE_SET CXX_MODULES FILES all.cpp)
+  add_executable(hello main.cpp)
+  target_link_libraries(hello foo)
+endif()

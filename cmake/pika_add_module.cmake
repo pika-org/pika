@@ -12,6 +12,7 @@ function(pika_add_module libname modulename)
   set(one_value_args GLOBAL_HEADER_GEN)
   set(multi_value_args
       SOURCES
+      MODULE_SOURCES
       HEADERS
       OBJECTS
       DEPENDENCIES
@@ -56,6 +57,7 @@ function(pika_add_module libname modulename)
 
   # Write full path for the sources files
   list(TRANSFORM ${modulename}_SOURCES PREPEND ${SOURCE_ROOT}/ OUTPUT_VARIABLE sources)
+  list(TRANSFORM ${modulename}_MODULE_SOURCES PREPEND ${SOURCE_ROOT}/ OUTPUT_VARIABLE module_sources)
   list(TRANSFORM ${modulename}_HEADERS PREPEND ${HEADER_ROOT}/ OUTPUT_VARIABLE headers)
 
   # This header generation is disabled for config module specific generated headers are included
@@ -143,6 +145,7 @@ function(pika_add_module libname modulename)
 
   # create library modules
   add_library(pika_${modulename} ${module_library_type} ${sources} ${${modulename}_OBJECTS})
+  target_sources(pika_${modulename} PUBLIC FILE_SET CXX_MODULES FILES ${module_sources})
 
   if(PIKA_WITH_CHECK_MODULE_DEPENDENCIES)
     # verify that all dependencies are from the same module category
@@ -177,9 +180,9 @@ function(pika_add_module libname modulename)
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
 
-  if(NOT module_is_interface_library)
+  # if(NOT module_is_interface_library)
     target_link_libraries(pika_${modulename} PRIVATE pika_private_flags)
-  endif()
+  # endif()
 
   if(PIKA_WITH_PRECOMPILED_HEADERS)
     target_precompile_headers(pika_${modulename} REUSE_FROM pika_precompiled_headers)
@@ -255,9 +258,12 @@ function(pika_add_module libname modulename)
   install(
     TARGETS pika_${modulename}
     EXPORT pika_internal_targets
+    # FILE_SET CXX_MODULES
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT ${modulename}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    FILE_SET CXX_MODULES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    COMPONENT ${modulename}
   )
   pika_export_internal_targets(pika_${modulename})
 
