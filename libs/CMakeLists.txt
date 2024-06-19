@@ -60,6 +60,7 @@ set(pika_libs pika)
 
 foreach(lib ${pika_libs})
   add_library(${lib} SHARED src/dummy.cpp ${pika_natvis_files_SOURCES})
+  target_sources(${lib} PUBLIC FILE_SET CXX_MODULES FILES ${lib}/src/module.cpp)
   set_target_properties(
     ${lib}
     PROPERTIES VERSION ${PIKA_VERSION}
@@ -74,6 +75,7 @@ foreach(lib ${pika_libs})
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT ${lib}
+    FILE_SET CXX_MODULES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
   )
   pika_export_targets(${lib})
 

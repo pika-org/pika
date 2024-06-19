@@ -135,13 +135,13 @@ function(pika_add_module libname modulename)
     set(module_is_interface_library TRUE)
   endif()
 
-  if(module_is_interface_library)
-    set(module_library_type INTERFACE)
-    set(module_public_keyword INTERFACE)
-  else()
+  # if(module_is_interface_library)
+  #   set(module_library_type INTERFACE)
+  #   set(module_public_keyword INTERFACE)
+  # else()
     set(module_library_type OBJECT)
     set(module_public_keyword PUBLIC)
-  endif()
+  # endif()
 
   # create library modules
   add_library(pika_${modulename} ${module_library_type} ${sources} ${${modulename}_OBJECTS})

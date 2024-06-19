@@ -7,6 +7,8 @@
 #include <pika/assert.hpp>
 // #include <pika/testing.hpp>
 
+import pika;
+
 int main()
 {
     PIKA_ASSERT(true);

@@ -121,10 +121,10 @@ namespace pika::util::detail {
     };
 
     template <typename... Ts>
-    static std::false_type all_of_impl(...);
+    std::false_type all_of_impl(...);
 
     template <typename... Ts>
-    static auto all_of_impl(int) -> always_true<typename std::enable_if_t<is_true_v<Ts>>...>;
+    auto all_of_impl(int) -> always_true<typename std::enable_if_t<is_true_v<Ts>>...>;
 
     template <typename... Ts>
     struct all_of : decltype(all_of_impl<Ts...>(0))
@@ -141,10 +141,10 @@ namespace pika::util::detail {
     inline constexpr bool all_of_v = all_of<Ts...>::value;
 
     template <typename... Ts>
-    static std::true_type any_of_impl(...);
+    std::true_type any_of_impl(...);
 
     template <typename... Ts>
-    static auto any_of_impl(int) -> always_false<std::enable_if_t<is_false_v<Ts>>...>;
+    auto any_of_impl(int) -> always_false<std::enable_if_t<is_false_v<Ts>>...>;
 
     template <typename... Ts>
     struct any_of : decltype(any_of_impl<Ts...>(0))
@@ -205,10 +205,10 @@ namespace pika::util::detail {
     };                                                                                             \
                                                                                                    \
     template <std::size_t J>                                                                       \
-    static empty at_index_check(...);                                                              \
+    empty at_index_check(...);                                                              \
                                                                                                    \
     template <std::size_t J, typename T>                                                           \
-    static indexed<J, T> at_index_check(indexed<J, T> const&);                                     \
+    indexed<J, T> at_index_check(indexed<J, T> const&);                                     \
                                                                                                    \
     template <std::size_t I, typename Ts>                                                          \
     struct at_index_impl                                                                           \

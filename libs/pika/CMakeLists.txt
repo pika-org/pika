@@ -56,7 +56,7 @@ set(_pika_modules
     # thread_manager
     # timing
     # topology
-    # type_support
+    type_support
     # util
     # version
 )

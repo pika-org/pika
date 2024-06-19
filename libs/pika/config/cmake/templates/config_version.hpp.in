@@ -48,40 +48,40 @@
 ///////////////////////////////////////////////////////////////////////////////
 // The version check enforces the major and minor version numbers to match for
 // every compilation unit to be compiled.
-#define PIKA_CHECK_VERSION                                                                         \
-    PIKA_PP_CAT(                                                                                   \
-        pika_check_version_, PIKA_PP_CAT(PIKA_VERSION_MAJOR, PIKA_PP_CAT(_, PIKA_VERSION_MINOR)))  \
+// #define PIKA_CHECK_VERSION
+    // PIKA_PP_CAT(
+    //     pika_check_version_, PIKA_PP_CAT(PIKA_VERSION_MAJOR, PIKA_PP_CAT(_, PIKA_VERSION_MINOR)))
     /**/
 
 // The version check enforces the major and minor version numbers to match for
 // every compilation unit to be compiled.
-#define PIKA_CHECK_BOOST_VERSION                                                                   \
-    PIKA_PP_CAT(pika_check_boost_version_, BOOST_VERSION)                                          \
+// #define PIKA_CHECK_BOOST_VERSION
+    // PIKA_PP_CAT(pika_check_boost_version_, BOOST_VERSION)
     /**/
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {
     // Helper data structures allowing to automatically detect version problems
     // between applications and the core libraries.
-    PIKA_EXPORT extern char const PIKA_CHECK_VERSION[];
-    PIKA_EXPORT extern char const PIKA_CHECK_BOOST_VERSION[];
+    // PIKA_EXPORT extern char const PIKA_CHECK_VERSION[];
+    // PIKA_EXPORT extern char const PIKA_CHECK_BOOST_VERSION[];
 }    // namespace pika
 
 ///////////////////////////////////////////////////////////////////////////////
-#if !defined(PIKA_EXPORTS) && !defined(PIKA_NO_VERSION_CHECK)
+// #if !defined(PIKA_EXPORTS) && !defined(PIKA_NO_VERSION_CHECK)
 
-// This is instantiated for each translation unit outside of the pika core
-// library, forcing to resolve the variable PIKA_CHECK_VERSION.
-namespace {
-    // Note: this function is never executed.
-# if defined(__GNUG__)
-    __attribute__((unused))
-# endif
-    char const*
-    check_pika_version()
-    {
-        char const* versions[] = {pika::PIKA_CHECK_VERSION, pika::PIKA_CHECK_BOOST_VERSION};
-        return versions[0];
-    }
-}    // namespace
-#endif
+// // This is instantiated for each translation unit outside of the pika core
+// // library, forcing to resolve the variable PIKA_CHECK_VERSION.
+// // namespace {
+// //     // Note: this function is never executed.
+// // # if defined(__GNUG__)
+// //     __attribute__((unused))
+// // # endif
+// //     char const*
+// //     check_pika_version()
+// //     {
+// //         char const* versions[] = {pika::PIKA_CHECK_VERSION, pika::PIKA_CHECK_BOOST_VERSION};
+// //         return versions[0];
+// //     }
+// // }    // namespace
+// #endif

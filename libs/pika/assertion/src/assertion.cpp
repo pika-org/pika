@@ -5,13 +5,13 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 module;
-#include <pika/config.hpp>
-// #include <pika/assert.hpp>
+// #include <pika/config.hpp>
+// // #include <pika/assert.hpp>
 
 #include <iostream>
 #include <string>
 
-module pika;
+module pika.assertion;
 
 namespace pika::detail {
     assertion_handler_type& get_handler()

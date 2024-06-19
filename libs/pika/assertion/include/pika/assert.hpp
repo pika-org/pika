@@ -5,6 +5,7 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#if 0 // TODO: no modules
 #pragma once
 
 #include <pika/config.hpp>
@@ -19,17 +20,13 @@
 #include <exception>
 #include <string>
 #include <type_traits>
-
-namespace pika::detail {
-    /// The signature for an assertion handler
-    using assertion_handler_type = void (*)(
-        source_location const& loc, const char* expr, std::string const& msg);
-
-    /// Set the assertion handler to be used within a program. If the handler has been
-    /// set already once, the call to this function will be ignored.
-    /// \note This function is not thread safe
-    PIKA_EXPORT void set_assertion_handler(assertion_handler_type handler);
-}    // namespace pika::detail
+#else
+#include <pika/preprocessor/stringize.hpp>
+#include <string>
+import pika;
+// TODO
+# define PIKA_ASSERT_CURRENT_FUNCTION __PRETTY_FUNCTION__
+#endif
 
 #if defined(DOXYGEN)
 /// \def PIKA_ASSERT(expr, msg)
