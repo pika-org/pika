@@ -16,6 +16,7 @@
 #include <mpi.h>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace ex = pika::execution::experimental;
 namespace mpi = pika::mpi::experimental;
