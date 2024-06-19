@@ -114,7 +114,7 @@ int pika_main()
                 if (rank == 0) { data = 42; }
                 tt::sync_wait(
                     ex::just(&data, count, datatype, 0, comm) | mpi::transform_mpi(MPI_Ibcast));
-                if (rank != 0) { PIKA_TEST_EQ(data, 42); }
+                PIKA_TEST_EQ(data, 42);
             }
 
             // Failure path
@@ -189,8 +189,7 @@ int pika_main()
                 catch (pika::exception const& e)
                 {
                     // Different MPI implementations print different error messages.
-                    bool err_ok = (e.get_error() == pika::error::bad_function_call) ||
-                        (e.get_error() == pika::error::invalid_status);
+                    bool err_ok = (e.get_error() == pika::error::bad_function_call);
                     PIKA_TEST_MSG(err_ok, "Returned error code was not in expected list");
                     std::vector<std::string> err_msgs = {
                         "null datatype", "Invalid datatype", "MPI_ERR_TYPE"};
