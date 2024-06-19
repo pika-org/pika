@@ -7,6 +7,7 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/command_line_handling/command_line_handling.hpp>
+#include <pika/command_line_handling/get_env_var_as.hpp>
 #include <pika/command_line_handling/parse_command_line.hpp>
 #include <pika/debugging/attach_debugger.hpp>
 #include <pika/functional/detail/reset_function.hpp>
@@ -398,7 +399,9 @@ namespace pika::detail {
     std::size_t handle_mpi_completion_mode(
         detail::manage_config& cfgmap, pika::program_options::variables_map& vm)
     {
-        std::size_t completion_mode = cfgmap.get_value<std::size_t>("pika.mpi.completion_mode", 0);
+        int def_val = pika::detail::get_env_var_as<std::size_t>("PIKA_MPI_COMPLETION_MODE", 0);
+        std::size_t completion_mode =
+            cfgmap.get_value<std::size_t>("pika.mpi.completion_mode", def_val);
 
         if (vm.count("pika:mpi-completion-mode"))
         {
