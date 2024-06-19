@@ -125,7 +125,7 @@ namespace pika::mpi::experimental::detail {
                             apex::scoped_timer apex_post("pika::mpi::post");
 #endif
                             // init a request
-                            MPI_Request request;
+                            MPI_Request request{MPI_REQUEST_NULL};
                             int status = MPI_SUCCESS;
                             // execute the mpi function call, passing in the request object
                             if constexpr (std::is_void_v<invoke_result_type>)
