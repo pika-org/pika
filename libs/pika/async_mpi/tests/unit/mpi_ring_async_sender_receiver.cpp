@@ -487,8 +487,6 @@ void init_resource_partitioner_handler(
     if (vm["no-mpi-pool"].as<bool>()) { pool_mode = mpix::pool_create_mode::force_no_create; }
 
     mpix::enable_optimizations(vm["mpi-optimizations"].as<bool>());
-    std::cout << "init_resource_partitioner_handler enable optimizations "
-              << vm["mpi-optimizations"].as<bool>() << std::endl;
 
     msr_deb<2>.debug(str<>("init RP"), "create_pool");
     mpix::create_pool("", pool_mode);
