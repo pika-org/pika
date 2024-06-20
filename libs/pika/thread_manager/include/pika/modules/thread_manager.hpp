@@ -42,7 +42,7 @@
 namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
     /// The \a thread-manager class is the central instance of management for
-    /// all (non-depleted) threads
+    /// all threads
     class thread_manager
     {
     private:

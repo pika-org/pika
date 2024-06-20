@@ -580,11 +580,9 @@ namespace pika::threads::detail {
                     scheduler.SchedulingPolicy::do_some_work(num_thread);
                 }
 
-                // Remove the mapping from thread_map_ if pika thread is depleted
-                // or terminated, this will delete the pika thread.
-                // REVIEW: what has to be done with depleted pika threads?
-                if (PIKA_LIKELY(state_val == thread_schedule_state::depleted ||
-                        state_val == thread_schedule_state::terminated))
+                // Remove the mapping from thread_map_ if pika thread is terminated, this will
+                // delete the pika thread.
+                if (PIKA_LIKELY(state_val == thread_schedule_state::terminated))
                 {
 #ifdef PIKA_HAVE_THREAD_CUMULATIVE_COUNTS
                     ++counters.executed_threads_;
