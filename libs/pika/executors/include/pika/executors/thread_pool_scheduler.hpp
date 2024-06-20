@@ -164,8 +164,8 @@ namespace pika::execution::experimental {
                 pika::detail::try_catch_exception_ptr(
                     [&]() {
                         os.scheduler.execute(
-                            [receiver = PIKA_MOVE(os.receiver)]() mutable {
-                                pika::execution::experimental::set_value(PIKA_MOVE(receiver));
+                            [&os]() mutable {
+                                pika::execution::experimental::set_value(PIKA_MOVE(os.receiver));
                             },
                             os.fallback_annotation);
                     },
