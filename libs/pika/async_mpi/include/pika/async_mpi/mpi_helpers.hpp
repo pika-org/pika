@@ -96,7 +96,7 @@ namespace pika::mpi::experimental::detail {
     // adds a request callback to the mpi polling code which will call
     // notify_one to wake up a suspended task
     template <typename OperationState>
-    void add_suspend_resume_request_callback(MPI_Request request, OperationState& op_state)
+    void add_suspend_resume_request_callback(OperationState& op_state)
     {
         PIKA_ASSERT(op_state.completed == false);
         detail::add_request_callback(
@@ -111,37 +111,39 @@ namespace pika::mpi::experimental::detail {
                 }
                 op_state.cond_var.notify_one();
             },
-            request);
+            op_state.request);
     }
 
     // -----------------------------------------------------------------
     // handler_method::new_task
     // adds a request callback to the mpi polling code which will call
     // set_value/error on the receiver
-    template <typename Receiver>
-    void add_new_task_request_callback(
-        MPI_Request request, execution::thread_priority p, Receiver&& receiver)
+    template <typename OperationState>
+    void add_new_task_request_callback(OperationState& op_state)
     {
         detail::add_request_callback(
-            [receiver = PIKA_MOVE(receiver), p](int status) mutable {
+            [&op_state](int status) mutable {
                 PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("schedule_task_callback")));
                 if (status != MPI_SUCCESS)
                 {
-                    ex::set_error(PIKA_FORWARD(Receiver, receiver),
+                    ex::set_error(PIKA_MOVE(op_state.receiver),
                         std::make_exception_ptr(mpi_exception(status)));
                 }
                 else
                 {
                     // pass the result onto a new task and invoke the continuation
+                    execution::thread_priority p = use_priority_boost(op_state.mode_flags) ?
+                        execution::thread_priority::boost :
+                        execution::thread_priority::normal;
                     auto snd0 = ex::transfer_just(default_pool_scheduler(p)) |
-                        ex::then([receiver = PIKA_FORWARD(Receiver, receiver)]() mutable {
+                        ex::then([&op_state]() mutable {
                             PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("set_value")));
-                            ex::set_value(PIKA_MOVE(receiver));
+                            ex::set_value(PIKA_MOVE(op_state.receiver));
                         });
                     ex::start_detached(PIKA_MOVE(snd0));
                 }
             },
-            request);
+            op_state.request);
     }
 
     // -----------------------------------------------------------------
@@ -149,14 +151,14 @@ namespace pika::mpi::experimental::detail {
     // adds a request callback to the mpi polling code which will call
     // the set_value/set_error helper using the void return signature
     template <typename OperationState>
-    void add_continuation_request_callback(MPI_Request request, OperationState& op_state)
+    void add_continuation_request_callback(OperationState& op_state)
     {
         detail::add_request_callback(
             [&op_state](int status) mutable {
                 PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("callback_void")));
                 set_value_error_helper(status, PIKA_MOVE(op_state.receiver));
             },
-            request);
+            op_state.request);
     }
 
     // -----------------------------------------------------------------
