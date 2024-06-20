@@ -282,10 +282,7 @@ namespace pika::split_tuple_detail {
         }
 
         template <std::size_t Index, typename Receiver>
-        void add_continuation(Receiver& receiver) = delete;
-
-        template <std::size_t Index, typename Receiver>
-        void add_continuation(Receiver&& receiver)
+        void add_continuation(Receiver& receiver)
         {
             if (predecessor_done)
             {
@@ -320,11 +317,10 @@ namespace pika::split_tuple_detail {
                     // to the vector and the vector is not threadsafe in
                     // itself. The continuation will be called later
                     // when set_error/set_stopped/set_value is called.
-                    continuations[Index] =
-                        [this, receiver = PIKA_FORWARD(Receiver, receiver)]() mutable {
-                            pika::detail::visit(
-                                stopped_error_value_visitor<Index, Receiver>{receiver}, v);
-                        };
+                    continuations[Index] = [this, &receiver]() mutable {
+                        pika::detail::visit(
+                            stopped_error_value_visitor<Index, Receiver>{receiver}, v);
+                    };
                 }
             }
         }
@@ -457,7 +453,7 @@ namespace pika::split_tuple_detail {
                 pika::execution::experimental::start_t, operation_state& os) noexcept
             {
                 os.state->start();
-                os.state->template add_continuation<Index>(PIKA_MOVE(os.receiver));
+                os.state->template add_continuation<Index>(os.receiver);
             }
         };
 

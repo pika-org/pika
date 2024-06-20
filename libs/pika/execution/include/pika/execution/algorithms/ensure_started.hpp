@@ -301,10 +301,7 @@ namespace pika::ensure_started_detail {
             }
 
             template <typename Receiver>
-            void add_continuation(Receiver& receiver) = delete;
-
-            template <typename Receiver>
-            void add_continuation(Receiver&& receiver)
+            void add_continuation(Receiver& receiver)
             {
                 PIKA_ASSERT(!continuation.has_value());
 
@@ -341,11 +338,10 @@ namespace pika::ensure_started_detail {
                         // continuation. This has to be done while holding
                         // the lock since predecessor signalling completion
                         // may otherwise not see the continuation.
-                        continuation.emplace(
-                            [this, receiver = PIKA_FORWARD(Receiver, receiver)]() mutable {
-                                pika::detail::visit(
-                                    stopped_error_value_visitor<Receiver>{receiver}, PIKA_MOVE(v));
-                            });
+                        continuation.emplace([this, &receiver]() mutable {
+                            pika::detail::visit(
+                                stopped_error_value_visitor<Receiver>{receiver}, PIKA_MOVE(v));
+                        });
                     }
                 }
             }
@@ -420,7 +416,7 @@ namespace pika::ensure_started_detail {
             friend void tag_invoke(
                 pika::execution::experimental::start_t, operation_state& os) noexcept
             {
-                os.state->add_continuation(PIKA_MOVE(os.receiver));
+                os.state->add_continuation(os.receiver);
             }
         };
 
