@@ -234,7 +234,7 @@ namespace pika::threads::detail {
                 // thread_map_count_.fetch_add(1, std::memory_order_acquire);
 
                 // Decrement only after thread_map_count_ has been incremented
-                addfrom->new_tasks_count_.data_.fetch_sub(1, std::memory_order_release);
+                // addfrom->new_tasks_count_.data_.fetch_sub(1, std::memory_order_release);
 
                 // insert the thread into the work-items queue assuming it is
                 // in pending state, thread would go out of scope otherwise
@@ -333,16 +333,17 @@ namespace pika::threads::detail {
             chrono::detail::tick_counter tc(cleanup_terminated_time_);
 # endif
 
-            if (terminated_items_count_.load(std::memory_order_acquire) == 0) return true;
+            // if (terminated_items_count_.load(std::memory_order_acquire) == 0) return true;
+            // if (terminated_items_.empty()) return true;
 
-            if (delete_all)
-            {
+            // if (delete_all)
+            // {
                 // delete all threads
                 threads::detail::thread_data* todelete;
                 while (terminated_items_.pop(todelete))
                 {
                     threads::detail::thread_id_type tid(todelete);
-                    terminated_items_count_.fetch_sub(1, std::memory_order_release);
+                    // terminated_items_count_.fetch_sub(1, std::memory_order_release);
 
                     // this thread has to be in this map
                     // PIKA_ASSERT(thread_map_.find(tid) != thread_map_.end());
@@ -354,38 +355,40 @@ namespace pika::threads::detail {
                     //     PIKA_ASSERT(thread_map_count_ >= 0);
                     // }
                 }
-            }
-            else
-            {
-                // delete only this many threads
-                std::int64_t delete_count =
-                    (std::min)(static_cast<std::int64_t>(terminated_items_count_ / 10),
-                        static_cast<std::int64_t>(parameters_.max_delete_count_));
+                return true;
+            // }
+            // else
+            // {
+            //     // delete only this many threads
+            //     // std::int64_t delete_count =
+            //     //     (std::min)(static_cast<std::int64_t>(terminated_items_count_ / 10),
+            //     //         static_cast<std::int64_t>(parameters_.max_delete_count_));
 
-                // delete at least this many threads
-                delete_count = (std::max)(
-                    delete_count, static_cast<std::int64_t>(parameters_.min_delete_count_));
+            //     // delete at least this many threads
+            //     // delete_count = (std::max)(
+            //     //     delete_count, static_cast<std::int64_t>(parameters_.min_delete_count_));
 
-                threads::detail::thread_data* todelete;
-                while (delete_count && terminated_items_.pop(todelete))
-                {
-                    threads::detail::thread_id_type tid(todelete);
-                    terminated_items_count_.fetch_sub(1, std::memory_order_release);
+            //     threads::detail::thread_data* todelete;
+            //     while (delete_count && terminated_items_.pop(todelete))
+            //     {
+            //         threads::detail::thread_id_type tid(todelete);
+            //         // terminated_items_count_.fetch_sub(1, std::memory_order_release);
 
-                    // this thread has to be in this map, except if it has changed
-                    // its priority, then it could be elsewhere
-                    // PIKA_ASSERT(thread_map_.find(tid) != thread_map_.end());
+            //         // this thread has to be in this map, except if it has changed
+            //         // its priority, then it could be elsewhere
+            //         // PIKA_ASSERT(thread_map_.find(tid) != thread_map_.end());
 
-                    // if (thread_map_.erase(tid) != 0)
-                    // {
-                    recycle_thread(tid);
-                    //     thread_map_count_.fetch_sub(1, std::memory_order_release);
-                    //     PIKA_ASSERT(thread_map_count_ >= 0);
-                    // }
-                    --delete_count;
-                }
-            }
-            return terminated_items_count_.load(std::memory_order_acquire) == 0;
+            //         // if (thread_map_.erase(tid) != 0)
+            //         // {
+            //         recycle_thread(tid);
+            //         //     thread_map_count_.fetch_sub(1, std::memory_order_release);
+            //         //     PIKA_ASSERT(thread_map_count_ >= 0);
+            //         // }
+            //         --delete_count;
+            //     }
+            // }
+            // return terminated_items_count_.load(std::memory_order_acquire) == 0;
+            // return terminated_items_.empty();
         }
 #endif
 
@@ -393,19 +396,22 @@ namespace pika::threads::detail {
         bool cleanup_terminated(bool delete_all = false)
         {
 #ifdef PIKA_HAVE_THREAD_STACK_MMAP
-            if (terminated_items_count_.load(std::memory_order_acquire) == 0) return true;
+            // if (terminated_items_count_.load(std::memory_order_acquire) == 0) return true;
+            if (terminated_items_.empty()) return true;
 
-            if (delete_all)
-            {
-                // do not lock mutex while deleting all threads, do it piece-wise
-                while (true)
-                {
-                    std::lock_guard<mutex_type> lk(mtx_);
-                    if (cleanup_terminated_locked(false)) { return true; }
-                }
-            }
+            // if (delete_all)
+            // {
+            //     // do not lock mutex while deleting all threads, do it piece-wise
+            //     while (true)
+            //     {
+            //         std::lock_guard<mutex_type> lk(mtx_);
+            //         if (cleanup_terminated_locked(false)) { return true; }
+            //     }
+            // }
 
-            std::lock_guard<mutex_type> lk(mtx_);
+            // std::lock_guard<mutex_type> lk(mtx_);
+            std::unique_lock<mutex_type> lk(mtx_, std::try_to_lock);
+            if (!lk.owns_lock()) { return false; }
             return cleanup_terminated_locked(false);
 #else
             PIKA_UNUSED(delete_all);
@@ -424,7 +430,7 @@ namespace pika::threads::detail {
 #endif
 #ifdef PIKA_HAVE_THREAD_STACK_MMAP
           , terminated_items_(128)
-          , terminated_items_count_(0)
+          // , terminated_items_count_(0)
 #endif
           , new_tasks_(128)
 #ifdef PIKA_HAVE_THREAD_QUEUE_WAITTIME
@@ -449,8 +455,8 @@ namespace pika::threads::detail {
           , stolen_to_staged_(0)
 #endif
         {
-            new_tasks_count_.data_ = 0;
-            work_items_count_.data_ = 0;
+            // new_tasks_count_.data_ = 0;
+            // work_items_count_.data_ = 0;
         }
 
         static void deallocate(threads::detail::thread_data* p) { p->destroy(); }
@@ -484,21 +490,24 @@ namespace pika::threads::detail {
         // This returns the current length of the queues (work items and new items)
         std::int64_t get_queue_length(std::memory_order order = std::memory_order_acquire) const
         {
-            return work_items_count_.data_.load(order) + new_tasks_count_.data_.load(order);
+            return work_items_.size() + new_tasks_.size();
+            // return work_items_count_.data_.load(order) + new_tasks_count_.data_.load(order);
         }
 
         // This returns the current length of the pending queue
         std::int64_t get_pending_queue_length(
             std::memory_order order = std::memory_order_acquire) const
         {
-            return work_items_count_.data_.load(order);
+            // return work_items_count_.data_.load(order);
+            return work_items_.size();
         }
 
         // This returns the current length of the staged queue
         std::int64_t get_staged_queue_length(
             std::memory_order order = std::memory_order_acquire) const
         {
-            return new_tasks_count_.data_.load(order);
+            // return new_tasks_count_.data_.load(order);
+            return new_tasks_.size();
         }
 
 #ifdef PIKA_HAVE_THREAD_QUEUE_WAITTIME
@@ -668,7 +677,7 @@ namespace pika::threads::detail {
 
             // do not execute the work, but register a task description for
             // later thread creation
-            new_tasks_count_.data_.fetch_add(1, std::memory_order_acquire);
+            // new_tasks_count_.data_.fetch_add(1, std::memory_order_acquire);
 
             task_description* td = task_description_alloc_.allocate(1);
 #ifdef PIKA_HAVE_THREAD_QUEUE_WAITTIME
@@ -699,7 +708,7 @@ namespace pika::threads::detail {
             thread_description_ptr tdesc;
             if (0 != work_items_count && work_items_.pop(tdesc, steal))
             {
-                --work_items_count_.data_;
+                // --work_items_count_.data_;
 
                 if (get_maintain_queue_wait_times_enabled())
                 {
@@ -720,7 +729,7 @@ namespace pika::threads::detail {
                 work_items_.pop(next_thrd, steal))
             {
                 thrd.reset(next_thrd, false);    // do not addref!
-                work_items_count_.data_.fetch_sub(1, std::memory_order_release);
+                // work_items_count_.data_.fetch_sub(1, std::memory_order_release);
                 return true;
             }
 #endif
@@ -730,7 +739,7 @@ namespace pika::threads::detail {
         /// Schedule the passed thread
         void schedule_thread(threads::detail::thread_id_ref_type thrd, bool other_end = false)
         {
-            work_items_count_.data_.fetch_add(1, std::memory_order_acquire);
+            // work_items_count_.data_.fetch_add(1, std::memory_order_acquire);
 #ifdef PIKA_HAVE_THREAD_QUEUE_WAITTIME
             using namespace std::chrono;
             work_items_.push(new thread_description{PIKA_MOVE(thrd),
@@ -753,7 +762,8 @@ namespace pika::threads::detail {
 #ifdef PIKA_HAVE_THREAD_STACK_MMAP
             terminated_items_.push(thrd);
 
-            std::int64_t count = terminated_items_count_.fetch_add(1, std::memory_order_relaxed) + 1;
+            // std::int64_t count = terminated_items_count_.fetch_add(1, std::memory_order_relaxed) + 1;
+            std::int64_t count = terminated_items_.size();
             if (count > parameters_.max_terminated_threads_)
             {
                 cleanup_terminated(true);    // clean up all terminated threads
@@ -780,13 +790,15 @@ namespace pika::threads::detail {
         {
             if (threads::detail::thread_schedule_state::terminated == state)
 #ifdef PIKA_HAVE_THREAD_STACK_MMAP
-                return terminated_items_count_;
+                // return terminated_items_count_;
+                return terminated_items_.size();
 #else
                 return 0;
 #endif
 
             if (threads::detail::thread_schedule_state::staged == state)
-                return new_tasks_count_.data_;
+                return new_tasks_.size();
+                // return new_tasks_count_.data_;
 
             if (threads::detail::thread_schedule_state::unknown == state)
             {
@@ -794,10 +806,13 @@ namespace pika::threads::detail {
                 // TODO: Relaxed load?
 #ifdef PIKA_HAVE_THREAD_STACK_MMAP
                 // return thread_map_count_ + new_tasks_count_.data_ - terminated_items_count_;
-                return work_items_count_.data_ + new_tasks_count_.data_ - terminated_items_count_;
+                // return work_items_count_.data_ + new_tasks_count_.data_ - terminated_items_count_;
+                // return work_items_.size() + new_tasks_.size() - terminated_items_count_;
+                return work_items_.size() + new_tasks_.size() - terminated_items_.size();
 #else
                 // return thread_map_count_ + new_tasks_count_.data_;
-                return work_items_count_.data_ + new_tasks_count_.data_;
+                // return work_items_count_.data_ + new_tasks_count_.data_;
+                return work_items_.size() + new_tasks_.size();
 #endif
             }
 
@@ -895,7 +910,8 @@ namespace pika::threads::detail {
         /// has to be terminated (i.e. no more work has to be done).
         inline bool wait_or_add_new(bool, std::size_t& added, bool steal = false) PIKA_HOT
         {
-            if (0 == new_tasks_count_.data_.load(std::memory_order_relaxed)) { return true; }
+            // if (0 == new_tasks_count_.data_.load(std::memory_order_relaxed)) { return true; }
+            if (new_tasks_.empty()) { return true; }
 
             // No obvious work has to be done, so a lock won't hurt too much.
             //
@@ -918,14 +934,16 @@ namespace pika::threads::detail {
         {
             // try to generate new threads from task lists, but only if our
             // own list of threads is empty
-            if (0 == work_items_count_.data_.load(std::memory_order_relaxed))
+            // if (0 == work_items_count_.data_.load(std::memory_order_relaxed))
+            if (work_items_.empty())
             {
                 // see if we can avoid grabbing the lock below
 
                 // don't try to steal if there are only a few tasks left on
                 // this queue
-                std::int64_t new_tasks_count =
-                    addfrom->new_tasks_count_.data_.load(std::memory_order_relaxed);
+                // std::int64_t new_tasks_count =
+                //     addfrom->new_tasks_count_.data_.load(std::memory_order_relaxed);
+                std::int64_t new_tasks_count = addfrom->new_tasks_.size();
                 bool enough_threads = new_tasks_count >= parameters_.min_tasks_to_steal_staged_;
 
                 if (running && !enough_threads)
@@ -1073,7 +1091,7 @@ namespace pika::threads::detail {
         // list of terminated threads
         terminated_items_type terminated_items_;
         // count of terminated items
-        std::atomic<std::int64_t> terminated_items_count_;
+        // std::atomic<std::int64_t> terminated_items_count_;
 #endif
 
         task_items_type new_tasks_;    // list of new tasks to run
@@ -1112,12 +1130,12 @@ namespace pika::threads::detail {
         // count of new_tasks stolen to this queue from other queues
         std::atomic<std::int64_t> stolen_to_staged_;
 #endif
-        // count of new tasks to run, separate to new cache line to avoid false
-        // sharing
-        pika::concurrency::detail::cache_line_data<std::atomic<std::int64_t>> new_tasks_count_;
+        // // count of new tasks to run, separate to new cache line to avoid false
+        // // sharing
+        // pika::concurrency::detail::cache_line_data<std::atomic<std::int64_t>> new_tasks_count_;
 
-        // count of active work items
-        pika::concurrency::detail::cache_line_data<std::atomic<std::int64_t>> work_items_count_;
+        // // count of active work items
+        // pika::concurrency::detail::cache_line_data<std::atomic<std::int64_t>> work_items_count_;
     };
 
     ///////////////////////////////////////////////////////////////////////////

@@ -56,7 +56,8 @@ namespace pika::threads::detail {
 
         bool pop(reference val, bool /* steal */ = true) { return queue_.try_dequeue(val); }
 
-        bool empty() { return (queue_.size_approx() == 0); }
+        bool empty() const noexcept { return (queue_.size_approx() == 0); }
+        std::size_t size() const noexcept { return queue_.size_approx(); }
 
     private:
         container_type queue_;
@@ -105,7 +106,8 @@ namespace pika::threads::detail {
 
         bool pop(reference val, bool /* steal */ = true) { return queue_.pop_left(val); }
 
-        bool empty() { return queue_.empty(); }
+        bool empty() const noexcept { return queue_.empty(); }
+        std::size_t size() const noexcept { return !queue_.empty(); }
 
     private:
         container_type queue_;
@@ -152,7 +154,8 @@ namespace pika::threads::detail {
             return queue_.pop_right(val);
         }
 
-        bool empty() { return queue_.empty(); }
+        bool empty() const noexcept { return queue_.empty(); }
+        std::size_t size() const noexcept { return !queue_.empty(); }
 
     private:
         container_type queue_;
@@ -207,7 +210,8 @@ namespace pika::threads::detail {
             return queue_.pop_left(val);
         }
 
-        bool empty() { return queue_.empty(); }
+        bool empty() const noexcept { return queue_.empty(); }
+        std::size_t size() const noexcept { return !queue_.empty(); }
 
     private:
         container_type queue_;
