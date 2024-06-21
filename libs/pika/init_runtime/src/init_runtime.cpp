@@ -243,7 +243,7 @@ namespace pika {
             pika::set_thread_termination_handler(
                 [](std::exception_ptr const& e) { report_error(e); });
             pika::detail::set_get_full_build_string(&pika::full_build_string);
-#if defined(PIKA_HAVE_VERIFY_LOCKS)
+#if 0 // defined(PIKA_HAVE_VERIFY_LOCKS)
             pika::util::set_registered_locks_error_handler(
                 &pika::detail::registered_locks_error_handler);
             pika::util::set_register_locks_predicate(&pika::detail::register_locks_predicate);

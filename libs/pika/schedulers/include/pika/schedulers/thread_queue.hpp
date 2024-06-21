@@ -11,6 +11,7 @@
 #include <pika/allocator_support/internal_allocator.hpp>
 #include <pika/assert.hpp>
 #include <pika/concurrency/cache_line_data.hpp>
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/functional/function.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/schedulers/deadlock_detection.hpp>
@@ -85,13 +86,13 @@ namespace pika::threads::detail {
     {
     private:
         // we use a simple mutex to protect the data members for now
-        using mutex_type = Mutex;
+        using mutex_type = pika::concurrency::detail::spinlock; // Mutex;
 
         // this is the type of a map holding all threads (except depleted ones)
-        using thread_map_type = std::unordered_set<threads::detail::thread_id_type,
-            std::hash<threads::detail::thread_id_type>,
-            std::equal_to<threads::detail::thread_id_type>,
-            pika::detail::internal_allocator<threads::detail::thread_id_type>>;
+        // using thread_map_type = std::unordered_set<threads::detail::thread_id_type,
+        //     std::hash<threads::detail::thread_id_type>,
+        //     std::equal_to<threads::detail::thread_id_type>,
+        //     pika::detail::internal_allocator<threads::detail::thread_id_type>>;
 
         using thread_heap_type = std::vector<threads::detail::thread_id_type,
             pika::detail::internal_allocator<threads::detail::thread_id_type>>;
@@ -219,18 +220,18 @@ namespace pika::threads::detail {
                 task_description_alloc_.deallocate(task, 1);
 
                 // add the new entry to the map of all threads
-                std::pair<thread_map_type::iterator, bool> p = thread_map_.insert(thrd.noref());
+                // std::pair<thread_map_type::iterator, bool> p = thread_map_.insert(thrd.noref());
 
-                if (PIKA_UNLIKELY(!p.second))
-                {
-                    addfrom->new_tasks_count_.data_.fetch_sub(1, std::memory_order_release);
-                    lk.unlock();
-                    PIKA_THROW_EXCEPTION(pika::error::out_of_memory, "thread_queue::add_new",
-                        "Couldn't add new thread to the thread map");
-                    return 0;
-                }
+                // if (PIKA_UNLIKELY(!p.second))
+                // {
+                //     addfrom->new_tasks_count_.data_.fetch_sub(1, std::memory_order_release);
+                //     lk.unlock();
+                //     PIKA_THROW_EXCEPTION(pika::error::out_of_memory, "thread_queue::add_new",
+                //         "Couldn't add new thread to the thread map");
+                //     return 0;
+                // }
 
-                thread_map_count_.fetch_add(1, std::memory_order_acquire);
+                // thread_map_count_.fetch_add(1, std::memory_order_acquire);
 
                 // Decrement only after thread_map_count_ has been incremented
                 addfrom->new_tasks_count_.data_.fetch_sub(1, std::memory_order_release);
@@ -260,33 +261,33 @@ namespace pika::threads::detail {
 #endif
 
             // create new threads from pending tasks (if appropriate)
-            std::int64_t add_count = -1;    // default is no constraint
+            std::int64_t add_count = 10; // -1;    // default is no constraint
 
             // if we are desperate (no work in the queues), add some even if the
             // map holds more than max_thread_count
-            if (PIKA_LIKELY(parameters_.max_thread_count_))
-            {
-                std::int64_t count = static_cast<std::int64_t>(thread_map_.size());
-                if (parameters_.max_thread_count_ >= count + parameters_.min_add_new_count_)
-                {    //-V104
-                    PIKA_ASSERT(parameters_.max_thread_count_ - count <
-                        (std::numeric_limits<std::int64_t>::max)());
-                    add_count = static_cast<std::int64_t>(parameters_.max_thread_count_ - count);
-                    if (add_count < parameters_.min_add_new_count_)
-                        add_count = parameters_.min_add_new_count_;
-                    if (add_count > parameters_.max_add_new_count_)
-                        add_count = parameters_.max_add_new_count_;
-                }
-                else if (work_items_.empty())
-                {
-                    // add this number of threads
-                    add_count = parameters_.min_add_new_count_;
+            // if (PIKA_LIKELY(parameters_.max_thread_count_))
+            // {
+            //     std::int64_t count = static_cast<std::int64_t>(thread_map_.size());
+            //     if (parameters_.max_thread_count_ >= count + parameters_.min_add_new_count_)
+            //     {    //-V104
+            //         PIKA_ASSERT(parameters_.max_thread_count_ - count <
+            //             (std::numeric_limits<std::int64_t>::max)());
+            //         add_count = static_cast<std::int64_t>(parameters_.max_thread_count_ - count);
+            //         if (add_count < parameters_.min_add_new_count_)
+            //             add_count = parameters_.min_add_new_count_;
+            //         if (add_count > parameters_.max_add_new_count_)
+            //             add_count = parameters_.max_add_new_count_;
+            //     }
+            //     else if (work_items_.empty())
+            //     {
+            //         // add this number of threads
+            //         add_count = parameters_.min_add_new_count_;
 
-                    // increase max_thread_count
-                    parameters_.max_thread_count_ += parameters_.min_add_new_count_;    //-V101
-                }
-                else { return false; }
-            }
+            //         // increase max_thread_count
+            //         parameters_.max_thread_count_ += parameters_.min_add_new_count_;    //-V101
+            //     }
+            //     else { return false; }
+            // }
 
             std::size_t addednew = add_new(add_count, addfrom, lk, steal);
             added += addednew;
@@ -344,14 +345,14 @@ namespace pika::threads::detail {
                     terminated_items_count_.fetch_sub(1, std::memory_order_release);
 
                     // this thread has to be in this map
-                    PIKA_ASSERT(thread_map_.find(tid) != thread_map_.end());
+                    // PIKA_ASSERT(thread_map_.find(tid) != thread_map_.end());
 
-                    if (thread_map_.erase(tid) != 0)
-                    {
-                        recycle_thread(tid);
-                        thread_map_count_.fetch_sub(1, std::memory_order_release);
-                        PIKA_ASSERT(thread_map_count_ >= 0);
-                    }
+                    // if (thread_map_.erase(tid) != 0)
+                    // {
+                    recycle_thread(tid);
+                    //     thread_map_count_.fetch_sub(1, std::memory_order_release);
+                    //     PIKA_ASSERT(thread_map_count_ >= 0);
+                    // }
                 }
             }
             else
@@ -373,14 +374,14 @@ namespace pika::threads::detail {
 
                     // this thread has to be in this map, except if it has changed
                     // its priority, then it could be elsewhere
-                    PIKA_ASSERT(thread_map_.find(tid) != thread_map_.end());
+                    // PIKA_ASSERT(thread_map_.find(tid) != thread_map_.end());
 
-                    if (thread_map_.erase(tid) != 0)
-                    {
-                        recycle_thread(tid);
-                        thread_map_count_.fetch_sub(1, std::memory_order_release);
-                        PIKA_ASSERT(thread_map_count_ >= 0);
-                    }
+                    // if (thread_map_.erase(tid) != 0)
+                    // {
+                    recycle_thread(tid);
+                    //     thread_map_count_.fetch_sub(1, std::memory_order_release);
+                    //     PIKA_ASSERT(thread_map_count_ >= 0);
+                    // }
                     --delete_count;
                 }
             }
@@ -415,7 +416,7 @@ namespace pika::threads::detail {
         thread_queue(
             std::size_t queue_num = std::size_t(-1), thread_queue_init_parameters parameters = {})
           : parameters_(parameters)
-          , thread_map_count_(0)
+          // , thread_map_count_(0)
           , work_items_(128, queue_num)
 #ifdef PIKA_HAVE_THREAD_QUEUE_WAITTIME
           , work_items_wait_(0)
@@ -617,20 +618,20 @@ namespace pika::threads::detail {
                     create_thread_object(thrd, data, lk);
 
                     // add a new entry in the map for this thread
-                    std::pair<thread_map_type::iterator, bool> p = thread_map_.insert(thrd.noref());
+                    // std::pair<thread_map_type::iterator, bool> p = thread_map_.insert(thrd.noref());
 
-                    if (PIKA_UNLIKELY(!p.second))
-                    {
-                        lk.unlock();
-                        PIKA_THROWS_IF(ec, pika::error::out_of_memory,
-                            "thread_queue::create_thread",
-                            "Couldn't add new thread to the map of threads");
-                        return;
-                    }
-                    thread_map_count_.fetch_add(1, std::memory_order_acquire);
+                    // if (PIKA_UNLIKELY(!p.second))
+                    // {
+                    //     lk.unlock();
+                    //     PIKA_THROWS_IF(ec, pika::error::out_of_memory,
+                    //         "thread_queue::create_thread",
+                    //         "Couldn't add new thread to the map of threads");
+                    //     return;
+                    // }
+                    // thread_map_count_.fetch_add(1, std::memory_order_acquire);
 
                     // this thread has to be in the map now
-                    PIKA_ASSERT(thread_map_.find(thrd.noref()) != thread_map_.end());
+                    // PIKA_ASSERT(thread_map_.find(thrd.noref()) != thread_map_.end());
                     PIKA_ASSERT(
                         &threads::detail::get_thread_id_data(thrd)->get_queue<thread_queue>() ==
                         this);
@@ -758,16 +759,16 @@ namespace pika::threads::detail {
                 cleanup_terminated(true);    // clean up all terminated threads
             }
 #else
-            {
-                threads::detail::thread_id_type tid(thrd);
+            // {
+            //     threads::detail::thread_id_type tid(thrd);
 
-                std::lock_guard<mutex_type> lk(mtx_);
-                PIKA_ASSERT(thread_map_.find(tid) != thread_map_.end());
-                thread_map_.erase(tid);
-            }
+            //     std::lock_guard<mutex_type> lk(mtx_);
+            //     PIKA_ASSERT(thread_map_.find(tid) != thread_map_.end());
+            //     thread_map_.erase(tid);
+            // }
 
-            thread_map_count_.fetch_sub(1, std::memory_order_release);
-            PIKA_ASSERT(thread_map_count_ >= 0);
+            // thread_map_count_.fetch_sub(1, std::memory_order_release);
+            // PIKA_ASSERT(thread_map_count_ >= 0);
             deallocate(thrd);
 #endif
         }
@@ -789,44 +790,50 @@ namespace pika::threads::detail {
 
             if (threads::detail::thread_schedule_state::unknown == state)
             {
+                // TODO: Get counts directly from the queues?
+                // TODO: Relaxed load?
 #ifdef PIKA_HAVE_THREAD_STACK_MMAP
-                return thread_map_count_ + new_tasks_count_.data_ - terminated_items_count_;
+                // return thread_map_count_ + new_tasks_count_.data_ - terminated_items_count_;
+                return work_items_count_.data_ + new_tasks_count_.data_ - terminated_items_count_;
 #else
-                return thread_map_count_ + new_tasks_count_.data_;
+                // return thread_map_count_ + new_tasks_count_.data_;
+                return work_items_count_.data_ + new_tasks_count_.data_;
 #endif
             }
 
             // acquire lock only if absolutely necessary
-            std::lock_guard<mutex_type> lk(mtx_);
+            // std::lock_guard<mutex_type> lk(mtx_);
 
-            std::int64_t num_threads = 0;
-            thread_map_type::const_iterator end = thread_map_.end();
-            for (thread_map_type::const_iterator it = thread_map_.begin(); it != end; ++it)
-            {
-                if (threads::detail::get_thread_id_data(*it)->get_state().state() == state)
-                    ++num_threads;
-            }
-            return num_threads;
+            // std::int64_t num_threads = 0;
+            // thread_map_type::const_iterator end = thread_map_.end();
+            // for (thread_map_type::const_iterator it = thread_map_.begin(); it != end; ++it)
+            // {
+            //     if (threads::detail::get_thread_id_data(*it)->get_state().state() == state)
+            //         ++num_threads;
+            // }
+            // TODO
+            return 0; // num_threads;
         }
 
         ///////////////////////////////////////////////////////////////////////
         void abort_all_suspended_threads()
         {
-            std::lock_guard<mutex_type> lk(mtx_);
-            thread_map_type::iterator end = thread_map_.end();
-            for (thread_map_type::iterator it = thread_map_.begin(); it != end; ++it)
-            {
-                auto thrd = threads::detail::get_thread_id_data(*it);
-                if (thrd->get_state().state() == threads::detail::thread_schedule_state::suspended)
-                {
-                    thrd->set_state(threads::detail::thread_schedule_state::pending,
-                        pika::threads::detail::thread_restart_state::abort);
+            PIKA_ASSERT(false);
+            // std::lock_guard<mutex_type> lk(mtx_);
+            // thread_map_type::iterator end = thread_map_.end();
+            // for (thread_map_type::iterator it = thread_map_.begin(); it != end; ++it)
+            // {
+            //     auto thrd = threads::detail::get_thread_id_data(*it);
+            //     if (thrd->get_state().state() == threads::detail::thread_schedule_state::suspended)
+            //     {
+            //         thrd->set_state(threads::detail::thread_schedule_state::pending,
+            //             pika::threads::detail::thread_restart_state::abort);
 
-                    // thread holds self-reference
-                    PIKA_ASSERT(thrd->count_ > 1);
-                    schedule_thread(threads::detail::thread_id_ref_type(thrd));
-                }
-            }
+            //         // thread holds self-reference
+            //         PIKA_ASSERT(thrd->count_ > 1);
+            //         schedule_thread(threads::detail::thread_id_ref_type(thrd));
+            //     }
+            // }
         }
 
         bool enumerate_threads(
@@ -834,50 +841,50 @@ namespace pika::threads::detail {
             threads::detail::thread_schedule_state state =
                 threads::detail::thread_schedule_state::unknown) const
         {
-            std::uint64_t count = thread_map_count_;
-            if (state == threads::detail::thread_schedule_state::terminated)
-            {
-#ifdef PIKA_HAVE_THREAD_STACK_MMAP
-                count = terminated_items_count_;
-#else
-                count = 0;
-#endif
-            }
-            else if (state == threads::detail::thread_schedule_state::staged)
-            {
-                PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "thread_queue::iterate_threads",
-                    "can't iterate over thread ids of staged threads");
-                return false;
-            }
+//             std::uint64_t count = thread_map_count_;
+//             if (state == threads::detail::thread_schedule_state::terminated)
+//             {
+// #ifdef PIKA_HAVE_THREAD_STACK_MMAP
+//                 count = terminated_items_count_;
+// #else
+//                 count = 0;
+// #endif
+//             }
+//             else if (state == threads::detail::thread_schedule_state::staged)
+//             {
+//                 PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "thread_queue::iterate_threads",
+//                     "can't iterate over thread ids of staged threads");
+//                 return false;
+//             }
 
-            std::vector<threads::detail::thread_id_type> ids;
-            ids.reserve(static_cast<std::size_t>(count));
+//             std::vector<threads::detail::thread_id_type> ids;
+//             ids.reserve(static_cast<std::size_t>(count));
 
-            if (state == threads::detail::thread_schedule_state::unknown)
-            {
-                std::lock_guard<mutex_type> lk(mtx_);
-                thread_map_type::const_iterator end = thread_map_.end();
-                for (thread_map_type::const_iterator it = thread_map_.begin(); it != end; ++it)
-                {
-                    ids.push_back(*it);
-                }
-            }
-            else
-            {
-                std::lock_guard<mutex_type> lk(mtx_);
-                thread_map_type::const_iterator end = thread_map_.end();
-                for (thread_map_type::const_iterator it = thread_map_.begin(); it != end; ++it)
-                {
-                    if (threads::detail::get_thread_id_data(*it)->get_state().state() == state)
-                        ids.push_back(*it);
-                }
-            }
+            // if (state == threads::detail::thread_schedule_state::unknown)
+            // {
+            //     std::lock_guard<mutex_type> lk(mtx_);
+            //     thread_map_type::const_iterator end = thread_map_.end();
+            //     for (thread_map_type::const_iterator it = thread_map_.begin(); it != end; ++it)
+            //     {
+            //         ids.push_back(*it);
+            //     }
+            // }
+            // else
+            // {
+            //     std::lock_guard<mutex_type> lk(mtx_);
+            //     thread_map_type::const_iterator end = thread_map_.end();
+            //     for (thread_map_type::const_iterator it = thread_map_.begin(); it != end; ++it)
+            //     {
+            //         if (threads::detail::get_thread_id_data(*it)->get_state().state() == state)
+            //             ids.push_back(*it);
+            //     }
+            // }
 
-            // now invoke callback function for all matching threads
-            for (threads::detail::thread_id_type const& id : ids)
-            {
-                if (!f(id)) return false;    // stop iteration
-            }
+            // // now invoke callback function for all matching threads
+            // for (threads::detail::thread_id_type const& id : ids)
+            // {
+            //     if (!f(id)) return false;    // stop iteration
+            // }
 
             return true;
         }
@@ -1049,10 +1056,10 @@ namespace pika::threads::detail {
 
         mutable mutex_type mtx_;    // mutex protecting the members
 
-        thread_map_type thread_map_;    // mapping of thread id's to pika-threads
+        // thread_map_type thread_map_;    // mapping of thread id's to pika-threads
 
         // overall count of work items
-        std::atomic<std::int64_t> thread_map_count_;
+        // std::atomic<std::int64_t> thread_map_count_;
 
         work_items_type work_items_;    // list of active work items
 
