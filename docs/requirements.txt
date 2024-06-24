@@ -1,0 +1,5 @@
+# noinshpect
+sphinx
+breathe
+recommonmark
+sphinx_material
