@@ -32,7 +32,7 @@ variables for doxygen:
 .. code-block:: bash
 
    export PIKA_DOCS_DOXYGEN_INPUT_ROOT="$SOURCE_DIR"
-   export PIKA_DOCS_DOXYGEN_OUTPUT_DIRECTORY="$BUILD_DIR/doxygen"
+   export PIKA_DOCS_DOXYGEN_OUTPUT_DIRECTORY="$BUILD_DIR/docs/doxygen"
 
 Then generate the doxygen XML files using:
 
