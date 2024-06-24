@@ -5,6 +5,7 @@
 # file BOOST_LICENSE_1_0.rst or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 include:
+  - local: '.gitlab/includes/gcc14_pipeline.yml'
   - local: '.gitlab/includes/gcc13_pipeline.yml'
   - local: '.gitlab/includes/clang14_cuda11_pipeline.yml'
   - local: '.gitlab/includes/performance_gcc13_pipeline.yml'
