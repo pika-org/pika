@@ -24,7 +24,7 @@ Building documentation
 ======================
 
 Building pika's documentation requires doxygen, sphinx, as well the sphinx extensions and themes
-listed in ``docs/conf.py``. Building the documentation is not done through CMake as the rest of
+listed in ``docs/requirements.txt``. Building the documentation is not done through CMake as the rest of
 pika. Assuming ``SOURCE_DIR`` is set to the pika source directory, and ``BUILD_DIR`` is set to a
 build directory (e.g. ``$SOURCE_DIR/build``), you first need to export the following environment
 variables for doxygen:
