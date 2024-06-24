@@ -34,3 +34,7 @@
 .md-typeset .headerlink {
     opacity: 1;
 }
+
+.sig {
+    font-weight: bold;
+}
