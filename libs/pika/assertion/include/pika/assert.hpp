@@ -5,28 +5,27 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#if 0 // TODO: no modules
 #pragma once
 
 #include <pika/config.hpp>
+#include <pika/preprocessor/stringize.hpp>
+#include <pika/preprocessor/nargs.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/assertion/current_function.hpp>
 #include <pika/assertion/evaluate_assert.hpp>
 #include <pika/assertion/source_location.hpp>
-#include <pika/preprocessor/stringize.hpp>
 
 #if defined(PIKA_COMPUTE_DEVICE_CODE)
 # include <assert.h>
 #endif
+
 #include <exception>
 #include <string>
 #include <type_traits>
-#else
-#include <pika/preprocessor/stringize.hpp>
-#include <string>
-import pika;
-// TODO
-# define PIKA_ASSERT_CURRENT_FUNCTION __PRETTY_FUNCTION__
 #endif
+
+# define PIKA_ASSERT_CURRENT_FUNCTION __PRETTY_FUNCTION__
 
 #if defined(DOXYGEN)
 /// \def PIKA_ASSERT(expr, msg)

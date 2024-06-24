@@ -28,6 +28,8 @@ set(config_headers
 )
 
 set(config_sources version.cpp)
+set(config_module_sources module.cpp)
+set(config_module_includes <type_traits> <utility>)
 
 include(pika_add_module)
 pika_add_module(
@@ -35,6 +37,8 @@ pika_add_module(
   GLOBAL_HEADER_GEN OFF
   SOURCES ${config_sources}
   HEADERS ${config_headers}
+  MODULE_SOURCES ${config_module_sources}
+  MODULE_INCLUDES ${config_module_includes}
   MODULE_DEPENDENCIES pika_preprocessor
   DEPENDENCIES pika_dependencies_boost
   CMAKE_SUBDIRS examples tests

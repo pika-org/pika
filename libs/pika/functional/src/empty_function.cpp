@@ -6,9 +6,18 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/functional/detail/empty_function.hpp>
+#if defined(PIKA_HAVE_MODULE)
+module;
+#endif
 
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/functional/detail/empty_function.hpp>
 #include <pika/modules/errors.hpp>
+#endif
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.functional;
+#endif
 
 namespace pika::util::detail {
     [[noreturn]] void throw_bad_function_call()

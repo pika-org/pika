@@ -19,11 +19,13 @@ set(preprocessor_headers
 
 # Default location is $PIKA_ROOT/libs/preprocessor/src
 set(preprocessor_sources dummy.cpp)
+set(preprocessor_module_sources module.cpp)
 
 include(pika_add_module)
 pika_add_module(
   pika preprocessor
   SOURCES ${preprocessor_sources}
+  MODULE_SOURCES ${preprocessor_module_sources}
   HEADERS ${preprocessor_headers}
   CMAKE_SUBDIRS tests
 )

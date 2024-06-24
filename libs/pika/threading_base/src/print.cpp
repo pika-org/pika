@@ -4,10 +4,16 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#if defined(PIKA_HAVE_MODULE)
+module;
+#endif
+
 #include <pika/config.hpp>
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/threading_base/print.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_data.hpp>
+#endif
 
 #include <cstdint>
 #include <thread>
@@ -16,6 +22,10 @@
 # include <linux/unistd.h>
 # include <sys/mman.h>
 # define PIKA_DEBUGGING_PRINT_LINUX
+#endif
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.threading_base;
 #endif
 
 // ------------------------------------------------------------

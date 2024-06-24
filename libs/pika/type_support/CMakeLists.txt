@@ -22,14 +22,18 @@ set(type_support_headers
 
 set(type_support_sources)
 set(type_support_module_sources module.cpp)
+set(type_support_module_includes <exception> <functional> <variant> <string> <type_traits>
+                                 <utility>
+)
 
 include(pika_add_module)
 pika_add_module(
   pika type_support
   GLOBAL_HEADER_GEN ON
   SOURCES ${type_support_sources}
-  MODULE_SOURCES ${type_support_module_sources}
   HEADERS ${type_support_headers}
+  MODULE_SOURCES ${type_support_module_sources}
+  MODULE_INCLUDES ${type_support_module_includes}
   MODULE_DEPENDENCIES pika_assertion pika_config
   CMAKE_SUBDIRS examples tests
 )

@@ -351,6 +351,8 @@ with section("parse"):
                 "HEADERS": "+",
                 "OBJECTS": "+",
                 "MODULE_DEPENDENCIES": "+",
+                "MODULE_SOURCES": "+",
+                "MODULE_INCLUDES": "+",
                 "SOURCES": "+",
             },
             "pargs": {

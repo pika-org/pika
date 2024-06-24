@@ -103,7 +103,7 @@ namespace pika::functional::detail {
 
 # include <pika/config.hpp>
 # include <pika/functional/tag_invoke.hpp>
-# include <pika/type_support/type_identity.hpp>
+// # include <pika/type_support/type_identity.hpp>
 
 # include <type_traits>
 # include <utility>

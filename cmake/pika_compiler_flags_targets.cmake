@@ -23,6 +23,10 @@ if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   target_compile_definitions(pika_public_flags INTERFACE PIKA_DEBUG)
 endif()
 
+if(PIKA_WITH_MODULE)
+  target_compile_definitions(pika_private_flags INTERFACE PIKA_HAVE_MODULE)
+endif()
+
 target_compile_definitions(
   pika_private_flags
   INTERFACE $<$<CONFIG:MinSizeRel>:NDEBUG>

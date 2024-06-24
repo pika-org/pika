@@ -14,8 +14,11 @@
 #include <pika/iterator_support/iterator_range.hpp>
 #include <pika/iterator_support/range.hpp>
 #include <pika/iterator_support/traits/is_range.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/type_support/lazy_conditional.hpp>
 #include <pika/type_support/type_identity.hpp>
+#endif
 
 #include <cstddef>
 #include <cstdint>

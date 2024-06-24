@@ -4,9 +4,16 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#if defined(PIKA_HAVE_MODULE)
+module;
+#endif
+
 #include <pika/config.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/debugging/environ.hpp>
 #include <pika/debugging/print.hpp>
+#endif
 
 #include <boost/crc.hpp>
 
@@ -34,6 +41,12 @@
 #if defined(__FreeBSD__)
 PIKA_EXPORT char** freebsd_environ = nullptr;
 #endif
+
+// #if defined(PIKA_HAVE_MODULE)
+module pika.debugging;
+// #endif
+
+#define PIKA_DETAIL_NS_DEBUG pika::debug::detail
 
 // ------------------------------------------------------------
 /// \cond NODETAIL
@@ -301,9 +314,10 @@ namespace PIKA_DETAIL_NS_DEBUG {
     template <typename T>
     PIKA_EXPORT void print_array(std::string const& name, T const* data, std::size_t size)
     {
-        std::cout << str<20>(name.c_str()) << ": {" << dec<4>(size) << "} : ";
-        std::copy(data, data + size, std::ostream_iterator<T>(std::cout, ", "));
-        std::cout << "\n";
+        // TODO: Why is this referring to std::cout@pika.debugging?
+        // std::cout << str<20>(name.c_str()) << ": {" << dec<4>(size) << "} : ";
+        // std::copy(data, data + size, std::ostream_iterator<T>(std::cout, ", "));
+        // std::cout << "\n";
     }
 
     template PIKA_EXPORT void print_array(std::string const&, std::size_t const*, std::size_t);

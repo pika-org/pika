@@ -7,7 +7,13 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#if defined(PIKA_HAVE_MODULE)
+module;
+#endif
+
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/functional/detail/basic_function.hpp>
 #include <pika/functional/detail/empty_function.hpp>
 #include <pika/functional/detail/vtable/function_vtable.hpp>
@@ -15,6 +21,7 @@
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
 #include <pika/modules/itt_notify.hpp>
+#endif
 
 #include <cstddef>
 #include <cstring>
@@ -22,6 +29,10 @@
 #include <string>
 #include <type_traits>
 #include <utility>
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.functional;
+#endif
 
 namespace pika::util::detail {
     ///////////////////////////////////////////////////////////////////////////

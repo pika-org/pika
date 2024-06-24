@@ -16,26 +16,26 @@ set(_pika_modules
     # async_cuda_base
     # async_mpi
     # command_line_handling
-    # concepts
+    concepts
     # concurrency
     config
     # coroutines
-    # datastructures
-    # debugging
-    # errors
+    datastructures
+    debugging
+    errors
     # execution
     # execution_base
     # executors
-    # filesystem
-    # functional
+    filesystem
+    functional
     # hashing
     # include
     # ini
     # init_runtime
-    # iterator_support
-    # itt_notify
+    iterator_support
+    itt_notify
     # lock_registration
-    # logging
+    logging
     # memory
     # mpi_base
     # prefix
@@ -46,22 +46,32 @@ set(_pika_modules
     # runtime_configuration
     # runtime
     # schedulers
-    # string_util
+    string_util
     # synchronization
-    # tag_invoke
+    tag_invoke
     # thread_pools
-    # thread_support
+    thread_support
     # threading
     # threading_base
     # thread_manager
-    # timing
+    timing
     # topology
     type_support
-    # util
+    util
     # version
 )
 # cmake-format: on
 
+set(module_imports)
 foreach(module ${_pika_modules})
   add_subdirectory(${module})
+
+  set(module_imports "${module_imports}\nexport import pika.${module};")
 endforeach()
+set(module_includes)
+set(module_name pika.all)
+set(module_interface_unit "${CMAKE_CURRENT_BINARY_DIR}/module.cpp")
+set(module_headers)
+configure_file(
+  "${PROJECT_SOURCE_DIR}/cmake/templates/module.cpp.in" "${module_interface_unit}" @ONLY
+)

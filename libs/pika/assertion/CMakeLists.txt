@@ -15,14 +15,16 @@ set(assertion_headers
 # Default location is $PIKA_ROOT/libs/assertion/src
 set(assertion_sources assertion.cpp source_location.cpp)
 set(assertion_module_sources module.cpp)
+set(assertion_module_includes <exception> <string> <type_traits> <utility>)
 
 include(pika_add_module)
 pika_add_module(
   pika assertion
   GLOBAL_HEADER_GEN OFF
   SOURCES ${assertion_sources}
-  MODULE_SOURCES ${assertion_module_sources}
   HEADERS ${assertion_headers}
+  MODULE_SOURCES ${assertion_module_sources}
+  MODULE_INCLUDES ${assertion_module_includes}
   MODULE_DEPENDENCIES pika_config pika_preprocessor
   CMAKE_SUBDIRS examples tests
 )

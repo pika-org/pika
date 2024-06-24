@@ -4,9 +4,18 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/string_util/bad_lexical_cast.hpp>
+#if defined(PIKA_HAVE_MODULE)
+module;
+#endif
 
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/string_util/bad_lexical_cast.hpp>
+#endif
 #include <typeinfo>
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.string_util;
+#endif
 
 namespace pika::detail {
     const char* bad_lexical_cast::what() const noexcept

@@ -22,6 +22,7 @@ set(iterator_support_headers
 )
 
 set(iterator_support_sources)
+set(iterator_support_module_includes <type_traits> <iterator> <utility> <vector> <memory> <algorithm> <functional>)
 
 include(pika_add_module)
 pika_add_module(
@@ -31,6 +32,7 @@ pika_add_module(
                              "pika/iterator_support/traits/is_range.hpp"
   SOURCES ${iterator_support_sources}
   HEADERS ${iterator_support_headers}
-  MODULE_DEPENDENCIES pika_config pika_datastructures pika_functional pika_type_support
+  MODULE_INCLUDES ${iterator_support_module_includes}
+  MODULE_DEPENDENCIES pika_assertion pika_config pika_datastructures pika_functional pika_type_support
   CMAKE_SUBDIRS examples tests
 )

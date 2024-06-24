@@ -8,14 +8,26 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/concepts/has_member_xxx.hpp>
 #include <pika/type_support/unused.hpp>
+#endif
 
 #include <type_traits>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::util::detail {
+#if defined(PIKA_HAVE_MODULE)
+    // If we have modules, we also have concepts (or do we?)
+    template <typename Lock>
+    concept has_owns_lock = requires
+    {
+        &Lock::owns_lock;
+    };
+#else
     PIKA_HAS_MEMBER_XXX_TRAIT_DEF(owns_lock)
+#endif
 
     template <typename Lock>
     constexpr void assert_owns_lock(Lock const&, int) noexcept
@@ -28,14 +40,22 @@ namespace pika::util::detail {
     }
 
     template <typename Lock>
+    #if defined(PIKA_HAVE_MODULE)
+    requires has_owns_lock<Lock> void
+    #else
     std::enable_if_t<has_owns_lock<Lock>::value>
+    #endif
     assert_owns_lock([[maybe_unused]] Lock const& l, long) noexcept
     {
         PIKA_ASSERT(l.owns_lock());
     }
 
     template <typename Lock>
+    #if defined(PIKA_HAVE_MODULE)
+    requires has_owns_lock<Lock> void
+    #else
     std::enable_if_t<has_owns_lock<Lock>::value>
+    #endif
     assert_doesnt_own_lock([[maybe_unused]] Lock const& l, long) noexcept
     {
         PIKA_ASSERT(!l.owns_lock());

@@ -6,6 +6,7 @@
 
 set(filesystem_headers pika/detail/filesystem.hpp)
 set(filesystem_sources filesystem.cpp)
+set(filesystem_module_includes <type_traits> <utility> <string> <functional> <typeinfo> <exception> <limits> <filesystem>)
 
 include(pika_add_module)
 pika_add_module(
@@ -13,6 +14,7 @@ pika_add_module(
   GLOBAL_HEADER_GEN OFF
   HEADERS ${filesystem_headers}
   SOURCES ${filesystem_sources}
+  MODULE_INCLUDES ${filesystem_module_includes}
   MODULE_DEPENDENCIES pika_config
   CMAKE_SUBDIRS examples tests
 )

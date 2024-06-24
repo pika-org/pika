@@ -8,6 +8,7 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <spdlog/sinks/sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
@@ -51,3 +52,10 @@ namespace pika::detail {
     PIKA_EXPORT std::shared_ptr<spdlog::sinks::sink> get_spdlog_sink(std::string const& env);
     PIKA_EXPORT PIKA_DETAIL_DECLARE_SPDLOG(pika)
 }    // namespace pika::detail
+
+#else
+
+#define PIKA_LOG(loglevel, ...)
+#define PIKA_LOG_ENABLED(loglevel) false
+
+#endif

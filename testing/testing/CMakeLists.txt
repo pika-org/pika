@@ -9,5 +9,17 @@ list(TRANSFORM testing_sources PREPEND src/ OUTPUT_VARIABLE testing_sources)
 
 add_library(pika_testing SHARED ${testing_sources})
 target_include_directories(pika_testing PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+# target_sources(
+#   pika_testing
+#   PUBLIC FILE_SET
+#          CXX_MODULES
+#          # BASE_DIRS
+#          # "${CMAKE_CURRENT_BINARY_DIR}/${lib}"
+#          # "${CMAKE_CURRENT_SOURCE_DIR}/${lib}"
+#          FILES
+#          src/module.cpp
+#          # "${CMAKE_CURRENT_BINARY_DIR}/${lib}/module.cpp"
+#          # "${CMAKE_CURRENT_SOURCE_DIR}/${lib}/src/module.cpp"
+# )
 target_link_libraries(pika_testing PRIVATE pika_private_flags)
 target_link_libraries(pika_testing PUBLIC pika::pika)

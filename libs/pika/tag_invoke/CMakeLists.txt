@@ -12,6 +12,8 @@ set(tag_invoke_headers
 )
 
 set(tag_invoke_sources)
+set(tag_invoke_module_sources module.cpp)
+set(tag_invoke_module_includes <type_traits> <utility> <functional>)
 
 include(pika_add_module)
 pika_add_module(
@@ -19,6 +21,8 @@ pika_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${tag_invoke_sources}
   HEADERS ${tag_invoke_headers}
+  MODULE_SOURCES ${tag_invoke_module_sources}
+  MODULE_INCLUDES ${tag_invoke_module_includes}
   MODULE_DEPENDENCIES pika_config pika_type_support
   CMAKE_SUBDIRS examples tests
 )

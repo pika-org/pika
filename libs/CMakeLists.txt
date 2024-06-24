@@ -60,7 +60,17 @@ set(pika_libs pika)
 
 foreach(lib ${pika_libs})
   add_library(${lib} SHARED src/dummy.cpp ${pika_natvis_files_SOURCES})
-  target_sources(${lib} PUBLIC FILE_SET CXX_MODULES FILES ${lib}/src/module.cpp)
+  target_sources(
+    ${lib}
+    PUBLIC FILE_SET
+           CXX_MODULES
+           BASE_DIRS
+           "${CMAKE_CURRENT_BINARY_DIR}/${lib}"
+           "${CMAKE_CURRENT_SOURCE_DIR}/${lib}"
+           FILES
+           "${CMAKE_CURRENT_BINARY_DIR}/${lib}/module.cpp"
+           "${CMAKE_CURRENT_SOURCE_DIR}/${lib}/src/module.cpp"
+  )
   set_target_properties(
     ${lib}
     PROPERTIES VERSION ${PIKA_VERSION}
@@ -74,8 +84,10 @@ foreach(lib ${pika_libs})
     EXPORT pika_targets
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT ${lib}
-    FILE_SET CXX_MODULES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+            COMPONENT ${lib}
+            FILE_SET CXX_MODULES
+            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
   )
   pika_export_targets(${lib})
 
@@ -87,7 +99,7 @@ foreach(module ${PIKA_ENABLED_MODULES})
   string(TOUPPER ${module} uppercase_module)
 
   set(MODULE_ENABLED_MODULE_DEFINES
-      "${MODULE_ENABLED_MODULE_DEFINES}#define PIKA_HAVE_MODULE_${uppercase_module}\n"
+      "${MODULE_ENABLED_MODULE_DEFINES} # define PIKA_HAVE_MODULE_${uppercase_module}\n"
   )
 endforeach()
 

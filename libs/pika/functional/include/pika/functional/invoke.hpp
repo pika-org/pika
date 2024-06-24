@@ -7,8 +7,11 @@
 #pragma once
 
 #include <pika/config.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/functional/detail/invoke.hpp>
 #include <pika/type_support/void_guard.hpp>
+#endif
 
 #include <type_traits>
 #include <utility>

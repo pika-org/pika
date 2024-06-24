@@ -7,9 +7,13 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 ////////////////////////////////////////////////////////////////////////////////
 
+module;
 #include <pika/config/export_definitions.hpp>
 #include <pika/config/version.hpp>
-#include <pika/preprocessor/stringize.hpp>
+
+module pika.config;
+
+// #include <pika/preprocessor/stringize.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {

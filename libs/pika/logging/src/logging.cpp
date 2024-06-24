@@ -5,6 +5,8 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#if !defined(PIKA_HAVE_MODULE)
+
 #include <pika/config.hpp>
 #include <pika/logging.hpp>
 #include <pika/string_util/from_string.hpp>
@@ -53,3 +55,5 @@ namespace pika::detail {
         return std::make_shared<spdlog::sinks::basic_file_sink_mt>(env);
     }
 }    // namespace pika::detail
+
+#endif

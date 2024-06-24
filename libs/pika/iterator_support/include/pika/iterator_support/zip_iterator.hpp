@@ -10,7 +10,10 @@
 #include <pika/config.hpp>
 #include <pika/iterator_support/iterator_facade.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/type_support/pack.hpp>
+#endif
 
 #include <cstddef>
 #include <iterator>

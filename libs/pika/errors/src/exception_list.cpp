@@ -4,10 +4,17 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#if defined(PIKA_HAVE_MODULE)
+module;
+#endif
+
 #include <pika/config.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/errors/exception.hpp>
 #include <pika/errors/exception_list.hpp>
 #include <pika/thread_support/unlock_guard.hpp>
+#endif
 
 #include <exception>
 #include <mutex>
@@ -15,6 +22,10 @@
 #include <string>
 #include <system_error>
 #include <utility>
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.errors;
+#endif
 
 namespace pika {
     namespace detail {

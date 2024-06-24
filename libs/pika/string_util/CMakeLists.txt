@@ -17,6 +17,7 @@ set(string_util_headers
 )
 
 set(string_util_sources bad_lexical_cast.cpp)
+set(string_util_module_includes <utility> <algorithm> <variant> <sstream> <fmt/format.h>)
 
 include(pika_add_module)
 pika_add_module(
@@ -24,6 +25,7 @@ pika_add_module(
   GLOBAL_HEADER_GEN ON
   HEADERS ${string_util_headers}
   SOURCES ${string_util_sources}
+  MODULE_INCLUDES ${string_util_module_includes}
   MODULE_DEPENDENCIES pika_config
   CMAKE_SUBDIRS examples tests
 )

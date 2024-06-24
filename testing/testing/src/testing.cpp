@@ -9,7 +9,11 @@
 #define PIKA_NO_VERSION_CHECK
 
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/modules/util.hpp>
+#endif
+
 #include <pika/testing.hpp>
 
 #include <atomic>
@@ -19,6 +23,10 @@
 #include <functional>
 #include <iostream>
 #include <string>
+
+#if defined(PIKA_HAVE_MODULE)
+import pika.all;
+#endif
 
 namespace pika::detail {
 

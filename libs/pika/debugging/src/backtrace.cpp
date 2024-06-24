@@ -9,11 +9,17 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 //
 
+#if defined(PIKA_HAVE_MODULE)
+module;
+#endif
+
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_STACKTRACES)
 
+#if !defined(PIKA_HAVE_MODULE)
 # include <pika/debugging/backtrace/backtrace.hpp>
+#endif
 
 # if (defined(__linux) || defined(__APPLE__) || defined(__sun)) &&                                 \
      (!defined(__ANDROID__) || !defined(ANDROID))
@@ -61,6 +67,10 @@
 #  include <stdlib.h>
 #  include <winbase.h>
 # endif
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.debugging;
+#endif
 
 namespace pika::debug::detail::stack_trace {
 # if defined(PIKA_HAVE_EXECINFO) && defined(PIKA_HAVE_UNWIND)

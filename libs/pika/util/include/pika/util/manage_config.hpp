@@ -7,7 +7,10 @@
 #pragma once
 
 #include <pika/config.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/string_util/from_string.hpp>
+#endif
 
 #include <map>
 #include <string>

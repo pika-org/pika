@@ -5,14 +5,25 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#if defined(PIKA_HAVE_MODULE)
+module;
+#endif
+
 #include <pika/config.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/errors/error.hpp>
 #include <pika/errors/exception.hpp>
+#endif
 
 #include <exception>
 #include <filesystem>
 #include <string>
 #include <system_error>
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.errors;
+#endif
 
 namespace pika::detail {
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)

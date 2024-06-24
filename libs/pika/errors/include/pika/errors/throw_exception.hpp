@@ -10,12 +10,15 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/assertion/current_function.hpp>
 #include <pika/errors/error.hpp>
 #include <pika/errors/exception_fwd.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/assertion/current_function.hpp>
 #include <pika/preprocessor/cat.hpp>
 #include <pika/preprocessor/expand.hpp>
 #include <pika/preprocessor/nargs.hpp>
+#endif
 
 #include <fmt/format.h>
 

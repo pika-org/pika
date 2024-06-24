@@ -5,8 +5,15 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#if defined(PIKA_HAVE_MODULE)
+module;
+#endif
+
 #include <pika/config.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/debugging/attach_debugger.hpp>
+#endif
 
 #include <iostream>
 
@@ -17,6 +24,10 @@
 #if defined(PIKA_WINDOWS)
 # include <Windows.h>
 #endif    // PIKA_WINDOWS
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.debugging;
+#endif
 
 namespace pika::debug::detail {
     void attach_debugger()

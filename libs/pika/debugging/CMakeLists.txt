@@ -11,6 +11,28 @@ set(debugging_headers
 )
 
 set(debugging_sources attach_debugger.cpp backtrace.cpp print.cpp)
+set(debugging_module_includes <type_traits> <utility> <cstddef> <tuple> <variant> <iosfwd> <functional> <chrono> <string> <memory> <string_view> <memory_resource> <typeinfo> <cxxabi.h> <boost/crc.hpp> <iostream>
+ <algorithm>
+ <array>
+ <atomic>
+ <bitset>
+ <chrono>
+ <climits>
+ <cmath>
+ <cstddef>
+ <cstdint>
+ <cstring>
+ <functional>
+ <iomanip>
+ <iostream>
+ <iterator>
+ <sstream>
+ <string>
+ <thread>
+ <type_traits>
+ <utility>
+ <vector>
+)
 
 include(pika_add_module)
 pika_add_module(
@@ -19,6 +41,7 @@ pika_add_module(
   SOURCES ${debugging_sources}
   HEADERS ${debugging_headers}
   EXCLUDE_FROM_GLOBAL_HEADER "pika/debugging/backtrace/backtrace.hpp"
+  MODULE_INCLUDES ${debugging_module_includes}
   MODULE_DEPENDENCIES pika_config
   CMAKE_SUBDIRS examples tests
 )

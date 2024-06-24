@@ -8,13 +8,17 @@
 #pragma once
 
 #include <pika/config.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/datastructures/member_pack.hpp>
+#include <pika/type_support/decay.hpp>
+#include <pika/type_support/pack.hpp>
+#endif
+
 #include <pika/functional/invoke.hpp>
 #include <pika/functional/one_shot.hpp>
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
-#include <pika/type_support/decay.hpp>
-#include <pika/type_support/pack.hpp>
 
 #include <cstddef>
 #include <type_traits>

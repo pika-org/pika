@@ -4,11 +4,23 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/config.hpp>
-#include <pika/util/manage_config.hpp>
+#if defined(PIKA_HAVE_MODULE)
+module;
+#endif
 
+#include <pika/config.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/util/manage_config.hpp>
+#endif
+
+#include <map>
 #include <string>
 #include <vector>
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.util;
+#endif
 
 namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////

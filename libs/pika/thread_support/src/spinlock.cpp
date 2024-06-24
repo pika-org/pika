@@ -7,11 +7,22 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 ////////////////////////////////////////////////////////////////////////////////
 
+#if defined(PIKA_HAVE_MODULE)
+module;
+#endif
+
 #include <pika/config/compiler_fence.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/thread_support/spinlock.hpp>
+#endif
 
 #include <chrono>
 #include <thread>
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.thread_support;
+#endif
 
 namespace pika::detail {
 

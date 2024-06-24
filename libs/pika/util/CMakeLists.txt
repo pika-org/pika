@@ -10,6 +10,7 @@ set(util_headers
 )
 
 set(util_sources manage_config.cpp)
+set(util_module_includes <type_traits> <iterator> <utility> <vector> <memory> <algorithm> <functional> <atomic> <map> <unordered_map>)
 
 include(pika_add_module)
 pika_add_module(
@@ -17,6 +18,7 @@ pika_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${util_sources}
   HEADERS ${util_headers}
-  MODULE_DEPENDENCIES pika_config pika_concepts pika_errors pika_iterator_support
+  MODULE_INCLUDES ${util_module_includes}
+  MODULE_DEPENDENCIES pika_config pika_concepts pika_errors pika_iterator_support pika_string_util
   CMAKE_SUBDIRS examples tests
 )

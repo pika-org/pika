@@ -216,9 +216,10 @@ else()
 endif()
 
 pika_option(PIKA_WITH_MODULE BOOL "Build pika as a module (default: OFF)" OFF ADVANCED)
-if(PIKA_WITH_MODULE)
-  pika_add_config_define(PIKA_HAVE_MODULE)
-endif()
+# Set this as a commandline define, to have it defined without includes
+# if(PIKA_WITH_MODULE)
+#   pika_add_config_define(PIKA_HAVE_MODULE)
+# endif()
 
 pika_option(
   PIKA_WITH_UNITY_BUILD BOOL "Enable unity build for certain build targets (default: ON)" ON
@@ -1607,8 +1608,21 @@ message("")
 
 if(PIKA_WITH_MODULE)
   cmake_minimum_required(VERSION 3.28)
-  add_library(foo foo.cpp)
-  target_sources(foo PUBLIC FILE_SET CXX_MODULES FILES all.cpp)
+
+  # add_library(bar OBJECT bar_impl.cpp)
+  # target_sources(bar PUBLIC FILE_SET CXX_MODULES FILES bar.cpp)
+
+  # add_library(foo OBJECT)
+  # target_sources(foo PUBLIC FILE_SET CXX_MODULES FILES foo.cpp)
+  # target_link_libraries(foo bar)
+
+  # add_library(bleh)
+  # target_sources(bleh PUBLIC FILE_SET CXX_MODULES FILES all.cpp)
+  # target_link_libraries(bleh foo bar)
+
+  add_library(bleh bar_impl.cpp)
+  target_sources(bleh PUBLIC FILE_SET CXX_MODULES FILES all.cpp foo.cpp bar.cpp)
+
   add_executable(hello main.cpp)
-  target_link_libraries(hello foo)
+  target_link_libraries(hello bleh)
 endif()

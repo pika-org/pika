@@ -7,7 +7,10 @@
 #pragma once
 
 #include <pika/config.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/type_support/pack.hpp>
+#endif
 
 #include <cstddef>    // for size_t
 #include <type_traits>
@@ -34,12 +37,12 @@ namespace pika::util::detail {
     T member_type(member_leaf<I, T> const& /*leaf*/) noexcept;
 
     template <std::size_t I, typename T>
-    static constexpr T& member_get(member_leaf<I, T>& leaf) noexcept
+    constexpr T& member_get(member_leaf<I, T>& leaf) noexcept
     {
         return leaf.member;
     }
     template <std::size_t I, typename T>
-    static constexpr T const& member_get(member_leaf<I, T> const& leaf) noexcept
+    constexpr T const& member_get(member_leaf<I, T> const& leaf) noexcept
     {
         return leaf.member;
     }
@@ -75,22 +78,22 @@ namespace pika::util::detail {
     T member_type(member_leaf<I, T> const& /*leaf*/) noexcept;
 
     template <std::size_t I, typename T>
-    static constexpr T& member_get(member_leaf<I, T, false>& leaf) noexcept
+    constexpr T& member_get(member_leaf<I, T, false>& leaf) noexcept
     {
         return leaf.member;
     }
     template <std::size_t I, typename T>
-    static constexpr T& member_get(member_leaf<I, T, true>& leaf) noexcept
+    constexpr T& member_get(member_leaf<I, T, true>& leaf) noexcept
     {
         return leaf;
     }
     template <std::size_t I, typename T>
-    static constexpr T const& member_get(member_leaf<I, T, false> const& leaf) noexcept
+    constexpr T const& member_get(member_leaf<I, T, false> const& leaf) noexcept
     {
         return leaf.member;
     }
     template <std::size_t I, typename T>
-    static constexpr T const& member_get(member_leaf<I, T, true> const& leaf) noexcept
+    constexpr T const& member_get(member_leaf<I, T, true> const& leaf) noexcept
     {
         return leaf;
     }

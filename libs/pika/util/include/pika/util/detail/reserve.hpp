@@ -9,10 +9,13 @@
 #pragma once
 
 #include <pika/config.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/concepts/has_member_xxx.hpp>
 #include <pika/iterator_support/range.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/iterator_support/traits/is_range.hpp>
+#endif
 
 #include <algorithm>
 #include <cstddef>
@@ -22,45 +25,45 @@
 
 namespace pika::traits::detail {
 
-    ///////////////////////////////////////////////////////////////////////
-    // not every random access sequence is reservable
-    // so we need an explicit trait to determine this
-    PIKA_HAS_MEMBER_XXX_TRAIT_DEF(reserve)
+    // ///////////////////////////////////////////////////////////////////////
+    // // not every random access sequence is reservable
+    // // so we need an explicit trait to determine this
+    // PIKA_HAS_MEMBER_XXX_TRAIT_DEF(reserve)
 
-    template <typename Range>
-    using is_reservable = std::integral_constant<bool,
-        is_range_v<std::decay_t<Range>> && has_reserve_v<std::decay_t<Range>>>;
+    // template <typename Range>
+    // using is_reservable = std::integral_constant<bool,
+    //     is_range_v<std::decay_t<Range>> && has_reserve_v<std::decay_t<Range>>>;
 
-    template <typename Range>
-    inline constexpr bool is_reservable_v = is_reservable<Range>::value;
+    // template <typename Range>
+    // inline constexpr bool is_reservable_v = is_reservable<Range>::value;
 
-    ///////////////////////////////////////////////////////////////////////
-    template <typename Container>
-    PIKA_FORCEINLINE void reserve_if_reservable(Container& v, std::size_t n)
-    {
-        if constexpr (is_reservable_v<Container>) { v.reserve(n); }
-    }
+    // ///////////////////////////////////////////////////////////////////////
+    // template <typename Container>
+    // PIKA_FORCEINLINE void reserve_if_reservable(Container& v, std::size_t n)
+    // {
+    //     if constexpr (is_reservable_v<Container>) { v.reserve(n); }
+    // }
 
-    ///////////////////////////////////////////////////////////////////////
-    // Reserve sufficient space in the given vector if the underlying
-    // iterator type of the given range allow calculating the size in O(1).
-    template <typename Container, typename Range>
-    PIKA_FORCEINLINE void reserve_if_random_access_by_range(Container& v, Range const& r)
-    {
-        using iterator_type = typename range_traits<Range>::iterator_type;
-        if constexpr (is_random_access_iterator_v<iterator_type> && is_reservable_v<Container>)
-        {
-            v.reserve(pika::util::size(r));
-        }
-    }
+    // ///////////////////////////////////////////////////////////////////////
+    // // Reserve sufficient space in the given vector if the underlying
+    // // iterator type of the given range allow calculating the size in O(1).
+    // template <typename Container, typename Range>
+    // PIKA_FORCEINLINE void reserve_if_random_access_by_range(Container& v, Range const& r)
+    // {
+    //     using iterator_type = typename range_traits<Range>::iterator_type;
+    //     if constexpr (is_random_access_iterator_v<iterator_type> && is_reservable_v<Container>)
+    //     {
+    //         v.reserve(pika::util::size(r));
+    //     }
+    // }
 
-    template <typename Container, typename Iterator>
-    PIKA_FORCEINLINE void
-    reserve_if_random_access_by_range(Container& v, Iterator begin, Iterator end)
-    {
-        if constexpr (is_random_access_iterator_v<Iterator> && is_reservable_v<Container>)
-        {
-            v.reserve(std::distance(begin, end));
-        }
-    }
+    // template <typename Container, typename Iterator>
+    // PIKA_FORCEINLINE void
+    // reserve_if_random_access_by_range(Container& v, Iterator begin, Iterator end)
+    // {
+    //     if constexpr (is_random_access_iterator_v<Iterator> && is_reservable_v<Container>)
+    //     {
+    //         v.reserve(std::distance(begin, end));
+    //     }
+    // }
 }    // namespace pika::traits::detail

@@ -4,12 +4,23 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#if defined(PIKA_HAVE_MODULE)
+module;
+#endif
+
 #include <pika/config.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/detail/filesystem.hpp>
+#endif
 
 #include <filesystem>
 #include <string>
 #include <system_error>
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.filesystem;
+#endif
 
 namespace pika::detail::filesystem {
     std::filesystem::path initial_path()

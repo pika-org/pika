@@ -10,6 +10,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(itt_notify_headers pika/modules/itt_notify.hpp pika/itt_notify/thread_name.hpp)
 
 set(itt_notify_sources itt_notify.cpp thread_name.cpp)
+set(itt_notify_module_includes <type_traits> <utility> <string>)
 
 if(TARGET pika_internal::amplifier)
   set(itt_notify_optional_dependencies pika_internal::amplifier)
@@ -22,6 +23,7 @@ pika_add_module(
   SOURCES ${itt_notify_sources}
   HEADERS ${itt_notify_headers}
   DEPENDENCIES ${itt_notify_optional_dependencies}
+  MODULE_INCLUDES ${itt_notify_module_includes}
   MODULE_DEPENDENCIES pika_config
   CMAKE_SUBDIRS examples tests
 )

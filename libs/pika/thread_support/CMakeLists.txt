@@ -11,6 +11,7 @@ set(thread_support_headers
 )
 
 set(thread_support_sources set_thread_name.cpp spinlock.cpp)
+set(thread_support_module_includes <type_traits> <utility> <string> <pika/assert.hpp> <atomic>)
 
 include(pika_add_module)
 pika_add_module(
@@ -18,6 +19,7 @@ pika_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${thread_support_sources}
   HEADERS ${thread_support_headers}
+  MODULE_INCLUDES ${thread_support_module_includes}
   MODULE_DEPENDENCIES pika_assertion pika_config pika_concepts pika_type_support
   CMAKE_SUBDIRS examples tests
 )

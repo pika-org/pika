@@ -103,9 +103,9 @@ function(pika_add_test category name)
   endif()
 
   # Only real tests, i.e. executables ending in _test, link to pika_testing
-  # if(TARGET ${${name}_EXECUTABLE}_test AND ${name}_TESTING)
-  #   target_link_libraries(${${name}_EXECUTABLE}_test PRIVATE pika_testing)
-  # endif()
+  if(TARGET ${${name}_EXECUTABLE}_test AND ${name}_TESTING)
+    target_link_libraries(${${name}_EXECUTABLE}_test PRIVATE pika_testing)
+  endif()
 
   if(TARGET ${${name}_EXECUTABLE}_test AND ${name}_PERFORMANCE_TESTING)
     target_link_libraries(${${name}_EXECUTABLE}_test PRIVATE pika_performance_testing)

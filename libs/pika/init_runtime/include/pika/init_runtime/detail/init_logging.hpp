@@ -7,6 +7,8 @@
 
 #pragma once
 
+#if !defined(PIKA_HAVE_MODULE)
+
 #include <pika/config.hpp>
 #include <pika/runtime_configuration/runtime_configuration.hpp>
 
@@ -15,3 +17,5 @@
 namespace pika::detail {
     PIKA_EXPORT void init_logging(pika::util::runtime_configuration& ini);
 }    // namespace pika::detail
+
+#endif

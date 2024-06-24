@@ -13,6 +13,7 @@ function(pika_add_module libname modulename)
   set(multi_value_args
       SOURCES
       MODULE_SOURCES
+      MODULE_INCLUDES
       HEADERS
       OBJECTS
       DEPENDENCIES
@@ -57,8 +58,22 @@ function(pika_add_module libname modulename)
 
   # Write full path for the sources files
   list(TRANSFORM ${modulename}_SOURCES PREPEND ${SOURCE_ROOT}/ OUTPUT_VARIABLE sources)
-  list(TRANSFORM ${modulename}_MODULE_SOURCES PREPEND ${SOURCE_ROOT}/ OUTPUT_VARIABLE module_sources)
+  list(TRANSFORM ${modulename}_MODULE_SOURCES PREPEND ${SOURCE_ROOT}/ OUTPUT_VARIABLE
+                                                                      module_sources
+  )
   list(TRANSFORM ${modulename}_HEADERS PREPEND ${HEADER_ROOT}/ OUTPUT_VARIABLE headers)
+
+  set(module_headers)
+  set(all_module_headers)
+  foreach(header_file ${${modulename}_HEADERS})
+    # Exclude the files specified
+    if((NOT (${header_file} IN_LIST ${modulename}_EXCLUDE_FROM_GLOBAL_HEADER))
+       AND (NOT ("${header_file}" MATCHES "detail"))
+    )
+      set(module_headers "${module_headers}#include <${header_file}>\n")
+    endif()
+    set(all_module_headers "${all_module_headers}#include <${header_file}>\n")
+  endforeach(header_file)
 
   # This header generation is disabled for config module specific generated headers are included
   if(${modulename}_GLOBAL_HEADER_GEN)
@@ -74,15 +89,6 @@ function(pika_add_module libname modulename)
     endif()
     # Add a global include file that include all module headers
     set(global_header "${CMAKE_CURRENT_BINARY_DIR}/include/pika/modules/${modulename}.hpp")
-    set(module_headers)
-    foreach(header_file ${${modulename}_HEADERS})
-      # Exclude the files specified
-      if((NOT (${header_file} IN_LIST ${modulename}_EXCLUDE_FROM_GLOBAL_HEADER))
-         AND (NOT ("${header_file}" MATCHES "detail"))
-      )
-        set(module_headers "${module_headers}#include <${header_file}>\n")
-      endif()
-    endforeach(header_file)
     configure_file(
       "${PROJECT_SOURCE_DIR}/cmake/templates/global_module_header.hpp.in" "${global_header}"
     )
@@ -135,17 +141,42 @@ function(pika_add_module libname modulename)
     set(module_is_interface_library TRUE)
   endif()
 
-  # if(module_is_interface_library)
-  #   set(module_library_type INTERFACE)
-  #   set(module_public_keyword INTERFACE)
-  # else()
-    set(module_library_type OBJECT)
-    set(module_public_keyword PUBLIC)
+  # if(module_is_interface_library) set(module_library_type INTERFACE) set(module_public_keyword
+  # INTERFACE) else()
+  set(module_library_type OBJECT)
+  set(module_public_keyword PUBLIC)
   # endif()
 
   # create library modules
   add_library(pika_${modulename} ${module_library_type} ${sources} ${${modulename}_OBJECTS})
-  target_sources(pika_${modulename} PUBLIC FILE_SET CXX_MODULES FILES ${module_sources})
+
+  if(PIKA_WITH_MODULE)
+    # target_sources(
+    #   pika_${modulename} PUBLIC FILE_SET CXX_MODULES # BASE_DIRS "${CMAKE_CURRENT_BINARY_DIR}"
+    #                             FILES ${module_sources}
+    # )
+    set(module_includes)
+    foreach(module_include ${${modulename}_MODULE_INCLUDES})
+      set(module_includes "${module_includes}\n#include ${module_include}")
+    endforeach()
+    set(module_name "pika.${modulename}")
+
+    set(module_imports)
+    foreach(dep ${${modulename}_MODULE_DEPENDENCIES})
+      string(REGEX REPLACE "pika\_" "pika." modulename_dotted "${dep}")
+      set(module_imports "${module_imports}\nimport ${modulename_dotted};")
+    endforeach()
+
+    set(module_interface_unit "${CMAKE_CURRENT_BINARY_DIR}/module.cpp")
+    configure_file(
+      "${PROJECT_SOURCE_DIR}/cmake/templates/module.cpp.in" "${module_interface_unit}" @ONLY
+    )
+
+    target_sources(
+      pika_${modulename} PUBLIC FILE_SET CXX_MODULES BASE_DIRS "${CMAKE_CURRENT_BINARY_DIR}"
+                                FILES ${module_interface_unit}
+    )
+  endif()
 
   if(PIKA_WITH_CHECK_MODULE_DEPENDENCIES)
     # verify that all dependencies are from the same module category
@@ -181,7 +212,7 @@ function(pika_add_module libname modulename)
   )
 
   # if(NOT module_is_interface_library)
-    target_link_libraries(pika_${modulename} PRIVATE pika_private_flags)
+  target_link_libraries(pika_${modulename} PRIVATE pika_private_flags)
   # endif()
 
   if(PIKA_WITH_PRECOMPILED_HEADERS)
@@ -225,12 +256,11 @@ function(pika_add_module libname modulename)
   string(TOUPPER ${first_letter} first_letter)
   string(REGEX REPLACE "^.(.*)" "${first_letter}\\1" libname_cap "${libname}")
 
-  if(NOT module_is_interface_library)
-    set_target_properties(
-      pika_${modulename} PROPERTIES FOLDER "Core/Modules/${libname_cap}" POSITION_INDEPENDENT_CODE
-                                                                         ON
-    )
-  endif()
+  # if(NOT module_is_interface_library)
+  set_target_properties(
+    pika_${modulename} PROPERTIES FOLDER "Core/Modules/${libname_cap}" POSITION_INDEPENDENT_CODE ON
+  )
+  # endif()
 
   if(PIKA_WITH_UNITY_BUILD AND NOT module_is_interface_library)
     set_target_properties(pika_${modulename} PROPERTIES UNITY_BUILD ON)
@@ -258,12 +288,12 @@ function(pika_add_module libname modulename)
   install(
     TARGETS pika_${modulename}
     EXPORT pika_internal_targets
-    # FILE_SET CXX_MODULES
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    FILE_SET CXX_MODULES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-    COMPONENT ${modulename}
+            FILE_SET CXX_MODULES
+            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+            COMPONENT ${modulename}
   )
   pika_export_internal_targets(pika_${modulename})
 

@@ -10,7 +10,10 @@
 
 #include <pika/config.hpp>
 #include <pika/errors/exception.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/thread_support/spinlock.hpp>
+#endif
 
 #include <cstddef>
 #include <exception>

@@ -98,7 +98,7 @@ namespace pika::functional::detail {
 #else
 
 # include <pika/config.hpp>
-# include <pika/type_support/type_identity.hpp>
+// # include <pika/type_support/type_identity.hpp>
 
 # include <type_traits>
 # include <utility>

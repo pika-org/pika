@@ -12,8 +12,10 @@
 
 #if !defined(PIKA_HAVE_BOOST_ITERATOR_TRAVERSAL_TAG_COMPATIBILITY)
 
+#if !defined(PIKA_HAVE_MODULE)
 # include <pika/type_support/lazy_conditional.hpp>
 # include <pika/type_support/type_identity.hpp>
+#endif
 
 # include <iterator>
 # include <type_traits>

@@ -25,7 +25,7 @@
 #include <utility>
 
 namespace pika::util::detail {
-    static const std::size_t function_storage_size = 3 * sizeof(void*);
+    inline constexpr std::size_t function_storage_size = 3 * sizeof(void*);
 
     ///////////////////////////////////////////////////////////////////////////
     class PIKA_EXPORT function_base

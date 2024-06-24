@@ -9,6 +9,7 @@ set(concepts_headers pika/concepts/concepts.hpp pika/concepts/has_member_xxx.hpp
 )
 
 set(concepts_sources)
+set(concepts_module_includes <type_traits>)
 
 include(pika_add_module)
 pika_add_module(
@@ -16,6 +17,7 @@ pika_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${concepts_sources}
   HEADERS ${concepts_headers}
+  MODULE_INCLUDES ${concepts_module_includes}
   MODULE_DEPENDENCIES pika_config pika_preprocessor pika_type_support
   CMAKE_SUBDIRS examples tests
 )

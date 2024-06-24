@@ -19,7 +19,7 @@ namespace pika::util::detail {
     template <typename C, typename T,
         typename = typename std::enable_if<
             std::is_base_of<C, typename std::remove_reference<T>::type>::value>::type>
-    static constexpr T&& mem_ptr_target(T&& v) noexcept
+    constexpr T&& mem_ptr_target(T&& v) noexcept
     {
         return PIKA_FORWARD(T, v);
     }
@@ -27,7 +27,7 @@ namespace pika::util::detail {
     // when `pm` is a pointer to member of a class `C` and
     // `remove_cvref_t<T>` is a specialization of `reference_wrapper`;
     template <typename C, typename T>
-    static constexpr T& mem_ptr_target(std::reference_wrapper<T> v) noexcept
+    constexpr T& mem_ptr_target(std::reference_wrapper<T> v) noexcept
     {
         return v.get();
     }
@@ -35,7 +35,7 @@ namespace pika::util::detail {
     // when `pm` is a pointer to member of a class `C` and `T` does not
     // satisfy the previous two items;
     template <typename C, typename T>
-    static constexpr auto mem_ptr_target(T&& v) noexcept(
+    constexpr auto mem_ptr_target(T&& v) noexcept(
 #if defined(PIKA_CUDA_VERSION)
         noexcept(*std::forward<T>(v))) -> decltype(*std::forward<T>(v))
 #else

@@ -20,6 +20,7 @@ set(errors_headers
 
 # Default location is $PIKA_ROOT/libs/errors/src
 set(errors_sources error_code.cpp exception.cpp exception_list.cpp throw_exception.cpp)
+set(errors_module_includes <type_traits> <utility> <fmt/format.h> <pika/assert.hpp> <functional> <atomic> <list> <mutex>)
 
 include(pika_add_module)
 pika_add_module(
@@ -27,6 +28,7 @@ pika_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${errors_sources}
   HEADERS ${errors_headers}
+  MODULE_INCLUDES ${errors_module_includes}
   MODULE_DEPENDENCIES pika_assertion pika_config pika_filesystem pika_logging pika_preprocessor
                       pika_thread_support
   CMAKE_SUBDIRS examples tests

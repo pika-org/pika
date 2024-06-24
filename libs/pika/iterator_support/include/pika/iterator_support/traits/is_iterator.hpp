@@ -9,7 +9,10 @@
 
 #include <pika/config.hpp>
 #include <pika/iterator_support/boost_iterator_categories.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/type_support/equality.hpp>
+#endif
 
 #include <iterator>
 #include <type_traits>

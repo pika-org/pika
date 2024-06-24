@@ -14,7 +14,6 @@ set(functional_headers
     pika/functional/deferred_call.hpp
     pika/functional/detail/basic_function.hpp
     pika/functional/detail/empty_function.hpp
-    pika/functional/detail/function_registration.hpp
     pika/functional/detail/invoke_result_plain_function.hpp
     pika/functional/detail/reset_function.hpp
     pika/functional/detail/vtable/callable_vtable.hpp
@@ -33,6 +32,7 @@ set(functional_headers
 
 # Default location is $PIKA_ROOT/libs/functional/src
 set(functional_sources basic_function.cpp empty_function.cpp)
+set(functional_module_includes <type_traits> <utility> <string> <functional> <memory>)
 
 include(pika_add_module)
 pika_add_module(
@@ -44,6 +44,7 @@ pika_add_module(
     "pika/functional/traits/is_bind_expression.hpp"
   SOURCES ${functional_sources}
   HEADERS ${functional_headers}
+  MODULE_INCLUDES ${functional_module_includes}
   MODULE_DEPENDENCIES
     pika_assertion
     pika_config
@@ -52,6 +53,7 @@ pika_add_module(
     pika_errors
     pika_itt_notify
     pika_tag_invoke
+    pika_thread_support
     pika_type_support
   CMAKE_SUBDIRS examples tests
 )
