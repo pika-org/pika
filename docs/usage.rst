@@ -271,6 +271,8 @@ of the proposed sender algorithms which is why we recommend that you enable ``PI
 whenever possible. We plan to deprecate and remove the P2300 implementation in pika in favour of
 stdexec and/or standard library implementations.
 
+.. _std_execution_more_resources:
+
 More resources
 ==============
 
