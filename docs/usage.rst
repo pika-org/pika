@@ -277,6 +277,9 @@ More resources
 .. |stdexec_resources| replace:: list of presentations, blog posts etc. about the ``std::execution`` model
 .. _stdexec_resources: https://github.com/NVIDIA/stdexec#resources
 
+.. |cppreference_execution| replace:: documentation about ``std::execution``
+.. _cppreference_execution: https://en.cppreference.com/w/cpp/experimental/execution
+
 The `P2300 proposal <https://wg21.link/p2300>`__ is the source of truth for ``std::execution``
 functionality. The reference implementation of P2300, stdexec, maintains a |stdexec_resources|_.  In
 addition to the above, other implementations of the ``std::execution`` model exist, with useful
@@ -286,7 +289,7 @@ documentation and examples:
 - `libunifex <https://github.com/facebookexperimental/libunifex/blob/main/doc/overview.md>`__
 
 Even though the implementations differ, the concepts are transferable between implementations and
-useful for learning.
+useful for learning. cppreference.com also contains early |cppreference_execution|_.
 
 pika has been presented at the following events and slides of the presentations are public:
 
