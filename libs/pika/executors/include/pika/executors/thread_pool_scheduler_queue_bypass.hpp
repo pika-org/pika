@@ -9,14 +9,16 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/coroutines/thread_enums.hpp>
+#include <pika/debugging/print.hpp>
 #include <pika/errors/try_catch_exception_ptr.hpp>
 #include <pika/execution/algorithms/execute.hpp>
 #include <pika/execution/algorithms/schedule_from.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
 #include <pika/execution_base/this_thread.hpp>
-#include <pika/executors/thread_pool_scheduler_queue_bypass.hpp>
+#include <pika/executors/thread_pool_scheduler.hpp>
 #include <pika/threading_base/annotated_function.hpp>
+#include <pika/threading_base/print.hpp>
 #include <pika/threading_base/register_thread.hpp>
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/threading_base/thread_description.hpp>
@@ -27,6 +29,15 @@
 #include <type_traits>
 #include <utility>
 
+namespace pika::debug::detail {
+    // a debug level of zero disables messages with a level>0
+    // a debug level of N shows messages with level 1..N
+    constexpr int bplevel = 9;
+
+    template <int Level>
+    static print_threshold<Level, bplevel> bps_deb("SBYPASS");
+}    // namespace pika::debug::detail
+
 namespace pika { namespace execution { namespace experimental {
 
     ///////////////////////////////////////////////////////////////////////
@@ -34,6 +45,8 @@ namespace pika { namespace execution { namespace experimental {
     class switch_status_background
     {
     public:
+        // stores previous state, sets current state to active
+        // sets next thread id to nullptr and need restore state to true
         switch_status_background(thread_id_ref_type const& t, thread_state prev_state)
           : thread_(t)
           , prev_state_(prev_state)
@@ -45,7 +58,43 @@ namespace pika { namespace execution { namespace experimental {
 
         ~switch_status_background()
         {
-            if (need_restore_state_) { store_state(prev_state_); }
+            using namespace pika::debug::detail;
+            thread_data* threaddata = get_thread_id_data(thread_);
+            if (threaddata != nullptr)
+            {
+                thread_state state = threaddata->get_state(/*std::memory_order_relaxed*/);
+                PIKA_DETAIL_DP(bps_deb<5>,
+                    debug(str<>("switch_status_background 1"),
+                        threadinfo<thread_id_ref_type*>(&thread_),
+                        static_cast<int>(state.state())));
+            }
+            else
+            {
+                PIKA_DETAIL_DP(bps_deb<5>,
+                    debug(str<>("switch_status_background 1"),
+                        threadinfo<thread_id_ref_type*>(&thread_), "NULLPTR"));
+            }
+
+            if (need_restore_state_)
+            {
+                store_state(prev_state_);    //
+            }
+
+            threaddata = get_thread_id_data(thread_);
+            if (threaddata != nullptr)
+            {
+                thread_state state = threaddata->get_state(/*std::memory_order_relaxed*/);
+                PIKA_DETAIL_DP(bps_deb<5>,
+                    debug(str<>("switch_status_background 2"),
+                        threadinfo<thread_id_ref_type*>(&thread_),
+                        static_cast<int>(state.state())));
+            }
+            else
+            {
+                PIKA_DETAIL_DP(bps_deb<5>,
+                    debug(str<>("switch_status_background 2"),
+                        threadinfo<thread_id_ref_type*>(&thread_), "NULLPTR"));
+            }
         }
 
         bool is_valid() const { return need_restore_state_; }
@@ -60,10 +109,10 @@ namespace pika { namespace execution { namespace experimental {
             return prev_state_;
         }
 
-        // Get the state this thread was in before execution (usually pending),
-        // this helps making sure no other worker-thread is started to execute this
-        // pika-thread in the meantime.
-        thread_schedule_state get_previous() const { return prev_state_.state(); }
+        // // Get the state this thread was in before execution (usually pending),
+        // // this helps making sure no other worker-thread is started to execute this
+        // // pika-thread in the meantime.
+        // thread_schedule_state get_previous() const { return prev_state_.state(); }
 
         // This restores the previous state, while making sure that the
         // original state has not been changed since we started executing this
@@ -185,52 +234,69 @@ namespace pika { namespace execution { namespace experimental {
         }
 
         template <typename F>
-        void execute(F&& f, char const* fallback_annotation) const
+        void execute(F&& f, char const* /*fallback_annotation*/) const
         {
-#if 0
-            pika::detail::thread_description desc(f, fallback_annotation);
-            threads::detail::thread_init_data data(
-                threads::detail::make_thread_function_nullary(
-                    PIKA_FORWARD(F, f)),
-                desc, priority_, schedulehint_, stacksize_);
-            threads::detail::register_work(data, pool_);
-#else
+            using namespace pika::debug::detail;
             using namespace pika::threads::detail;
             using namespace pika::detail;
-            // which thread index are we
-            const std::int16_t thread_num = get_local_thread_num_tss();
-            thread_description desc(f, fallback_annotation);
 
-            // create thread using pending_do_not_scheduleto bypass queue insertion
+            if (get_self_id() != invalid_thread_id)
+            {
+                throw std::runtime_error("Bypass scheduler - already on task thread");
+                return;
+            }
+
+            // which thread index are we in the current pool
+            const std::int16_t thread_num = get_local_thread_num_tss();
+            // create a description object with annotation
+            thread_description desc(f, "Bypass");
+            // create thread using 'pending_do_not_schedule' to bypass queue insertion
             thread_init_data data(make_thread_function_nullary(PIKA_FORWARD(F, f)), desc, priority_,
                 thread_schedule_hint(thread_num), stacksize_,
                 thread_schedule_state::pending_do_not_schedule, true /* run_now */
             );
+            // set the pool's scheduler in the data
             data.scheduler_base = pool_->get_scheduler();
 
-            // threads::detail::register_work(data, pool_);
+            // create the full thread object and set it as pending
             thread_id_ref_type id = invalid_thread_id;
             pika::error_code ec = throws;
             data.scheduler_base->create_thread(data, &id, ec);
             data.initial_state = thread_schedule_state::pending;
+            PIKA_DETAIL_DP(
+                bps_deb<5>, debug(str<>("create_thread"), threadinfo<thread_id_ref_type*>(&id)));
 
+            // get ready to perform a context switch on the thread and change its state
             thread_data* threaddata = get_thread_id_data(id);
             thread_state state = threaddata->get_state(std::memory_order_relaxed);
-
+            // RAII restores settings on exit
             switch_status_background thrd_stat(id, state);
 
-            if (PIKA_LIKELY(thrd_stat.is_valid() &&
-                    thrd_stat.get_previous() == thread_schedule_state::pending))
+            this_thread::detail::agent_storage* context_storage =
+                this_thread::detail::get_agent_storage();
+
+            // invoke thread callable
+            PIKA_DETAIL_DP(bps_deb<5>,
+                debug(str<>("Execute"), threadinfo<thread_id_ref_type*>(&id), threaddata));
+            thread_result_type result = (*threaddata)(context_storage);
+
+            // check return from task execution
+            if (result.first == thread_schedule_state::terminated)
             {
-                pika::execution::this_thread::detail::agent_storage* context_storage =
-                    pika::execution::this_thread::detail::get_agent_storage();
-
-                // invoke thread callable
-                thrd_stat = (*threaddata)(context_storage);
-
+                // let RAII thrd_stat clean up on exit
+                PIKA_DETAIL_DP(bps_deb<5>,
+                    debug(str<>("Terminated"), threadinfo<thread_id_ref_type*>(&id), threaddata));
+                thrd_stat = std::move(result);
+            }
+            else
+            {
+                thrd_stat = std::move(result);
                 thread_id_ref_type next = thrd_stat.move_next_thread();
                 if (next != nullptr && next != id)
                 {
+                    PIKA_DETAIL_DP(bps_deb<5>,
+                        debug(str<>("Next task"), threadinfo<thread_id_ref_type*>(&next),
+                            threaddata));
                     thread_id_ref_type next_thrd;
                     if (next_thrd == nullptr) { next_thrd = PIKA_MOVE(next); }
                     else
@@ -242,27 +308,51 @@ namespace pika { namespace execution { namespace experimental {
                         scheduler->do_some_work(thread_num);
                     }
                 }
-                thrd_stat.store_state(state);
+                else if (next == id)
+                {
+                    PIKA_DETAIL_DP(bps_deb<5>,
+                        debug(
+                            str<>("next==id"), threadinfo<thread_id_ref_type*>(&next), threaddata));
+                }
+
+                if (!thrd_stat.store_state(state))
+                {
+                    throw std::runtime_error(
+                        "Should not be possible for another thread to have modified our state");
+                }
                 //
                 switch (state.state())
                 {
                 case thread_schedule_state::pending_boost:
                     // might happen? reset to pending and schedule it
+                    {
+                        std::cout << "thread_schedule_state::pending_boost" << std::endl;    //
+                    }
                     threaddata->set_state(thread_schedule_state::pending);
-                    // fallthrough
+                    [[fallthrough]];
                 case thread_schedule_state::pending:
+                {
+                    std::cout << "thread_schedule_state::pending" << std::endl;    //
                     data.scheduler_base->schedule_thread(id, thread_schedule_hint(thread_num),
                         false /*allow_fallback*/, execution::thread_priority::high);
-                    break;
+                }
+                break;
                 case thread_schedule_state::terminated:
+                {
+                    std::cout << "thread_schedule_state::terminated" << std::endl;    //
+                    id = invalid_thread_id;
+                    [[fallthrough]];
+                }
                     // thread goes into terminated items and gets cleaned up
                 case thread_schedule_state::suspended:
+                {
+                    std::cout << "thread_schedule_state::suspended" << std::endl;    //
                     // thread sits in thread map until resumed
                     return;
+                }
                 default: throw std::runtime_error("fix this thread state type");
                 }
             }
-#endif
         }
 
         template <typename F>

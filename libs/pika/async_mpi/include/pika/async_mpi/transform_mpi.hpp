@@ -23,6 +23,7 @@
 #include <pika/execution_base/any_sender.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
+#include <pika/executors/thread_pool_scheduler_queue_bypass.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/mpi_base/mpi.hpp>
@@ -50,6 +51,7 @@ namespace pika::mpi::experimental {
             using execution::thread_priority;
             using pika::execution::experimental::just;
             using pika::execution::experimental::let_value;
+            using pika::execution::experimental::thread_pool_scheduler_queue_bypass;
             using pika::execution::experimental::transfer;
             using pika::execution::experimental::transfer_just;
             using pika::execution::experimental::unique_any_sender;
@@ -77,6 +79,10 @@ namespace pika::mpi::experimental {
                 execution::thread_priority::boost :
                 execution::thread_priority::normal;
 
+            auto dgb = []() {
+                PIKA_DETAIL_DP(mpi_tran<0>, debug(str<>("transform_mpi"), "complete"));
+            };
+
             auto completion_snd = [=](MPI_Request request) -> unique_any_sender<> {
                 if (!completions_inline)    // not inline : a transfer is required
                 {
@@ -86,20 +92,27 @@ namespace pika::mpi::experimental {
                     }
                     return just(request) | trigger_mpi(mode) | transfer(default_pool_scheduler(p));
                 }
+                // inline, can we skip any steps?
                 if (request == MPI_REQUEST_NULL) { return just(); }
-                return just(request) | trigger_mpi(mode);
+                if (inline_ready(mode))    // the completion mode does not requre a transfer
+                {
+                    return just(request) | trigger_mpi(mode);    //
+                }
+                return just(request) | trigger_mpi(mode) |
+                    transfer(ex::with_annotation(
+                        ex::thread_pool_scheduler_queue_bypass{}, "transform_mpi"));
             };
 
             if (requests_inline)
             {
-                return dispatch_mpi_sender<Sender, F>{PIKA_MOVE(sender), PIKA_FORWARD(F, f)} |
-                    let_value(completion_snd);
+                return dispatch_mpi(PIKA_MOVE(sender), PIKA_FORWARD(F, f)) |
+                    let_value(completion_snd) | ex::then(dgb);
             }
             else
             {
                 auto snd0 = PIKA_FORWARD(Sender, sender) | transfer(mpi_pool_scheduler(p));
-                return dispatch_mpi_sender<decltype(snd0), F>{PIKA_MOVE(snd0), PIKA_FORWARD(F, f)} |
-                    let_value(completion_snd);
+                return dispatch_mpi(PIKA_MOVE(snd0), PIKA_FORWARD(F, f)) |
+                    let_value(completion_snd) | ex::then(dgb);
             }
         }
 
