@@ -36,9 +36,9 @@ using pika::threads::detail::make_thread_function_nullary;
 using pika::threads::detail::register_thread;
 using pika::threads::detail::thread_init_data;
 
-using pika::threads::detail::get_thread_phase;
 using pika::threads::detail::get_self;
 using pika::threads::detail::get_self_id;
+using pika::threads::detail::get_thread_phase;
 using pika::threads::detail::set_thread_state;
 using pika::threads::detail::thread_id_ref_type;
 using pika::threads::detail::thread_id_type;
