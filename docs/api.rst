@@ -15,7 +15,11 @@ pika follows `semver <https://semver.org>`__. pika is currently at a 0.X version
 minor versions may break the API. pika gives no guarantees about ABI stability. The ABI may change
 even in patch versions.
 
-The API reference is a work in progress. The following headers are part of the public API. Any other
+The API reference is a work in progress. While the reference is being expanded, the
+:ref:`std_execution_more_resources` section contains useful links to high level overviews and low
+level API descriptions of ``std::execution``.
+
+The following headers are part of the public API. Any other
 headers are internal implementation details.
 
 .. contents::
