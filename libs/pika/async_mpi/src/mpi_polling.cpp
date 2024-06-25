@@ -113,7 +113,7 @@ namespace pika::mpi::experimental {
             bool error_handler_initialized_ = false;
             int rank_ = -1;
             int size_ = -1;
-            std::size_t max_polling_requests = get_polling_default();
+            std::atomic<std::size_t> max_polling_requests{get_polling_default()};
 
             // The sum of messages in queue + vector
             std::atomic<std::uint32_t> all_in_flight_{0};
@@ -441,7 +441,7 @@ namespace pika::mpi::experimental {
 
                     int num_completed = 0;
                     // do we poll for N requests at a time, or just 1
-                    if (mpi_data_.max_polling_requests > 1)
+                    if (mpi_data_.max_polling_requests.load(std::memory_order_relaxed) > 1)
                     {
                         // it seems some MPI implementations choke when the request list is
                         // large, so we will use a max of max_poll_requests per test.
@@ -704,7 +704,10 @@ namespace pika::mpi::experimental {
     void set_max_polling_size(std::size_t p) { detail::mpi_data_.max_polling_requests = p; }
 
     // -------------------------------------------------------------
-    std::size_t get_max_polling_size() { return detail::mpi_data_.max_polling_requests; }
+    std::size_t get_max_polling_size()
+    {
+        return detail::mpi_data_.max_polling_requests.load(std::memory_order_relaxed);
+    }
 
     // -----------------------------------------------------------------
     std::size_t get_completion_mode() { return detail::completion_flags_; }
