@@ -328,6 +328,7 @@ struct message_receiver
 // this is called on a pika thread after the runtime starts up
 int pika_main(pika::program_options::variables_map& vm)
 {
+    [[maybe_unused]] pika::scoped_annotation annotate("mpi_ring_test");
     // Do not initialize mpi (we do that ourselves), do install an error handler
     mpix::init(false, true);
     // Setup mpi polling on default pool, enable exceptions and init mpi internals

@@ -72,25 +72,25 @@ namespace pika::mpi::experimental {
         enum class handler_method : std::uint32_t
         {
             /// enable the use of a dedicated pool for polling mpi messages.
-            use_pool = 0b0000'0001,    // 1
+            use_pool = 0b0000'0001,    // 01
 
             /// this bit enables the inline invocation of the mpi request, when set
             /// the calling thread performs the mpi operation, when unset, a transfer
             /// is made so that the invocation happens on a new task that
             /// would normally be on a dedicated pool if/when it exists
-            request_inline = 0b0000'0010,    // 2
+            request_inline = 0b0000'0010,    // 02
 
             /// this bit enables the inline execution of the completion handler for the
             /// request, when unset a transfer is made to move the completion handler
             /// from the polling thread onto a new one
-            completion_inline = 0b0000'0100,    // 4
+            completion_inline = 0b0000'0100,    // 04
 
             /// this bit enables the use of a high priority task flag
             /// 1) requests are boosted to high priority if they are passed the the mpi-pool
             ///    to ensure they execute before other polling tasks (reduce latency)
             /// 2) completions are boosted to high priority when sent to the main thread pool
             ///    so that the continuation is executed as quickly as possible
-            high_priority = 0b0000'1000,    // 8
+            high_priority = 0b0000'1000,    // 08
 
             /// 3 bits control the handler method,
             method_mask = 0b0111'0000,    // 70
@@ -124,31 +124,39 @@ namespace pika::mpi::experimental {
         };
 
         /// 3 bits define continuation mode
-        inline handler_method get_handler_method(std::underlying_type_t<handler_method> flags)
+        inline handler_method get_handler_method(const std::underlying_type_t<handler_method> flags)
         {
             return static_cast<handler_method>(
                 flags & pika::detail::to_underlying(handler_method::method_mask));
         }
 
         /// 1 bit defines high priority boost mode for pool transfers
-        inline bool use_priority_boost(int mode)
+        inline bool use_priority_boost(const int mode)
         {
             return (mode & pika::detail::to_underlying(handler_method::high_priority)) != 0;
         }
         /// 1 bit defines inline or transfer completion
-        inline bool use_inline_completion(int mode)
+        inline bool use_inline_completion(const int mode)
         {
             return (mode & pika::detail::to_underlying(handler_method::completion_inline)) != 0;
         }
         /// 1 bit defines inline or transfer mpi invocation
-        inline bool use_inline_request(int mode)
+        inline bool use_inline_request(const int mode)
         {
             return (mode & pika::detail::to_underlying(handler_method::request_inline)) != 0;
         }
         /// 1 bit defines whether we use a pool or not
-        inline bool use_pool(int mode)
+        inline bool use_pool(const int mode)
         {
             return (mode & pika::detail::to_underlying(handler_method::use_pool)) != 0;
+        }
+        /// Convenience fn to test if mode supports inline continuation
+        inline bool inline_ready(const int mode)
+        {
+            handler_method h = get_handler_method(mode);
+            /// these task modes always trigger continuations on a pika task and can be safely inlined
+            return (h == handler_method::yield_while) ||
+                (h == handler_method::suspend_resume) | (h == handler_method::new_task);
         }
 
         /// used for debugging to show mode type in messages, should be removed
