@@ -36,8 +36,6 @@ namespace test {
     }
 }    // namespace test
 
-void tag_invoke() = delete;
-
 int main()
 {
 #if defined(PIKA_HAVE_STDEXEC)
