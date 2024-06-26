@@ -8,9 +8,12 @@
 
 #include <pika/config.hpp>
 #include <pika/debugging/print.hpp>
-#include <pika/threading_base/thread_data.hpp>
 
 #include <iosfwd>
+
+namespace pika::threads::detail {
+    class thread_data;    // forward declaration only
+}
 
 // ------------------------------------------------------------
 /// \cond NODETAIL
@@ -51,9 +54,9 @@ namespace pika::debug::detail {
     };
 
     template <>
-    struct threadinfo<threads::detail::thread_id_ref_type*>
+    struct threadinfo<threads::detail::thread_id_ref*>
     {
-        constexpr explicit threadinfo(threads::detail::thread_id_ref_type const* v)
+        constexpr explicit threadinfo(threads::detail::thread_id_ref const* v)
           : data(v)
         {
         }
@@ -75,5 +78,19 @@ namespace pika::debug::detail {
 
         PIKA_EXPORT friend std::ostream& operator<<(std::ostream& os, threadinfo const& d);
     };
+
+    template <>
+    struct threadinfo<std::size_t*>
+    {
+        constexpr explicit threadinfo(std::size_t const* v)
+          : data(*v)
+        {
+        }
+
+        std::size_t const data;
+
+        PIKA_EXPORT friend std::ostream& operator<<(std::ostream& os, threadinfo const& d);
+    };
+
 }    // namespace pika::debug::detail
 /// \endcond
