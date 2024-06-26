@@ -8,6 +8,7 @@
 #include <pika/testing.hpp>
 
 import pika;
+import pika.testing;
 
 int main()
 {
