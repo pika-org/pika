@@ -10,7 +10,6 @@
 #include <pika/config.hpp>
 #include <pika/config/config_strings.hpp>
 #include <pika/config/version.hpp>
-#include <pika/prefix/find_prefix.hpp>
 #include <pika/preprocessor/stringize.hpp>
 #include <pika/version.hpp>
 

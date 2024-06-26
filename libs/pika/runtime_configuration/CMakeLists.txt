@@ -27,7 +27,6 @@ pika_add_module(
     pika_itt_notify
     pika_logging
     pika_ini
-    pika_prefix
     pika_coroutines
     pika_version
     pika_synchronization

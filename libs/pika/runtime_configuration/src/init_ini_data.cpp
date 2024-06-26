@@ -10,7 +10,6 @@
 #include <pika/ini/ini.hpp>
 #include <pika/logging.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/prefix/find_prefix.hpp>
 #include <pika/runtime_configuration/init_ini_data.hpp>
 #include <pika/version.hpp>
 

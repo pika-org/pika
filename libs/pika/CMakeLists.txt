@@ -38,7 +38,6 @@ set(_pika_modules
     logging
     memory
     mpi_base
-    prefix
     preprocessor
     program_options
     properties

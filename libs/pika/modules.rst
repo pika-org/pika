@@ -44,7 +44,6 @@ Core modules
    /libs/core/logging/docs/index.rst
    /libs/core/memory/docs/index.rst
    /libs/core/mpi_base/docs/index.rst
-   /libs/core/prefix/docs/index.rst
    /libs/core/preprocessor/docs/index.rst
    /libs/core/program_options/docs/index.rst
    /libs/core/properties/docs/index.rst
