@@ -24,8 +24,11 @@ namespace pika::debug::detail {
 
     std::ostream& operator<<(std::ostream& os, threadinfo<threads::detail::thread_data*> const& d)
     {
-        os << ptr(d.data) << " \"" << ((d.data != nullptr) ? d.data->get_description() : "nullptr")
-           << "\"";
+        os << ptr(d.data)                                                                       //
+           << " \"" << ((d.data != nullptr) ? d.data->get_description() : "nullptr") << "\""    //
+           << " state:" << ((d.data != nullptr) ? get_thread_state_name(d.data->get_state()) : "")
+           << " state ex:"
+           << ((d.data != nullptr) ? get_thread_state_ex_name(d.data->get_state().state_ex()) : "");
         return os;
     }
 
@@ -53,6 +56,12 @@ namespace pika::debug::detail {
 #else
         os << "??? " << /*hex<8,uintptr_t>*/ (std::uintptr_t(&d.data));
 #endif
+        return os;
+    }
+
+    std::ostream& operator<<(std::ostream& os, threadinfo<std::size_t*> const& d)
+    {
+        os << d.data;
         return os;
     }
 
