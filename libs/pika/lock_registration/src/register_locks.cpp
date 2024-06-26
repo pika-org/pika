@@ -5,22 +5,30 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+
+PIKA_GLOBAL_MODULE_FRAGMENT
+
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/debugging/backtrace/backtrace.hpp>
 #include <pika/lock_registration/detail/register_locks.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/type_support/unused.hpp>
+#endif
 
 #include <cstddef>
 #include <memory>
 #include <string>
 #include <utility>
 
+PIKA_MODULE_IMPLEMENTATION(pika.lock_registration)
+
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::util {
 
-#ifdef PIKA_HAVE_VERIFY_LOCKS
+#if 0 // PIKA_HAVE_VERIFY_LOCKS
     ///////////////////////////////////////////////////////////////////////////
     namespace detail {
 
@@ -306,7 +314,7 @@ namespace pika::util {
 
     void reset_ignored_all() { detail::register_locks::set_ignore_all_locks(false); }
 
-#else
+#elif 0
 
     bool register_lock(void const*, util::register_lock_data*) { return true; }
 

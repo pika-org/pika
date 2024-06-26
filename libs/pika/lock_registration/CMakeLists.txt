@@ -15,7 +15,7 @@ pika_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${lock_registration_sources}
   HEADERS ${lock_registration_headers}
-  DEPENDENCIES pika_assertion pika_concepts pika_config pika_errors pika_functional
-               pika_type_support
+  MODULE_DEPENDENCIES pika_assertion pika_concepts pika_config pika_errors pika_functional
+                      pika_type_support
   CMAKE_SUBDIRS examples tests
 )

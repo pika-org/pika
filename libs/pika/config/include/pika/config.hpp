@@ -212,4 +212,12 @@
 #  define PIKA_HAVE_MAX_CPU_COUNT 256
 #endif
 
+///////////////////////////////////////////////////////////////////////////////
+// Helper macros for modules
+#if defined(PIKA_HAVE_MODULE)
+#define PIKA_MODULE_IMPLEMENTATION(module_name) module module_name;
+#else
+#define PIKA_MODULE_IMPLEMENTATION(module_name)
+#endif
+
 // clang-format on

@@ -34,7 +34,7 @@ set(_pika_modules
     # init_runtime
     iterator_support
     itt_notify
-    # lock_registration
+    lock_registration
     logging
     # memory
     # mpi_base

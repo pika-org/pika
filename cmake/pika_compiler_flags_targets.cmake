@@ -25,6 +25,9 @@ endif()
 
 if(PIKA_WITH_MODULE)
   target_compile_definitions(pika_private_flags INTERFACE PIKA_HAVE_MODULE)
+  target_compile_definitions(pika_private_flags INTERFACE "PIKA_GLOBAL_MODULE_FRAGMENT=module\;")
+else()
+  target_compile_definitions(pika_private_flags INTERFACE "PIKA_GLOBAL_MODULE_FRAGMENT=")
 endif()
 
 target_compile_definitions(

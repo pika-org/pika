@@ -450,6 +450,13 @@ pika_option(
 # We create a target to contain libraries like rt, dl etc. in order to remove global variables
 add_library(pika_base_libraries INTERFACE)
 
+# TODO: This makes it easier for now to include all third-party headers in the global module
+# fragment in all modules
+target_link_libraries(pika_base_libraries INTERFACE Boost::boost)
+target_link_libraries(pika_base_libraries INTERFACE pika_internal::hwloc)
+target_link_libraries(pika_base_libraries INTERFACE fmt::fmt)
+target_link_libraries(pika_base_libraries INTERFACE spdlog::spdlog)
+
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
   target_link_libraries(pika_base_libraries INTERFACE imf svml irng intlc)
 endif()
