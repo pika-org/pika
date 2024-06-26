@@ -206,11 +206,15 @@ namespace pika::detail {
                 // got the section name. It might be hierarchical, so split it up, and
                 // for each elem, check if we have it.  If not, create it, and add
                 std::string sec_name(line.substr(1, line.size() - 2));
+
                 std::string::size_type pos = 0;
-                for (std::string::size_type pos1 = sec_name.find_first_of('.');
-                     std::string::npos != pos1; pos1 = sec_name.find_first_of('.', pos = pos1 + 1))
+                std::string::size_type pos1 = sec_name.find_first_of('.');
+
+                while (pos1 != std::string::npos)
                 {
                     current = current->add_section_if_new(sec_name.substr(pos, pos1 - pos));
+                    pos = pos1 + 1;
+                    pos1 = sec_name.find_first_of('.', pos);
                 }
 
                 current = current->add_section_if_new(sec_name.substr(pos));
