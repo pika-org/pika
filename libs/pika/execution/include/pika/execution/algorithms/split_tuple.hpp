@@ -527,15 +527,7 @@ namespace pika::split_tuple_detail {
 }    // namespace pika::split_tuple_detail
 
 namespace pika::execution::experimental {
-    /// \brief Splits a sender of a tuple into a tuple of senders.
-    ///
-    /// Sender adaptor that takes a sender that sends a single, non-empty, tuple
-    /// and returns a new tuple of the same size as the one sent by the input
-    /// sender which contains one sender for each element in the input sender
-    /// tuple. Each output sender signals completion whenever the input sender
-    /// would have signalled completion.
-    inline constexpr struct split_tuple_t final
-      : pika::functional::detail::tag_fallback<split_tuple_t>
+    struct split_tuple_t final : pika::functional::detail::tag_fallback<split_tuple_t>
     {
     private:
         template <typename Sender, PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender>)>
@@ -561,5 +553,14 @@ namespace pika::execution::experimental {
         {
             return detail::partial_algorithm<split_tuple_t, Allocator>{allocator};
         }
-    } split_tuple{};
+    };
+
+    /// \brief Splits a sender of a tuple into a tuple of senders.
+    ///
+    /// Sender adaptor that takes a sender that sends a single, non-empty, tuple and returns a new
+    /// tuple of the same size as the one sent by the input sender which contains one sender for
+    /// each element in the input sender tuple. Each output sender signals completion whenever the
+    /// input sender would have signalled completion. The predecessor sender must complete with
+    /// exactly one tuple of at least one type.
+    inline constexpr split_tuple_t split_tuple{};
 }    // namespace pika::execution::experimental

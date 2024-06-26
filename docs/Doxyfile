@@ -7,7 +7,9 @@ GENERATE_RTF           = NO
 GENERATE_HTML          = NO
 QUIET                  = NO
 OUTPUT_DIRECTORY       = "$(PIKA_DOCS_DOXYGEN_OUTPUT_DIRECTORY)"
-INPUT                  = "$(PIKA_DOCS_DOXYGEN_INPUT_ROOT)/libs/pika/init_runtime" "$(PIKA_DOCS_DOXYGEN_INPUT_ROOT)/libs/pika/runtime"
+INPUT                  = "$(PIKA_DOCS_DOXYGEN_INPUT_ROOT)/libs/pika/init_runtime" \
+                         "$(PIKA_DOCS_DOXYGEN_INPUT_ROOT)/libs/pika/runtime" \
+                         "$(PIKA_DOCS_DOXYGEN_INPUT_ROOT)/libs/pika/execution"
 FILE_PATTERNS          = *.cpp *.hpp *.cu
 RECURSIVE              = YES
 EXCLUDE_PATTERNS       = */test */detail

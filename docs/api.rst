@@ -68,3 +68,16 @@ The ``pika/init.hpp`` header provides functionality to manage the pika runtime.
 
 .. doxygenstruct:: pika::init_params
    :members:
+
+.. _header_pika_execution:
+
+``pika/execution.hpp``
+======================
+
+The ``pika/execution.hpp`` header provides functionality related to ``std::execution``.
+
+.. doxygenvariable:: pika::execution::experimental::split_tuple
+
+.. literalinclude:: ../examples/documentation/split_tuple_documentation.cpp
+   :language: c++
+   :start-at: #include
