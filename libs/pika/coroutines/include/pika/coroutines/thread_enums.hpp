@@ -34,20 +34,17 @@ namespace pika::threads::detail {
                                            for synchronization event, but still
                                            known and under control of the
                                            thread-manager) */
-        depleted = 4,                 /*!< thread has been depleted (deeply
-                                           suspended, it is not known to the
-                                           thread-manager) */
-        terminated = 5,               /*!< thread has been stopped an may be
+        terminated = 4,               /*!< thread has been stopped an may be
                                            garbage collected */
-        staged = 6,                   /*!< this is not a real thread state, but
+        staged = 5,                   /*!< this is not a real thread state, but
                                            allows to reference staged task
                                            descriptions, which eventually will
                                            be converted into thread objects */
-        pending_do_not_schedule = 7,  /*< this is not a real thread state,
+        pending_do_not_schedule = 6,  /*< this is not a real thread state,
                                           but allows to create a thread in
                                           pending state without scheduling it
                                           (internal, do not use) */
-        pending_boost = 8             /*< this is not a real thread state,
+        pending_boost = 7             /*< this is not a real thread state,
                                           but allows to suspend a thread in
                                           pending state without high priority
                                           rescheduling */

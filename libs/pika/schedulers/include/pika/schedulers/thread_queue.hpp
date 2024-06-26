@@ -87,7 +87,7 @@ namespace pika::threads::detail {
         // we use a simple mutex to protect the data members for now
         using mutex_type = Mutex;
 
-        // this is the type of a map holding all threads (except depleted ones)
+        // this is the type of a map holding all threads
         using thread_map_type = std::unordered_set<threads::detail::thread_id_type,
             std::hash<threads::detail::thread_id_type>,
             std::equal_to<threads::detail::thread_id_type>,

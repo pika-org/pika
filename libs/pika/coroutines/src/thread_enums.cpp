@@ -22,7 +22,6 @@ namespace pika::threads::detail {
             "active",
             "pending",
             "suspended",
-            "depleted",
             "terminated",
             "staged",
             "pending_do_not_schedule",

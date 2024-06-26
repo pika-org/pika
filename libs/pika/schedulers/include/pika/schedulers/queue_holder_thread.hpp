@@ -128,7 +128,7 @@ namespace pika::threads::detail {
 
         // -------------------------------------
         // thread map stores every task in this queue set
-        // this is the type of a map holding all threads (except depleted/terminated)
+        // this is the type of a map holding all threads (except terminated)
         using thread_map_type = std::unordered_set<threads::detail::thread_id_type,
             std::hash<threads::detail::thread_id_type>,
             std::equal_to<threads::detail::thread_id_type>,
