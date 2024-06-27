@@ -39,7 +39,6 @@ These headers are part of the public API, but are currently undocumented.
 - ``pika/mutex.hpp``
 - ``pika/runtime.hpp``
 - ``pika/semaphore.hpp``
-- ``pika/shared_mutex.hpp``
 - ``pika/thread.hpp``
 
 All functionality in a namespace containing ``detail`` and all macros prefixed with ``PIKA_DETAIL``

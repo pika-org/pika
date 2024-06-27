@@ -4,10 +4,8 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(tests ignore_while_locked_1485 shared_mutex_1702)
+set(tests ignore_while_locked_1485)
 
-set(shared_mutex_1702_PARAMETERS THREADS 4)
-set(shared_mutex_1702_LIBRARIES pika_dependencies_boost)
 set(ignore_while_locked_1485_PARAMETERS THREADS 2)
 
 # Create test cases
