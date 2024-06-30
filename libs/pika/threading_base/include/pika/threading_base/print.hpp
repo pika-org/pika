@@ -9,6 +9,7 @@
 #include <pika/config.hpp>
 #include <pika/debugging/print.hpp>
 
+#include <cstddef>
 #include <iosfwd>
 
 namespace pika::threads::detail {

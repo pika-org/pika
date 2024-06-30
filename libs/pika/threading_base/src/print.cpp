@@ -9,6 +9,7 @@
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_data.hpp>
 
+#include <cstddef>
 #include <cstdint>
 #include <thread>
 
