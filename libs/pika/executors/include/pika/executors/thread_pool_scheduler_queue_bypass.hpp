@@ -34,10 +34,8 @@
 namespace pika::debug::detail {
     // a debug level of zero disables messages with a level>0
     // a debug level of N shows messages with level 1..N
-    constexpr int bplevel = 9;
-
     template <int Level>
-    static print_threshold<Level, bplevel> bps_deb("SBYPASS");
+    static print_threshold<Level, 0> bps_deb("SBYPASS");
 }    // namespace pika::debug::detail
 
 namespace pika { namespace execution { namespace experimental {
