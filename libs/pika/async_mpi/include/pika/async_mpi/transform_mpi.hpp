@@ -80,9 +80,8 @@ namespace pika::mpi::experimental {
                 execution::thread_priority::normal;
 
             auto dgb = []() {
-                PIKA_DETAIL_DP(mpi_tran<0>, debug(str<>("transform_mpi"), "complete"));
+                PIKA_DETAIL_DP(mpi_tran<1>, debug(str<>("transform_mpi"), "complete"));
             };
-
             auto completion_snd = [=](MPI_Request request) -> unique_any_sender<> {
                 if (!completions_inline)    // not inline : a transfer is required
                 {
@@ -106,13 +105,21 @@ namespace pika::mpi::experimental {
             if (requests_inline)
             {
                 return dispatch_mpi(PIKA_MOVE(sender), PIKA_FORWARD(F, f)) |
+#ifdef PIKA_DEBUG
                     let_value(completion_snd) | ex::then(dgb);
+#else
+                    let_value(completion_snd);
+#endif
             }
             else
             {
                 auto snd0 = PIKA_FORWARD(Sender, sender) | transfer(mpi_pool_scheduler(p));
                 return dispatch_mpi(PIKA_MOVE(snd0), PIKA_FORWARD(F, f)) |
+#ifdef PIKA_DEBUG
                     let_value(completion_snd) | ex::then(dgb);
+#else
+                    let_value(completion_snd);
+#endif
             }
         }
 
