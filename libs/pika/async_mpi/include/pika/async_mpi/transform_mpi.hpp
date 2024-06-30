@@ -94,7 +94,7 @@ namespace pika::mpi::experimental {
                 }
                 // inline, can we skip any steps?
                 if (request == MPI_REQUEST_NULL) { return just(); }
-                if (inline_ready(mode))    // the completion mode does not requre a transfer
+                if (inline_ready(mode))    // the completion mode does not require a transfer
                 {
                     return just(request) | trigger_mpi(mode);    //
                 }

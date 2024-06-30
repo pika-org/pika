@@ -23,7 +23,9 @@
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/threading_base/thread_description.hpp>
 
+#include <atomic>
 #include <cstddef>
+#include <cstdint>
 #include <exception>
 #include <string>
 #include <type_traits>
@@ -48,7 +50,7 @@ namespace pika { namespace execution { namespace experimental {
         using thread_pool_scheduler::operator==;
         using thread_pool_scheduler::operator!=;
 
-        // Since this scheduler executes the task immmediately on whichever thread is active
+        // Since this scheduler executes the task immediately on whichever thread is active
         // we do not support "with_priority" property
         // we do not support "with_hint" property
 
