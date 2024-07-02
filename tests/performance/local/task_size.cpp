@@ -52,7 +52,8 @@ void task(double task_size_s) noexcept
 
 // The "task" method simply spawns total_tasks independent tasks without any special consideration
 // for grouping or affinity.
-void do_work_task(std::uint64_t tasks_per_thread, double task_size_s)
+double do_work_task(
+    high_resolution_timer& timer, std::uint64_t tasks_per_thread, double task_size_s)
 {
     auto const num_threads = pika::get_num_worker_threads();
     auto const total_tasks = num_threads * tasks_per_thread;
@@ -66,12 +67,18 @@ void do_work_task(std::uint64_t tasks_per_thread, double task_size_s)
     senders.reserve(total_tasks);
 
     for (std::uint64_t i = 0; i < total_tasks; ++i) { senders.push_back(spawn()); }
+
+    double const spawn_time_s = timer.elapsed();
+
     tt::sync_wait(ex::when_all_vector(std::move(senders)));
+
+    return spawn_time_s;
 }
 
 // The "barrier" method spawns one task per worker thread and uses a barrier run the "tasks" in
 // lockstep on each worker thread.
-void do_work_barrier(std::uint64_t tasks_per_thread, double task_size_s)
+double do_work_barrier(
+    high_resolution_timer& timer, std::uint64_t tasks_per_thread, double task_size_s)
 {
     auto const num_threads = pika::get_num_worker_threads();
     auto sched = ex::thread_pool_scheduler{};
@@ -91,11 +98,17 @@ void do_work_barrier(std::uint64_t tasks_per_thread, double task_size_s)
     senders.reserve(num_threads);
 
     for (std::uint64_t i = 0; i < num_threads; ++i) { senders.push_back(spawn()); }
+
+    double const spawn_time_s = timer.elapsed();
+
     tt::sync_wait(ex::when_all_vector(std::move(senders)));
+
+    return spawn_time_s;
 }
 
 // The "bulk" method sequences each set of num_worker_threads tasks through bulk.
-void do_work_bulk(std::uint64_t tasks_per_thread, double task_size_s)
+double do_work_bulk(
+    high_resolution_timer& timer, std::uint64_t tasks_per_thread, double task_size_s)
 {
     auto const num_threads = pika::get_num_worker_threads();
     auto sched = ex::thread_pool_scheduler{};
@@ -107,7 +120,12 @@ void do_work_bulk(std::uint64_t tasks_per_thread, double task_size_s)
     {
         sender = std::move(sender) | ex::transfer(sched) | ex::bulk(num_threads, work);
     }
+
+    double const spawn_time_s = timer.elapsed();
+
     tt::sync_wait(std::move(sender));
+
+    return spawn_time_s;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -121,7 +139,7 @@ int pika_main(variables_map& vm)
     auto const target_efficiency = vm["target-efficiency"].as<double>();
     auto const perftest_json = vm["perftest-json"].as<bool>();
 
-    using do_work_type = void(std::uint64_t, double);
+    using do_work_type = double(high_resolution_timer&, std::uint64_t, double);
     do_work_type* do_work = [&]() {
         if (method == "task") { return do_work_task; }
         else if (method == "barrier") { return do_work_barrier; }
@@ -173,7 +191,7 @@ int pika_main(variables_map& vm)
     {
         fmt::print(
             "method,num_threads,tasks_per_thread,task_size_s,single_threaded_reference_time_s,"
-            "time_s,task_overhead_time_s,parallel_efficiency\n");
+            "time_s,spawn_time_s,task_overhead_time_s,parallel_efficiency\n");
     }
 
     double task_size_s = task_size_min_s;
@@ -183,17 +201,17 @@ int pika_main(variables_map& vm)
         double const single_threaded_reference_time_s = total_tasks * task_size_s;
 
         high_resolution_timer timer;
-        do_work(tasks_per_thread, task_size_s);
-        double time_s = timer.elapsed();
+        double const spawn_time_s = do_work(timer, tasks_per_thread, task_size_s);
+        double const time_s = timer.elapsed();
 
         efficiency = single_threaded_reference_time_s / time_s / num_threads;
         if (!perftest_json)
         {
-            double task_overhead_time_s =
+            double const task_overhead_time_s =
                 (time_s - single_threaded_reference_time_s / num_threads) / tasks_per_thread;
-            fmt::print("{},{},{},{:.9f},{:.9f},{:.9f},{:.9f},{:.4f}\n", method, num_threads,
+            fmt::print("{},{},{},{:.9f},{:.9f},{:.9f},{:.9f},{:.9f},{:.4f}\n", method, num_threads,
                 tasks_per_thread, task_size_s, single_threaded_reference_time_s, time_s,
-                task_overhead_time_s, efficiency);
+                spawn_time_s, task_overhead_time_s, efficiency);
         }
 
         task_size_s *= task_size_growth_factor;
