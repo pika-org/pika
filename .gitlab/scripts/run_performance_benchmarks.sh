@@ -24,6 +24,7 @@ pika_targets=(
 "task_latency_test"
 "task_latency_test"
 "task_latency_test"
+"condition_variable_overhead_test"
 )
 pika_test_options=(
 "--pika:ini=pika.thread_queue.init_threads_count=100 \
@@ -66,6 +67,12 @@ pika_test_options=(
 --nostack
 --pika:threads=2
 --perftest-json"
+
+"--loops=1000000
+--repetitions=3
+--pika:threads=2
+--perftest-json"
+
 )
 
 index=0
