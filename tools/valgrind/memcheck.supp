@@ -33,6 +33,7 @@
    match-leak-kinds: definite
    ...
    fun:orte_init
+   ...
 }
 
 {

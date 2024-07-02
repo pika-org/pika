@@ -10,6 +10,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(executors_headers
     pika/executors/std_thread_scheduler.hpp pika/executors/thread_pool_scheduler.hpp
     pika/executors/thread_pool_scheduler_bulk.hpp
+    pika/executors/thread_pool_scheduler_queue_bypass.hpp
 )
 
 include(pika_add_module)

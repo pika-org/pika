@@ -32,6 +32,8 @@
 #include <type_traits>
 #include <utility>
 
+#define PIKA_MPI_ENABLE_EARLY_POLL
+
 namespace pika::mpi::experimental::detail {
     namespace ex = execution::experimental;
 
@@ -125,7 +127,7 @@ namespace pika::mpi::experimental::detail {
                             apex::scoped_timer apex_post("pika::mpi::post");
 #endif
                             // init a request
-                            MPI_Request request;
+                            MPI_Request request{MPI_REQUEST_NULL};
                             int status = MPI_SUCCESS;
                             // execute the mpi function call, passing in the request object
                             if constexpr (std::is_void_v<invoke_result_type>)
@@ -152,18 +154,23 @@ namespace pika::mpi::experimental::detail {
                                     std::make_exception_ptr(mpi_exception(status)));
                                 return;
                             }
+#ifdef PIKA_MPI_ENABLE_EARLY_POLL
                             // early poll just in case the request completed immediately
                             if (poll_request(request))
                             {
-#ifdef PIKA_HAVE_APEX
+# ifdef PIKA_HAVE_APEX
                                 apex::scoped_timer apex_invoke("pika::mpi::trigger");
-#endif
+# endif
                                 PIKA_DETAIL_DP(mpi_tran<7>,
                                     debug(
                                         str<>("dispatch_mpi_recv"), "eager poll ok", ptr(request)));
                                 ex::set_value(PIKA_MOVE(r.op_state.receiver), MPI_REQUEST_NULL);
                             }
-                            else { ex::set_value(PIKA_MOVE(r.op_state.receiver), request); }
+                            else
+#endif
+                            {
+                                ex::set_value(PIKA_MOVE(r.op_state.receiver), request);
+                            }
                         },
                         [&](std::exception_ptr ep) {
                             ex::set_error(PIKA_MOVE(r.op_state.receiver), PIKA_MOVE(ep));

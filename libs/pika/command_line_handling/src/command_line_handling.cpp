@@ -7,6 +7,7 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/command_line_handling/command_line_handling.hpp>
+#include <pika/command_line_handling/get_env_var_as.hpp>
 #include <pika/command_line_handling/parse_command_line.hpp>
 #include <pika/debugging/attach_debugger.hpp>
 #include <pika/functional/detail/reset_function.hpp>
@@ -394,6 +395,23 @@ namespace pika::detail {
         }
     }
 
+#if defined(PIKA_HAVE_MPI)
+    std::size_t handle_mpi_completion_mode(
+        detail::manage_config& cfgmap, pika::program_options::variables_map& vm)
+    {
+        int def_val = pika::detail::get_env_var_as<std::size_t>("PIKA_MPI_COMPLETION_MODE", 0);
+        std::size_t completion_mode =
+            cfgmap.get_value<std::size_t>("pika.mpi.completion_mode", def_val);
+
+        if (vm.count("pika:mpi-completion-mode"))
+        {
+            completion_mode = vm["pika:mpi-completion-mode"].as<std::size_t>();
+        }
+
+        return completion_mode;
+    }
+#endif
+
     ///////////////////////////////////////////////////////////////////////////
     void command_line_handling::handle_arguments(detail::manage_config& cfgmap,
         pika::program_options::variables_map& vm, std::vector<std::string>& ini_config)
@@ -531,6 +549,11 @@ namespace pika::detail {
             ini_config.emplace_back("pika.thread_queue.high_priority_queues!=" +
                 std::to_string(num_high_priority_queues));
         }
+
+#if defined(PIKA_HAVE_MPI)
+        std::size_t const mpi_completion_mode = detail::handle_mpi_completion_mode(cfgmap, vm);
+        ini_config.emplace_back("pika.mpi.completion_mode=" + std::to_string(mpi_completion_mode));
+#endif
 
         update_logging_settings(vm, ini_config);
 

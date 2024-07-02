@@ -23,6 +23,7 @@
 #include <pika/execution_base/any_sender.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
+#include <pika/executors/thread_pool_scheduler_queue_bypass.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/mpi_base/mpi.hpp>
@@ -50,14 +51,15 @@ namespace pika::mpi::experimental {
             using execution::thread_priority;
             using pika::execution::experimental::just;
             using pika::execution::experimental::let_value;
+            using pika::execution::experimental::thread_pool_scheduler_queue_bypass;
             using pika::execution::experimental::transfer;
             using pika::execution::experimental::transfer_just;
             using pika::execution::experimental::unique_any_sender;
 
             // get mpi completion mode settings
             auto mode = get_completion_mode();
-            bool inline_com = use_inline_completion(mode);
-            bool inline_req = use_inline_request(mode);
+            bool completions_inline = use_inline_completion(mode);
+            bool requests_inline = use_inline_request(mode);
 
 #ifdef PIKA_DEBUG
             // ----------------------------------------------------------
@@ -77,29 +79,47 @@ namespace pika::mpi::experimental {
                 execution::thread_priority::boost :
                 execution::thread_priority::normal;
 
+            auto dgb = []() {
+                PIKA_DETAIL_DP(mpi_tran<1>, debug(str<>("transform_mpi"), "complete"));
+            };
             auto completion_snd = [=](MPI_Request request) -> unique_any_sender<> {
-                if (!inline_com)
+                if (!completions_inline)    // not inline : a transfer is required
                 {
                     if (request == MPI_REQUEST_NULL)
                     {
                         return transfer_just(default_pool_scheduler(p));
                     }
-                    return transfer_just(default_pool_scheduler(p), request) | trigger_mpi(mode);
+                    return just(request) | trigger_mpi(mode) | transfer(default_pool_scheduler(p));
                 }
+                // inline, can we skip any steps?
                 if (request == MPI_REQUEST_NULL) { return just(); }
-                return just(request) | trigger_mpi(mode);
+                if (inline_ready(mode))    // the completion mode does not require a transfer
+                {
+                    return just(request) | trigger_mpi(mode);    //
+                }
+                return just(request) | trigger_mpi(mode) |
+                    transfer(ex::with_annotation(
+                        ex::thread_pool_scheduler_queue_bypass{}, "transform_mpi"));
             };
 
-            if (inline_req)
+            if (requests_inline)
             {
-                return dispatch_mpi_sender<Sender, F>{PIKA_MOVE(sender), PIKA_FORWARD(F, f)} |
+                return dispatch_mpi(PIKA_MOVE(sender), PIKA_FORWARD(F, f)) |
+#ifdef PIKA_DEBUG
+                    let_value(completion_snd) | ex::then(dgb);
+#else
                     let_value(completion_snd);
+#endif
             }
             else
             {
                 auto snd0 = PIKA_FORWARD(Sender, sender) | transfer(mpi_pool_scheduler(p));
-                return dispatch_mpi_sender<decltype(snd0), F>{PIKA_MOVE(snd0), PIKA_FORWARD(F, f)} |
+                return dispatch_mpi(PIKA_MOVE(snd0), PIKA_FORWARD(F, f)) |
+#ifdef PIKA_DEBUG
+                    let_value(completion_snd) | ex::then(dgb);
+#else
                     let_value(completion_snd);
+#endif
             }
         }
 
