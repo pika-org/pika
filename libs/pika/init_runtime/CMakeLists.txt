@@ -14,7 +14,7 @@ set(init_runtime_headers
 set(init_runtime_sources init_logging.cpp init_runtime.cpp scoped_finalize.cpp)
 
 if(PIKA_WITH_MPI)
-  list(APPEND init_runtime_additional_module_dependencies pika_mpi_base)
+  list(APPEND init_runtime_additional_module_dependencies pika_mpi_base pika_async_mpi)
 endif()
 
 include(pika_add_module)

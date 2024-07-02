@@ -338,6 +338,11 @@ namespace pika::detail {
                 "allowed values: 0 - no NUMA sensitivity, 1 - allow only for "
                 "boundary cores to steal across NUMA domains, 2 - "
                 "no cross boundary stealing is allowed (default value: 0)")
+#if defined(PIKA_HAVE_MPI)
+            ("pika:mpi-completion-mode", value<std::size_t>(),
+                "the pika MPI polling completion mode (only available if MPI "
+                "built with MPI support)")
+#endif
         ;
 
         options_description config_options("pika configuration options");
