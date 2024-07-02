@@ -93,7 +93,7 @@ int pika_main()
     // randomly create tasks that run on a random pool
     // attach continuations to them that run on different
     // random pools
-#if defined(PIKA_HAVE_VERIFY_LOCKS)
+#if defined(PIKA_HAVE_VERIFY_LOCKS) || defined(PIKA_HAVE_VALGRIND)
     constexpr int loops = 20;
 #else
     constexpr int loops = 500;

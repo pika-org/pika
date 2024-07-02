@@ -21,7 +21,7 @@ set(tests
     used_pus
 )
 
-set(cross_pool_injection_PARAMETERS THREADS -1 TIMEOUT 300)
+set(cross_pool_injection_PARAMETERS THREADS -1)
 if(PIKA_WITH_SANITIZERS)
   # This test triggers a possible false positive stack-use-after-scope in lock registration
   list(APPEND cross_pool_injection_PARAMETERS "--pika:ini=pika.lock_detection=0")
