@@ -113,14 +113,8 @@ namespace pika::mpi::experimental {
             bool error_handler_initialized_ = false;
             int rank_ = -1;
             int size_ = -1;
-            std::size_t max_polling_requests = get_polling_default();
+            std::atomic<std::size_t> max_polling_requests{get_polling_default()};
 
-            // requests vector holds the requests that are checked; this
-            // represents the number of active requests in the vector, not the
-            // size of the vector
-            std::atomic<std::uint32_t> active_requests_size_{0};
-            // requests queue holds the requests recently added
-            std::atomic<std::uint32_t> request_queue_size_{0};
             // The sum of messages in queue + vector
             std::atomic<std::uint32_t> all_in_flight_{0};
             // for debugging of code creating/destroying polling handlers
@@ -169,8 +163,6 @@ namespace pika::mpi::experimental {
             os << "R "
                << dec<3>(info.rank_) << "/"
                << dec<3>(info.size_)
-               << " vector "    << dec<4>(info.active_requests_size_)
-               << " queued "    << dec<4>(info.request_queue_size_)
                << " in_flight " << dec<4>(info.all_in_flight_)
                << " vec_cb "    << dec<4>(info.callbacks_.size())
                << " vec_rq "    << dec<4>(info.requests_.size());
@@ -221,11 +213,9 @@ namespace pika::mpi::experimental {
         void add_to_request_callback_queue(request_callback&& req_callback)
         {
             pika::threads::detail::increment_global_activity_count();
-
-            // access data before moving it
-            mpi_data_.request_callback_queue_.enqueue(PIKA_MOVE(req_callback));
-            ++mpi_data_.request_queue_size_;
             ++mpi_data_.all_in_flight_;
+            //
+            mpi_data_.request_callback_queue_.enqueue(PIKA_MOVE(req_callback));
             PIKA_DETAIL_DP(
                 mpi_debug<5>, debug(str<>("CB queued"), ptr(req_callback.request_), mpi_data_));
         }
@@ -240,7 +230,6 @@ namespace pika::mpi::experimental {
             mpi_data_.requests_.push_back(req_callback.request_);
             mpi_data_.callbacks_.push_back(
                 {PIKA_MOVE(req_callback.callback_function_), MPI_SUCCESS, req_callback.request_});
-            ++(mpi_data_.active_requests_size_);
 
             // clang-format off
             PIKA_DETAIL_DP(mpi_debug<5>, debug(str<>("CB queue => vector"),
@@ -398,9 +387,9 @@ namespace pika::mpi::experimental {
                     debug(str<>("Ready CB invoke"), ptr(ready_callback_.request_),
                         ready_callback_.err_));
 
-                // Invoke callback (PIKA_MOVE doesn't compile here)
-                PIKA_INVOKE(std::move(ready_callback_.cb_), ready_callback_.err_);
-
+                // decrement before invoking callback : race if invoked code checks in_flight
+                --mpi_data_.all_in_flight_;
+                PIKA_INVOKE(PIKA_MOVE(ready_callback_.cb_), ready_callback_.err_);
                 pika::threads::detail::decrement_global_activity_count();
             }
 
@@ -446,14 +435,13 @@ namespace pika::mpi::experimental {
                     while (mpi_data_.request_callback_queue_.try_dequeue(req_callback))
                     {
                         add_to_request_callback_vector(PIKA_MOVE(req_callback));
-                        --mpi_data_.request_queue_size_;
                     }
 
                     std::uint32_t vsize = mpi_data_.requests_.size();
 
                     int num_completed = 0;
                     // do we poll for N requests at a time, or just 1
-                    if (mpi_data_.max_polling_requests > 1)
+                    if (mpi_data_.max_polling_requests.load(std::memory_order_relaxed) > 1)
                     {
                         // it seems some MPI implementations choke when the request list is
                         // large, so we will use a max of max_poll_requests per test.
@@ -489,11 +477,6 @@ namespace pika::mpi::experimental {
                                                            MPI_SUCCESS});
                                     // Remove the request from our vector to prevent retesting
                                     mpi_data_.requests_[req_init + index] = MPI_REQUEST_NULL;
-
-                                    // decrement before invoking callback to avoid race
-                                    // if invoked code checks in_flight value
-                                    --mpi_data_.all_in_flight_;
-                                    --mpi_data_.active_requests_size_;
                                 }
                             }
                             vsize -= req_size;
@@ -514,11 +497,6 @@ namespace pika::mpi::experimental {
                                     mpi_data_.callbacks_[index].request_, status});
                             // Remove the request from our vector to prevent retesting
                             mpi_data_.requests_[index] = MPI_REQUEST_NULL;
-
-                            // decrement before invoking callback to avoid race
-                            // if invoked code checks in_flight value
-                            --mpi_data_.all_in_flight_;
-                            --mpi_data_.active_requests_size_;
                         }
                     }
                 } while (event_handled == true);
@@ -544,9 +522,9 @@ namespace pika::mpi::experimental {
                 PIKA_DETAIL_DP(mpi_debug<5>,
                     debug(str<>("CB invoke"), ptr(ready_callback_.request_), ready_callback_.err_));
 
-                // Invoke callback (PIKA_MOVE doesn't compile here)
-                PIKA_INVOKE(std::move(ready_callback_.cb_), ready_callback_.err_);
-
+                // decrement before invoking callback : race if invoked code checks in_flight
+                --mpi_data_.all_in_flight_;
+                PIKA_INVOKE(PIKA_MOVE(ready_callback_.cb_), ready_callback_.err_);
                 pika::threads::detail::decrement_global_activity_count();
             }
 
@@ -581,15 +559,11 @@ namespace pika::mpi::experimental {
             do {
                 event_handled = false;
 
-                // Move requests in the queue (that have not yet been polled for)
-                // into the polling vector ...
-                // Number in_flight does not change during this section as one
-                // is moved off the queue and into the vector
+                // Move unpolled requests in the queue into the polling vector ...
                 request_callback req_callback;
                 while (mpi_data_.request_callback_queue_.try_dequeue(req_callback))
                 {
                     add_to_request_callback_vector(PIKA_MOVE(req_callback));
-                    --mpi_data_.request_queue_size_;
                 }
 
                 int rindex, flag;
@@ -604,18 +578,13 @@ namespace pika::mpi::experimental {
                         debug(
                             str<>("CB invoke"), ptr(mpi_data_.callbacks_[index].request_), status));
 
-                    // Invoke callback (PIKA_MOVE doesn't compile here)
-                    PIKA_INVOKE(std::move(mpi_data_.callbacks_[index].cb_), status);
-
-                    pika::threads::detail::decrement_global_activity_count();
-
                     // Remove the request from our vector to prevent retesting
                     mpi_data_.requests_[index] = MPI_REQUEST_NULL;
 
-                    // decrement before invoking callback to avoid race
-                    // if invoked code checks in_flight value
+                    // decrement before invoking callback : race if invoked code checks in_flight
                     --mpi_data_.all_in_flight_;
-                    --mpi_data_.active_requests_size_;
+                    PIKA_INVOKE(PIKA_MOVE(mpi_data_.callbacks_[index].cb_), status);
+                    pika::threads::detail::decrement_global_activity_count();
                 }
             } while (event_handled == true);
 
@@ -682,8 +651,8 @@ namespace pika::mpi::experimental {
             {
                 std::unique_lock<detail::mutex_type> lk(detail::mpi_data_.polling_vector_mtx_);
                 bool request_queue_empty =
-                    detail::mpi_data_.request_callback_queue_.size_approx() == 0;
-                bool requests_empty = detail::mpi_data_.all_in_flight_ == 0;
+                    (detail::mpi_data_.request_callback_queue_.size_approx() == 0);
+                bool requests_empty = (detail::mpi_data_.all_in_flight_ == 0);
                 lk.unlock();
                 PIKA_ASSERT_MSG(request_queue_empty,
                     "MPI request polling was disabled while there are unprocessed MPI requests. "
@@ -729,19 +698,20 @@ namespace pika::mpi::experimental {
     }    // namespace detail
 
     // -------------------------------------------------------------
-    size_t get_work_count()
-    {
-        return detail::mpi_data_.active_requests_size_ + detail::mpi_data_.request_queue_size_;
-    }
+    size_t get_work_count() { return detail::mpi_data_.all_in_flight_; }
 
     // -------------------------------------------------------------
     void set_max_polling_size(std::size_t p) { detail::mpi_data_.max_polling_requests = p; }
 
     // -------------------------------------------------------------
-    std::size_t get_max_polling_size() { return detail::mpi_data_.max_polling_requests; }
+    std::size_t get_max_polling_size()
+    {
+        return detail::mpi_data_.max_polling_requests.load(std::memory_order_relaxed);
+    }
 
     // -----------------------------------------------------------------
     std::size_t get_completion_mode() { return detail::completion_flags_; }
+    void set_completion_mode(std::size_t mode) { detail::completion_flags_ = mode; }
 
     // -----------------------------------------------------------------
     bool create_pool(std::string const& pool_name, pool_create_mode mode)
