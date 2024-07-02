@@ -59,7 +59,7 @@ endif()
 set(pika_libs pika)
 
 foreach(lib ${pika_libs})
-  add_library(${lib} SHARED src/dummy.cpp ${pika_natvis_files_SOURCES})
+  add_library(${lib} src/dummy.cpp ${pika_natvis_files_SOURCES})
   set_target_properties(
     ${lib}
     PROPERTIES VERSION ${PIKA_VERSION}

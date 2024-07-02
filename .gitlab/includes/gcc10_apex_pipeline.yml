@@ -16,7 +16,7 @@ include:
     SPACK_SPEC: "pika@main +apex arch=$SPACK_ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD \
                  ^apex@2.6.5 ~activeharmony~plugins~binutils~openmp~papi ^otf2@2.3"
     CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_APEX=ON -DPIKA_WITH_MALLOC=system \
-                  -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
+                  -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON -DBUILD_SHARED_LIBS=OFF"
 
 gcc10_apex_spack_compiler_image:
   extends:
