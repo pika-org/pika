@@ -340,8 +340,7 @@ namespace pika::detail {
         std::size_t const trace_depth = detail::from_string<std::size_t>(
             get_config_entry("pika.trace_depth", PIKA_HAVE_THREAD_BACKTRACE_DEPTH));
 
-        pika::debug::detail::backtrace bt(trace_depth);
-        std::string back_trace = bt.trace();
+        std::string back_trace = pika::debug::detail::trace(trace_depth);
 
         std::string state_name("not running");
         std::string hostname;
