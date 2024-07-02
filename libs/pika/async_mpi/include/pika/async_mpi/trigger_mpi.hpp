@@ -155,20 +155,24 @@ namespace pika::mpi::experimental::detail {
                                 // suspend is invalid on a non pika thread
                                 PIKA_ASSERT(pika::threads::detail::get_self_id());
                                 // the callback will resume _this_ thread
-                                std::unique_lock l{r.op_state.mutex};
-                                add_suspend_resume_request_callback(r.op_state.request, r.op_state);
-                                if (use_priority_boost(r.op_state.mode_flags))
                                 {
-                                    threads::detail::thread_data::scoped_thread_priority
-                                        set_restore(p);
-                                    r.op_state.cond_var.wait(
-                                        l, [&]() { return r.op_state.completed; });
+                                    std::unique_lock l{r.op_state.mutex};
+                                    add_suspend_resume_request_callback(
+                                        r.op_state.request, r.op_state);
+                                    if (use_priority_boost(r.op_state.mode_flags))
+                                    {
+                                        threads::detail::thread_data::scoped_thread_priority
+                                            set_restore(p);
+                                        r.op_state.cond_var.wait(
+                                            l, [&]() { return r.op_state.completed; });
+                                    }
+                                    else
+                                    {
+                                        r.op_state.cond_var.wait(
+                                            l, [&]() { return r.op_state.completed; });
+                                    }
                                 }
-                                else
-                                {
-                                    r.op_state.cond_var.wait(
-                                        l, [&]() { return r.op_state.completed; });
-                                }
+
 #ifdef PIKA_HAVE_APEX
                                 apex::scoped_timer apex_invoke("pika::mpi::trigger");
 #endif

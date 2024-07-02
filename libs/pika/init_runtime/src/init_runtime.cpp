@@ -41,6 +41,10 @@
 #include <pika/util/get_entry_as.hpp>
 #include <pika/version.hpp>
 
+#if defined(PIKA_HAVE_MPI)
+# include <pika/async_mpi/mpi_polling.hpp>
+#endif
+
 #if defined(PIKA_HAVE_HIP)
 # include <hip/hip_runtime.h>
 # include <whip.hpp>
@@ -134,6 +138,10 @@ namespace pika {
                 cmdline.rtcfg_.get_spinlock_deadlock_detection_limit());
             pika::util::detail::set_spinlock_deadlock_warning_limit(
                 cmdline.rtcfg_.get_spinlock_deadlock_warning_limit());
+#endif
+#ifdef PIKA_HAVE_MPI
+            pika::mpi::experimental::set_completion_mode(pika::detail::get_entry_as<std::size_t>(
+                cmdline.rtcfg_, "pika.mpi.completion_mode", 0));
 #endif
             init_logging(cmdline.rtcfg_);
         }

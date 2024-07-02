@@ -337,6 +337,11 @@ namespace pika::util {
             "${PIKA_THREAD_QUEUE_INIT_THREADS_COUNT:" PIKA_PP_STRINGIZE(
                 PIKA_PP_EXPAND(PIKA_THREAD_QUEUE_INIT_THREADS_COUNT)) "}",
 
+#if defined(PIKA_HAVE_MPI)
+            "[pika.mpi]",
+            "completion_mode = ${PIKA_MPI_COMPLETION_MODE:0}",
+#endif
+
             "[pika.commandline]",
 
             // allow for unknown options to be passed through
