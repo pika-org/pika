@@ -440,16 +440,16 @@ namespace pika::execution::experimental {
                         "async_rw_lock::sender::operation_state state is empty, was the sender "
                         "already started?");
 
-                    auto continuation = [r = PIKA_MOVE(os.r)](shared_state_ptr_type state) mutable {
+                    auto continuation = [&os](shared_state_ptr_type state) mutable {
                         try
                         {
                             pika::execution::experimental::set_value(
-                                PIKA_MOVE(r), access_type{PIKA_MOVE(state)});
+                                PIKA_MOVE(os.r), access_type{PIKA_MOVE(state)});
                         }
                         catch (...)
                         {
                             pika::execution::experimental::set_error(
-                                PIKA_MOVE(r), std::current_exception());
+                                PIKA_MOVE(os.r), std::current_exception());
                         }
                     };
 
@@ -632,16 +632,16 @@ namespace pika::execution::experimental {
                         "async_rw_lock::sender::operation_state state is empty, was the sender "
                         "already started?");
 
-                    auto continuation = [r = PIKA_MOVE(os.r)](shared_state_ptr_type state) mutable {
+                    auto continuation = [&os](shared_state_ptr_type state) mutable {
                         try
                         {
                             pika::execution::experimental::set_value(
-                                PIKA_MOVE(r), access_type{PIKA_MOVE(state)});
+                                PIKA_MOVE(os.r), access_type{PIKA_MOVE(state)});
                         }
                         catch (...)
                         {
                             pika::execution::experimental::set_error(
-                                PIKA_MOVE(r), std::current_exception());
+                                PIKA_MOVE(os.r), std::current_exception());
                         }
                     };
 

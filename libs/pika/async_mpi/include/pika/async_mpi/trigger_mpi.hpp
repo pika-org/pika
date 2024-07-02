@@ -156,7 +156,7 @@ namespace pika::mpi::experimental::detail {
                                 PIKA_ASSERT(pika::threads::detail::get_self_id());
                                 // the callback will resume _this_ thread
                                 std::unique_lock l{r.op_state.mutex};
-                                add_suspend_resume_request_callback(r.op_state.request, r.op_state);
+                                add_suspend_resume_request_callback(r.op_state);
                                 if (use_priority_boost(r.op_state.mode_flags))
                                 {
                                     threads::detail::thread_data::scoped_thread_priority
@@ -181,15 +181,14 @@ namespace pika::mpi::experimental::detail {
                             {
                                 // The callback will call set_value/set_error inside a new task
                                 // and execution will continue on that thread
-                                add_new_task_request_callback(
-                                    r.op_state.request, p, PIKA_MOVE(r.op_state.receiver));
+                                add_new_task_request_callback(r.op_state);
                                 break;
                             }
                             case handler_method::continuation:
                             {
                                 // The callback will call set_value/set_error
                                 // execution will continue on the callback thread
-                                add_continuation_request_callback<>(r.op_state.request, r.op_state);
+                                add_continuation_request_callback(r.op_state);
                                 break;
                             }
                             case handler_method::mpix_continuation:
