@@ -41,6 +41,7 @@ jobs:
                 -DCMAKE_CXX_FLAGS="--coverage" \
                 -DCMAKE_EXE_LINKER_FLAGS="--coverage" \
                 -DPIKA_WITH_MALLOC=system \
+                -DPIKA_WITH_MPI=ON \
                 -DPIKA_WITH_EXAMPLES=ON \
                 -DPIKA_WITH_TESTS=ON \
                 -DPIKA_WITH_TESTS_HEADERS=OFF \
@@ -57,6 +58,11 @@ jobs:
         working-directory: build
         continue-on-error: true
         run: |
+            # We are certain that we want to run mpiexec as root despite warnings as that is the
+            # only user available in the container. Mistakes will only affect the current step.
+            export OMPI_ALLOW_RUN_AS_ROOT=1
+            export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
+
             ctest -j2 --timeout 120 --output-on-failure
       - name: Generate coverage report
         shell: bash
