@@ -22,6 +22,7 @@ set(benchmarks
     task_overhead
     task_overhead_report
     task_size
+    task_yield
 )
 
 if(NOT PIKA_WITH_SANITIZERS)

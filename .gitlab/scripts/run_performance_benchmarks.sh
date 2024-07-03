@@ -24,6 +24,8 @@ pika_targets=(
 "task_latency_test"
 "task_latency_test"
 "task_latency_test"
+"task_yield_test"
+"task_yield_test"
 "condition_variable_overhead_test"
 )
 pika_test_options=(
@@ -65,6 +67,16 @@ pika_test_options=(
 
 "--repetitions=1000000
 --nostack
+--pika:threads=2
+--perftest-json"
+
+"--repetitions=100
+--num-yields=100000
+--pika:threads=1
+--perftest-json"
+
+"--repetitions=100
+--num-yields=100000
 --pika:threads=2
 --perftest-json"
 
