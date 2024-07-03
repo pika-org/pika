@@ -20,10 +20,7 @@ namespace pika::debug::detail {
     {
     };
 
-    inline std::string trace(std::size_t frames_no = PIKA_HAVE_THREAD_BACKTRACE_DEPTH)
-    {
-        return "";
-    }
+    inline std::string trace(std::size_t = 0) { return ""; }
 }    // namespace pika::debug::detail
 
 #endif
