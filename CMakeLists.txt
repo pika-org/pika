@@ -106,6 +106,12 @@ unset(PIKA_ENABLED_MODULES CACHE)
 include(pika_compiler_flags_targets)
 
 # ##################################################################################################
+# Use shared libraries by default
+pika_option(
+  BUILD_SHARED_LIBS BOOL "Build using shared libraries (default: ON)" ON CATEGORY "Build Targets"
+)
+
+# ##################################################################################################
 # Setup platform for which pika should be compiled.
 #
 include(pika_set_platform)
