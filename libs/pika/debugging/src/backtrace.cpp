@@ -13,7 +13,7 @@
 
 #if defined(PIKA_HAVE_STACKTRACES)
 
-# include <pika/debugging/backtrace/backtrace.hpp>
+# include <pika/debugging/detail/backtrace.hpp>
 
 # if (defined(__linux) || defined(__APPLE__) || defined(__sun)) &&                                 \
      (!defined(__ANDROID__) || !defined(ANDROID))

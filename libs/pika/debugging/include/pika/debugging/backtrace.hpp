@@ -9,7 +9,7 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_STACKTRACES)
-# include <pika/debugging/backtrace/backtrace.hpp>
+# include <pika/debugging/detail/backtrace.hpp>
 #else
 
 # include <cstddef>

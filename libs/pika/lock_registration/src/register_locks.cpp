@@ -7,7 +7,7 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/debugging/backtrace/backtrace.hpp>
+#include <pika/debugging/backtrace.hpp>
 #include <pika/lock_registration/detail/register_locks.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/type_support/unused.hpp>
