@@ -6,7 +6,7 @@
 
 set(debugging_headers
     pika/debugging/attach_debugger.hpp pika/debugging/backtrace.hpp
-    pika/debugging/backtrace/backtrace.hpp pika/debugging/demangle_helper.hpp
+    pika/debugging/demangle_helper.hpp pika/debugging/detail/backtrace.hpp
     pika/debugging/environ.hpp pika/debugging/print.hpp
 )
 
@@ -18,7 +18,6 @@ pika_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${debugging_sources}
   HEADERS ${debugging_headers}
-  EXCLUDE_FROM_GLOBAL_HEADER "pika/debugging/backtrace/backtrace.hpp"
   MODULE_DEPENDENCIES pika_config
   CMAKE_SUBDIRS examples tests
 )
