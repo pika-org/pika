@@ -10,7 +10,7 @@
 
 ### New features
 
-- Handling of receivers internally has been slightly optimized to avoid allocations. ([#1126](https://github.com/pika-org/pika/pull/1126), [#1139](https://github.com/pika-org/pika/pull/1139), [#1192](https://github.com/pika-org/pika/pull/1192))
+- Handling of receivers has been slightly optimized internally to avoid allocations. ([#1126](https://github.com/pika-org/pika/pull/1126), [#1139](https://github.com/pika-org/pika/pull/1139), [#1192](https://github.com/pika-org/pika/pull/1192))
 - The MPI integration now has experimental support for the MPI continuations proposal. This requires an [experimental build of OpenMPI](https://github.com/open-mpi/ompi/pull/9502). ([#1128](https://github.com/pika-org/pika/pull/1128))
 - pika can now be compiled as a static library by disabling the CMake option `BUILD_SHARED_LIBS`. ([#1179](https://github.com/pika-org/pika/pull/1179))
 
