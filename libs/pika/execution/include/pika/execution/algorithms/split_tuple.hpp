@@ -558,5 +558,7 @@ namespace pika::execution::experimental {
     /// each element in the input sender tuple. Each output sender signals completion whenever the
     /// input sender would have signalled completion. The predecessor sender must complete with
     /// exactly one tuple of at least one type.
+    ///
+    /// Added in 0.12.0.
     inline constexpr split_tuple_t split_tuple{};
 }    // namespace pika::execution::experimental
