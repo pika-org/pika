@@ -6,6 +6,28 @@
 
 # Changelog
 
+## 0.26.0 (2024-07-08)
+
+### New features
+
+- Handling of receivers internally has been slightly optimized to avoid allocations. ([#1126](https://github.com/pika-org/pika/pull/1126), [#1139](https://github.com/pika-org/pika/pull/1139), [#1192](https://github.com/pika-org/pika/pull/1192))
+- The MPI integration now has experimental support for the MPI continuations proposal. This requires an [experimental build of OpenMPI](https://github.com/open-mpi/ompi/pull/9502). ([#1128](https://github.com/pika-org/pika/pull/1128))
+- pika can now be compiled as a static library by disabling the CMake option `BUILD_SHARED_LIBS`. ([#1179](https://github.com/pika-org/pika/pull/1179))
+
+### Breaking changes
+
+- The `shared_mutex` utility has been removed. ([#1155](https://github.com/pika-org/pika/pull/1155))
+- The `prefix` module has been cleaned up with many internal functionalities being moved to a `detail` namespace. ([#1177](https://github.com/pika-org/pika/pull/1177))
+- The `depleted` thread state has been removed as it is no longer used. ([#1184](https://github.com/pika-org/pika/pull/1184))
+
+### Bugfixes
+
+- The hostname output in logs has been fixed. ([#1127](https://github.com/pika-org/pika/pull/1127))
+- The internal `append_t` type pack helper has been fixed to append rather than prepend. This may affect the order of completion signatures for senders. However, there are still no guarantees on the order of completion signatures. ([#1137](https://github.com/pika-org/pika/pull/1137))
+- Fix potential use-after-free in MPI integration. ([#1151](https://github.com/pika-org/pika/pull/1151))
+- Undefined behaviour on FreeBSD in the `get_executable_prefix` helper has been fixed. ([#1171](https://github.com/pika-org/pika/pull/1171))
+- Compilation with `PIKA_WITH_STACKTRACES=OFF` has been fixed. ([#1178](https://github.com/pika-org/pika/pull/1178), [#1196](https://github.com/pika-org/pika/pull/1196))
+
 ## 0.25.0 (2024-05-10)
 
 ### New features
