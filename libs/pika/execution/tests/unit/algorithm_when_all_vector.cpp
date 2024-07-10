@@ -6,6 +6,7 @@
 
 #include <pika/config.hpp>
 #include <pika/modules/execution.hpp>
+#include <pika/modules/execution_base.hpp>
 #include <pika/testing.hpp>
 
 #include <pika/execution_base/tests/algorithm_test_utils.hpp>
@@ -257,6 +258,35 @@ int main()
             PIKA_TEST_EQ(v3[2], 44);
             PIKA_TEST_EQ(v3[3], 45);
         };
+        auto r = callback_receiver<decltype(f)>{f, set_value_called};
+        auto os = ex::connect(std::move(s), std::move(r));
+        ex::start(os);
+        PIKA_TEST(set_value_called);
+    }
+
+    // Test a combination with any_sender as predecessors and successor
+    {
+        std::atomic<bool> set_value_called{false};
+        std::vector<ex::any_sender<>> senders;
+        senders.emplace_back(ex::just());
+        senders.emplace_back(ex::just());
+        senders.emplace_back(ex::just());
+        ex::any_sender<> s = ex::when_all_vector(std::move(senders));
+        auto f = []() {};
+        auto r = callback_receiver<decltype(f)>{f, set_value_called};
+        auto os = ex::connect(s, std::move(r));
+        ex::start(os);
+        PIKA_TEST(set_value_called);
+    }
+
+    {
+        std::atomic<bool> set_value_called{false};
+        std::vector<ex::any_sender<>> senders;
+        senders.emplace_back(ex::just());
+        senders.emplace_back(ex::just());
+        senders.emplace_back(ex::just());
+        ex::any_sender<> s = ex::when_all_vector(std::move(senders));
+        auto f = []() {};
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));
         ex::start(os);
