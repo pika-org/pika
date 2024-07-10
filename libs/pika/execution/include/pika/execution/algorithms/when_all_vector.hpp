@@ -245,14 +245,14 @@ namespace pika::when_all_vector_detail {
             operation_states_storage_type op_states = nullptr;
 
             template <typename Receiver_>
-            operation_state(Receiver_&& receiver, std::vector<Sender>&& senders)
+            operation_state(Receiver_&& receiver, std::vector<Sender> senders)
               : num_predecessors(senders.size())
               , receiver(PIKA_FORWARD(Receiver_, receiver))
             {
                 op_states =
                     std::make_unique<std::optional<operation_state_type>[]>(num_predecessors);
                 std::size_t i = 0;
-                for (auto&& sender : senders)
+                for (auto& sender : senders)
                 {
                     op_states[i].emplace(pika::detail::with_result_of([&]() {
                         return pika::execution::experimental::connect(
@@ -383,7 +383,7 @@ namespace pika::when_all_vector_detail {
         friend auto tag_invoke(pika::execution::experimental::connect_t,
             when_all_vector_sender_type const& s, Receiver&& receiver)
         {
-            return operation_state<Receiver>(receiver, s.senders);
+            return operation_state<Receiver>(PIKA_FORWARD(Receiver, receiver), s.senders);
         }
     };
 }    // namespace pika::when_all_vector_detail
