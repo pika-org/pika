@@ -37,6 +37,17 @@
 }
 
 {
+   ORTE init
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   ...
+   fun:hwloc_topology_load
+   ...
+   fun:orte_init
+}
+
+{
    ORTE event loop
    Memcheck:Leak
    match-leak-kinds: definite
