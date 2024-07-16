@@ -37,7 +37,7 @@ foreach(test ${tests})
     FOLDER "Tests/Unit/Modules/AsyncMPI"
   )
 
-  foreach(polling_mode RANGE 0 63 1)
+  foreach(polling_mode RANGE 0 ${MPIX_CONTINUATIONS_LOOP_COUNT} 1)
     pika_add_pseudo_target(${test}_mode_${polling_mode}_test)
     pika_add_pseudo_dependencies(${test}_mode_${polling_mode}_test ${test}_test)
     pika_add_unit_test(
