@@ -202,7 +202,6 @@ namespace pika::mpi::experimental {
         // -----------------------------------------------------------------
         std::size_t get_completion_mode_default()
         {
-            // inline continuations are default
             return pika::detail::get_env_var_as<std::size_t>("PIKA_MPI_COMPLETION_MODE", 0);
         }
 
