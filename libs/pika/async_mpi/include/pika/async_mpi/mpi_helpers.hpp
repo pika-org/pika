@@ -65,7 +65,7 @@ namespace pika::mpi::experimental::detail {
     }
 
     // -----------------------------------------------------------------
-    // return a scheduler on the mpi pool, with or without stack
+    // return a scheduler on the mpi pool
     inline auto mpi_pool_scheduler(execution::thread_priority p)
     {
         if (!pool_exists()) return default_pool_scheduler(p);
