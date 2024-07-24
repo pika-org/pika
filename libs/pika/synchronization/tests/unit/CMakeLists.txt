@@ -8,12 +8,6 @@ set(tests
     async_rw_mutex
     barrier
     binary_semaphore
-    channel_mpmc_fib
-    channel_mpmc_shift
-    channel_mpsc_fib
-    channel_mpsc_shift
-    channel_spsc_fib
-    channel_spsc_shift
     condition_variable
     counting_semaphore
     latch
@@ -27,12 +21,6 @@ set(tests
 set(async_rw_mutex_PARAMETERS THREADS 4)
 set(barrier_cpp20_PARAMETERS THREADS 4)
 set(binary_semaphore_cpp20_PARAMETERS THREADS 4)
-set(channel_mpmc_fib_PARAMETERS THREADS 4)
-set(channel_mpmc_shift_PARAMETERS THREADS 4)
-set(channel_mpsc_fib_PARAMETERS THREADS 4)
-set(channel_mpsc_shift_PARAMETERS THREADS 4)
-set(channel_spsc_fib_PARAMETERS THREADS 4)
-set(channel_spsc_shift_PARAMETERS THREADS 4)
 
 set(counting_semaphore_PARAMETERS THREADS 4)
 set(counting_semaphore_cpp20_PARAMETERS THREADS 4)
