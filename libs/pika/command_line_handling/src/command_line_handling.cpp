@@ -19,6 +19,7 @@
 #include <pika/topology/cpu_mask.hpp>
 #include <pika/topology/topology.hpp>
 #include <pika/type_support/unused.hpp>
+#include <pika/util/get_entry_as.hpp>
 #include <pika/util/manage_config.hpp>
 #include <pika/version.hpp>
 
@@ -396,12 +397,11 @@ namespace pika::detail {
     }
 
 #if defined(PIKA_HAVE_MPI)
-    std::size_t handle_mpi_completion_mode(
-        detail::manage_config& cfgmap, pika::program_options::variables_map& vm)
+    std::size_t handle_mpi_completion_mode(detail::manage_config& cfgmap,
+        pika::util::runtime_configuration const& rtcfg, pika::program_options::variables_map& vm)
     {
-        int def_val = pika::detail::get_env_var_as<std::size_t>("PIKA_MPI_COMPLETION_MODE", 0);
-        std::size_t completion_mode =
-            cfgmap.get_value<std::size_t>("pika.mpi.completion_mode", def_val);
+        std::size_t completion_mode = cfgmap.get_value<std::size_t>("pika.mpi.completion_mode",
+            pika::detail::get_entry_as<std::size_t>(rtcfg, "pika.mpi.completion_mode", 0));
 
         if (vm.count("pika:mpi-completion-mode"))
         {
@@ -551,7 +551,8 @@ namespace pika::detail {
         }
 
 #if defined(PIKA_HAVE_MPI)
-        std::size_t const mpi_completion_mode = detail::handle_mpi_completion_mode(cfgmap, vm);
+        std::size_t const mpi_completion_mode =
+            detail::handle_mpi_completion_mode(cfgmap, rtcfg_, vm);
         ini_config.emplace_back("pika.mpi.completion_mode=" + std::to_string(mpi_completion_mode));
 #endif
 
