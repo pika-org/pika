@@ -20,7 +20,7 @@
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
-#include <pika/synchronization/condition_variable.hpp>
+#include <pika/synchronization/counting_semaphore.hpp>
 #include <pika/type_support/pack.hpp>
 #include <pika/type_support/unused.hpp>
 
@@ -133,16 +133,10 @@ namespace pika::sync_wait_detail {
 
         struct shared_state
         {
-            pika::condition_variable cond_var;
-            mutex_type mtx;
-            std::atomic<bool> set_called = false;
+            pika::binary_semaphore<> sem{0};
             pika::detail::variant<pika::detail::monostate, error_type, value_type> value;
 
-            void wait()
-            {
-                std::unique_lock<mutex_type> l(mtx);
-                cond_var.wait(l, [&] { return set_called.load(); });
-            }
+            void wait() { sem.acquire(); }
 
             auto get_value()
             {
@@ -165,14 +159,7 @@ namespace pika::sync_wait_detail {
 
         shared_state& state;
 
-        void signal_set_called() noexcept
-        {
-            std::unique_lock<mutex_type> l(state.mtx);
-            state.set_called = true;
-            [[maybe_unused]] pika::util::ignore_while_checking<decltype(l)> il(&l);
-
-            state.cond_var.notify_one();
-        }
+        void signal_set_called() noexcept { state.sem.release(); }
 
         template <typename Error>
         friend void tag_invoke(pika::execution::experimental::set_error_t,
