@@ -20,6 +20,8 @@ pika_targets=(
 "task_size_test"
 "task_size_test"
 "task_size_test"
+"task_size_test"
+"task_size_test"
 "task_latency_test"
 "task_latency_test"
 "task_latency_test"
@@ -35,6 +37,18 @@ pika_test_options=(
 --tasks=500000"
 
 "--method=task
+--tasks-per-thread=1000 \
+--task-size-growth-factor=1.05 \
+--target-efficiency=0.9 \
+--perftest-json"
+
+"--method=task-hierarchical
+--tasks-per-thread=1000 \
+--task-size-growth-factor=1.05 \
+--target-efficiency=0.9 \
+--perftest-json"
+
+"--method=task-yield
 --tasks-per-thread=1000 \
 --task-size-growth-factor=1.05 \
 --target-efficiency=0.9 \
