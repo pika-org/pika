@@ -27,6 +27,7 @@
 #include <fmt/ostream.h>
 #include <fmt/printf.h>
 
+#include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>
@@ -75,8 +76,48 @@ double do_work_task(
     return spawn_time_s;
 }
 
-// The "barrier" method spawns one task per worker thread and uses a barrier run the "tasks" in
-// lockstep on each worker thread.
+// The "task-hierarchical" method spawns total_tasks independent tasks through num_threads helper tasks,
+// hinted to run on each worker thread. The helper tasks spawn tasks on their own worker thread to
+// reduce contention.
+double do_work_task_hierarchical(
+    high_resolution_timer& timer, std::uint64_t tasks_per_thread, double task_size_s)
+{
+    auto const num_threads = pika::get_num_worker_threads();
+    auto const total_tasks = num_threads * tasks_per_thread;
+    auto sched = ex::thread_pool_scheduler{};
+    auto spawn_helper = [=](std::size_t thread_num) {
+        auto sched_with_hint =
+            ex::with_hint(sched, pika::execution::thread_schedule_hint(thread_num));
+        return ex::schedule(sched_with_hint) | ex::let_value([=] {
+            auto spawn = [&]() {
+                return ex::schedule(sched_with_hint) |
+                    ex::then(pika::util::detail::bind_front(task, task_size_s)) |
+                    ex::ensure_started() | ex::drop_value();
+            };
+
+            std::vector<decltype(spawn())> senders;
+            senders.reserve(total_tasks);
+
+            for (std::uint64_t i = 0; i < tasks_per_thread; ++i) { senders.push_back(spawn()); }
+
+            return ex::when_all_vector(std::move(senders));
+        });
+    };
+
+    std::vector<decltype(spawn_helper(std::size_t{}))> senders;
+    senders.reserve(num_threads);
+
+    for (std::uint64_t i = 0; i < num_threads; ++i) { senders.push_back(spawn_helper(i)); }
+
+    double const spawn_time_s = timer.elapsed();
+
+    tt::sync_wait(ex::when_all_vector(std::move(senders)));
+
+    return spawn_time_s;
+}
+
+// The "barrier" method spawns one task per worker thread and uses a barrier run
+// the "tasks" in lockstep on each worker thread.
 double do_work_barrier(
     high_resolution_timer& timer, std::uint64_t tasks_per_thread, double task_size_s)
 {
@@ -142,6 +183,7 @@ int pika_main(variables_map& vm)
     using do_work_type = double(high_resolution_timer&, std::uint64_t, double);
     do_work_type* do_work = [&]() {
         if (method == "task") { return do_work_task; }
+        else if (method == "task-hierarchical") { return do_work_task_hierarchical; }
         else if (method == "barrier") { return do_work_barrier; }
         else if (method == "bulk") { return do_work_bulk; }
         else
@@ -234,7 +276,7 @@ int main(int argc, char* argv[])
     options_description cmdline("usage: " PIKA_APPLICATION_STRING " [options]");
     // clang-format off
     cmdline.add_options()
-        ("method", value<std::string>()->default_value("task"), "method used to spawn tasks (\"task\", \"barrier\", or \"bulk\")")
+        ("method", value<std::string>()->default_value("task"), "method used to spawn tasks (\"task\", \"task-hierarchical\", \"barrier\", or \"bulk\")")
         ("tasks-per-thread", value<std::uint64_t>()->default_value(1000), "number of tasks to invoke per thread")
         ("task-size-min-s", value<double>()->default_value(1e-6), "initial task size in seconds")
         ("task-size-max-s", value<double>()->default_value(1e-2), "maximum task size in seconds at which to stop the test")
