@@ -184,7 +184,6 @@ double do_work_bulk(
 {
     auto const num_threads = pika::get_num_worker_threads();
     auto sched = ex::thread_pool_scheduler{};
-    pika::barrier b(num_threads);
     auto work = [=](auto) { task(task_size_s); };
 
     ex::unique_any_sender<> sender{ex::just()};
