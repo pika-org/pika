@@ -116,6 +116,37 @@ double do_work_task_hierarchical(
     return spawn_time_s;
 }
 
+// The "task-yield" method spawns num_threads tasks. Each of the tasks then yields tasks_per_thread
+// times to emulate total_tasks being scheduled. This method is similar to the "barrier" method with
+// the difference that the tasks do not run in lockstep.
+double do_work_task_yield(
+    high_resolution_timer& timer, std::uint64_t tasks_per_thread, double task_size_s)
+{
+    auto const num_threads = pika::get_num_worker_threads();
+    auto sched = ex::thread_pool_scheduler{};
+    auto work = [=]() {
+        for (std::uint64_t i = 0; i < tasks_per_thread; ++i)
+        {
+            pika::this_thread::yield();
+            task(task_size_s);
+        }
+    };
+    auto spawn = [=]() {
+        return ex::schedule(sched) | ex::then(work) | ex::ensure_started() | ex::drop_value();
+    };
+
+    std::vector<decltype(spawn())> senders;
+    senders.reserve(num_threads);
+
+    for (std::uint64_t i = 0; i < num_threads; ++i) { senders.push_back(spawn()); }
+
+    double const spawn_time_s = timer.elapsed();
+
+    tt::sync_wait(ex::when_all_vector(std::move(senders)));
+
+    return spawn_time_s;
+}
+
 // The "barrier" method spawns one task per worker thread and uses a barrier run
 // the "tasks" in lockstep on each worker thread.
 double do_work_barrier(
@@ -184,12 +215,15 @@ int pika_main(variables_map& vm)
     do_work_type* do_work = [&]() {
         if (method == "task") { return do_work_task; }
         else if (method == "task-hierarchical") { return do_work_task_hierarchical; }
+        else if (method == "task-yield") { return do_work_task_yield; }
         else if (method == "barrier") { return do_work_barrier; }
         else if (method == "bulk") { return do_work_bulk; }
         else
         {
             PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "task_size",
-                "--method must be \"task\", \"barrier\", or \"bulk\" ({} given)", method);
+                "--method must be \"task\", \"task-hierarchical\", \"task-yield\", \"barrier\", or "
+                "\"bulk\" ({} given)",
+                method);
         }
     }();
 
@@ -276,7 +310,7 @@ int main(int argc, char* argv[])
     options_description cmdline("usage: " PIKA_APPLICATION_STRING " [options]");
     // clang-format off
     cmdline.add_options()
-        ("method", value<std::string>()->default_value("task"), "method used to spawn tasks (\"task\", \"task-hierarchical\", \"barrier\", or \"bulk\")")
+        ("method", value<std::string>()->default_value("task"), "method used to spawn tasks (\"task\", \"task-hierarchical\", \"task-yield\", \"barrier\", or \"bulk\")")
         ("tasks-per-thread", value<std::uint64_t>()->default_value(1000), "number of tasks to invoke per thread")
         ("task-size-min-s", value<double>()->default_value(1e-6), "initial task size in seconds")
         ("task-size-max-s", value<double>()->default_value(1e-2), "maximum task size in seconds at which to stop the test")
