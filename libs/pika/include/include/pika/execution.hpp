@@ -7,4 +7,5 @@
 #pragma once
 
 #include <pika/modules/execution.hpp>
+#include <pika/modules/execution_base.hpp>
 #include <pika/modules/executors.hpp>
