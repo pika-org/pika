@@ -14,7 +14,7 @@ variables:
   timeout: 2 hours
   before_script:
     - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
-    - export CONFIG_TAG=`echo $DOCKERFILE_SHA-$BASE_IMAGE-$SPACK_COMMIT | sha256sum - | head -c 16`
+    - export CONFIG_TAG=`echo $DOCKERFILE_SHA-$BASE_IMAGE-$SPACK_COMMIT-$SPACK_REPO | sha256sum - | head -c 16`
     - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/$ARCH/pika-spack-base:$CONFIG_TAG
     - echo -e "CONFIG_TAG=$CONFIG_TAG" >> base.env
     - echo -e "ARCH=$ARCH" >> base.env
@@ -22,7 +22,7 @@ variables:
   variables:
     BASE_IMAGE: docker.io/ubuntu:22.04
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_base
-    DOCKER_BUILD_ARGS: '["BASE_IMAGE","SPACK_COMMIT"]'
+    DOCKER_BUILD_ARGS: '["BASE_IMAGE","SPACK_COMMIT","SPACK_REPO"]'
   artifacts:
     reports:
       dotenv: base.env
