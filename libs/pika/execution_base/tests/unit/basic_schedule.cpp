@@ -100,7 +100,10 @@ sender<scheduler_2> tag_invoke(ex::schedule_t, scheduler_2)
 int main()
 {
     static_assert(!ex::is_scheduler_v<non_scheduler_1>, "non_scheduler_1 is not a scheduler");
+    // stdexec static_asserts that a member schedule must return a sender
+#if !defined(PIKA_HAVE_STDEXEC)
     static_assert(!ex::is_scheduler_v<non_scheduler_2>, "non_scheduler_2 is not a scheduler");
+#endif
     static_assert(!ex::is_scheduler_v<non_scheduler_3>, "non_scheduler_3 is not a scheduler");
     static_assert(ex::is_scheduler_v<scheduler_1>, "scheduler_1 is a scheduler");
     static_assert(ex::is_scheduler_v<scheduler_2>, "scheduler_2 is a scheduler");

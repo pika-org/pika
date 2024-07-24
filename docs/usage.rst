@@ -72,8 +72,8 @@ pika optionally depends on:
   default user-level thread implementations in pika. This can be enabled with
   ``PIKA_WITH_BOOST_CONTEXT=ON``.
 * `stdexec <https://github.com/NVIDIA/stdexec>`__. stdexec support can be enabled with
-  ``PIKA_WITH_STDEXEC=ON`` (currently tested with commit `b39a506096900de4074ee556867a3805bd8351bd
-  <https://github.com/NVIDIA/stdexec/tree/b39a506096900de4074ee556867a3805bd8351bd>`__).  The
+  ``PIKA_WITH_STDEXEC=ON`` (currently tested with commit `e99073de4c4b924804f54d7f52bc4e9fbcf53b92
+  <https://github.com/NVIDIA/stdexec/tree/e99073de4c4b924804f54d7f52bc4e9fbcf53b92>`__).  The
   integration is experimental. See :ref:`pika_stdexec` for more information about the integration.
 
 If you are using `nix <https://nixos.org>`__ you can also use the ``shell.nix`` file provided at the
