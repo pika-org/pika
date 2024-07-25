@@ -106,7 +106,7 @@ namespace pika::thread_pool_bulk_detail {
                 std::exception_ptr>>;
 
         using completion_signatures =
-            pika::execution::experimental::make_completion_signatures<Sender,
+            pika::execution::experimental::transform_completion_signatures_of<Sender,
                 pika::execution::experimental::empty_env,
                 pika::execution::experimental::completion_signatures<
                     pika::execution::experimental::set_error_t(std::exception_ptr)>>;

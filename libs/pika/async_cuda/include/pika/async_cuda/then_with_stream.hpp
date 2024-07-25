@@ -159,7 +159,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                         cuda_stream const&, std::add_lvalue_reference_t<std::decay_t<Ts>>...>>>;
 
         using completion_signatures =
-            pika::execution::experimental::make_completion_signatures<std::decay_t<Sender>,
+            pika::execution::experimental::transform_completion_signatures_of<std::decay_t<Sender>,
                 pika::execution::experimental::empty_env,
                 pika::execution::experimental::completion_signatures<
                     pika::execution::experimental::set_error_t(std::exception_ptr)>,
