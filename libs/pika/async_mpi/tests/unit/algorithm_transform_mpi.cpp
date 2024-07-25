@@ -191,8 +191,8 @@ int pika_main()
                     // Different MPI implementations print different error messages.
                     bool err_ok = (e.get_error() == pika::error::bad_function_call);
                     PIKA_TEST_MSG(err_ok, "Returned error code was not in expected list");
-                    std::vector<std::string> err_msgs = {
-                        "null datatype", "Invalid datatype", "MPI_ERR_TYPE"};
+                    std::vector<std::string> err_msgs = {"null datatype", "MPI_DATATYPE_NULL",
+                        "Invalid datatype", "MPI_ERR_TYPE", "Invalid root"};
                     bool msg_ok = false;
                     for (const auto& msg : err_msgs)
                     {
