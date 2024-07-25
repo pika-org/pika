@@ -233,8 +233,8 @@ namespace pika {
 
 #if defined(PIKA_HAVE_STDEXEC)
             using completion_signatures =
-                pika::execution::experimental::make_completion_signatures<std::decay_t<Sender>,
-                    pika::execution::experimental::empty_env>;
+                pika::execution::experimental::transform_completion_signatures_of<
+                    std::decay_t<Sender>, pika::execution::experimental::empty_env>;
 #else
             template <template <typename...> class Tuple, template <typename...> class Variant>
             using value_types = typename pika::execution::experimental::sender_traits<
