@@ -79,7 +79,7 @@ jobs:
             # https://github.com/actions/runner-images/issues/9491
             sysctl --write vm.mmap_rnd_bits=28
 
-            export ASAN_OPTIONS=fast_unwind_on_malloc=0:strict_string_checks=1:detect_leaks=1:detect_stack_use_after_return=0:check_initialization_order=1:strict_init_order=1:suppressions=$PWD/tools/asan.supp
+            export ASAN_OPTIONS=fast_unwind_on_malloc=0:strict_string_checks=1:detect_leaks=1:detect_stack_use_after_return=1:check_initialization_order=1:strict_init_order=1:suppressions=$PWD/tools/asan.supp
             export UBSAN_OPTIONS=print_stacktrace=1:suppressions=$PWD/tools/ubsan.supp
             cd build
             ctest \
@@ -94,7 +94,7 @@ jobs:
             # See above.
             sysctl --write vm.mmap_rnd_bits=28
 
-            export ASAN_OPTIONS=fast_unwind_on_malloc=0:strict_string_checks=1:detect_leaks=1:detect_stack_use_after_return=0:check_initialization_order=1:strict_init_order=1:suppressions=$PWD/tools/asan.supp
+            export ASAN_OPTIONS=fast_unwind_on_malloc=0:strict_string_checks=1:detect_leaks=1:detect_stack_use_after_return=1:check_initialization_order=1:strict_init_order=1:suppressions=$PWD/tools/asan.supp
             export UBSAN_OPTIONS=print_stacktrace=1:suppressions=$PWD/tools/ubsan.supp
             cd build
             ctest \
