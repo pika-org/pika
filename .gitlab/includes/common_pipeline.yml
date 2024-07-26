@@ -20,7 +20,6 @@ variables:
                          -DPIKA_WITH_PARALLEL_TESTS_BIND_NONE=ON"
 .build_variables_common:
   variables:
-    NUM_PROCS: 6
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_build
     DOCKER_BUILD_ARGS: '["SPACK_ARCH","BASE_IMAGE","BUILD_TYPE","CI_COMMIT_AUTHOR","CI_COMMIT_BRANCH","CI_COMMIT_DESCRIPTION","CI_COMMIT_MESSAGE","CI_COMMIT_SHA","CI_COMMIT_SHORT_SHA","CI_COMMIT_TIMESTAMP","CI_COMMIT_TITLE","COMPILER","CSCS_LOGSTASH_URL","SPACK_COMMIT","SPACK_SPEC","SOURCE_DIR","BUILD_DIR","CMAKE_COMMON_FLAGS","CMAKE_FLAGS", "NUM_PROCS"]'
 
@@ -28,34 +27,35 @@ variables:
   variables:
     SLURM_JOB_NUM_NODES: 1
     SLURM_NTASKS: 1
+    SLURM_TIMELIMIT: '01:00:00'
 
 .test_common_daint_mc:
   extends:
-    - .test_common
     - .container-runner-daint-mc
+    - .test_common
   variables:
     SLURM_PARTITION: normal
 
 .test_common_eiger_mc:
   extends:
-    - .test_common
     - .container-runner-eiger-mc-f7t
+    - .test_common
   variables:
     SLURM_PARTITION: normal
 
 .test_common_gpu_daint_cuda:
   extends:
-    - .test_common
     - .container-runner-daint-gpu
+    - .test_common
   variables:
     SLURM_PARTITION: normal
 
 .test_common_gpu_clariden_cuda:
   extends:
-    - .test_common
     - .container-runner-clariden-a100
+    - .test_common
 
 .test_common_gpu_clariden_hip:
   extends:
-    - .test_common
     - .container-runner-clariden-mi200
+    - .test_common

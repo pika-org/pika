@@ -8,10 +8,10 @@ include:
   - local: '.gitlab/includes/common_pipeline.yml'
 
 variables:
-  SPACK_COMMIT: 7f3dd38ccc106142846f29f76b928fa58e0e3164
+  SPACK_COMMIT: develop-2024-07-21
 
 .base_spack_image:
-  timeout: 2 hours
+  timeout: 1 hours
   before_script:
     - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
     - export CONFIG_TAG=`echo $DOCKERFILE_SHA-$BASE_IMAGE-$SPACK_COMMIT-$SPACK_REPO | sha256sum - | head -c 16`
@@ -35,6 +35,7 @@ base_spack_image_x86_64:
   extends: [.container-builder-cscs-zen2, .base_spack_image]
 
 .compiler_image_template:
+  timeout: 4 hours
   before_script:
     - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
     - compiler=${COMPILER}${NVHPC_COMPILER:+-}${NVHPC_COMPILER}
@@ -59,6 +60,7 @@ base_spack_image_x86_64:
   extends: [.container-builder-cscs-zen2, .compiler_image_template]
 
 .dependencies_image_template:
+  timeout: 4 hours
   before_script:
     - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
     - CONFIG_TAG=`echo $DOCKERFILE_SHA-$BASE_IMAGE-$SPACK_SPEC | sha256sum - | head -c 16`
@@ -88,6 +90,7 @@ base_spack_image_x86_64:
     DOTENV_FILE: "build-$BUILD_TYPE.env"
 
 .build_template:
+  timeout: 2 hours
   extends:
     - .build_variables_common
     - .cmake_variables_common
@@ -118,4 +121,4 @@ base_spack_image_x86_64:
     - spack arch
     - export CTEST_XML=$PWD/ctest.xml
     - trap "${SOURCE_DIR}/.gitlab/scripts/collect_ctest_metrics.sh ${CTEST_XML}" EXIT
-    - spack -e pika_ci build-env $spack_spec -- bash -c "ctest --output-junit ${CTEST_XML} --label-exclude COMPILE_ONLY --test-dir ${BUILD_DIR} -j$(($(nproc)/2)) --timeout 120 --output-on-failure --no-compress-output --no-tests=error"
+    - spack -e pika_ci build-env $spack_spec -- bash -c "ctest --output-junit ${CTEST_XML} --label-exclude COMPILE_ONLY --test-dir ${BUILD_DIR} -j$(($(nproc)/2)) --timeout 300 --output-on-failure --no-compress-output --no-tests=error"

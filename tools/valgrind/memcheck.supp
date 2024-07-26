@@ -53,3 +53,13 @@
    ...
    fun:event_base_loop
 }
+
+# CUDA
+{
+    Generic CUDA
+    Memcheck:Leak
+    fun:*alloc
+    ...
+    obj:*libcuda.so*
+    ...
+}

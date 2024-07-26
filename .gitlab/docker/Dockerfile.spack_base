@@ -18,6 +18,7 @@ RUN apt-get update && apt-get -yqq install --no-install-recommends \
     git \
     gnupg2 \
     jq \
+    libc6-dbg \
     libcurl4-openssl-dev \
     libssl-dev \
     libtool \
