@@ -7,14 +7,11 @@
 // simple compile test to see if mpix continuuations are present
 // returns 0 when available, 0 otherwise
 
+#include <mpi-ext.h>
 #include <mpi.h>
 
-#if __has_include(<mpi-ext.h>)
-# include <mpi-ext.h>
+#if !defined(OMPI_HAVE_MPI_EXT_CONTINUE)
+static_assert(false);
 #endif
 
-#ifdef OMPI_HAVE_MPI_EXT_CONTINUE
-int main() { return 0; }
-#else
-int main() { return 1; }
-#endif
+int main() {}
