@@ -11,26 +11,12 @@ if(NOT ${PIKA_WITH_MPI})
   return()
 endif()
 
-# For testing and benchmarking, we would like to know if mpi continuations extension is present
-try_compile(
-  # Name of variable to store the compile result (TRUE or FALSE) in:
-  MPIX_COMPILE_RESULT
-  # Binary directory:
-  ${CMAKE_CURRENT_BINARY_DIR}/
-  # Source file to be compiled:
-  SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/check_openmpi_continuations.cpp
-  # Where to store the output produced during compilation:
-  OUTPUT_VARIABLE TEST_COMPILE_OUTPUT
-)
-
-# Did compilation succeed and process return 0 (success)?
-if("${MPIX_COMPILE_RESULT}")
+pika_check_for_mpix_continuations(PIKA_WITH_MPIX_CONTINUATIONS)
+if(PIKA_WITH_MPIX_CONTINUATIONS)
   message(STATUS "MPIx Continuations detected")
-  set(PIKA_WITH_MPIX_CONTINUATIONS True)
   set(PIKA_MPI_MODES_LOOP_COUNT 79)
 else()
   message(STATUS "MPIx Continuations not detected")
-  set(PIKA_WITH_MPIX_CONTINUATIONS False)
   set(PIKA_MPI_MODES_LOOP_COUNT 63)
 endif()
 
