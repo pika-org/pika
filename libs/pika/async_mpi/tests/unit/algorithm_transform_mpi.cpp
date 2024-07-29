@@ -18,10 +18,17 @@
 #include <utility>
 #include <vector>
 
+#if defined(__clang__) || defined(__GNUC__)
+# define ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__((no_sanitize_address))
+#else
+# define ATTRIBUTE_NO_SANITIZE_ADDRESS
+#endif
+
 namespace ex = pika::execution::experimental;
 namespace mpi = pika::mpi::experimental;
 namespace tt = pika::this_thread::experimental;
 
+// -----------------------------------------------------------------
 // This overload is only used to check dispatching. It is not a useful
 // implementation.
 template <typename T>
@@ -31,6 +38,123 @@ auto tag_invoke(mpi::transform_mpi_t, custom_type<T>& c)
     return mpi::transform_mpi(ex::just(&c.x, 1, MPI_INT, 0, MPI_COMM_WORLD), MPI_Ibcast);
 }
 
+// -----------------------------------------------------------------
+// These tests are in a separate function so that we can annotate the whole thing with
+// disabled address sanitizer to work around (temporarily hide) unresolved stack corruption reports
+ATTRIBUTE_NO_SANITIZE_ADDRESS void test_exception_handler_code(MPI_Comm comm, MPI_Datatype datatype)
+{
+    // Failure path
+    {
+        // Exception with error sender
+        bool exception_thrown = false;
+        try
+        {
+            tt::sync_wait(mpi::transform_mpi(
+                error_sender<int*, int, MPI_Datatype, int, MPI_Comm>{}, MPI_Ibcast));
+            PIKA_TEST(false);
+        }
+        catch (std::runtime_error const& e)
+        {
+            PIKA_TEST_EQ(std::string(e.what()), std::string("error"));
+            exception_thrown = true;
+        }
+        PIKA_TEST(exception_thrown);
+    }
+
+    {
+        // Exception with const reference error sencder
+        bool exception_thrown = false;
+        try
+        {
+            tt::sync_wait(mpi::transform_mpi(
+                const_reference_error_sender{}, [](MPI_Request*) { PIKA_TEST(false); }));
+        }
+        catch (std::runtime_error const& e)
+        {
+            PIKA_TEST_EQ(std::string(e.what()), std::string("error"));
+            exception_thrown = true;
+        }
+        PIKA_TEST(exception_thrown);
+    }
+
+    {
+        // Exception in the lambda
+        bool exception_thrown = false;
+        int data = 0, count = 1;
+        auto s = mpi::transform_mpi(ex::just(&data, count, datatype, 0, comm),
+            [](int* data, int count, MPI_Datatype datatype, int i, MPI_Comm comm,
+                MPI_Request* request) {
+                MPI_Ibcast(data, count, datatype, i, comm, request);
+                throw std::runtime_error("error in lambda");
+            });
+        try
+        {
+            tt::sync_wait(PIKA_MOVE(s));
+        }
+        catch (std::runtime_error const& e)
+        {
+            PIKA_TEST_EQ(std::string(e.what()), std::string("error in lambda"));
+            exception_thrown = true;
+        }
+        PIKA_TEST(exception_thrown);
+        // Necessary to avoid a seg fault caused by MPI data going out of scope
+        // too early when an exception occurred outside of MPI
+        MPI_Barrier(comm);
+    }
+
+    {
+        // Exception thrown through pika custom error handler that throws
+        int *data = nullptr, count = 0;
+        bool exception_thrown = false;
+        try
+        {
+            tt::sync_wait(
+                mpi::transform_mpi(ex::just(data, count, MPI_DATATYPE_NULL, -1, comm), MPI_Ibcast));
+            PIKA_TEST(false);
+        }
+        catch (pika::exception const& e)
+        {
+            // Different MPI implementations print different error messages.
+            bool err_ok = (e.get_error() == pika::error::bad_function_call);
+            PIKA_TEST_MSG(err_ok, "Returned error code was not in expected list");
+            std::vector<std::string> err_msgs = {"null datatype", "MPI_DATATYPE_NULL",
+                "Invalid datatype", "MPI_ERR_TYPE", "Invalid root"};
+            bool msg_ok = false;
+            for (const auto& msg : err_msgs)
+            {
+                msg_ok |= (std::string(e.what()).find(msg) != std::string::npos);
+            }
+            PIKA_TEST_MSG(msg_ok, "Error message did not contain expected string");
+            exception_thrown = true;
+        }
+        PIKA_TEST(exception_thrown);
+    }
+}
+
+// -----------------------------------------------------------------
+ATTRIBUTE_NO_SANITIZE_ADDRESS void test_exception_no_handler(MPI_Comm comm)
+{
+    // Use the default error handler MPI_ERRORS_ARE_FATAL
+    mpi::enable_user_polling enable_polling_no_errhandler;
+    {
+        // Exception thrown based on the returned error code
+        int *data = nullptr, count = 0;
+        bool exception_thrown = false;
+        try
+        {
+            tt::sync_wait(
+                mpi::transform_mpi(ex::just(data, count, MPI_DATATYPE_NULL, -1, comm), MPI_Ibcast));
+            PIKA_TEST(false);
+        }
+        catch (std::runtime_error const&)
+        {
+            exception_thrown = true;
+        }
+        PIKA_TEST(exception_thrown);
+    }
+}
+
+// -----------------------------------------------------------------
 int pika_main()
 {
     int size, rank;
@@ -117,116 +241,11 @@ int pika_main()
                 PIKA_TEST_EQ(data, 42);
             }
 
-            // Failure path
-            {
-                // Exception with error sender
-                bool exception_thrown = false;
-                try
-                {
-                    tt::sync_wait(mpi::transform_mpi(
-                        error_sender<int*, int, MPI_Datatype, int, MPI_Comm>{}, MPI_Ibcast));
-                    PIKA_TEST(false);
-                }
-                catch (std::runtime_error const& e)
-                {
-                    PIKA_TEST_EQ(std::string(e.what()), std::string("error"));
-                    exception_thrown = true;
-                }
-                PIKA_TEST(exception_thrown);
-            }
+            test_exception_handler_code(comm, datatype);
 
-            {
-                // Exception with const reference error sencder
-                bool exception_thrown = false;
-                try
-                {
-                    tt::sync_wait(mpi::transform_mpi(
-                        const_reference_error_sender{}, [](MPI_Request*) { PIKA_TEST(false); }));
-                }
-                catch (std::runtime_error const& e)
-                {
-                    PIKA_TEST_EQ(std::string(e.what()), std::string("error"));
-                    exception_thrown = true;
-                }
-                PIKA_TEST(exception_thrown);
-            }
+        }    // let the user polling go out of scope
 
-            {
-                // Exception in the lambda
-                bool exception_thrown = false;
-                int data = 0, count = 1;
-                auto s = mpi::transform_mpi(ex::just(&data, count, datatype, 0, comm),
-                    [](int* data, int count, MPI_Datatype datatype, int i, MPI_Comm comm,
-                        MPI_Request* request) {
-                        MPI_Ibcast(data, count, datatype, i, comm, request);
-                        throw std::runtime_error("error in lambda");
-                    });
-                try
-                {
-                    tt::sync_wait(PIKA_MOVE(s));
-                }
-                catch (std::runtime_error const& e)
-                {
-                    PIKA_TEST_EQ(std::string(e.what()), std::string("error in lambda"));
-                    exception_thrown = true;
-                }
-                PIKA_TEST(exception_thrown);
-                // Necessary to avoid a seg fault caused by MPI data going out of scope
-                // too early when an exception occurred outside of MPI
-                MPI_Barrier(comm);
-            }
-
-            {
-                // Exception thrown through pika custom error handler that throws
-                int *data = nullptr, count = 0;
-                bool exception_thrown = false;
-                try
-                {
-                    tt::sync_wait(mpi::transform_mpi(
-                        ex::just(data, count, MPI_DATATYPE_NULL, -1, comm), MPI_Ibcast));
-                    PIKA_TEST(false);
-                }
-                catch (pika::exception const& e)
-                {
-                    // Different MPI implementations print different error messages.
-                    bool err_ok = (e.get_error() == pika::error::bad_function_call);
-                    PIKA_TEST_MSG(err_ok, "Returned error code was not in expected list");
-                    std::vector<std::string> err_msgs = {"null datatype", "MPI_DATATYPE_NULL",
-                        "Invalid datatype", "MPI_ERR_TYPE", "Invalid root"};
-                    bool msg_ok = false;
-                    for (const auto& msg : err_msgs)
-                    {
-                        msg_ok |= (std::string(e.what()).find(msg) != std::string::npos);
-                    }
-                    PIKA_TEST_MSG(msg_ok, "Error message did not contain expected string");
-                    exception_thrown = true;
-                }
-                PIKA_TEST(exception_thrown);
-            }
-            // let the user polling go out of scope
-        }
-
-        {
-            // Use the default error handler MPI_ERRORS_ARE_FATAL
-            mpi::enable_user_polling enable_polling_no_errhandler;
-            {
-                // Exception thrown based on the returned error code
-                int *data = nullptr, count = 0;
-                bool exception_thrown = false;
-                try
-                {
-                    tt::sync_wait(mpi::transform_mpi(
-                        ex::just(data, count, MPI_DATATYPE_NULL, -1, comm), MPI_Ibcast));
-                    PIKA_TEST(false);
-                }
-                catch (std::runtime_error const&)
-                {
-                    exception_thrown = true;
-                }
-                PIKA_TEST(exception_thrown);
-            }
-            // let the user polling go out of scope
-        }
+        test_exception_no_handler(comm);
     }
 
     test_adl_isolation(mpi::transform_mpi(my_namespace::my_sender{}, [](MPI_Request*) {}));
