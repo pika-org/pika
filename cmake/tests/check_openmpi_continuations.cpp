@@ -4,8 +4,7 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-// simple compile test to see if mpix continuuations are present
-// returns 0 when available, 0 otherwise
+// simple compile test to see if mpix continuations are present
 
 #include <mpi-ext.h>
 #include <mpi.h>
