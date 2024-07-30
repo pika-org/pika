@@ -737,7 +737,7 @@ namespace pika::mpi::experimental {
         else if ((mode == pool_create_mode::pika_decides) && (detail::mpi_data_.size_ == 1))
         {
             // if we have a single rank - disable pool
-            PIKA_DETAIL_DP(detail::mpi_debug<0>, debug(str<>("single rank"), "Pool disabled"));
+            PIKA_DETAIL_DP(detail::mpi_debug<1>, debug(str<>("single rank"), "Pool disabled"));
             flags &= ~1;
         }
         PIKA_DETAIL_DP(detail::mpi_debug<1>,
