@@ -88,7 +88,7 @@ namespace pika::drop_value_detail {
             pika::execution::experimental::set_value_t()>;
 
         using completion_signatures =
-            pika::execution::experimental::make_completion_signatures<Sender,
+            pika::execution::experimental::transform_completion_signatures_of<Sender,
                 pika::execution::experimental::empty_env,
                 pika::execution::experimental::completion_signatures<>, empty_set_value>;
 #else
