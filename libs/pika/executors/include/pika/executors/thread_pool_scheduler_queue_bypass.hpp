@@ -125,8 +125,7 @@ namespace pika { namespace execution { namespace experimental {
 
             // create the full thread object and set it as pending
             thread_id_ref_type id = invalid_thread_id;
-            pika::error_code ec = throws;
-            data.scheduler_base->create_thread(data, &id, ec);
+            data.scheduler_base->create_thread(data, &id, pika::throws);
             data.initial_state = thread_schedule_state::pending;
             PIKA_DETAIL_DP(
                 bps_deb<5>, debug(str<>("create_thread"), threadinfo<thread_id_ref_type*>(&id)));
