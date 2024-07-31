@@ -29,8 +29,7 @@ namespace mpi = pika::mpi::experimental;
 namespace tt = pika::this_thread::experimental;
 
 // -----------------------------------------------------------------
-// This overload is only used to check dispatching. It is not a useful
-// implementation.
+// This overload is only used to check dispatching. It is not a useful implementation.
 template <typename T>
 auto tag_invoke(mpi::transform_mpi_t, custom_type<T>& c)
 {
