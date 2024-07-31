@@ -93,15 +93,23 @@ namespace pika::mpi::experimental {
                     }
                     return just(request) | trigger_mpi(mode) | transfer(default_pool_scheduler(p));
                 }
-                // inline, can we skip any steps?
-                if (request == MPI_REQUEST_NULL) { return just(); }
-                if (inline_ready(mode))    // the completion mode does not require a transfer
+                if (threads::detail::get_self_id() == threads::detail::invalid_thread_id)
                 {
-                    return just(request) | trigger_mpi(mode);    //
+                    if (request == MPI_REQUEST_NULL)
+                    {
+                        return just() |
+                            transfer(ex::with_annotation(
+                                ex::thread_pool_scheduler_queue_bypass{}, "transform_mpi"));
+                    }
+                    return just(request) | trigger_mpi(mode) |
+                        transfer(ex::with_annotation(
+                            ex::thread_pool_scheduler_queue_bypass{}, "transform_mpi"));
                 }
-                return just(request) | trigger_mpi(mode) |
-                    transfer(ex::with_annotation(
-                        ex::thread_pool_scheduler_queue_bypass{}, "transform_mpi"));
+                else
+                {
+                    if (request == MPI_REQUEST_NULL) { return just(); }
+                    return just(request) | trigger_mpi(mode);
+                }
             };
 
             if (requests_inline)
