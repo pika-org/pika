@@ -6,6 +6,16 @@
 
 # Changelog
 
+## 0.26.1 (2024-07-31)
+
+### New features
+
+### Breaking changes
+
+### Bugfixes
+
+- The `PIKA_MPI_COMPLETION_MODE` environment variable not being taken into account has been fixed. ([#1215](https://github.com/pika-org/pika/pull/1215))
+
 ## 0.26.0 (2024-07-08)
 
 ### New features
