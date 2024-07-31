@@ -79,9 +79,11 @@ namespace pika::mpi::experimental {
                 execution::thread_priority::boost :
                 execution::thread_priority::normal;
 
+#ifdef PIKA_DEBUG
             auto dgb = []() {
                 PIKA_DETAIL_DP(mpi_tran<1>, debug(str<>("transform_mpi"), "complete"));
             };
+#endif
             auto completion_snd = [=](MPI_Request request) -> unique_any_sender<> {
                 if (!completions_inline)    // not inline : a transfer is required
                 {
