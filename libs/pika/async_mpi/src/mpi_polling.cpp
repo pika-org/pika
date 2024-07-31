@@ -675,8 +675,8 @@ namespace pika::mpi::experimental {
             PIKA_DETAIL_DP(
                 mpi_debug<2>, debug(str<>("MPIX"), "register continuation", ptr(request)));
             mpi_ext_continuation_result_check(MPIX_Continue(request, cb_func, op_state,
-                /*MPIX_CONT_DEFER_COMPLETE | */ MPIX_CONT_INVOKE_FAILED, MPI_STATUSES_IGNORE,
-                detail::mpi_data_.mpix_continuations_request));
+                /*MPIX_CONT_DEFER_COMPLETE | */ MPIX_CONT_POLL_ONLY | MPIX_CONT_INVOKE_FAILED,
+                MPI_STATUSES_IGNORE, detail::mpi_data_.mpix_continuations_request));
         }
 
         void restart_mpix()
@@ -858,8 +858,8 @@ namespace pika::mpi::experimental {
         auto mode = get_completion_mode();
         if (mode >= pika::detail::to_underlying(detail::handler_method::unspecified))
         {
-            PIKA_THROW_EXCEPTION(
-                pika::error::invalid_status, "Bad completion flags", "invalid completion mode");
+            // PIKA_THROW_EXCEPTION(
+            //     pika::error::invalid_status, "Bad completion flags", "invalid completion mode");
         }
 #ifdef OMPI_HAVE_MPI_EXT_CONTINUE
         // if we are using experimental mpix_continuations, setup internals
