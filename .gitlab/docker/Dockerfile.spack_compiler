@@ -6,10 +6,14 @@ SHELL ["/bin/bash", "-c"]
 # Disable host compatibility to be able to compile for other architectures than the one from the
 # CSCS CI's .container-builder
 # Allow installing deprecated packages (needed for apex)
-# Use curl as the fetch method to try to avoid fetch errors on santis
+# Use curl as the fetch method to try to avoid fetch errors. Additionally retry more on failures.
 RUN spack config --scope site add concretizer:targets:host_compatible:false && \
     spack config --scope site add config:deprecated:true && \
-    spack config --scope site add config:url_fetch_method:curl
+    spack config --scope site add config:url_fetch_method:curl && \
+    spack config --scope site add config:connect_timeout:10 && \
+    echo "retry = 10" >> $HOME/.curlrc && \
+    echo "retry-connrefused" >> $HOME/.curlrc && \
+    echo "retry-max-time = 30" >> $HOME/.curlrc
 
 # Install compiler if not already installed, modify packages.yaml to require spack compilers
 ARG SPACK_ARCH
