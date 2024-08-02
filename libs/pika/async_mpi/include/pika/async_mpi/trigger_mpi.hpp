@@ -194,13 +194,13 @@ namespace pika::mpi::experimental::detail {
                                 add_continuation_request_callback(r.op_state);
                                 break;
                             }
-                            case handler_method::mpix_continuation:
+                            case handler_method::mpix_continuation_suspend:
                             {
                                 PIKA_DETAIL_DP(mpi_tran<1>,
                                     debug(str<>("MPI_EXT_CONTINUE"), "register_mpix_continuation",
                                         ptr(r.op_state.request), ptr(r.op_state.request)));
-
-                                MPIX_Continue_cb_function* func = &mpix_callback<operation_state>;
+                                MPIX_Continue_cb_function* func =
+                                    &mpix_callback_resume<operation_state>;
                                 {
                                     std::unique_lock l{r.op_state.mutex};
                                     // make sure registration is done under lock to stop cond_var
@@ -221,6 +221,22 @@ namespace pika::mpi::experimental::detail {
                                 // call set_value/set_error depending on mpi return status
                                 set_value_error_helper(
                                     r.op_state.status, PIKA_MOVE(r.op_state.receiver));
+                                break;
+                            }
+                            case handler_method::mpix_continuation_con:
+                            {
+                                PIKA_DETAIL_DP(mpi_tran<1>,
+                                    debug(str<>("MPI_EXT_CONTINUE"), "register_mpix_continuation",
+                                        ptr(r.op_state.request), ptr(r.op_state.request)));
+                                MPIX_Continue_cb_function* func =
+                                    &mpix_callback_continuation<operation_state>;
+                                {
+                                    std::unique_lock l{r.op_state.mutex};
+                                    // make sure registration is done under lock to stop cond_var
+                                    // going out of scope before notification is sent
+                                    register_mpix_continuation(
+                                        &r.op_state.request, func, &r.op_state);
+                                }
                                 break;
                             }
                             default: PIKA_UNREACHABLE;

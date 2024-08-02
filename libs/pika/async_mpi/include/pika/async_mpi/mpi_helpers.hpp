@@ -164,7 +164,7 @@ namespace pika::mpi::experimental::detail {
     // handler_method::mpix_continuation - signature is
     /// typedef int (MPIX_Continue_cb_function)(int rc, void *cb_data);
     template <typename OperationState>
-    int mpix_callback([[maybe_unused]] int rc, void* cb_data)
+    int mpix_callback_resume([[maybe_unused]] int rc, void* cb_data)
     {
         PIKA_DETAIL_DP(mpi_tran<1>, debug(str<>("MPIX"), "callback triggered"));
         auto& op_state = *static_cast<OperationState*>(cb_data);
@@ -175,6 +175,19 @@ namespace pika::mpi::experimental::detail {
             op_state.completed = true;
         }
         op_state.cond_var.notify_one();
+        // tell mpix that we handled it ok, error is passed into set_error in mpi_trigger
+        return MPI_SUCCESS;
+    }
+
+    // -----------------------------------------------------------------
+    // handler_method::mpix_continuation2 - signature is
+    /// typedef int (MPIX_Continue_cb_function)(int rc, void *cb_data);
+    template <typename OperationState>
+    int mpix_callback_continuation([[maybe_unused]] int rc, void* cb_data)
+    {
+        PIKA_DETAIL_DP(mpi_tran<1>, debug(str<>("MPIX"), "callback triggered"));
+        auto& op_state = *static_cast<OperationState*>(cb_data);
+        set_value_error_helper(op_state.status, PIKA_MOVE(op_state.receiver));
         // tell mpix that we handled it ok, error is passed into set_error in mpi_trigger
         return MPI_SUCCESS;
     }
