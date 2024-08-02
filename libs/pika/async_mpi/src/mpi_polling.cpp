@@ -617,7 +617,8 @@ namespace pika::mpi::experimental {
 
 #ifdef OMPI_HAVE_MPI_EXT_CONTINUE
             // if mpi continuations are available, poll here and bypass main routine
-            if (get_handler_method(mode) == handler_method::mpix_continuation)
+            if ((get_handler_method(mode) == handler_method::mpix_continuation_suspend) ||
+                (get_handler_method(mode) == handler_method::mpix_continuation_con))
             {
                 return try_mpix_polling(single_threaded);
             }
@@ -861,9 +862,12 @@ namespace pika::mpi::experimental {
             // PIKA_THROW_EXCEPTION(
             //     pika::error::invalid_status, "Bad completion flags", "invalid completion mode");
         }
+
 #ifdef OMPI_HAVE_MPI_EXT_CONTINUE
         // if we are using experimental mpix_continuations, setup internals
-        if (detail::get_handler_method(mode) == detail::handler_method::mpix_continuation)
+        if ((detail::get_handler_method(mode) ==
+                detail::handler_method::mpix_continuation_suspend) ||
+            (detail::get_handler_method(mode) == detail::handler_method::mpix_continuation_con))
         {
             // the lock prevents multithreaded polling from accessing the request before it is ready
             std::unique_lock lk(detail::mpi_data_.mpix_lock);
@@ -879,7 +883,9 @@ namespace pika::mpi::experimental {
         }
 #else
         // if selected, but unsupported, throw an error
-        if (detail::get_handler_method(mode) == detail::handler_method::mpix_continuation)
+        if ((detail::get_handler_method(mode) ==
+                detail::handler_method::mpix_continuation_suspend) ||
+            (detail::get_handler_method(mode) == detail::handler_method::mpix_continuation_con))
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status, "MPI_EXT_CONTINUE",
                 "mpi_ext_continuation not supported, invalid handler method");
