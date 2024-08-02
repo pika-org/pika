@@ -294,8 +294,6 @@ namespace pika::mpi::experimental {
         /// Ideally, would use a zip iterator to do both using remove_if
         void compact_vectors()
         {
-            using detail::mpi_data_;
-
             size_t const size = mpi_data_.requests_.size();
             size_t pos = size;
             // find index of first NULL request
@@ -326,19 +324,19 @@ namespace pika::mpi::experimental {
         pika::threads::detail::polling_status try_mpix_polling(bool singlethreaded)
         {
             PIKA_DETAIL_DP(mpi_debug<5>,
-                debug(str<>("mpix check"), ptr(detail::mpi_data_.mpix_continuations_request)));
+                debug(str<>("mpix check"), ptr(mpi_data_.mpix_continuations_request)));
 
             using pika::threads::detail::polling_status;
-            if (!detail::mpi_data_.mpix_ready_.load(std::memory_order_relaxed))
+            if (!mpi_data_.mpix_ready_.load(std::memory_order_relaxed))
                 return pika::threads::detail::polling_status::idle;
             //
             int flag = 0;
             if (!singlethreaded)
             {
-                std::unique_lock lk(detail::mpi_data_.mpix_lock, std::try_to_lock);
+                std::unique_lock lk(mpi_data_.mpix_lock, std::try_to_lock);
                 if (!lk.owns_lock()) { return polling_status::busy; }
-                mpi_ext_continuation_result_check(MPI_Test(
-                    &detail::mpi_data_.mpix_continuations_request, &flag, MPI_STATUS_IGNORE));
+                mpi_ext_continuation_result_check(
+                    MPI_Test(&mpi_data_.mpix_continuations_request, &flag, MPI_STATUS_IGNORE));
                 if (flag != 0)
                 {
                     restart_mpix();
@@ -348,8 +346,8 @@ namespace pika::mpi::experimental {
             else
             {
                 // there should not be a lock here, but the mpix stuff fails without it
-                mpi_ext_continuation_result_check(MPI_Test(
-                    &detail::mpi_data_.mpix_continuations_request, &flag, MPI_STATUS_IGNORE));
+                mpi_ext_continuation_result_check(
+                    MPI_Test(&mpi_data_.mpix_continuations_request, &flag, MPI_STATUS_IGNORE));
                 if (flag != 0)
                 {
                     restart_mpix();
@@ -359,7 +357,7 @@ namespace pika::mpi::experimental {
             // for debugging, create a timer : debug info every N seconds
             static auto mpix_deb = mpi_debug<1>.make_timer(2, debug::detail::str<>("MPIX"), "poll");
             PIKA_DETAIL_DP(mpi_debug<1>,
-                timed(mpix_deb, ptr(detail::mpi_data_.mpix_continuations_request), "Flag", flag));
+                timed(mpix_deb, ptr(mpi_data_.mpix_continuations_request), "Flag", flag));
 
             return polling_status::idle;
         }
@@ -633,7 +631,7 @@ namespace pika::mpi::experimental {
 #if defined(PIKA_DEBUG)
             ++get_register_polling_count();
 #endif
-            if (detail::mpi_data_.rank_ == 0)
+            if (mpi_data_.rank_ == 0)
             {
                 PIKA_DETAIL_DP(detail::mpi_debug<1>,
                     debug(str<>("polling_enabled"), "pool =", pool.get_pool_name(), ", mode",
@@ -648,10 +646,9 @@ namespace pika::mpi::experimental {
         {
 #if defined(PIKA_DEBUG)
             {
-                std::unique_lock<detail::mutex_type> lk(detail::mpi_data_.polling_vector_mtx_);
-                bool request_queue_empty =
-                    (detail::mpi_data_.request_callback_queue_.size_approx() == 0);
-                bool requests_empty = (detail::mpi_data_.all_in_flight_ == 0);
+                std::unique_lock<detail::mutex_type> lk(mpi_data_.polling_vector_mtx_);
+                bool request_queue_empty = (mpi_data_.request_callback_queue_.size_approx() == 0);
+                bool requests_empty = (mpi_data_.all_in_flight_ == 0);
                 lk.unlock();
                 PIKA_ASSERT_MSG(request_queue_empty,
                     "MPI request polling was disabled while there are unprocessed MPI requests. "
@@ -666,7 +663,7 @@ namespace pika::mpi::experimental {
             sched->clear_mpi_polling_function();
         }
 
-        int comm_world_size() { return detail::mpi_data_.size_; }
+        int comm_world_size() { return mpi_data_.size_; }
 
 #ifdef OMPI_HAVE_MPI_EXT_CONTINUE
         void register_mpix_continuation(
@@ -676,17 +673,15 @@ namespace pika::mpi::experimental {
                 mpi_debug<2>, debug(str<>("MPIX"), "register continuation", ptr(request)));
             mpi_ext_continuation_result_check(MPIX_Continue(request, cb_func, op_state,
                 /*MPIX_CONT_DEFER_COMPLETE | */ MPIX_CONT_POLL_ONLY | MPIX_CONT_INVOKE_FAILED,
-                MPI_STATUSES_IGNORE, detail::mpi_data_.mpix_continuations_request));
+                MPI_STATUSES_IGNORE, mpi_data_.mpix_continuations_request));
         }
 
         void restart_mpix()
         {
             {
                 PIKA_DETAIL_DP(mpi_debug<2>,
-                    debug(str<>("MPIX"), "MPI_Start",
-                        ptr(detail::mpi_data_.mpix_continuations_request)));
-                mpi_ext_continuation_result_check(
-                    MPI_Start(&detail::mpi_data_.mpix_continuations_request));
+                    debug(str<>("MPIX"), "MPI_Start", ptr(mpi_data_.mpix_continuations_request)));
+                mpi_ext_continuation_result_check(MPI_Start(&mpi_data_.mpix_continuations_request));
             }
         }
 #else
