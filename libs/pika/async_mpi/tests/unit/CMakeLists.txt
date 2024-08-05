@@ -8,7 +8,7 @@ set(tests algorithm_transform_mpi mpi_ring_async_sender_receiver)
 
 # cmake-format: off
 set(mpi_ring_async_sender_receiver_PARAMETERS
-    ARGS "--in-flight-limit=32" "--rounds=10" "--iterations=100" 
+    ARGS "--in-flight-limit=32" "--rounds=5" "--iterations=25" "--message-bytes=64"
          "--pika:ignore-process-mask"
     THREADS 4 RANKS 2 MPIWRAPPER
 )

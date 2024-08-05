@@ -112,13 +112,12 @@ namespace pika::mpi::experimental {
             ///
             /// * unspecified : reserved for development purposes or for customization by an
             /// application using pika
-            yield_while = 0b0000'0000,                   // 0x00, 00 ... 15
-            suspend_resume = 0b0001'0000,                // 0x10, 16 ... 31
-            new_task = 0b0010'0000,                      // 0x20, 32 ... 47
-            continuation = 0b0011'0000,                  // 0x30, 48 ... 63
-            mpix_continuation_suspend = 0b0100'0000,     // 0x40, 64 ... 79
-            mpix_continuation_con = 0b0101'0000,         // 0x50, 80 ... 95
-            unspecified = mpix_continuation_con + 16,    // 0x60, 96 ...
+            yield_while = 0b0000'0000,               // 0x00, 00 ... 15
+            suspend_resume = 0b0001'0000,            // 0x10, 16 ... 31
+            new_task = 0b0010'0000,                  // 0x20, 32 ... 47
+            continuation = 0b0011'0000,              // 0x30, 48 ... 63
+            mpix_continuation = 0b0100'0000,         // 0x40, 64 ... 79
+            unspecified = mpix_continuation + 16,    // 0x50, ...
 
             /// Default flags are to invoke inline, but transfer completion using a dedicated pool
             default_mode = use_pool | request_inline | high_priority | new_task,
@@ -161,8 +160,7 @@ namespace pika::mpi::experimental {
             case handler_method::new_task: return "new_task";
             case handler_method::continuation: return "continuation";
             case handler_method::suspend_resume: return "suspend_resume";
-            case handler_method::mpix_continuation_suspend: return "mpix_continuation_suspend";
-            case handler_method::mpix_continuation_con: return "mpix_continuation_continuation";
+            case handler_method::mpix_continuation: return "mpix_continuation";
             case handler_method::unspecified: return "unspecified";
             default: return "invalid";
             }
