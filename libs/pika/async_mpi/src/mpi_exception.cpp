@@ -18,12 +18,10 @@ namespace pika::mpi::experimental {
         std::string error_message(int code)
         {
             int N = 1023;
-            std::unique_ptr<char[]> err_buff(new char[std::size_t(N) + 1]);
-            err_buff[0] = '\0';
-
-            MPI_Error_string(code, err_buff.get(), &N);
-
-            return err_buff.get();
+            const int len = 1024;
+            char buff[len] = {0};
+            MPI_Error_string(code, buff, &N);
+            return std::string(buff);
         }
     }    // namespace detail
 
