@@ -106,7 +106,10 @@ namespace pika { namespace execution { namespace experimental {
 
             if (get_self_id() != invalid_thread_id)
             {
-                throw std::runtime_error("Bypass scheduler - already on task thread");
+                auto id = get_self_id();
+                PIKA_DETAIL_DP(bps_deb<5>,
+                    error(str<>("(in)Valid thread_id"), threadinfo<thread_id_type*>(&id)));
+                f();
                 return;
             }
 

@@ -114,6 +114,14 @@ namespace pika::mpi::experimental {
 
             if (requests_inline)
             {
+                if (threads::detail::get_self_id() == threads::detail::invalid_thread_id)
+                {
+                    auto snd0 = PIKA_FORWARD(Sender, sender) |
+                        transfer(ex::with_annotation(
+                            ex::thread_pool_scheduler_queue_bypass{}, "transform_mpi"));
+                    return dispatch_mpi(PIKA_MOVE(snd0), PIKA_FORWARD(F, f)) |
+                        let_value(completion_snd);
+                }
                 return dispatch_mpi(PIKA_MOVE(sender), PIKA_FORWARD(F, f)) |
 #ifdef PIKA_DEBUG
                     let_value(completion_snd) | ex::then(dgb);
