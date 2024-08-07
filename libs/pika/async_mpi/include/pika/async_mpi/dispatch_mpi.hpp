@@ -115,6 +115,10 @@ namespace pika::mpi::experimental::detail {
                 friend constexpr void
                 tag_invoke(ex::set_value_t, dispatch_mpi_receiver r, Ts&&... ts) noexcept
                 {
+                    // init a request
+                    MPI_Request request{MPI_REQUEST_NULL};
+                    int status = MPI_SUCCESS;
+
                     pika::detail::try_catch_exception_ptr(
                         [&]() mutable {
                             using invoke_result_type = mpi_request_invoke_result_t<F, Ts...>;
@@ -124,9 +128,6 @@ namespace pika::mpi::experimental::detail {
 #ifdef PIKA_HAVE_APEX
                             apex::scoped_timer apex_post("pika::mpi::post");
 #endif
-                            // init a request
-                            MPI_Request request;
-                            int status = MPI_SUCCESS;
                             // execute the mpi function call, passing in the request object
                             if constexpr (std::is_void_v<invoke_result_type>)
                             {
@@ -166,6 +167,8 @@ namespace pika::mpi::experimental::detail {
                             else { ex::set_value(PIKA_MOVE(r.op_state.receiver), request); }
                         },
                         [&](std::exception_ptr ep) {
+                            PIKA_DETAIL_DP(mpi_tran<7>,
+                                error(str<>("dispatch_mpi_recv"), "exception", ptr(request)));
                             ex::set_error(PIKA_MOVE(r.op_state.receiver), PIKA_MOVE(ep));
                         });
                 }
@@ -193,7 +196,7 @@ namespace pika::mpi::experimental::detail {
               , f(PIKA_FORWARD(F_, f))
               , op_state(ex::connect(PIKA_FORWARD(Sender_, sender), dispatch_mpi_receiver{*this}))
             {
-                PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("operation_state")));
+                PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("dispatch_mpi_sender"), "operation_state"));
             }
 
             friend constexpr auto tag_invoke(ex::start_t, operation_state& os) noexcept

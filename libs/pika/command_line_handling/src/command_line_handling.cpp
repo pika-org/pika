@@ -7,6 +7,7 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/command_line_handling/command_line_handling.hpp>
+#include <pika/command_line_handling/get_env_var_as.hpp>
 #include <pika/command_line_handling/parse_command_line.hpp>
 #include <pika/debugging/attach_debugger.hpp>
 #include <pika/functional/detail/reset_function.hpp>

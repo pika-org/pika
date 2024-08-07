@@ -598,8 +598,10 @@ namespace pika::threads::detail {
                     "execution::thread_priority::high");
                 return true;
             }
+#ifdef PIKA_DEBUG
             // if we're out of work in the main queues,
             debug_queues("get_next_thread");
+#endif
             return false;
         }
 
@@ -623,8 +625,10 @@ namespace pika::threads::detail {
                     "execution::thread_priority::low");
                 return true;
             }
+#ifdef PIKA_DEBUG
             // if we're out of work in the main queues,
             debug_queues("get_next_thread");
+#endif
             return false;
         }
 
@@ -679,7 +683,9 @@ namespace pika::threads::detail {
             count += owns_hp_queue() ? hp_queue_->get_queue_length() : 0;
             count += owns_np_queue() ? np_queue_->get_queue_length() : 0;
             count += owns_lp_queue() ? lp_queue_->get_queue_length() : 0;
+#ifdef PIKA_DEBUG
             debug_queues("get_queue_length");
+#endif
             return count;
         }
 

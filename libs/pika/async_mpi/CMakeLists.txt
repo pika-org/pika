@@ -1,4 +1,4 @@
-# Copyright (c) 2019-2020 The STE||AR-Group
+# Copyright (c) 2021 ETH Zurich
 #
 # SPDX-License-Identifier: BSL-1.0
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -9,6 +9,15 @@
 # if the user does not want support, quit - the module will not be enabled
 if(NOT ${PIKA_WITH_MPI})
   return()
+endif()
+
+pika_check_for_mpix_continuations(PIKA_WITH_MPIX_CONTINUATIONS)
+if(PIKA_WITH_MPIX_CONTINUATIONS)
+  message(STATUS "MPIx Continuations detected")
+  set(PIKA_MPI_MODES_LOOP_COUNT 79)
+else()
+  message(STATUS "MPIx Continuations not detected")
+  set(PIKA_MPI_MODES_LOOP_COUNT 63)
 endif()
 
 # Default location is $PIKA_ROOT/libs/mpi/include

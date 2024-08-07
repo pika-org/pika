@@ -328,6 +328,7 @@ struct message_receiver
 // this is called on a pika thread after the runtime starts up
 int pika_main(pika::program_options::variables_map& vm)
 {
+    [[maybe_unused]] pika::scoped_annotation annotate("mpi_ring_test");
     // Do not initialize mpi (we do that ourselves), do install an error handler
     mpix::init(false, true);
     // Setup mpi polling on default pool, enable exceptions and init mpi internals
@@ -487,8 +488,6 @@ void init_resource_partitioner_handler(
     if (vm["no-mpi-pool"].as<bool>()) { pool_mode = mpix::pool_create_mode::force_no_create; }
 
     mpix::enable_optimizations(vm["mpi-optimizations"].as<bool>());
-    std::cout << "init_resource_partitioner_handler enable optimizations "
-              << vm["mpi-optimizations"].as<bool>() << std::endl;
 
     msr_deb<2>.debug(str<>("init RP"), "create_pool");
     mpix::create_pool("", pool_mode);

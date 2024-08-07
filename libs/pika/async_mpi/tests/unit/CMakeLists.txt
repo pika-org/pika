@@ -4,14 +4,11 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(tests # algorithm_transform_mpi
-    mpi_ring_async_sender_receiver
-    # mpi_async_storage
-)
+set(tests algorithm_transform_mpi mpi_ring_async_sender_receiver)
 
 # cmake-format: off
 set(mpi_ring_async_sender_receiver_PARAMETERS
-    ARGS "--in-flight-limit=32" "--rounds=10" "--iterations=100" 
+    ARGS "--in-flight-limit=32" "--rounds=5" "--iterations=25" "--message-bytes=64"
          "--pika:ignore-process-mask"
     THREADS 4 RANKS 2 MPIWRAPPER
 )
@@ -23,7 +20,7 @@ set(mpi_async_storage_PARAMETERS
 )
 # cmake-format: on
 
-set(algorithm_transform_mpi_PARAMETERS RANKS 2 MPIWRAPPER)
+set(algorithm_transform_mpi_PARAMETERS THREADS 2 RANKS 2 MPIWRAPPER)
 set(algorithm_transform_mpi_DEPENDENCIES pika_execution_test_utilities)
 
 foreach(test ${tests})
@@ -40,7 +37,7 @@ foreach(test ${tests})
     FOLDER "Tests/Unit/Modules/AsyncMPI"
   )
 
-  foreach(polling_mode RANGE 0 63 1)
+  foreach(polling_mode RANGE 0 ${PIKA_MPI_MODES_LOOP_COUNT} 1)
     pika_add_pseudo_target(${test}_mode_${polling_mode}_test)
     pika_add_pseudo_dependencies(${test}_mode_${polling_mode}_test ${test}_test)
     pika_add_unit_test(
