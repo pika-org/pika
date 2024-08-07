@@ -201,7 +201,9 @@ namespace pika { namespace execution { namespace experimental {
                 break;
                 case thread_schedule_state::suspended:
                 {
-                    std::cout << "thread_schedule_state::suspended" << std::endl;    //
+                    PIKA_DETAIL_DP(bps_deb<5>,
+                        debug(str<>("AfterRestore"), "thread_schedule_state::suspended",
+                            threadinfo<thread_id_ref_type*>(&id), threaddata));
                     // thread sits in thread map until resumed
                     return;
                 }
