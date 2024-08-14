@@ -10,7 +10,7 @@
 
 ### New features
 
-- `sync_wait` now uses a `binary_semaphore` instead of a `condition_variable` internally for synchronization and may be slightly faster due to removing one lock. ([#1206](https://github.com/pika-org/pika/pull/1206))
+- `sync_wait` now internally uses a `binary_semaphore` instead of a `condition_variable` for synchronization and may be slightly faster due to removing one lock. ([#1206](https://github.com/pika-org/pika/pull/1206))
 
 ### Breaking changes
 
