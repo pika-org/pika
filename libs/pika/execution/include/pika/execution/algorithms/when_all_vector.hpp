@@ -389,8 +389,7 @@ namespace pika::when_all_vector_detail {
 }    // namespace pika::when_all_vector_detail
 
 namespace pika::execution::experimental {
-    inline constexpr struct when_all_vector_t final
-      : pika::functional::detail::tag_fallback<when_all_vector_t>
+    struct when_all_vector_t final : pika::functional::detail::tag_fallback<when_all_vector_t>
     {
     private:
         template <typename Sender, PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender>)>
@@ -406,5 +405,16 @@ namespace pika::execution::experimental {
         {
             return when_all_vector_detail::when_all_vector_sender<Sender>{senders};
         }
-    } when_all_vector{};
+    };
+
+    /// \brief Returns a sender that completes when all senders in the input vector have completed.
+    ///
+    /// Sender adaptor that takes a vector of senders and returns a sender that sends a vector of
+    /// the values sent by the input senders. The vector sent has the same size as the input vector.
+    /// An empty vector of senders completes immediately on start. When the input vector of senders
+    /// contains senders that send no value the output sender sends no value instead of a vector.
+    /// The senders in the input vector must send at most a single type.
+    ///
+    /// Added in 0.2.0.
+    inline constexpr when_all_vector_t when_all_vector{};
 }    // namespace pika::execution::experimental

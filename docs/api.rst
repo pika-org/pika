@@ -80,3 +80,9 @@ The ``pika/execution.hpp`` header provides functionality related to ``std::execu
 .. literalinclude:: ../examples/documentation/split_tuple_documentation.cpp
    :language: c++
    :start-at: #include
+
+.. doxygenvariable:: pika::execution::experimental::when_all_vector
+
+.. literalinclude:: ../examples/documentation/when_all_vector_documentation.cpp
+   :language: c++
+   :start-at: #include
