@@ -6,6 +6,21 @@
 
 # Changelog
 
+## 0.27.0 (2024-08-15)
+
+### New features
+
+- `sync_wait` now uses a `binary_semaphore` instead of a `condition_variable` internally for synchronization and may be slightly faster due to removing one lock. ([#1206](https://github.com/pika-org/pika/pull/1206))
+
+### Breaking changes
+
+- All channel implementations have been removed. ([#1209](https://github.com/pika-org/pika/pull/1209))
+
+### Bugfixes
+
+- Compilation of copyable senders together with `when_all_vector` has been fixed. ([#1200](https://github.com/pika-org/pika/pull/1200))
+- The `pika/execution.hpp` header has been fixed to include headers that should have been included by it. ([#1206](https://github.com/pika-org/pika/pull/1207))
+
 ## 0.26.1 (2024-07-31)
 
 ### New features
