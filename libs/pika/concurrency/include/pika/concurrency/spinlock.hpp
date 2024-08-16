@@ -9,10 +9,13 @@
 #pragma once
 
 #include <pika/config.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/execution_base/this_thread.hpp>
 #include <pika/lock_registration/detail/register_locks.hpp>
 #include <pika/modules/itt_notify.hpp>
 #include <pika/thread_support/spinlock.hpp>
+#endif
 
 #include <atomic>
 

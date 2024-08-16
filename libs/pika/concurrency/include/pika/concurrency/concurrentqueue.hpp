@@ -52,6 +52,7 @@
 
 #pragma once
 
+#include <pika/config.hpp>
 #include <pika/config/forward.hpp>
 #include <pika/config/move.hpp>
 
@@ -89,7 +90,9 @@
 # undef free
 #else
 # include <atomic>    // Requires C++11. Sorry VS2010.
+#if !defined(PIKA_HAVE_MODULE)
 # include <cassert>
+#endif
 #endif
 #include <algorithm>
 #include <array>
@@ -200,8 +203,8 @@ namespace pika::concurrency::detail {
 # endif
 namespace pika::concurrency::detail {
     using thread_id_t = std::uintptr_t;
-    static const thread_id_t invalid_thread_id = 0;    // Address can't be nullptr
-    static const thread_id_t invalid_thread_id2 =
+    inline constexpr thread_id_t invalid_thread_id = 0;    // Address can't be nullptr
+    inline constexpr thread_id_t invalid_thread_id2 =
         1;    // Member accesses off a null pointer are also generally invalid. Plus it's not aligned.
     inline thread_id_t thread_id()
     {
@@ -396,11 +399,11 @@ namespace pika::concurrency::detail {
 // Compiler-specific likely/unlikely hints
 namespace pika::concurrency::detail {
 #if defined(__GNUC__)
-    static inline bool(likely)(bool x) { return __builtin_expect((x), true); }
-    static inline bool(unlikely)(bool x) { return __builtin_expect((x), false); }
+    inline constexpr bool(likely)(bool x) { return __builtin_expect((x), true); }
+    inline constexpr bool(unlikely)(bool x) { return __builtin_expect((x), false); }
 #else
-    static inline bool(likely)(bool x) { return x; }
-    static inline bool(unlikely)(bool x) { return x; }
+    inline constexpr bool(likely)(bool x) { return x; }
+    inline constexpr bool(unlikely)(bool x) { return x; }
 #endif
 }    // namespace pika::concurrency::detail
 
@@ -597,7 +600,7 @@ namespace pika::concurrency::detail {
     {
     };
 
-    static inline size_t hash_thread_id(thread_id_t id)
+    inline size_t hash_thread_id(thread_id_t id)
     {
         static_assert(sizeof(thread_id_t) <= 8,
             "Expected a platform where thread IDs are at most 64-bit values");
@@ -607,7 +610,7 @@ namespace pika::concurrency::detail {
     }
 
     template <typename T>
-    static inline bool circular_less_than(T a, T b)
+    inline constexpr bool circular_less_than(T a, T b)
     {
         static_assert(std::is_integral<T>::value && !std::numeric_limits<T>::is_signed,
             "circular_less_than is intended to be used only with unsigned integer types");
@@ -618,14 +621,14 @@ namespace pika::concurrency::detail {
     }
 
     template <typename U>
-    static inline char* align_for(char* ptr)
+    inline constexpr char* align_for(char* ptr)
     {
         const std::size_t alignment = std::alignment_of<U>::value;
         return ptr + (alignment - (reinterpret_cast<std::uintptr_t>(ptr) % alignment)) % alignment;
     }
 
     template <typename T>
-    static inline T ceil_to_pow_2(T x)
+    inline constexpr T ceil_to_pow_2(T x)
     {
         static_assert(std::is_integral<T>::value && !std::numeric_limits<T>::is_signed,
             "ceil_to_pow_2 is intended to be used only with unsigned integer types");
@@ -641,7 +644,7 @@ namespace pika::concurrency::detail {
     }
 
     template <typename T>
-    static inline void swap_relaxed(std::atomic<T>& left, std::atomic<T>& right)
+    inline constexpr void swap_relaxed(std::atomic<T>& left, std::atomic<T>& right)
     {
         T temp = PIKA_MOVE(left.load(std::memory_order_relaxed));
         left.store(PIKA_MOVE(right.load(std::memory_order_relaxed)), std::memory_order_relaxed);
@@ -649,7 +652,7 @@ namespace pika::concurrency::detail {
     }
 
     template <typename T>
-    static inline T const& nomove(T const& x)
+    inline constexpr T const& nomove(T const& x)
     {
         return x;
     }
@@ -675,7 +678,7 @@ namespace pika::concurrency::detail {
     };
 
     template <typename It>
-    static inline auto deref_noexcept(It& it) MOODYCAMEL_NOEXCEPT->decltype(*it)
+    inline constexpr auto deref_noexcept(It& it) MOODYCAMEL_NOEXCEPT->decltype(*it)
     {
         return *it;
     }

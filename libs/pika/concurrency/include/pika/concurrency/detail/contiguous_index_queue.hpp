@@ -7,7 +7,10 @@
 #pragma once
 
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/concurrency/cache_line_data.hpp>
+#endif
 
 #include <atomic>
 #include <cstdint>
