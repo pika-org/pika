@@ -8,10 +8,19 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 ////////////////////////////////////////////////////////////////////////////////
 
+PIKA_GLOBAL_MODULE_FRAGMENT;
+
 #include <pika/config.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/execution_base/detail/spinlock_deadlock_detection.hpp>
+#endif
 
 #include <cstddef>
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.execution_base;
+#endif
 
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
 namespace pika::util::detail {

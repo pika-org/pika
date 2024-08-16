@@ -10,8 +10,11 @@
 #if defined(PIKA_HAVE_STDEXEC)
 # include <pika/execution_base/sender.hpp>
 # include <pika/execution_base/stdexec_forward.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 # include <pika/functional/detail/invoke_result_plain_function.hpp>
 # include <pika/functional/tag_invoke.hpp>
+#endif
 
 namespace pika::execution::experimental::detail {
     template <bool TagInvocable, typename CPO, typename Sender>
@@ -42,7 +45,10 @@ namespace pika::execution::experimental::detail {
 }    // namespace pika::execution::experimental::detail
 #else
 # include <pika/execution_base/sender.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 # include <pika/functional/tag_invoke.hpp>
+#endif
 
 # include <type_traits>
 

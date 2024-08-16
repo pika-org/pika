@@ -36,6 +36,7 @@ pika_add_module(
     pika_functional
     pika_iterator_support
     pika_lock_registration
+    pika_tag_invoke
     pika_timing
     pika_type_support
   CMAKE_SUBDIRS examples tests

@@ -24,7 +24,7 @@ set(_pika_modules
     debugging
     errors
     # execution
-    # execution_base
+    execution_base
     # executors
     filesystem
     functional
@@ -36,9 +36,9 @@ set(_pika_modules
     itt_notify
     lock_registration
     logging
-    # memory
+    memory
     # mpi_base
-    # prefix
+    prefix
     preprocessor
     # program_options
     # properties

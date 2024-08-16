@@ -38,7 +38,10 @@ namespace pika::execution::experimental {
 # endif
 #else
 # include <pika/config/constexpr.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 # include <pika/functional/tag_invoke.hpp>
+#endif
 
 # include <exception>
 # include <type_traits>

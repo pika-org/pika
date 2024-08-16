@@ -9,8 +9,11 @@
 #include <pika/config.hpp>
 #include <pika/execution_base/agent_base.hpp>
 #include <pika/execution_base/agent_ref.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/timing/high_resolution_timer.hpp>
 #include <pika/timing/steady_clock.hpp>
+#endif
 
 #include <chrono>
 #include <cstddef>

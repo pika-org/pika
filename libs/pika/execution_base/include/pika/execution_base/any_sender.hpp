@@ -7,12 +7,15 @@
 #pragma once
 
 #include <pika/assert.hpp>
-#include <pika/errors/error.hpp>
-#include <pika/errors/throw_exception.hpp>
 #include <pika/execution_base/operation_state.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/errors/error.hpp>
+#include <pika/errors/throw_exception.hpp>
 #include <pika/type_support/pack.hpp>
+#endif
 
 #include <cstddef>
 #include <cstring>

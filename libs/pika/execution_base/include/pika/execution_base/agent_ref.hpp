@@ -7,7 +7,10 @@
 #pragma once
 
 #include <pika/config.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/timing/steady_clock.hpp>
+#endif
 
 #include <fmt/format.h>
 

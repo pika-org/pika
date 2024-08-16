@@ -48,10 +48,13 @@ namespace pika::execution::experimental {
 # include <pika/config/constexpr.hpp>
 # include <pika/execution_base/operation_state.hpp>
 # include <pika/execution_base/receiver.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 # include <pika/functional/detail/invoke_result_plain_function.hpp>
 # include <pika/functional/detail/tag_fallback_invoke.hpp>
 # include <pika/functional/tag_invoke.hpp>
 # include <pika/type_support/equality.hpp>
+#endif
 
 # include <cstddef>
 # include <exception>

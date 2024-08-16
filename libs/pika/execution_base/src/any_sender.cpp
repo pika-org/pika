@@ -4,9 +4,13 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+PIKA_GLOBAL_MODULE_FRAGMENT
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/errors/error.hpp>
 #include <pika/errors/throw_exception.hpp>
 #include <pika/execution_base/any_sender.hpp>
+#endif
 
 #include <fmt/format.h>
 
@@ -14,6 +18,10 @@
 #include <exception>
 #include <string>
 #include <utility>
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.execution_base;
+#endif
 
 namespace pika::execution::experimental::detail {
     void empty_any_operation_state::start() & noexcept

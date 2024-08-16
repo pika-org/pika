@@ -6,8 +6,12 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+PIKA_GLOBAL_MODULE_FRAGMENT
+
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/errors/throw_exception.hpp>
 #include <pika/execution_base/agent_base.hpp>
 #include <pika/execution_base/context_base.hpp>
@@ -19,6 +23,7 @@
 
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
 # include <pika/errors/throw_exception.hpp>
+#endif
 #endif
 
 #include <fmt/format.h>
@@ -42,9 +47,14 @@
 #  include <sched.h>
 # else
 // AIX's sched.h defines ::var which sometimes conflicts with Lambda's var
+// TODO: Can't do this in global module fragment? Only preprocessor directives.
 extern "C" int sched_yield(void);
 # endif
 # include <time.h>
+#endif
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.execution_base;
 #endif
 
 namespace pika::execution {

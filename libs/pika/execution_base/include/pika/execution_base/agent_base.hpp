@@ -7,7 +7,10 @@
 #pragma once
 
 #include <pika/execution_base/context_base.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/timing/steady_clock.hpp>
+#endif
 
 #include <cstddef>
 #include <string>

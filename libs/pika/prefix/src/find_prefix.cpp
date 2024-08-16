@@ -7,13 +7,18 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 ////////////////////////////////////////////////////////////////////////////////
 
+PIKA_GLOBAL_MODULE_FRAGMENT
+
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/modules/errors.hpp>
 #include <pika/prefix/find_prefix.hpp>
 #include <pika/string_util/classification.hpp>
 #include <pika/string_util/split.hpp>
 #include <pika/type_support/unused.hpp>
+#endif
 
 #if defined(PIKA_WINDOWS)
 # include <windows.h>
@@ -37,6 +42,10 @@
 #include <cstdint>
 #include <filesystem>
 #include <string>
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.prefix;
+#endif
 
 namespace pika::util {
     ///////////////////////////////////////////////////////////////////////////////
