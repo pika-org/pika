@@ -214,6 +214,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Helper macros for modules
+// TODO: This seems to not be usable. It confuses the build system?
 #if defined(PIKA_HAVE_MODULE)
 #define PIKA_MODULE_IMPLEMENTATION(module_name) module module_name;
 #else

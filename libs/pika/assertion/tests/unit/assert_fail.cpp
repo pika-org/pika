@@ -5,16 +5,18 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/assert.hpp>
-// #include <pika/testing.hpp>
+#include <pika/testing.hpp>
 
-#include <string>
+#include <pika/assert.hpp>
+#include <pika/testing.hpp>
 
 import pika;
+import pika.testing;
 
 [[noreturn]] void assertion_handler(
     pika::detail::source_location const&, const char*, std::string const&)
 {
-    // PIKA_TEST(true);
+    PIKA_TEST(true);
     std::exit(1);
 }
 
@@ -25,5 +27,5 @@ int main()
     pika::detail::set_assertion_handler(&assertion_handler);
     PIKA_ASSERT(false);
 
-    // PIKA_TEST(true);
+    PIKA_TEST(true);
 }

@@ -28,7 +28,7 @@ set(_pika_modules
     # executors
     filesystem
     functional
-    # hashing
+    hashing
     # include
     # ini
     # init_runtime
