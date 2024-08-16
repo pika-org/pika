@@ -24,6 +24,7 @@ pika_add_module(
     pika_concurrency
     pika_errors
     pika_logging
+    pika_string_util
     pika_type_support
     pika_util
   DEPENDENCIES pika_internal::hwloc

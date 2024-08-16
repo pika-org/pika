@@ -12,9 +12,12 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/string_util/from_string.hpp>
 #include <pika/string_util/trim.hpp>
 #include <pika/type_support/unused.hpp>
+#endif
 
 #include <fmt/format.h>
 

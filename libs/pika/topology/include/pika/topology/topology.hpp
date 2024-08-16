@@ -11,9 +11,12 @@
 #pragma once
 
 #include <pika/config.hpp>
+#include <pika/topology/cpu_mask.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/concurrency/spinlock.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/topology/cpu_mask.hpp>
+#endif
 
 #include <cstddef>
 #include <iosfwd>
@@ -72,7 +75,7 @@ namespace pika::threads::detail {
         membind_firsttouch = HWLOC_MEMBIND_FIRSTTOUCH,
         membind_bind = HWLOC_MEMBIND_BIND,
         membind_interleave = HWLOC_MEMBIND_INTERLEAVE,
-#if HWLOC_API_VERSION < 0x0002'0000
+#if HWLOC_API_VERSION < 0x00020000
         membind_replicate = HWLOC_MEMBIND_REPLICATE,
 #endif
         membind_nexttouch = HWLOC_MEMBIND_NEXTTOUCH,

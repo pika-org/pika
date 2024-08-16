@@ -11,12 +11,12 @@
 // schedulers etc. assume that the global runtime (configuration, thread manager, etc.) always
 // exists.
 
-#include <pika/execution.hpp>
-#include <pika/functional/bind_front.hpp>
-#include <pika/modules/schedulers.hpp>
-#include <pika/modules/thread_pools.hpp>
+// #include <pika/execution.hpp>
+// #include <pika/functional/bind_front.hpp>
+// #include <pika/modules/schedulers.hpp>
+// #include <pika/modules/thread_pools.hpp>
 #include <pika/testing.hpp>
-#include <pika/thread.hpp>
+// #include <pika/thread.hpp>
 
 #include <algorithm>
 #include <cstddef>
@@ -25,6 +25,9 @@
 #include <mutex>
 #include <numeric>
 #include <utility>
+
+import pika.all;
+import pika.testing;
 
 namespace ex = pika::execution::experimental;
 namespace tt = pika::this_thread::experimental;

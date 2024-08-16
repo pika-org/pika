@@ -6,8 +6,12 @@
 
 #pragma once
 
+#include <pika/config.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/functional/tag_invoke.hpp>
+#endif
 
 namespace pika::execution::experimental {
     inline constexpr struct with_priority_t final : pika::functional::detail::tag<with_priority_t>

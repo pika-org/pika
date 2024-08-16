@@ -11,7 +11,7 @@ set(_pika_modules
     # affinity
     # allocator_support
     assertion
-    # async_base
+    async_base
     # async_cuda
     # async_cuda_base
     # async_mpi
@@ -55,7 +55,7 @@ set(_pika_modules
     # threading_base
     # thread_manager
     timing
-    # topology
+    topology
     type_support
     util
     # version

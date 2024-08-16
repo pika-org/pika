@@ -220,6 +220,7 @@ function(pika_add_module libname modulename)
         <hwloc.h>
         <boost/config.hpp>
         <boost/container/small_vector.hpp>
+        <boost/dynamic_bitset.hpp>
         <boost/intrusive/slist.hpp>
         <boost/lockfree/queue.hpp>
         <boost/optional.hpp>
