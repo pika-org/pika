@@ -15,7 +15,7 @@ include:
     CXXSTD: 20
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD +stdexec \
                  ^boost@1.82.0 ^hwloc@2.9.1 \
-                 ^stdexec@git.e99073de4c4b924804f54d7f52bc4e9fbcf53b92=main \
+                 ^stdexec@git.8bc7c7f06fe39831dea6852407ebe7f6be8fa9fd=main \
                  ^spdlog cxxflags=-D_GLIBCXX_DEBUG cxxflags=-D_GLIBCXX_DEBUG_PEDANTIC \
                  cxxflags=-D_GLIBCXX_DEBUG_BACKTRACE cxxflags=-D_GLIBCXX_ASSERTIONS'"
     CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_MALLOC=system \

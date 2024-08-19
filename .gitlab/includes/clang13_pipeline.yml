@@ -16,7 +16,7 @@ include:
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} cxxflags=-stdlib=libc++ malloc=system \
                  cxxstd=$CXXSTD +stdexec ^boost@1.79.0 ^hwloc@2.6.0 ^fmt cxxflags=-stdlib=libc++ \
                  ^spdlog cxxflags=-stdlib=libc++ \
-                 ^stdexec@git.e99073de4c4b924804f54d7f52bc4e9fbcf53b92=main"
+                 ^stdexec@git.8bc7c7f06fe39831dea6852407ebe7f6be8fa9fd=main"
     CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DCMAKE_CXX_FLAGS=-stdlib=libc++ \
                   -DPIKA_WITH_MALLOC=system -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON \
                   -DPIKA_WITH_STDEXEC=ON"
