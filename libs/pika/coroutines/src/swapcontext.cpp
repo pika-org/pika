@@ -5,7 +5,13 @@
 //  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
+PIKA_GLOBAL_MODULE_FRAGMENT
+
 #include <pika/config.hpp>
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.coroutines;
+#endif
 
 #if !defined(PIKA_HAVE_BOOST_CONTEXT)
 

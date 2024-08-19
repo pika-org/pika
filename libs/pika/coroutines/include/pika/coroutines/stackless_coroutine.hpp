@@ -14,9 +14,12 @@
 #include <pika/coroutines/detail/tss.hpp>
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/coroutines/thread_id_type.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/functional/detail/reset_function.hpp>
 #include <pika/functional/unique_function.hpp>
 #include <pika/type_support/unused.hpp>
+#endif
 
 #include <cstddef>
 #include <utility>

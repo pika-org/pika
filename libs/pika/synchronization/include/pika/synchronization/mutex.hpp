@@ -8,14 +8,17 @@
 #pragma once
 
 #include <pika/config.hpp>
+#include <pika/synchronization/detail/condition_variable.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/concurrency/spinlock.hpp>
 #include <pika/coroutines/coroutine_fwd.hpp>
 #include <pika/coroutines/thread_id_type.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/threading_base.hpp>
-#include <pika/synchronization/detail/condition_variable.hpp>
 #include <pika/threading_base/threading_base_fwd.hpp>
 #include <pika/timing/steady_clock.hpp>
+#endif
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////

@@ -4,14 +4,22 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+PIKA_GLOBAL_MODULE_FRAGMENT
+
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
 
+#if !defined(PIKA_HAVE_MODULE)
 # include <pika/errors/error_code.hpp>
 # include <pika/threading_base/detail/reset_lco_description.hpp>
 # include <pika/threading_base/thread_description.hpp>
 # include <pika/threading_base/threading_base_fwd.hpp>
+#endif
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.threading_base;
+#endif
 
 namespace pika::threads::detail {
     reset_lco_description::reset_lco_description(thread_id_type const& id,
@@ -27,5 +35,11 @@ namespace pika::threads::detail {
         set_thread_lco_description(id_, old_desc_, ec_);
     }
 }    // namespace pika::threads::detail
+
+#else
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.threading_base;
+#endif
 
 #endif    // PIKA_HAVE_THREAD_DESCRIPTION

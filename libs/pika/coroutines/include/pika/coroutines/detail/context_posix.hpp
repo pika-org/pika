@@ -44,8 +44,11 @@
 #endif
 
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/type_support/unused.hpp>
 #include <pika/util/get_and_reset_value.hpp>
+#endif
 
 // include unist.d conditionally to check for POSIX version. Not all OSs have
 // the unistd header...

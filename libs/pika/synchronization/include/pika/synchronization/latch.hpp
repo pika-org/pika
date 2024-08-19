@@ -9,10 +9,13 @@
 #pragma once
 
 #include <pika/assert.hpp>
+#include <pika/synchronization/detail/condition_variable.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/concurrency/cache_line_data.hpp>
 #include <pika/concurrency/spinlock.hpp>
-#include <pika/synchronization/detail/condition_variable.hpp>
 #include <pika/type_support/unused.hpp>
+#endif
 
 #include <atomic>
 #include <cstddef>

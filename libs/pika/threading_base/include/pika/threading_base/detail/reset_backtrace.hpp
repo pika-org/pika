@@ -10,8 +10,11 @@
 
 #ifdef PIKA_HAVE_THREAD_BACKTRACE_ON_SUSPENSION
 
-# include <pika/errors/error_code.hpp>
 # include <pika/threading_base/threading_base_fwd.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
+# include <pika/errors/error_code.hpp>
+#endif
 
 # include <memory>
 # include <string>

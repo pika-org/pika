@@ -10,15 +10,18 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/coroutines/thread_enums.hpp>
-#include <pika/functional/unique_function.hpp>
-#include <pika/lock_registration/detail/register_locks.hpp>
-#include <pika/modules/errors.hpp>
 #include <pika/threading_base/register_thread.hpp>
 #include <pika/threading_base/scheduler_mode.hpp>
 #include <pika/threading_base/thread_description.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/coroutines/thread_enums.hpp>
+#include <pika/functional/unique_function.hpp>
+#include <pika/lock_registration/detail/register_locks.hpp>
+#include <pika/modules/errors.hpp>
 #include <pika/timing/steady_clock.hpp>
+#endif
 
 #include <atomic>
 #include <chrono>

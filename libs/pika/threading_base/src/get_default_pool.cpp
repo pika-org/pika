@@ -6,11 +6,24 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+PIKA_GLOBAL_MODULE_FRAGMENT
+
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/threading_base/detail/get_default_pool.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_description.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
+#endif
+
+// TODO: error: no member named 'string' in namespace 'std'
+// on PIKA_ASSERT(pool), why?
+#include <string>
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.threading_base;
+#endif
 
 // The following implementation has been divided for Linux and Mac OSX
 #if (defined(__linux) || defined(__linux__) || defined(linux) || defined(__APPLE__))

@@ -4,12 +4,20 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+PIKA_GLOBAL_MODULE_FRAGMENT
+
+#include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/affinity/affinity_data.hpp>
 #include <pika/affinity/parse_affinity_options.hpp>
-#include <pika/assert.hpp>
 #include <pika/errors/error_code.hpp>
 #include <pika/topology/cpu_mask.hpp>
 #include <pika/topology/topology.hpp>
+#endif
+
+// TODO: ADL for operator& doesn't work without this? What's the right place to include it?
+#include <boost/dynamic_bitset.hpp>
 
 #include <algorithm>
 #include <atomic>
@@ -17,6 +25,10 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.affinity;
+#endif
 
 namespace pika::detail {
     inline std::size_t count_initialized(std::vector<threads::detail::mask_type> const& masks)

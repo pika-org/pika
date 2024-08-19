@@ -19,7 +19,10 @@
 # include <pika/coroutines/detail/get_stack_pointer.hpp>
 # include <pika/coroutines/detail/posix_utility.hpp>
 # include <pika/coroutines/detail/swap_context.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 # include <pika/util/get_and_reset_value.hpp>
+#endif
 
 # include <fmt/format.h>
 

@@ -12,9 +12,12 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/concurrency/spinlock.hpp>
 #include <pika/execution_base/agent_ref.hpp>
 #include <pika/execution_base/this_thread.hpp>
+#endif
 
 #include <atomic>
 #include <cstddef>

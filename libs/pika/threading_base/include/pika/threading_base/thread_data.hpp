@@ -10,6 +10,13 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+#include <pika/threading_base/thread_description.hpp>
+#include <pika/threading_base/thread_init_data.hpp>
+#if defined(PIKA_HAVE_APEX)
+# include <pika/threading_base/external_timer.hpp>
+#endif
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/concurrency/spinlock_pool.hpp>
 #include <pika/coroutines/coroutine.hpp>
 #include <pika/coroutines/detail/combined_tagged_state.hpp>
@@ -21,10 +28,6 @@
 #include <pika/modules/errors.hpp>
 #include <pika/modules/memory.hpp>
 #include <pika/thread_support/atomic_count.hpp>
-#include <pika/threading_base/thread_description.hpp>
-#include <pika/threading_base/thread_init_data.hpp>
-#if defined(PIKA_HAVE_APEX)
-# include <pika/threading_base/external_timer.hpp>
 #endif
 
 #include <atomic>

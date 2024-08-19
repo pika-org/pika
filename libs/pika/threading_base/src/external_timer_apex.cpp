@@ -6,15 +6,24 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
+PIKA_GLOBAL_MODULE_FRAGMENT
+
 #include <pika/config.hpp>
 #ifdef PIKA_HAVE_APEX
 # include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 # include <pika/threading_base/external_timer.hpp>
 # include <pika/threading_base/thread_data.hpp>
+#endif
 
 # include <cstdint>
 # include <memory>
 # include <string>
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.threading_base;
+#endif
 
 namespace pika::detail::external_timer {
     std::shared_ptr<task_wrapper> new_task(pika::detail::thread_description const& description,
@@ -98,4 +107,11 @@ namespace pika::detail::external_timer {
         }
     }
 }    // namespace pika::detail::external_timer
+
+#else
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.threading_base;
+#endif
+
 #endif

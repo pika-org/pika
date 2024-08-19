@@ -8,6 +8,7 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/coroutines/detail/coroutine_impl.hpp>
 #include <pika/coroutines/detail/coroutine_stackful_self.hpp>
 #include <pika/coroutines/thread_enums.hpp>
@@ -16,6 +17,7 @@
 #include <pika/execution_base/context_base.hpp>
 #include <pika/execution_base/resource_base.hpp>
 #include <pika/timing/steady_clock.hpp>
+#endif
 
 #include <cstddef>
 #include <string>

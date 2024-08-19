@@ -8,8 +8,8 @@ include(pika_message)
 
 # cmake-format: off
 set(_pika_modules
-    # affinity
-    # allocator_support
+    affinity
+    allocator_support
     assertion
     async_base
     # async_cuda
@@ -19,13 +19,13 @@ set(_pika_modules
     concepts
     concurrency
     config
-    # coroutines
+    coroutines
     datastructures
     debugging
     errors
-    # execution
+    # execution # TODO
     execution_base
-    # executors
+    # executors # TODO
     filesystem
     functional
     hashing
@@ -47,12 +47,12 @@ set(_pika_modules
     # runtime
     # schedulers
     string_util
-    # synchronization
+    synchronization
     tag_invoke
     # thread_pools
     thread_support
-    # threading
-    # threading_base
+    # threading # TODO
+    threading_base
     # thread_manager
     timing
     topology

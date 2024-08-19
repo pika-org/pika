@@ -4,8 +4,12 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/affinity/affinity_data.hpp>
+PIKA_GLOBAL_MODULE_FRAGMENT
+
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/affinity/affinity_data.hpp>
 #include <pika/functional/bind.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/threading_base/callback_notifier.hpp>
@@ -14,6 +18,7 @@
 #include <pika/threading_base/thread_pool_base.hpp>
 #include <pika/timing/detail/timestamp.hpp>
 #include <pika/topology/topology.hpp>
+#endif
 
 #include <chrono>
 #include <cstddef>
@@ -23,6 +28,10 @@
 #include <ostream>
 #include <string>
 #include <thread>
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.threading_base;
+#endif
 
 namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////

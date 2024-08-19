@@ -157,6 +157,9 @@ function(pika_add_module libname modulename)
     # )
     # TODO: Override with all system headers for now
     set(${modulename}_MODULE_INCLUDES
+        <errno.h>
+        <sys/mman.h>
+        <sys/param.h>
         <algorithm>
         <any>
         <array>
@@ -220,12 +223,14 @@ function(pika_add_module libname modulename)
         <hwloc.h>
         <boost/config.hpp>
         <boost/container/small_vector.hpp>
+        <boost/context/detail/fcontext.hpp>
         <boost/dynamic_bitset.hpp>
         <boost/intrusive/slist.hpp>
         <boost/lockfree/queue.hpp>
         <boost/optional.hpp>
         <boost/tokenizer.hpp>
         <fmt/format.h>
+        <fmt/ostream.h>
         <fmt/printf.h>
     )
     set(module_includes)

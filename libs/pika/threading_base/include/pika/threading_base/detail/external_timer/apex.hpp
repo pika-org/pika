@@ -8,9 +8,14 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/coroutines/thread_id_type.hpp>
+
+#if defined(PIKA_HAVE_APEX)
 #include <pika/threading_base/thread_description.hpp>
 #include <pika/threading_base/threading_base_fwd.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/coroutines/thread_id_type.hpp>
+#endif
 
 #include <apex_api.hpp>
 
@@ -55,3 +60,5 @@ namespace pika::detail::external_timer {
         std::shared_ptr<task_wrapper> data_;
     };
 }    // namespace pika::detail::external_timer
+
+#endif

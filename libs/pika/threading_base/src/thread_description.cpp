@@ -4,17 +4,26 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+PIKA_GLOBAL_MODULE_FRAGMENT
+
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/string_util/to_string.hpp>
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/threading_base/thread_description.hpp>
 #include <pika/type_support/unused.hpp>
+#endif
 
 #include <fmt/format.h>
 
 #include <ostream>
 #include <string>
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.threading_base;
+#endif
 
 namespace pika::detail {
     std::ostream& operator<<(std::ostream& os, thread_description const& d)

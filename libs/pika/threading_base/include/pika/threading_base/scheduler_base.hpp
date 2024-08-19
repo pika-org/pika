@@ -8,9 +8,6 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/concurrency/cache_line_data.hpp>
-#include <pika/functional/function.hpp>
-#include <pika/modules/errors.hpp>
 #include <pika/threading_base/scheduler_mode.hpp>
 #include <pika/threading_base/scheduler_state.hpp>
 #include <pika/threading_base/thread_data.hpp>
@@ -18,8 +15,14 @@
 #include <pika/threading_base/thread_pool_base.hpp>
 #include <pika/threading_base/thread_queue_init_parameters.hpp>
 #include <pika/threading_base/threading_base_fwd.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/concurrency/cache_line_data.hpp>
+#include <pika/functional/function.hpp>
+#include <pika/modules/errors.hpp>
 #if defined(PIKA_HAVE_SCHEDULER_LOCAL_STORAGE)
 # include <pika/coroutines/detail/tss.hpp>
+#endif
 #endif
 
 #include <fmt/format.h>

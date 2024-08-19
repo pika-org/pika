@@ -13,7 +13,10 @@
 #include <pika/assert.hpp>
 #include <pika/coroutines/detail/get_stack_pointer.hpp>
 #include <pika/coroutines/detail/swap_context.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/util/get_and_reset_value.hpp>
+#endif
 
 // include unist.d conditionally to check for POSIX version. Not all OSs have the
 // unistd header...

@@ -35,7 +35,10 @@
 #include <pika/coroutines/detail/coroutine_impl.hpp>
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/coroutines/thread_id_type.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/functional/function.hpp>
+#endif
 
 #include <cstddef>
 #include <exception>

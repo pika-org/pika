@@ -17,13 +17,21 @@
 //
 //===----------------------------------------------------------------------===//
 
+PIKA_GLOBAL_MODULE_FRAGMENT
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/synchronization/barrier.hpp>
 #include <pika/threading_base/thread_data.hpp>
+#endif
 
 #include <atomic>
 #include <cstddef>
 #include <memory>
 #include <thread>
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.synchronization;
+#endif
 
 namespace pika::detail {
     barrier_algorithm_base::barrier_algorithm_base(std::ptrdiff_t expected)

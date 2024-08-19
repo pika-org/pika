@@ -9,18 +9,27 @@
 // (C) Copyright 2008 Anthony Williams
 // (C) Copyright 2011-2012 Vicente J. Botet Escriba
 
+PIKA_GLOBAL_MODULE_FRAGMENT
+
 #include <pika/config.hpp>
 #if defined(PIKA_HAVE_THREAD_LOCAL_STORAGE)
 # include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 # include <pika/coroutines/coroutine.hpp>
 # include <pika/coroutines/detail/coroutine_self.hpp>
 # include <pika/coroutines/detail/tss.hpp>
 # include <pika/modules/errors.hpp>
 # include <pika/type_support/unused.hpp>
+#endif
 
 # include <cstddef>
 # include <map>
 # include <memory>
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.coroutines;
+#endif
 
 namespace pika::threads::coroutines::detail {
     ///////////////////////////////////////////////////////////////////////////
@@ -223,4 +232,10 @@ namespace pika::threads::coroutines::detail {
 # endif
     }
 }    // namespace pika::threads::coroutines::detail
+#else
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.coroutines;
+#endif
+
 #endif

@@ -10,9 +10,9 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(synchronization_headers
     pika/synchronization/async_rw_mutex.hpp
     pika/synchronization/barrier.hpp
-    pika/synchronization/channel_mpmc.hpp
-    pika/synchronization/channel_mpsc.hpp
-    pika/synchronization/channel_spsc.hpp
+    # pika/synchronization/channel_mpmc.hpp
+    # pika/synchronization/channel_mpsc.hpp
+    # pika/synchronization/channel_spsc.hpp
     pika/synchronization/condition_variable.hpp
     pika/synchronization/counting_semaphore.hpp
     pika/synchronization/detail/condition_variable.hpp
@@ -42,10 +42,12 @@ pika_add_module(
   HEADERS ${synchronization_headers}
   MODULE_DEPENDENCIES
     pika_config
+    pika_allocator_support
     pika_assertion
     pika_execution_base
     pika_concurrency
     pika_coroutines
+    pika_datastructures
     pika_errors
     pika_functional
     pika_hashing
@@ -54,6 +56,7 @@ pika_add_module(
     pika_lock_registration
     pika_logging
     pika_memory
+    pika_tag_invoke
     pika_threading_base
     pika_thread_support
     pika_topology

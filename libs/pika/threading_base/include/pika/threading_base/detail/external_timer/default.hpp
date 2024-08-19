@@ -7,9 +7,12 @@
 
 #pragma once
 
-#include <pika/coroutines/thread_id_type.hpp>
 #include <pika/threading_base/thread_description.hpp>
 #include <pika/threading_base/threading_base_fwd.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/coroutines/thread_id_type.hpp>
+#endif
 
 #include <cstdint>
 #include <memory>

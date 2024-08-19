@@ -7,10 +7,13 @@
 #pragma once
 
 #include <pika/config.hpp>
+#include <pika/synchronization/mutex.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/modules/execution_base.hpp>
 #include <pika/modules/memory.hpp>
 #include <pika/modules/thread_support.hpp>
-#include <pika/synchronization/mutex.hpp>
+#endif
 
 #include <atomic>
 #include <cstddef>

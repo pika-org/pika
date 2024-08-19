@@ -7,8 +7,11 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/debugging/print.hpp>
 #include <pika/threading_base/thread_data.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/debugging/print.hpp>
+#endif
 
 #include <iosfwd>
 

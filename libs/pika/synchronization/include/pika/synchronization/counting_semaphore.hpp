@@ -8,9 +8,12 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/concurrency/spinlock.hpp>
 #include <pika/synchronization/detail/counting_semaphore.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/timing/steady_clock.hpp>
+#endif
 
 #include <cstddef>
 #include <cstdint>

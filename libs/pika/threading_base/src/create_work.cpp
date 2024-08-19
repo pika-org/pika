@@ -4,7 +4,11 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+PIKA_GLOBAL_MODULE_FRAGMENT
+
 #include <pika/config.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/logging.hpp>
 #include <pika/modules/coroutines.hpp>
 #include <pika/modules/errors.hpp>
@@ -12,6 +16,11 @@
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/threading_base/thread_init_data.hpp>
+#endif
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.threading_base;
+#endif
 
 namespace pika::threads::detail {
     thread_id_ref_type create_work(

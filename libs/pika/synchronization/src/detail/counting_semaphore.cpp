@@ -5,16 +5,25 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+PIKA_GLOBAL_MODULE_FRAGMENT
+
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/synchronization/detail/condition_variable.hpp>
 #include <pika/synchronization/detail/counting_semaphore.hpp>
 #include <pika/thread_support/assert_owns_lock.hpp>
+#endif
 
 #include <cstddef>
 #include <cstdint>
 #include <mutex>
 #include <utility>
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.synchronization;
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace pika::detail {

@@ -8,6 +8,8 @@
 #pragma once
 
 #include <pika/config.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/concurrency/cache_line_data.hpp>
 #include <pika/concurrency/spinlock.hpp>
 #include <pika/coroutines/thread_enums.hpp>
@@ -15,6 +17,7 @@
 #include <pika/modules/errors.hpp>
 #include <pika/thread_support/atomic_count.hpp>
 #include <pika/timing/steady_clock.hpp>
+#endif
 
 #include <boost/intrusive/slist.hpp>
 

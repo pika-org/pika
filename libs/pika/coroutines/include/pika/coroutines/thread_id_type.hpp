@@ -11,9 +11,12 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/memory/intrusive_ptr.hpp>
 #include <pika/modules/memory.hpp>
 #include <pika/thread_support/atomic_count.hpp>
+#endif
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>

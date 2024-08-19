@@ -8,7 +8,10 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/topology/topology.hpp>
+#endif
 
 #include <atomic>
 #include <cstddef>

@@ -8,17 +8,20 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/affinity/affinity_data.hpp>
-#include <pika/concurrency/barrier.hpp>
-#include <pika/functional/function.hpp>
-#include <pika/modules/errors.hpp>
 #include <pika/threading_base/callback_notifier.hpp>
 #include <pika/threading_base/scheduler_mode.hpp>
 #include <pika/threading_base/scheduler_state.hpp>
 #include <pika/threading_base/thread_init_data.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/affinity/affinity_data.hpp>
+#include <pika/concurrency/barrier.hpp>
+#include <pika/functional/function.hpp>
+#include <pika/modules/errors.hpp>
 #include <pika/timing/steady_clock.hpp>
 #include <pika/topology/cpu_mask.hpp>
 #include <pika/topology/topology.hpp>
+#endif
 
 #include <fmt/format.h>
 

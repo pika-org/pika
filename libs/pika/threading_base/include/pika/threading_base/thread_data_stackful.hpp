@@ -9,14 +9,17 @@
 #pragma once
 
 #include <pika/config.hpp>
+#include <pika/threading_base/execution_agent.hpp>
+#include <pika/threading_base/thread_data.hpp>
+#include <pika/threading_base/thread_init_data.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/allocator_support/internal_allocator.hpp>
 #include <pika/assert.hpp>
 #include <pika/coroutines/thread_id_type.hpp>
 #include <pika/functional/function.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/threading_base/execution_agent.hpp>
-#include <pika/threading_base/thread_data.hpp>
-#include <pika/threading_base/thread_init_data.hpp>
+#endif
 
 #include <cstddef>
 #include <cstdint>

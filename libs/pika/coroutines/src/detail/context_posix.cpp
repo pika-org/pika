@@ -4,8 +4,13 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+PIKA_GLOBAL_MODULE_FRAGMENT
+
 #include <pika/config.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/coroutines/detail/context_impl.hpp>
+#endif
 
 // The preprocessor conditions below are kept in sync with those used in
 // context_impl.hpp
@@ -39,3 +44,7 @@ namespace pika { namespace threads { namespace coroutines { namespace detail { n
 # error No default_context_impl available for this system
 
 #endif    // PIKA_HAVE_BOOST_CONTEXT
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.coroutines;
+#endif

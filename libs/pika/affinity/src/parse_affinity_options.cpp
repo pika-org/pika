@@ -4,10 +4,15 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/affinity/parse_affinity_options.hpp>
+PIKA_GLOBAL_MODULE_FRAGMENT
+
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/affinity/parse_affinity_options.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/topology/topology.hpp>
+#endif
 
 #include <hwloc.h>
 
@@ -18,6 +23,10 @@
 #include <string>
 #include <tuple>
 #include <vector>
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.affinity;
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::detail {

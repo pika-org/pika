@@ -10,8 +10,11 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/functional/function.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/functional/function.hpp>
+#endif
 
 namespace pika::threads::detail {
     using get_default_pool_type = util::detail::function<thread_pool_base*()>;

@@ -5,9 +5,11 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/threading_base/thread_helpers.hpp>
+PIKA_GLOBAL_MODULE_FRAGMENT
 
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/modules/errors.hpp>
 #ifdef PIKA_HAVE_VERIFY_LOCKS
@@ -20,6 +22,7 @@
 #include <pika/threading_base/set_thread_state.hpp>
 #include <pika/threading_base/set_thread_state_timed.hpp>
 #include <pika/threading_base/thread_description.hpp>
+#include <pika/threading_base/thread_helpers.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
 #include <pika/timing/steady_clock.hpp>
 #include <pika/type_support/unused.hpp>
@@ -28,6 +31,7 @@
 # include <pika/debugging/backtrace.hpp>
 # include <pika/threading_base/detail/reset_backtrace.hpp>
 #endif
+#endif
 
 #include <atomic>
 #include <cstddef>
@@ -35,6 +39,10 @@
 #include <memory>
 #include <string>
 #include <utility>
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.threading_base;
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::threads::detail {

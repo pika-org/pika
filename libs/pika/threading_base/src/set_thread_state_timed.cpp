@@ -4,8 +4,12 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+PIKA_GLOBAL_MODULE_FRAGMENT
+
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/coroutines/coroutine.hpp>
 #include <pika/functional/bind.hpp>
 #include <pika/functional/bind_front.hpp>
@@ -13,6 +17,7 @@
 #include <pika/threading_base/create_thread.hpp>
 #include <pika/threading_base/set_thread_state_timed.hpp>
 #include <pika/threading_base/threading_base_fwd.hpp>
+#endif
 
 #include <atomic>
 #include <chrono>
@@ -20,6 +25,10 @@
 #include <memory>
 #include <system_error>
 #include <utility>
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.threading_base;
+#endif
 
 namespace pika::threads::detail {
     /// This thread function is used by the at_timer thread below to trigger

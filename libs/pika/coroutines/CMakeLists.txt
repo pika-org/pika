@@ -12,11 +12,11 @@ set(coroutines_headers
     pika/coroutines/stackless_coroutine.hpp
     pika/coroutines/detail/combined_tagged_state.hpp
     pika/coroutines/detail/context_base.hpp
-    pika/coroutines/detail/context_generic_context.hpp
+    # pika/coroutines/detail/context_generic_context.hpp
     pika/coroutines/detail/context_impl.hpp
     pika/coroutines/detail/context_linux_x86.hpp
-    pika/coroutines/detail/context_posix.hpp
-    pika/coroutines/detail/context_windows_fibers.hpp
+    # pika/coroutines/detail/context_posix.hpp
+    # pika/coroutines/detail/context_windows_fibers.hpp
     pika/coroutines/detail/coroutine_accessor.hpp
     pika/coroutines/detail/coroutine_impl.hpp
     pika/coroutines/detail/coroutine_self.hpp

@@ -8,13 +8,16 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/coroutines/thread_enums.hpp>
 #include <pika/threading_base/thread_description.hpp>
 #include <pika/threading_base/threading_base_fwd.hpp>
 #if defined(PIKA_HAVE_APEX)
 # include <pika/threading_base/external_timer.hpp>
 #endif
+
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/coroutines/thread_enums.hpp>
 #include <pika/type_support/unused.hpp>
+#endif
 
 #include <cstddef>
 #include <cstdint>

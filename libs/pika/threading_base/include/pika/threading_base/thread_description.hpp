@@ -8,12 +8,15 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+#include <pika/threading_base/threading_base_fwd.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
-#include <pika/threading_base/threading_base_fwd.hpp>
 #include <pika/type_support/unused.hpp>
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
 # include <pika/modules/itt_notify.hpp>
+#endif
 #endif
 
 #include <fmt/format.h>

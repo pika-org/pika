@@ -13,8 +13,11 @@
 
 #include <pika/config.hpp>
 #if defined(PIKA_HAVE_THREAD_LOCAL_STORAGE)
-# include <pika/coroutines/detail/tss.hpp>
 # include <pika/threading_base/thread_data.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
+# include <pika/coroutines/detail/tss.hpp>
+#endif
 
 # include <memory>
 

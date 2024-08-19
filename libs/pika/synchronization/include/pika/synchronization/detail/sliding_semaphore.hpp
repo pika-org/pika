@@ -7,8 +7,11 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/concurrency/spinlock.hpp>
 #include <pika/synchronization/detail/condition_variable.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/concurrency/spinlock.hpp>
+#endif
 
 #include <cstdint>
 #include <mutex>

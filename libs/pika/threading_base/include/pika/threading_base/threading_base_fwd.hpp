@@ -9,12 +9,15 @@
 #pragma once
 
 #include <pika/config.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/coroutines/coroutine_fwd.hpp>
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/coroutines/thread_id_type.hpp>
 #include <pika/functional/function.hpp>
 #include <pika/functional/unique_function.hpp>
 #include <pika/modules/errors.hpp>
+#endif
 
 #if defined(PIKA_HAVE_APEX)
 # include <apex_api.hpp>

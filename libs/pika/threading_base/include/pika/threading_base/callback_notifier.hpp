@@ -7,7 +7,10 @@
 #pragma once
 
 #include <pika/config.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/functional/function.hpp>
+#endif
 
 #include <cstddef>
 #include <deque>

@@ -5,21 +5,29 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/synchronization/mutex.hpp>
+PIKA_GLOBAL_MODULE_FRAGMENT
 
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/concurrency/spinlock.hpp>
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/lock_registration/detail/register_locks.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/itt_notify.hpp>
 #include <pika/synchronization/condition_variable.hpp>
+#include <pika/synchronization/mutex.hpp>
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/timing/steady_clock.hpp>
 #include <pika/type_support/unused.hpp>
+#endif
 
 #include <mutex>
 #include <utility>
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.synchronization;
+#endif
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////

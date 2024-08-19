@@ -12,8 +12,11 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/errors/error_code.hpp>
 #include <pika/topology/cpu_mask.hpp>
+#endif
 
 #include <cstddef>
 #include <cstdint>

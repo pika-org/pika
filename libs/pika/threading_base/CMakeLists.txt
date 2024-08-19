@@ -92,7 +92,9 @@ pika_add_module(
     pika_lock_registration
     pika_logging
     pika_memory
+    pika_thread_support
     pika_timing
+    pika_topology
     pika_type_support
     ${additional_dependencies}
   CMAKE_SUBDIRS examples tests

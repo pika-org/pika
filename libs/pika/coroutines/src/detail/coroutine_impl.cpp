@@ -28,16 +28,28 @@
 //  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/config.hpp>
+PIKA_GLOBAL_MODULE_FRAGMENT
 
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/coroutines/coroutine.hpp>
 #include <pika/coroutines/detail/coroutine_impl.hpp>
 #include <pika/coroutines/detail/coroutine_stackful_self.hpp>
+#endif
 
 #include <cstddef>
 #include <exception>
 #include <utility>
+
+// TODO: error: no member named 'string' in namespace 'std'
+// on PIKA_ASSERT(!m_fun), why?
+#include <string>
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.coroutines;
+#endif
 
 namespace pika::threads::coroutines::detail {
 #if defined(PIKA_DEBUG)

@@ -32,7 +32,10 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/type_support/unused.hpp>
+#endif
 
 // include unist.d conditionally to check for POSIX version. Not all OSs have the
 // unistd header...

@@ -13,7 +13,9 @@
 # include <pika/threading_base/thread_helpers.hpp>
 
 # if PIKA_HAVE_ITTNOTIFY != 0
+#if !defined(PIKA_HAVE_MODULE)
 #  include <pika/modules/itt_notify.hpp>
+#endif
 # elif defined(PIKA_HAVE_APEX)
 #  include <pika/threading_base/external_timer.hpp>
 # elif defined(PIKA_HAVE_TRACY)

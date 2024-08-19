@@ -8,17 +8,20 @@
 #pragma once
 
 #include <pika/config.hpp>
+#include <pika/synchronization/detail/condition_variable.hpp>
+#include <pika/synchronization/mutex.hpp>
+#include <pika/synchronization/stop_token.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/lock_registration/detail/register_locks.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/memory.hpp>
-#include <pika/synchronization/detail/condition_variable.hpp>
-#include <pika/synchronization/mutex.hpp>
-#include <pika/synchronization/stop_token.hpp>
 #include <pika/thread_support/assert_owns_lock.hpp>
 #include <pika/thread_support/unlock_guard.hpp>
 #include <pika/timing/steady_clock.hpp>
 #include <pika/type_support/unused.hpp>
+#endif
 
 #include <mutex>
 #include <utility>

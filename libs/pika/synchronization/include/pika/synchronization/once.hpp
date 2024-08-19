@@ -11,8 +11,11 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/functional/detail/invoke.hpp>
 #include <pika/synchronization/event.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/functional/detail/invoke.hpp>
+#endif
 
 #include <atomic>
 #include <utility>

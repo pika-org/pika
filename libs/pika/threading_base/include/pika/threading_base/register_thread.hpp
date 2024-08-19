@@ -11,12 +11,15 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/functional/function.hpp>
-#include <pika/modules/errors.hpp>
 #include <pika/threading_base/detail/get_default_pool.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/functional/function.hpp>
+#include <pika/modules/errors.hpp>
+#endif
 
 #include <cstddef>
 #include <cstdint>

@@ -6,8 +6,10 @@
 
 #pragma once
 
-#include <pika/allocator_support/internal_allocator.hpp>
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/allocator_support/internal_allocator.hpp>
 #include <pika/concurrency/spinlock.hpp>
 #include <pika/datastructures/detail/small_vector.hpp>
 #include <pika/execution_base/operation_state.hpp>
@@ -15,6 +17,7 @@
 #include <pika/execution_base/sender.hpp>
 #include <pika/execution_base/this_thread.hpp>
 #include <pika/functional/unique_function.hpp>
+#endif
 
 #include <atomic>
 #include <exception>

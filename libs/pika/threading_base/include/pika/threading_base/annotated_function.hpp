@@ -9,12 +9,14 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
-# include <pika/functional/detail/invoke.hpp>
-# include <pika/functional/traits/get_function_address.hpp>
-# include <pika/functional/traits/get_function_annotation.hpp>
 # include <pika/threading_base/scoped_annotation.hpp>
 # include <pika/threading_base/thread_description.hpp>
 # include <pika/threading_base/thread_helpers.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
+# include <pika/functional/detail/invoke.hpp>
+# include <pika/functional/traits/get_function_address.hpp>
+# include <pika/functional/traits/get_function_annotation.hpp>
 # include <pika/type_support/decay.hpp>
 
 # if PIKA_HAVE_ITTNOTIFY != 0
@@ -22,6 +24,7 @@
 # elif defined(PIKA_HAVE_APEX)
 #  include <pika/threading_base/external_timer.hpp>
 # endif
+#endif
 #endif
 
 #include <cstddef>

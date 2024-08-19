@@ -4,12 +4,21 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+PIKA_GLOBAL_MODULE_FRAGMENT
+
 #include <pika/config.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/allocator_support/internal_allocator.hpp>
 #include <pika/logging.hpp>
 #include <pika/threading_base/thread_data.hpp>
+#endif
 
 #include <fmt/format.h>
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.threading_base;
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace pika::threads::detail {

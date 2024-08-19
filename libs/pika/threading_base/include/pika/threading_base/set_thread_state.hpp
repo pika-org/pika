@@ -7,9 +7,12 @@
 #pragma once
 
 #include <pika/config.hpp>
+#include <pika/threading_base/threading_base_fwd.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/coroutines/coroutine.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/threading_base/threading_base_fwd.hpp>
+#endif
 
 #include <atomic>
 #include <memory>

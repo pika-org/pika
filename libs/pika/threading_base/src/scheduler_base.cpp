@@ -4,8 +4,12 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+PIKA_GLOBAL_MODULE_FRAGMENT
+
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/execution_base/this_thread.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/scheduler_mode.hpp>
@@ -14,6 +18,7 @@
 #include <pika/threading_base/thread_pool_base.hpp>
 #if defined(PIKA_HAVE_SCHEDULER_LOCAL_STORAGE)
 # include <pika/coroutines/detail/tss.hpp>
+#endif
 #endif
 
 #include <algorithm>
@@ -32,6 +37,10 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.threading_base;
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::threads::detail {

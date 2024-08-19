@@ -153,7 +153,8 @@ PIKA_EXPORT void itt_metadata_add(
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::detail {
 
-    struct thread_description;
+    // TODO: Can't forward declare in one module, define in another.
+    // struct thread_description;
 
 }    // namespace pika::detail
 
@@ -561,7 +562,8 @@ inline constexpr void itt_metadata_add(
 //////////////////////////////////////////////////////////////////////////////
 namespace pika::detail {
 
-    struct thread_description;
+    // TODO: Can't forward declare in one module, define in another.
+    // struct thread_description;
 
 }    // namespace pika::detail
 
