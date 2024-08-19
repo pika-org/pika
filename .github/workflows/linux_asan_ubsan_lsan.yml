@@ -83,6 +83,7 @@ jobs:
             export UBSAN_OPTIONS=print_stacktrace=1:suppressions=$PWD/tools/ubsan.supp
             cd build
             ctest \
+              --repeat-until-fail 7 \
               --timeout 120 \
               --output-on-failure \
               -E "$(${GITHUB_WORKSPACE}/.github/blacklist_to_ctest_regex.sh ${GITHUB_WORKSPACE}/.github/workflows/linux_asan_ubsan_lsan_blacklist.txt)"
@@ -98,6 +99,7 @@ jobs:
             export UBSAN_OPTIONS=print_stacktrace=1:suppressions=$PWD/tools/ubsan.supp
             cd build
             ctest \
+              --repeat-until-fail 7 \
               --timeout 120 \
               --output-on-failure \
               -R "$(${GITHUB_WORKSPACE}/.github/blacklist_to_ctest_regex.sh ${GITHUB_WORKSPACE}/.github/workflows/linux_asan_ubsan_lsan_blacklist.txt)"

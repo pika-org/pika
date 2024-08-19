@@ -185,6 +185,9 @@ namespace pika::threads::detail {
 
             PIKA_ASSERT(data.stacksize != execution::thread_stacksize::current);
 
+            bool schedule_now =
+                data.initial_state == threads::detail::thread_schedule_state::pending;
+
             if (data.run_now)
             {
                 threads::detail::thread_id_ref_type tid;
@@ -192,7 +195,7 @@ namespace pika::threads::detail {
                 holder_->add_to_thread_map(tid.noref());
 
                 // push the new thread in the pending queue thread
-                if (data.initial_state == threads::detail::thread_schedule_state::pending)
+                if (schedule_now)
                 {
                     // return the thread_id_ref of the newly created thread
                     if (id) { *id = tid; }
