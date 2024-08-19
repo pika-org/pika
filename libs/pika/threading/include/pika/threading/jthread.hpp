@@ -7,9 +7,12 @@
 #pragma once
 
 #include <pika/config.hpp>
+#include <pika/threading/thread.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/functional/detail/invoke.hpp>
 #include <pika/synchronization/stop_token.hpp>
-#include <pika/threading/thread.hpp>
+#endif
 
 #include <type_traits>
 #include <utility>

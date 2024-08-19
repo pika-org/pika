@@ -11,17 +11,19 @@
 #if defined(PIKA_HAVE_STDEXEC)
 # include <pika/execution_base/stdexec_forward.hpp>
 #endif
-
 #include <pika/assert.hpp>
+#include <pika/execution/algorithms/detail/helpers.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/concepts/concepts.hpp>
 #include <pika/datastructures/variant.hpp>
-#include <pika/execution/algorithms/detail/helpers.hpp>
 #include <pika/execution_base/operation_state.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/type_support/detail/with_result_of.hpp>
 #include <pika/type_support/pack.hpp>
+#endif
 
 #include <atomic>
 #include <cstddef>

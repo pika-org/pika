@@ -16,6 +16,19 @@ pika_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${threading_sources}
   HEADERS ${threading_headers}
-  MODULE_DEPENDENCIES pika_errors pika_lock_registration pika_memory pika_synchronization
+  MODULE_DEPENDENCIES
+    pika_assertion
+    pika_concurrency
+    pika_coroutines
+    pika_errors
+    pika_functional
+    pika_lock_registration
+    pika_memory
+    pika_synchronization
+    pika_tag_invoke
+    pika_thread_support
+    pika_threading_base
+    pika_timing
+    pika_topology
   CMAKE_SUBDIRS examples tests
 )

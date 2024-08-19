@@ -11,11 +11,12 @@
 #if defined(PIKA_HAVE_STDEXEC)
 # include <pika/execution_base/stdexec_forward.hpp>
 #endif
+#include <pika/execution/algorithms/detail/helpers.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/concepts/concepts.hpp>
 #include <pika/concurrency/spinlock.hpp>
 #include <pika/datastructures/variant.hpp>
-#include <pika/execution/algorithms/detail/helpers.hpp>
 #include <pika/execution_base/operation_state.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
@@ -23,6 +24,7 @@
 #include <pika/synchronization/condition_variable.hpp>
 #include <pika/type_support/pack.hpp>
 #include <pika/type_support/unused.hpp>
+#endif
 
 #include <atomic>
 #include <exception>

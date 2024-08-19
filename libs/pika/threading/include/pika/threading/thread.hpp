@@ -8,6 +8,8 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/concurrency/spinlock.hpp>
 #include <pika/functional/deferred_call.hpp>
 #include <pika/functional/function.hpp>
@@ -17,6 +19,7 @@
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
 #include <pika/timing/steady_clock.hpp>
+#endif
 
 #include <fmt/format.h>
 

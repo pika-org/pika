@@ -11,6 +11,7 @@
 #if defined(PIKA_HAVE_STDEXEC)
 # include <pika/execution_base/stdexec_forward.hpp>
 #else
+#if !defined(PIKA_HAVE_MODULE)
 # include <pika/allocator_support/allocator_deleter.hpp>
 # include <pika/allocator_support/internal_allocator.hpp>
 # include <pika/allocator_support/traits/is_allocator.hpp>
@@ -20,6 +21,7 @@
 # include <pika/execution_base/sender.hpp>
 # include <pika/functional/detail/tag_fallback_invoke.hpp>
 # include <pika/type_support/unused.hpp>
+#endif
 
 # include <cstddef>
 # include <exception>

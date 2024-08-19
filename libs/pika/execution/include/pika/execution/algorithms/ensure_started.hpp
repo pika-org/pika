@@ -11,6 +11,10 @@
 #if defined(PIKA_HAVE_STDEXEC)
 # include <pika/execution_base/stdexec_forward.hpp>
 #else
+# include <pika/execution/algorithms/detail/helpers.hpp>
+# include <pika/execution/algorithms/detail/partial_algorithm.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 # include <pika/allocator_support/allocator_deleter.hpp>
 # include <pika/allocator_support/internal_allocator.hpp>
 # include <pika/allocator_support/traits/is_allocator.hpp>
@@ -18,8 +22,6 @@
 # include <pika/concepts/concepts.hpp>
 # include <pika/concurrency/spinlock.hpp>
 # include <pika/datastructures/variant.hpp>
-# include <pika/execution/algorithms/detail/helpers.hpp>
-# include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 # include <pika/execution_base/operation_state.hpp>
 # include <pika/execution_base/receiver.hpp>
 # include <pika/execution_base/sender.hpp>
@@ -30,6 +32,7 @@
 # include <pika/thread_support/atomic_count.hpp>
 # include <pika/type_support/detail/with_result_of.hpp>
 # include <pika/type_support/pack.hpp>
+#endif
 
 # include <atomic>
 # include <cstddef>

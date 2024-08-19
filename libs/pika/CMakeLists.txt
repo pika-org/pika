@@ -23,7 +23,7 @@ set(_pika_modules
     datastructures
     debugging
     errors
-    # execution # TODO
+    execution
     execution_base
     # executors # TODO
     filesystem
@@ -51,7 +51,7 @@ set(_pika_modules
     tag_invoke
     # thread_pools
     thread_support
-    # threading # TODO
+    threading
     threading_base
     # thread_manager
     timing

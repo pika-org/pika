@@ -6,7 +6,9 @@
 
 #pragma once
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/datastructures/member_pack.hpp>
+#endif
 
 #include <cstddef>
 #include <type_traits>

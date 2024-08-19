@@ -11,11 +11,13 @@
 #if defined(PIKA_HAVE_STDEXEC)
 # include <pika/execution_base/stdexec_forward.hpp>
 #else
+#if !defined(PIKA_HAVE_MODULE)
 # include <pika/datastructures/member_pack.hpp>
 # include <pika/errors/try_catch_exception_ptr.hpp>
 # include <pika/execution_base/receiver.hpp>
 # include <pika/execution_base/sender.hpp>
 # include <pika/type_support/pack.hpp>
+#endif
 
 # include <cstddef>
 # include <exception>

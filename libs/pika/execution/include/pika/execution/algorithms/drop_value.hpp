@@ -7,14 +7,16 @@
 #pragma once
 
 #include <pika/config.hpp>
+#include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/concepts/concepts.hpp>
 #include <pika/errors/try_catch_exception_ptr.hpp>
-#include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 #include <pika/execution_base/completion_scheduler.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
+#endif
 
 #include <exception>
 #include <type_traits>

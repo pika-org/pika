@@ -4,7 +4,12 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+PIKA_GLOBAL_MODULE_FRAGMENT
+
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/functional/bind.hpp>
 #include <pika/functional/bind_front.hpp>
 #include <pika/functional/unique_function.hpp>
@@ -17,6 +22,7 @@
 #include <pika/threading_base/thread_init_data.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
 #include <pika/timing/steady_clock.hpp>
+#endif
 
 #include <cstddef>
 #include <exception>
@@ -26,6 +32,10 @@
 
 #if defined(__ANDROID__) || defined(ANDROID)
 # include <cpu-features.h>
+#endif
+
+#if defined(PIKA_HAVE_MODULE)
+module pika.threading;
 #endif
 
 namespace pika {

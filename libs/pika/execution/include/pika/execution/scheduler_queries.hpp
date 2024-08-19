@@ -10,9 +10,11 @@
 #if defined(PIKA_HAVE_STDEXEC)
 # include <pika/execution_base/stdexec_forward.hpp>
 #else
+#if !defined(PIKA_HAVE_MODULE)
 # include <pika/concepts/concepts.hpp>
 # include <pika/execution_base/sender.hpp>
 # include <pika/functional/tag_invoke.hpp>
+#endif
 
 namespace pika::execution::experimental {
     enum class forward_progress_guarantee

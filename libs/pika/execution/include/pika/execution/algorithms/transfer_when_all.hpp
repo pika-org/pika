@@ -13,7 +13,10 @@
 #else
 # include <pika/execution/algorithms/transfer.hpp>
 # include <pika/execution/algorithms/when_all.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 # include <pika/functional/detail/tag_fallback_invoke.hpp>
+#endif
 
 # include <utility>
 

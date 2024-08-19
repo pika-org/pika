@@ -11,13 +11,16 @@
 #if defined(PIKA_HAVE_STDEXEC)
 # include <pika/execution_base/stdexec_forward.hpp>
 #else
-# include <pika/concepts/concepts.hpp>
 # include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 # include <pika/execution/algorithms/schedule_from.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
+# include <pika/concepts/concepts.hpp>
 # include <pika/execution_base/completion_scheduler.hpp>
 # include <pika/execution_base/receiver.hpp>
 # include <pika/execution_base/sender.hpp>
 # include <pika/functional/detail/tag_priority_invoke.hpp>
+#endif
 
 # include <utility>
 

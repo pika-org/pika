@@ -13,8 +13,11 @@
 #else
 # include <pika/execution/algorithms/start_detached.hpp>
 # include <pika/execution/algorithms/then.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 # include <pika/execution_base/sender.hpp>
 # include <pika/functional/detail/tag_fallback_invoke.hpp>
+#endif
 
 # include <utility>
 
