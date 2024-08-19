@@ -12,7 +12,6 @@ function(pika_add_module libname modulename)
   set(one_value_args GLOBAL_HEADER_GEN)
   set(multi_value_args
       SOURCES
-      MODULE_SOURCES
       MODULE_INCLUDES
       HEADERS
       OBJECTS
@@ -58,9 +57,6 @@ function(pika_add_module libname modulename)
 
   # Write full path for the sources files
   list(TRANSFORM ${modulename}_SOURCES PREPEND ${SOURCE_ROOT}/ OUTPUT_VARIABLE sources)
-  list(TRANSFORM ${modulename}_MODULE_SOURCES PREPEND ${SOURCE_ROOT}/ OUTPUT_VARIABLE
-                                                                      module_sources
-  )
   list(TRANSFORM ${modulename}_HEADERS PREPEND ${HEADER_ROOT}/ OUTPUT_VARIABLE headers)
 
   set(module_headers)
@@ -151,10 +147,6 @@ function(pika_add_module libname modulename)
   add_library(pika_${modulename} ${module_library_type} ${sources} ${${modulename}_OBJECTS})
 
   if(PIKA_WITH_MODULE)
-    # target_sources(
-    #   pika_${modulename} PUBLIC FILE_SET CXX_MODULES # BASE_DIRS "${CMAKE_CURRENT_BINARY_DIR}"
-    #                             FILES ${module_sources}
-    # )
     # TODO: Override with all system headers for now
     set(${modulename}_MODULE_INCLUDES
         <errno.h>

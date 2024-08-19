@@ -1612,24 +1612,3 @@ include(pika_generate_package)
 message("")
 message("pika will be installed to ${CMAKE_INSTALL_PREFIX}")
 message("")
-
-if(PIKA_WITH_MODULE)
-  cmake_minimum_required(VERSION 3.28)
-
-  # add_library(bar OBJECT bar_impl.cpp)
-  # target_sources(bar PUBLIC FILE_SET CXX_MODULES FILES bar.cpp)
-
-  # add_library(foo OBJECT)
-  # target_sources(foo PUBLIC FILE_SET CXX_MODULES FILES foo.cpp)
-  # target_link_libraries(foo bar)
-
-  # add_library(bleh)
-  # target_sources(bleh PUBLIC FILE_SET CXX_MODULES FILES all.cpp)
-  # target_link_libraries(bleh foo bar)
-
-  add_library(bleh bar_impl.cpp)
-  target_sources(bleh PUBLIC FILE_SET CXX_MODULES FILES all.cpp foo.cpp bar.cpp)
-
-  add_executable(hello main.cpp)
-  target_link_libraries(hello bleh)
-endif()
