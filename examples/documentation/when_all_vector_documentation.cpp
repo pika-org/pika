@@ -8,6 +8,7 @@
 #include <pika/init.hpp>
 
 #include <fmt/printf.h>
+#include <fmt/ranges.h>
 
 #include <cstddef>
 #include <random>
