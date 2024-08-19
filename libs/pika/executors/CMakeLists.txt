@@ -18,14 +18,22 @@ pika_add_module(
   GLOBAL_HEADER_GEN ON
   HEADERS ${executors_headers}
   MODULE_DEPENDENCIES
+    pika_assertion
     pika_async_base
+    pika_concurrency
     pika_config
+    pika_coroutines
+    pika_datastructures
+    pika_errors
     pika_execution
+    pika_execution_base
+    pika_functional
     pika_itt_notify
+    pika_memory
     pika_properties
     pika_threading
+    pika_threading_base
     pika_timing
-    pika_errors
-    pika_memory
+    pika_type_support
   CMAKE_SUBDIRS examples tests
 )

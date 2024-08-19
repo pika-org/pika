@@ -7,11 +7,14 @@
 #pragma once
 
 #include <pika/config.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/concepts/concepts.hpp>
 #include <pika/errors/try_catch_exception_ptr.hpp>
 #include <pika/execution/algorithms/execute.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
+#endif
 
 #include <exception>
 #include <thread>

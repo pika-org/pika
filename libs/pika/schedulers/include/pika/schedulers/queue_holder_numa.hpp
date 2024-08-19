@@ -9,13 +9,15 @@
 #include <pika/config.hpp>
 #include <pika/schedulers/lockfree_queue_backends.hpp>
 #include <pika/schedulers/thread_queue_mc.hpp>
+#include <pika/schedulers/queue_holder_thread.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/threading_base/print.hpp>
 #include <pika/threading_base/thread_data.hpp>
 //
 #include <pika/thread_support/unlock_guard.hpp>
 #include <pika/type_support/unused.hpp>
 //
-#include <pika/schedulers/queue_holder_thread.hpp>
 //
 #include <cmath>
 #include <cstddef>
@@ -32,6 +34,7 @@
 #include <mutex>
 #include <string>
 #include <utility>
+#endif
 
 #if !defined(QUEUE_HOLDER_NUMA_DEBUG)
 # if defined(PIKA_DEBUG)
@@ -42,7 +45,7 @@
 #endif
 
 namespace pika::detail {
-    static pika::debug::detail::enable_print<QUEUE_HOLDER_NUMA_DEBUG> nq_deb("QH_NUMA");
+    inline constexpr pika::debug::detail::enable_print<QUEUE_HOLDER_NUMA_DEBUG> nq_deb("QH_NUMA");
 }
 
 // ------------------------------------------------------------////////

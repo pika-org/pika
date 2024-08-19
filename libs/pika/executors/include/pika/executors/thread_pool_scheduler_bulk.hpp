@@ -12,6 +12,9 @@
 #endif
 
 #include <pika/assert.hpp>
+#include <pika/executors/thread_pool_scheduler.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/concepts/concepts.hpp>
 #include <pika/concurrency/detail/contiguous_index_queue.hpp>
 #include <pika/coroutines/thread_enums.hpp>
@@ -20,7 +23,6 @@
 #include <pika/execution_base/completion_scheduler.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
-#include <pika/executors/thread_pool_scheduler.hpp>
 #include <pika/functional/bind_front.hpp>
 #include <pika/functional/tag_invoke.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
@@ -29,6 +31,7 @@
 #include <pika/threading_base/register_thread.hpp>
 #include <pika/threading_base/thread_description.hpp>
 #include <pika/threading_base/thread_num_tss.hpp>
+#endif
 
 #include <atomic>
 #include <cstddef>

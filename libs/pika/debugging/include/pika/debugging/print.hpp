@@ -31,7 +31,7 @@
 // When the template parameter is false, the optimizer will
 // not produce code and so the impact is nil.
 //
-// static pika::debug::detail::enable_print<true> spq_deb("SUBJECT");
+// inline constexpr pika::debug::detail::enable_print<true> spq_deb("SUBJECT");
 //
 // Later in code you may print information using
 //

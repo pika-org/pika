@@ -8,12 +8,14 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/affinity/affinity_data.hpp>
 #include <pika/assert.hpp>
+#include <pika/thread_pools/scheduling_loop.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/affinity/affinity_data.hpp>
 #include <pika/concurrency/barrier.hpp>
 #include <pika/functional/function.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/thread_pools/scheduling_loop.hpp>
 #include <pika/threading_base/callback_notifier.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
@@ -30,6 +32,7 @@
 #include <thread>
 #include <utility>
 #include <vector>
+#endif
 
 #include <pika/config/warnings_prefix.hpp>
 

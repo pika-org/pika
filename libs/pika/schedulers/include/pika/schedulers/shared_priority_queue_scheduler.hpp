@@ -12,13 +12,15 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+#include <pika/schedulers/queue_holder_numa.hpp>
+#include <pika/schedulers/queue_holder_thread.hpp>
+#include <pika/schedulers/thread_queue_mc.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/debugging/print.hpp>
 #include <pika/execution_base/this_thread.hpp>
 #include <pika/functional/function.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/schedulers/queue_holder_numa.hpp>
-#include <pika/schedulers/queue_holder_thread.hpp>
-#include <pika/schedulers/thread_queue_mc.hpp>
 #include <pika/threading_base/detail/global_activity_count.hpp>
 #include <pika/threading_base/print.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
@@ -43,15 +45,16 @@
 #include <type_traits>
 #include <vector>
 
-#include <pika/config/warnings_prefix.hpp>
-
 #if defined(__linux) || defined(linux) || defined(__linux__)
 # include <linux/unistd.h>
 # include <sys/mman.h>
 # define PIKA_DETAIL_SHARED_PRIORITY_SCHEDULER_LINUX
 #endif
+#endif
 
 // #define SHARED_PRIORITY_SCHEDULER_DEBUG_NUMA
+
+#include <pika/config/warnings_prefix.hpp>
 
 namespace pika::debug::detail {
     // a debug level of zero disables messages with a level>0
@@ -59,8 +62,8 @@ namespace pika::debug::detail {
     constexpr int debug_level = 0;
 
     template <int Level>
-    static print_threshold<Level, debug_level> spq_deb("SPQUEUE");
-    static print_threshold<1, debug_level> spq_arr("SPQUEUE");
+    inline constexpr print_threshold<Level, debug_level> spq_deb("SPQUEUE");
+    inline constexpr print_threshold<1, debug_level> spq_arr("SPQUEUE");
 }    // namespace pika::debug::detail
 
 // ------------------------------------------------------------

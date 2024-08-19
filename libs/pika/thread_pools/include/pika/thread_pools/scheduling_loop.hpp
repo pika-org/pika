@@ -8,6 +8,8 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/functional/unique_function.hpp>
 #include <pika/logging.hpp>
 #include <pika/modules/itt_notify.hpp>
@@ -32,6 +34,7 @@
 #include <memory>
 #include <sstream>
 #include <utility>
+#endif
 
 namespace pika::threads::detail {
 

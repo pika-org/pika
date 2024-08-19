@@ -25,7 +25,7 @@ set(_pika_modules
     errors
     execution
     execution_base
-    # executors # TODO
+    executors
     filesystem
     functional
     hashing
@@ -41,15 +41,15 @@ set(_pika_modules
     prefix
     preprocessor
     # program_options
-    # properties
+    properties
     # resource_partitioner
     # runtime_configuration
     # runtime
-    # schedulers
+    schedulers
     string_util
     synchronization
     tag_invoke
-    # thread_pools
+    thread_pools
     thread_support
     threading
     threading_base

@@ -40,12 +40,23 @@ pika_add_module(
   HEADERS ${execution_headers}
   DEPENDENCIES ${execution_optional_dependencies}
   MODULE_DEPENDENCIES
+    pika_allocator_support
+    pika_assertion
+    pika_concurrency
     pika_config
-    pika_threading
+    pika_datastructures
     pika_errors
+    pika_execution_base
+    pika_functional
+    pika_iterator_support
+    pika_lock_registration
     pika_memory
+    pika_synchronization
+    pika_tag_invoke
     pika_thread_support
+    pika_threading
     pika_timing
     pika_topology
+    pika_type_support
   CMAKE_SUBDIRS examples tests
 )

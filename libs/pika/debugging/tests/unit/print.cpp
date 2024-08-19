@@ -20,9 +20,9 @@
 
 namespace pika {
     // this is an enabled debug object that should output messages
-    static pika::debug::detail::enable_print<true> p_enabled("PRINT  ");
+    inline constexpr pika::debug::detail::enable_print<true> p_enabled("PRINT  ");
     // this is disabled and we want it to have zero footprint
-    static pika::debug::detail::enable_print<false> p_disabled("PRINT  ");
+    inline constexpr pika::debug::detail::enable_print<false> p_disabled("PRINT  ");
 }    // namespace pika
 
 int increment(std::atomic<int>& counter) { return ++counter; }

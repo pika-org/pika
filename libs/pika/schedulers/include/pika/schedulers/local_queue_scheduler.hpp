@@ -8,14 +8,16 @@
 #pragma once
 
 #include <pika/config.hpp>
+#include <pika/schedulers/deadlock_detection.hpp>
+#include <pika/schedulers/lockfree_queue_backends.hpp>
+#include <pika/schedulers/thread_queue.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/affinity/affinity_data.hpp>
 #include <pika/assert.hpp>
 #include <pika/functional/function.hpp>
 #include <pika/logging.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/schedulers/deadlock_detection.hpp>
-#include <pika/schedulers/lockfree_queue_backends.hpp>
-#include <pika/schedulers/thread_queue.hpp>
 #include <pika/threading_base/detail/global_activity_count.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_data.hpp>
@@ -34,6 +36,7 @@
 #include <string>
 #include <type_traits>
 #include <vector>
+#endif
 
 #include <pika/config/warnings_prefix.hpp>
 

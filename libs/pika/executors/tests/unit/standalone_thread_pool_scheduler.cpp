@@ -29,6 +29,8 @@
 import pika.all;
 import pika.testing;
 
+#define PIKA_ASSERT_CURRENT_FUNCTION __PRETTY_FUNCTION__
+
 namespace ex = pika::execution::experimental;
 namespace tt = pika::this_thread::experimental;
 void test_thread_pool_scheduler(pika::execution::experimental::thread_pool_scheduler sched)

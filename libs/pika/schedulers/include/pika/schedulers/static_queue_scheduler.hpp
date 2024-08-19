@@ -8,8 +8,9 @@
 #pragma once
 
 #include <pika/config.hpp>
-
 #include <pika/assert.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/logging.hpp>
 #include <pika/schedulers/deadlock_detection.hpp>
 #include <pika/schedulers/local_queue_scheduler.hpp>
@@ -26,6 +27,7 @@
 #include <mutex>
 #include <string>
 #include <vector>
+#endif
 
 #include <pika/config/warnings_prefix.hpp>
 

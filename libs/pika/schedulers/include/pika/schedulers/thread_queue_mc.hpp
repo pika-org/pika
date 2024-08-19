@@ -7,16 +7,18 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/allocator_support/internal_allocator.hpp>
 #include <pika/assert.hpp>
-#include <pika/concurrency/cache_line_data.hpp>
-#include <pika/functional/function.hpp>
-#include <pika/modules/errors.hpp>
 #include <pika/schedulers/deadlock_detection.hpp>
 #include <pika/schedulers/lockfree_queue_backends.hpp>
 #include <pika/schedulers/maintain_queue_wait_times.hpp>
 #include <pika/schedulers/queue_holder_thread.hpp>
 #include <pika/schedulers/thread_queue.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/allocator_support/internal_allocator.hpp>
+#include <pika/concurrency/cache_line_data.hpp>
+#include <pika/functional/function.hpp>
+#include <pika/modules/errors.hpp>
 #include <pika/thread_support/unlock_guard.hpp>
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/threading_base/thread_queue_init_parameters.hpp>
@@ -41,9 +43,10 @@
 #include <unordered_set>
 #include <utility>
 #include <vector>
+#endif
 
 namespace pika::detail {
-    static pika::debug::detail::enable_print<false> tqmc_deb("_TQ_MC_");
+    inline constexpr pika::debug::detail::enable_print<false> tqmc_deb("_TQ_MC_");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -75,9 +78,9 @@ namespace pika::threads::detail {
         // call this function
         std::size_t add_new(std::int64_t add_count, thread_queue_type* addfrom, bool stealing)
         {
-            [[maybe_unused]] auto scp = ::pika::detail::tqmc_deb.scope(debug::detail::ptr(this),
-                __func__, "from", debug::detail::ptr(addfrom), "std::thread::id",
-                debug::detail::hex<6>(holder_->owner_id_), stealing);
+            // [[maybe_unused]] auto scp = ::pika::detail::tqmc_deb.scope(debug::detail::ptr(this),
+            //     __func__, "from", debug::detail::ptr(addfrom), "std::thread::id",
+            //     debug::detail::hex<6>(holder_->owner_id_), stealing);
             PIKA_ASSERT(holder_->owner_id_ == std::this_thread::get_id());
 
             if (addfrom->new_tasks_count_.data_.load(std::memory_order_relaxed) == 0) { return 0; }
@@ -235,8 +238,8 @@ namespace pika::threads::detail {
         bool get_next_thread(threads::detail::thread_id_ref_type& thrd, bool other_end,
             bool check_new = false) PIKA_HOT
         {
-            [[maybe_unused]] auto scp =
-                ::pika::detail::tqmc_deb.scope(debug::detail::ptr(this), __func__);
+            // [[maybe_unused]] auto scp =
+            //     ::pika::detail::tqmc_deb.scope(debug::detail::ptr(this), __func__);
             std::int64_t work_items_count_count =
                 work_items_count_.data_.load(std::memory_order_relaxed);
 

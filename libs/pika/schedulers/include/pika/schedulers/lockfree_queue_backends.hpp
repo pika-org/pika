@@ -11,6 +11,7 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
 # include <pika/concurrency/deque.hpp>
 #else
@@ -25,6 +26,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <utility>
+#endif
 
 namespace pika::threads::detail {
 

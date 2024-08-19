@@ -8,15 +8,17 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/allocator_support/internal_allocator.hpp>
 #include <pika/assert.hpp>
-#include <pika/concurrency/cache_line_data.hpp>
-#include <pika/functional/function.hpp>
-#include <pika/modules/errors.hpp>
 #include <pika/schedulers/deadlock_detection.hpp>
 #include <pika/schedulers/lockfree_queue_backends.hpp>
 #include <pika/schedulers/maintain_queue_wait_times.hpp>
 #include <pika/schedulers/queue_helpers.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/allocator_support/internal_allocator.hpp>
+#include <pika/concurrency/cache_line_data.hpp>
+#include <pika/functional/function.hpp>
+#include <pika/modules/errors.hpp>
 #include <pika/thread_support/unlock_guard.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_data.hpp>
@@ -44,6 +46,7 @@
 #include <unordered_set>
 #include <utility>
 #include <vector>
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::threads::detail {

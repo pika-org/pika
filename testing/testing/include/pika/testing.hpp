@@ -9,6 +9,10 @@
 #pragma once
 
 #include <pika/config.hpp>
+#include <pika/preprocessor/cat.hpp>
+#include <pika/preprocessor/expand.hpp>
+#include <pika/preprocessor/nargs.hpp>
+#include <pika/preprocessor/stringize.hpp>
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/testing/detail.hpp>

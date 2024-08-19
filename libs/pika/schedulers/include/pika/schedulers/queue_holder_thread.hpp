@@ -8,8 +8,10 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/debugging/print.hpp>
 #include <pika/schedulers/lockfree_queue_backends.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/debugging/print.hpp>
 #include <pika/threading_base/print.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_data.hpp>
@@ -36,6 +38,7 @@
 #include <unordered_set>
 #include <utility>
 #include <vector>
+#endif
 
 #if !defined(QUEUE_HOLDER_THREAD_DEBUG)
 # if defined(PIKA_DEBUG)
@@ -46,7 +49,7 @@
 #endif
 
 namespace pika::detail {
-    static pika::debug::detail::enable_print<QUEUE_HOLDER_THREAD_DEBUG> tq_deb("QH_THRD");
+    inline constexpr pika::debug::detail::enable_print<QUEUE_HOLDER_THREAD_DEBUG> tq_deb("QH_THRD");
 }
 
 // ------------------------------------------------------------

@@ -7,16 +7,19 @@
 
 #pragma once
 
-#include <pika/affinity/affinity_data.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
+#include <pika/thread_pools/scheduled_thread_pool.hpp>
+#include <pika/thread_pools/scheduling_loop.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/affinity/affinity_data.hpp>
 #include <pika/concurrency/barrier.hpp>
 #include <pika/execution_base/this_thread.hpp>
 #include <pika/functional/deferred_call.hpp>
 #include <pika/functional/detail/invoke.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/schedulers.hpp>
-#include <pika/thread_pools/scheduled_thread_pool.hpp>
-#include <pika/thread_pools/scheduling_loop.hpp>
 #include <pika/threading_base/callback_notifier.hpp>
 #include <pika/threading_base/create_thread.hpp>
 #include <pika/threading_base/create_work.hpp>
@@ -48,6 +51,7 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
+#endif
 
 namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
@@ -401,7 +405,7 @@ namespace pika::threads::detail {
         // process may have a non-full mask set which is inherited by this thread.
         if (!any(mask)) { mask = topo.get_machine_affinity_mask(); }
 
-        if (PIKA_LOG_ENABLED(debug)) topo.write_to_log();
+        // if (PIKA_LOG_ENABLED(debug)) topo.write_to_log();
 
         error_code ec(throwmode::lightweight);
         topo.set_thread_affinity_mask(mask, ec);

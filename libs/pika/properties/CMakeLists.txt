@@ -13,6 +13,6 @@ pika_add_module(
   pika properties
   GLOBAL_HEADER_GEN ON
   HEADERS ${properties_headers}
-  DEPENDENCIES pika_tag_invoke
+  MODULE_DEPENDENCIES pika_tag_invoke
   CMAKE_SUBDIRS examples tests
 )

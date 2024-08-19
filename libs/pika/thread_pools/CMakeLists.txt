@@ -7,7 +7,6 @@
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(thread_pools_headers
-    pika/thread_pools/detail/scoped_background_timer.hpp
     pika/thread_pools/scheduled_thread_pool.hpp pika/thread_pools/scheduled_thread_pool_impl.hpp
     pika/thread_pools/scheduling_loop.hpp
 )
@@ -22,11 +21,19 @@ pika_add_module(
   HEADERS ${thread_pools_headers}
   MODULE_DEPENDENCIES
     pika_assertion
+    pika_concurrency
     pika_config
+    pika_coroutines
     pika_debugging
     pika_errors
+    pika_execution_base
+    pika_functional
     pika_itt_notify
     pika_logging
     pika_schedulers
+    pika_tag_invoke
+    pika_thread_support
+    pika_threading_base
+    pika_topology
   CMAKE_SUBDIRS examples tests
 )

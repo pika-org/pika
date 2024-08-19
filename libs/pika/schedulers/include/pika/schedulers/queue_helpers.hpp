@@ -11,6 +11,8 @@
 #pragma once
 
 #include <pika/config.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/logging.hpp>
 #include <pika/schedulers/deadlock_detection.hpp>
 #include <pika/threading_base/thread_data.hpp>
@@ -22,6 +24,7 @@
 #include <cstdint>
 #include <iomanip>
 #include <vector>
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::threads::detail {

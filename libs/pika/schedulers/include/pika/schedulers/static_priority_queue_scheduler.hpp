@@ -9,17 +9,18 @@
 #pragma once
 
 #include <pika/config.hpp>
-
 #include <pika/assert.hpp>
 #include <pika/schedulers/local_priority_queue_scheduler.hpp>
 #include <pika/schedulers/lockfree_queue_backends.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <fmt/format.h>
 
 #include <cstddef>
 #include <cstdint>
 #include <mutex>
 #include <string>
+#endif
 
 #include <pika/config/warnings_prefix.hpp>
 
