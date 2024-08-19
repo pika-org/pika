@@ -4,7 +4,9 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(example_programs hello_world_documentation init_hpp_documentation split_tuple_documentation)
+set(example_programs hello_world_documentation init_hpp_documentation split_tuple_documentation
+                     when_all_vector_documentation
+)
 
 foreach(example_program ${example_programs})
   set(sources ${example_program}.cpp)
