@@ -18,7 +18,6 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <pika/threading_base/thread_pool_base.hpp>
 #include <pika/timing/detail/timestamp.hpp>
 #include <pika/topology/topology.hpp>
-#endif
 
 #include <chrono>
 #include <cstddef>
@@ -28,6 +27,7 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <ostream>
 #include <string>
 #include <thread>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.threading_base;

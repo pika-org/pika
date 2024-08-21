@@ -17,9 +17,9 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 # include <pika/coroutines/detail/tss.hpp>
-#endif
 
 # include <memory>
+#endif
 
 namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////

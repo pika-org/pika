@@ -11,10 +11,10 @@
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/execution_base/receiver.hpp>
 #include <pika/type_support/pack.hpp>
-#endif
 
 #include <type_traits>
 #include <variant>
+#endif
 
 namespace pika::execution::experimental::detail {
 

@@ -10,9 +10,11 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <time.h>
 
 #include <cstdint>
+#endif
 
 #if defined(PIKA_HAVE_CUDA) && defined(PIKA_COMPUTE_CODE)
 # include <pika/timing/detail/timestamp/cuda.hpp>
@@ -25,8 +27,9 @@ namespace pika::chrono::detail {
         return timestamp_cuda();
 #else
         struct timespec res;
-        clock_gettime(CLOCK_MONOTONIC, &res);
-        return 1000 * res.tv_sec + res.tv_nsec / 1000000;
+        // clock_gettime(CLOCK_MONOTONIC, &res);
+        // return 1000 * res.tv_sec + res.tv_nsec / 1000000;
+        return 0;
 #endif
     }
 }    // namespace pika::chrono::detail

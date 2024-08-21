@@ -12,10 +12,10 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/coroutines/thread_id_type.hpp>
-#endif
 
 #include <cstdint>
 #include <memory>
+#endif
 
 namespace pika::detail::external_timer {
     inline std::shared_ptr<task_wrapper> new_task(

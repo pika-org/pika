@@ -17,10 +17,6 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <pika/threading_base/thread_pool_base.hpp>
 #endif
 
-// TODO: error: no member named 'string' in namespace 'std'
-// on PIKA_ASSERT(pool), why?
-#include <string>
-
 #if defined(PIKA_HAVE_MODULE)
 module pika.threading_base;
 #endif

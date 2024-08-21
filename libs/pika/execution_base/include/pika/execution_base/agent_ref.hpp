@@ -10,7 +10,6 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/timing/steady_clock.hpp>
-#endif
 
 #include <fmt/format.h>
 
@@ -18,6 +17,7 @@
 #include <cstddef>
 #include <iosfwd>
 #include <string>
+#endif
 
 namespace pika::execution::detail {
     struct agent_base;

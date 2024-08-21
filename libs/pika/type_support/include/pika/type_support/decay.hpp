@@ -9,9 +9,11 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <functional>
 #include <type_traits>
 #include <utility>
+#endif
 
 namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////

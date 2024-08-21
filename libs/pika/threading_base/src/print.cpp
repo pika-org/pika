@@ -11,7 +11,6 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <pika/threading_base/print.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_data.hpp>
-#endif
 
 #include <cstdint>
 #include <thread>
@@ -20,6 +19,7 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 # include <linux/unistd.h>
 # include <sys/mman.h>
 # define PIKA_DEBUGGING_PRINT_LINUX
+#endif
 #endif
 
 #if defined(PIKA_HAVE_MODULE)

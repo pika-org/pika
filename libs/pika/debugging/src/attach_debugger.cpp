@@ -13,7 +13,6 @@ module;
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/debugging/attach_debugger.hpp>
-#endif
 
 #include <iostream>
 
@@ -24,6 +23,7 @@ module;
 #if defined(PIKA_WINDOWS)
 # include <Windows.h>
 #endif    // PIKA_WINDOWS
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.debugging;

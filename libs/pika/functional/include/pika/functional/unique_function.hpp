@@ -13,9 +13,11 @@
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstddef>
 #include <type_traits>
 #include <utility>
+#endif
 
 namespace pika::util::detail {
     template <typename Sig>

@@ -15,7 +15,6 @@
 #include <pika/errors/error.hpp>
 #include <pika/errors/throw_exception.hpp>
 #include <pika/type_support/pack.hpp>
-#endif
 
 #include <cstddef>
 #include <cstring>
@@ -23,6 +22,7 @@
 #include <memory>
 #include <type_traits>
 #include <utility>
+#endif
 
 #include <pika/config/warnings_prefix.hpp>
 

@@ -21,10 +21,10 @@
 #include <pika/thread_support/unlock_guard.hpp>
 #include <pika/timing/steady_clock.hpp>
 #include <pika/type_support/unused.hpp>
-#endif
 
 #include <mutex>
 #include <utility>
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {

@@ -45,10 +45,10 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/functional/unique_function.hpp>
-#endif
 
 #include <cstddef>
 #include <utility>
+#endif
 
 namespace pika::threads::coroutines::detail {
 

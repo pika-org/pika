@@ -13,13 +13,13 @@
 #include <pika/modules/execution_base.hpp>
 #include <pika/modules/memory.hpp>
 #include <pika/modules/thread_support.hpp>
-#endif
 
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <type_traits>
 #include <utility>
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // This header holds components that can be used to asynchronously request that

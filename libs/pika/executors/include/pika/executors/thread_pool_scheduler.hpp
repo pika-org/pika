@@ -22,13 +22,13 @@
 #include <pika/threading_base/register_thread.hpp>
 #include <pika/threading_base/scoped_annotation.hpp>
 #include <pika/threading_base/thread_description.hpp>
-#endif
 
 #include <cstddef>
 #include <exception>
 #include <string>
 #include <type_traits>
 #include <utility>
+#endif
 
 namespace pika::execution::experimental {
     struct thread_pool_scheduler

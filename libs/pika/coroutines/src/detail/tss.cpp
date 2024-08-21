@@ -21,11 +21,11 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 # include <pika/coroutines/detail/tss.hpp>
 # include <pika/modules/errors.hpp>
 # include <pika/type_support/unused.hpp>
-#endif
 
 # include <cstddef>
 # include <map>
 # include <memory>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.coroutines;

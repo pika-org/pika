@@ -13,7 +13,9 @@
 #include <pika/functional/detail/vtable/copyable_vtable.hpp>
 #include <pika/functional/detail/vtable/vtable.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <type_traits>
+#endif
 
 namespace pika::util::detail {
     struct function_base_vtable

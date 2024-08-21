@@ -16,9 +16,9 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 # include <pika/functional/detail/tag_fallback_invoke.hpp>
-#endif
 
 # include <utility>
+#endif
 
 namespace pika::execution::experimental {
     inline constexpr struct transfer_just_t final

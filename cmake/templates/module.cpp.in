@@ -11,12 +11,13 @@ module;
 
 // Include all third party library headers and pika macros
 
-// #include <pika/config.hpp>
 @module_includes@
 
 // For now include all standard library headers that we might use
 
 export module @module_name@;
+
+import std;
 
 @module_imports@
 

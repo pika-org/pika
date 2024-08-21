@@ -16,11 +16,11 @@
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
-#endif
 
 #include <exception>
 #include <type_traits>
 #include <utility>
+#endif
 
 namespace pika::drop_value_detail {
     template <typename Receiver>

@@ -40,7 +40,9 @@
 // include unist.d conditionally to check for POSIX version. Not all OSs have the
 // unistd header...
 #if defined(PIKA_HAVE_UNISTD_H)
+#if !defined(PIKA_HAVE_MODULE)
 # include <unistd.h>
+#endif
 #endif
 
 #if defined(_POSIX_VERSION)
@@ -48,19 +50,23 @@
  * Most of these utilities are really pure C++, but they are useful
  * only on posix systems.
  */
+#if !defined(PIKA_HAVE_MODULE)
 # include <cerrno>
 # include <cstddef>
 # include <cstdlib>
 # include <cstring>
 # include <stdexcept>
 # include <string>
+#endif
 
 # if defined(_POSIX_MAPPED_FILES) && _POSIX_MAPPED_FILES > 0
+#if !defined(PIKA_HAVE_MODULE)
 #  include <errno.h>
 #  include <sys/mman.h>
 #  include <sys/param.h>
 
 #  include <stdexcept>
+#endif
 # endif
 
 # if defined(__FreeBSD__)
@@ -72,6 +78,8 @@
 #  include <unistd.h>
 #  define EXEC_PAGESIZE static_cast<std::size_t>(sysconf(_SC_PAGESIZE))
 # endif
+
+#define EXEC_PAGESIZE 4096
 
 /**
  * Stack allocation routines and trampolines for setcontext

@@ -8,7 +8,9 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <functional>
+#endif
 
 namespace pika::detail {
     template <typename T>

@@ -10,8 +10,8 @@ module;
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/string_util/bad_lexical_cast.hpp>
-#endif
 #include <typeinfo>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.string_util;

@@ -244,6 +244,11 @@ if(PIKA_WITH_PRECOMPILED_HEADERS)
 endif()
 
 # ##################################################################################################
+# std module (https://github.com/DanielaE/std.module)
+# ##################################################################################################
+add_subdirectory(std.module)
+
+# ##################################################################################################
 pika_option(PIKA_WITH_EXAMPLES BOOL "Build examples (default: OFF)" OFF CATEGORY "Build Targets")
 pika_option(PIKA_WITH_TESTS BOOL "Build tests (default: OFF)" OFF CATEGORY "Build Targets")
 pika_option(

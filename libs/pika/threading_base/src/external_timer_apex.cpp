@@ -15,11 +15,11 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #if !defined(PIKA_HAVE_MODULE)
 # include <pika/threading_base/external_timer.hpp>
 # include <pika/threading_base/thread_data.hpp>
-#endif
 
 # include <cstdint>
 # include <memory>
 # include <string>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.threading_base;

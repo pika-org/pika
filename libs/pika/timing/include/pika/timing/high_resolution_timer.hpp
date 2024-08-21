@@ -8,8 +8,10 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <chrono>
 #include <cstdint>
+#endif
 
 namespace pika::chrono::detail {
     ///////////////////////////////////////////////////////////////////////////

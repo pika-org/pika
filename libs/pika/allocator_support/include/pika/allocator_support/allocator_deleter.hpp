@@ -10,7 +10,9 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <memory>
+#endif
 
 namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////

@@ -12,9 +12,9 @@
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/concepts/has_member_xxx.hpp>
 #include <pika/type_support/unused.hpp>
-#endif
 
 #include <type_traits>
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::util::detail {

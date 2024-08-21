@@ -19,10 +19,10 @@
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/functional/function.hpp>
 #include <pika/modules/errors.hpp>
-#endif
 
 #include <cstddef>
 #include <utility>
+#endif
 
 #include <pika/config/warnings_prefix.hpp>
 

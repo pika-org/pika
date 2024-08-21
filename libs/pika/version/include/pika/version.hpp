@@ -14,9 +14,11 @@
 #include <pika/prefix/find_prefix.hpp>
 #include <pika/preprocessor/stringize.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstdint>
 #include <string>
 #include <string_view>
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {

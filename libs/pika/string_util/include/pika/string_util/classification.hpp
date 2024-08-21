@@ -6,8 +6,10 @@
 
 #pragma once
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cctype>
 #include <string>
+#endif
 
 namespace pika::detail {
     template <typename CharT, typename Traits, typename Allocator>

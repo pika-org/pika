@@ -8,7 +8,9 @@
 
 #include <pika/config/export_definitions.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <iosfwd>
+#endif
 
 namespace pika::detail {
     /// This contains the location information where \a PIKA_ASSERT has been

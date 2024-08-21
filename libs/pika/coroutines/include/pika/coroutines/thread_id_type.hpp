@@ -16,7 +16,6 @@
 #include <pika/memory/intrusive_ptr.hpp>
 #include <pika/modules/memory.hpp>
 #include <pika/thread_support/atomic_count.hpp>
-#endif
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -27,6 +26,7 @@
 #include <iosfwd>
 #include <string_view>
 #include <utility>
+#endif
 
 namespace pika::threads::detail {
     // same as below, just not holding a reference count

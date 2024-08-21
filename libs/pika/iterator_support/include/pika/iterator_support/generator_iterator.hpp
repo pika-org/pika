@@ -12,8 +12,10 @@
 #include <pika/config.hpp>
 #include <pika/iterator_support/iterator_facade.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <functional>
 #include <iterator>
+#endif
 
 namespace pika::util {
 

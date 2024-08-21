@@ -8,12 +8,14 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstddef>
 #include <limits>
 #include <memory>
 #include <new>
 #include <type_traits>
 #include <utility>
+#endif
 
 #include <pika/preprocessor/cat.hpp>
 
@@ -62,7 +64,9 @@ inline void __aligned_free(void* p) noexcept { free(p); }
 
 #else    // !PIKA_HAVE_CXX17_STD_ALIGNED_ALLOC && !PIKA_HAVE_C11_ALIGNED_ALLOC
 
+#if !defined(PIKA_HAVE_MODULE)
 # include <cstdlib>
+#endif
 
 // provide our own (simple) implementation of aligned_alloc
 // NOLINTNEXTLINE(bugprone-reserved-identifier)

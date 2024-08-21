@@ -20,10 +20,10 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/timing/steady_clock.hpp>
 #include <pika/type_support/unused.hpp>
-#endif
 
 #include <mutex>
 #include <utility>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.synchronization;

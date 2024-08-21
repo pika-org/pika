@@ -22,7 +22,6 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 # include <pika/util/get_and_reset_value.hpp>
-#endif
 
 # include <fmt/format.h>
 
@@ -32,13 +31,16 @@
 # include <cstdlib>
 # include <stdexcept>
 # include <sys/param.h>
+#endif
 
 # if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION)
 
+#if !defined(PIKA_HAVE_MODULE)
 #  include <cstring>
 #  include <signal.h>
 #  include <stdlib.h>
 #  include <strings.h>
+#endif
 
 #  if !defined(SEGV_STACK_SIZE)
 #   define SEGV_STACK_SIZE MINSIGSTKSZ + 4096
@@ -46,8 +48,10 @@
 
 # endif
 
+#if !defined(PIKA_HAVE_MODULE)
 # include <iomanip>
 # include <iostream>
+#endif
 
 # if defined(PIKA_HAVE_VALGRIND)
 #  if defined(__GNUG__) && !defined(__INTEL_COMPILER)
@@ -206,15 +210,17 @@ namespace pika::threads::coroutines {
 
                 if (0 != (m_stack_size % EXEC_PAGESIZE))
                 {
-                    throw std::runtime_error(
-                        fmt::format("stack size of {} is not page aligned, page size is {}",
-                            m_stack_size, EXEC_PAGESIZE));
+                    // throw std::runtime_error(
+                    //     fmt::format("stack size of {} is not page aligned, page size is {}",
+                    //         m_stack_size, EXEC_PAGESIZE));
+                    throw std::runtime_error("");
                 }
 
                 if (0 >= m_stack_size)
                 {
-                    throw std::runtime_error(
-                        fmt::format("stack size of {} is invalid", m_stack_size));
+                    // throw std::runtime_error(
+                    //     fmt::format("stack size of {} is invalid", m_stack_size));
+                    throw std::runtime_error("");
                 }
 
                 m_stack = posix::alloc_stack(static_cast<std::size_t>(m_stack_size));

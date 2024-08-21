@@ -10,10 +10,12 @@
 
 #if defined(PIKA_HAVE_STACKTRACES)
 # include <pika/debugging/backtrace/backtrace.hpp>
-#else
 
+#if !defined(PIKA_HAVE_MODULE)
 # include <cstddef>
 # include <string>
+#endif
+#else
 
 namespace pika::debug::detail {
     class backtrace

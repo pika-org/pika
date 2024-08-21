@@ -6,8 +6,10 @@
 
 #pragma once
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <tuple>
 #include <type_traits>
+#endif
 
 namespace pika::traits::detail {
     template <typename T, typename Enable = void>

@@ -17,12 +17,12 @@
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/type_support/unused.hpp>
-#endif
 
 #include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <utility>
+#endif
 
 namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////

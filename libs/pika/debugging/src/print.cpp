@@ -13,7 +13,6 @@ module;
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/debugging/environ.hpp>
 #include <pika/debugging/print.hpp>
-#endif
 
 #include <boost/crc.hpp>
 
@@ -37,6 +36,7 @@ module;
 #include <type_traits>
 #include <utility>
 #include <vector>
+#endif
 
 #if defined(__FreeBSD__)
 PIKA_EXPORT char** freebsd_environ = nullptr;
@@ -45,6 +45,13 @@ PIKA_EXPORT char** freebsd_environ = nullptr;
 // #if defined(PIKA_HAVE_MODULE)
 module pika.debugging;
 // #endif
+
+import std;
+
+// TODO
+#if !defined(CHAR_BIT)
+#define CHAR_BIT 8
+#endif
 
 #define PIKA_DETAIL_NS_DEBUG pika::debug::detail
 

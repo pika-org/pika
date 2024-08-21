@@ -22,7 +22,6 @@
 # include <pika/execution_base/sender.hpp>
 # include <pika/functional/detail/tag_fallback_invoke.hpp>
 # include <pika/type_support/pack.hpp>
-#endif
 
 # include <atomic>
 # include <cstddef>
@@ -32,6 +31,7 @@
 # include <optional>
 # include <type_traits>
 # include <utility>
+#endif
 
 namespace pika::when_all_impl {
     // This is a receiver to be connected to the ith predecessor sender

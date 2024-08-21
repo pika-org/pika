@@ -9,7 +9,9 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <chrono>
+#endif
 
 namespace pika::chrono {
     using std::chrono::steady_clock;

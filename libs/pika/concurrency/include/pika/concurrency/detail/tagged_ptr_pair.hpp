@@ -15,8 +15,10 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstddef>    // for std::size_t
 #include <cstdint>
+#endif
 
 #ifdef _MSC_VER
 # if defined(_M_IX86)

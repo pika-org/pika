@@ -18,7 +18,6 @@ module;
 #include <pika/errors/error_code.hpp>
 #include <pika/errors/exception.hpp>
 #include <pika/errors/exception_info.hpp>
-#endif
 
 #if defined(PIKA_WINDOWS)
 # include <process.h>
@@ -37,6 +36,7 @@ module;
 #include <system_error>
 #include <utility>
 #include <vector>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.errors;

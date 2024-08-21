@@ -11,11 +11,11 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/concurrency/spinlock.hpp>
-#endif
 
 #include <cstdint>
 #include <mutex>
 #include <utility>
+#endif
 
 #if defined(PIKA_MSVC_WARNING_PRAGMA)
 # pragma warning(push)

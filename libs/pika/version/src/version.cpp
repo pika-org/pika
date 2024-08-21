@@ -10,6 +10,8 @@
 #include <pika/config.hpp>
 #include <pika/config/config_strings.hpp>
 #include <pika/config/version.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/prefix/find_prefix.hpp>
 #include <pika/preprocessor/stringize.hpp>
 #include <pika/version.hpp>
@@ -20,6 +22,7 @@
 #include <cstdint>
 #include <sstream>
 #include <string>
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {

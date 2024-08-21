@@ -10,11 +10,11 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/type_support/pack.hpp>
-#endif
 
 #include <cstddef>    // for size_t
 #include <type_traits>
 #include <utility>
+#endif
 
 namespace pika::util::detail {
 #if defined(PIKA_HAVE_CXX20_NO_UNIQUE_ADDRESS_ATTRIBUTE) &&                                        \

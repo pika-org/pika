@@ -6,7 +6,9 @@
 
 #pragma once
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <utility>
+#endif
 
 namespace pika::detail {
     template <typename F, typename... Args>

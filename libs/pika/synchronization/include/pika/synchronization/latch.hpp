@@ -15,7 +15,6 @@
 #include <pika/concurrency/cache_line_data.hpp>
 #include <pika/concurrency/spinlock.hpp>
 #include <pika/type_support/unused.hpp>
-#endif
 
 #include <atomic>
 #include <cstddef>
@@ -23,6 +22,7 @@
 #include <limits>
 #include <mutex>
 #include <utility>
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {

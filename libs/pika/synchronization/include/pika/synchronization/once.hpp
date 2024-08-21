@@ -15,10 +15,10 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/functional/detail/invoke.hpp>
-#endif
 
 #include <atomic>
 #include <utility>
+#endif
 
 namespace pika {
     struct once_flag

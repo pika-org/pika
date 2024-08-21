@@ -17,7 +17,6 @@
 #include <pika/execution_base/sender.hpp>
 #include <pika/execution_base/this_thread.hpp>
 #include <pika/functional/unique_function.hpp>
-#endif
 
 #include <atomic>
 #include <exception>
@@ -26,6 +25,7 @@
 #include <optional>
 #include <type_traits>
 #include <utility>
+#endif
 
 namespace pika::execution::experimental {
     /// The type of access provided by async_rw_mutex.

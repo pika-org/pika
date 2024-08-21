@@ -10,11 +10,11 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/string_util/from_string.hpp>
-#endif
 
 #include <map>
 #include <string>
 #include <vector>
+#endif
 
 #include <pika/config/warnings_prefix.hpp>
 

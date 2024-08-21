@@ -16,7 +16,6 @@
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/concurrency/spinlock.hpp>
 #include <pika/modules/errors.hpp>
-#endif
 
 #include <cstddef>
 #include <iosfwd>
@@ -26,6 +25,7 @@
 #include <vector>
 
 #include <hwloc.h>
+#endif
 
 namespace pika::threads::detail {
 
@@ -75,9 +75,9 @@ namespace pika::threads::detail {
         membind_firsttouch = HWLOC_MEMBIND_FIRSTTOUCH,
         membind_bind = HWLOC_MEMBIND_BIND,
         membind_interleave = HWLOC_MEMBIND_INTERLEAVE,
-#if HWLOC_API_VERSION < 0x00020000
-        membind_replicate = HWLOC_MEMBIND_REPLICATE,
-#endif
+// #if HWLOC_API_VERSION < 0x00020000
+//         membind_replicate = HWLOC_MEMBIND_REPLICATE,
+// #endif
         membind_nexttouch = HWLOC_MEMBIND_NEXTTOUCH,
         membind_mixed = HWLOC_MEMBIND_MIXED,
         // special pika addition
@@ -287,7 +287,9 @@ namespace pika::threads::detail {
 
         std::size_t init_socket_number(std::size_t num_thread)
         {
-            return init_node_number(num_thread, HWLOC_OBJ_SOCKET);
+            // TODO
+            // return init_node_number(num_thread, HWLOC_OBJ_SOCKET);
+            return 0;
         }
 
         std::size_t init_numa_node_number(std::size_t num_thread);

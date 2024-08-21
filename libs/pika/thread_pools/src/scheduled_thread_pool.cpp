@@ -16,9 +16,9 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <pika/schedulers/static_queue_scheduler.hpp>
 #include <pika/thread_pools/scheduled_thread_pool.hpp>
 #include <pika/thread_pools/scheduled_thread_pool_impl.hpp>
-#endif
 
 #include <mutex>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.thread_pools;

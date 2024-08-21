@@ -12,10 +12,10 @@
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/type_support/lazy_conditional.hpp>
 #include <pika/type_support/type_identity.hpp>
-#endif
 
 #include <iterator>
 #include <type_traits>
+#endif
 
 namespace pika::util {
 

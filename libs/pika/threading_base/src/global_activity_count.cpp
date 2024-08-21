@@ -8,10 +8,10 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/threading_base/detail/global_activity_count.hpp>
-#endif
 
 #include <atomic>
 #include <cstddef>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.threading_base;

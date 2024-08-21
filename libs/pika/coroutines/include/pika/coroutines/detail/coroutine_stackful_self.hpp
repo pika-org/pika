@@ -13,10 +13,12 @@
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/coroutines/thread_id_type.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstddef>
 #include <exception>
 #include <limits>
 #include <utility>
+#endif
 
 namespace pika::threads::coroutines::detail {
 

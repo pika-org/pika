@@ -7,15 +7,14 @@
 #pragma once
 
 #include <pika/assert.hpp>
+#include <pika/concurrency/cache_line_data.hpp>
 
 #if !defined(PIKA_HAVE_MODULE)
-#include <pika/concurrency/cache_line_data.hpp>
-#endif
-
 #include <atomic>
 #include <cstdint>
 #include <optional>
 #include <type_traits>
+#endif
 
 namespace pika::concurrency::detail {
     /// \brief A concurrent queue which can only hold contiguous ranges of

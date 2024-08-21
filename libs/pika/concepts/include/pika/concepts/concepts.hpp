@@ -11,7 +11,9 @@
 
 #include <pika/preprocessor/cat.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <type_traits>
+#endif
 
 #define PIKA_CONCEPT_REQUIRES_(...)                                                                \
     int PIKA_PP_CAT(_concept_requires_,                                                            \

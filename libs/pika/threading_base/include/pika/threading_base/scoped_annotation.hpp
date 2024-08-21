@@ -23,8 +23,10 @@
 # endif
 #endif
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <string>
 #include <type_traits>
+#endif
 
 namespace pika {
     namespace detail {

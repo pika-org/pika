@@ -27,11 +27,13 @@
 #endif
 #endif
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstddef>
 #include <cstdint>
 #include <string>
 #include <type_traits>
 #include <utility>
+#endif
 
 namespace pika {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)

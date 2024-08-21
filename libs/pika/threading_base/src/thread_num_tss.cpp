@@ -11,12 +11,12 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/modules/errors.hpp>
 #include <pika/threading_base/thread_num_tss.hpp>
-#endif
 
 #include <cstddef>
 #include <cstdint>
 #include <tuple>
 #include <utility>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.threading_base;

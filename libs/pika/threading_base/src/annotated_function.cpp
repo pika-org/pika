@@ -11,11 +11,11 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
 #if !defined(PIKA_HAVE_MODULE)
 # include <pika/threading_base/annotated_function.hpp>
-#endif
 
 # include <string>
 # include <unordered_set>
 # include <utility>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.threading_base;
@@ -32,7 +32,9 @@ namespace pika::detail {
 
 #else
 
+#if !defined(PIKA_HAVE_MODULE)
 # include <string>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.threading_base;

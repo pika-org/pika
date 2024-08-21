@@ -20,7 +20,6 @@
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/type_support/detail/with_result_of.hpp>
 #include <pika/type_support/pack.hpp>
-#endif
 
 #if __has_include(<fmt/base.h>)
 # include <fmt/base.h>
@@ -36,6 +35,7 @@
 #include <tuple>
 #include <type_traits>
 #include <utility>
+#endif
 
 // We only make the choice of mode available when not using stdexec and if not
 // using older versions of GCC. stdexec's sender concepts require nothrow

@@ -11,7 +11,9 @@
 #include <pika/config.hpp>
 #include <pika/preprocessor/cat.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <type_traits>
+#endif
 
 /// This macro creates a boolean unary meta-function which result is
 /// true if and only if its parameter type has member function with

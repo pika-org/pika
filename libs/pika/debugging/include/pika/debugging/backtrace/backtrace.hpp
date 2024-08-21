@@ -12,10 +12,12 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstddef>
 #include <iosfwd>
 #include <string>
 #include <vector>
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::debug::detail {

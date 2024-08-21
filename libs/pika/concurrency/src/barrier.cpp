@@ -10,10 +10,10 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/concurrency/barrier.hpp>
-#endif
 
 #include <cstddef>
 #include <mutex>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.concurrency;

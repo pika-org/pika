@@ -15,12 +15,12 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/coroutines/thread_id_type.hpp>
-#endif
 
 #include <apex_api.hpp>
 
 #include <cstdint>
 #include <memory>
+#endif
 
 namespace pika::detail::external_timer {
     using apex::finalize;

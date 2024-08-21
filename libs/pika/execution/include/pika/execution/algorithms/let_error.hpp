@@ -23,11 +23,11 @@
 # include <pika/functional/detail/tag_fallback_invoke.hpp>
 # include <pika/type_support/detail/with_result_of.hpp>
 # include <pika/type_support/pack.hpp>
-#endif
 
 # include <exception>
 # include <type_traits>
 # include <utility>
+#endif
 
 namespace pika::let_error_detail {
     template <typename PredecessorSender, typename F>

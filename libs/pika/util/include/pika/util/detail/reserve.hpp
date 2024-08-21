@@ -15,13 +15,13 @@
 #include <pika/iterator_support/range.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/iterator_support/traits/is_range.hpp>
-#endif
 
 #include <algorithm>
 #include <cstddef>
 #include <iterator>
 #include <type_traits>
 #include <vector>
+#endif
 
 namespace pika::traits::detail {
 

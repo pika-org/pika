@@ -11,10 +11,12 @@
 #include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/iterator_support/traits/is_range.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstddef>
 #include <iterator>
 #include <type_traits>
 #include <utility>
+#endif
 
 namespace pika::util {
     template <typename Iterator, typename Sentinel = Iterator>

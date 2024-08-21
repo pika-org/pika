@@ -8,8 +8,10 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstddef>
 #include <memory>
+#endif
 
 namespace pika::detail {
     // By default we return the address of the object which is used to invoke

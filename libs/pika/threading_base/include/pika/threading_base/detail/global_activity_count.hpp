@@ -8,7 +8,9 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstddef>
+#endif
 
 namespace pika::threads::detail {
     PIKA_EXPORT void increment_global_activity_count();

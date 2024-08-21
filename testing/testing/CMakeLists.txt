@@ -8,6 +8,7 @@ set(testing_sources testing.cpp)
 list(TRANSFORM testing_sources PREPEND src/ OUTPUT_VARIABLE testing_sources)
 
 add_library(pika_testing SHARED ${testing_sources})
+target_compile_definitions(pika_testing PRIVATE PIKA_HAVE_MODULE)
 target_include_directories(pika_testing PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_sources(
   pika_testing

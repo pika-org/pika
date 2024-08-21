@@ -17,10 +17,10 @@
 #include <pika/execution_base/context_base.hpp>
 #include <pika/execution_base/resource_base.hpp>
 #include <pika/timing/steady_clock.hpp>
-#endif
 
 #include <cstddef>
 #include <string>
+#endif
 
 #include <pika/config/warnings_prefix.hpp>
 

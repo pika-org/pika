@@ -7,7 +7,9 @@
 
 #pragma once
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <ios>
+#endif
 
 namespace pika::detail {
 

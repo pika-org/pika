@@ -16,12 +16,14 @@
 #include <pika/memory/config/defines.hpp>
 #include <pika/memory/detail/sp_convertible.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <fmt/format.h>
 
 #include <cstddef>
 #include <functional>
 #include <iosfwd>
 #include <type_traits>
+#endif
 
 namespace pika::memory {
 

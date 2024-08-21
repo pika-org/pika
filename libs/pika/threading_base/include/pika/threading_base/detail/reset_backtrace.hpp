@@ -14,10 +14,10 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 # include <pika/errors/error_code.hpp>
-#endif
 
 # include <memory>
 # include <string>
+#endif
 
 namespace pika::threads::detail {
     struct reset_backtrace

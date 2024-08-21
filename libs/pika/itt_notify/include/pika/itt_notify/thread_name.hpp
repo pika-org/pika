@@ -8,7 +8,9 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <string>
+#endif
 
 namespace pika::detail {
     /// Helper utility to set and store a name for the current operating system

@@ -19,13 +19,13 @@
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/type_support/detail/with_result_of.hpp>
 #include <pika/type_support/pack.hpp>
-#endif
 
 #include <exception>
 #include <optional>
 #include <tuple>
 #include <type_traits>
 #include <utility>
+#endif
 
 namespace pika::drop_op_state_detail {
     template <typename OpState>

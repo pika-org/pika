@@ -17,12 +17,12 @@
 # include <pika/execution_base/receiver.hpp>
 # include <pika/execution_base/sender.hpp>
 # include <pika/type_support/pack.hpp>
-#endif
 
 # include <cstddef>
 # include <exception>
 # include <stdexcept>
 # include <utility>
+#endif
 
 namespace pika::just_detail {
     template <typename Is, typename... Ts>

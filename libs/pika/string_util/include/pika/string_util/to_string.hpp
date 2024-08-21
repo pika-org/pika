@@ -9,10 +9,12 @@
 #include <pika/config.hpp>
 #include <pika/string_util/bad_lexical_cast.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <fmt/format.h>
 
 #include <string>
 #include <type_traits>
+#endif
 
 namespace pika::detail {
 

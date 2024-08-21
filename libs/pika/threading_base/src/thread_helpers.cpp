@@ -31,7 +31,6 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 # include <pika/debugging/backtrace.hpp>
 # include <pika/threading_base/detail/reset_backtrace.hpp>
 #endif
-#endif
 
 #include <atomic>
 #include <cstddef>
@@ -39,6 +38,7 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <memory>
 #include <string>
 #include <utility>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.threading_base;

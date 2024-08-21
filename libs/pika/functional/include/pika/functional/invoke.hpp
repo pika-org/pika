@@ -11,10 +11,10 @@
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/functional/detail/invoke.hpp>
 #include <pika/type_support/void_guard.hpp>
-#endif
 
 #include <type_traits>
 #include <utility>
+#endif
 
 namespace pika::util::detail {
 #define PIKA_INVOKE_R(R, F, ...) (::pika::detail::void_guard<R>(), PIKA_INVOKE(F, __VA_ARGS__))

@@ -12,12 +12,12 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/modules/errors.hpp>
-#endif
 
 #include <chrono>
 #include <mutex>
 #include <shared_mutex>
 #include <utility>
+#endif
 
 namespace pika {
 

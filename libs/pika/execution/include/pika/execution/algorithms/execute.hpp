@@ -17,9 +17,9 @@
 #if !defined(PIKA_HAVE_MODULE)
 # include <pika/execution_base/sender.hpp>
 # include <pika/functional/detail/tag_fallback_invoke.hpp>
-#endif
 
 # include <utility>
+#endif
 
 namespace pika::execution::experimental {
     inline constexpr struct execute_t final : pika::functional::detail::tag_fallback<execute_t>

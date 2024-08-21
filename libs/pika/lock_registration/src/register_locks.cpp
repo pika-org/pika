@@ -15,12 +15,12 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <pika/lock_registration/detail/register_locks.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/type_support/unused.hpp>
-#endif
 
 #include <cstddef>
 #include <memory>
 #include <string>
 #include <utility>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.lock_registration;

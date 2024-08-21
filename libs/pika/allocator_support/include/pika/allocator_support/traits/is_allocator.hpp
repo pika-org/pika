@@ -12,8 +12,10 @@
 #include <pika/config.hpp>
 #include <pika/concepts/has_member_xxx.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <type_traits>
 #include <utility>
+#endif
 
 namespace pika::detail {
     template <typename T>

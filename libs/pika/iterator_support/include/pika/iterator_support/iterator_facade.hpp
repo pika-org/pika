@@ -16,11 +16,13 @@
 #include <pika/config.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstddef>
 #include <iterator>
 #include <memory>
 #include <type_traits>
 #include <utility>
+#endif
 
 namespace pika::util {
     ///////////////////////////////////////////////////////////////////////////

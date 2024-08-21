@@ -9,11 +9,13 @@
 
 #include <pika/config/forward.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <algorithm>
 #include <cctype>
 #include <cstddef>
 #include <string>
 #include <utility>
+#endif
 
 namespace pika::detail {
     template <typename It, typename CharT, typename Traits, typename Allocator>

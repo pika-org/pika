@@ -11,7 +11,9 @@
 #include <pika/config.hpp>
 #include <pika/preprocessor/stringize.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <string>
+#endif
 
 namespace pika::util {
     // return the full path of the current executable

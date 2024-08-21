@@ -13,12 +13,12 @@
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/concurrency/spinlock.hpp>
 #include <pika/timing/steady_clock.hpp>
-#endif
 
 #include <cstddef>
 #include <cstdint>
 #include <mutex>
 #include <utility>
+#endif
 
 #if defined(PIKA_MSVC_WARNING_PRAGMA)
 # pragma warning(push)
@@ -43,7 +43,7 @@ namespace pika {
     // well: one thread waiting for several other threads to touch (signal)
     // the semaphore, or several threads waiting for one other thread to touch
     // this semaphore.
-    template <std::ptrdiff_t LeastMaxValue = PTRDIFF_MAX,
+    template <std::ptrdiff_t LeastMaxValue = std::numeric_limits<std::ptrdiff_t>::max(),
         typename Mutex = pika::concurrency::detail::spinlock>
     class counting_semaphore
     {

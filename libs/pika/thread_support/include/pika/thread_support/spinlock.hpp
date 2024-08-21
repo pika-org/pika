@@ -14,7 +14,9 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <atomic>
+#endif
 
 namespace pika::detail {
 

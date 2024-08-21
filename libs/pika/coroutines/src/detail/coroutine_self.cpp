@@ -12,9 +12,9 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/coroutines/detail/coroutine_self.hpp>
-#endif
 
 #include <cstddef>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.coroutines;

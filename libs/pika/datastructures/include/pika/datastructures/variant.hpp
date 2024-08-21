@@ -9,7 +9,9 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_CXX17_COPY_ELISION)
+#if !defined(PIKA_HAVE_MODULE)
 # include <variant>
+#endif
 
 namespace pika::detail {
     using std::get;

@@ -89,11 +89,16 @@
 # undef malloc
 # undef free
 #else
+#if !defined(PIKA_HAVE_MODULE)
 # include <atomic>    // Requires C++11. Sorry VS2010.
+#endif
 #if !defined(PIKA_HAVE_MODULE)
 # include <cassert>
+#else
+#define assert(...) do {} while (0)
 #endif
 #endif
+#if !defined(PIKA_HAVE_MODULE)
 #include <algorithm>
 #include <array>
 #include <climits>    // for CHAR_BIT
@@ -105,6 +110,19 @@
 #include <thread>    // partly for __WINPTHREADS_VERSION if on MinGW-w64 w/ POSIX threading
 #include <type_traits>
 #include <utility>
+#endif
+
+// TODO: Assume everything is lockfree for now
+#define ATOMIC_BOOL_LOCK_FREE 1
+#define ATOMIC_CHAR_LOCK_FREE 1
+#define ATOMIC_CHAR16_T_LOCK_FREE 1
+#define ATOMIC_CHAR32_T_LOCK_FREE 1
+#define ATOMIC_WCHAR_T_LOCK_FREE 1
+#define ATOMIC_SHORT_LOCK_FREE 1
+#define ATOMIC_INT_LOCK_FREE 1
+#define ATOMIC_LONG_LOCK_FREE 1
+#define ATOMIC_LLONG_LOCK_FREE 1
+#define ATOMIC_POINTER_LOCK_FREE 1
 
 // Platform-specific definitions of a numeric thread ID type and an invalid value
 namespace pika::concurrency::detail {

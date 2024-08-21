@@ -20,7 +20,6 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <pika/threading_base/thread_helpers.hpp>
 #include <pika/timing/steady_clock.hpp>
 #include <pika/type_support/unused.hpp>
-#endif
 
 #include <boost/intrusive/detail/uncast.hpp>
 #include <boost/intrusive/slist.hpp>
@@ -30,6 +29,7 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <mutex>
 #include <string>
 #include <utility>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.synchronization;

@@ -6,7 +6,9 @@
 
 #pragma once
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <type_traits>
+#endif
 
 namespace pika::detail {
     template <bool Enable, typename C1, typename C2>

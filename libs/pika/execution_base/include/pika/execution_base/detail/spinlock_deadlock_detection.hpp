@@ -8,7 +8,9 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstddef>
+#endif
 
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
 namespace pika::util::detail {

@@ -23,7 +23,6 @@
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/type_support/detail/with_result_of.hpp>
 #include <pika/type_support/pack.hpp>
-#endif
 
 #include <atomic>
 #include <cstddef>
@@ -34,6 +33,7 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
+#endif
 
 namespace pika::when_all_vector_detail {
     template <typename Sender>

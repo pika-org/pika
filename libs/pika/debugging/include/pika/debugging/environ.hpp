@@ -15,8 +15,10 @@
 // To be safe, declare it here.
 
 #if defined(__linux) || defined(linux) || defined(__linux__)
+#if !defined(PIKA_HAVE_MODULE)
 # include <sys/mman.h>
 # include <unistd.h>
+#endif
 #elif defined(__APPLE__)
 // It appears that on Mac OS X the 'environ' variable is not
 // available to dynamically linked libraries.

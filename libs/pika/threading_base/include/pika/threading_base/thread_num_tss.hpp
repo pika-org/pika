@@ -8,7 +8,9 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstddef>
+#endif
 
 #include <pika/config/warnings_prefix.hpp>
 

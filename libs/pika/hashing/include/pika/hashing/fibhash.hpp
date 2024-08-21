@@ -11,8 +11,10 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstdint>
 #include <cstdlib>
+#endif
 
 namespace pika::detail {
     template <std::uint64_t N>

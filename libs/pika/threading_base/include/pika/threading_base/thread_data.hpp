@@ -28,7 +28,6 @@
 #include <pika/modules/errors.hpp>
 #include <pika/modules/memory.hpp>
 #include <pika/thread_support/atomic_count.hpp>
-#endif
 
 #include <atomic>
 #include <cstddef>
@@ -39,6 +38,7 @@
 #include <stack>
 #include <string>
 #include <utility>
+#endif
 
 #include <pika/config/warnings_prefix.hpp>
 

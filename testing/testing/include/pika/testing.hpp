@@ -16,9 +16,9 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/testing/detail.hpp>
-#endif
 
 #include <string>
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 #define PIKA_TEST(...)                                                                             \

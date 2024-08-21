@@ -13,12 +13,12 @@
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/timing/high_resolution_timer.hpp>
 #include <pika/timing/steady_clock.hpp>
-#endif
 
 #include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <ratio>
+#endif
 
 namespace pika::execution {
     namespace detail {

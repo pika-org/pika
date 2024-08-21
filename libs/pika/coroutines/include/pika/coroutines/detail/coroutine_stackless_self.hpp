@@ -14,12 +14,12 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/functional/function.hpp>
-#endif
 
 #include <cstddef>
 #include <exception>
 #include <limits>
 #include <utility>
+#endif
 
 namespace pika::threads::coroutines::detail {
     class stackless_coroutine;

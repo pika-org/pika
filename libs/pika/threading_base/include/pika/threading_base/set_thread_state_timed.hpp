@@ -15,9 +15,9 @@
 #include <pika/coroutines/coroutine.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/timing.hpp>
-#endif
 
 #include <atomic>
+#endif
 
 namespace pika::threads::detail {
 

@@ -17,7 +17,6 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <pika/threading_base/create_thread.hpp>
 #include <pika/threading_base/set_thread_state_timed.hpp>
 #include <pika/threading_base/threading_base_fwd.hpp>
-#endif
 
 #include <atomic>
 #include <chrono>
@@ -25,6 +24,7 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <memory>
 #include <system_error>
 #include <utility>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.threading_base;

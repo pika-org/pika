@@ -31,7 +31,9 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstddef>
+#endif
 
 /*
    ContextImpl concept documentation.

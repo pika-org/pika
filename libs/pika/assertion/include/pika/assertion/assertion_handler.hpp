@@ -10,7 +10,9 @@
 #include <pika/config.hpp>
 #include <pika/assertion/source_location.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <string>
+#endif
 
 namespace pika::detail {
     /// The signature for an assertion handler

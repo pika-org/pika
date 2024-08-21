@@ -8,8 +8,10 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstddef>
 #include <type_traits>
+#endif
 
 namespace pika::util::detail {
 

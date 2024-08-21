@@ -8,8 +8,10 @@
 
 #include <pika/iterator_support/traits/is_iterator.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <type_traits>
 #include <utility>
+#endif
 
 namespace pika::traits {
 

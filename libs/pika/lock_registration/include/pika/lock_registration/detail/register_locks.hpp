@@ -13,7 +13,6 @@
 #include <pika/concepts/has_member_xxx.hpp>
 #include <pika/functional/function.hpp>
 #include <pika/type_support/unused.hpp>
-#endif
 
 #include <cstddef>
 #include <map>
@@ -23,6 +22,7 @@
 #endif
 #include <type_traits>
 #include <utility>
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::util {

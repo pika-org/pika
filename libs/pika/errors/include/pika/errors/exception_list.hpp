@@ -13,7 +13,6 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/thread_support/spinlock.hpp>
-#endif
 
 #include <cstddef>
 #include <exception>
@@ -21,6 +20,7 @@
 #include <mutex>
 #include <string>
 #include <system_error>
+#endif
 
 #include <pika/config/warnings_prefix.hpp>
 

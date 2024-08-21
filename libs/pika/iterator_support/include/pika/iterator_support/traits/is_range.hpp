@@ -11,8 +11,10 @@
 #include <pika/iterator_support/range.hpp>
 #include <pika/iterator_support/traits/is_sentinel_for.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <iterator>
 #include <type_traits>
+#endif
 
 namespace pika::traits {
     ///////////////////////////////////////////////////////////////////////////

@@ -17,11 +17,11 @@
 #include <pika/concurrency/spinlock.hpp>
 #include <pika/execution_base/agent_ref.hpp>
 #include <pika/execution_base/this_thread.hpp>
-#endif
 
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::detail {

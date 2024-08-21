@@ -11,9 +11,9 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/debugging/print.hpp>
-#endif
 
 #include <iosfwd>
+#endif
 
 // ------------------------------------------------------------
 /// \cond NODETAIL

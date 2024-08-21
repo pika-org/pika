@@ -13,11 +13,11 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/concurrency/spinlock.hpp>
-#endif
 
 #include <atomic>
 #include <mutex>
 #include <utility>
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace pika::experimental {

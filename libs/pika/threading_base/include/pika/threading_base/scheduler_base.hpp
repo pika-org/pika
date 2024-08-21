@@ -23,7 +23,6 @@
 #if defined(PIKA_HAVE_SCHEDULER_LOCAL_STORAGE)
 # include <pika/coroutines/detail/tss.hpp>
 #endif
-#endif
 
 #include <fmt/format.h>
 
@@ -38,6 +37,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#endif
 
 #include <pika/config/warnings_prefix.hpp>
 

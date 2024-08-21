@@ -9,8 +9,10 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstddef>
 #include <cstdint>
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::threads::detail {

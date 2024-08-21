@@ -14,7 +14,6 @@ module;
 #include <pika/errors/exception.hpp>
 #include <pika/errors/exception_list.hpp>
 #include <pika/thread_support/unlock_guard.hpp>
-#endif
 
 #include <exception>
 #include <mutex>
@@ -22,6 +21,7 @@ module;
 #include <string>
 #include <system_error>
 #include <utility>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.errors;

@@ -9,9 +9,11 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstddef>
 #include <iterator>
 #include <type_traits>
+#endif
 
 namespace pika::detail {
     template <typename T>

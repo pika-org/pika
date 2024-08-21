@@ -14,11 +14,11 @@
 #include <pika/execution/algorithms/execute.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
-#endif
 
 #include <exception>
 #include <thread>
 #include <type_traits>
+#endif
 
 namespace pika::execution::experimental {
     struct std_thread_scheduler

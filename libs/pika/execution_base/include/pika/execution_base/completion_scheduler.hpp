@@ -48,9 +48,9 @@ namespace pika::execution::experimental::detail {
 
 #if !defined(PIKA_HAVE_MODULE)
 # include <pika/functional/tag_invoke.hpp>
-#endif
 
 # include <type_traits>
+#endif
 
 namespace pika::execution::experimental {
     template <typename CPO>

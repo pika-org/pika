@@ -24,7 +24,6 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
 # include <pika/errors/throw_exception.hpp>
 #endif
-#endif
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -52,6 +51,7 @@ extern "C" int sched_yield(void);
 # endif
 # include <time.h>
 #endif
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.execution_base;
@@ -71,7 +71,10 @@ namespace pika::execution {
             {
                 default_agent();
 
-                std::string description() const override { return fmt::format("{}", id_); }
+                std::string description() const override {
+                    // return fmt::format("{}", id_);
+                    return "";
+                }
 
                 default_context const& context() const override { return context_; }
 

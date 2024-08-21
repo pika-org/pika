@@ -17,7 +17,6 @@ module;
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/modules/util.hpp>
 #include <pika/testing.hpp>
-#endif
 
 #include <atomic>
 #include <cstddef>
@@ -26,6 +25,7 @@ module;
 #include <functional>
 #include <iostream>
 #include <string>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.testing;
@@ -45,7 +45,10 @@ namespace pika::detail {
 
     fixture::~fixture()
     {
-        if (report_errors(stream_) != 0) { std::exit(EXIT_FAILURE); }
+        if (report_errors(stream_) != 0) {
+            // std::exit(EXIT_FAILURE);
+            std::exit(1);
+        }
     }
 
     void fixture::increment_tests(counter_type c)

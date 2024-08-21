@@ -17,7 +17,6 @@
 #include <pika/functional/function.hpp>
 #include <pika/functional/unique_function.hpp>
 #include <pika/modules/errors.hpp>
-#endif
 
 #if defined(PIKA_HAVE_APEX)
 # include <apex_api.hpp>
@@ -28,6 +27,7 @@
 #include <functional>
 #include <memory>
 #include <utility>
+#endif
 
 namespace pika::detail::external_timer {
 #if defined(PIKA_HAVE_APEX)

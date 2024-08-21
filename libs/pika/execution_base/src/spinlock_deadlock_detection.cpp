@@ -14,9 +14,9 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/execution_base/detail/spinlock_deadlock_detection.hpp>
-#endif
 
 #include <cstddef>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.execution_base;

@@ -14,12 +14,12 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/threading_base/thread_description.hpp>
 #include <pika/type_support/unused.hpp>
-#endif
 
 #include <fmt/format.h>
 
 #include <ostream>
 #include <string>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.threading_base;

@@ -18,13 +18,13 @@
 #include <pika/preprocessor/cat.hpp>
 #include <pika/preprocessor/expand.hpp>
 #include <pika/preprocessor/nargs.hpp>
-#endif
 
 #include <fmt/format.h>
 
 #include <exception>
 #include <string>
 #include <system_error>
+#endif
 
 #include <pika/config/warnings_prefix.hpp>
 

@@ -15,12 +15,14 @@
 #include <pika/errors/exception_fwd.hpp>
 #include <pika/errors/exception_info.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstddef>
 #include <cstdint>
 #include <exception>
 #include <functional>
 #include <string>
 #include <system_error>
+#endif
 
 #include <pika/config/warnings_prefix.hpp>
 

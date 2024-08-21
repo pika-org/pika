@@ -11,8 +11,10 @@
 #include <pika/config.hpp>
 #include <pika/functional/detail/vtable/vtable.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstddef>
 #include <new>
+#endif
 
 namespace pika::util::detail {
     struct copyable_vtable

@@ -20,9 +20,9 @@
 # include <pika/execution_base/receiver.hpp>
 # include <pika/execution_base/sender.hpp>
 # include <pika/functional/detail/tag_priority_invoke.hpp>
-#endif
 
 # include <utility>
+#endif
 
 namespace pika::execution::experimental {
     inline constexpr struct transfer_t final : pika::functional::detail::tag_priority<transfer_t>

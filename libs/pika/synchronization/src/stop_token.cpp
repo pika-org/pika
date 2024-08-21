@@ -14,12 +14,12 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <pika/modules/thread_support.hpp>
 #include <pika/synchronization/mutex.hpp>
 #include <pika/synchronization/stop_token.hpp>
-#endif
 
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <mutex>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.synchronization;

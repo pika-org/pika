@@ -48,12 +48,14 @@
 #include <pika/coroutines/detail/tss.hpp>
 #include <pika/coroutines/thread_id_type.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <exception>
 #include <limits>
 #include <utility>
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 #define PIKA_COROUTINE_NUM_ALL_HEAPS                                                               \

@@ -10,11 +10,11 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/functional/function.hpp>
-#endif
 
 #include <cstddef>
 #include <deque>
 #include <exception>
+#endif
 
 #include <pika/config/warnings_prefix.hpp>
 

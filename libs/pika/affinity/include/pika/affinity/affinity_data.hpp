@@ -11,13 +11,13 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/topology/topology.hpp>
-#endif
 
 #include <atomic>
 #include <cstddef>
 #include <string>
 #include <utility>
 #include <vector>
+#endif
 
 #include <pika/config/warnings_prefix.hpp>
 

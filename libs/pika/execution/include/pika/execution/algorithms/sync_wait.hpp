@@ -24,12 +24,12 @@
 #include <pika/synchronization/condition_variable.hpp>
 #include <pika/type_support/pack.hpp>
 #include <pika/type_support/unused.hpp>
-#endif
 
 #include <atomic>
 #include <exception>
 #include <type_traits>
 #include <utility>
+#endif
 
 namespace pika::sync_wait_detail {
     struct sync_wait_error_visitor

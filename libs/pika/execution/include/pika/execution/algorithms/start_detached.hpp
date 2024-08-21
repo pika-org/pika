@@ -21,13 +21,13 @@
 # include <pika/execution_base/sender.hpp>
 # include <pika/functional/detail/tag_fallback_invoke.hpp>
 # include <pika/type_support/unused.hpp>
-#endif
 
 # include <cstddef>
 # include <exception>
 # include <memory>
 # include <type_traits>
 # include <utility>
+#endif
 
 namespace pika::start_detached_detail {
     template <typename Sender, typename Allocator>

@@ -17,12 +17,14 @@
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstddef>
 #include <cstring>
 #include <new>
 #include <string>
 #include <type_traits>
 #include <utility>
+#endif
 
 namespace pika::util::detail {
     inline constexpr std::size_t function_storage_size = 3 * sizeof(void*);

@@ -15,9 +15,9 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/threading_base/thread_init_data.hpp>
-#endif
 
 #include <cstddef>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.threading_base;

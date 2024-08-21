@@ -12,10 +12,10 @@
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/coroutines/coroutine.hpp>
 #include <pika/modules/errors.hpp>
-#endif
 
 #include <atomic>
 #include <memory>
+#endif
 
 namespace pika::threads::detail {
     PIKA_EXPORT thread_state set_thread_state(thread_id_type const& id,

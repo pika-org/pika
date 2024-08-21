@@ -22,7 +22,6 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #if defined(PIKA_HAVE_APEX)
 # include <pika/threading_base/external_timer.hpp>
 #endif
-#endif
 
 #include <fmt/format.h>
 
@@ -31,6 +30,7 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <cstdint>
 #include <memory>
 #include <mutex>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.threading_base;

@@ -105,8 +105,10 @@ namespace pika::functional::detail {
 # include <pika/functional/tag_invoke.hpp>
 // # include <pika/type_support/type_identity.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 # include <type_traits>
 # include <utility>
+#endif
 
 namespace pika::functional::detail {
     namespace tag_fallback_invoke_t_ns {

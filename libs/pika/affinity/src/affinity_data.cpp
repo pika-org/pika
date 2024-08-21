@@ -14,7 +14,6 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <pika/errors/error_code.hpp>
 #include <pika/topology/cpu_mask.hpp>
 #include <pika/topology/topology.hpp>
-#endif
 
 // TODO: ADL for operator& doesn't work without this? What's the right place to include it?
 #include <boost/dynamic_bitset.hpp>
@@ -25,6 +24,7 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <string>
 #include <utility>
 #include <vector>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.affinity;

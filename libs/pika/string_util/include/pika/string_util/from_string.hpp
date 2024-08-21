@@ -9,6 +9,7 @@
 #include <pika/config.hpp>
 #include <pika/string_util/bad_lexical_cast.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <algorithm>
 #include <cctype>
 #include <cstddef>
@@ -18,6 +19,7 @@
 #include <string>
 #include <type_traits>
 #include <utility>
+#endif
 
 namespace pika::detail {
     template <typename T, typename Enable = void>

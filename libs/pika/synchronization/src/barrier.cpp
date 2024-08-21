@@ -22,12 +22,12 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/synchronization/barrier.hpp>
 #include <pika/threading_base/thread_data.hpp>
-#endif
 
 #include <atomic>
 #include <cstddef>
 #include <memory>
 #include <thread>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.synchronization;

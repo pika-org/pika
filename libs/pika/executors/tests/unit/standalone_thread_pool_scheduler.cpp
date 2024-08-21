@@ -18,16 +18,18 @@
 #include <pika/testing.hpp>
 // #include <pika/thread.hpp>
 
-#include <algorithm>
-#include <cstddef>
-#include <cstdint>
-#include <memory>
-#include <mutex>
-#include <numeric>
-#include <utility>
+// #include <algorithm>
+// #include <cstddef>
+// #include <cstdint>
+// #include <memory>
+// #include <mutex>
+// #include <numeric>
+// #include <utility>
 
+import std;
 import pika.all;
 import pika.testing;
+
 
 #define PIKA_ASSERT_CURRENT_FUNCTION __PRETTY_FUNCTION__
 

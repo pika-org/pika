@@ -12,9 +12,11 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <filesystem>
 #include <string>
 #include <system_error>
+#endif
 
 namespace pika::detail::filesystem {
     PIKA_EXPORT std::filesystem::path initial_path();

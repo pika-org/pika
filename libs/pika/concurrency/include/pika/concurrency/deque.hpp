@@ -22,6 +22,7 @@
 #include <pika/concurrency/detail/freelist.hpp>
 #include <pika/concurrency/detail/tagged_ptr_pair.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <boost/lockfree/detail/tagged_ptr.hpp>
 
 #include <atomic>
@@ -30,6 +31,11 @@
 #include <new>
 #include <type_traits>
 #include <utility>
+#endif
+
+#if !defined(BOOST_LOCKFREE_CACHELINE_BYTES)
+#define BOOST_LOCKFREE_CACHELINE_BYTES 64
+#endif
 
 namespace pika::concurrency::detail {
 

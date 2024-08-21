@@ -19,7 +19,6 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <pika/topology/topology.hpp>
 #include <pika/type_support/unused.hpp>
 #include <pika/util/ios_flags_saver.hpp>
-#endif
 
 #include <fmt/ostream.h>
 
@@ -36,10 +35,11 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <errno.h>
 
 #include <hwloc.h>
-
-#if HWLOC_API_VERSION < 0x00010b00
-# define HWLOC_OBJ_NUMANODE HWLOC_OBJ_NODE
 #endif
+
+// #if HWLOC_API_VERSION < 0x00010b00
+// # define HWLOC_OBJ_NUMANODE HWLOC_OBJ_NODE
+// #endif
 
 #if defined(__ANDROID__) && defined(ANDROID)
 # include <cpu-features.h>
@@ -49,18 +49,32 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 # include <hwi/include/bqc/A2_inlines.h>
 #endif
 
+#if !defined(PIKA_HAVE_MODULE)
 #if defined(_POSIX_VERSION)
 # include <sys/resource.h>
 # include <sys/syscall.h>
+#endif
 #endif
 
 #if defined(PIKA_HAVE_UNISTD_H)
 # include <unistd.h>
 #endif
 
+#include <errno.h>
+
 #if defined(PIKA_HAVE_MODULE)
 module pika.topology;
 #endif
+
+// from hwloc/deprecated.h
+/* backward compat with v2.0 before WHOLE_SYSTEM renaming */
+#define HWLOC_TOPOLOGY_FLAG_WHOLE_SYSTEM HWLOC_TOPOLOGY_FLAG_INCLUDE_DISALLOWED
+/* backward compat with v1.11 before System removal */
+#define HWLOC_OBJ_SYSTEM HWLOC_OBJ_MACHINE
+/* backward compat with v1.10 before Socket->Package renaming */
+#define HWLOC_OBJ_SOCKET HWLOC_OBJ_PACKAGE
+/* backward compat with v1.10 before Node->NUMANode clarification */
+#define HWLOC_OBJ_NODE HWLOC_OBJ_NUMANODE
 
 namespace pika::threads::detail {
     void write_to_log(char const* valuename, std::size_t value)

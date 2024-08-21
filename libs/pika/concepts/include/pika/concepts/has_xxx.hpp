@@ -10,7 +10,9 @@
 #include <pika/config.hpp>
 #include <pika/preprocessor/cat.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <type_traits>
+#endif
 
 /// This macro creates a boolean unary meta-function such that for
 /// any type X, has_name<X>::value == true if and only if X is a

@@ -10,7 +10,9 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstdint>
+#endif
 
 namespace pika {
     enum class runtime_state : std::int8_t

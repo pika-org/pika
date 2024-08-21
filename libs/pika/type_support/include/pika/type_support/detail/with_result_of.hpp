@@ -8,7 +8,9 @@
 
 #include <pika/config/forward.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <utility>
+#endif
 
 namespace pika::detail {
     // Based on

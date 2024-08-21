@@ -12,11 +12,11 @@ module;
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/detail/filesystem.hpp>
-#endif
 
 #include <filesystem>
 #include <string>
 #include <system_error>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.filesystem;

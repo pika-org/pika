@@ -10,10 +10,10 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
-#endif
 
 #include <type_traits>
 #include <utility>
+#endif
 
 namespace pika::experimental {
 

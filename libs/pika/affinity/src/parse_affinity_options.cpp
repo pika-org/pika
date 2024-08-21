@@ -12,7 +12,6 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <pika/affinity/parse_affinity_options.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/topology/topology.hpp>
-#endif
 
 #include <hwloc.h>
 
@@ -23,6 +22,7 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <string>
 #include <tuple>
 #include <vector>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.affinity;

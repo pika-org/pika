@@ -14,12 +14,12 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <pika/synchronization/detail/condition_variable.hpp>
 #include <pika/synchronization/detail/counting_semaphore.hpp>
 #include <pika/thread_support/assert_owns_lock.hpp>
-#endif
 
 #include <cstddef>
 #include <cstdint>
 #include <mutex>
 #include <utility>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.synchronization;

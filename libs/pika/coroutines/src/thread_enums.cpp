@@ -14,10 +14,10 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/coroutines/thread_enums.hpp>
-#endif
 
 #include <cstddef>
 #include <ostream>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.coroutines;

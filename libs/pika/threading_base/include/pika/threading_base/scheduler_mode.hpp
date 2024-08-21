@@ -8,7 +8,9 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstdint>
+#endif
 
 namespace pika::threads {
     /// This enumeration describes the possible modes of a scheduler.

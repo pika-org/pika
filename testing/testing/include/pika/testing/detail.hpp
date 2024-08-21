@@ -19,7 +19,6 @@
 #include <pika/preprocessor/stringize.hpp>
 #include <pika/thread_support/spinlock.hpp>
 #include <pika/util/ios_flags_saver.hpp>
-#endif
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -31,6 +30,7 @@
 #include <cstdint>
 #include <mutex>
 #include <ostream>
+#endif
 
 namespace pika::detail {
     enum counter_type

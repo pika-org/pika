@@ -6,9 +6,11 @@
 
 #pragma once
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <algorithm>
 #include <cstddef>
 #include <string>
+#endif
 
 namespace pika::detail {
     template <typename CharT, class Traits, class Alloc>

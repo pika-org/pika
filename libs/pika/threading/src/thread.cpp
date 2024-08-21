@@ -22,7 +22,6 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <pika/threading_base/thread_init_data.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
 #include <pika/timing/steady_clock.hpp>
-#endif
 
 #include <cstddef>
 #include <exception>
@@ -32,6 +31,7 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 
 #if defined(__ANDROID__) || defined(ANDROID)
 # include <cpu-features.h>
+#endif
 #endif
 
 #if defined(PIKA_HAVE_MODULE)

@@ -6,6 +6,8 @@
 
 #pragma once
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <type_traits>
+#endif
 
 #define PIKA_MOVE(...) static_cast<std::remove_reference_t<decltype(__VA_ARGS__)>&&>(__VA_ARGS__)

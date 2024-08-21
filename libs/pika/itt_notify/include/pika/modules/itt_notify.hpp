@@ -8,9 +8,11 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#endif
 
 // NOLINTBEGIN(bugprone-reserved-identifier)
 struct ___itt_caller;

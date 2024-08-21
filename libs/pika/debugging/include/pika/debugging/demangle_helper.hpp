@@ -8,13 +8,17 @@
 #pragma once
 
 #include <pika/config.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <memory>
 #include <string>
 #include <type_traits>
 #include <typeinfo>
+#endif
 
 // gcc and clang both provide this header
 #if __has_include(<cxxabi.h>)
+#if !defined(PIKA_HAVE_MODULE)
 # include <cxxabi.h>
 namespace pika::debug::detail {
     using support_cxxabi = std::true_type;
@@ -29,6 +33,7 @@ namespace pika::debug::detail {
         return nullptr;
     }
 }    // namespace pika::debug::detail
+#endif
 #endif
 
 // --------------------------------------------------------------------

@@ -19,11 +19,11 @@
 #include <pika/coroutines/thread_id_type.hpp>
 #include <pika/functional/function.hpp>
 #include <pika/modules/errors.hpp>
-#endif
 
 #include <cstddef>
 #include <cstdint>
 #include <utility>
+#endif
 
 #include <pika/config/warnings_prefix.hpp>
 

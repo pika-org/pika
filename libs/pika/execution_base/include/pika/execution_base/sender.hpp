@@ -54,13 +54,13 @@ namespace pika::execution::experimental {
 # include <pika/functional/detail/tag_fallback_invoke.hpp>
 # include <pika/functional/tag_invoke.hpp>
 # include <pika/type_support/equality.hpp>
-#endif
 
 # include <cstddef>
 # include <exception>
 # include <memory>
 # include <type_traits>
 # include <utility>
+#endif
 
 namespace pika::execution::experimental {
 # if defined(DOXYGEN)

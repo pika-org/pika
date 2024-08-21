@@ -12,11 +12,11 @@ module;
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/util/manage_config.hpp>
-#endif
 
 #include <map>
 #include <string>
 #include <vector>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.util;

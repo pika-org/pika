@@ -17,13 +17,13 @@
 #include <pika/modules/errors.hpp>
 #include <pika/thread_support/atomic_count.hpp>
 #include <pika/timing/steady_clock.hpp>
-#endif
 
 #include <boost/intrusive/slist.hpp>
 
 #include <cstddef>
 #include <mutex>
 #include <utility>
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::detail {

@@ -8,12 +8,18 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <climits>
 #include <condition_variable>
 #include <cstddef>
 #include <mutex>
+#endif
 
 #include <pika/config/warnings_prefix.hpp>
+
+#if !defined(CHAR_BIT)
+#define CHAR_BIT 8
+#endif
 
 namespace pika::concurrency::detail {
     class PIKA_EXPORT barrier

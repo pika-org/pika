@@ -19,10 +19,10 @@
 #include <pika/functional/detail/reset_function.hpp>
 #include <pika/functional/unique_function.hpp>
 #include <pika/type_support/unused.hpp>
-#endif
 
 #include <cstddef>
 #include <utility>
+#endif
 
 namespace pika::threads::coroutines::detail {
     class stackless_coroutine

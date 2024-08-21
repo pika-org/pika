@@ -10,7 +10,6 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <pika/errors/error.hpp>
 #include <pika/errors/throw_exception.hpp>
 #include <pika/execution_base/any_sender.hpp>
-#endif
 
 #include <fmt/format.h>
 
@@ -18,6 +17,7 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <exception>
 #include <string>
 #include <utility>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.execution_base;

@@ -13,13 +13,13 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/type_support/pack.hpp>
-#endif
 
 #include <cstddef>
 #include <iterator>
 #include <tuple>
 #include <type_traits>
 #include <utility>
+#endif
 
 namespace pika::util {
 

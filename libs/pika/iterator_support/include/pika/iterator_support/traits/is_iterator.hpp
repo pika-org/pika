@@ -12,12 +12,12 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/type_support/equality.hpp>
-#endif
 
 #include <iterator>
 #include <type_traits>
 #include <utility>
 #include <vector>
+#endif
 
 namespace pika::traits {
     ///////////////////////////////////////////////////////////////////////////

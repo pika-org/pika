@@ -35,20 +35,29 @@ module;
 # endif
 
 # ifdef PIKA_HAVE_EXECINFO
+#if !defined(PIKA_HAVE_MODULE)
 #  include <execinfo.h>
 # endif
+#endif
 
 # ifdef PIKA_HAVE_ABI_CXA_DEMANGLE
+#if !defined(PIKA_HAVE_MODULE)
 #  include <cxxabi.h>
 # endif
+#endif
 
 # ifdef PIKA_HAVE_DLFCN
+#if !defined(PIKA_HAVE_MODULE)
 #  include <dlfcn.h>
+#endif
 # endif
 # ifdef PIKA_HAVE_UNWIND
+#if !defined(PIKA_HAVE_MODULE)
 #  include <unwind.h>
+#endif
 # endif
 
+#if !defined(PIKA_HAVE_MODULE)
 # include <cstddef>
 # include <cstdint>
 # include <cstdlib>
@@ -59,6 +68,7 @@ module;
 # include <string>
 # include <utility>
 # include <vector>
+#endif
 
 # if defined(PIKA_MSVC)
 #  include <windows.h>
@@ -71,6 +81,8 @@ module;
 #if defined(PIKA_HAVE_MODULE)
 module pika.debugging;
 #endif
+
+import std;
 
 namespace pika::debug::detail::stack_trace {
 # if defined(PIKA_HAVE_EXECINFO) && defined(PIKA_HAVE_UNWIND)

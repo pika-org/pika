@@ -21,7 +21,6 @@
 #include <pika/timing/steady_clock.hpp>
 #include <pika/topology/cpu_mask.hpp>
 #include <pika/topology/topology.hpp>
-#endif
 
 #include <fmt/format.h>
 
@@ -35,6 +34,7 @@
 #include <string>
 #include <thread>
 #include <vector>
+#endif
 
 #include <pika/config/warnings_prefix.hpp>
 

@@ -8,8 +8,10 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <exception>
 #include <utility>
+#endif
 
 namespace pika::detail {
     /// Helper function for a try-catch block where what would normally go in

@@ -1,0 +1,432 @@
+--- ranges-original	2023-05-15 09:33:18.000000000 +0200
++++ ranges	2023-05-22 16:47:19.603768300 +0200
+@@ -6076,7 +6076,201 @@
+   {
+     _Vp _M_base;
+     range_difference_t<_Vp> _M_n;
+-    template<bool> class _Iterator;
++    template<bool _Const> class _Iterator
++    {
++      using _Parent = __detail::__maybe_const_t<_Const, chunk_view>;
++      using _Base = __detail::__maybe_const_t<_Const, _Vp>;
++
++      iterator_t<_Base> _M_current = iterator_t<_Base>();
++      sentinel_t<_Base> _M_end = sentinel_t<_Base>();
++      range_difference_t<_Base> _M_n = 0;
++      range_difference_t<_Base> _M_missing = 0;
++
++      constexpr
++      _Iterator(_Parent* __parent, iterator_t<_Base> __current,
++          range_difference_t<_Base> __missing = 0)
++      : _M_current(__current), _M_end(ranges::end(__parent->_M_base)),
++        _M_n(__parent->_M_n), _M_missing(__missing)
++      { }
++
++      static auto
++      _S_iter_cat()
++      {
++        if constexpr (random_access_range<_Base>)
++    return random_access_iterator_tag{};
++        else if constexpr (bidirectional_range<_Base>)
++    return bidirectional_iterator_tag{};
++        else
++    return forward_iterator_tag{};
++      }
++
++      friend chunk_view;
++
++    public:
++      using iterator_category = input_iterator_tag;
++      using iterator_concept = decltype(_S_iter_cat());
++      using value_type = decltype(views::take(subrange(_M_current, _M_end), _M_n));
++      using difference_type = range_difference_t<_Base>;
++
++      _Iterator() = default;
++
++      constexpr _Iterator(_Iterator<!_Const> __i)
++        requires _Const
++    && convertible_to<iterator_t<_Vp>, iterator_t<_Base>>
++    && convertible_to<sentinel_t<_Vp>, sentinel_t<_Base>>
++      : _M_current(std::move(__i._M_current)), _M_end(std::move(__i._M_end)),
++        _M_n(__i._M_n), _M_missing(__i._M_missing)
++      { }
++
++      constexpr iterator_t<_Base>
++      base() const
++      { return _M_current; }
++
++      constexpr value_type
++      operator*() const
++      {
++        __glibcxx_assert(_M_current != _M_end);
++        return views::take(subrange(_M_current, _M_end), _M_n);
++      }
++
++      constexpr _Iterator&
++      operator++()
++      {
++        __glibcxx_assert(_M_current != _M_end);
++        _M_missing = ranges::advance(_M_current, _M_n, _M_end);
++        return *this;
++      }
++
++      constexpr _Iterator
++      operator++(int)
++      {
++        auto __tmp = *this;
++        ++*this;
++        return __tmp;
++      }
++
++      constexpr _Iterator&
++      operator--() requires bidirectional_range<_Base>
++      {
++        ranges::advance(_M_current, _M_missing - _M_n);
++        _M_missing = 0;
++        return *this;
++      }
++
++      constexpr _Iterator
++      operator--(int) requires bidirectional_range<_Base>
++      {
++        auto __tmp = *this;
++        --*this;
++        return __tmp;
++      }
++
++      constexpr _Iterator&
++      operator+=(difference_type __x)
++        requires random_access_range<_Base>
++      {
++        if (__x > 0)
++    {
++      __glibcxx_assert(ranges::distance(_M_current, _M_end) > _M_n * (__x - 1));
++      _M_missing = ranges::advance(_M_current, _M_n * __x, _M_end);
++    }
++        else if (__x < 0)
++    {
++      ranges::advance(_M_current, _M_n * __x + _M_missing);
++      _M_missing = 0;
++    }
++        return *this;
++      }
++
++      constexpr _Iterator&
++      operator-=(difference_type __x)
++        requires random_access_range<_Base>
++      { return *this += -__x; }
++
++      constexpr value_type
++      operator[](difference_type __n) const
++        requires random_access_range<_Base>
++      { return *(*this + __n); }
++
++      friend constexpr bool
++      operator==(const _Iterator& __x, const _Iterator& __y)
++      { return __x._M_current == __y._M_current; }
++
++      friend constexpr bool
++      operator==(const _Iterator& __x, default_sentinel_t)
++      { return __x._M_current == __x._M_end; }
++
++      friend constexpr bool
++      operator<(const _Iterator& __x, const _Iterator& __y)
++        requires random_access_range<_Base>
++      { return __x._M_current > __y._M_current; }
++
++      friend constexpr bool
++      operator>(const _Iterator& __x, const _Iterator& __y)
++        requires random_access_range<_Base>
++      { return __y < __x; }
++
++      friend constexpr bool
++      operator<=(const _Iterator& __x, const _Iterator& __y)
++        requires random_access_range<_Base>
++      { return !(__y < __x); }
++
++      friend constexpr bool
++      operator>=(const _Iterator& __x, const _Iterator& __y)
++        requires random_access_range<_Base>
++      { return !(__x < __y); }
++
++      friend constexpr auto
++      operator<=>(const _Iterator& __x, const _Iterator& __y)
++        requires random_access_range<_Base>
++    && three_way_comparable<iterator_t<_Base>>
++      { return __x._M_current <=> __y._M_current; }
++
++      friend constexpr _Iterator
++      operator+(const _Iterator& __i, difference_type __n)
++        requires random_access_range<_Base>
++      {
++        auto __r  = __i;
++        __r += __n;
++        return __r;
++      }
++
++      friend constexpr _Iterator
++      operator+(difference_type __n, const _Iterator& __i)
++        requires random_access_range<_Base>
++      {
++        auto __r  = __i;
++        __r += __n;
++        return __r;
++      }
++
++      friend constexpr _Iterator
++      operator-(const _Iterator& __i, difference_type __n)
++        requires random_access_range<_Base>
++      {
++        auto __r  = __i;
++        __r -= __n;
++        return __r;
++      }
++
++      friend constexpr difference_type
++      operator-(const _Iterator& __x, const _Iterator& __y)
++        requires sized_sentinel_for<iterator_t<_Base>, iterator_t<_Base>>
++      {
++        return (__x._M_current - __y._M_current
++          + __x._M_missing - __y._M_missing) / __x._M_n;
++      }
++
++      friend constexpr difference_type
++      operator-(default_sentinel_t __y, const _Iterator& __x)
++        requires sized_sentinel_for<sentinel_t<_Base>, iterator_t<_Base>>
++      { return __detail::__div_ceil(__x._M_end - __x._M_current, __x._M_n); }
++
++      friend constexpr difference_type
++      operator-(const _Iterator& __x, default_sentinel_t __y)
++        requires sized_sentinel_for<sentinel_t<_Base>, iterator_t<_Base>>
++      { return -(__y - __x); }
++    };
+ 
+   public:
+     constexpr explicit
+@@ -6147,205 +6341,6 @@
+     inline constexpr bool enable_borrowed_range<chunk_view<_Vp>>
+       = forward_range<_Vp> && enable_borrowed_range<_Vp>;
+ 
+-  template<view _Vp>
+-    requires forward_range<_Vp>
+-  template<bool _Const>
+-  class chunk_view<_Vp>::_Iterator
+-  {
+-    using _Parent = __detail::__maybe_const_t<_Const, chunk_view>;
+-    using _Base = __detail::__maybe_const_t<_Const, _Vp>;
+-
+-    iterator_t<_Base> _M_current = iterator_t<_Base>();
+-    sentinel_t<_Base> _M_end = sentinel_t<_Base>();
+-    range_difference_t<_Base> _M_n = 0;
+-    range_difference_t<_Base> _M_missing = 0;
+-
+-    constexpr
+-    _Iterator(_Parent* __parent, iterator_t<_Base> __current,
+-	      range_difference_t<_Base> __missing = 0)
+-    : _M_current(__current), _M_end(ranges::end(__parent->_M_base)),
+-      _M_n(__parent->_M_n), _M_missing(__missing)
+-    { }
+-
+-    static auto
+-    _S_iter_cat()
+-    {
+-      if constexpr (random_access_range<_Base>)
+-	return random_access_iterator_tag{};
+-      else if constexpr (bidirectional_range<_Base>)
+-	return bidirectional_iterator_tag{};
+-      else
+-	return forward_iterator_tag{};
+-    }
+-
+-    friend chunk_view;
+-
+-  public:
+-    using iterator_category = input_iterator_tag;
+-    using iterator_concept = decltype(_S_iter_cat());
+-    using value_type = decltype(views::take(subrange(_M_current, _M_end), _M_n));
+-    using difference_type = range_difference_t<_Base>;
+-
+-    _Iterator() = default;
+-
+-    constexpr _Iterator(_Iterator<!_Const> __i)
+-      requires _Const
+-	&& convertible_to<iterator_t<_Vp>, iterator_t<_Base>>
+-	&& convertible_to<sentinel_t<_Vp>, sentinel_t<_Base>>
+-    : _M_current(std::move(__i._M_current)), _M_end(std::move(__i._M_end)),
+-      _M_n(__i._M_n), _M_missing(__i._M_missing)
+-    { }
+-
+-    constexpr iterator_t<_Base>
+-    base() const
+-    { return _M_current; }
+-
+-    constexpr value_type
+-    operator*() const
+-    {
+-      __glibcxx_assert(_M_current != _M_end);
+-      return views::take(subrange(_M_current, _M_end), _M_n);
+-    }
+-
+-    constexpr _Iterator&
+-    operator++()
+-    {
+-      __glibcxx_assert(_M_current != _M_end);
+-      _M_missing = ranges::advance(_M_current, _M_n, _M_end);
+-      return *this;
+-    }
+-
+-    constexpr _Iterator
+-    operator++(int)
+-    {
+-      auto __tmp = *this;
+-      ++*this;
+-      return __tmp;
+-    }
+-
+-    constexpr _Iterator&
+-    operator--() requires bidirectional_range<_Base>
+-    {
+-      ranges::advance(_M_current, _M_missing - _M_n);
+-      _M_missing = 0;
+-      return *this;
+-    }
+-
+-    constexpr _Iterator
+-    operator--(int) requires bidirectional_range<_Base>
+-    {
+-      auto __tmp = *this;
+-      --*this;
+-      return __tmp;
+-    }
+-
+-    constexpr _Iterator&
+-    operator+=(difference_type __x)
+-      requires random_access_range<_Base>
+-    {
+-      if (__x > 0)
+-	{
+-	  __glibcxx_assert(ranges::distance(_M_current, _M_end) > _M_n * (__x - 1));
+-	  _M_missing = ranges::advance(_M_current, _M_n * __x, _M_end);
+-	}
+-      else if (__x < 0)
+-	{
+-	  ranges::advance(_M_current, _M_n * __x + _M_missing);
+-	  _M_missing = 0;
+-	}
+-      return *this;
+-    }
+-
+-    constexpr _Iterator&
+-    operator-=(difference_type __x)
+-      requires random_access_range<_Base>
+-    { return *this += -__x; }
+-
+-    constexpr value_type
+-    operator[](difference_type __n) const
+-      requires random_access_range<_Base>
+-    { return *(*this + __n); }
+-
+-    friend constexpr bool
+-    operator==(const _Iterator& __x, const _Iterator& __y)
+-    { return __x._M_current == __y._M_current; }
+-
+-    friend constexpr bool
+-    operator==(const _Iterator& __x, default_sentinel_t)
+-    { return __x._M_current == __x._M_end; }
+-
+-    friend constexpr bool
+-    operator<(const _Iterator& __x, const _Iterator& __y)
+-      requires random_access_range<_Base>
+-    { return __x._M_current > __y._M_current; }
+-
+-    friend constexpr bool
+-    operator>(const _Iterator& __x, const _Iterator& __y)
+-      requires random_access_range<_Base>
+-    { return __y < __x; }
+-
+-    friend constexpr bool
+-    operator<=(const _Iterator& __x, const _Iterator& __y)
+-      requires random_access_range<_Base>
+-    { return !(__y < __x); }
+-
+-    friend constexpr bool
+-    operator>=(const _Iterator& __x, const _Iterator& __y)
+-      requires random_access_range<_Base>
+-    { return !(__x < __y); }
+-
+-    friend constexpr auto
+-    operator<=>(const _Iterator& __x, const _Iterator& __y)
+-      requires random_access_range<_Base>
+-	&& three_way_comparable<iterator_t<_Base>>
+-    { return __x._M_current <=> __y._M_current; }
+-
+-    friend constexpr _Iterator
+-    operator+(const _Iterator& __i, difference_type __n)
+-      requires random_access_range<_Base>
+-    {
+-      auto __r  = __i;
+-      __r += __n;
+-      return __r;
+-    }
+-
+-    friend constexpr _Iterator
+-    operator+(difference_type __n, const _Iterator& __i)
+-      requires random_access_range<_Base>
+-    {
+-      auto __r  = __i;
+-      __r += __n;
+-      return __r;
+-    }
+-
+-    friend constexpr _Iterator
+-    operator-(const _Iterator& __i, difference_type __n)
+-      requires random_access_range<_Base>
+-    {
+-      auto __r  = __i;
+-      __r -= __n;
+-      return __r;
+-    }
+-
+-    friend constexpr difference_type
+-    operator-(const _Iterator& __x, const _Iterator& __y)
+-      requires sized_sentinel_for<iterator_t<_Base>, iterator_t<_Base>>
+-    {
+-      return (__x._M_current - __y._M_current
+-	      + __x._M_missing - __y._M_missing) / __x._M_n;
+-    }
+-
+-    friend constexpr difference_type
+-    operator-(default_sentinel_t __y, const _Iterator& __x)
+-      requires sized_sentinel_for<sentinel_t<_Base>, iterator_t<_Base>>
+-    { return __detail::__div_ceil(__x._M_end - __x._M_current, __x._M_n); }
+-
+-    friend constexpr difference_type
+-    operator-(const _Iterator& __x, default_sentinel_t __y)
+-      requires sized_sentinel_for<sentinel_t<_Base>, iterator_t<_Base>>
+-    { return -(__y - __x); }
+-  };
+-
+   namespace views
+   {
+     namespace __detail
+@@ -8843,17 +8838,17 @@
+     friend constexpr _Iterator
+     operator+(const _Iterator& __x, difference_type __y)
+     requires random_access_range<_Base>
+-    { return (auto(__x) += __y); }
++    { return (_Iterator(__x) += __y); }
+ 
+     friend constexpr _Iterator
+     operator+(difference_type __x, const _Iterator& __y)
+     requires random_access_range<_Base>
+-    { return auto(__y) += __x; }
++    { return _Iterator(__y) += __x; }
+ 
+     friend constexpr _Iterator
+     operator-(const _Iterator& __x, difference_type __y)
+     requires random_access_range<_Base>
+-    { return auto(__x) -= __y; }
++    { return _Iterator(__x) -= __y; }
+ 
+     friend constexpr difference_type
+     operator-(const _Iterator& __x, const _Iterator& __y)

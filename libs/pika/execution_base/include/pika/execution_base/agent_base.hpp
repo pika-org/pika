@@ -10,10 +10,10 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/timing/steady_clock.hpp>
-#endif
 
 #include <cstddef>
 #include <string>
+#endif
 
 namespace pika::execution::detail {
     struct agent_base

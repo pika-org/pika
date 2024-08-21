@@ -60,6 +60,7 @@ set(pika_libs pika)
 
 foreach(lib ${pika_libs})
   add_library(${lib} SHARED src/dummy.cpp ${pika_natvis_files_SOURCES})
+  target_link_libraries(${lib} PRIVATE pika_private_flags pika_public_flags)
   target_sources(
     ${lib}
     PUBLIC FILE_SET

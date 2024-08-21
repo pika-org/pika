@@ -12,9 +12,9 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <pika/allocator_support/internal_allocator.hpp>
 #include <pika/logging.hpp>
 #include <pika/threading_base/thread_data.hpp>
-#endif
 
 #include <fmt/format.h>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.threading_base;

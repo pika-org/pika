@@ -8,14 +8,17 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstddef>
 #include <memory>
+#endif
 
 // The use of Boost's small_vector is currently forced due to the performance of
 // the pika one being significantly worse.
 #if 1    // !defined(PIKA_HAVE_CXX17_MEMORY_RESOURCE)
 
 // fall back to Boost if memory_resource is not supported
+#if !defined(PIKA_HAVE_MODULE)
 # if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 120000
 #  pragma GCC diagnostic push
 #  pragma GCC diagnostic ignored "-Warray-bounds"
@@ -25,6 +28,7 @@
 # if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 120000
 #  pragma GCC diagnostic pop
 # endif
+#endif
 
 namespace pika::detail {
 

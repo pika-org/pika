@@ -11,11 +11,13 @@
 #include <pika/config.hpp>
 #include <pika/coroutines/detail/combined_tagged_state.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <fmt/format.h>
 
 #include <cstddef>
 #include <cstdint>
 #include <iosfwd>
+#endif
 
 namespace pika::threads::detail {
     // clang-format off

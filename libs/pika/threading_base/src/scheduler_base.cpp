@@ -19,7 +19,6 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #if defined(PIKA_HAVE_SCHEDULER_LOCAL_STORAGE)
 # include <pika/coroutines/detail/tss.hpp>
 #endif
-#endif
 
 #include <algorithm>
 #include <atomic>
@@ -37,6 +36,7 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <string>
 #include <utility>
 #include <vector>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.threading_base;

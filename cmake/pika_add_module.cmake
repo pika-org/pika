@@ -144,86 +144,89 @@ function(pika_add_module libname modulename)
   # endif()
 
   # create library modules
-  add_library(pika_${modulename} ${module_library_type} ${sources} ${${modulename}_OBJECTS})
+  add_library(pika_${modulename} ${module_library_type} ${sources} ${${modulename}_OBJECTS}
+    "${CMAKE_SOURCE_DIR}/libs/src/dummy.cpp"
+  )
 
   if(PIKA_WITH_MODULE)
     # TODO: Override with all system headers for now
     set(${modulename}_MODULE_INCLUDES
+        <unistd.h>
         <errno.h>
         <sys/mman.h>
-        <sys/param.h>
-        <algorithm>
-        <any>
-        <array>
-        <atomic>
-        <bitset>
-        <cassert>
-        <cctype>
-        <cerrno>
-        <chrono>
-        <climits>
-        <cmath>
-        <complex>
-        <condition_variable>
-        <cstddef>
-        <cstdint>
-        <cstdio>
-        <cstdlib>
-        <cstring>
-        <ctime>
-        <deque>
-        <exception>
-        <filesystem>
-        <forward_list>
-        <fstream>
-        <functional>
-        <iomanip>
-        <ios>
-        <iosfwd>
-        <iostream>
-        <iterator>
-        <limits>
-        <list>
-        <locale>
-        <map>
-        <memory>
-        <mutex>
-        <new>
-        <numeric>
-        <optional>
-        <ostream>
-        <random>
-        <regex>
-        <set>
-        <shared_mutex>
-        <sstream>
-        <stack>
-        <stdexcept>
-        <string>
-        <string_view>
-        <system_error>
-        <thread>
-        <tuple>
-        <type_traits>
-        <typeinfo>
-        <unordered_map>
-        <unordered_set>
-        <utility>
-        <variant>
-        <vector>
-        <cxxabi.h>
-        <hwloc.h>
-        <boost/config.hpp>
-        <boost/container/small_vector.hpp>
-        <boost/context/detail/fcontext.hpp>
-        <boost/dynamic_bitset.hpp>
-        <boost/intrusive/slist.hpp>
-        <boost/lockfree/queue.hpp>
-        <boost/optional.hpp>
-        <boost/tokenizer.hpp>
-        <fmt/format.h>
-        <fmt/ostream.h>
-        <fmt/printf.h>
+        # <sys/param.h>
+        # <algorithm>
+        # <any>
+        # <array>
+        # <atomic>
+        # <bitset>
+        # <cassert>
+        # <cctype>
+        # <cerrno>
+        # <chrono>
+        # <climits>
+        # <cmath>
+        # <complex>
+        # <condition_variable>
+        # <cstddef>
+        # <cstdint>
+        # <cstdio>
+        # <cstdlib>
+        # <cstring>
+        # <ctime>
+        # <deque>
+        # <exception>
+        # <filesystem>
+        # <forward_list>
+        # <fstream>
+        # <functional>
+        # <iomanip>
+        # <ios>
+        # <iosfwd>
+        # <iostream>
+        # <iterator>
+        # <limits>
+        # <list>
+        # <locale>
+        # <map>
+        # <memory>
+        # <mutex>
+        # <new>
+        # <numeric>
+        # <optional>
+        # <ostream>
+        # <random>
+        # <regex>
+        # <set>
+        # <shared_mutex>
+        # <sstream>
+        # <stack>
+        # <stdexcept>
+        # <string>
+        # <string_view>
+        # <system_error>
+        # <thread>
+        # <tuple>
+        # <type_traits>
+        # <typeinfo>
+        # <unordered_map>
+        # <unordered_set>
+        # <utility>
+        # <variant>
+        # <vector>
+        # <cxxabi.h>
+        # <hwloc.h>
+        # <boost/config.hpp>
+        # <boost/container/small_vector.hpp>
+        # <boost/context/detail/fcontext.hpp>
+        # <boost/dynamic_bitset.hpp>
+        # <boost/intrusive/slist.hpp>
+        # <boost/lockfree/queue.hpp>
+        # <boost/optional.hpp>
+        # <boost/tokenizer.hpp>
+        # <fmt/format.h>
+        # <fmt/ostream.h>
+        # <fmt/printf.h>
     )
     set(module_includes)
     foreach(module_include ${${modulename}_MODULE_INCLUDES})
@@ -284,6 +287,8 @@ function(pika_add_module libname modulename)
   # if(NOT module_is_interface_library)
   target_link_libraries(pika_${modulename} PRIVATE pika_private_flags)
   # endif()
+
+  target_link_libraries(pika_${modulename} PRIVATE std)
 
   if(PIKA_WITH_PRECOMPILED_HEADERS)
     target_precompile_headers(pika_${modulename} REUSE_FROM pika_precompiled_headers)

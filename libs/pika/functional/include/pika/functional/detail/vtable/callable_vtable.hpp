@@ -9,19 +9,18 @@
 #pragma once
 
 #include <pika/config.hpp>
-
-#if !defined(PIKA_HAVE_MODULE)
-#include <pika/type_support/void_guard.hpp>
-#endif
-
 #include <pika/functional/detail/empty_function.hpp>
 #include <pika/functional/detail/vtable/vtable.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/type_support/void_guard.hpp>
+
 #include <cstddef>
 #include <utility>
+#endif
 
 namespace pika::util::detail {
     struct trivial_empty_function;

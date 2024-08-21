@@ -31,7 +31,6 @@
 #include <pika/threading_base/register_thread.hpp>
 #include <pika/threading_base/thread_description.hpp>
 #include <pika/threading_base/thread_num_tss.hpp>
-#endif
 
 #include <atomic>
 #include <cstddef>
@@ -43,6 +42,7 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
+#endif
 
 namespace pika::thread_pool_bulk_detail {
     /// This sender represents bulk work that will be performed using the

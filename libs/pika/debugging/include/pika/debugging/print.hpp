@@ -8,6 +8,7 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <array>
 #include <chrono>
 #include <cstddef>
@@ -19,6 +20,7 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
+#endif
 
 // ------------------------------------------------------------
 // This file provides a simple to use printf style debugging

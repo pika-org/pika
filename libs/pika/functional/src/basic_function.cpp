@@ -21,7 +21,6 @@ module;
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
 #include <pika/modules/itt_notify.hpp>
-#endif
 
 #include <cstddef>
 #include <cstring>
@@ -29,6 +28,7 @@ module;
 #include <string>
 #include <type_traits>
 #include <utility>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.functional;

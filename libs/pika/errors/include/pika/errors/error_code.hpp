@@ -13,10 +13,12 @@
 #include <pika/errors/error.hpp>
 #include <pika/errors/exception_fwd.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <exception>
 #include <stdexcept>
 #include <string>
 #include <system_error>
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {

@@ -10,6 +10,8 @@ if(NOT TARGET pika_dependencies_boost)
   # We first try to find the required minimum set of Boost libraries. This will also give us the
   # version of the found boost installation
 
+  pika_set_cmake_policy(CMP0167 OLD)
+
   # Add additional version to recognize
   # cmake-format: off
   set(Boost_ADDITIONAL_VERSIONS

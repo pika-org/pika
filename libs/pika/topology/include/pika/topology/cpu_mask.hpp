@@ -17,7 +17,6 @@
 #include <pika/string_util/from_string.hpp>
 #include <pika/string_util/trim.hpp>
 #include <pika/type_support/unused.hpp>
-#endif
 
 #include <fmt/format.h>
 
@@ -36,6 +35,7 @@
 #  endif
 #endif
 // clang-format on
+#endif
 
 namespace pika::threads::detail {
     /// \cond NOINTERNAL

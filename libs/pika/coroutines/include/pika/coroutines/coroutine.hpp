@@ -31,7 +31,6 @@
 #pragma once
 
 #include <pika/config.hpp>
-
 #include <pika/assert.hpp>
 #include <pika/coroutines/coroutine_fwd.hpp>
 #include <pika/coroutines/detail/coroutine_accessor.hpp>
@@ -40,10 +39,12 @@
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/coroutines/thread_id_type.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstddef>
 #include <cstdint>
 #include <limits>
 #include <utility>
+#endif
 
 namespace pika::threads::coroutines::detail {
     /////////////////////////////////////////////////////////////////////////////

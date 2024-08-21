@@ -17,7 +17,6 @@
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
 # include <pika/modules/itt_notify.hpp>
 #endif
-#endif
 
 #include <fmt/format.h>
 
@@ -26,6 +25,7 @@
 #include <string>
 #include <type_traits>
 #include <utility>
+#endif
 
 namespace pika::detail {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)

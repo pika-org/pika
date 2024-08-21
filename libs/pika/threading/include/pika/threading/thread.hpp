@@ -19,7 +19,6 @@
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
 #include <pika/timing/steady_clock.hpp>
-#endif
 
 #include <fmt/format.h>
 
@@ -30,6 +29,7 @@
 #include <mutex>
 #include <type_traits>
 #include <utility>
+#endif
 
 #include <pika/config/warnings_prefix.hpp>
 

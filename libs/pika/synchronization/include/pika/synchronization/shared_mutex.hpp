@@ -11,7 +11,9 @@
 #include <pika/synchronization/condition_variable.hpp>
 #include <pika/synchronization/mutex.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <mutex>
+#endif
 
 namespace pika::detail {
     template <typename Mutex = pika::mutex>

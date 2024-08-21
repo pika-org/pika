@@ -6,9 +6,11 @@
 
 #pragma once
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <atomic>
 #include <cstdint>
 #include <vector>
+#endif
 
 namespace pika::detail {
     // helper function for counter evaluation

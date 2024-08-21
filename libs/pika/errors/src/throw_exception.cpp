@@ -14,12 +14,12 @@ module;
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/errors/error.hpp>
 #include <pika/errors/exception.hpp>
-#endif
 
 #include <exception>
 #include <filesystem>
 #include <string>
 #include <system_error>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.errors;

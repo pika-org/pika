@@ -11,10 +11,10 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/string_util/from_string.hpp>
-#endif
 
 #include <string>
 #include <type_traits>
+#endif
 
 namespace pika::detail {
 

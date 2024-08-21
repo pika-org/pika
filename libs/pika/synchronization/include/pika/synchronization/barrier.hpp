@@ -36,7 +36,6 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/execution_base/this_thread.hpp>
-#endif
 
 #include <atomic>
 #include <chrono>
@@ -45,6 +44,7 @@
 #include <cstdint>
 #include <memory>
 #include <utility>
+#endif
 
 #include <pika/config/warnings_prefix.hpp>
 

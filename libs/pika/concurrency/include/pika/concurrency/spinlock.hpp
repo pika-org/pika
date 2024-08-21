@@ -15,9 +15,9 @@
 #include <pika/lock_registration/detail/register_locks.hpp>
 #include <pika/modules/itt_notify.hpp>
 #include <pika/thread_support/spinlock.hpp>
-#endif
 
 #include <atomic>
+#endif
 
 namespace pika::concurrency::detail {
     struct spinlock

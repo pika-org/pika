@@ -21,7 +21,6 @@
 #include <pika/lock_registration/detail/register_locks.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/timing/steady_clock.hpp>
-#endif
 
 #include <atomic>
 #include <chrono>
@@ -30,6 +29,7 @@
 #include <functional>
 #include <type_traits>
 #include <utility>
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::threads::detail {

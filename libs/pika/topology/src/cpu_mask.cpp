@@ -10,11 +10,11 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/topology/cpu_mask.hpp>
-#endif
 
 #include <iomanip>
 #include <sstream>
 #include <string>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.topology;

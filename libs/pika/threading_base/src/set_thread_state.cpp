@@ -19,7 +19,6 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <pika/threading_base/set_thread_state.hpp>
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/threading_base/threading_base_fwd.hpp>
-#endif
 
 #include <fmt/format.h>
 
@@ -28,6 +27,7 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <functional>
 #include <string>
 #include <utility>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.threading_base;

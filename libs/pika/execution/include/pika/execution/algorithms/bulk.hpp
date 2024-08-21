@@ -25,13 +25,13 @@
 # include <pika/functional/detail/tag_priority_invoke.hpp>
 # include <pika/iterator_support/counting_shape.hpp>
 # include <pika/type_support/pack.hpp>
-#endif
 
 # include <exception>
 # include <iterator>
 # include <tuple>
 # include <type_traits>
 # include <utility>
+#endif
 
 namespace pika::bulk_detail {
     template <typename Sender, typename Shape, typename F>

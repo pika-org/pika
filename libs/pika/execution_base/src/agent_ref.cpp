@@ -14,12 +14,12 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 # include <pika/lock_registration/detail/register_locks.hpp>
 #endif
 #include <pika/execution_base/this_thread.hpp>
-#endif
 
 #include <fmt/format.h>
 
 #include <cstddef>
 #include <string>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.execution_base;

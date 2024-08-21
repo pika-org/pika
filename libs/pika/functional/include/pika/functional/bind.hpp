@@ -9,22 +9,21 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
-
-#if !defined(PIKA_HAVE_MODULE)
-#include <pika/datastructures/member_pack.hpp>
-#include <pika/type_support/decay.hpp>
-#include <pika/type_support/pack.hpp>
-#endif
-
 #include <pika/functional/invoke.hpp>
 #include <pika/functional/one_shot.hpp>
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
 #include <pika/functional/traits/is_bind_expression.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
+#include <pika/datastructures/member_pack.hpp>
+#include <pika/type_support/decay.hpp>
+#include <pika/type_support/pack.hpp>
+
 #include <cstddef>
 #include <type_traits>
 #include <utility>
+#endif
 
 namespace pika::util::detail {
     template <std::size_t I>

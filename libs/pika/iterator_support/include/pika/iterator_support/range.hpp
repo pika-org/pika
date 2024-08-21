@@ -8,9 +8,11 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstddef>
 #include <iterator>
 #include <utility>
+#endif
 
 namespace pika::util {
     namespace detail {

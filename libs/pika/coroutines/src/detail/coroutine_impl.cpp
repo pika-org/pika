@@ -37,15 +37,11 @@ PIKA_GLOBAL_MODULE_FRAGMENT
 #include <pika/coroutines/coroutine.hpp>
 #include <pika/coroutines/detail/coroutine_impl.hpp>
 #include <pika/coroutines/detail/coroutine_stackful_self.hpp>
-#endif
 
 #include <cstddef>
 #include <exception>
 #include <utility>
-
-// TODO: error: no member named 'string' in namespace 'std'
-// on PIKA_ASSERT(!m_fun), why?
-#include <string>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.coroutines;

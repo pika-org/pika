@@ -10,10 +10,10 @@
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/modules/itt_notify.hpp>
-#endif
 
 #include <cstddef>
 #include <memory>
+#endif
 
 namespace pika::detail {
     // By default we don't know anything about the function's name

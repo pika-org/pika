@@ -11,6 +11,7 @@
 #include <pika/errors/error_code.hpp>
 #include <pika/errors/exception_info.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <fmt/format.h>
 
 #include <cstddef>
@@ -23,6 +24,7 @@
 #if defined(PIKA_WINDOWS)
 # include <excpt.h>
 # undef exception_info
+#endif
 #endif
 
 namespace pika {

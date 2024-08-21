@@ -6,12 +6,13 @@
 
 #pragma once
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <boost/version.hpp>
-
 #include <boost/lockfree/policies.hpp>
 #include <boost/lockfree/queue.hpp>
 
 #include <cstddef>
+#endif
 
 namespace pika::concurrency::detail {
     template <typename T, typename Alloc = std::allocator<T>>

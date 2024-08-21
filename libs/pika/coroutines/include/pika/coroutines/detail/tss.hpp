@@ -14,10 +14,12 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstddef>
 #include <map>
 #include <memory>
 #include <utility>
+#endif
 
 namespace pika::threads::coroutines::detail {
     class tss_storage;

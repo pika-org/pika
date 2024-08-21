@@ -6,12 +6,16 @@
 
 module;
 // #include <pika/config.hpp>
-// // #include <pika/assert.hpp>
+// #include <pika/assert.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <iostream>
 #include <string>
+#endif
 
 module pika.assertion;
+
+import std;
 
 namespace pika::detail {
     assertion_handler_type& get_handler()

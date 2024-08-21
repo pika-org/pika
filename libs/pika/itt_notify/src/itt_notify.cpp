@@ -5,8 +5,11 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
+
+#if !defined(PIKA_HAVE_MODULE)
 #include <pika/itt_notify/thread_name.hpp>
 #include <pika/modules/itt_notify.hpp>
+#endif
 
 #if PIKA_HAVE_ITTNOTIFY != 0
 

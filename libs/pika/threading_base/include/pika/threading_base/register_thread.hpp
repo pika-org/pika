@@ -19,12 +19,12 @@
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/functional/function.hpp>
 #include <pika/modules/errors.hpp>
-#endif
 
 #include <cstddef>
 #include <cstdint>
 #include <type_traits>
 #include <utility>
+#endif
 
 namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////

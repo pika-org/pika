@@ -22,11 +22,11 @@
 # include <pika/functional/detail/invoke.hpp>
 # include <pika/functional/detail/tag_fallback_invoke.hpp>
 # include <pika/type_support/pack.hpp>
-#endif
 
 # include <exception>
 # include <type_traits>
 # include <utility>
+#endif
 
 namespace pika::then_detail {
     template <typename Receiver, typename F>

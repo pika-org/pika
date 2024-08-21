@@ -10,8 +10,10 @@
 
 #include <pika/assertion/source_location.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <string>
 #include <utility>
+#endif
 
 namespace pika::detail {
     /// \cond NOINTERNAL

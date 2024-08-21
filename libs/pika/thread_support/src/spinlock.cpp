@@ -15,10 +15,10 @@ module;
 
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/thread_support/spinlock.hpp>
-#endif
 
 #include <chrono>
 #include <thread>
+#endif
 
 #if defined(PIKA_HAVE_MODULE)
 module pika.thread_support;

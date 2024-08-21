@@ -1,5 +1,6 @@
 module;
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <atomic>
 #include <boost/version.hpp>
 #include <cstddef>
@@ -12,9 +13,11 @@ module;
 #include <ostream>
 #include <type_traits>
 #include <string>
+#endif
 
 export module pika.testing;
 
+import std;
 import pika.all;
 
 export {

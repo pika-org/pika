@@ -12,10 +12,10 @@
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/functional/detail/invoke.hpp>
 #include <pika/synchronization/stop_token.hpp>
-#endif
 
 #include <type_traits>
 #include <utility>
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {

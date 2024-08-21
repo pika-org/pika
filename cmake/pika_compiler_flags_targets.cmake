@@ -37,6 +37,9 @@ target_compile_definitions(
   INTERFACE $<$<CONFIG:RelWithDebInfo>:NDEBUG>
 )
 
+# For consistent flags with modules (std module has these)
+target_compile_options(pika_private_flags INTERFACE -fsized-deallocation -faligned-allocation)
+
 # Remaining flags are set through the macros in cmake/pika_add_compile_flag.cmake
 
 include(pika_export_targets)

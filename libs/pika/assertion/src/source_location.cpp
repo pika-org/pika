@@ -7,9 +7,13 @@
 module;
 // // #include <pika/assertion/source_location.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <ostream>
+#endif
 
 module pika.assertion;
+
+import std;
 
 namespace pika::detail {
     std::ostream& operator<<(std::ostream& os, source_location const& loc)

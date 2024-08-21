@@ -23,8 +23,6 @@
 #include <exception>
 #include <string>
 #include <type_traits>
-#else
-#include <string>
 #endif
 
 # define PIKA_ASSERT_CURRENT_FUNCTION __PRETTY_FUNCTION__

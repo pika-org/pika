@@ -8,12 +8,14 @@
 
 #include <pika/config.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 #include <cstddef>
 #include <limits>
 #include <memory>
 #include <new>
 #include <type_traits>
 #include <utility>
+#endif
 
 #include <pika/preprocessor/cat.hpp>
 

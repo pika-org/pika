@@ -16,12 +16,12 @@
 #if !defined(PIKA_HAVE_MODULE)
 #include <pika/errors/error_code.hpp>
 #include <pika/topology/cpu_mask.hpp>
-#endif
 
 #include <cstddef>
 #include <cstdint>
 #include <string>
 #include <vector>
+#endif
 
 namespace pika::detail {
     enum distribution_type

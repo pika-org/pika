@@ -21,8 +21,10 @@
 #  endif
 # endif
 
+#if !defined(PIKA_HAVE_MODULE)
 # include <cstddef>
 # include <limits>
+#endif
 
 namespace pika::threads::coroutines::detail {
     inline std::size_t get_stack_ptr()

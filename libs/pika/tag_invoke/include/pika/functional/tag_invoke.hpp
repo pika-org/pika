@@ -100,8 +100,10 @@ namespace pika::functional::detail {
 # include <pika/config.hpp>
 // # include <pika/type_support/type_identity.hpp>
 
+#if !defined(PIKA_HAVE_MODULE)
 # include <type_traits>
 # include <utility>
+#endif
 
 namespace pika::functional::detail {
     template <auto& Tag>
