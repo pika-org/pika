@@ -118,9 +118,9 @@ int pika_main(pika::program_options::variables_map& vm)
                   << '\n';
     }
 
-// The compilation of this loop unrolling with llvm-amdgpu's
-// Clang 5.3.3 is hanging.
-#if !defined(PIKA_HAVE_HIP)
+// The compilation of this loop unrolling with llvm-amdgpu's Clang 5.3.3 is hanging. NVHPC 24.7 also
+// fails to compile this when unrolling the full loop.
+#if !defined(PIKA_HAVE_HIP) && !defined(PIKA_NVHPC_VERSION)
     {
         cu::enable_user_polling poll("default");
 
