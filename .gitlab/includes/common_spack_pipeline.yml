@@ -104,6 +104,7 @@ base_spack_image_x86_64:
     - CONFIG_TAG=`echo $configuration | sha256sum - | head -c 16`
     - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/pika-$compiler-$build_type-build:$CONFIG_TAG
     - echo -e "PERSIST_IMAGE_NAME_${build_type_upper}=$PERSIST_IMAGE_NAME" >> $DOTENV_FILE
+    - echo -e "BUILD_TYPE=$BUILD_TYPE" >> $DOTENV_FILE
   artifacts:
     reports:
       dotenv: "$DOTENV_FILE"
@@ -122,3 +123,6 @@ base_spack_image_x86_64:
     - export CTEST_XML=$PWD/ctest.xml
     - trap "${SOURCE_DIR}/.gitlab/scripts/collect_ctest_metrics.sh ${CTEST_XML}" EXIT
     - spack -e pika_ci build-env $spack_spec -- bash -c "ctest --output-junit ${CTEST_XML} --label-exclude COMPILE_ONLY --test-dir ${BUILD_DIR} -j$(($(nproc)/2)) --timeout 120 --output-on-failure --no-compress-output --no-tests=error"
+    - export MIMALLOC_EAGER_COMMIT_DELAY=0
+    - export MIMALLOC_LARGE_OS_PAGES=1
+    - "${SOURCE_DIR}/.gitlab/scripts/run_performance_benchmarks.sh"
