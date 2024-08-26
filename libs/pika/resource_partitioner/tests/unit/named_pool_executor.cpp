@@ -128,7 +128,7 @@ void init_resource_partitioner_handler(
 
     // add one PU to each pool
     std::size_t thread_count = 0;
-    for (pika::resource::numa_domain const& d : rp.numa_domains())
+    for (pika::resource::socket const& d : rp.sockets())
     {
         for (pika::resource::core const& c : d.cores())
         {

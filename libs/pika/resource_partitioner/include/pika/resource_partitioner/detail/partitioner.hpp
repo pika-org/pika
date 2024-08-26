@@ -93,7 +93,7 @@ namespace pika::resource::detail {
         void create_thread_pool(std::string const& name, scheduler_function scheduler_creation);
 
         // Functions to add processing units to thread pools via
-        // the pu/core/numa_domain API
+        // the pu/core/socket API
         void add_resource(
             pika::resource::pu const& p, std::string const& pool_name, std::size_t num_threads = 1)
         {
@@ -107,9 +107,9 @@ namespace pika::resource::detail {
             const pika::resource::core& c, std::string const& pool_name, bool exclusive = true);
         void add_resource(const std::vector<pika::resource::core>& cv, std::string const& pool_name,
             bool exclusive = true);
-        void add_resource(const pika::resource::numa_domain& nd, std::string const& pool_name,
-            bool exclusive = true);
-        void add_resource(const std::vector<pika::resource::numa_domain>& ndv,
+        void add_resource(
+            const pika::resource::socket& nd, std::string const& pool_name, bool exclusive = true);
+        void add_resource(const std::vector<pika::resource::socket>& ndv,
             std::string const& pool_name, bool exclusive = true);
 
         pika::detail::affinity_data const& get_affinity_data() const { return affinity_data_; }
@@ -151,7 +151,7 @@ namespace pika::resource::detail {
 
         scheduler_function get_pool_creator(size_t index) const;
 
-        std::vector<numa_domain> const& numa_domains() const { return numa_domains_; }
+        std::vector<socket> const& sockets() const { return sockets_; }
 
         std::size_t assign_cores(std::size_t first_core);
 
@@ -218,7 +218,7 @@ namespace pika::resource::detail {
 
         // contains the internal topology back-end used to add resources to
         // initial_thread_pools
-        std::vector<numa_domain> numa_domains_;
+        std::vector<socket> sockets_;
 
         // store policy flags determining the general behavior of the
         // resource_partitioner

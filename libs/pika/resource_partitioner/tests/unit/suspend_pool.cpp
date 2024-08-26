@@ -136,7 +136,7 @@ void test_scheduler(int argc, char* argv[], pika::resource::scheduling_policy sc
         PIKA_ASSERT(worker_pool_threads >= 1);
         std::size_t worker_pool_threads_added = 0;
 
-        for (pika::resource::numa_domain const& d : rp.numa_domains())
+        for (pika::resource::socket const& d : rp.sockets())
         {
             for (pika::resource::core const& c : d.cores())
             {

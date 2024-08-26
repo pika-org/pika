@@ -220,7 +220,7 @@ void init_resource_partitioner_handler(pika::resource::partitioner& rp,
     std::size_t threads_remaining = max_threads;
     std::size_t threads_in_pool = 0;
     // create pools randomly and add a random number of PUs to each pool
-    for (pika::resource::numa_domain const& d : rp.numa_domains())
+    for (pika::resource::socket const& d : rp.sockets())
     {
         for (pika::resource::core const& c : d.cores())
         {

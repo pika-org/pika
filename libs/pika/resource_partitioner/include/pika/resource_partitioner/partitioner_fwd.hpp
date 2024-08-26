@@ -18,7 +18,7 @@
 #include <string>
 
 namespace pika::resource {
-    class numa_domain;
+    class socket;
     class core;
     class pu;
 

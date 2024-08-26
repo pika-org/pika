@@ -39,11 +39,11 @@ namespace pika::resource {
 
     private:
         friend class core;
-        friend class numa_domain;
+        friend class socket;
         friend class resource::detail::partitioner;
 
         std::vector<pu> pus_sharing_core();
-        std::vector<pu> pus_sharing_numa_domain();
+        std::vector<pu> pus_sharing_socket();
 
         std::size_t id_;
         core* core_;
@@ -63,9 +63,9 @@ namespace pika::resource {
         static constexpr const std::size_t invalid_core_id = std::size_t(-1);
 
     public:
-        explicit core(std::size_t id = invalid_core_id, numa_domain* domain = nullptr)
+        explicit core(std::size_t id = invalid_core_id, socket* socket = nullptr)
           : id_(id)
-          , domain_(domain)
+          , socket_(socket)
         {
         }
 
@@ -73,23 +73,23 @@ namespace pika::resource {
         std::size_t id() const { return id_; }
 
     private:
-        std::vector<core> cores_sharing_numa_domain();
+        std::vector<core> cores_sharing_socket();
 
         friend class pu;
-        friend class numa_domain;
+        friend class socket;
         friend class resource::detail::partitioner;
 
         std::size_t id_;
-        numa_domain* domain_;
+        socket* socket_;
         std::vector<pu> pus_;
     };
 
-    class numa_domain
+    class socket
     {
-        static constexpr const std::size_t invalid_numa_domain_id = std::size_t(-1);
+        static constexpr const std::size_t invalid_socket_id = std::size_t(-1);
 
     public:
-        explicit numa_domain(std::size_t id = invalid_numa_domain_id)
+        explicit socket(std::size_t id = invalid_socket_id)
           : id_(id)
         {
         }
@@ -140,7 +140,7 @@ namespace pika::resource {
 
         ///////////////////////////////////////////////////////////////////////
         // Functions to add processing units to thread pools via
-        // the pu/core/numa_domain API
+        // the pu/core/socket API
         void add_resource(
             pika::resource::pu const& p, std::string const& pool_name, std::size_t num_threads = 1)
         {
@@ -154,13 +154,13 @@ namespace pika::resource {
             pika::resource::core const& c, std::string const& pool_name, bool exclusive = true);
         PIKA_EXPORT void add_resource(std::vector<pika::resource::core>& cv,
             std::string const& pool_name, bool exclusive = true);
-        PIKA_EXPORT void add_resource(pika::resource::numa_domain const& nd,
-            std::string const& pool_name, bool exclusive = true);
-        PIKA_EXPORT void add_resource(std::vector<pika::resource::numa_domain> const& ndv,
+        PIKA_EXPORT void add_resource(
+            pika::resource::socket const& nd, std::string const& pool_name, bool exclusive = true);
+        PIKA_EXPORT void add_resource(std::vector<pika::resource::socket> const& ndv,
             std::string const& pool_name, bool exclusive = true);
 
-        // Access all available NUMA domains
-        PIKA_EXPORT std::vector<numa_domain> const& numa_domains() const;
+        // Access all available sockets
+        PIKA_EXPORT std::vector<socket> const& sockets() const;
 
         // Returns the threads requested at startup --pika:threads=cores
         // for example will return the number actually created

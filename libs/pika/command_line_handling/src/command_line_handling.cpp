@@ -350,12 +350,12 @@ namespace pika::detail {
         {
             if (0 != std::string("pu").find(affinity_domain_) &&
                 0 != std::string("core").find(affinity_domain_) &&
-                0 != std::string("numa").find(affinity_domain_) &&
+                0 != std::string("socket").find(affinity_domain_) &&
                 0 != std::string("machine").find(affinity_domain_))
             {
                 throw pika::detail::command_line_error(
                     "Invalid command line option --pika:affinity, value must be one of: pu, core, "
-                    "numa, or machine.");
+                    "socket, or machine.");
             }
         }
     }

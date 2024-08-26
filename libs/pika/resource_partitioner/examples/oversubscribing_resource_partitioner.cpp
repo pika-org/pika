@@ -216,7 +216,7 @@ void init_resource_partitioner_handler(
         rp.create_thread_pool(pool_name, pika::resource::scheduling_policy::shared_priority, deft);
         // add N pus to network pool
         int count = 0;
-        for (pika::resource::numa_domain const& d : rp.numa_domains())
+        for (pika::resource::socket const& d : rp.sockets())
         {
             for (pika::resource::core const& c : d.cores())
             {

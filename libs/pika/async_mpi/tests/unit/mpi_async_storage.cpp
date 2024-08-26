@@ -471,7 +471,7 @@ void init_resource_partitioner_handler(
     // communication related tasks
     rp.create_thread_pool(
         mpi::get_pool_name(), pika::resource::scheduling_policy::local_priority_fifo, mode);
-    rp.add_resource(rp.numa_domains()[0].cores()[0].pus()[0], mpi::get_pool_name());
+    rp.add_resource(rp.sockets()[0].cores()[0].pus()[0], mpi::get_pool_name());
 }
 
 //----------------------------------------------------------------------------

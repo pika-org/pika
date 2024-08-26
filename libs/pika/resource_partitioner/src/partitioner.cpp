@@ -31,12 +31,12 @@ namespace pika::resource {
         return result;
     }
 
-    std::vector<pu> pu::pus_sharing_numa_domain()
+    std::vector<pu> pu::pus_sharing_socket()
     {
         std::vector<pu> result;
-        result.reserve(core_->domain_->cores_.size());
+        result.reserve(core_->socket_->cores_.size());
 
-        for (core const& c : core_->domain_->cores_)
+        for (core const& c : core_->socket_->cores_)
         {
             for (pu const& p : c.pus_)
             {
@@ -46,12 +46,12 @@ namespace pika::resource {
         return result;
     }
 
-    std::vector<core> core::cores_sharing_numa_domain()
+    std::vector<core> core::cores_sharing_socket()
     {
         std::vector<core> result;
-        result.reserve(domain_->cores_.size());
+        result.reserve(socket_->cores_.size());
 
-        for (core const& c : domain_->cores_)
+        for (core const& c : socket_->cores_)
         {
             if (c.id_ != id_) { result.push_back(c); }
         }
@@ -175,21 +175,18 @@ namespace pika::resource {
     }
 
     void partitioner::add_resource(
-        numa_domain const& nd, std::string const& pool_name, bool exclusive /*= true*/)
+        socket const& nd, std::string const& pool_name, bool exclusive /*= true*/)
     {
         partitioner_.add_resource(nd, pool_name, exclusive);
     }
 
-    void partitioner::add_resource(std::vector<numa_domain> const& ndv,
-        std::string const& pool_name, bool exclusive /*= true*/)
+    void partitioner::add_resource(
+        std::vector<socket> const& ndv, std::string const& pool_name, bool exclusive /*= true*/)
     {
         partitioner_.add_resource(ndv, pool_name, exclusive);
     }
 
-    std::vector<numa_domain> const& partitioner::numa_domains() const
-    {
-        return partitioner_.numa_domains();
-    }
+    std::vector<socket> const& partitioner::sockets() const { return partitioner_.sockets(); }
 
     pika::threads::detail::topology const& partitioner::get_topology() const
     {
