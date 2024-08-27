@@ -62,24 +62,6 @@ namespace pika::detail {
         return masks;
     }
 
-    std::vector<mask_info> extract_numanode_masks(
-        threads::detail::topology const& t, bounds_type const& b)
-    {
-        std::vector<mask_info> masks;
-        for (std::int64_t index : b)
-        {
-            masks.push_back(std::make_tuple(static_cast<std::size_t>(index),
-                t.init_numa_node_affinity_mask_from_numa_node(static_cast<std::size_t>(index))));
-        }
-        return masks;
-    }
-
-    threads::detail::mask_cref_type extract_machine_mask(
-        threads::detail::topology const& t, error_code& ec)
-    {
-        return t.get_machine_affinity_mask(ec);
-    }
-
     ///////////////////////////////////////////////////////////////////////////
     bool pu_in_process_mask(bool use_process_mask, threads::detail::topology& t,
         std::size_t num_core, std::size_t num_pu)
