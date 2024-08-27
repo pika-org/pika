@@ -11,6 +11,8 @@ function submit_logstash {
     fi
 
     curl \
+        --silent \
+        --show-error \
         --request POST \
         --header "Content-Type: application/json" \
         --data "@${1}" \
