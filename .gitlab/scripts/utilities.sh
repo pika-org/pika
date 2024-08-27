@@ -16,7 +16,8 @@ function submit_logstash {
         --request POST \
         --header "Content-Type: application/json" \
         --data "@${1}" \
-        "${CSCS_LOGSTASH_URL}"
+        "${CSCS_LOGSTASH_URL}" \
+        || true
 }
 
 function json_merge {
