@@ -82,9 +82,6 @@ namespace pika::util::detail {
 #endif
 
 /////////////////////////////////////////////////////////////
-// use this to silence compiler warnings for global variables
-#define PIKA_MAYBE_UNUSED [[maybe_unused]]
-
 #if defined(PIKA_MSVC)
 # pragma warning(pop)
 #endif

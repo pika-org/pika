@@ -50,13 +50,13 @@ extern char** environ;
 namespace pika {
     namespace detail {
         // Default params to initialize the init_params struct
-        PIKA_MAYBE_UNUSED static int dummy_argc = 1;
-        PIKA_MAYBE_UNUSED static char app_name[] = PIKA_APPLICATION_STRING;
+        [[maybe_unused]] static int dummy_argc = 1;
+        [[maybe_unused]] static char app_name[] = PIKA_APPLICATION_STRING;
         static char* default_argv[2] = {app_name, nullptr};
-        PIKA_MAYBE_UNUSED static char** dummy_argv = default_argv;
+        [[maybe_unused]] static char** dummy_argv = default_argv;
         // PIKA_APPLICATION_STRING is specific to an application and therefore
         // cannot be in the source file
-        PIKA_MAYBE_UNUSED static const pika::program_options::options_description default_desc =
+        [[maybe_unused]] static const pika::program_options::options_description default_desc =
             pika::program_options::options_description(
                 "Usage: " PIKA_APPLICATION_STRING " [options]");
 
