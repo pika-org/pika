@@ -14,7 +14,6 @@
 #include <pika/functional/detail/vtable/vtable.hpp>
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
-#include <pika/modules/itt_notify.hpp>
 
 #include <cstddef>
 #include <cstring>
@@ -124,15 +123,6 @@ namespace pika::util::detail {
         return vptr->get_function_annotation(object);
 #else
         return nullptr;
-#endif
-    }
-
-    util::itt::string_handle function_base::get_function_annotation_itt() const
-    {
-#if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
-        return vptr->get_function_annotation_itt(object);
-#else
-        return util::itt::string_handle{};
 #endif
     }
 }    // namespace pika::util::detail

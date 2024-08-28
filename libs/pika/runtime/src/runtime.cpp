@@ -15,7 +15,6 @@
 #include <pika/execution_base/this_thread.hpp>
 #include <pika/functional/bind.hpp>
 #include <pika/functional/function.hpp>
-#include <pika/itt_notify/thread_name.hpp>
 #include <pika/logging.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/thread_manager.hpp>
@@ -29,7 +28,7 @@
 #include <pika/runtime/state.hpp>
 #include <pika/runtime/thread_hooks.hpp>
 #include <pika/string_util/from_string.hpp>
-#include <pika/thread_support/set_thread_name.hpp>
+#include <pika/thread_support/thread_name.hpp>
 #include <pika/threading_base/external_timer.hpp>
 #include <pika/threading_base/scheduler_mode.hpp>
 #include <pika/threading_base/thread_helpers.hpp>
@@ -532,13 +531,6 @@ namespace pika::detail {
     {
         static runtime* runtime_ = nullptr;
         return runtime_;
-    }
-
-    std::string get_thread_name()
-    {
-        std::string& thread_name = detail::thread_name();
-        if (thread_name.empty()) return "<unknown>";
-        return thread_name;
     }
 
     // Register the current kernel thread with pika, this should be done once
@@ -1133,12 +1125,8 @@ namespace pika::detail {
             cond.notify_all();
         }
 
-        // register this thread with any possibly active Intel tool
         std::string thread_name("main-thread#wait_helper");
-        PIKA_ITT_THREAD_SET_NAME(thread_name.c_str());
-
-        // set thread name as shown in Visual Studio
-        detail::set_thread_name(thread_name.c_str());
+        detail::set_thread_name(thread_name);
 
 #if defined(PIKA_HAVE_APEX)
         // not registering helper threads - for now
@@ -1406,23 +1394,18 @@ namespace pika::detail {
             fullname << "/local:" + std::to_string(local_thread_num);
         }
 
-        PIKA_ASSERT(detail::thread_name().empty());
-        detail::thread_name() = PIKA_MOVE(fullname).str();
+        PIKA_ASSERT(detail::get_thread_name_internal().empty());
+        detail::set_thread_name(PIKA_MOVE(fullname).str());
+#if defined(PIKA_HAVE_APEX) || defined(PIKA_HAVE_TRACY)
+        char const* name = detail::get_thread_name().c_str();
 
-        char const* name = detail::thread_name().c_str();
-
-        // register this thread with any possibly active Intel tool
-        PIKA_ITT_THREAD_SET_NAME(name);
-
-        // set thread name as shown in Visual Studio
-        detail::set_thread_name(name);
-
-#if defined(PIKA_HAVE_APEX)
+# if defined(PIKA_HAVE_APEX)
         if (std::strstr(name, "worker") != nullptr) detail::external_timer::register_thread(name);
-#endif
+# endif
 
-#ifdef PIKA_HAVE_TRACY
+# ifdef PIKA_HAVE_TRACY
         tracy::SetThreadName(name);
+# endif
 #endif
 
         // call thread-specific user-supplied on_start handler
@@ -1440,7 +1423,7 @@ namespace pika::detail {
         if (on_stop_func_) { on_stop_func_(global_thread_num, global_thread_num, "", context); }
 
         // reset thread local storage
-        detail::thread_name().clear();
+        detail::set_thread_name("");
     }
 
     void runtime::add_pre_startup_function(startup_function_type f)
@@ -1481,7 +1464,7 @@ namespace pika::detail {
     /// Unregister an external OS-thread with pika
     bool runtime::unregister_thread()
     {
-        deinit_tss_helper(detail::thread_name().c_str(), pika::get_worker_thread_num());
+        deinit_tss_helper(detail::get_thread_name().c_str(), pika::get_worker_thread_num());
         return true;
     }
 

@@ -1,4 +1,4 @@
-//  Copyright (c) 2019 Mikael Simberg
+//  Copyright (c) 2007-2013 Hartmut Kaiser
 //
 //  SPDX-License-Identifier: BSL-1.0
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -10,8 +10,12 @@
 
 #include <string>
 
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
+# include <windows.h>
+#endif
+
 namespace pika::detail {
-    /// Helper utility to set and store a name for the current operating system
-    /// thread. Returns a reference to the name for the current thread.
-    PIKA_EXPORT std::string& thread_name();
+    PIKA_EXPORT std::string& get_thread_name_internal();
+    PIKA_EXPORT std::string get_thread_name();
+    PIKA_EXPORT void set_thread_name(std::string_view name);
 }    // namespace pika::detail

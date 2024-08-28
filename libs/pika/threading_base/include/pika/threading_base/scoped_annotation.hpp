@@ -12,9 +12,7 @@
 # include <pika/threading_base/thread_description.hpp>
 # include <pika/threading_base/thread_helpers.hpp>
 
-# if PIKA_HAVE_ITTNOTIFY != 0
-#  include <pika/modules/itt_notify.hpp>
-# elif defined(PIKA_HAVE_APEX)
+# if defined(PIKA_HAVE_APEX)
 #  include <pika/threading_base/external_timer.hpp>
 # elif defined(PIKA_HAVE_TRACY)
 #  include <pika/threading_base/detail/tracy.hpp>
@@ -45,26 +43,6 @@ namespace pika {
 
         // add empty (but non-trivial) destructor to silence warnings
         PIKA_HOST_DEVICE ~scoped_annotation() {}
-    };
-# elif PIKA_HAVE_ITTNOTIFY != 0
-    struct [[nodiscard]] scoped_annotation
-    {
-        PIKA_NON_COPYABLE(scoped_annotation);
-
-        explicit scoped_annotation(char const* name)
-          : task_(thread_domain_, pika::util::itt::string_handle(name))
-        {
-        }
-        template <typename F>
-        explicit scoped_annotation(F&& f)
-          : task_(
-                thread_domain_, pika::detail::get_function_annotation_itt<std::decay_t<F>>::call(f))
-        {
-        }
-
-    private:
-        pika::util::itt::thread_domain thread_domain_;
-        pika::util::itt::task task_;
     };
 # elif defined(PIKA_HAVE_TRACY)
     struct [[nodiscard]] scoped_annotation

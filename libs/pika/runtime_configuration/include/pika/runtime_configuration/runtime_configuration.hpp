@@ -51,9 +51,6 @@ namespace pika::util {
         // default configuration loaded from pika.ini
         bool load_application_configuration(char const* filename, error_code& ec = throws);
 
-        // Can be set to true if we want to use the ITT notify tools API.
-        bool get_itt_notify_mode() const;
-
         // Enable lock detection during suspension
         bool enable_lock_detection() const;
 

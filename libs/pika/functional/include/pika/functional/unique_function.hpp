@@ -81,16 +81,5 @@ namespace pika::detail {
             return f.get_function_annotation();
         }
     };
-
-# if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
-    template <typename Sig>
-    struct get_function_annotation_itt<util::detail::unique_function<Sig>>
-    {
-        static util::itt::string_handle call(util::detail::unique_function<Sig> const& f) noexcept
-        {
-            return f.get_function_annotation_itt();
-        }
-    };
-# endif
 }    // namespace pika::detail
 #endif

@@ -6,11 +6,11 @@
 
 set(thread_support_headers
     pika/thread_support/assert_owns_lock.hpp pika/thread_support/atomic_count.hpp
-    pika/thread_support/set_thread_name.hpp pika/thread_support/spinlock.hpp
+    pika/thread_support/spinlock.hpp pika/thread_support/thread_name.hpp
     pika/thread_support/unlock_guard.hpp
 )
 
-set(thread_support_sources set_thread_name.cpp spinlock.cpp)
+set(thread_support_sources spinlock.cpp thread_name.cpp)
 
 include(pika_add_module)
 pika_add_module(

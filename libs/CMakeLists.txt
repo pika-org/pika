@@ -97,7 +97,3 @@ configure_file(
 if(MSVC AND PIKA_WITH_SWAP_CONTEXT_EMULATION)
   target_link_options(pika PRIVATE "/EXPORT:switch_to_fiber")
 endif()
-
-if(PIKA_WITH_ITTNOTIFY)
-  target_link_libraries(pika PUBLIC pika_internal::amplifier)
-endif()
