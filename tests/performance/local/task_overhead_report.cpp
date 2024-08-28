@@ -154,7 +154,7 @@ int main(int argc, char* argv[])
         value<std::uint64_t>()->default_value(
             // Address sanitizer can use a lot of memory on this test, so we reduce the default
             // number of tasks
-#if defined(PIKA_HAVE_ADDRESS_SANITIZER)
+#if defined(PIKA_HAVE_ADDRESS_SANITIZER) || defined(PIKA_HAVE_VALGRIND)
             50000
 #else
             500000
