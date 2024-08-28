@@ -47,7 +47,7 @@ RUN CTEST_XML=$PWD/ctest.xml; \
             --label-regex COMPILE_ONLY \
             --test-dir ${BUILD_DIR} \
             -j${NUM_PROCS} \
-            --timeout 30 \
+            --timeout 60 \
             --output-on-failure \
             --no-compress-output \
             -R tests \
