@@ -32,7 +32,7 @@ if(NOT TARGET pika_dependencies_boost)
   set(Boost_NO_BOOST_CMAKE ON) # disable the search for boost-cmake
 
   # Find the headers and get the version
-  find_package(Boost ${Boost_MINIMUM_VERSION} REQUIRED)
+  find_package(Boost ${Boost_MINIMUM_VERSION} CONFIG REQUIRED)
   if(NOT Boost_VERSION_STRING)
     set(Boost_VERSION_STRING
         "${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}.${Boost_SUBMINOR_VERSION}"
@@ -46,7 +46,8 @@ if(NOT TARGET pika_dependencies_boost)
 
   list(REMOVE_DUPLICATES __boost_libraries)
 
-  find_package(Boost ${Boost_MINIMUM_VERSION} MODULE REQUIRED COMPONENTS ${__boost_libraries})
+  pika_set_cmake_policy(CMP0167 NEW)  # deprecates FindBoost
+  find_package(Boost ${Boost_MINIMUM_VERSION} CONFIG REQUIRED COMPONENTS ${__boost_libraries})
 
   if(NOT Boost_FOUND)
     pika_error("Could not find Boost. Please set BOOST_ROOT to point to your Boost installation.")
