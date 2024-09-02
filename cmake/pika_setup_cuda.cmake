@@ -143,19 +143,15 @@ if(PIKA_WITH_CUDA AND NOT TARGET pika_internal::cuda)
 endif()
 
 function(pika_add_nvhpc_cuda_flags source)
-  set_source_files_properties(${source} PROPERTIES LANGUAGE CXX)
-
-  get_source_file_property(source_compile_flags ${source} COMPILE_FLAGS)
-  if(source_compile_flags STREQUAL "NOTFOUND")
-    set(source_compile_flags)
-  endif()
-
   set(source_gpu_cc_flags)
   foreach(cuda_arch ${CMAKE_CUDA_ARCHITECTURES})
     set(source_gpu_cc_flags "${source_gpu_cc_flags} -gpu=cc${cuda_arch}")
   endforeach()
 
+  get_source_file_property(source_compile_flags ${source} COMPILE_FLAGS)
+  string(REGEX REPLACE "^NOTFOUND$" "" source_compile_flags ${source_compile_flags})
   set_source_files_properties(
     ${source} PROPERTIES COMPILE_FLAGS "${source_compile_flags} -x cu ${source_gpu_cc_flags}"
+                         LANGUAGE CXX
   )
 endfunction()
