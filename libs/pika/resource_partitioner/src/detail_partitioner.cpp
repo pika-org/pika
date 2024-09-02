@@ -242,23 +242,22 @@ namespace pika::resource::detail {
         threads::detail::topology& topo = get_topology();
 
         std::size_t pid = 0;
-        std::size_t num_numa_nodes = topo.get_number_of_numa_nodes();
-        if (num_numa_nodes == 0) num_numa_nodes = topo.get_number_of_sockets();
-        numa_domains_.reserve(num_numa_nodes);
+        std::size_t num_sockets = topo.get_number_of_sockets();
+        sockets_.reserve(num_sockets);
 
-        // loop on the numa-domains
-        for (std::size_t i = 0; i != num_numa_nodes; ++i)
+        // loop on the sockets
+        for (std::size_t i = 0; i != num_sockets; ++i)
         {
-            numa_domains_.emplace_back(i);             // add a numa domain
-            numa_domain& nd = numa_domains_.back();    // numa-domain just added
+            sockets_.emplace_back(i);        // add a socket
+            socket& nd = sockets_.back();    // socket just added
 
-            std::size_t numa_node_cores = topo.get_number_of_numa_node_cores(i);
-            nd.cores_.reserve(numa_node_cores);
+            std::size_t socket_cores = topo.get_number_of_socket_cores(i);
+            nd.cores_.reserve(socket_cores);
 
-            bool numa_domain_contains_exposed_cores = false;
+            bool socket_contains_exposed_cores = false;
 
             // loop on the cores
-            for (std::size_t j = 0; j != numa_node_cores; ++j)
+            for (std::size_t j = 0; j != socket_cores; ++j)
             {
                 nd.cores_.emplace_back(j, &nd);
                 core& c = nd.cores_.back();
@@ -287,11 +286,11 @@ namespace pika::resource::detail {
                     ++pid;
                 }
 
-                if (core_contains_exposed_pus) { numa_domain_contains_exposed_cores = true; }
+                if (core_contains_exposed_pus) { socket_contains_exposed_cores = true; }
                 else { nd.cores_.pop_back(); }
             }
 
-            if (!numa_domain_contains_exposed_cores) { numa_domains_.pop_back(); }
+            if (!socket_contains_exposed_cores) { sockets_.pop_back(); }
         }
     }
 
@@ -329,7 +328,7 @@ namespace pika::resource::detail {
     {
         // Assign all free resources to the default pool
         bool first = true;
-        for (pika::resource::numa_domain& d : numa_domains_)
+        for (pika::resource::socket& d : sockets_)
         {
             for (pika::resource::core& c : d.cores_)
             {
@@ -585,7 +584,7 @@ namespace pika::resource::detail {
     }
 
     // ----------------------------------------------------------------------
-    // Add processing units to pools via pu/core/domain api
+    // Add processing units to pools via pu/core/socket api
     // ----------------------------------------------------------------------
     void partitioner::add_resource(
         pu const& p, std::string const& pool_name, bool exclusive, std::size_t num_threads)
@@ -654,16 +653,15 @@ namespace pika::resource::detail {
         for (const core& c : cv) { add_resource(c.pus_, pool_name, exclusive); }
     }
 
-    void partitioner::add_resource(
-        numa_domain const& nd, std::string const& pool_name, bool exclusive)
+    void partitioner::add_resource(socket const& nd, std::string const& pool_name, bool exclusive)
     {
         add_resource(nd.cores_, pool_name, exclusive);
     }
 
     void partitioner::add_resource(
-        std::vector<numa_domain> const& ndv, std::string const& pool_name, bool exclusive)
+        std::vector<socket> const& ndv, std::string const& pool_name, bool exclusive)
     {
-        for (const numa_domain& d : ndv) { add_resource(d, pool_name, exclusive); }
+        for (const socket& d : ndv) { add_resource(d, pool_name, exclusive); }
     }
 
     void partitioner::set_scheduler(scheduling_policy sched, std::string const& pool_name)

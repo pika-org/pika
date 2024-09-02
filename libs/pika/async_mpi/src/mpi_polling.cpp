@@ -769,7 +769,7 @@ namespace pika::mpi::experimental {
         auto& rp = resource::get_partitioner();
         rp.create_thread_pool(
             get_pool_name(), pika::resource::scheduling_policy::static_priority, smode);
-        rp.add_resource(rp.numa_domains()[0].cores()[0].pus()[0], get_pool_name());
+        rp.add_resource(rp.sockets()[0].cores()[0].pus()[0], get_pool_name());
         PIKA_DETAIL_DP(detail::mpi_debug<1>,
             debug(str<>("pool created"), "name", get_pool_name(), "mode flags", bin<8>(flags)));
         return true;

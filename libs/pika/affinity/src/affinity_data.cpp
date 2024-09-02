@@ -161,12 +161,12 @@ namespace pika::detail {
             // pu_num.
             return topo.get_core_affinity_mask(pu_num);
         }
-        if (0 == std::string("numa").find(affinity_domain_))
+        if (0 == std::string("socket").find(affinity_domain_))
         {
-            // The affinity domain is 'numa', return a bit mask corresponding
-            // to all processing units of the NUMA domain containing the
+            // The affinity domain is 'socket', return a bit mask corresponding
+            // to all processing units of the socket containing the
             // given pu_num.
-            return topo.get_numa_node_affinity_mask(pu_num);
+            return topo.get_socket_affinity_mask(pu_num);
         }
 
         // The affinity domain is 'machine', return a bit mask corresponding

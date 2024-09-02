@@ -5,7 +5,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 // This example creates a resource partitioner, a custom thread pool, and adds
-// processing units from a single NUMA domain to the custom thread pool. It is
+// processing units from a single socket to the custom thread pool. It is
 // intended for inclusion in the documentation.
 
 //[body
@@ -26,16 +26,16 @@ void init_resource_partitioner_handler(
 {
     rp.create_thread_pool("my-thread-pool");
 
-    bool one_numa_domain = rp.numa_domains().size() == 1;
+    bool one_socket = rp.sockets().size() == 1;
     bool skipped_first_pu = false;
 
-    pika::resource::numa_domain const& d = rp.numa_domains()[0];
+    pika::resource::socket const& d = rp.sockets()[0];
 
     for (pika::resource::core const& c : d.cores())
     {
         for (pika::resource::pu const& p : c.pus())
         {
-            if (one_numa_domain && !skipped_first_pu)
+            if (one_socket && !skipped_first_pu)
             {
                 skipped_first_pu = true;
                 continue;

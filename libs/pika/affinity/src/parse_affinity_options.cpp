@@ -307,67 +307,67 @@ namespace pika::detail {
 
         num_pus.resize(num_threads);
 
-        // numa nodes
-        std::size_t num_numas = (std::max)(std::size_t(1), t.get_number_of_numa_nodes());
-        std::vector<std::size_t> num_cores_numa(num_numas, 0);
-        std::vector<std::size_t> num_pus_numa(num_numas, 0);
-        std::vector<std::size_t> num_threads_numa(num_numas, 0);
-        for (std::size_t n = 0; n < num_numas; ++n)
+        // sockets
+        std::size_t num_sockets = (std::max)(std::size_t(1), t.get_number_of_sockets());
+        std::vector<std::size_t> num_cores_socket(num_sockets, 0);
+        std::vector<std::size_t> num_pus_socket(num_sockets, 0);
+        std::vector<std::size_t> num_threads_socket(num_sockets, 0);
+        for (std::size_t n = 0; n < num_sockets; ++n)
         {
-            num_cores_numa[n] = t.get_number_of_numa_node_cores(n);
+            num_cores_socket[n] = t.get_number_of_socket_cores(n);
         }
 
         std::size_t core_offset = 0;
         std::size_t pus_t = 0;
-        for (std::size_t n = 0; n < num_numas; ++n)
+        for (std::size_t n = 0; n < num_sockets; ++n)
         {
-            for (std::size_t num_core = 0; num_core < num_cores_numa[n]; ++num_core)
+            for (std::size_t num_core = 0; num_core < num_cores_socket[n]; ++num_core)
             {
                 std::size_t num_pus = t.get_number_of_core_pus(num_core + core_offset);
                 for (std::size_t num_pu = 0; num_pu < num_pus; ++num_pu)
                 {
                     if (pu_in_process_mask(use_process_mask, t, num_core + core_offset, num_pu))
                     {
-                        ++num_pus_numa[n];
+                        ++num_pus_socket[n];
                     }
                 }
             }
 
-            pus_t += num_pus_numa[n];
-            core_offset += num_cores_numa[n];
+            pus_t += num_pus_socket[n];
+            core_offset += num_cores_socket[n];
         }
 
         // how many threads should go on each domain
         std::size_t pus_t2 = 0;
-        for (std::size_t n = 0; n < num_numas; ++n)
+        for (std::size_t n = 0; n < num_sockets; ++n)
         {
             std::size_t temp = static_cast<std::size_t>(std::round(
-                static_cast<double>(num_threads * num_pus_numa[n]) / static_cast<double>(pus_t)));
+                static_cast<double>(num_threads * num_pus_socket[n]) / static_cast<double>(pus_t)));
 
             // due to rounding up, we might have too many threads
             if ((pus_t2 + temp) > num_threads) temp = num_threads - pus_t2;
             pus_t2 += temp;
-            num_threads_numa[n] = temp;
+            num_threads_socket[n] = temp;
 
-            // PIKA_ASSERT(num_threads_numa[n] <= num_pus_numa[n]);
+            // PIKA_ASSERT(num_threads_socket[n] <= num_pus_socket[n]);
         }
 
         // PIKA_ASSERT(num_threads <= pus_t2);
 
-        // assign threads to cores on each numa domain
+        // assign threads to cores on each socket
         std::size_t num_thread = 0;
         core_offset = 0;
-        for (std::size_t n = 0; n < num_numas; ++n)
+        for (std::size_t n = 0; n < num_sockets; ++n)
         {
-            std::vector<std::size_t> num_pus_cores(num_cores_numa[n], 0);
-            std::vector<std::size_t> next_pu_index(num_cores_numa[n], 0);
-            std::vector<std::vector<std::size_t>> pu_indexes(num_cores_numa[n]);
+            std::vector<std::size_t> num_pus_cores(num_cores_socket[n], 0);
+            std::vector<std::size_t> next_pu_index(num_cores_socket[n], 0);
+            std::vector<std::vector<std::size_t>> pu_indexes(num_cores_socket[n]);
 
             // iterate once and count pus/core
-            for (std::size_t num_thread_numa = 0; num_thread_numa < num_threads_numa[n];
+            for (std::size_t num_thread_socket = 0; num_thread_socket < num_threads_socket[n];
                 /**/)
             {
-                for (std::size_t num_core = 0; num_core < num_cores_numa[n]; ++num_core)
+                for (std::size_t num_core = 0; num_core < num_cores_socket[n]; ++num_core)
                 {
                     std::size_t num_core_pus = t.get_number_of_core_pus(num_core);
                     std::size_t pu_index = next_pu_index[num_core];
@@ -390,13 +390,13 @@ namespace pika::detail {
                     pu_indexes[num_core].push_back(next_pu_index[num_core] - 1);
 
                     num_pus_cores[num_core]++;
-                    if (++num_thread_numa == num_threads_numa[n]) break;
+                    if (++num_thread_socket == num_threads_socket[n]) break;
                 }
             }
 
             // Iterate over the cores and assigned pus per core. this additional
             // loop is needed so that we have consecutive worker thread numbers
-            for (std::size_t num_core = 0; num_core < num_cores_numa[n]; ++num_core)
+            for (std::size_t num_core = 0; num_core < num_cores_socket[n]; ++num_core)
             {
                 for (std::size_t num_pu = 0; num_pu < num_pus_cores[num_core]; ++num_pu)
                 {
@@ -414,7 +414,7 @@ namespace pika::detail {
                     ++num_thread;
                 }
             }
-            core_offset += num_cores_numa[n];
+            core_offset += num_cores_socket[n];
         }
     }
 

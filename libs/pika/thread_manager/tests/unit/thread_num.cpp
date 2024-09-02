@@ -32,7 +32,7 @@ void test_scheduler(int argc, char* argv[], pika::resource::scheduling_policy sc
         std::size_t pools_added = 0;
 
         rp.set_default_pool_name("0");
-        for (pika::resource::numa_domain const& d : rp.numa_domains())
+        for (pika::resource::socket const& d : rp.sockets())
         {
             for (pika::resource::core const& c : d.cores())
             {
