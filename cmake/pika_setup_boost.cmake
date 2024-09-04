@@ -46,7 +46,7 @@ if(NOT TARGET pika_dependencies_boost)
 
   list(REMOVE_DUPLICATES __boost_libraries)
 
-  pika_set_cmake_policy(CMP0167 NEW)  # deprecates FindBoost
+  pika_set_cmake_policy(CMP0167 NEW) # deprecates FindBoost
   find_package(Boost ${Boost_MINIMUM_VERSION} CONFIG REQUIRED COMPONENTS ${__boost_libraries})
 
   if(NOT Boost_FOUND)
