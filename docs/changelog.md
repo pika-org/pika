@@ -6,6 +6,19 @@
 
 # Changelog
 
+## 0.28.0 (2024-09-04)
+
+### New features
+
+### Breaking changes
+
+- When using stdexec, pika now requires and is tested with stdexec commit `8bc7c7f06fe39831dea6852407ebe7f6be8fa9fd` ([#1205](https://github.com/pika-org/pika/pull/1205))
+- The Boost dependency is now found using CMake's config mode instead of CMake's deprecated Boost module. This requires Boost to be installed with a `BoostConfig.cmake` file. ([#1229](https://github.com/pika-org/pika/pull/1229))
+
+### Bugfixes
+
+- NUMA nodes and sockets are now correctly handled on Grace-Hopper systems. This allows use of hwloc 2.11 and newer on such systems. ([#1224](https://github.com/pika-org/pika/pull/1224))
+
 ## 0.27.0 (2024-08-15)
 
 ### New features
