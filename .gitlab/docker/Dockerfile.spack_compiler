@@ -26,7 +26,9 @@ RUN spack compiler info $COMPILER > /dev/null 2> /dev/null; compiler_missing=$?;
     fi && \
     if [[ $compiler_missing != 0 ]]; then \
         spack install $spack_compiler arch=$SPACK_ARCH && \
-        spack compiler add --scope site $(spack location -i $spack_compiler) && \
+        spack external find \
+            --scope site \
+            --path $(spack location -i $spack_compiler) gcc llvm && \
         \
         printf "  all:\n    require:\n    - one_of: [\"%%${COMPILER}\"${NVHPC_COMPILER:+,\"%%}${NVHPC_COMPILER}${NVHPC_COMPILER:+\"}]" \
             >> $SPACK_ROOT/etc/spack/packages.yaml && \
@@ -34,8 +36,10 @@ RUN spack compiler info $COMPILER > /dev/null 2> /dev/null; compiler_missing=$?;
         if [[ ! -z "$NVHPC_COMPILER" ]]; then \
             nvhpc_version=${NVHPC_COMPILER#nvhpc@} && \
             spack install $NVHPC_COMPILER%$spack_compiler arch=$SPACK_ARCH && \
-            spack compiler add --scope site \
-                $(spack location -i $NVHPC_COMPILER)/Linux_x86_64/$nvhpc_version/compilers/bin; \
+            spack external find \
+                --scope site \
+                --path $(spack location -i $NVHPC_COMPILER)/Linux_x86_64/$nvhpc_version/compilers/bin \
+                nvhpc; \
         fi && \
         spack clean --all; \
     fi
