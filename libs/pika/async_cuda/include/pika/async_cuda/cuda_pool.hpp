@@ -89,7 +89,7 @@ namespace pika::cuda::experimental {
             std::vector<cublas_handle> handles;
             std::vector<std::mutex> handle_mutexes;
 
-            PIKA_EXPORT cublas_handles_holder(std::size_t num_handles);
+            PIKA_EXPORT explicit cublas_handles_holder(std::size_t num_handles);
             cublas_handles_holder(cublas_handles_holder&&) = delete;
             cublas_handles_holder(cublas_handles_holder const&) = delete;
             cublas_handles_holder& operator=(cublas_handles_holder&&) = delete;
@@ -106,7 +106,7 @@ namespace pika::cuda::experimental {
             std::vector<cusolver_handle> handles;
             std::vector<std::mutex> handle_mutexes;
 
-            PIKA_EXPORT cusolver_handles_holder(std::size_t num_handles);
+            PIKA_EXPORT explicit cusolver_handles_holder(std::size_t num_handles);
             cusolver_handles_holder(cusolver_handles_holder&&) = delete;
             cusolver_handles_holder(cusolver_handles_holder const&) = delete;
             cusolver_handles_holder& operator=(cusolver_handles_holder&&) = delete;
