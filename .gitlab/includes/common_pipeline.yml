@@ -29,13 +29,6 @@ variables:
     SLURM_NTASKS: 1
     SLURM_TIMELIMIT: '01:00:00'
 
-.test_common_daint_mc:
-  extends:
-    - .container-runner-daint-mc
-    - .test_common
-  variables:
-    SLURM_PARTITION: normal
-
 .test_common_eiger_mc:
   extends:
     - .container-runner-eiger-mc-f7t

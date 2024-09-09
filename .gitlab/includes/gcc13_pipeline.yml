@@ -10,7 +10,7 @@ include:
 
 .variables_gcc13_config:
   variables:
-    SPACK_ARCH: linux-ubuntu22.04-broadwell
+    SPACK_ARCH: linux-ubuntu22.04-zen2
     COMPILER: gcc@13.1.0
     CXXSTD: 20
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD +stdexec \
@@ -44,7 +44,7 @@ gcc13_build:
   needs: [gcc13_build]
   extends:
     - .variables_gcc13_config
-    - .test_common_daint_mc
+    - .test_common_eiger_mc
     - .test_template
 
 gcc13_test_release:
