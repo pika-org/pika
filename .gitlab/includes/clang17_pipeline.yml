@@ -10,7 +10,7 @@ include:
 
 .variables_clang17_config:
   variables:
-    SPACK_ARCH: linux-ubuntu22.04-broadwell
+    SPACK_ARCH: linux-ubuntu22.04-zen2
     COMPILER: clang@17.0.4
     CXXSTD: 23
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD ^boost@1.83.0 \
@@ -39,7 +39,7 @@ clang17_build:
   needs: [clang17_build]
   extends:
     - .variables_clang17_config
-    - .test_common_daint_mc
+    - .test_common_eiger_mc
     - .test_template
 
 clang17_test_release:
