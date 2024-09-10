@@ -12,7 +12,7 @@ variables:
 
 .base_spack_image:
   timeout: 1 hours
-  before_script:
+  script:
     - echo $DOCKERHUB_TOKEN | podman login docker.io -u $DOCKERHUB_USERNAME --password-stdin
     - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
     - export CONFIG_TAG=`echo $DOCKERFILE_SHA-$BASE_IMAGE-$SPACK_COMMIT-$SPACK_REPO | sha256sum - | head -c 16`
@@ -37,7 +37,7 @@ base_spack_image_x86_64:
 
 .compiler_image_template:
   timeout: 4 hours
-  before_script:
+  script:
     - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
     - compiler=${COMPILER}${NVHPC_COMPILER:+-}${NVHPC_COMPILER}
     - compiler=${compiler//@/-}
@@ -62,7 +62,7 @@ base_spack_image_x86_64:
 
 .dependencies_image_template:
   timeout: 4 hours
-  before_script:
+  script:
     - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
     - CONFIG_TAG=`echo $DOCKERFILE_SHA-$BASE_IMAGE-$SPACK_SPEC | sha256sum - | head -c 16`
     - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/base/pika-$compiler-dependencies:$CONFIG_TAG
@@ -96,7 +96,7 @@ base_spack_image_x86_64:
     - .build_variables_common
     - .cmake_variables_common
     - .parallel_build_types
-  before_script:
+  script:
     - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
     - build_type=`echo $BUILD_TYPE | tr '[:upper:]' '[:lower:]'`
     - build_type_upper=`echo $BUILD_TYPE | tr '[:lower:]' '[:upper:]'`
