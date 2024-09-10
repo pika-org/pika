@@ -38,3 +38,21 @@ gcc13_gh200_build:
     - .variables_gcc13_gh200_config
     - .build_template_gh200
   allow_failure: true
+
+.gcc13_gh200_test_common:
+  needs: [gcc13_gh200_build]
+  extends:
+    - .variables_gcc13_gh200_config
+    - .test_common_daint_alps
+    - .test_template
+  allow_failure: true
+
+gcc13_gh200_test_release:
+  extends: [.gcc13_gh200_test_common]
+  image: $PERSIST_IMAGE_NAME_RELEASE
+  allow_failure: true
+
+gcc13_gh200_test_debug:
+  extends: [.gcc13_gh200_test_common]
+  image: $PERSIST_IMAGE_NAME_DEBUG
+  allow_failure: true

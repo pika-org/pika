@@ -43,6 +43,11 @@ variables:
   variables:
     SLURM_PARTITION: normal
 
+.test_common_daint_alps:
+  extends:
+    - .container-runner-daint-gh200
+    - .test_common
+
 .test_common_gpu_clariden_cuda:
   extends:
     - .container-runner-clariden-a100
