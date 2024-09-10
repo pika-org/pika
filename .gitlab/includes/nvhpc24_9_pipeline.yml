@@ -20,19 +20,18 @@ include:
                  ^stdexec@24.09 ^cuda@12.4%${NVHPC_COMPILER} ^whip%${NVHPC_COMPILER}"
     CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_CUDA=ON -DPIKA_WITH_MALLOC=system \
                   -DPIKA_WITH_MPI=ON -DCMAKE_CUDA_ARCHITECTURES=$GPU_TARGET -DPIKA_WITH_STDEXEC=ON"
-    PULL_ON_HOST_MACHINE: "YES"
 
 nvhpc24_9_spack_compiler_image:
   extends:
     - .variables_nvhpc24_9_config
-    - .compiler_image_template_santis
+    - .compiler_image_template_gh200
   allow_failure: true
 
 nvhpc24_9_spack_image:
   needs: [nvhpc24_9_spack_compiler_image]
   extends:
     - .variables_nvhpc24_9_config
-    - .dependencies_image_template_santis
+    - .dependencies_image_template_gh200
   allow_failure: true
 
 nvhpc24_9_build:
@@ -40,5 +39,5 @@ nvhpc24_9_build:
   needs: [nvhpc24_9_spack_image]
   extends:
     - .variables_nvhpc24_9_config
-    - .build_template_santis
+    - .build_template_gh200
   allow_failure: true
