@@ -400,6 +400,7 @@ namespace pika::ensure_started_detail {
                 if (!start_called.exchange(true))
                 {
                     PIKA_ASSERT(os.has_value());
+                    // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
                     pika::execution::experimental::start(*os);
                 }
             }
