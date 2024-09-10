@@ -13,6 +13,7 @@ variables:
 .base_spack_image:
   timeout: 1 hours
   before_script:
+    - echo $DOCKERHUB_TOKEN | podman login docker.io -u $DOCKERHUB_USERNAME --password-stdin
     - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
     - export CONFIG_TAG=`echo $DOCKERFILE_SHA-$BASE_IMAGE-$SPACK_COMMIT-$SPACK_REPO | sha256sum - | head -c 16`
     - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/$ARCH/pika-spack-base:$CONFIG_TAG
