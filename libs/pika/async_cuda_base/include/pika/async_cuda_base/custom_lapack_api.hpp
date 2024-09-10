@@ -36,6 +36,8 @@
 # define CUSOLVER_STATUS_INVALID_VALUE rocblas_status_invalid_value
 # define CUSOLVER_STATUS_CONTINUE rocblas_status_continue
 # define CUSOLVER_STATUS_CHECK_NUMERICS_FAIL rocblas_status_check_numerics_fail
+# define CUSOLVER_STATUS_EXCLUDED_FROM_BUILD rocblas_status_excluded_from_build
+# define CUSOLVER_STATUS_ARCH_MISMATCH rocblas_status_arch_mismatch
 
 #elif defined(PIKA_HAVE_CUDA)
 

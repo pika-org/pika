@@ -43,6 +43,10 @@ namespace pika::cuda::experimental {
             case rocblas_status_size_increased: return "rocblas_status_size_increased";
             case rocblas_status_size_query_mismatch: return "rocblas_status_size_query_mismatch";
             case rocblas_status_size_unchanged: return "rocblas_status_size_unchanged";
+# if ROCBLAS_VERSION_MAJOR >= 4
+            case rocblas_status_excluded_from_build: return "rocblas_status_excluded_from_build";
+            case rocblas_status_arch_mismatch: return "rocblas_status_arch_mismatch";
+# endif
 #endif
             }
             return "<unknown>";

@@ -66,6 +66,10 @@ namespace pika::cuda::experimental {
             case CUSOLVER_STATUS_SIZE_UNCHANGED: return "CUSOLVER_STATUS_SIZE_UNCHANGED";
             case CUSOLVER_STATUS_CONTINUE: return "CUSOLVER_STATUS_CONTINUE";
             case CUSOLVER_STATUS_CHECK_NUMERICS_FAIL: return "CUSOLVER_STATUS_CHECK_NUMERICS_FAIL";
+#  if ROCBLAS_VERSION_MAJOR >= 4
+            case CUSOLVER_STATUS_EXCLUDED_FROM_BUILD: return "CUSOLVER_STATUS_EXCLUDED_FROM_BUILD";
+            case CUSOLVER_STATUS_ARCH_MISMATCH: return "CUSOLVER_STATUS_ARCH_MISMATCH";
+#  endif
 # endif
             }
             return "<unknown>";
