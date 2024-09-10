@@ -10,7 +10,7 @@ include:
 
 .variables_gcc9_cuda11_config:
   variables:
-    SPACK_ARCH: linux-ubuntu22.04-haswell
+    SPACK_ARCH: linux-ubuntu22.04-neoverse_v2
     COMPILER: gcc@9.3.0
     CXXSTD: 17
     GPU_TARGET: '60'
@@ -40,7 +40,7 @@ gcc9_cuda11_build:
   needs: [gcc9_cuda11_build]
   extends:
     - .variables_gcc9_cuda11_config
-    - .test_common_gpu_daint_cuda
+    - .test_common_daint_alps
     - .test_template
 
 gcc9_cuda11_test_release:

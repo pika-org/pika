@@ -10,7 +10,7 @@ include:
 
 .variables_clang14_cuda11_config:
   variables:
-    SPACK_ARCH: linux-ubuntu22.04-haswell
+    SPACK_ARCH: linux-ubuntu22.04-neoverse_v2
     COMPILER: clang@14.0.6
     CXXSTD: 17
     GPU_TARGET: '60'
@@ -46,7 +46,7 @@ clang14_cuda11_build:
   needs: [clang14_cuda11_build]
   extends:
     - .variables_clang14_cuda11_config
-    - .test_common_gpu_daint_cuda
+    - .test_common_daint_alps
     - .test_template
 
 clang14_cuda11_test_release:

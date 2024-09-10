@@ -10,7 +10,7 @@ include:
 
 .variables_gcc12_cuda12_config:
   variables:
-    SPACK_ARCH: linux-ubuntu22.04-haswell
+    SPACK_ARCH: linux-ubuntu22.04-neoverse_v2
     COMPILER: gcc@12.1.0
     CXXSTD: 17
     GPU_TARGET: "60"
@@ -44,7 +44,7 @@ gcc12_cuda12_build:
 #  needs: [gcc12_cuda12_build]
 #  extends:
 #    - .variables_gcc12_cuda12_config
-#    - .test_common_gpu_daint_cuda
+#    - .test_common_daint_alps
 #    - .test_template
 #
 #gcc12_cuda12_test_release:

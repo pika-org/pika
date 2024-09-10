@@ -36,13 +36,6 @@ variables:
   variables:
     SLURM_PARTITION: normal
 
-.test_common_gpu_daint_cuda:
-  extends:
-    - .container-runner-daint-gpu
-    - .test_common
-  variables:
-    SLURM_PARTITION: normal
-
 .test_common_daint_alps:
   extends:
     - .container-runner-daint-gh200

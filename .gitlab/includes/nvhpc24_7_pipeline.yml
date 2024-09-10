@@ -10,7 +10,7 @@ include:
 
 .variables_nvhpc24_7_config:
   variables:
-    SPACK_ARCH: linux-ubuntu22.04-haswell
+    SPACK_ARCH: linux-ubuntu22.04-neoverse_v2
     COMPILER: gcc@14.2.0
     NVHPC_COMPILER: nvhpc@24.7
     CXXSTD: 20
@@ -47,7 +47,7 @@ nvhpc24_7_build:
 #   needs: [nvhpc24_7_build]
 #   extends:
 #     - .variables_nvhpc24_7_config
-#     - .test_common_gpu_daint_cuda
+#     - .test_common_daint_alps
 #     - .test_template
 #
 # nvhpc24_7_test_release:
