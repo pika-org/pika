@@ -27,7 +27,7 @@ variables:
     reports:
       dotenv: base.env
 
-# We allow failure since santis is unstable
+# We allow failure since gh200 vclusters are unstable
 base_spack_image_aarch64:
   extends: [.container-builder-cscs-gh200, .base_spack_image]
   allow_failure: true
@@ -51,7 +51,7 @@ base_spack_image_x86_64:
     reports:
       dotenv: compiler.env
 
-.compiler_image_template_santis:
+.compiler_image_template_gh200:
   needs: [base_spack_image_aarch64]
   extends: [.container-builder-cscs-gh200, .compiler_image_template]
 
@@ -74,7 +74,7 @@ base_spack_image_x86_64:
     reports:
       dotenv: dependencies.env
 
-.dependencies_image_template_santis:
+.dependencies_image_template_gh200:
   extends: [.container-builder-cscs-gh200, .dependencies_image_template]
 
 .dependencies_image_template_rosa:
@@ -109,7 +109,7 @@ base_spack_image_x86_64:
     reports:
       dotenv: "$DOTENV_FILE"
 
-.build_template_santis:
+.build_template_gh200:
   extends: [.container-builder-cscs-gh200, .build_template]
 
 .build_template_rosa:
