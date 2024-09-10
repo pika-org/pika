@@ -4,6 +4,10 @@
 // (See accompanying file LICENSE_1_0.txt
 // or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#if defined(__GNUC__)
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Warray-bounds"
+#endif
 #include <pika/program_options/detail/utf8_codecvt_facet.hpp>
 #include <pika/program_options/errors.hpp>
 #include <pika/program_options/option.hpp>
@@ -17,6 +21,9 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#if defined(__GNUC__)
+# pragma GCC diagnostic pop
+#endif
 
 using namespace pika::program_options;
 using namespace std;
