@@ -67,7 +67,7 @@ int pika_main()
             return p;
         };
 
-        auto s = ex::transfer_just(sched, device_ptr, n) | cu::then_with_stream(malloc) |
+        auto s = ex::just(device_ptr, n) | ex::continues_on(sched) | cu::then_with_stream(malloc) |
             ex::bulk(n, f) | cu::then_with_stream(memcpy) | cu::then_with_stream(free);
         tt::sync_wait(std::move(s));
 
@@ -93,7 +93,7 @@ int pika_main()
             return p;
         };
 
-        auto s = ex::transfer_just(sched, device_ptr, n) | cu::then_with_stream(malloc) |
+        auto s = ex::just(device_ptr, n) | ex::continues_on(sched) | cu::then_with_stream(malloc) |
             ex::bulk(pika::util::detail::make_counting_shape(n), f) | cu::then_with_stream(memcpy) |
             cu::then_with_stream(free);
         tt::sync_wait(std::move(s));

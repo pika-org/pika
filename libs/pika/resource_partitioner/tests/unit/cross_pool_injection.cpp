@@ -108,8 +108,8 @@ int pika_main()
         std::size_t random_pool_2 = st_rand(0, num_pools - 1);
         auto& sched_1 = HP_schedulers[random_pool_1];
         auto& sched_2 = HP_schedulers[random_pool_2];
-        ex::start_detached(ex::transfer_just(sched_1, 0) | ex::then(dummy_task) |
-            ex::transfer(sched_2) | ex::then([=, &counter]() {
+        ex::start_detached(ex::just(0) | ex::continues_on(sched_1) | ex::then(dummy_task) |
+            ex::continues_on(sched_2) | ex::then([=, &counter]() {
                 dummy_task(0);
                 --counter;
             }));
@@ -127,8 +127,8 @@ int pika_main()
         std::size_t random_pool_2 = st_rand(0, num_pools - 1);
         auto& sched_3 = NP_schedulers[random_pool_1];
         auto& sched_4 = NP_schedulers[random_pool_2];
-        ex::start_detached(ex::transfer_just(sched_3, 0) | ex::then(dummy_task) |
-            ex::transfer(sched_4) | ex::then([=, &counter]() {
+        ex::start_detached(ex::just(0) | ex::continues_on(sched_3) | ex::then(dummy_task) |
+            ex::continues_on(sched_4) | ex::then([=, &counter]() {
                 dummy_task(0);
                 --counter;
             }));
@@ -146,8 +146,8 @@ int pika_main()
         std::size_t random_pool_2 = st_rand(0, num_pools - 1);
         auto& sched_5 = HP_schedulers[random_pool_1];
         auto& sched_6 = NP_schedulers[random_pool_2];
-        ex::start_detached(ex::transfer_just(sched_5, 0) | ex::then(dummy_task) |
-            ex::transfer(sched_6) | ex::then([=, &counter]() {
+        ex::start_detached(ex::just(0) | ex::continues_on(sched_5) | ex::then(dummy_task) |
+            ex::continues_on(sched_6) | ex::then([=, &counter]() {
                 dummy_task(0);
                 --counter;
             }));
@@ -165,8 +165,8 @@ int pika_main()
         std::size_t random_pool_2 = st_rand(0, num_pools - 1);
         auto& sched_7 = NP_schedulers[random_pool_1];
         auto& sched_8 = HP_schedulers[random_pool_2];
-        ex::start_detached(ex::transfer_just(sched_7, 0) | ex::then(dummy_task) |
-            ex::transfer(sched_8) | ex::then([=, &counter]() {
+        ex::start_detached(ex::just(0) | ex::continues_on(sched_7) | ex::then(dummy_task) |
+            ex::continues_on(sched_8) | ex::then([=, &counter]() {
                 dummy_task(0);
                 --counter;
             }));
@@ -186,7 +186,8 @@ int pika_main()
         auto& sched_8 = HP_schedulers[random_pool_2];
         // random delay up to 5 milliseconds
         std::size_t delay = st_rand(0, 5);
-        auto s = ex::transfer_just(sched_7, delay) | ex::then(dummy_task) | ex::ensure_started();
+        auto s = ex::just(delay) | ex::continues_on(sched_7) | ex::then(dummy_task) |
+            ex::ensure_started();
         ex::start_detached(ex::schedule(sched_8) | ex::then([s = std::move(s), &counter]() mutable {
             // if s is not ready then this task will suspend itself in sync_wait
             tt::sync_wait(std::move(s));

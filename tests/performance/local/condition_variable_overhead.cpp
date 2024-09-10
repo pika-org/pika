@@ -142,15 +142,17 @@ void test_cv(Scheduler&& sched, std::uint64_t loops)
     for (int i = 0; i < N; i++)
     {
         // thread A
-        auto s1 = ex::transfer_just(sched, &task_data_A[i], &task_data_B[i])    //
-            | ex::then([&, loops](task_data* tda, task_data* tdb) {             //
+        auto s1 = ex::just(&task_data_A[i], &task_data_B[i])           //
+            | ex::continues_on(sched)                                  //
+            | ex::then([&, loops](task_data* tda, task_data* tdb) {    //
                   function_A(loops, tda, tdb);
               });
         senders.push_back(std::move(s1));
 
         // thread B
-        auto s2 = ex::transfer_just(sched, &task_data_A[i], &task_data_B[i])    //
-            | ex::then([&, loops](task_data* tda, task_data* tdb) {             //
+        auto s2 = ex::just(&task_data_A[i], &task_data_B[i])           //
+            | ex::continues_on(sched)                                  //
+            | ex::then([&, loops](task_data* tda, task_data* tdb) {    //
                   function_B(loops, tda, tdb);
               });
         senders.push_back(std::move(s2));

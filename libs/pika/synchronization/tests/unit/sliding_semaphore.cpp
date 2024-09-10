@@ -44,8 +44,8 @@ int pika_main()
 
     for (std::size_t i = 0; i != num_tasks; ++i)
     {
-        senders.emplace_back(
-            ex::transfer_just(sched, std::ref(sem)) | ex::then(worker) | ex::ensure_started());
+        senders.emplace_back(ex::just(std::ref(sem)) | ex::continues_on(sched) | ex::then(worker) |
+            ex::ensure_started());
     }
 
     sem.wait(initial_count + num_tasks);

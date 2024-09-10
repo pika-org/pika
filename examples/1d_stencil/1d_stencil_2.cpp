@@ -95,7 +95,7 @@ struct stepper
             {
                 next[i] =
                     ex::when_all(current[idx(i, -1, nx)], current[i], current[idx(i, +1, nx)]) |
-                    ex::transfer(sched) | ex::then(Op) | ex::split();
+                    ex::continues_on(sched) | ex::then(Op) | ex::split();
             }
         }
 

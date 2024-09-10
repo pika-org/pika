@@ -29,12 +29,14 @@ struct pipeline
         std::vector<ex::unique_any_sender<>> tasks;
         for (auto s : input)
         {
-            auto sender = ex::transfer_just(ex::thread_pool_scheduler{}, "Error.*", std::move(s)) |
+            auto sender = ex::just("Error.*", std::move(s)) |
+                ex::continues_on(ex::thread_pool_scheduler{}) |
                 ex::let_value([](std::string re, std::string item) -> ex::unique_any_sender<> {
                     std::regex regex(std::move(re));
                     if (std::regex_match(item, regex))
                     {
-                        return ex::transfer_just(ex::thread_pool_scheduler{}, std::move(item)) |
+                        return ex::just(std::move(item)) |
+                            ex::continues_on(ex::thread_pool_scheduler{}) |
                             ex::then([](std::string s) {
                                 return pika::detail::trim_copy(std::move(s));
                             }) |

@@ -42,10 +42,10 @@ ex::unique_any_sender<std::uint64_t> fibonacci_sender_one(std::uint64_t n)
     // asynchronously launch the calculation of one of the sub-terms
     // attach a continuation to this sender which is called asynchronously on
     // its completion and which calculates the other sub-term
-    return ex::transfer_just(ex::thread_pool_scheduler{}, n - 1) |
+    return ex::just(n - 1) | ex::continues_on(ex::thread_pool_scheduler{}) |
         ex::let_value([n](std::uint64_t res) {
             return ex::when_all(fibonacci_sender_one(n - 2), ex::just(res)) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::then(add);
+                ex::continues_on(ex::thread_pool_scheduler{}) | ex::then(add);
         });
 }
 
@@ -58,7 +58,7 @@ std::uint64_t fibonacci(std::uint64_t n)
 
     // asynchronously launch the creation of one of the sub-terms of the
     // execution graph
-    auto s = ex::transfer_just(ex::thread_pool_scheduler{}, n - 1) | ex::then(fibonacci);
+    auto s = ex::just(n - 1) | ex::continues_on(ex::thread_pool_scheduler{}) | ex::then(fibonacci);
     std::uint64_t r = fibonacci(n - 2);
 
     return tt::sync_wait(std::move(s)) + r;
@@ -73,12 +73,12 @@ ex::unique_any_sender<std::uint64_t> fibonacci_sender(std::uint64_t n)
 
     // asynchronously launch the creation of one of the sub-terms of the
     // execution graph
-    auto s =
-        ex::transfer_just(ex::thread_pool_scheduler{}, n - 1) | ex::let_value(fibonacci_sender);
+    auto s = ex::just(n - 1) | ex::continues_on(ex::thread_pool_scheduler{}) |
+        ex::let_value(fibonacci_sender);
     auto r = fibonacci_sender(n - 2);
 
-    return ex::when_all(std::move(s), std::move(r)) | ex::transfer(ex::thread_pool_scheduler{}) |
-        ex::then(add);
+    return ex::when_all(std::move(s), std::move(r)) |
+        ex::continues_on(ex::thread_pool_scheduler{}) | ex::then(add);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -89,14 +89,14 @@ ex::unique_any_sender<std::uint64_t> fibonacci_sender_all(std::uint64_t n)
     if (n < threshold) return ex::just(fibonacci_serial(n));
 
     // asynchronously launch the calculation of both of the sub-terms
-    auto s =
-        ex::transfer_just(ex::thread_pool_scheduler{}, n - 1) | ex::let_value(fibonacci_sender_all);
-    auto r =
-        ex::transfer_just(ex::thread_pool_scheduler{}, n - 2) | ex::let_value(fibonacci_sender_all);
+    auto s = ex::just(n - 1) | ex::continues_on(ex::thread_pool_scheduler{}) |
+        ex::let_value(fibonacci_sender_all);
+    auto r = ex::just(n - 2) | ex::continues_on(ex::thread_pool_scheduler{}) |
+        ex::let_value(fibonacci_sender_all);
 
     // create a sender representing the successful calculation of both sub-terms
-    return ex::when_all(std::move(s), std::move(r)) | ex::transfer(ex::thread_pool_scheduler{}) |
-        ex::then(add);
+    return ex::when_all(std::move(s), std::move(r)) |
+        ex::continues_on(ex::thread_pool_scheduler{}) | ex::then(add);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

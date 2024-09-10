@@ -73,7 +73,7 @@ void threadLoop()
                                                           pika::execution::thread_priority::bound),
                                        pika::execution::thread_stacksize::default_),
             pika::execution::thread_schedule_hint(std::int16_t(i % threads)));
-        tt::sync_wait(ex::transfer_just(sched, i, i % threads) | ex::then(f));
+        tt::sync_wait(ex::just(i, i % threads) | ex::continues_on(sched) | ex::then(f));
     }
 
     do {

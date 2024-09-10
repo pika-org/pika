@@ -11,13 +11,15 @@
 #if defined(PIKA_HAVE_STDEXEC)
 # include <pika/execution_base/stdexec_forward.hpp>
 #else
-# include <pika/execution/algorithms/transfer.hpp>
+# include <pika/execution/algorithms/continues_on.hpp>
 # include <pika/execution/algorithms/when_all.hpp>
 # include <pika/functional/detail/tag_fallback_invoke.hpp>
 
 # include <utility>
 
 namespace pika::execution::experimental {
+    PIKA_DEPRECATED("transfer_when_all will be removed in the future, use transfer and when_all "
+                    "separately instead")
     inline constexpr struct transfer_when_all_t final
       : pika::functional::detail::tag_fallback<transfer_when_all_t>
     {
@@ -26,7 +28,8 @@ namespace pika::execution::experimental {
         friend constexpr PIKA_FORCEINLINE auto
         tag_fallback_invoke(transfer_when_all_t, Scheduler&& scheduler, Ts&&... ts)
         {
-            return transfer(when_all(PIKA_FORWARD(Ts, ts)...), PIKA_FORWARD(Scheduler, scheduler));
+            return continues_on(
+                when_all(PIKA_FORWARD(Ts, ts)...), PIKA_FORWARD(Scheduler, scheduler));
         }
     } transfer_when_all{};
 }    // namespace pika::execution::experimental

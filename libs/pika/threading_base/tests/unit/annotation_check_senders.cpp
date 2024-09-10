@@ -64,15 +64,15 @@ auto test_senders_schedule_no_parent_annotation()
             ex::then(pika::annotated_function([] {}, "2-schedule-no-parent-D")),
 
         // 2 x <unknown>
-        ex::schedule(ex::thread_pool_scheduler{}) | ex::transfer(ex::thread_pool_scheduler{}),
+        ex::schedule(ex::thread_pool_scheduler{}) | ex::continues_on(ex::thread_pool_scheduler{}),
 
         // 2-schedule-no-parent-E and <unknown>
         ex::schedule(ex::with_annotation(ex::thread_pool_scheduler{}, "2-schedule-no-parent-E")) |
-            ex::transfer(ex::thread_pool_scheduler{}),
+            ex::continues_on(ex::thread_pool_scheduler{}),
 
         // 2-schedule-no-parent-F and <unknown>
         ex::schedule(ex::thread_pool_scheduler{}) |
-            ex::transfer(
+            ex::continues_on(
                 ex::with_annotation(ex::thread_pool_scheduler{}, "2-schedule-no-parent-F")),
 
         // 2 x <unknown>
@@ -117,16 +117,16 @@ auto test_senders_schedule_parent_annotation()
 
                 // 2 x 3-schedule-parent
                 ex::schedule(ex::thread_pool_scheduler{}) |
-                    ex::transfer(ex::thread_pool_scheduler{}),
+                    ex::continues_on(ex::thread_pool_scheduler{}),
 
                 // 3-schedule-parent-E and 3-schedule-parent
                 ex::schedule(
                     ex::with_annotation(ex::thread_pool_scheduler{}, "3-schedule-parent-E")) |
-                    ex::transfer(ex::thread_pool_scheduler{}),
+                    ex::continues_on(ex::thread_pool_scheduler{}),
 
                 // 3-schedule-parent-F and 3-schedule-parent
                 ex::schedule(ex::thread_pool_scheduler{}) |
-                    ex::transfer(
+                    ex::continues_on(
                         ex::with_annotation(ex::thread_pool_scheduler{}, "3-schedule-parent-F")),
 
                 // 2 x 3-schedule-parent

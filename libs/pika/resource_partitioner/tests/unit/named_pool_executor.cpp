@@ -72,8 +72,10 @@ int pika_main()
     std::vector<ex::unique_any_sender<>> lotsa_senders;
 
     // use schedulers to schedule work on pools
-    lotsa_senders.push_back(ex::transfer_just(sched_0_hp, 3, "HP default") | ex::then(dummy_task));
-    lotsa_senders.push_back(ex::transfer_just(sched_0, 3, "Normal default") | ex::then(dummy_task));
+    lotsa_senders.push_back(
+        ex::just(3, "HP default") | ex::continues_on(sched_0_hp) | ex::then(dummy_task));
+    lotsa_senders.push_back(
+        ex::just(3, "Normal default") | ex::continues_on(sched_0) | ex::then(dummy_task));
 
     std::vector<ex::thread_pool_scheduler> scheds;
     std::vector<ex::thread_pool_scheduler> scheds_hp;
@@ -93,18 +95,17 @@ int pika_main()
     {
         std::string pool_name = "pool-" + std::to_string(i);
         lotsa_senders.push_back(
-            ex::transfer_just(scheds[i], 3, pool_name + "normal") | ex::then(dummy_task));
+            ex::just(3, pool_name + "normal") | ex::continues_on(scheds[i]) | ex::then(dummy_task));
         lotsa_senders.push_back(
-            ex::transfer_just(scheds_hp[i], 3, pool_name + " HP") | ex::then(dummy_task));
+            ex::just(3, pool_name + " HP") | ex::continues_on(scheds_hp[i]) | ex::then(dummy_task));
     }
 
     // check that the default scheduler still works
     auto large_stack_scheduler =
         ex::with_stacksize(ex::thread_pool_scheduler{}, pika::execution::thread_stacksize::large);
 
-    lotsa_senders.push_back(
-        ex::transfer_just(large_stack_scheduler, 3, "true default + large stack") |
-        ex::then(dummy_task));
+    lotsa_senders.push_back(ex::just(3, "true default + large stack") |
+        ex::continues_on(large_stack_scheduler) | ex::then(dummy_task));
 
     // just wait until everything is done
     tt::sync_wait(ex::when_all_vector(std::move(lotsa_senders)));

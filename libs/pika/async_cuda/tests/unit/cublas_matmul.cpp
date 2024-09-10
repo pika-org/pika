@@ -165,7 +165,7 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched, sMatri
     pika::chrono::detail::high_resolution_timer t1;
     //
     std::cout << "calling CUBLAS...\n";
-    auto gemm = ex::transfer_just(cuda_sched) |
+    auto gemm = ex::schedule(cuda_sched) |
         cu::then_with_cublas(
             [&](cublasHandle_t handle) {
                 cu::check_cublas_error(cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N,
@@ -199,7 +199,7 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched, sMatri
     ex::unique_any_sender<> gemms_finished = ex::just();
     for (std::size_t j = 0; j < iterations; j++)
     {
-        gemms_finished = std::move(gemms_finished) | ex::transfer(cuda_sched) |
+        gemms_finished = std::move(gemms_finished) | ex::continues_on(cuda_sched) |
             cu::then_with_cublas(
                 [&](cublasHandle_t handle) {
                     cu::check_cublas_error(cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N,
@@ -226,7 +226,7 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched, sMatri
     });
 
     // when the matrix operations complete, copy the result to the host
-    auto copy_finished = std::move(gemms_finished_split) | ex::transfer(cuda_sched) |
+    auto copy_finished = std::move(gemms_finished_split) | ex::continues_on(cuda_sched) |
         cu::then_with_stream(pika::util::detail::bind_front(whip::memcpy_async, h_CUBLAS.data(),
             d_C, size_C * sizeof(T), whip::memcpy_device_to_host));
 

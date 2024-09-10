@@ -28,6 +28,9 @@ set(tests
     scheduler_queries
 )
 
+set(algorithm_transfer_just_FLAGS COMPILE_FLAGS "-DPIKA_HAVE_DEPRECATION_WARNINGS=0")
+set(algorithm_transfer_FLAGS COMPILE_FLAGS "-DPIKA_HAVE_DEPRECATION_WARNINGS=0")
+
 foreach(test ${tests})
   set(sources ${test}.cpp)
 
