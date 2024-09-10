@@ -37,19 +37,10 @@ variables:
   variables:
     SLURM_PARTITION: normal
 
-.test_common_gpu_daint_cuda:
+.test_common_daint_gh200:
   extends:
-    - .container-runner-daint-gpu
+    - .container-runner-daint-gh200
     - .test_common
   variables:
-    SLURM_PARTITION: normal
-
-.test_common_gpu_clariden_cuda:
-  extends:
-    - .container-runner-clariden-a100
-    - .test_common
-
-.test_common_gpu_clariden_hip:
-  extends:
-    - .container-runner-clariden-mi200
-    - .test_common
+    NVIDIA_VISIBLE_DEVICES: all
+    NVIDIA_DRIVER_CAPABILITIES: "compute,utility"
