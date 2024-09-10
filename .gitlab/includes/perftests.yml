@@ -1,0 +1,56 @@
+# Copyright (c) 2023 ETH Zurich
+#
+# SPDX-License-Identifier: BSL-1.0
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file BOOST_LICENSE_1_0.rst or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+include:
+  - local: '.gitlab/includes/common_pipeline.yml'
+  - local: '.gitlab/includes/common_spack_pipeline.yml'
+
+.variables_clang11_perftests_config:
+  variables:
+    SPACK_ARCH: linux-ubuntu22.04-neoverse_v2
+    COMPILER: clang@11.0.1
+    CXXSTD: 20
+    SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} malloc=mimalloc cxxstd=$CXXSTD \
+                 ^boost@1.78.0 ^hwloc@2.2.0"
+    CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_MALLOC=mimalloc \
+                  -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
+
+clang11_perftests_spack_compiler_image:
+  extends:
+    - .variables_clang11_perftests_config
+    - .compiler_image_template_rosa
+
+clang11_perftests_spack_image:
+  before_script:
+    - export MIMALLOC_LARGE_OS_PAGES=1
+    - export MIMALLOC_EAGER_COMMIT_DELAY=0
+    - python3 -m venv ~/venv_perftests
+    - source ~/venv_perftests/bin/activate
+    - python3 -m pip install $(cat $SOURCE_DIR/tools/perftests_ci/requirements.txt | grep -v \#)
+    - deactivate
+  needs: [clang11_perftests_spack_compiler_image]
+  extends:
+    - .variables_clang11_perftests_config
+    - .dependencies_image_template_rosa
+
+clang11_perftests_build:
+  needs: [clang11_perftests_spack_image]
+  extends:
+    - .variables_clang11_perftests_config
+    - .build_template_rosa
+
+.clang11_perftests_test_common:
+  before_script:
+    - source "$SOURCE_DIR/.gitlab/scripts/prepare_and_launch_perftests.sh"
+  needs: [clang11_perftests_build]
+  extends:
+    - .variables_clang11_perftests_config
+    - .test_common_eiger_mc
+    - .test_template
+
+clang11_perftests_test_release:
+  extends: [.clang11_perftests_test_common]
+  image: $PERSIST_IMAGE_NAME_RELEASE

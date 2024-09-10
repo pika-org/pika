@@ -8,34 +8,6 @@
 
 set -ex
 
-status_computation_and_artifacts_storage() {
-    ctest_exit_code=$?
-    ctest_status=$((ctest_exit_code + configure_build_errors + test_errors + plot_errors))
-
-    # Copy the testing directory for saving as an artifact
-    cp -r "${build_dir}/Testing" "${orig_src_dir}/${configuration_name}-Testing"
-    cp -r "${build_dir}/reports" "${orig_src_dir}/${configuration_name}-reports"
-
-    echo "${ctest_status}" >"jenkins-pika-${configuration_name}-ctest-status.txt"
-    exit $ctest_status
-}
-
-trap "status_computation_and_artifacts_storage" EXIT
-
-# Things went alright by default
-configure_build_errors=0
-test_errors=0
-plot_errors=0
-
-# Build and Run the perftests. We source the environment to keep the context for
-# variables like configure_build_errors in launch_perftests.sh. Modifications
-# written to variables in a sub-shell created with spack build-env would not be
-# visible here.
-set +e
-spack build-env --dump env.txt $SPACK_SPEC
-source env.txt
-set -e
-
 pika_targets=("task_overhead_report_test")
 pika_test_options=(
     "--pika:ini=pika.thread_queue.init_threads_count=100 \
@@ -90,3 +62,8 @@ ${perftests_dir}/driver.py -v -l "$logfile" perftest plot compare --references \
         plot_errors=1
         exit 1
     }
+
+# Comment on the PR if any failures
+if [[ $(cat ${status_file}) != 0 ]]; then
+    ./.gitlab/scripts/comment_github.sh
+fi
