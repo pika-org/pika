@@ -85,12 +85,11 @@ namespace pika::cuda::experimental {
         struct cublas_handles_holder
         {
             std::size_t const concurrency;
-            std::vector<cublas_handle> unsynchronized_handles;
-            std::atomic<std::size_t> synchronized_handle_index;
-            std::vector<cublas_handle> synchronized_handles;
+            std::atomic<std::size_t> handle_index;
+            std::vector<cublas_handle> handles;
             std::vector<std::mutex> handle_mutexes;
 
-            PIKA_EXPORT cublas_handles_holder();
+            PIKA_EXPORT explicit cublas_handles_holder(std::size_t num_handles);
             cublas_handles_holder(cublas_handles_holder&&) = delete;
             cublas_handles_holder(cublas_handles_holder const&) = delete;
             cublas_handles_holder& operator=(cublas_handles_holder&&) = delete;
@@ -103,12 +102,11 @@ namespace pika::cuda::experimental {
         struct cusolver_handles_holder
         {
             std::size_t const concurrency;
-            std::vector<cusolver_handle> unsynchronized_handles;
-            std::atomic<std::size_t> synchronized_handle_index;
-            std::vector<cusolver_handle> synchronized_handles;
+            std::atomic<std::size_t> handle_index;
+            std::vector<cusolver_handle> handles;
             std::vector<std::mutex> handle_mutexes;
 
-            PIKA_EXPORT cusolver_handles_holder();
+            PIKA_EXPORT explicit cusolver_handles_holder(std::size_t num_handles);
             cusolver_handles_holder(cusolver_handles_holder&&) = delete;
             cusolver_handles_holder(cusolver_handles_holder const&) = delete;
             cusolver_handles_holder& operator=(cusolver_handles_holder&&) = delete;
@@ -126,7 +124,8 @@ namespace pika::cuda::experimental {
             cusolver_handles_holder cusolver_handles;
 
             PIKA_EXPORT pool_data(int device, std::size_t num_normal_priority_streams_per_thread,
-                std::size_t num_high_priority_streams_per_thread, unsigned int flags);
+                std::size_t num_high_priority_streams_per_thread, unsigned int flags,
+                std::size_t num_cublas_handles, std::size_t num_cusolver_handles);
             pool_data(pool_data&&) = delete;
             pool_data(pool_data const&) = delete;
             pool_data& operator=(pool_data&&) = delete;
@@ -138,7 +137,8 @@ namespace pika::cuda::experimental {
     public:
         PIKA_EXPORT explicit cuda_pool(int device = 0,
             std::size_t num_normal_priority_streams_per_thread = 3,
-            std::size_t num_high_priority_streams_per_thread = 3, unsigned int flags = 0);
+            std::size_t num_high_priority_streams_per_thread = 3, unsigned int flags = 0,
+            std::size_t num_cublas_handles = 16, std::size_t num_cusolver_handles = 16);
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         cuda_pool(cuda_pool&&) = default;
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
@@ -179,14 +179,18 @@ struct fmt::formatter<pika::cuda::experimental::cuda_pool> : fmt::formatter<std:
     auto format(pika::cuda::experimental::cuda_pool const& pool, FormatContext& ctx) const
     {
         bool valid{pool.data};
-        auto high_priority_streams =
+        auto num_high_priority_streams =
             valid ? pool.data->high_priority_streams.num_streams_per_thread : 0;
-        auto normal_priority_streams =
+        auto num_normal_priority_streams =
             valid ? pool.data->normal_priority_streams.num_streams_per_thread : 0;
+        auto num_cublas_handles = valid ? pool.data->cublas_handles.handles.size() : 0;
+        auto num_cusolver_handles = valid ? pool.data->cusolver_handles.handles.size() : 0;
         return fmt::formatter<std::string>::format(
             fmt::format("cuda_pool({}, num_high_priority_streams_per_thread = {}, "
-                        "num_normal_priority_streams_per_thread = {})",
-                fmt::ptr(pool.data.get()), high_priority_streams, normal_priority_streams),
+                        "num_normal_priority_streams_per_thread = {}, num_cublas_handles = {}, "
+                        "num_cusolver_handles = {})",
+                fmt::ptr(pool.data.get()), num_high_priority_streams, num_normal_priority_streams,
+                num_cublas_handles, num_cusolver_handles),
             ctx);
     }
 };
