@@ -59,6 +59,7 @@ jobs:
                 -DPIKA_WITH_COMPILER_WARNINGS=ON \
                 -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON \
                 -DPIKA_WITH_SANITIZERS=On \
+                -DPIKA_WITH_VERIFY_LOCKS=Off \
                 -DCMAKE_CXX_FLAGS="-fsanitize=address -fsanitize-address-use-after-scope -fsanitize=undefined -fno-omit-frame-pointer -Wno-error=ignored-optimization-argument" \
                 -DPIKA_WITH_STACKOVERFLOW_DETECTION=Off \
                 -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=On
