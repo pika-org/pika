@@ -25,7 +25,7 @@ clang11_perftests_spack_compiler_image:
 
 clang11_perftests_spack_image:
   before_script:
-    - export MIMALLOC_LARGE_OS_PAGES=1
+    - export MIMALLOC_ALLOW_LARGE_OS_PAGES=1
     - export MIMALLOC_EAGER_COMMIT_DELAY=0
     - python3 -m venv ~/venv_perftests
     - source ~/venv_perftests/bin/activate
