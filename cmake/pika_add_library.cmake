@@ -12,6 +12,7 @@ function(pika_add_library name)
       INTERNAL_FLAGS
       NOLIBS
       NOEXPORT
+      NOPCH
       OBJECT
       NONAMEPREFIX
       UNITY_BUILD
@@ -178,6 +179,10 @@ function(pika_add_library name)
 
   if(NOT ${${name}_NOEXPORT})
     set(_target_flags ${_target_flags} EXPORT)
+  endif()
+
+  if(${${name}_NOPCH})
+    set(_target_flags ${_target_flags} NOPCH)
   endif()
 
   if(${name}_INTERNAL_FLAGS)
