@@ -22,19 +22,19 @@ include:
 clang18_spack_compiler_image:
   extends:
     - .variables_clang18_config
-    - .compiler_image_template_rosa
+    - .compiler_image_template_zen2
 
 clang18_spack_image:
   needs: [clang18_spack_compiler_image]
   extends:
     - .variables_clang18_config
-    - .dependencies_image_template_rosa
+    - .dependencies_image_template_zen2
 
 clang18_build:
   needs: [clang18_spack_image]
   extends:
     - .variables_clang18_config
-    - .build_template_rosa
+    - .build_template_zen2
 
 .clang18_test_common:
   needs: [clang18_build]
