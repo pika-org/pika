@@ -39,7 +39,7 @@ variables:
 
 .test_common_daint_gh200:
   extends:
-    - .container-runner-daint-gh200
+    - .container-runner-todi-gh200 # TODO: daint? rename template?
     - .test_common
   variables:
     NVIDIA_VISIBLE_DEVICES: all
