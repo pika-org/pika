@@ -59,7 +59,10 @@ namespace pika::mpi::experimental::detail {
 
 #if defined(PIKA_HAVE_STDEXEC)
         using completion_signatures = pika::execution::experimental::completion_signatures<
-            pika::execution::experimental::set_value_t()>;
+            pika::execution::experimental::set_value_t(),
+            pika::execution::experimental::set_error_t(std::exception_ptr),
+            pika::execution::experimental::set_stopped_t()>;
+
 #else
         // -----------------------------------------------------------------
         // completion signatures
@@ -98,7 +101,7 @@ namespace pika::mpi::experimental::detail {
 
                 template <typename Error>
                 friend constexpr void
-                tag_invoke(ex::set_error_t, trigger_mpi_receiver r, Error&& error) noexcept
+                tag_invoke(ex::set_error_t, trigger_mpi_receiver&& r, Error&& error) noexcept
                 {
                     ex::set_error(PIKA_MOVE(r.op_state.receiver), PIKA_FORWARD(Error, error));
                 }
