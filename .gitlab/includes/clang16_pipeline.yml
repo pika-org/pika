@@ -26,19 +26,19 @@ include:
 clang16_spack_compiler_image:
   extends:
     - .variables_clang16_config
-    - .compiler_image_template_rosa
+    - .compiler_image_template_zen2
 
 clang16_spack_image:
   needs: [clang16_spack_compiler_image]
   extends:
     - .variables_clang16_config
-    - .dependencies_image_template_rosa
+    - .dependencies_image_template_zen2
 
 clang16_build:
   needs: [clang16_spack_image]
   extends:
     - .variables_clang16_config
-    - .build_template_rosa
+    - .build_template_zen2
 
 .clang16_test_common:
   needs: [clang16_build]

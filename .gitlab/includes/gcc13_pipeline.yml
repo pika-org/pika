@@ -25,19 +25,19 @@ include:
 gcc13_spack_compiler_image:
   extends:
     - .variables_gcc13_config
-    - .compiler_image_template_rosa
+    - .compiler_image_template_zen2
 
 gcc13_spack_image:
   needs: [gcc13_spack_compiler_image]
   extends:
     - .variables_gcc13_config
-    - .dependencies_image_template_rosa
+    - .dependencies_image_template_zen2
 
 gcc13_build:
   needs: [gcc13_spack_image]
   extends:
     - .variables_gcc13_config
-    - .build_template_rosa
+    - .build_template_zen2
 
 .gcc13_test_common:
   needs: [gcc13_build]
