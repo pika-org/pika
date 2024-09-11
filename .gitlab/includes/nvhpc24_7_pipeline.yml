@@ -26,20 +26,20 @@ include:
 nvhpc24_7_spack_compiler_image:
   extends:
     - .variables_nvhpc24_7_config
-    - .compiler_image_template_rosa
+    - .compiler_image_template_zen2
 
 nvhpc24_7_spack_image:
   needs: [nvhpc24_7_spack_compiler_image]
   extends:
     - .variables_nvhpc24_7_config
-    - .dependencies_image_template_rosa
+    - .dependencies_image_template_zen2
 
 nvhpc24_7_build:
   timeout: 2 hours
   needs: [nvhpc24_7_spack_image]
   extends:
     - .variables_nvhpc24_7_config
-    - .build_template_rosa
+    - .build_template_zen2
 
 needs: [nvhpc24_7_build]
 extends:
