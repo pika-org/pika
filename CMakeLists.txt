@@ -1326,14 +1326,6 @@ if(PIKA_WITH_BOOST_CONTEXT)
 endif()
 
 # ##################################################################################################
-
-# Note: on windows systems the ':' will be converted to a ';' at runtime
-pika_add_config_cond_define(
-  PIKA_DEFAULT_COMPONENT_PATH_SUFFIXES
-  "\"/${CMAKE_INSTALL_LIBDIR}/pika:/${CMAKE_INSTALL_BINDIR}/pika:/lib/pika:/bin/pika\""
-)
-
-# ##################################################################################################
 # search path configuration
 # ##################################################################################################
 if(PIKA_WITH_FULL_RPATH)
