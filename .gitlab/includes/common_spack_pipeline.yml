@@ -120,6 +120,7 @@ base_spack_image_x86_64:
   extends:
     - .cmake_variables_common
   script:
+    - printenv
     - spack arch
     - export CTEST_XML=$PWD/ctest.xml
     - trap "${SOURCE_DIR}/.gitlab/scripts/collect_ctest_metrics.sh ${CTEST_XML}" EXIT
