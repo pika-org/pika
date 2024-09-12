@@ -189,7 +189,7 @@ double do_work_bulk(
     ex::unique_any_sender<> sender{ex::just()};
     for (std::uint64_t i = 0; i < tasks_per_thread; ++i)
     {
-        sender = std::move(sender) | ex::transfer(sched) | ex::bulk(num_threads, work);
+        sender = std::move(sender) | ex::continues_on(sched) | ex::bulk(num_threads, work);
     }
 
     double const spawn_time_s = timer.elapsed();

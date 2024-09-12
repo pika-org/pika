@@ -90,12 +90,11 @@ void matrixMultiply(sMatrixSize& matrix_size, std::size_t device, std::size_t it
     whip::malloc(&d_C, size_C * sizeof(T));
 
     // copy A and B to device
-    auto copies_done = ex::when_all(ex::transfer_just(cuda_sched, d_A, h_A.data(),
-                                        size_A * sizeof(T), whip::memcpy_host_to_device) |
-            cu::then_with_stream(whip::memcpy_async),
-        ex::transfer_just(
-            cuda_sched, d_B, h_B.data(), size_B * sizeof(T), whip::memcpy_host_to_device) |
-            cu::then_with_stream(whip::memcpy_async));
+    auto copies_done =
+        ex::when_all(ex::just(d_A, h_A.data(), size_A * sizeof(T), whip::memcpy_host_to_device) |
+                ex::continues_on(cuda_sched) | cu::then_with_stream(whip::memcpy_async),
+            ex::just(d_B, h_B.data(), size_B * sizeof(T), whip::memcpy_host_to_device) |
+                ex::continues_on(cuda_sched) | cu::then_with_stream(whip::memcpy_async));
 
     // print something when copies complete
     tt::sync_wait(std::move(copies_done) | ex::then([] {

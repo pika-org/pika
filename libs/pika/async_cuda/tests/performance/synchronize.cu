@@ -137,24 +137,24 @@ int pika_main(pika::program_options::variables_map& vm)
             // then_with_stream calls to force synchronization between the
             // kernel launches.
             tt::sync_wait(ex::schedule(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
-                ex::transfer(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
-                ex::transfer(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
-                ex::transfer(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
-                ex::transfer(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
-                ex::transfer(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
-                ex::transfer(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
-                ex::transfer(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
-                ex::transfer(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
-                ex::transfer(sched) | cu::then_with_stream(f));
+                ex::continues_on(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
+                ex::continues_on(sched) | cu::then_with_stream(f) |
+                ex::continues_on(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
+                ex::continues_on(sched) | cu::then_with_stream(f) |
+                ex::continues_on(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
+                ex::continues_on(sched) | cu::then_with_stream(f) |
+                ex::continues_on(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
+                ex::continues_on(sched) | cu::then_with_stream(f) |
+                ex::continues_on(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
+                ex::continues_on(sched) | cu::then_with_stream(f) |
+                ex::continues_on(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
+                ex::continues_on(sched) | cu::then_with_stream(f) |
+                ex::continues_on(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
+                ex::continues_on(sched) | cu::then_with_stream(f) |
+                ex::continues_on(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
+                ex::continues_on(sched) | cu::then_with_stream(f) |
+                ex::continues_on(ex::thread_pool_scheduler{}) | ex::then(f_empty) |
+                ex::continues_on(sched) | cu::then_with_stream(f));
         }
         // Do the remainder one-by-one
         for (std::size_t i = 0; i < non_batch_iterations; ++i)
@@ -176,7 +176,7 @@ int pika_main(pika::program_options::variables_map& vm)
         for (std::size_t i = 0; i != iterations; ++i)
         {
             tt::sync_wait(ex::schedule(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}));
+                ex::continues_on(ex::thread_pool_scheduler{}));
         }
         double elapsed = timer.elapsed();
         std::cout << "then_with_stream with transfer:                                " << elapsed
@@ -198,13 +198,13 @@ int pika_main(pika::program_options::variables_map& vm)
                 cu::then_with_stream(f) | cu::then_with_stream(f) | cu::then_with_stream(f) |
                 cu::then_with_stream(f) | cu::then_with_stream(f) | cu::then_with_stream(f) |
                 cu::then_with_stream(f) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}));
+                ex::continues_on(ex::thread_pool_scheduler{}));
         }
         // Do the remainder one-by-one
         for (std::size_t i = 0; i < non_batch_iterations; ++i)
         {
             tt::sync_wait(ex::schedule(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}));
+                ex::continues_on(ex::thread_pool_scheduler{}));
         }
         double elapsed = timer.elapsed();
         std::cout << "then_with_stream with transfer batched:                        " << elapsed

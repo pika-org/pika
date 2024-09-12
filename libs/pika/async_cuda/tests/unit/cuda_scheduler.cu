@@ -48,7 +48,7 @@ int pika_main()
     }
 
     {
-        auto s = ex::just() | ex::transfer(sched);
+        auto s = ex::just() | ex::continues_on(sched);
         CHECK_CUDA_COMPLETION_SCHEDULER(s);
     }
 
@@ -81,7 +81,7 @@ int pika_main()
         // started). The thread pool is never accessed.
         auto s = ex::schedule(sched) |
             cu::then_with_cublas([](cublasHandle_t) {}, CUBLAS_POINTER_MODE_HOST) |
-            ex::transfer(ex::thread_pool_scheduler{nullptr});
+            ex::continues_on(ex::thread_pool_scheduler{nullptr});
         CHECK_NOT_CUDA_COMPLETION_SCHEDULER(s);
 #endif
     }

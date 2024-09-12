@@ -31,7 +31,7 @@ struct custom_type_non_default_constructible_non_copyable
     int x;
     custom_type_non_default_constructible_non_copyable() = delete;
     explicit custom_type_non_default_constructible_non_copyable(int x)
-      : x(x){};
+      : x(x) {};
     custom_type_non_default_constructible_non_copyable(
         custom_type_non_default_constructible_non_copyable&&) = default;
     custom_type_non_default_constructible_non_copyable& operator=(
@@ -361,14 +361,14 @@ void test_transfer_basic()
     });
     auto work2 = ex::then(
         work1, [=, &current_id]() { PIKA_TEST_EQ(current_id, pika::this_thread::get_id()); });
-    auto transfer1 = ex::transfer(work2, sched);
+    auto transfer1 = ex::continues_on(work2, sched);
     auto work3 = ex::then(transfer1, [=, &current_id]() {
         current_id = pika::this_thread::get_id();
         PIKA_TEST_NEQ(current_id, parent_id);
     });
     auto work4 = ex::then(
         work3, [=, &current_id]() { PIKA_TEST_EQ(current_id, pika::this_thread::get_id()); });
-    auto transfer2 = ex::transfer(work4, sched);
+    auto transfer2 = ex::continues_on(work4, sched);
     auto work5 = ex::then(transfer2, [=, &current_id]() {
         current_id = pika::this_thread::get_id();
         PIKA_TEST_NEQ(current_id, parent_id);
@@ -393,7 +393,7 @@ void test_transfer_arguments()
         PIKA_TEST_EQ(current_id, pika::this_thread::get_id());
         return x / 2.0;
     });
-    auto transfer1 = ex::transfer(work2, sched);
+    auto transfer1 = ex::continues_on(work2, sched);
     auto work3 = ex::then(transfer1, [=, &current_id](double x) {
         current_id = pika::this_thread::get_id();
         PIKA_TEST_NEQ(current_id, parent_id);
@@ -403,7 +403,7 @@ void test_transfer_arguments()
         PIKA_TEST_EQ(current_id, pika::this_thread::get_id());
         return "result: " + std::to_string(x);
     });
-    auto transfer2 = ex::transfer(work4, sched);
+    auto transfer2 = ex::continues_on(work4, sched);
     auto work5 = ex::then(transfer2, [=, &current_id](std::string s) {
         current_id = pika::this_thread::get_id();
         PIKA_TEST_NEQ(current_id, parent_id);
@@ -431,7 +431,7 @@ void test_just_void()
         pika::thread::id parent_id = pika::this_thread::get_id();
 
         auto begin = ex::just();
-        auto transfer1 = ex::transfer(begin, ex::thread_pool_scheduler{});
+        auto transfer1 = ex::continues_on(begin, ex::thread_pool_scheduler{});
         auto work1 = ex::then(
             transfer1, [parent_id]() { PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id()); });
         tt::sync_wait(std::move(work1));
@@ -455,7 +455,7 @@ void test_just_one_arg()
         pika::thread::id parent_id = pika::this_thread::get_id();
 
         auto begin = ex::just(3);
-        auto transfer1 = ex::transfer(begin, ex::thread_pool_scheduler{});
+        auto transfer1 = ex::continues_on(begin, ex::thread_pool_scheduler{});
         auto work1 = ex::then(transfer1, [parent_id](int x) {
             PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id());
             PIKA_TEST_EQ(x, 3);
@@ -482,7 +482,7 @@ void test_just_two_args()
         pika::thread::id parent_id = pika::this_thread::get_id();
 
         auto begin = ex::just(3, std::string("hello"));
-        auto transfer1 = ex::transfer(begin, ex::thread_pool_scheduler{});
+        auto transfer1 = ex::continues_on(begin, ex::thread_pool_scheduler{});
         auto work1 = ex::then(transfer1, [parent_id](int x, std::string y) {
             PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id());
             PIKA_TEST_EQ(x, 3);
@@ -492,21 +492,21 @@ void test_just_two_args()
     }
 }
 
-void test_transfer_just_void()
+void test_just_continues_on_void()
 {
     pika::thread::id parent_id = pika::this_thread::get_id();
 
-    auto begin = ex::transfer_just(ex::thread_pool_scheduler{});
+    auto begin = ex::just() | ex::continues_on(ex::thread_pool_scheduler{});
     auto work1 =
         ex::then(begin, [parent_id]() { PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id()); });
     tt::sync_wait(std::move(work1));
 }
 
-void test_transfer_just_one_arg()
+void test_just_continues_on_one_arg()
 {
     pika::thread::id parent_id = pika::this_thread::get_id();
 
-    auto begin = ex::transfer_just(ex::thread_pool_scheduler{}, 3);
+    auto begin = ex::just(3) | ex::continues_on(ex::thread_pool_scheduler{});
     auto work1 = ex::then(begin, [parent_id](int x) {
         PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id());
         PIKA_TEST_EQ(x, 3);
@@ -514,11 +514,11 @@ void test_transfer_just_one_arg()
     tt::sync_wait(std::move(work1));
 }
 
-void test_transfer_just_two_args()
+void test_just_continues_on_two_args()
 {
     pika::thread::id parent_id = pika::this_thread::get_id();
 
-    auto begin = ex::transfer_just(ex::thread_pool_scheduler{}, 3, std::string("hello"));
+    auto begin = ex::just(3, std::string("hello")) | ex::continues_on(ex::thread_pool_scheduler{});
     auto work1 = ex::then(begin, [parent_id](int x, std::string y) {
         PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id());
         PIKA_TEST_EQ(x, 3);
@@ -748,17 +748,18 @@ void test_ensure_started()
     }
 
     {
-        auto s = ex::transfer_just(sched, 42) | ex::ensure_started();
+        auto s = ex::just(42) | ex::continues_on(sched) | ex::ensure_started();
         PIKA_TEST_EQ(tt::sync_wait(std::move(s)), 42);
     }
 
     {
-        auto s = ex::transfer_just(sched, 42) | ex::ensure_started() | ex::transfer(sched);
+        auto s =
+            ex::just(42) | ex::continues_on(sched) | ex::ensure_started() | ex::continues_on(sched);
         PIKA_TEST_EQ(tt::sync_wait(std::move(s)), 42);
     }
 
     {
-        auto s = ex::transfer_just(sched, 42) | ex::ensure_started() | ex::split();
+        auto s = ex::just(42) | ex::continues_on(sched) | ex::ensure_started() | ex::split();
         PIKA_TEST_EQ(tt::sync_wait(s), 42);
         PIKA_TEST_EQ(tt::sync_wait(s), 42);
         PIKA_TEST_EQ(tt::sync_wait(s), 42);
@@ -859,11 +860,11 @@ void test_ensure_started_when_all()
             std::unique_lock l{mtx};
             cond.wait(l, [&]() { return started; });
         }
-        auto succ1 = s | ex::transfer(sched) | ex::then([&](int const& x) {
+        auto succ1 = s | ex::continues_on(sched) | ex::then([&](int const& x) {
             ++successor_task_calls;
             return x + 1;
         });
-        auto succ2 = s | ex::transfer(sched) | ex::then([&](int const& x) {
+        auto succ2 = s | ex::continues_on(sched) | ex::then([&](int const& x) {
             ++successor_task_calls;
             return x + 2;
         });
@@ -884,17 +885,17 @@ void test_split()
     }
 
     {
-        auto s = ex::transfer_just(sched, 42) | ex::split();
+        auto s = ex::just(42) | ex::continues_on(sched) | ex::split();
         PIKA_TEST_EQ(tt::sync_wait(std::move(s)), 42);
     }
 
     {
-        auto s = ex::transfer_just(sched, 42) | ex::split() | ex::transfer(sched);
+        auto s = ex::just(42) | ex::continues_on(sched) | ex::split() | ex::continues_on(sched);
         PIKA_TEST_EQ(tt::sync_wait(std::move(s)), 42);
     }
 
     {
-        auto s = ex::transfer_just(sched, 42) | ex::split();
+        auto s = ex::just(42) | ex::continues_on(sched) | ex::split();
         PIKA_TEST_EQ(tt::sync_wait(s), 42);
         PIKA_TEST_EQ(tt::sync_wait(s), 42);
         PIKA_TEST_EQ(tt::sync_wait(s), 42);
@@ -954,11 +955,11 @@ void test_split_when_all()
             ++first_task_calls;
             return 3;
         }) | ex::split();
-        auto succ1 = s | ex::transfer(sched) | ex::then([&](int const& x) {
+        auto succ1 = s | ex::continues_on(sched) | ex::then([&](int const& x) {
             ++successor_task_calls;
             return x + 1;
         });
-        auto succ2 = s | ex::transfer(sched) | ex::then([&](int const& x) {
+        auto succ2 = s | ex::continues_on(sched) | ex::then([&](int const& x) {
             ++successor_task_calls;
             return x + 2;
         });
@@ -982,54 +983,57 @@ void test_let_value()
     }
 
     {
-        auto result = tt::sync_wait(
-            ex::schedule(sched) | ex::let_value([=]() { return ex::transfer_just(sched, 42); }));
+        auto result = tt::sync_wait(ex::schedule(sched) |
+            ex::let_value([=]() { return ex::just(42) | ex::continues_on(sched); }));
         PIKA_TEST_EQ(result, 42);
     }
 
     {
         auto result = tt::sync_wait(
-            ex::just() | ex::let_value([=]() { return ex::transfer_just(sched, 42); }));
+            ex::just() | ex::let_value([=]() { return ex::just(42) | ex::continues_on(sched); }));
         PIKA_TEST_EQ(result, 42);
     }
 
     // int predecessor, value ignored
     {
-        auto result = tt::sync_wait(
-            ex::transfer_just(sched, 43) | ex::let_value([](int&) { return ex::just(42); }));
+        auto result = tt::sync_wait(ex::just(43) | ex::continues_on(sched) |
+            ex::let_value([](int&) { return ex::just(42); }));
         PIKA_TEST_EQ(result, 42);
     }
 
     {
-        auto result = tt::sync_wait(ex::transfer_just(sched, 43) |
-            ex::let_value([=](int&) { return ex::transfer_just(sched, 42); }));
+        auto result = tt::sync_wait(ex::just(43) | ex::continues_on(sched) |
+            ex::let_value([=](int&) { return ex::just(42) | ex::continues_on(sched); }));
         PIKA_TEST_EQ(result, 42);
     }
 
     {
-        auto result = tt::sync_wait(
-            ex::just(43) | ex::let_value([=](int&) { return ex::transfer_just(sched, 42); }));
+        auto result = tt::sync_wait(ex::just(43) |
+            ex::let_value([=](int&) { return ex::just(42) | ex::continues_on(sched); }));
         PIKA_TEST_EQ(result, 42);
     }
 
     // int predecessor, value used
     {
-        auto result = tt::sync_wait(ex::transfer_just(sched, 43) | ex::let_value([](int& x) {
-            return ex::just(42) | ex::then([&](int y) { return x + y; });
-        }));
+        auto result =
+            tt::sync_wait(ex::just(43) | ex::continues_on(sched) | ex::let_value([](int& x) {
+                return ex::just(42) | ex::then([&](int y) { return x + y; });
+            }));
         PIKA_TEST_EQ(result, 85);
     }
 
     {
-        auto result = tt::sync_wait(ex::transfer_just(sched, 43) | ex::let_value([=](int& x) {
-            return ex::transfer_just(sched, 42) | ex::then([&](int y) { return x + y; });
-        }));
+        auto result =
+            tt::sync_wait(ex::just(43) | ex::continues_on(sched) | ex::let_value([=](int& x) {
+                return ex::just(42) | ex::continues_on(sched) |
+                    ex::then([&](int y) { return x + y; });
+            }));
         PIKA_TEST_EQ(result, 85);
     }
 
     {
         auto result = tt::sync_wait(ex::just(43) | ex::let_value([=](int& x) {
-            return ex::transfer_just(sched, 42) | ex::then([&](int y) { return x + y; });
+            return ex::just(42) | ex::continues_on(sched) | ex::then([&](int y) { return x + y; });
         }));
         PIKA_TEST_EQ(result, 85);
     }
@@ -1040,7 +1044,7 @@ void test_let_value()
 
         try
         {
-            tt::sync_wait(ex::transfer_just(sched, 43) | ex::then([](int) -> int {
+            tt::sync_wait(ex::just(43) | ex::continues_on(sched) | ex::then([](int) -> int {
                 throw std::runtime_error("error");
             }) | ex::let_value([](int&) {
                 PIKA_TEST(false);
@@ -1095,7 +1099,7 @@ void test_let_error()
             ex::let_error([=, &called](std::exception_ptr& ep) {
                 called = true;
                 check_exception_ptr_message(ep, "error");
-                return ex::transfer_just(sched);
+                return ex::schedule(sched);
             }));
         PIKA_TEST(called);
     }
@@ -1106,7 +1110,7 @@ void test_let_error()
             ex::let_error([=, &called](std::exception_ptr& ep) {
                 called = true;
                 check_exception_ptr_message(ep, "error");
-                return ex::transfer_just(sched);
+                return ex::schedule(sched);
             }));
         PIKA_TEST(called);
     }
@@ -1127,7 +1131,7 @@ void test_let_error()
             throw std::runtime_error("error");
         }) | ex::let_error([=](std::exception_ptr& ep) {
             check_exception_ptr_message(ep, "error");
-            return ex::transfer_just(sched, 42);
+            return ex::just(42) | ex::continues_on(sched);
         }));
         PIKA_TEST_EQ(result, 42);
     }
@@ -1137,15 +1141,15 @@ void test_let_error()
             throw std::runtime_error("error");
         }) | ex::let_error([=](std::exception_ptr& ep) {
             check_exception_ptr_message(ep, "error");
-            return ex::transfer_just(sched, 42);
+            return ex::just(42) | ex::continues_on(sched);
         }));
         PIKA_TEST_EQ(result, 42);
     }
 
     // predecessor doesn't throw, let sender is ignored
     {
-        auto result =
-            tt::sync_wait(ex::transfer_just(sched, 42) | ex::let_error([](std::exception_ptr) {
+        auto result = tt::sync_wait(
+            ex::just(42) | ex::continues_on(sched) | ex::let_error([](std::exception_ptr) {
                 PIKA_TEST(false);
                 return ex::just(43);
             }));
@@ -1153,10 +1157,10 @@ void test_let_error()
     }
 
     {
-        auto result =
-            tt::sync_wait(ex::transfer_just(sched, 42) | ex::let_error([=](std::exception_ptr) {
+        auto result = tt::sync_wait(
+            ex::just(42) | ex::continues_on(sched) | ex::let_error([=](std::exception_ptr) {
                 PIKA_TEST(false);
-                return ex::transfer_just(sched, 43);
+                return ex::just(43) | ex::continues_on(sched);
             }));
         PIKA_TEST_EQ(result, 42);
     }
@@ -1164,7 +1168,7 @@ void test_let_error()
     {
         auto result = tt::sync_wait(ex::just(42) | ex::let_error([=](std::exception_ptr) {
             PIKA_TEST(false);
-            return ex::transfer_just(sched, 43);
+            return ex::just(43) | ex::continues_on(sched);
         }));
         PIKA_TEST_EQ(result, 42);
     }
@@ -1235,11 +1239,12 @@ void test_bulk()
         std::vector<int> v(n, -1);
         pika::thread::id parent_id = pika::this_thread::get_id();
 
-        auto v_out = tt::sync_wait(ex::transfer_just(ex::thread_pool_scheduler{}, std::move(v)) |
-            ex::bulk(n, [&parent_id](int i, std::vector<int>& v) {
-                v[i] = i;
-                PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id());
-            }));
+        auto v_out =
+            tt::sync_wait(ex::just(std::move(v)) | ex::continues_on(ex::thread_pool_scheduler{}) |
+                ex::bulk(n, [&parent_id](int i, std::vector<int>& v) {
+                    v[i] = i;
+                    PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id());
+                }));
 
         for (int i = 0; i < n; ++i) { PIKA_TEST_EQ(v_out[i], i); }
     }
@@ -1287,7 +1292,7 @@ void test_bulk()
 
         try
         {
-            tt::sync_wait(ex::transfer_just(ex::thread_pool_scheduler{}) | ex::bulk(n, [&v](int i) {
+            tt::sync_wait(ex::schedule(ex::thread_pool_scheduler{}) | ex::bulk(n, [&v](int i) {
                 if (i == i_fail) { throw std::runtime_error("error"); }
                 v[i] = i;
             }));
@@ -1330,7 +1335,7 @@ void test_completion_scheduler()
     }
 
     {
-        auto sender = ex::transfer_just(ex::thread_pool_scheduler{}, 42);
+        auto sender = ex::just(42) | ex::continues_on(ex::thread_pool_scheduler{});
         auto completion_scheduler =
             ex::get_completion_scheduler<ex::set_value_t>(ex::get_env(sender));
         static_assert(
@@ -1348,9 +1353,10 @@ void test_completion_scheduler()
     }
 
     {
-        auto sender = ex::then(
-            ex::bulk(ex::transfer_just(ex::thread_pool_scheduler{}, 42), 10, [](int, int) {}),
-            [](int) {});
+        auto sender =
+            ex::then(ex::bulk(ex::just(42) | ex::continues_on(ex::thread_pool_scheduler{}), 10,
+                         [](int, int) {}),
+                [](int) {});
         auto completion_scheduler =
             ex::get_completion_scheduler<ex::set_value_t>(ex::get_env(sender));
         static_assert(
@@ -1359,9 +1365,10 @@ void test_completion_scheduler()
     }
 
     {
-        auto sender = ex::bulk(
-            ex::then(ex::transfer_just(ex::thread_pool_scheduler{}, 42), [](int x) { return x; }),
-            10, [](int, int) {});
+        auto sender =
+            ex::bulk(ex::then(ex::just(42) | ex::continues_on(ex::thread_pool_scheduler{}),
+                         [](int x) { return x; }),
+                10, [](int, int) {});
         auto completion_scheduler =
             ex::get_completion_scheduler<ex::set_value_t>(ex::get_env(sender));
         static_assert(
@@ -1380,22 +1387,24 @@ void test_drop_value()
     }
 
     {
-        tt::sync_wait(ex::drop_value(ex::transfer_just(sched, 3)));
-        static_assert(
-            std::is_void_v<decltype(tt::sync_wait(ex::drop_value(ex::transfer_just(sched, 3))))>);
-    }
-
-    {
-        tt::sync_wait(ex::drop_value(ex::transfer_just(sched, std::string("hello"))));
+        tt::sync_wait(ex::drop_value(ex::just(3) | ex::continues_on(sched)));
         static_assert(std::is_void_v<decltype(tt::sync_wait(
-                ex::drop_value(ex::transfer_just(sched, std::string("hello")))))>);
+                ex::drop_value(ex::just(3) | ex::continues_on(sched))))>);
     }
 
     {
-        tt::sync_wait(ex::drop_value(
-            ex::transfer_just(sched, custom_type_non_default_constructible_non_copyable{0})));
-        static_assert(std::is_void_v<decltype(tt::sync_wait(ex::drop_value(ex::transfer_just(
-                sched, custom_type_non_default_constructible_non_copyable{0}))))>);
+        tt::sync_wait(ex::drop_value(ex::just(std::string("hello")) | ex::continues_on(sched)));
+        static_assert(std::is_void_v<decltype(tt::sync_wait(
+                ex::drop_value(ex::just(std::string("hello")) | ex::continues_on(sched))))>);
+    }
+
+    {
+        tt::sync_wait(
+            ex::drop_value(ex::just(custom_type_non_default_constructible_non_copyable{0}) |
+                ex::continues_on(sched)));
+        static_assert(std::is_void_v<decltype(tt::sync_wait(
+                ex::drop_value(ex::just(custom_type_non_default_constructible_non_copyable{0}) |
+                    ex::continues_on(sched))))>);
     }
 
     {
@@ -1423,24 +1432,24 @@ void test_split_tuple()
     ex::thread_pool_scheduler sched{};
 
     {
-        auto [s] = ex::split_tuple(ex::transfer_just(sched, std::tuple(42)));
+        auto [s] = ex::split_tuple(ex::just(std::tuple(42)) | ex::continues_on(sched));
         PIKA_TEST_EQ(tt::sync_wait(std::move(s)), 42);
     }
 
     {
-        auto [s1, s2, s3] =
-            ex::split_tuple(ex::transfer_just(sched, std::tuple(42, std::string{"hello"}, 3.14)));
+        auto [s1, s2, s3] = ex::split_tuple(
+            ex::just(std::tuple(42, std::string{"hello"}, 3.14)) | ex::continues_on(sched));
         PIKA_TEST_EQ(tt::sync_wait(std::move(s1)), 42);
         PIKA_TEST_EQ(tt::sync_wait(std::move(s2)), std::string{"hello"});
         PIKA_TEST_EQ(tt::sync_wait(std::move(s3)), 3.14);
     }
 
     {
-        auto [s1, s2, s3] =
-            ex::split_tuple(ex::transfer_just(sched, std::tuple(42, std::string{"hello"}, 3.14)));
-        auto s1_transfer = std::move(s1) | ex::transfer(sched);
-        auto s2_transfer = std::move(s2) | ex::transfer(sched);
-        auto s3_transfer = std::move(s3) | ex::transfer(sched);
+        auto [s1, s2, s3] = ex::split_tuple(
+            ex::just(std::tuple(42, std::string{"hello"}, 3.14)) | ex::continues_on(sched));
+        auto s1_transfer = std::move(s1) | ex::continues_on(sched);
+        auto s2_transfer = std::move(s2) | ex::continues_on(sched);
+        auto s3_transfer = std::move(s3) | ex::continues_on(sched);
         PIKA_TEST_EQ(tt::sync_wait(std::move(s1_transfer)), 42);
         PIKA_TEST_EQ(tt::sync_wait(std::move(s2_transfer)), std::string{"hello"});
         PIKA_TEST_EQ(tt::sync_wait(std::move(s3_transfer)), 3.14);
@@ -1494,9 +1503,9 @@ int pika_main()
     test_just_void();
     test_just_one_arg();
     test_just_two_args();
-    test_transfer_just_void();
-    test_transfer_just_one_arg();
-    test_transfer_just_two_args();
+    test_just_continues_on_void();
+    test_just_continues_on_one_arg();
+    test_just_continues_on_two_args();
     test_when_all();
     test_when_all_vector();
     test_ensure_started();

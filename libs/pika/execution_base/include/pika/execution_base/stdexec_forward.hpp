@@ -12,5 +12,10 @@
 
 namespace pika::execution::experimental {
     using namespace stdexec;
-}
+
+# if !defined(PIKA_HAVE_STDEXEC_CONTINUES_ON)
+    using continues_on_t = stdexec::continue_on_t;
+    inline constexpr continues_on_t continues_on{};
+# endif
+}    // namespace pika::execution::experimental
 #endif

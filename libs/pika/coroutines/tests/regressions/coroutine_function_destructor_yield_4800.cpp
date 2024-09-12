@@ -54,8 +54,8 @@ int pika_main()
     // destructor being called late in the coroutine call operator.
     for (int i = 0; i < num_iterations; ++i)
     {
-        tt::sync_wait(
-            ex::transfer_just(ex::thread_pool_scheduler{}, yielder{}) | ex::then([](auto&&) {}));
+        tt::sync_wait(ex::just(yielder{}) | ex::continues_on(ex::thread_pool_scheduler{}) |
+            ex::then([](auto&&) {}));
     }
 
     for (int i = 0; i < num_iterations; ++i)

@@ -20,11 +20,11 @@
 #include <vector>
 
 using pika::execution::experimental::async_rw_mutex;
+using pika::execution::experimental::continues_on;
 using pika::execution::experimental::execute;
 using pika::execution::experimental::start_detached;
 using pika::execution::experimental::then;
 using pika::execution::experimental::thread_pool_scheduler;
-using pika::execution::experimental::transfer;
 using pika::execution::experimental::when_all;
 using pika::this_thread::experimental::sync_wait;
 
@@ -174,8 +174,8 @@ void test_multiple_accesses(async_rw_mutex<ReadWriteT, ReadT> rwm, std::size_t i
 
     // Read-only and read-write access return senders of different types
     using r_sender_type =
-        std::decay_t<decltype(rwm.read() | transfer(exec) | then(checker{true, 0, count, 0}))>;
-    using rw_sender_type = std::decay_t<decltype(rwm.readwrite() | transfer(exec) |
+        std::decay_t<decltype(rwm.read() | continues_on(exec) | then(checker{true, 0, count, 0}))>;
+    using rw_sender_type = std::decay_t<decltype(rwm.readwrite() | continues_on(exec) |
         then(checker{false, 0, count, 0}))>;
     std::vector<r_sender_type> r_senders;
     std::vector<rw_sender_type> rw_senders;
@@ -195,13 +195,13 @@ void test_multiple_accesses(async_rw_mutex<ReadWriteT, ReadT> rwm, std::size_t i
         {
             if (readonly)
             {
-                r_senders.push_back(rwm.read() | transfer(exec) |
+                r_senders.push_back(rwm.read() | continues_on(exec) |
                     then(checker{readonly, expected_predecessor_count, count, min_expected_count,
                         max_expected_count}));
             }
             else
             {
-                rw_senders.push_back(rwm.readwrite() | transfer(exec) |
+                rw_senders.push_back(rwm.readwrite() | continues_on(exec) |
                     then(checker{readonly, expected_predecessor_count, count, min_expected_count,
                         max_expected_count}));
                 // Only read-write access is allowed to change the value

@@ -21,6 +21,7 @@ function(pika_setup_target target)
       INTERNAL_FLAGS
       NOLIBS
       NONAMEPREFIX
+      NOPCH
       NOTLLKEYWORD
       UNITY_BUILD
   )
@@ -115,10 +116,11 @@ function(pika_setup_target target)
 
   if(NOT target_NOLIBS)
     target_link_libraries(${target} ${__tll_public} pika::pika)
-    if(PIKA_WITH_PRECOMPILED_HEADERS_INTERNAL)
-      if("${_type}" STREQUAL "EXECUTABLE")
-        target_precompile_headers(${target} REUSE_FROM pika_exe_precompiled_headers)
-      endif()
+    if(PIKA_WITH_PRECOMPILED_HEADERS_INTERNAL
+       AND "${_type}" STREQUAL "EXECUTABLE"
+       AND NOT target_NOPCH
+    )
+      target_precompile_headers(${target} REUSE_FROM pika_exe_precompiled_headers)
     endif()
   endif()
 

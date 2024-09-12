@@ -54,7 +54,7 @@ int pika_main()
         std::vector<ex::unique_any_sender<>> results;
         for (std::ptrdiff_t i = 0; i != NUM_THREADS; ++i)
         {
-            results.emplace_back(ex::transfer_just(sched, std::ref(l)) |
+            results.emplace_back(ex::just(std::ref(l)) | ex::continues_on(sched) |
                 ex::then(test_arrive_and_wait) | ex::ensure_started());
         }
 
@@ -76,7 +76,7 @@ int pika_main()
         pika::latch l(NUM_THREADS + 1);
         PIKA_TEST(!l.try_wait());
 
-        auto s = ex::transfer_just(sched, std::ref(l)) | ex::then(test_count_down) |
+        auto s = ex::just(std::ref(l)) | ex::continues_on(sched) | ex::then(test_count_down) |
             ex::ensure_started();
 
         PIKA_TEST(!l.try_wait());
@@ -98,7 +98,7 @@ int pika_main()
         std::vector<ex::unique_any_sender<>> results;
         for (std::ptrdiff_t i = 0; i != NUM_THREADS; ++i)
         {
-            results.emplace_back(ex::transfer_just(sched, std::ref(l)) |
+            results.emplace_back(ex::just(std::ref(l)) | ex::continues_on(sched) |
                 ex::then(test_arrive_and_wait) | ex::ensure_started());
         }
 

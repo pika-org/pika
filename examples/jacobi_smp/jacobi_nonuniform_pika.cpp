@@ -91,7 +91,7 @@ namespace jacobi_smp {
                 for (std::size_t dep : deps) { trigger.push_back((*deps_src)[dep]); }
 
                 (*deps_dst)[block] = ex::when_all_vector(std::move(trigger)) |
-                    ex::transfer(ex::thread_pool_scheduler{}) |
+                    ex::continues_on(ex::thread_pool_scheduler{}) |
                     ex::then(pika::util::detail::bind_front(jacobi_kernel_wrap, block_ranges[block],
                         std::cref(A), std::ref(*dst), std::cref(*src), std::cref(b))) |
                     ex::split();

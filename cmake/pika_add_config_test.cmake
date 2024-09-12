@@ -483,6 +483,15 @@ function(pika_check_for_stdexec_sender_receiver_concepts)
 endfunction()
 
 # ##################################################################################################
+function(pika_check_for_stdexec_continues_on)
+  pika_add_config_test(
+    PIKA_WITH_STDEXEC_CONTINUES_ON
+    SOURCE cmake/tests/stdexec_continues_on.cpp
+    FILE ${ARGN}
+  )
+endfunction()
+
+# ##################################################################################################
 function(pika_check_for_mpix_continuations)
   pika_add_config_test(
     PIKA_WITH_MPIX_CONTINUATIONS

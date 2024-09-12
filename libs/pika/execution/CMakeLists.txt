@@ -8,6 +8,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(execution_headers
     pika/execution/algorithms/bulk.hpp
+    pika/execution/algorithms/continues_on.hpp
     pika/execution/algorithms/detail/helpers.hpp
     pika/execution/algorithms/detail/partial_algorithm.hpp
     pika/execution/algorithms/drop_operation_state.hpp
@@ -24,7 +25,6 @@ set(execution_headers
     pika/execution/algorithms/start_detached.hpp
     pika/execution/algorithms/sync_wait.hpp
     pika/execution/algorithms/then.hpp
-    pika/execution/algorithms/transfer.hpp
     pika/execution/algorithms/transfer_just.hpp
     pika/execution/algorithms/transfer_when_all.hpp
     pika/execution/algorithms/unpack.hpp

@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
     ex::thread_pool_scheduler sched{};
 
     // We can schedule work using sched.
-    auto snd1 = ex::transfer_just(sched, 42) | ex::then([](int x) {
+    auto snd1 = ex::just(42) | ex::continues_on(sched) | ex::then([](int x) {
         fmt::print(std::cout, "Hello from a pika user-level thread (with id {})!\nx = {}\n",
             pika::this_thread::get_id(), x);
     });
@@ -39,9 +39,9 @@ int main(int argc, char* argv[])
 
     // We can build arbitrary graphs of work using the split and when_all adaptors.
     auto snd2 = ex::just(3.14) | ex::split();
-    auto snd3 = ex::transfer(snd2, sched) |
+    auto snd3 = ex::continues_on(snd2, sched) |
         ex::then([](double pi) { fmt::print(std::cout, "Is this pi: {}?\n", pi); });
-    auto snd4 = ex::transfer_when_all(sched, std::move(snd2), ex::just(500.3)) |
+    auto snd4 = ex::when_all(std::move(snd2), ex::just(500.3)) | ex::continues_on(sched) |
         ex::then([](double pi, double r) { return pi * r * r; });
     auto result = tt::sync_wait(ex::when_all(std::move(snd3), std::move(snd4)));
     fmt::print(std::cout, "The result is {}\n", result);

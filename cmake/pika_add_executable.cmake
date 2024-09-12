@@ -7,7 +7,15 @@
 
 function(pika_add_executable name)
   # retrieve arguments
-  set(options GPU EXCLUDE_FROM_ALL EXCLUDE_FROM_DEFAULT_BUILD INTERNAL_FLAGS NOLIBS UNITY_BUILD)
+  set(options
+      GPU
+      EXCLUDE_FROM_ALL
+      EXCLUDE_FROM_DEFAULT_BUILD
+      INTERNAL_FLAGS
+      NOLIBS
+      NOPCH
+      UNITY_BUILD
+  )
   set(one_value_args
       INI
       FOLDER
@@ -155,6 +163,10 @@ function(pika_add_executable name)
 
   if(${${name}_NOLIBS})
     set(_target_flags ${_target_flags} NOLIBS)
+  endif()
+
+  if(${${name}_NOPCH})
+    set(_target_flags ${_target_flags} NOPCH)
   endif()
 
   if(${name}_INTERNAL_FLAGS)

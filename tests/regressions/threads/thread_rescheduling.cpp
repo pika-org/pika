@@ -90,14 +90,14 @@ void tree_boot(std::uint64_t count, std::uint64_t grain_size, thread_id_type thr
     ex::thread_pool_scheduler sched{};
     for (std::uint64_t i = 0; i < children; ++i)
     {
-        senders.emplace_back(ex::transfer_just(sched, child_count, grain_size, thread) |
+        senders.emplace_back(ex::just(child_count, grain_size, thread) | ex::continues_on(sched) |
             ex::then(tree_boot) | ex::ensure_started());
     }
 
     for (std::uint64_t i = 0; i < actors; ++i)
     {
-        senders.emplace_back(ex::transfer_just(sched, thread) | ex::then(change_thread_state) |
-            ex::ensure_started());
+        senders.emplace_back(ex::just(thread) | ex::continues_on(sched) |
+            ex::then(change_thread_state) | ex::ensure_started());
     }
 
     detail::wait(std::move(senders));
@@ -136,14 +136,14 @@ int pika_main(variables_map& vm)
 
         ex::thread_pool_scheduler sched{};
         // Flood the queues with set_thread_state operations before the rescheduling attempt.
-        auto before = ex::transfer_just(sched, tasks, grain_size, thread_id.noref()) |
+        auto before = ex::just(tasks, grain_size, thread_id.noref()) | ex::continues_on(sched) |
             ex::then(tree_boot) | ex::ensure_started();
 
         set_thread_state(thread_id.noref(), pika::threads::detail::thread_schedule_state::pending,
             pika::threads::detail::thread_restart_state::signaled);
 
         // Flood the queues with set_thread_state operations after the rescheduling attempt.
-        auto after = ex::transfer_just(sched, tasks, grain_size, thread_id.noref()) |
+        auto after = ex::just(tasks, grain_size, thread_id.noref()) | ex::continues_on(sched) |
             ex::then(tree_boot) | ex::ensure_started();
 
         tt::sync_wait(std::move(before));

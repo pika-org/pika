@@ -95,8 +95,9 @@ int pika_main(pika::program_options::variables_map&)
 
     // use scheduler to schedule work on custom pool
     auto sender = ex::schedule(pool_scheduler) |
-        ex::then(pika::util::detail::bind_front(do_stuff, 5, true)) | ex::transfer(pool_scheduler) |
-        ex::then([]() { do_stuff(5, true); }) | ex::transfer(pool_scheduler) |
+        ex::then(pika::util::detail::bind_front(do_stuff, 5, true)) |
+        ex::continues_on(pool_scheduler) | ex::then([]() { do_stuff(5, true); }) |
+        ex::continues_on(pool_scheduler) |
         ex::then([pool_scheduler, high_priority_scheduler, async_count]() mutable {
             ex::unique_any_sender<> sender1, sender2;
             for (std::size_t i = 0; i < async_count; i++)

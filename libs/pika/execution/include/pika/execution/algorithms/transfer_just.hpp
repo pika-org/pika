@@ -11,13 +11,15 @@
 #if defined(PIKA_HAVE_STDEXEC)
 # include <pika/execution_base/stdexec_forward.hpp>
 #else
+# include <pika/execution/algorithms/continues_on.hpp>
 # include <pika/execution/algorithms/just.hpp>
-# include <pika/execution/algorithms/transfer.hpp>
 # include <pika/functional/detail/tag_fallback_invoke.hpp>
 
 # include <utility>
 
 namespace pika::execution::experimental {
+    PIKA_DEPRECATED(
+        "transfer_just will be removed in the future, use transfer and just separately instead")
     inline constexpr struct transfer_just_t final
       : pika::functional::detail::tag_fallback<transfer_just_t>
     {
@@ -26,7 +28,7 @@ namespace pika::execution::experimental {
         friend constexpr PIKA_FORCEINLINE auto
         tag_fallback_invoke(transfer_just_t, Scheduler&& scheduler, Ts&&... ts)
         {
-            return transfer(just(PIKA_FORWARD(Ts, ts)...), PIKA_FORWARD(Scheduler, scheduler));
+            return continues_on(just(PIKA_FORWARD(Ts, ts)...), PIKA_FORWARD(Scheduler, scheduler));
         }
     } transfer_just{};
 }    // namespace pika::execution::experimental

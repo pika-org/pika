@@ -10,22 +10,24 @@
 
 #if defined(PIKA_HAVE_STDEXEC)
 # include <pika/execution_base/stdexec_forward.hpp>
-#else
-# include <pika/allocator_support/allocator_deleter.hpp>
-# include <pika/allocator_support/internal_allocator.hpp>
-# include <pika/allocator_support/traits/is_allocator.hpp>
-# include <pika/assert.hpp>
-# include <pika/concepts/concepts.hpp>
-# include <pika/execution_base/operation_state.hpp>
-# include <pika/execution_base/sender.hpp>
-# include <pika/functional/detail/tag_fallback_invoke.hpp>
-# include <pika/type_support/unused.hpp>
+#endif
 
-# include <cstddef>
-# include <exception>
-# include <memory>
-# include <type_traits>
-# include <utility>
+#include <pika/allocator_support/allocator_deleter.hpp>
+#include <pika/allocator_support/internal_allocator.hpp>
+#include <pika/allocator_support/traits/is_allocator.hpp>
+#include <pika/assert.hpp>
+#include <pika/concepts/concepts.hpp>
+#include <pika/execution_base/operation_state.hpp>
+#include <pika/execution_base/receiver.hpp>
+#include <pika/execution_base/sender.hpp>
+#include <pika/functional/detail/tag_fallback_invoke.hpp>
+#include <pika/type_support/unused.hpp>
+
+#include <cstddef>
+#include <exception>
+#include <memory>
+#include <type_traits>
+#include <utility>
 
 namespace pika::start_detached_detail {
     template <typename Sender, typename Allocator>
@@ -33,12 +35,14 @@ namespace pika::start_detached_detail {
     {
         struct start_detached_receiver
         {
+            PIKA_STDEXEC_RECEIVER_CONCEPT
+
             operation_state_holder& op_state;
 
             template <typename Error>
-# if !defined(__NVCC__)
+#if !defined(__NVCC__)
             [[noreturn]]
-# endif
+#endif
             friend void tag_invoke(pika::execution::experimental::set_error_t,
                 start_detached_receiver&& r, Error error) noexcept
             {
@@ -134,4 +138,3 @@ namespace pika::execution::experimental {
         }
     } start_detached{};
 }    // namespace pika::execution::experimental
-#endif

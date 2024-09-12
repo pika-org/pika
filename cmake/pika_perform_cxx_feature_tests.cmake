@@ -55,4 +55,6 @@ function(pika_perform_cxx_feature_tests)
   pika_check_for_stdexec_sender_receiver_concepts(
     DEFINITIONS PIKA_HAVE_STDEXEC_SENDER_RECEIVER_CONCEPTS
   )
+
+  pika_check_for_stdexec_continues_on(DEFINITIONS PIKA_HAVE_STDEXEC_CONTINUES_ON)
 endfunction()

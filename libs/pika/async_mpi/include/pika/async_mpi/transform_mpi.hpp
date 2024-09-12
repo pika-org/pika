@@ -15,11 +15,11 @@
 #include <pika/async_mpi/trigger_mpi.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/debugging/print.hpp>
+#include <pika/execution/algorithms/continues_on.hpp>
 #include <pika/execution/algorithms/detail/helpers.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
+#include <pika/execution/algorithms/just.hpp>
 #include <pika/execution/algorithms/let_value.hpp>
-#include <pika/execution/algorithms/transfer.hpp>
-#include <pika/execution/algorithms/transfer_just.hpp>
 #include <pika/execution_base/any_sender.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
@@ -48,10 +48,10 @@ namespace pika::mpi::experimental {
             PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("transform_mpi_t"), "tag_fallback_invoke"));
 
             using execution::thread_priority;
+            using pika::execution::experimental::continues_on;
             using pika::execution::experimental::just;
             using pika::execution::experimental::let_value;
             using pika::execution::experimental::transfer;
-            using pika::execution::experimental::transfer_just;
             using pika::execution::experimental::unique_any_sender;
 
             // get mpi completion mode settings
@@ -82,9 +82,11 @@ namespace pika::mpi::experimental {
                 {
                     if (request == MPI_REQUEST_NULL)
                     {
-                        return transfer_just(default_pool_scheduler(p));
+                        return ex::schedule(default_pool_scheduler(p));
                     }
                     return just(request) | trigger_mpi(mode) | transfer(default_pool_scheduler(p));
+                    return just(request) | trigger_mpi(mode) |
+                        ex::continues_on(default_pool_scheduler(p));
                 }
                 if (request == MPI_REQUEST_NULL) { return just(); }
                 return just(request) | trigger_mpi(mode);
@@ -97,7 +99,7 @@ namespace pika::mpi::experimental {
             }
             else
             {
-                auto snd0 = PIKA_FORWARD(Sender, sender) | transfer(mpi_pool_scheduler(p));
+                auto snd0 = PIKA_FORWARD(Sender, sender) | continues_on(mpi_pool_scheduler(p));
                 return dispatch_mpi_sender<decltype(snd0), F>{PIKA_MOVE(snd0), PIKA_FORWARD(F, f)} |
                     let_value(completion_snd);
             }
