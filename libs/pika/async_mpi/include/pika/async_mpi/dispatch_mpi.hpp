@@ -58,7 +58,7 @@ namespace pika::mpi::experimental::detail {
 
 #if defined(PIKA_HAVE_STDEXEC)
         template <typename...>
-        using no_value_completion = completion_signatures<>;
+        using no_value_completion = pika::execution::experimental::completion_signatures<>;
         using completion_signatures =
             pika::execution::experimental::transform_completion_signatures_of<std::decay_t<Sender>,
                 pika::execution::experimental::empty_env,

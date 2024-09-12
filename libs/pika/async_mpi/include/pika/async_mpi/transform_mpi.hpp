@@ -51,7 +51,6 @@ namespace pika::mpi::experimental {
             using pika::execution::experimental::continues_on;
             using pika::execution::experimental::just;
             using pika::execution::experimental::let_value;
-            using pika::execution::experimental::transfer;
             using pika::execution::experimental::unique_any_sender;
 
             // get mpi completion mode settings
@@ -84,7 +83,6 @@ namespace pika::mpi::experimental {
                     {
                         return ex::schedule(default_pool_scheduler(p));
                     }
-                    return just(request) | trigger_mpi(mode) | transfer(default_pool_scheduler(p));
                     return just(request) | trigger_mpi(mode) |
                         ex::continues_on(default_pool_scheduler(p));
                 }
