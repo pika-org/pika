@@ -102,8 +102,8 @@ int pika_main(pika::program_options::variables_map& vm)
     {
         auto start = std::chrono::high_resolution_clock::now();
 
-        tt::sync_wait(
-            ex::transfer_just(ex::thread_pool_scheduler{}, num_tasks) | ex::then(spawn_level));
+        tt::sync_wait(ex::just(num_tasks) | ex::continues_on(ex::thread_pool_scheduler{}) |
+            ex::then(spawn_level));
 
         auto end = std::chrono::high_resolution_clock::now();
 

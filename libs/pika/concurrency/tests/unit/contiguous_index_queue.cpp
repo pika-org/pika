@@ -164,9 +164,8 @@ void test_concurrent(pop_mode m)
 
     for (std::size_t i = 0; i < num_threads; ++i)
     {
-        senders.push_back(ex::transfer_just(ex::thread_pool_scheduler{}, m, i, std::ref(b),
-                              std::ref(q), std::ref(popped_indices[i])) |
-            ex::then(test_concurrent_worker));
+        senders.push_back(ex::just(m, i, std::ref(b), std::ref(q), std::ref(popped_indices[i])) |
+            ex::continues_on(ex::thread_pool_scheduler{}) | ex::then(test_concurrent_worker));
     }
 
     tt::sync_wait(ex::when_all_vector(std::move(senders)));

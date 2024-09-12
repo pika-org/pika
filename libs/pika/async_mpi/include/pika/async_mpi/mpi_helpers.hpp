@@ -13,12 +13,11 @@
 #include <pika/datastructures/variant.hpp>
 #include <pika/debugging/demangle_helper.hpp>
 #include <pika/debugging/print.hpp>
+#include <pika/execution/algorithms/continues_on.hpp>
 #include <pika/execution/algorithms/detail/helpers.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 #include <pika/execution/algorithms/just.hpp>
 #include <pika/execution/algorithms/then.hpp>
-#include <pika/execution/algorithms/transfer.hpp>
-#include <pika/execution/algorithms/transfer_just.hpp>
 #include <pika/execution_base/any_sender.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
@@ -135,8 +134,8 @@ namespace pika::mpi::experimental::detail {
                     execution::thread_priority p = use_priority_boost(op_state.mode_flags) ?
                         execution::thread_priority::boost :
                         execution::thread_priority::normal;
-                    auto snd0 = ex::transfer_just(default_pool_scheduler(p)) |
-                        ex::then([&op_state]() mutable {
+                    auto snd0 =
+                        ex::schedule(default_pool_scheduler(p)) | ex::then([&op_state]() mutable {
                             PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("set_value")));
                             ex::set_value(PIKA_MOVE(op_state.receiver));
                         });

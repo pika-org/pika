@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
         for (std::size_t i = 0; i < n; ++i)
         {
             tt::sync_wait(ex::schedule(ex::thread_pool_scheduler{}) |
-                ex::transfer(cu::cuda_scheduler{pool}) |
+                ex::continues_on(cu::cuda_scheduler{pool}) |
                 cu::then_with_cublas([](cublasHandle_t) {}, CUBLAS_POINTER_MODE_HOST));
         }
 
@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
         for (std::size_t i = 0; i < n; ++i)
         {
             tt::sync_wait(ex::schedule(ex::thread_pool_scheduler{}) |
-                ex::transfer(cu::cuda_scheduler{pool}) |
+                ex::continues_on(cu::cuda_scheduler{pool}) |
                 cu::then_with_cusolver([](cusolverDnHandle_t) {}));
         }
     }

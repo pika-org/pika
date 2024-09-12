@@ -64,7 +64,7 @@ namespace jacobi_smp {
                 if (j + 1 < n_block) trigger.push_back((*deps_old)[j + 1]);
 
                 (*deps_new)[j] = ex::when_all_vector(std::move(trigger)) |
-                    ex::transfer(ex::thread_pool_scheduler{}) |
+                    ex::continues_on(ex::thread_pool_scheduler{}) |
                     ex::then(pika::util::detail::bind_front(jacobi_kernel_wrap, range(y, y_end), n,
                         std::ref(*grid_new), std::cref(*grid_old))) |
                     ex::split();

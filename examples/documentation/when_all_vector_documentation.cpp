@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
     snds.reserve(n);
     for (std::size_t i = 0; i < n; ++i)
     {
-        snds.push_back(ex::transfer_just(sched, i) | ex::then(calculate));
+        snds.push_back(ex::just(i) | ex::continues_on(sched) | ex::then(calculate));
     }
     auto snds_print =
         ex::when_all_vector(std::move(snds)) | ex::then([](std::vector<std::size_t> results) {
@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
     snds_nothing.reserve(n);
     for (std::size_t i = 0; i < n; ++i)
     {
-        snds_nothing.push_back(ex::transfer_just(sched, i) |
+        snds_nothing.push_back(ex::just(i) | ex::continues_on(sched) |
             ex::then([](auto i) { fmt::print("{}: {}\n", i, calculate(i)); }));
     }
     auto snds_nothing_done = ex::when_all_vector(std::move(snds_nothing)) |

@@ -527,13 +527,13 @@ void test_unique_any_sender_set_error()
 void test_any_sender_set_stopped()
 {
     ex::any_sender<> as{ex::just()};
-    tt::sync_wait(ex::transfer(std::move(as), ex::std_thread_scheduler{}));
+    tt::sync_wait(ex::continues_on(std::move(as), ex::std_thread_scheduler{}));
 }
 
 void test_unique_any_sender_set_stopped()
 {
     ex::any_sender<> as{ex::just()};
-    tt::sync_wait(ex::transfer(std::move(as), ex::std_thread_scheduler{}));
+    tt::sync_wait(ex::continues_on(std::move(as), ex::std_thread_scheduler{}));
 }
 
 // This tests that the empty vtable types used in the implementation of any_*

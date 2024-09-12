@@ -35,7 +35,7 @@ int pika_main(pika::program_options::variables_map& vm)
     std::vector<ex::unique_any_sender<>> results;
     for (std::ptrdiff_t i = 0; i != num_threads; ++i)
     {
-        results.emplace_back(ex::transfer_just(ex::thread_pool_scheduler{}, std::ref(l)) |
+        results.emplace_back(ex::just(std::ref(l)) | ex::continues_on(ex::thread_pool_scheduler{}) |
             ex::then(wait_for_latch) | ex::ensure_started());
     }
 

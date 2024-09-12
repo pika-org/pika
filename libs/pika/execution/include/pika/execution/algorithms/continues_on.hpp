@@ -22,7 +22,8 @@
 # include <utility>
 
 namespace pika::execution::experimental {
-    inline constexpr struct transfer_t final : pika::functional::detail::tag_priority<transfer_t>
+    inline constexpr struct continues_on_t final
+      : pika::functional::detail::tag_priority<continues_on_t>
     {
     private:
         // clang-format off
@@ -33,15 +34,15 @@ namespace pika::execution::experimental {
                 pika::execution::experimental::detail::
                     is_completion_scheduler_tag_invocable_v<
                         pika::execution::experimental::set_value_t, Sender,
-                        transfer_t, Scheduler>)>
+                        continues_on_t, Scheduler>)>
         // clang-format on
         friend constexpr PIKA_FORCEINLINE auto
-        tag_override_invoke(transfer_t, Sender&& sender, Scheduler&& scheduler)
+        tag_override_invoke(continues_on_t, Sender&& sender, Scheduler&& scheduler)
         {
             auto completion_scheduler = pika::execution::experimental::get_completion_scheduler<
                 pika::execution::experimental::set_value_t>(
                 pika::execution::experimental::get_env(sender));
-            return pika::functional::detail::tag_invoke(transfer_t{},
+            return pika::functional::detail::tag_invoke(continues_on_t{},
                 PIKA_MOVE(completion_scheduler), PIKA_FORWARD(Sender, sender),
                 PIKA_FORWARD(Scheduler, scheduler));
         }
@@ -54,7 +55,7 @@ namespace pika::execution::experimental {
             )>
         // clang-format on
         friend constexpr PIKA_FORCEINLINE auto
-        tag_fallback_invoke(transfer_t, Sender&& predecessor_sender, Scheduler&& scheduler)
+        tag_fallback_invoke(continues_on_t, Sender&& predecessor_sender, Scheduler&& scheduler)
         {
             return schedule_from(
                 PIKA_FORWARD(Scheduler, scheduler), PIKA_FORWARD(Sender, predecessor_sender));
@@ -62,11 +63,15 @@ namespace pika::execution::experimental {
 
         template <typename Scheduler>
         friend constexpr PIKA_FORCEINLINE auto
-        tag_fallback_invoke(transfer_t, Scheduler&& scheduler)
+        tag_fallback_invoke(continues_on_t, Scheduler&& scheduler)
         {
-            return detail::partial_algorithm<transfer_t, Scheduler>{
+            return detail::partial_algorithm<continues_on_t, Scheduler>{
                 PIKA_FORWARD(Scheduler, scheduler)};
         }
-    } transfer{};
+    } continues_on{};
+
+    using transfer_t PIKA_DEPRECATED("transfer_t has been renamed continues_on_t") = continues_on_t;
+    PIKA_DEPRECATED("transfer has been renamed continues_on")
+    inline constexpr continues_on_t transfer{};
 }    // namespace pika::execution::experimental
 #endif

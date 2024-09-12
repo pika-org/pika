@@ -28,13 +28,14 @@ int main(int argc, char* argv[])
         ex::then([](int x) { return std::tuple(x, x * x); }) | ex::split_tuple();
 
     // snd and snd_squared will be ready at the same time, but can be used independently
-    auto snd_print =
-        std::move(snd) | ex::transfer(sched) | ex::then([](int x) { fmt::print("x is {}\n", x); });
-    auto snd_process = std::move(snd_squared) | ex::transfer(sched) | ex::then([](int x_squared) {
-        fmt::print("Performing expensive operations on x * x\n");
-        std::this_thread::sleep_for(std::chrono::milliseconds(300));
-        return x_squared / 2;
-    });
+    auto snd_print = std::move(snd) | ex::continues_on(sched) |
+        ex::then([](int x) { fmt::print("x is {}\n", x); });
+    auto snd_process =
+        std::move(snd_squared) | ex::continues_on(sched) | ex::then([](int x_squared) {
+            fmt::print("Performing expensive operations on x * x\n");
+            std::this_thread::sleep_for(std::chrono::milliseconds(300));
+            return x_squared / 2;
+        });
 
     auto x_squared_processed =
         tt::sync_wait(ex::when_all(std::move(snd_print), std::move(snd_process)));

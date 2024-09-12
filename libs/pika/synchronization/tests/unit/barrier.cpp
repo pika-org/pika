@@ -52,7 +52,8 @@ void test_barrier_empty_oncomplete()
         results.reserve(threads);
         for (std::size_t i = 0; i != threads; ++i)
         {
-            results.emplace_back(ex::transfer_just(ex::thread_pool_scheduler{}, std::ref(b)) |
+            results.emplace_back(ex::just(std::ref(b)) |
+                ex::continues_on(ex::thread_pool_scheduler{}) |
                 ex::then(local_barrier_test_no_completion) | ex::ensure_started());
         }
 
@@ -101,8 +102,9 @@ void test_barrier_oncomplete()
         results.reserve(threads);
         for (std::size_t i = 0; i != threads; ++i)
         {
-            results.emplace_back(ex::transfer_just(ex::thread_pool_scheduler{}, std::ref(b)) |
-                ex::then(local_barrier_test) | ex::ensure_started());
+            results.emplace_back(ex::just(std::ref(b)) |
+                ex::continues_on(ex::thread_pool_scheduler{}) | ex::then(local_barrier_test) |
+                ex::ensure_started());
         }
 
         b.arrive_and_wait();    // wait for all threads to enter the barrier
@@ -146,7 +148,8 @@ void test_barrier_empty_oncomplete_split()
         results.reserve(threads);
         for (std::size_t i = 0; i != threads; ++i)
         {
-            results.emplace_back(ex::transfer_just(ex::thread_pool_scheduler{}, std::ref(b)) |
+            results.emplace_back(ex::just(std::ref(b)) |
+                ex::continues_on(ex::thread_pool_scheduler{}) |
                 ex::then(local_barrier_test_no_completion_split) | ex::ensure_started());
         }
 
@@ -190,8 +193,9 @@ void test_barrier_oncomplete_split()
         results.reserve(threads);
         for (std::size_t i = 0; i != threads; ++i)
         {
-            results.emplace_back(ex::transfer_just(ex::thread_pool_scheduler{}, std::ref(b)) |
-                ex::then(local_barrier_test_split) | ex::ensure_started());
+            results.emplace_back(ex::just(std::ref(b)) |
+                ex::continues_on(ex::thread_pool_scheduler{}) | ex::then(local_barrier_test_split) |
+                ex::ensure_started());
         }
 
         b.arrive_and_wait();    // wait for all threads to enter the barrier

@@ -66,7 +66,7 @@ int pika_main(variables_map& vm)
         // Create the threads which will wait on the event
         for (std::size_t i = 0; i < pxthreads; ++i)
         {
-            senders.emplace_back(ex::transfer_just(sched, std::ref(e), std::ref(c)) |
+            senders.emplace_back(ex::just(std::ref(e), std::ref(c)) | ex::continues_on(sched) |
                 ex::then(local_event_test) | ex::ensure_started());
         }
 
