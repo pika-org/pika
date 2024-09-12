@@ -58,11 +58,17 @@ namespace pika::mpi::experimental::detail {
         int completion_mode_flags_;
 
 #if defined(PIKA_HAVE_STDEXEC)
-        using completion_signatures = pika::execution::experimental::completion_signatures<
-            pika::execution::experimental::set_value_t(),
-            pika::execution::experimental::set_error_t(std::exception_ptr),
-            pika::execution::experimental::set_stopped_t()>;
-
+        template <typename...>
+        using no_value_completion = completion_signatures<>;
+        using completion_signatures =
+            pika::execution::experimental::transform_completion_signatures_of<std::decay_t<Sender>,
+                pika::execution::experimental::empty_env,
+                pika::execution::experimental::completion_signatures<
+                    pika::execution::experimental::set_value_t(),
+                    pika::execution::experimental::set_error_t(std::exception_ptr),
+                    // this also gets added by the default SetDone template parameter
+                    pika::execution::experimental::set_stopped_t()>,
+                no_value_completion>;
 #else
         // -----------------------------------------------------------------
         // completion signatures
@@ -101,7 +107,7 @@ namespace pika::mpi::experimental::detail {
 
                 template <typename Error>
                 friend constexpr void
-                tag_invoke(ex::set_error_t, trigger_mpi_receiver&& r, Error&& error) noexcept
+                tag_invoke(ex::set_error_t, trigger_mpi_receiver r, Error&& error) noexcept
                 {
                     ex::set_error(PIKA_MOVE(r.op_state.receiver), PIKA_FORWARD(Error, error));
                 }
