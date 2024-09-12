@@ -4,6 +4,7 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#include <pika/config/compiler_specific.hpp>
 #include <pika/exception.hpp>
 #include <pika/execution.hpp>
 #include <pika/execution_base/tests/algorithm_test_utils.hpp>
@@ -17,12 +18,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-
-#if defined(__clang__) || defined(__GNUC__)
-# define ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__((no_sanitize_address))
-#else
-# define ATTRIBUTE_NO_SANITIZE_ADDRESS
-#endif
 
 namespace ex = pika::execution::experimental;
 namespace mpi = pika::mpi::experimental;
@@ -40,7 +35,7 @@ auto tag_invoke(mpi::transform_mpi_t, custom_type<T>& c)
 // -----------------------------------------------------------------
 // These tests are in a separate function so that we can annotate the whole thing with
 // disabled address sanitizer to work around (temporarily hide) unresolved stack corruption reports
-ATTRIBUTE_NO_SANITIZE_ADDRESS void test_exception_handler_code(MPI_Comm comm, MPI_Datatype datatype)
+PIKA_NO_SANITIZE_ADDRESS void test_exception_handler_code(MPI_Comm comm, MPI_Datatype datatype)
 {
     // Failure path
     {
@@ -131,7 +126,7 @@ ATTRIBUTE_NO_SANITIZE_ADDRESS void test_exception_handler_code(MPI_Comm comm, MP
 }
 
 // -----------------------------------------------------------------
-ATTRIBUTE_NO_SANITIZE_ADDRESS void test_exception_no_handler(MPI_Comm comm)
+PIKA_NO_SANITIZE_ADDRESS void test_exception_no_handler(MPI_Comm comm)
 {
     // Use the default error handler MPI_ERRORS_ARE_FATAL
     mpi::enable_user_polling enable_polling_no_errhandler;

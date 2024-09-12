@@ -853,8 +853,8 @@ namespace pika::mpi::experimental {
         auto mode = get_completion_mode();
         if (mode >= pika::detail::to_underlying(detail::handler_method::unspecified))
         {
-            // PIKA_THROW_EXCEPTION(
-            //     pika::error::invalid_status, "Bad completion flags", "invalid completion mode");
+            PIKA_THROW_EXCEPTION(
+                pika::error::invalid_status, "Bad completion flags", "invalid completion mode");
         }
 
 #ifdef OMPI_HAVE_MPI_EXT_CONTINUE
