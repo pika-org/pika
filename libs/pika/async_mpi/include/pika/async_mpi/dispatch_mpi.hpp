@@ -64,9 +64,7 @@ namespace pika::mpi::experimental::detail {
                 pika::execution::experimental::empty_env,
                 pika::execution::experimental::completion_signatures<
                     pika::execution::experimental::set_value_t(MPI_Request),
-                    pika::execution::experimental::set_error_t(std::exception_ptr),
-                    // this also gets added by the default SetDone template parameter
-                    pika::execution::experimental::set_stopped_t()>,
+                    pika::execution::experimental::set_error_t(std::exception_ptr)>,
                 no_value_completion>;
 #else
         // -----------------------------------------------------------------
