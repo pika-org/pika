@@ -1,3 +1,4 @@
+//  Copyright (c) 2024 ETH Zurich
 //  Copyright (c) 2013-2015 Thomas Heller
 //
 //  SPDX-License-Identifier: BSL-1.0

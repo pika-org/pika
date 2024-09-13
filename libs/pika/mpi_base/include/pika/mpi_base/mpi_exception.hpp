@@ -1,3 +1,4 @@
+//  Copyright (c) 2024 ETH Zurich
 //  Copyright (c) 2020 John Biddiscombe
 //
 //  SPDX-License-Identifier: BSL-1.0
