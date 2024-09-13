@@ -87,8 +87,8 @@ namespace pika::detail {
                 strm << "{stack-trace}: " << *back_trace << "\n";
             }
 #if defined(PIKA_HAVE_MPI)
-            if (pika::util::mpi_environment::is_mpi_inititialized())
-                strm << "{mpi-rank}: " << pika::util::mpi_environment::rank() << '\n';
+            if (pika::mpi::environment::is_mpi_inititialized())
+                strm << "{mpi-rank}: " << pika::mpi::environment::rank() << '\n';
 #endif
             std::string const* hostname_ = xi.get<pika::detail::throw_hostname>();
             if (hostname_ && !hostname_->empty()) strm << "{hostname}: " << *hostname_ << "\n";

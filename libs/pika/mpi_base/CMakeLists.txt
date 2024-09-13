@@ -10,8 +10,10 @@ if(NOT PIKA_WITH_MPI)
   return()
 endif()
 
-set(mpi_base_headers pika/mpi_base/mpi.hpp pika/mpi_base/mpi_environment.hpp)
-set(mpi_base_sources mpi_environment.cpp)
+set(mpi_base_headers pika/mpi_base/mpi.hpp pika/mpi_base/mpi_environment.hpp
+                     pika/mpi_base/mpi_exception.hpp
+)
+set(mpi_base_sources mpi_environment.cpp mpi_exception.cpp)
 
 include(pika_add_module)
 pika_add_module(

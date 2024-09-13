@@ -7,7 +7,6 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/async_mpi/mpi_exception.hpp>
 #include <pika/functional/unique_function.hpp>
 #include <pika/modules/concurrency.hpp>
 #include <pika/modules/execution_base.hpp>
@@ -15,6 +14,7 @@
 #include <pika/modules/resource_partitioner.hpp>
 #include <pika/modules/threading_base.hpp>
 #include <pika/mpi_base/mpi.hpp>
+#include <pika/mpi_base/mpi_exception.hpp>
 #include <pika/runtime/thread_pool_helpers.hpp>
 #include <pika/synchronization/counting_semaphore.hpp>
 #include <pika/type_support/to_underlying.hpp>

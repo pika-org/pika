@@ -11,18 +11,18 @@
 
 #include <string>
 
-namespace pika::mpi::experimental {
+namespace pika::mpi {
     namespace detail {
         PIKA_EXPORT std::string error_message(int code);
     }    // namespace detail
 
-    struct mpi_exception : pika::exception
+    struct exception : pika::exception
     {
-        PIKA_EXPORT explicit mpi_exception(int err_code, const std::string& msg = "");
+        PIKA_EXPORT explicit exception(int err_code, const std::string& msg = "");
         PIKA_EXPORT int get_mpi_errorcode() const noexcept;
 
     protected:
         int err_code_;
     };
 
-}    // namespace pika::mpi::experimental
+}    // namespace pika::mpi

@@ -24,7 +24,6 @@
 #include <pika/executors/thread_pool_scheduler.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/functional/invoke.hpp>
-#include <pika/mpi_base/mpi.hpp>
 #include <pika/runtime/runtime.hpp>
 
 #include <exception>
@@ -85,7 +84,7 @@ namespace pika::mpi::experimental::detail {
         else
         {
             ex::set_error(PIKA_FORWARD(Receiver, receiver),
-                std::make_exception_ptr(mpi_exception(mpi_status)));
+                std::make_exception_ptr(mpi::exception(mpi_status, "set_error handler")));
         }
     }
 
@@ -125,7 +124,8 @@ namespace pika::mpi::experimental::detail {
                 if (status != MPI_SUCCESS)
                 {
                     ex::set_error(PIKA_MOVE(op_state.receiver),
-                        std::make_exception_ptr(mpi_exception(status)));
+                        std::make_exception_ptr(
+                            mpi::exception(status, "new_task_request_callback")));
                 }
                 else
                 {
