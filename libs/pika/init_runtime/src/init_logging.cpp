@@ -17,6 +17,7 @@
 
 #if defined(PIKA_HAVE_MPI)
 # include <pika/mpi_base/mpi.hpp>
+# include <pika/mpi_base/mpi_environment.hpp>
 #endif
 
 #include <fmt/format.h>
@@ -114,16 +115,11 @@ namespace pika::detail {
             else { dest.append(std::string_view("----")); }
 
             static int rank = [&] {
-            // First try to get the rank through MPI
 #if defined(PIKA_HAVE_MPI)
-                int mpi_initialized = 0;
-                if (MPI_Initialized(&mpi_initialized) == MPI_SUCCESS && mpi_initialized)
-                {
-                    int rank = 0;
-                    if (MPI_Comm_rank(MPI_COMM_WORLD, &rank) == MPI_SUCCESS) { return rank; }
-                }
+                // First try to get the rank through MPI
+                if (pika::util::mpi_environment::is_mpi_inititialized())
+                    return pika::util::mpi_environment::rank();
 #endif
-
                 // Otherwise guess based on environment variables
                 return helper.guess_rank();
             }();

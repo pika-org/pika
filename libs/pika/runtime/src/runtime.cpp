@@ -42,6 +42,7 @@
 
 #if defined(PIKA_HAVE_MPI)
 # include <pika/mpi_base/mpi.hpp>
+# include <pika/mpi_base/mpi_environment.hpp>
 #endif
 
 #if defined(PIKA_HAVE_TRACY)
@@ -905,15 +906,8 @@ namespace pika::detail {
             strm << std::string(79, '*') << '\n';
 
 #if defined(PIKA_HAVE_MPI)
-            int mpi_initialized = 0;
-            if (MPI_Initialized(&mpi_initialized) == MPI_SUCCESS && mpi_initialized)
-            {
-                int rank = 0;
-                if (MPI_Comm_rank(MPI_COMM_WORLD, &rank) == MPI_SUCCESS)
-                {
-                    strm << "MPI rank: " << rank << '\n';
-                }
-            }
+            if (pika::util::mpi_environment::is_mpi_inititialized())
+                strm << "{mpi-rank}: " << pika::util::mpi_environment::rank() << '\n';
 #endif
 
             for (std::size_t i = 0; i != num_threads; ++i)
