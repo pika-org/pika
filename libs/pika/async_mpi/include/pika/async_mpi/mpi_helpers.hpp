@@ -25,6 +25,7 @@
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/mpi_base/mpi.hpp>
+#include <pika/runtime/runtime.hpp>
 
 #include <exception>
 #include <type_traits>
@@ -53,24 +54,22 @@ namespace pika::mpi::experimental::detail {
         std::invoke_result_t<F, std::add_lvalue_reference_t<std::decay_t<Ts>>..., MPI_Request*>>;
 
     // -----------------------------------------------------------------
-    // return a scheduler on the mpi pool, with or without stack
-    inline auto mpi_pool_scheduler(execution::thread_priority p, bool stack = true)
-    {
-        ex::thread_pool_scheduler sched{&resource::get_thread_pool(get_pool_name())};
-        if (!stack)
-        {
-            sched = ex::with_stacksize(std::move(sched), execution::thread_stacksize::nostack);
-        }
-        sched = ex::with_priority(std::move(sched), p);
-        return sched;
-    }
-
-    // -----------------------------------------------------------------
     // return a scheduler on the default pool with added priority if requested
     inline auto default_pool_scheduler(execution::thread_priority p)
     {
         return ex::with_priority(
-            ex::thread_pool_scheduler{&resource::get_thread_pool("default")}, p);
+            ex::thread_pool_scheduler{
+                &pika::detail::get_runtime_ptr()->get_thread_manager().default_pool()},
+            p);
+    }
+
+    // -----------------------------------------------------------------
+    // return a scheduler on the mpi pool
+    inline auto mpi_pool_scheduler(execution::thread_priority p)
+    {
+        if (!pool_exists()) return default_pool_scheduler(p);
+        return ex::with_priority(
+            ex::thread_pool_scheduler{&resource::get_thread_pool(get_pool_name())}, p);
     }
 
     // -----------------------------------------------------------------
@@ -164,7 +163,7 @@ namespace pika::mpi::experimental::detail {
     // handler_method::mpix_continuation - signature is
     /// typedef int (MPIX_Continue_cb_function)(int rc, void *cb_data);
     template <typename OperationState>
-    int mpix_callback([[maybe_unused]] int rc, void* cb_data)
+    int mpix_callback_resume([[maybe_unused]] int rc, void* cb_data)
     {
         PIKA_DETAIL_DP(mpi_tran<1>, debug(str<>("MPIX"), "callback triggered"));
         auto& op_state = *static_cast<OperationState*>(cb_data);
@@ -175,6 +174,19 @@ namespace pika::mpi::experimental::detail {
             op_state.completed = true;
         }
         op_state.cond_var.notify_one();
+        // tell mpix that we handled it ok, error is passed into set_error in mpi_trigger
+        return MPI_SUCCESS;
+    }
+
+    // -----------------------------------------------------------------
+    // handler_method::mpix_continuation2 - signature is
+    /// typedef int (MPIX_Continue_cb_function)(int rc, void *cb_data);
+    template <typename OperationState>
+    int mpix_callback_continuation([[maybe_unused]] int rc, void* cb_data)
+    {
+        PIKA_DETAIL_DP(mpi_tran<1>, debug(str<>("MPIX"), "callback triggered"));
+        auto& op_state = *static_cast<OperationState*>(cb_data);
+        set_value_error_helper(op_state.status, PIKA_MOVE(op_state.receiver));
         // tell mpix that we handled it ok, error is passed into set_error in mpi_trigger
         return MPI_SUCCESS;
     }

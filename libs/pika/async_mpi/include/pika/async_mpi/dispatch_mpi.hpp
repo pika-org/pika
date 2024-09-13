@@ -57,10 +57,15 @@ namespace pika::mpi::experimental::detail {
         std::decay_t<F> f;
 
 #if defined(PIKA_HAVE_STDEXEC)
-
-        using completion_signatures = pika::execution::experimental::completion_signatures<
-            pika::execution::experimental::set_value_t(MPI_Request)>;
-
+        template <typename...>
+        using no_value_completion = pika::execution::experimental::completion_signatures<>;
+        using completion_signatures =
+            pika::execution::experimental::transform_completion_signatures_of<std::decay_t<Sender>,
+                pika::execution::experimental::empty_env,
+                pika::execution::experimental::completion_signatures<
+                    pika::execution::experimental::set_value_t(MPI_Request),
+                    pika::execution::experimental::set_error_t(std::exception_ptr)>,
+                no_value_completion>;
 #else
         // -----------------------------------------------------------------
         // completion signatures
@@ -124,7 +129,7 @@ namespace pika::mpi::experimental::detail {
                             apex::scoped_timer apex_post("pika::mpi::post");
 #endif
                             // init a request
-                            MPI_Request request;
+                            MPI_Request request{MPI_REQUEST_NULL};
                             int status = MPI_SUCCESS;
                             // execute the mpi function call, passing in the request object
                             if constexpr (std::is_void_v<invoke_result_type>)

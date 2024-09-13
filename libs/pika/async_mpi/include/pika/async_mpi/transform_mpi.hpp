@@ -51,13 +51,12 @@ namespace pika::mpi::experimental {
             using pika::execution::experimental::continues_on;
             using pika::execution::experimental::just;
             using pika::execution::experimental::let_value;
-            using pika::execution::experimental::transfer;
             using pika::execution::experimental::unique_any_sender;
 
             // get mpi completion mode settings
             auto mode = get_completion_mode();
-            bool inline_com = use_inline_completion(mode);
-            bool inline_req = use_inline_request(mode);
+            bool completions_inline = use_inline_completion(mode);
+            bool requests_inline = use_inline_request(mode);
 
 #ifdef PIKA_DEBUG
             // ----------------------------------------------------------
@@ -78,20 +77,20 @@ namespace pika::mpi::experimental {
                 execution::thread_priority::normal;
 
             auto completion_snd = [=](MPI_Request request) -> unique_any_sender<> {
-                if (!inline_com)
+                if (!completions_inline)    // not inline : a transfer is required
                 {
                     if (request == MPI_REQUEST_NULL)
                     {
                         return ex::schedule(default_pool_scheduler(p));
                     }
-                    return just(request) | ex::continues_on(default_pool_scheduler(p)) |
-                        trigger_mpi(mode);
+                    return just(request) | trigger_mpi(mode) |
+                        ex::continues_on(default_pool_scheduler(p));
                 }
                 if (request == MPI_REQUEST_NULL) { return just(); }
                 return just(request) | trigger_mpi(mode);
             };
 
-            if (inline_req)
+            if (requests_inline)
             {
                 return dispatch_mpi_sender<Sender, F>{PIKA_MOVE(sender), PIKA_FORWARD(F, f)} |
                     let_value(completion_snd);
