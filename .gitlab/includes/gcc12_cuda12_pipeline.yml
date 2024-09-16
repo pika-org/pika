@@ -12,7 +12,7 @@ include:
   variables:
     SPACK_ARCH: linux-ubuntu22.04-haswell
     COMPILER: gcc@12.1.0
-    CXXSTD: 17
+    CXXSTD: 20
     GPU_TARGET: "60"
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} +cuda cuda_arch=${GPU_TARGET} malloc=system \
                  cxxstd=$CXXSTD ^boost@1.82.0 ^hwloc@2.9.1 ^cuda@12.0.0 ^fmt@10.0.0"
