@@ -939,7 +939,7 @@ namespace pika::detail {
                     !pika::threads::detail::any(pu_mask) ? ~pu_mask : pu_mask;
 
                 // The masks reported by pika must be the same as the ones
-                // reported from HWLOC.
+                // reported from hwloc.
                 if (!ec &&
                     !pika::threads::detail::equal(
                         boundcpu_never_empty, pu_mask_never_empty, num_threads))
@@ -947,9 +947,9 @@ namespace pika::detail {
                     std::string boundcpu_str =
                         pika::threads::detail::to_string(boundcpu_never_empty);
                     std::string pu_mask_str = pika::threads::detail::to_string(pu_mask_never_empty);
-                    PIKA_THROW_EXCEPTION(pika::error::invalid_status, "handle_print_bind",
-                        "unexpected mismatch between binding reported from HWLOC({}) and "
-                        "pika({}) on thread {}",
+                    PIKA_LOG(warn,
+                        "unexpected mismatch between binding reported from hwloc ({}) and "
+                        "binding expected by pika ({}) on thread {}",
                         boundcpu_str, pu_mask_str, i);
                 }
             }
