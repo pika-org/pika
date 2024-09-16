@@ -1178,6 +1178,8 @@ namespace pika::threads::detail {
                 hwloc_obj_t const pu_obj = hwloc_get_obj_by_depth(topo, pu_depth, i);
                 unsigned idx = static_cast<unsigned>(pu_obj->os_index);
                 PIKA_ASSERT(i == detail::get_index(pu_obj));
+                PIKA_ASSERT(idx < mask_size(mask));
+                PIKA_ASSERT(detail::get_index(pu_obj) < mask_size(logical_mask));
                 if (test(mask, idx)) { set(logical_mask, detail::get_index(pu_obj)); }
             }
         }
