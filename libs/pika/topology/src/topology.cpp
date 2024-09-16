@@ -200,6 +200,13 @@ namespace pika::threads::detail {
                 pika::error::no_success, "topology::topology", "Failed to init hwloc topology");
         }
 
+        err = hwloc_topology_set_flags(topo, HWLOC_TOPOLOGY_FLAG_INCLUDE_DISALLOWED);
+        if (err != 0)
+        {
+            PIKA_THROW_EXCEPTION(pika::error::no_success, "topology::topology",
+                "Failed to set HWLOC_TOPOLOGY_FLAG_INCLUDE_DISALLOWED flag for hwloc topology");
+        }
+
 #if HWLOC_API_VERSION >= 0x0002'0000
 # if defined(PIKA_HAVE_ADDITIONAL_HWLOC_TESTING)
         // Enable HWLOC filtering that makes it report no cores. This is purely
