@@ -13,10 +13,8 @@ endif()
 
 pika_check_for_mpix_continuations(PIKA_WITH_MPIX_CONTINUATIONS)
 if(PIKA_WITH_MPIX_CONTINUATIONS)
-  message(STATUS "MPIx Continuations detected")
   set(PIKA_MPI_MODES_LOOP_COUNT 79)
 else()
-  message(STATUS "MPIx Continuations not detected")
   set(PIKA_MPI_MODES_LOOP_COUNT 63)
 endif()
 
