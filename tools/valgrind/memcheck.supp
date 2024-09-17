@@ -30,16 +30,6 @@
 {
    ORTE init
    Memcheck:Leak
-   match-leak-kinds: definite
-   ...
-   fun:orte_init
-   ...
-}
-
-{
-   ORTE init
-   Memcheck:Leak
-   match-leak-kinds: possible
    ...
    fun:orte_init
    ...
@@ -48,10 +38,18 @@
 {
    ORTE event loop
    Memcheck:Leak
-   match-leak-kinds: definite
    fun:malloc
    ...
    fun:event_base_loop
+   ...
+}
+
+{
+   ORTE event loop
+   Memcheck:Leak
+   fun:malloc
+   ...
+   fun:pmix_server_init
    ...
 }
 
