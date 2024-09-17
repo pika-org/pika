@@ -54,7 +54,3 @@ RUN CTEST_XML=$PWD/ctest.xml; \
             --no-compress-output \
             -R tests \
             --no-tests=error"
-
-# nvidia-container-runtime
-ENV NVIDIA_VISIBLE_DEVICES all
-ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
