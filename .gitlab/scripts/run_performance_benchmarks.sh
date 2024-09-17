@@ -108,7 +108,16 @@ for executable in "${pika_targets[@]}"; do
     result_file=$(mktemp --tmpdir "${executable}_raw.XXXXXXXXXX.json")
     echo '{}' > "${result_file}"
 
-    "${BUILD_DIR}/bin/${executable}" ${test_opts[@]} > "${raw_result_file}"
+    echo
+    echo
+    echo "Running: ${executable} ${test_opts[@]}"
+    set +e
+    "${BUILD_DIR}/bin/${executable}" ${test_opts[@]} | tee "${raw_result_file}"
+    exit_code=$?
+    set -e
+    if [[ ${exit_code} -ne 0 ]]; then
+        echo "${executable} failed with exit code ${exit_code}"
+    fi
 
     # Append command and command line options
     json_add_value_string "${result_file}" "metric.benchmark.command" "${executable}"
