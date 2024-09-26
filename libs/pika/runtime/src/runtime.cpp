@@ -949,7 +949,9 @@ namespace pika::detail {
                     std::string pu_mask_str = pika::threads::detail::to_string(pu_mask_never_empty);
                     PIKA_LOG(warn,
                         "unexpected mismatch between binding reported from hwloc ({}) and "
-                        "binding expected by pika ({}) on thread {}",
+                        "binding expected by pika ({}) on thread {}; if you are setting custom "
+                        "bindings using pika-bind/PIKA_PROCESS_MASK/--pika:process-mask, please "
+                        "check your bindings with PIKA_PRINT_BIND/--pika:print-bind",
                         boundcpu_str, pu_mask_str, i);
                 }
             }
