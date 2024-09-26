@@ -200,6 +200,15 @@ namespace pika::threads::detail {
                 pika::error::no_success, "topology::topology", "Failed to init hwloc topology");
         }
 
+        // HWLOC_TOPOLOGY_FLAG_INCLUDE_DISALLOWED is used to give visibility to all resources (in
+        // particular PUs) on the system. When using e.g. cgroups with a subset of PUs visible,
+        // hwloc will not report the disallowed PUs by default. Even though we can't use the
+        // disallowed PUs, it's important to make them visible so that CPU masks can be sized
+        // correctly. Otherwise PU indices may point past the end of the mask.
+        //
+        // Including disallowed resources means that logical indices may not match what is reported
+        // by the standalone hwloc-bind tool (since the latter will not include disallowed
+        // resources). Physical indices will always be consistent.
         err = hwloc_topology_set_flags(topo, HWLOC_TOPOLOGY_FLAG_INCLUDE_DISALLOWED);
         if (err != 0)
         {
