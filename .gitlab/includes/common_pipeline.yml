@@ -41,6 +41,3 @@ variables:
   extends:
     - .container-runner-todi-gh200 # TODO: daint? rename template?
     - .test_common
-  variables:
-    NVIDIA_VISIBLE_DEVICES: all
-    NVIDIA_DRIVER_CAPABILITIES: "compute,utility"
