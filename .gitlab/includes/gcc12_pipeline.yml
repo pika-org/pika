@@ -13,11 +13,15 @@ include:
     SPACK_ARCH: linux-ubuntu24.04-zen2
     COMPILER: gcc@12.1.0
     CXXSTD: 20
-    SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD ^boost@1.79.0 \
-                 ^hwloc@2.7.0"
+    SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD +valgrind \
+                 ^boost@1.79.0 ^hwloc@2.7.0 ^valgrind ~mpi"
     CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_MALLOC=system \
+                  -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON \
                   -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON -DPIKA_WITH_THREAD_STACK_MMAP=OFF \
-                  -DPIKA_WITH_STACKTRACES=OFF"
+                  -DPIKA_WITH_STACKTRACES=OFF \
+                  -DPIKA_WITH_VALGRIND=ON -DPIKA_WITH_TESTS_VALGRIND=ON \
+                  -DPIKA_WITH_TESTS_VALGRIND_OPTIONS='--error-exitcode=1;--leak-check=full;--fair-sched=yes;--gen-suppressions=all;--suppressions=$SOURCE_DIR/tools/valgrind/memcheck.supp'"
+
 gcc12_spack_compiler_image:
   extends:
     - .variables_gcc12_config
