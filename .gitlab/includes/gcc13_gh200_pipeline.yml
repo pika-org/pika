@@ -8,7 +8,7 @@ include:
   - local: '.gitlab/includes/common_pipeline.yml'
   - local: '.gitlab/includes/common_spack_pipeline.yml'
 
-.variables_gcc13_santis_config:
+.variables_gcc13_gh200_config:
   variables:
     SPACK_ARCH: linux-ubuntu22.04-neoverse_v2
     COMPILER: gcc@13.1.0
@@ -19,22 +19,22 @@ include:
     CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_MALLOC=system \
                   -DPIKA_WITH_STDEXEC=ON -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
 
-gcc13_santis_spack_compiler_image:
+gcc13_gh200_spack_compiler_image:
   extends:
-    - .variables_gcc13_santis_config
-    - .compiler_image_template_santis
+    - .variables_gcc13_gh200_config
+    - .compiler_image_template_gh200
   allow_failure: true
 
-gcc13_santis_spack_image:
-  needs: [gcc13_santis_spack_compiler_image]
+gcc13_gh200_spack_image:
+  needs: [gcc13_gh200_spack_compiler_image]
   extends:
-    - .variables_gcc13_santis_config
-    - .dependencies_image_template_santis
+    - .variables_gcc13_gh200_config
+    - .dependencies_image_template_gh200
   allow_failure: true
 
-gcc13_santis_build:
-  needs: [gcc13_santis_spack_image]
+gcc13_gh200_build:
+  needs: [gcc13_gh200_spack_image]
   extends:
-    - .variables_gcc13_santis_config
-    - .build_template_santis
+    - .variables_gcc13_gh200_config
+    - .build_template_gh200
   allow_failure: true
