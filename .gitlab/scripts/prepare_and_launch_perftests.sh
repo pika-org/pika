@@ -8,11 +8,14 @@
 
 set -eux
 
+#TODO: check that SOURCE_DIR and BUILD_DIR are defined in the spack build env, otherwise redefine them there
+
 # Computes the status of the job and store the artifacts
 status_computation_and_artifacts_storage() {
     ctest_exit_code=$?
     ctest_status=$((ctest_exit_code + configure_build_errors + test_errors + plot_errors))
 
+    # TODO: build_dir and src_dir are not defined yet
     # Copy the testing directory for saving as an artifact
     cp -r "${build_dir}/Testing" "${orig_src_dir}/${configuration_name}-Testing"
     cp -r "${build_dir}/reports" "${orig_src_dir}/${configuration_name}-reports"
@@ -23,6 +26,7 @@ status_computation_and_artifacts_storage() {
 
 trap "status_computation_and_artifacts_storage" EXIT
 
+# TODO: check that SRC_DIR is defined, define build_dir or take the one from spack
 # Variables
 perftests_dir=${SRC_DIR}/tools/perftests_ci
 
