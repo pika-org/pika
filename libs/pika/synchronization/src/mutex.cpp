@@ -16,7 +16,6 @@
 #include <pika/synchronization/condition_variable.hpp>
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/timing/steady_clock.hpp>
-#include <pika/type_support/unused.hpp>
 
 #include <mutex>
 #include <utility>

@@ -18,7 +18,6 @@
 #include <pika/thread_support/assert_owns_lock.hpp>
 #include <pika/thread_support/unlock_guard.hpp>
 #include <pika/timing/steady_clock.hpp>
-#include <pika/type_support/unused.hpp>
 
 #include <mutex>
 #include <utility>

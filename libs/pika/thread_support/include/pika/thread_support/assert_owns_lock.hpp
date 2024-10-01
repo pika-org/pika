@@ -9,7 +9,6 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/concepts/has_member_xxx.hpp>
-#include <pika/type_support/unused.hpp>
 
 #include <type_traits>
 

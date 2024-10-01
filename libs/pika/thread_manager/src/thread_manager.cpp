@@ -26,7 +26,6 @@
 #include <pika/threading_base/thread_queue_init_parameters.hpp>
 #include <pika/timing/detail/timestamp.hpp>
 #include <pika/topology/topology.hpp>
-#include <pika/type_support/unused.hpp>
 #include <pika/util/get_entry_as.hpp>
 
 #include <cstddef>

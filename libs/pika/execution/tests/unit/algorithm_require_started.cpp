@@ -7,6 +7,7 @@
 #include <pika/execution.hpp>
 #include <pika/execution_base/tests/algorithm_test_utils.hpp>
 #include <pika/testing.hpp>
+#include <pika/type_support/unused.hpp>
 
 #include <atomic>
 #include <exception>

@@ -37,7 +37,6 @@
 #include <pika/threading/thread.hpp>
 #include <pika/threading_base/detail/get_default_pool.hpp>
 #include <pika/type_support/pack.hpp>
-#include <pika/type_support/unused.hpp>
 #include <pika/util/get_entry_as.hpp>
 #include <pika/version.hpp>
 
@@ -243,7 +242,7 @@ namespace pika {
         ////////////////////////////////////////////////////////////////////////
         void init_environment(detail::command_line_handling& cmdline)
         {
-            PIKA_UNUSED(pika::detail::filesystem::initial_path());
+            pika::detail::filesystem::initial_path();
 
             pika::detail::set_assertion_handler(&pika::detail::assertion_handler);
             pika::detail::set_custom_exception_info_handler(&pika::detail::custom_exception_info);

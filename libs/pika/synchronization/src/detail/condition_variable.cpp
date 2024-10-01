@@ -15,7 +15,6 @@
 #include <pika/thread_support/unlock_guard.hpp>
 #include <pika/threading_base/thread_helpers.hpp>
 #include <pika/timing/steady_clock.hpp>
-#include <pika/type_support/unused.hpp>
 
 #include <cstddef>
 #include <exception>

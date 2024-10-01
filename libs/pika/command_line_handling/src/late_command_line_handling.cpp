@@ -11,7 +11,6 @@
 #include <pika/program_options/variables_map.hpp>
 #include <pika/runtime_configuration/runtime_configuration.hpp>
 #include <pika/string_util/from_string.hpp>
-#include <pika/type_support/unused.hpp>
 
 #include <cstddef>
 #include <cstdlib>

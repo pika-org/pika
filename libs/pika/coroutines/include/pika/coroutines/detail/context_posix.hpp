@@ -44,7 +44,6 @@
 #endif
 
 #include <pika/assert.hpp>
-#include <pika/type_support/unused.hpp>
 #include <pika/util/get_and_reset_value.hpp>
 
 // include unist.d conditionally to check for POSIX version. Not all OSs have

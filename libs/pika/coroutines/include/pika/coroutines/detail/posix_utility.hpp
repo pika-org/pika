@@ -32,7 +32,6 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/type_support/unused.hpp>
 
 // include unist.d conditionally to check for POSIX version. Not all OSs have the
 // unistd header...
