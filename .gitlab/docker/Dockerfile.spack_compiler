@@ -1,8 +1,6 @@
 ARG BASE_IMAGE
 FROM $BASE_IMAGE
 
-SHELL ["/bin/bash", "-c"]
-
 # Disable host compatibility to be able to compile for other architectures than the one from the
 # CSCS CI's .container-builder
 # Allow installing deprecated packages (needed for apex)

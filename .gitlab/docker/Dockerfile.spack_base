@@ -3,6 +3,8 @@ FROM $BASE_IMAGE
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+SHELL ["/bin/bash", "-c"]
+
 # Install utility packages
 RUN apt-get update && apt-get -yqq install --no-install-recommends \
     build-essential \
