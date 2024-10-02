@@ -12,7 +12,6 @@
 #include <pika/concurrency/cache_line_data.hpp>
 #include <pika/concurrency/spinlock.hpp>
 #include <pika/synchronization/detail/condition_variable.hpp>
-#include <pika/type_support/unused.hpp>
 
 #include <atomic>
 #include <cstddef>

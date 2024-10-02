@@ -22,7 +22,6 @@
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/synchronization/counting_semaphore.hpp>
 #include <pika/type_support/pack.hpp>
-#include <pika/type_support/unused.hpp>
 
 #include <atomic>
 #include <exception>

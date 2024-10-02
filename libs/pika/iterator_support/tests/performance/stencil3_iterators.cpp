@@ -313,7 +313,7 @@ std::chrono::duration<double> bench_stencil3_iterator_v1()
     using reference = std::iterator_traits<decltype(r.first)>::reference;
 
     // handle boundary elements explicitly
-    int result = values.back() + values.front() + values[1];
+    [[maybe_unused]] int result = values.back() + values.front() + values[1];
 
     std::for_each(r.first, r.second, [&result](reference val) {
         using std::get;
@@ -321,7 +321,6 @@ std::chrono::duration<double> bench_stencil3_iterator_v1()
     });
 
     result += values[partition_size - 2] + values.back() + values.front();
-    PIKA_UNUSED(result);
 
     return std::chrono::high_resolution_clock::now() - start;
 }
@@ -413,7 +412,7 @@ std::chrono::duration<double> bench_stencil3_iterator_v2()
     using reference = std::iterator_traits<decltype(r.first)>::reference;
 
     // handle boundary elements explicitly
-    int result = values.back() + values.front() + values[1];
+    [[maybe_unused]] int result = values.back() + values.front() + values[1];
 
     std::for_each(r.first, r.second, [&result](reference val) {
         using std::get;
@@ -421,7 +420,6 @@ std::chrono::duration<double> bench_stencil3_iterator_v2()
     });
 
     result += values[partition_size - 2] + values.back() + values.front();
-    PIKA_UNUSED(result);
 
     return std::chrono::high_resolution_clock::now() - start;
 }
@@ -435,7 +433,7 @@ std::chrono::duration<double> bench_stencil3_iterator_explicit()
     auto start = std::chrono::high_resolution_clock::now();
 
     // handle all elements explicitly
-    int result = values.back() + values.front() + values[1];
+    [[maybe_unused]] int result = values.back() + values.front() + values[1];
 
     auto range = pika::detail::irange(1, partition_size - 1);
 
@@ -443,7 +441,6 @@ std::chrono::duration<double> bench_stencil3_iterator_explicit()
         [&result, &values](std::size_t i) { result += values[i - 1] + values[i] + values[i + 1]; });
 
     result += values[partition_size - 2] + values.back() + values.front();
-    PIKA_UNUSED(result);
 
     return std::chrono::high_resolution_clock::now() - start;
 }

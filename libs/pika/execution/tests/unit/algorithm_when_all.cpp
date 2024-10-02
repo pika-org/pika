@@ -7,6 +7,7 @@
 #include <pika/config.hpp>
 #include <pika/modules/execution.hpp>
 #include <pika/testing.hpp>
+#include <pika/type_support/unused.hpp>
 
 #include <pika/execution_base/tests/algorithm_test_utils.hpp>
 

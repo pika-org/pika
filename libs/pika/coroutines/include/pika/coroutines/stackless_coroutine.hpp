@@ -16,7 +16,6 @@
 #include <pika/coroutines/thread_id_type.hpp>
 #include <pika/functional/detail/reset_function.hpp>
 #include <pika/functional/unique_function.hpp>
-#include <pika/type_support/unused.hpp>
 
 #include <cstddef>
 #include <utility>

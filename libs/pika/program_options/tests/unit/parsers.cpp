@@ -13,7 +13,6 @@
 #include <pika/program_options/value_semantic.hpp>
 #include <pika/program_options/variables_map.hpp>
 #include <pika/testing.hpp>
-#include <pika/type_support/unused.hpp>
 
 #include <cstddef>
 #include <cstdlib>    // for putenv

@@ -37,7 +37,6 @@
 #include <pika/coroutines/config/defines.hpp>
 #include <pika/coroutines/detail/get_stack_pointer.hpp>
 #include <pika/coroutines/detail/swap_context.hpp>
-#include <pika/type_support/unused.hpp>
 #include <pika/util/get_and_reset_value.hpp>
 
 #include <atomic>
