@@ -28,9 +28,14 @@ variables:
     reports:
       dotenv: base.env
 
+.gh200-slurm-account:
+  variables:
+    SLURM_ACCOUNT: g154
+    SLURM_RESERVATION: daint
+
 # We allow failure since santis is unstable
 base_spack_image_aarch64:
-  extends: [.container-builder-cscs-gh200, .base_spack_image]
+  extends: [.container-builder-cscs-gh200, .base_spack_image, .gh200-slurm-account]
   allow_failure: true
 base_spack_image_x86_64:
   extends: [.container-builder-cscs-zen2, .base_spack_image]
@@ -54,7 +59,7 @@ base_spack_image_x86_64:
 
 .compiler_image_template_santis:
   needs: [base_spack_image_aarch64]
-  extends: [.container-builder-cscs-gh200, .compiler_image_template]
+  extends: [.container-builder-cscs-gh200, .compiler_image_template, .gh200-slurm-account]
 
 .compiler_image_template_rosa:
   needs: [base_spack_image_x86_64]
@@ -76,7 +81,7 @@ base_spack_image_x86_64:
       dotenv: dependencies.env
 
 .dependencies_image_template_santis:
-  extends: [.container-builder-cscs-gh200, .dependencies_image_template]
+  extends: [.container-builder-cscs-gh200, .dependencies_image_template, .gh200-slurm-account]
 
 .dependencies_image_template_rosa:
   extends: [.container-builder-cscs-zen2, .dependencies_image_template]
@@ -111,7 +116,7 @@ base_spack_image_x86_64:
       dotenv: "$DOTENV_FILE"
 
 .build_template_santis:
-  extends: [.container-builder-cscs-gh200, .build_template]
+  extends: [.container-builder-cscs-gh200, .build_template, .gh200-slurm-account]
 
 .build_template_rosa:
   extends: [.container-builder-cscs-zen2, .build_template]
