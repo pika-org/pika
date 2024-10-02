@@ -23,6 +23,8 @@ variables:
     - echo -e "ARCH=$ARCH" >> base.env
     - echo -e "BASE_IMAGE=$PERSIST_IMAGE_NAME" >> base.env
   variables:
+    # TODO: Temporary
+    CSCS_REBUILD_POLICY: "always"
     BASE_IMAGE: docker.io/ubuntu:22.04
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_base
     DOCKER_BUILD_ARGS: '["BASE_IMAGE","SPACK_BUILDCACHE","SPACK_COMMIT","USE_SPACK_BUILDCACHE", "SPACK_REPO"]'
