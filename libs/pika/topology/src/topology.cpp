@@ -209,7 +209,13 @@ namespace pika::threads::detail {
         // Including disallowed resources means that logical indices may not match what is reported
         // by the standalone hwloc-bind tool (since the latter will not include disallowed
         // resources). Physical indices will always be consistent.
-        err = hwloc_topology_set_flags(topo, HWLOC_TOPOLOGY_FLAG_INCLUDE_DISALLOWED);
+        err = hwloc_topology_set_flags(topo,
+#if HWLOC_API_VERSION < 0x0002'0100
+            HWLOC_TOPOLOGY_FLAG_WHOLE_SYSTEM
+#else
+            HWLOC_TOPOLOGY_FLAG_INCLUDE_DISALLOWED
+#endif
+        );
         if (err != 0)
         {
             PIKA_THROW_EXCEPTION(pika::error::no_success, "topology::topology",
