@@ -53,4 +53,6 @@ RUN spack external find --exclude python --scope site \
     && spack compiler find --scope site \
     && ([[ "${USE_SPACK_BUILDCACHE}" != "true" ]] \
         || (spack mirror add ${SPACK_BUILDCACHE} https://binaries.spack.io/${SPACK_BUILDCACHE} \
-            && spack buildcache keys --install --trust))
+            && spack mirror add develop https://binaries.spack.io/develop \
+            && spack buildcache keys --install --trust \
+            && spack mirror rm develop))
