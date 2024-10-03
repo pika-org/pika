@@ -451,11 +451,6 @@ function(pika_check_for_cxx23_static_call_operator_gpu)
       set(static_call_operator_test_extension "hip")
     endif()
 
-    set(extra_cxxflags)
-    if(PIKA_WITH_CUDA AND CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC")
-      set(extra_cxxflags "-x cu")
-    endif()
-
     pika_add_config_test(
       PIKA_WITH_CXX23_STATIC_CALL_OPERATOR_GPU
       SOURCE cmake/tests/cxx23_static_call_operator.${static_call_operator_test_extension} GPU
