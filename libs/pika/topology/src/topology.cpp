@@ -200,6 +200,28 @@ namespace pika::threads::detail {
                 pika::error::no_success, "topology::topology", "Failed to init hwloc topology");
         }
 
+        // HWLOC_TOPOLOGY_FLAG_INCLUDE_DISALLOWED is used to give visibility to all resources (in
+        // particular PUs) on the system. When using e.g. cgroups with a subset of PUs visible,
+        // hwloc will not report the disallowed PUs by default. Even though we can't use the
+        // disallowed PUs, it's important to make them visible so that CPU masks can be sized
+        // correctly. Otherwise PU indices may point past the end of the mask.
+        //
+        // Including disallowed resources means that logical indices may not match what is reported
+        // by the standalone hwloc-bind tool (since the latter will not include disallowed
+        // resources). Physical indices will always be consistent.
+        err = hwloc_topology_set_flags(topo,
+#if HWLOC_API_VERSION < 0x0002'0100
+            HWLOC_TOPOLOGY_FLAG_WHOLE_SYSTEM
+#else
+            HWLOC_TOPOLOGY_FLAG_INCLUDE_DISALLOWED
+#endif
+        );
+        if (err != 0)
+        {
+            PIKA_THROW_EXCEPTION(pika::error::no_success, "topology::topology",
+                "Failed to set HWLOC_TOPOLOGY_FLAG_INCLUDE_DISALLOWED flag for hwloc topology");
+        }
+
 #if HWLOC_API_VERSION >= 0x0002'0000
 # if defined(PIKA_HAVE_ADDITIONAL_HWLOC_TESTING)
         // Enable HWLOC filtering that makes it report no cores. This is purely
@@ -1171,6 +1193,8 @@ namespace pika::threads::detail {
                 hwloc_obj_t const pu_obj = hwloc_get_obj_by_depth(topo, pu_depth, i);
                 unsigned idx = static_cast<unsigned>(pu_obj->os_index);
                 PIKA_ASSERT(i == detail::get_index(pu_obj));
+                PIKA_ASSERT(idx < mask_size(mask));
+                PIKA_ASSERT(detail::get_index(pu_obj) < mask_size(logical_mask));
                 if (test(mask, idx)) { set(logical_mask, detail::get_index(pu_obj)); }
             }
         }
