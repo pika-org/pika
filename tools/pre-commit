@@ -27,7 +27,7 @@ function error_msg() {
     exit_code=1
 }
 
-cont_image=docker.io/pikaorg/pika-ci-base:27
+cont_image=docker.io/pikaorg/pika-ci-base:28
 git_dir=$(git rev-parse --show-toplevel)
 
 echo "Run clang-format"
