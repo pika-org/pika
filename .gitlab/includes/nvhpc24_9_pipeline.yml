@@ -11,7 +11,7 @@ include:
 .variables_nvhpc24_9_config:
   variables:
     SPACK_ARCH: linux-ubuntu22.04-neoverse_v2
-    COMPILER: gcc@14.2.0
+    COMPILER: gcc@13.3.0
     NVHPC_COMPILER: nvhpc@24.9
     CXXSTD: 20
     GPU_TARGET: '90'
