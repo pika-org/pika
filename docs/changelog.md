@@ -6,6 +6,19 @@
 
 # Changelog
 
+## 0.29.0 (2024-10-04)
+
+### New features
+
+- The CUDA/HIP pool uses fewer, and a user-controllable number of, cuBLAS/SOLVER and rocBLAS/SOLVER handles. This can significantly reduce GPU memory usage, especially on high core count systems. ([#1234](https://github.com/pika-org/pika/pull/1234))
+- The sender adaptor `transfer` has been renamed to `continues_on`, with a deprecation warning, to match the latest P2300 proposal. `transfer_just` and `transfer_when_all` have been deprecated. ([#1235](https://github.com/pika-org/pika/pull/1235))
+
+### Breaking changes
+
+### Bugfixes
+
+- An initialization issue when setting an explicit process mask on a process that has a limited number of cores available due to cgroups restrictions has been fixed. ([#1251](https://github.com/pika-org/pika/pull/1251))
+
 ## 0.28.0 (2024-09-04)
 
 ### New features
