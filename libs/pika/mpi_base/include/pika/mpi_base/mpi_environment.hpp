@@ -19,17 +19,9 @@
 
 # include <pika/config/warnings_prefix.hpp>
 
-namespace pika::mpi {
+namespace pika::mpi::detail {
     struct PIKA_EXPORT environment
     {
-        // This function checks a list of environment variables to see if commonly set
-        // ones such as mpich, openmpi, slurm, etc are present.
-        // The list of env vars can be set via pika command line params,
-        // or defaults used from cmake configure time.
-        // Although this function is not currently used in pika,
-        // it is left for potential future use
-        static bool check_environment(util::runtime_configuration const& cfg);
-
         // calls mpi_init_thread with the thread level requested and reports
         // any problem if the same level is not granted
         static int init(
@@ -42,7 +34,7 @@ namespace pika::mpi {
         static bool pika_called_init();
 
         // convenience functions that retrieve mpi settings
-        static bool is_mpi_inititialized();
+        static bool is_mpi_initialized();
         static int rank();
         static int size();
         static std::string get_processor_name();
@@ -50,7 +42,7 @@ namespace pika::mpi {
     private:
         static bool mpi_init_pika_;
     };
-}    // namespace pika::mpi
+}    // namespace pika::mpi::detail
 
 # include <pika/config/warnings_suffix.hpp>
 

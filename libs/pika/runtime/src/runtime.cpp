@@ -906,8 +906,8 @@ namespace pika::detail {
             strm << std::string(79, '*') << '\n';
 
 #if defined(PIKA_HAVE_MPI)
-            if (pika::mpi::environment::is_mpi_inititialized())
-                strm << "{mpi-rank}: " << pika::mpi::environment::rank() << '\n';
+            if (mpi::detail::environment::is_mpi_initialized())
+                strm << "{mpi-rank}: " << mpi::detail::environment::rank() << '\n';
 #endif
 
             for (std::size_t i = 0; i != num_threads; ++i)

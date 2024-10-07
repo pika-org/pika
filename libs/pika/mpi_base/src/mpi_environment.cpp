@@ -20,115 +20,73 @@
 #include <cstdlib>
 #include <string>
 
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace mpi {
+namespace pika::mpi::detail {
 
-    namespace detail {
+    bool environment::mpi_init_pika_ = false;
 
-        bool detect_environment(util::runtime_configuration const& cfg, char const* default_env)
+    ///////////////////////////////////////////////////////////////////////////
+    int environment::init(int*, char***, const int required, const int minimal, int& provided)
+    {
+        mpi_init_pika_ = false;
+        int retval = MPI_SUCCESS;
+        if (!environment::is_mpi_initialized())
         {
-#if defined(__bgq__)
-            // If running on BG/Q, we can safely assume to always run in an MPI environment
-            return true;
-#endif
-            std::string mpi_environment_strings = cfg.get_entry("pika.mpi.env", default_env);
+            retval = MPI_Init_thread(nullptr, nullptr, required, &provided);
+            if (MPI_SUCCESS != retval) { return retval; }
 
-            boost::char_separator<char> sep(";,: ");
-            boost::tokenizer<boost::char_separator<char>> tokens(mpi_environment_strings, sep);
-            for (auto const& tok : tokens)
+            if (provided < minimal)
             {
-                char* env = std::getenv(tok.c_str());
-                if (env)
-                {
-                    PIKA_LOG(debug, "Found MPI environment variable: {} = {}, enabling MPI support",
-                        tok, std::string(env));
-                    return true;
-                }
+                PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::mpi::environment::init",
+                    "MPI doesn't provide minimal requested thread level");
             }
-
-            PIKA_LOG(info, "No known MPI environment variable found, no MPI support");
-            return false;
+            mpi_init_pika_ = true;
         }
-    }    // namespace detail
-
-    bool environment::check_environment(util::runtime_configuration const& cfg)
-    {
-        // log message was already generated
-        return detail::detect_environment(cfg, PIKA_HAVE_MPI_ENV);
+        return retval;
     }
-}}    // namespace pika::mpi
 
-#if defined(PIKA_HAVE_MODULE_MPI_BASE)
-
-namespace pika::mpi {
-
-bool environment::mpi_init_pika_ = false;
-
-///////////////////////////////////////////////////////////////////////////
-int environment::init(int*, char***, const int required, const int minimal, int& provided)
-{
-    mpi_init_pika_ = false;
-    int retval = MPI_SUCCESS;
-    if (!environment::is_mpi_inititialized())
+    bool environment::is_mpi_initialized()
     {
-        retval = MPI_Init_thread(nullptr, nullptr, required, &provided);
-        if (MPI_SUCCESS != retval) { return retval; }
-
-        if (provided < minimal)
+        int is_initialized = 0;
+        int retval = MPI_Initialized(&is_initialized);
+        if (MPI_SUCCESS != retval)
         {
-            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "pika::mpi::environment::init",
-                "MPI doesn't provide minimal requested thread level");
+            throw mpi::exception(MPI_ERR_OTHER, "MPI_Initialized call failed");
         }
-        mpi_init_pika_ = true;
+        return is_initialized;
     }
-    return retval;
-}
 
-bool environment::is_mpi_inititialized()
-{
-    int is_initialized = 0;
-    int retval = MPI_Initialized(&is_initialized);
-    if (MPI_SUCCESS != retval)
+    std::string environment::get_processor_name()
     {
-        throw mpi::exception(MPI_ERR_OTHER, "MPI_Initialized call failed");
+        char name[MPI_MAX_PROCESSOR_NAME + 1] = {'\0'};
+        int len = 0;
+        MPI_Get_processor_name(name, &len);
+
+        return name;
     }
-    return is_initialized;
-}
 
-std::string environment::get_processor_name()
-{
-    char name[MPI_MAX_PROCESSOR_NAME + 1] = {'\0'};
-    int len = 0;
-    MPI_Get_processor_name(name, &len);
-
-    return name;
-}
-
-void environment::finalize()
-{
-    if (pika_called_init())
+    void environment::finalize()
     {
-        int is_finalized = 0;
-        MPI_Finalized(&is_finalized);
-        if (!is_finalized) { MPI_Finalize(); }
+        if (pika_called_init())
+        {
+            int is_finalized = 0;
+            MPI_Finalized(&is_finalized);
+            if (!is_finalized) { MPI_Finalize(); }
+        }
     }
-}
 
-bool environment::pika_called_init() { return mpi_init_pika_; }
+    bool environment::pika_called_init() { return mpi_init_pika_; }
 
-int environment::size()
-{
-    int res(-1);
-    MPI_Comm_size(MPI_COMM_WORLD, &res);
-    return res;
-}
+    int environment::size()
+    {
+        int res(-1);
+        MPI_Comm_size(MPI_COMM_WORLD, &res);
+        return res;
+    }
 
-int environment::rank()
-{
-    int res(-1);
-    MPI_Comm_rank(MPI_COMM_WORLD, &res);
-    return res;
-}
-}    // namespace pika::mpi
-
-#endif
+    int environment::rank()
+    {
+        int res(-1);
+        MPI_Comm_rank(MPI_COMM_WORLD, &res);
+        return res;
+    }
+}    // namespace pika::mpi::detail

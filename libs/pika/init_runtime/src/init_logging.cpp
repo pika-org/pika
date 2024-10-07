@@ -117,8 +117,8 @@ namespace pika::detail {
             static int rank = [&] {
 #if defined(PIKA_HAVE_MPI)
                 // First try to get the rank through MPI
-                if (pika::mpi::environment::is_mpi_inititialized())
-                    return pika::mpi::environment::rank();
+                if (mpi::detail::environment::is_mpi_initialized())
+                    return mpi::detail::environment::rank();
 #endif
                 // Otherwise guess based on environment variables
                 return helper.guess_rank();

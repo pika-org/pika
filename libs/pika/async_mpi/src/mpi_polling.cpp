@@ -822,14 +822,14 @@ namespace pika::mpi::experimental {
         if (init_mpi)
         {
             int provided, required = get_preferred_thread_mode();
-            pika::mpi::environment::init(nullptr, nullptr, required, required, provided);
+            mpi::detail::environment::init(nullptr, nullptr, required, required, provided);
         }
-        else if (!pika::mpi::environment::is_mpi_inititialized())
+        else if (!mpi::detail::environment::is_mpi_initialized())
         {
             throw mpi::exception(MPI_ERR_OTHER, "MPI must be initialized before using pika::mpi");
         }
-        detail::mpi_data_.rank_ = pika::mpi::environment::rank();
-        detail::mpi_data_.size_ = pika::mpi::environment::size();
+        detail::mpi_data_.rank_ = mpi::detail::environment::rank();
+        detail::mpi_data_.size_ = mpi::detail::environment::size();
 
         PIKA_DETAIL_DP(detail::mpi_debug<1>, debug(str<>("init"), detail::mpi_data_));
 
@@ -887,7 +887,7 @@ namespace pika::mpi::experimental {
         }
 
         // clean up if we initialized mpi
-        pika::mpi::environment::finalize();
+        mpi::detail::environment::finalize();
 
         PIKA_DETAIL_DP(detail::mpi_debug<5>,
             debug(str<>("Clearing mode"), detail::mpi_data_, "disable_user_polling"));
