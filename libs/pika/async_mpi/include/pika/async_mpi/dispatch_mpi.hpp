@@ -24,6 +24,8 @@
 #include <pika/executors/thread_pool_scheduler.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/functional/invoke.hpp>
+#include <pika/mpi_base/mpi.hpp>
+#include <pika/mpi_base/mpi_exception.hpp>
 
 #include <exception>
 #include <tuple>

@@ -25,6 +25,7 @@
 #include <pika/execution_base/sender.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/functional/invoke.hpp>
+#include <pika/mpi_base/mpi.hpp>
 
 #include <exception>
 #include <tuple>

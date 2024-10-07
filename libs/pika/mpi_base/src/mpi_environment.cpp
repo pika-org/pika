@@ -12,6 +12,7 @@
 #include <pika/modules/mpi_base.hpp>
 #include <pika/modules/runtime_configuration.hpp>
 #include <pika/modules/util.hpp>
+#include <pika/mpi_base/mpi_exception.hpp>
 
 #include <boost/tokenizer.hpp>
 

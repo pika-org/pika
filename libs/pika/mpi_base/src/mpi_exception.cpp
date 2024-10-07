@@ -7,6 +7,7 @@
 
 #include <pika/config.hpp>
 #include <pika/errors/exception.hpp>
+#include <pika/mpi_base/mpi.hpp>
 #include <pika/mpi_base/mpi_exception.hpp>
 
 #include <cstddef>
