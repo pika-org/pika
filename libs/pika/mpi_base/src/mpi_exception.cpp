@@ -12,7 +12,6 @@
 
 #include <cstddef>
 #include <memory>
-#include <mpi.h>
 #include <string>
 
 namespace pika::mpi {

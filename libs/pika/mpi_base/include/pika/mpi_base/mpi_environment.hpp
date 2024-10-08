@@ -9,15 +9,13 @@
 
 #include <pika/config.hpp>
 
-#if defined(PIKA_HAVE_MODULE_MPI_BASE)
+#include <pika/modules/runtime_configuration.hpp>
+#include <pika/mpi_base/mpi.hpp>
 
-# include <pika/modules/runtime_configuration.hpp>
-# include <pika/mpi_base/mpi.hpp>
+#include <cstdlib>
+#include <string>
 
-# include <cstdlib>
-# include <string>
-
-# include <pika/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 namespace pika::mpi::detail {
     struct PIKA_EXPORT environment
@@ -44,21 +42,4 @@ namespace pika::mpi::detail {
     };
 }    // namespace pika::mpi::detail
 
-# include <pika/config/warnings_suffix.hpp>
-
-#else
-
-# include <pika/modules/runtime_configuration.hpp>
-
-# include <pika/config/warnings_prefix.hpp>
-
-namespace pika::mpi {
-    struct PIKA_EXPORT environment
-    {
-        static bool check_environment(runtime_configuration const& cfg);
-    };
-}    // namespace pika::mpi
-
-# include <pika/config/warnings_suffix.hpp>
-
-#endif
+#include <pika/config/warnings_suffix.hpp>
