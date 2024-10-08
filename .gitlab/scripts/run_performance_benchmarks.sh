@@ -12,6 +12,14 @@ current_dir=$(dirname -- "${BASH_SOURCE[0]}")
 
 source "${current_dir}/utilities.sh"
 
+# Helper function to filter out non-json output, for the type of output that we have below:
+# - any number of header lines may be printed that don't consist of '{'
+# - the json output starts with a single '{' and continues until the end of the file
+# The awk script below prints everything from the first '{' to the end of the file.
+function keep_json {
+    awk '/^{$/,EOF'
+}
+
 metadata_file=$(mktemp --tmpdir metadata.XXXXXXXXXX.json)
 create_metadata_file "${metadata_file}"
 
@@ -124,8 +132,8 @@ for executable in "${pika_targets[@]}"; do
     json_add_value_string "${result_file}" "metric.benchmark.command_options" "${test_opts}"
 
     # Extract name and timing data from raw result file
-    benchmark_name=$(jq '.outputs[0].name' "${raw_result_file}")
-    benchmark_series=$(jq '.outputs[0].series' "${raw_result_file}")
+    benchmark_name=$(cat "${raw_result_file}" | keep_json | jq '.outputs[0].name')
+    benchmark_series=$(cat "${raw_result_file}" | keep_json | jq '.outputs[0].series')
     json_add_value_json "${result_file}" "metric.benchmark.name" "${benchmark_name}"
     json_add_value_json "${result_file}" "metric.benchmark.series" "${benchmark_series}"
 
