@@ -344,7 +344,7 @@ int pika_main(pika::program_options::variables_map& vm)
     // Disable idle backoff on the default pool
     pika::threads::remove_scheduler_mode(::pika::threads::scheduler_mode::enable_idle_backoff);
 
-    pika::util::mpi_environment mpi_env;
+    pika::mpi::environment mpi_env;
     pika::detail::runtime* rt = pika::detail::get_runtime_ptr();
     pika::util::runtime_configuration cfg = rt->get_config();
     mpi_env.init(nullptr, nullptr, cfg);

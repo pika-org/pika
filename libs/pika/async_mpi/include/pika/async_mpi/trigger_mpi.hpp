@@ -11,7 +11,6 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/async_mpi/dispatch_mpi.hpp>
-#include <pika/async_mpi/mpi_exception.hpp>
 #include <pika/async_mpi/mpi_polling.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/datastructures/variant.hpp>

@@ -1,3 +1,4 @@
+//  Copyright (c) 2024 ETH Zurich
 //  Copyright (c) 2020 John Biddiscombe
 //
 //  SPDX-License-Identifier: BSL-1.0
@@ -5,15 +6,15 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
-#include <pika/async_mpi/mpi_exception.hpp>
 #include <pika/errors/exception.hpp>
 #include <pika/mpi_base/mpi.hpp>
+#include <pika/mpi_base/mpi_exception.hpp>
 
 #include <cstddef>
 #include <memory>
 #include <string>
 
-namespace pika::mpi::experimental {
+namespace pika::mpi {
     namespace detail {
         std::string error_message(int code)
         {
@@ -26,13 +27,13 @@ namespace pika::mpi::experimental {
     }    // namespace detail
 
     // -------------------------------------------------------------------------
-    // exception type for failed launch of MPI functions
-    mpi_exception::mpi_exception(int err_code, const std::string& msg)
+    // exception type for failed launch of MPI functions or other mpi problem
+    exception::exception(int err_code, const std::string& msg)
       : pika::exception(pika::error::bad_function_call,
             msg + std::string(" MPI returned with error: ") + detail::error_message(err_code))
       , err_code_(err_code)
     {
     }
 
-    int mpi_exception::get_mpi_errorcode() const noexcept { return err_code_; }
-}    // namespace pika::mpi::experimental
+    int exception::get_mpi_errorcode() const noexcept { return err_code_; }
+}    // namespace pika::mpi

@@ -1,3 +1,4 @@
+//  Copyright (c) 2024 ETH Zurich
 //  Copyright (c) 2017 Mikael Simberg
 //
 //  SPDX-License-Identifier: BSL-1.0

@@ -647,15 +647,6 @@ if(PIKA_WITH_MPI)
     pika_add_config_define(PIKA_HAVE_MPI_ENV "\"${pika_mpi_env_}\"")
   endif()
 
-  pika_option(
-    PIKA_WITH_MPI_MULTITHREADED BOOL "Turn on MPI multithreading support (default: ON)." ON
-    CATEGORY "MPI"
-    ADVANCED
-  )
-  if(PIKA_WITH_MPI_MULTITHREADED)
-    pika_add_config_define(PIKA_HAVE_MPI_MULTITHREADED)
-  endif()
-
   if(MSVC)
     # FIXME: add OpenMPI specific flag here for now as the pika_add_compile_flag() below does not
     # add the extra options to the top level directory

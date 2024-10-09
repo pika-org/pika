@@ -6,7 +6,6 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/async_mpi/mpi_exception.hpp>
 #include <pika/async_mpi/mpi_polling.hpp>
 #include <pika/command_line_handling/get_env_var_as.hpp>
 #include <pika/concurrency/spinlock.hpp>
@@ -15,6 +14,7 @@
 #include <pika/modules/errors.hpp>
 #include <pika/modules/threading_base.hpp>
 #include <pika/mpi_base/mpi_environment.hpp>
+#include <pika/mpi_base/mpi_exception.hpp>
 #include <pika/resource_partitioner/detail/partitioner.hpp>
 #include <pika/string_util/case_conv.hpp>
 #include <pika/synchronization/condition_variable.hpp>
@@ -46,8 +46,7 @@
 namespace pika::mpi::experimental::detail {
     static inline void mpi_ext_continuation_result_check(int code)
     {
-        if (code != MPI_SUCCESS)
-            throw pika::mpi::experimental::mpi_exception(code, "MPI_EXT_CONTINUATION problem");
+        if (code != MPI_SUCCESS) throw pika::mpi::exception(code, "MPI_EXT_CONTINUATION problem");
     }
 }    // namespace pika::mpi::experimental::detail
 #endif
@@ -265,9 +264,9 @@ namespace pika::mpi::experimental {
         // function that converts an MPI error into an exception
         void pika_MPI_Handler(MPI_Comm*, int* errorcode, ...)
         {
-            PIKA_DETAIL_DP(
-                mpi_debug<5>, debug(str<>("pika_MPI_Handler"), error_message(*errorcode)));
-            throw mpi_exception(*errorcode, error_message(*errorcode));
+            PIKA_DETAIL_DP(mpi_debug<5>,
+                debug(str<>("pika_MPI_Handler"), mpi::detail::error_message(*errorcode)));
+            throw mpi::exception(*errorcode, "pika MPI error->exception handler");
         }
 
         // -------------------------------------------------------------
@@ -823,21 +822,14 @@ namespace pika::mpi::experimental {
         if (init_mpi)
         {
             int provided, required = get_preferred_thread_mode();
-            pika::util::mpi_environment::init(nullptr, nullptr, required, required, provided);
-            MPI_Comm_rank(MPI_COMM_WORLD, &detail::mpi_data_.rank_);
-            MPI_Comm_size(MPI_COMM_WORLD, &detail::mpi_data_.size_);
+            mpi::detail::environment::init(nullptr, nullptr, required, required, provided);
         }
-        else
+        else if (!mpi::detail::environment::is_mpi_initialized())
         {
-            int is_initialized = 0;
-            MPI_Initialized(&is_initialized);
-            if (is_initialized)
-            {
-                MPI_Comm_rank(MPI_COMM_WORLD, &detail::mpi_data_.rank_);
-                MPI_Comm_size(MPI_COMM_WORLD, &detail::mpi_data_.size_);
-            }
-            else { PIKA_DETAIL_DP(detail::mpi_debug<1>, error(str<>("mpi not initialized"))); }
+            throw mpi::exception(MPI_ERR_OTHER, "MPI must be initialized before using pika::mpi");
         }
+        detail::mpi_data_.rank_ = mpi::detail::environment::rank();
+        detail::mpi_data_.size_ = mpi::detail::environment::size();
 
         PIKA_DETAIL_DP(detail::mpi_debug<1>, debug(str<>("init"), detail::mpi_data_));
 
@@ -895,7 +887,7 @@ namespace pika::mpi::experimental {
         }
 
         // clean up if we initialized mpi
-        pika::util::mpi_environment::finalize();
+        mpi::detail::environment::finalize();
 
         PIKA_DETAIL_DP(detail::mpi_debug<5>,
             debug(str<>("Clearing mode"), detail::mpi_data_, "disable_user_polling"));
