@@ -196,14 +196,6 @@ namespace pika::mpi::experimental {
         /// set the maximum number of MPI_Request completions to handle at each polling event
         PIKA_EXPORT void set_max_polling_size(std::size_t);
         PIKA_EXPORT std::size_t get_max_polling_size();
-
-        // initialize the pika::mpi background request handler
-        // All ranks should call this function (but only one thread per rank needs to do so)
-        PIKA_EXPORT void start(
-            exception_mode errorhandler = no_handler, std::string pool_name = "");
-
-        // -----------------------------------------------------------------
-        PIKA_EXPORT void stop();
     }    // namespace detail
 
     /// return the total number of mpi requests currently in queues
@@ -223,6 +215,13 @@ namespace pika::mpi::experimental {
     /// otherwise, the flags passed by the user to completion mode etc are honoured
     PIKA_EXPORT void enable_optimizations(bool enable);
 
+    // initialize the pika::mpi background request handler
+    // All ranks should call this function (but only one thread per rank needs to do so)
+    PIKA_EXPORT void start_polling(
+        exception_mode errorhandler = no_handler, std::string pool_name = "");
+
+    PIKA_EXPORT void stop_polling();
+
     // -----------------------------------------------------------------
     // This RAII helper class ensures that MPI polling start/stop is handled correctly
     struct [[nodiscard]] enable_polling
@@ -231,9 +230,9 @@ namespace pika::mpi::experimental {
         explicit enable_polling(
             exception_mode errorhandler = no_handler, std::string const& pool_name = "")
         {
-            mpi::experimental::detail::start(errorhandler, pool_name);
+            start_polling(errorhandler, pool_name);
         }
 
-        ~enable_polling() { mpi::experimental::detail::stop(); }
+        ~enable_polling() { stop_polling(); }
     };
 }    // namespace pika::mpi::experimental
