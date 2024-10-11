@@ -14,6 +14,7 @@
 #include <pika/modules/resource_partitioner.hpp>
 #include <pika/modules/threading_base.hpp>
 #include <pika/mpi_base/mpi.hpp>
+#include <pika/program_options/variables_map.hpp>
 #include <pika/runtime/thread_pool_helpers.hpp>
 #include <pika/synchronization/counting_semaphore.hpp>
 #include <pika/type_support/to_underlying.hpp>
@@ -30,11 +31,11 @@
 
 namespace pika::mpi::experimental {
 
-    enum pool_create_mode
+    /// mode to control installation of pika mpi error -> exception handler
+    enum exception_mode
     {
-        pika_decides = 0,
-        force_create,
-        force_no_create,
+        no_handler = 0,
+        install_handler,
     };
 
     namespace detail {
@@ -174,6 +175,35 @@ namespace pika::mpi::experimental {
             MPI_Request*, MPIX_Continue_cb_function*, void*);
         /// called after each completed continuation to restart/re-enable continuation support
         PIKA_EXPORT void restart_mpix();
+
+        void init_resource_partitioner_handler(pika::resource::partitioner&,
+            pika::program_options::variables_map const& vm,
+            resource::polling_pool_creation_mode mode);
+
+        PIKA_EXPORT bool create_pool(pika::resource::partitioner& rp, std::string const& pool_name,
+            resource::polling_pool_creation_mode mode);
+
+        PIKA_EXPORT const std::string& get_pool_name();
+        PIKA_EXPORT void register_pool(const std::string& pool_name);
+
+        PIKA_EXPORT void register_polling();
+        PIKA_EXPORT void unregister_polling();
+
+        // returns false if no custom mpi pool has been created
+        PIKA_EXPORT bool pool_exists();
+
+        // -----------------------------------------------------------------
+        /// set the maximum number of MPI_Request completions to handle at each polling event
+        PIKA_EXPORT void set_max_polling_size(std::size_t);
+        PIKA_EXPORT std::size_t get_max_polling_size();
+
+        // initialize the pika::mpi background request handler
+        // All ranks should call this function (but only one thread per rank needs to do so)
+        PIKA_EXPORT void start(
+            exception_mode errorhandler = no_handler, std::string pool_name = "");
+
+        // -----------------------------------------------------------------
+        PIKA_EXPORT void stop();
     }    // namespace detail
 
     /// return the total number of mpi requests currently in queues
@@ -182,53 +212,27 @@ namespace pika::mpi::experimental {
     PIKA_EXPORT size_t get_work_count();
 
     // -----------------------------------------------------------------
-    /// set the maximum number of MPI_Request completions to handle at each polling event
-    PIKA_EXPORT void set_max_polling_size(std::size_t);
-    PIKA_EXPORT std::size_t get_max_polling_size();
-
-    // -----------------------------------------------------------------
-    /// Get the polling transfer mode for continuations.
+    /// Set/Get the polling and handler mode for continuations.
     PIKA_EXPORT std::size_t get_completion_mode();
     PIKA_EXPORT void set_completion_mode(std::size_t mode);
 
-    PIKA_EXPORT bool create_pool(
-        std::string const& = "", pool_create_mode = pool_create_mode::pika_decides);
-
-    PIKA_EXPORT const std::string& get_pool_name();
-    PIKA_EXPORT void set_pool_name(const std::string&);
-
-    // returns false if no custom mpi pool has been created
-    PIKA_EXPORT bool pool_exists();
-
-    PIKA_EXPORT void register_polling();
-
+    /// can be used to chooose between single/multi thread model when initializing MPI
     PIKA_EXPORT int get_preferred_thread_mode();
 
-    /// when true pika::mpi can disable the pool, or change the thread mode
+    /// when true pika::mpi can disable pool creation, or change the thread mode
     /// otherwise, the flags passed by the user to completion mode etc are honoured
     PIKA_EXPORT void enable_optimizations(bool enable);
 
-    // initialize the pika::mpi background request handler
-    // All ranks should call this function (but only one thread per rank needs to do so)
-    PIKA_EXPORT void init(bool init_mpi = false, bool init_errorhandler = false);
-
     // -----------------------------------------------------------------
-    PIKA_EXPORT void finalize(std::string const& pool_name = "");
-
-    // -----------------------------------------------------------------
-    // This RAII helper class assumes that MPI initialization/finalization is handled elsewhere
-    struct [[nodiscard]] enable_user_polling
+    // This RAII helper class ensures that MPI polling start/stop is handled correctly
+    struct [[nodiscard]] enable_polling
     {
-        enable_user_polling(std::string const& pool_name = "", bool init_errorhandler = false)
-          : pool_name_(pool_name)
+        /// an empty pool name tells pika to use the mpi pool if it exists
+        enable_polling(exception_mode errorhandler = no_handler, std::string const& pool_name = "")
         {
-            mpi::experimental::init(false, init_errorhandler);
-            mpi::experimental::register_polling();
+            mpi::experimental::detail::start(errorhandler, pool_name);
         }
 
-        ~enable_user_polling() { mpi::experimental::finalize(pool_name_); }
-
-    private:
-        std::string pool_name_;
+        ~enable_polling() { mpi::experimental::detail::stop(); }
     };
 }    // namespace pika::mpi::experimental

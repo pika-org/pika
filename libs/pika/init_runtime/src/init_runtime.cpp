@@ -138,7 +138,7 @@ namespace pika {
             pika::util::detail::set_spinlock_deadlock_warning_limit(
                 cmdline.rtcfg_.get_spinlock_deadlock_warning_limit());
 #endif
-#ifdef PIKA_HAVE_MPI
+#if defined(PIKA_HAVE_MPI)
             pika::mpi::experimental::set_completion_mode(pika::detail::get_entry_as<std::size_t>(
                 cmdline.rtcfg_, "pika.mpi.completion_mode", 0));
 #endif
@@ -320,6 +320,13 @@ namespace pika {
             case command_line_handling_result::success: break;
             case command_line_handling_result::exit: return 0;
             }
+
+#if defined(PIKA_HAVE_MPI)
+            if (params.pool_creation_mode !=
+                pika::resource::polling_pool_creation_mode::mode_manual)
+                mpi::experimental::detail::init_resource_partitioner_handler(
+                    rp, cmdline.vm_, params.pool_creation_mode);
+#endif
 
             // If thread_pools initialization in user main
             if (params.rp_callback) { params.rp_callback(rp, cmdline.vm_); }
