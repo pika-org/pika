@@ -216,7 +216,7 @@ namespace pika::mpi::experimental {
     PIKA_EXPORT std::size_t get_completion_mode();
     PIKA_EXPORT void set_completion_mode(std::size_t mode);
 
-    /// can be used to chooose between single/multi thread model when initializing MPI
+    /// can be used to choose between single/multi thread model when initializing MPI
     PIKA_EXPORT int get_preferred_thread_mode();
 
     /// when true pika::mpi can disable pool creation, or change the thread mode
