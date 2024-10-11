@@ -4,7 +4,7 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(tests algorithm_transform_mpi mpi_ring_async_sender_receiver)
+set(tests algorithm_transform_mpi mpi_ring_async_sender_receiver pool_creation)
 
 # cmake-format: off
 set(mpi_ring_async_sender_receiver_PARAMETERS
@@ -22,6 +22,9 @@ set(mpi_async_storage_PARAMETERS
 
 set(algorithm_transform_mpi_PARAMETERS THREADS 2 RANKS 2 MPIWRAPPER)
 set(algorithm_transform_mpi_DEPENDENCIES pika_execution_test_utilities)
+
+set(pool_creation_PARAMETERS THREADS 2 RANKS 2 MPIWRAPPER)
+set(pool_creation_DEPENDENCIES pika_execution_test_utilities)
 
 foreach(test ${tests})
 

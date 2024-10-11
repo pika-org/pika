@@ -220,9 +220,13 @@ namespace pika::resource::detail {
         // initial_thread_pools
         std::vector<socket> sockets_;
 
-        // store policy flags determining the general behavior of the
-        // resource_partitioner
+        // store policy flags determining the general behavior of the resource_partitioner
         resource::partitioner_mode mode_;
+
+#if defined(PIKA_HAVE_MPI)
+        // store policy flags determining the polling mode set at initialization
+        resource::polling_pool_creation_mode polling_mode_;
+#endif
 
         // topology information
         threads::detail::topology& topo_;

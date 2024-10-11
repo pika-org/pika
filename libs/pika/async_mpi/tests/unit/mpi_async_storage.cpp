@@ -451,30 +451,6 @@ int pika_main(pika::program_options::variables_map& vm)
 }
 
 //----------------------------------------------------------------------------
-void init_resource_partitioner_handler(
-    pika::resource::partitioner& rp, pika::program_options::variables_map const& vm)
-{
-    // Don't create the MPI pool if the user disabled it
-    if (vm["no-mpi-pool"].as<bool>()) return;
-
-    // Don't create the MPI pool if there is a single process
-    int ntasks;
-    MPI_Comm_size(MPI_COMM_WORLD, &ntasks);
-    if (ntasks == 1) return;
-
-    // Disable idle backoff on the MPI pool
-    using pika::threads::scheduler_mode;
-    auto mode = scheduler_mode::default_mode;
-    mode = scheduler_mode(mode & ~scheduler_mode::enable_idle_backoff);
-
-    // Create a thread pool with a single core that we will use for all
-    // communication related tasks
-    rp.create_thread_pool(
-        mpi::get_pool_name(), pika::resource::scheduling_policy::local_priority_fifo, mode);
-    rp.add_resource(rp.sockets()[0].cores()[0].pus()[0], mpi::get_pool_name());
-}
-
-//----------------------------------------------------------------------------
 int main(int argc, char* argv[])
 {
     // Init MPI
@@ -489,9 +465,6 @@ int main(int argc, char* argv[])
     // some of these are not used currently but left for future tweaking
     pika::program_options::options_description cmdline(
         "Usage: " PIKA_APPLICATION_STRING " [options]");
-
-    cmdline.add_options()(
-        "no-mpi-pool", pika::program_options::bool_switch(), "Disable the MPI pool.");
 
     cmdline.add_options()("in-flight-limit",
         pika::program_options::value<std::uint32_t>()->default_value(
@@ -514,8 +487,8 @@ int main(int argc, char* argv[])
     nws_deb<6>.debug(3, "Calling pika::init");
     pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
-    // Set the callback to init thread_pools
-    init_args.rp_callback = &init_resource_partitioner_handler;
+    // Tell init to create an mpi thread pool if needed
+    init_args.resource::polling_pool_creation_mode = ::pika::resource::polling_pool_pika_decides;
 
     auto result = pika::init(pika_main, argc, argv, init_args);
     PIKA_TEST_EQ(result, 0);

@@ -182,6 +182,9 @@ namespace pika::resource::detail {
       : rtcfg_()
       , first_core_(std::size_t(-1))
       , mode_(mode_default)
+#if defined(PIKA_HAVE_MPI)
+      , polling_mode_(mode_manual)
+#endif
       , topo_(threads::detail::get_topology())
       , default_scheduler_mode_(threads::scheduler_mode::default_mode)
     {

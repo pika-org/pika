@@ -58,20 +58,6 @@ namespace pika::mpi::experimental {
             bool completions_inline = use_inline_completion(mode);
             bool requests_inline = use_inline_request(mode);
 
-#ifdef PIKA_DEBUG
-            // ----------------------------------------------------------
-            // the pool should exist if the completion mode needs it
-            int cwsize = detail::comm_world_size();
-            bool need_pool = (cwsize > 1 && use_pool(mode));
-            if (pool_exists() != need_pool)
-            {
-                PIKA_DETAIL_DP(mpi_tran<0>,
-                    error(str<>("transform_mpi"), "mode", mode, "pool_exists()", pool_exists(),
-                        "need_pool", need_pool));
-            }
-            PIKA_ASSERT(pool_exists() == need_pool);
-#endif
-
             execution::thread_priority p = use_priority_boost(mode) ?
                 execution::thread_priority::boost :
                 execution::thread_priority::normal;

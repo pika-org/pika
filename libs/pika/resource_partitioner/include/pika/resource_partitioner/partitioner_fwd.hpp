@@ -37,8 +37,7 @@ namespace pika::resource {
     /// Returns false otherwise.
     PIKA_EXPORT bool is_partitioner_valid();
 
-    /// This enumeration describes the modes available when creating a
-    /// resource partitioner.
+    /// This enumeration describes the modes available when creating a resource partitioner.
     enum partitioner_mode
     {
         /// Default mode.
@@ -49,6 +48,25 @@ namespace pika::resource {
         /// Allow worker threads to be added and removed from thread pools.
         mode_allow_dynamic_pools = 2
     };
+
+#if defined(PIKA_HAVE_MPI)
+    /// This enumeration describes polling pool creation modes,
+    /// the user may request a dedicated pool that can be used by pika::mpi
+    /// MPI pool completion flags are passed on the command line or via env vars
+    /// When pika+MPI is disabled, no mpi pool will be created, the polling mode
+    /// is ignored and using xxx_enable/xxx_disable has no effect
+    enum polling_pool_creation_mode
+    {
+        /// the user must create a pool if they wish to use one with mpi
+        mode_manual = 0,
+        /// if the completion mode requires it, a pool will be created at startup
+        mode_pika_decides = 1,
+        /// overrides command line flags/env vars - enables creation of a polling pool
+        mode_force_create = 2,
+        /// overrides command line flags/env vars - disables creation of a polling pool
+        mode_force_no_create = 3,
+    };
+#endif
 
     using scheduler_function =
         util::detail::function<std::unique_ptr<pika::threads::detail::thread_pool_base>(
