@@ -836,119 +836,117 @@ namespace pika::mpi::experimental {
             int provided, required = get_preferred_thread_mode();
             mpi::detail::environment::init(nullptr, nullptr, required, required, provided);
         }
-
-        // -----------------------------------------------------------------
-        // initialize the pika::mpi background request handler
-        // All ranks should call this function,
-        // but only one thread per rank needs to do so
-        void start(exception_mode errorhandler, std::string pool_name)
-        {
-            // don't allow polling code to run until init has completed
-            std::lock_guard<detail::mutex_type> lk(detail::mpi_data_.polling_vector_mtx_);
-
-            if (pool_name.empty()) pool_name = get_pool_name();
-            register_pool(pool_name);
-
-            // --------------------------------------
-            // the user has asked us to call mpi_init
-            if (!mpi::detail::environment::is_mpi_initialized())
-            {
-                throw mpi::exception(
-                    MPI_ERR_OTHER, "MPI must be initialized before using pika::mpi");
-            }
-            detail::mpi_data_.rank_ = mpi::detail::environment::rank();
-            detail::mpi_data_.size_ = mpi::detail::environment::size();
-
-            PIKA_DETAIL_DP(detail::mpi_debug<1>, debug(str<>("init"), detail::mpi_data_));
-
-            // --------------------------------------
-            // install error handler (convert mpi errors into exceptoions
-            if (errorhandler == exception_mode::install_handler)
-            {
-                PIKA_ASSERT(detail::mpi_data_.error_handler_initialized_ == false);
-                detail::set_error_handler();
-                detail::mpi_data_.error_handler_initialized_ = true;
-            }
-
-            // --------------------------------------
-            auto mode = get_completion_mode();
-            if (mode >= pika::detail::to_underlying(detail::handler_method::unspecified))
-            {
-                PIKA_THROW_EXCEPTION(
-                    pika::error::invalid_status, "Bad completion flags", "invalid completion mode");
-            }
-
-#ifdef OMPI_HAVE_MPI_EXT_CONTINUE
-            // --------------------------------------
-            // if we are using experimental mpix_continuations, setup internals
-            if (detail::get_handler_method(mode) == detail::handler_method::mpix_continuation)
-            {
-                // the lock prevents multithreaded polling from accessing the request before it is ready
-                std::unique_lock lk(detail::mpi_data_.mpix_lock);
-                // the atomic flag prevents lockless version accessing the request before it is ready
-                detail::mpi_ext_continuation_result_check(MPIX_Continue_init(MPIX_CONT_POLL_ONLY,
-                    MPI_UNDEFINED, MPI_INFO_NULL, &detail::mpi_data_.mpix_continuations_request));
-
-                PIKA_DETAIL_DP(detail::mpi_debug<1>,
-                    debug(str<>("MPIX"), "Enabled,", "pool =", get_pool_name(), ", mode",
-                        mode_string(get_completion_mode()), get_completion_mode(),
-                        ptr(detail::mpi_data_.mpix_continuations_request)));
-                // it is now safe to use the mpix request, {memory_order = not a critical code path}
-                detail::mpi_data_.mpix_ready_.store(true, std::memory_order_seq_cst);
-            }
-#else
-            // if selected, but unsupported, throw an error
-            if (detail::get_handler_method(mode) == detail::handler_method::mpix_continuation)
-            {
-                PIKA_THROW_EXCEPTION(pika::error::invalid_status, "MPI_EXT_CONTINUE",
-                    "mpi_ext_continuation not supported, invalid handler method");
-            }
-#endif
-            register_polling();
-
-            // ----------------------------------------------------------
-            // the pool should exist if the completion mode needs it
-            bool need_pool = (detail::comm_world_size() > 1 && use_pool(mode));
-            if (pool_exists() != need_pool)
-            {
-                PIKA_DETAIL_DP(mpi_debug<0>,
-                    warning(str<>("pika:::mpi"), "handler mode", mode,
-                        "and mpi pool existence status", pool_exists(),
-                        "are inconsistent and may reduce performance"));
-            }
-        }
-
-        // -----------------------------------------------------------------
-        void stop()
-        {
-            unregister_polling(pika::resource::get_thread_pool(get_pool_name()));
-
-            // remove error handler if we installed it
-            if (detail::mpi_data_.error_handler_initialized_)
-            {
-                PIKA_ASSERT(pika_mpi_errhandler != 0);
-                detail::mpi_data_.error_handler_initialized_ = false;
-                MPI_Errhandler_free(&detail::pika_mpi_errhandler);
-                detail::pika_mpi_errhandler = 0;
-            }
-
-            // clean up if we initialized mpi
-            PIKA_DETAIL_DP(detail::mpi_debug<1>, debug(str<>("finalize"), detail::mpi_data_));
-            mpi::detail::environment::finalize();
-        }
     }    // namespace detail
 
-    // -------------------------------------------------------------
+    // -----------------------------------------------------------------
+    // initialize the pika::mpi background request handler
+    // All ranks should call this function,
+    // but only one thread per rank needs to do so
+    void start_polling(exception_mode errorhandler, std::string pool_name)
+    {
+        // don't allow polling code to run until init has completed
+        std::lock_guard<detail::mutex_type> lk(detail::mpi_data_.polling_vector_mtx_);
+
+        if (pool_name.empty()) pool_name = detail::get_pool_name();
+        detail::register_pool(pool_name);
+
+        // --------------------------------------
+        // the user has asked us to call mpi_init
+        if (!mpi::detail::environment::is_mpi_initialized())
+        {
+            throw mpi::exception(MPI_ERR_OTHER, "MPI must be initialized before using pika::mpi");
+        }
+        detail::mpi_data_.rank_ = mpi::detail::environment::rank();
+        detail::mpi_data_.size_ = mpi::detail::environment::size();
+
+        PIKA_DETAIL_DP(detail::mpi_debug<1>, debug(str<>("init"), detail::mpi_data_));
+
+        // --------------------------------------
+        // install error handler (convert mpi errors into exceptoions
+        if (errorhandler == exception_mode::install_handler)
+        {
+            PIKA_ASSERT(detail::mpi_data_.error_handler_initialized_ == false);
+            detail::set_error_handler();
+            detail::mpi_data_.error_handler_initialized_ = true;
+        }
+
+        // --------------------------------------
+        auto mode = get_completion_mode();
+        if (mode >= pika::detail::to_underlying(detail::handler_method::unspecified))
+        {
+            PIKA_THROW_EXCEPTION(
+                pika::error::invalid_status, "Bad completion flags", "invalid completion mode");
+        }
+
+#ifdef OMPI_HAVE_MPI_EXT_CONTINUE
+        // --------------------------------------
+        // if we are using experimental mpix_continuations, setup internals
+        if (detail::get_handler_method(mode) == detail::handler_method::mpix_continuation)
+        {
+            // the lock prevents multithreaded polling from accessing the request before it is ready
+            std::unique_lock lk(detail::mpi_data_.mpix_lock);
+            // the atomic flag prevents lockless version accessing the request before it is ready
+            detail::mpi_ext_continuation_result_check(MPIX_Continue_init(MPIX_CONT_POLL_ONLY,
+                MPI_UNDEFINED, MPI_INFO_NULL, &detail::mpi_data_.mpix_continuations_request));
+
+            PIKA_DETAIL_DP(detail::mpi_debug<1>,
+                debug(str<>("MPIX"), "Enabled,", "pool =", detail::get_pool_name(), ", mode",
+                    detail::mode_string(get_completion_mode()), get_completion_mode(),
+                    ptr(detail::mpi_data_.mpix_continuations_request)));
+            // it is now safe to use the mpix request, {memory_order = not a critical code path}
+            detail::mpi_data_.mpix_ready_.store(true, std::memory_order_seq_cst);
+        }
+#else
+        // if selected, but unsupported, throw an error
+        if (detail::get_handler_method(mode) == detail::handler_method::mpix_continuation)
+        {
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "MPI_EXT_CONTINUE",
+                "mpi_ext_continuation not supported, invalid handler method");
+        }
+#endif
+        detail::register_polling();
+
+        // ----------------------------------------------------------
+        // the pool should exist if the completion mode needs it
+        bool need_pool = (detail::comm_world_size() > 1 && detail::use_pool(mode));
+        if (detail::pool_exists() != need_pool)
+        {
+            PIKA_DETAIL_DP(detail::mpi_debug<0>,
+                warning(str<>("pika:::mpi"), "handler mode", mode, "and mpi pool existence status",
+                    detail::pool_exists(), "are inconsistent and may reduce performance"));
+        }
+    }
+
+    // -----------------------------------------------------------------
+    void stop_polling()
+    {
+        detail::unregister_polling(pika::resource::get_thread_pool(detail::get_pool_name()));
+
+        // remove error handler if we installed it
+        if (detail::mpi_data_.error_handler_initialized_)
+        {
+            PIKA_ASSERT(detail::pika_mpi_errhandler != 0);
+            detail::mpi_data_.error_handler_initialized_ = false;
+            MPI_Errhandler_free(&detail::pika_mpi_errhandler);
+            detail::pika_mpi_errhandler = 0;
+        }
+
+        // clean up if we initialized mpi
+        PIKA_DETAIL_DP(detail::mpi_debug<1>, debug(str<>("finalize"), detail::mpi_data_));
+        mpi::detail::environment::finalize();
+    }
+
+    // -----------------------------------------------------------------
     size_t get_work_count() { return detail::mpi_data_.all_in_flight_; }
 
     // -----------------------------------------------------------------
     std::size_t get_completion_mode() { return detail::completion_flags_; }
     void set_completion_mode(std::size_t mode) { detail::completion_flags_ = mode; }
 
-    // -------------------------------------------------------------
+    // -----------------------------------------------------------------
     void enable_optimizations(bool enable) { detail::mpi_data_.optimizations_ = enable; }
 
-    // -------------------------------------------------------------
+    // -----------------------------------------------------------------
     // Return the "best" mpi thread mode to use for initialization
     // if all requests are transferred to the mpi pool, then single threaded is ok
     int get_preferred_thread_mode()
