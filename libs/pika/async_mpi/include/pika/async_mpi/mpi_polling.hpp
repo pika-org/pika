@@ -228,7 +228,8 @@ namespace pika::mpi::experimental {
     struct [[nodiscard]] enable_polling
     {
         /// an empty pool name tells pika to use the mpi pool if it exists
-        enable_polling(exception_mode errorhandler = no_handler, std::string const& pool_name = "")
+        explicit enable_polling(
+            exception_mode errorhandler = no_handler, std::string const& pool_name = "")
         {
             mpi::experimental::detail::start(errorhandler, pool_name);
         }
