@@ -846,8 +846,13 @@ namespace pika::mpi::experimental {
     {
         // don't allow polling code to run until init has completed
         std::lock_guard<detail::mutex_type> lk(detail::mpi_data_.polling_vector_mtx_);
+        PIKA_DETAIL_DP(detail::mpi_debug<1>, debug(str<>("start_polling"), detail::mpi_data_));
 
-        if (pool_name.empty()) pool_name = detail::get_pool_name();
+        if (pool_name.empty())
+        {
+            pool_name = detail::pool_exists() ? detail::get_pool_name() :
+                                                resource::get_partitioner().get_default_pool_name();
+        }
         detail::register_pool(pool_name);
 
         // --------------------------------------
@@ -858,8 +863,6 @@ namespace pika::mpi::experimental {
         }
         detail::mpi_data_.rank_ = mpi::detail::environment::rank();
         detail::mpi_data_.size_ = mpi::detail::environment::size();
-
-        PIKA_DETAIL_DP(detail::mpi_debug<1>, debug(str<>("init"), detail::mpi_data_));
 
         // --------------------------------------
         // install error handler (convert mpi errors into exceptoions
