@@ -713,9 +713,6 @@ namespace pika::mpi::experimental {
         }
 
         // -----------------------------------------------------------------
-        const std::string& get_pool_name() { return detail::polling_pool_name_; }
-
-        // -----------------------------------------------------------------
         void register_pool(const std::string& pool_name)
         {
             PIKA_DETAIL_DP(detail::mpi_debug<1>,
@@ -839,6 +836,9 @@ namespace pika::mpi::experimental {
     }    // namespace detail
 
     // -----------------------------------------------------------------
+    const std::string& get_pool_name() { return detail::polling_pool_name_; }
+
+    // -----------------------------------------------------------------
     // initialize the pika::mpi background request handler
     // All ranks should call this function,
     // but only one thread per rank needs to do so
@@ -850,7 +850,7 @@ namespace pika::mpi::experimental {
 
         if (pool_name.empty())
         {
-            pool_name = detail::pool_exists() ? detail::get_pool_name() :
+            pool_name = detail::pool_exists() ? get_pool_name() :
                                                 resource::get_partitioner().get_default_pool_name();
         }
         detail::register_pool(pool_name);
@@ -893,7 +893,7 @@ namespace pika::mpi::experimental {
                 MPI_UNDEFINED, MPI_INFO_NULL, &detail::mpi_data_.mpix_continuations_request));
 
             PIKA_DETAIL_DP(detail::mpi_debug<1>,
-                debug(str<>("MPIX"), "Enabled,", "pool =", detail::get_pool_name(), ", mode",
+                debug(str<>("MPIX"), "Enabled,", "pool =", get_pool_name(), ", mode",
                     detail::mode_string(get_completion_mode()), get_completion_mode(),
                     ptr(detail::mpi_data_.mpix_continuations_request)));
             // it is now safe to use the mpix request, {memory_order = not a critical code path}
@@ -923,7 +923,7 @@ namespace pika::mpi::experimental {
     // -----------------------------------------------------------------
     void stop_polling()
     {
-        detail::unregister_polling(pika::resource::get_thread_pool(detail::get_pool_name()));
+        detail::unregister_polling(pika::resource::get_thread_pool(get_pool_name()));
 
         // remove error handler if we installed it
         if (detail::mpi_data_.error_handler_initialized_)
