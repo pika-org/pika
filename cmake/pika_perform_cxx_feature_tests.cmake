@@ -44,6 +44,10 @@ function(pika_perform_cxx_feature_tests)
     DEFINITIONS PIKA_HAVE_CXX20_TRIVIAL_VIRTUAL_DESTRUCTOR
   )
 
+  pika_check_for_cxx20_trivial_virtual_destructor_gpu(
+    DEFINITIONS PIKA_HAVE_CXX20_TRIVIAL_VIRTUAL_DESTRUCTOR_GPU
+  )
+
   pika_check_for_cxx23_static_call_operator(DEFINITIONS PIKA_HAVE_CXX23_STATIC_CALL_OPERATOR)
 
   pika_check_for_cxx23_static_call_operator_gpu(
