@@ -183,7 +183,6 @@ namespace pika::mpi::experimental {
         PIKA_EXPORT bool create_pool(pika::resource::partitioner& rp, std::string const& pool_name,
             resource::polling_pool_creation_mode mode);
 
-        PIKA_EXPORT const std::string& get_pool_name();
         PIKA_EXPORT void register_pool(const std::string& pool_name);
 
         PIKA_EXPORT void register_polling();
@@ -214,6 +213,9 @@ namespace pika::mpi::experimental {
     /// when true pika::mpi can disable pool creation, or change the thread mode
     /// otherwise, the flags passed by the user to completion mode etc are honoured
     PIKA_EXPORT void enable_optimizations(bool enable);
+
+    /// return the name assigned to the mpi polling pool
+    PIKA_EXPORT const std::string& get_pool_name();
 
     // initialize the pika::mpi background request handler
     // All ranks should call this function (but only one thread per rank needs to do so)
