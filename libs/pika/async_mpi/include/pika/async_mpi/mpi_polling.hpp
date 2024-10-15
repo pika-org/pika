@@ -175,9 +175,6 @@ namespace pika::mpi::experimental {
         PIKA_EXPORT void register_polling();
         PIKA_EXPORT void unregister_polling();
 
-        // returns false if no custom mpi pool has been created
-        PIKA_EXPORT bool pool_exists();
-
         // -----------------------------------------------------------------
         /// set the maximum number of MPI_Request completions to handle at each polling event
         PIKA_EXPORT void set_max_polling_size(std::size_t);

@@ -156,9 +156,6 @@ namespace pika::mpi::experimental {
         // should pika use an mpi pool, default initialization
         static std::size_t enable_pool_{get_enable_pool_default()};
 
-        // by default, we assume that no custom pool exists
-        static bool custom_pool_exists_{false};
-
         // default completion/handler mode for mpi continuations
         static std::size_t completion_flags_{get_completion_mode_default()};
 
@@ -616,10 +613,7 @@ namespace pika::mpi::experimental {
         }
 
         // -------------------------------------------------------------
-        inline bool singlethreaded(int mode)
-        {
-            return (custom_pool_exists_ && !use_inline_request(mode));
-        }
+        inline bool singlethreaded(int mode) { return (enable_pool_ && !use_inline_request(mode)); }
 
         // -------------------------------------------------------------
         pika::threads::detail::polling_status poll()
@@ -732,21 +726,22 @@ namespace pika::mpi::experimental {
                 debug(str<>("register_pool"), "pool =", pool_name, ", mode",
                     mode_string(get_completion_mode()), get_completion_mode()));
             if (pool_name == resource::get_partitioner().get_default_pool_name())
-                detail::custom_pool_exists_ = false;
+                detail::enable_pool_ = false;
             else
             {
                 for (std::size_t p = 1; p < resource::get_partitioner().get_num_pools(); ++p)
                 {
                     if (pool_name == resource::get_partitioner().get_pool_name(p))
-                        detail::custom_pool_exists_ = true;
+                        detail::enable_pool_ = true;
                 }
-                if (!detail::custom_pool_exists_)
+                if (!detail::enable_pool_)
                 {
                     PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "mpi::register",
                         "Register failed '{}' does not exist", pool_name);
                 }
             }
             detail::polling_pool_name_ = pool_name;
+            PIKA_ASSERT(detail::enable_pool_ == enable_pool_);
         }
 
         // -----------------------------------------------------------------
@@ -838,9 +833,6 @@ namespace pika::mpi::experimental {
             return true;
         }
 
-        // -----------------------------------------------------------------
-        bool pool_exists() { return custom_pool_exists_; }
-
         // -------------------------------------------------------------
         void init()
         {
@@ -864,8 +856,8 @@ namespace pika::mpi::experimental {
 
         if (pool_name.empty())
         {
-            pool_name = detail::pool_exists() ? get_pool_name() :
-                                                resource::get_partitioner().get_default_pool_name();
+            pool_name = detail::enable_pool_ ? get_pool_name() :
+                                               resource::get_partitioner().get_default_pool_name();
         }
         detail::register_pool(pool_name);
 
@@ -921,11 +913,11 @@ namespace pika::mpi::experimental {
         // ----------------------------------------------------------
         // the pool should exist if the completion mode needs it
         bool need_pool = (detail::comm_world_size() > 1 && get_enable_pool());
-        if (detail::pool_exists() != need_pool)
+        if (detail::enable_pool_ != need_pool)
         {
             PIKA_DETAIL_DP(detail::mpi_debug<0>,
                 warning(str<>("pika:::mpi"), "handler mode", mode, "and mpi pool existence status",
-                    detail::pool_exists(), "are inconsistent and may reduce performance"));
+                    detail::enable_pool_, "are inconsistent and may reduce performance"));
         }
     }
 
@@ -952,8 +944,8 @@ namespace pika::mpi::experimental {
     size_t get_work_count() { return detail::mpi_data_.all_in_flight_; }
 
     // -----------------------------------------------------------------
-    bool get_enable_pool() { return detail::enable_pool_; }
-    void set_enable_pool(bool mode) { detail::enable_pool_ = mode; }
+    inline bool get_enable_pool() { return detail::enable_pool_; }
+    inline void set_enable_pool(bool mode) { detail::enable_pool_ = mode; }
 
     // -----------------------------------------------------------------
     std::size_t get_completion_mode() { return detail::completion_flags_; }
