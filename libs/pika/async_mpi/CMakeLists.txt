@@ -13,9 +13,9 @@ endif()
 
 pika_check_for_mpix_continuations(PIKA_WITH_MPIX_CONTINUATIONS)
 if(PIKA_WITH_MPIX_CONTINUATIONS)
-  set(PIKA_MPI_MODES_LOOP_COUNT 79)
+  set(PIKA_MPI_MODES_LOOP_COUNT 39)
 else()
-  set(PIKA_MPI_MODES_LOOP_COUNT 63)
+  set(PIKA_MPI_MODES_LOOP_COUNT 31)
 endif()
 
 # Default location is $PIKA_ROOT/libs/mpi/include

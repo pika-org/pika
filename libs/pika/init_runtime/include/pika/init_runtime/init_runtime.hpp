@@ -74,9 +74,6 @@ namespace pika {
         mutable shutdown_function_type shutdown;
         pika::resource::partitioner_mode rp_mode = pika::resource::mode_default;
         detail::rp_callback_type rp_callback;
-#if defined(PIKA_HAVE_MPI)
-        pika::resource::polling_pool_creation_mode pool_creation_mode = pika::resource::mode_manual;
-#endif
     };
 
     PIKA_EXPORT int init(std::function<int(pika::program_options::variables_map&)> f, int argc,

@@ -40,18 +40,23 @@ foreach(test ${tests})
     FOLDER "Tests/Unit/Modules/AsyncMPI"
   )
 
-  foreach(polling_mode RANGE 0 ${PIKA_MPI_MODES_LOOP_COUNT} 1)
-    pika_add_pseudo_target(${test}_mode_${polling_mode}_test)
-    pika_add_pseudo_dependencies(${test}_mode_${polling_mode}_test ${test}_test)
-    pika_add_unit_test(
-      "modules.async_mpi"
-      ${test}_mode_${polling_mode}
-      ${${test}_PARAMETERS}
-      EXECUTABLE
-      ${test}_test
-      ARGS
-      "--pika:mpi-completion-mode=${polling_mode}"
-    )
+  foreach(enable_pool RANGE 1)
+    foreach(polling_mode RANGE 0 ${PIKA_MPI_MODES_LOOP_COUNT} 1)
+      set(temp_name_ ${test}_mode_${enable_pool}_${polling_mode})
+      message("generating ${temp_name_}")
+      pika_add_pseudo_target(${temp_name_}_test)
+      pika_add_pseudo_dependencies(${temp_name_}_test ${test}_test)
+      pika_add_unit_test(
+        "modules.async_mpi"
+        ${temp_name_}
+        ${${test}_PARAMETERS}
+        EXECUTABLE
+        ${test}_test
+        ARGS
+        $<$<BOOL:${enable_pool}>:--pika:mpi-enable-pool>
+        "--pika:mpi-completion-mode=${polling_mode}"
+      )
+    endforeach()
   endforeach()
   pika_add_unit_test("modules.async_mpi" ${test} ${${test}_PARAMETERS})
 endforeach()

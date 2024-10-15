@@ -545,10 +545,9 @@ int main(int argc, char* argv[])
     }
 
     // -----------------
-    // Initialize and run pika. Ask for an mpi thread pool if polling mode requires it
+    // Initialize and run pika.
     pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
-    init_args.pool_creation_mode = ::pika::resource::mode_pika_decides;
 
     mpix::enable_optimizations(vm["mpi-optimizations"].as<bool>());
 
