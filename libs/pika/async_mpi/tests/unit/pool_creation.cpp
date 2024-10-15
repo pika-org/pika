@@ -7,7 +7,6 @@
 #include <pika/config/compiler_specific.hpp>
 #include <pika/exception.hpp>
 #include <pika/execution.hpp>
-#include <pika/execution_base/tests/algorithm_test_utils.hpp>
 #include <pika/init.hpp>
 #include <pika/mpi.hpp>
 #include <pika/testing.hpp>
