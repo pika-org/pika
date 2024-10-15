@@ -63,6 +63,8 @@ namespace pika::mpi::experimental {
         constexpr std::uint32_t max_poll_requests = 32;
 
         // -----------------------------------------------------------------
+        /// Get the default value for mpi pool creation enable/disable
+        bool get_enable_pool_default();
         /// Get the default value for number of requests to poll for in calls to MPI_Test etc
         std::size_t get_polling_default();
         /// Get the default mode for completions/transfers of MPI requests to from pools
@@ -151,11 +153,16 @@ namespace pika::mpi::experimental {
         /// a single instance of all the mpi variables initialized once at startup
         static mpi_data mpi_data_;
 
+        // should pika use an mpi pool, default initialization
+        static std::size_t enable_pool_{get_enable_pool_default()};
+
+        // by default, we assume that no custom pool exists
+        static bool custom_pool_exists_{false};
+
         // default completion/handler mode for mpi continuations
         static std::size_t completion_flags_{get_completion_mode_default()};
 
         static std::string polling_pool_name_{"polling"};
-        static bool custom_pool_exists_{false};
 
         // stream operator to display debug mpi_data
         PIKA_EXPORT std::ostream& operator<<(std::ostream& os, mpi_data const& info)
@@ -199,6 +206,12 @@ namespace pika::mpi::experimental {
             PIKA_DETAIL_DP(mpi_debug<2>, debug(str<>("Poll size"), dec<3>(val)));
             mpi_data_.max_polling_requests = val;
             return val;
+        }
+
+        // -----------------------------------------------------------------
+        bool get_enable_pool_default()
+        {
+            return pika::detail::get_env_var_as<bool>("PIKA_MPI_ENABLE_POOL", false);
         }
 
         // -----------------------------------------------------------------
@@ -605,7 +618,7 @@ namespace pika::mpi::experimental {
         // -------------------------------------------------------------
         inline bool singlethreaded(int mode)
         {
-            return (use_pool(mode) && !use_inline_request(mode));
+            return (custom_pool_exists_ && !use_inline_request(mode));
         }
 
         // -------------------------------------------------------------
@@ -778,9 +791,10 @@ namespace pika::mpi::experimental {
             // use reference so that we change the actual value in place
             std::size_t& flags = detail::completion_flags_;
             if (mode == resource::polling_pool_creation_mode::mode_force_no_create)
-                flags &= ~pika::detail::to_underlying(handler_method::use_pool);
+                set_enable_pool(false);
             else
             {
+                // if we are potentially using a pool, mpi must be initialized
                 if (!mpi::detail::environment::is_mpi_initialized())
                 {
                     PIKA_THROW_EXCEPTION(pika::error::invalid_status, "mpi::create_pool",
@@ -788,14 +802,14 @@ namespace pika::mpi::experimental {
                 }
 
                 if (mode == resource::polling_pool_creation_mode::mode_force_create)
-                    flags |= pika::detail::to_underlying(handler_method::use_pool);
+                    set_enable_pool(true);
                 else if ((mode == resource::polling_pool_creation_mode::mode_pika_decides) &&
                     (mpi_data_.size_ == 1))
                 {
                     // if we have a single rank - disable pool
                     PIKA_DETAIL_DP(
                         detail::mpi_debug<1>, debug(str<>("single rank"), "Pool disabled"));
-                    flags &= ~pika::detail::to_underlying(handler_method::use_pool);
+                    set_enable_pool(false);
                 }
             }
             PIKA_DETAIL_DP(detail::mpi_debug<1>,
@@ -803,8 +817,8 @@ namespace pika::mpi::experimental {
             // reset the env var used to control completion mode and pool flags
             setenv("PIKA_MPI_COMPLETION_MODE", std::to_string(flags).c_str(), true);
 
-            // if pool is now disabled, set mpi pool to default and exit
-            if (!detail::use_pool(flags))
+            // if pool is now disabled, set mpi pool to default pool and exit
+            if (!get_enable_pool())
             {
                 register_pool(rp.get_default_pool_name());
                 return false;
@@ -856,7 +870,6 @@ namespace pika::mpi::experimental {
         detail::register_pool(pool_name);
 
         // --------------------------------------
-        // the user has asked us to call mpi_init
         if (!mpi::detail::environment::is_mpi_initialized())
         {
             throw mpi::exception(MPI_ERR_OTHER, "MPI must be initialized before using pika::mpi");
@@ -865,7 +878,7 @@ namespace pika::mpi::experimental {
         detail::mpi_data_.size_ = mpi::detail::environment::size();
 
         // --------------------------------------
-        // install error handler (convert mpi errors into exceptoions
+        // install error handler (convert mpi errors into exceptions)
         if (errorhandler == exception_mode::install_handler)
         {
             PIKA_ASSERT(detail::mpi_data_.error_handler_initialized_ == false);
@@ -875,12 +888,6 @@ namespace pika::mpi::experimental {
 
         // --------------------------------------
         auto mode = get_completion_mode();
-        if (mode >= pika::detail::to_underlying(detail::handler_method::unspecified))
-        {
-            PIKA_THROW_EXCEPTION(
-                pika::error::invalid_status, "Bad completion flags", "invalid completion mode");
-        }
-
 #ifdef OMPI_HAVE_MPI_EXT_CONTINUE
         // --------------------------------------
         // if we are using experimental mpix_continuations, setup internals
@@ -907,11 +914,13 @@ namespace pika::mpi::experimental {
                 "mpi_ext_continuation not supported, invalid handler method");
         }
 #endif
+
+        // --------------------------------------
         detail::register_polling();
 
         // ----------------------------------------------------------
         // the pool should exist if the completion mode needs it
-        bool need_pool = (detail::comm_world_size() > 1 && detail::use_pool(mode));
+        bool need_pool = (detail::comm_world_size() > 1 && get_enable_pool());
         if (detail::pool_exists() != need_pool)
         {
             PIKA_DETAIL_DP(detail::mpi_debug<0>,
@@ -941,6 +950,10 @@ namespace pika::mpi::experimental {
 
     // -----------------------------------------------------------------
     size_t get_work_count() { return detail::mpi_data_.all_in_flight_; }
+
+    // -----------------------------------------------------------------
+    bool get_enable_pool() { return detail::enable_pool_; }
+    void set_enable_pool(bool mode) { detail::enable_pool_ = mode; }
 
     // -----------------------------------------------------------------
     std::size_t get_completion_mode() { return detail::completion_flags_; }

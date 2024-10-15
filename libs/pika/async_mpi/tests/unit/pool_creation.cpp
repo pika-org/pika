@@ -125,10 +125,8 @@ int main(int argc, char* argv[])
     MPI_Init(&argc, &argv);
 
     // ---------------------------------------
-    // Let pika create a pool for mpi using default settings
-    pika::init_params init_args1;
-    init_args1.pool_creation_mode = pika::resource::polling_pool_creation_mode::mode_pika_decides;
     // Start runtime and collect runtime exit status
+    pika::init_params init_args1;
     auto result1 = pika::init([&]() { return pika_main(""); }, argc, argv, init_args1);
     PIKA_TEST_EQ(result1, 0);
 
