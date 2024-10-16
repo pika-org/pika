@@ -5,6 +5,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config/compiler_specific.hpp>
+#include <pika/debugging/print.hpp>
 #include <pika/exception.hpp>
 #include <pika/execution.hpp>
 #include <pika/init.hpp>
@@ -24,8 +25,8 @@
 /// note that it is expected that this test will print warnings when a pool is created
 /// but not actually needed by the completion mode
 
-static const std::string random_pool_name1 = "abcd12345qwerty";
-static const std::string random_pool_name2 = "ta-daa-500";
+static const std::string random_name1 = "abcd12345qwerty";
+static const std::string random_name2 = "ta-daa-500";
 
 namespace ex = pika::execution::experimental;
 namespace mpi = pika::mpi::experimental;
@@ -106,8 +107,8 @@ void init_resource_partitioner_manual(
 
     // Create a thread pool with a single core that we will use for communication related tasks
     rp.create_thread_pool(
-        random_pool_name1, pika::resource::scheduling_policy::local_priority_fifo, mode);
-    rp.add_resource(rp.sockets()[0].cores()[0].pus()[0], random_pool_name1);
+        random_name1, pika::resource::scheduling_policy::local_priority_fifo, mode);
+    rp.add_resource(rp.sockets()[0].cores()[0].pus()[0], random_name1);
 }
 
 //----------------------------------------------------------------------------
@@ -115,7 +116,7 @@ void init_resource_partitioner_mpi(
     pika::resource::partitioner& rp, pika::program_options::variables_map const&)
 {
     pika::mpi::experimental::detail::create_pool(
-        rp, random_pool_name2, pika::resource::polling_pool_creation_mode::mode_force_create);
+        rp, random_name2, mpi::polling_pool_creation_mode::mode_force_create);
 }
 
 //----------------------------------------------------------------------------
@@ -124,8 +125,9 @@ int main(int argc, char* argv[])
     MPI_Init(&argc, &argv);
 
     // ---------------------------------------
-    // Start runtime and collect runtime exit status
+    // Start runtime and collect runtime exit status, turn on auto pool creation
     pika::init_params init_args1;
+    init_args1.cfg.emplace_back("pika.mpi.enable_pool=" + std::to_string(true));
     auto result1 = pika::init([&]() { return pika_main(""); }, argc, argv, init_args1);
     PIKA_TEST_EQ(result1, 0);
 
@@ -134,9 +136,7 @@ int main(int argc, char* argv[])
     // set runtime initialization callback to manually create our thread pool
     pika::init_params init_args2;
     init_args2.rp_callback = &init_resource_partitioner_manual;
-    // Start runtime and collect runtime exit status
-    auto result2 =
-        pika::init([&]() { return pika_main(random_pool_name1); }, argc, argv, init_args2);
+    auto result2 = pika::init([&]() { return pika_main(random_name1); }, argc, argv, init_args2);
     PIKA_TEST_EQ(result2, 0);
 
     // ---------------------------------------
@@ -144,9 +144,7 @@ int main(int argc, char* argv[])
     // set runtime initialization callback to create our thread pool using mpi internals
     pika::init_params init_args3;
     init_args3.rp_callback = &init_resource_partitioner_mpi;
-    // Start runtime and collect runtime exit status
-    auto result3 =
-        pika::init([&]() { return pika_main(random_pool_name2); }, argc, argv, init_args3);
+    auto result3 = pika::init([&]() { return pika_main(random_name2); }, argc, argv, init_args3);
     PIKA_TEST_EQ(result3, 0);
 
     MPI_Finalize();

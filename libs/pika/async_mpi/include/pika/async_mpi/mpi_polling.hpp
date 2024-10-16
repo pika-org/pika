@@ -38,6 +38,19 @@ namespace pika::mpi::experimental {
         install_handler,
     };
 
+    /// This enumeration describes polling pool creation modes,
+    /// the user may request a dedicated pool that can be used by pika::mpi
+    /// MPI pool completion flags are passed on the command line or via env vars
+    /// the default mode is pika_decides: if running on one rank or a single thread
+    /// per rank, creation of the pool will be
+    enum polling_pool_creation_mode
+    {
+        /// if the completion mode requires it, a pool will be created at startup
+        mode_pika_decides = 0,
+        /// overrides command line flags/env vars - enables creation of a polling pool
+        mode_force_create = 1,
+    };
+
     namespace detail {
         using request_callback_function_type = pika::util::detail::unique_function<void(int)>;
 
@@ -164,11 +177,14 @@ namespace pika::mpi::experimental {
         PIKA_EXPORT void restart_mpix();
 
         void init_resource_partitioner_handler(pika::resource::partitioner&,
-            pika::program_options::variables_map const& vm,
-            resource::polling_pool_creation_mode mode);
+            pika::program_options::variables_map const& vm, polling_pool_creation_mode mode);
 
+        /// creates a pool to be used for mpi polling, returns true if the pool was created
+        /// and false if it was not, due to lack of threads, or running on a single rank
+        /// passing a pool creation mode of force create will only fail if insufficient threads
+        /// exist to support one
         PIKA_EXPORT bool create_pool(pika::resource::partitioner& rp, std::string const& pool_name,
-            resource::polling_pool_creation_mode mode);
+            polling_pool_creation_mode mode);
 
         PIKA_EXPORT void register_pool(const std::string& pool_name);
 

@@ -154,7 +154,7 @@ namespace pika::mpi::experimental {
         static mpi_data mpi_data_;
 
         // should pika use an mpi pool, default initialization
-        static std::size_t enable_pool_{get_enable_pool_default()};
+        static bool enable_pool_{get_enable_pool_default()};
 
         // default completion/handler mode for mpi continuations
         static std::size_t completion_flags_{get_completion_mode_default()};
@@ -703,9 +703,8 @@ namespace pika::mpi::experimental {
         // -------------------------------------------------------------
         // used at startup during pika::init to initialize an mpi pool
         void init_resource_partitioner_handler(pika::resource::partitioner& rp,
-            pika::program_options::variables_map const&, resource::polling_pool_creation_mode mode)
+            pika::program_options::variables_map const&, polling_pool_creation_mode mode)
         {
-            if (mode == resource::polling_pool_creation_mode::mode_manual) return;
             PIKA_DETAIL_DP(detail::mpi_debug<2>, debug(str<>("init RP"), "create_pool"));
             create_pool(rp, "", mode);
         }
@@ -722,26 +721,22 @@ namespace pika::mpi::experimental {
         // -----------------------------------------------------------------
         void register_pool(const std::string& pool_name)
         {
-            PIKA_DETAIL_DP(detail::mpi_debug<1>,
-                debug(str<>("register_pool"), "pool =", pool_name, ", mode",
-                    mode_string(get_completion_mode()), get_completion_mode()));
-            if (pool_name == resource::get_partitioner().get_default_pool_name())
-                detail::enable_pool_ = false;
-            else
+            bool found = false;
+            for (std::size_t p = 0; p < resource::get_partitioner().get_num_pools(); ++p)
             {
-                for (std::size_t p = 1; p < resource::get_partitioner().get_num_pools(); ++p)
+                if (pool_name == resource::get_partitioner().get_pool_name(p))
                 {
-                    if (pool_name == resource::get_partitioner().get_pool_name(p))
-                        detail::enable_pool_ = true;
-                }
-                if (!detail::enable_pool_)
-                {
-                    PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "mpi::register",
-                        "Register failed '{}' does not exist", pool_name);
+                    found = true;
+                    detail::polling_pool_name_ = pool_name;
+                    detail::enable_pool_ = (p > 0);
+                    break;
                 }
             }
-            detail::polling_pool_name_ = pool_name;
-            PIKA_ASSERT(detail::enable_pool_ == enable_pool_);
+            if (!found)
+                PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "mpi::register",
+                    "Register failed '{}' does not exist", pool_name);
+            PIKA_DETAIL_DP(detail::mpi_debug<0>,
+                debug(str<>("register_pool"), "pool =", detail::polling_pool_name_));
         }
 
         // -----------------------------------------------------------------
@@ -774,63 +769,53 @@ namespace pika::mpi::experimental {
 
         // -----------------------------------------------------------------
         bool create_pool(pika::resource::partitioner& rp, std::string const& pool_name,
-            resource::polling_pool_creation_mode mode)
+            polling_pool_creation_mode mode)
         {
-            if (mpi::detail::environment::is_mpi_initialized())
+            // if we are potentially using a pool, mpi must be initialized
+            if (!mpi::detail::environment::is_mpi_initialized())
             {
-                // needed, in order to decide if pool can be disabled on 1 rank
-                mpi_data_.rank_ = mpi::detail::environment::rank();
-                mpi_data_.size_ = mpi::detail::environment::size();
+                PIKA_THROW_EXCEPTION(pika::error::invalid_status, "mpi::create_pool",
+                    "MPI must be initialized prior to pool creation");
             }
+            // needed, in order to decide if pool can be disabled on 1 rank
+            mpi_data_.rank_ = mpi::detail::environment::rank();
+            mpi_data_.size_ = mpi::detail::environment::size();
 
-            // use reference so that we change the actual value in place
-            std::size_t& flags = detail::completion_flags_;
-            if (mode == resource::polling_pool_creation_mode::mode_force_no_create)
-                set_enable_pool(false);
-            else
+            bool do_create = true;
+            if (mode == polling_pool_creation_mode::mode_pika_decides)
             {
-                // if we are potentially using a pool, mpi must be initialized
-                if (!mpi::detail::environment::is_mpi_initialized())
+                if (mpi_data_.size_ == 1)
                 {
-                    PIKA_THROW_EXCEPTION(pika::error::invalid_status, "mpi::create_pool",
-                        "MPI must be initialized prior to pool creation");
-                }
-
-                if (mode == resource::polling_pool_creation_mode::mode_force_create)
-                    set_enable_pool(true);
-                else if ((mode == resource::polling_pool_creation_mode::mode_pika_decides) &&
-                    (mpi_data_.size_ == 1))
-                {
-                    // if we have a single rank - disable pool
                     PIKA_DETAIL_DP(
-                        detail::mpi_debug<1>, debug(str<>("single rank"), "Pool disabled"));
-                    set_enable_pool(false);
+                        detail::mpi_debug<0>, warning(str<>("Pool disabled"), "single rank"));
+                    do_create = false;
+                }
+                if (rp.get_number_requested_threads() < 2)
+                {
+                    PIKA_DETAIL_DP(detail::mpi_debug<0>,
+                        warning(str<>("Pool disabled"), "insufficient threads"));
+                    do_create = false;
                 }
             }
-            PIKA_DETAIL_DP(detail::mpi_debug<1>,
-                debug(str<>("completion mode"), bin<8>(flags), detail::mode_string(flags)));
-            // reset the env var used to control completion mode and pool flags
-            setenv("PIKA_MPI_COMPLETION_MODE", std::to_string(flags).c_str(), true);
 
             // if pool is now disabled, set mpi pool to default pool and exit
-            if (!get_enable_pool())
+            if (!do_create) { register_pool(rp.get_default_pool_name()); }
+            else
             {
-                register_pool(rp.get_default_pool_name());
-                return false;
-            }
-            // Disable idle backoff on the MPI pool we are about to create
-            using pika::threads::scheduler_mode;
-            auto smode = scheduler_mode::default_mode & ~scheduler_mode::enable_idle_backoff;
+                // Disable idle backoff on the MPI pool we are about to create
+                auto smode = threads::scheduler_mode::default_mode &
+                    ~threads::scheduler_mode::enable_idle_backoff;
 
-            // Create a pool with a single core to use for all communication related tasks
-            std::string name = pool_name.empty() ? get_pool_name() : pool_name;
-            rp.create_thread_pool(name, pika::resource::scheduling_policy::static_priority, smode);
-            rp.add_resource(rp.sockets()[0].cores()[0].pus()[0], name);
-            PIKA_DETAIL_DP(detail::mpi_debug<1>,
-                debug(str<>("pool created"), "name", get_pool_name(), "mode flags", bin<8>(flags)));
-            //
-            register_pool(name);
-            return true;
+                // Create a pool with a single core to use for all communication related tasks
+                std::string name = pool_name.empty() ? get_pool_name() : pool_name;
+                rp.create_thread_pool(name, resource::scheduling_policy::static_priority, smode);
+                rp.add_resource(rp.sockets()[0].cores()[0].pus()[0], name);
+                register_pool(name);
+            }
+            PIKA_DETAIL_DP(detail::mpi_debug<0>,
+                debug(str<>("create_pool"), (do_create ? "created" : "skipped"), "name",
+                    get_pool_name(), "mode flags", bin<8>(detail::completion_flags_)));
+            return do_create;
         }
 
         // -------------------------------------------------------------
@@ -859,7 +844,7 @@ namespace pika::mpi::experimental {
             pool_name = detail::enable_pool_ ? get_pool_name() :
                                                resource::get_partitioner().get_default_pool_name();
         }
-        detail::register_pool(pool_name);
+        if (pool_name != get_pool_name()) detail::register_pool(pool_name);
 
         // --------------------------------------
         if (!mpi::detail::environment::is_mpi_initialized())
@@ -944,8 +929,8 @@ namespace pika::mpi::experimental {
     size_t get_work_count() { return detail::mpi_data_.all_in_flight_; }
 
     // -----------------------------------------------------------------
-    inline bool get_enable_pool() { return detail::enable_pool_; }
-    inline void set_enable_pool(bool mode) { detail::enable_pool_ = mode; }
+    bool get_enable_pool() { return detail::enable_pool_; }
+    void set_enable_pool(bool mode) { detail::enable_pool_ = mode; }
 
     // -----------------------------------------------------------------
     std::size_t get_completion_mode() { return detail::completion_flags_; }
