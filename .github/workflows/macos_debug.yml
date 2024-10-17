@@ -79,7 +79,7 @@ jobs:
       - name: Install
         shell: bash
         run: |
-            cmake --build build --target install
+            sudo cmake --build build --target install
       - name: Hello
         shell: bash
         run: |
