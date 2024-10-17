@@ -19,7 +19,7 @@ jobs:
   build_and_test:
     name: github/macos/debug
     if: ${{ github.event_name == 'merge_group' }}
-    runs-on: macos-12
+    runs-on: macos-15
 
     steps:
       - name: Install dependencies
