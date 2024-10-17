@@ -59,6 +59,8 @@ namespace pika::detail {
     // - https://github.com/llvm/llvm-project/commit/73b22935a7a863679021598db6a45fcfb62cd321
     // - https://reviews.llvm.org/D119615
 #if defined(PIKA_HAVE_CXX20_TRIVIAL_VIRTUAL_DESTRUCTOR) &&                                         \
+    (!defined(PIKA_HAVE_GPU_SUPPORT) ||                                                            \
+        defined(PIKA_HAVE_CXX20_TRIVIAL_VIRTUAL_DESTRUCTOR_GPU)) &&                                \
     !(defined(PIKA_COMPUTE_CODE) && defined(PIKA_CLANG_VERSION) &&                                 \
         (PIKA_CLANG_VERSION >= 140000) && (PIKA_CLANG_VERSION < 150000))
     template <typename T>
