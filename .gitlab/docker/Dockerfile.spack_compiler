@@ -15,6 +15,9 @@ RUN spack config --scope site add concretizer:targets:host_compatible:false && \
     echo "retry-connrefused" >> $HOME/.curlrc && \
     echo "retry-max-time = 30" >> $HOME/.curlrc
 
+# Provided by the gitlab runner of .container-builder
+ARG NUM_PROCS
+
 # Install compiler if not already installed, modify packages.yaml to require spack compilers
 ARG SPACK_ARCH
 ARG COMPILER
@@ -25,7 +28,7 @@ RUN spack compiler info $COMPILER > /dev/null 2> /dev/null; compiler_missing=$?;
         export spack_compiler="$spack_compiler~gold"; \
     fi && \
     if [[ $compiler_missing != 0 ]]; then \
-        spack install $spack_compiler arch=$SPACK_ARCH && \
+        spack install -j$NUM_PROCS $spack_compiler arch=$SPACK_ARCH && \
         spack external find \
             --scope site \
             --path $(spack location -i $spack_compiler) gcc llvm && \
@@ -35,7 +38,7 @@ RUN spack compiler info $COMPILER > /dev/null 2> /dev/null; compiler_missing=$?;
         \
         if [[ ! -z "$NVHPC_COMPILER" ]]; then \
             nvhpc_version=${NVHPC_COMPILER#nvhpc@} && \
-            spack install $NVHPC_COMPILER%$spack_compiler arch=$SPACK_ARCH && \
+            spack install -j$NUM_PROCS $NVHPC_COMPILER%$spack_compiler arch=$SPACK_ARCH && \
             spack external find \
                 --scope site \
                 --path $(spack location -i $NVHPC_COMPILER)/Linux_x86_64/$nvhpc_version/compilers/bin \

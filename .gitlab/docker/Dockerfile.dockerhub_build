@@ -1,6 +1,9 @@
 ARG BASE_IMAGE
 FROM $BASE_IMAGE
 
+# Provided by the gitlab runner of .container-builder
+ARG NUM_PROCS
+
 ARG SOURCE_DIR
 ARG BUILD_DIR
 
@@ -18,5 +21,5 @@ RUN cmake -B${BUILD_DIR} ${SOURCE_DIR} \
      -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON
 
 # Build
-RUN cmake --build ${BUILD_DIR} --target all
-RUN cmake --build ${BUILD_DIR} --target tests
+RUN cmake --build ${BUILD_DIR} --parallel $NUM_PROCS --target all
+RUN cmake --build ${BUILD_DIR} --parallel $NUM_PROCS --target tests
