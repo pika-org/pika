@@ -220,8 +220,7 @@ namespace pika::resource::detail {
         // initial_thread_pools
         std::vector<socket> sockets_;
 
-        // store policy flags determining the general behavior of the
-        // resource_partitioner
+        // store policy flags determining the general behavior of the resource_partitioner
         resource::partitioner_mode mode_;
 
         // topology information

@@ -328,10 +328,8 @@ struct message_receiver
 // this is called on a pika thread after the runtime starts up
 int pika_main(pika::program_options::variables_map& vm)
 {
-    // Do not initialize mpi (we do that ourselves), do install an error handler
-    mpix::init(false, true);
-    // Setup mpi polling on default pool, enable exceptions and init mpi internals
-    mpix::register_polling();
+    // Enable polling on mpi pool, install an error handler
+    mpix::enable_polling enable_polling(mpix::exception_mode::install_handler);
     //
     std::int32_t rank, size;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -360,7 +358,7 @@ int pika_main(pika::program_options::variables_map& vm)
     limiter = std::make_unique<pika::counting_semaphore<>>(in_flight);
 
     mpi_poll_size = vm["mpi-polling-size"].as<std::uint32_t>();
-    mpix::set_max_polling_size(mpi_poll_size);
+    mpix::detail::set_max_polling_size(mpi_poll_size);
 
     std::uint32_t message_size = vm["message-bytes"].as<std::uint32_t>();
 
@@ -479,20 +477,6 @@ int pika_main(pika::program_options::variables_map& vm)
 }
 
 //----------------------------------------------------------------------------
-void init_resource_partitioner_handler(
-    pika::resource::partitioner&, pika::program_options::variables_map const& vm)
-{
-    // Don't create an MPI pool if the user disabled it
-    auto pool_mode = mpix::pool_create_mode::pika_decides;
-    if (vm["no-mpi-pool"].as<bool>()) { pool_mode = mpix::pool_create_mode::force_no_create; }
-
-    mpix::enable_optimizations(vm["mpi-optimizations"].as<bool>());
-
-    msr_deb<2>.debug(str<>("init RP"), "create_pool");
-    mpix::create_pool("", pool_mode);
-}
-
-//----------------------------------------------------------------------------
 // the normal int main function that is called at startup and runs on an OS
 // thread the user must call pika::init to start the pika runtime which
 // will execute pika_main on a pika thread
@@ -564,8 +548,8 @@ int main(int argc, char* argv[])
     // Initialize and run pika.
     pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
-    // Set the callback to init thread_pools
-    init_args.rp_callback = &init_resource_partitioner_handler;
+
+    mpix::enable_optimizations(vm["mpi-optimizations"].as<bool>());
 
     auto result = pika::init(pika_main, argc, argv, init_args);
     PIKA_TEST_EQ(result, 0);
