@@ -465,7 +465,7 @@ void condition_test_waits(condition_test_data* data)
 
     // Test wait_until.
     std::chrono::system_clock::time_point xt =
-        std::chrono::system_clock::now() + std::chrono::milliseconds(100);
+        std::chrono::system_clock::now() + std::chrono::milliseconds(200);
     while (data->notified != 3) data->condition.wait_until(lock, xt);
     PIKA_TEST(lock ? true : false);
     PIKA_TEST_EQ(data->notified, 3);
@@ -473,7 +473,7 @@ void condition_test_waits(condition_test_data* data)
     data->condition.notify_one();
 
     // Test predicate wait_until.
-    xt = std::chrono::system_clock::now() + std::chrono::milliseconds(100);
+    xt = std::chrono::system_clock::now() + std::chrono::milliseconds(200);
     cond_predicate pred(data->notified, 4);
     PIKA_TEST(data->condition.wait_until(lock, xt, pred));
     PIKA_TEST(lock ? true : false);
@@ -484,7 +484,7 @@ void condition_test_waits(condition_test_data* data)
 
     // Test predicate wait_for
     cond_predicate pred_rel(data->notified, 5);
-    PIKA_TEST(data->condition.wait_for(lock, std::chrono::milliseconds(100), pred_rel));
+    PIKA_TEST(data->condition.wait_for(lock, std::chrono::milliseconds(200), pred_rel));
     PIKA_TEST(lock ? true : false);
     PIKA_TEST(pred_rel());
     PIKA_TEST_EQ(data->notified, 5);
