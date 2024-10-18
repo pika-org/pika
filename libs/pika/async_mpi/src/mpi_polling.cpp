@@ -64,7 +64,7 @@ namespace pika::mpi::experimental {
 
         // -----------------------------------------------------------------
         /// Get the default value for mpi pool creation enable/disable
-        bool get_enable_pool_default();
+        bool get_pool_enabled_default();
         /// Get the default value for number of requests to poll for in calls to MPI_Test etc
         std::size_t get_polling_default();
         /// Get the default mode for completions/transfers of MPI requests to from pools
@@ -154,7 +154,7 @@ namespace pika::mpi::experimental {
         static mpi_data mpi_data_;
 
         // should pika use an mpi pool, default initialization
-        static bool enable_pool_{get_enable_pool_default()};
+        static bool enable_pool_{get_pool_enabled_default()};
 
         // default completion/handler mode for mpi continuations
         static std::size_t completion_flags_{get_completion_mode_default()};
@@ -206,7 +206,7 @@ namespace pika::mpi::experimental {
         }
 
         // -----------------------------------------------------------------
-        bool get_enable_pool_default()
+        bool get_pool_enabled_default()
         {
             return pika::detail::get_env_var_as<bool>("PIKA_MPI_ENABLE_POOL", false);
         }
@@ -822,6 +822,11 @@ namespace pika::mpi::experimental {
             int provided, required = get_preferred_thread_mode();
             mpi::detail::environment::init(nullptr, nullptr, required, required, provided);
         }
+
+        // -----------------------------------------------------------------
+        bool get_pool_enabled() { return detail::enable_pool_; }
+        void set_pool_enabled(bool mode) { detail::enable_pool_ = mode; }
+
     }    // namespace detail
 
     // -----------------------------------------------------------------
@@ -895,7 +900,7 @@ namespace pika::mpi::experimental {
 
         // ----------------------------------------------------------
         // the pool should exist if the completion mode needs it
-        bool need_pool = (detail::comm_world_size() > 1 && get_enable_pool());
+        bool need_pool = (detail::comm_world_size() > 1 && detail::get_pool_enabled());
         if (detail::enable_pool_ != need_pool)
         {
             PIKA_LOG(warn,
@@ -926,10 +931,6 @@ namespace pika::mpi::experimental {
 
     // -----------------------------------------------------------------
     size_t get_work_count() { return detail::mpi_data_.all_in_flight_; }
-
-    // -----------------------------------------------------------------
-    bool get_enable_pool() { return detail::enable_pool_; }
-    void set_enable_pool(bool mode) { detail::enable_pool_ = mode; }
 
     // -----------------------------------------------------------------
     std::size_t get_completion_mode() { return detail::completion_flags_; }
