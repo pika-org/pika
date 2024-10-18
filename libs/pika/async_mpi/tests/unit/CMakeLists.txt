@@ -50,7 +50,7 @@ foreach(test ${tests})
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL
-    DEPENDENCIES pika_testing ${${test}_DEPENDENCIES}
+    DEPENDENCIES ${${test}_DEPENDENCIES}
     FOLDER "Tests/Unit/Modules/AsyncMPI"
   )
 
@@ -70,7 +70,7 @@ foreach(test ${tests})
         ${full_name_}
         ${${test}_PARAMETERS}
         EXECUTABLE
-        ${test}_test
+        ${test}
         ARGS
         $<$<BOOL:${enable_pool}>:--pika:mpi-enable-pool>
         "--pika:mpi-completion-mode=${polling_mode}"
