@@ -13,6 +13,7 @@
 #include <pika/config.hpp>
 #include <pika/execution_base/this_thread.hpp>
 #include <pika/mpi_base/mpi_environment.hpp>
+#include <pika/runtime/runtime.hpp>
 #include <pika/threading_base/print.hpp>
 //
 #define RANK_OUTPUT (rank == 0)
@@ -144,11 +145,7 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
     std::uniform_int_distribution<std::uint64_t>& random_slot, test_options& options)
 {
     static constexpr deb::print_threshold<1, debug_level> write_arr(" WRITE ");
-
-    // this needs to scope all uses of mpi::experimental::executor
-    std::string poolname = "default";
-    if (pika::resource::pool_exists(mpi::get_pool_name())) { poolname = mpi::get_pool_name(); }
-    mpi::enable_user_polling enable_polling(poolname);
+    mpi::enable_polling enable_polling();
 
     pika::scoped_annotation annotate("test_write");
     std::stringstream temp;
@@ -234,12 +231,10 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
             void* buffer_to_recv = &local_recv_storage[memory_offset_recv];
             auto rsnd = ex::just(buffer_to_recv, options.transfer_size_B, MPI_UNSIGNED_CHAR,
                             recv_rank, tag, MPI_COMM_WORLD) |
-                mpi::transform_mpi(MPI_Irecv, mpi::stream_type::receive_1) |
-                ex::then([&](int result) {
+                mpi::transform_mpi(MPI_Irecv) | ex::then([&]() {
                     --recvs_in_flight;
                     nws_deb<5>.debug(deb::str<>("recv complete"), "recv in flight", recvs_in_flight,
                         "send in flight", sends_in_flight);
-                    return result;
                 });
             ex::start_detached(std::move(rsnd));
 
@@ -257,11 +252,10 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
             void* buffer_to_send = &local_send_storage[memory_offset_send];
             auto ssnd = ex::just(buffer_to_send, options.transfer_size_B, MPI_UNSIGNED_CHAR,
                             send_rank, tag, MPI_COMM_WORLD) |
-                mpi::transform_mpi(MPI_Isend, mpi::stream_type::send_1) | ex::then([&](int result) {
+                mpi::transform_mpi(MPI_Isend) | ex::then([&]() {
                     --sends_in_flight;
                     nws_deb<5>.debug(deb::str<>("send complete"), "recv in flight", recvs_in_flight,
                         "send in flight", sends_in_flight);
-                    return result;
                 });
             launch_on_default_pool(std::move(ssnd));
         }
@@ -342,12 +336,15 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
 int pika_main(pika::program_options::variables_map& vm)
 {
     // Disable idle backoff on the default pool
-    pika::threads::remove_scheduler_mode(::pika::threads::scheduler_mode::enable_idle_backoff);
+    pika::detail::remove_scheduler_mode(pika::threads::scheduler_mode::enable_idle_backoff);
 
-    pika::mpi::environment mpi_env;
+    pika::mpi::detail::environment mpi_env;
     pika::detail::runtime* rt = pika::detail::get_runtime_ptr();
     pika::util::runtime_configuration cfg = rt->get_config();
-    mpi_env.init(nullptr, nullptr, cfg);
+    int minimal = MPI_THREAD_MULTIPLE;
+    int required = MPI_THREAD_MULTIPLE;
+    int provided = 0;
+    mpi_env.init(nullptr, nullptr, required, minimal, provided);
 
     pika::chrono::detail::high_resolution_timer timer_main;
     nws_deb<2>.debug(deb::str<>("PIKA main"));
@@ -373,7 +370,7 @@ int pika_main(pika::program_options::variables_map& vm)
     options.warmup = false;
     options.final = false;
 
-    mpi::set_max_requests_in_flight(options.in_flight_limit);
+    // mpi::set_max_requests_in_flight(options.in_flight_limit);
     nws_deb<1>.debug("set_max_requests_in_flight", rank, deb::dec<04>(options.in_flight_limit));
 
     nws_deb<1>.debug(
@@ -466,10 +463,10 @@ int main(int argc, char* argv[])
     pika::program_options::options_description cmdline(
         "Usage: " PIKA_APPLICATION_STRING " [options]");
 
-    cmdline.add_options()("in-flight-limit",
-        pika::program_options::value<std::uint32_t>()->default_value(
-            mpi::get_max_requests_in_flight()),
-        "Apply a limit to the number of messages in flight.");
+    // cmdline.add_options()("in-flight-limit",
+    //     pika::program_options::value<std::uint32_t>()->default_value(
+    //         mpi::get_max_requests_in_flight()),
+    //     "Apply a limit to the number of messages in flight.");
 
     cmdline.add_options()("localMB",
         pika::program_options::value<std::uint64_t>()->default_value(256),
@@ -487,9 +484,6 @@ int main(int argc, char* argv[])
     nws_deb<6>.debug(3, "Calling pika::init");
     pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
-    // Tell init to create an mpi thread pool if needed
-    init_args.resource::polling_pool_creation_mode = ::pika::resource::polling_pool_pika_decides;
-
     auto result = pika::init(pika_main, argc, argv, init_args);
     PIKA_TEST_EQ(result, 0);
 
