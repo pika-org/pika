@@ -201,37 +201,40 @@ namespace pika::mpi::experimental {
         PIKA_EXPORT bool get_pool_enabled();
         PIKA_EXPORT void set_pool_enabled(bool);
 
+        // -----------------------------------------------------------------
+        /// Set/Get the polling and handler mode for continuations.
+        PIKA_EXPORT void set_completion_mode(std::size_t);
+
     }    // namespace detail
+
+    /// when true pika::mpi can disable pool creation, or change the thread mode
+    /// otherwise, the flags passed by the user to completion mode etc are honoured
+    PIKA_EXPORT void enable_optimizations(bool);
+
+    // -----------------------------------------------------------------
+    /// Set/Get the polling and handler mode for continuations.
+    PIKA_EXPORT std::size_t get_completion_mode();
+
+    /// can be used to choose between single/multi thread model when initializing MPI
+    PIKA_EXPORT int get_preferred_thread_mode();
 
     /// return the total number of mpi requests currently in queues
     /// This number is an estimate as new work might be created/added during the call
     /// and so the returned value should be considered approximate (racy)
     PIKA_EXPORT size_t get_work_count();
 
-    // -----------------------------------------------------------------
-    /// Set/Get the polling and handler mode for continuations.
-    PIKA_EXPORT std::size_t get_completion_mode();
-    PIKA_EXPORT void set_completion_mode(std::size_t);
-
-    /// can be used to choose between single/multi thread model when initializing MPI
-    PIKA_EXPORT int get_preferred_thread_mode();
-
-    /// when true pika::mpi can disable pool creation, or change the thread mode
-    /// otherwise, the flags passed by the user to completion mode etc are honoured
-    PIKA_EXPORT void enable_optimizations(bool);
-
     /// return the name assigned to the mpi polling pool
     PIKA_EXPORT const std::string& get_pool_name();
 
-    // initialize the pika::mpi background request handler
-    // All ranks should call this function (but only one thread per rank needs to do so)
+    /// initialize the pika::mpi background request handler
+    /// All ranks should call this function (but only one thread per rank needs to do so)
     PIKA_EXPORT void start_polling(
         exception_mode errorhandler = no_handler, std::string pool_name = "");
 
     PIKA_EXPORT void stop_polling();
 
     // -----------------------------------------------------------------
-    // This RAII helper class ensures that MPI polling start/stop is handled correctly
+    /// This RAII helper class ensures that MPI polling start/stop is handled correctly
     struct [[nodiscard]] enable_polling
     {
         /// an empty pool name tells pika to use the mpi pool if it exists

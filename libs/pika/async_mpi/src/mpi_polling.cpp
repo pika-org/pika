@@ -827,10 +827,36 @@ namespace pika::mpi::experimental {
         bool get_pool_enabled() { return detail::enable_pool_; }
         void set_pool_enabled(bool mode) { detail::enable_pool_ = mode; }
 
+        // -----------------------------------------------------------------
+        void set_completion_mode(std::size_t mode) { detail::completion_flags_ = mode; }
+
     }    // namespace detail
 
     // -----------------------------------------------------------------
     const std::string& get_pool_name() { return detail::polling_pool_name_; }
+
+    // -----------------------------------------------------------------
+    // Return the "best" mpi thread mode to use for initialization
+    // if all requests are transferred to the mpi pool, then single threaded is ok
+    int get_preferred_thread_mode()
+    {
+        int required = MPI_THREAD_MULTIPLE;
+        if (detail::singlethreaded(get_completion_mode()) && detail::mpi_data_.optimizations_)
+        {
+            required = MPI_THREAD_SINGLE;
+            PIKA_DETAIL_DP(detail::mpi_debug<1>, debug(str<>("MPI_THREAD_SINGLE"), "overridden"));
+        }
+        return required;
+    }
+
+    // -----------------------------------------------------------------
+    size_t get_work_count() { return detail::mpi_data_.all_in_flight_; }
+
+    // -----------------------------------------------------------------
+    std::size_t get_completion_mode() { return detail::completion_flags_; }
+
+    // -----------------------------------------------------------------
+    void enable_optimizations(bool enable) { detail::mpi_data_.optimizations_ = enable; }
 
     // -----------------------------------------------------------------
     // initialize the pika::mpi background request handler
@@ -927,30 +953,6 @@ namespace pika::mpi::experimental {
         // clean up if we initialized mpi
         PIKA_DETAIL_DP(detail::mpi_debug<1>, debug(str<>("finalize"), detail::mpi_data_));
         mpi::detail::environment::finalize();
-    }
-
-    // -----------------------------------------------------------------
-    size_t get_work_count() { return detail::mpi_data_.all_in_flight_; }
-
-    // -----------------------------------------------------------------
-    std::size_t get_completion_mode() { return detail::completion_flags_; }
-    void set_completion_mode(std::size_t mode) { detail::completion_flags_ = mode; }
-
-    // -----------------------------------------------------------------
-    void enable_optimizations(bool enable) { detail::mpi_data_.optimizations_ = enable; }
-
-    // -----------------------------------------------------------------
-    // Return the "best" mpi thread mode to use for initialization
-    // if all requests are transferred to the mpi pool, then single threaded is ok
-    int get_preferred_thread_mode()
-    {
-        int required = MPI_THREAD_MULTIPLE;
-        if (detail::singlethreaded(get_completion_mode()) && detail::mpi_data_.optimizations_)
-        {
-            required = MPI_THREAD_SINGLE;
-            PIKA_DETAIL_DP(detail::mpi_debug<1>, debug(str<>("MPI_THREAD_SINGLE"), "overridden"));
-        }
-        return required;
     }
 
 }    // namespace pika::mpi::experimental
