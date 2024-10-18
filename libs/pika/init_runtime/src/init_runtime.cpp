@@ -141,8 +141,9 @@ namespace pika {
 #if defined(PIKA_HAVE_MPI)
             pika::mpi::experimental::detail::set_pool_enabled(
                 pika::detail::get_entry_as<bool>(cmdline.rtcfg_, "pika.mpi.enable_pool", false));
-            pika::mpi::experimental::set_completion_mode(pika::detail::get_entry_as<std::size_t>(
-                cmdline.rtcfg_, "pika.mpi.completion_mode", 0));
+            pika::mpi::experimental::detail::set_completion_mode(
+                pika::detail::get_entry_as<std::size_t>(
+                    cmdline.rtcfg_, "pika.mpi.completion_mode", 0));
 #endif
             init_logging(cmdline.rtcfg_);
         }
