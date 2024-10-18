@@ -195,17 +195,18 @@ namespace pika::mpi::experimental {
         /// set the maximum number of MPI_Request completions to handle at each polling event
         PIKA_EXPORT void set_max_polling_size(std::size_t);
         PIKA_EXPORT std::size_t get_max_polling_size();
+
+        // -----------------------------------------------------------------
+        /// Set/Get the pool_enabled flag
+        PIKA_EXPORT bool get_pool_enabled();
+        PIKA_EXPORT void set_pool_enabled(bool);
+
     }    // namespace detail
 
     /// return the total number of mpi requests currently in queues
     /// This number is an estimate as new work might be created/added during the call
     /// and so the returned value should be considered approximate (racy)
     PIKA_EXPORT size_t get_work_count();
-
-    // -----------------------------------------------------------------
-    /// Set/Get the polling and handler mode for continuations.
-    PIKA_EXPORT bool get_enable_pool();
-    PIKA_EXPORT void set_enable_pool(bool);
 
     // -----------------------------------------------------------------
     /// Set/Get the polling and handler mode for continuations.
