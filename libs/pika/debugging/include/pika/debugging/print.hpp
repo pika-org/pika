@@ -484,7 +484,7 @@ namespace PIKA_DETAIL_NS_DEBUG {
         }
 
         template <typename T, typename V>
-        constexpr void set(T&, V const&)
+        static constexpr void set(T&, V const&)
         {
         }
 
@@ -586,7 +586,7 @@ namespace PIKA_DETAIL_NS_DEBUG {
         }
 
         template <typename T, typename V>
-        void set(T& var, V const& val)
+        static void set(T& var, V const& val)
         {
             var = val;
         }

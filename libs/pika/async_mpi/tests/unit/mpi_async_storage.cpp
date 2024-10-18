@@ -44,7 +44,7 @@ constexpr int debug_level = 9;
 
 // cppcheck-suppress ConfigurationNotChecked
 template <int Level>
-static pika::debug::detail::print_threshold<Level, debug_level> nws_deb("STORAGE");
+inline constexpr pika::debug::detail::print_threshold<Level, debug_level> nws_deb("STORAGE");
 
 //----------------------------------------------------------------------------
 //
@@ -143,7 +143,7 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
     std::uniform_int_distribution<std::uint64_t>& random_offset,
     std::uniform_int_distribution<std::uint64_t>& random_slot, test_options& options)
 {
-    static deb::print_threshold<1, debug_level> write_arr(" WRITE ");
+    static constexpr deb::print_threshold<1, debug_level> write_arr(" WRITE ");
 
     // this needs to scope all uses of mpi::experimental::executor
     std::string poolname = "default";
