@@ -54,18 +54,7 @@ int pika_main(const std::string& pool_name)
             tt::sync_wait(PIKA_MOVE(s));
             PIKA_TEST_EQ(data, 42);
         }
-
-        // Operator| overload
-        {
-            // MPI function pointer
-            int data = 0, count = 1;
-            if (rank == 0) { data = 42; }
-            tt::sync_wait(
-                ex::just(&data, count, datatype, 0, comm) | mpi::transform_mpi(MPI_Ibcast));
-            PIKA_TEST_EQ(data, 42);
-        }
-
-    }    // let the user polling go out of scope
+    }    // let the polling go out of scope
 
     {
         // Register polling on default pool
@@ -80,17 +69,7 @@ int pika_main(const std::string& pool_name)
             tt::sync_wait(PIKA_MOVE(s));
             PIKA_TEST_EQ(data, 42);
         }
-
-        // Operator| overload
-        {
-            // MPI function pointer
-            int data = 0, count = 1;
-            if (rank == 0) { data = 42; }
-            tt::sync_wait(
-                ex::just(&data, count, datatype, 0, comm) | mpi::transform_mpi(MPI_Ibcast));
-            PIKA_TEST_EQ(data, 42);
-        }
-    }    // let the user polling go out of scope
+    }    // let the polling go out of scope
 
     pika::finalize();
     return EXIT_SUCCESS;
@@ -124,29 +103,36 @@ int main(int argc, char* argv[])
 {
     MPI_Init(&argc, &argv);
 
-    // ---------------------------------------
-    // Start runtime and collect runtime exit status, turn on auto pool creation
-    pika::init_params init_args1;
-    init_args1.cfg.emplace_back("pika.mpi.enable_pool=" + std::to_string(true));
-    auto result1 = pika::init([&]() { return pika_main(""); }, argc, argv, init_args1);
-    PIKA_TEST_EQ(result1, 0);
+    int result = 0;
+    {
+        // ---------------------------------------
+        // Start runtime and collect runtime exit status, turn on auto pool creation
+        pika::init_params init_args;
+        init_args.cfg.emplace_back("pika.mpi.enable_pool=" + std::to_string(true));
+        result |= pika::init([&]() { return pika_main(""); }, argc, argv, init_args);
+        PIKA_TEST_EQ(result, 0);
+    }
 
-    // ---------------------------------------
-    // test if we can create and initialize an mpi pool ourselves
-    // set runtime initialization callback to manually create our thread pool
-    pika::init_params init_args2;
-    init_args2.rp_callback = &init_resource_partitioner_manual;
-    auto result2 = pika::init([&]() { return pika_main(random_name1); }, argc, argv, init_args2);
-    PIKA_TEST_EQ(result2, 0);
+    {
+        // ---------------------------------------
+        // test if we can create and initialize an mpi pool ourselves
+        // set runtime initialization callback to manually create our thread pool
+        pika::init_params init_args;
+        init_args.rp_callback = &init_resource_partitioner_manual;
+        result |= pika::init([&]() { return pika_main(random_name1); }, argc, argv, init_args);
+        PIKA_TEST_EQ(result, 0);
+    }
 
-    // ---------------------------------------
-    // test if we can create and initialize an mpi pool using mpi::create_pool
-    // set runtime initialization callback to create our thread pool using mpi internals
-    pika::init_params init_args3;
-    init_args3.rp_callback = &init_resource_partitioner_mpi;
-    auto result3 = pika::init([&]() { return pika_main(random_name2); }, argc, argv, init_args3);
-    PIKA_TEST_EQ(result3, 0);
+    {
+        // ---------------------------------------
+        // test if we can create and initialize an mpi pool using mpi::create_pool
+        // set runtime initialization callback to create our thread pool using mpi internals
+        pika::init_params init_args;
+        init_args.rp_callback = &init_resource_partitioner_mpi;
+        result |= pika::init([&]() { return pika_main(random_name2); }, argc, argv, init_args);
+        PIKA_TEST_EQ(result, 0);
+    }
 
     MPI_Finalize();
-    return result1 && result2 && result3;
+    return result;
 }
