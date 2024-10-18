@@ -396,6 +396,16 @@ namespace pika::detail {
     }
 
 #if defined(PIKA_HAVE_MPI)
+    bool handle_enable_mpi_pool(detail::manage_config& cfgmap,
+        pika::util::runtime_configuration const& rtcfg, pika::program_options::variables_map& vm)
+    {
+        bool enable_mpi_pool = cfgmap.get_value<bool>("pika.mpi.enable_pool",
+            pika::detail::get_entry_as<bool>(rtcfg, "pika.mpi.enable_pool", false));
+
+        enable_mpi_pool |= vm.count("pika:mpi-enable-pool");
+        return enable_mpi_pool;
+    }
+
     std::size_t handle_mpi_completion_mode(detail::manage_config& cfgmap,
         pika::util::runtime_configuration const& rtcfg, pika::program_options::variables_map& vm)
     {
@@ -550,6 +560,9 @@ namespace pika::detail {
         }
 
 #if defined(PIKA_HAVE_MPI)
+        bool enable_mpi_pool = detail::handle_enable_mpi_pool(cfgmap, rtcfg_, vm);
+        ini_config.emplace_back("pika.mpi.enable_pool=" + std::to_string(enable_mpi_pool));
+
         std::size_t const mpi_completion_mode =
             detail::handle_mpi_completion_mode(cfgmap, rtcfg_, vm);
         ini_config.emplace_back("pika.mpi.completion_mode=" + std::to_string(mpi_completion_mode));

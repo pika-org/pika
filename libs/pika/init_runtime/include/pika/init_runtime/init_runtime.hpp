@@ -72,8 +72,8 @@ namespace pika {
         std::vector<std::string> cfg;
         mutable startup_function_type startup;
         mutable shutdown_function_type shutdown;
-        pika::resource::partitioner_mode rp_mode = ::pika::resource::mode_default;
-        pika::detail::rp_callback_type rp_callback;
+        pika::resource::partitioner_mode rp_mode = pika::resource::mode_default;
+        detail::rp_callback_type rp_callback;
     };
 
     PIKA_EXPORT int init(std::function<int(pika::program_options::variables_map&)> f, int argc,
