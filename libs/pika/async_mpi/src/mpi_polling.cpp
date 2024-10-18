@@ -735,7 +735,7 @@ namespace pika::mpi::experimental {
             if (!found)
                 PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "mpi::register",
                     "Register failed '{}' does not exist", pool_name);
-            PIKA_DETAIL_DP(detail::mpi_debug<0>,
+            PIKA_DETAIL_DP(detail::mpi_debug<1>,
                 debug(str<>("register_pool"), "pool =", detail::polling_pool_name_));
         }
 
@@ -786,14 +786,12 @@ namespace pika::mpi::experimental {
             {
                 if (mpi_data_.size_ == 1)
                 {
-                    PIKA_DETAIL_DP(
-                        detail::mpi_debug<0>, warning(str<>("Pool disabled"), "single rank"));
+                    PIKA_LOG(warn, "MPI Pool creation disabled, running on a single rank");
                     do_create = false;
                 }
                 if (rp.get_number_requested_threads() < 2)
                 {
-                    PIKA_DETAIL_DP(detail::mpi_debug<0>,
-                        warning(str<>("Pool disabled"), "insufficient threads"));
+                    PIKA_LOG(warn, "MPI Pool creation disabled, insufficient threads");
                     do_create = false;
                 }
             }
@@ -812,7 +810,7 @@ namespace pika::mpi::experimental {
                 rp.add_resource(rp.sockets()[0].cores()[0].pus()[0], name);
                 register_pool(name);
             }
-            PIKA_DETAIL_DP(detail::mpi_debug<0>,
+            PIKA_DETAIL_DP(detail::mpi_debug<1>,
                 debug(str<>("create_pool"), (do_create ? "created" : "skipped"), "name",
                     get_pool_name(), "mode flags", bin<8>(detail::completion_flags_)));
             return do_create;
@@ -900,9 +898,10 @@ namespace pika::mpi::experimental {
         bool need_pool = (detail::comm_world_size() > 1 && get_enable_pool());
         if (detail::enable_pool_ != need_pool)
         {
-            PIKA_DETAIL_DP(detail::mpi_debug<0>,
-                warning(str<>("pika:::mpi"), "handler mode", mode, "and mpi pool existence status",
-                    detail::enable_pool_, "are inconsistent and may reduce performance"));
+            PIKA_LOG(warn,
+                "pika::mpi handler mode ({}) and mpi pool existence status ({}) "
+                "are inconsistent and may reduce performance",
+                mode, detail::enable_pool_);
         }
     }
 
@@ -948,7 +947,7 @@ namespace pika::mpi::experimental {
         if (detail::singlethreaded(get_completion_mode()) && detail::mpi_data_.optimizations_)
         {
             required = MPI_THREAD_SINGLE;
-            PIKA_DETAIL_DP(detail::mpi_debug<0>, debug(str<>("MPI_THREAD_SINGLE"), "overridden"));
+            PIKA_DETAIL_DP(detail::mpi_debug<1>, debug(str<>("MPI_THREAD_SINGLE"), "overridden"));
         }
         return required;
     }
