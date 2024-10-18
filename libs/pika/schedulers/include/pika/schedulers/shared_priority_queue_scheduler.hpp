@@ -59,8 +59,8 @@ namespace pika::debug::detail {
     constexpr int debug_level = 0;
 
     template <int Level>
-    static print_threshold<Level, debug_level> spq_deb("SPQUEUE");
-    static print_threshold<1, debug_level> spq_arr("SPQUEUE");
+    inline constexpr print_threshold<Level, debug_level> spq_deb("SPQUEUE");
+    inline constexpr print_threshold<1, debug_level> spq_arr("SPQUEUE");
 }    // namespace pika::debug::detail
 
 // ------------------------------------------------------------
