@@ -71,11 +71,6 @@ namespace pika::mpi::experimental {
         /// on any error instead of the default behavior of program termination
         PIKA_EXPORT void set_error_handler();
 
-        // -----------------------------------------------------------------
-        /// Background progress function for MPI async operations
-        /// Checks for completed MPI_Requests and sets ready state in waiting receivers
-        PIKA_EXPORT pika::threads::detail::polling_status poll();
-
         /// utility function to avoid duplication in eager check locations
         PIKA_EXPORT bool poll_request(MPI_Request /*req*/);
 

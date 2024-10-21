@@ -613,26 +613,20 @@ namespace pika::mpi::experimental {
                 polling_status::busy;
         }
 
-        // -------------------------------------------------------------
-        inline bool singlethreaded(int mode) { return (enable_pool_ && !use_inline_request(mode)); }
-
-        // -------------------------------------------------------------
-        pika::threads::detail::polling_status poll()
-        {
-            // get mpi completion mode settings
-            auto mode = get_completion_mode();
-            bool single_threaded = singlethreaded(mode);
-
 #ifdef OMPI_HAVE_MPI_EXT_CONTINUE
-            // if mpi continuations are available, poll here and bypass main routine
-            if (get_handler_method(mode) == handler_method::mpix_continuation)
-            {
-                return try_mpix_polling(single_threaded);
-            }
+        // -------------------------------------------------------------
+        pika::threads::detail::polling_status mpix_poll_single_threaded()
+        {
+            return try_mpix_polling(true);
+        }
+        pika::threads::detail::polling_status mpix_poll_multi_threaded()
+        {
+            return try_mpix_polling(false);
+        }
 #endif
 
-            return (single_threaded) ? poll_singlethreaded() : poll_multithreaded();
-        }
+        // -------------------------------------------------------------
+        inline bool singlethreaded(int mode) { return (enable_pool_ && !use_inline_request(mode)); }
 
         // -------------------------------------------------------------
         void register_polling(pika::threads::detail::thread_pool_base& pool)
@@ -647,7 +641,26 @@ namespace pika::mpi::experimental {
                         mode_string(get_completion_mode()), get_completion_mode()));
             }
             auto* sched = pool.get_scheduler();
-            sched->set_mpi_polling_functions(&poll, &get_work_count);
+
+            // get mpi completion mode settings
+            auto mode = get_completion_mode();
+            bool single_threaded = singlethreaded(mode);
+
+#ifdef OMPI_HAVE_MPI_EXT_CONTINUE
+            // if mpi continuations are available, use custom polling function
+            if (get_handler_method(mode) == handler_method::mpix_continuation)
+            {
+                if (single_threaded)
+                    sched->set_mpi_polling_functions(&mpix_poll_single_threaded, &get_work_count);
+                else
+                    sched->set_mpi_polling_functions(&mpix_poll_multi_threaded, &get_work_count);
+                return;
+            }
+#endif
+            if (single_threaded)
+                sched->set_mpi_polling_functions(&poll_singlethreaded, &get_work_count);
+            else
+                sched->set_mpi_polling_functions(&poll_multithreaded, &get_work_count);
         }
 
         // ------------------------------------------------------------`-
