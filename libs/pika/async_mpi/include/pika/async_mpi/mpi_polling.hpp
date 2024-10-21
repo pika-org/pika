@@ -166,9 +166,6 @@ namespace pika::mpi::experimental {
             }
         }
 
-        /// utility : needed by static checks when debugging
-        PIKA_EXPORT int comm_world_size();
-
         /// mpix extensions in openmpi to support mpi continuations
         using MPIX_Continue_cb_function = int(int rc, void* cb_data);
         PIKA_EXPORT void register_mpix_continuation(
@@ -176,9 +173,12 @@ namespace pika::mpi::experimental {
         /// called after each completed continuation to restart/re-enable continuation support
         PIKA_EXPORT void restart_mpix();
 
+        // -----------------------------------------------------------------
+        /// called at runtime start when command-line flags ask for an mpi pool
         void init_resource_partitioner_handler(pika::resource::partitioner&,
             pika::program_options::variables_map const& vm, polling_pool_creation_mode mode);
 
+        // -----------------------------------------------------------------
         /// creates a pool to be used for mpi polling, returns true if the pool was created
         /// and false if it was not, due to lack of threads, or running on a single rank
         /// passing a pool creation mode of force create will only fail if insufficient threads
@@ -186,8 +186,12 @@ namespace pika::mpi::experimental {
         PIKA_EXPORT bool create_pool(pika::resource::partitioner& rp, std::string const& pool_name,
             polling_pool_creation_mode mode);
 
+        // -----------------------------------------------------------------
+        /// tell the pika::mpi frework which pool is being used for mpi polling
         PIKA_EXPORT void register_pool(const std::string& pool_name);
 
+        // -----------------------------------------------------------------
+        /// actually enable/disable the polling callback handler
         PIKA_EXPORT void register_polling();
         PIKA_EXPORT void unregister_polling();
 
