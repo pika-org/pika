@@ -57,7 +57,7 @@ namespace pika::mpi::experimental {
         // by convention the title is 7 chars (for alignment)
         // a debug level of N shows messages with level 1..N
         template <int Level>
-        static debug::detail::print_threshold<Level, 0> mpi_debug("MPIPOLL");
+        inline constexpr debug::detail::print_threshold<Level, 0> mpi_debug("MPIPOLL");
 
         constexpr std::uint32_t max_poll_requests = 32;
 
