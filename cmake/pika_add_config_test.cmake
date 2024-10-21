@@ -432,6 +432,31 @@ function(pika_check_for_cxx20_trivial_virtual_destructor)
 endfunction()
 
 # ##################################################################################################
+function(pika_check_for_cxx20_trivial_virtual_destructor_gpu)
+  if(PIKA_WITH_GPU_SUPPORT)
+    set(trivial_virtual_destructor_test_extension "cpp")
+    if(PIKA_WITH_CUDA AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC")
+      set(trivial_virtual_destructor_test_extension "cu")
+    elseif(PIKA_WITH_HIP)
+      set(trivial_virtual_destructor_test_extension "hip")
+    endif()
+
+    set(extra_cxxflags)
+    if(PIKA_WITH_CUDA AND CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC")
+      set(extra_cxxflags "-x cu")
+    endif()
+
+    pika_add_config_test(
+      PIKA_WITH_CXX20_TRIVIAL_VIRTUAL_DESTRUCTOR_GPU
+      SOURCE
+        cmake/tests/cxx20_trivial_virtual_destructor.${trivial_virtual_destructor_test_extension}
+        GPU
+      FILE ${ARGN}
+    )
+  endif()
+endfunction()
+
+# ##################################################################################################
 function(pika_check_for_cxx23_static_call_operator)
   pika_add_config_test(
     PIKA_WITH_CXX23_STATIC_CALL_OPERATOR
