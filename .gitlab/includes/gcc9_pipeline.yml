@@ -22,19 +22,19 @@ include:
 gcc9_spack_compiler_image:
   extends:
     - .variables_gcc9_config
-    - .compiler_image_template_rosa
+    - .compiler_image_template_zen2
 
 gcc9_spack_image:
   needs: [gcc9_spack_compiler_image]
   extends:
     - .variables_gcc9_config
-    - .dependencies_image_template_rosa
+    - .dependencies_image_template_zen2
 
 gcc9_build:
   needs: [gcc9_spack_image]
   extends:
     - .variables_gcc9_config
-    - .build_template_rosa
+    - .build_template_zen2
 
 .gcc9_test_common:
   needs: [gcc9_build]
