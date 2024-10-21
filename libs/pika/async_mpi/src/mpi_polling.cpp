@@ -945,6 +945,11 @@ namespace pika::mpi::experimental {
         std::lock_guard<detail::mutex_type> lk(detail::mpi_data_.polling_vector_mtx_);
         detail::unregister_polling(pika::resource::get_thread_pool(get_pool_name()));
 
+        // to avoid adding mutex check in single threaded polling mode,
+        // we must ensure that no (other) threads are still polling
+        // before we exit and allow polling to commence on another pool
+        pika::util::yield_while([&] { return detail::mpi_data_.all_in_flight_ > 0; });
+
         // remove error handler if we installed it
         if (detail::mpi_data_.error_handler_initialized_)
         {
