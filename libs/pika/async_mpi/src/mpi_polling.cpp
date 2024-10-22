@@ -146,9 +146,9 @@ namespace pika::mpi::experimental {
             std::mutex mpix_lock;
             std::atomic<bool> mpix_ready_{false};
 #endif
-
             // optimizations allow/disallow
             bool optimizations_{false};
+            bool single_thread_mode_{false};
         };
 
         /// a single instance of all the mpi variables initialized once at startup
@@ -180,9 +180,7 @@ namespace pika::mpi::experimental {
         // stream operator to display debug mpi_request
         PIKA_EXPORT std::ostream& operator<<(std::ostream& os, MPI_Request const& req)
         {
-            // clang-format off
-            os <<  "req " << debug::detail::hex<8>(req);
-            // clang-format on
+            os << "req " << debug::detail::hex<8>(req);
             return os;
         }
 
@@ -219,36 +217,36 @@ namespace pika::mpi::experimental {
         }
 
         // -----------------------------------------------------------------
-        /// used internally to add an MPI_Request to the lockfree queue
-        /// that will be used by the polling routines to check when requests
-        /// have completed
-        void add_to_request_callback_queue(request_callback&& req_callback)
-        {
-            pika::threads::detail::increment_global_activity_count();
-            ++mpi_data_.all_in_flight_;
-            //
-            mpi_data_.request_callback_queue_.enqueue(PIKA_MOVE(req_callback));
-            PIKA_DETAIL_DP(
-                mpi_debug<5>, debug(str<>("CB queued"), ptr(req_callback.request_), mpi_data_));
-        }
-
-        // -----------------------------------------------------------------
-        /// used internally to add a request to the main polling vector
-        /// that is passed to MPI_Testany. This is only called inside the
-        /// polling function when a lock is held, so only one thread
-        /// at a time ever enters here
+        /// used internally to add a request to the main polling vector passed to MPI_Testany.
+        /// This is only called inside the polling function when a lock is held,
+        /// so only one thread at a time ever enters here
         inline void add_to_request_callback_vector(request_callback&& req_callback)
         {
             mpi_data_.requests_.push_back(req_callback.request_);
             mpi_data_.callbacks_.push_back(
                 {PIKA_MOVE(req_callback.callback_function_), MPI_SUCCESS, req_callback.request_});
 
-            // clang-format off
-            PIKA_DETAIL_DP(mpi_debug<5>, debug(str<>("CB queue => vector"),
-                mpi_data_, ptr(req_callback.request_),
-                "nulls", dec<3>(get_num_null_requests_in_vector())
-                ));
-            // clang-format on
+            PIKA_DETAIL_DP(mpi_debug<5>,
+                debug(str<>("CB queue => vector"), mpi_data_, ptr(req_callback.request_), "nulls",
+                    dec<3>(get_num_null_requests_in_vector())));
+        }
+
+        // -----------------------------------------------------------------
+        /// used internally to add an MPI_Request to the lockfree queue that will be used
+        /// by the polling routines to check when requests have completed
+        void add_to_request_callback_queue(request_callback&& req_callback)
+        {
+            pika::threads::detail::increment_global_activity_count();
+            ++mpi_data_.all_in_flight_;
+            //
+            PIKA_DETAIL_DP(
+                mpi_debug<5>, debug(str<>("CB queued"), ptr(req_callback.request_), mpi_data_));
+
+            // can skip the queue and go direct to the polling vector when singlethreaded
+            if (mpi_data_.single_thread_mode_)
+                add_to_request_callback_vector(PIKA_MOVE(req_callback));
+            else
+                mpi_data_.request_callback_queue_.enqueue(PIKA_MOVE(req_callback));
         }
 
 #if defined(PIKA_DEBUG)
@@ -358,7 +356,6 @@ namespace pika::mpi::experimental {
             }
             else
             {
-                // there should not be a lock here, but the mpix stuff fails without it
                 mpi_ext_continuation_result_check(
                     MPI_Test(&mpi_data_.mpix_continuations_request, &flag, MPI_STATUS_IGNORE));
                 if (flag != 0)
@@ -626,11 +623,20 @@ namespace pika::mpi::experimental {
 #endif
 
         // -------------------------------------------------------------
-        inline bool singlethreaded(int mode) { return (enable_pool_ && !use_inline_request(mode)); }
+        // if there is a pool and requests are always transferred to the pool
+        // then all mpi activities can be done in single threaded lock-free mode
+        inline bool can_run_singlethreaded(int mode)
+        {    //
+            return (enable_pool_ && !use_inline_request(mode));
+        }
 
         // -------------------------------------------------------------
         void register_polling(pika::threads::detail::thread_pool_base& pool)
         {
+            // try to ensure that no (other) threads are still polling elsewhere
+            // before we allow polling to commence on this/another pool
+            pika::util::yield_while([&] { return detail::mpi_data_.all_in_flight_ > 0; });
+
 #if defined(PIKA_DEBUG)
             ++get_register_polling_count();
 #endif
@@ -644,20 +650,25 @@ namespace pika::mpi::experimental {
 
             // get mpi completion mode settings
             auto mode = get_completion_mode();
-            bool single_threaded = singlethreaded(mode);
-
+            mpi_data_.single_thread_mode_ = can_run_singlethreaded(mode);
+            if (mpi_data_.single_thread_mode_)
+            {
+                PIKA_DETAIL_DP(detail::mpi_debug<1>,
+                    debug(str<>("single_thread_mode_"), "pool =", pool.get_pool_name(), ", mode",
+                        mode_string(get_completion_mode()), get_completion_mode()));
+            }
 #ifdef OMPI_HAVE_MPI_EXT_CONTINUE
             // if mpi continuations are available, use custom polling function
             if (get_handler_method(mode) == handler_method::mpix_continuation)
             {
-                if (single_threaded)
+                if (mpi_data_.single_thread_mode_)
                     sched->set_mpi_polling_functions(&mpix_poll_single_threaded, &get_work_count);
                 else
                     sched->set_mpi_polling_functions(&mpix_poll_multi_threaded, &get_work_count);
                 return;
             }
 #endif
-            if (single_threaded)
+            if (mpi_data_.single_thread_mode_)
                 sched->set_mpi_polling_functions(&poll_singlethreaded, &get_work_count);
             else
                 sched->set_mpi_polling_functions(&poll_multithreaded, &get_work_count);
@@ -852,7 +863,8 @@ namespace pika::mpi::experimental {
     int get_preferred_thread_mode()
     {
         int required = MPI_THREAD_MULTIPLE;
-        if (detail::singlethreaded(get_completion_mode()) && detail::mpi_data_.optimizations_)
+        if (detail::can_run_singlethreaded(get_completion_mode()) &&
+            detail::mpi_data_.optimizations_)
         {
             required = MPI_THREAD_SINGLE;
             PIKA_DETAIL_DP(detail::mpi_debug<1>, debug(str<>("MPI_THREAD_SINGLE"), "overridden"));
@@ -958,8 +970,7 @@ namespace pika::mpi::experimental {
         std::lock_guard<detail::mutex_type> lk(detail::mpi_data_.polling_vector_mtx_);
         detail::unregister_polling(pika::resource::get_thread_pool(get_pool_name()));
 
-        // to avoid adding mutex check in single threaded polling mode,
-        // we must ensure that no (other) threads are still polling
+        // try to ensure that no (other) threads are still polling
         // before we exit and allow polling to commence on another pool
         pika::util::yield_while([&] { return detail::mpi_data_.all_in_flight_ > 0; });
 
