@@ -32,10 +32,13 @@ function(pika_add_test category name)
 
   if(TARGET ${${name}_EXECUTABLE}_test)
     set(_exe "$<TARGET_FILE:${${name}_EXECUTABLE}_test>")
+    set(target ${${name}_EXECUTABLE}_test)
   elseif(TARGET ${${name}_EXECUTABLE})
     set(_exe "$<TARGET_FILE:${${name}_EXECUTABLE}>")
+    set(target ${${name}_EXECUTABLE})
   else()
     set(_exe "${${name}_EXECUTABLE}")
+    set(target "")
   endif()
 
   if(${name}_RUN_SERIAL)
@@ -104,13 +107,12 @@ function(pika_add_test category name)
     set_tests_properties("${_full_name}" PROPERTIES WILL_FAIL TRUE)
   endif()
 
-  # Only real tests, i.e. executables ending in _test, link to pika_testing
-  if(TARGET ${${name}_EXECUTABLE}_test AND ${name}_TESTING)
-    target_link_libraries(${${name}_EXECUTABLE}_test PRIVATE pika_testing)
+  if(NOT "${target}" STREQUAL "" AND ${name}_TESTING)
+    target_link_libraries(${target} PRIVATE pika_testing)
   endif()
 
-  if(TARGET ${${name}_EXECUTABLE}_test AND ${name}_PERFORMANCE_TESTING)
-    target_link_libraries(${${name}_EXECUTABLE}_test PRIVATE pika_performance_testing)
+  if(NOT "${target}" STREQUAL "" AND ${name}_PERFORMANCE_TESTING)
+    target_link_libraries(${target} PRIVATE pika_performance_testing)
   endif()
 
 endfunction(pika_add_test)
