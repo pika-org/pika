@@ -496,7 +496,7 @@ namespace PIKA_DETAIL_NS_DEBUG {
         }
 
         template <typename Expr>
-        constexpr bool eval(Expr const&)
+        constexpr bool eval(Expr const&) const
         {
             return true;
         }
@@ -598,7 +598,7 @@ namespace PIKA_DETAIL_NS_DEBUG {
         }
 
         template <typename Expr>
-        auto eval(Expr const& e)
+        auto eval(Expr const& e) const
         {
             return e();
         }
