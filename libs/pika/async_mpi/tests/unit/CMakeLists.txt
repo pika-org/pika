@@ -38,8 +38,6 @@ set(pool_creation_PARAMETERS THREADS 2 RANKS 2 MPIWRAPPER)
 set(pool_creation_NO_POOL ON)
 # cmake-format: on
 
-# note that because we add (eg) "_0_5" to the test name, we explicitly link pika_testing because
-# pika_add_unit_test expects "${name}_test"
 foreach(test ${tests})
 
   set(sources ${test}.cpp)
@@ -70,11 +68,12 @@ foreach(test ${tests})
         ${full_name_}
         ${${test}_PARAMETERS}
         EXECUTABLE
-        ${test}
+        ${test}_test
         ARGS
         $<$<BOOL:${enable_pool}>:--pika:mpi-enable-pool>
         "--pika:mpi-completion-mode=${polling_mode}"
       )
     endforeach()
   endforeach()
+  pika_add_unit_test("modules.async_mpi" ${test} ${${test}_PARAMETERS})
 endforeach()
