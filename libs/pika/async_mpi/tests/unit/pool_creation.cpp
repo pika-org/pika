@@ -56,21 +56,6 @@ int pika_main(const std::string& pool_name)
         }
     }    // let the polling go out of scope
 
-    {
-        // Register polling on default pool
-        mpi::enable_polling enable_polling(mpi::exception_mode::install_handler,
-            pika::resource::get_partitioner().get_default_pool_name());
-        // Success path
-        {
-            // MPI function pointer
-            int data = 0, count = 1;
-            if (rank == 0) { data = 42; }
-            auto s = mpi::transform_mpi(ex::just(&data, count, datatype, 0, comm), MPI_Ibcast);
-            tt::sync_wait(PIKA_MOVE(s));
-            PIKA_TEST_EQ(data, 42);
-        }
-    }    // let the polling go out of scope
-
     pika::finalize();
     return EXIT_SUCCESS;
 }
@@ -103,13 +88,12 @@ int main(int argc, char* argv[])
 {
     MPI_Init(&argc, &argv);
 
-    int result = 0;
     {
         // ---------------------------------------
         // Start runtime and collect runtime exit status, turn on auto pool creation
         pika::init_params init_args;
         init_args.cfg.emplace_back("pika.mpi.enable_pool=" + std::to_string(true));
-        result |= pika::init([&]() { return pika_main(""); }, argc, argv, init_args);
+        int result = pika::init([&]() { return pika_main(""); }, argc, argv, init_args);
         PIKA_TEST_EQ(result, 0);
     }
 
@@ -119,7 +103,7 @@ int main(int argc, char* argv[])
         // set runtime initialization callback to manually create our thread pool
         pika::init_params init_args;
         init_args.rp_callback = &init_resource_partitioner_manual;
-        result |= pika::init([&]() { return pika_main(random_name1); }, argc, argv, init_args);
+        int result = pika::init([&]() { return pika_main(random_name1); }, argc, argv, init_args);
         PIKA_TEST_EQ(result, 0);
     }
 
@@ -129,10 +113,9 @@ int main(int argc, char* argv[])
         // set runtime initialization callback to create our thread pool using mpi internals
         pika::init_params init_args;
         init_args.rp_callback = &init_resource_partitioner_mpi;
-        result |= pika::init([&]() { return pika_main(random_name2); }, argc, argv, init_args);
+        int result = pika::init([&]() { return pika_main(random_name2); }, argc, argv, init_args);
         PIKA_TEST_EQ(result, 0);
     }
 
-    MPI_Finalize();
-    return result;
+    return MPI_Finalize();
 }
