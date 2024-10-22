@@ -86,7 +86,11 @@ void init_resource_partitioner_mpi(
 //----------------------------------------------------------------------------
 int main(int argc, char* argv[])
 {
-    MPI_Init(&argc, &argv);
+    // -----------------
+    // Init MPI
+    int provided, preferred = MPI_THREAD_MULTIPLE;
+    MPI_Init_thread(&argc, &argv, preferred, &provided);
+    PIKA_TEST_EQ(provided, preferred);
 
     {
         // ---------------------------------------
