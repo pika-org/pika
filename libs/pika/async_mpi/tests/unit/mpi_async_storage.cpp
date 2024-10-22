@@ -370,7 +370,7 @@ int pika_main(pika::program_options::variables_map& vm)
     options.warmup = false;
     options.final = false;
 
-    // mpi::set_max_requests_in_flight(options.in_flight_limit);
+    mpi::set_max_requests_in_flight(options.in_flight_limit);
     nws_deb<1>.debug("set_max_requests_in_flight", rank, deb::dec<04>(options.in_flight_limit));
 
     nws_deb<1>.debug(
@@ -463,10 +463,10 @@ int main(int argc, char* argv[])
     pika::program_options::options_description cmdline(
         "Usage: " PIKA_APPLICATION_STRING " [options]");
 
-    // cmdline.add_options()("in-flight-limit",
-    //     pika::program_options::value<std::uint32_t>()->default_value(
-    //         mpi::get_max_requests_in_flight()),
-    //     "Apply a limit to the number of messages in flight.");
+    cmdline.add_options()("in-flight-limit",
+        pika::program_options::value<std::uint32_t>()->default_value(
+            mpi::get_max_requests_in_flight()),
+        "Apply a limit to the number of messages in flight.");
 
     cmdline.add_options()("localMB",
         pika::program_options::value<std::uint64_t>()->default_value(256),
