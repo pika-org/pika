@@ -333,7 +333,8 @@ namespace pika::mpi::experimental {
         }
 
 #ifdef OMPI_HAVE_MPI_EXT_CONTINUE
-        pika::threads::detail::polling_status try_mpix_polling(bool singlethreaded)
+        template <bool SingleThreaded>
+        pika::threads::detail::polling_status try_mpix_polling()
         {
             PIKA_DETAIL_DP(mpi_debug<5>,
                 debug(str<>("mpix check"), ptr(mpi_data_.mpix_continuations_request)));
@@ -343,7 +344,7 @@ namespace pika::mpi::experimental {
                 return pika::threads::detail::polling_status::idle;
             //
             int flag = 0;
-            if (!singlethreaded)
+            if constexpr (!SingleThreaded)
             {
                 std::unique_lock lk(mpi_data_.mpix_lock, std::try_to_lock);
                 if (!lk.owns_lock()) { return polling_status::busy; }
@@ -611,18 +612,6 @@ namespace pika::mpi::experimental {
                 polling_status::busy;
         }
 
-#ifdef OMPI_HAVE_MPI_EXT_CONTINUE
-        // -------------------------------------------------------------
-        pika::threads::detail::polling_status mpix_poll_single_threaded()
-        {
-            return try_mpix_polling(true);
-        }
-        pika::threads::detail::polling_status mpix_poll_multi_threaded()
-        {
-            return try_mpix_polling(false);
-        }
-#endif
-
         // -------------------------------------------------------------
         // if there is a pool and requests are always transferred to the pool
         // then all mpi activities can be done in single threaded lock-free mode
@@ -663,9 +652,9 @@ namespace pika::mpi::experimental {
             if (get_handler_method(mode) == handler_method::mpix_continuation)
             {
                 if (mpi_data_.single_thread_mode_)
-                    sched->set_mpi_polling_functions(&mpix_poll_single_threaded, &get_work_count);
+                    sched->set_mpi_polling_functions(&try_mpix_polling<true>, &get_work_count);
                 else
-                    sched->set_mpi_polling_functions(&mpix_poll_multi_threaded, &get_work_count);
+                    sched->set_mpi_polling_functions(&try_mpix_polling<false>, &get_work_count);
                 return;
             }
 #endif
