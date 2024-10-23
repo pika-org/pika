@@ -76,18 +76,12 @@ namespace pika::let_error_detail {
         // in CUDA mode (where >>> also has a different meaning in kernel
         // launches).
         template <template <typename...> class Tuple, template <typename...> class Variant>
-        using value_types = pika::util::detail::unique_concat_t<
-            predecessor_value_types<Tuple, Variant>,
-            pika::util::detail::concat_pack_of_packs_t<pika::util::detail::transform_t<
-                successor_sender_types<Variant>,
-                pika::execution::experimental::detail::value_types<Tuple, Variant>::template apply
-# if defined(PIKA_CLANG_VERSION) && PIKA_CLANG_VERSION < 110000
-                >
-                //
-                >>;
-# else
-                >>>;
-# endif
+        using value_types =
+            pika::util::detail::unique_concat_t<predecessor_value_types<Tuple, Variant>,
+                pika::util::detail::concat_pack_of_packs_t<
+                    pika::util::detail::transform_t<successor_sender_types<Variant>,
+                        pika::execution::experimental::detail::value_types<Tuple,
+                            Variant>::template apply>>>;
 
         template <template <typename...> class Variant>
         using error_types = pika::util::detail::unique_t<pika::util::detail::prepend_t<
