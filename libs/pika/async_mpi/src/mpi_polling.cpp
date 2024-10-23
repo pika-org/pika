@@ -213,7 +213,8 @@ namespace pika::mpi::experimental {
         // -----------------------------------------------------------------
         std::size_t get_completion_mode_default()
         {
-            return pika::detail::get_env_var_as<std::size_t>("PIKA_MPI_COMPLETION_MODE", 0);
+            return pika::detail::get_env_var_as<std::size_t>("PIKA_MPI_COMPLETION_MODE",
+                pika::detail::to_underlying(handler_method::default_mode));
         }
 
         // -----------------------------------------------------------------

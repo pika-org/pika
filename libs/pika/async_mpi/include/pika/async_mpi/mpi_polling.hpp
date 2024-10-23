@@ -83,19 +83,19 @@ namespace pika::mpi::experimental {
             /// the calling thread performs the mpi operation, when unset, a transfer
             /// is made so that the invocation happens on a new task that
             /// would normally be on a dedicated pool if/when it exists
-            request_inline = 0b0000'0001,    // 2
+            request_inline = 0b0000'0001,    // 1
 
             /// this bit enables the inline execution of the completion handler for the
             /// request, when unset a transfer is made to move the completion handler
             /// from the polling thread onto a new one
-            completion_inline = 0b0000'0010,    // 4
+            completion_inline = 0b0000'0010,    // 2
 
             /// this bit enables the use of a high priority task flag
             /// 1) requests are boosted to high priority if they are passed the the mpi-pool
             ///    to ensure they execute before other polling tasks (reduce latency)
             /// 2) completions are boosted to high priority when sent to the main thread pool
             ///    so that the continuation is executed as quickly as possible
-            high_priority = 0b0000'0100,    // 8
+            high_priority = 0b0000'0100,    // 4
 
             /// 3 bits control the handler method,
             method_mask = 0b0011'1000,    // 56
@@ -117,11 +117,12 @@ namespace pika::mpi::experimental {
             ///
             /// * unspecified : reserved for development purposes or for customization by an
             /// application using pika
-            yield_while = 0b0000'0000,          // 0x00, 00 ... 7
-            suspend_resume = 0b0000'1000,       // 0x08, 08 ... 15
-            new_task = 0b0001'0000,             // 0x10, 16 ... 23
-            continuation = 0b0001'1000,         // 0x18, 24 ... 31
-            mpix_continuation = 0b0010'0000,    // 0x20, 32 ... 39
+            yield_while = 0b0000'0000,                                          // 0x00, 00 -> 7
+            suspend_resume = 0b0000'1000,                                       // 0x08, 08 -> 15
+            new_task = 0b0001'0000,                                             // 0x10, 16 -> 23
+            continuation = 0b0001'1000,                                         // 0x18, 24 -> 31
+            mpix_continuation = 0b0010'0000,                                    // 0x20, 32 -> 39
+            default_mode = continuation + completion_inline + high_priority,    // 24 + 2 + 4 = 30
         };
 
         /// 3 bits define continuation mode
