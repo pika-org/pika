@@ -129,8 +129,7 @@ namespace pika::drop_value_detail {
 }    // namespace pika::drop_value_detail
 
 namespace pika::execution::experimental {
-    inline constexpr struct drop_value_t final
-      : pika::functional::detail::tag_fallback<drop_value_t>
+    struct drop_value_t final : pika::functional::detail::tag_fallback<drop_value_t>
     {
         template <typename Sender, PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender>)>
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(drop_value_t, Sender&& sender)
@@ -140,5 +139,12 @@ namespace pika::execution::experimental {
 
         using pika::functional::detail::tag_fallback<drop_value_t>::operator();
         auto operator()() const { return detail::partial_algorithm<drop_value_t>{}; }
-    } drop_value{};
+    };
+
+    /// \brief Ignores all values sent by the predecessor sender, sending none itself.
+    ///
+    /// Sender adaptor that takes any sender and returns a new sender that sends no values.
+    ///
+    /// Added in 0.6.0.
+    inline constexpr drop_value_t drop_value{};
 }    // namespace pika::execution::experimental
