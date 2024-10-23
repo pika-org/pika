@@ -138,10 +138,7 @@ namespace pika::execution::experimental {
             return drop_value_detail::drop_value_sender<Sender>{PIKA_FORWARD(Sender, sender)};
         }
 
-        // TODO: Use static operator() here, will go to customization afterwards anyway.
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(drop_value_t)
-        {
-            return detail::partial_algorithm<drop_value_t>{};
-        }
+        using pika::functional::detail::tag_fallback<drop_value_t>::operator();
+        auto operator()() const { return detail::partial_algorithm<drop_value_t>{}; }
     } drop_value{};
 }    // namespace pika::execution::experimental
