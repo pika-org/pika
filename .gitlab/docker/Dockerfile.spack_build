@@ -1,14 +1,15 @@
 ARG BASE_IMAGE
 FROM $BASE_IMAGE
 
+# Provided by the gitlab runner of .container-builder
+ARG NUM_PROCS
+
 ARG SOURCE_DIR
 ARG BUILD_DIR
 
 ARG BUILD_TYPE
 ARG CMAKE_COMMON_FLAGS
 ARG CMAKE_FLAGS
-# Provided by the gitlab runner of .container-builder
-ARG NUM_PROCS
 
 COPY . ${SOURCE_DIR}
 
@@ -17,9 +18,10 @@ RUN spack -e pika_ci spec -lI $spack_spec
 
 # Configure & Build
 RUN spack -e pika_ci config add "config:flags:keep_werror:all" && \
-    spack -e pika_ci build-env $spack_spec -- bash -c "cmake -B${BUILD_DIR} ${SOURCE_DIR} \
-    -DCMAKE_BUILD_TYPE=$BUILD_TYPE $CMAKE_COMMON_FLAGS $CMAKE_FLAGS && cmake --build ${BUILD_DIR} \
-    --target all tests examples install"
+    spack -e pika_ci build-env $spack_spec -- \
+    bash -c " \
+    cmake -B${BUILD_DIR} ${SOURCE_DIR} -DCMAKE_BUILD_TYPE=$BUILD_TYPE $CMAKE_COMMON_FLAGS $CMAKE_FLAGS && \
+    cmake --build ${BUILD_DIR} --parallel $NUM_PROCS --target all tests examples install"
 
 # Run compile only tests and tests.unit.build, submit ctest metrics to elastic
 ARG SPACK_ARCH
