@@ -53,6 +53,15 @@
    ...
 }
 
+{
+   hwloc
+   Memcheck:Leak
+   fun:malloc
+   ...
+   fun:hwloc_topology_load
+   ...
+}
+
 # CUDA
 {
     Generic CUDA
