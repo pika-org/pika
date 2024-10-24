@@ -150,8 +150,11 @@ function(pika_add_nvhpc_cuda_flags source)
 
   get_source_file_property(source_compile_flags ${source} COMPILE_FLAGS)
   string(REGEX REPLACE "^NOTFOUND$" "" source_compile_flags ${source_compile_flags})
+  set(extra_source_compile_flags
+      $<$<VERSION_GREATER_EQUAL:$<CXX_COMPILER_VERSION>,24.9.0>:"--diag_suppress cuda_compile">
+  )
   set_source_files_properties(
-    ${source} PROPERTIES COMPILE_FLAGS "${source_compile_flags} -x cu ${source_gpu_cc_flags}"
-                         LANGUAGE CXX
+    ${source} PROPERTIES COMPILE_FLAGS "${source_compile_flags} -x cu ${source_gpu_cc_flags} \
+      ${extra_source_compile_flags}" LANGUAGE CXX
   )
 endfunction()
