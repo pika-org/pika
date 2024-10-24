@@ -84,7 +84,7 @@ if(NOT TARGET pika_dependencies_allocator)
       set(_use_custom_allocator TRUE)
 
       pika_warn(
-        "pika is using mimalloc as the allocator. Typically, exporting the following environment variables will further improve performance: MIMALLOC_EAGER_COMMIT_DELAY=0 and MIMALLOC_LARGE_OS_PAGES=1."
+        "pika is using mimalloc as the allocator. Typically, exporting the following environment variables will further improve performance: MIMALLOC_EAGER_COMMIT_DELAY=0 and MIMALLOC_ALLOW_LARGE_OS_PAGES=1."
       )
     endif()
 
