@@ -31,15 +31,15 @@ namespace pika::program_options::detail {
        Experiments show that the performance loss is less than 10%.
     */
     template <class ToChar, class FromChar, class Fun>
-    std::basic_string<ToChar> convert(const std::basic_string<FromChar>& s, Fun fun)
+    std::basic_string<ToChar> convert(std::basic_string<FromChar> const& s, Fun fun)
 
     {
         std::basic_string<ToChar> result;
 
         std::mbstate_t state = std::mbstate_t();
 
-        const FromChar* from = s.data();
-        const FromChar* from_end = s.data() + s.size();
+        FromChar const* from = s.data();
+        FromChar const* from_end = s.data() + s.size();
         // The interface of cvt is not really iterator-like, and it's
         // not possible the tell the required output size without the conversion.
         // All we can is convert data by pieces.
@@ -74,7 +74,7 @@ namespace pika::program_options::detail {
 namespace pika::program_options {
 
     std::wstring from_8_bit(
-        const std::string& s, const std::codecvt<wchar_t, char, std::mbstate_t>& cvt)
+        std::string const& s, std::codecvt<wchar_t, char, std::mbstate_t> const& cvt)
     {
         using namespace std::placeholders;
         return detail::convert<wchar_t>(s,
@@ -83,7 +83,7 @@ namespace pika::program_options {
     }
 
     std::string to_8_bit(
-        const std::wstring& s, const std::codecvt<wchar_t, char, std::mbstate_t>& cvt)
+        std::wstring const& s, std::codecvt<wchar_t, char, std::mbstate_t> const& cvt)
     {
         using namespace std::placeholders;
         return detail::convert<char>(s,
@@ -95,23 +95,23 @@ namespace pika::program_options {
         pika::program_options::detail::utf8_codecvt_facet utf8_facet;
     }
 
-    std::wstring from_utf8(const std::string& s) { return from_8_bit(s, utf8_facet); }
+    std::wstring from_utf8(std::string const& s) { return from_8_bit(s, utf8_facet); }
 
-    std::string to_utf8(const std::wstring& s) { return to_8_bit(s, utf8_facet); }
+    std::string to_utf8(std::wstring const& s) { return to_8_bit(s, utf8_facet); }
 
-    std::wstring from_local_8_bit(const std::string& s)
+    std::wstring from_local_8_bit(std::string const& s)
     {
         using facet_type = std::codecvt<wchar_t, char, std::mbstate_t>;
         return from_8_bit(s, std::use_facet<facet_type>(std::locale()));
     }
 
-    std::string to_local_8_bit(const std::wstring& s)
+    std::string to_local_8_bit(std::wstring const& s)
     {
         using facet_type = std::codecvt<wchar_t, char, std::mbstate_t>;
         return to_8_bit(s, std::use_facet<facet_type>(std::locale()));
     }
 
-    std::string to_internal(const std::string& s) { return s; }
+    std::string to_internal(std::string const& s) { return s; }
 
-    std::string to_internal(const std::wstring& s) { return to_utf8(s); }
+    std::string to_internal(std::wstring const& s) { return to_utf8(s); }
 }    // namespace pika::program_options

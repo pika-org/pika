@@ -22,7 +22,7 @@ namespace pika::detail {
         {
         }
 
-        const char* what() const noexcept override;
+        char const* what() const noexcept override;
 
         virtual ~bad_lexical_cast() noexcept;
 

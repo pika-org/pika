@@ -26,7 +26,7 @@ __global__ void kernel(float* p)
     p[i] = i;
 }
 
-void print_matrix(int m, int n, const double* A, int lda, const char* name)
+void print_matrix(int m, int n, double const* A, int lda, char const* name)
 {
     for (int row = 0; row < m; row++)
     {
@@ -120,9 +120,9 @@ int main()
     // This example is adapted from
     // https://docs.nvidia.com/cuda/cusolver/index.html#lu_examples
     {
-        const int m = 3;
-        const int lda = m;
-        const int ldb = m;
+        int const m = 3;
+        int const lda = m;
+        int const ldb = m;
 
         //       | 1 2 3  |
         //   A = | 4 5 6  |

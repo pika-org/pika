@@ -18,8 +18,8 @@
 
 namespace pika::cuda::experimental {
 
-    PIKA_EXPORT const std::string& get_pool_name();
-    PIKA_EXPORT void set_pool_name(const std::string&);
+    PIKA_EXPORT std::string const& get_pool_name();
+    PIKA_EXPORT void set_pool_name(std::string const&);
 
     // -----------------------------------------------------------------
     // This RAII helper class enables polling for a scoped block

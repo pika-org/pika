@@ -52,7 +52,7 @@ namespace pika::resource::detail {
 
     private:
         init_pool_data(
-            const std::string& name, scheduling_policy policy, pika::threads::scheduler_mode mode);
+            std::string const& name, scheduling_policy policy, pika::threads::scheduler_mode mode);
 
         init_pool_data(std::string const& name, scheduler_function create_func,
             pika::threads::scheduler_mode mode);
@@ -101,15 +101,15 @@ namespace pika::resource::detail {
         }
         void add_resource(pika::resource::pu const& p, std::string const& pool_name, bool exclusive,
             std::size_t num_threads = 1);
-        void add_resource(const std::vector<pika::resource::pu>& pv, std::string const& pool_name,
+        void add_resource(std::vector<pika::resource::pu> const& pv, std::string const& pool_name,
             bool exclusive = true);
         void add_resource(
-            const pika::resource::core& c, std::string const& pool_name, bool exclusive = true);
-        void add_resource(const std::vector<pika::resource::core>& cv, std::string const& pool_name,
+            pika::resource::core const& c, std::string const& pool_name, bool exclusive = true);
+        void add_resource(std::vector<pika::resource::core> const& cv, std::string const& pool_name,
             bool exclusive = true);
         void add_resource(
-            const pika::resource::socket& nd, std::string const& pool_name, bool exclusive = true);
-        void add_resource(const std::vector<pika::resource::socket>& ndv,
+            pika::resource::socket const& nd, std::string const& pool_name, bool exclusive = true);
+        void add_resource(std::vector<pika::resource::socket> const& ndv,
             std::string const& pool_name, bool exclusive = true);
 
         pika::detail::affinity_data const& get_affinity_data() const { return affinity_data_; }
@@ -164,12 +164,12 @@ namespace pika::resource::detail {
         std::size_t expand_pool(
             std::string const& pool_name, util::detail::function<void(std::size_t)> const& add_pu);
 
-        void set_default_pool_name(const std::string& name)
+        void set_default_pool_name(std::string const& name)
         {
             initial_thread_pools_[0].pool_name_ = name;
         }
 
-        const std::string& get_default_pool_name() const
+        std::string const& get_default_pool_name() const
         {
             return initial_thread_pools_[0].pool_name_;
         }

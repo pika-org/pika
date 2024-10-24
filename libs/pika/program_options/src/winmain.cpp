@@ -25,7 +25,7 @@ namespace pika { namespace program_options {
         //    http://article.gmane.org/gmane.comp.lib.boost.user/3005
         //    http://msdn.microsoft.com/library/en-us/vccelng/htm/progs_12.asp
         PIKA_EXPORT
-        std::vector<std::string> split_winmain(const std::string& input)
+        std::vector<std::string> split_winmain(std::string const& input)
         {
             std::vector<std::string> result;
 
@@ -95,11 +95,11 @@ namespace pika { namespace program_options {
             return result;
         }
 
-        std::vector<std::wstring> split_winmain(const std::wstring& cmdline)
+        std::vector<std::wstring> split_winmain(std::wstring const& cmdline)
         {
             std::vector<std::wstring> result;
             std::vector<std::string> aux = split_winmain(to_internal(cmdline));
-            for (const auto& i : aux) result.push_back(from_utf8(i));
+            for (auto const& i : aux) result.push_back(from_utf8(i));
             return result;
         }
 

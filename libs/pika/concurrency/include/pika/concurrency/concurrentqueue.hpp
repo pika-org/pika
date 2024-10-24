@@ -503,14 +503,14 @@ namespace pika::concurrency::detail {
         // Recommended values are on the order of 1000-10000 unless the number of
         // consumer threads exceeds the number of idle cores (in which case try 0-100).
         // Only affects instances of the BlockingConcurrentQueue.
-        static const int MAX_SEMA_SPINS = 10000;
+        static int const MAX_SEMA_SPINS = 10000;
 
         // Whether to recycle dynamically-allocated blocks into an internal free list or
         // not. If false, only pre-allocated blocks (controlled by the constructor
         // arguments) will be recycled, and all others will be `free`d back to the heap.
         // Note that blocks consumed by explicit producers are only freed on destruction
         // of the queue (not following destruction of the token) regardless of this trait.
-        static const bool RECYCLE_ALLOCATED_BLOCKS = false;
+        static bool const RECYCLE_ALLOCATED_BLOCKS = false;
 
 #ifndef MCDBGQ_USE_RELACY
         // Memory allocation can be customized if needed.

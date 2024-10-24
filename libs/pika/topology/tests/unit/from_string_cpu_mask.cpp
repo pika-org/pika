@@ -40,7 +40,7 @@ void test_valid()
 #endif
     };
 
-    for (const auto& t : tests)
+    for (auto const& t : tests)
     {
         auto mask = pika::detail::from_string<pika::threads::detail::mask_type>(t.str);
 #if defined(PIKA_HAVE_MAX_CPU_COUNT)
@@ -68,7 +68,7 @@ void test_invalid()
     const std::vector<std::string> tests{
         "", "0", "0x", "Ob", "foobar", "x0xff", "0xffg", " 0xabcdefgh\t"};
 
-    for (const auto& t : tests)
+    for (auto const& t : tests)
     {
         try
         {

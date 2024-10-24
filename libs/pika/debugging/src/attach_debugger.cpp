@@ -22,7 +22,7 @@ namespace pika::debug::detail {
     void attach_debugger()
     {
 #if defined(_POSIX_VERSION) && defined(PIKA_HAVE_UNISTD_H)
-        volatile int i = 0;
+        int volatile i = 0;
         std::cerr << "PID: " << getpid()
                   << " ready for attaching debugger. Once attached set i = 1 and continue"
                   << std::endl;

@@ -14,7 +14,7 @@
 
 namespace po = pika::program_options;
 
-std::vector<std::string> sv(const char* array[], unsigned size)
+std::vector<std::string> sv(char const* array[], unsigned size)
 {
     std::vector<std::string> r;
     for (unsigned i = 0; i < size; ++i) r.emplace_back(array[i]);
@@ -34,8 +34,8 @@ void test_optional()
         ;
     // clang-format on
 
-    const char* cmdline1_[] = {"--foo=12", "--bar", "1"};
-    std::vector<std::string> cmdline1 = sv(cmdline1_, sizeof(cmdline1_) / sizeof(const char*));
+    char const* cmdline1_[] = {"--foo=12", "--bar", "1"};
+    std::vector<std::string> cmdline1 = sv(cmdline1_, sizeof(cmdline1_) / sizeof(char const*));
 
     po::variables_map vm;
     po::store(po::command_line_parser(cmdline1).options(desc).run(), vm);

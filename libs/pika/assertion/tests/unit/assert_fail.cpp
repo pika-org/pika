@@ -10,7 +10,7 @@
 #include <string>
 
 [[noreturn]] void assertion_handler(
-    pika::detail::source_location const&, const char*, std::string const&)
+    pika::detail::source_location const&, char const*, std::string const&)
 {
     PIKA_TEST(true);
     std::exit(1);

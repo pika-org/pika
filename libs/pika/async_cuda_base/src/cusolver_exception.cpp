@@ -16,7 +16,7 @@
 
 namespace pika::cuda::experimental {
     namespace detail {
-        const char* cusolver_get_error_string(cusolverStatus_t error)
+        char const* cusolver_get_error_string(cusolverStatus_t error)
         {
             switch (error)
             {
@@ -84,7 +84,7 @@ namespace pika::cuda::experimental {
     {
     }
 
-    cusolver_exception::cusolver_exception(const std::string& msg, cusolverStatus_t err)
+    cusolver_exception::cusolver_exception(std::string const& msg, cusolverStatus_t err)
       : pika::exception(pika::error::bad_function_call, msg)
       , err_(err)
     {

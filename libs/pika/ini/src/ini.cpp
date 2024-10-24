@@ -39,7 +39,7 @@ extern char** environ;
 
 namespace pika::detail {
     // example ini line: line # comment
-    const char pattern_comment[] = "^([^#]*)(#.*)$";
+    char const pattern_comment[] = "^([^#]*)(#.*)$";
 
     inline std::string trim_whitespace(std::string const& s)
     {
@@ -64,7 +64,7 @@ namespace pika::detail {
         read(filename);
     }
 
-    section::section(const section& in)
+    section::section(section const& in)
       : root_(this_())
       , name_(in.get_name())
       , parent_name_(in.get_parent_name())

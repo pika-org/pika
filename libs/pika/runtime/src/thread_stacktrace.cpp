@@ -63,7 +63,7 @@ namespace pika::detail {
         std::stringstream tmp;
         //
         int count = 0;
-        for (const auto& data : tlist)
+        for (auto const& data : tlist)
         {
             fmt::print(tmp, "Stack trace {} : {:#012x} : \n{}\n\n\n", count,
                 reinterpret_cast<uintptr_t>(data),

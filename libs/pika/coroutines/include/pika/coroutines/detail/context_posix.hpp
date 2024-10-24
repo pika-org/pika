@@ -212,7 +212,7 @@ namespace pika::threads::coroutines {
             /// Free function. Saves the current context in @p from
             /// and restores the context in @p to.
             friend void swap_context(ucontext_context_impl_base& from,
-                const ucontext_context_impl_base& to, default_hint)
+                ucontext_context_impl_base const& to, default_hint)
             {
                 [[maybe_unused]] int error = PIKA_COROUTINE_SWAP_CONTEXT(&from.m_ctx, &to.m_ctx);
                 PIKA_ASSERT(error == 0);
@@ -264,7 +264,7 @@ namespace pika::threads::coroutines {
 
 # if defined(PIKA_HAVE_ADDRESS_SANITIZER)
                 asan_stack_size = m_stack_size;
-                asan_stack_bottom = const_cast<const void*>(m_stack);
+                asan_stack_bottom = const_cast<void const*>(m_stack);
 # endif
 # if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) && !defined(PIKA_HAVE_ADDRESS_SANITIZER)
                 // concept inspired by the following links:
@@ -378,7 +378,7 @@ namespace pika::threads::coroutines {
 
 # if defined(PIKA_HAVE_ADDRESS_SANITIZER)
                     asan_stack_size = m_stack_size;
-                    asan_stack_bottom = const_cast<const void*>(m_stack);
+                    asan_stack_bottom = const_cast<void const*>(m_stack);
 # endif
                 }
             }

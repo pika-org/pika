@@ -86,8 +86,8 @@ struct ___itt_counter;
 PIKA_EXPORT extern bool use_ittnotify_api;
 
 ///////////////////////////////////////////////////////////////////////////////
-PIKA_EXPORT void itt_sync_create(void* addr, const char* objtype, const char* objname) noexcept;
-PIKA_EXPORT void itt_sync_rename(void* addr, const char* name) noexcept;
+PIKA_EXPORT void itt_sync_create(void* addr, char const* objtype, char const* objname) noexcept;
+PIKA_EXPORT void itt_sync_rename(void* addr, char const* name) noexcept;
 PIKA_EXPORT void itt_sync_prepare(void* addr) noexcept;
 PIKA_EXPORT void itt_sync_acquired(void* addr) noexcept;
 PIKA_EXPORT void itt_sync_cancel(void* addr) noexcept;
@@ -121,7 +121,7 @@ PIKA_EXPORT ___itt_id* itt_make_id(void*, std::size_t);
 PIKA_EXPORT void itt_id_create(___itt_domain const*, ___itt_id* id) noexcept;
 PIKA_EXPORT void itt_id_destroy(___itt_id* id) noexcept;
 
-PIKA_EXPORT __itt_heap_function itt_heap_function_create(const char*, const char*) noexcept;
+PIKA_EXPORT __itt_heap_function itt_heap_function_create(char const*, char const*) noexcept;
 PIKA_EXPORT void itt_heap_allocate_begin(__itt_heap_function, std::size_t, int) noexcept;
 PIKA_EXPORT void itt_heap_allocate_end(__itt_heap_function, void**, std::size_t, int) noexcept;
 PIKA_EXPORT void itt_heap_free_begin(__itt_heap_function, void*) noexcept;
@@ -404,7 +404,7 @@ namespace pika { namespace util { namespace itt {
             if (use_ittnotify_api && id_)
             {
                 PIKA_ITT_COUNTER_SET_VALUE(
-                    id_, const_cast<void*>(static_cast<const void*>(&value)));
+                    id_, const_cast<void*>(static_cast<void const*>(&value)));
             }
         }
 
@@ -464,8 +464,8 @@ namespace pika { namespace util { namespace itt {
 
 #else
 
-inline constexpr void itt_sync_create(void*, const char*, const char*) noexcept {}
-inline constexpr void itt_sync_rename(void*, const char*) noexcept {}
+inline constexpr void itt_sync_create(void*, char const*, char const*) noexcept {}
+inline constexpr void itt_sync_rename(void*, char const*) noexcept {}
 inline constexpr void itt_sync_prepare(void*) noexcept {}
 inline constexpr void itt_sync_acquired(void*) noexcept {}
 inline constexpr void itt_sync_cancel(void*) noexcept {}
@@ -505,7 +505,7 @@ inline constexpr ___itt_id* itt_make_id(void*, unsigned long) { return nullptr; 
 inline constexpr void itt_id_create(___itt_domain const*, ___itt_id*) noexcept {}
 inline constexpr void itt_id_destroy(___itt_id*) noexcept {}
 
-inline constexpr __itt_heap_function itt_heap_function_create(const char*, const char*) noexcept
+inline constexpr __itt_heap_function itt_heap_function_create(char const*, char const*) noexcept
 {
     return nullptr;
 }

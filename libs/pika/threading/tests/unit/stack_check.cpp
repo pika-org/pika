@@ -23,7 +23,7 @@
 using info = std::tuple<std::size_t, std::ptrdiff_t, std::ptrdiff_t>;
 using info_stack = std::stack<info>;
 
-void stack_remaining(const char* txt, info_stack& stack)
+void stack_remaining(char const* txt, info_stack& stack)
 {
 #if defined(PIKA_HAVE_THREADS_GET_STACK_POINTER)
     std::size_t stack_ptr = pika::threads::coroutines::detail::get_stack_ptr();

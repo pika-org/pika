@@ -50,43 +50,43 @@ namespace pika::threads::detail {
         return fmt::format("{}: {}", id, get_thread_id_data(id)->get_description());
     }
 
-    void execution_agent::yield(const char* desc)
+    void execution_agent::yield(char const* desc)
     {
         do_yield(desc, thread_schedule_state::pending);
     }
 
-    void execution_agent::yield_k(std::size_t k, const char* desc)
+    void execution_agent::yield_k(std::size_t k, char const* desc)
     {
         if (k < 16) { PIKA_SMT_PAUSE; }
         else if (k < 32 || k & 1) { do_yield(desc, thread_schedule_state::pending_boost); }
         else { do_yield(desc, thread_schedule_state::pending); }
     }
 
-    void execution_agent::spin_k(std::size_t k, const char*)
+    void execution_agent::spin_k(std::size_t k, char const*)
     {
         for (std::size_t i = 0; i < k; ++i) { PIKA_SMT_PAUSE; }
     }
 
-    void execution_agent::resume(const char* desc)
+    void execution_agent::resume(char const* desc)
     {
         do_resume(desc, thread_restart_state::signaled);
     }
 
-    void execution_agent::abort(const char* desc) { do_resume(desc, thread_restart_state::abort); }
+    void execution_agent::abort(char const* desc) { do_resume(desc, thread_restart_state::abort); }
 
-    void execution_agent::suspend(const char* desc)
+    void execution_agent::suspend(char const* desc)
     {
         do_yield(desc, thread_schedule_state::suspended);
     }
 
     void execution_agent::sleep_for(
-        pika::chrono::steady_duration const& sleep_duration, const char* desc)
+        pika::chrono::steady_duration const& sleep_duration, char const* desc)
     {
         sleep_until(sleep_duration.from_now(), desc);
     }
 
     void execution_agent::sleep_until(
-        pika::chrono::steady_time_point const& sleep_time, const char* desc)
+        pika::chrono::steady_time_point const& sleep_time, char const* desc)
     {
         // Just yield until time has passed by...
         auto now = std::chrono::steady_clock::now();
@@ -121,7 +121,7 @@ namespace pika::threads::detail {
     };
 #endif
 
-    thread_restart_state execution_agent::do_yield(const char* desc, thread_schedule_state state)
+    thread_restart_state execution_agent::do_yield(char const* desc, thread_schedule_state state)
     {
         thread_id_ref_type id = self_.get_thread_id();    // keep alive
         if (PIKA_UNLIKELY(!id))
@@ -177,7 +177,7 @@ namespace pika::threads::detail {
         return statex;
     }
 
-    void execution_agent::do_resume(const char* /* desc */, thread_restart_state statex)
+    void execution_agent::do_resume(char const* /* desc */, thread_restart_state statex)
     {
         auto thrd = self_.get_thread_id();
         set_thread_state(PIKA_MOVE(thrd), thread_schedule_state::pending, statex,

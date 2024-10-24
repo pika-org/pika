@@ -73,6 +73,6 @@ namespace pika::util {
 
     PIKA_EXPORT void perftests_print_times();
 
-    PIKA_EXPORT void print_cdash_timing(const char* name, double time);
-    PIKA_EXPORT void print_cdash_timing(const char* name, std::uint64_t time);
+    PIKA_EXPORT void print_cdash_timing(char const* name, double time);
+    PIKA_EXPORT void print_cdash_timing(char const* name, std::uint64_t time);
 }    // namespace pika::util

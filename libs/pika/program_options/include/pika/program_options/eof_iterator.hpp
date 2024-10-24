@@ -69,7 +69,7 @@ namespace pika::program_options {
 
         void increment() { static_cast<Derived&>(*this).get(); }
 
-        bool equal(const eof_iterator& other) const
+        bool equal(eof_iterator const& other) const
         {
             if (m_at_eof && other.m_at_eof)
                 return true;
@@ -77,7 +77,7 @@ namespace pika::program_options {
                 return false;
         }
 
-        const ValueType& dereference() const { return m_value; }
+        ValueType const& dereference() const { return m_value; }
 
         bool m_at_eof;
         ValueType m_value;

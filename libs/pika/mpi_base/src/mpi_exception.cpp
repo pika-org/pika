@@ -19,7 +19,7 @@ namespace pika::mpi {
         std::string error_message(int code)
         {
             int N = 1023;
-            const int len = 1024;
+            int const len = 1024;
             char buff[len] = {0};
             MPI_Error_string(code, buff, &N);
             return std::string(buff);
@@ -28,7 +28,7 @@ namespace pika::mpi {
 
     // -------------------------------------------------------------------------
     // exception type for failed launch of MPI functions or other mpi problem
-    exception::exception(int err_code, const std::string& msg)
+    exception::exception(int err_code, std::string const& msg)
       : pika::exception(pika::error::bad_function_call,
             msg + std::string(" MPI returned with error: ") + detail::error_message(err_code))
       , err_code_(err_code)

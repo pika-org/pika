@@ -29,7 +29,7 @@
 namespace pika::detail {
 
     [[noreturn]] void assertion_handler(
-        pika::detail::source_location const& loc, const char* expr, std::string const& msg)
+        pika::detail::source_location const& loc, char const* expr, std::string const& msg)
     {
         static thread_local bool handling_assertion = false;
 

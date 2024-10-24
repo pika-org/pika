@@ -225,7 +225,7 @@ void check_exception_ptr(std::exception_ptr eptr)
     {
         std::rethrow_exception(eptr);
     }
-    catch (const std::runtime_error& e)
+    catch (std::runtime_error const& e)
     {
         PIKA_TEST_EQ(std::string(e.what()), std::string("error"));
     }

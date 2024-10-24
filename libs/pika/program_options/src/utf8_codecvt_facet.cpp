@@ -36,8 +36,8 @@ namespace pika::program_options::detail {
     utf8_codecvt_facet::~utf8_codecvt_facet() {}
 
     // Translate incoming UTF-8 into UCS-4
-    std::codecvt_base::result utf8_codecvt_facet::do_in(std::mbstate_t& /*state*/, const char* from,
-        const char* from_end, const char*& from_next, wchar_t* to, wchar_t* to_end,
+    std::codecvt_base::result utf8_codecvt_facet::do_in(std::mbstate_t& /*state*/, char const* from,
+        char const* from_end, char const*& from_next, wchar_t* to, wchar_t* to_end,
         wchar_t*& to_next) const
     {
         // Basic algorithm:  The first octet determines how many
@@ -60,7 +60,7 @@ namespace pika::program_options::detail {
 
             // The first octet is   adjusted by a value dependent upon
             // the number   of "continuing octets" encoding the character
-            const int cont_octet_count = static_cast<int>(get_cont_octet_count(*from));
+            int const cont_octet_count = static_cast<int>(get_cont_octet_count(*from));
             const wchar_t octet1_modifier_table[] = {0x00, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc};
 
             // The unsigned char conversion is necessary in case char is
@@ -112,7 +112,7 @@ namespace pika::program_options::detail {
     }
 
     std::codecvt_base::result utf8_codecvt_facet::do_out(std::mbstate_t& /*state*/,
-        const wchar_t* from, const wchar_t* from_end, const wchar_t*& from_next, char* to,
+        wchar_t const* from, wchar_t const* from_end, wchar_t const*& from_next, char* to,
         char* to_end, char*& to_next) const
     {
         // RG - consider merging this table with the other one
@@ -171,7 +171,7 @@ namespace pika::program_options::detail {
     // How many char objects can I process to get <= max_limit
     // wchar_t objects?
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-    int utf8_codecvt_facet::do_length(std::mbstate_t&, const char* from, const char* from_end,
+    int utf8_codecvt_facet::do_length(std::mbstate_t&, char const* from, char const* from_end,
         std::size_t max_limit) const noexcept
     // NOLINTEND(bugprone-easily-swappable-parameters)
     {
@@ -186,7 +186,7 @@ namespace pika::program_options::detail {
         // last measured character.
         std::size_t last_octet_count = 0;
         std::size_t char_count = 0;
-        const char* from_next = from;
+        char const* from_next = from;
         // Use "<" because the buffer may represent incomplete characters
         while (from_next + last_octet_count <= from_end && char_count <= max_limit)
         {

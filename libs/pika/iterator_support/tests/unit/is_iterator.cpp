@@ -53,7 +53,7 @@ struct bidirectional_traversal_iterator
     using difference_type = int;
     using value_type = int;
     using iterator_category = std::input_iterator_tag;
-    using pointer = const int*;
+    using pointer = int const*;
     using reference = void;
 
     int state;
@@ -87,32 +87,32 @@ struct bidirectional_traversal_iterator
         return copy;
     }
 
-    bool operator==(const bidirectional_traversal_iterator& that) const
+    bool operator==(bidirectional_traversal_iterator const& that) const
     {
         return this->state == that.state;
     }
 
-    bool operator!=(const bidirectional_traversal_iterator& that) const
+    bool operator!=(bidirectional_traversal_iterator const& that) const
     {
         return this->state != that.state;
     }
 
-    bool operator<(const bidirectional_traversal_iterator& that) const
+    bool operator<(bidirectional_traversal_iterator const& that) const
     {
         return this->state < that.state;
     }
 
-    bool operator<=(const bidirectional_traversal_iterator& that) const
+    bool operator<=(bidirectional_traversal_iterator const& that) const
     {
         return this->state <= that.state;
     }
 
-    bool operator>(const bidirectional_traversal_iterator& that) const
+    bool operator>(bidirectional_traversal_iterator const& that) const
     {
         return this->state > that.state;
     }
 
-    bool operator>=(const bidirectional_traversal_iterator& that) const
+    bool operator>=(bidirectional_traversal_iterator const& that) const
     {
         return this->state >= that.state;
     }
@@ -123,7 +123,7 @@ struct random_access_traversal_iterator
     using difference_type = int;
     using value_type = int;
     using iterator_category = std::input_iterator_tag;
-    using pointer = const int*;
+    using pointer = int const*;
     using reference = void;
 
     int state;
@@ -183,37 +183,37 @@ struct random_access_traversal_iterator
         return copy -= n;
     }
 
-    difference_type operator-(const random_access_traversal_iterator& that) const
+    difference_type operator-(random_access_traversal_iterator const& that) const
     {
         return this->state - that.state;
     }
 
-    bool operator==(const random_access_traversal_iterator& that) const
+    bool operator==(random_access_traversal_iterator const& that) const
     {
         return this->state == that.state;
     }
 
-    bool operator!=(const random_access_traversal_iterator& that) const
+    bool operator!=(random_access_traversal_iterator const& that) const
     {
         return this->state != that.state;
     }
 
-    bool operator<(const random_access_traversal_iterator& that) const
+    bool operator<(random_access_traversal_iterator const& that) const
     {
         return this->state < that.state;
     }
 
-    bool operator<=(const random_access_traversal_iterator& that) const
+    bool operator<=(random_access_traversal_iterator const& that) const
     {
         return this->state <= that.state;
     }
 
-    bool operator>(const random_access_traversal_iterator& that) const
+    bool operator>(random_access_traversal_iterator const& that) const
     {
         return this->state > that.state;
     }
 
-    bool operator>=(const random_access_traversal_iterator& that) const
+    bool operator>=(random_access_traversal_iterator const& that) const
     {
         return this->state >= that.state;
     }
@@ -232,7 +232,7 @@ void addition_result()
 
     struct C
     {
-        B operator+(const A&) const { return B{}; }
+        B operator+(A const&) const { return B{}; }
     };
 
     PIKA_TEST_MSG((std::is_same<B, typename addition_result<C, A>::type>::value), "deduced type");
@@ -272,7 +272,7 @@ void equality_result()
 
     struct C
     {
-        B operator==(const A&) const { return B{}; }
+        B operator==(A const&) const { return B{}; }
     };
 
     PIKA_TEST_MSG((std::is_same_v<B, equality_result_t<C, A>>), "deduced type");
@@ -294,7 +294,7 @@ void inequality_result()
 
     struct C
     {
-        B operator!=(const A&) const { return B{}; }
+        B operator!=(A const&) const { return B{}; }
     };
 
     PIKA_TEST_MSG((std::is_same_v<B, inequality_result_t<C, A>>), "deduced type");
@@ -315,7 +315,7 @@ void inplace_addition_result()
 
     struct C
     {
-        B operator+=(const A&) const { return B{}; }
+        B operator+=(A const&) const { return B{}; }
     };
 
     PIKA_TEST_MSG(
@@ -337,7 +337,7 @@ void inplace_subtraction_result()
 
     struct C
     {
-        B operator-=(const A&) const { return B{}; }
+        B operator-=(A const&) const { return B{}; }
     };
 
     PIKA_TEST_MSG(
@@ -439,7 +439,7 @@ void subscript_result()
 
     struct C
     {
-        B operator[](const A&) const { return B{}; }
+        B operator[](A const&) const { return B{}; }
     };
 
     PIKA_TEST_MSG((std::is_same<B, typename subscript_result<C, A>::type>::value), "deduced type");
@@ -460,7 +460,7 @@ void subtraction_result()
 
     struct C
     {
-        B operator-(const A&) const { return B{}; }
+        B operator-(A const&) const { return B{}; }
     };
 
     PIKA_TEST_MSG(

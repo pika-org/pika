@@ -213,7 +213,7 @@ namespace pika {
 
             ~std_exception() noexcept {}
 
-            const char* what() const noexcept override { return what_.c_str(); }
+            char const* what() const noexcept override { return what_.c_str(); }
         };
 
         struct PIKA_EXPORT bad_alloc : std::bad_alloc
@@ -229,7 +229,7 @@ namespace pika {
 
             ~bad_alloc() noexcept {}
 
-            const char* what() const noexcept override { return what_.c_str(); }
+            char const* what() const noexcept override { return what_.c_str(); }
         };
 
         struct PIKA_EXPORT bad_exception : std::bad_exception
@@ -245,7 +245,7 @@ namespace pika {
 
             ~bad_exception() noexcept {}
 
-            const char* what() const noexcept override { return what_.c_str(); }
+            char const* what() const noexcept override { return what_.c_str(); }
         };
 
         struct PIKA_EXPORT bad_cast : std::bad_cast
@@ -261,7 +261,7 @@ namespace pika {
 
             ~bad_cast() noexcept {}
 
-            const char* what() const noexcept override { return what_.c_str(); }
+            char const* what() const noexcept override { return what_.c_str(); }
         };
 
         struct PIKA_EXPORT bad_typeid : std::bad_typeid
@@ -277,7 +277,7 @@ namespace pika {
 
             ~bad_typeid() noexcept {}
 
-            const char* what() const noexcept override { return what_.c_str(); }
+            char const* what() const noexcept override { return what_.c_str(); }
         };
 
         template <typename Exception>

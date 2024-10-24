@@ -24,7 +24,7 @@ namespace std {
 
     // 20.7.2.1, constructors
     constexpr variant() noexcept(see below);
-    variant(const variant&);
+    variant(variant const&);
     variant(variant&&) noexcept(see below);
 
     template <class T> constexpr variant(T&&) noexcept(see below);
@@ -47,7 +47,7 @@ namespace std {
     ~variant();
 
     // 20.7.2.3, assignment
-    variant& operator=(const variant&);
+    variant& operator=(variant const&);
     variant& operator=(variant&&) noexcept(see below);
 
     template <class T> variant& operator=(T&&) noexcept(see below);
@@ -127,10 +127,10 @@ namespace std {
   constexpr T&& get(variant<Types...>&&);
 
   template <class T, class... Types>
-  constexpr const T& get(const variant<Types...>&);
+  constexpr T const& get(const variant<Types...>&);
 
   template <class T, class... Types>
-  constexpr const T&& get(const variant<Types...>&&);
+  constexpr T const&& get(const variant<Types...>&&);
 
   template <size_t I, class... Types>
   constexpr add_pointer_t<variant_alternative_t<I, variant<Types...>>>

@@ -745,7 +745,7 @@ namespace pika::mpi::experimental {
         }
 
         // -------------------------------------------------------------
-        void register_pool(const std::string& pool_name)
+        void register_pool(std::string const& pool_name)
         {
             bool found = false;
             for (std::size_t p = 0; p < resource::get_partitioner().get_num_pools(); ++p)
@@ -845,7 +845,7 @@ namespace pika::mpi::experimental {
     }    // namespace detail
 
     // -----------------------------------------------------------------
-    const std::string& get_pool_name() { return detail::polling_pool_name_; }
+    std::string const& get_pool_name() { return detail::polling_pool_name_; }
 
     // -----------------------------------------------------------------
     // Return the "best" mpi thread mode to use for initialization

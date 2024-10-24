@@ -188,7 +188,7 @@ namespace pika::threads::detail {
 
         /// \brief Prints the \param m to os in a human readable form
         void print_affinity_mask(std::ostream& os, std::size_t num_thread, mask_cref_type m,
-            const std::string& pool_name) const;
+            std::string const& pool_name) const;
 
         /// \brief Reduce thread priority of the current thread.
         ///
@@ -252,11 +252,11 @@ namespace pika::threads::detail {
             pika_hwloc_membind_policy policy, int flags) const;
 
         threads::detail::mask_type get_area_membind_nodeset(
-            const void* addr, std::size_t len) const;
+            void const* addr, std::size_t len) const;
 
-        bool set_area_membind_nodeset(const void* addr, std::size_t len, void* nodeset) const;
+        bool set_area_membind_nodeset(void const* addr, std::size_t len, void* nodeset) const;
 
-        int get_numa_domain(const void* addr) const;
+        int get_numa_domain(void const* addr) const;
 
         /// Free memory that was previously allocated by allocate
         void deallocate(void* addr, std::size_t len) const;

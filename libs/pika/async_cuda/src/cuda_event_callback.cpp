@@ -341,7 +341,7 @@ namespace pika::cuda::experimental::detail {
 }    // namespace pika::cuda::experimental::detail
 
 namespace pika::cuda::experimental {
-    PIKA_EXPORT const std::string& get_pool_name()
+    PIKA_EXPORT std::string const& get_pool_name()
     {
         if (pika::resource::pool_exists(detail::polling_pool_name))
         {
@@ -351,7 +351,7 @@ namespace pika::cuda::experimental {
         return resource::get_partitioner().get_default_pool_name();
     }
 
-    PIKA_EXPORT void set_pool_name(const std::string& name)
+    PIKA_EXPORT void set_pool_name(std::string const& name)
     {
         PIKA_DETAIL_DP(detail::cud_debug<2>, debug(debug::detail::str<>("set pool name"), name));
         detail::polling_pool_name = name;

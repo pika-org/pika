@@ -68,7 +68,7 @@ int pika_main(variables_map& vm)
     {
         num_iterations = vm["delay-iterations"].as<std::uint64_t>();
 
-        const bool csv = vm.count("csv");
+        bool const csv = vm.count("csv");
 
         const std::size_t pxthreads = vm["pxthreads"].as<std::size_t>();
 

@@ -603,7 +603,7 @@ namespace pika::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    void command_line_handling::store_command_line(int argc, const char* const* argv)
+    void command_line_handling::store_command_line(int argc, char const* const* argv)
     {
         // Collect the command line for diagnostic purposes.
         std::string command;
@@ -706,7 +706,7 @@ namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     // separate command line arguments from configuration settings
     std::vector<std::string> command_line_handling::preprocess_config_settings(
-        int argc, const char* const* argv)
+        int argc, char const* const* argv)
     {
         std::vector<std::string> options;
         options.reserve(static_cast<std::size_t>(argc) + ini_config_.size());
@@ -752,7 +752,7 @@ namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     command_line_handling_result command_line_handling::call(
         pika::program_options::options_description const& desc_cmdline, int argc,
-        const char* const* argv)
+        char const* const* argv)
     {
         // set the flag signaling that command line parsing has been done
         cmd_line_parsed_ = true;

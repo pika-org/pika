@@ -28,7 +28,7 @@
 using namespace pika::program_options;
 using namespace std;
 
-vector<string> sv(const char* array[], unsigned size)
+vector<string> sv(char const* array[], unsigned size)
 {
     vector<string> r;
     for (unsigned i = 0; i < size; ++i) r.emplace_back(array[i]);
@@ -48,8 +48,8 @@ void test_variable_map()
         ;
     // clang-format on
 
-    const char* cmdline3_[] = {"--foo='12'", "--bar=11", "-z3", "-ofoo"};
-    vector<string> cmdline3 = sv(cmdline3_, sizeof(cmdline3_) / sizeof(const char*));
+    char const* cmdline3_[] = {"--foo='12'", "--bar=11", "-z3", "-ofoo"};
+    vector<string> cmdline3 = sv(cmdline3_, sizeof(cmdline3_) / sizeof(char const*));
     parsed_options a3 = command_line_parser(cmdline3).options(desc).run();
 
     variables_map vm;
@@ -71,8 +71,8 @@ void test_variable_map()
         ;
     // clang-format on
 
-    const char* cmdline4_[] = {"--zee", "--zak=13"};
-    vector<string> cmdline4 = sv(cmdline4_, sizeof(cmdline4_) / sizeof(const char*));
+    char const* cmdline4_[] = {"--zee", "--zak=13"};
+    vector<string> cmdline4 = sv(cmdline4_, sizeof(cmdline4_) / sizeof(char const*));
     parsed_options a4 = command_line_parser(cmdline4).options(desc).run();
 
     variables_map vm2;
@@ -93,8 +93,8 @@ void test_variable_map()
         ;
     // clang-format on
 
-    const char* cmdline5_[] = {"--voo=1"};
-    vector<string> cmdline5 = sv(cmdline5_, sizeof(cmdline5_) / sizeof(const char*));
+    char const* cmdline5_[] = {"--voo=1"};
+    vector<string> cmdline5 = sv(cmdline5_, sizeof(cmdline5_) / sizeof(char const*));
     parsed_options a5 = command_line_parser(cmdline5).options(desc2).run();
 
     variables_map vm3;
@@ -117,8 +117,8 @@ void test_variable_map()
 
     /* The -m option is implicit. It does not have value in inside the token,
        and we should not grab the next token.  */
-    const char* cmdline6_[] = {"--imp=1", "-m", "--foo=1"};
-    vector<string> cmdline6 = sv(cmdline6_, sizeof(cmdline6_) / sizeof(const char*));
+    char const* cmdline6_[] = {"--imp=1", "-m", "--foo=1"};
+    vector<string> cmdline6 = sv(cmdline6_, sizeof(cmdline6_) / sizeof(char const*));
     parsed_options a6 = command_line_parser(cmdline6).options(desc3).run();
 
     variables_map vm4;
@@ -132,7 +132,7 @@ void test_variable_map()
 
 int stored_value;
 
-void notifier(const vector<int>& v) { stored_value = v.front(); }
+void notifier(vector<int> const& v) { stored_value = v.front(); }
 
 void test_semantic_values()
 {
@@ -164,8 +164,8 @@ void test_semantic_values()
     notify(vm);
     PIKA_TEST_EQ(vm.count("biz"), std::size_t(1));
     PIKA_TEST_EQ(vm.count("baz"), std::size_t(1));
-    const vector<string> av = vm["biz"].as<vector<string>>();
-    const vector<string> av2 = vm["baz"].as<vector<string>>();
+    vector<string> const av = vm["biz"].as<vector<string>>();
+    vector<string> const av2 = vm["baz"].as<vector<string>>();
     string exp1[] = {"a", "b x"};
     PIKA_TEST(av == vector<string>(exp1, exp1 + 2));
     string exp2[] = {"q", "q", "w"};
@@ -208,13 +208,13 @@ void test_priority()
         // This will have values in both sources, and values should be combined
         ("include", value<vector<int>>()->composing());
 
-    const char* cmdline1_[] = {"--first=1", "--aux=10", "--first=3", "--include=1"};
-    vector<string> cmdline1 = sv(cmdline1_, sizeof(cmdline1_) / sizeof(const char*));
+    char const* cmdline1_[] = {"--first=1", "--aux=10", "--first=3", "--include=1"};
+    vector<string> cmdline1 = sv(cmdline1_, sizeof(cmdline1_) / sizeof(char const*));
 
     parsed_options p1 = command_line_parser(cmdline1).options(desc).run();
 
-    const char* cmdline2_[] = {"--first=12", "--second=7", "--include=7"};
-    vector<string> cmdline2 = sv(cmdline2_, sizeof(cmdline2_) / sizeof(const char*));
+    char const* cmdline2_[] = {"--first=12", "--second=7", "--include=7"};
+    vector<string> cmdline2 = sv(cmdline2_, sizeof(cmdline2_) / sizeof(char const*));
 
     parsed_options p2 = command_line_parser(cmdline2).options(desc).run();
 

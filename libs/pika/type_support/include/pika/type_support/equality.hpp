@@ -22,9 +22,9 @@ namespace pika::detail {
 
     template <typename T, typename U>
     struct equality_result<T, U,
-        std::void_t<decltype(std::declval<const T&>() == std::declval<const U&>())>>
+        std::void_t<decltype(std::declval<T const&>() == std::declval<U const&>())>>
     {
-        using type = decltype(std::declval<const T&>() == std::declval<const U&>());
+        using type = decltype(std::declval<T const&>() == std::declval<U const&>());
     };
 
     template <typename T, typename U>
@@ -38,9 +38,9 @@ namespace pika::detail {
 
     template <typename T, typename U>
     struct inequality_result<T, U,
-        std::void_t<decltype(std::declval<const T&>() != std::declval<const U&>())>>
+        std::void_t<decltype(std::declval<T const&>() != std::declval<U const&>())>>
     {
-        using type = decltype(std::declval<const T&>() != std::declval<const U&>());
+        using type = decltype(std::declval<T const&>() != std::declval<U const&>());
     };
 
     template <typename T, typename U>

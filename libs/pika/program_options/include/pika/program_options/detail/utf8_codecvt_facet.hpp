@@ -104,12 +104,12 @@ namespace pika::program_options::detail {
         virtual ~utf8_codecvt_facet();
 
     protected:
-        std::codecvt_base::result do_in(std::mbstate_t& state, const char* from,
-            const char* from_end, const char*& from_next, wchar_t* to, wchar_t* to_end,
+        std::codecvt_base::result do_in(std::mbstate_t& state, char const* from,
+            char const* from_end, char const*& from_next, wchar_t* to, wchar_t* to_end,
             wchar_t*& to_next) const override;
 
-        std::codecvt_base::result do_out(std::mbstate_t& state, const wchar_t* from,
-            const wchar_t* from_end, const wchar_t*& from_next, char* to, char* to_end,
+        std::codecvt_base::result do_out(std::mbstate_t& state, wchar_t const* from,
+            wchar_t const* from_end, wchar_t const*& from_next, char* to, char* to_end,
             char*& to_next) const override;
 
         bool invalid_continuing_octet(unsigned char octet_1) const
@@ -146,17 +146,17 @@ namespace pika::program_options::detail {
 
         int do_encoding() const noexcept override
         {
-            const int variable_byte_external_encoding = 0;
+            int const variable_byte_external_encoding = 0;
             return variable_byte_external_encoding;
         }
 
         // How many char objects can I process to get <= max_limit
         // wchar_t objects?
-        int do_length(std::mbstate_t&, const char* from, const char* from_end,
+        int do_length(std::mbstate_t&, char const* from, char const* from_end,
             std::size_t max_limit) const noexcept override;
 
         // Nonstandard override
-        virtual int do_length(const std::mbstate_t& s, const char* from, const char* from_end,
+        virtual int do_length(std::mbstate_t const& s, char const* from, char const* from_end,
             std::size_t max_limit) const noexcept
         {
             return do_length(const_cast<std::mbstate_t&>(s), from, from_end, max_limit);

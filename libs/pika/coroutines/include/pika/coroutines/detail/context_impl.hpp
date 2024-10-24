@@ -75,7 +75,7 @@
        A ContextImpl cannot be sliced by copying it to a ContextImplBase.
 
      - void swap_context(ContextImplBase& from,
-                         const ContextImplBase& to)
+                         ContextImplBase const& to)
 
        This free function is called unqualified (via ADL).
        Preconditions:

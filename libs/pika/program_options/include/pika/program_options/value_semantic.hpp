@@ -56,7 +56,7 @@ namespace pika::program_options {
             option is specified more than once.
         */
         virtual void parse(
-            std::any& value_store, const std::vector<std::string>& new_tokens, bool utf8) const = 0;
+            std::any& value_store, std::vector<std::string> const& new_tokens, bool utf8) const = 0;
 
         /** Called to assign default value to 'value_store'. Returns
             true if default value is assigned, and false if no default
@@ -65,7 +65,7 @@ namespace pika::program_options {
 
         /** Called when final value of an option is determined.
         */
-        virtual void notify(const std::any& value_store) const = 0;
+        virtual void notify(std::any const& value_store) const = 0;
 
         virtual ~value_semantic() {}
     };
@@ -90,12 +90,12 @@ namespace pika::program_options {
     class PIKA_EXPORT value_semantic_codecvt_helper<char> : public value_semantic
     {
     private:    // base overrides
-        PIKA_EXPORT void parse(std::any& value_store, const std::vector<std::string>& new_tokens,
+        PIKA_EXPORT void parse(std::any& value_store, std::vector<std::string> const& new_tokens,
             bool utf8) const override;
 
     protected:    // interface for derived classes.
         virtual void xparse(
-            std::any& value_store, const std::vector<std::string>& new_tokens) const = 0;
+            std::any& value_store, std::vector<std::string> const& new_tokens) const = 0;
     };
 
     /** Helper conversion class for values that accept ascii
@@ -109,12 +109,12 @@ namespace pika::program_options {
     class PIKA_EXPORT value_semantic_codecvt_helper<wchar_t> : public value_semantic
     {
     private:    // base overrides
-        PIKA_EXPORT void parse(std::any& value_store, const std::vector<std::string>& new_tokens,
+        PIKA_EXPORT void parse(std::any& value_store, std::vector<std::string> const& new_tokens,
             bool utf8) const override;
 
     protected:    // interface for derived classes.
         virtual void xparse(
-            std::any& value_store, const std::vector<std::wstring>& new_tokens) const = 0;
+            std::any& value_store, std::vector<std::wstring> const& new_tokens) const = 0;
     };
 
     /** Class which specifies a simple handling of a value: the value will
@@ -142,13 +142,13 @@ namespace pika::program_options {
             any modifications.
          */
         void xparse(
-            std::any& value_store, const std::vector<std::string>& new_tokens) const override;
+            std::any& value_store, std::vector<std::string> const& new_tokens) const override;
 
         /** Does nothing. */
         bool apply_default(std::any&) const override { return false; }
 
         /** Does nothing. */
-        void notify(const std::any&) const override {}
+        void notify(std::any const&) const override {}
 
     private:
         bool m_zero_tokens;
@@ -165,7 +165,7 @@ namespace pika::program_options {
     public:
         // Returns the type of the value described by this
         // object.
-        virtual const std::type_info& value_type() const = 0;
+        virtual std::type_info const& value_type() const = 0;
         // Not really needed, since deletion from this
         // class is silly, but just in case.
         virtual ~typed_value_base() {}
@@ -194,7 +194,7 @@ namespace pika::program_options {
             if none is explicitly specified. The type 'T' should
             provide operator<< for ostream.
         */
-        typed_value* default_value(const T& v)
+        typed_value* default_value(T const& v)
         {
             m_default_value = std::any(v);
             m_default_value_as_text = pika::detail::to_string(v);
@@ -207,7 +207,7 @@ namespace pika::program_options {
             but textual representation of default value must be provided
             by the user.
         */
-        typed_value* default_value(const T& v, const std::string& textual)
+        typed_value* default_value(T const& v, std::string const& textual)
         {
             m_default_value = std::any(v);
             m_default_value_as_text = textual;
@@ -218,7 +218,7 @@ namespace pika::program_options {
             if the option is given, but without an adjacent value.
             Using this implies that an explicit value is optional,
         */
-        typed_value* implicit_value(const T& v)
+        typed_value* implicit_value(T const& v)
         {
             m_implicit_value = std::any(v);
             m_implicit_value_as_text = pika::detail::to_string(v);
@@ -226,7 +226,7 @@ namespace pika::program_options {
         }
 
         /** Specifies the name used to to the value in help message.  */
-        typed_value* value_name(const std::string& name)
+        typed_value* value_name(std::string const& name)
         {
             m_value_name = name;
             return this;
@@ -242,7 +242,7 @@ namespace pika::program_options {
             operator<< for ostream, but textual representation of default
             value must be provided by the user.
         */
-        typed_value* implicit_value(const T& v, const std::string& textual)
+        typed_value* implicit_value(T const& v, std::string const& textual)
         {
             m_implicit_value = std::any(v);
             m_implicit_value_as_text = textual;
@@ -251,7 +251,7 @@ namespace pika::program_options {
 
         /** Specifies a function to be called when the final value
             is determined. */
-        typed_value* notifier(std::function<void(const T&)> f)
+        typed_value* notifier(std::function<void(T const&)> f)
         {
             m_notifier = f;
             return this;
@@ -317,7 +317,7 @@ namespace pika::program_options {
         /** Creates an instance of the 'validator' class and calls
             its operator() to perform the actual conversion. */
         void xparse(std::any& value_store,
-            const std::vector<std::basic_string<Char>>& new_tokens) const override;
+            std::vector<std::basic_string<Char>> const& new_tokens) const override;
 
         /** If default value was specified via previous call to
             'default_value', stores that value into 'value_store'.
@@ -336,10 +336,10 @@ namespace pika::program_options {
         /** If an address of variable to store value was specified
             when creating *this, stores the value there. Otherwise,
             does nothing. */
-        void notify(const std::any& value_store) const override;
+        void notify(std::any const& value_store) const override;
 
     public:    // typed_value_base overrides
-        const std::type_info& value_type() const override { return typeid(T); }
+        std::type_info const& value_type() const override { return typeid(T); }
 
     private:
         T* m_store_to;
@@ -352,7 +352,7 @@ namespace pika::program_options {
         std::any m_implicit_value;
         std::string m_implicit_value_as_text;
         bool m_composing, m_implicit, m_multitoken, m_zero_tokens, m_required;
-        std::function<void(const T&)> m_notifier;
+        std::function<void(T const&)> m_notifier;
     };
 
     /** Creates a typed_value<T> instance. This function is the primary

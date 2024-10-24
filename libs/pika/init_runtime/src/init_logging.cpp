@@ -34,7 +34,7 @@
 
 namespace pika::detail {
     static void spdlog_format_thread_id(pika::threads::detail::thread_id_type const id,
-        const spdlog::details::log_msg&, const std::tm&, spdlog::memory_buf_t& dest)
+        spdlog::details::log_msg const&, std::tm const&, spdlog::memory_buf_t& dest)
     {
         if (id)
         {
@@ -50,7 +50,7 @@ namespace pika::detail {
     class pika_thread_id_formatter_flag : public spdlog::custom_flag_formatter
     {
     public:
-        void format(const spdlog::details::log_msg& m, const std::tm& t,
+        void format(spdlog::details::log_msg const& m, std::tm const& t,
             spdlog::memory_buf_t& dest) override
         {
             spdlog_format_thread_id(threads::detail::get_self_id(), m, t, dest);
@@ -65,7 +65,7 @@ namespace pika::detail {
     class pika_parent_thread_id_formatter_flag : public spdlog::custom_flag_formatter
     {
     public:
-        void format(const spdlog::details::log_msg& m, const std::tm& t,
+        void format(spdlog::details::log_msg const& m, std::tm const& t,
             spdlog::memory_buf_t& dest) override
         {
             spdlog_format_thread_id(threads::detail::get_parent_id(), m, t, dest);
@@ -87,7 +87,7 @@ namespace pika::detail {
 
     public:
         void format(
-            const spdlog::details::log_msg&, const std::tm&, spdlog::memory_buf_t& dest) override
+            spdlog::details::log_msg const&, std::tm const&, spdlog::memory_buf_t& dest) override
         {
             format_id(dest, pika::get_thread_pool_num());
             dest.append(std::string_view("/"));
@@ -106,7 +106,7 @@ namespace pika::detail {
     {
     public:
         void format(
-            const spdlog::details::log_msg&, const std::tm&, spdlog::memory_buf_t& dest) override
+            spdlog::details::log_msg const&, std::tm const&, spdlog::memory_buf_t& dest) override
         {
             static PIKA_DETAIL_NS_DEBUG::hostname_print_helper helper{};
             static std::string_view hostname_str = helper.get_hostname();

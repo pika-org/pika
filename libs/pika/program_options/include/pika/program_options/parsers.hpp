@@ -33,7 +33,7 @@ namespace pika::program_options {
     {
     public:
         explicit basic_parsed_options(
-            const options_description* xdescription, int options_prefix = 0)
+            options_description const* xdescription, int options_prefix = 0)
           : description(xdescription)
           , m_options_prefix(options_prefix)
         {
@@ -45,7 +45,7 @@ namespace pika::program_options {
             option_description passed to them, and issues of lifetime are
             up to the caller. Can be nullptr.
          */
-        const options_description* description;
+        options_description const* description;
 
         /** Mainly used for the diagnostic messages in exceptions.
          *  The canonical option prefix  for the parser which generated these results,
@@ -68,10 +68,10 @@ namespace pika::program_options {
     {
     public:
         /** Constructs wrapped options from options in UTF8 encoding. */
-        explicit basic_parsed_options(const basic_parsed_options<char>& po);
+        explicit basic_parsed_options(basic_parsed_options<char> const& po);
 
         std::vector<basic_option<wchar_t>> options;
-        const options_description* description;
+        options_description const* description;
 
         /** Stores UTF8 encoded options that were passed to constructor,
             to avoid reverse conversion in some cases. */
@@ -95,7 +95,7 @@ namespace pika::program_options {
     /** Augments basic_parsed_options<wchar_t> with conversion from
         'parsed_options' */
 
-    using ext_parser = std::function<std::pair<std::string, std::string>(const std::string&)>;
+    using ext_parser = std::function<std::pair<std::string, std::string>(std::string const&)>;
 
     /** Command line parser.
 
@@ -118,16 +118,16 @@ namespace pika::program_options {
         /** Creates a command line parser for the specified arguments
             list. The 'args' parameter should not include program name.
         */
-        basic_command_line_parser(const std::vector<std::basic_string<Char>>& args);
+        basic_command_line_parser(std::vector<std::basic_string<Char>> const& args);
         /** Creates a command line parser for the specified arguments
             list. The parameters should be the same as passed to 'main'.
         */
-        basic_command_line_parser(int argc, const Char* const argv[]);
+        basic_command_line_parser(int argc, Char const* const argv[]);
 
         /** Sets options descriptions to use. */
-        basic_command_line_parser& options(const options_description& desc);
+        basic_command_line_parser& options(options_description const& desc);
         /** Sets positional options description to use. */
-        basic_command_line_parser& positional(const positional_options_description& desc);
+        basic_command_line_parser& positional(positional_options_description const& desc);
 
         /** Sets the command line style. */
         basic_command_line_parser& style(int);
@@ -154,7 +154,7 @@ namespace pika::program_options {
         basic_command_line_parser& extra_style_parser(style_parser s);
 
     private:
-        const options_description* m_desc;
+        options_description const* m_desc;
     };
 
     using command_line_parser = basic_command_line_parser<char>;
@@ -164,9 +164,9 @@ namespace pika::program_options {
         and returns the result of calling the 'run' method.
      */
     template <class Char>
-    basic_parsed_options<Char> parse_command_line(int argc, const Char* const argv[],
-        const options_description&, int style = 0,
-        std::function<std::pair<std::string, std::string>(const std::string&)> ext = ext_parser());
+    basic_parsed_options<Char> parse_command_line(int argc, Char const* const argv[],
+        options_description const&, int style = 0,
+        std::function<std::pair<std::string, std::string>(std::string const&)> ext = ext_parser());
 
     /** Parse a config file.
 
@@ -174,7 +174,7 @@ namespace pika::program_options {
     */
     template <class Char>
     PIKA_EXPORT basic_parsed_options<Char> parse_config_file(
-        std::basic_istream<Char>&, const options_description&, bool allow_unregistered = false);
+        std::basic_istream<Char>&, options_description const&, bool allow_unregistered = false);
 
     /** Parse a config file.
 
@@ -183,7 +183,7 @@ namespace pika::program_options {
     */
     template <class Char = char>
     PIKA_EXPORT basic_parsed_options<Char> parse_config_file(
-        const char* filename, const options_description&, bool allow_unregistered = false);
+        char const* filename, options_description const&, bool allow_unregistered = false);
 
     /** Controls if the 'collect_unregistered' function should
         include positional options, or not. */
@@ -201,7 +201,7 @@ namespace pika::program_options {
     */
     template <class Char>
     std::vector<std::basic_string<Char>> collect_unrecognized(
-        const std::vector<basic_option<Char>>& options, enum collect_unrecognized_mode mode);
+        std::vector<basic_option<Char>> const& options, enum collect_unrecognized_mode mode);
 
     /** Parse environment.
 
@@ -213,7 +213,7 @@ namespace pika::program_options {
         different from the naming of command line options.
     */
     PIKA_EXPORT parsed_options parse_environment(
-        const options_description&, const std::function<std::string(std::string)>& name_mapper);
+        options_description const&, std::function<std::string(std::string)> const& name_mapper);
 
     /** Parse environment.
 
@@ -222,14 +222,14 @@ namespace pika::program_options {
         converting the remaining string into lower case.
     */
     PIKA_EXPORT parsed_options parse_environment(
-        const options_description&, const std::string& prefix);
+        options_description const&, std::string const& prefix);
 
     /** @overload
         This function exists to resolve ambiguity between the two above
         functions when second argument is of 'char*' type. There's implicit
         conversion to both std::function and string.
     */
-    PIKA_EXPORT parsed_options parse_environment(const options_description&, const char* prefix);
+    PIKA_EXPORT parsed_options parse_environment(options_description const&, char const* prefix);
 
     /** Splits a given string to a collection of single strings which
         can be passed to command_line_parser. The second parameter is
@@ -238,14 +238,14 @@ namespace pika::program_options {
         Splitting is done in a unix style way, with respect to quotes '"'
         and escape characters '\'
     */
-    PIKA_EXPORT std::vector<std::string> split_unix(const std::string& cmdline,
-        const std::string& separator = " \t", const std::string& quote = "'\"",
-        const std::string& escape = "\\");
+    PIKA_EXPORT std::vector<std::string> split_unix(std::string const& cmdline,
+        std::string const& separator = " \t", std::string const& quote = "'\"",
+        std::string const& escape = "\\");
 
     /** @overload */
-    PIKA_EXPORT std::vector<std::wstring> split_unix(const std::wstring& cmdline,
-        const std::wstring& separator = L" \t", const std::wstring& quote = L"'\"",
-        const std::wstring& escape = L"\\");
+    PIKA_EXPORT std::vector<std::wstring> split_unix(std::wstring const& cmdline,
+        std::wstring const& separator = L" \t", std::wstring const& quote = L"'\"",
+        std::wstring const& escape = L"\\");
 
 #ifdef PIKA_WINDOWS
     /** Parses the char* string which is passed to WinMain function on
@@ -254,10 +254,10 @@ namespace pika::program_options {
         runtime library and if it always exists.
         This function is available only on Windows.
     */
-    PIKA_EXPORT std::vector<std::string> split_winmain(const std::string& cmdline);
+    PIKA_EXPORT std::vector<std::string> split_winmain(std::string const& cmdline);
 
     /** @overload */
-    PIKA_EXPORT std::vector<std::wstring> split_winmain(const std::wstring& cmdline);
+    PIKA_EXPORT std::vector<std::wstring> split_winmain(std::wstring const& cmdline);
 #endif
 
 }    // namespace pika::program_options

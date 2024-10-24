@@ -86,13 +86,13 @@ int mult_2(int* arg) { return *arg * 2; }
 struct polymorphic_mult_functor
 {
     template <typename T>
-    T operator()(const T* _arg) const
+    T operator()(T const* _arg) const
     {
         return *_arg * 2;
     }
 
     template <typename T>
-    T operator()(const T* _arg)
+    T operator()(T const* _arg)
     {
         PIKA_TEST(false);
         return *_arg * 2;
@@ -102,7 +102,7 @@ struct polymorphic_mult_functor
 ///////////////////////////////////////////////////////////////////////////////
 int main()
 {
-    const int N = 10;
+    int const N = 10;
 
     // Test transform_iterator
     {

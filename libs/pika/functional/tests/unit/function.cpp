@@ -62,8 +62,8 @@ struct generate_three_obj
 };
 static int generate_five() { return 5; }
 static int generate_three() { return 3; }
-static string identity_str(const string& s) { return s; }
-static string string_cat(const string& s1, const string& s2) { return s1 + s2; }
+static string identity_str(string const& s) { return s; }
+static string string_cat(string const& s1, string const& s2) { return s1 + s2; }
 static int sum_ints(int x, int y) { return x + y; }
 
 struct write_const_1_nonconst_2
@@ -597,7 +597,7 @@ static void test_one_arg()
     pika::util::detail::function<string(string)> id(&identity_str);
     PIKA_TEST_EQ(id("str"), "str");
 
-    pika::util::detail::function<string(const char*)> id2(&identity_str);
+    pika::util::detail::function<string(char const*)> id2(&identity_str);
     PIKA_TEST_EQ(id2("foo"), "foo");
 
     add_to_obj add_to(5);
@@ -610,7 +610,7 @@ static void test_one_arg()
 
 static void test_two_args()
 {
-    pika::util::detail::function<string(const string&, const string&)> cat(&string_cat);
+    pika::util::detail::function<string(string const&, string const&)> cat(&string_cat);
     PIKA_TEST_EQ(cat("str", "ing"), "string");
 
     pika::util::detail::function<int(short, short)> sum(&sum_ints);
@@ -671,12 +671,12 @@ struct add_with_throw_on_copy
 
     add_with_throw_on_copy() {}
 
-    add_with_throw_on_copy(const add_with_throw_on_copy&)
+    add_with_throw_on_copy(add_with_throw_on_copy const&)
     {
         throw std::runtime_error("But this CAN'T throw");
     }
 
-    add_with_throw_on_copy& operator=(const add_with_throw_on_copy&)
+    add_with_throw_on_copy& operator=(add_with_throw_on_copy const&)
     {
         throw std::runtime_error("But this CAN'T throw");
     }
@@ -749,7 +749,7 @@ static void test_implicit()
 
 static void test_call_obj(pika::util::detail::function<int(int, int)> f) { PIKA_TEST(!f.empty()); }
 
-static void test_call_cref(const pika::util::detail::function<int(int, int)>& f)
+static void test_call_cref(pika::util::detail::function<int(int, int)> const& f)
 {
     PIKA_TEST(!f.empty());
 }
@@ -766,7 +766,7 @@ struct big_aggregating_structure
 
     big_aggregating_structure() { ++global_int; }
 
-    big_aggregating_structure(const big_aggregating_structure&) { ++global_int; }
+    big_aggregating_structure(big_aggregating_structure const&) { ++global_int; }
 
     ~big_aggregating_structure() { --global_int; }
 

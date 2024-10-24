@@ -40,7 +40,7 @@ void cv_wait(pika::stop_token stoken, int /* id */, bool& ready, pika::mutex& re
         PIKA_TEST(!stoken.stop_requested());
         PIKA_TEST(notify_called);
     }
-    catch (const char* e)
+    catch (char const* e)
     {
         PIKA_TEST(!notify_called);
     }

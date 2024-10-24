@@ -189,13 +189,13 @@ namespace std {
     template <>
     struct is_error_code_enum<pika::error>
     {
-        static const bool value = true;
+        static bool const value = true;
     };
 
     template <>
     struct is_error_condition_enum<pika::error>
     {
-        static const bool value = true;
+        static bool const value = true;
     };
 }    // namespace std
 /// \endcond
