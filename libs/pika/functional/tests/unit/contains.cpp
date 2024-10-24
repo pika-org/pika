@@ -30,10 +30,10 @@ struct Seventeen
 //    int value;
 //};
 //
-//bool operator==(const ReturnInt& x, const ReturnInt& y)
+//bool operator==(ReturnInt const& x, ReturnInt const& y)
 //{ return x.value == y.value; }
 //
-//bool operator!=(const ReturnInt& x, const ReturnInt& y)
+//bool operator!=(ReturnInt const& x, ReturnInt const& y)
 //{ return x.value != y.value; }
 //
 //namespace contain_test {

@@ -240,7 +240,7 @@ namespace pika::program_options {
         using name2index_iterator = std::map<std::string, int>::const_iterator;
         using approximation_range = std::pair<name2index_iterator, name2index_iterator>;
 
-        //approximation_range find_approximation(const std::string& prefix) const;
+        //approximation_range find_approximation(std::string const& prefix) const;
 
         std::string m_caption;
         std::size_t const m_line_length;
