@@ -16,8 +16,8 @@ include:
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD ^boost@1.80.0 \
                  ^hwloc@2.8.0"
     CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_MALLOC=system \
-                  -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON -DPIKA_WITH_UNITY_BUILD=OFF \
-                  -DPIKA_WITH_THREAD_STACK_MMAP=OFF"
+                  -DPIKA_WITH_MAX_CPU_COUNT=256 -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON \
+                  -DPIKA_WITH_UNITY_BUILD=OFF -DPIKA_WITH_THREAD_STACK_MMAP=OFF"
 
 clang15_spack_compiler_image:
   extends:
