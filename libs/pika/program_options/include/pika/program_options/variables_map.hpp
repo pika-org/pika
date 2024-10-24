@@ -32,7 +32,7 @@ namespace pika::program_options {
         is not changed, even if 'options' specify some value.
     */
     PIKA_EXPORT
-    void store(const basic_parsed_options<char>& options, variables_map& m, bool utf8 = false);
+    void store(basic_parsed_options<char> const& options, variables_map& m, bool utf8 = false);
 
     /** Stores in 'm' all options that are defined in 'options'.
         If 'm' already has a non-defaulted value of an option, that value
@@ -40,7 +40,7 @@ namespace pika::program_options {
         This is wide character variant.
     */
     PIKA_EXPORT
-    void store(const basic_parsed_options<wchar_t>& options, variables_map& m);
+    void store(basic_parsed_options<wchar_t> const& options, variables_map& m);
 
     /** Runs all 'notify' function for options in 'm'. */
     PIKA_EXPORT void notify(variables_map& m);
@@ -55,7 +55,7 @@ namespace pika::program_options {
           : m_defaulted(false)
         {
         }
-        variable_value(const std::any& xv, bool xdefaulted)
+        variable_value(std::any const& xv, bool xdefaulted)
           : v(xv)
           , m_defaulted(xdefaulted)
         {
@@ -64,9 +64,9 @@ namespace pika::program_options {
         /** If stored value if of type T, returns that value. Otherwise,
             throws boost::bad_any_cast exception. */
         template <class T>
-        const T& as() const
+        T const& as() const
         {
-            return std::any_cast<const T&>(v);
+            return std::any_cast<T const&>(v);
         }
         /** @overload */
         template <class T>
@@ -81,7 +81,7 @@ namespace pika::program_options {
             given, but has default value. */
         bool defaulted() const;
         /** Returns the contained value. */
-        const std::any& value() const;
+        std::any const& value() const;
 
         /** Returns the contained value. */
         std::any& value();
@@ -94,10 +94,10 @@ namespace pika::program_options {
         // they are known only after all sources are stored. By that
         // time options_description for the first source might not
         // be easily accessible, so we need to store semantic here.
-        std::shared_ptr<const value_semantic> m_value_semantic;
+        std::shared_ptr<value_semantic const> m_value_semantic;
 
         friend PIKA_EXPORT void store(
-            const basic_parsed_options<char>& options, variables_map& m, bool);
+            basic_parsed_options<char> const& options, variables_map& m, bool);
 
         friend class PIKA_EXPORT variables_map;
     };
@@ -108,7 +108,7 @@ namespace pika::program_options {
     {
     public:
         abstract_variables_map();
-        abstract_variables_map(const abstract_variables_map* next);
+        abstract_variables_map(abstract_variables_map const* next);
 
         virtual ~abstract_variables_map() {}
 
@@ -126,7 +126,7 @@ namespace pika::program_options {
 
             - if there's a non-defaulted value, returns it.
         */
-        const variable_value& operator[](const std::string& name) const;
+        variable_value const& operator[](std::string const& name) const;
 
         /** Sets next variable map, which will be used to find
            variables not found in *this. */
@@ -135,9 +135,9 @@ namespace pika::program_options {
     private:
         /** Returns value of variable 'name' stored in *this, or
             empty value otherwise. */
-        virtual const variable_value& get(const std::string& name) const = 0;
+        virtual variable_value const& get(std::string const& name) const = 0;
 
-        const abstract_variables_map* m_next;
+        abstract_variables_map const* m_next;
     };
 
     /** Concrete variables map which store variables in real map.
@@ -151,10 +151,10 @@ namespace pika::program_options {
     {
     public:
         variables_map();
-        variables_map(const abstract_variables_map* next);
+        variables_map(abstract_variables_map const* next);
 
         // Resolve conflict between inherited operators.
-        const variable_value& operator[](const std::string& name) const
+        variable_value const& operator[](std::string const& name) const
         {
             return abstract_variables_map::operator[](name);
         }
@@ -167,14 +167,14 @@ namespace pika::program_options {
     private:
         /** Implementation of abstract_variables_map::get
             which does 'find' in *this. */
-        const variable_value& get(const std::string& name) const override;
+        variable_value const& get(std::string const& name) const override;
 
         /** Names of option with 'final' values \-- which should not
             be changed by subsequence assignments. */
         std::set<std::string> m_final;
 
         friend PIKA_EXPORT void store(
-            const basic_parsed_options<char>& options, variables_map& xm, bool utf8);
+            basic_parsed_options<char> const& options, variables_map& xm, bool utf8);
 
         /** Names of required options, filled by parser which has
             access to options_description.
@@ -191,7 +191,7 @@ namespace pika::program_options {
 
     inline bool variable_value::defaulted() const { return m_defaulted; }
 
-    inline const std::any& variable_value::value() const { return v; }
+    inline std::any const& variable_value::value() const { return v; }
 
     inline std::any& variable_value::value() { return v; }
 

@@ -413,12 +413,12 @@ namespace pika { namespace util { namespace itt {
 }}}    // namespace pika::util::itt
 
 ///////////////////////////////////////////////////////////////////////////////
-void itt_sync_create(void* addr, const char* objtype, const char* objname) noexcept
+void itt_sync_create(void* addr, char const* objtype, char const* objname) noexcept
 {
     PIKA_INTERNAL_ITT_SYNC_CREATE(addr, objtype, objname);
 }
 
-void itt_sync_rename(void* addr, const char* objname) noexcept
+void itt_sync_rename(void* addr, char const* objname) noexcept
 {
     PIKA_INTERNAL_ITT_SYNC_RENAME(addr, objname);
 }
@@ -503,7 +503,7 @@ void itt_id_create(___itt_domain const* domain, ___itt_id* id) noexcept
 void itt_id_destroy(___itt_id* id) noexcept { PIKA_INTERNAL_ITT_ID_DESTROY(id); }
 
 ///////////////////////////////////////////////////////////////////////////////
-__itt_heap_function itt_heap_function_create(const char* name, const char* domain) noexcept
+__itt_heap_function itt_heap_function_create(char const* name, char const* domain) noexcept
 {
     return PIKA_INTERNAL_ITT_HEAP_FUNCTION_CREATE(name, domain);
 }

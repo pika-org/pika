@@ -33,7 +33,7 @@ namespace mpi = pika::mpi::experimental;
 namespace tt = pika::this_thread::experimental;
 
 // -----------------------------------------------------------------
-int pika_main(const std::string& pool_name)
+int pika_main(std::string const& pool_name)
 {
     int size, rank;
     MPI_Comm comm = MPI_COMM_WORLD;

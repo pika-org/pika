@@ -30,7 +30,7 @@ namespace pika::program_options {
           , case_insensitive(false)
         {
         }
-        basic_option(const std::string& xstring_key, const std::vector<std::string>& xvalue)
+        basic_option(std::string const& xstring_key, std::vector<std::string> const& xvalue)
           : string_key(xstring_key)
           , position_key(-1)
           , value(xvalue)

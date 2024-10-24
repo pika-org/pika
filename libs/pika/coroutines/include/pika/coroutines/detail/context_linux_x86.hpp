@@ -241,7 +241,7 @@ namespace pika::threads::coroutines {
 # endif
 # if defined(PIKA_HAVE_ADDRESS_SANITIZER)
                 asan_stack_size = m_stack_size;
-                asan_stack_bottom = const_cast<const void*>(m_stack);
+                asan_stack_bottom = const_cast<void const*>(m_stack);
 # endif
 
                 set_sigsegv_handler();
@@ -341,7 +341,7 @@ namespace pika::threads::coroutines {
                 m_sp[funp_idx] = reinterpret_cast<void*>(funp);
 # if defined(PIKA_HAVE_ADDRESS_SANITIZER)
                 asan_stack_size = m_stack_size;
-                asan_stack_bottom = const_cast<const void*>(m_stack);
+                asan_stack_bottom = const_cast<void const*>(m_stack);
 # endif
             }
 

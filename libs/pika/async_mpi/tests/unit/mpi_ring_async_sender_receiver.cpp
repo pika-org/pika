@@ -133,12 +133,12 @@ enum class msg_type : std::uint32_t
 // ------------------------------------------------------------
 // utility function to print out info after send/recv completes
 void msg_info(
-    std::uint32_t rank, std::uint32_t size, msg_type mtype, header h, const char* xmsg = nullptr)
+    std::uint32_t rank, std::uint32_t size, msg_type mtype, header h, char const* xmsg = nullptr)
 {
     if (output)
     {
         int other = (mtype == msg_type::send) ? next_rank(rank, size) : prev_rank(rank, size);
-        const char* msg = (mtype == msg_type::send) ? "send" : "recv";
+        char const* msg = (mtype == msg_type::send) ? "send" : "recv";
         std::stringstream temp;
         temp << dec<3>(rank) << "/" << dec<3>(size);
         // clang-format off

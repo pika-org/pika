@@ -136,7 +136,7 @@ namespace pika::resource {
         // allow the default pool to be renamed to something else
         PIKA_EXPORT void set_default_pool_name(std::string const& name);
 
-        PIKA_EXPORT const std::string& get_default_pool_name() const;
+        PIKA_EXPORT std::string const& get_default_pool_name() const;
 
         ///////////////////////////////////////////////////////////////////////
         // Functions to add processing units to thread pools via

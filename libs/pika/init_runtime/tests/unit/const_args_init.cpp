@@ -32,7 +32,7 @@ int main()
     }
 
     {
-        const char* argv[] = {name.data(), nullptr};
+        char const* argv[] = {name.data(), nullptr};
 
         PIKA_TEST_EQ(pika::init(pika_main, argc, argv), 0);
 
@@ -50,7 +50,7 @@ int main()
     }
 
     {
-        const char* const argv[] = {name.data(), nullptr};
+        char const* const argv[] = {name.data(), nullptr};
 
         PIKA_TEST_EQ(pika::init(pika_main, argc, argv), 0);
 

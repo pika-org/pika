@@ -19,7 +19,7 @@
 using namespace pika::program_options;
 using namespace std;
 
-void check_equal(const std::vector<string>& actual, char const** expected, int n)
+void check_equal(std::vector<string> const& actual, char const** expected, int n)
 {
     if (actual.size() != n)
     {

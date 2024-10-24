@@ -74,7 +74,7 @@ struct sMatrixSize
 // @param wB         width of matrix B
 // -------------------------------------------------------------------------
 template <typename T>
-void matrixMulCPU(T* C, const T* A, const T* B, unsigned int hA, unsigned int wA, unsigned int wB)
+void matrixMulCPU(T* C, T const* A, T const* B, unsigned int hA, unsigned int wA, unsigned int wB)
 {
     for (unsigned int i = 0; i < hA; ++i)
     {
@@ -95,7 +95,7 @@ void matrixMulCPU(T* C, const T* A, const T* B, unsigned int hA, unsigned int wA
 // -------------------------------------------------------------------------
 // Compute the L2 norm difference between two arrays
 inline bool compare_L2_err(
-    const float* reference, const float* data, const unsigned int len, const float epsilon)
+    float const* reference, float const* data, unsigned int const len, float const epsilon)
 {
     PIKA_ASSERT(epsilon >= 0);
 

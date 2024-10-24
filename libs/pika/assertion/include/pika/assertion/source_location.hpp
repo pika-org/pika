@@ -15,9 +15,9 @@ namespace pika::detail {
     /// called
     struct source_location
     {
-        const char* file_name;
+        char const* file_name;
         unsigned line_number;
-        const char* function_name;
+        char const* function_name;
     };
     PIKA_EXPORT std::ostream& operator<<(std::ostream& os, source_location const& loc);
 }    // namespace pika::detail

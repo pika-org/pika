@@ -114,7 +114,7 @@ PIKA_NO_SANITIZE_ADDRESS void test_exception_handler_code(MPI_Comm comm, MPI_Dat
             std::vector<std::string> err_msgs = {"null datatype", "MPI_DATATYPE_NULL",
                 "Invalid datatype", "MPI_ERR_TYPE", "Invalid root"};
             bool msg_ok = false;
-            for (const auto& msg : err_msgs)
+            for (auto const& msg : err_msgs)
             {
                 msg_ok |= (std::string(e.what()).find(msg) != std::string::npos);
             }

@@ -198,7 +198,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
             cuda_scheduler sched;
-            std::optional<std::reference_wrapper<const cuda_stream>> stream;
+            std::optional<std::reference_wrapper<cuda_stream const>> stream;
 
             struct then_with_cuda_stream_receiver_tag
             {

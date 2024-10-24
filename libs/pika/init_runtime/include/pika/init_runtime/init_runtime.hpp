@@ -77,12 +77,12 @@ namespace pika {
     };
 
     PIKA_EXPORT int init(std::function<int(pika::program_options::variables_map&)> f, int argc,
-        const char* const* argv, init_params const& params = init_params());
-    PIKA_EXPORT int init(std::function<int(int, char**)> f, int argc, const char* const* argv,
+        char const* const* argv, init_params const& params = init_params());
+    PIKA_EXPORT int init(std::function<int(int, char**)> f, int argc, char const* const* argv,
         init_params const& params = init_params());
-    PIKA_EXPORT int init(std::function<int()> f, int argc, const char* const* argv,
+    PIKA_EXPORT int init(std::function<int()> f, int argc, char const* const* argv,
         init_params const& params = init_params());
-    PIKA_EXPORT int init(std::nullptr_t, int argc, const char* const* argv,
+    PIKA_EXPORT int init(std::nullptr_t, int argc, char const* const* argv,
         init_params const& params = init_params());
 
     /// Start the runtime.
@@ -96,7 +96,7 @@ namespace pika {
     /// @pre the runtime is stopped
     /// @post the runtime is running
     PIKA_EXPORT void start(std::function<int(pika::program_options::variables_map&)> f, int argc,
-        const char* const* argv, init_params const& params = init_params());
+        char const* const* argv, init_params const& params = init_params());
 
     /// Start the runtime.
     ///
@@ -108,7 +108,7 @@ namespace pika {
     /// @pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
     /// @pre the runtime is stopped
     /// @post the runtime is running
-    PIKA_EXPORT void start(std::function<int(int, char**)> f, int argc, const char* const* argv,
+    PIKA_EXPORT void start(std::function<int(int, char**)> f, int argc, char const* const* argv,
         init_params const& params = init_params());
 
     /// Start the runtime.
@@ -119,10 +119,10 @@ namespace pika {
     ///
     /// @pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
     /// @pre the runtime is not running
-    PIKA_EXPORT void start(std::function<int()> f, int argc, const char* const* argv,
+    PIKA_EXPORT void start(std::function<int()> f, int argc, char const* const* argv,
         init_params const& params = init_params());
 
-    PIKA_EXPORT void start(std::nullptr_t, int argc, const char* const* argv,
+    PIKA_EXPORT void start(std::nullptr_t, int argc, char const* const* argv,
         init_params const& params = init_params());
 
     /// Start the runtime.
@@ -136,7 +136,7 @@ namespace pika {
     /// @pre the runtime is not initialized
     /// @post the runtime is running
     PIKA_EXPORT void start(
-        int argc, const char* const* argv, init_params const& params = init_params());
+        int argc, char const* const* argv, init_params const& params = init_params());
 
     /// Stop the runtime.
     ///

@@ -66,7 +66,7 @@ namespace pika::execution {
 
 namespace pika::util {
     template <typename Predicate>
-    void yield_while(Predicate&& predicate, const char* thread_name = nullptr,
+    void yield_while(Predicate&& predicate, char const* thread_name = nullptr,
         bool allow_timed_suspension = true)
     {
         auto yield_or_spin = allow_timed_suspension ?
@@ -87,7 +87,7 @@ namespace pika::util {
         // replaced if and when a better solution appears.
         template <typename Predicate>
         void yield_while_count(Predicate&& predicate, std::size_t required_count,
-            const char* thread_name = nullptr, bool allow_timed_suspension = true)
+            char const* thread_name = nullptr, bool allow_timed_suspension = true)
         {
             auto yield_or_spin = allow_timed_suspension ?
                 &pika::execution::this_thread::detail::yield_k :
@@ -115,12 +115,12 @@ namespace pika::util {
         template <typename Predicate>
         [[nodiscard]] bool yield_while_count_timeout(Predicate&& predicate,
             std::size_t required_count, std::chrono::duration<double> timeout,
-            const char* thread_name = nullptr, bool allow_timed_suspension = true)
+            char const* thread_name = nullptr, bool allow_timed_suspension = true)
         {
             // Seconds represented using a double
             using duration_type = std::chrono::duration<double>;
 
-            const bool use_timeout = timeout >= duration_type(0.0);
+            bool const use_timeout = timeout >= duration_type(0.0);
             auto yield_or_spin = allow_timed_suspension ?
                 &pika::execution::this_thread::detail::yield_k :
                 &pika::execution::this_thread::detail::spin_k;
@@ -151,12 +151,12 @@ namespace pika::util {
         template <typename Predicate>
         [[nodiscard]] bool
         yield_while_timeout(Predicate&& predicate, std::chrono::duration<double> timeout,
-            const char* thread_name = nullptr, bool allow_timed_suspension = true)
+            char const* thread_name = nullptr, bool allow_timed_suspension = true)
         {
             // Seconds represented using a double
             using duration_type = std::chrono::duration<double>;
 
-            const bool use_timeout = timeout >= duration_type(0.0);
+            bool const use_timeout = timeout >= duration_type(0.0);
             auto yield_or_spin = allow_timed_suspension ?
                 &pika::execution::this_thread::detail::yield_k :
                 &pika::execution::this_thread::detail::spin_k;

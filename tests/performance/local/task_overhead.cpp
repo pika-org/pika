@@ -48,7 +48,7 @@ static std::uint64_t num_threads = 1;
 static std::string info_string = "";
 
 ///////////////////////////////////////////////////////////////////////////////
-void print_stats(const char* title, const char* wait, const char* sched, std::int64_t count,
+void print_stats(char const* title, char const* wait, char const* sched, std::int64_t count,
     double duration, bool csv)
 {
     std::ostringstream temp;
@@ -71,7 +71,7 @@ void print_stats(const char* title, const char* wait, const char* sched, std::in
     //pika::util::print_cdash_timing(title, duration);
 }
 
-const char* sched_name(ex::thread_pool_scheduler const&) { return "thread_pool_scheduler"; }
+char const* sched_name(ex::thread_pool_scheduler const&) { return "thread_pool_scheduler"; }
 
 ///////////////////////////////////////////////////////////////////////////////
 // we use globals here to prevent the delay from being optimized away
@@ -82,7 +82,7 @@ double null_function() noexcept
 {
     if (num_iterations > 0)
     {
-        const int array_size = 4096;
+        int const array_size = 4096;
         std::array<double, array_size> dummy;
         for (std::uint64_t i = 0; i < num_iterations; ++i)
         {
@@ -106,7 +106,7 @@ void function_senders_when_all_vector(std::uint64_t count, bool csv, Scheduler& 
     tt::sync_wait(ex::when_all_vector(std::move(senders)));
 
     // stop the clock
-    const double duration = walltime.elapsed();
+    double const duration = walltime.elapsed();
     print_stats("schedule", "WhenAll", sched_name(sched), count, duration, csv);
 }
 
@@ -126,7 +126,7 @@ void function_senders_when_all_vector_eager(std::uint64_t count, bool csv, Sched
     tt::sync_wait(ex::when_all_vector(std::move(senders)));
 
     // stop the clock
-    const double duration = walltime.elapsed();
+    double const duration = walltime.elapsed();
     print_stats("schedule", "WhenAllEager", sched_name(sched), count, duration, csv);
 }
 
@@ -143,7 +143,7 @@ void function_senders_when_all_vector_any_sender(std::uint64_t count, bool csv, 
     tt::sync_wait(ex::when_all_vector(std::move(senders)));
 
     // stop the clock
-    const double duration = walltime.elapsed();
+    double const duration = walltime.elapsed();
     print_stats("schedule", "WhenAllAnySender", sched_name(sched), count, duration, csv);
 }
 
@@ -164,7 +164,7 @@ void function_senders_when_all_vector_eager_any_sender(
     tt::sync_wait(ex::when_all_vector(std::move(senders)));
 
     // stop the clock
-    const double duration = walltime.elapsed();
+    double const duration = walltime.elapsed();
     print_stats("schedule", "WhenAllEagerAnySender", sched_name(sched), count, duration, csv);
 }
 
@@ -173,7 +173,7 @@ void function_sliding_semaphore_execute(std::uint64_t count, bool csv, Scheduler
 {
     // start the clock
     high_resolution_timer walltime;
-    const int sem_count = 5000;
+    int const sem_count = 5000;
     pika::sliding_semaphore sem(sem_count);
     for (std::uint64_t i = 0; i < count; ++i)
     {
@@ -186,7 +186,7 @@ void function_sliding_semaphore_execute(std::uint64_t count, bool csv, Scheduler
     sem.wait(count + sem_count - 1);
 
     // stop the clock
-    const double duration = walltime.elapsed();
+    double const duration = walltime.elapsed();
     print_stats("execute", "Sliding-Sem", sched_name(sched), count, duration, csv);
 }
 
@@ -209,7 +209,7 @@ void function_register_work(std::uint64_t count, bool csv)
     l.wait();
 
     // stop the clock
-    const double duration = walltime.elapsed();
+    double const duration = walltime.elapsed();
     print_stats("register_work", "latch", "none", count, duration, csv);
 }
 
@@ -241,7 +241,7 @@ void function_create_thread(std::uint64_t count, bool csv)
     l.wait();
 
     // stop the clock
-    const double duration = walltime.elapsed();
+    double const duration = walltime.elapsed();
     print_stats("create_thread", "latch", "none", count, duration, csv);
 }
 
@@ -299,7 +299,7 @@ void function_create_thread_hierarchical_placement(std::uint64_t count, bool csv
     l.wait();
 
     // stop the clock
-    const double duration = walltime.elapsed();
+    double const duration = walltime.elapsed();
     print_stats("create_thread_hierarchical", "latch", "none", count, duration, csv);
 }
 
@@ -332,7 +332,7 @@ void function_apply_hierarchical_placement(std::uint64_t count, bool csv)
     l.wait();
 
     // stop the clock
-    const double duration = walltime.elapsed();
+    double const duration = walltime.elapsed();
     print_stats("execute_hierarchical", "latch", "thread_pool_scheduler", count, duration, csv);
 }
 
@@ -348,7 +348,7 @@ int pika_main(variables_map& vm)
             numa_sensitive = 0;
 
         bool test_all = (vm.count("test-all") > 0);
-        const int repetitions = vm["repetitions"].as<int>();
+        int const repetitions = vm["repetitions"].as<int>();
 
         if (vm.count("info")) info_string = vm["info"].as<std::string>();
 

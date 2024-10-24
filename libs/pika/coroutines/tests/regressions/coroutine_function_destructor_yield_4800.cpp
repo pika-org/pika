@@ -45,9 +45,9 @@ int pika_main()
     }
 
 #if defined(PIKA_WITH_VALGRIND)
-    const int num_iterations = 100;
+    int const num_iterations = 100;
 #else
-    const int num_iterations = 1000;
+    int const num_iterations = 1000;
 #endif
 
     // This is a more complicated example which sometimes leads to the yielder

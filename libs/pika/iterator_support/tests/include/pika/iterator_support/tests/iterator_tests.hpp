@@ -39,7 +39,7 @@ namespace tests {
 
         int foo() const { return x_; }
 
-        bool operator==(const dummy_type& d) const { return x_ == d.x_; }
+        bool operator==(dummy_type const& d) const { return x_ == d.x_; }
 
         int x_;
     };
@@ -376,8 +376,8 @@ namespace tests {
         Iterator i2(i);
         using value_type = typename std::iterator_traits<Iterator>::value_type;
         using reference = typename std::iterator_traits<Iterator>::reference;
-        PIKA_TEST((std::is_same<const value_type&, reference>::value));
-        const T& v2 = *i2;
+        PIKA_TEST((std::is_same<value_type const&, reference>::value));
+        T const& v2 = *i2;
         PIKA_TEST_EQ(v1, v2);
         //PIKA_TEST(is_lvalue_iterator<Iterator>::value);
         //PIKA_TEST(!is_non_const_lvalue_iterator<Iterator>::value);
@@ -473,17 +473,17 @@ namespace tests {
         using value_type = T;
         struct reference
         {
-            reference& operator=(const T&) { return *this; }
+            reference& operator=(T const&) { return *this; }
             operator value_type() { return static_object<T>::get(); }
         };
 
-        using pointer = const T*;
+        using pointer = T const*;
         using difference_type = std::ptrdiff_t;
 
         input_output_iterator_archetype() {}
-        self& operator=(const self&) { return *this; }
-        bool operator==(const self&) const { return true; }
-        bool operator!=(const self&) const { return true; }
+        self& operator=(self const&) { return *this; }
+        bool operator==(self const&) const { return true; }
+        bool operator!=(self const&) const { return true; }
         reference operator*() const { return reference(); }
         self& operator++() { return *this; }
         self operator++(int) { return *this; }
@@ -498,14 +498,14 @@ namespace tests {
     public:
         using iterator_category = std::input_iterator_tag;
         using value_type = T;
-        using reference = const T&;
-        using pointer = const T*;
+        using reference = T const&;
+        using pointer = T const*;
         using difference_type = std::ptrdiff_t;
         input_iterator_archetype_no_proxy() {}
         input_iterator_archetype_no_proxy(input_iterator_archetype_no_proxy const&) {}
-        self& operator=(const self&) { return *this; }
-        bool operator==(const self&) const { return true; }
-        bool operator!=(const self&) const { return true; }
+        self& operator=(self const&) { return *this; }
+        bool operator==(self const&) const { return true; }
+        bool operator!=(self const&) const { return true; }
         reference operator*() const { return static_object<T>::get(); }
         self& operator++() { return *this; }
         self operator++(int) { return *this; }
@@ -520,14 +520,14 @@ namespace tests {
     public:
         using iterator_category = std::forward_iterator_tag;
         using value_type = T;
-        using reference = const T&;
+        using reference = T const&;
         using pointer = T const*;
         using difference_type = std::ptrdiff_t;
         forward_iterator_archetype() {}
         forward_iterator_archetype(forward_iterator_archetype const&) {}
-        self& operator=(const self&) { return *this; }
-        bool operator==(const self&) const { return true; }
-        bool operator!=(const self&) const { return true; }
+        self& operator=(self const&) { return *this; }
+        bool operator==(self const&) const { return true; }
+        bool operator!=(self const&) const { return true; }
         reference operator*() const { return static_object<T>::get(); }
         self& operator++() { return *this; }
         self operator++(int) { return *this; }
