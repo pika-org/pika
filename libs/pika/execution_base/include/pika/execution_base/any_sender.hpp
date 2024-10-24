@@ -107,7 +107,7 @@ namespace pika::detail {
 #if defined(PIKA_DETAIL_ENABLE_ANY_SENDER_SBO)
         union
         {
-            std::aligned_storage_t<embedded_storage_size, alignment_size> embedded_storage;
+            alignas(alignment_size) unsigned char embedded_storage[embedded_storage_size];
 #endif
             base_type* heap_storage = nullptr;
 #if defined(PIKA_DETAIL_ENABLE_ANY_SENDER_SBO)

@@ -145,7 +145,7 @@ namespace pika::detail {
             return *this;
         }
 
-        std::aligned_storage_t<sizeof(T), alignof(T)> memory_[Size];
+        alignas(T) memory_[Size * sizeof(T)];
         PIKA_NO_UNIQUE_ADDRESS allocator_memory_resource<T, Allocator> resource_;
         buffer_resource_type pool_;
         allocator_type allocator_;
