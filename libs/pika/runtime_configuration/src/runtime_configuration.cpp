@@ -339,7 +339,8 @@ namespace pika::util {
 
 #if defined(PIKA_HAVE_MPI)
             "[pika.mpi]",
-            "completion_mode = ${PIKA_MPI_COMPLETION_MODE:0}",
+            "enable_pool = ${PIKA_MPI_ENABLE_POOL:0}",
+            "completion_mode = ${PIKA_MPI_COMPLETION_MODE:30}",
 #endif
 
             "[pika.commandline]",

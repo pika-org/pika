@@ -68,7 +68,7 @@ namespace pika::mpi::experimental::detail {
     // return a scheduler on the mpi pool
     inline auto mpi_pool_scheduler(execution::thread_priority p)
     {
-        if (!pool_exists()) return default_pool_scheduler(p);
+        if (!get_pool_enabled()) return default_pool_scheduler(p);
         return ex::with_priority(
             ex::thread_pool_scheduler{&resource::get_thread_pool(get_pool_name())}, p);
     }

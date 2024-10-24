@@ -129,7 +129,7 @@ PIKA_NO_SANITIZE_ADDRESS void test_exception_handler_code(MPI_Comm comm, MPI_Dat
 PIKA_NO_SANITIZE_ADDRESS void test_exception_no_handler(MPI_Comm comm)
 {
     // Use the default error handler MPI_ERRORS_ARE_FATAL
-    mpi::enable_user_polling enable_polling_no_errhandler;
+    mpi::enable_polling enable_polling_no_errhandler;
     {
         // Exception thrown based on the returned error code
         int *data = nullptr, count = 0;
@@ -162,9 +162,8 @@ int pika_main()
 
     {
         {
-            // Use the custom error handler from the async_mpi module which throws
-            // exceptions on error returned
-            mpi::enable_user_polling enable_polling(mpi::get_pool_name(), true);
+            // Use the custom error handler which throws exceptions on mpi errors
+            mpi::enable_polling enable_polling(mpi::exception_mode::install_handler);
             // Success path
             {
                 // MPI function pointer
@@ -249,24 +248,12 @@ int pika_main()
 }
 
 //----------------------------------------------------------------------------
-void init_resource_partitioner_handler(
-    pika::resource::partitioner&, pika::program_options::variables_map const& /*vm*/)
-{
-    namespace mpix = pika::mpi::experimental;
-    mpix::create_pool("", mpix::pool_create_mode::pika_decides);
-}
-
-//----------------------------------------------------------------------------
 int main(int argc, char* argv[])
 {
     MPI_Init(&argc, &argv);
 
-    // Set runtime initialization callback to init thread_pools
-    pika::init_params init_args;
-    init_args.rp_callback = &init_resource_partitioner_handler;
-
     // Start runtime and collect runtime exit status
-    auto result = pika::init(pika_main, argc, argv, init_args);
+    auto result = pika::init(pika_main, argc, argv);
     PIKA_TEST_EQ(result, 0);
 
     MPI_Finalize();
