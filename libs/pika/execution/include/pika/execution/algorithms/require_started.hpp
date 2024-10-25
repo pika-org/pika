@@ -17,6 +17,7 @@
 #include <pika/execution_base/sender.hpp>
 #include <pika/functional/bind_front.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
+#include <pika/logging.hpp>
 #include <pika/type_support/detail/with_result_of.hpp>
 #include <pika/type_support/pack.hpp>
 
@@ -70,7 +71,7 @@ namespace pika {
          switch (mode)                                                                             \
          {                                                                                         \
          case require_started_mode::terminate_on_unstarted:                                        \
-             fmt::print(std::cerr, "{}: {}\n", f, message);                                        \
+             PIKA_LOG(err, "{}: {}\n", f, message);                                                \
              std::terminate();                                                                     \
              break;                                                                                \
                                                                                                    \
