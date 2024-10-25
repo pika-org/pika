@@ -128,7 +128,8 @@ int main()
 
         auto s = ex::just(std::move(sp)) |
             ex::then([&](auto&&) { PIKA_TEST_EQ(sp_weak.use_count(), 1); }) |
-            ex::drop_operation_state() | ex::then([&]() { PIKA_TEST_EQ(sp_weak.use_count(), 0); });
+            ex::then([&] { PIKA_TEST_EQ(sp_weak.use_count(), 1); }) | ex::drop_operation_state() |
+            ex::then([&] { PIKA_TEST_EQ(sp_weak.use_count(), 0); });
         tt::sync_wait(std::move(s));
     }
 
