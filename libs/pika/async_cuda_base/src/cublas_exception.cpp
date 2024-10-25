@@ -13,7 +13,7 @@
 
 namespace pika::cuda::experimental {
     namespace detail {
-        const char* cublas_get_error_string(cublasStatus_t error)
+        char const* cublas_get_error_string(cublasStatus_t error)
         {
             switch (error)
             {
@@ -61,7 +61,7 @@ namespace pika::cuda::experimental {
     {
     }
 
-    cublas_exception::cublas_exception(const std::string& msg, cublasStatus_t err)
+    cublas_exception::cublas_exception(std::string const& msg, cublasStatus_t err)
       : pika::exception(pika::error::bad_function_call, msg)
       , err_(err)
     {

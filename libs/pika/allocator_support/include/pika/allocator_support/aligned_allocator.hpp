@@ -100,7 +100,7 @@ namespace pika::detail {
     {
         using value_type = T;
         using pointer = T*;
-        using const_pointer = const T*;
+        using const_pointer = T const*;
         using reference = T&;
         using const_reference = T const&;
         using size_type = std::size_t;

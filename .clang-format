@@ -114,6 +114,7 @@ PenaltyReturnTypeOnItsOwnLine: 20
 PointerAlignment: Left
 PPIndentWidth: 1
 ReflowComments: false
+QualifierAlignment: Right
 RequiresClausePosition: OwnLine
 RequiresExpressionIndentation: OuterScope
 SortIncludes:    true

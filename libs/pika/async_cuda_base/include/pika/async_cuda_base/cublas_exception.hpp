@@ -14,13 +14,13 @@
 
 namespace pika::cuda::experimental {
     namespace detail {
-        PIKA_EXPORT const char* cublas_get_error_string(cublasStatus_t error);
+        PIKA_EXPORT char const* cublas_get_error_string(cublasStatus_t error);
     }    // namespace detail
 
     struct cublas_exception : pika::exception
     {
         PIKA_EXPORT explicit cublas_exception(cublasStatus_t err);
-        PIKA_EXPORT cublas_exception(const std::string& msg, cublasStatus_t err);
+        PIKA_EXPORT cublas_exception(std::string const& msg, cublasStatus_t err);
         PIKA_EXPORT cublasStatus_t get_cublas_errorcode() const noexcept;
 
     protected:

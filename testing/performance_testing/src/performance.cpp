@@ -53,14 +53,14 @@ namespace pika::util {
 
     void perftests_print_times() { std::cout << detail::times(); }
 
-    void print_cdash_timing(const char* name, double time)
+    void print_cdash_timing(char const* name, double time)
     {
         fmt::print(std::cout,
             "<DartMeasurement name=\"{}\" type=\"numeric/double\">{}</DartMeasurement>\n", name,
             time);
     }
 
-    void print_cdash_timing(const char* name, std::uint64_t time)
+    void print_cdash_timing(char const* name, std::uint64_t time)
     {
         print_cdash_timing(name, static_cast<double>(time) / 1e9);
     }

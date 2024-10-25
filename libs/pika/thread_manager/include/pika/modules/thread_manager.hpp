@@ -232,7 +232,7 @@ namespace pika::threads::detail {
             return total_used_processing_punits;
         }
 
-        hwloc_bitmap_ptr get_pool_numa_bitmap(const std::string& pool_name) const
+        hwloc_bitmap_ptr get_pool_numa_bitmap(std::string const& pool_name) const
         {
             return get_pool(pool_name).get_numa_domain_bitmap();
         }

@@ -62,7 +62,7 @@ namespace pika::program_options::detail {
             found_eof();
         }
         common_config_file_iterator(
-            const std::set<std::string>& allowed_options, bool allow_unregistered = false);
+            std::set<std::string> const& allowed_options, bool allow_unregistered = false);
 
         virtual ~common_config_file_iterator() = default;
 
@@ -87,10 +87,10 @@ namespace pika::program_options::detail {
             '*', then all options with the same prefix are
             allowed. For example, if 'name' is 'foo*', then 'foo1' and
             'foo_bar' are allowed. */
-        void add_option(const char* name);
+        void add_option(char const* name);
 
         // Returns true if 's' is a registered option name.
-        bool allowed_option(const std::string& s) const;
+        bool allowed_option(std::string const& s) const;
 
         // That's probably too much data for iterator, since
         // it will be copied, but let's not bother for now.
@@ -110,7 +110,7 @@ namespace pika::program_options::detail {
         /** Creates a config file parser for the specified stream.
         */
         basic_config_file_iterator(std::basic_istream<Char>& is,
-            const std::set<std::string>& allowed_options, bool allow_unregistered = false);
+            std::set<std::string> const& allowed_options, bool allow_unregistered = false);
 
     private:    // base overrides
         bool getline(std::string&) override;
@@ -129,7 +129,7 @@ namespace pika::program_options::detail {
 
     template <class Char>
     basic_config_file_iterator<Char>::basic_config_file_iterator(std::basic_istream<Char>& is,
-        const std::set<std::string>& allowed_options, bool allow_unregistered)
+        std::set<std::string> const& allowed_options, bool allow_unregistered)
       : common_config_file_iterator(allowed_options, allow_unregistered)
     {
         this->is.reset(&is, null_deleter());

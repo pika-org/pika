@@ -37,7 +37,7 @@ struct matcher
     uint32_t function;
     uint32_t registers_t::*reg;
     uint32_t bit;
-    const char* target;
+    char const* target;
 } options[] = {{0x0000'0001U, &registers_t::edx, 19, "clflush"},
     {0x0000'0001U, &registers_t::edx, 8, "cx8"}, {0x0000'0001U, &registers_t::ecx, 13, "cx16"},
     {0x0000'0001U, &registers_t::edx, 15, "cmov"}, {0x0000'0001U, &registers_t::edx, 5, "msr"},

@@ -17,7 +17,7 @@ namespace pika::program_options {
     positional_options_description::positional_options_description() {}
 
     positional_options_description& positional_options_description::add(
-        const char* name, int max_count)
+        char const* name, int max_count)
     {
         PIKA_ASSERT(max_count != -1 || m_trailing.empty());
 
@@ -33,7 +33,7 @@ namespace pika::program_options {
                                     (std::numeric_limits<unsigned>::max)();
     }
 
-    const std::string& positional_options_description::name_for_position(unsigned position) const
+    std::string const& positional_options_description::name_for_position(unsigned position) const
     {
         PIKA_ASSERT(position < max_total_count());
 

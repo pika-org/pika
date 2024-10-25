@@ -64,7 +64,7 @@ public:
 // from the async_rw_mutex senders.
 struct checker
 {
-    const bool expect_readonly;
+    bool const expect_readonly;
     const std::size_t expected_predecessor_value;
     std::atomic<std::size_t>& count;
     const std::size_t count_min;

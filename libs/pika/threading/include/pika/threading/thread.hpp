@@ -40,7 +40,7 @@ namespace pika {
     class PIKA_EXPORT thread
     {
         using mutex_type = pika::concurrency::detail::spinlock;
-        void terminate(const char* function, const char* reason) const;
+        void terminate(char const* function, char const* reason) const;
 
     public:
         class id;

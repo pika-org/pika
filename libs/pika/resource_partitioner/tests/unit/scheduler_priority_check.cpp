@@ -76,13 +76,13 @@ int pika_main(variables_map& vm)
     // randomly create normal priority tasks
     // and then a set of HP tasks in periodic bursts
     // Use task plotting tools to validate that scheduling is correct
-    const int np_loop = vm["nnp"].as<int>();
-    const int hp_loop = vm["nhp"].as<int>();
-    const int np_m = vm["mnp"].as<int>();
-    const int hp_m = vm["mhp"].as<int>();
-    const int cycles = vm["cycles"].as<int>();
+    int const np_loop = vm["nnp"].as<int>();
+    int const hp_loop = vm["nhp"].as<int>();
+    int const np_m = vm["mnp"].as<int>();
+    int const hp_m = vm["mhp"].as<int>();
+    int const cycles = vm["cycles"].as<int>();
 
-    const int np_total = np_loop * cycles;
+    int const np_total = np_loop * cycles;
     //
     struct dec_counter
     {

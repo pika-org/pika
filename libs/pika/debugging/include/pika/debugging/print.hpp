@@ -273,7 +273,7 @@ namespace PIKA_DETAIL_NS_DEBUG {
     }
 
     template <typename... Args>
-    void tuple_print(std::ostream& os, const std::tuple<Args...>& t)
+    void tuple_print(std::ostream& os, std::tuple<Args...> const& t)
     {
         tuple_print(os, t, std::make_index_sequence<sizeof...(Args)>());
     }
@@ -427,7 +427,7 @@ namespace PIKA_DETAIL_NS_DEBUG {
     template <>
     struct enable_print<false>
     {
-        constexpr enable_print(const char*) {}
+        constexpr enable_print(char const*) {}
 
         constexpr bool is_enabled() const { return false; }
 
@@ -490,7 +490,7 @@ namespace PIKA_DETAIL_NS_DEBUG {
 
         // @todo, return void so that timers have zero footprint when disabled
         template <typename... Args>
-        constexpr empty_timed_var make_timer(const double, Args const&...) const
+        constexpr empty_timed_var make_timer(double const, Args const&...) const
         {
             return empty_timed_var{};
         }
@@ -518,7 +518,7 @@ namespace PIKA_DETAIL_NS_DEBUG {
         {
         }
 
-        constexpr enable_print(const char* p)
+        constexpr enable_print(char const* p)
           : prefix_(p)
         {
         }
@@ -592,7 +592,7 @@ namespace PIKA_DETAIL_NS_DEBUG {
         }
 
         template <typename... Args>
-        constexpr timed_var<Args...> make_timer(const double delay, const Args... args) const
+        constexpr timed_var<Args...> make_timer(double const delay, const Args... args) const
         {
             return timed_var<Args...>(delay, args...);
         }

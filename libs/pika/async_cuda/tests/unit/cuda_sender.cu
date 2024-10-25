@@ -36,7 +36,7 @@ auto launch_saxpy_kernel(pika::cuda::experimental::cuda_scheduler& cuda_sched, S
     unsigned int& blocks, unsigned int& threads, void** args)
 {
     return ex::when_all(std::forward<Sender>(predecessor),
-               ex::just(reinterpret_cast<const void*>(&saxpy), dim3(blocks), dim3(threads), args,
+               ex::just(reinterpret_cast<void const*>(&saxpy), dim3(blocks), dim3(threads), args,
                    std::size_t(0))) |
         ex::continues_on(cuda_sched) | cu::then_with_stream(whip::launch_kernel);
 }

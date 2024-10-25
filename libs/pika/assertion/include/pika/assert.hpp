@@ -23,7 +23,7 @@
 namespace pika::detail {
     /// The signature for an assertion handler
     using assertion_handler_type = void (*)(
-        source_location const& loc, const char* expr, std::string const& msg);
+        source_location const& loc, char const* expr, std::string const& msg);
 
     /// Set the assertion handler to be used within a program. If the handler has been
     /// set already once, the call to this function will be ignored.

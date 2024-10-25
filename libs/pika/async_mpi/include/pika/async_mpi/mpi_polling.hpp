@@ -149,7 +149,7 @@ namespace pika::mpi::experimental {
         }
 
         /// used for debugging to show mode type in messages, should be removed
-        inline const char* mode_string(int flags)
+        inline char const* mode_string(int flags)
         {
             switch (get_handler_method(flags))
             {
@@ -184,7 +184,7 @@ namespace pika::mpi::experimental {
 
         // -----------------------------------------------------------------
         /// tell the pika::mpi frework which pool is being used for mpi polling
-        PIKA_EXPORT void register_pool(const std::string& pool_name);
+        PIKA_EXPORT void register_pool(std::string const& pool_name);
 
         // -----------------------------------------------------------------
         /// actually enable/disable the polling callback handler
@@ -224,7 +224,7 @@ namespace pika::mpi::experimental {
     PIKA_EXPORT size_t get_work_count();
 
     /// return the name assigned to the mpi polling pool
-    PIKA_EXPORT const std::string& get_pool_name();
+    PIKA_EXPORT std::string const& get_pool_name();
 
     /// initialize the pika::mpi background request handler
     /// All ranks should call this function (but only one thread per rank needs to do so)

@@ -98,7 +98,7 @@ struct wrapper
     }
 
     template <typename U>
-    wrapper(const wrapper<U>& other, std::enable_if_t<std::is_convertible<U, T>::value>* = 0)
+    wrapper(wrapper<U> const& other, std::enable_if_t<std::is_convertible<U, T>::value>* = 0)
       : m_x(other.m_x)
     {
     }

@@ -138,7 +138,7 @@ namespace pika::threads::coroutines {
              * default.
              */
             friend void swap_context(fibers_context_impl_base& from,
-                const fibers_context_impl_base& to, default_hint) noexcept
+                fibers_context_impl_base const& to, default_hint) noexcept
             {
                 if (!is_fiber())
                 {

@@ -901,7 +901,7 @@ namespace pika::threads::detail {
     }
 
     void topology::print_affinity_mask(std::ostream& os, std::size_t num_thread, mask_cref_type m,
-        const std::string& pool_name) const
+        std::string const& pool_name) const
     {
         pika::detail::ios_flags_saver ifs(os);
         bool first = true;
@@ -1300,7 +1300,7 @@ namespace pika::threads::detail {
 #endif
     }
 
-    bool topology::set_area_membind_nodeset(const void* addr, std::size_t len, void* nodeset) const
+    bool topology::set_area_membind_nodeset(void const* addr, std::size_t len, void* nodeset) const
     {
 #if !defined(__APPLE__)
         hwloc_membind_policy_t policy = ::HWLOC_MEMBIND_BIND;
@@ -1341,7 +1341,7 @@ namespace pika::threads::detail {
     }    // namespace
 
     threads::detail::mask_type topology::get_area_membind_nodeset(
-        const void* addr, std::size_t len) const
+        void const* addr, std::size_t len) const
     {
         pika_hwloc_bitmap_wrapper& nodeset = bitmap_storage();
         if (!nodeset) { nodeset.reset(hwloc_bitmap_alloc()); }
@@ -1367,7 +1367,7 @@ namespace pika::threads::detail {
         return bitmap_to_mask(ns, HWLOC_OBJ_NUMANODE);
     }
 
-    int topology::get_numa_domain(const void* addr) const
+    int topology::get_numa_domain(void const* addr) const
     {
 #if HWLOC_API_VERSION >= 0x0001'0b06
         pika_hwloc_bitmap_wrapper& nodeset = bitmap_storage();

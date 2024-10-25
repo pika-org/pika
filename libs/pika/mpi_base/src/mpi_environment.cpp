@@ -25,7 +25,7 @@ namespace pika::mpi::detail {
     bool environment::mpi_init_pika_ = false;
 
     ///////////////////////////////////////////////////////////////////////////
-    int environment::init(int*, char***, const int required, const int minimal, int& provided)
+    int environment::init(int*, char***, int const required, int const minimal, int& provided)
     {
         mpi_init_pika_ = false;
         int retval = MPI_SUCCESS;

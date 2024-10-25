@@ -154,13 +154,13 @@ namespace pika::threads::detail {
         // ------------------------------------------------------------
         struct queue_mc_print
         {
-            const QueueType* const q_;
-            explicit queue_mc_print(const QueueType* const q)
+            QueueType const* const q_;
+            explicit queue_mc_print(QueueType const* const q)
               : q_(q)
             {
             }
             //
-            friend std::ostream& operator<<(std::ostream& os, const queue_mc_print& d)
+            friend std::ostream& operator<<(std::ostream& os, queue_mc_print const& d)
             {
                 os << "n " << debug::detail::dec<3>(d.q_->new_tasks_count_.data_) << " w "
                    << debug::detail::dec<3>(d.q_->work_items_count_.data_);
@@ -170,13 +170,13 @@ namespace pika::threads::detail {
 
         struct queue_data_print
         {
-            const queue_holder_thread* q_;
-            explicit queue_data_print(const queue_holder_thread* q)
+            queue_holder_thread const* q_;
+            explicit queue_data_print(queue_holder_thread const* q)
               : q_(q)
             {
             }
             //
-            friend std::ostream& operator<<(std::ostream& os, const queue_data_print& d)
+            friend std::ostream& operator<<(std::ostream& os, queue_data_print const& d)
             {
                 os << "D " << debug::detail::dec<2>(d.q_->domain_index_) << " Q "
                    << debug::detail::dec<3>(d.q_->queue_index_) << " TM "
@@ -199,7 +199,7 @@ namespace pika::threads::detail {
         // NOLINTBEGIN(bugprone-easily-swappable-parameters)
         queue_holder_thread(QueueType* bp_queue, QueueType* hp_queue, QueueType* np_queue,
             QueueType* lp_queue, std::size_t domain, std::size_t queue, std::size_t thread_num,
-            std::size_t owner, const thread_queue_init_parameters& init, std::thread::id owner_id)
+            std::size_t owner, thread_queue_init_parameters const& init, std::thread::id owner_id)
           // NOLINTEND(bugprone-easily-swappable-parameters)
           : bp_queue_(bp_queue)
           , hp_queue_(hp_queue)
@@ -937,7 +937,7 @@ namespace pika::threads::detail {
         }
 
         // ------------------------------------------------------------
-        void debug_queues(const char* prefix)
+        void debug_queues(char const* prefix)
         {
             static auto deb_queues =
                 ::pika::detail::tq_deb.make_timer(1, debug::detail::str<>("debug_queues"));

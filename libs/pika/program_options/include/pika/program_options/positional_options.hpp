@@ -40,7 +40,7 @@ namespace pika::program_options {
             No calls to 'add' can be made after call with 'max_value' equal to
             '-1'.
         */
-        positional_options_description& add(const char* name, int max_count);
+        positional_options_description& add(char const* name, int max_count);
 
         /** Returns the maximum number of positional options that can
             be present. Can return (numeric_limits<unsigned>::max)() to
@@ -51,7 +51,7 @@ namespace pika::program_options {
             options at 'position'.
             Precondition: position < max_total_count()
         */
-        const std::string& name_for_position(unsigned position) const;
+        std::string const& name_for_position(unsigned position) const;
 
     private:
         // List of names corresponding to the positions. If the number of

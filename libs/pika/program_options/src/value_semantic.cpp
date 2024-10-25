@@ -22,13 +22,13 @@ namespace pika::program_options {
     using namespace std;
 
     namespace {
-        std::string convert_value(const std::wstring& s)
+        std::string convert_value(std::wstring const& s)
         {
             try
             {
                 return to_local_8_bit(s);
             }
-            catch (const std::exception&)
+            catch (std::exception const&)
             {
                 return "<unrepresentable unicode string>";
             }
@@ -36,13 +36,13 @@ namespace pika::program_options {
     }    // namespace
 
     void value_semantic_codecvt_helper<char>::parse(
-        std::any& value_store, const std::vector<std::string>& new_tokens, bool utf8) const
+        std::any& value_store, std::vector<std::string> const& new_tokens, bool utf8) const
     {
         if (utf8)
         {
             // Need to convert to local encoding.
             std::vector<string> local_tokens;
-            for (const auto& new_token : new_tokens)
+            for (auto const& new_token : new_tokens)
             {
                 std::wstring w = from_utf8(new_token);
                 local_tokens.push_back(to_local_8_bit(w));
@@ -57,18 +57,18 @@ namespace pika::program_options {
     }
 
     void value_semantic_codecvt_helper<wchar_t>::parse(
-        std::any& value_store, const std::vector<std::string>& new_tokens, bool utf8) const
+        std::any& value_store, std::vector<std::string> const& new_tokens, bool utf8) const
     {
         std::vector<wstring> tokens;
         if (utf8)
         {
             // Convert from utf8
-            for (const auto& new_token : new_tokens) { tokens.push_back(from_utf8(new_token)); }
+            for (auto const& new_token : new_tokens) { tokens.push_back(from_utf8(new_token)); }
         }
         else
         {
             // Convert from local encoding
-            for (const auto& new_token : new_tokens)
+            for (auto const& new_token : new_tokens)
             {
                 tokens.push_back(from_local_8_bit(new_token));
             }
@@ -98,7 +98,7 @@ namespace pika::program_options {
     }
 
     void untyped_value::xparse(
-        std::any& value_store, const std::vector<std::string>& new_tokens) const
+        std::any& value_store, std::vector<std::string> const& new_tokens) const
     {
         if (value_store.has_value()) throw multiple_occurrences();
         if (new_tokens.size() > 1) throw multiple_values();
@@ -122,7 +122,7 @@ namespace pika::program_options {
         Case is ignored. The 'xs' vector can either be empty, in which
         case the value is 'true', or can contain explicit value.
     */
-    void validate(std::any& v, const vector<string>& xs, bool*, int)
+    void validate(std::any& v, vector<string> const& xs, bool*, int)
     {
         check_first_occurrence(v);
         string s(get_single_string(xs, true));
@@ -142,7 +142,7 @@ namespace pika::program_options {
     // create auxiliary 'widen' routine to convert from char* into
     // needed string type, and that's more work.
     PIKA_EXPORT
-    void validate(std::any& v, const vector<wstring>& xs, bool*, int)
+    void validate(std::any& v, vector<wstring> const& xs, bool*, int)
     {
         check_first_occurrence(v);
         wstring s(get_single_string(xs, true));
@@ -158,14 +158,14 @@ namespace pika::program_options {
     }
 
     PIKA_EXPORT
-    void validate(std::any& v, const vector<string>& xs, std::string*, int)
+    void validate(std::any& v, vector<string> const& xs, std::string*, int)
     {
         check_first_occurrence(v);
         v = std::any(get_single_string(xs));
     }
 
     PIKA_EXPORT
-    void validate(std::any& v, const vector<wstring>& xs, std::string*, int)
+    void validate(std::any& v, vector<wstring> const& xs, std::string*, int)
     {
         check_first_occurrence(v);
         v = std::any(get_single_string(xs));
@@ -174,35 +174,35 @@ namespace pika::program_options {
     namespace validators {
 
         PIKA_EXPORT
-        void check_first_occurrence(const std::any& value)
+        void check_first_occurrence(std::any const& value)
         {
             if (value.has_value()) throw multiple_occurrences();
         }
     }    // namespace validators
 
-    invalid_option_value::invalid_option_value(const std::string& bad_value)
+    invalid_option_value::invalid_option_value(std::string const& bad_value)
       : validation_error(validation_error::invalid_option_value)
     {
         set_substitute("value", bad_value);
     }
 
 #ifndef BOOST_NO_STD_WSTRING
-    invalid_option_value::invalid_option_value(const std::wstring& bad_value)
+    invalid_option_value::invalid_option_value(std::wstring const& bad_value)
       : validation_error(validation_error::invalid_option_value)
     {
         set_substitute("value", convert_value(bad_value));
     }
 #endif
 
-    invalid_bool_value::invalid_bool_value(const std::string& bad_value)
+    invalid_bool_value::invalid_bool_value(std::string const& bad_value)
       : validation_error(validation_error::invalid_bool_value)
     {
         set_substitute("value", bad_value);
     }
 
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-    error_with_option_name::error_with_option_name(const std::string& template_,
-        const std::string& option_name, const std::string& original_token, int option_style)
+    error_with_option_name::error_with_option_name(std::string const& template_,
+        std::string const& option_name, std::string const& original_token, int option_style)
       // NOLINTEND(bugprone-easily-swappable-parameters)
       : error(template_)
       , m_option_style(option_style)
@@ -217,7 +217,7 @@ namespace pika::program_options {
         m_substitutions["original_token"] = original_token;
     }
 
-    const char* error_with_option_name::what() const noexcept
+    char const* error_with_option_name::what() const noexcept
     {
         // will substitute tokens each time what is run()
         substitute_placeholders(m_error_template);
@@ -225,7 +225,7 @@ namespace pika::program_options {
         return m_message.c_str();
     }
 
-    void error_with_option_name::replace_token(const string& from, const string& to) const
+    void error_with_option_name::replace_token(string const& from, string const& to) const
     {
         for (;;)
         {
@@ -272,7 +272,7 @@ namespace pika::program_options {
         return option_name;
     }
 
-    void error_with_option_name::substitute_placeholders(const string& error_template) const
+    void error_with_option_name::substitute_placeholders(string const& error_template) const
     {
         m_message = error_template;
         std::map<std::string, std::string> substitutions(m_substitutions);
@@ -282,7 +282,7 @@ namespace pika::program_options {
         //
         //  replace placeholder with defaults if values are missing
         //
-        for (const auto& substitution_default : m_substitution_defaults)
+        for (auto const& substitution_default : m_substitution_defaults)
         {
             // missing parameter: use default
             if (substitutions.count(substitution_default.first) == 0 ||
@@ -301,7 +301,7 @@ namespace pika::program_options {
             replace_token('%' + substitution.first + '%', substitution.second);
     }
 
-    void ambiguous_option::substitute_placeholders(const string& original_error_template) const
+    void ambiguous_option::substitute_placeholders(string const& original_error_template) const
     {
         // For short forms, all alternatives must be identical, by
         //      definition, to the specified option, so we don't need to
@@ -341,7 +341,7 @@ namespace pika::program_options {
     {
         // Initially, store the message in 'const char*' variable,
         // to avoid conversion to std::string in all cases.
-        const char* msg;
+        char const* msg;
         switch (kind)
         {
         case invalid_bool_value:

@@ -126,17 +126,17 @@ struct iterator
         return copy -= n;
     }
 
-    bool operator==(const iterator& that) const { return this->state == that.state; }
+    bool operator==(iterator const& that) const { return this->state == that.state; }
 
-    bool operator!=(const iterator& that) const { return this->state != that.state; }
+    bool operator!=(iterator const& that) const { return this->state != that.state; }
 
-    bool operator<(const iterator& that) const { return this->state < that.state; }
+    bool operator<(iterator const& that) const { return this->state < that.state; }
 
-    bool operator<=(const iterator& that) const { return this->state <= that.state; }
+    bool operator<=(iterator const& that) const { return this->state <= that.state; }
 
-    bool operator>(const iterator& that) const { return this->state > that.state; }
+    bool operator>(iterator const& that) const { return this->state > that.state; }
 
-    bool operator>=(const iterator& that) const { return this->state >= that.state; }
+    bool operator>=(iterator const& that) const { return this->state >= that.state; }
 
 protected:
     Value state;

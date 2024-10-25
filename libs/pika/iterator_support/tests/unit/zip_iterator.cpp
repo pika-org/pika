@@ -71,7 +71,7 @@ int main(void)
 
     std::tuple<int, double> val_tuple(*zip_it_mixed);
 
-    std::tuple<const int&, double&> ref_tuple(*zip_it_mixed);
+    std::tuple<int const&, double&> ref_tuple(*zip_it_mixed);
 
     double dblOldVal = std::get<1>(ref_tuple);
     std::get<1>(ref_tuple) -= 41.;
@@ -130,11 +130,11 @@ int main(void)
 
     // typedefs for cons lists for dereferencing the zip iterator
     // made from the cons list above.
-    using cons_11_refs_type = tuple_cat_result_of_t<std::tuple<const int&>,
-        std::tuple<int&, int&, const int&, int&, int&, const int&, int&, int&, const int&,
-            const int&>>;
+    using cons_11_refs_type = tuple_cat_result_of_t<std::tuple<int const&>,
+        std::tuple<int&, int&, int const&, int&, int&, int const&, int&, int&, int const&,
+            int const&>>;
     //
-    using cons_12_refs_type = tuple_cat_result_of_t<std::tuple<const int&>, cons_11_refs_type>;
+    using cons_12_refs_type = tuple_cat_result_of_t<std::tuple<int const&>, cons_11_refs_type>;
 
     // typedef for zip iterator with 12 elements
     using zip_it_12_type = pika::util::zip_iterator<cons_12_its_type>;

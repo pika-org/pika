@@ -101,7 +101,7 @@ struct perf
 };
 
 //----------------------------------------------------------------------------
-void display(perf const& data, const test_options& options)
+void display(perf const& data, test_options const& options)
 {
     std::stringstream temp;
     double IOPs_s = data.IOPs / data.time;

@@ -23,7 +23,7 @@ namespace pika::mpi::detail {
         // calls mpi_init_thread with the thread level requested and reports
         // any problem if the same level is not granted
         static int init(
-            int* argc, char*** argv, const int required, const int minimal, int& provided);
+            int* argc, char*** argv, int const required, int const minimal, int& provided);
 
         // finalize mpi, do not call unless init was previously called
         static void finalize();

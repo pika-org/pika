@@ -19,14 +19,14 @@ namespace pika::program_options::detail {
     using namespace std;
 
     common_config_file_iterator::common_config_file_iterator(
-        const std::set<std::string>& allowed_options, bool allow_unregistered)
+        std::set<std::string> const& allowed_options, bool allow_unregistered)
       : allowed_options(allowed_options)
       , m_allow_unregistered(allow_unregistered)
     {
-        for (const auto& allowed_option : allowed_options) { add_option(allowed_option.c_str()); }
+        for (auto const& allowed_option : allowed_options) { add_option(allowed_option.c_str()); }
     }
 
-    void common_config_file_iterator::add_option(const char* name)
+    void common_config_file_iterator::add_option(char const* name)
     {
         string s(name);
         PIKA_ASSERT(!s.empty());
@@ -56,7 +56,7 @@ namespace pika::program_options::detail {
     }
 
     namespace {
-        string trim_ws(const string& s)
+        string trim_ws(string const& s)
         {
             string::size_type n, n2;
             n = s.find_first_not_of(" \t\r\n");
@@ -114,7 +114,7 @@ namespace pika::program_options::detail {
         if (!found) found_eof();
     }
 
-    bool common_config_file_iterator::allowed_option(const std::string& s) const
+    bool common_config_file_iterator::allowed_option(std::string const& s) const
     {
         set<string>::const_iterator i = allowed_options.find(s);
         if (i != allowed_options.end()) return true;

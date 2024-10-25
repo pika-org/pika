@@ -16,8 +16,8 @@ namespace pika::program_options::detail {
 
     template <class Char>
     std::vector<std::basic_string<Char>>
-    split_unix(const std::basic_string<Char>& cmdline, const std::basic_string<Char>& separator,
-        const std::basic_string<Char>& quote, const std::basic_string<Char>& escape)
+    split_unix(std::basic_string<Char> const& cmdline, std::basic_string<Char> const& separator,
+        std::basic_string<Char> const& quote, std::basic_string<Char> const& escape)
     {
         using tokenizerT = boost::tokenizer<boost::escaped_list_separator<Char>,
             typename std::basic_string<Char>::const_iterator, std::basic_string<Char>>;
@@ -40,14 +40,14 @@ namespace pika::program_options {
 
     // Take a command line string and splits in into tokens, according
     // to the given collection of separators chars.
-    std::vector<std::string> split_unix(const std::string& cmdline, const std::string& separator,
-        const std::string& quote, const std::string& escape)
+    std::vector<std::string> split_unix(std::string const& cmdline, std::string const& separator,
+        std::string const& quote, std::string const& escape)
     {
         return detail::split_unix<char>(cmdline, separator, quote, escape);
     }
 
-    std::vector<std::wstring> split_unix(const std::wstring& cmdline, const std::wstring& separator,
-        const std::wstring& quote, const std::wstring& escape)
+    std::vector<std::wstring> split_unix(std::wstring const& cmdline, std::wstring const& separator,
+        std::wstring const& quote, std::wstring const& escape)
     {
         return detail::split_unix<wchar_t>(cmdline, separator, quote, escape);
     }

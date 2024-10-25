@@ -55,7 +55,7 @@ namespace pika::program_options::detail {
         using style_t = ::pika::program_options::command_line_style::style_t;
 
         using additional_parser =
-            std::function<std::pair<std::string, std::string>(const std::string&)>;
+            std::function<std::pair<std::string, std::string>(std::string const&)>;
 
         using style_parser = std::function<std::vector<option>(std::vector<std::string>&)>;
 
@@ -66,10 +66,10 @@ namespace pika::program_options::detail {
             unregistered options. They will be assigned index 1 and are
             assumed to have optional parameter.
         */
-        cmdline(const std::vector<std::string>& args);
+        cmdline(std::vector<std::string> const& args);
 
         /** @overload */
-        cmdline(int argc, const char* const* argv);
+        cmdline(int argc, char const* const* argv);
 
         void style(int style);
 
@@ -86,8 +86,8 @@ namespace pika::program_options::detail {
 
         void allow_unregistered();
 
-        void set_options_description(const options_description& desc);
-        void set_positional_options(const positional_options_description& m_positional);
+        void set_options_description(options_description const& desc);
+        void set_positional_options(positional_options_description const& m_positional);
 
         std::vector<option> run();
 
@@ -114,18 +114,18 @@ namespace pika::program_options::detail {
 
         bool is_style_active(style_t style) const;
 
-        void init(const std::vector<std::string>& args);
+        void init(std::vector<std::string> const& args);
 
         void finish_option(option& opt, std::vector<std::string>& other_tokens,
-            const std::vector<style_parser>& style_parsers);
+            std::vector<style_parser> const& style_parsers);
 
         // Copies of input.
         std::vector<std::string> m_args;
         style_t m_style;
         bool m_allow_unregistered;
 
-        const options_description* m_desc;
-        const positional_options_description* m_positional;
+        options_description const* m_desc;
+        positional_options_description const* m_positional;
 
         additional_parser m_additional_parser;
         style_parser m_style_parser;

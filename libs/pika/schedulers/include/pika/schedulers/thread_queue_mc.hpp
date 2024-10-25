@@ -115,7 +115,7 @@ namespace pika::threads::detail {
 
     public:
         explicit thread_queue_mc(
-            const thread_queue_init_parameters& parameters, std::size_t queue_num = std::size_t(-1))
+            thread_queue_init_parameters const& parameters, std::size_t queue_num = std::size_t(-1))
           : parameters_(parameters)
           , queue_index_(static_cast<int>(queue_num))
           , holder_(nullptr)
