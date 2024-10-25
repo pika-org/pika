@@ -13,6 +13,7 @@
 #include <pika/execution_base/this_thread.hpp>
 #include <pika/functional/deferred_call.hpp>
 #include <pika/functional/detail/invoke.hpp>
+#include <pika/logging.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/schedulers.hpp>
 #include <pika/thread_pools/scheduled_thread_pool.hpp>

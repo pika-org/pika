@@ -12,6 +12,7 @@
 #include <pika/assert.hpp>
 #include <pika/concurrency/cache_line_data.hpp>
 #include <pika/functional/function.hpp>
+#include <pika/logging.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/schedulers/deadlock_detection.hpp>
 #include <pika/schedulers/lockfree_queue_backends.hpp>
