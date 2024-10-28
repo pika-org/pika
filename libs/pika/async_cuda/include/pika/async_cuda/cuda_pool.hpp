@@ -10,7 +10,6 @@
 #include <pika/async_cuda_base/cublas_handle.hpp>
 #include <pika/async_cuda_base/cuda_stream.hpp>
 #include <pika/async_cuda_base/cusolver_handle.hpp>
-#include <pika/concurrency/cache_line_data.hpp>
 #include <pika/coroutines/thread_enums.hpp>
 
 #include <fmt/format.h>
@@ -57,22 +56,19 @@ namespace pika::cuda::experimental {
 
     /// A pool of CUDA streams, used for scheduling work on a CUDA device.
     ///
-    /// The pool initializes a set of CUDA (thread-local) streams on
-    /// construction and provides access to the streams in a round-robin
-    /// fashion. The pool is movable and copyable with reference semantics.
-    /// Copies of a pool still refer to the original pool of streams.
+    /// The pool initializes a set of CUDA streams on construction and
+    /// provides access to the streams in a round-robin fashion. The pool is
+    /// movable and copyable with reference semantics. Copies of a pool still
+    /// refer to the original pool of streams.
     class cuda_pool
     {
     private:
         struct streams_holder
         {
-            std::size_t const num_streams_per_thread;
-            std::size_t const concurrency;
+            std::atomic<std::size_t> stream_index;
             std::vector<cuda_stream> streams;
-            std::vector<pika::concurrency::detail::cache_aligned_data<std::size_t>>
-                active_stream_indices;
 
-            PIKA_EXPORT streams_holder(int device, std::size_t num_streams_per_thread,
+            PIKA_EXPORT streams_holder(int device, std::size_t num_streams,
                 pika::execution::thread_priority, unsigned int flags);
             streams_holder(streams_holder&&) = delete;
             streams_holder(streams_holder const&) = delete;
@@ -121,8 +117,8 @@ namespace pika::cuda::experimental {
             cublas_handles_holder cublas_handles;
             cusolver_handles_holder cusolver_handles;
 
-            PIKA_EXPORT pool_data(int device, std::size_t num_normal_priority_streams_per_thread,
-                std::size_t num_high_priority_streams_per_thread, unsigned int flags,
+            PIKA_EXPORT pool_data(int device, std::size_t num_normal_priority_streams,
+                std::size_t num_high_priority_streams, unsigned int flags,
                 std::size_t num_cublas_handles, std::size_t num_cusolver_handles);
             pool_data(pool_data&&) = delete;
             pool_data(pool_data const&) = delete;
@@ -133,9 +129,8 @@ namespace pika::cuda::experimental {
         std::shared_ptr<pool_data> data;
 
     public:
-        PIKA_EXPORT explicit cuda_pool(int device = 0,
-            std::size_t num_normal_priority_streams_per_thread = 3,
-            std::size_t num_high_priority_streams_per_thread = 3, unsigned int flags = 0,
+        PIKA_EXPORT explicit cuda_pool(int device = 0, std::size_t num_normal_priority_streams = 32,
+            std::size_t num_high_priority_streams = 32, unsigned int flags = 0,
             std::size_t num_cublas_handles = 16, std::size_t num_cusolver_handles = 16);
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         cuda_pool(cuda_pool&&) = default;
@@ -178,14 +173,14 @@ struct fmt::formatter<pika::cuda::experimental::cuda_pool> : fmt::formatter<std:
     {
         bool valid{pool.data};
         auto num_high_priority_streams =
-            valid ? pool.data->high_priority_streams.num_streams_per_thread : 0;
+            valid ? pool.data->high_priority_streams.streams.size() : 0;
         auto num_normal_priority_streams =
-            valid ? pool.data->normal_priority_streams.num_streams_per_thread : 0;
+            valid ? pool.data->normal_priority_streams.streams.size() : 0;
         auto num_cublas_handles = valid ? pool.data->cublas_handles.handles.size() : 0;
         auto num_cusolver_handles = valid ? pool.data->cusolver_handles.handles.size() : 0;
         return fmt::formatter<std::string>::format(
-            fmt::format("cuda_pool({}, num_high_priority_streams_per_thread = {}, "
-                        "num_normal_priority_streams_per_thread = {}, num_cublas_handles = {}, "
+            fmt::format("cuda_pool({}, num_high_priority_streams = {}, "
+                        "num_normal_priority_streams = {}, num_cublas_handles = {}, "
                         "num_cusolver_handles = {})",
                 fmt::ptr(pool.data.get()), num_high_priority_streams, num_normal_priority_streams,
                 num_cublas_handles, num_cusolver_handles),
