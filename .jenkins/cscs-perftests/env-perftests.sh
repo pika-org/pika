@@ -13,4 +13,4 @@ spack_arch="cray-cnl7-broadwell"
 spack_spec="pika@main arch=${spack_arch} %${spack_compiler} malloc=mimalloc ^boost@${boost_version} ^hwloc@${hwloc_version}"
 
 export MIMALLOC_EAGER_COMMIT_DELAY=0
-export MIMALLOC_LARGE_OS_PAGES=1
+export MIMALLOC_ALLOW_LARGE_OS_PAGES=1

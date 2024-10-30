@@ -245,6 +245,36 @@ following:
 - ``%q``: The parent task id and description.
 - ``%k``: The current task id and description.
 
+.. _malloc:
+
+Using custom allocators with pika
+=================================
+
+Typical use of pika can often lead to many small allocations from many different threads,
+potentially leading to suboptimal performance with the system allocator. By default, pika uses
+`mimalloc <https://github.com/microsoft/mimalloc>`__ as the memory allocator because it usually
+performs significantly better than the system allocator. In some cases, the system allocator or
+other custom allocators might perform better.
+
+Setting the following environment variables usually further improves performance with mimalloc:
+
+- ``MIMALLOC_EAGER_COMMIT_DELAY=0``
+- ``MIMALLOC_ALLOW_LARGE_OS_PAGES=1``
+
+We have observed mimalloc performing worse than the defaults with the above options on some systems,
+as well as worse than the system allocator. Always benchmark to find the most suitable allocator for
+your workload and system.
+
+To ease testing of different allocators, you may also configure pika with the system allocator and
+instead use ``LD_PRELOAD`` to replace the default allocator at runtime. This allows you to choose
+the allocator without rebuilding pika. To do so, export the ``LD_PRELOAD`` environment variable to
+point to the shared library of the allocator. For example, to use `jemalloc
+<https://jemalloc.net>`__, set ``LD_PRELOAD`` to the full path of ``libjemalloc.so``:
+
+.. code-block:: bash
+
+   export LD_PRELOAD=/path/to/libjemalloc.so
+
 .. _pika_stdexec:
 
 Relation to std::execution and stdexec
