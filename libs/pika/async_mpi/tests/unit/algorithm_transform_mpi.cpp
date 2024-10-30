@@ -234,11 +234,16 @@ int pika_main()
                 PIKA_TEST_EQ(data, 42);
             }
 
+            // MPICH does not support throwing exceptions from error handlers (lock issues, see
+            // https://github.com/pmodels/mpich/issues/7187)
+#if !defined(MPICH)
             test_exception_handler_code(comm, datatype);
 
         }    // let the user polling go out of scope
-
         test_exception_no_handler(comm);
+#else
+        }
+#endif
     }
 
     test_adl_isolation(mpi::transform_mpi(my_namespace::my_sender{}, [](MPI_Request*) {}));
@@ -250,7 +255,10 @@ int pika_main()
 //----------------------------------------------------------------------------
 int main(int argc, char* argv[])
 {
-    MPI_Init(&argc, &argv);
+    int provided;
+    int preferred = MPI_THREAD_MULTIPLE;
+    MPI_Init_thread(&argc, &argv, preferred, &provided);
+    PIKA_TEST_EQ(provided, preferred);
 
     // Start runtime and collect runtime exit status
     auto result = pika::init(pika_main, argc, argv);
