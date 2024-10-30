@@ -71,7 +71,7 @@ namespace pika {
          switch (mode)                                                                             \
          {                                                                                         \
          case require_started_mode::terminate_on_unstarted:                                        \
-             PIKA_LOG(err, "{}: {}\n", f, message);                                                \
+             PIKA_LOG(err, "{}: {}", f, message);                                                  \
              std::terminate();                                                                     \
              break;                                                                                \
                                                                                                    \
