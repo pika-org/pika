@@ -75,6 +75,12 @@ The ``pika/init.hpp`` header provides functionality to manage the pika runtime.
 
 The ``pika/execution.hpp`` header provides functionality related to ``std::execution``.
 
+.. doxygenvariable:: pika::execution::experimental::drop_value
+
+.. literalinclude:: ../examples/documentation/drop_value_documentation.cpp
+   :language: c++
+   :start-at: #include
+
 .. doxygenvariable:: pika::execution::experimental::split_tuple
 
 .. literalinclude:: ../examples/documentation/split_tuple_documentation.cpp
