@@ -52,22 +52,24 @@ namespace pika::util::detail {
         }
 
         template <typename T>
+        struct aligned_storage_helper
+        {
+            alignas(T) unsigned char storage[sizeof(T)];
+        };
+
+        template <typename T>
         static void* allocate(void* storage, std::size_t storage_size)
         {
-            using storage_t = std::aligned_storage_t<sizeof(T), alignof(T)>;
-
-            if (sizeof(T) > storage_size) { return new storage_t; }
+            if (sizeof(T) > storage_size) { return new aligned_storage_helper<T>; }
             return storage;
         }
 
         template <typename T>
         static void _deallocate(void* obj, std::size_t storage_size, bool destroy)
         {
-            using storage_t = std::aligned_storage_t<sizeof(T), alignof(T)>;
-
             if (destroy) { get<T>(obj).~T(); }
 
-            if (sizeof(T) > storage_size) { delete static_cast<storage_t*>(obj); }
+            if (sizeof(T) > storage_size) { delete static_cast<aligned_storage_helper<T>*>(obj); }
         }
         void (*deallocate)(void*, std::size_t storage_size, bool);
 
