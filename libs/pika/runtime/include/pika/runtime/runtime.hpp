@@ -437,7 +437,7 @@ namespace pika::detail {
 }    // namespace pika::detail
 
 namespace pika {
-    /// Returns true when the runtime is initialized, false otherwise.
+    /// @brief Returns true when the runtime is initialized, false otherwise.
     ///
     /// Returns true while in a @ref pika::init call, or between calls of @ref pika::start and @ref
     /// pika::stop, otherwise false.
