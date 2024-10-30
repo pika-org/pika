@@ -67,9 +67,9 @@ namespace pika::start_detached_detail {
             };
 
             template <typename... Ts>
-            friend void tag_invoke(pika::execution::experimental::set_value_t,
-                start_detached_receiver&& r, Ts&&...) noexcept
+            void set_value(Ts&&...) && noexcept
             {
+                auto r = PIKA_MOVE(*this);
                 r.op_state.release();
             }
         };

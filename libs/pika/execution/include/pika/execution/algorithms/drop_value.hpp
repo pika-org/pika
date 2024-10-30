@@ -53,9 +53,9 @@ namespace pika::drop_value_detail {
         }
 
         template <typename... Ts>
-        friend void tag_invoke(pika::execution::experimental::set_value_t,
-            drop_value_receiver_type&& r, Ts&&...) noexcept
+        void set_value(Ts&&...) && noexcept
         {
+            auto r = PIKA_MOVE(*this);
             pika::execution::experimental::set_value(PIKA_MOVE(r.receiver));
         }
 

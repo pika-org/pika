@@ -95,11 +95,12 @@ namespace pika::bulk_detail {
             }
 
             template <typename... Ts>
-            void set_value(Ts&&... ts)
+            void set_value(Ts&&... ts) && noexcept
             {
+                auto r = PIKA_MOVE(*this);
                 pika::detail::try_catch_exception_ptr(
                     [&]() {
-                        for (auto const& s : shape) { PIKA_INVOKE(f, s, ts...); }
+                        for (auto const& s : r.shape) { PIKA_INVOKE(r.f, s, ts...); }
                         pika::execution::experimental::set_value(
                             PIKA_MOVE(receiver), PIKA_FORWARD(Ts, ts)...);
                     },
@@ -107,20 +108,6 @@ namespace pika::bulk_detail {
                         pika::execution::experimental::set_error(
                             PIKA_MOVE(receiver), PIKA_MOVE(ep));
                     });
-            }
-
-            template <typename... Ts>
-            friend auto tag_invoke(
-                pika::execution::experimental::set_value_t, bulk_receiver&& r, Ts&&... ts) noexcept
-                -> decltype(pika::execution::experimental::set_value(
-                                std::declval<std::decay_t<Receiver>&&>(), PIKA_FORWARD(Ts, ts)...),
-                    void())
-            {
-                // set_value is in a member function only because of a
-                // compiler bug in GCC 7. When the body of set_value is
-                // inlined here compilation fails with an internal compiler
-                // error.
-                r.set_value(PIKA_FORWARD(Ts, ts)...);
             }
         };
 

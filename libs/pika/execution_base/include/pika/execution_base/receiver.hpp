@@ -131,8 +131,18 @@ namespace pika::execution::experimental {
     struct is_receiver_of;
 
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE
-    struct set_value_t : pika::functional::detail::tag<set_value_t>
+    struct set_value_t
     {
+        template <typename Receiver, typename... Ts>
+        PIKA_FORCEINLINE constexpr auto
+        PIKA_STATIC_CALL_OPERATOR(Receiver&& receiver, Ts&&... ts) noexcept
+            -> decltype(PIKA_FORWARD(Receiver, receiver).set_value(PIKA_FORWARD(Ts, ts)...))
+        {
+            static_assert(
+                noexcept(PIKA_FORWARD(Receiver, receiver).set_value(PIKA_FORWARD(Ts, ts)...)),
+                "std::execution receiver set_value member function must be noexcept");
+            return PIKA_FORWARD(Receiver, receiver).set_value(PIKA_FORWARD(Ts, ts)...);
+        }
     } set_value{};
 
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE

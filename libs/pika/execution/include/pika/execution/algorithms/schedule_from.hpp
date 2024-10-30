@@ -181,13 +181,13 @@ namespace pika::schedule_from_detail {
                     pika::detail::monostate>;
 
                 template <typename... Ts>
-                friend auto tag_invoke(pika::execution::experimental::set_value_t,
-                    predecessor_sender_receiver&& r, Ts&&... ts) noexcept
+                auto set_value(Ts&&... ts) && noexcept
                     -> decltype(std::declval<value_type>()
                                     .template emplace<std::tuple<std::decay_t<Ts>...>>(
                                         PIKA_FORWARD(Ts, ts)...),
                         void())
                 {
+                    auto r = PIKA_MOVE(*this);
                     // nvcc fails to compile this with std::forward<Ts>(ts)...
                     // or static_cast<Ts&&>(ts)... so we explicitly use
                     // static_cast<decltype(ts)>(ts)... as a workaround.
@@ -252,9 +252,9 @@ namespace pika::schedule_from_detail {
                     r.op_state.set_stopped_scheduler_sender();
                 }
 
-                friend void tag_invoke(pika::execution::experimental::set_value_t,
-                    scheduler_sender_receiver&& r) noexcept
+                void set_value() && noexcept
                 {
+                    auto r = PIKA_MOVE(*this);
                     r.op_state.set_value_scheduler_sender();
                 }
             };
