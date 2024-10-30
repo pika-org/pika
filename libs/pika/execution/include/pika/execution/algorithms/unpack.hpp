@@ -198,7 +198,7 @@ namespace pika::unpack_detail {
 }    // namespace pika::unpack_detail
 
 namespace pika::execution::experimental {
-    inline constexpr struct unpack_t final : pika::functional::detail::tag_fallback<unpack_t>
+    struct unpack_t final : pika::functional::detail::tag_fallback<unpack_t>
     {
     private:
         template <typename Sender, PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender>)>
@@ -211,5 +211,17 @@ namespace pika::execution::experimental {
         {
             return detail::partial_algorithm<unpack_t>{};
         }
-    } unpack{};
+    };
+
+    /// \brief Transforms a sender of tuples into a sender of the elements of the tuples.
+    ///
+    /// Sender adaptor that takes a sender of a tuple-like and returns a sender where the tuple-like
+    /// has been unpacked into its elements, similarly to `std::apply`. Each completion signature
+    /// must send exactly one tuple-like, not zero or more than one. The predecessor sender can have
+    /// any number of completion signatures for the value channel, each sending a single tuple-like.
+    /// The adaptor does not unpack tuple-likes recursively. Any type that supports the tuple
+    /// protocol can be used with the adaptor.
+    ///
+    /// Added in 0.17.0.
+    inline constexpr unpack_t unpack{};
 }    // namespace pika::execution::experimental

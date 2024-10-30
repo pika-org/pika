@@ -5,7 +5,7 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 set(example_programs drop_value_documentation hello_world_documentation init_hpp_documentation
-                     split_tuple_documentation when_all_vector_documentation
+                     split_tuple_documentation unpack_documentation when_all_vector_documentation
 )
 
 foreach(example_program ${example_programs})
