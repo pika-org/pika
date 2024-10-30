@@ -140,12 +140,12 @@ namespace pika {
 
     /// @brief Stop the runtime.
     ///
-    /// Waits until @ref pika::finalize has been called and there is no more activity on the
-    /// runtime. See @ref pika::wait. The runtime can be started again after calling @ref
-    /// pika::stop. Must be called from outside the runtime.
+    /// Waits until @ref pika::finalize() has been called and there is no more activity on the
+    /// runtime. See @ref pika::wait(). The runtime can be started again after calling @ref
+    /// pika::stop(). Must be called from outside the runtime.
     ///
-    /// @return the return value of the callable passed to @p pika::start, if any. If none was
-    /// passed, returns 0.
+    /// @return the return value of the callable passed to @ref pika::start(int, char const* const*,
+    /// init_params const&)", if any. If none was passed, returns 0.
     ///
     /// @pre the runtime is initialized
     /// @pre the calling thread is not a pika task
@@ -154,10 +154,10 @@ namespace pika {
 
     /// @brief Signal the runtime that it may be stopped.
     ///
-    /// Until @ref pika::finalize has been called, @ref pika::stop will not return. This function
-    /// exists to distinguish between the runtime being idle but still expecting work to be
-    /// scheduled on it and the runtime being idle and ready to be shutdown. Unlike @pika::stop,
-    /// @ref pika::finalize can be called from within or outside the runtime.
+    /// Until @ref pika::finalize() has been called, @ref pika::stop() will not return. This
+    /// function exists to distinguish between the runtime being idle but still expecting work to be
+    /// scheduled on it and the runtime being idle and ready to be shutdown. Unlike @ref
+    /// pika::stop(), @ref pika::finalize() can be called from within or outside the runtime.
     ///
     /// @pre the runtime is initialized
     PIKA_EXPORT void finalize();

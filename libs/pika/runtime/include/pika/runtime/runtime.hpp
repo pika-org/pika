@@ -439,8 +439,8 @@ namespace pika::detail {
 namespace pika {
     /// @brief Returns true when the runtime is initialized, false otherwise.
     ///
-    /// Returns true while in a @ref pika::init call, or between calls of @ref pika::start and @ref
-    /// pika::stop, otherwise false.
+    /// Returns true between calls of @ref pika::start(int, char const* const*, init_params const&)
+    /// and @ref pika::stop(), otherwise false.
     ///
     /// Added in 0.22.0.
     PIKA_EXPORT bool is_runtime_initialized() noexcept;
