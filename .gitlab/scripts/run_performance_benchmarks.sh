@@ -110,6 +110,7 @@ pika_test_options=(
 )
 
 index=0
+failures=0
 for executable in "${pika_targets[@]}"; do
     test_opts=${pika_test_options[$index]}
     raw_result_file=$(mktemp --tmpdir "${executable}_raw.XXXXXXXXXX.json")
@@ -124,21 +125,27 @@ for executable in "${pika_targets[@]}"; do
     exit_code=$?
     set -e
     if [[ ${exit_code} -ne 0 ]]; then
+        failures=$((failures + 1))
+
         echo "${executable} failed with exit code ${exit_code}"
+    else
+        # Append command and command line options
+        json_add_value_string "${result_file}" "metric.benchmark.command" "${executable}"
+        json_add_value_string "${result_file}" "metric.benchmark.command_options" "${test_opts}"
+
+        # Extract name and timing data from raw result file
+        benchmark_name=$(cat "${raw_result_file}" | keep_json | jq '.outputs[0].name')
+        benchmark_series=$(cat "${raw_result_file}" | keep_json | jq '.outputs[0].series')
+        json_add_value_json "${result_file}" "metric.benchmark.name" "${benchmark_name}"
+        json_add_value_json "${result_file}" "metric.benchmark.series" "${benchmark_series}"
+
+        json_merge "${metadata_file}" "${result_file}" "${result_file}"
+        submit_logstash "${result_file}"
     fi
-
-    # Append command and command line options
-    json_add_value_string "${result_file}" "metric.benchmark.command" "${executable}"
-    json_add_value_string "${result_file}" "metric.benchmark.command_options" "${test_opts}"
-
-    # Extract name and timing data from raw result file
-    benchmark_name=$(cat "${raw_result_file}" | keep_json | jq '.outputs[0].name')
-    benchmark_series=$(cat "${raw_result_file}" | keep_json | jq '.outputs[0].series')
-    json_add_value_json "${result_file}" "metric.benchmark.name" "${benchmark_name}"
-    json_add_value_json "${result_file}" "metric.benchmark.series" "${benchmark_series}"
-
-    json_merge "${metadata_file}" "${result_file}" "${result_file}"
-    submit_logstash "${result_file}"
 
     index=$((index + 1))
 done
+
+if ((failures > 0)); then
+    exit 1
+fi
