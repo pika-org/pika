@@ -1021,11 +1021,11 @@ namespace pika::detail {
 
             // Always report the exception early in case the runtime becomes deadlocked because of the
             // thrown exception and isn't able to shut down.
-            fmt::print(std::cerr,
+            PIKA_LOG(warn,
                 "The pika runtime caught the following exception in the entry point (typically "
                 "pika_main). The exception may be rethrown later by pika::init or pika::stop. The "
                 "pika runtime will wait for all tasks to finish, but may be deadlocked because of "
-                "the exception.\n");
+                "the exception.");
             detail::report_exception_and_continue(exception_);
 
             // Then call user-registered error handlers if available.
