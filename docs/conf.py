@@ -68,7 +68,7 @@ html_theme_options = {
         {"href": "developer", "internal": True, "title": "Developer documentation"},
     ],
     "heroes": {
-        "index": "Concurrency and parallelism built on C++ std::execution",
+        "index": "pika is a C++ tasking library built on std::execution with fibers, CUDA, HIP, and MPI support",
     },
     "version_dropdown": False,
     "table_classes": ["plain"],
