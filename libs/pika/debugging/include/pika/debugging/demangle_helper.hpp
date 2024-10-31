@@ -8,6 +8,8 @@
 #pragma once
 
 #include <pika/config.hpp>
+
+#include <cstdlib>
 #include <memory>
 #include <string>
 #include <type_traits>
