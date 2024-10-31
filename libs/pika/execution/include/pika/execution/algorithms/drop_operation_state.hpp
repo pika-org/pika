@@ -236,7 +236,8 @@ namespace pika::drop_op_state_detail {
 }    // namespace pika::drop_op_state_detail
 
 namespace pika::execution::experimental {
-    inline constexpr struct drop_operation_state_t final
+
+    struct drop_operation_state_t final
     {
         template <typename Sender, PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender>)>
         constexpr PIKA_FORCEINLINE auto PIKA_STATIC_CALL_OPERATOR(Sender&& sender)
@@ -248,5 +249,20 @@ namespace pika::execution::experimental {
         {
             return detail::partial_algorithm<drop_operation_state_t>{};
         }
-    } drop_operation_state{};
+    };
+
+    /// \brief Releases the operation state of the adaptor before signaling a connected receiver.
+    ///
+    /// Sender adaptor that takes any sender and returns a sender. Values received as references
+    /// from the predecessor sender will be copied before being passed on to successor senders.
+    /// Other values are passed on unchanged.
+    ///
+    /// The operation state of previous senders can hold on to allocated memory or values longer
+    /// than necessary which can prevent other algorithms from using those resources.
+    /// @p drop_operation_state can be used to explicitly release the operation state, and thus
+    /// associated resources, of previous senders.
+    ///
+    /// Added in 0.19.0.
+    inline constexpr drop_operation_state_t drop_operation_state{};
+
 }    // namespace pika::execution::experimental

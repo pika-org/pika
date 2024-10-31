@@ -81,6 +81,12 @@ The ``pika/execution.hpp`` header provides functionality related to ``std::execu
    :language: c++
    :start-at: #include
 
+.. doxygenvariable:: pika::execution::experimental::drop_operation_state
+
+.. literalinclude:: ../examples/documentation/drop_operation_state_documentation.cpp
+   :language: c++
+   :start-at: #include
+
 .. doxygenvariable:: pika::execution::experimental::split_tuple
 
 .. literalinclude:: ../examples/documentation/split_tuple_documentation.cpp
