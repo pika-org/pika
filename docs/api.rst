@@ -74,6 +74,19 @@ The ``pika/init.hpp`` header provides functionality to manage the pika runtime.
 ======================
 
 The ``pika/execution.hpp`` header provides functionality related to ``std::execution``.
+``std::execution`` functionality, including extensions provided by pika, is defined in the
+``pika::execution::experimental`` namespace. When the CMake option ``PIKA_WITH_STDEXEC`` is enabled,
+pika pulls the ``stdexec`` namespace into ``pika::execution::experimental``.
+
+See :ref:`pika_stdexec` and :ref:`std_execution_more_resources` for more details on how pika relates
+to ``std::execution`` and for more resources on learning about ``std::execution``. Documentation for
+sender functionality added to the C++ standard in the above resources apply to both pika's and
+stdexec's implementations of them.
+
+Documented below are sender adaptors not available in stdexec or not proposed for standardization.
+
+All sender adaptors are `customization point objects (CPOs)
+<https://eel.is/c++draft/customization.point.object>`__.
 
 .. doxygenvariable:: pika::execution::experimental::drop_value
 
