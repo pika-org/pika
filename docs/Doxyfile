@@ -14,6 +14,7 @@ FILE_PATTERNS          = *.cpp *.hpp *.cu
 RECURSIVE              = YES
 EXCLUDE_PATTERNS       = */test */detail
 EXCLUDE_SYMBOLS        = "*detail*"
+EXTRACT_ALL            = YES
 ENABLE_PREPPROCESSING  = YES
 MACRO_EXPANSION        = YES
 EXPAND_ONLY_PREDEF     = YES
