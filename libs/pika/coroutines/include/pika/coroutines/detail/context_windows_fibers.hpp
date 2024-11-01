@@ -102,7 +102,7 @@ namespace pika::threads::coroutines {
 
         /*
          * Windows implementation for the context_impl_base class.
-         * @note context_impl is not required to be consistent
+         * \note context_impl is not required to be consistent
          * If not initialized it can only be swapped out, not in
          * (at that point it will be initialized).
          */
@@ -125,8 +125,8 @@ namespace pika::threads::coroutines {
             }
 
             /*
-             * Free function. Saves the current context in @p from
-             * and restores the context in @p to. On windows the from
+             * Free function. Saves the current context in \p from
+             * and restores the context in \p to. On windows the from
              * parameter is ignored. The current context is saved on the
              * current fiber.
              * Note that if the current thread is not a fiber, it will be

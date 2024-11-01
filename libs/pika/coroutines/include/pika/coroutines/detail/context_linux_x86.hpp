@@ -133,9 +133,9 @@ namespace pika::threads::coroutines {
             }
 
             /**
-             * Free function. Saves the current context in @p from
-             * and restores the context in @p to.
-             * @note This function is found by ADL.
+             * Free function. Saves the current context in \p from
+             * and restores the context in \p to.
+             * \note This function is found by ADL.
              */
             friend void swap_context(x86_linux_context_impl_base& from,
                 x86_linux_context_impl_base const& to, default_hint);
@@ -472,9 +472,9 @@ namespace pika::threads::coroutines {
         };
 
         /**
-         * Free function. Saves the current context in @p from
-         * and restores the context in @p to.
-         * @note This function is found by ADL.
+         * Free function. Saves the current context in \p from
+         * and restores the context in \p to.
+         * \note This function is found by ADL.
          */
         inline void swap_context(
             x86_linux_context_impl_base& from, x86_linux_context_impl_base const& to, default_hint)

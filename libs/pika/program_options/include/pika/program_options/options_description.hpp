@@ -167,7 +167,7 @@ namespace pika::program_options {
         adding new option (the add_options) method, and facilities to search
         for options by name.
 
-        See @ref a_adding_options "here" for option adding interface discussion.
+        See \ref a_adding_options "here" for option adding interface discussion.
         @sa option_description
     */
     class PIKA_EXPORT options_description

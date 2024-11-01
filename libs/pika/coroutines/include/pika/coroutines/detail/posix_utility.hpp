@@ -231,7 +231,7 @@ namespace pika::threads::coroutines::detail::posix {
 
     /**
      * The splitter is needed for 64 bit systems.
-     * @note The current implementation does NOT use
+     * \note The current implementation does NOT use
      * (for debug reasons).
      * Thus it is not 64 bit clean.
      * Use it for 64 bits systems.

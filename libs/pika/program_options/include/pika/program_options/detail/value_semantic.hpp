@@ -79,7 +79,7 @@ namespace pika::program_options {
     using namespace validators;
 
     /** Validates 's' and updates 'v'.
-        @pre 'v' is either empty or in the state assigned by the previous
+        \pre 'v' is either empty or in the state assigned by the previous
         invocation of 'validate'.
         The target type is specified via a parameter which has the type of
         pointer to the desired type. This is workaround for compilers without

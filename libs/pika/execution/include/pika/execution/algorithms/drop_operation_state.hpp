@@ -259,7 +259,7 @@ namespace pika::execution::experimental {
     ///
     /// The operation state of previous senders can hold on to allocated memory or values longer
     /// than necessary which can prevent other algorithms from using those resources.
-    /// @p drop_operation_state can be used to explicitly release the operation state, and thus
+    /// \p drop_operation_state can be used to explicitly release the operation state, and thus
     /// associated resources, of previous senders.
     ///
     /// Added in 0.19.0.
