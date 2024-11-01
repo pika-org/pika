@@ -144,7 +144,5 @@ namespace pika::execution::experimental {
     /// \brief Ignores all values sent by the predecessor sender, sending none itself.
     ///
     /// Sender adaptor that takes any sender and returns a new sender that sends no values.
-    ///
-    /// Added in 0.6.0.
     inline constexpr drop_value_t drop_value{};
 }    // namespace pika::execution::experimental

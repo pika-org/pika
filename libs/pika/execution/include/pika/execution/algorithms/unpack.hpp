@@ -221,7 +221,5 @@ namespace pika::execution::experimental {
     /// any number of completion signatures for the value channel, each sending a single tuple-like.
     /// The adaptor does not unpack tuple-likes recursively. Any type that supports the tuple
     /// protocol can be used with the adaptor.
-    ///
-    /// Added in 0.17.0.
     inline constexpr unpack_t unpack{};
 }    // namespace pika::execution::experimental

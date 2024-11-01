@@ -64,6 +64,8 @@ The ``pika/init.hpp`` header provides functionality to manage the pika runtime.
 .. doxygenfunction:: pika::suspend()
 .. doxygenfunction:: pika::is_runtime_initialized()
 
+.. versionadded:: 0.22.0
+
 .. doxygenstruct:: pika::init_params
    :members:
 
@@ -89,11 +91,15 @@ All sender adaptors are `customization point objects (CPOs)
 
 .. doxygenvariable:: pika::execution::experimental::drop_value
 
+.. versionadded:: 0.6.0
+
 .. literalinclude:: ../examples/documentation/drop_value_documentation.cpp
    :language: c++
    :start-at: #include
 
 .. doxygenvariable:: pika::execution::experimental::drop_operation_state
+
+.. versionadded:: 0.19.0
 
 .. literalinclude:: ../examples/documentation/drop_operation_state_documentation.cpp
    :language: c++
@@ -101,17 +107,23 @@ All sender adaptors are `customization point objects (CPOs)
 
 .. doxygenvariable:: pika::execution::experimental::split_tuple
 
+.. versionadded:: 0.12.0
+
 .. literalinclude:: ../examples/documentation/split_tuple_documentation.cpp
    :language: c++
    :start-at: #include
 
 .. doxygenvariable:: pika::execution::experimental::unpack
 
+.. versionadded:: 0.17.0
+
 .. literalinclude:: ../examples/documentation/unpack_documentation.cpp
    :language: c++
    :start-at: #include
 
 .. doxygenvariable:: pika::execution::experimental::when_all_vector
+
+.. versionadded:: 0.2.0
 
 .. literalinclude:: ../examples/documentation/when_all_vector_documentation.cpp
    :language: c++
