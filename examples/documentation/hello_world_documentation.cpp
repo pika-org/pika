@@ -8,10 +8,8 @@
 #include <pika/init.hpp>
 #include <pika/thread.hpp>
 
-#include <fmt/ostream.h>
 #include <fmt/printf.h>
 
-#include <iostream>
 #include <utility>
 
 int main(int argc, char* argv[])
@@ -30,7 +28,7 @@ int main(int argc, char* argv[])
 
     // We can schedule work using sched.
     auto snd1 = ex::just(42) | ex::continues_on(sched) | ex::then([](int x) {
-        fmt::print(std::cout, "Hello from a pika user-level thread (with id {})!\nx = {}\n",
+        fmt::print("Hello from a pika user-level thread (with id {})!\nx = {}\n",
             pika::this_thread::get_id(), x);
     });
 
@@ -40,11 +38,11 @@ int main(int argc, char* argv[])
     // We can build arbitrary graphs of work using the split and when_all adaptors.
     auto snd2 = ex::just(3.14) | ex::split();
     auto snd3 = ex::continues_on(snd2, sched) |
-        ex::then([](double pi) { fmt::print(std::cout, "Is this pi: {}?\n", pi); });
+        ex::then([](double pi) { fmt::print("Is this pi: {}?\n", pi); });
     auto snd4 = ex::when_all(std::move(snd2), ex::just(500.3)) | ex::continues_on(sched) |
         ex::then([](double pi, double r) { return pi * r * r; });
     auto result = tt::sync_wait(ex::when_all(std::move(snd3), std::move(snd4)));
-    fmt::print(std::cout, "The result is {}\n", result);
+    fmt::print("The result is {}\n", result);
 
     // Tell the runtime that when there are no more tasks in the queues it is ok to stop.
     pika::finalize();
