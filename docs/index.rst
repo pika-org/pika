@@ -10,8 +10,8 @@ Overview
 ========
 
 **pika** is a C++ library that builds on the `std::execution (P2300) proposal
-<https://wg21.link/p2300>`__ by providing a CPU runtime with user-level threads, as well as
-integration with CUDA, HIP, and MPI. See :ref:`getting_started` to get started.
+<https://wg21.link/p2300>`__ accepted to C++26 by providing a CPU runtime with user-level threads,
+as well as integration with CUDA, HIP, and MPI. See :ref:`getting_started` to get started.
 
 Hello, world
 ============
