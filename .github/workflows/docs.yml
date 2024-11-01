@@ -33,8 +33,11 @@ jobs:
                 --allow-downgrades \
                 --allow-remove-essential \
                 --allow-change-held-packages \
-                doxygen python3 python3-pip
+                doxygen python3 python3-pip ripgrep
             pip install --requirement $PWD/docs/requirements.txt
+      - name: Check that docstrings don't use @command
+        run: |
+            ./scripts/check_doxygen_commands.sh $PWD
       - name: Build documentation
         run: |
             export PIKA_DOCS_DOXYGEN_OUTPUT_DIRECTORY=$PWD/build/doxygen
