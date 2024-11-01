@@ -595,16 +595,14 @@ namespace pika::cuda::experimental {
     // - this operation can only be used when the predecessor sender has
     //   cuda_scheduler as its completion scheduler
 
-    /// Attach a continuation to run f with an additional CUDA stream.
-    ///
-    /// Attaches a continuation to the given sender which will call f with the
-    /// arguments sent by the given sender with an additional cudaStream_t
-    /// argument as the last argument. This can only be called on a sender with
-    /// a completion scheduler that is cuda_scheduler. f does not have exclusive
-    /// access to the given stream and other calls may reuse the same stream
-    /// concurrently.
-    inline constexpr struct then_with_stream_t final
+    /// \brief The type of the \ref then_with_stream sender adaptor.
+    struct then_with_stream_t final
     {
+        /// \brief Create a \ref then_with_stream sender.
+        ///
+        /// \param sender The predecessor sender.
+        /// \param f Callable that will be passed a \p cudaStream_t as the last argument. Values
+        /// from \p sender are passed as references.
         template <typename Sender, typename F>
         constexpr PIKA_FORCEINLINE auto PIKA_STATIC_CALL_OPERATOR(Sender&& sender, F&& f)
         {
@@ -612,24 +610,36 @@ namespace pika::cuda::experimental {
                 then_with_stream_detail::cuda_stream_callable<F>{std::forward<F>(f)});
         }
 
+        /// \brief Partially bound sender. Expects a sender to be supplied later.
         template <typename F>
         constexpr PIKA_FORCEINLINE auto PIKA_STATIC_CALL_OPERATOR(F&& f)
         {
             return pika::execution::experimental::detail::partial_algorithm<then_with_stream_t, F>{
                 std::forward<F>(f)};
         }
-    } then_with_stream{};
+    };
 
-    /// Attach a continuation to run f with an additional cuBLAS handle.
+    /// \brief Sender adaptor which calls \p f with CUDA stream.
     ///
-    /// Attaches a continuation to the given sender which will call f with the
-    /// arguments sent by the given sender with an additional cublasHandle_t
-    /// argument as the first argument. This can only be called on a sender with
-    /// a completion scheduler that is cuda_scheduler. The handle is
-    /// thread-local and f may not yield a pika thread until after the handle
-    /// has been used the last time by f.
-    inline constexpr struct then_with_cublas_t final
+    /// When the predecessor sender completes, calls \p f with a CUDA stream as the last argument
+    /// after other values sent by the predecessor sender. This adaptor can only be used when the
+    /// completion scheduler is a \ref cuda_scheduler. Other work may be scheduled concurrently on
+    /// the stream passed to \p f. Values sent by the predecessor sender are passed as references to
+    /// \p f and kept alive until the work submitted by \p f to the stream is completed. \p f may
+    /// return as soon as work has been submitted, and a connected receiver will be signaled only
+    /// once the kernels submitted to the stream have completed.
+    inline constexpr then_with_stream_t then_with_stream{};
+
+    /// \brief The type of the \ref then_with_cublas sender adaptor.
+    struct then_with_cublas_t final
     {
+        /// \brief Create a \ref then_with_cublas sender.
+        ///
+        /// \param sender The predecessor sender.
+        /// \param f Callable that will be passed a \p cublasHandle_t as the first argument. Values
+        /// from \p sender are passed as references.
+        /// \param pointer_mode The \p cublasPointerMode_t used for the internal cuBLAS handle, or
+        /// the equivalent for rocBLAS.
         template <typename Sender, typename F>
         constexpr PIKA_FORCEINLINE auto
         PIKA_STATIC_CALL_OPERATOR(Sender&& sender, F&& f, cublasPointerMode_t pointer_mode)
@@ -639,6 +649,7 @@ namespace pika::cuda::experimental {
                     std::forward<F>(f), pointer_mode});
         }
 
+        /// \brief Partially bound sender. Expects a sender to be supplied later.
         template <typename F>
         constexpr PIKA_FORCEINLINE auto
         PIKA_STATIC_CALL_OPERATOR(F&& f, cublasPointerMode_t pointer_mode)
@@ -646,18 +657,26 @@ namespace pika::cuda::experimental {
             return pika::execution::experimental::detail::partial_algorithm<then_with_cublas_t, F,
                 cublasPointerMode_t>{std::forward<F>(f), pointer_mode};
         }
-    } then_with_cublas{};
+    };
 
-    /// Attach a continuation to run f with an additional cuSOLVER handle.
+    /// \brief Sender adaptor which calls \p f with a cuBLAS handle.
     ///
-    /// Attaches a continuation to the given sender which will call f with the
-    /// arguments sent by the given sender with an additional cusolverDnHandle_t
-    /// argument as the first argument. This can only be called on a sender with
-    /// a completion scheduler that is cuda_scheduler. The handle is
-    /// thread-local and f may not yield a pika thread until after the handle
-    /// has been used the last time by f.
-    inline constexpr struct then_with_cusolver_t final
+    /// This sender is intended to be used to submit work using a cuBLAS handle. The stream
+    /// associated to the handle may also be used to submit work. The handle is accessed through a
+    /// \ref locked_cublas_handle and \p f should return as quickly as possible to avoid blocking
+    /// other work from using the handle.
+    ///
+    /// The behaviour of synchronization and lifetimes are the same as for \ref then_with_stream,
+    /// except that the handle is passed as the first argument to match the typical function
+    /// signatures of cuBLAS functions.
+    inline constexpr then_with_cublas_t then_with_cublas{};
+
+    /// \brief The type of the \ref then_with_cusolver sender adaptor.
+    struct then_with_cusolver_t final
     {
+        /// \param sender The predecessor sender.
+        /// \param f Callable that will be passed a \p cusolverDnHandle_t as the first argument.
+        /// Values from \p sender are passed as references.
         template <typename Sender, typename F>
         constexpr PIKA_FORCEINLINE auto PIKA_STATIC_CALL_OPERATOR(Sender&& sender, F&& f)
         {
@@ -665,11 +684,24 @@ namespace pika::cuda::experimental {
                 then_with_stream_detail::cusolver_handle_callable<F>{std::forward<F>(f)});
         }
 
+        /// \brief Partially bound sender. Expects a sender to be supplied later.
         template <typename F>
         constexpr PIKA_FORCEINLINE auto PIKA_STATIC_CALL_OPERATOR(F&& f)
         {
             return pika::execution::experimental::detail::partial_algorithm<then_with_cusolver_t,
                 F>{std::forward<F>(f)};
         }
-    } then_with_cusolver{};
+    };
+
+    /// \brief Sender adaptor which calls \p f with a cuSOLVER handle.
+    ///
+    /// This sender is intended to be used to submit work using a cuSOLVER handle. The stream
+    /// associated to the handle may also be used to submit work. The handle is accessed through a
+    /// \ref locked_cusolver_handle and \p f should return as quickly as possible to avoid blocking
+    /// other work from using the handle.
+    ///
+    /// The behaviour of synchronization and lifetimes are the same as for \ref then_with_stream,
+    /// except that the handle is passed as the first argument to match the typical function
+    /// signatures of cuBLAS functions.
+    inline constexpr then_with_cusolver_t then_with_cusolver{};
 }    // namespace pika::cuda::experimental

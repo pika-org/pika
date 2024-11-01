@@ -5,6 +5,8 @@
     Distributed under the Boost Software License, Version 1.0. (See accompanying
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+:tocdepth: 3
+
 .. _api:
 
 =============
@@ -32,7 +34,6 @@ These headers are part of the public API, but are currently undocumented.
 - ``pika/async_rw_mutex.hpp``
 - ``pika/barrier.hpp``
 - ``pika/condition_variable.hpp``
-- ``pika/cuda.hpp``
 - ``pika/latch.hpp``
 - ``pika/mpi.hpp``
 - ``pika/mutex.hpp``
@@ -136,3 +137,83 @@ All sender adaptors are `customization point objects (CPOs)
 .. literalinclude:: ../examples/documentation/when_all_vector_documentation.cpp
    :language: c++
    :start-at: #include
+
+.. _header_pika_cuda:
+
+``pika/cuda.hpp``
+=================
+
+The ``pika/cuda.hpp`` header provides functionality related to CUDA and HIP. All functionality is
+under the ``pika::cuda::experimental`` namespace and class and function names contain ``cuda``, even
+when HIP support is enabled. CUDA and HIP functionality can be enabled with the CMake options
+``PIKA_WITH_CUDA`` and ``PIKA_WITH_HIP``, respectively. In the following, whenever CUDA is
+mentioned, it refers to to CUDA and HIP interchangeably.
+
+.. note::
+   https://github.com/pika-org/pika/issues/116 tracks a potential renaming of the functionality
+   to avoid using ``cuda`` even when HIP is enabled. If you have feedback on a rename or just want
+   to follow along, please see that issue.
+
+.. warning::
+   At the moment, ``nvcc`` can not compile stdexec headers. Of the CUDA compilers, only ``nvc++`` is
+   able to compile stdexec headers. If you have stdexec support enabled in pika, either ensure that
+   ``.cu`` files do not include stdexec headers, or use ``nvc++`` to compile your application.
+   However, ``nvc++`` does not officially support compiling device code. Use at your own risk.
+
+   For HIP there are no known restrictions.
+
+The CUDA support in pika relies on four major components:
+
+1. A pool of CUDA streams as well as cuBLAS and cuSOLVER handles. These streams and handles are used
+   in a round-robin fashion by various sender adaptors.
+2. A CUDA scheduler, in the ``std::execution`` sense. This uses the CUDA pool to schedule work on a
+   GPU.
+3. Sender adaptors. A few special-purpose sender adaptors, as well as customizations of a few
+   ``std::execution`` adaptors are provided to help schedule different types of work on a GPU.
+4. Polling of CUDA events integrated into the pika scheduling loop. This integration is essential to
+   avoid calling e.g. ``cudaStreamSynchronize`` on a pika task, which would block the underlying
+   worker thread and thus block progress of other work.
+
+The following example gives an overview of using the above CUDA functionalities in pika:
+
+.. literalinclude:: ../examples/documentation/cuda_overview_documentation.cu
+   :language: c++
+   :start-at: #include
+
+.. note::
+   pika uses `whip <https://github.com/eth-cscs/whip>`__ internally for portability between CUDA and
+   HIP. However, users of pika are not forced to use whip as whip only creates aliases for CUDA/HIP
+   types and enumerations. whip is thus compatible with directly using the types and enumerations
+   provided by CUDA/HIP.
+
+While :cpp:class:`pika::cuda::experimental::cuda_pool` gives direct access to streams and handles,
+the recommended way to access them is through the sender adaptors available below.
+
+.. doxygenclass:: pika::cuda::experimental::cuda_scheduler
+.. doxygenstruct:: pika::cuda::experimental::then_with_stream_t
+.. doxygenvariable:: pika::cuda::experimental::then_with_stream
+
+.. literalinclude:: ../examples/documentation/then_with_stream_documentation.cu
+    :language: c++
+    :start-at: #include
+
+.. doxygenstruct:: pika::cuda::experimental::then_with_cublas_t
+.. doxygenvariable:: pika::cuda::experimental::then_with_cublas
+
+.. literalinclude:: ../examples/documentation/then_with_cublas_documentation.cu
+    :language: c++
+    :start-at: #include
+
+.. doxygenstruct:: pika::cuda::experimental::then_with_cusolver_t
+.. doxygenvariable:: pika::cuda::experimental::then_with_cusolver
+
+See :cpp:var:`pika::cuda::experimental::then_with_cublas` for an example of what can be done with
+:cpp:var:`pika::cuda::experimental::then_with_cusolver`. The interfaces are identical except for the
+type of handle passed to the callable.
+
+.. doxygenclass:: pika::cuda::experimental::cuda_pool
+.. doxygenclass:: pika::cuda::experimental::cuda_stream
+.. doxygenclass:: pika::cuda::experimental::cublas_handle
+.. doxygenclass:: pika::cuda::experimental::locked_cublas_handle
+.. doxygenclass:: pika::cuda::experimental::cusolver_handle
+.. doxygenclass:: pika::cuda::experimental::locked_cusolver_handle
