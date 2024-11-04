@@ -13,9 +13,34 @@ template <typename T>
 void test_atomic()
 {
     std::atomic<T> a;
+
     a.store(T{});
-    T i = a.load();
-    (void) i;
+
+    {
+        [[maybe_unused]] T i = a.load();
+    }
+
+    {
+        [[maybe_unused]] T i = a.exchange(T{});
+    }
+
+    {
+        T expected{};
+        [[maybe_unused]] bool b = a.compare_exchange_weak(expected, T{});
+    }
+
+    {
+        T expected{};
+        [[maybe_unused]] bool b = a.compare_exchange_strong(expected, T{});
+    }
+
+    {
+        [[maybe_unused]] T i = a.fetch_sub(T{1});
+    }
+
+    {
+        [[maybe_unused]] T i = a.fetch_add(T{1});
+    }
 }
 
 int main()
