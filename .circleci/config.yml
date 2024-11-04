@@ -16,7 +16,7 @@ setup_x86_large: &setup_x86_large
 
 setup_arm64_machine: &setup_arm64_machine
   machine:
-    image: ubuntu-2204:current
+    image: ubuntu-2404:current
   resource_class: arm.large
 
 docker_default: &docker_default
@@ -509,6 +509,7 @@ jobs:
               ninja-build \
               libboost-context-dev \
               libhwloc-dev \
+              libstdc++-14-dev \
               mpi-default-dev \
               xsltproc
             git clone --branch 9.1.0 --single-branch --depth 1 \

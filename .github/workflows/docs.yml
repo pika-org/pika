@@ -22,7 +22,7 @@ on:
 jobs:
   build:
     name: github/documentation/build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@v4
@@ -50,7 +50,7 @@ jobs:
   deploy:
     needs: build
     name: github/documentation/deploy
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: github.ref == 'refs/heads/main' && github.repository == 'pika-org/pika'
 
     permissions:

@@ -15,7 +15,7 @@ on:
 jobs:
   build:
     name: github/linux/coverage/upload
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Download coverage report from GH artifacts
