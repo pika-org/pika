@@ -21,7 +21,7 @@ variables:
     - echo -e "ARCH=$ARCH" >> base.env
     - echo -e "BASE_IMAGE=$PERSIST_IMAGE_NAME" >> base.env
   variables:
-    BASE_IMAGE: docker.io/ubuntu:22.04
+    BASE_IMAGE: docker.io/ubuntu:24.04
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_base
     DOCKER_BUILD_ARGS: '["BASE_IMAGE","SPACK_COMMIT","SPACK_REPO"]'
   artifacts:

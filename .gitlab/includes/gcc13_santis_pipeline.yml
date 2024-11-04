@@ -10,7 +10,7 @@ include:
 
 .variables_gcc13_santis_config:
   variables:
-    SPACK_ARCH: linux-ubuntu22.04-neoverse_v2
+    SPACK_ARCH: linux-ubuntu24.04-neoverse_v2
     COMPILER: gcc@13.1.0
     CXXSTD: 20
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD +stdexec \
