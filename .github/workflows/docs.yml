@@ -37,7 +37,7 @@ jobs:
             pip install --requirement $PWD/docs/requirements.txt
       - name: Build documentation
         run: |
-            export PIKA_DOCS_DOXYGEN_OUTPUT_DIRECTORY=$PWD/build/docs/doxygen
+            export PIKA_DOCS_DOXYGEN_OUTPUT_DIRECTORY=$PWD/build/doxygen
             export PIKA_DOCS_DOXYGEN_INPUT_ROOT=$PWD
             mkdir -p $PIKA_DOCS_DOXYGEN_OUTPUT_DIRECTORY
             doxygen docs/Doxyfile
