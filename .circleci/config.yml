@@ -509,6 +509,7 @@ jobs:
               ninja-build \
               libboost-context-dev \
               libhwloc-dev \
+              libstdc++-14-dev \
               mpi-default-dev \
               xsltproc
             git clone --branch 9.1.0 --single-branch --depth 1 \
