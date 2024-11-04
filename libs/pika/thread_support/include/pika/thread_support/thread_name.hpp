@@ -17,5 +17,5 @@
 namespace pika::detail {
     PIKA_EXPORT std::string& get_thread_name_internal();
     PIKA_EXPORT std::string get_thread_name();
-    PIKA_EXPORT void set_thread_name(std::string_view name);
+    PIKA_EXPORT void set_thread_name(std::string_view name, std::string_view short_name);
 }    // namespace pika::detail

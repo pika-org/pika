@@ -28,9 +28,9 @@ namespace pika::detail {
 
     std::string get_thread_name()
     {
-        std::string const& thread_name = detail::get_thread_name_internal();
-        if (thread_name.empty()) return "<unknown>";
-        return thread_name;
+        std::string const& name = detail::get_thread_name_internal();
+        if (name.empty()) return "<unknown>";
+        return name;
     }
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
@@ -47,15 +47,15 @@ namespace pika::detail {
 # pragma pack(pop)
 
     // Set the name of the thread shown in the Visual Studio debugger
-    void set_thread_name(std::string_view thread_name)
+    void set_thread_name(std::string_view name, std::string_view)
     {
-        auto& name = get_thread_name_internal();
-        name = thread_name;
+        auto& name_internal = get_thread_name_internal();
+        name_internal = name;
 
         DWORD dwThreadID = -1;
         THREADNAME_INFO info;
         info.dwType = 0x1000;
-        info.szName = name.c_str();
+        info.szName = name_internal.c_str();
         info.dwThreadID = dwThreadID;
         info.dwFlags = 0;
 
@@ -69,15 +69,15 @@ namespace pika::detail {
         }
     }
 #else
-    void set_thread_name(std::string_view thread_name)
+    void set_thread_name(std::string_view name, std::string_view short_name)
     {
-        auto& name = get_thread_name_internal();
-        name = thread_name;
+        auto& name_internal = get_thread_name_internal();
+        name_internal = name;
 # if defined(PIKA_HAVE_PTHREAD_SETNAME_NP)
         // https://man7.org/linux/man-pages/man3/pthread_setname_np.3.html:
         // The thread name is a meaningful C language string, whose length is restricted to 16
         // characters, including the terminating null byte ('\0').
-        std::string pthread_name{thread_name, 0, 15};
+        std::string pthread_name{short_name, 0, 15};
         int rc = pthread_setname_np(pthread_self(), pthread_name.c_str());
         if (rc != 0)
         {

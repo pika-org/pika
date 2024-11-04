@@ -1125,8 +1125,9 @@ namespace pika::detail {
             cond.notify_all();
         }
 
-        std::string thread_name("main-thread#wait_helper");
-        detail::set_thread_name(thread_name);
+        std::string fullname("pika/main-thread#wait_helper");
+        std::string shortname("pika/waithelper");
+        detail::set_thread_name(fullname, shortname);
 
 #if defined(PIKA_HAVE_APEX)
         // not registering helper threads - for now
@@ -1381,9 +1382,18 @@ namespace pika::detail {
         std::size_t global_thread_num, char const* pool_name, char const* postfix)
     // NOLINTEND(bugprone-easily-swappable-parameters)
     {
+        PIKA_ASSERT(context != nullptr);
+        PIKA_ASSERT(context[0]);
+
         std::ostringstream fullname;
+        std::ostringstream shortname;
         fullname << "pika/" << context;
-        if (pool_name && *pool_name) { fullname << "/pool:" << pool_name; }
+        shortname << "pika/" << context[0];
+        if (pool_name && *pool_name)
+        {
+            fullname << "/pool:" << pool_name;
+            shortname << '/' << pool_name[0];
+        }
         if (postfix && *postfix) { fullname << '/' << postfix; }
         if (global_thread_num != std::size_t(-1))
         {
@@ -1392,10 +1402,11 @@ namespace pika::detail {
         if (local_thread_num != std::size_t(-1))
         {
             fullname << "/local:" + std::to_string(local_thread_num);
+            shortname << '/' << std::to_string(local_thread_num);
         }
 
         PIKA_ASSERT(detail::get_thread_name_internal().empty());
-        detail::set_thread_name(PIKA_MOVE(fullname).str());
+        detail::set_thread_name(fullname.str(), shortname.str());
 #if defined(PIKA_HAVE_APEX) || defined(PIKA_HAVE_TRACY)
         char const* name = detail::get_thread_name().c_str();
 
@@ -1423,7 +1434,7 @@ namespace pika::detail {
         if (on_stop_func_) { on_stop_func_(global_thread_num, global_thread_num, "", context); }
 
         // reset thread local storage
-        detail::set_thread_name("");
+        detail::set_thread_name("", "");
     }
 
     void runtime::add_pre_startup_function(startup_function_type f)
