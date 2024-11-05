@@ -45,7 +45,7 @@ If you'd like to build pika manually you will need CMake 3.22.0 or greater and a
 supporting C++17:
 
 - `GCC <https://gcc.gnu.org>`__ 9 or greater
-- `clang <https://clang.llvm.org>`__ 11 or greater
+- `clang <https://clang.llvm.org>`__ 13 or greater
 
 Additionally, pika depends on:
 

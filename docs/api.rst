@@ -33,7 +33,6 @@ These headers are part of the public API, but are currently undocumented.
 - ``pika/barrier.hpp``
 - ``pika/condition_variable.hpp``
 - ``pika/cuda.hpp``
-- ``pika/execution.hpp``
 - ``pika/latch.hpp``
 - ``pika/mpi.hpp``
 - ``pika/mutex.hpp``

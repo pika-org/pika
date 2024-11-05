@@ -67,11 +67,11 @@ struct sMatrixSize
 // -------------------------------------------------------------------------
 // Compute reference data set matrix multiply on CPU
 // C = A * B
-// @param C          reference data, computed but preallocated
-// @param A          matrix A as provided to device
-// @param B          matrix B as provided to device
-// @param hA         height of matrix A
-// @param wB         width of matrix B
+// \param C          reference data, computed but preallocated
+// \param A          matrix A as provided to device
+// \param B          matrix B as provided to device
+// \param hA         height of matrix A
+// \param wB         width of matrix B
 // -------------------------------------------------------------------------
 template <typename T>
 void matrixMulCPU(T* C, T const* A, T const* B, unsigned int hA, unsigned int wA, unsigned int wB)

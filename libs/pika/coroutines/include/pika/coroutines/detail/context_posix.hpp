@@ -174,7 +174,7 @@ namespace pika::threads::coroutines {
 
     namespace detail::posix {
         /// Posix implementation for the context_impl_base class.
-        /// @note context_impl is not required to be consistent
+        /// \note context_impl is not required to be consistent
         /// If not initialized it can only be swapped out, not in
         /// (at that point it will be initialized).
         class ucontext_context_impl_base : detail::context_impl_base
@@ -209,8 +209,8 @@ namespace pika::threads::coroutines {
 # endif
 
         private:
-            /// Free function. Saves the current context in @p from
-            /// and restores the context in @p to.
+            /// Free function. Saves the current context in \p from
+            /// and restores the context in \p to.
             friend void swap_context(ucontext_context_impl_base& from,
                 ucontext_context_impl_base const& to, default_hint)
             {
