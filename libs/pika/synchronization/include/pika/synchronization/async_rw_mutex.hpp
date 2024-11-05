@@ -85,7 +85,7 @@ namespace pika::execution::experimental {
             T& get_value()
             {
                 pika::util::yield_while(
-                    [this]() { return !value_set.load(std::memory_order_acquire); });
+                    [this]() { return !value_set.load(std::memory_order_acquire); }, "", false);
                 PIKA_ASSERT(value);
                 // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
                 return *value;
