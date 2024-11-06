@@ -200,6 +200,18 @@ int pika_main()
                 PIKA_TEST_EQ(data, 42);
             }
 
+            // Values passed to transform_mpi should be kept alive by transform_mpi itself
+            {
+                int count = 1 << 20;
+                auto s = ex::just(std::vector<int>{count, 0}, datatype, 0, comm) |
+                    ex::drop_operation_state() |
+                    mpi::transform_mpi([](auto& data, MPI_Datatype datatype, int i, MPI_Comm comm,
+                                           MPI_Request* request) {
+                        MPI_Ibcast(data.data(), data.size(), datatype, i, comm, request);
+                    });
+                tt::sync_wait(PIKA_MOVE(s));
+            }
+
             // transform_mpi should be able to handle reference types (by copying
             // them to the operation state)
             {
