@@ -11,13 +11,9 @@ endif()
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(async_cuda_headers
-    pika/async_cuda/cuda_polling_helper.hpp
-    pika/async_cuda/cuda_pool.hpp
-    pika/async_cuda/cuda_scheduler.hpp
-    pika/async_cuda/cuda_scheduler_bulk.hpp
-    pika/async_cuda/detail/cuda_event_callback.hpp
-    pika/async_cuda/then_on_host.hpp
-    pika/async_cuda/then_with_stream.hpp
+    pika/async_cuda/cuda_polling_helper.hpp pika/async_cuda/cuda_pool.hpp
+    pika/async_cuda/cuda_scheduler.hpp pika/async_cuda/cuda_scheduler_bulk.hpp
+    pika/async_cuda/detail/cuda_event_callback.hpp pika/async_cuda/then_with_stream.hpp
 )
 
 set(async_cuda_sources cuda_event_callback.cpp cuda_pool.cpp cuda_scheduler.cpp)

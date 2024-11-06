@@ -539,10 +539,10 @@ int pika_main()
         dummy::reset_counts();
         auto s = ex::just(1) | ex::continues_on(ex::thread_pool_scheduler{}) | ex::then(dummy{}) |
             ex::continues_on(cu::cuda_scheduler{pool}) | cu::then_with_stream(dummy{}) |
-            cu::then_on_host(dummy{}) | cu::then_with_cublas(dummy{}, CUBLAS_POINTER_MODE_HOST) |
+            cu::then_with_cublas(dummy{}, CUBLAS_POINTER_MODE_HOST) |
             cu::then_with_cusolver(dummy{}) | ex::continues_on(ex::thread_pool_scheduler{}) |
             ex::then(dummy{});
-        PIKA_TEST_EQ(tt::sync_wait(std::move(s)), 7.0);
+        PIKA_TEST_EQ(tt::sync_wait(std::move(s)), 6.0);
         PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::cublas_void_calls.load(), std::size_t(0));
@@ -556,14 +556,14 @@ int pika_main()
         // then_with_cusolver results in a increment of the cublas overload.
         PIKA_TEST_EQ(dummy::cublas_int_calls.load(), std::size_t(1));
 #else
-        PIKA_TEST_EQ(dummy::cublas_int_calls.load(), std::size_t(0));
-        PIKA_TEST_EQ(dummy::cusolver_int_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(dummy::cublas_int_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(dummy::cusolver_int_calls.load(), std::size_t(0));
 #endif
-        PIKA_TEST_EQ(dummy::host_double_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(dummy::host_double_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::stream_double_calls.load(), std::size_t(1));
-        PIKA_TEST_EQ(dummy::cublas_double_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(dummy::cublas_double_calls.load(), std::size_t(0));
 #if !defined(PIKA_HAVE_HIP)
-        PIKA_TEST_EQ(dummy::cusolver_double_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cusolver_double_calls.load(), std::size_t(1));
 #endif
     }
 
