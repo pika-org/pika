@@ -59,13 +59,13 @@ into HPX.
 
 The development of pika has been funded by:
 
-.. image:: _static/logo-cscs.jpg
+.. image:: _static/logo-cscs.png
    :width: 50%
    :align: center
    :alt: Swiss National Supercomputing Centre (CSCS)
    :target: https://www.cscs.ch
 
-.. image:: _static/logo-ethz.svg
+.. image:: _static/logo-ethz.png
    :width: 50%
    :align: center
    :alt: ETH Zurich
