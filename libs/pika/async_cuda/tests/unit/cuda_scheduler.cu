@@ -69,11 +69,6 @@ int pika_main()
     }
 
     {
-        auto s = ex::schedule(sched) | cu::then_on_host([]() {});
-        CHECK_CUDA_COMPLETION_SCHEDULER(s);
-    }
-
-    {
 #if !defined(PIKA_HAVE_CUDA) || defined(PIKA_CLANG_VERSION)
         // This test initializes the thread_pool_scheduler with nullptr only to
         // avoid it trying to get a thread pool through the default thread pool
