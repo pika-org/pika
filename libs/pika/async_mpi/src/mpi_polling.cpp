@@ -787,9 +787,21 @@ namespace pika::mpi::experimental {
             // if we are potentially using a pool, mpi must be initialized
             if (!mpi::detail::environment::is_mpi_initialized())
             {
-                PIKA_THROW_EXCEPTION(pika::error::invalid_status, "mpi::create_pool",
-                    "MPI must be initialized prior to pool creation");
+                if (mode == polling_pool_creation_mode::mode_force_create)
+                {
+                    PIKA_THROW_EXCEPTION(pika::error::invalid_status, "mpi::create_pool",
+                        "MPI must be initialized prior to pool creation");
+                }
+                else
+                {
+                    PIKA_LOG(warn,
+                        "MPI pool creation was requested, but MPI is not initialized, not creating "
+                        "the pool (if PIKA_MPI_ENABLE_POOL is set to 1, unsetting it will silence "
+                        "the warning)");
+                    return false;
+                }
             }
+
             // needed, in order to decide if pool can be disabled on 1 rank
             mpi_data_.rank_ = mpi::detail::environment::rank();
             mpi_data_.size_ = mpi::detail::environment::size();
