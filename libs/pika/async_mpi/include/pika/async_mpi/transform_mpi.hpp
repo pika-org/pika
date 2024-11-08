@@ -80,7 +80,7 @@ namespace pika::mpi::experimental {
             {
                 return PIKA_FORWARD(Sender, sender) |
                     let_value([=, f = std::move(f)](auto&... args) {
-                        auto snd0 = just(std::forward<decltype(args)>(args)...);
+                        auto snd0 = just(args...);
                         return dispatch_mpi_sender<decltype(snd0), F>{
                                    PIKA_MOVE(snd0), PIKA_FORWARD(F, f)} |
                             let_value(completion_snd);
@@ -90,7 +90,7 @@ namespace pika::mpi::experimental {
             {
                 return PIKA_FORWARD(Sender, sender) | continues_on(mpi_pool_scheduler(p)) |
                     let_value([=, f = std::move(f)](auto&... args) {
-                        auto snd0 = just(std::forward<decltype(args)>(args)...);
+                        auto snd0 = just(args...);
                         return dispatch_mpi_sender<decltype(snd0), F>{
                                    PIKA_MOVE(snd0), PIKA_FORWARD(F, f)} |
                             let_value(completion_snd);
