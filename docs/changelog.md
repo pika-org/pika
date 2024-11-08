@@ -6,6 +6,24 @@
 
 # Changelog
 
+## 0.30.0 (2024-11-08)
+
+### New features
+
+- pika can now automatically create a custom thread pool used for MPI work. ([#1267](https://github.com/pika-org/pika/pull/1267))
+- All uses of `std::aligned_storage_t` have been removed, allowing for builds without deprecation warnings with C++23. ([#1280](https://github.com/pika-org/pika/pull/1280))
+- Documentation has been expanded, with many sender adaptors unique to pika now documented. ([#1279](https://github.com/pika-org/pika/pull/1279), [#1286](https://github.com/pika-org/pika/pull/1286), [#1287](https://github.com/pika-org/pika/pull/1287), [#1292](https://github.com/pika-org/pika/pull/1292), [#1304](https://github.com/pika-org/pika/pull/1304), [#1310](https://github.com/pika-org/pika/pull/1310))
+
+### Breaking changes
+
+- The default MPI mode used for creating and waiting for MPI requests has been changed. ([#1143](https://github.com/pika-org/pika/pull/1143))
+- Support for clang 11 and clang 12 has been dropped. Use of these versions is not disallowed but no attempt will be made to fix issues for those compilers. ([#1284](https://github.com/pika-org/pika/pull/1284))
+
+### Bugfixes
+
+- Builds with clang 19 have been fixed. ([#1283](https://github.com/pika-org/pika/pull/1283))
+- Detection for when libatomic is required has been improved. ([#1315](https://github.com/pika-org/pika/pull/1315))
+
 ## 0.29.0 (2024-10-04)
 
 ### New features
