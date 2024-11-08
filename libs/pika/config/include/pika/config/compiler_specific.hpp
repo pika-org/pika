@@ -162,14 +162,20 @@
 #endif
 
 // clang-format on
+# if !defined(__has_feature)
+#  define PIKA_HAS_FEATURE(x) 0
+# else
+#  define PIKA_HAS_FEATURE(x) __has_feature(x)
+# endif
+
 # if defined(PIKA_HAVE_SANITIZERS)
-#  if defined(__SANITIZE_ADDRESS__) || (defined(__has_feature) && __has_feature(address_sanitizer))
+#  if defined(__SANITIZE_ADDRESS__) || PIKA_HAS_FEATURE(address_sanitizer)
 #   define PIKA_HAVE_ADDRESS_SANITIZER
 #   if defined(PIKA_GCC_VERSION) || defined(PIKA_CLANG_VERSION)
 #    define PIKA_NO_SANITIZE_ADDRESS __attribute__((no_sanitize("address")))
 #   endif
 #  endif
-#  if defined(__SANITIZE_THREAD__) || (defined(__has_feature) && __has_feature(thread_sanitizer))
+#  if defined(__SANITIZE_THREAD__) || PIKA_HAS_FEATURE(thread_sanitizer)
 #   define PIKA_HAVE_THREAD_SANITIZER
 #   if defined(PIKA_GCC_VERSION) || defined(PIKA_CLANG_VERSION)
 #    define PIKA_NO_SANITIZE_THREAD __attribute__((no_sanitize("thread")))
