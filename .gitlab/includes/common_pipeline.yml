@@ -52,3 +52,8 @@ variables:
   extends:
     - .container-runner-clariden-mi200
     - .test_common
+
+.test_common_todi:
+  extends:
+    - .container-runner-todi-gh200
+    - .test_common

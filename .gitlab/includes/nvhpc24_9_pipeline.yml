@@ -39,3 +39,18 @@ nvhpc24_9_build:
   extends:
     - .variables_nvhpc24_9_config
     - .build_template_santis
+
+.nvhpc24_9_test_common:
+  needs: [nvhpc24_9_build]
+  extends:
+    - .variables_nvhpc24_9_config
+    - .test_common_todi
+    - .test_template
+
+nvhpc24_9_test_release:
+  extends: [.nvhpc24_9_test_common]
+  image: $PERSIST_IMAGE_NAME_RELEASE
+
+nvhpc24_9_test_debug:
+  extends: [.nvhpc24_9_test_common]
+  image: $PERSIST_IMAGE_NAME_DEBUG
