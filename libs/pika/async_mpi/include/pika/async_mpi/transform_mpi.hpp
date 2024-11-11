@@ -78,21 +78,21 @@ namespace pika::mpi::experimental {
 
             if (requests_inline)
             {
-                return PIKA_FORWARD(Sender, sender) |
-                    let_value([=, f = std::forward<F>(f)](auto&... args) {
+                return std::forward<Sender>(sender) |
+                    let_value([=, f = std::forward<F>(f)](auto&... args) mutable {
                         auto snd0 = just(args...);
                         return dispatch_mpi_sender<decltype(snd0), F>{
-                                   PIKA_MOVE(snd0), PIKA_FORWARD(F, f)} |
+                                   std::move(snd0), std::move(f)} |
                             let_value(completion_snd);
                     });
             }
             else
             {
-                return PIKA_FORWARD(Sender, sender) | continues_on(mpi_pool_scheduler(p)) |
-                    let_value([=, f = std::forward<F>(f)](auto&... args) {
+                return std::forward<Sender>(sender) | continues_on(mpi_pool_scheduler(p)) |
+                    let_value([=, f = std::forward<F>(f)](auto&... args) mutable {
                         auto snd0 = just(args...);
                         return dispatch_mpi_sender<decltype(snd0), F>{
-                                   PIKA_MOVE(snd0), PIKA_FORWARD(F, f)} |
+                                   std::move(snd0), std::move(f)} |
                             let_value(completion_snd);
                     });
             }
