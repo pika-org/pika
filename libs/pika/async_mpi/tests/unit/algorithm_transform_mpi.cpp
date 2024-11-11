@@ -212,6 +212,17 @@ int pika_main()
                 tt::sync_wait(PIKA_MOVE(s));
             }
 
+            {
+                auto s = ex::just(custom_type_non_default_constructible_non_copyable{42}, datatype,
+                             0, comm) |
+                    ex::drop_operation_state() |
+                    mpi::transform_mpi([](auto& data, MPI_Datatype datatype, int i, MPI_Comm comm,
+                                           MPI_Request* request) {
+                        MPI_Ibcast(&data, 1, datatype, i, comm, request);
+                    });
+                tt::sync_wait(PIKA_MOVE(s));
+            }
+
             // transform_mpi should be able to handle reference types (by copying
             // them to the operation state)
             {

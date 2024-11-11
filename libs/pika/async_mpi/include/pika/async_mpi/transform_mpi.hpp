@@ -20,6 +20,7 @@
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 #include <pika/execution/algorithms/just.hpp>
 #include <pika/execution/algorithms/let_value.hpp>
+#include <pika/execution/algorithms/unpack.hpp>
 #include <pika/execution_base/any_sender.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
@@ -52,6 +53,7 @@ namespace pika::mpi::experimental {
             using pika::execution::experimental::just;
             using pika::execution::experimental::let_value;
             using pika::execution::experimental::unique_any_sender;
+            using pika::execution::experimental::unpack;
 
             // get mpi completion mode settings
             auto mode = get_completion_mode();
@@ -79,8 +81,9 @@ namespace pika::mpi::experimental {
             if (requests_inline)
             {
                 return std::forward<Sender>(sender) |
-                    let_value([=, f = std::forward<F>(f)](auto&... args) mutable {
-                        auto snd0 = just(args...);
+                    let_value([=, f = std::forward<F>(f)](auto&&... args) mutable {
+                        std::tuple<decltype(args)&...> ts{args...};
+                        auto snd0 = just(ts) | ex::unpack();
                         return dispatch_mpi_sender<decltype(snd0), F>{
                                    std::move(snd0), std::move(f)} |
                             let_value(completion_snd);
@@ -90,7 +93,8 @@ namespace pika::mpi::experimental {
             {
                 return std::forward<Sender>(sender) | continues_on(mpi_pool_scheduler(p)) |
                     let_value([=, f = std::forward<F>(f)](auto&... args) mutable {
-                        auto snd0 = just(args...);
+                        std::tuple<decltype(args)&...> ts{args...};
+                        auto snd0 = just(ts) | ex::unpack();
                         return dispatch_mpi_sender<decltype(snd0), F>{
                                    std::move(snd0), std::move(f)} |
                             let_value(completion_snd);
