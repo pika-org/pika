@@ -41,7 +41,7 @@ RUN spack compiler info $COMPILER > /dev/null 2> /dev/null; compiler_missing=$?;
             spack install -j$NUM_PROCS $NVHPC_COMPILER%$spack_compiler arch=$SPACK_ARCH && \
             spack external find \
                 --scope site \
-                --path $(spack location -i $NVHPC_COMPILER)/Linux_x86_64/$nvhpc_version/compilers/bin \
+                --path $(spack location -i $NVHPC_COMPILER)/Linux_$(uname -m)/$nvhpc_version/compilers/bin \
                 nvhpc; \
         fi && \
         spack clean --all; \
