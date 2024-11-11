@@ -55,7 +55,7 @@ namespace pika {
         }                                                                                          \
                                                                                                    \
         explicit NAME(TYPE&& value)                                                                \
-          : error_info(PIKA_FORWARD(TYPE, value))                                                  \
+          : error_info(std::forward<TYPE>(value))                                                  \
         {                                                                                          \
         }                                                                                          \
     } /**/
@@ -125,7 +125,7 @@ namespace pika {
         {
             using node_type = detail::exception_info_node<ErrorInfo...>;
 
-            node_ptr node = std::make_shared<node_type>(PIKA_FORWARD(ErrorInfo, tagged_values)...);
+            node_ptr node = std::make_shared<node_type>(std::forward<ErrorInfo>(tagged_values)...);
             node->next = std::move(_data);
             _data = std::move(node);
             return *this;
@@ -184,13 +184,13 @@ namespace pika {
         static_assert(
             !std::is_base_of<exception_info, ED>::value, "E shall not derive from exception_info");
 
-        throw detail::exception_with_info<ED>(PIKA_FORWARD(E, e), std::move(xi));
+        throw detail::exception_with_info<ED>(std::forward<E>(e), std::move(xi));
     }
 
     template <typename E>
     [[noreturn]] void throw_with_info(E&& e, exception_info const& xi)
     {
-        throw_with_info(PIKA_FORWARD(E, e), exception_info(xi));
+        throw_with_info(std::forward<E>(e), exception_info(xi));
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -209,14 +209,14 @@ namespace pika {
     ///////////////////////////////////////////////////////////////////////////
     template <typename E, typename F>
     auto invoke_with_exception_info(
-        E const& e, F&& f) -> decltype(PIKA_FORWARD(F, f)(std::declval<exception_info const*>()))
+        E const& e, F&& f) -> decltype(std::forward<F>(f)(std::declval<exception_info const*>()))
     {
-        return PIKA_FORWARD(F, f)(dynamic_cast<exception_info const*>(std::addressof(e)));
+        return std::forward<F>(f)(dynamic_cast<exception_info const*>(std::addressof(e)));
     }
 
     template <typename F>
     auto invoke_with_exception_info(std::exception_ptr const& p,
-        F&& f) -> decltype(PIKA_FORWARD(F, f)(std::declval<exception_info const*>()))
+        F&& f) -> decltype(std::forward<F>(f)(std::declval<exception_info const*>()))
     {
         try
         {
@@ -224,7 +224,7 @@ namespace pika {
         }
         catch (exception_info const& xi)
         {
-            return PIKA_FORWARD(F, f)(&xi);
+            return std::forward<F>(f)(&xi);
         }
         catch (std::exception const& e)
         {
@@ -234,13 +234,13 @@ namespace pika {
         catch (...)
         {
         }
-        return PIKA_FORWARD(F, f)(nullptr);
+        return std::forward<F>(f)(nullptr);
     }
 
     template <typename F>
     auto invoke_with_exception_info(pika::error_code const& ec,
-        F&& f) -> decltype(PIKA_FORWARD(F, f)(std::declval<exception_info const*>()))
+        F&& f) -> decltype(std::forward<F>(f)(std::declval<exception_info const*>()))
     {
-        return invoke_with_exception_info(detail::access_exception(ec), PIKA_FORWARD(F, f));
+        return invoke_with_exception_info(detail::access_exception(ec), std::forward<F>(f));
     }
 }    // namespace pika

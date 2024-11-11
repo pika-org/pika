@@ -25,7 +25,7 @@ namespace pika::execution::experimental::detail {
     public:
         template <typename... Ts_>
         explicit constexpr partial_algorithm_base(Ts_&&... ts)
-          : ts(std::piecewise_construct, PIKA_FORWARD(Ts_, ts)...)
+          : ts(std::piecewise_construct, std::forward<Ts_>(ts)...)
         {
         }
 
@@ -37,7 +37,7 @@ namespace pika::execution::experimental::detail {
         template <typename U>
         friend constexpr PIKA_FORCEINLINE auto operator|(U&& u, partial_algorithm_base p)
         {
-            return Tag{}(PIKA_FORWARD(U, u), std::move(p.ts).template get<Is>()...);
+            return Tag{}(std::forward<U>(u), std::move(p.ts).template get<Is>()...);
         }
     };
 

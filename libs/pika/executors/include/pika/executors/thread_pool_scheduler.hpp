@@ -126,7 +126,7 @@ namespace pika::execution::experimental {
         {
             pika::detail::thread_description desc(f, fallback_annotation);
             threads::detail::thread_init_data data(
-                threads::detail::make_thread_function_nullary(PIKA_FORWARD(F, f)), desc, priority_,
+                threads::detail::make_thread_function_nullary(std::forward<F>(f)), desc, priority_,
                 schedulehint_, stacksize_);
             threads::detail::register_work(data, pool_);
         }
@@ -134,7 +134,7 @@ namespace pika::execution::experimental {
         template <typename F>
         friend void tag_invoke(execute_t, thread_pool_scheduler const& sched, F&& f)
         {
-            sched.execute(PIKA_FORWARD(F, f), sched.get_fallback_annotation());
+            sched.execute(std::forward<F>(f), sched.get_fallback_annotation());
         }
 
         template <typename Scheduler, typename Receiver>
@@ -147,8 +147,8 @@ namespace pika::execution::experimental {
             template <typename Scheduler_, typename Receiver_>
             operation_state(
                 Scheduler_&& scheduler, Receiver_&& receiver, char const* fallback_annotation)
-              : scheduler(PIKA_FORWARD(Scheduler_, scheduler))
-              , receiver(PIKA_FORWARD(Receiver_, receiver))
+              : scheduler(std::forward<Scheduler_>(scheduler))
+              , receiver(std::forward<Receiver_>(receiver))
               , fallback_annotation(fallback_annotation)
             {
                 PIKA_ASSERT(fallback_annotation != nullptr);
@@ -205,7 +205,7 @@ namespace pika::execution::experimental {
             friend operation_state<Scheduler, Receiver>
             tag_invoke(connect_t, sender&& s, Receiver&& receiver)
             {
-                return {std::move(s.scheduler), PIKA_FORWARD(Receiver, receiver),
+                return {std::move(s.scheduler), std::forward<Receiver>(receiver),
                     s.fallback_annotation};
             }
 
@@ -213,7 +213,7 @@ namespace pika::execution::experimental {
             friend operation_state<Scheduler, Receiver>
             tag_invoke(connect_t, sender const& s, Receiver&& receiver)
             {
-                return {s.scheduler, PIKA_FORWARD(Receiver, receiver), s.fallback_annotation};
+                return {s.scheduler, std::forward<Receiver>(receiver), s.fallback_annotation};
             }
 
             struct env
@@ -271,7 +271,7 @@ namespace pika::execution::experimental {
         tag_invoke(schedule_from_t, thread_pool_scheduler&& scheduler, Sender&& predecessor_sender)
         {
             return schedule_from_detail::schedule_from_sender<Sender, thread_pool_scheduler>{
-                PIKA_FORWARD(Sender, predecessor_sender),
+                std::forward<Sender>(predecessor_sender),
                 with_annotation(std::move(scheduler), scheduler.get_fallback_annotation())};
         }
 
@@ -280,7 +280,7 @@ namespace pika::execution::experimental {
             schedule_from_t, thread_pool_scheduler const& scheduler, Sender&& predecessor_sender)
         {
             return schedule_from_detail::schedule_from_sender<Sender, thread_pool_scheduler>{
-                PIKA_FORWARD(Sender, predecessor_sender),
+                std::forward<Sender>(predecessor_sender),
                 with_annotation(scheduler, scheduler.get_fallback_annotation())};
         }
 #endif

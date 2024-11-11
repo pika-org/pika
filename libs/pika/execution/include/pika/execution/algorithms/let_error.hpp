@@ -172,7 +172,7 @@ namespace pika::let_error_detail {
                     pika::detail::try_catch_exception_ptr(
                         [&]() {
                             r.op_state.predecessor_error.template emplace<std::decay_t<Error>>(
-                                PIKA_FORWARD(Error, error));
+                                std::forward<Error>(error));
                             pika::detail::visit(
                                 set_error_visitor{r.op_state}, r.op_state.predecessor_error);
                         },
@@ -195,7 +195,7 @@ namespace pika::let_error_detail {
                 {
                     auto r = std::move(*this);
                     pika::execution::experimental::set_value(
-                        std::move(r.op_state.receiver), PIKA_FORWARD(Ts, ts)...);
+                        std::move(r.op_state.receiver), std::forward<Ts>(ts)...);
                 }
             };
 
@@ -236,8 +236,8 @@ namespace pika::let_error_detail {
 
             template <typename PredecessorSender_, typename Receiver_, typename F_>
             operation_state(PredecessorSender_&& predecessor_sender, Receiver_&& receiver, F_&& f)
-              : receiver(PIKA_FORWARD(Receiver_, receiver))
-              , f(PIKA_FORWARD(F_, f))
+              : receiver(std::forward<Receiver_>(receiver))
+              , f(std::forward<F_>(f))
               , predecessor_operation_state{pika::execution::experimental::connect(
                     std::forward<PredecessorSender_>(predecessor_sender),
                     let_error_predecessor_receiver(*this))}
@@ -261,7 +261,7 @@ namespace pika::let_error_detail {
             Receiver&& receiver)
         {
             return operation_state<Receiver>(
-                std::move(s.predecessor_sender), PIKA_FORWARD(Receiver, receiver), std::move(s.f));
+                std::move(s.predecessor_sender), std::forward<Receiver>(receiver), std::move(s.f));
         }
 
         template <typename Receiver>
@@ -290,13 +290,13 @@ namespace pika::execution::experimental {
         tag_fallback_invoke(let_error_t, PredecessorSender&& predecessor_sender, F&& f)
         {
             return let_error_detail::let_error_sender<PredecessorSender, F>{
-                PIKA_FORWARD(PredecessorSender, predecessor_sender), PIKA_FORWARD(F, f)};
+                std::forward<PredecessorSender>(predecessor_sender), std::forward<F>(f)};
         }
 
         template <typename F>
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(let_error_t, F&& f)
         {
-            return detail::partial_algorithm<let_error_t, F>{PIKA_FORWARD(F, f)};
+            return detail::partial_algorithm<let_error_t, F>{std::forward<F>(f)};
         }
     } let_error{};
 }    // namespace pika::execution::experimental

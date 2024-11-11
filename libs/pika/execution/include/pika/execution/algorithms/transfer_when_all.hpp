@@ -29,7 +29,7 @@ namespace pika::execution::experimental {
         tag_fallback_invoke(transfer_when_all_t, Scheduler&& scheduler, Ts&&... ts)
         {
             return continues_on(
-                when_all(PIKA_FORWARD(Ts, ts)...), PIKA_FORWARD(Scheduler, scheduler));
+                when_all(std::forward<Ts>(ts)...), std::forward<Scheduler>(scheduler));
         }
     } transfer_when_all{};
 }    // namespace pika::execution::experimental

@@ -72,9 +72,9 @@ namespace pika::thread_pool_bulk_detail {
         thread_pool_bulk_sender(pika::execution::experimental::thread_pool_scheduler&& scheduler,
             Sender_&& sender, Shape_&& shape, F_&& f)
           : scheduler(std::move(scheduler))
-          , sender(PIKA_FORWARD(Sender_, sender))
-          , shape(PIKA_FORWARD(Shape_, shape))
-          , f(PIKA_FORWARD(F_, f))
+          , sender(std::forward<Sender_>(sender))
+          , shape(std::forward<Shape_>(shape))
+          , f(std::forward<F_>(f))
         {
         }
         thread_pool_bulk_sender(thread_pool_bulk_sender&&) = default;
@@ -141,7 +141,7 @@ namespace pika::thread_pool_bulk_detail {
                     pika::execution::experimental::set_error_t, bulk_receiver&& r, E&& e) noexcept
                 {
                     pika::execution::experimental::set_error(
-                        std::move(r.op_state->receiver), PIKA_FORWARD(E, e));
+                        std::move(r.op_state->receiver), std::forward<E>(e));
                 }
 
                 friend void tag_invoke(
@@ -230,7 +230,7 @@ namespace pika::thread_pool_bulk_detail {
                         std::apply(
                             pika::util::detail::bind_front(pika::execution::experimental::set_value,
                                 std::move(op_state->receiver)),
-                            PIKA_FORWARD(Ts, ts));
+                            std::forward<Ts>(ts));
                     }
                 };
 
@@ -396,7 +396,7 @@ namespace pika::thread_pool_bulk_detail {
                     if (r.op_state->shape == 0)
                     {
                         pika::execution::experimental::set_value(
-                            std::move(r.op_state->receiver), PIKA_FORWARD(Ts, ts)...);
+                            std::move(r.op_state->receiver), std::forward<Ts>(ts)...);
                         return;
                     }
 
@@ -407,7 +407,7 @@ namespace pika::thread_pool_bulk_detail {
 
                     // Store sent values in the operation state
                     r.op_state->ts.template emplace<std::tuple<std::decay_t<Ts>...>>(
-                        PIKA_FORWARD(Ts, ts)...);
+                        std::forward<Ts>(ts)...);
 
                     // Initialize the queues for all worker threads so that
                     // worker threads can start stealing immediately when
@@ -466,10 +466,10 @@ namespace pika::thread_pool_bulk_detail {
                 Sender_&& sender, Shape_&& shape, F_&& f, Receiver_&& receiver)
               : scheduler(std::move(scheduler))
               , op_state(pika::execution::experimental::connect(
-                    PIKA_FORWARD(Sender_, sender), bulk_receiver{this}))
-              , shape(PIKA_FORWARD(Shape_, shape))
-              , f(PIKA_FORWARD(F_, f))
-              , receiver(PIKA_FORWARD(Receiver_, receiver))
+                    std::forward<Sender_>(sender), bulk_receiver{this}))
+              , shape(std::forward<Shape_>(shape))
+              , f(std::forward<F_>(f))
+              , receiver(std::forward<Receiver_>(receiver))
             {
             }
 
@@ -487,7 +487,7 @@ namespace pika::thread_pool_bulk_detail {
         {
             return operation_state<std::decay_t<Receiver>>{std::move(s.scheduler),
                 std::move(s.sender), std::move(s.shape), std::move(s.f),
-                PIKA_FORWARD(Receiver, receiver)};
+                std::forward<Receiver>(receiver)};
         }
 
         template <typename Receiver>
@@ -495,7 +495,7 @@ namespace pika::thread_pool_bulk_detail {
             Receiver&& receiver)
         {
             return operation_state<std::decay_t<Receiver>>{
-                s.scheduler, s.sender, s.shape, s.f, PIKA_FORWARD(Receiver, receiver)};
+                s.scheduler, s.sender, s.shape, s.f, std::forward<Receiver>(receiver)};
         }
 
         friend auto tag_invoke(
@@ -514,6 +514,6 @@ namespace pika::execution::experimental {
     {
         return thread_pool_bulk_detail::thread_pool_bulk_sender<std::decay_t<Sender>,
             std::decay_t<Shape>, std::decay_t<F>>{std::move(scheduler),
-            PIKA_FORWARD(Sender, sender), PIKA_FORWARD(Shape, shape), PIKA_FORWARD(F, f)};
+            std::forward<Sender>(sender), std::forward<Shape>(shape), std::forward<F>(f)};
     }
 }    // namespace pika::execution::experimental

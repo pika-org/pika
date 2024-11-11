@@ -24,7 +24,7 @@ namespace pika::util::detail {
     public:
         template <typename F_, typename = std::enable_if_t<std::is_constructible_v<F, F_>>>
         constexpr explicit one_shot_wrapper(F_&& f)
-          : _f(PIKA_FORWARD(F_, f))
+          : _f(std::forward<F_>(f))
 #if defined(PIKA_DEBUG)
           , _called(false)
 #endif
@@ -55,7 +55,7 @@ namespace pika::util::detail {
         {
             check_call();
 
-            return PIKA_INVOKE(std::move(_f), PIKA_FORWARD(Ts, vs)...);
+            return PIKA_INVOKE(std::move(_f), std::forward<Ts>(vs)...);
         }
 
         constexpr std::size_t get_function_address() const
@@ -84,7 +84,7 @@ namespace pika::util::detail {
     {
         using result_type = one_shot_wrapper<std::decay_t<F>>;
 
-        return result_type(PIKA_FORWARD(F, f));
+        return result_type(std::forward<F>(f));
     }
 }    // namespace pika::util::detail
 

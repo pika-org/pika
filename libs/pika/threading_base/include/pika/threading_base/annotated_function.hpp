@@ -58,7 +58,7 @@ namespace pika {
             std::invoke_result_t<fun_type, Ts...> operator()(Ts&&... ts)
             {
                 scoped_annotation annotate(get_function_annotation());
-                return PIKA_INVOKE(f_, PIKA_FORWARD(Ts, ts)...);
+                return PIKA_INVOKE(f_, std::forward<Ts>(ts)...);
             }
 
             ///////////////////////////////////////////////////////////////////
@@ -98,7 +98,7 @@ namespace pika {
     {
         using result_type = detail::annotated_function<std::decay_t<F>>;
 
-        return result_type(PIKA_FORWARD(F, f), name);
+        return result_type(std::forward<F>(f), name);
     }
 
     template <typename F>
@@ -109,7 +109,7 @@ namespace pika {
         // Store string in a set to ensure it lives for the entire duration of
         // the task.
         char const* name_c_str = pika::detail::store_function_annotation(std::move(name));
-        return result_type(PIKA_FORWARD(F, f), name_c_str);
+        return result_type(std::forward<F>(f), name_c_str);
     }
 
 #else
@@ -122,13 +122,13 @@ namespace pika {
     template <typename F>
     constexpr F&& annotated_function(F&& f, char const* = nullptr) noexcept
     {
-        return PIKA_FORWARD(F, f);
+        return std::forward<F>(f);
     }
 
     template <typename F>
     constexpr F&& annotated_function(F&& f, std::string const&) noexcept
     {
-        return PIKA_FORWARD(F, f);
+        return std::forward<F>(f);
     }
 #endif
 }    // namespace pika

@@ -102,7 +102,7 @@ namespace pika::mpi::experimental::detail {
                 friend constexpr void
                 tag_invoke(ex::set_error_t, dispatch_mpi_receiver r, Error&& error) noexcept
                 {
-                    ex::set_error(std::move(r.op_state.receiver), PIKA_FORWARD(Error, error));
+                    ex::set_error(std::move(r.op_state.receiver), std::forward<Error>(error));
                 }
 
                 friend constexpr void tag_invoke(
@@ -195,9 +195,9 @@ namespace pika::mpi::experimental::detail {
 
             template <typename Receiver_, typename F_, typename Sender_>
             operation_state(Receiver_&& receiver, F_&& f, Sender_&& sender)
-              : receiver(PIKA_FORWARD(Receiver_, receiver))
-              , f(PIKA_FORWARD(F_, f))
-              , op_state(ex::connect(PIKA_FORWARD(Sender_, sender), dispatch_mpi_receiver{*this}))
+              : receiver(std::forward<Receiver_>(receiver))
+              , f(std::forward<F_>(f))
+              , op_state(ex::connect(std::forward<Sender_>(sender), dispatch_mpi_receiver{*this}))
             {
                 PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("operation_state")));
             }
@@ -212,7 +212,7 @@ namespace pika::mpi::experimental::detail {
         friend constexpr auto
         tag_invoke(ex::connect_t, dispatch_mpi_sender_type const& s, Receiver&& receiver)
         {
-            return operation_state<Receiver>(PIKA_FORWARD(Receiver, receiver), s.f, s.sender);
+            return operation_state<Receiver>(std::forward<Receiver>(receiver), s.f, s.sender);
         }
 
         template <typename Receiver>
@@ -220,7 +220,7 @@ namespace pika::mpi::experimental::detail {
         tag_invoke(ex::connect_t, dispatch_mpi_sender_type&& s, Receiver&& receiver)
         {
             return operation_state<Receiver>(
-                PIKA_FORWARD(Receiver, receiver), std::move(s.f), std::move(s.sender));
+                std::forward<Receiver>(receiver), std::move(s.f), std::move(s.sender));
         }
     };
 
@@ -238,14 +238,14 @@ namespace pika::mpi::experimental {
         tag_fallback_invoke(dispatch_mpi_t, Sender&& sender, F&& f)
         {
             return detail::dispatch_mpi_sender<Sender, F>{
-                PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f)};
+                std::forward<Sender>(sender), std::forward<F>(f)};
         }
 
         template <typename F>
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(dispatch_mpi_t, F&& f)
         {
             return pika::execution::experimental::detail::partial_algorithm<dispatch_mpi_t, F>{
-                PIKA_FORWARD(F, f)};
+                std::forward<F>(f)};
         }
 
     } dispatch_mpi{};

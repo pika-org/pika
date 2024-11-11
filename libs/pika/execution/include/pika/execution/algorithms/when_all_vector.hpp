@@ -156,7 +156,7 @@ namespace pika::when_all_vector_detail {
                     {
                         try
                         {
-                            r.op_state.error = PIKA_FORWARD(Error, error);
+                            r.op_state.error = std::forward<Error>(error);
                         }
                         catch (...)
                         {
@@ -189,7 +189,7 @@ namespace pika::when_all_vector_detail {
                             // predecessor senders that send nothing.
                             if constexpr (sizeof...(Ts) == 1)
                             {
-                                r.op_state.ts[r.i].emplace(PIKA_FORWARD(Ts, ts)...);
+                                r.op_state.ts[r.i].emplace(std::forward<Ts>(ts)...);
                             }
                         }
                         catch (...)
@@ -247,7 +247,7 @@ namespace pika::when_all_vector_detail {
             template <typename Receiver_>
             operation_state(Receiver_&& receiver, std::vector<Sender> senders)
               : num_predecessors(senders.size())
-              , receiver(PIKA_FORWARD(Receiver_, receiver))
+              , receiver(std::forward<Receiver_>(receiver))
             {
                 op_states =
                     std::make_unique<std::optional<operation_state_type>[]>(num_predecessors);
@@ -298,7 +298,7 @@ namespace pika::when_all_vector_detail {
                         pika::detail::visit(
                             [this](auto&& error) {
                                 pika::execution::experimental::set_error(
-                                    std::move(receiver), PIKA_FORWARD(decltype(error), error));
+                                    std::move(receiver), std::forward<decltype(error)>(error));
                             },
                             std::move(*error));
                     }
@@ -363,14 +363,14 @@ namespace pika::when_all_vector_detail {
             when_all_vector_sender_type&& s, Receiver&& receiver)
         {
             return operation_state<Receiver>(
-                PIKA_FORWARD(Receiver, receiver), std::move(s.senders));
+                std::forward<Receiver>(receiver), std::move(s.senders));
         }
 
         template <typename Receiver>
         friend auto tag_invoke(pika::execution::experimental::connect_t,
             when_all_vector_sender_type const& s, Receiver&& receiver)
         {
-            return operation_state<Receiver>(PIKA_FORWARD(Receiver, receiver), s.senders);
+            return operation_state<Receiver>(std::forward<Receiver>(receiver), s.senders);
         }
     };
 }    // namespace pika::when_all_vector_detail

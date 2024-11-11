@@ -90,7 +90,7 @@ namespace pika::start_detached_detail {
         explicit operation_state_holder(Sender_&& sender, allocator_type const& alloc)
           : alloc(alloc)
           , op_state(pika::execution::experimental::connect(
-                PIKA_FORWARD(Sender_, sender), start_detached_receiver{*this}))
+                std::forward<Sender_>(sender), start_detached_receiver{*this}))
         {
             pika::execution::experimental::start(op_state);
         }
@@ -133,7 +133,7 @@ namespace pika::execution::experimental {
             unique_ptr p(allocator_traits::allocate(alloc, 1),
                 pika::detail::allocator_deleter<other_allocator>{alloc});
 
-            new (p.get()) operation_state_type{PIKA_FORWARD(Sender, sender), alloc};
+            new (p.get()) operation_state_type{std::forward<Sender>(sender), alloc};
             PIKA_UNUSED(p.release());
         }
     } start_detached{};

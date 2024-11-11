@@ -105,7 +105,7 @@ namespace pika::mpi::experimental::detail {
                 friend constexpr void
                 tag_invoke(ex::set_error_t, trigger_mpi_receiver r, Error&& error) noexcept
                 {
-                    ex::set_error(std::move(r.op_state.receiver), PIKA_FORWARD(Error, error));
+                    ex::set_error(std::move(r.op_state.receiver), std::forward<Error>(error));
                 }
 
                 friend constexpr void tag_invoke(ex::set_stopped_t, trigger_mpi_receiver r) noexcept
@@ -231,10 +231,10 @@ namespace pika::mpi::experimental::detail {
 
             template <typename Receiver_, typename Sender_>
             operation_state(Receiver_&& receiver, Sender_&& sender, int flags)
-              : receiver(PIKA_FORWARD(Receiver_, receiver))
+              : receiver(std::forward<Receiver_>(receiver))
               , mode_flags{flags}
               , status{MPI_SUCCESS}
-              , op_state(ex::connect(PIKA_FORWARD(Sender_, sender), trigger_mpi_receiver{*this}))
+              , op_state(ex::connect(std::forward<Sender_>(sender), trigger_mpi_receiver{*this}))
             {
             }
 
@@ -248,7 +248,7 @@ namespace pika::mpi::experimental::detail {
         friend constexpr auto
         tag_invoke(ex::connect_t, trigger_mpi_sender_type const& s, Receiver&& receiver)
         {
-            return operation_state<Receiver>(PIKA_FORWARD(Receiver, receiver), s.sender);
+            return operation_state<Receiver>(std::forward<Receiver>(receiver), s.sender);
         }
 
         template <typename Receiver>
@@ -256,7 +256,7 @@ namespace pika::mpi::experimental::detail {
         tag_invoke(ex::connect_t, trigger_mpi_sender_type&& s, Receiver&& receiver)
         {
             return operation_state<Receiver>(
-                PIKA_FORWARD(Receiver, receiver), std::move(s.sender), s.completion_mode_flags_);
+                std::forward<Receiver>(receiver), std::move(s.sender), s.completion_mode_flags_);
         }
     };
 
@@ -274,7 +274,7 @@ namespace pika::mpi::experimental {
         friend constexpr PIKA_FORCEINLINE auto
         tag_fallback_invoke(trigger_mpi_t, Sender&& sender, int flags)
         {
-            return detail::trigger_mpi_sender<Sender>{PIKA_FORWARD(Sender, sender), flags};
+            return detail::trigger_mpi_sender<Sender>{std::forward<Sender>(sender), flags};
         }
 
         //

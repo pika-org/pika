@@ -166,7 +166,7 @@ namespace pika::split_detail {
                 friend void tag_invoke(pika::execution::experimental::set_error_t, split_receiver r,
                     Error&& error) noexcept
                 {
-                    r.state->v.template emplace<error_type>(error_type(PIKA_FORWARD(Error, error)));
+                    r.state->v.template emplace<error_type>(error_type(std::forward<Error>(error)));
                     r.state->set_predecessor_done();
                 }
 
@@ -194,12 +194,12 @@ namespace pika::split_detail {
                     -> decltype(std::declval<
                                     pika::detail::variant<pika::detail::monostate, value_type>>()
                                     .template emplace<value_type>(
-                                        std::make_tuple<>(PIKA_FORWARD(Ts, ts)...)),
+                                        std::make_tuple<>(std::forward<Ts>(ts)...)),
                         void())
                 {
                     auto r = std::move(*this);
                     r.state->v.template emplace<value_type>(
-                        std::make_tuple<>(PIKA_FORWARD(Ts, ts)...));
+                        std::make_tuple<>(std::forward<Ts>(ts)...));
 
                     r.state->set_predecessor_done();
                 }
@@ -213,7 +213,7 @@ namespace pika::split_detail {
             {
                 os.emplace(pika::detail::with_result_of([&]() {
                     return pika::execution::experimental::connect(
-                        PIKA_FORWARD(Sender_, sender), split_receiver{this});
+                        std::forward<Sender_>(sender), split_receiver{this});
                 }));
             }
 
@@ -383,7 +383,7 @@ namespace pika::split_detail {
             unique_ptr p(allocator_traits::allocate(alloc, 1),
                 pika::detail::allocator_deleter<other_allocator>{alloc});
 
-            new (p.get()) shared_state{PIKA_FORWARD(Sender_, sender), allocator};
+            new (p.get()) shared_state{std::forward<Sender_>(sender), allocator};
             state = p.release();
         }
 
@@ -400,7 +400,7 @@ namespace pika::split_detail {
 
             template <typename Receiver_>
             operation_state(Receiver_&& receiver, pika::intrusive_ptr<shared_state> state)
-              : receiver(PIKA_FORWARD(Receiver_, receiver))
+              : receiver(std::forward<Receiver_>(receiver))
               , state(std::move(state))
             {
             }
@@ -422,14 +422,14 @@ namespace pika::split_detail {
         friend operation_state<Receiver> tag_invoke(
             pika::execution::experimental::connect_t, split_sender_type&& s, Receiver&& receiver)
         {
-            return {PIKA_FORWARD(Receiver, receiver), std::move(s.state)};
+            return {std::forward<Receiver>(receiver), std::move(s.state)};
         }
 
         template <typename Receiver>
         friend operation_state<Receiver> tag_invoke(pika::execution::experimental::connect_t,
             split_sender_type const& s, Receiver&& receiver)
         {
-            return {PIKA_FORWARD(Receiver, receiver), s.state};
+            return {std::forward<Receiver>(receiver), s.state};
         }
     };
 
@@ -457,7 +457,7 @@ namespace pika::execution::experimental {
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(split_t, Sender&& sender)
         {
             return split_detail::split_sender<Sender, pika::detail::internal_allocator<>>{
-                PIKA_FORWARD(Sender, sender), {}};
+                std::forward<Sender>(sender), {}};
         }
 
         template <typename Sender, typename Allocator,
@@ -468,7 +468,7 @@ namespace pika::execution::experimental {
         tag_fallback_invoke(split_t, Sender&& sender, Allocator const& allocator)
         {
             return split_detail::split_sender<Sender, Allocator>{
-                PIKA_FORWARD(Sender, sender), allocator};
+                std::forward<Sender>(sender), allocator};
         }
 
         template <typename Sender, typename Allocator,
@@ -477,7 +477,7 @@ namespace pika::execution::experimental {
         friend constexpr PIKA_FORCEINLINE auto
         tag_fallback_invoke(split_t, Sender&& sender, Allocator const&)
         {
-            return PIKA_FORWARD(Sender, sender);
+            return std::forward<Sender>(sender);
         }
 
         template <typename Sender, typename Allocator,
@@ -487,13 +487,13 @@ namespace pika::execution::experimental {
         tag_fallback_invoke(split_t, Sender&& sender, Allocator const& allocator)
         {
             return split_detail::split_sender<Sender, Allocator>{
-                PIKA_FORWARD(Sender, sender), allocator};
+                std::forward<Sender>(sender), allocator};
         }
 
         template <typename Sender, PIKA_CONCEPT_REQUIRES_(split_detail::is_split_sender_v<Sender>)>
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(split_t, Sender&& sender)
         {
-            return PIKA_FORWARD(Sender, sender);
+            return std::forward<Sender>(sender);
         }
 
         template <typename Allocator = pika::detail::internal_allocator<>,

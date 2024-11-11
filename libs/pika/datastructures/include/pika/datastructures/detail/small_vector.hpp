@@ -357,7 +357,7 @@ namespace pika::detail {
         template <typename... Ts>
         iterator emplace(const_iterator pos, Ts&&... ts)
         {
-            return data_.emplace(pos, PIKA_FORWARD(Ts, ts)...);
+            return data_.emplace(pos, std::forward<Ts>(ts)...);
         }
 
         iterator erase(const_iterator pos) { return data_.erase(pos); }
@@ -368,7 +368,7 @@ namespace pika::detail {
         template <typename... Ts>
         reference emplace_back(Ts&&... ts)
         {
-            return data_.emplace_back(PIKA_FORWARD(Ts, ts)...);
+            return data_.emplace_back(std::forward<Ts>(ts)...);
         }
 
         void pop_back() { data_.pop_back(); }

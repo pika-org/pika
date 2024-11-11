@@ -46,7 +46,7 @@ namespace pika::unpack_detail {
             Error&& error) noexcept
         {
             pika::execution::experimental::set_error(
-                std::move(r.receiver), PIKA_FORWARD(Error, error));
+                std::move(r.receiver), std::forward<Error>(error));
         }
 
         friend void tag_invoke(
@@ -61,7 +61,7 @@ namespace pika::unpack_detail {
             auto r = std::move(*this);
             std::apply(pika::util::detail::bind_front(
                            pika::execution::experimental::set_value, std::move(r.receiver)),
-                PIKA_FORWARD(Ts, ts));
+                std::forward<Ts>(ts));
         }
 
         friend constexpr pika::execution::experimental::empty_env tag_invoke(
@@ -178,7 +178,7 @@ namespace pika::unpack_detail {
             pika::execution::experimental::connect_t, unpack_sender_type&& s, Receiver&& receiver)
         {
             return pika::execution::experimental::connect(
-                std::move(s.sender), unpack_receiver<Receiver>{PIKA_FORWARD(Receiver, receiver)});
+                std::move(s.sender), unpack_receiver<Receiver>{std::forward<Receiver>(receiver)});
         }
 
         template <typename Receiver>
@@ -186,7 +186,7 @@ namespace pika::unpack_detail {
             unpack_sender_type const& r, Receiver&& receiver)
         {
             return pika::execution::experimental::connect(
-                r.sender, unpack_receiver<Receiver>{PIKA_FORWARD(Receiver, receiver)});
+                r.sender, unpack_receiver<Receiver>{std::forward<Receiver>(receiver)});
         }
 
         friend decltype(auto) tag_invoke(
@@ -204,7 +204,7 @@ namespace pika::execution::experimental {
         template <typename Sender, PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender>)>
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(unpack_t, Sender&& sender)
         {
-            return unpack_detail::unpack_sender<Sender>{PIKA_FORWARD(Sender, sender)};
+            return unpack_detail::unpack_sender<Sender>{std::forward<Sender>(sender)};
         }
 
         friend constexpr PIKA_FORCEINLINE auto tag_invoke(unpack_t)

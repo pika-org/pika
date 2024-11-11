@@ -89,7 +89,7 @@ namespace pika::cuda::experimental {
                 template <typename Receiver_>
                 operation_state(cuda_scheduler scheduler, Receiver_&& receiver)
                   : scheduler(std::move(scheduler))
-                  , receiver(PIKA_FORWARD(Receiver_, receiver))
+                  , receiver(std::forward<Receiver_>(receiver))
                 {
                 }
                 operation_state(operation_state&&) = delete;
@@ -133,14 +133,14 @@ namespace pika::cuda::experimental {
             friend operation_state<Receiver> tag_invoke(pika::execution::experimental::connect_t,
                 cuda_scheduler_sender&& s, Receiver&& receiver)
             {
-                return {std::move(s.scheduler), PIKA_FORWARD(Receiver, receiver)};
+                return {std::move(s.scheduler), std::forward<Receiver>(receiver)};
             }
 
             template <typename Receiver>
             friend operation_state<Receiver> tag_invoke(pika::execution::experimental::connect_t,
                 cuda_scheduler_sender const& s, Receiver&& receiver)
             {
-                return {s.scheduler, PIKA_FORWARD(Receiver, receiver)};
+                return {s.scheduler, std::forward<Receiver>(receiver)};
             }
 
             struct env

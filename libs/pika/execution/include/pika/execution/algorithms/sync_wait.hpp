@@ -164,7 +164,7 @@ namespace pika::sync_wait_detail {
         friend void tag_invoke(pika::execution::experimental::set_error_t,
             sync_wait_receiver_type&& r, Error&& error) noexcept
         {
-            r.state.value.template emplace<error_type>(PIKA_FORWARD(Error, error));
+            r.state.value.template emplace<error_type>(std::forward<Error>(error));
             r.signal_set_called();
         }
 
@@ -180,7 +180,7 @@ namespace pika::sync_wait_detail {
         void set_value(Us&&... us) && noexcept
         {
             auto r = std::move(*this);
-            r.state.value.template emplace<value_type>(PIKA_FORWARD(Us, us)...);
+            r.state.value.template emplace<value_type>(std::forward<Us>(us)...);
             r.signal_set_called();
         }
 
@@ -209,7 +209,7 @@ namespace pika::this_thread::experimental {
 
             state_type state{};
             auto op_state = pika::execution::experimental::connect(
-                PIKA_FORWARD(Sender, sender), receiver_type{state});
+                std::forward<Sender>(sender), receiver_type{state});
             pika::execution::experimental::start(op_state);
 
             state.wait();

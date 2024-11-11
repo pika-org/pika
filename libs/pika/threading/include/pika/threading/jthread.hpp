@@ -24,14 +24,14 @@ namespace pika {
         static void invoke(std::false_type, F&& f, stop_token&& /* st */, Ts&&... ts)
         {
             // started thread does not expect a stop token:
-            PIKA_INVOKE(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
+            PIKA_INVOKE(std::forward<F>(f), std::forward<Ts>(ts)...);
         }
 
         template <typename F, typename... Ts>
         static void invoke(std::true_type, F&& f, stop_token&& st, Ts&&... ts)
         {
             // pass the stop_token as first argument to the started thread:
-            PIKA_INVOKE(PIKA_FORWARD(F, f), std::move(st), PIKA_FORWARD(Ts, ts)...);
+            PIKA_INVOKE(std::forward<F>(f), std::move(st), std::forward<Ts>(ts)...);
         }
 
     public:
@@ -54,13 +54,13 @@ namespace pika {
         // Requires: F and each T in Ts meet the Cpp17MoveConstructible
         //      requirements. Either
         //
-        //      INVOKE(decay-copy(PIKA_FORWARD(F, f)), get_stop_token(),
-        //             decay-copy(PIKA_FORWARD(Ts, ts))...)
+        //      INVOKE(decay-copy(std::forward<F>(f)), get_stop_token(),
+        //             decay-copy(std::forward<Ts>(ts))...)
         //
         //      is a valid expression or
         //
-        //      INVOKE(decay-copy(PIKA_FORWARD(F, f)),
-        //             decay-copy(PIKA_FORWARD(Ts, ts))...)
+        //      INVOKE(decay-copy(std::forward<F>(f)),
+        //             decay-copy(std::forward<Ts>(ts))...)
         //
         //      is a valid expression.
         //
@@ -69,13 +69,13 @@ namespace pika {
         // Effects: Initializes ssource_ and constructs an object of type
         //      jthread. The new thread of execution executes
         //
-        //      INVOKE(decay-copy(PIKA_FORWARD(F, f)), get_stop_token(),
-        //             decay-copy(PIKA_FORWARD(Ts, ts))...)
+        //      INVOKE(decay-copy(std::forward<F>(f)), get_stop_token(),
+        //             decay-copy(std::forward<Ts>(ts))...)
         //
         //      if that expression is well-formed, otherwise
         //
-        //      INVOKE(decay-copy(PIKA_FORWARD(F, f)),
-        //             decay-copy(PIKA_FORWARD(Ts, ts))...)
+        //      INVOKE(decay-copy(std::forward<F>(f)),
+        //             decay-copy(std::forward<Ts>(ts))...)
         //
         //      with the calls to decay-copy being evaluated in the
         //      constructing thread. Any return value from this invocation
@@ -108,12 +108,12 @@ namespace pika {
                     // perform tasks of the thread
                     using use_stop_token = typename std::is_invocable<F, stop_token, Ts...>::type;
 
-                    jthread::invoke(use_stop_token{}, PIKA_FORWARD(F, f), std::move(st),
-                        PIKA_FORWARD(Ts, ts)...);
+                    jthread::invoke(use_stop_token{}, std::forward<F>(f), std::move(st),
+                        std::forward<Ts>(ts)...);
                 },
                 // not captured due to possible races if immediately set
-                ssource_.get_token(), PIKA_FORWARD(F, f),    // pass callable
-                PIKA_FORWARD(Ts, ts)...                      // pass arguments for callable
+                ssource_.get_token(), std::forward<F>(f),    // pass callable
+                std::forward<Ts>(ts)...                      // pass arguments for callable
             }
         {
         }

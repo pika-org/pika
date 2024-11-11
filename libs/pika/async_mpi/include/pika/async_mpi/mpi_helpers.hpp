@@ -81,11 +81,11 @@ namespace pika::mpi::experimental::detail {
         static_assert(sizeof...(Ts) <= 1, "Expecting at most one value");
         if (mpi_status == MPI_SUCCESS)
         {
-            ex::set_value(PIKA_FORWARD(Receiver, receiver), PIKA_FORWARD(Ts, ts)...);
+            ex::set_value(std::forward<Receiver>(receiver), std::forward<Ts>(ts)...);
         }
         else
         {
-            ex::set_error(PIKA_FORWARD(Receiver, receiver),
+            ex::set_error(std::forward<Receiver>(receiver),
                 std::make_exception_ptr(mpi::exception(mpi_status, "set_error handler")));
         }
     }

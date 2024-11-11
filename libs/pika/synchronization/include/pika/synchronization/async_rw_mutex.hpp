@@ -78,7 +78,7 @@ namespace pika::execution::experimental {
             void set_value(U&& u)
             {
                 PIKA_ASSERT(!value);
-                value.emplace(PIKA_FORWARD(U, u));
+                value.emplace(std::forward<U>(u));
                 value_set.store(true, std::memory_order_release);
             }
 
@@ -103,7 +103,7 @@ namespace pika::execution::experimental {
             void add_continuation(F&& continuation)
             {
                 std::lock_guard<mutex_type> l(mtx);
-                continuations.emplace_back(PIKA_FORWARD(F, continuation));
+                continuations.emplace_back(std::forward<F>(continuation));
             }
         };
 
@@ -144,7 +144,7 @@ namespace pika::execution::experimental {
             void add_continuation(F&& continuation)
             {
                 std::lock_guard<mutex_type> l(mtx);
-                continuations.emplace_back(PIKA_FORWARD(F, continuation));
+                continuations.emplace_back(std::forward<F>(continuation));
             }
         };
     }    // namespace detail
@@ -422,7 +422,7 @@ namespace pika::execution::experimental {
                 template <typename R_>
                 operation_state(
                     R_&& r, shared_state_weak_ptr_type prev_state, shared_state_ptr_type state)
-                  : r(PIKA_FORWARD(R_, r))
+                  : r(std::forward<R_>(r))
                   , prev_state(std::move(prev_state))
                   , state(std::move(state))
                 {
@@ -476,7 +476,7 @@ namespace pika::execution::experimental {
             friend auto tag_invoke(pika::execution::experimental::connect_t, sender&& s, R&& r)
             {
                 return operation_state<R>{
-                    PIKA_FORWARD(R, r), std::move(s.prev_state), std::move(s.state)};
+                    std::forward<R>(r), std::move(s.prev_state), std::move(s.state)};
             }
         };
 
@@ -518,7 +518,7 @@ namespace pika::execution::experimental {
         template <typename U,
             typename = std::enable_if_t<!std::is_same<std::decay_t<U>, async_rw_mutex>::value>>
         explicit async_rw_mutex(U&& u, allocator_type const& alloc = {})
-          : value(PIKA_FORWARD(U, u))
+          : value(std::forward<U>(u))
           , alloc(alloc)
         {
         }
@@ -614,7 +614,7 @@ namespace pika::execution::experimental {
                 template <typename R_>
                 operation_state(
                     R_&& r, shared_state_weak_ptr_type prev_state, shared_state_ptr_type state)
-                  : r(PIKA_FORWARD(R_, r))
+                  : r(std::forward<R_>(r))
                   , prev_state(std::move(prev_state))
                   , state(std::move(state))
                 {
@@ -668,7 +668,7 @@ namespace pika::execution::experimental {
             friend auto tag_invoke(pika::execution::experimental::connect_t, sender&& s, R&& r)
             {
                 return operation_state<R>{
-                    PIKA_FORWARD(R, r), std::move(s.prev_state), std::move(s.state)};
+                    std::forward<R>(r), std::move(s.prev_state), std::move(s.state)};
             }
 
             template <typename R>
@@ -681,7 +681,7 @@ namespace pika::execution::experimental {
                         "connectable");
                 }
 
-                return operation_state<R>{PIKA_FORWARD(R, r), s.prev_state, s.state};
+                return operation_state<R>{std::forward<R>(r), s.prev_state, s.state};
             }
         };
 

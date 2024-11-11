@@ -52,8 +52,6 @@
 
 #pragma once
 
-#include <pika/config/forward.hpp>
-
 #if defined(__GNUC__) && !defined(__INTEL_COMPILER)
 // Disable -Wconversion warnings (spuriously triggered when Traits::size_t and
 // Traits::index_t are set to < 32 bits, causing integer promotion, causing warnings
@@ -667,9 +665,9 @@ namespace pika::concurrency::detail {
     struct nomove_if<false>
     {
         template <typename U>
-        static inline auto eval(U&& x) -> decltype(PIKA_FORWARD(U, x))
+        static inline auto eval(U&& x) -> decltype(std::forward<U>(x))
         {
-            return PIKA_FORWARD(U, x);
+            return std::forward<U>(x);
         }
     };
 
@@ -1612,7 +1610,7 @@ namespace pika::concurrency::detail {
         {
             return static_cast<ExplicitProducer*>(token.producer)
                 ->ConcurrentQueue::ExplicitProducer::template enqueue<canAlloc>(
-                    PIKA_FORWARD(U, element));
+                    std::forward<U>(element));
         }
 
         template <AllocationMode canAlloc, typename U>
@@ -1622,7 +1620,7 @@ namespace pika::concurrency::detail {
             return producer == nullptr ?
                 false :
                 producer->ConcurrentQueue::ImplicitProducer::template enqueue<canAlloc>(
-                    PIKA_FORWARD(U, element));
+                    std::forward<U>(element));
         }
 
         template <AllocationMode canAlloc, typename It>
@@ -2267,13 +2265,13 @@ namespace pika::concurrency::detail {
                     }
 
                     MOODYCAMEL_CONSTEXPR_IF(!MOODYCAMEL_NOEXCEPT_CTOR(
-                        T, U, new (static_cast<T*>(nullptr)) T(PIKA_FORWARD(U, element))))
+                        T, U, new (static_cast<T*>(nullptr)) T(std::forward<U>(element))))
                     {
                         // The constructor may throw. We want the element not to appear in the queue in
                         // that case (without corrupting the queue):
                         MOODYCAMEL_TRY
                         {
-                            new ((*this->tailBlock)[currentTailIndex]) T(PIKA_FORWARD(U, element));
+                            new ((*this->tailBlock)[currentTailIndex]) T(std::forward<U>(element));
                         }
                         MOODYCAMEL_CATCH(...)
                         {
@@ -2300,7 +2298,7 @@ namespace pika::concurrency::detail {
                     pr_blockIndexFront = (pr_blockIndexFront + 1) & (pr_blockIndexSize - 1);
 
                     MOODYCAMEL_CONSTEXPR_IF(!MOODYCAMEL_NOEXCEPT_CTOR(
-                        T, U, new (static_cast<T*>(nullptr)) T(PIKA_FORWARD(U, element))))
+                        T, U, new (static_cast<T*>(nullptr)) T(std::forward<U>(element))))
                     {
                         this->tailIndex.store(newTailIndex, std::memory_order_release);
                         return true;
@@ -2308,7 +2306,7 @@ namespace pika::concurrency::detail {
                 }
 
                 // Enqueue
-                new ((*this->tailBlock)[currentTailIndex]) T(PIKA_FORWARD(U, element));
+                new ((*this->tailBlock)[currentTailIndex]) T(std::forward<U>(element));
 
                 this->tailIndex.store(newTailIndex, std::memory_order_release);
                 return true;
@@ -3020,12 +3018,12 @@ namespace pika::concurrency::detail {
 
                     MOODYCAMEL_CONSTEXPR_IF(!MOODYCAMEL_NOEXCEPT_CTOR(
                         // NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
-                        T, U, new (static_cast<T*>(nullptr)) T(PIKA_FORWARD(U, element))))
+                        T, U, new (static_cast<T*>(nullptr)) T(std::forward<U>(element))))
                     {
                         // May throw, try to insert now before we publish the fact that we have this new block
                         MOODYCAMEL_TRY
                         {
-                            new ((*newBlock)[currentTailIndex]) T(PIKA_FORWARD(U, element));
+                            new ((*newBlock)[currentTailIndex]) T(std::forward<U>(element));
                         }
                         MOODYCAMEL_CATCH(...)
                         {
@@ -3043,7 +3041,7 @@ namespace pika::concurrency::detail {
 
                     MOODYCAMEL_CONSTEXPR_IF(!MOODYCAMEL_NOEXCEPT_CTOR(
                         // NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
-                        T, U, new (static_cast<T*>(nullptr)) T(PIKA_FORWARD(U, element))))
+                        T, U, new (static_cast<T*>(nullptr)) T(std::forward<U>(element))))
                     {
                         this->tailIndex.store(newTailIndex, std::memory_order_release);
                         return true;
@@ -3052,7 +3050,7 @@ namespace pika::concurrency::detail {
 
                 // Enqueue
                 // NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
-                new ((*this->tailBlock)[currentTailIndex]) T(PIKA_FORWARD(U, element));
+                new ((*this->tailBlock)[currentTailIndex]) T(std::forward<U>(element));
 
                 this->tailIndex.store(newTailIndex, std::memory_order_release);
                 return true;
@@ -4346,7 +4344,7 @@ namespace pika::concurrency::detail {
         static inline U* create(A1&& a1)
         {
             void* p = aligned_malloc<U>(sizeof(U));
-            return p != nullptr ? new (p) U(PIKA_FORWARD(A1, a1)) : nullptr;
+            return p != nullptr ? new (p) U(std::forward<A1>(a1)) : nullptr;
         }
 
         template <typename U>

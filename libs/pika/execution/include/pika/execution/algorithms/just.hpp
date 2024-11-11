@@ -38,14 +38,14 @@ namespace pika::just_detail {
             template <typename T,
                 typename = std::enable_if_t<!std::is_same_v<std::decay_t<T>, just_sender_type>>>
             explicit constexpr just_sender_type(T&& t)
-              : ts(std::piecewise_construct, PIKA_FORWARD(T, t))
+              : ts(std::piecewise_construct, std::forward<T>(t))
             {
             }
 
             template <typename T0, typename T1, typename... Ts_>
             explicit constexpr just_sender_type(T0&& t0, T1&& t1, Ts_&&... ts)
-              : ts(std::piecewise_construct, PIKA_FORWARD(T0, t0), PIKA_FORWARD(T1, t1),
-                    PIKA_FORWARD(Ts_, ts)...)
+              : ts(std::piecewise_construct, std::forward<T0>(t0), std::forward<T1>(t1),
+                    std::forward<Ts_>(ts)...)
             {
             }
 
@@ -71,7 +71,7 @@ namespace pika::just_detail {
                 template <typename Receiver_>
                 operation_state(Receiver_&& receiver,
                     pika::util::detail::member_pack_for<std::decay_t<Ts>...> ts)
-                  : receiver(PIKA_FORWARD(Receiver_, receiver))
+                  : receiver(std::forward<Receiver_>(receiver))
                   , ts(std::move(ts))
                 {
                 }
@@ -100,14 +100,14 @@ namespace pika::just_detail {
             friend auto tag_invoke(
                 pika::execution::experimental::connect_t, just_sender_type&& s, Receiver&& receiver)
             {
-                return operation_state<Receiver>{PIKA_FORWARD(Receiver, receiver), std::move(s.ts)};
+                return operation_state<Receiver>{std::forward<Receiver>(receiver), std::move(s.ts)};
             }
 
             template <typename Receiver>
             friend auto tag_invoke(pika::execution::experimental::connect_t,
                 just_sender_type const& s, Receiver&& receiver)
             {
-                return operation_state<Receiver>{PIKA_FORWARD(Receiver, receiver), s.ts};
+                return operation_state<Receiver>{std::forward<Receiver>(receiver), s.ts};
             }
         };
     };
@@ -124,7 +124,7 @@ namespace pika::execution::experimental {
         {
             return just_detail::just_sender<
                 typename pika::util::detail::make_index_pack<sizeof...(Ts)>::type, Ts...>{
-                PIKA_FORWARD(Ts, ts)...};
+                std::forward<Ts>(ts)...};
         }
     } just{};
 }    // namespace pika::execution::experimental

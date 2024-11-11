@@ -103,7 +103,7 @@ namespace pika::mpi::experimental {
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(transform_mpi_t, F&& f)
         {
             return pika::execution::experimental::detail::partial_algorithm<transform_mpi_t, F>{
-                PIKA_FORWARD(F, f)};
+                std::forward<F>(f)};
         }
 
     } transform_mpi{};

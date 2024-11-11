@@ -42,7 +42,7 @@ namespace pika::util::detail {
             typename Enable2 = std::enable_if_t<std::is_invocable_r_v<R, FD&, Ts...>>>
         function(F&& f)
         {
-            assign(PIKA_FORWARD(F, f));
+            assign(std::forward<F>(f));
         }
 
         // the split SFINAE prevents MSVC from eagerly instantiating things
@@ -51,7 +51,7 @@ namespace pika::util::detail {
             typename Enable2 = std::enable_if_t<std::is_invocable_r_v<R, FD&, Ts...>>>
         function& operator=(F&& f)
         {
-            assign(PIKA_FORWARD(F, f));
+            assign(std::forward<F>(f));
             return *this;
         }
 

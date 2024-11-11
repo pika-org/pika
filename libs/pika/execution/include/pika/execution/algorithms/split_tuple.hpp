@@ -119,7 +119,7 @@ namespace pika::split_tuple_detail {
             friend void tag_invoke(pika::execution::experimental::set_error_t,
                 split_tuple_receiver&& r, Error&& error) noexcept
             {
-                r.state.v.template emplace<error_type>(error_type(PIKA_FORWARD(Error, error)));
+                r.state.v.template emplace<error_type>(error_type(std::forward<Error>(error)));
                 r.state.set_predecessor_done();
             }
 
@@ -150,11 +150,11 @@ namespace pika::split_tuple_detail {
             auto set_value(T&& t) && noexcept
                 -> decltype(std::declval<
                                 pika::detail::variant<pika::detail::monostate, value_type>>()
-                                .template emplace<value_type>(PIKA_FORWARD(T, t)),
+                                .template emplace<value_type>(std::forward<T>(t)),
                     void())
             {
                 auto r = std::move(*this);
-                r.state.v.template emplace<value_type>(PIKA_FORWARD(T, t));
+                r.state.v.template emplace<value_type>(std::forward<T>(t));
 
                 r.state.set_predecessor_done();
             }
@@ -173,7 +173,7 @@ namespace pika::split_tuple_detail {
         {
             os.emplace(pika::detail::with_result_of([&]() {
                 return pika::execution::experimental::connect(
-                    PIKA_FORWARD(Sender_, sender), split_tuple_receiver{*this});
+                    std::forward<Sender_>(sender), split_tuple_receiver{*this});
             }));
         }
 
@@ -439,7 +439,7 @@ namespace pika::split_tuple_detail {
 
             template <typename Receiver_>
             operation_state(Receiver_&& receiver, pika::intrusive_ptr<shared_state_type> state)
-              : receiver(PIKA_FORWARD(Receiver_, receiver))
+              : receiver(std::forward<Receiver_>(receiver))
               , state(std::move(state))
             {
             }
@@ -461,7 +461,7 @@ namespace pika::split_tuple_detail {
         friend operation_state<Receiver> tag_invoke(pika::execution::experimental::connect_t,
             split_tuple_sender_type&& s, Receiver&& receiver)
         {
-            return {PIKA_FORWARD(Receiver, receiver), std::move(s.state)};
+            return {std::forward<Receiver>(receiver), std::move(s.state)};
         }
 
         template <typename Receiver>
@@ -498,7 +498,7 @@ namespace pika::split_tuple_detail {
         unique_ptr p(allocator_traits::allocate(alloc, 1),
             pika::detail::allocator_deleter<other_allocator>{alloc});
 
-        new (p.get()) shared_state_type{PIKA_FORWARD(Sender, sender), allocator};
+        new (p.get()) shared_state_type{std::forward<Sender>(sender), allocator};
         pika::intrusive_ptr<shared_state_type> state = p.release();
 
         // nvcc does not like decay_t, so this uses decay<>::type instead.
@@ -530,7 +530,7 @@ namespace pika::execution::experimental {
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(split_tuple_t, Sender&& sender)
         {
             return split_tuple_detail::make_split_tuple_senders(
-                PIKA_FORWARD(Sender, sender), pika::detail::internal_allocator<>{});
+                std::forward<Sender>(sender), pika::detail::internal_allocator<>{});
         }
 
         template <typename Sender, typename Allocator,
@@ -539,7 +539,7 @@ namespace pika::execution::experimental {
         tag_fallback_invoke(split_tuple_t, Sender&& sender, Allocator const& allocator)
         {
             return split_tuple_detail::make_split_tuple_senders(
-                PIKA_FORWARD(Sender, sender), allocator);
+                std::forward<Sender>(sender), allocator);
         }
 
         template <typename Allocator = pika::detail::internal_allocator<>,

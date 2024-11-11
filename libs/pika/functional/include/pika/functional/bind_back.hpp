@@ -41,8 +41,8 @@ namespace pika::util::detail {
         template <typename F_, typename... Ts_,
             typename = std::enable_if_t<std::is_constructible_v<F, F_>>>
         constexpr explicit bound_back(F_&& f, Ts_&&... vs)
-          : _f(PIKA_FORWARD(F_, f))
-          , _args(std::piecewise_construct, PIKA_FORWARD(Ts_, vs)...)
+          : _f(std::forward<F_>(f))
+          , _args(std::piecewise_construct, std::forward<Ts_>(vs)...)
         {
         }
 
@@ -73,7 +73,7 @@ namespace pika::util::detail {
             typename invoke_bound_back_result<F&, util::detail::pack<Ts&...>, Us&&...>::type
             operator()(Us&&... vs) &
         {
-            return PIKA_INVOKE(_f, PIKA_FORWARD(Us, vs)..., _args.template get<Is>()...);
+            return PIKA_INVOKE(_f, std::forward<Us>(vs)..., _args.template get<Is>()...);
         }
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
@@ -82,7 +82,7 @@ namespace pika::util::detail {
             util::detail::pack<Ts const&...>, Us&&...>::type
         operator()(Us&&... vs) const&
         {
-            return PIKA_INVOKE(_f, PIKA_FORWARD(Us, vs)..., _args.template get<Is>()...);
+            return PIKA_INVOKE(_f, std::forward<Us>(vs)..., _args.template get<Is>()...);
         }
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
@@ -92,7 +92,7 @@ namespace pika::util::detail {
             operator()(Us&&... vs) &&
         {
             return PIKA_INVOKE(
-                std::move(_f), PIKA_FORWARD(Us, vs)..., std::move(_args).template get<Is>()...);
+                std::move(_f), std::forward<Us>(vs)..., std::move(_args).template get<Is>()...);
         }
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
@@ -102,7 +102,7 @@ namespace pika::util::detail {
         operator()(Us&&... vs) const&&
         {
             return PIKA_INVOKE(
-                std::move(_f), PIKA_FORWARD(Us, vs)..., std::move(_args).template get<Is>()...);
+                std::move(_f), std::forward<Us>(vs)..., std::move(_args).template get<Is>()...);
         }
 
         constexpr std::size_t get_function_address() const
@@ -132,14 +132,14 @@ namespace pika::util::detail {
         using result_type = bound_back<std::decay_t<F>,
             util::detail::make_index_pack_t<sizeof...(Ts)>, ::pika::detail::decay_unwrap_t<Ts>...>;
 
-        return result_type(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...);
+        return result_type(std::forward<F>(f), std::forward<Ts>(vs)...);
     }
 
     // nullary functions do not need to be bound again
     template <typename F>
     constexpr std::decay_t<F> bind_back(F&& f)
     {
-        return PIKA_FORWARD(F, f);
+        return std::forward<F>(f);
     }
 }    // namespace pika::util::detail
 

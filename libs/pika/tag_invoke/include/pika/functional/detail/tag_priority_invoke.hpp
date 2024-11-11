@@ -20,7 +20,7 @@ namespace pika::functional::detail {
         /// The evaluation of the expression
         /// `pika::functional::detail::tag_override_invoke(tag, args...)` is
         /// equivalent to evaluating the unqualified call to
-        /// `tag_override_invoke(decay-copy(tag), PIKA_FORWARD(Args, args)...)`.
+        /// `tag_override_invoke(decay-copy(tag), std::forward<Args>(args)...)`.
         ///
         /// `pika::functional::detail::tag_override_invoke` is implemented against P1895.
         ///
@@ -122,10 +122,10 @@ namespace pika::functional::detail {
             template <typename Tag, typename... Ts>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
             PIKA_STATIC_CALL_OPERATOR(Tag tag, Ts&&... ts) noexcept(
-                noexcept(tag_override_invoke(std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...)))
-                -> decltype(tag_override_invoke(std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...))
+                noexcept(tag_override_invoke(std::declval<Tag>(), std::forward<Ts>(ts)...)))
+                -> decltype(tag_override_invoke(std::declval<Tag>(), std::forward<Ts>(ts)...))
             {
-                return tag_override_invoke(tag, PIKA_FORWARD(Ts, ts)...);
+                return tag_override_invoke(tag, std::forward<Ts>(ts)...);
             }
 
             friend constexpr bool operator==(tag_override_invoke_t, tag_override_invoke_t)
@@ -235,7 +235,7 @@ namespace pika::functional::detail {
                 Args&&... args) noexcept(is_nothrow_tag_override_invocable_v<Tag, Args...>)
                 -> tag_override_invoke_result_t<Tag, Args&&...>
             {
-                return tag_override_invoke(Tag{}, PIKA_FORWARD(Args, args)...);
+                return tag_override_invoke(Tag{}, std::forward<Args>(args)...);
             }
 
             // Is not tag-override-dispatchable, but tag-dispatchable
@@ -247,7 +247,7 @@ namespace pika::functional::detail {
             PIKA_STATIC_CALL_OPERATOR(Args&&... args) noexcept(
                 is_nothrow_tag_invocable_v<Tag, Args...>) -> tag_invoke_result_t<Tag, Args&&...>
             {
-                return tag_invoke(Tag{}, PIKA_FORWARD(Args, args)...);
+                return tag_invoke(Tag{}, std::forward<Args>(args)...);
             }
 
             // Is not tag-override-dispatchable, not tag-dispatchable, but
@@ -261,7 +261,7 @@ namespace pika::functional::detail {
                 Args&&... args) noexcept(is_nothrow_tag_fallback_invocable_v<Tag, Args...>)
                 -> tag_fallback_invoke_result_t<Tag, Args&&...>
             {
-                return tag_fallback_invoke(Tag{}, PIKA_FORWARD(Args, args)...);
+                return tag_fallback_invoke(Tag{}, std::forward<Args>(args)...);
             }
         };
 
@@ -281,7 +281,7 @@ namespace pika::functional::detail {
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto PIKA_STATIC_CALL_OPERATOR(
                 Args&&... args) noexcept -> tag_override_invoke_result_t<Tag, Args&&...>
             {
-                return tag_override_invoke(Tag{}, PIKA_FORWARD(Args, args)...);
+                return tag_override_invoke(Tag{}, std::forward<Args>(args)...);
             }
 
             // Is not nothrow tag-override-dispatchable, but nothrow
@@ -294,7 +294,7 @@ namespace pika::functional::detail {
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto PIKA_STATIC_CALL_OPERATOR(
                 Args&&... args) noexcept -> tag_invoke_result_t<Tag, Args&&...>
             {
-                return tag_invoke(Tag{}, PIKA_FORWARD(Args, args)...);
+                return tag_invoke(Tag{}, std::forward<Args>(args)...);
             }
 
             // Is not nothrow tag-override-dispatchable, not nothrow
@@ -308,7 +308,7 @@ namespace pika::functional::detail {
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto PIKA_STATIC_CALL_OPERATOR(
                 Args&&... args) noexcept -> tag_fallback_invoke_result_t<Tag, Args&&...>
             {
-                return tag_fallback_invoke(Tag{}, PIKA_FORWARD(Args, args)...);
+                return tag_fallback_invoke(Tag{}, std::forward<Args>(args)...);
             }
         };
     }    // namespace tag_base_ns

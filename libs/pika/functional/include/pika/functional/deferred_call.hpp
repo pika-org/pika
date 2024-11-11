@@ -49,8 +49,8 @@ namespace pika::util::detail {
         template <typename F_, typename... Ts_,
             typename = std::enable_if_t<std::is_constructible_v<F, F_&&>>>
         explicit constexpr PIKA_HOST_DEVICE deferred(F_&& f, Ts_&&... vs)
-          : _f(PIKA_FORWARD(F_, f))
-          , _args(std::piecewise_construct, PIKA_FORWARD(Ts_, vs)...)
+          : _f(std::forward<F_>(f))
+          , _args(std::piecewise_construct, std::forward<Ts_>(vs)...)
         {
         }
 
@@ -104,7 +104,7 @@ namespace pika::util::detail {
         using result_type = deferred<std::decay_t<F>,
             util::detail::make_index_pack_t<sizeof...(Ts)>, ::pika::detail::decay_unwrap_t<Ts>...>;
 
-        return result_type(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...);
+        return result_type(std::forward<F>(f), std::forward<Ts>(vs)...);
     }
 
     // nullary functions do not need to be bound again
@@ -114,7 +114,7 @@ namespace pika::util::detail {
         static_assert(
             pika::detail::is_deferred_invocable_v<F>, "F shall be Callable with no arguments");
 
-        return PIKA_FORWARD(F, f);
+        return std::forward<F>(f);
     }
 }    // namespace pika::util::detail
 
