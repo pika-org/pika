@@ -22,18 +22,15 @@ gcc13_gh200_spack_compiler_image:
   extends:
     - .variables_gcc13_gh200_config
     - .compiler_image_template_gh200
-  allow_failure: true
 
 gcc13_gh200_spack_image:
   needs: [gcc13_gh200_spack_compiler_image]
   extends:
     - .variables_gcc13_gh200_config
     - .dependencies_image_template_gh200
-  allow_failure: true
 
 gcc13_gh200_build:
   needs: [gcc13_gh200_spack_image]
   extends:
     - .variables_gcc13_gh200_config
     - .build_template_gh200
-  allow_failure: true

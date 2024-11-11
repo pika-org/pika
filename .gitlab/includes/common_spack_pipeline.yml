@@ -28,10 +28,9 @@ variables:
     reports:
       dotenv: base.env
 
-# We allow failure since santis is unstable
 base_spack_image_aarch64:
   extends: [.container-builder-cscs-gh200, .base_spack_image]
-  allow_failure: true
+
 base_spack_image_x86_64:
   extends: [.container-builder-cscs-zen2, .base_spack_image]
 
