@@ -9,6 +9,7 @@
 
 #include <pika/config.hpp>
 #include <pika/thread_support/thread_name.hpp>
+#include <pika/type_support/unused.hpp>
 
 #include <fmt/format.h>
 
@@ -85,7 +86,8 @@ namespace pika::detail {
                                                  "attempting to set name \"{}\" for thread {}",
                 rc, pthread_name, pthread_self()));
         }
-
+# else
+        PIKA_UNUSED(short_name);
 # endif
     }
 #endif
