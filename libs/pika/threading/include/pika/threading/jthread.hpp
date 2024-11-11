@@ -31,7 +31,7 @@ namespace pika {
         static void invoke(std::true_type, F&& f, stop_token&& st, Ts&&... ts)
         {
             // pass the stop_token as first argument to the started thread:
-            PIKA_INVOKE(PIKA_FORWARD(F, f), PIKA_MOVE(st), PIKA_FORWARD(Ts, ts)...);
+            PIKA_INVOKE(PIKA_FORWARD(F, f), std::move(st), PIKA_FORWARD(Ts, ts)...);
         }
 
     public:
@@ -108,7 +108,7 @@ namespace pika {
                     // perform tasks of the thread
                     using use_stop_token = typename std::is_invocable<F, stop_token, Ts...>::type;
 
-                    jthread::invoke(use_stop_token{}, PIKA_FORWARD(F, f), PIKA_MOVE(st),
+                    jthread::invoke(use_stop_token{}, PIKA_FORWARD(F, f), std::move(st),
                         PIKA_FORWARD(Ts, ts)...);
                 },
                 // not captured due to possible races if immediately set

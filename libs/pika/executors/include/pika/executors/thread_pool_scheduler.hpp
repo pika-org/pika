@@ -110,7 +110,7 @@ namespace pika::execution::experimental {
         {
             auto sched_with_annotation = scheduler;
             sched_with_annotation.annotation_ =
-                pika::detail::store_function_annotation(PIKA_MOVE(annotation));
+                pika::detail::store_function_annotation(std::move(annotation));
             return sched_with_annotation;
         }
 
@@ -165,13 +165,13 @@ namespace pika::execution::experimental {
                     [&]() {
                         os.scheduler.execute(
                             [&os]() mutable {
-                                pika::execution::experimental::set_value(PIKA_MOVE(os.receiver));
+                                pika::execution::experimental::set_value(std::move(os.receiver));
                             },
                             os.fallback_annotation);
                     },
                     [&](std::exception_ptr ep) {
                         pika::execution::experimental::set_error(
-                            PIKA_MOVE(os.receiver), PIKA_MOVE(ep));
+                            std::move(os.receiver), std::move(ep));
                     });
             }
         };
@@ -205,7 +205,7 @@ namespace pika::execution::experimental {
             friend operation_state<Scheduler, Receiver>
             tag_invoke(connect_t, sender&& s, Receiver&& receiver)
             {
-                return {PIKA_MOVE(s.scheduler), PIKA_FORWARD(Receiver, receiver),
+                return {std::move(s.scheduler), PIKA_FORWARD(Receiver, receiver),
                     s.fallback_annotation};
             }
 
@@ -238,7 +238,7 @@ namespace pika::execution::experimental {
 
         friend sender<thread_pool_scheduler> tag_invoke(schedule_t, thread_pool_scheduler&& sched)
         {
-            return {PIKA_MOVE(sched)};
+            return {std::move(sched)};
         }
 
         friend sender<thread_pool_scheduler> tag_invoke(
@@ -272,7 +272,7 @@ namespace pika::execution::experimental {
         {
             return schedule_from_detail::schedule_from_sender<Sender, thread_pool_scheduler>{
                 PIKA_FORWARD(Sender, predecessor_sender),
-                with_annotation(PIKA_MOVE(scheduler), scheduler.get_fallback_annotation())};
+                with_annotation(std::move(scheduler), scheduler.get_fallback_annotation())};
         }
 
         template <typename Sender, PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender>)>

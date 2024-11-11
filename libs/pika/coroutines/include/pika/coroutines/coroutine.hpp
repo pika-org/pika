@@ -62,7 +62,7 @@ namespace pika::threads::coroutines::detail {
 
         coroutine(
             functor_type&& f, thread_id_type id, std::ptrdiff_t stack_size = default_stack_size)
-          : impl_(PIKA_MOVE(f), id, stack_size)
+          : impl_(std::move(f), id, stack_size)
         {
             PIKA_ASSERT(impl_.is_ready());
         }
@@ -84,7 +84,7 @@ namespace pika::threads::coroutines::detail {
 
         void init() { impl_.init(); }
 
-        void rebind(functor_type&& f, thread_id_type id) { impl_.rebind(PIKA_MOVE(f), id); }
+        void rebind(functor_type&& f, thread_id_type id) { impl_.rebind(std::move(f), id); }
 
         PIKA_FORCEINLINE result_type operator()(arg_type arg = arg_type())
         {

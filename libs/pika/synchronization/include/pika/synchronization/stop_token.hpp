@@ -437,7 +437,7 @@ namespace pika {
         explicit stop_callback(stop_token&& st, CB&& cb) noexcept(
             std::is_nothrow_constructible<Callback, CB>::value)
           : callback_(PIKA_FORWARD(CB, cb))
-          , state_(PIKA_MOVE(st.state_))
+          , state_(std::move(st.state_))
         {
             if (state_) state_->add_callback(this);
         }
@@ -488,7 +488,7 @@ namespace pika {
     template <typename Callback>
     stop_callback<std::decay_t<Callback>> make_stop_callback(stop_token&& st, Callback&& cb)
     {
-        return stop_callback<std::decay_t<Callback>>(PIKA_MOVE(st), PIKA_FORWARD(Callback, cb));
+        return stop_callback<std::decay_t<Callback>>(std::move(st), PIKA_FORWARD(Callback, cb));
     }
 
     // clang-format produces inconsistent result between different versions

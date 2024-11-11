@@ -89,7 +89,7 @@ namespace pika {
         {
             [[maybe_unused]] util::ignore_while_checking il(&l);
 
-            cond_.notify_one(PIKA_MOVE(l), execution::thread_priority::boost, ec);
+            cond_.notify_one(std::move(l), execution::thread_priority::boost, ec);
         }
     }
 

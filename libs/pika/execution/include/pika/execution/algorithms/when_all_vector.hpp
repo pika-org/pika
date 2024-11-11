@@ -53,7 +53,7 @@ namespace pika::when_all_vector_detail {
         senders_type senders;
 
         explicit constexpr when_all_vector_sender_type(senders_type&& senders)
-          : senders(PIKA_MOVE(senders))
+          : senders(std::move(senders))
         {
         }
 
@@ -178,7 +178,7 @@ namespace pika::when_all_vector_detail {
                 template <typename... Ts>
                 void set_value(Ts&&... ts) && noexcept
                 {
-                    auto r = PIKA_MOVE(*this);
+                    auto r = std::move(*this);
                     if (!r.op_state.set_stopped_error_called)
                     {
                         try
@@ -256,13 +256,7 @@ namespace pika::when_all_vector_detail {
                 {
                     op_states[i].emplace(pika::detail::with_result_of([&]() {
                         return pika::execution::experimental::connect(
-#if defined(__NVCC__) && defined(PIKA_CUDA_VERSION) && (PIKA_CUDA_VERSION >= 1204)
-                            std::move(sender)
-#else
-                            PIKA_MOVE(sender)
-#endif
-                                ,
-                            when_all_vector_receiver{*this, i});
+                            std::move(sender), when_all_vector_receiver{*this, i});
                     }));
                     ++i;
                 }
@@ -283,7 +277,7 @@ namespace pika::when_all_vector_detail {
                     {
                         if constexpr (is_void_value_type)
                         {
-                            pika::execution::experimental::set_value(PIKA_MOVE(receiver));
+                            pika::execution::experimental::set_value(std::move(receiver));
                         }
                         else
                         {
@@ -292,18 +286,11 @@ namespace pika::when_all_vector_detail {
                             for (auto&& t : ts)
                             {
                                 PIKA_ASSERT(t.has_value());
-                                values.push_back(
-#if defined(__NVCC__) && defined(PIKA_CUDA_VERSION) && (PIKA_CUDA_VERSION >= 1204)
-                                    // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-                                    std::move(*t)
-#else
-                                    // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-                                    PIKA_MOVE(*t)
-#endif
-                                );
+                                // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+                                values.push_back(std::move(*t));
                             }
                             pika::execution::experimental::set_value(
-                                PIKA_MOVE(receiver), PIKA_MOVE(values));
+                                std::move(receiver), std::move(values));
                         }
                     }
                     else if (error)
@@ -311,9 +298,9 @@ namespace pika::when_all_vector_detail {
                         pika::detail::visit(
                             [this](auto&& error) {
                                 pika::execution::experimental::set_error(
-                                    PIKA_MOVE(receiver), PIKA_FORWARD(decltype(error), error));
+                                    std::move(receiver), PIKA_FORWARD(decltype(error), error));
                             },
-                            PIKA_MOVE(*error));
+                            std::move(*error));
                     }
                     else
                     {
@@ -324,7 +311,7 @@ namespace pika::when_all_vector_detail {
                                           Sender>::sends_done)
 #endif
                         {
-                            pika::execution::experimental::set_stopped(PIKA_MOVE(receiver));
+                            pika::execution::experimental::set_stopped(std::move(receiver));
                         }
                         else { PIKA_UNREACHABLE; }
                     }
@@ -342,14 +329,14 @@ namespace pika::when_all_vector_detail {
                     // send nothing to the continuation.
                     if constexpr (is_void_value_type)
                     {
-                        pika::execution::experimental::set_value(PIKA_MOVE(os.receiver));
+                        pika::execution::experimental::set_value(std::move(os.receiver));
                     }
                     // If the predecessor sender type sends something we
                     // send an empty vector of that type to the continuation.
                     else
                     {
                         pika::execution::experimental::set_value(
-                            PIKA_MOVE(os.receiver), std::vector<element_value_type>{});
+                            std::move(os.receiver), std::vector<element_value_type>{});
                     }
                 }
                 // Otherwise we start all the operation states and wait for
@@ -376,7 +363,7 @@ namespace pika::when_all_vector_detail {
             when_all_vector_sender_type&& s, Receiver&& receiver)
         {
             return operation_state<Receiver>(
-                PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.senders));
+                PIKA_FORWARD(Receiver, receiver), std::move(s.senders));
         }
 
         template <typename Receiver>
@@ -396,7 +383,7 @@ namespace pika::execution::experimental {
         friend constexpr PIKA_FORCEINLINE auto
         tag_fallback_invoke(when_all_vector_t, std::vector<Sender>&& senders)
         {
-            return when_all_vector_detail::when_all_vector_sender<Sender>{PIKA_MOVE(senders)};
+            return when_all_vector_detail::when_all_vector_sender<Sender>{std::move(senders)};
         }
 
         template <typename Sender, PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender>)>

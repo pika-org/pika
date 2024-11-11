@@ -107,7 +107,7 @@ namespace pika::threads::detail {
                 // pushing the new thread into the pending queue of the
                 // specified thread_queue
                 ++added;
-                schedule_work(PIKA_MOVE(tid), stealing);
+                schedule_work(std::move(tid), stealing);
             }
 
             return added;
@@ -196,7 +196,7 @@ namespace pika::threads::detail {
                 {
                     // return the thread_id_ref of the newly created thread
                     if (id) { *id = tid; }
-                    schedule_work(PIKA_MOVE(tid), false);
+                    schedule_work(std::move(tid), false);
                 }
                 else
                 {
@@ -204,7 +204,7 @@ namespace pika::threads::detail {
                     // returned to the caller as otherwise the thread would
                     // go out of scope right away.
                     PIKA_ASSERT(id != nullptr);
-                    *id = PIKA_MOVE(tid);
+                    *id = std::move(tid);
                 }
 
                 if (&ec != &throws) ec = make_success_code();
@@ -224,7 +224,7 @@ namespace pika::threads::detail {
             // later thread creation
             ++new_tasks_count_.data_;
 
-            new_task_items_.push(task_description(PIKA_MOVE(data)));
+            new_task_items_.push(task_description(std::move(data)));
 
             if (&ec != &throws) ec = make_success_code();
         }
@@ -276,7 +276,7 @@ namespace pika::threads::detail {
                 debug::detail::dec<4>(work_items_count_.data_),
                 debug::detail::threadinfo<threads::detail::thread_id_ref_type*>(&thrd));
             //
-            work_items_.push(PIKA_MOVE(thrd), other_end);
+            work_items_.push(std::move(thrd), other_end);
 #ifdef DEBUG_QUEUE_EXTRA
             debug_queue(work_items_);
 #endif

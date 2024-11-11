@@ -158,7 +158,7 @@ namespace pika::threads::detail {
                 auto pool_func = rp.get_pool_creator(i);
                 std::unique_ptr<thread_pool_base> pool(
                     pool_func(thread_pool_init, thread_queue_init));
-                pools_.push_back(PIKA_MOVE(pool));
+                pools_.push_back(std::move(pool));
                 break;
             }
             case resource::unspecified:
@@ -186,8 +186,8 @@ namespace pika::threads::detail {
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
                     new pika::threads::detail::scheduled_thread_pool<local_sched_type>(
-                        PIKA_MOVE(sched), thread_pool_init));
-                pools_.push_back(PIKA_MOVE(pool));
+                        std::move(sched), thread_pool_init));
+                pools_.push_back(std::move(pool));
                 break;
             }
 
@@ -220,8 +220,8 @@ namespace pika::threads::detail {
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
                     new pika::threads::detail::scheduled_thread_pool<local_sched_type>(
-                        PIKA_MOVE(sched), thread_pool_init));
-                pools_.push_back(PIKA_MOVE(pool));
+                        std::move(sched), thread_pool_init));
+                pools_.push_back(std::move(pool));
 
                 break;
             }
@@ -256,8 +256,8 @@ namespace pika::threads::detail {
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
                     new pika::threads::detail::scheduled_thread_pool<local_sched_type>(
-                        PIKA_MOVE(sched), thread_pool_init));
-                pools_.push_back(PIKA_MOVE(pool));
+                        std::move(sched), thread_pool_init));
+                pools_.push_back(std::move(pool));
 #else
                 throw pika::detail::command_line_error(
                     "Command line option --pika:queuing=local-priority-lifo is not configured in "
@@ -285,8 +285,8 @@ namespace pika::threads::detail {
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
                     new pika::threads::detail::scheduled_thread_pool<local_sched_type>(
-                        PIKA_MOVE(sched), thread_pool_init));
-                pools_.push_back(PIKA_MOVE(pool));
+                        std::move(sched), thread_pool_init));
+                pools_.push_back(std::move(pool));
                 break;
             }
 
@@ -317,8 +317,8 @@ namespace pika::threads::detail {
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
                     new pika::threads::detail::scheduled_thread_pool<local_sched_type>(
-                        PIKA_MOVE(sched), thread_pool_init));
-                pools_.push_back(PIKA_MOVE(pool));
+                        std::move(sched), thread_pool_init));
+                pools_.push_back(std::move(pool));
                 break;
             }
 
@@ -352,8 +352,8 @@ namespace pika::threads::detail {
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
                     new pika::threads::detail::scheduled_thread_pool<local_sched_type>(
-                        PIKA_MOVE(sched), thread_pool_init));
-                pools_.push_back(PIKA_MOVE(pool));
+                        std::move(sched), thread_pool_init));
+                pools_.push_back(std::move(pool));
 #else
                 throw pika::detail::command_line_error(
                     "Command line option --pika:queuing=abp-priority-fifo is not configured in "
@@ -392,8 +392,8 @@ namespace pika::threads::detail {
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
                     new pika::threads::detail::scheduled_thread_pool<local_sched_type>(
-                        PIKA_MOVE(sched), thread_pool_init));
-                pools_.push_back(PIKA_MOVE(pool));
+                        std::move(sched), thread_pool_init));
+                pools_.push_back(std::move(pool));
 #else
                 throw pika::detail::command_line_error(
                     "Command line option --pika:queuing=abp-priority-lifo is not configured in "
@@ -420,8 +420,8 @@ namespace pika::threads::detail {
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
                     new pika::threads::detail::scheduled_thread_pool<local_sched_type>(
-                        PIKA_MOVE(sched), thread_pool_init));
-                pools_.push_back(PIKA_MOVE(pool));
+                        std::move(sched), thread_pool_init));
+                pools_.push_back(std::move(pool));
                 break;
             }
             }

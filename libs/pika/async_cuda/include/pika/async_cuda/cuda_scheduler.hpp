@@ -18,6 +18,8 @@
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
 
+#include <utility>
+
 namespace pika::cuda::experimental {
     /// A scheduler for running work on a CUDA pool.
     ///
@@ -86,7 +88,7 @@ namespace pika::cuda::experimental {
 
                 template <typename Receiver_>
                 operation_state(cuda_scheduler scheduler, Receiver_&& receiver)
-                  : scheduler(PIKA_MOVE(scheduler))
+                  : scheduler(std::move(scheduler))
                   , receiver(PIKA_FORWARD(Receiver_, receiver))
                 {
                 }
@@ -101,7 +103,7 @@ namespace pika::cuda::experimental {
                     // This currently only acts as an inline scheduler to signal
                     // downstream senders that they should use the
                     // cuda_scheduler.
-                    pika::execution::experimental::set_value(PIKA_MOVE(os.receiver));
+                    pika::execution::experimental::set_value(std::move(os.receiver));
                 }
             };
 
@@ -131,7 +133,7 @@ namespace pika::cuda::experimental {
             friend operation_state<Receiver> tag_invoke(pika::execution::experimental::connect_t,
                 cuda_scheduler_sender&& s, Receiver&& receiver)
             {
-                return {PIKA_MOVE(s.scheduler), PIKA_FORWARD(Receiver, receiver)};
+                return {std::move(s.scheduler), PIKA_FORWARD(Receiver, receiver)};
             }
 
             template <typename Receiver>
@@ -166,6 +168,6 @@ namespace pika::cuda::experimental {
     inline auto tag_invoke(
         pika::execution::experimental::schedule_t, cuda_scheduler scheduler) noexcept
     {
-        return detail::cuda_scheduler_sender{PIKA_MOVE(scheduler)};
+        return detail::cuda_scheduler_sender{std::move(scheduler)};
     }
 }    // namespace pika::cuda::experimental

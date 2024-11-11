@@ -189,7 +189,7 @@ namespace pika::threads::detail {
         {
         }
         explicit thread_id_ref(thread_id_repr&& thrd) noexcept
-          : thrd_(PIKA_MOVE(thrd))
+          : thrd_(std::move(thrd))
         {
         }
 
@@ -200,7 +200,7 @@ namespace pika::threads::detail {
         }
         thread_id_ref& operator=(thread_id_repr&& rhs) noexcept
         {
-            thrd_ = PIKA_MOVE(rhs);
+            thrd_ = std::move(rhs);
             return *this;
         }
 
@@ -247,7 +247,7 @@ namespace pika::threads::detail {
         thread_id noref() const noexcept { return thread_id(thrd_.get()); }
 
         thread_id_repr& get() & noexcept { return thrd_; }
-        thread_id_repr&& get() && noexcept { return PIKA_MOVE(thrd_); }
+        thread_id_repr&& get() && noexcept { return std::move(thrd_); }
 
         thread_id_repr const& get() const& noexcept { return thrd_; }
 

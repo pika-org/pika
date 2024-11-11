@@ -16,6 +16,7 @@
 #include <exception>
 #include <thread>
 #include <type_traits>
+#include <utility>
 
 namespace pika::execution::experimental {
     struct std_thread_scheduler
@@ -56,13 +57,13 @@ namespace pika::execution::experimental {
                 pika::detail::try_catch_exception_ptr(
                     [&]() {
                         std::thread t{[&os]() mutable {
-                            pika::execution::experimental::set_value(PIKA_MOVE(os.receiver));
+                            pika::execution::experimental::set_value(std::move(os.receiver));
                         }};
                         t.detach();
                     },
                     [&](std::exception_ptr ep) {
                         pika::execution::experimental::set_error(
-                            PIKA_MOVE(os.receiver), PIKA_MOVE(ep));
+                            std::move(os.receiver), std::move(ep));
                     });
             }
         };

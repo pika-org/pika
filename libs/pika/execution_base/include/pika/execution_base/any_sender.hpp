@@ -220,7 +220,7 @@ namespace pika::detail {
             if (!empty()) { release(); }
         }
 
-        movable_sbo_storage(movable_sbo_storage&& other) { move_assign(PIKA_MOVE(other)); }
+        movable_sbo_storage(movable_sbo_storage&& other) { move_assign(std::move(other)); }
 
         template <typename T>
         explicit movable_sbo_storage(
@@ -228,7 +228,7 @@ namespace pika::detail {
         {
             static_assert(std::is_base_of_v<base_type, T>);
 
-            move_assign(PIKA_MOVE(other));
+            move_assign(std::move(other));
         }
 
         movable_sbo_storage& operator=(movable_sbo_storage&& other)
@@ -237,7 +237,7 @@ namespace pika::detail {
             {
                 if (!empty()) { release(); }
 
-                move_assign(PIKA_MOVE(other));
+                move_assign(std::move(other));
             }
             return *this;
         }
@@ -252,7 +252,7 @@ namespace pika::detail {
             {
                 if (!empty()) { release(); }
 
-                move_assign(PIKA_MOVE(other));
+                move_assign(std::move(other));
             }
             return *this;
         }
@@ -487,21 +487,21 @@ namespace pika::execution::experimental::detail {
         {
         }
 
-        void move_into(void* p) override { new (p) any_receiver_impl(PIKA_MOVE(receiver)); }
+        void move_into(void* p) override { new (p) any_receiver_impl(std::move(receiver)); }
 
         void set_value(Ts... ts) && override
         {
-            pika::execution::experimental::set_value(PIKA_MOVE(receiver), PIKA_MOVE(ts)...);
+            pika::execution::experimental::set_value(std::move(receiver), std::move(ts)...);
         }
 
         void set_error(std::exception_ptr ep) && noexcept override
         {
-            pika::execution::experimental::set_error(PIKA_MOVE(receiver), PIKA_MOVE(ep));
+            pika::execution::experimental::set_error(std::move(receiver), std::move(ep));
         }
 
         void set_stopped() && noexcept override
         {
-            pika::execution::experimental::set_stopped(PIKA_MOVE(receiver));
+            pika::execution::experimental::set_stopped(std::move(receiver));
         }
     };
 
@@ -542,19 +542,19 @@ namespace pika::execution::experimental::detail {
         auto set_value(Ts_&&... ts) && noexcept -> decltype(std::declval<base_type>().set_value(
                                                     PIKA_FORWARD(Ts_, ts)...))
         {
-            auto r = PIKA_MOVE(*this);
+            auto r = std::move(*this);
             // We first move the storage to a temporary variable so that
             // this any_receiver is empty after this set_value. Doing
-            // PIKA_MOVE(storage.get()).set_value(...) would leave us with a
+            // std::move(storage.get()).set_value(...) would leave us with a
             // non-empty any_receiver holding a moved-from receiver.
-            auto moved_storage = PIKA_MOVE(r.storage);
+            auto moved_storage = std::move(r.storage);
             try
             {
-                PIKA_MOVE(moved_storage.get()).set_value(PIKA_FORWARD(Ts_, ts)...);
+                std::move(moved_storage.get()).set_value(PIKA_FORWARD(Ts_, ts)...);
             }
             catch (...)
             {
-                PIKA_MOVE(moved_storage.get()).set_error(std::current_exception());
+                std::move(moved_storage.get()).set_error(std::current_exception());
             }
         }
 
@@ -563,10 +563,10 @@ namespace pika::execution::experimental::detail {
         {
             // We first move the storage to a temporary variable so that
             // this any_receiver is empty after this set_error. Doing
-            // PIKA_MOVE(storage.get()).set_error(...) would leave us with a
+            // std::move(storage.get()).set_error(...) would leave us with a
             // non-empty any_receiver holding a moved-from receiver.
-            auto moved_storage = PIKA_MOVE(r.storage);
-            PIKA_MOVE(moved_storage.get()).set_error(PIKA_MOVE(ep));
+            auto moved_storage = std::move(r.storage);
+            std::move(moved_storage.get()).set_error(std::move(ep));
         }
 
         friend void tag_invoke(
@@ -574,10 +574,10 @@ namespace pika::execution::experimental::detail {
         {
             // We first move the storage to a temporary variable so that
             // this any_receiver is empty after this set_stopped. Doing
-            // PIKA_MOVE(storage.get()).set_stopped(...) would leave us with a
+            // std::move(storage.get()).set_stopped(...) would leave us with a
             // non-empty any_receiver holding a moved-from receiver.
-            auto moved_storage = PIKA_MOVE(r.storage);
-            PIKA_MOVE(moved_storage.get()).set_stopped();
+            auto moved_storage = std::move(r.storage);
+            std::move(moved_storage.get()).set_stopped();
         }
 
         friend constexpr pika::execution::experimental::empty_env tag_invoke(
@@ -655,11 +655,11 @@ namespace pika::execution::experimental::detail {
 
         ~unique_any_sender_impl() noexcept = default;
 
-        void move_into(void* p) override { new (p) unique_any_sender_impl(PIKA_MOVE(sender)); }
+        void move_into(void* p) override { new (p) unique_any_sender_impl(std::move(sender)); }
 
         any_operation_state connect(any_receiver<Ts...>&& receiver) && override
         {
-            return any_operation_state{PIKA_MOVE(sender), PIKA_MOVE(receiver)};
+            return any_operation_state{std::move(sender), std::move(receiver)};
         }
     };
 
@@ -677,7 +677,7 @@ namespace pika::execution::experimental::detail {
 
         ~any_sender_impl() noexcept = default;
 
-        void move_into(void* p) override { new (p) any_sender_impl(PIKA_MOVE(sender)); }
+        void move_into(void* p) override { new (p) any_sender_impl(std::move(sender)); }
 
         any_sender_base<Ts...>* clone() const override { return new any_sender_impl(sender); }
 
@@ -685,12 +685,12 @@ namespace pika::execution::experimental::detail {
 
         any_operation_state connect(any_receiver<Ts...>&& receiver) const& override
         {
-            return any_operation_state{sender, PIKA_MOVE(receiver)};
+            return any_operation_state{sender, std::move(receiver)};
         }
 
         any_operation_state connect(any_receiver<Ts...>&& receiver) && override
         {
-            return any_operation_state{PIKA_MOVE(sender), PIKA_MOVE(receiver)};
+            return any_operation_state{std::move(sender), std::move(receiver)};
         }
     };
 }    // namespace pika::execution::experimental::detail
@@ -766,14 +766,14 @@ namespace pika::execution::experimental {
 
         // cppcheck-suppress noExplicitConstructor
         unique_any_sender(any_sender<Ts...>&& other)
-          : storage(PIKA_MOVE(other.storage))
+          : storage(std::move(other.storage))
         {
             other.reset();
         }
 
         unique_any_sender& operator=(any_sender<Ts...>&& other)
         {
-            storage = PIKA_MOVE(other.storage);
+            storage = std::move(other.storage);
             other.reset();
             return *this;
         };
@@ -797,10 +797,10 @@ namespace pika::execution::experimental {
         {
             // We first move the storage to a temporary variable so that this
             // any_sender is empty after this connect. Doing
-            // PIKA_MOVE(storage.get()).connect(...) would leave us with a
+            // std::move(storage.get()).connect(...) would leave us with a
             // non-empty any_sender holding a moved-from sender.
-            auto moved_storage = PIKA_MOVE(s.storage);
-            return PIKA_MOVE(moved_storage.get())
+            auto moved_storage = std::move(s.storage);
+            return std::move(moved_storage.get())
                 .connect(detail::any_receiver<Ts...>{PIKA_FORWARD(R, r)});
         }
 
@@ -908,10 +908,10 @@ namespace pika::execution::experimental {
         {
             // We first move the storage to a temporary variable so that this
             // any_sender is empty after this connect. Doing
-            // PIKA_MOVE(storage.get()).connect(...) would leave us with a
+            // std::move(storage.get()).connect(...) would leave us with a
             // non-empty any_sender holding a moved-from sender.
-            auto moved_storage = PIKA_MOVE(s.storage);
-            return PIKA_MOVE(moved_storage.get())
+            auto moved_storage = std::move(s.storage);
+            return std::move(moved_storage.get())
                 .connect(detail::any_receiver<Ts...>{PIKA_FORWARD(R, r)});
         }
 

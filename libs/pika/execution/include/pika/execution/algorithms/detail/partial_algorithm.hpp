@@ -37,7 +37,7 @@ namespace pika::execution::experimental::detail {
         template <typename U>
         friend constexpr PIKA_FORCEINLINE auto operator|(U&& u, partial_algorithm_base p)
         {
-            return Tag{}(PIKA_FORWARD(U, u), PIKA_MOVE(p.ts).template get<Is>()...);
+            return Tag{}(PIKA_FORWARD(U, u), std::move(p.ts).template get<Is>()...);
         }
     };
 

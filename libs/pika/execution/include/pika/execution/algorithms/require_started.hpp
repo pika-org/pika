@@ -109,23 +109,23 @@ namespace pika {
             {
                 PIKA_ASSERT(r.op_state != nullptr);
                 pika::execution::experimental::set_error(
-                    PIKA_MOVE(r.op_state->receiver), PIKA_FORWARD(Error, error));
+                    std::move(r.op_state->receiver), PIKA_FORWARD(Error, error));
             }
 
             friend void tag_invoke(pika::execution::experimental::set_stopped_t,
                 require_started_receiver_type r) noexcept
             {
                 PIKA_ASSERT(r.op_state != nullptr);
-                pika::execution::experimental::set_stopped(PIKA_MOVE(r.op_state->receiver));
+                pika::execution::experimental::set_stopped(std::move(r.op_state->receiver));
             };
 
             template <typename... Ts>
             void set_value(Ts&&... ts) && noexcept
             {
-                auto r = PIKA_MOVE(*this);
+                auto r = std::move(*this);
                 PIKA_ASSERT(r.op_state != nullptr);
                 pika::execution::experimental::set_value(
-                    PIKA_MOVE(r.op_state->receiver), PIKA_FORWARD(Ts, ts)...);
+                    std::move(r.op_state->receiver), PIKA_FORWARD(Ts, ts)...);
             }
 
             friend constexpr pika::execution::experimental::empty_env tag_invoke(
@@ -168,7 +168,7 @@ namespace pika {
                 )
               : receiver(PIKA_FORWARD(Receiver_, receiver))
               , op_state(pika::detail::with_result_of([&]() {
-                  return pika::execution::experimental::connect(PIKA_MOVE(sender),
+                  return pika::execution::experimental::connect(std::move(sender),
                       require_started_receiver<require_started_op_state_type>{this});
               }))
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)

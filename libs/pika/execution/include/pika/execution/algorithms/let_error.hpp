@@ -139,7 +139,7 @@ namespace pika::let_error_detail {
                     {
                         using operation_state_type =
                             decltype(pika::execution::experimental::connect(
-                                PIKA_INVOKE(PIKA_MOVE(op_state.f), error),
+                                PIKA_INVOKE(std::move(op_state.f), error),
                                 std::declval<Receiver>()));
 
 # if defined(PIKA_HAVE_CXX17_COPY_ELISION)
@@ -150,16 +150,16 @@ namespace pika::let_error_detail {
                         op_state.successor_op_state.template emplace<operation_state_type>(
                             pika::detail::with_result_of([&]() {
                                 return pika::execution::experimental::connect(
-                                    PIKA_INVOKE(PIKA_MOVE(op_state.f), error),
-                                    PIKA_MOVE(op_state.receiver));
+                                    PIKA_INVOKE(std::move(op_state.f), error),
+                                    std::move(op_state.receiver));
                             }));
 # else
                         // MSVC doesn't get copy elision quite right, the operation
                         // state must be constructed explicitly directly in place
                         op_state.successor_op_state.template emplace_f<operation_state_type>(
                             pika::execution::experimental::connect,
-                            PIKA_INVOKE(PIKA_MOVE(op_state.f), error),
-                            PIKA_MOVE(op_state.receiver));
+                            PIKA_INVOKE(std::move(op_state.f), error),
+                            std::move(op_state.receiver));
 # endif
                         pika::detail::visit(start_visitor{}, op_state.successor_op_state);
                     }
@@ -178,14 +178,14 @@ namespace pika::let_error_detail {
                         },
                         [&](std::exception_ptr ep) {
                             pika::execution::experimental::set_error(
-                                PIKA_MOVE(r.op_state.receiver), PIKA_MOVE(ep));
+                                std::move(r.op_state.receiver), std::move(ep));
                         });
                 }
 
                 friend void tag_invoke(pika::execution::experimental::set_stopped_t,
                     let_error_predecessor_receiver&& r) noexcept
                 {
-                    pika::execution::experimental::set_stopped(PIKA_MOVE(r.op_state.receiver));
+                    pika::execution::experimental::set_stopped(std::move(r.op_state.receiver));
                 };
 
                 template <typename... Ts,
@@ -193,9 +193,9 @@ namespace pika::let_error_detail {
                         pika::execution::experimental::set_value_t, Receiver&&, Ts...>>>
                 void set_value(Ts&&... ts) && noexcept
                 {
-                    auto r = PIKA_MOVE(*this);
+                    auto r = std::move(*this);
                     pika::execution::experimental::set_value(
-                        PIKA_MOVE(r.op_state.receiver), PIKA_FORWARD(Ts, ts)...);
+                        std::move(r.op_state.receiver), PIKA_FORWARD(Ts, ts)...);
                 }
             };
 
@@ -261,7 +261,7 @@ namespace pika::let_error_detail {
             Receiver&& receiver)
         {
             return operation_state<Receiver>(
-                PIKA_MOVE(s.predecessor_sender), PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.f));
+                std::move(s.predecessor_sender), PIKA_FORWARD(Receiver, receiver), std::move(s.f));
         }
 
         template <typename Receiver>

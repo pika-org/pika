@@ -32,7 +32,7 @@ namespace pika::util::detail {
         }
 
         constexpr one_shot_wrapper(one_shot_wrapper&& other)
-          : _f(PIKA_MOVE(other._f))
+          : _f(std::move(other._f))
 #if defined(PIKA_DEBUG)
           , _called(other._called)
 #endif
@@ -55,7 +55,7 @@ namespace pika::util::detail {
         {
             check_call();
 
-            return PIKA_INVOKE(PIKA_MOVE(_f), PIKA_FORWARD(Ts, vs)...);
+            return PIKA_INVOKE(std::move(_f), PIKA_FORWARD(Ts, vs)...);
         }
 
         constexpr std::size_t get_function_address() const

@@ -52,7 +52,7 @@ namespace pika::ensure_started_detail {
         void operator()(Error&& error)
         {
             pika::execution::experimental::set_error(
-                PIKA_MOVE(receiver), PIKA_FORWARD(Error, error));
+                std::move(receiver), PIKA_FORWARD(Error, error));
         }
     };
 
@@ -67,7 +67,7 @@ namespace pika::ensure_started_detail {
         void operator()(Ts&& ts)
         {
             std::apply(pika::util::detail::bind_front(
-                           pika::execution::experimental::set_value, PIKA_MOVE(receiver)),
+                           pika::execution::experimental::set_value, std::move(receiver)),
                 PIKA_FORWARD(Ts, ts));
         }
     };
@@ -243,7 +243,7 @@ namespace pika::ensure_started_detail {
                                         std::make_tuple<>(PIKA_FORWARD(Ts, ts)...)),
                         void())
                 {
-                    auto r = PIKA_MOVE(*this);
+                    auto r = std::move(*this);
                     r.state->v.template emplace<value_type>(
                         std::make_tuple<>(PIKA_FORWARD(Ts, ts)...));
                     r.state->set_predecessor_done();
@@ -278,12 +278,12 @@ namespace pika::ensure_started_detail {
 
                 void operator()(pika::execution::detail::stopped_type)
                 {
-                    pika::execution::experimental::set_stopped(PIKA_MOVE(receiver));
+                    pika::execution::experimental::set_stopped(std::move(receiver));
                 }
 
                 void operator()(error_type&& error)
                 {
-                    pika::detail::visit(error_visitor<Receiver>{receiver}, PIKA_MOVE(error));
+                    pika::detail::visit(error_visitor<Receiver>{receiver}, std::move(error));
                 }
 
                 template <typename T,
@@ -363,7 +363,7 @@ namespace pika::ensure_started_detail {
                     // TODO: Should this preserve the scheduler? It does not
                     // if we call set_* inline.
                     pika::detail::visit(
-                        stopped_error_value_visitor<Receiver>{receiver}, PIKA_MOVE(v));
+                        stopped_error_value_visitor<Receiver>{receiver}, std::move(v));
                 }
                 else
                 {
@@ -379,7 +379,7 @@ namespace pika::ensure_started_detail {
                         // directly again.
                         l.unlock();
                         pika::detail::visit(
-                            stopped_error_value_visitor<Receiver>{receiver}, PIKA_MOVE(v));
+                            stopped_error_value_visitor<Receiver>{receiver}, std::move(v));
                     }
                     else
                     {
@@ -389,7 +389,7 @@ namespace pika::ensure_started_detail {
                         // may otherwise not see the continuation.
                         continuation.emplace([this, &receiver]() mutable {
                             pika::detail::visit(
-                                stopped_error_value_visitor<Receiver>{receiver}, PIKA_MOVE(v));
+                                stopped_error_value_visitor<Receiver>{receiver}, std::move(v));
                         });
                     }
                 }
@@ -454,7 +454,7 @@ namespace pika::ensure_started_detail {
             template <typename Receiver_>
             operation_state(Receiver_&& receiver, pika::intrusive_ptr<shared_state> state)
               : receiver(PIKA_FORWARD(Receiver_, receiver))
-              , state(PIKA_MOVE(state))
+              , state(std::move(state))
             {
             }
 
@@ -474,7 +474,7 @@ namespace pika::ensure_started_detail {
         friend operation_state<Receiver> tag_invoke(pika::execution::experimental::connect_t,
             ensure_started_sender_type&& s, Receiver&& receiver)
         {
-            return {PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.state)};
+            return {PIKA_FORWARD(Receiver, receiver), std::move(s.state)};
         }
 
         template <typename Receiver>

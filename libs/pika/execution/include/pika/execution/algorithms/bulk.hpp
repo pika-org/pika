@@ -85,28 +85,28 @@ namespace pika::bulk_detail {
                 Error&& error) noexcept
             {
                 pika::execution::experimental::set_error(
-                    PIKA_MOVE(r.receiver), PIKA_FORWARD(Error, error));
+                    std::move(r.receiver), PIKA_FORWARD(Error, error));
             }
 
             friend void tag_invoke(
                 pika::execution::experimental::set_stopped_t, bulk_receiver&& r) noexcept
             {
-                pika::execution::experimental::set_stopped(PIKA_MOVE(r.receiver));
+                pika::execution::experimental::set_stopped(std::move(r.receiver));
             }
 
             template <typename... Ts>
             void set_value(Ts&&... ts) && noexcept
             {
-                auto r = PIKA_MOVE(*this);
+                auto r = std::move(*this);
                 pika::detail::try_catch_exception_ptr(
                     [&]() {
                         for (auto const& s : r.shape) { PIKA_INVOKE(r.f, s, ts...); }
                         pika::execution::experimental::set_value(
-                            PIKA_MOVE(r.receiver), PIKA_FORWARD(Ts, ts)...);
+                            std::move(r.receiver), PIKA_FORWARD(Ts, ts)...);
                     },
                     [&](std::exception_ptr ep) {
                         pika::execution::experimental::set_error(
-                            PIKA_MOVE(r.receiver), PIKA_MOVE(ep));
+                            std::move(r.receiver), std::move(ep));
                     });
             }
         };
@@ -115,9 +115,9 @@ namespace pika::bulk_detail {
         friend auto tag_invoke(
             pika::execution::experimental::connect_t, bulk_sender_type&& s, Receiver&& receiver)
         {
-            return pika::execution::experimental::connect(PIKA_MOVE(s.sender),
+            return pika::execution::experimental::connect(std::move(s.sender),
                 bulk_receiver<Receiver>(
-                    PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.shape), PIKA_MOVE(s.f)));
+                    PIKA_FORWARD(Receiver, receiver), std::move(s.shape), std::move(s.f)));
         }
 
         template <typename Receiver>
@@ -149,7 +149,7 @@ namespace pika::execution::experimental {
             auto scheduler = pika::execution::experimental::get_completion_scheduler<
                 pika::execution::experimental::set_value_t>(
                 pika::execution::experimental::get_env(sender));
-            return pika::functional::detail::tag_invoke(bulk_t{}, PIKA_MOVE(scheduler),
+            return pika::functional::detail::tag_invoke(bulk_t{}, std::move(scheduler),
                 PIKA_FORWARD(Sender, sender), shape, PIKA_FORWARD(F, f));
         }
 

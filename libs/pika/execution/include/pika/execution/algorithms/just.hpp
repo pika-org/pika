@@ -72,7 +72,7 @@ namespace pika::just_detail {
                 operation_state(Receiver_&& receiver,
                     pika::util::detail::member_pack_for<std::decay_t<Ts>...> ts)
                   : receiver(PIKA_FORWARD(Receiver_, receiver))
-                  , ts(PIKA_MOVE(ts))
+                  , ts(std::move(ts))
                 {
                 }
 
@@ -87,11 +87,11 @@ namespace pika::just_detail {
                     pika::detail::try_catch_exception_ptr(
                         [&]() {
                             pika::execution::experimental::set_value(
-                                PIKA_MOVE(os.receiver), PIKA_MOVE(os.ts).template get<Is>()...);
+                                std::move(os.receiver), std::move(os.ts).template get<Is>()...);
                         },
                         [&](std::exception_ptr ep) {
                             pika::execution::experimental::set_error(
-                                PIKA_MOVE(os.receiver), PIKA_MOVE(ep));
+                                std::move(os.receiver), std::move(ep));
                         });
                 }
             };
@@ -100,7 +100,7 @@ namespace pika::just_detail {
             friend auto tag_invoke(
                 pika::execution::experimental::connect_t, just_sender_type&& s, Receiver&& receiver)
             {
-                return operation_state<Receiver>{PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.ts)};
+                return operation_state<Receiver>{PIKA_FORWARD(Receiver, receiver), std::move(s.ts)};
             }
 
             template <typename Receiver>

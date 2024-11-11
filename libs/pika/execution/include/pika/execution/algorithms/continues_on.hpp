@@ -43,7 +43,7 @@ namespace pika::execution::experimental {
                 pika::execution::experimental::set_value_t>(
                 pika::execution::experimental::get_env(sender));
             return pika::functional::detail::tag_invoke(continues_on_t{},
-                PIKA_MOVE(completion_scheduler), PIKA_FORWARD(Sender, sender),
+                std::move(completion_scheduler), PIKA_FORWARD(Sender, sender),
                 PIKA_FORWARD(Scheduler, scheduler));
         }
 

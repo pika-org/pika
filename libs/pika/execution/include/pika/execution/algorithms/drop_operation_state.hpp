@@ -56,14 +56,14 @@ namespace pika::drop_op_state_detail {
                 r.op_state->op_state.reset();
 
                 pika::execution::experimental::set_error(
-                    PIKA_MOVE(r.op_state->receiver), PIKA_MOVE(error_local));
+                    std::move(r.op_state->receiver), std::move(error_local));
             }
             catch (...)
             {
                 r.op_state->op_state.reset();
 
                 pika::execution::experimental::set_error(
-                    PIKA_MOVE(r.op_state->receiver), std::current_exception());
+                    std::move(r.op_state->receiver), std::current_exception());
             }
         }
 
@@ -75,13 +75,13 @@ namespace pika::drop_op_state_detail {
 
             r.op_state->op_state.reset();
 
-            pika::execution::experimental::set_stopped(PIKA_MOVE(r.op_state->receiver));
+            pika::execution::experimental::set_stopped(std::move(r.op_state->receiver));
         };
 
         template <typename... Ts>
         void set_value(Ts&&... ts) && noexcept
         {
-            auto r = PIKA_MOVE(*this);
+            auto r = std::move(*this);
 
             PIKA_ASSERT(r.op_state != nullptr);
             PIKA_ASSERT(r.op_state->op_state.has_value());
@@ -92,15 +92,15 @@ namespace pika::drop_op_state_detail {
                 r.op_state->op_state.reset();
 
                 std::apply(pika::util::detail::bind_front(pika::execution::experimental::set_value,
-                               PIKA_MOVE(r.op_state->receiver)),
-                    PIKA_MOVE(ts_local));
+                               std::move(r.op_state->receiver)),
+                    std::move(ts_local));
             }
             catch (...)
             {
                 r.op_state->op_state.reset();
 
                 pika::execution::experimental::set_error(
-                    PIKA_MOVE(r.op_state->receiver), std::current_exception());
+                    std::move(r.op_state->receiver), std::current_exception());
             }
         }
 
@@ -134,7 +134,7 @@ namespace pika::drop_op_state_detail {
           : receiver(PIKA_FORWARD(Receiver_, receiver))
           , op_state(pika::detail::with_result_of([&]() mutable {
               return pika::execution::experimental::connect(
-                  PIKA_MOVE(sender), drop_op_state_receiver<drop_op_state_op_state_type>{this});
+                  std::move(sender), drop_op_state_receiver<drop_op_state_op_state_type>{this});
           }))
         {
         }
@@ -223,7 +223,7 @@ namespace pika::drop_op_state_detail {
         tag_invoke(pika::execution::experimental::connect_t, drop_op_state_sender_type&& s,
             Receiver&& receiver)
         {
-            return {PIKA_MOVE(s.sender), PIKA_FORWARD(Receiver, receiver)};
+            return {std::move(s.sender), PIKA_FORWARD(Receiver, receiver)};
         }
 
         template <typename Receiver>

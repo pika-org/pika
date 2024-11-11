@@ -58,8 +58,8 @@ namespace pika::util::detail {
         deferred(deferred&&) = default;
 #else
         constexpr PIKA_HOST_DEVICE deferred(deferred&& other)
-          : _f(PIKA_MOVE(other._f))
-          , _args(PIKA_MOVE(other._args))
+          : _f(std::move(other._f))
+          , _args(std::move(other._args))
         {
         }
 #endif
@@ -71,7 +71,7 @@ namespace pika::util::detail {
         PIKA_HOST_DEVICE
         PIKA_FORCEINLINE std::invoke_result_t<F, Ts...> operator()()
         {
-            return PIKA_INVOKE(PIKA_MOVE(_f), PIKA_MOVE(_args).template get<Is>()...);
+            return PIKA_INVOKE(std::move(_f), std::move(_args).template get<Is>()...);
         }
 
         constexpr std::size_t get_function_address() const

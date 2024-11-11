@@ -102,13 +102,13 @@ namespace pika::mpi::experimental::detail {
                 friend constexpr void
                 tag_invoke(ex::set_error_t, dispatch_mpi_receiver r, Error&& error) noexcept
                 {
-                    ex::set_error(PIKA_MOVE(r.op_state.receiver), PIKA_FORWARD(Error, error));
+                    ex::set_error(std::move(r.op_state.receiver), PIKA_FORWARD(Error, error));
                 }
 
                 friend constexpr void tag_invoke(
                     ex::set_stopped_t, dispatch_mpi_receiver r) noexcept
                 {
-                    ex::set_stopped(PIKA_MOVE(r.op_state.receiver));
+                    ex::set_stopped(std::move(r.op_state.receiver));
                 }
 
                 // receive the MPI function invocable + arguments and add a request,
@@ -119,7 +119,7 @@ namespace pika::mpi::experimental::detail {
                     typename = std::enable_if_t<is_mpi_request_invocable_v<F, Ts...>>>
                 constexpr void set_value(Ts&&... ts) && noexcept
                 {
-                    auto r = PIKA_MOVE(*this);
+                    auto r = std::move(*this);
                     pika::detail::try_catch_exception_ptr(
                         [&]() mutable {
                             using invoke_result_type = mpi_request_invoke_result_t<F, Ts...>;
@@ -135,12 +135,12 @@ namespace pika::mpi::experimental::detail {
                             // execute the mpi function call, passing in the request object
                             if constexpr (std::is_void_v<invoke_result_type>)
                             {
-                                PIKA_INVOKE(PIKA_MOVE(r.op_state.f), ts..., &request);
+                                PIKA_INVOKE(std::move(r.op_state.f), ts..., &request);
                             }
                             else
                             {
                                 static_assert(std::is_same_v<invoke_result_type, int>);
-                                status = PIKA_INVOKE(PIKA_MOVE(r.op_state.f), ts..., &request);
+                                status = PIKA_INVOKE(std::move(r.op_state.f), ts..., &request);
                             }
                             PIKA_DETAIL_DP(mpi_tran<7>,
                                 debug(str<>("dispatch_mpi_recv"), "invoke mpi", ptr(request)));
@@ -153,7 +153,7 @@ namespace pika::mpi::experimental::detail {
                                 PIKA_DETAIL_DP(mpi_tran<5>,
                                     debug(str<>("set_error"), "status != MPI_SUCCESS",
                                         mpi::detail::error_message(status)));
-                                ex::set_error(PIKA_MOVE(r.op_state.receiver),
+                                ex::set_error(std::move(r.op_state.receiver),
                                     std::make_exception_ptr(
                                         mpi::exception(status, "dispatch mpi")));
                                 return;
@@ -167,12 +167,12 @@ namespace pika::mpi::experimental::detail {
                                 PIKA_DETAIL_DP(mpi_tran<7>,
                                     debug(
                                         str<>("dispatch_mpi_recv"), "eager poll ok", ptr(request)));
-                                ex::set_value(PIKA_MOVE(r.op_state.receiver), MPI_REQUEST_NULL);
+                                ex::set_value(std::move(r.op_state.receiver), MPI_REQUEST_NULL);
                             }
-                            else { ex::set_value(PIKA_MOVE(r.op_state.receiver), request); }
+                            else { ex::set_value(std::move(r.op_state.receiver), request); }
                         },
                         [&](std::exception_ptr ep) {
-                            ex::set_error(PIKA_MOVE(r.op_state.receiver), PIKA_MOVE(ep));
+                            ex::set_error(std::move(r.op_state.receiver), std::move(ep));
                         });
                 }
 
@@ -220,7 +220,7 @@ namespace pika::mpi::experimental::detail {
         tag_invoke(ex::connect_t, dispatch_mpi_sender_type&& s, Receiver&& receiver)
         {
             return operation_state<Receiver>(
-                PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.f), PIKA_MOVE(s.sender));
+                PIKA_FORWARD(Receiver, receiver), std::move(s.f), std::move(s.sender));
         }
     };
 

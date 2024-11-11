@@ -105,24 +105,24 @@ namespace pika::mpi::experimental::detail {
                 friend constexpr void
                 tag_invoke(ex::set_error_t, trigger_mpi_receiver r, Error&& error) noexcept
                 {
-                    ex::set_error(PIKA_MOVE(r.op_state.receiver), PIKA_FORWARD(Error, error));
+                    ex::set_error(std::move(r.op_state.receiver), PIKA_FORWARD(Error, error));
                 }
 
                 friend constexpr void tag_invoke(ex::set_stopped_t, trigger_mpi_receiver r) noexcept
                 {
-                    ex::set_stopped(PIKA_MOVE(r.op_state.receiver));
+                    ex::set_stopped(std::move(r.op_state.receiver));
                 }
 
                 // receive the MPI Request and set a callback to be
                 // triggered when the mpi request completes
                 constexpr void set_value(MPI_Request request) && noexcept
                 {
-                    auto r = PIKA_MOVE(*this);
+                    auto r = std::move(*this);
 
                     // early exit check
                     if (request == MPI_REQUEST_NULL)
                     {
-                        ex::set_value(PIKA_MOVE(r.op_state.receiver));
+                        ex::set_value(std::move(r.op_state.receiver));
                         return;
                     }
 
@@ -153,7 +153,7 @@ namespace pika::mpi::experimental::detail {
                                 apex::scoped_timer apex_invoke("pika::mpi::trigger");
 #endif
                                 // we just assume the return from mpi_test is always MPI_SUCCESS
-                                ex::set_value(PIKA_MOVE(r.op_state.receiver));
+                                ex::set_value(std::move(r.op_state.receiver));
                                 break;
                             }
                             case handler_method::suspend_resume:
@@ -183,7 +183,7 @@ namespace pika::mpi::experimental::detail {
 #endif
                                 // call set_value/set_error depending on mpi return status
                                 set_value_error_helper(
-                                    r.op_state.status, PIKA_MOVE(r.op_state.receiver));
+                                    r.op_state.status, std::move(r.op_state.receiver));
                                 break;
                             }
                             case handler_method::new_task:
@@ -214,7 +214,7 @@ namespace pika::mpi::experimental::detail {
                             }
                         },
                         [&](std::exception_ptr ep) {
-                            ex::set_error(PIKA_MOVE(r.op_state.receiver), PIKA_MOVE(ep));
+                            ex::set_error(std::move(r.op_state.receiver), std::move(ep));
                         });
                 }
 
@@ -256,7 +256,7 @@ namespace pika::mpi::experimental::detail {
         tag_invoke(ex::connect_t, trigger_mpi_sender_type&& s, Receiver&& receiver)
         {
             return operation_state<Receiver>(
-                PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.sender), s.completion_mode_flags_);
+                PIKA_FORWARD(Receiver, receiver), std::move(s.sender), s.completion_mode_flags_);
         }
     };
 

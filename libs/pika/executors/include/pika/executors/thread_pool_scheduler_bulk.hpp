@@ -71,7 +71,7 @@ namespace pika::thread_pool_bulk_detail {
         template <typename Sender_, typename Shape_, typename F_>
         thread_pool_bulk_sender(pika::execution::experimental::thread_pool_scheduler&& scheduler,
             Sender_&& sender, Shape_&& shape, F_&& f)
-          : scheduler(PIKA_MOVE(scheduler))
+          : scheduler(std::move(scheduler))
           , sender(PIKA_FORWARD(Sender_, sender))
           , shape(PIKA_FORWARD(Shape_, shape))
           , f(PIKA_FORWARD(F_, f))
@@ -141,13 +141,13 @@ namespace pika::thread_pool_bulk_detail {
                     pika::execution::experimental::set_error_t, bulk_receiver&& r, E&& e) noexcept
                 {
                     pika::execution::experimental::set_error(
-                        PIKA_MOVE(r.op_state->receiver), PIKA_FORWARD(E, e));
+                        std::move(r.op_state->receiver), PIKA_FORWARD(E, e));
                 }
 
                 friend void tag_invoke(
                     pika::execution::experimental::set_stopped_t, bulk_receiver&& r) noexcept
                 {
-                    pika::execution::experimental::set_stopped(PIKA_MOVE(r.op_state->receiver));
+                    pika::execution::experimental::set_stopped(std::move(r.op_state->receiver));
                 };
 
                 struct task_function;
@@ -229,7 +229,7 @@ namespace pika::thread_pool_bulk_detail {
                     {
                         std::apply(
                             pika::util::detail::bind_front(pika::execution::experimental::set_value,
-                                PIKA_MOVE(op_state->receiver)),
+                                std::move(op_state->receiver)),
                             PIKA_FORWARD(Ts, ts));
                     }
                 };
@@ -274,14 +274,14 @@ namespace pika::thread_pool_bulk_detail {
                             {
                                 PIKA_ASSERT(op_state->exception.has_value());
                                 pika::execution::experimental::set_error(
-                                    PIKA_MOVE(op_state->receiver),
+                                    std::move(op_state->receiver),
                                     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-                                    PIKA_MOVE(*(op_state->exception)));
+                                    std::move(*(op_state->exception)));
                             }
                             else
                             {
                                 pika::detail::visit(
-                                    set_value_end_loop_visitor{op_state}, PIKA_MOVE(op_state->ts));
+                                    set_value_end_loop_visitor{op_state}, std::move(op_state->ts));
                             }
                         }
                     }
@@ -372,7 +372,7 @@ namespace pika::thread_pool_bulk_detail {
 
                     // Spawn the task.
                     threads::detail::thread_init_data data(
-                        threads::detail::make_thread_function_nullary(PIKA_MOVE(task_f)), desc,
+                        threads::detail::make_thread_function_nullary(std::move(task_f)), desc,
                         pika::execution::experimental::get_priority(op_state->scheduler), hint,
                         pika::execution::experimental::get_stacksize(op_state->scheduler));
                     threads::detail::register_work(data, op_state->scheduler.get_thread_pool());
@@ -391,12 +391,12 @@ namespace pika::thread_pool_bulk_detail {
                 template <typename... Ts>
                 void set_value(Ts&&... ts) && noexcept
                 {
-                    auto r = PIKA_MOVE(*this);
+                    auto r = std::move(*this);
                     // Don't spawn tasks if there is no work to be done
                     if (r.op_state->shape == 0)
                     {
                         pika::execution::experimental::set_value(
-                            PIKA_MOVE(r.op_state->receiver), PIKA_FORWARD(Ts, ts)...);
+                            std::move(r.op_state->receiver), PIKA_FORWARD(Ts, ts)...);
                         return;
                     }
 
@@ -464,7 +464,7 @@ namespace pika::thread_pool_bulk_detail {
             template <typename Sender_, typename Shape_, typename F_, typename Receiver_>
             operation_state(pika::execution::experimental::thread_pool_scheduler scheduler,
                 Sender_&& sender, Shape_&& shape, F_&& f, Receiver_&& receiver)
-              : scheduler(PIKA_MOVE(scheduler))
+              : scheduler(std::move(scheduler))
               , op_state(pika::execution::experimental::connect(
                     PIKA_FORWARD(Sender_, sender), bulk_receiver{this}))
               , shape(PIKA_FORWARD(Shape_, shape))
@@ -485,8 +485,8 @@ namespace pika::thread_pool_bulk_detail {
         friend auto tag_invoke(pika::execution::experimental::connect_t,
             thread_pool_bulk_sender&& s, Receiver&& receiver)
         {
-            return operation_state<std::decay_t<Receiver>>{PIKA_MOVE(s.scheduler),
-                PIKA_MOVE(s.sender), PIKA_MOVE(s.shape), PIKA_MOVE(s.f),
+            return operation_state<std::decay_t<Receiver>>{std::move(s.scheduler),
+                std::move(s.sender), std::move(s.shape), std::move(s.f),
                 PIKA_FORWARD(Receiver, receiver)};
         }
 
@@ -513,7 +513,7 @@ namespace pika::execution::experimental {
     tag_invoke(bulk_t, thread_pool_scheduler scheduler, Sender&& sender, Shape&& shape, F&& f)
     {
         return thread_pool_bulk_detail::thread_pool_bulk_sender<std::decay_t<Sender>,
-            std::decay_t<Shape>, std::decay_t<F>>{PIKA_MOVE(scheduler),
+            std::decay_t<Shape>, std::decay_t<F>>{std::move(scheduler),
             PIKA_FORWARD(Sender, sender), PIKA_FORWARD(Shape, shape), PIKA_FORWARD(F, f)};
     }
 }    // namespace pika::execution::experimental

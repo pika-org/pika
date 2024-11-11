@@ -142,7 +142,7 @@ namespace pika::sync_wait_detail {
                 if (pika::detail::holds_alternative<value_type>(value))
                 {
                     if constexpr (is_void_result) { return; }
-                    else { return PIKA_MOVE(pika::detail::get<value_type>(value)); }
+                    else { return std::move(pika::detail::get<value_type>(value)); }
                 }
                 else if (pika::detail::holds_alternative<error_type>(value))
                 {
@@ -179,7 +179,7 @@ namespace pika::sync_wait_detail {
                 (!is_void_result && sizeof...(Us) == 1)>>
         void set_value(Us&&... us) && noexcept
         {
-            auto r = PIKA_MOVE(*this);
+            auto r = std::move(*this);
             r.state.value.template emplace<value_type>(PIKA_FORWARD(Us, us)...);
             r.signal_set_called();
         }

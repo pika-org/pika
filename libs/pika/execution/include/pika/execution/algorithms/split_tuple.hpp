@@ -47,7 +47,7 @@ namespace pika::split_tuple_detail {
         template <typename Error>
         void operator()(Error const& error)
         {
-            pika::execution::experimental::set_error(PIKA_MOVE(receiver), error);
+            pika::execution::experimental::set_error(std::move(receiver), error);
         }
     };
 
@@ -153,7 +153,7 @@ namespace pika::split_tuple_detail {
                                 .template emplace<value_type>(PIKA_FORWARD(T, t)),
                     void())
             {
-                auto r = PIKA_MOVE(*this);
+                auto r = std::move(*this);
                 r.state.v.template emplace<value_type>(PIKA_FORWARD(T, t));
 
                 r.state.set_predecessor_done();
@@ -203,7 +203,7 @@ namespace pika::split_tuple_detail {
                     ;
                 if constexpr (sends_stopped)
                 {
-                    pika::execution::experimental::set_stopped(PIKA_MOVE(receiver));
+                    pika::execution::experimental::set_stopped(std::move(receiver));
                 }
                 else { PIKA_UNREACHABLE; }
             }
@@ -216,7 +216,7 @@ namespace pika::split_tuple_detail {
             void operator()(value_type& t)
             {
                 pika::execution::experimental::set_value(
-                    PIKA_MOVE(receiver), std::move(std::get<Index>(t)));
+                    std::move(receiver), std::move(std::get<Index>(t)));
             }
         };
 
@@ -273,7 +273,7 @@ namespace pika::split_tuple_detail {
                 // We cannot call clear on continuations after the loop
                 // because the shared state may already be released by
                 // the last continuation to run.
-                auto continuations_local = PIKA_MOVE(continuations);
+                auto continuations_local = std::move(continuations);
                 for (auto const& continuation : continuations_local)
                 {
                     if (continuation) { continuation(); }
@@ -440,7 +440,7 @@ namespace pika::split_tuple_detail {
             template <typename Receiver_>
             operation_state(Receiver_&& receiver, pika::intrusive_ptr<shared_state_type> state)
               : receiver(PIKA_FORWARD(Receiver_, receiver))
-              , state(PIKA_MOVE(state))
+              , state(std::move(state))
             {
             }
 
@@ -461,7 +461,7 @@ namespace pika::split_tuple_detail {
         friend operation_state<Receiver> tag_invoke(pika::execution::experimental::connect_t,
             split_tuple_sender_type&& s, Receiver&& receiver)
         {
-            return {PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.state)};
+            return {PIKA_FORWARD(Receiver, receiver), std::move(s.state)};
         }
 
         template <typename Receiver>

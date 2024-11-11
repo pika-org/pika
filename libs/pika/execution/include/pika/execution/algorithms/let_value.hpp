@@ -151,13 +151,13 @@ namespace pika::let_value_detail {
                     let_value_predecessor_receiver&& r, Error&& error) noexcept
                 {
                     pika::execution::experimental::set_error(
-                        PIKA_MOVE(r.op_state.receiver), PIKA_FORWARD(Error, error));
+                        std::move(r.op_state.receiver), PIKA_FORWARD(Error, error));
                 }
 
                 friend void tag_invoke(pika::execution::experimental::set_stopped_t,
                     let_value_predecessor_receiver&& r) noexcept
                 {
-                    pika::execution::experimental::set_stopped(PIKA_MOVE(r.op_state.receiver));
+                    pika::execution::experimental::set_stopped(std::move(r.op_state.receiver));
                 };
 
                 struct start_visitor
@@ -192,7 +192,7 @@ namespace pika::let_value_detail {
                     {
                         using operation_state_type =
                             decltype(pika::execution::experimental::connect(
-                                std::apply(PIKA_MOVE(op_state.f), t), std::declval<Receiver>()));
+                                std::apply(std::move(op_state.f), t), std::declval<Receiver>()));
 
 # if defined(PIKA_HAVE_CXX17_COPY_ELISION)
                         // with_result_of is used to emplace the operation state
@@ -202,15 +202,15 @@ namespace pika::let_value_detail {
                         op_state.successor_op_state.template emplace<operation_state_type>(
                             pika::detail::with_result_of([&]() {
                                 return pika::execution::experimental::connect(
-                                    std::apply(PIKA_MOVE(op_state.f), t),
-                                    PIKA_MOVE(op_state.receiver));
+                                    std::apply(std::move(op_state.f), t),
+                                    std::move(op_state.receiver));
                             }));
 # else
                         // MSVC doesn't get copy elision quite right, the operation
                         // state must be constructed explicitly directly in place
                         op_state.successor_op_state.template emplace_f<operation_state_type>(
                             pika::execution::experimental::connect,
-                            std::apply(PIKA_MOVE(op_state.f), t), PIKA_MOVE(op_state.receiver));
+                            std::apply(std::move(op_state.f), t), std::move(op_state.receiver));
 # endif
                         pika::detail::visit(start_visitor{}, op_state.successor_op_state);
                     }
@@ -230,7 +230,7 @@ namespace pika::let_value_detail {
                                         PIKA_FORWARD(Ts, ts)...),
                         void())
                 {
-                    auto r = PIKA_MOVE(*this);
+                    auto r = std::move(*this);
                     pika::detail::try_catch_exception_ptr(
                         [&]() {
                             r.op_state.predecessor_ts
@@ -241,7 +241,7 @@ namespace pika::let_value_detail {
                         },
                         [&](std::exception_ptr ep) {
                             pika::execution::experimental::set_error(
-                                PIKA_MOVE(r.op_state.receiver), PIKA_MOVE(ep));
+                                std::move(r.op_state.receiver), std::move(ep));
                         });
                 }
             };
@@ -273,7 +273,7 @@ namespace pika::let_value_detail {
             Receiver&& receiver)
         {
             return operation_state<Receiver>(
-                PIKA_MOVE(s.predecessor_sender), PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.f));
+                std::move(s.predecessor_sender), PIKA_FORWARD(Receiver, receiver), std::move(s.f));
         }
 
         template <typename Receiver>

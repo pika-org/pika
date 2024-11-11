@@ -46,19 +46,19 @@ namespace pika::then_detail {
             Error&& error) noexcept
         {
             pika::execution::experimental::set_error(
-                PIKA_MOVE(r.receiver), PIKA_FORWARD(Error, error));
+                std::move(r.receiver), PIKA_FORWARD(Error, error));
         }
 
         friend void tag_invoke(
             pika::execution::experimental::set_stopped_t, then_receiver_type&& r) noexcept
         {
-            pika::execution::experimental::set_stopped(PIKA_MOVE(r.receiver));
+            pika::execution::experimental::set_stopped(std::move(r.receiver));
         }
 
         template <typename... Ts>
         void set_value(Ts&&... ts) && noexcept
         {
-            auto r = PIKA_MOVE(*this);
+            auto r = std::move(*this);
             pika::detail::try_catch_exception_ptr(
                 [&]() {
                     if constexpr (std::is_void_v<std::invoke_result_t<F, Ts...>>)
@@ -68,25 +68,25 @@ namespace pika::then_detail {
 # if defined(PIKA_GCC_VERSION) && (PIKA_GCC_VERSION < 100000)
                         PIKA_INVOKE(std::move(r.f), PIKA_FORWARD(Ts, ts)...);
 # else
-                        PIKA_INVOKE(PIKA_MOVE(r.f), PIKA_FORWARD(Ts, ts)...);
+                        PIKA_INVOKE(std::move(r.f), PIKA_FORWARD(Ts, ts)...);
 # endif
-                        pika::execution::experimental::set_value(PIKA_MOVE(r.receiver));
+                        pika::execution::experimental::set_value(std::move(r.receiver));
                     }
                     else
                     {
                     // Certain versions of GCC with optimizations fail on
                     // the move with an internal compiler error.
 # if defined(PIKA_GCC_VERSION) && (PIKA_GCC_VERSION < 100000)
-                        pika::execution::experimental::set_value(PIKA_MOVE(r.receiver),
+                        pika::execution::experimental::set_value(std::move(r.receiver),
                             PIKA_INVOKE(std::move(r.f), PIKA_FORWARD(Ts, ts)...));
 # else
-                        pika::execution::experimental::set_value(PIKA_MOVE(r.receiver),
-                            PIKA_INVOKE(PIKA_MOVE(r.f), PIKA_FORWARD(Ts, ts)...));
+                        pika::execution::experimental::set_value(std::move(r.receiver),
+                            PIKA_INVOKE(std::move(r.f), PIKA_FORWARD(Ts, ts)...));
 # endif
                     }
                 },
                 [&](std::exception_ptr ep) {
-                    pika::execution::experimental::set_error(PIKA_MOVE(r.receiver), PIKA_MOVE(ep));
+                    pika::execution::experimental::set_error(std::move(r.receiver), std::move(ep));
                 });
         }
     };
@@ -135,8 +135,8 @@ namespace pika::then_detail {
         friend auto tag_invoke(
             pika::execution::experimental::connect_t, then_sender_type&& s, Receiver&& receiver)
         {
-            return pika::execution::experimental::connect(PIKA_MOVE(s.sender),
-                then_receiver<Receiver, F>{PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.f)});
+            return pika::execution::experimental::connect(std::move(s.sender),
+                then_receiver<Receiver, F>{PIKA_FORWARD(Receiver, receiver), std::move(s.f)});
         }
 
         template <typename Receiver>

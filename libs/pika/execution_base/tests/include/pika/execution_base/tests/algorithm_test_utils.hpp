@@ -154,7 +154,7 @@ struct callback_receiver
     auto set_value(Ts&&... ts) && noexcept
         -> decltype(PIKA_INVOKE(std::declval<std::decay_t<F>>(), std::forward<Ts>(ts)...), void())
     {
-        auto r = PIKA_MOVE(*this);
+        auto r = std::move(*this);
         PIKA_INVOKE(r.f, std::forward<Ts>(ts)...);
         r.set_value_called = true;
     }
@@ -192,7 +192,7 @@ struct error_callback_receiver
     template <typename... Ts>
     void set_value(Ts&&...) && noexcept
     {
-        auto r = PIKA_MOVE(*this);
+        auto r = std::move(*this);
         PIKA_TEST(r.expect_set_value);
     }
 

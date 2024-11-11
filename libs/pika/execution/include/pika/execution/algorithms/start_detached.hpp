@@ -50,7 +50,7 @@ namespace pika::start_detached_detail {
 
                 if constexpr (std::is_same_v<std::decay_t<Error>, std::exception_ptr>)
                 {
-                    std::rethrow_exception(PIKA_MOVE(error));
+                    std::rethrow_exception(std::move(error));
                 }
 
                 PIKA_ASSERT_MSG(false,
@@ -69,7 +69,7 @@ namespace pika::start_detached_detail {
             template <typename... Ts>
             void set_value(Ts&&...) && noexcept
             {
-                auto r = PIKA_MOVE(*this);
+                auto r = std::move(*this);
                 r.op_state.release();
             }
         };

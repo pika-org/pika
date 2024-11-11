@@ -75,7 +75,7 @@ namespace pika::detail {
         for (/**/; count > 0; --count)
         {
             // notify_one() returns false if no more threads are waiting
-            if (!cond_.notify_one(PIKA_MOVE(l))) break;
+            if (!cond_.notify_one(std::move(l))) break;
 
             l = std::unique_lock<mutex_type>(*mtx);
         }
@@ -85,7 +85,7 @@ namespace pika::detail {
     {
         PIKA_ASSERT_OWNS_LOCK(l);
 
-        signal(PIKA_MOVE(l), lower_limit_);
+        signal(std::move(l), lower_limit_);
         return lower_limit_;
     }
 }    // namespace pika::detail

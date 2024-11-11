@@ -22,6 +22,7 @@
 #include <whip.hpp>
 
 #include <type_traits>
+#include <utility>
 
 namespace pika::cuda::experimental {
     namespace detail {
@@ -132,7 +133,7 @@ namespace pika::cuda::experimental {
             std::decay_t<T> operator()(T&& t, whip::stream_t stream) const
             {
                 launch_bulk_function(f, shape, t, stream);
-                return PIKA_MOVE(t);
+                return std::move(t);
             }
         };
     }    // namespace detail

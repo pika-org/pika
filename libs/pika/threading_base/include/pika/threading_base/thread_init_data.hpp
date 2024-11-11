@@ -55,7 +55,7 @@ namespace pika::threads::detail {
 
         thread_init_data& operator=(thread_init_data&& rhs) noexcept
         {
-            func = PIKA_MOVE(rhs.func);
+            func = std::move(rhs.func);
             priority = rhs.priority;
             schedulehint = rhs.schedulehint;
             stacksize = rhs.stacksize;
@@ -63,7 +63,7 @@ namespace pika::threads::detail {
             run_now = rhs.run_now;
             scheduler_base = rhs.scheduler_base;
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
-            description = PIKA_MOVE(rhs.description);
+            description = std::move(rhs.description);
 #endif
 #if defined(PIKA_HAVE_THREAD_PARENT_REFERENCE)
             parent_id = rhs.parent_id;
@@ -78,9 +78,9 @@ namespace pika::threads::detail {
         }
 
         thread_init_data(thread_init_data&& rhs) noexcept
-          : func(PIKA_MOVE(rhs.func))
+          : func(std::move(rhs.func))
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
-          , description(PIKA_MOVE(rhs.description))
+          , description(std::move(rhs.description))
 #endif
 #if defined(PIKA_HAVE_THREAD_PARENT_REFERENCE)
           , parent_id(rhs.parent_id)

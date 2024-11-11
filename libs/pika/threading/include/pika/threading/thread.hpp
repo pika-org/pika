@@ -161,7 +161,7 @@ namespace pika {
         {
         }
         explicit id(threads::detail::thread_id_type&& i) noexcept
-          : id_(PIKA_MOVE(i))
+          : id_(std::move(i))
         {
         }
 
@@ -170,7 +170,7 @@ namespace pika {
         {
         }
         explicit id(threads::detail::thread_id_ref_type&& i) noexcept
-          : id_(PIKA_MOVE(i).get().get())
+          : id_(std::move(i).get().get())
         {
         }
 

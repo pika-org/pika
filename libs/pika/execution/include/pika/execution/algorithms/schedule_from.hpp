@@ -196,12 +196,12 @@ namespace pika::schedule_from_detail {
             void set_error_predecessor_sender(Error&& error) noexcept
             {
                 pika::execution::experimental::set_error(
-                    PIKA_MOVE(receiver), PIKA_FORWARD(Error, error));
+                    std::move(receiver), PIKA_FORWARD(Error, error));
             }
 
             void set_stopped_predecessor_sender() noexcept
             {
-                pika::execution::experimental::set_stopped(PIKA_MOVE(receiver));
+                pika::execution::experimental::set_stopped(std::move(receiver));
             }
 
             template <typename... Us>
@@ -215,14 +215,14 @@ namespace pika::schedule_from_detail {
                 // state is not required to be copyable nor movable).
                 scheduler_op_state.emplace(pika::detail::with_result_of([&]() {
                     return pika::execution::experimental::connect(
-                        pika::execution::experimental::schedule(PIKA_MOVE(scheduler)),
+                        pika::execution::experimental::schedule(std::move(scheduler)),
                         scheduler_sender_receiver{*this});
                 }));
 # else
                 // MSVC doesn't get copy elision quite right, the operation
                 // state must be constructed explicitly directly in place
                 scheduler_op_state.emplace_f(pika::execution::experimental::connect,
-                    pika::execution::experimental::schedule(PIKA_MOVE(scheduler)),
+                    pika::execution::experimental::schedule(std::move(scheduler)),
                     scheduler_sender_receiver{*this});
 # endif
                 pika::execution::experimental::start(*scheduler_op_state);
@@ -264,7 +264,7 @@ namespace pika::schedule_from_detail {
                 void operator()(Ts&& ts)
                 {
                     std::apply(pika::util::detail::bind_front(
-                                   pika::execution::experimental::set_value, PIKA_MOVE(receiver)),
+                                   pika::execution::experimental::set_value, std::move(receiver)),
                         PIKA_FORWARD(Ts, ts));
                 }
             };
@@ -274,20 +274,20 @@ namespace pika::schedule_from_detail {
             {
                 scheduler_op_state.reset();
                 pika::execution::experimental::set_error(
-                    PIKA_MOVE(receiver), PIKA_FORWARD(Error, error));
+                    std::move(receiver), PIKA_FORWARD(Error, error));
             }
 
             void set_stopped_scheduler_sender() noexcept
             {
                 scheduler_op_state.reset();
-                pika::execution::experimental::set_stopped(PIKA_MOVE(receiver));
+                pika::execution::experimental::set_stopped(std::move(receiver));
             }
 
             void set_value_scheduler_sender() noexcept
             {
                 scheduler_op_state.reset();
                 pika::detail::visit(
-                    scheduler_sender_value_visitor{PIKA_MOVE(receiver)}, PIKA_MOVE(ts));
+                    scheduler_sender_value_visitor{std::move(receiver)}, std::move(ts));
             }
 
             friend void tag_invoke(
@@ -301,7 +301,7 @@ namespace pika::schedule_from_detail {
         friend operation_state<Receiver> tag_invoke(pika::execution::experimental::connect_t,
             schedule_from_sender_type&& s, Receiver&& receiver)
         {
-            return {PIKA_MOVE(s.predecessor_sender), PIKA_MOVE(s.scheduler),
+            return {std::move(s.predecessor_sender), std::move(s.scheduler),
                 PIKA_FORWARD(Receiver, receiver)};
         }
 

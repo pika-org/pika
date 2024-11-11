@@ -78,8 +78,8 @@ namespace pika::threads::coroutines::detail {
 
         arg_type yield(result_type arg = result_type())
         {
-            return !yield_decorator_.empty() ? yield_decorator_(PIKA_MOVE(arg)) :
-                                               yield_impl(PIKA_MOVE(arg));
+            return !yield_decorator_.empty() ? yield_decorator_(std::move(arg)) :
+                                               yield_impl(std::move(arg));
         }
 
         template <typename F>
@@ -100,7 +100,7 @@ namespace pika::threads::coroutines::detail {
         yield_decorator_type decorate_yield(yield_decorator_type&& f)
         {
             std::swap(f, yield_decorator_);
-            return PIKA_MOVE(f);
+            return std::move(f);
         }
 
         yield_decorator_type undecorate_yield()

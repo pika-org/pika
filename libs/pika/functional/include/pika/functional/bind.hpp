@@ -107,8 +107,8 @@ namespace pika::util::detail {
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         constexpr PIKA_HOST_DEVICE bound(bound&& other)
-          : _f(PIKA_MOVE(other._f))
-          , _args(PIKA_MOVE(other._args))
+          : _f(std::move(other._f))
+          , _args(std::move(other._args))
         {
         }
 #endif
@@ -143,9 +143,9 @@ namespace pika::util::detail {
         constexpr PIKA_HOST_DEVICE invoke_bound_result_t<F&&, util::detail::pack<Ts&&...>, Us&&...>
         operator()(Us&&... vs) &&
         {
-            return PIKA_INVOKE(PIKA_MOVE(_f),
+            return PIKA_INVOKE(std::move(_f),
                 detail::bind_eval<Ts, sizeof...(Us)>::call(
-                    PIKA_MOVE(_args).template get<Is>(), PIKA_FORWARD(Us, vs)...)...);
+                    std::move(_args).template get<Is>(), PIKA_FORWARD(Us, vs)...)...);
         }
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
@@ -154,9 +154,9 @@ namespace pika::util::detail {
             invoke_bound_result_t<F const&&, util::detail::pack<Ts const&&...>, Us&&...>
             operator()(Us&&... vs) const&&
         {
-            return PIKA_INVOKE(PIKA_MOVE(_f),
+            return PIKA_INVOKE(std::move(_f),
                 detail::bind_eval<Ts const, sizeof...(Us)>::call(
-                    PIKA_MOVE(_args).template get<Is>(), PIKA_FORWARD(Us, vs)...)...);
+                    std::move(_args).template get<Is>(), PIKA_FORWARD(Us, vs)...)...);
         }
 
         constexpr std::size_t get_function_address() const

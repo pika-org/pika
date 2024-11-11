@@ -66,7 +66,7 @@ namespace pika::resource::detail {
       , scheduling_policy_(user_defined)
       , num_threads_(0)
       , mode_(mode)
-      , create_function_(PIKA_MOVE(create_func))
+      , create_function_(std::move(create_func))
     {
         if (name.empty())
         {
@@ -491,8 +491,8 @@ namespace pika::resource::detail {
         }
 
         affinity_data_.set_num_threads(new_pu_nums.size());
-        affinity_data_.set_pu_nums(PIKA_MOVE(new_pu_nums));
-        affinity_data_.set_affinity_masks(PIKA_MOVE(new_affinity_masks));
+        affinity_data_.set_pu_nums(std::move(new_pu_nums));
+        affinity_data_.set_affinity_masks(std::move(new_affinity_masks));
     }
 
     // Returns true if any of the pools defined by the user is empty of resources
@@ -562,7 +562,7 @@ namespace pika::resource::detail {
         if (pool_name == get_default_pool_name())
         {
             initial_thread_pools_[0] = detail::init_pool_data(
-                get_default_pool_name(), PIKA_MOVE(scheduler_creation), default_scheduler_mode_);
+                get_default_pool_name(), std::move(scheduler_creation), default_scheduler_mode_);
             return;
         }
 
@@ -580,7 +580,7 @@ namespace pika::resource::detail {
         }
 
         initial_thread_pools_.push_back(detail::init_pool_data(
-            pool_name, PIKA_MOVE(scheduler_creation), default_scheduler_mode_));
+            pool_name, std::move(scheduler_creation), default_scheduler_mode_));
     }
 
     // ----------------------------------------------------------------------

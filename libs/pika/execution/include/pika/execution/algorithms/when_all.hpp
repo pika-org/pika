@@ -265,7 +265,7 @@ namespace pika::when_all_impl {
                 pika::util::detail::member_pack<pika::util::detail::index_pack<Is...>, Ts...>& ts)
             {
                 pika::execution::experimental::set_value(
-                    PIKA_MOVE(receiver), PIKA_MOVE(*(ts.template get<Is>()))...);
+                    std::move(receiver), std::move(*(ts.template get<Is>()))...);
             }
 
             void finish() noexcept
@@ -278,11 +278,11 @@ namespace pika::when_all_impl {
                         pika::detail::visit(
                             [this](auto&& error) {
                                 pika::execution::experimental::set_error(
-                                    PIKA_MOVE(receiver), PIKA_FORWARD(decltype(error), error));
+                                    std::move(receiver), PIKA_FORWARD(decltype(error), error));
                             },
-                            PIKA_MOVE(*error));
+                            std::move(*error));
                     }
-                    else { pika::execution::experimental::set_stopped(PIKA_MOVE(receiver)); }
+                    else { pika::execution::experimental::set_stopped(std::move(receiver)); }
                 }
             }
         };
@@ -345,7 +345,7 @@ namespace pika::when_all_impl {
             pika::execution::experimental::connect_t, when_all_sender_type&& s, Receiver&& receiver)
         {
             return operation_state<Receiver, senders_type&&, num_predecessors - 1>(
-                PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.senders));
+                PIKA_FORWARD(Receiver, receiver), std::move(s.senders));
         }
 
         template <typename Receiver>

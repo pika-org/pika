@@ -491,7 +491,7 @@ namespace pika::detail {
             if (it != entries_.end())
             {
                 auto& e = it->second;
-                e.first = PIKA_MOVE(val);
+                e.first = std::move(val);
                 if (!e.second.empty())
                 {
                     std::string value = e.first;

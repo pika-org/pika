@@ -111,7 +111,7 @@ namespace pika::threads::detail {
         {
         }
 
-        ~on_exit_reset_held_lock_data() { pika::util::set_held_locks_data(PIKA_MOVE(data_)); }
+        ~on_exit_reset_held_lock_data() { pika::util::set_held_locks_data(std::move(data_)); }
 
         std::unique_ptr<pika::util::held_locks_data> data_;
     };
@@ -180,7 +180,7 @@ namespace pika::threads::detail {
     void execution_agent::do_resume(char const* /* desc */, thread_restart_state statex)
     {
         auto thrd = self_.get_thread_id();
-        set_thread_state(PIKA_MOVE(thrd), thread_schedule_state::pending, statex,
+        set_thread_state(std::move(thrd), thread_schedule_state::pending, statex,
             execution::thread_priority::normal,
             execution::thread_schedule_hint{
                 static_cast<std::int16_t>(get_thread_id_data(thrd)->get_last_worker_thread_num())},

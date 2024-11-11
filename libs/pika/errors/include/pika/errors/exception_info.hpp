@@ -39,7 +39,7 @@ namespace pika {
         }
 
         explicit error_info(Type&& value)
-          : _value(PIKA_MOVE(value))
+          : _value(std::move(value))
         {
         }
 
@@ -126,8 +126,8 @@ namespace pika {
             using node_type = detail::exception_info_node<ErrorInfo...>;
 
             node_ptr node = std::make_shared<node_type>(PIKA_FORWARD(ErrorInfo, tagged_values)...);
-            node->next = PIKA_MOVE(_data);
-            _data = PIKA_MOVE(node);
+            node->next = std::move(_data);
+            _data = std::move(node);
             return *this;
         }
 
@@ -148,7 +148,7 @@ namespace pika {
         struct exception_with_info_base : public exception_info
         {
             exception_with_info_base(std::type_info const& type, exception_info xi)
-              : exception_info(PIKA_MOVE(xi))
+              : exception_info(std::move(xi))
               , type(type)
             {
             }
@@ -163,13 +163,13 @@ namespace pika {
         {
             explicit exception_with_info(E const& e, exception_info xi)
               : E(e)
-              , exception_with_info_base(typeid(E), PIKA_MOVE(xi))
+              , exception_with_info_base(typeid(E), std::move(xi))
             {
             }
 
             explicit exception_with_info(E&& e, exception_info xi)
-              : E(PIKA_MOVE(e))
-              , exception_with_info_base(typeid(E), PIKA_MOVE(xi))
+              : E(std::move(e))
+              , exception_with_info_base(typeid(E), std::move(xi))
             {
             }
         };
@@ -184,7 +184,7 @@ namespace pika {
         static_assert(
             !std::is_base_of<exception_info, ED>::value, "E shall not derive from exception_info");
 
-        throw detail::exception_with_info<ED>(PIKA_FORWARD(E, e), PIKA_MOVE(xi));
+        throw detail::exception_with_info<ED>(PIKA_FORWARD(E, e), std::move(xi));
     }
 
     template <typename E>

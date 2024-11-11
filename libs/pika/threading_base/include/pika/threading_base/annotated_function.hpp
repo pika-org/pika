@@ -49,7 +49,7 @@ namespace pika {
             }
 
             annotated_function(F&& f, char const* name)
-              : f_(PIKA_MOVE(f))
+              : f_(std::move(f))
               , name_(name)
             {
             }
@@ -108,7 +108,7 @@ namespace pika {
 
         // Store string in a set to ensure it lives for the entire duration of
         // the task.
-        char const* name_c_str = pika::detail::store_function_annotation(PIKA_MOVE(name));
+        char const* name_c_str = pika::detail::store_function_annotation(std::move(name));
         return result_type(PIKA_FORWARD(F, f), name_c_str);
     }
 

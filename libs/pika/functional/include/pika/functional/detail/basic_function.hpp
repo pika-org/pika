@@ -113,7 +113,7 @@ namespace pika::util::detail {
         }
 
         basic_function(basic_function&& other) noexcept
-          : base_type(PIKA_MOVE(other), get_empty_vtable())
+          : base_type(std::move(other), get_empty_vtable())
         {
         }
 
@@ -125,7 +125,7 @@ namespace pika::util::detail {
 
         basic_function& operator=(basic_function&& other) noexcept
         {
-            base_type::op_assign(PIKA_MOVE(other), get_empty_vtable());
+            base_type::op_assign(std::move(other), get_empty_vtable());
             return *this;
         }
 

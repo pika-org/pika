@@ -51,7 +51,7 @@ namespace pika::split_detail {
         template <typename Error>
         void operator()(Error const& error)
         {
-            pika::execution::experimental::set_error(PIKA_MOVE(receiver), error);
+            pika::execution::experimental::set_error(std::move(receiver), error);
         }
     };
 
@@ -64,7 +64,7 @@ namespace pika::split_detail {
         void operator()(Ts const& ts)
         {
             std::apply(pika::util::detail::bind_front(
-                           pika::execution::experimental::set_value, PIKA_MOVE(receiver)),
+                           pika::execution::experimental::set_value, std::move(receiver)),
                 ts);
         }
     };
@@ -197,7 +197,7 @@ namespace pika::split_detail {
                                         std::make_tuple<>(PIKA_FORWARD(Ts, ts)...)),
                         void())
                 {
-                    auto r = PIKA_MOVE(*this);
+                    auto r = std::move(*this);
                     r.state->v.template emplace<value_type>(
                         std::make_tuple<>(PIKA_FORWARD(Ts, ts)...));
 
@@ -233,7 +233,7 @@ namespace pika::split_detail {
 
                 void operator()(pika::execution::detail::stopped_type)
                 {
-                    pika::execution::experimental::set_stopped(PIKA_MOVE(receiver));
+                    pika::execution::experimental::set_stopped(std::move(receiver));
                 }
 
                 void operator()(error_type const& error)
@@ -401,7 +401,7 @@ namespace pika::split_detail {
             template <typename Receiver_>
             operation_state(Receiver_&& receiver, pika::intrusive_ptr<shared_state> state)
               : receiver(PIKA_FORWARD(Receiver_, receiver))
-              , state(PIKA_MOVE(state))
+              , state(std::move(state))
             {
             }
 
@@ -422,7 +422,7 @@ namespace pika::split_detail {
         friend operation_state<Receiver> tag_invoke(
             pika::execution::experimental::connect_t, split_sender_type&& s, Receiver&& receiver)
         {
-            return {PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.state)};
+            return {PIKA_FORWARD(Receiver, receiver), std::move(s.state)};
         }
 
         template <typename Receiver>

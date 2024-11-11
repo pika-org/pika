@@ -46,21 +46,21 @@ namespace pika::unpack_detail {
             Error&& error) noexcept
         {
             pika::execution::experimental::set_error(
-                PIKA_MOVE(r.receiver), PIKA_FORWARD(Error, error));
+                std::move(r.receiver), PIKA_FORWARD(Error, error));
         }
 
         friend void tag_invoke(
             pika::execution::experimental::set_stopped_t, unpack_receiver_type&& r) noexcept
         {
-            pika::execution::experimental::set_stopped(PIKA_MOVE(r.receiver));
+            pika::execution::experimental::set_stopped(std::move(r.receiver));
         }
 
         template <typename Ts>
         void set_value(Ts&& ts) && noexcept
         {
-            auto r = PIKA_MOVE(*this);
+            auto r = std::move(*this);
             std::apply(pika::util::detail::bind_front(
-                           pika::execution::experimental::set_value, PIKA_MOVE(r.receiver)),
+                           pika::execution::experimental::set_value, std::move(r.receiver)),
                 PIKA_FORWARD(Ts, ts));
         }
 
@@ -178,7 +178,7 @@ namespace pika::unpack_detail {
             pika::execution::experimental::connect_t, unpack_sender_type&& s, Receiver&& receiver)
         {
             return pika::execution::experimental::connect(
-                PIKA_MOVE(s.sender), unpack_receiver<Receiver>{PIKA_FORWARD(Receiver, receiver)});
+                std::move(s.sender), unpack_receiver<Receiver>{PIKA_FORWARD(Receiver, receiver)});
         }
 
         template <typename Receiver>
