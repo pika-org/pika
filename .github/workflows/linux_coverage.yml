@@ -19,7 +19,7 @@ jobs:
   build:
     name: github/linux/coverage
     runs-on: ubuntu-24.04
-    container: pikaorg/pika-ci-base:27
+    container: pikaorg/pika-ci-base:28
 
     steps:
       - uses: actions/checkout@v4
