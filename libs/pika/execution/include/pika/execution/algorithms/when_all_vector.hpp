@@ -414,7 +414,5 @@ namespace pika::execution::experimental {
     /// An empty vector of senders completes immediately on start. When the input vector of senders
     /// contains senders that send no value the output sender sends no value instead of a vector.
     /// The senders in the input vector must send at most a single type.
-    ///
-    /// Added in 0.2.0.
     inline constexpr when_all_vector_t when_all_vector{};
 }    // namespace pika::execution::experimental

@@ -261,8 +261,6 @@ namespace pika::execution::experimental {
     /// than necessary which can prevent other algorithms from using those resources.
     /// \p drop_operation_state can be used to explicitly release the operation state, and thus
     /// associated resources, of previous senders.
-    ///
-    /// Added in 0.19.0.
     inline constexpr drop_operation_state_t drop_operation_state{};
 
 }    // namespace pika::execution::experimental

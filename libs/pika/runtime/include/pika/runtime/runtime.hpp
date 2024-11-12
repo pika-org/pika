@@ -441,8 +441,6 @@ namespace pika {
     ///
     /// Returns true between calls of \ref pika::start(int, char const* const*, init_params const&)
     /// and \ref pika::stop(), otherwise false.
-    ///
-    /// Added in 0.22.0.
     PIKA_EXPORT bool is_runtime_initialized() noexcept;
 }    // namespace pika
 
