@@ -1,5 +1,5 @@
 {
-  "image": "docker.io/pikaorg/pika-ci-base:28",
+  "image": "docker.io/pikaorg/pika-ci-base:29",
   "features": {},
   "onCreateCommand": "cmake -Bbuild -GNinja -DCMAKE_BUILD_TYPE=Debug -DPIKA_WITH_MALLOC=system -DPIKA_WITH_EXAMPLES=ON -DPIKA_WITH_TESTS=ON -DPIKA_WITH_TESTS_EXAMPLES=ON -DPIKA_WITH_TESTS_HEADERS=ON -DPIKA_WITH_TESTS_MAX_THREADS=2 -DPIKA_WITH_COMPILER_WARNINGS=ON -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON && cmake --build build --target pika",
   "extensions": [

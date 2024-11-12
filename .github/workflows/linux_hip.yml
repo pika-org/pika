@@ -20,7 +20,7 @@ jobs:
     name: github/linux/hip/fast
     if: ${{ github.event_name == 'merge_group' }}
     runs-on: ubuntu-24.04
-    container: pikaorg/pika-ci-hip:16
+    container: pikaorg/pika-ci-hip:17
     steps:
       - uses: actions/checkout@v4
       - name: Update apt repositories for ccache
