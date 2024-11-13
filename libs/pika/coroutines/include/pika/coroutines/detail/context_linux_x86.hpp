@@ -118,6 +118,9 @@ namespace pika::threads::coroutines {
                 PIKA_ASSERT(sizeof(void*) == 4);
 # endif
 
+                // Silence this warning since the explicit cast is ignored until clang-tidy version
+                // 19 (https://github.com/llvm/llvm-project/pull/94524)
+                // NOLINTBEGIN(bugprone-multi-level-implicit-pointer-conversion)
                 __builtin_prefetch(static_cast<void*>(m_sp), 1, 3);
                 __builtin_prefetch(static_cast<void*>(m_sp), 0, 3);
                 __builtin_prefetch(
@@ -138,6 +141,7 @@ namespace pika::threads::coroutines {
                     static_cast<void*>(static_cast<void**>(m_sp) - 64 / sizeof(void*)), 1, 3);
                 __builtin_prefetch(
                     static_cast<void*>(static_cast<void**>(m_sp) - 64 / sizeof(void*)), 0, 3);
+                // NOLINTEND(bugprone-multi-level-implicit-pointer-conversion)
             }
 
             /**
