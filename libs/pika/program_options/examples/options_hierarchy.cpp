@@ -321,6 +321,7 @@ int main(int ac, char* av[])
         options.ParseOptions(ac, av);
         PrintOptions(options);
     }
+    // NOLINTNEXTLINE(bugprone-empty-catch)
     catch (OptionsExitsProgram const&)
     {
     }

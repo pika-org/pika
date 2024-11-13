@@ -73,6 +73,7 @@ namespace pika::threads::coroutines::detail {
                         result_last.first == threads::detail::thread_schedule_state::terminated);
                     status = super_type::ctx_exited_return;
                 }
+                // NOLINTNEXTLINE(bugprone-empty-catch)
                 catch (...)
                 {
                     status = super_type::ctx_exited_abnormally;
