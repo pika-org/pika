@@ -61,4 +61,6 @@ function(pika_perform_cxx_feature_tests)
   )
 
   pika_check_for_stdexec_continues_on(DEFINITIONS PIKA_HAVE_STDEXEC_CONTINUES_ON)
+
+  pika_check_for_pthread_setname_np(DEFINITIONS PIKA_HAVE_PTHREAD_SETNAME_NP)
 endfunction()

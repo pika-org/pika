@@ -124,20 +124,6 @@ if(NOT TARGET pika_dependencies_allocator)
 
   pika_info("Using ${PIKA_WITH_MALLOC} allocator.")
 
-  # Setup Intel amplifier
-  if((NOT PIKA_WITH_APEX) AND PIKA_WITH_ITTNOTIFY)
-
-    find_package(Amplifier)
-    if(NOT AMPLIFIER_FOUND)
-      pika_error(
-        "Intel Amplifier could not be found and PIKA_WITH_ITTNOTIFY=On, please specify AMPLIFIER_ROOT to point to the root of your Amplifier installation"
-      )
-    endif()
-
-    pika_add_config_define(PIKA_HAVE_ITTNOTIFY 1)
-    pika_add_config_define(PIKA_HAVE_THREAD_DESCRIPTION)
-  endif()
-
   # convey selected allocator type to the build configuration
   if(NOT PIKA_FIND_PACKAGE)
     pika_add_config_define(PIKA_HAVE_MALLOC "\"${PIKA_WITH_MALLOC}\"")

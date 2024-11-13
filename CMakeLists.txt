@@ -617,12 +617,6 @@ if(PIKA_WITH_SPINLOCK_DEADLOCK_DETECTION)
 endif()
 
 pika_option(
-  PIKA_WITH_ITTNOTIFY BOOL "Enable Amplifier (ITT) instrumentation support." OFF
-  CATEGORY "Profiling"
-  ADVANCED
-)
-
-pika_option(
   PIKA_WITH_MPI BOOL
   "Enable support for returning futures from MPI asynchronous calls (default: ON)" OFF
   CATEGORY "MPI"

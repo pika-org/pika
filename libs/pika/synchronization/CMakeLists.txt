@@ -45,7 +45,6 @@ pika_add_module(
     pika_errors
     pika_functional
     pika_hashing
-    pika_itt_notify
     pika_memory
     pika_lock_registration
     pika_logging

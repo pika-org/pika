@@ -12,7 +12,6 @@ set(runtime_headers
     pika/runtime/debugging.hpp
     pika/runtime/detail/runtime_fwd.hpp
     pika/runtime/get_os_thread_count.hpp
-    pika/runtime/get_thread_name.hpp
     pika/runtime/get_worker_thread_num.hpp
     pika/runtime/report_error.hpp
     pika/runtime/runtime_handlers.hpp

@@ -24,7 +24,6 @@ pika_add_module(
     pika_program_options
     pika_errors
     pika_filesystem
-    pika_itt_notify
     pika_logging
     pika_ini
     pika_coroutines

@@ -36,7 +36,6 @@ pika_add_module(
     pika_execution_base
     pika_errors
     pika_hashing
-    pika_itt_notify
     pika_lock_registration
     pika_thread_support
   CMAKE_SUBDIRS examples tests

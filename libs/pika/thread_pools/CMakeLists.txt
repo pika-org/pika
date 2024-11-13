@@ -20,13 +20,7 @@ pika_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${thread_pools_sources}
   HEADERS ${thread_pools_headers}
-  MODULE_DEPENDENCIES
-    pika_assertion
-    pika_config
-    pika_debugging
-    pika_errors
-    pika_itt_notify
-    pika_logging
-    pika_schedulers
+  MODULE_DEPENDENCIES pika_assertion pika_config pika_debugging pika_errors pika_logging
+                      pika_schedulers
   CMAKE_SUBDIRS examples tests
 )
