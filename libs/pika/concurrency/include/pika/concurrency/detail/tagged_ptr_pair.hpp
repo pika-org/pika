@@ -49,12 +49,12 @@ namespace pika::concurrency::detail {
         std::uint64_t left;
         std::uint64_t right;
 
-        bool operator==(volatile uint128_type const& rhs) const
+        bool operator==(uint128_type const volatile& rhs) const
         {
             return (left == rhs.left) && (right == rhs.right);
         }
 
-        bool operator!=(volatile uint128_type const& rhs) const { return !(*this == rhs); }
+        bool operator!=(uint128_type const volatile& rhs) const { return !(*this == rhs); }
     };
 
     template <class Left, class Right>
@@ -74,17 +74,17 @@ namespace pika::concurrency::detail {
         static constexpr std::size_t right_tag_index = 7;
         static constexpr compressed_ptr_t ptr_mask = 0xffff'ffff'ffff;
 
-        static Left* extract_left_ptr(volatile compressed_ptr_pair_t const& i)
+        static Left* extract_left_ptr(compressed_ptr_pair_t const volatile& i)
         {
             return reinterpret_cast<Left*>(i.left & ptr_mask);
         }
 
-        static Right* extract_right_ptr(volatile compressed_ptr_pair_t const& i)
+        static Right* extract_right_ptr(compressed_ptr_pair_t const volatile& i)
         {
             return reinterpret_cast<Right*>(i.right & ptr_mask);
         }
 
-        static tag_t extract_left_tag(volatile compressed_ptr_pair_t const& i)
+        static tag_t extract_left_tag(compressed_ptr_pair_t const volatile& i)
         {
             cast_unit cu;
             cu.value.left = i.left;
@@ -92,7 +92,7 @@ namespace pika::concurrency::detail {
             return cu.tags[left_tag_index];
         }
 
-        static tag_t extract_right_tag(volatile compressed_ptr_pair_t const& i)
+        static tag_t extract_right_tag(compressed_ptr_pair_t const volatile& i)
         {
             cast_unit cu;
             cu.value.left = i.left;
@@ -171,9 +171,9 @@ namespace pika::concurrency::detail {
 
         /** comparing semantics */
         /* @{ */
-        bool operator==(volatile tagged_ptr_pair const& p) const { return (pair_ == p.pair_); }
+        bool operator==(tagged_ptr_pair const volatile& p) const { return (pair_ == p.pair_); }
 
-        bool operator!=(volatile tagged_ptr_pair const& p) const { return !operator==(p); }
+        bool operator!=(tagged_ptr_pair const volatile& p) const { return !operator==(p); }
         /* @} */
 
         /** pointer access */

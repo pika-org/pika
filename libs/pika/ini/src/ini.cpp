@@ -749,7 +749,7 @@ namespace pika::detail {
         {
             indent(ind, strm);
 
-            const std::string expansion = expand(l, i->second.first);
+            std::string const expansion = expand(l, i->second.first);
 
             // Check if the expanded entry is different from the actual entry.
             if (expansion != i->second.first)

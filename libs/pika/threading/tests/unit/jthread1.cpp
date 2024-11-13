@@ -245,7 +245,7 @@ void test_pika_thread()
             // "interrupted" not derived from std::exception
             PIKA_TEST(false);
         }
-        catch (const char* e)
+        catch (char const* e)
         {
             caught_exception = true;
         }
@@ -334,7 +334,7 @@ void test_temporarily_disable_token()
             {
                 if (actToken.stop_requested()) { throw "interrupted"; }
             }
-            catch (const char*)
+            catch (char const*)
             {
                 state.store(State::interrupted);
             }

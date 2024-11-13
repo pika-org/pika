@@ -208,15 +208,15 @@ namespace pika {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename E, typename F>
-    auto invoke_with_exception_info(E const& e, F&& f)
-        -> decltype(PIKA_FORWARD(F, f)(std::declval<exception_info const*>()))
+    auto invoke_with_exception_info(
+        E const& e, F&& f) -> decltype(PIKA_FORWARD(F, f)(std::declval<exception_info const*>()))
     {
         return PIKA_FORWARD(F, f)(dynamic_cast<exception_info const*>(std::addressof(e)));
     }
 
     template <typename F>
-    auto invoke_with_exception_info(std::exception_ptr const& p, F&& f)
-        -> decltype(PIKA_FORWARD(F, f)(std::declval<exception_info const*>()))
+    auto invoke_with_exception_info(std::exception_ptr const& p,
+        F&& f) -> decltype(PIKA_FORWARD(F, f)(std::declval<exception_info const*>()))
     {
         try
         {
@@ -237,8 +237,8 @@ namespace pika {
     }
 
     template <typename F>
-    auto invoke_with_exception_info(pika::error_code const& ec, F&& f)
-        -> decltype(PIKA_FORWARD(F, f)(std::declval<exception_info const*>()))
+    auto invoke_with_exception_info(pika::error_code const& ec,
+        F&& f) -> decltype(PIKA_FORWARD(F, f)(std::declval<exception_info const*>()))
     {
         return invoke_with_exception_info(detail::access_exception(ec), PIKA_FORWARD(F, f));
     }

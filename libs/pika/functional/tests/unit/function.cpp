@@ -533,7 +533,7 @@ static void test_zero_args()
 
     // Const vs. non-const
     write_const_1_nonconst_2 one_or_two;
-    const pika::util::detail::function<void()> v7(one_or_two);
+    pika::util::detail::function<void()> const v7(one_or_two);
     pika::util::detail::function<void()> v8(one_or_two);
 
     global_int = 0;
@@ -604,7 +604,7 @@ static void test_one_arg()
     pika::util::detail::function<int(int)> f2(add_to);
     PIKA_TEST_EQ(f2(3), 8);
 
-    const pika::util::detail::function<int(int)> cf2(add_to);
+    pika::util::detail::function<int(int)> const cf2(add_to);
     PIKA_TEST_EQ(cf2(3), 8);
 }
 

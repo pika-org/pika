@@ -82,8 +82,7 @@ private:
             std::cout << "OS-threads (Independent Variable),"
                       << "Tasks per OS-thread (Control Variable) [tasks/OS-threads],"
                       << "Payload Duration (Control Variable) [nanoseconds],"
-                      << "Total Walltime [nanoseconds]"
-                      << "\n";
+                      << "Total Walltime [nanoseconds]" << "\n";
 
         fmt::print(std::cout, "{},{},{},{:.14g}\n", this->osthreads_, this->tasks_,
             this->payload_duration_, results);

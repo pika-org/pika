@@ -37,9 +37,9 @@
 namespace pika::cuda::experimental::then_with_stream_detail {
     template <typename F, typename... Ts>
     auto invoke_with_thread_local_cublas_handle(cuda_scheduler& sched, cuda_stream const& stream,
-        cublasPointerMode_t pointer_mode, F&& f, Ts&&... ts)
-        -> decltype(PIKA_INVOKE(
-            PIKA_FORWARD(F, f), std::declval<cublasHandle_t>(), PIKA_FORWARD(Ts, ts)...))
+        cublasPointerMode_t pointer_mode, F&& f,
+        Ts&&... ts) -> decltype(PIKA_INVOKE(PIKA_FORWARD(F, f), std::declval<cublasHandle_t>(),
+                        PIKA_FORWARD(Ts, ts)...))
     {
         auto locked_handle = sched.get_cublas_handle(stream, pointer_mode);
         return PIKA_INVOKE(PIKA_FORWARD(F, f), locked_handle.get().get(), PIKA_FORWARD(Ts, ts)...);
@@ -48,7 +48,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
     template <typename F, typename... Ts>
     auto invoke_with_thread_local_cusolver_handle(cuda_scheduler& sched, cuda_stream const& stream,
         F&& f, Ts&&... ts) -> decltype(PIKA_INVOKE(PIKA_FORWARD(F, f),
-        std::declval<cusolverDnHandle_t>(), PIKA_FORWARD(Ts, ts)...))
+                               std::declval<cusolverDnHandle_t>(), PIKA_FORWARD(Ts, ts)...))
     {
         auto locked_handle = sched.get_cusolver_handle(stream);
         return PIKA_INVOKE(PIKA_FORWARD(F, f), locked_handle.get().get(), PIKA_FORWARD(Ts, ts)...);

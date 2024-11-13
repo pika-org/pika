@@ -110,8 +110,8 @@ namespace pika::detail {
         }
         catch (std::exception const& e)
         {
-            std::cerr << "handle_late_commandline_options: "
-                      << "command line processing: " << e.what() << std::endl;
+            std::cerr << "handle_late_commandline_options: " << "command line processing: "
+                      << e.what() << std::endl;
             return -1;
         }
 

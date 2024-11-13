@@ -23,7 +23,7 @@ namespace pika::resource {
     ///////////////////////////////////////////////////////////////////////////
     class pu
     {
-        static constexpr const std::size_t invalid_pu_id = std::size_t(-1);
+        static constexpr std::size_t const invalid_pu_id = std::size_t(-1);
 
     public:
         explicit pu(
@@ -60,7 +60,7 @@ namespace pika::resource {
 
     class core
     {
-        static constexpr const std::size_t invalid_core_id = std::size_t(-1);
+        static constexpr std::size_t const invalid_core_id = std::size_t(-1);
 
     public:
         explicit core(std::size_t id = invalid_core_id, socket* socket = nullptr)
@@ -86,7 +86,7 @@ namespace pika::resource {
 
     class socket
     {
-        static constexpr const std::size_t invalid_socket_id = std::size_t(-1);
+        static constexpr std::size_t const invalid_socket_id = std::size_t(-1);
 
     public:
         explicit socket(std::size_t id = invalid_socket_id)

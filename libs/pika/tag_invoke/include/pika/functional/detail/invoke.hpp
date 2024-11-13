@@ -63,8 +63,8 @@ namespace pika::util::detail {
 
         template <typename T1>
         constexpr auto operator()(T1&& t1) const
-            noexcept(noexcept(detail::mem_ptr_target<C>(PIKA_FORWARD(T1, t1)).*pm))
-                -> decltype(detail::mem_ptr_target<C>(PIKA_FORWARD(T1, t1)).*pm)
+            noexcept(noexcept(detail::mem_ptr_target<C>(PIKA_FORWARD(T1, t1)).*
+                pm)) -> decltype(detail::mem_ptr_target<C>(PIKA_FORWARD(T1, t1)).*pm)
         {
             // This seems to trigger a bogus warning in GCC 11 with
             // optimizations enabled (possibly the same as this:
@@ -93,10 +93,10 @@ namespace pika::util::detail {
         }
 
         template <typename T1, typename... Tn>
-        constexpr auto operator()(T1&& t1, Tn&&... tn) const noexcept(noexcept(
-            (detail::mem_ptr_target<C>(PIKA_FORWARD(T1, t1)).*pm)(PIKA_FORWARD(Tn, tn)...)))
-            -> decltype((detail::mem_ptr_target<C>(PIKA_FORWARD(T1, t1)).*pm)(
-                PIKA_FORWARD(Tn, tn)...))
+        constexpr auto operator()(T1&& t1, Tn&&... tn) const
+            noexcept(noexcept((detail::mem_ptr_target<C>(PIKA_FORWARD(T1, t1)).*pm)(PIKA_FORWARD(
+                Tn, tn)...))) -> decltype((detail::mem_ptr_target<C>(PIKA_FORWARD(T1, t1)).*
+                                  pm)(PIKA_FORWARD(Tn, tn)...))
         {
             // This seems to trigger a bogus warning in GCC 11 with
             // optimizations enabled (possibly the same as this:

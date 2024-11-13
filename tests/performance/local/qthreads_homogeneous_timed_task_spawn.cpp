@@ -110,7 +110,7 @@ int qthreads_main(variables_map& vm)
     if (vm.count("no-header")) header = false;
 
     //time in seconds
-    delay_sec = (delay) *1.0E-6;
+    delay_sec = (delay) * 1.0E-6;
 
     {
         // Validate command line.

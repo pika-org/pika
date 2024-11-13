@@ -104,7 +104,7 @@ namespace pika::program_options {
 
         std::string const& long_name() const;
 
-        const std::pair<std::string const*, std::size_t> long_names() const;
+        std::pair<std::string const*, std::size_t> const long_names() const;
 
         /// Explanation of this option
         std::string const& description() const;
