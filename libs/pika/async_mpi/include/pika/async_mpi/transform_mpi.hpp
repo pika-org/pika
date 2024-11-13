@@ -81,7 +81,7 @@ namespace pika::mpi::experimental {
             if (requests_inline)
             {
                 return std::forward<Sender>(sender) |
-                    let_value([=, f = std::forward<F>(f)](auto&&... args) mutable {
+                    let_value([=, f = std::forward<F>(f)](auto&... args) mutable {
                         return just(std::tuple<decltype(args)&...>{args...}) | ex::unpack() |
                             dispatch_mpi(std::move(f)) | let_value(completion_snd);
                     });
