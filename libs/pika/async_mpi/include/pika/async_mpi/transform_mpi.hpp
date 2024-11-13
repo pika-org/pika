@@ -82,7 +82,7 @@ namespace pika::mpi::experimental {
             {
                 return std::forward<Sender>(sender) |
                     let_value([=, f = std::forward<F>(f)](auto&... args) mutable {
-                        return just(std::tuple<decltype(args)&...>{args...}) | ex::unpack() |
+                        return just(std::forward_as_tuple(args...)) | ex::unpack() |
                             dispatch_mpi(std::move(f)) | let_value(completion_snd);
                     });
             }
@@ -90,7 +90,7 @@ namespace pika::mpi::experimental {
             {
                 return std::forward<Sender>(sender) | continues_on(mpi_pool_scheduler(p)) |
                     let_value([=, f = std::forward<F>(f)](auto&... args) mutable {
-                        return just(std::tuple<decltype(args)&...>{args...}) | ex::unpack() |
+                        return just(std::forward_as_tuple(args...)) | ex::unpack() |
                             dispatch_mpi(std::move(f)) | let_value(completion_snd);
                     });
             }
