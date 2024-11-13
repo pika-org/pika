@@ -218,7 +218,7 @@ int pika_main()
                     ex::drop_operation_state() |
                     mpi::transform_mpi([](auto& data, MPI_Datatype datatype, int i, MPI_Comm comm,
                                            MPI_Request* request) {
-                        MPI_Ibcast(&data, 1, datatype, i, comm, request);
+                        MPI_Ibcast(&data.x, 1, datatype, i, comm, request);
                     });
                 tt::sync_wait(PIKA_MOVE(s));
             }
