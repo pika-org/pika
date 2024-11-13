@@ -1407,8 +1407,11 @@ namespace pika::detail {
 
         PIKA_ASSERT(detail::get_thread_name_internal().empty());
         detail::set_thread_name(fullname.str(), shortname.str());
+        PIKA_ASSERT(!detail::get_thread_name_internal().empty());
 #if defined(PIKA_HAVE_APEX) || defined(PIKA_HAVE_TRACY)
-        char const* name = detail::get_thread_name().c_str();
+        // Use internal name to ensure C-strings are backed by strings that will not go out of
+        // scope.
+        char const* name = detail::get_thread_name_internal().c_str();
 
 # if defined(PIKA_HAVE_APEX)
         if (std::strstr(name, "worker") != nullptr) detail::external_timer::register_thread(name);
