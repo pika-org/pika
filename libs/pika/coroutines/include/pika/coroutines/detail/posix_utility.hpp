@@ -81,6 +81,7 @@ namespace pika::threads::coroutines::detail::posix {
     {
         if (use_guard_pages)
         {
+            // NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
             return static_cast<void*>(static_cast<void**>(stack) - (EXEC_PAGESIZE / sizeof(void*)));
         }
 
@@ -91,6 +92,7 @@ namespace pika::threads::coroutines::detail::posix {
     {
         if (use_guard_pages)
         {
+            // NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
             return static_cast<void*>(static_cast<void**>(stack) + (EXEC_PAGESIZE / sizeof(void*)));
         }
 

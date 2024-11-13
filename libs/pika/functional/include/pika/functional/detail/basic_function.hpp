@@ -155,6 +155,7 @@ namespace pika::util::detail {
                     vptr = f_vptr;
                     buffer = vtable::template allocate<T>(storage, function_storage_size);
                 }
+                // NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
                 object = ::new (buffer) T(PIKA_FORWARD(F, f));
             }
             else { base_type::reset(get_empty_vtable()); }

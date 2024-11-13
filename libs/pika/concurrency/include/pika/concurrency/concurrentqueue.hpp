@@ -3018,6 +3018,7 @@ namespace pika::concurrency::detail {
                     newBlock->ConcurrentQueue::Block::template reset_empty<implicit_context>();
 
                     MOODYCAMEL_CONSTEXPR_IF(!MOODYCAMEL_NOEXCEPT_CTOR(
+                        // NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
                         T, U, new (static_cast<T*>(nullptr)) T(PIKA_FORWARD(U, element))))
                     {
                         // May throw, try to insert now before we publish the fact that we have this new block
@@ -3040,6 +3041,7 @@ namespace pika::concurrency::detail {
                     this->tailBlock = newBlock;
 
                     MOODYCAMEL_CONSTEXPR_IF(!MOODYCAMEL_NOEXCEPT_CTOR(
+                        // NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
                         T, U, new (static_cast<T*>(nullptr)) T(PIKA_FORWARD(U, element))))
                     {
                         this->tailIndex.store(newTailIndex, std::memory_order_release);
@@ -3048,6 +3050,7 @@ namespace pika::concurrency::detail {
                 }
 
                 // Enqueue
+                // NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
                 new ((*this->tailBlock)[currentTailIndex]) T(PIKA_FORWARD(U, element));
 
                 this->tailIndex.store(newTailIndex, std::memory_order_release);
