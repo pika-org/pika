@@ -228,9 +228,10 @@ int pika_main()
             {
                 int data = 0, count = 1;
                 if (rank == 0) { data = 42; }
-                auto s = mpi::transform_mpi(
-                    const_reference_sender<int>{count}, [&](int& count, MPI_Request* request) {
-                        MPI_Ibcast(&data, count, datatype, 0, comm, request);
+                auto s = mpi::transform_mpi(const_reference_sender<int>{count},
+                    [&](int& count_transform_mpi, MPI_Request* request) {
+                        PIKA_TEST(&count_transform_mpi != &count);
+                        MPI_Ibcast(&data, count_transform_mpi, datatype, 0, comm, request);
                     });
                 tt::sync_wait(PIKA_MOVE(s));
                 PIKA_TEST_EQ(data, 42);
