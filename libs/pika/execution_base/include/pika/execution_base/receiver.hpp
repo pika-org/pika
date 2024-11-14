@@ -136,12 +136,12 @@ namespace pika::execution::experimental {
         template <typename Receiver, typename... Ts>
         PIKA_FORCEINLINE constexpr auto
         PIKA_STATIC_CALL_OPERATOR(Receiver&& receiver, Ts&&... ts) noexcept
-            -> decltype(PIKA_FORWARD(Receiver, receiver).set_value(PIKA_FORWARD(Ts, ts)...))
+            -> decltype(std::forward<Receiver>(receiver).set_value(std::forward<Ts>(ts)...))
         {
             static_assert(
-                noexcept(PIKA_FORWARD(Receiver, receiver).set_value(PIKA_FORWARD(Ts, ts)...)),
+                noexcept(std::forward<Receiver>(receiver).set_value(std::forward<Ts>(ts)...)),
                 "std::execution receiver set_value member function must be noexcept");
-            return PIKA_FORWARD(Receiver, receiver).set_value(PIKA_FORWARD(Ts, ts)...);
+            return std::forward<Receiver>(receiver).set_value(std::forward<Ts>(ts)...);
         }
     } set_value{};
 

@@ -184,18 +184,11 @@ namespace pika::schedule_from_detail {
                 auto set_value(Ts&&... ts) && noexcept
                     -> decltype(std::declval<value_type>()
                                     .template emplace<std::tuple<std::decay_t<Ts>...>>(
-                                        PIKA_FORWARD(Ts, ts)...),
+                                        std::forward<Ts>(ts)...),
                         void())
                 {
-                    auto r = PIKA_MOVE(*this);
-                    // nvcc fails to compile this with std::forward<Ts>(ts)...
-                    // or static_cast<Ts&&>(ts)... so we explicitly use
-                    // static_cast<decltype(ts)>(ts)... as a workaround.
-# if defined(PIKA_HAVE_CUDA)
-                    r.op_state.set_value_predecessor_sender(static_cast<decltype(ts)&&>(ts)...);
-# else
-                    r.op_state.set_value_predecessor_sender(PIKA_FORWARD(Ts, ts)...);
-# endif
+                    auto r = std::move(*this);
+                    r.op_state.set_value_predecessor_sender(std::forward<Ts>(ts)...);
                 }
             };
 
@@ -254,7 +247,7 @@ namespace pika::schedule_from_detail {
 
                 void set_value() && noexcept
                 {
-                    auto r = PIKA_MOVE(*this);
+                    auto r = std::move(*this);
                     r.op_state.set_value_scheduler_sender();
                 }
             };

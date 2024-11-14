@@ -105,7 +105,7 @@ namespace pika::when_all_impl {
         auto set_value(Ts&&... ts) && noexcept
             -> decltype(set_value_helper(index_pack_type{}, PIKA_FORWARD(Ts, ts)...), void())
         {
-            auto r = PIKA_MOVE(*this);
+            auto r = std::move(*this);
             if constexpr (OperationState::sender_pack_size > 0)
             {
                 if (!r.op_state.set_stopped_error_called)
