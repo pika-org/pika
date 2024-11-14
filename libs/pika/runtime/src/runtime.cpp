@@ -66,6 +66,7 @@
 #include <mutex>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <thread>
 #include <utility>
 #include <vector>
@@ -1385,42 +1386,47 @@ namespace pika::detail {
         PIKA_ASSERT(context != nullptr);
         PIKA_ASSERT(context[0]);
 
-        std::ostringstream fullname;
-        std::ostringstream shortname;
-        fullname << "pika/" << context;
-        shortname << "pika/" << context[0];
-        if (pool_name && *pool_name)
+        // Only set thread name for threads that we create
+        if (std::string_view(context) != std::string_view("main-thread"))
         {
-            fullname << "/pool:" << pool_name;
-            shortname << '/' << pool_name[0];
-        }
-        if (postfix && *postfix) { fullname << '/' << postfix; }
-        if (global_thread_num != std::size_t(-1))
-        {
-            fullname << "/global:" + std::to_string(global_thread_num);
-        }
-        if (local_thread_num != std::size_t(-1))
-        {
-            fullname << "/local:" + std::to_string(local_thread_num);
-            shortname << '/' << std::to_string(local_thread_num);
-        }
+            std::ostringstream fullname;
+            std::ostringstream shortname;
+            fullname << "pika/" << context;
+            shortname << "pika/" << context[0];
+            if (pool_name && *pool_name)
+            {
+                fullname << "/pool:" << pool_name;
+                shortname << '/' << pool_name[0];
+            }
+            if (postfix && *postfix) { fullname << '/' << postfix; }
+            if (global_thread_num != std::size_t(-1))
+            {
+                fullname << "/global:" + std::to_string(global_thread_num);
+            }
+            if (local_thread_num != std::size_t(-1))
+            {
+                fullname << "/local:" + std::to_string(local_thread_num);
+                shortname << '/' << std::to_string(local_thread_num);
+            }
 
-        PIKA_ASSERT(detail::get_thread_name_internal().empty());
-        detail::set_thread_name(fullname.str(), shortname.str());
-        PIKA_ASSERT(!detail::get_thread_name_internal().empty());
+            PIKA_ASSERT(detail::get_thread_name_internal().empty());
+            detail::set_thread_name(fullname.str(), shortname.str());
+            PIKA_ASSERT(!detail::get_thread_name_internal().empty());
 #if defined(PIKA_HAVE_APEX) || defined(PIKA_HAVE_TRACY)
-        // Use internal name to ensure C-strings are backed by strings that will not go out of
-        // scope.
-        char const* name = detail::get_thread_name_internal().c_str();
+            // Use internal name to ensure C-strings are backed by strings that
+            // will not go out of scope.
+            char const* name = detail::get_thread_name_internal().c_str();
 
 # if defined(PIKA_HAVE_APEX)
-        if (std::strstr(name, "worker") != nullptr) detail::external_timer::register_thread(name);
+            if (std::strstr(name, "worker") != nullptr)
+                detail::external_timer::register_thread(name);
 # endif
 
 # ifdef PIKA_HAVE_TRACY
-        tracy::SetThreadName(name);
+            tracy::SetThreadName(name);
 # endif
 #endif
+        }
 
         // call thread-specific user-supplied on_start handler
         if (on_start_func_)
