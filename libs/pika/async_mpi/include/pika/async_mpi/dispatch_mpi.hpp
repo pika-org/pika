@@ -237,9 +237,8 @@ namespace pika::mpi::experimental {
         friend constexpr PIKA_FORCEINLINE auto
         tag_fallback_invoke(dispatch_mpi_t, Sender&& sender, F&& f)
         {
-            auto snd1 = detail::dispatch_mpi_sender<Sender, F>{
+            return detail::dispatch_mpi_sender<Sender, F>{
                 PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f)};
-            return pika::execution::experimental::make_unique_any_sender(std::move(snd1));
         }
 
         template <typename F>
