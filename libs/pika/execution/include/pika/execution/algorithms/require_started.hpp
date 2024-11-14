@@ -465,8 +465,6 @@ namespace pika {
         /// operation state has not been started.
         /// The operation state of a \p require_started sender is allowed to not be started if it
         /// has been explicitly requested with the \p discard member function.
-        ///
-        /// Added in 0.21.0.
         inline constexpr require_started_t require_started{};
 
     }    // namespace execution::experimental
