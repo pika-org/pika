@@ -115,9 +115,10 @@ namespace pika::mpi::experimental::detail {
 
                 // receive the MPI Request and set a callback to be
                 // triggered when the mpi request completes
-                friend constexpr void tag_invoke(
-                    ex::set_value_t, trigger_mpi_receiver r, MPI_Request request) noexcept
+                constexpr void set_value(MPI_Request request) && noexcept
                 {
+                    auto r = PIKA_MOVE(*this);
+
                     // early exit check
                     if (request == MPI_REQUEST_NULL)
                     {

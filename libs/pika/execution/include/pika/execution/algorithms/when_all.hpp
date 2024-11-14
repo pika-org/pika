@@ -102,12 +102,13 @@ namespace pika::when_all_impl {
             typename pika::util::detail::make_index_pack<OperationState::sender_pack_size>::type;
 
         template <typename... Ts>
-        auto set_value(Ts&&... ts) noexcept
+        auto set_value(Ts&&... ts) && noexcept
             -> decltype(set_value_helper(index_pack_type{}, PIKA_FORWARD(Ts, ts)...), void())
         {
+            auto r = std::move(*this);
             if constexpr (OperationState::sender_pack_size > 0)
             {
-                if (!op_state.set_stopped_error_called)
+                if (!r.op_state.set_stopped_error_called)
                 {
                     try
                     {
@@ -115,34 +116,18 @@ namespace pika::when_all_impl {
                     }
                     catch (...)
                     {
-                        if (!op_state.set_stopped_error_called.exchange(true))
+                        if (!r.op_state.set_stopped_error_called.exchange(true))
                         {
                             // NOLINTNEXTLINE(bugprone-throw-keyword-missing)
-                            op_state.error = std::current_exception();
+                            r.op_state.error = std::current_exception();
                         }
                     }
                 }
             }
 
-            op_state.finish();
+            r.op_state.finish();
         }
     };
-
-    // Due to what appears to be a bug in clang this is not a hidden friend
-    // of when_all_receiver. The trailing decltype for SFINAE in the member
-    // set_value would give an error about accessing an incomplete type, if
-    // the member set_value were a hidden friend tag_invoke overload
-    // instead. Note that the receiver is unconstrained. That is because
-    // OperationState in when_all_receiver<OperationState> cannot be deduced
-    // when when_all_receiver is an alias template. Since this is in a
-    // unique namespace nothing but when_all_receiver should ever find this
-    // overload.
-    template <typename Receiver, typename... Ts>
-    auto tag_invoke(pika::execution::experimental::set_value_t, Receiver&& r, Ts&&... ts) noexcept
-        -> decltype(r.set_value(PIKA_FORWARD(Ts, ts)...), void())
-    {
-        r.set_value(PIKA_FORWARD(Ts, ts)...);
-    }
 
     template <typename... Senders>
     struct when_all_sender_impl

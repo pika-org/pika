@@ -55,10 +55,10 @@ namespace pika::then_detail {
             pika::execution::experimental::set_stopped(PIKA_MOVE(r.receiver));
         }
 
-    private:
         template <typename... Ts>
-        void set_value_helper(Ts&&... ts) noexcept
+        void set_value(Ts&&... ts) && noexcept
         {
+            auto r = PIKA_MOVE(*this);
             pika::detail::try_catch_exception_ptr(
                 [&]() {
                     if constexpr (std::is_void_v<std::invoke_result_t<F, Ts...>>)
@@ -66,37 +66,28 @@ namespace pika::then_detail {
                     // Certain versions of GCC with optimizations fail on
                     // the move with an internal compiler error.
 # if defined(PIKA_GCC_VERSION) && (PIKA_GCC_VERSION < 100000)
-                        PIKA_INVOKE(std::move(f), PIKA_FORWARD(Ts, ts)...);
+                        PIKA_INVOKE(std::move(r.f), PIKA_FORWARD(Ts, ts)...);
 # else
-                        PIKA_INVOKE(PIKA_MOVE(f), PIKA_FORWARD(Ts, ts)...);
+                        PIKA_INVOKE(PIKA_MOVE(r.f), PIKA_FORWARD(Ts, ts)...);
 # endif
-                        pika::execution::experimental::set_value(PIKA_MOVE(receiver));
+                        pika::execution::experimental::set_value(PIKA_MOVE(r.receiver));
                     }
                     else
                     {
                     // Certain versions of GCC with optimizations fail on
                     // the move with an internal compiler error.
 # if defined(PIKA_GCC_VERSION) && (PIKA_GCC_VERSION < 100000)
-                        pika::execution::experimental::set_value(PIKA_MOVE(receiver),
-                            PIKA_INVOKE(std::move(f), PIKA_FORWARD(Ts, ts)...));
+                        pika::execution::experimental::set_value(PIKA_MOVE(r.receiver),
+                            PIKA_INVOKE(std::move(r.f), PIKA_FORWARD(Ts, ts)...));
 # else
-                        pika::execution::experimental::set_value(PIKA_MOVE(receiver),
-                            PIKA_INVOKE(PIKA_MOVE(f), PIKA_FORWARD(Ts, ts)...));
+                        pika::execution::experimental::set_value(PIKA_MOVE(r.receiver),
+                            PIKA_INVOKE(PIKA_MOVE(r.f), PIKA_FORWARD(Ts, ts)...));
 # endif
                     }
                 },
                 [&](std::exception_ptr ep) {
-                    pika::execution::experimental::set_error(PIKA_MOVE(receiver), PIKA_MOVE(ep));
+                    pika::execution::experimental::set_error(PIKA_MOVE(r.receiver), PIKA_MOVE(ep));
                 });
-        }
-
-        template <typename... Ts>
-        friend void tag_invoke(
-            pika::execution::experimental::set_value_t, then_receiver_type&& r, Ts&&... ts) noexcept
-        {
-            // GCC 7 fails with an internal compiler error unless the actual
-            // body is in a helper function.
-            r.set_value_helper(PIKA_FORWARD(Ts, ts)...);
         }
     };
 

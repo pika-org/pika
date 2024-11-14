@@ -196,9 +196,9 @@ namespace pika::let_error_detail {
                 template <typename... Ts,
                     typename = std::enable_if_t<std::is_invocable_v<
                         pika::execution::experimental::set_value_t, Receiver&&, Ts...>>>
-                friend void tag_invoke(pika::execution::experimental::set_value_t,
-                    let_error_predecessor_receiver&& r, Ts&&... ts) noexcept
+                void set_value(Ts&&... ts) && noexcept
                 {
+                    auto r = PIKA_MOVE(*this);
                     pika::execution::experimental::set_value(
                         PIKA_MOVE(r.receiver), PIKA_FORWARD(Ts, ts)...);
                 }
