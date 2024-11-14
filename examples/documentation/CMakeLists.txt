@@ -9,6 +9,7 @@ set(example_programs
     drop_value_documentation
     hello_world_documentation
     init_hpp_documentation
+    require_started_documentation
     split_tuple_documentation
     unpack_documentation
     when_all_vector_documentation
@@ -32,3 +33,12 @@ foreach(example_program ${example_programs})
     pika_add_example_test("documentation" ${example_program} ${${example_program}_PARAMETERS})
   endif()
 endforeach()
+
+if(PIKA_WITH_TESTS AND PIKA_WITH_TESTS_EXAMPLES)
+  set_tests_properties(
+    tests.examples.documentation.require_started_documentation
+    PROPERTIES
+      PASS_REGULAR_EXPRESSION
+      "pika::execution::experimental::~require_started_sender: A require_started sender was never started"
+  )
+endif()

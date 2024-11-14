@@ -105,6 +105,12 @@ All sender adaptors are `customization point objects (CPOs)
    :language: c++
    :start-at: #include
 
+.. doxygenvariable:: pika::execution::experimental::require_started
+
+.. literalinclude:: ../examples/documentation/require_started_documentation.cpp
+   :language: c++
+   :start-at: #include
+
 .. doxygenvariable:: pika::execution::experimental::split_tuple
 
 .. versionadded:: 0.12.0
