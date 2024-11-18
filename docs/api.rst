@@ -154,6 +154,12 @@ mentioned, it refers to to CUDA and HIP interchangeably.
    to avoid using ``cuda`` even when HIP is enabled. If you have feedback on a rename or just want
    to follow along, please see that issue.
 
+.. note::
+   pika uses `whip <https://github.com/eth-cscs/whip>`__ internally for portability between CUDA and
+   HIP. However, users of pika are not forced to use whip as whip only creates aliases for CUDA/HIP
+   types and enumerations. whip is thus compatible with directly using the types and enumerations
+   provided by CUDA/HIP.
+
 .. warning::
    At the moment, ``nvcc`` can not compile stdexec headers. Of the CUDA compilers, only ``nvc++`` is
    able to compile stdexec headers. If you have stdexec support enabled in pika, either ensure that
@@ -179,12 +185,6 @@ The following example gives an overview of using the above CUDA functionalities 
 .. literalinclude:: ../examples/documentation/cuda_overview_documentation.cu
    :language: c++
    :start-at: #include
-
-.. note::
-   pika uses `whip <https://github.com/eth-cscs/whip>`__ internally for portability between CUDA and
-   HIP. However, users of pika are not forced to use whip as whip only creates aliases for CUDA/HIP
-   types and enumerations. whip is thus compatible with directly using the types and enumerations
-   provided by CUDA/HIP.
 
 While :cpp:class:`pika::cuda::experimental::cuda_pool` gives direct access to streams and handles,
 the recommended way to access them is through the sender adaptors available below.
