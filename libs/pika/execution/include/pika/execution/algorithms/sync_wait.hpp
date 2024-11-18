@@ -177,9 +177,9 @@ namespace pika::sync_wait_detail {
         template <typename... Us,
             typename = std::enable_if_t<(is_void_result && sizeof...(Us) == 0) ||
                 (!is_void_result && sizeof...(Us) == 1)>>
-        void set_value(Us&&... us) && noexcept
+        friend void tag_invoke(pika::execution::experimental::set_value_t,
+            sync_wait_receiver_type&& r, Us&&... us) noexcept
         {
-            auto r = PIKA_MOVE(*this);
             r.state.value.template emplace<value_type>(PIKA_FORWARD(Us, us)...);
             r.signal_set_called();
         }

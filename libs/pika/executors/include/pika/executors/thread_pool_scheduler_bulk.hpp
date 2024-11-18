@@ -389,9 +389,9 @@ namespace pika::thread_pool_bulk_detail {
                 }
 
                 template <typename... Ts>
-                void set_value(Ts&&... ts) && noexcept
+                friend void tag_invoke(pika::execution::experimental::set_value_t,
+                    bulk_receiver&& r, Ts&&... ts) noexcept
                 {
-                    auto r = PIKA_MOVE(*this);
                     // Don't spawn tasks if there is no work to be done
                     if (r.op_state->shape == 0)
                     {

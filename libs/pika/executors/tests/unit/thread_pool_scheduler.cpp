@@ -75,14 +75,14 @@ struct check_context_receiver
     }
 
     template <typename... Ts>
-    void set_value(Ts&&...) && noexcept
+    friend void tag_invoke(ex::set_value_t, check_context_receiver&& r, Ts&&...) noexcept
     {
-        PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id());
+        PIKA_TEST_NEQ(r.parent_id, pika::this_thread::get_id());
         PIKA_TEST_NEQ(pika::thread::id(pika::threads::detail::invalid_thread_id),
             pika::this_thread::get_id());
-        std::lock_guard l{mtx};
-        executed = true;
-        cond.notify_one();
+        std::lock_guard l{r.mtx};
+        r.executed = true;
+        r.cond.notify_one();
     }
 
     friend constexpr pika::execution::experimental::empty_env tag_invoke(
@@ -234,12 +234,12 @@ struct callback_receiver
     friend void tag_invoke(ex::set_stopped_t, callback_receiver&&) noexcept { PIKA_TEST(false); }
 
     template <typename... Ts>
-    void set_value(Ts&&...) && noexcept
+    friend void tag_invoke(ex::set_value_t, callback_receiver&& r, Ts&&...) noexcept
     {
-        f();
-        std::lock_guard l{mtx};
-        executed = true;
-        cond.notify_one();
+        r.f();
+        std::lock_guard l{r.mtx};
+        r.executed = true;
+        r.cond.notify_one();
     }
 
     friend constexpr pika::execution::experimental::empty_env tag_invoke(
