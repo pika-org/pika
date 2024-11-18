@@ -48,8 +48,8 @@ is to stabilize those APIs over time.
 
 .. _header_pika_init:
 
-``pika/init.hpp``
-=================
+Runtime management (``pika/init.hpp``)
+======================================
 
 The ``pika/init.hpp`` header provides functionality to manage the pika runtime.
 
@@ -72,8 +72,8 @@ The ``pika/init.hpp`` header provides functionality to manage the pika runtime.
 
 .. _header_pika_execution:
 
-``pika/execution.hpp``
-======================
+``std::execution`` support (``pika/execution.hpp``)
+===================================================
 
 The ``pika/execution.hpp`` header provides functionality related to ``std::execution``.
 ``std::execution`` functionality, including extensions provided by pika, is defined in the
@@ -140,8 +140,8 @@ All sender adaptors are `customization point objects (CPOs)
 
 .. _header_pika_cuda:
 
-``pika/cuda.hpp``
-=================
+CUDA/HIP support (``pika/cuda.hpp``)
+====================================
 
 The ``pika/cuda.hpp`` header provides functionality related to CUDA and HIP. All functionality is
 under the ``pika::cuda::experimental`` namespace and class and function names contain ``cuda``, even
