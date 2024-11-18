@@ -241,7 +241,8 @@ struct error_receiver
     };
 
     template <typename... Ts>
-    void set_value(Ts&&...) && noexcept
+    friend void
+    tag_invoke(pika::execution::experimental::set_value_t, error_receiver&&, Ts&&...) noexcept
     {
         PIKA_TEST(false);
     }

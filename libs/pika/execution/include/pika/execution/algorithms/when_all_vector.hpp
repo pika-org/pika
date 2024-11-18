@@ -176,9 +176,9 @@ namespace pika::when_all_vector_detail {
                 };
 
                 template <typename... Ts>
-                void set_value(Ts&&... ts) && noexcept
+                friend void tag_invoke(pika::execution::experimental::set_value_t,
+                    when_all_vector_receiver&& r, Ts&&... ts) noexcept
                 {
-                    auto r = PIKA_MOVE(*this);
                     if (!r.op_state.set_stopped_error_called)
                     {
                         try

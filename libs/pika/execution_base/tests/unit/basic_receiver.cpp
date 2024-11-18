@@ -31,7 +31,7 @@ namespace mylib {
             error_called = true;
         }
 
-        void set_value(int) && noexcept { value_called = true; }
+        friend void tag_invoke(ex::set_value_t, receiver_1&&, int) noexcept { value_called = true; }
 
         friend constexpr ex::empty_env tag_invoke(ex::get_env_t, receiver_1 const&) noexcept
         {
@@ -64,7 +64,7 @@ namespace mylib {
             error_called = true;
         }
 
-        void set_value(int) && noexcept { value_called = true; }
+        friend void tag_invoke(ex::set_value_t, receiver_3, int) noexcept { value_called = true; }
 
         friend constexpr ex::empty_env tag_invoke(ex::get_env_t, receiver_3 const&) noexcept
         {
@@ -81,7 +81,10 @@ namespace mylib {
             error_called = true;
         }
 
-        void set_value(int) noexcept { value_called = true; }
+        friend void tag_invoke(ex::set_value_t, non_receiver_1, int) noexcept
+        {
+            value_called = true;
+        }
     };
 
     struct non_receiver_2
@@ -93,7 +96,10 @@ namespace mylib {
             error_called = true;
         }
 
-        void set_value(int) && noexcept { value_called = true; }
+        friend void tag_invoke(ex::set_value_t, non_receiver_2, int) noexcept
+        {
+            value_called = true;
+        }
     };
 
     struct non_receiver_3
@@ -105,7 +111,10 @@ namespace mylib {
             error_called = true;
         }
 
-        void set_value(int) noexcept { value_called = true; }
+        friend void tag_invoke(ex::set_value_t, non_receiver_3, int) noexcept
+        {
+            value_called = true;
+        }
     };
 
     struct non_receiver_4
@@ -119,7 +128,10 @@ namespace mylib {
             error_called = true;
         }
 
-        void set_value(int) & noexcept { value_called = true; }
+        friend void tag_invoke(ex::set_value_t, non_receiver_4&, int) noexcept
+        {
+            value_called = true;
+        }
 
         friend constexpr ex::empty_env tag_invoke(ex::get_env_t, non_receiver_4 const&) noexcept
         {

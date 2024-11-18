@@ -79,10 +79,9 @@ namespace pika::drop_op_state_detail {
         };
 
         template <typename... Ts>
-        void set_value(Ts&&... ts) && noexcept
+        friend void tag_invoke(pika::execution::experimental::set_value_t,
+            drop_op_state_receiver_type r, Ts&&... ts) noexcept
         {
-            auto r = PIKA_MOVE(*this);
-
             PIKA_ASSERT(r.op_state != nullptr);
             PIKA_ASSERT(r.op_state->op_state.has_value());
 

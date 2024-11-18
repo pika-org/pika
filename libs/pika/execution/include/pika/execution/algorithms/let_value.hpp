@@ -231,26 +231,36 @@ namespace pika::let_value_detail {
                     pika::detail::monostate>;
 
                 template <typename... Ts>
-                auto set_value(Ts&&... ts) && noexcept
+                void set_value(Ts&&... ts)
+                {
+                    pika::detail::try_catch_exception_ptr(
+                        [&]() {
+                            op_state.predecessor_ts
+                                .template emplace<std::tuple<std::decay_t<Ts>...>>(
+                                    PIKA_FORWARD(Ts, ts)...);
+                            pika::detail::visit(
+                                set_value_visitor{PIKA_MOVE(receiver), PIKA_MOVE(f), op_state},
+                                op_state.predecessor_ts);
+                        },
+                        [&](std::exception_ptr ep) {
+                            pika::execution::experimental::set_error(
+                                PIKA_MOVE(receiver), PIKA_MOVE(ep));
+                        });
+                }
+
+                template <typename... Ts>
+                friend auto tag_invoke(pika::execution::experimental::set_value_t,
+                    let_value_predecessor_receiver&& r, Ts&&... ts) noexcept
                     -> decltype(std::declval<predecessor_ts_type>()
                                     .template emplace<std::tuple<std::decay_t<Ts>...>>(
                                         PIKA_FORWARD(Ts, ts)...),
                         void())
                 {
-                    auto r = PIKA_MOVE(*this);
-                    pika::detail::try_catch_exception_ptr(
-                        [&]() {
-                            r.op_state.predecessor_ts
-                                .template emplace<std::tuple<std::decay_t<Ts>...>>(
-                                    PIKA_FORWARD(Ts, ts)...);
-                            pika::detail::visit(
-                                set_value_visitor{PIKA_MOVE(r.receiver), PIKA_MOVE(f), r.op_state},
-                                r.op_state.predecessor_ts);
-                        },
-                        [&](std::exception_ptr ep) {
-                            pika::execution::experimental::set_error(
-                                PIKA_MOVE(r.receiver), PIKA_MOVE(ep));
-                        });
+                    // set_value is in a member function only because of a
+                    // compiler bug in GCC 7. When the body of set_value is
+                    // inlined here compilation fails with an internal
+                    // compiler error.
+                    r.set_value(PIKA_FORWARD(Ts, ts)...);
                 }
             };
 

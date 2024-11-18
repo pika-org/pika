@@ -236,14 +236,14 @@ namespace pika::ensure_started_detail {
 #endif
 
                 template <typename... Ts>
-                auto set_value(Ts&&... ts) && noexcept
+                friend auto tag_invoke(pika::execution::experimental::set_value_t,
+                    ensure_started_receiver r, Ts&&... ts) noexcept
                     -> decltype(std::declval<
                                     pika::detail::variant<pika::detail::monostate, value_type>>()
                                     .template emplace<value_type>(
                                         std::make_tuple<>(PIKA_FORWARD(Ts, ts)...)),
                         void())
                 {
-                    auto r = PIKA_MOVE(*this);
                     r.state->v.template emplace<value_type>(
                         std::make_tuple<>(PIKA_FORWARD(Ts, ts)...));
                     r.state->set_predecessor_done();
