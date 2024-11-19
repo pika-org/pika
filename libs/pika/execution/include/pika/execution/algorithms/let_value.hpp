@@ -73,9 +73,6 @@ namespace pika::let_value_detail {
         using successor_sender_types = pika::util::detail::unique_t<pika::util::detail::transform_t<
             predecessor_value_types<Tuple, Variant>, successor_sender_types_helper>>;
 
-        // The workaround for clang is due to a parsing bug in clang < 11
-        // in CUDA mode (where >>> also has a different meaning in kernel
-        // launches).
         template <template <typename...> class Tuple, template <typename...> class Variant>
         using value_types = pika::util::detail::unique_t<pika::util::detail::concat_pack_of_packs_t<
             pika::util::detail::transform_t<successor_sender_types<Tuple, Variant>,
