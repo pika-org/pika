@@ -164,6 +164,8 @@ namespace pika::threads::detail {
                 threads::detail::get_thread_id_data(thrd)->rebind(data);
             }
             else
+# else
+            PIKA_UNUSED(heap);
 # endif
 #endif
             {
