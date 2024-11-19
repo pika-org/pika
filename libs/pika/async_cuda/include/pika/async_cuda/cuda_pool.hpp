@@ -161,13 +161,27 @@ namespace pika::cuda::experimental {
         /// \brief Construct a pool of CUDA streams and handles.
         ///
         /// \param device the CUDA device used for scheduling work
-        /// \param num_normal_priority_streams_per_thread the number of normal priority streams per
-        /// thread
-        /// \param num_high_priority_streams_per_thread the number of high priority streams per
-        /// thread
+        /// \param num_normal_priority_streams the number of normal priority streams
+        /// \param num_high_priority_streams the number of high priority streams
         /// \param flags flags used to construct CUDA streams
         /// \param num_cublas_handles the number of cuBLAS handles to create for the whole pool
         /// \param num_cusolver_handles the number of cuSOLVER handles to create for the whole pool
+        ///
+        /// \note The default values of \p num_normal_priority_streams, \p
+        /// num_high_priority_streams, \p num_cublas_handles, and \p num_cusolver_handles have been
+        /// chosen to easily allow saturating most GPUs without creating unnecessarily many streams.
+        /// In individual situations more streams (e.g. launching many small kernels) or fewer
+        /// streams (e.g. the GPU does not support more concurrency, or [slows down when using too
+        /// many streams](https://github.com/ROCm/HIP/issues/3366)) may be more appropriate. Each
+        /// cuBLAS and cuSOLVER handle may require a significant amount of GPU memory, which is why
+        /// the default values are lower than the number of streams. The default values have proven
+        /// to work well e.g. in [DLA-Future](https://github.com/eth-cscs/DLA-Future).
+        ///
+        /// \warning Up to and including version 0.30.X the number of streams parameters denoted the
+        /// number of streams *per worker thread*. From 0.31.0 onwards the parameters denote the
+        /// total number of streams to create in the pool. The default values were adjusted
+        /// accordingly, but if you are not using the default values, please verify the values you
+        /// are passing to the \ref cuda_pool constructor are still reasonable with 0.31.0.
         PIKA_EXPORT explicit cuda_pool(int device = 0, std::size_t num_normal_priority_streams = 32,
             std::size_t num_high_priority_streams = 32, unsigned int flags = 0,
             std::size_t num_cublas_handles = 16, std::size_t num_cusolver_handles = 16);
