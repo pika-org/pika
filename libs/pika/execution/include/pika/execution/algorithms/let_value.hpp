@@ -243,8 +243,8 @@ namespace pika::let_value_detail {
                             r.op_state.predecessor_ts
                                 .template emplace<std::tuple<std::decay_t<Ts>...>>(
                                     PIKA_FORWARD(Ts, ts)...);
-                            pika::detail::visit(
-                                set_value_visitor{PIKA_MOVE(r.receiver), PIKA_MOVE(f), r.op_state},
+                            pika::detail::visit(set_value_visitor{PIKA_MOVE(r.receiver),
+                                                    PIKA_MOVE(r.f), r.op_state},
                                 r.op_state.predecessor_ts);
                         },
                         [&](std::exception_ptr ep) {
