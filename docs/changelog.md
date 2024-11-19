@@ -6,6 +6,16 @@
 
 # Changelog
 
+## 0.30.1 (2024-11-19)
+
+### New features
+
+### Breaking changes
+
+### Bugfixes
+
+- A parameter lifetime issue in `transform_mpi` that affects almost all MPI modes was fixed. ([#1321](https://github.com/pika-org/pika/pull/1321))
+
 ## 0.30.0 (2024-11-08)
 
 ### New features
