@@ -17,9 +17,11 @@ VERSION_MINOR=$(sed -n 's/set(PIKA_VERSION_MINOR \(.*\))/\1/p' CMakeLists.txt)
 VERSION_PATCH=$(sed -n 's/set(PIKA_VERSION_PATCH \(.*\))/\1/p' CMakeLists.txt)
 VERSION_TAG=$(sed -n 's/set(PIKA_VERSION_TAG "\(.*\)")/\1/p' CMakeLists.txt)
 VERSION_FULL_NOTAG=${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
+REGEX_VERSION_FULL_NOTAG="$(echo ${VERSION_FULL_NOTAG} | sed s/\\./\\\\./g)"
 VERSION_FULL_TAG=${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAG}
 VERSION_TITLE="pika ${VERSION_FULL_NOTAG}"
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+RELEASE_DATE=$(date '+%Y-%m-%d')
 
 if ! which hub >/dev/null 2>&1; then
     echo "Hub not installed on this system (see https://hub.github.com/). Exiting."
@@ -64,8 +66,8 @@ if [ -z "${VERSION_TAG}" ]; then
         sanity_errors=$((sanity_errors + 1))
     fi
 
-    printf "Checking that %s also has a date set for %s... " "${changelog_path}" "${VERSION_FULL_NOTAG}"
-    if grep "## ${VERSION_FULL_NOTAG} ([0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\})" "${changelog_path}"; then
+    printf "Checking that %s also has today's date set for %s... " "${changelog_path}" "${VERSION_FULL_NOTAG}"
+    if grep "## ${REGEX_VERSION_FULL_NOTAG} (${RELEASE_DATE})" "${changelog_path}"; then
         echo "OK"
     else
         echo "Missing"
