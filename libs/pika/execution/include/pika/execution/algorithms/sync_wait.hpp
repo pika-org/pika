@@ -144,12 +144,10 @@ namespace pika::sync_wait_detail {
                     pika::util::detail::yield_while_timeout(
                         poll, busy_wait_timeout, "sync_wait::wait", false))
                 {
-                    std::cerr << "busy wait acquired\n";
                     return;
                 }
 
                 sem.acquire();
-                std::cerr << "yielding wait acquired\n";
             }
 
             auto get_value()
