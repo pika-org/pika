@@ -146,8 +146,8 @@ CUDA/HIP support (``pika/cuda.hpp``)
 The ``pika/cuda.hpp`` header provides functionality related to CUDA and HIP. All functionality is
 under the ``pika::cuda::experimental`` namespace and class and function names contain ``cuda``, even
 when HIP support is enabled. CUDA and HIP functionality can be enabled with the CMake options
-``PIKA_WITH_CUDA`` and ``PIKA_WITH_HIP``, respectively. In the following, whenever CUDA is
-mentioned, it refers to to CUDA and HIP interchangeably.
+``PIKA_WITH_CUDA`` and ``PIKA_WITH_HIP``, respectively, but they are mutually exclusive. In the
+following, whenever CUDA is mentioned, it refers to to CUDA and HIP interchangeably.
 
 .. note::
    https://github.com/pika-org/pika/issues/116 tracks a potential renaming of the functionality
