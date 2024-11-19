@@ -56,9 +56,9 @@ namespace pika::unpack_detail {
         }
 
         template <typename Ts>
-        friend void tag_invoke(
-            pika::execution::experimental::set_value_t, unpack_receiver_type&& r, Ts&& ts) noexcept
+        void set_value(Ts&& ts) && noexcept
         {
+            auto r = PIKA_MOVE(*this);
             std::apply(pika::util::detail::bind_front(
                            pika::execution::experimental::set_value, PIKA_MOVE(r.receiver)),
                 PIKA_FORWARD(Ts, ts));
