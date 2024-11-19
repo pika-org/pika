@@ -76,6 +76,8 @@ pika follows `Semantic Versioning <https://semver.org>`__.
 #. Make sure ``PIKA_VERSION_MAJOR/MINOR/PATCH`` in ``CMakeLists.txt`` contain
    the correct values. Change them if needed.
 
+#. Update the version in the ``CITATION.cff`` file (both in the title and the ``version`` field).
+
 #. When making a post-1.0.0 major release, remove deprecated functionality if
    appropriate.
 
