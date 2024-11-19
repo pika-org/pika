@@ -31,6 +31,21 @@ if ! [[ "$CURRENT_BRANCH" =~ ^release-[0-9]+\.[0-9]+\.X$ ]]; then
     exit 1
 fi
 
+printf "Checking that the git repository is in a clean state... "
+if [[ $(git status --porcelain | wc -l) -eq 0 ]]; then
+    echo "OK"
+else
+    echo "ERROR"
+    git status -s
+    echo "Do you want to continue anyway?"
+    select yn in "Yes" "No"; do
+        case $yn in
+        Yes) break ;;
+        No) exit ;;
+        esac
+    done
+fi
+
 changelog_path="docs/changelog.md"
 
 if [ -z "${VERSION_TAG}" ]; then
