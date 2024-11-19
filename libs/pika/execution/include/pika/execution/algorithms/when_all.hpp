@@ -112,7 +112,7 @@ namespace pika::when_all_impl {
                 {
                     try
                     {
-                        set_value_helper(index_pack_type{}, PIKA_FORWARD(Ts, ts)...);
+                        r.set_value_helper(index_pack_type{}, PIKA_FORWARD(Ts, ts)...);
                     }
                     catch (...)
                     {

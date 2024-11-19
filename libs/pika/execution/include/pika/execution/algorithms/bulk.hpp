@@ -102,11 +102,11 @@ namespace pika::bulk_detail {
                     [&]() {
                         for (auto const& s : r.shape) { PIKA_INVOKE(r.f, s, ts...); }
                         pika::execution::experimental::set_value(
-                            PIKA_MOVE(receiver), PIKA_FORWARD(Ts, ts)...);
+                            PIKA_MOVE(r.receiver), PIKA_FORWARD(Ts, ts)...);
                     },
                     [&](std::exception_ptr ep) {
                         pika::execution::experimental::set_error(
-                            PIKA_MOVE(receiver), PIKA_MOVE(ep));
+                            PIKA_MOVE(r.receiver), PIKA_MOVE(ep));
                     });
             }
         };
