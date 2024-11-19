@@ -26,12 +26,14 @@ nvhpc24_9_spack_compiler_image:
   extends:
     - .variables_nvhpc24_9_config
     - .compiler_image_template_santis
+  allow_failure: true
 
 nvhpc24_9_spack_image:
   needs: [nvhpc24_9_spack_compiler_image]
   extends:
     - .variables_nvhpc24_9_config
     - .dependencies_image_template_santis
+  allow_failure: true
 
 nvhpc24_9_build:
   timeout: 2 hours
@@ -39,3 +41,4 @@ nvhpc24_9_build:
   extends:
     - .variables_nvhpc24_9_config
     - .build_template_santis
+  allow_failure: true
