@@ -158,7 +158,9 @@ mentioned, it refers to to CUDA and HIP interchangeably.
    pika uses `whip <https://github.com/eth-cscs/whip>`__ internally for portability between CUDA and
    HIP. However, users of pika are not forced to use whip as whip only creates aliases for CUDA/HIP
    types and enumerations. whip is thus compatible with directly using the types and enumerations
-   provided by CUDA/HIP.
+   provided by CUDA/HIP. For cuBLAS, cuSOLVER, rocBLAS, and rocSOLVER support pika does not use a
+   portability library, but simply uses the appropriate types depending on if CUDA or HIP support is
+   enabled.
 
 .. warning::
    At the moment, ``nvcc`` can not compile stdexec headers. Of the CUDA compilers, only ``nvc++`` is
