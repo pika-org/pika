@@ -30,14 +30,15 @@ int main(int argc, char* argv[])
     }
 
     {
-        // The termination is ignored with discard, the sender is from the user's perspective
-        // rightfully not used
+        // The termination is ignored with discard, the sender is from the
+        // user's perspective rightfully not used
         auto s = ex::just() | ex::require_started();
         s.discard();
     }
 
     {
-        // The require_started sender terminates on destruction if it has not been used
+        // The require_started sender terminates on destruction if it has not
+        // been used
         auto s = ex::just() | ex::require_started();
     }
     assert(false);
