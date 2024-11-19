@@ -281,6 +281,9 @@ namespace pika::threads::detail {
         thread_id_ref_type next_thrd;
         while (true)
         {
+            // It's ok to use next_thrd here. If it's been moved from in previous iterations, it
+            // will simply be empty.
+            // NOLINTNEXTLINE(bugprone-use-after-move)
             thread_id_ref_type thrd = std::move(next_thrd);
 
             // Get the next pika thread from the queue
