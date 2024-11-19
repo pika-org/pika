@@ -24,6 +24,7 @@
 #include <pika/type_support/pack.hpp>
 
 #include <atomic>
+#include <chrono>
 #include <exception>
 #include <type_traits>
 #include <utility>
@@ -135,7 +136,19 @@ namespace pika::sync_wait_detail {
             pika::binary_semaphore<> sem{0};
             pika::detail::variant<pika::detail::monostate, error_type, value_type> value;
 
-            void wait() { sem.acquire(); }
+            void wait(std::chrono::duration<double> busy_wait_timeout)
+            {
+                auto const poll = [&]() { return !sem.try_acquire(); };
+                bool const do_busy_wait = busy_wait_timeout > std::chrono::duration<double>(0.0);
+                if (do_busy_wait &&
+                    pika::util::detail::yield_while_timeout(
+                        poll, busy_wait_timeout, "sync_wait::wait", false))
+                {
+                    return;
+                }
+
+                sem.acquire();
+            }
 
             auto get_value()
             {
@@ -198,7 +211,8 @@ namespace pika::this_thread::experimental {
                 pika::execution::experimental::is_sender_v<Sender>
             )>
         // clang-format on
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(sync_wait_t, Sender&& sender)
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(sync_wait_t, Sender&& sender,
+            std::chrono::duration<double> busy_wait_timeout = std::chrono::duration<double>(0.0))
         {
             using receiver_type = sync_wait_detail::sync_wait_receiver<Sender>;
             using state_type = typename receiver_type::shared_state;
@@ -208,7 +222,7 @@ namespace pika::this_thread::experimental {
                 std::forward<Sender>(sender), receiver_type{state});
             pika::execution::experimental::start(op_state);
 
-            state.wait();
+            state.wait(busy_wait_timeout);
             return state.get_value();
         }
     } sync_wait{};
