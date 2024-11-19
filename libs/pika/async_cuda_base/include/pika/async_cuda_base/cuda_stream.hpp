@@ -23,7 +23,7 @@ namespace pika::cuda::experimental {
     ///
     /// Equality comparable and formattable.
     ///
-    /// When accessing the underlying stream, https://github.com/eth-cscs/whip is used for
+    /// When accessing the underlying stream, [whip](https://github.com/eth-cscs/whip) is used for
     /// compatibility with CUDA and HIP.
     ///
     /// \note The recommended way to access a stream is through sender adaptors using \ref
