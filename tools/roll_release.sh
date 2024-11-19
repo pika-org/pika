@@ -61,7 +61,7 @@ if [ -z "${VERSION_TAG}" ]; then
     sanity_errors=0
 
     printf "Checking that %s has an entry for %s... " "${changelog_path}" "${VERSION_FULL_NOTAG}"
-    if grep "## ${VERSION_FULL_NOTAG}" "${changelog_path}"; then
+    if grep "## ${REGEX_VERSION_FULL_NOTAG}" "${changelog_path}"; then
         echo "OK"
     else
         echo "Missing"
