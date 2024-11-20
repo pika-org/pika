@@ -53,19 +53,13 @@ namespace pika::cuda::experimental {
         PIKA_EXPORT cuda_pool const& get_pool() const noexcept;
 
         /// \brief Return the next available CUDA stream from the pool.
-        ///
-        /// Equivalent to accessing the stream via \ref get_pool().
         PIKA_EXPORT cuda_stream const& get_next_stream();
 
         /// \brief Return the next available cuBLAS handle from the pool.
-        ///
-        /// Equivalent to accessing the cuBLAS handle via \ref get_pool().
         PIKA_EXPORT locked_cublas_handle get_cublas_handle(
             cuda_stream const& stream, cublasPointerMode_t pointer_mode);
 
         /// \brief Return the next available cuSOLVER handle from the pool.
-        ///
-        /// Equivalent to accessing the cuSOLVER handle via \ref get_pool().
         PIKA_EXPORT locked_cusolver_handle get_cusolver_handle(cuda_stream const& stream);
 
         /// \cond NOINTERNAL
