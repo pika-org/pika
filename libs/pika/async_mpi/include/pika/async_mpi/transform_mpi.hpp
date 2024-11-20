@@ -64,21 +64,45 @@ namespace pika::mpi::experimental {
                 execution::thread_priority::boost :
                 execution::thread_priority::normal;
 
-            auto f_mpi = [=, f = std::forward<F>(f)](auto&... args) mutable -> unique_any_sender<> {
-                auto s = just(std::forward_as_tuple(args...)) | ex::unpack() |
-                    dispatch_mpi(std::move(f)) | trigger_mpi(mode);
-                if (completions_inline) { return s; }
-                else { return std::move(s) | ex::continues_on(default_pool_scheduler(p)); }
-            };
-
             if (requests_inline)
             {
-                return std::forward<Sender>(sender) | let_value(std::move(f_mpi));
+                if (completions_inline)
+                {
+                    return std::forward<Sender>(sender) |
+                        let_value([=, f = std::forward<F>(f)](auto&... args) mutable {
+                            return just(std::forward_as_tuple(args...)) | ex::unpack() |
+                                dispatch_mpi(std::move(f)) | trigger_mpi(mode);
+                        });
+                }
+                else
+                {
+                    return std::forward<Sender>(sender) |
+                        let_value([=, f = std::forward<F>(f)](auto&... args) mutable {
+                            return just(std::forward_as_tuple(args...)) | ex::unpack() |
+                                dispatch_mpi(std::move(f)) | trigger_mpi(mode) |
+                                ex::continues_on(default_pool_scheduler(p));
+                        });
+                }
             }
             else
             {
-                return std::forward<Sender>(sender) | continues_on(mpi_pool_scheduler(p)) |
-                    let_value(std::move(f_mpi));
+                if (completions_inline)
+                {
+                    return std::forward<Sender>(sender) | continues_on(mpi_pool_scheduler(p)) |
+                        let_value([=, f = std::forward<F>(f)](auto&... args) mutable {
+                            return just(std::forward_as_tuple(args...)) | ex::unpack() |
+                                dispatch_mpi(std::move(f)) | trigger_mpi(mode);
+                        });
+                }
+                else
+                {
+                    return std::forward<Sender>(sender) | continues_on(mpi_pool_scheduler(p)) |
+                        let_value([=, f = std::forward<F>(f)](auto&... args) mutable {
+                            return just(std::forward_as_tuple(args...)) | ex::unpack() |
+                                dispatch_mpi(std::move(f)) | trigger_mpi(mode) |
+                                ex::continues_on(default_pool_scheduler(p));
+                        });
+                }
             }
         }
 
