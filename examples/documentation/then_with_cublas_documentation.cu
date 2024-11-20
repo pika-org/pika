@@ -37,9 +37,9 @@ class gpu_data
     std::size_t n{0};
 
 public:
-    // Note that blocking functions such as cudaMalloc will block the underlying operating system
-    // thread instead of yielding the pika task. Consider using e.g. a pool of GPU memory to avoid
-    // blocking the thread for too long.
+    // Note that blocking functions such as cudaMalloc will block the underlying
+    // operating system thread instead of yielding the pika task. Consider using
+    // e.g. a pool of GPU memory to avoid blocking the thread for too long.
     gpu_data(std::size_t n)
       : n(n)
     {
@@ -96,19 +96,24 @@ int main(int argc, char* argv[])
         double alpha = 1.0;
         double beta = 1.0;
 
-        auto s = ex::just(std::move(a), std::move(b), std::move(c)) | ex::continues_on(cuda_sched) |
-            cu::then_with_stream([](auto& a, auto& b, auto& c, whip::stream_t stream) {
-                init<<<n * n / 256, 256, 0, stream>>>(a.get(), b.get(), c.get(), n * n);
-                return std::make_tuple(std::move(a), std::move(b), std::move(c));
-            }) |
+        auto s = ex::just(std::move(a), std::move(b), std::move(c)) |
+            ex::continues_on(cuda_sched) |
+            cu::then_with_stream(
+                [](auto& a, auto& b, auto& c, whip::stream_t stream) {
+                    init<<<n * n / 256, 256, 0, stream>>>(
+                        a.get(), b.get(), c.get(), n * n);
+                    return std::make_tuple(
+                        std::move(a), std::move(b), std::move(c));
+                }) |
             ex::unpack() |
-            // a, b, and c will be kept alive by the then_with_cublas operation state at least until
-            // the GPU kernels complete.  Values sent by the predecessor sender are passed as the
-            // last arguments after the handle.
+            // a, b, and c will be kept alive by the then_with_cublas operation
+            // state at least until the GPU kernels complete.  Values sent by
+            // the predecessor sender are passed as the last arguments after the
+            // handle.
             cu::then_with_cublas(
                 [&](blas_handle_t handle, auto& a, auto& b, auto& c) {
-                    blas_gemm(handle, blas_op_n, blas_op_n, n, n, n, &alpha, a.get(), n, b.get(), n,
-                        &beta, c.get(), n);
+                    blas_gemm(handle, blas_op_n, blas_op_n, n, n, n, &alpha,
+                        a.get(), n, b.get(), n, &beta, c.get(), n);
                 },
                 blas_pointer_mode);
         tt::sync_wait(std::move(s));
