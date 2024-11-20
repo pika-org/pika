@@ -64,44 +64,39 @@ namespace pika::mpi::experimental {
                 execution::thread_priority::boost :
                 execution::thread_priority::normal;
 
-            if (requests_inline)
+            if (completions_inline)
             {
-                if (completions_inline)
+                auto f_completion = [=, f = std::forward<F>(f)](auto&... args) mutable {
+                    return just(std::forward_as_tuple(args...)) | ex::unpack() |
+                        dispatch_mpi(std::move(f)) | trigger_mpi(mode);
+                };
+
+                if (requests_inline)
                 {
-                    return std::forward<Sender>(sender) |
-                        let_value([=, f = std::forward<F>(f)](auto&... args) mutable {
-                            return just(std::forward_as_tuple(args...)) | ex::unpack() |
-                                dispatch_mpi(std::move(f)) | trigger_mpi(mode);
-                        });
+                    return std::forward<Sender>(sender) | let_value(std::move(f_completion));
                 }
                 else
                 {
-                    return std::forward<Sender>(sender) |
-                        let_value([=, f = std::forward<F>(f)](auto&... args) mutable {
-                            return just(std::forward_as_tuple(args...)) | ex::unpack() |
-                                dispatch_mpi(std::move(f)) | trigger_mpi(mode) |
-                                ex::continues_on(default_pool_scheduler(p));
-                        });
+                    return std::forward<Sender>(sender) | continues_on(mpi_pool_scheduler(p)) |
+                        let_value(std::move(f_completion));
                 }
             }
             else
             {
-                if (completions_inline)
+                auto f_completion = [=, f = std::forward<F>(f)](auto&... args) mutable {
+                    return just(std::forward_as_tuple(args...)) | ex::unpack() |
+                        dispatch_mpi(std::move(f)) | trigger_mpi(mode) |
+                        ex::continues_on(default_pool_scheduler(p));
+                };
+
+                if (requests_inline)
                 {
-                    return std::forward<Sender>(sender) | continues_on(mpi_pool_scheduler(p)) |
-                        let_value([=, f = std::forward<F>(f)](auto&... args) mutable {
-                            return just(std::forward_as_tuple(args...)) | ex::unpack() |
-                                dispatch_mpi(std::move(f)) | trigger_mpi(mode);
-                        });
+                    return std::forward<Sender>(sender) | let_value(std::move(f_completion));
                 }
                 else
                 {
                     return std::forward<Sender>(sender) | continues_on(mpi_pool_scheduler(p)) |
-                        let_value([=, f = std::forward<F>(f)](auto&... args) mutable {
-                            return just(std::forward_as_tuple(args...)) | ex::unpack() |
-                                dispatch_mpi(std::move(f)) | trigger_mpi(mode) |
-                                ex::continues_on(default_pool_scheduler(p));
-                        });
+                        let_value(std::move(f_completion));
                 }
             }
         }
