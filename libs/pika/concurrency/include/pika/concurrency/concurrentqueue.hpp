@@ -1976,11 +1976,13 @@ namespace pika::concurrency::detail {
 
             inline T* operator[](index_t idx) MOODYCAMEL_NOEXCEPT
             {
+                // NOLINTNEXTLINE(bugprone-casting-through-void)
                 return static_cast<T*>(static_cast<void*>(elements)) +
                     static_cast<size_t>(idx & static_cast<index_t>(BLOCK_SIZE - 1));
             }
             inline T const* operator[](index_t idx) const MOODYCAMEL_NOEXCEPT
             {
+                // NOLINTNEXTLINE(bugprone-casting-through-void)
                 return static_cast<T const*>(static_cast<void const*>(elements)) +
                     static_cast<size_t>(idx & static_cast<index_t>(BLOCK_SIZE - 1));
             }
