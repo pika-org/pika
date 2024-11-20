@@ -119,9 +119,14 @@ namespace pika::mpi::experimental::detail {
                 {
                     auto r = std::move(*this);
 
-                    // early exit check
-                    if (request == MPI_REQUEST_NULL)
+                    // early poll just in case the request completed immediately
+                    if (poll_request(request))
                     {
+#ifdef PIKA_HAVE_APEX
+                        apex::scoped_timer apex_ invoke("pika::mpi::trigger");
+#endif
+                        PIKA_DETAIL_DP(mpi_tran<7>,
+                            debug(str<>("trigger_mpi_recv"), "eager poll ok", ptr(request)));
                         ex::set_value(std::move(r.op_state.receiver));
                         return;
                     }
