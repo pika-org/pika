@@ -172,13 +172,17 @@ following, whenever CUDA is mentioned, it refers to to CUDA and HIP interchangea
 
 The CUDA support in pika relies on four major components:
 
-1. A pool of CUDA streams as well as cuBLAS and cuSOLVER handles. These streams and handles are used
-   in a round-robin fashion by various sender adaptors.
-2. A CUDA scheduler, in the ``std::execution`` sense. This uses the CUDA pool to schedule work on a
-   GPU.
-3. Sender adaptors. A few special-purpose sender adaptors, as well as customizations of a few
-   ``std::execution`` adaptors are provided to help schedule different types of work on a GPU.
-4. Polling of CUDA events integrated into the pika scheduling loop. This integration is essential to
+1. A pool of CUDA streams as well as cuBLAS and cuSOLVER handles
+   (:cpp:class:`pika::cuda::experimental::cuda_pool`). These streams and handles are used in a
+   round-robin fashion by various sender adaptors.
+2. A CUDA scheduler, in the ``std::execution`` sense
+   (:cpp:class:`pika::cuda::experimental::cuda_scheduler`). This uses the CUDA pool to schedule work
+   on a GPU.
+3. Sender adaptors (:cpp:var:`pika::cuda::experimental::then_with_stream` etc.). A few
+   special-purpose sender adaptors, as well as customizations of a few ``std::execution`` adaptors
+   are provided to help schedule different types of work on a GPU.
+4. Polling of CUDA events integrated into the pika scheduling loop
+   (:cpp:class:`pika::cuda::experimental::enable_user_polling`). This integration is essential to
    avoid calling e.g. ``cudaStreamSynchronize`` on a pika task, which would block the underlying
    worker thread and thus block progress of other work.
 
@@ -189,7 +193,8 @@ The following example gives an overview of using the above CUDA functionalities 
    :start-at: #include
 
 While :cpp:class:`pika::cuda::experimental::cuda_pool` gives direct access to streams and handles,
-the recommended way to access them is through the sender adaptors available below.
+the recommended way to access them is through the
+:cpp:class:`pika::cuda::experimental::cuda_scheduler` and the sender adaptors available below.
 
 .. doxygenclass:: pika::cuda::experimental::cuda_scheduler
 .. doxygenstruct:: pika::cuda::experimental::then_with_stream_t
