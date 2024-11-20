@@ -708,6 +708,7 @@ static void test_empty_ref()
         f2();
         PIKA_TEST_MSG(false, "Exception didn't throw for reference to empty function.");
     }
+    // NOLINTNEXTLINE(bugprone-empty-catch)
     catch (std::runtime_error const& /*e*/)
     {
     }
@@ -732,6 +733,7 @@ static void test_exception()
         f(5, 4);
         PIKA_TEST(false);
     }
+    // NOLINTNEXTLINE(bugprone-empty-catch)
     catch (std::runtime_error const&)
     {
         // okay

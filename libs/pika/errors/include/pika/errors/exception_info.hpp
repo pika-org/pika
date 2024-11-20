@@ -230,6 +230,7 @@ namespace pika {
         {
             return fmt::format("std::exception:\n  what():  {}", e.what());
         }
+        // NOLINTNEXTLINE(bugprone-empty-catch)
         catch (...)
         {
         }
