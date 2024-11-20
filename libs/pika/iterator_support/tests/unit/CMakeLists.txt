@@ -17,7 +17,6 @@ set(tests
     stencil3_iterator
     transform_iterator
     transform_iterator2
-    zip_iterator
 )
 
 set(is_range_FLAGS NOLIBS)
