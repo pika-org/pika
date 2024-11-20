@@ -67,14 +67,9 @@ namespace pika::mpi::experimental {
             auto completion_snd = [=](MPI_Request request) -> unique_any_sender<> {
                 if (!completions_inline)    // not inline : a transfer is required
                 {
-                    if (request == MPI_REQUEST_NULL)
-                    {
-                        return ex::schedule(default_pool_scheduler(p));
-                    }
                     return just(request) | trigger_mpi(mode) |
                         ex::continues_on(default_pool_scheduler(p));
                 }
-                if (request == MPI_REQUEST_NULL) { return just(); }
                 return just(request) | trigger_mpi(mode);
             };
 
