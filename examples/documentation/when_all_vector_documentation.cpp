@@ -33,10 +33,11 @@ int main(int argc, char* argv[])
     snds.reserve(n);
     for (std::size_t i = 0; i < n; ++i)
     {
-        snds.push_back(ex::just(i) | ex::continues_on(sched) | ex::then(calculate));
+        snds.push_back(
+            ex::just(i) | ex::continues_on(sched) | ex::then(calculate));
     }
-    auto snds_print =
-        ex::when_all_vector(std::move(snds)) | ex::then([](std::vector<std::size_t> results) {
+    auto snds_print = ex::when_all_vector(std::move(snds)) |
+        ex::then([](std::vector<std::size_t> results) {
             fmt::print("Results are: {}\n", fmt::join(results, ", "));
         });
     tt::sync_wait(std::move(snds_print));
