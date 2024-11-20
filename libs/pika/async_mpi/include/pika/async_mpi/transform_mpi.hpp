@@ -52,7 +52,6 @@ namespace pika::mpi::experimental {
             using pika::execution::experimental::continues_on;
             using pika::execution::experimental::just;
             using pika::execution::experimental::let_value;
-            using pika::execution::experimental::unique_any_sender;
             using pika::execution::experimental::unpack;
 
             // get mpi completion mode settings
@@ -67,7 +66,7 @@ namespace pika::mpi::experimental {
             if (completions_inline)
             {
                 auto f_completion = [=, f = std::forward<F>(f)](auto&... args) mutable {
-                    return just(std::forward_as_tuple(args...)) | ex::unpack() |
+                    return just(std::forward_as_tuple(args...)) | unpack() |
                         dispatch_mpi(std::move(f)) | trigger_mpi(mode);
                 };
 
@@ -84,9 +83,9 @@ namespace pika::mpi::experimental {
             else
             {
                 auto f_completion = [=, f = std::forward<F>(f)](auto&... args) mutable {
-                    return just(std::forward_as_tuple(args...)) | ex::unpack() |
+                    return just(std::forward_as_tuple(args...)) | unpack() |
                         dispatch_mpi(std::move(f)) | trigger_mpi(mode) |
-                        ex::continues_on(default_pool_scheduler(p));
+                        continues_on(default_pool_scheduler(p));
                 };
 
                 if (requests_inline)
