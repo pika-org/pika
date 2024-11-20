@@ -213,6 +213,7 @@ See :cpp:var:`pika::cuda::experimental::then_with_cublas` for an example of what
 :cpp:var:`pika::cuda::experimental::then_with_cusolver`. The interfaces are identical except for the
 type of handle passed to the callable.
 
+.. doxygenclass:: pika::cuda::experimental::enable_user_polling
 .. doxygenclass:: pika::cuda::experimental::cuda_pool
 .. doxygenclass:: pika::cuda::experimental::cuda_stream
 .. doxygenclass:: pika::cuda::experimental::cublas_handle
