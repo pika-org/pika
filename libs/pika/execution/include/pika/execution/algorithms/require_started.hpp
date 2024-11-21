@@ -120,9 +120,9 @@ namespace pika {
             };
 
             template <typename... Ts>
-            friend void tag_invoke(pika::execution::experimental::set_value_t,
-                require_started_receiver_type r, Ts&&... ts) noexcept
+            void set_value(Ts&&... ts) && noexcept
             {
+                auto r = PIKA_MOVE(*this);
                 PIKA_ASSERT(r.op_state != nullptr);
                 pika::execution::experimental::set_value(
                     PIKA_MOVE(r.op_state->receiver), PIKA_FORWARD(Ts, ts)...);
@@ -381,8 +381,7 @@ namespace pika {
 
                 s.connected = true;
                 return
-                {
-                    // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+                {    // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
                     *std::exchange(s.sender, std::nullopt), PIKA_FORWARD(Receiver, receiver)
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
                                                                 ,
@@ -439,7 +438,7 @@ namespace pika {
 #endif
 
     namespace execution::experimental {
-        inline constexpr struct require_started_t final
+        struct require_started_t final
         {
             template <typename Sender, PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender>)>
             constexpr PIKA_FORCEINLINE auto
@@ -453,7 +452,20 @@ namespace pika {
             {
                 return detail::partial_algorithm<require_started_t>{};
             }
-        } require_started{};
+        };
+
+        /// \brief Diagnose if a sender has not been started and terminates on destruction. It
+        /// forwards the values of the predecessor sender.
+        ///
+        /// Sender adaptor that takes any sender and returns a new sender that sends the same values
+        /// as the predecessor sender.
+        ///
+        /// The destructor terminates if the sender has not been connected or if the
+        /// operation state has not been started.
+        /// The operation state of a \p require_started sender is allowed to not be started if it
+        /// has been explicitly requested with the \p discard member function.
+        inline constexpr require_started_t require_started{};
+
     }    // namespace execution::experimental
 
 #undef PIKA_DETAIL_REQUIRE_STARTED_MODE_PARAMETER

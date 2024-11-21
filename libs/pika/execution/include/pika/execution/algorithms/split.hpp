@@ -190,14 +190,14 @@ namespace pika::split_detail {
                     value_type_helper>;
 
                 template <typename... Ts>
-                friend auto tag_invoke(pika::execution::experimental::set_value_t, split_receiver r,
-                    Ts&&... ts) noexcept
+                auto set_value(Ts&&... ts) && noexcept
                     -> decltype(std::declval<
                                     pika::detail::variant<pika::detail::monostate, value_type>>()
                                     .template emplace<value_type>(
                                         std::make_tuple<>(PIKA_FORWARD(Ts, ts)...)),
                         void())
                 {
+                    auto r = PIKA_MOVE(*this);
                     r.state->v.template emplace<value_type>(
                         std::make_tuple<>(PIKA_FORWARD(Ts, ts)...));
 

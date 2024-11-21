@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright (c) 2024 ETH Zurich
+# Copyright (c) 2019 The STE||AR-Group
 #
 # SPDX-License-Identifier: BSL-1.0
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -11,42 +11,67 @@
 # are correctly clang-formatted and that CMakeLists.txt and *.cmake
 # files are cmake-formatted
 
+# To use this hook, you must have clang-format and cmake-format
+# installed on your system
+
 # To install this hook, symlink this hook to your git hooks as follows
 # (note that the extra ../../ in the path is because git runs the hook
 # from the .git/hooks directory, so the symlink has to be redirected)
 # ln -s -f ../../tools/pre-commit .git/hooks/pre-commit
 
-# To use this hook, you must have podman installed.
-
 # @todo : add support for the pika inspect tool to be run as well
 
-function error_msg() {
-    echo "$1 formatted files. run git add -u and git commit again."
-    echo "run git commit --no-verify to bypass."
-    git status
-    exit_code=1
-}
+CLANG_FORMAT_VERSION=clang-format-16
 
-cont_image=docker.io/pikaorg/pika-ci-base:28
-git_dir=$(git rev-parse --show-toplevel)
+red=$(tput setaf 1)
+green=$(tput setaf 2)
+yellow=$(tput setaf 3)
+blue=$(tput setaf 4)
+normal=$(tput sgr0)
 
-echo "Run clang-format"
-podman run -w /pika/source -v=${git_dir}:/pika/source ${cont_image} \
-    git-clang-format -f --extensions cpp,hpp,cu
-result_clang_format=$?
+cxxfiles=()
+for file in `git diff --cached --name-only --diff-filter=ACMRT | grep -E "\.(cpp|hpp)$"`; do
+    if ! cmp -s <(git show :${file}) <(git show :${file}|$CLANG_FORMAT_VERSION -style=file); then
+        cxxfiles+=("${file}")
+    fi
+done
 
-echo "Run cmake-format"
-checksum=$(git diff --cached --name-only | grep -E '(CMakeLists.txt|\.cmake)' | xargs -I {} sh -c 'md5sum {}')
-podman run -w /pika/source -v=${git_dir}:/pika/source ${cont_image} \
-    bash -c "git diff --cached --name-only | grep -E '(CMakeLists.txt|\.cmake)' | xargs cmake-format -i"
-checksum_after_format=$(git diff --cached --name-only | grep -E '(CMakeLists.txt|\.cmake)' | xargs -I {} sh -c 'md5sum {}')
+cmakefiles=()
+for file in `git diff --cached --name-only --diff-filter=ACMRT | grep -E "(CMakeLists\.txt|\.cmake)$"`; do
+    tmpfile=$(mktemp /tmp/cmake-check.XXXXXX)
+    git show :${file} > $tmpfile
+    cmake-format -c $(pwd)/.cmake-format.py -i $tmpfile
+    if ! cmp -s <(git show :${file}) <(cat $tmpfile); then
+        cmakefiles+=("${file}")
+    fi
+    rm $tmpfile
+done
 
-exit_code=0
-if [ "$checksum" != "$checksum_after_format" ]; then
-    error_msg "cmake-format"
+returncode=0
+full_list=
+
+if [ -n "${cxxfiles}" ]; then
+    printf "# ${blue}clang-format ${red}error pre-commit${normal} : To fix run the following (use git commit ${yellow}--no-verify${normal} to bypass)\n"
+    for f in "${cxxfiles[@]}" ; do
+        rel=$(realpath --relative-to "./$GIT_PREFIX" $f)
+        printf "$CLANG_FORMAT_VERSION -i %s\n" "$rel"
+        full_list="${rel} ${full_list}"
+    done
+    returncode=1
 fi
-if [ "$result_clang_format" == 1 ]; then
-    error_msg "clang-format"
+
+if [ -n "${cmakefiles}" ]; then
+    printf "# ${green}cmake-format ${red}error pre-commit${normal} : To fix run the following (use git commit ${yellow}--no-verify${normal} to bypass)\n"
+    for f in "${cmakefiles[@]}" ; do
+        rel=$(realpath --relative-to "./$GIT_PREFIX" $f)
+        printf "cmake-format -i %s\n" "$rel"
+        full_list="${rel} ${full_list}"
+    done
+    returncode=1
 fi
 
-exit $exit_code
+if [ ! -z "$full_list" ]; then
+    printf "\n# ${red}To commit the corrected files, run\n${normal}\ngit add ${full_list}\n"
+fi
+
+exit $returncode

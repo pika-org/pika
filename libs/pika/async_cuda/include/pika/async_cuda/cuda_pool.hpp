@@ -84,7 +84,6 @@ namespace pika::cuda::experimental {
 
         struct cublas_handles_holder
         {
-            std::size_t const concurrency;
             std::atomic<std::size_t> handle_index;
             std::vector<cublas_handle> handles;
             std::vector<std::mutex> handle_mutexes;
@@ -101,7 +100,6 @@ namespace pika::cuda::experimental {
 
         struct cusolver_handles_holder
         {
-            std::size_t const concurrency;
             std::atomic<std::size_t> handle_index;
             std::vector<cusolver_handle> handles;
             std::vector<std::mutex> handle_mutexes;

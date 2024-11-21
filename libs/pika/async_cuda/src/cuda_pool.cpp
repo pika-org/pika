@@ -49,9 +49,7 @@ namespace pika::cuda::experimental {
     }
 
     cuda_pool::cublas_handles_holder::cublas_handles_holder(std::size_t num_handles)
-      : concurrency(pika::detail::get_runtime_ptr() ? pika::get_num_worker_threads() :
-                                                      pika::threads::detail::hardware_concurrency())
-      , handle_index{0}
+      : handle_index{0}
       , handles()
       , handle_mutexes(num_handles)
     {
@@ -83,9 +81,7 @@ namespace pika::cuda::experimental {
     }
 
     cuda_pool::cusolver_handles_holder::cusolver_handles_holder(std::size_t num_handles)
-      : concurrency(pika::detail::get_runtime_ptr() ? pika::get_num_worker_threads() :
-                                                      pika::threads::detail::hardware_concurrency())
-      , handle_index{0}
+      : handle_index{0}
       , handles()
       , handle_mutexes(num_handles)
     {

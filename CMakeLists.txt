@@ -45,8 +45,8 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # ##################################################################################################
 set(PIKA_VERSION_MAJOR 0)
 set(PIKA_VERSION_MINOR 30)
-set(PIKA_VERSION_PATCH 0)
-set(PIKA_VERSION_DATE 20241108)
+set(PIKA_VERSION_PATCH 1)
+set(PIKA_VERSION_DATE 20241119)
 set(PIKA_VERSION_TAG "-trunk")
 
 set(PIKA_VERSION "${PIKA_VERSION_MAJOR}.${PIKA_VERSION_MINOR}.${PIKA_VERSION_PATCH}")
@@ -615,12 +615,6 @@ pika_option(
 if(PIKA_WITH_SPINLOCK_DEADLOCK_DETECTION)
   pika_add_config_define(PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION)
 endif()
-
-pika_option(
-  PIKA_WITH_ITTNOTIFY BOOL "Enable Amplifier (ITT) instrumentation support." OFF
-  CATEGORY "Profiling"
-  ADVANCED
-)
 
 pika_option(
   PIKA_WITH_MPI BOOL

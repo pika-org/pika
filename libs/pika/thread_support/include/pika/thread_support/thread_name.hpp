@@ -8,17 +8,14 @@
 
 #include <pika/config.hpp>
 
+#include <string>
+
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
 # include <windows.h>
-
-namespace pika::detail {
-    PIKA_EXPORT void set_thread_name(char const* /*threadName*/, DWORD /*dwThreadID*/ = DWORD(-1));
-}    // namespace pika::detail
-
-#else
-
-namespace pika::detail {
-    inline void set_thread_name(char const* /*thread_name*/) {}
-}    // namespace pika::detail
-
 #endif
+
+namespace pika::detail {
+    PIKA_EXPORT std::string& get_thread_name_internal();
+    PIKA_EXPORT std::string get_thread_name();
+    PIKA_EXPORT void set_thread_name(std::string_view name, std::string_view short_name);
+}    // namespace pika::detail

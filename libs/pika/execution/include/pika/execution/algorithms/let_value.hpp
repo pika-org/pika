@@ -73,9 +73,6 @@ namespace pika::let_value_detail {
         using successor_sender_types = pika::util::detail::unique_t<pika::util::detail::transform_t<
             predecessor_value_types<Tuple, Variant>, successor_sender_types_helper>>;
 
-        // The workaround for clang is due to a parsing bug in clang < 11
-        // in CUDA mode (where >>> also has a different meaning in kernel
-        // launches).
         template <template <typename...> class Tuple, template <typename...> class Variant>
         using value_types = pika::util::detail::unique_t<pika::util::detail::concat_pack_of_packs_t<
             pika::util::detail::transform_t<successor_sender_types<Tuple, Variant>,
@@ -231,36 +228,26 @@ namespace pika::let_value_detail {
                     pika::detail::monostate>;
 
                 template <typename... Ts>
-                void set_value(Ts&&... ts)
-                {
-                    pika::detail::try_catch_exception_ptr(
-                        [&]() {
-                            op_state.predecessor_ts
-                                .template emplace<std::tuple<std::decay_t<Ts>...>>(
-                                    PIKA_FORWARD(Ts, ts)...);
-                            pika::detail::visit(
-                                set_value_visitor{PIKA_MOVE(receiver), PIKA_MOVE(f), op_state},
-                                op_state.predecessor_ts);
-                        },
-                        [&](std::exception_ptr ep) {
-                            pika::execution::experimental::set_error(
-                                PIKA_MOVE(receiver), PIKA_MOVE(ep));
-                        });
-                }
-
-                template <typename... Ts>
-                friend auto tag_invoke(pika::execution::experimental::set_value_t,
-                    let_value_predecessor_receiver&& r, Ts&&... ts) noexcept
+                auto set_value(Ts&&... ts) && noexcept
                     -> decltype(std::declval<predecessor_ts_type>()
                                     .template emplace<std::tuple<std::decay_t<Ts>...>>(
                                         PIKA_FORWARD(Ts, ts)...),
                         void())
                 {
-                    // set_value is in a member function only because of a
-                    // compiler bug in GCC 7. When the body of set_value is
-                    // inlined here compilation fails with an internal
-                    // compiler error.
-                    r.set_value(PIKA_FORWARD(Ts, ts)...);
+                    auto r = PIKA_MOVE(*this);
+                    pika::detail::try_catch_exception_ptr(
+                        [&]() {
+                            r.op_state.predecessor_ts
+                                .template emplace<std::tuple<std::decay_t<Ts>...>>(
+                                    PIKA_FORWARD(Ts, ts)...);
+                            pika::detail::visit(set_value_visitor{PIKA_MOVE(r.receiver),
+                                                    PIKA_MOVE(r.f), r.op_state},
+                                r.op_state.predecessor_ts);
+                        },
+                        [&](std::exception_ptr ep) {
+                            pika::execution::experimental::set_error(
+                                PIKA_MOVE(r.receiver), PIKA_MOVE(ep));
+                        });
                 }
             };
 

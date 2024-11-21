@@ -20,6 +20,7 @@
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 #include <pika/execution/algorithms/just.hpp>
 #include <pika/execution/algorithms/let_value.hpp>
+#include <pika/execution/algorithms/unpack.hpp>
 #include <pika/execution_base/any_sender.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
@@ -52,6 +53,7 @@ namespace pika::mpi::experimental {
             using pika::execution::experimental::just;
             using pika::execution::experimental::let_value;
             using pika::execution::experimental::unique_any_sender;
+            using pika::execution::experimental::unpack;
 
             // get mpi completion mode settings
             auto mode = get_completion_mode();
@@ -78,14 +80,19 @@ namespace pika::mpi::experimental {
 
             if (requests_inline)
             {
-                return dispatch_mpi_sender<Sender, F>{PIKA_MOVE(sender), PIKA_FORWARD(F, f)} |
-                    let_value(completion_snd);
+                return std::forward<Sender>(sender) |
+                    let_value([=, f = std::forward<F>(f)](auto&... args) mutable {
+                        return just(std::forward_as_tuple(args...)) | ex::unpack() |
+                            dispatch_mpi(std::move(f)) | let_value(completion_snd);
+                    });
             }
             else
             {
-                auto snd0 = PIKA_FORWARD(Sender, sender) | continues_on(mpi_pool_scheduler(p));
-                return dispatch_mpi_sender<decltype(snd0), F>{PIKA_MOVE(snd0), PIKA_FORWARD(F, f)} |
-                    let_value(completion_snd);
+                return std::forward<Sender>(sender) | continues_on(mpi_pool_scheduler(p)) |
+                    let_value([=, f = std::forward<F>(f)](auto&... args) mutable {
+                        return just(std::forward_as_tuple(args...)) | ex::unpack() |
+                            dispatch_mpi(std::move(f)) | let_value(completion_snd);
+                    });
             }
         }
 

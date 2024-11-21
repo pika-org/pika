@@ -18,7 +18,8 @@ int main(int argc, char* argv[])
 
     pika::start(argc, argv);
 
-    // The pika runtime is now active and we can schedule work on the default thread pool
+    // The pika runtime is now active and we can schedule work on the default
+    // thread pool
     auto s = ex::schedule(ex::thread_pool_scheduler{}) |
         ex::then([]() { fmt::print("Hello from the pika runtime\n"); });
     tt::sync_wait(std::move(s));

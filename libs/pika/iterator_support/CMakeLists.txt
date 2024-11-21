@@ -18,7 +18,6 @@ set(iterator_support_headers
     pika/iterator_support/traits/is_range.hpp
     pika/iterator_support/traits/is_sentinel_for.hpp
     pika/iterator_support/transform_iterator.hpp
-    pika/iterator_support/zip_iterator.hpp
 )
 
 set(iterator_support_sources)

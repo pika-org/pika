@@ -39,7 +39,6 @@ Core modules
    /libs/core/ini/docs/index.rst
    /libs/core/init_runtime/docs/index.rst
    /libs/core/iterator_support/docs/index.rst
-   /libs/core/itt_notify/docs/index.rst
    /libs/core/lock_registration/docs/index.rst
    /libs/core/logging/docs/index.rst
    /libs/core/memory/docs/index.rst

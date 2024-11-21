@@ -442,18 +442,6 @@ namespace pika::traits {
     inline constexpr bool is_random_access_iterator_v = is_random_access_iterator<Iter>::value;
 
     ///////////////////////////////////////////////////////////////////////////
-    template <typename Iter, typename Enable = void>
-    struct is_zip_iterator : std::false_type
-    {
-    };
-
-    template <typename Iter>
-    using is_zip_iterator_t = typename is_zip_iterator<Iter>::type;
-
-    template <typename Iter>
-    inline constexpr bool is_zip_iterator_v = is_zip_iterator<Iter>::value;
-
-    ///////////////////////////////////////////////////////////////////////////
     // Iterators are contiguous if they are pointers (without concepts we have
     // no generic way of determining whether an iterator is contiguous)
 

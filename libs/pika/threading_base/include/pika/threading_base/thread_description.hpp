@@ -12,9 +12,6 @@
 #include <pika/functional/traits/get_function_annotation.hpp>
 #include <pika/threading_base/threading_base_fwd.hpp>
 #include <pika/type_support/unused.hpp>
-#if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
-# include <pika/modules/itt_notify.hpp>
-#endif
 
 #include <fmt/format.h>
 
@@ -45,9 +42,6 @@ namespace pika::detail {
 
         data_type type_;
         data data_;
-# if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
-        util::itt::string_handle desc_itt_;
-# endif
 
         PIKA_EXPORT void init_from_alternative_name(char const* altname);
 
@@ -64,15 +58,6 @@ namespace pika::detail {
             data_.desc_ = desc ? desc : "<unknown>";
         }
 
-# if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
-        thread_description(char const* desc, util::itt::string_handle const& sh) noexcept
-          : type_(data_type_description)
-        {
-            data_.desc_ = desc ? desc : "<unknown>";
-            desc_itt_ = sh;
-        }
-# endif
-
         /* The priority of description is name, altname, address */
         template <typename F, typename = std::enable_if_t<!std::is_same_v<F, thread_description>>>
         explicit thread_description(F const& f, char const* altname = nullptr) noexcept
@@ -84,9 +69,6 @@ namespace pika::detail {
             if (name != nullptr)    // -V547
             {
                 altname = name;
-# if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
-                desc_itt_ = pika::detail::get_function_annotation_itt<F>::call(f);
-# endif
             }
 
 # if defined(PIKA_HAVE_THREAD_DESCRIPTION_FULL)
@@ -99,10 +81,6 @@ namespace pika::detail {
 # else
             init_from_alternative_name(altname);
 # endif
-
-# if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
-            if (!desc_itt_) { desc_itt_ = util::itt::string_handle(get_description()); }
-# endif
         }
 
         constexpr data_type kind() const noexcept { return type_; }
@@ -112,28 +90,6 @@ namespace pika::detail {
             PIKA_ASSERT(type_ == data_type_description);
             return data_.desc_;
         }
-
-# if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
-        util::itt::string_handle get_description_itt() const noexcept
-        {
-            PIKA_ASSERT(type_ == data_type_description);
-            return desc_itt_ ? desc_itt_ : util::itt::string_handle(get_description());
-        }
-
-        util::itt::task get_task_itt(util::itt::domain const& domain) const noexcept
-        {
-            switch (kind())
-            {
-            case data_type_description:
-                return util::itt::task(domain, get_description_itt());
-                break;
-            case data_type_address: return util::itt::task(domain, "address", get_address()); break;
-            default: PIKA_ASSERT(false); break;
-            }
-
-            return util::itt::task(domain, "<error>");
-        }
-# endif
 
         std::size_t get_address() const noexcept
         {
@@ -181,28 +137,6 @@ namespace pika::detail {
         constexpr data_type kind() const noexcept { return data_type_description; }
 
         constexpr char const* get_description() const noexcept { return "<unknown>"; }
-
-# if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
-        util::itt::string_handle get_description_itt() const noexcept
-        {
-            PIKA_ASSERT(type_ == data_type_description);
-            return util::itt::string_handle(get_description());
-        }
-
-        util::itt::task get_task_itt(util::itt::domain const& domain) const noexcept
-        {
-            switch (kind())
-            {
-            case data_type_description:
-                return util::itt::task(domain, get_description_itt());
-                break;
-            case data_type_address: return util::itt::task(domain, "address", get_address()); break;
-            default: PIKA_ASSERT(false); break;
-            }
-
-            return util::itt::task(domain, "<error>");
-        }
-# endif
 
         constexpr std::size_t get_address() const noexcept { return 0; }
 

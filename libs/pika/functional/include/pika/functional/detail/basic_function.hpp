@@ -57,7 +57,6 @@ namespace pika::util::detail {
 
         std::size_t get_function_address() const;
         char const* get_function_annotation() const;
-        util::itt::string_handle get_function_annotation_itt() const;
 
     protected:
         vtable const* vptr;
@@ -201,7 +200,6 @@ namespace pika::util::detail {
 
         using base_type::get_function_address;
         using base_type::get_function_annotation;
-        using base_type::get_function_annotation_itt;
 
     private:
         static constexpr vtable const* get_empty_vtable() noexcept

@@ -200,14 +200,38 @@ int pika_main()
                 PIKA_TEST_EQ(data, 42);
             }
 
+            // Values passed to transform_mpi should be kept alive by transform_mpi itself
+            {
+                int count = 1 << 20;
+                auto s = ex::just(std::vector<int>{count, 0}, datatype, 0, comm) |
+                    ex::drop_operation_state() |
+                    mpi::transform_mpi([](auto& data, MPI_Datatype datatype, int i, MPI_Comm comm,
+                                           MPI_Request* request) {
+                        MPI_Ibcast(data.data(), data.size(), datatype, i, comm, request);
+                    });
+                tt::sync_wait(PIKA_MOVE(s));
+            }
+
+            {
+                auto s = ex::just(custom_type_non_default_constructible_non_copyable{42}, datatype,
+                             0, comm) |
+                    ex::drop_operation_state() |
+                    mpi::transform_mpi([](auto& data, MPI_Datatype datatype, int i, MPI_Comm comm,
+                                           MPI_Request* request) {
+                        MPI_Ibcast(&data.x, 1, datatype, i, comm, request);
+                    });
+                tt::sync_wait(PIKA_MOVE(s));
+            }
+
             // transform_mpi should be able to handle reference types (by copying
             // them to the operation state)
             {
                 int data = 0, count = 1;
                 if (rank == 0) { data = 42; }
-                auto s = mpi::transform_mpi(
-                    const_reference_sender<int>{count}, [&](int& count, MPI_Request* request) {
-                        MPI_Ibcast(&data, count, datatype, 0, comm, request);
+                auto s = mpi::transform_mpi(const_reference_sender<int>{count},
+                    [&](int& count_transform_mpi, MPI_Request* request) {
+                        PIKA_TEST(&count_transform_mpi != &count);
+                        MPI_Ibcast(&data, count_transform_mpi, datatype, 0, comm, request);
                     });
                 tt::sync_wait(PIKA_MOVE(s));
                 PIKA_TEST_EQ(data, 42);

@@ -117,9 +117,9 @@ namespace pika::mpi::experimental::detail {
                 // otherwise return the request by passing it to set_value
                 template <typename... Ts,
                     typename = std::enable_if_t<is_mpi_request_invocable_v<F, Ts...>>>
-                friend constexpr void
-                tag_invoke(ex::set_value_t, dispatch_mpi_receiver r, Ts&&... ts) noexcept
+                constexpr void set_value(Ts&&... ts) && noexcept
                 {
+                    auto r = PIKA_MOVE(*this);
                     pika::detail::try_catch_exception_ptr(
                         [&]() mutable {
                             using invoke_result_type = mpi_request_invoke_result_t<F, Ts...>;
@@ -237,9 +237,8 @@ namespace pika::mpi::experimental {
         friend constexpr PIKA_FORCEINLINE auto
         tag_fallback_invoke(dispatch_mpi_t, Sender&& sender, F&& f)
         {
-            auto snd1 = detail::dispatch_mpi_sender<Sender, F>{
+            return detail::dispatch_mpi_sender<Sender, F>{
                 PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f)};
-            return pika::execution::experimental::make_unique_any_sender(std::move(snd1));
         }
 
         template <typename F>

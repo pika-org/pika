@@ -17,9 +17,7 @@
 # include <pika/threading_base/thread_helpers.hpp>
 # include <pika/type_support/decay.hpp>
 
-# if PIKA_HAVE_ITTNOTIFY != 0
-#  include <pika/modules/itt_notify.hpp>
-# elif defined(PIKA_HAVE_APEX)
+# if defined(PIKA_HAVE_APEX)
 #  include <pika/threading_base/external_timer.hpp>
 # endif
 #endif
