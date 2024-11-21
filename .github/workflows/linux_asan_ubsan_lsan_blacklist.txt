@@ -1,3 +1,5 @@
+tests.performance.local.heterogeneous_timed_task_spawn
+tests.performance.local.task_overhead
 tests.unit.modules.resource_partitioner.cross_pool_injection
 tests.unit.modules.resource_partitioner.suspend_thread
 tests.unit.modules.thread_manager.thread_num
