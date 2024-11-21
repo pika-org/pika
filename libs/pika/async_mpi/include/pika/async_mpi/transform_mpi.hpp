@@ -65,7 +65,7 @@ namespace pika::mpi::experimental {
 
             if (completions_inline)
             {
-                auto f_completion = [mode, p, f = std::forward<F>(f)](auto&... args) mutable {
+                auto f_completion = [mode, f = std::forward<F>(f)](auto&... args) mutable {
                     return just(std::forward_as_tuple(args...)) | unpack() |
                         dispatch_mpi(std::move(f)) | trigger_mpi(mode);
                 };
