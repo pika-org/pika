@@ -380,12 +380,11 @@ namespace pika {
                 }
 
                 s.connected = true;
-                return
-                {    // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+                return {// NOLINTNEXTLINE(bugprone-unchecked-optional-access)
                     *std::exchange(s.sender, std::nullopt), PIKA_FORWARD(Receiver, receiver)
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
                                                                 ,
-                        s.mode
+                    s.mode
 #endif
                 };
             }
@@ -409,12 +408,10 @@ namespace pika {
                 }
 
                 s.connected = true;
-                return
-                {
-                    *s.sender, PIKA_FORWARD(Receiver, receiver)
+                return {*s.sender, PIKA_FORWARD(Receiver, receiver)
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
-                                   ,
-                        s.mode
+                                       ,
+                    s.mode
 #endif
                 };
             }

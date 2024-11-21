@@ -25,8 +25,8 @@
 /// note that it is expected that this test will print warnings when a pool is created
 /// but not actually needed by the completion mode
 
-static const std::string random_name1 = "abcd12345qwerty";
-static const std::string random_name2 = "ta-daa-500";
+static std::string const random_name1 = "abcd12345qwerty";
+static std::string const random_name2 = "ta-daa-500";
 
 namespace ex = pika::execution::experimental;
 namespace mpi = pika::mpi::experimental;

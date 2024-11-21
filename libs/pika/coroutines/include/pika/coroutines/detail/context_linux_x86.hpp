@@ -118,18 +118,30 @@ namespace pika::threads::coroutines {
                 PIKA_ASSERT(sizeof(void*) == 4);
 # endif
 
-                __builtin_prefetch(m_sp, 1, 3);
-                __builtin_prefetch(m_sp, 0, 3);
-                __builtin_prefetch(static_cast<void**>(m_sp) + 64 / sizeof(void*), 1, 3);
-                __builtin_prefetch(static_cast<void**>(m_sp) + 64 / sizeof(void*), 0, 3);
+                // Silence this warning since the explicit cast is ignored until clang-tidy version
+                // 19 (https://github.com/llvm/llvm-project/pull/94524)
+                // NOLINTBEGIN(bugprone-multi-level-implicit-pointer-conversion)
+                __builtin_prefetch(static_cast<void*>(m_sp), 1, 3);
+                __builtin_prefetch(static_cast<void*>(m_sp), 0, 3);
+                __builtin_prefetch(
+                    static_cast<void*>(static_cast<void**>(m_sp) + 64 / sizeof(void*)), 1, 3);
+                __builtin_prefetch(
+                    static_cast<void*>(static_cast<void**>(m_sp) + 64 / sizeof(void*)), 0, 3);
 # if !defined(__x86_64__)
-                __builtin_prefetch(static_cast<void**>(m_sp) + 32 / sizeof(void*), 1, 3);
-                __builtin_prefetch(static_cast<void**>(m_sp) + 32 / sizeof(void*), 0, 3);
-                __builtin_prefetch(static_cast<void**>(m_sp) - 32 / sizeof(void*), 1, 3);
-                __builtin_prefetch(static_cast<void**>(m_sp) - 32 / sizeof(void*), 0, 3);
+                __builtin_prefetch(
+                    static_cast<void*>(static_cast<void**>(m_sp) + 32 / sizeof(void*)), 1, 3);
+                __builtin_prefetch(
+                    static_cast<void*>(static_cast<void**>(m_sp) + 32 / sizeof(void*)), 0, 3);
+                __builtin_prefetch(
+                    static_cast<void*>(static_cast<void**>(m_sp) - 32 / sizeof(void*)), 1, 3);
+                __builtin_prefetch(
+                    static_cast<void*>(static_cast<void**>(m_sp) - 32 / sizeof(void*)), 0, 3);
 # endif
-                __builtin_prefetch(static_cast<void**>(m_sp) - 64 / sizeof(void*), 1, 3);
-                __builtin_prefetch(static_cast<void**>(m_sp) - 64 / sizeof(void*), 0, 3);
+                __builtin_prefetch(
+                    static_cast<void*>(static_cast<void**>(m_sp) - 64 / sizeof(void*)), 1, 3);
+                __builtin_prefetch(
+                    static_cast<void*>(static_cast<void**>(m_sp) - 64 / sizeof(void*)), 0, 3);
+                // NOLINTEND(bugprone-multi-level-implicit-pointer-conversion)
             }
 
             /**
@@ -434,12 +446,12 @@ namespace pika::threads::coroutines {
              * 0:  r15
              **/
 #  if defined(PIKA_HAVE_VALGRIND) && !defined(NVALGRIND)
-            static const std::size_t valgrind_id_idx = 11;
+            static std::size_t const valgrind_id_idx = 11;
 #  endif
 
-            static const std::size_t context_size = 12;
-            static const std::size_t cb_idx = 10;
-            static const std::size_t funp_idx = 8;
+            static std::size_t const context_size = 12;
+            static std::size_t const cb_idx = 10;
+            static std::size_t const funp_idx = 8;
 # else
             /** structure of context_data:
              * 7: valgrind_id (if enabled)
@@ -452,14 +464,14 @@ namespace pika::threads::coroutines {
              * 0: edi
              **/
 #  if defined(PIKA_HAVE_VALGRIND) && !defined(NVALGRIND)
-            static const std::size_t context_size = 8;
-            static const std::size_t valgrind_id_idx = 7;
+            static std::size_t const context_size = 8;
+            static std::size_t const valgrind_id_idx = 7;
 #  else
-            static const std::size_t context_size = 7;
+            static std::size_t const context_size = 7;
 #  endif
 
-            static const std::size_t cb_idx = 6;
-            static const std::size_t funp_idx = 4;
+            static std::size_t const cb_idx = 6;
+            static std::size_t const funp_idx = 4;
 # endif
 
             std::ptrdiff_t m_stack_size;

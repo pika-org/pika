@@ -86,11 +86,11 @@ namespace pika::threads::detail {
         QueueType* const lp_queue_;
 
         // these are the domain and local thread queue ids for the container
-        const std::size_t domain_index_;
-        const std::size_t queue_index_;
-        const std::size_t thread_num_;
+        std::size_t const domain_index_;
+        std::size_t const queue_index_;
+        std::size_t const thread_num_;
         // a mask that hold a bit per queue to indicate ownership of the queue
-        const std::size_t owner_mask_;
+        std::size_t const owner_mask_;
 
         // we must use OS mutexes here because we cannot suspend a pika
         // thread whilst processing the Queues for that thread, this code

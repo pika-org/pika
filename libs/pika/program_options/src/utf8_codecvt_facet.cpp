@@ -61,7 +61,7 @@ namespace pika::program_options::detail {
             // The first octet is   adjusted by a value dependent upon
             // the number   of "continuing octets" encoding the character
             int const cont_octet_count = static_cast<int>(get_cont_octet_count(*from));
-            const wchar_t octet1_modifier_table[] = {0x00, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc};
+            wchar_t const octet1_modifier_table[] = {0x00, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc};
 
             // The unsigned char conversion is necessary in case char is
             // signed   (I learned this the hard way)
@@ -116,7 +116,7 @@ namespace pika::program_options::detail {
         char* to_end, char*& to_next) const
     {
         // RG - consider merging this table with the other one
-        const wchar_t octet1_modifier_table[] = {0x00, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc};
+        wchar_t const octet1_modifier_table[] = {0x00, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc};
 
         wchar_t max_wchar = (std::numeric_limits<wchar_t>::max)();
         while (from != from_end && to != to_end)
@@ -132,7 +132,7 @@ namespace pika::program_options::detail {
             int cont_octet_count = get_cont_octet_out_count(*from);
 
             // RG  - comment this formula better
-            int shift_exponent = (cont_octet_count) *6;
+            int shift_exponent = (cont_octet_count) * 6;
 
             // Process the first character
             *to++ = static_cast<char>(octet1_modifier_table[cont_octet_count] +

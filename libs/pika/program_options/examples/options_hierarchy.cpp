@@ -34,7 +34,7 @@
 
 namespace po = pika::program_options;
 
-const std::string version("1.0");
+std::string const version("1.0");
 
 // Used to exit the program if the help/version option is set
 class OptionsExitsProgram : public std::exception
@@ -321,6 +321,7 @@ int main(int ac, char* av[])
         options.ParseOptions(ac, av);
         PrintOptions(options);
     }
+    // NOLINTNEXTLINE(bugprone-empty-catch)
     catch (OptionsExitsProgram const&)
     {
     }

@@ -204,7 +204,7 @@ namespace pika::threads::detail {
         inline std::size_t local_thread_number() const
         {
             using namespace pika::threads::detail;
-            const std::size_t thread_pool_num = get_thread_pool_num_tss();
+            std::size_t const thread_pool_num = get_thread_pool_num_tss();
             // if the thread belongs to this pool return local Id
             if (pool_index_ == thread_pool_num) return get_local_thread_num_tss();
             return std::size_t(-1);
@@ -1322,7 +1322,7 @@ namespace pika::threads::detail {
 
         pika::detail::affinity_data const& affinity_data_;
 
-        const thread_queue_init_parameters queue_parameters_;
+        thread_queue_init_parameters const queue_parameters_;
 
         // used to make sure the scheduler is only initialized once on a thread
         std::mutex init_mutex;

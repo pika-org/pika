@@ -243,9 +243,9 @@ namespace pika::functional::detail {
             template <typename... Args,
                 typename Enable = std::enable_if_t<!is_tag_override_invocable_v<Tag, Args&&...> &&
                     is_tag_invocable_v<Tag, Args&&...>>>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto PIKA_STATIC_CALL_OPERATOR(
-                Args&&... args) noexcept(is_nothrow_tag_invocable_v<Tag, Args...>)
-                -> tag_invoke_result_t<Tag, Args&&...>
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
+            PIKA_STATIC_CALL_OPERATOR(Args&&... args) noexcept(
+                is_nothrow_tag_invocable_v<Tag, Args...>) -> tag_invoke_result_t<Tag, Args&&...>
             {
                 return tag_invoke(Tag{}, PIKA_FORWARD(Args, args)...);
             }

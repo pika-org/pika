@@ -49,7 +49,7 @@ namespace tests {
     // TrivialIterator.
     // Preconditions: i != j, *i == val
     template <class Iterator, class T>
-    void trivial_iterator_test(const Iterator i, const Iterator j, T val)
+    void trivial_iterator_test(Iterator const i, Iterator const j, T val)
     {
         Iterator k;
         PIKA_TEST(i == i);
@@ -140,12 +140,12 @@ namespace tests {
     }
 
     template <typename Iterator, typename T>
-    void readable_iterator_traversal_test(const Iterator, T, std::false_type)
+    void readable_iterator_traversal_test(Iterator const, T, std::false_type)
     {
     }
 
     template <typename Iterator, typename T>
-    void readable_iterator_test(const Iterator i1, T v)
+    void readable_iterator_test(Iterator const i1, T v)
     {
         using ref_t = typename std::iterator_traits<Iterator>::reference;
 
@@ -335,7 +335,7 @@ namespace tests {
     {
         PIKA_ASSERT(N >= 2);
         bidirectional_readable_iterator_test(i, vals[0], vals[1]);
-        const Iterator j = i;
+        Iterator const j = i;
         int c;
 
         for (c = 0; c < N - 1; ++c)
@@ -430,7 +430,7 @@ namespace tests {
     }
 
     template <class Iterator, class T>
-    void writable_iterator_traversal_test(const Iterator, T, std::false_type)
+    void writable_iterator_traversal_test(Iterator const, T, std::false_type)
     {
     }
 

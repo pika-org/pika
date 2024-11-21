@@ -238,8 +238,7 @@ namespace pika {
 #if !defined(__NVCC__)
         [[nodiscard]]
 #endif
-        friend bool
-        operator==(stop_token const& lhs, stop_token const& rhs) noexcept
+        friend bool operator==(stop_token const& lhs, stop_token const& rhs) noexcept
         {
             return lhs.state_ == rhs.state_;
         }
@@ -248,8 +247,7 @@ namespace pika {
 #if !defined(__NVCC__)
         [[nodiscard]]
 #endif
-        friend bool
-        operator!=(stop_token const& lhs, stop_token const& rhs) noexcept
+        friend bool operator!=(stop_token const& lhs, stop_token const& rhs) noexcept
         {
             return !(lhs == rhs);
         }
@@ -377,8 +375,7 @@ namespace pika {
 #if !defined(__NVCC__)
         [[nodiscard]]
 #endif
-        friend bool
-        operator==(stop_source const& lhs, stop_source const& rhs) noexcept
+        friend bool operator==(stop_source const& lhs, stop_source const& rhs) noexcept
         {
             return lhs.state_ == rhs.state_;
         }
@@ -386,8 +383,7 @@ namespace pika {
 #if !defined(__NVCC__)
         [[nodiscard]]
 #endif
-        friend bool
-        operator!=(stop_source const& lhs, stop_source const& rhs) noexcept
+        friend bool operator!=(stop_source const& lhs, stop_source const& rhs) noexcept
         {
             return !(lhs == rhs);
         }

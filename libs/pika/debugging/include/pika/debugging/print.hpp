@@ -592,7 +592,7 @@ namespace PIKA_DETAIL_NS_DEBUG {
         }
 
         template <typename... Args>
-        constexpr timed_var<Args...> make_timer(double const delay, const Args... args) const
+        constexpr timed_var<Args...> make_timer(double const delay, Args const... args) const
         {
             return timed_var<Args...>(delay, args...);
         }

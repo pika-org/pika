@@ -132,7 +132,7 @@ int pika_main(variables_map& vm)
 
         num_iterations = vm["delay-iterations"].as<std::uint64_t>();
 
-        const std::uint64_t count = vm["tasks"].as<std::uint64_t>();
+        std::uint64_t const count = vm["tasks"].as<std::uint64_t>();
         if (PIKA_UNLIKELY(0 == count))
             throw std::logic_error("error: count of 0 tasks specified\n");
 

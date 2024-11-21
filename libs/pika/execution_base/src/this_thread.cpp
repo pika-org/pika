@@ -51,50 +51,62 @@ namespace pika::execution {
 
     namespace detail { namespace {
 
-            struct default_context : context_base
-            {
-                resource_base const& resource() const override { return resource_; }
-                resource_base resource_;
-            };
+        struct default_context : context_base
+        {
+            resource_base const& resource() const override { return resource_; }
+            resource_base resource_;
+        };
 
-            struct default_agent : detail::agent_base
-            {
-                default_agent();
+        struct default_agent : detail::agent_base
+        {
+            default_agent();
 
-                std::string description() const override { return fmt::format("{}", id_); }
+            std::string description() const override { return fmt::format("{}", id_); }
 
-                default_context const& context() const override { return context_; }
+            default_context const& context() const override { return context_; }
 
-                void yield(char const* desc) override;
-                void yield_k(std::size_t k, char const* desc) override;
-                void spin_k(std::size_t k, char const* desc) override;
-                void suspend(char const* desc) override;
-                void resume(char const* desc) override;
-                void abort(char const* desc) override;
-                void sleep_for(
-                    pika::chrono::steady_duration const& sleep_duration, char const* desc) override;
-                void sleep_until(
-                    pika::chrono::steady_time_point const& sleep_time, char const* desc) override;
+            void yield(char const* desc) override;
+            void yield_k(std::size_t k, char const* desc) override;
+            void spin_k(std::size_t k, char const* desc) override;
+            void suspend(char const* desc) override;
+            void resume(char const* desc) override;
+            void abort(char const* desc) override;
+            void sleep_for(
+                pika::chrono::steady_duration const& sleep_duration, char const* desc) override;
+            void sleep_until(
+                pika::chrono::steady_time_point const& sleep_time, char const* desc) override;
 
-            private:
-                bool running_;
-                bool aborted_;
-                std::thread::id id_;
-                std::mutex mtx_;
-                std::condition_variable suspend_cv_;
-                std::condition_variable resume_cv_;
+        private:
+            bool running_;
+            bool aborted_;
+            std::thread::id id_;
+            std::mutex mtx_;
+            std::condition_variable suspend_cv_;
+            std::condition_variable resume_cv_;
 
-                default_context context_;
-            };
+            default_context context_;
+        };
 
-            default_agent::default_agent()
-              : running_(true)
-              , aborted_(false)
-              , id_(std::this_thread::get_id())
-            {
-            }
+        default_agent::default_agent()
+          : running_(true)
+          , aborted_(false)
+          , id_(std::this_thread::get_id())
+        {
+        }
 
-            void default_agent::yield(char const* /* desc */)
+        void default_agent::yield(char const* /* desc */)
+        {
+#if defined(PIKA_WINDOWS)
+            Sleep(0);
+#else
+            sched_yield();
+#endif
+        }
+
+        void default_agent::yield_k(std::size_t k, char const* /* desc */)
+        {
+            if (k < 16) { PIKA_SMT_PAUSE; }
+            else if (k < 32 || k & 1)
             {
 #if defined(PIKA_WINDOWS)
                 Sleep(0);
@@ -102,87 +114,75 @@ namespace pika::execution {
                 sched_yield();
 #endif
             }
-
-            void default_agent::yield_k(std::size_t k, char const* /* desc */)
+            else
             {
-                if (k < 16) { PIKA_SMT_PAUSE; }
-                else if (k < 32 || k & 1)
-                {
 #if defined(PIKA_WINDOWS)
-                    Sleep(0);
+                Sleep(1);
 #else
-                    sched_yield();
+                // g++ -Wextra warns on {} or {0}
+                struct timespec rqtp = {0, 0};
+
+                // POSIX says that timespec has tv_sec and tv_nsec
+                // But it doesn't guarantee order or placement
+
+                rqtp.tv_sec = 0;
+                rqtp.tv_nsec = 1000;
+
+                nanosleep(&rqtp, nullptr);
 #endif
-                }
-                else
-                {
-#if defined(PIKA_WINDOWS)
-                    Sleep(1);
-#else
-                    // g++ -Wextra warns on {} or {0}
-                    struct timespec rqtp = {0, 0};
-
-                    // POSIX says that timespec has tv_sec and tv_nsec
-                    // But it doesn't guarantee order or placement
-
-                    rqtp.tv_sec = 0;
-                    rqtp.tv_nsec = 1000;
-
-                    nanosleep(&rqtp, nullptr);
-#endif
-                }
             }
+        }
 
-            void default_agent::spin_k(std::size_t k, char const* /* desc */)
+        void default_agent::spin_k(std::size_t k, char const* /* desc */)
+        {
+            for (std::size_t i = 0; i < k; ++i) { PIKA_SMT_PAUSE; }
+        }
+
+        void default_agent::suspend(char const* /* desc */)
+        {
+            std::unique_lock<std::mutex> l(mtx_);
+            PIKA_ASSERT(running_);
+
+            running_ = false;
+            resume_cv_.notify_all();
+
+            suspend_cv_.wait(l, [&] { return running_; });
+
+            if (aborted_)
             {
-                for (std::size_t i = 0; i < k; ++i) { PIKA_SMT_PAUSE; }
+                PIKA_THROW_EXCEPTION(pika::error::yield_aborted, "suspend",
+                    "std::thread({}) aborted (yield returned wait_abort)", id_);
             }
+        }
 
-            void default_agent::suspend(char const* /* desc */)
-            {
-                std::unique_lock<std::mutex> l(mtx_);
-                PIKA_ASSERT(running_);
+        void default_agent::resume(char const* /* desc */)
+        {
+            std::unique_lock<std::mutex> l(mtx_);
+            resume_cv_.wait(l, [&] { return !running_; });
+            running_ = true;
+            suspend_cv_.notify_one();
+        }
 
-                running_ = false;
-                resume_cv_.notify_all();
+        void default_agent::abort(char const* /* desc */)
+        {
+            std::unique_lock<std::mutex> l(mtx_);
+            resume_cv_.wait(l, [&] { return !running_; });
+            running_ = true;
+            aborted_ = true;
+            suspend_cv_.notify_one();
+        }
 
-                suspend_cv_.wait(l, [&] { return running_; });
+        void default_agent::sleep_for(
+            pika::chrono::steady_duration const& sleep_duration, char const* /* desc */)
+        {
+            std::this_thread::sleep_for(sleep_duration.value());
+        }
 
-                if (aborted_)
-                {
-                    PIKA_THROW_EXCEPTION(pika::error::yield_aborted, "suspend",
-                        "std::thread({}) aborted (yield returned wait_abort)", id_);
-                }
-            }
-
-            void default_agent::resume(char const* /* desc */)
-            {
-                std::unique_lock<std::mutex> l(mtx_);
-                resume_cv_.wait(l, [&] { return !running_; });
-                running_ = true;
-                suspend_cv_.notify_one();
-            }
-
-            void default_agent::abort(char const* /* desc */)
-            {
-                std::unique_lock<std::mutex> l(mtx_);
-                resume_cv_.wait(l, [&] { return !running_; });
-                running_ = true;
-                aborted_ = true;
-                suspend_cv_.notify_one();
-            }
-
-            void default_agent::sleep_for(
-                pika::chrono::steady_duration const& sleep_duration, char const* /* desc */)
-            {
-                std::this_thread::sleep_for(sleep_duration.value());
-            }
-
-            void default_agent::sleep_until(
-                pika::chrono::steady_time_point const& sleep_time, char const* /* desc */)
-            {
-                std::this_thread::sleep_until(sleep_time.value());
-            }
+        void default_agent::sleep_until(
+            pika::chrono::steady_time_point const& sleep_time, char const* /* desc */)
+        {
+            std::this_thread::sleep_until(sleep_time.value());
+        }
     }}    // namespace detail
 
     namespace detail {

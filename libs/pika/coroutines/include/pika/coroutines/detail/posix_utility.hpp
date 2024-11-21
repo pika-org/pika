@@ -81,6 +81,7 @@ namespace pika::threads::coroutines::detail::posix {
     {
         if (use_guard_pages)
         {
+            // NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
             return static_cast<void*>(static_cast<void**>(stack) - (EXEC_PAGESIZE / sizeof(void*)));
         }
 
@@ -91,6 +92,7 @@ namespace pika::threads::coroutines::detail::posix {
     {
         if (use_guard_pages)
         {
+            // NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
             return static_cast<void*>(static_cast<void**>(stack) + (EXEC_PAGESIZE / sizeof(void*)));
         }
 
@@ -197,7 +199,7 @@ namespace pika::threads::coroutines::detail::posix {
 # else    // non-mmap()
 
     //this should be a fine default.
-    static const std::size_t stack_alignment = sizeof(void*) > 16 ? sizeof(void*) : 16;
+    static std::size_t const stack_alignment = sizeof(void*) > 16 ? sizeof(void*) : 16;
 
     struct stack_aligner
     {

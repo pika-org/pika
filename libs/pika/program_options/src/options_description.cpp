@@ -163,7 +163,7 @@ namespace pika::program_options {
         return m_long_names.empty() ? empty_string : *m_long_names.begin();
     }
 
-    const std::pair<std::string const*, std::size_t> option_description::long_names() const
+    std::pair<std::string const*, std::size_t> const option_description::long_names() const
     {
         // reinterpret_cast is to please msvc 10.
         return (m_long_names.empty()) ?
@@ -428,7 +428,7 @@ namespace pika::program_options {
             else
             {
                 string::const_iterator line_begin = par.begin();
-                const string::const_iterator par_end = par.end();
+                string::const_iterator const par_end = par.end();
 
                 bool first_line = true;    // of current paragraph!
 
@@ -523,7 +523,7 @@ namespace pika::program_options {
             tok paragraphs(desc, boost::char_separator<char>("\n", "", boost::keep_empty_tokens));
 
             tok::const_iterator par_iter = paragraphs.begin();
-            const tok::const_iterator par_end = paragraphs.end();
+            tok::const_iterator const par_end = paragraphs.end();
 
             while (par_iter != par_end)    // paragraphs
             {

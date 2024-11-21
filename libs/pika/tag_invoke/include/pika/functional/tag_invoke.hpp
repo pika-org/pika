@@ -204,9 +204,9 @@ namespace pika::functional::detail {
         {
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto PIKA_STATIC_CALL_OPERATOR(
-                Args&&... args) noexcept(is_nothrow_tag_invocable_v<Tag, Args...>)
-                -> tag_invoke_result_t<Tag, Args...>
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
+            PIKA_STATIC_CALL_OPERATOR(Args&&... args) noexcept(
+                is_nothrow_tag_invocable_v<Tag, Args...>) -> tag_invoke_result_t<Tag, Args...>
             {
                 return tag_invoke(Tag{}, PIKA_FORWARD(Args, args)...);
             }

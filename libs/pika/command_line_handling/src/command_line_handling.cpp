@@ -258,8 +258,8 @@ namespace pika::detail {
     {
         // If using the process mask we override "cores" and "all" options but
         // keep explicit numeric values.
-        const std::size_t init_threads = get_number_of_default_threads(use_process_mask);
-        const std::size_t init_cores = get_number_of_default_cores(use_process_mask);
+        std::size_t const init_threads = get_number_of_default_threads(use_process_mask);
+        std::size_t const init_cores = get_number_of_default_cores(use_process_mask);
 
         std::size_t default_threads = init_threads;
 

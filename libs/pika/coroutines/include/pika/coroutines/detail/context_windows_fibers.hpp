@@ -222,7 +222,7 @@ namespace pika::threads::coroutines {
         }
 
         // initial stack size (grows as needed)
-        static const std::size_t stack_size = sizeof(void*) >= 8 ? 2048 : 1024;
+        static std::size_t const stack_size = sizeof(void*) >= 8 ? 2048 : 1024;
 
         template <typename CoroutineImpl>
         class fibers_context_impl : public fibers_context_impl_base

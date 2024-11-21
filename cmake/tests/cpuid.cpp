@@ -47,7 +47,7 @@ struct matcher
     {0x0000'0001U, &registers_t::ecx, 9, "ssse3"}, {0x0000'0001U, &registers_t::ecx, 19, "sse4.1"},
     {0x0000'0001U, &registers_t::ecx, 20, "sse4.2"}, {0x0000'0001U, &registers_t::ecx, 28, "avx"},
     {0x8000'0001U, &registers_t::edx, 11, "xop"}, {0x8000'0001U, &registers_t::edx, 16, "fma4"}};
-const size_t noptions = sizeof options / sizeof options[0];
+size_t const noptions = sizeof options / sizeof options[0];
 
 int main(int argc, char** argv)
 {

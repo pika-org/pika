@@ -38,10 +38,7 @@ namespace pika::traits {
 
             static char test(...);
 
-            enum
-            {
-                value = sizeof(test(std::declval<T>())) == sizeof(void*)
-            };
+            static constexpr bool value = sizeof(test(std::declval<T>())) == sizeof(void*);
         };
 
         ///////////////////////////////////////////////////////////////////////

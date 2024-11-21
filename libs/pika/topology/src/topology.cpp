@@ -908,8 +908,8 @@ namespace pika::threads::detail {
 
         if (!threads::detail::any(m))
         {
-            os << std::setw(4) << num_thread << ": thread binding disabled"
-               << ", on pool \"" << pool_name << "\"" << std::endl;
+            os << std::setw(4) << num_thread << ": thread binding disabled" << ", on pool \""
+               << pool_name << "\"" << std::endl;
             return;
         }
 

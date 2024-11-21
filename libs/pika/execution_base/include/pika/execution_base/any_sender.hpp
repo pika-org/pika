@@ -539,8 +539,8 @@ namespace pika::execution::experimental::detail {
         any_receiver& operator=(any_receiver const&) = delete;
 
         template <typename... Ts_>
-        auto set_value(Ts_&&... ts) && noexcept
-            -> decltype(std::declval<base_type>().set_value(PIKA_FORWARD(Ts_, ts)...))
+        auto set_value(Ts_&&... ts) && noexcept -> decltype(std::declval<base_type>().set_value(
+                                                    PIKA_FORWARD(Ts_, ts)...))
         {
             auto r = PIKA_MOVE(*this);
             // We first move the storage to a temporary variable so that

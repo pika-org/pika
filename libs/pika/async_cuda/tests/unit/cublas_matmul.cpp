@@ -157,8 +157,8 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched, sMatri
     tt::sync_wait(std::move(copy_AB));
 
     std::cout << "Computing result using CUBLAS...\n";
-    const T alpha = 1.0f;
-    const T beta = 0.0f;
+    T const alpha = 1.0f;
+    T const beta = 0.0f;
 
     // Perform warmup operation with cublas
     // note cublas is column major ordering : transpose the order

@@ -166,8 +166,7 @@ private:
                       << "Average Precision per Task [nanoseconds/task],"
                       << "Precision Uncertainty per Task [nanoseconds/task],"
                       << "Amortized Overhead per Task [nanoseconds/task],"
-                      << "Amortized Overhead per Task Uncertainty [nanoseconds/task]"
-                      << "\n";
+                      << "Amortized Overhead per Task Uncertainty [nanoseconds/task]" << "\n";
 
         fmt::print(std::cout, "{},{},{},{:.14g},{:.14g},{:.14g},{:.14g}\n", this->osthreads_,
             this->tasks_, this->payload_duration_, results.average_precision_,
