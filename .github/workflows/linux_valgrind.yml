@@ -32,7 +32,7 @@ jobs:
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: ccache-linux-valgrind
+          key: ccache-linux-valgrind-${{ matrix.build_type }}
       - name: Configure
         shell: bash
         # -gdwarf-4 because of https://github.com/llvm/llvm-project/issues/56550
