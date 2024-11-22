@@ -25,6 +25,10 @@ jobs:
       # --privileged is enabled for sysctl further down.
       options: --privileged
 
+    strategy:
+      matrix:
+        build_type: ["Debug", "RelWithDebInfo"]
+
     steps:
       - uses: actions/checkout@v4
       - name: Update apt repositories for ccache
@@ -49,7 +53,7 @@ jobs:
                 -Bbuild \
                 -GNinja \
                 -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-                -DCMAKE_BUILD_TYPE=Debug \
+                -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
                 -DPIKA_WITH_MALLOC=system \
                 -DPIKA_WITH_MPI=OFF \
                 -DPIKA_WITH_EXAMPLES=ON \

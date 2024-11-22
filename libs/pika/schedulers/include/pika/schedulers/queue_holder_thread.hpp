@@ -475,6 +475,8 @@ namespace pika::threads::detail {
                     debug::detail::threadinfo<threads::detail::thread_id_ref_type*>(&tid));
             }
             else
+#else
+            PIKA_UNUSED(heap);
 #endif
             {
                 // Allocate a new thread object.
