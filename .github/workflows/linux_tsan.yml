@@ -36,7 +36,7 @@ jobs:
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: ccache-linux-sanitizers-thread
+          key: ccache-linux-sanitizers-thread-${{ matrix.build_type }}
       - name: Switch OpenMPI to MPICH
         shell: bash
         run: |
